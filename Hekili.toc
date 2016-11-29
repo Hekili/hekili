@@ -1,0 +1,25 @@
+## Interface: 70100 
+## Version: 7.1.0
+## Title: Hekili
+## Author: Hekili
+## Notes: Priority helper for Shamans, Paladins, Monks, and Hunters with support for in-game modifications.
+## SavedVariables: HekiliDB
+## OptionalDeps: Masque, SpellFlash, SpellFlashCore, WeakAuras
+
+embeds.xml
+
+Hekili.lua
+Utils.lua
+Formatting.lua
+MultilineEditor.lua
+Constants.lua
+State.lua
+Events.lua
+Classes.lua
+Classes\Paladin.lua
+Classes\Shaman.lua
+Targets.lua
+Options.lua
+UI.lua
+Scripts.lua
+Core.lua

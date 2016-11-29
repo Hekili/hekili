@@ -1,0 +1,74 @@
+package-as: Hekili
+
+enable-nolib-creation: no
+
+externals:
+    Libs/LibStub:
+        url: svn://svn.wowace.com/wow/libstub/mainline/trunk
+        tag: latest
+    Libs/AceAddon-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
+        tag: latest
+    Libs/AceBucket-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceBucket-3.0
+        tag: latest
+    Libs/AceComm-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceComm-3.0
+        tag: latest
+    Libs/AceConfig-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+        tag: latest
+    Libs/AceConsole-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
+        tag: latest
+    Libs/AceDB-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+        tag: latest
+    Libs/AceDBOptions-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
+        tag: latest
+    Libs/AceEvent-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+        tag: latest
+    Libs/AceGUI-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+        tag: latest
+    Libs/AceHook-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceHook-3.0
+        tag: latest
+    Libs/AceLocale-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
+        tag: latest
+    Libs/AceSerializer-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceSerializer-3.0
+        tag: latest
+    Libs/AceTab-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTab-3.0
+        tag: latest
+    Libs/AceTimer-3.0:
+        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+        tag: latest
+    Libs/CallbackHandler-1.0:
+        url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+        tag: latest
+    Libs/LibSharedMedia-3.0:
+        url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk
+        tag: latest
+    Libs/AceGUI-3.0-SharedMediaWidgets:
+        url: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk
+        tag: latest
+    Libs/LibDualSpec-1.0: 
+        url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
+        tag: latest
+    Libs/LibSpellRange-1.0:
+        url: svn://svn.curseforge.net/wow/libspellrange-1-0/mainline/trunk
+        tag: latest
+    Libs/LibRangeCheck-2.0:
+        url: svn://svn.wowace.com/wow/librangecheck-2-0/mainline/trunk
+        tag: latest
+    Libs/LibArtifactData-1.0:
+        url: git://git.wowace.com/wow/libartifactdata-1-0/mainline.git
+        tag: latest
+    Libs/LibCompress:
+        url: svn://svn.wowace.com/wow/libcompress/mainline/trunk
+        tag: latest

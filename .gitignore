@@ -45,3 +45,11 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+Libs/AceAddon-3.0/
+Libs/AceBucket-3.0/
+Libs/CallbackHandler-1.0/
+Libs/AceTimer-3.0/
+Libs/AceComm-3.0/
+Libs/AceConfig-3.0/
+Libs/AceConsole-3.0/AceConsole-3.0.lua
+Libs/AceConsole-3.0/AceConsole-3.0.xml
