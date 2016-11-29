@@ -2024,12 +2024,13 @@ function Hekili:GetOptions()
           gettingStarted = {
             type = 'description',
             name = "|cFFFFD100Getting Started|r\n\n" ..
-            "By default, this addon shows two displays.  The lower display is a hybrid display that will display a single-target, cleave, or AOE priority list depending on the number of targets that have been detected.  " ..
-            "The upper display will show an AOE priority list, assuming a certain number of targets.\n\n" ..
+            "By default, this addon has two displays.  The primary display is a hybrid display that will display a single-target, cleave, or AOE priority list depending on the number of targets that have been detected.  " ..
             "For greater control over the primary display, you may want to adjust the |cFFFFD100Mode Switch|r settings found in the |cFFFFD100Toggles|r section of the options.  You can bind a key that will manually swap " ..
             "the primary display between fixed single-target mode, automatic mode, or fixed AOE mode.\n\n" ..
+            "When the primary display is in fixed single-target mode, a second display may appear (if configured) that will show AOE recommendations.\n\n" ..
             "Additionally, by default, most major cooldowns are excluded from the action lists.  To enable them, it is strongly recommend that you bind a key in the |cFFFFD100Toggles|r section for |cFFFFD100Show Cooldowns|r.  " ..
             "This will enable you to tell the addon when you do (or do not) want to have your cooldowns recommended.\n\n" ..
+            "There are additional |cFFFFD100Class Settings|r you can use to adjust preferences on for your class or specialization.  Read the tooltips for more information.\n\n" ..
             "Finally, there are many options that can be changed on a per-display basis.  Check the |cFFFFD100Displays|r section, click the display in question, and check the |cFFFFD100UI and Style|r section to explore the " ..
             "available options for customization.\n",
             order = 1,
@@ -2037,11 +2038,7 @@ function Hekili:GetOptions()
           whatsNew = {
             type = 'description',
             name = "|cFFFFD100What's New!|r\n\n" ..
-            "|cFFFFD100Shaman|r - The Shaman class module has been rewritten for Legion.  It currently supports only Enhancement.\n\n" ..
-            "|cFFFFD100Paladin|r - The Paladin class module has been rewritten for Legion.  It currently supports only Retribution.  The ability-specific Clash settings are currently disabled and will be restored at a " ..
-            "later date.\n\n" ..
-            "|cFFFFD100New Syntax|r - Artifact traits are supported via the |cFFFFD100artifact.trait.rank|r and |cFFFFD100artifact.trait.enabled|r syntax.\n\n" ..
-            "|cFF00FF00Coming Soon|r - Windwalker Monk support, followed by Protection Paladin and Elemental Shaman support.",
+            "|cFF00FF00Monks!|r - Windwalker and Brewmaster Monks are supported through an additional class module.  You can download it from http://curse.com/addons/wow/hekili-monks/.",
             order = 2
           },
           endCap = { -- just here to trigger scrolling if needed.
@@ -2504,25 +2501,25 @@ function Hekili:GetOptions()
               ['Switch Type'] = {
                 type = 'select',
                 name = 'Switch Type',
-                desc = "|cFFFFD100Auto:|r\nPressing the Mode Switch keybind will switch between single-target and automatic detection of single-target vs. cleave vs. AOE.\n" ..
-                "|cFFFFD100Manual:|r\nPressing this key will switch between single-target and AOE.  Cleave action lists will not be used.\n",
+                desc = "|cFFFFD100Auto / Single-Target:|r\nPressing the Mode Switch keybind will switch between strict single target (1 enemy) vs. using auto-detection to count active enemies.\n" ..
+                "|cFFFFD100Single-Target / AOE:|r\nPressing this key will switch between single-target and AOE.  AOE is defined as a minimum of 3 targets for default displays.\n",
                 values = {
-                  [0] = 'Auto',
-                  [1] = 'Manual',
+                  [0] = 'Single-Target <-> Auto',
+                  [1] = 'Single-Target <-> AOE',
                 },
                 order = 21,
               },
               ['Mode Status'] = {
                 type = 'select',
                 name = 'Current Mode',
-                desc = "Based upon the Switch Type, this setting can switch between single-target and auto ('cleave') or single-target and AOE.",
+                desc = "Based upon the Switch Type, this setting can switch between single-target, AOE, or auto-detection of enemies.",
                 values = function(info, val)
                   if Hekili.DB.profile['Switch Type'] == 2 then
-                    return { [0] = 'Single Target', [1] = 'Cleave', [2] = 'AOE' }
+                    return { [0] = 'Single-Target', [1] = 'Cleave', [2] = 'AOE' }
                   elseif Hekili.DB.profile['Switch Type'] == 1 then
-                    return { [0] = 'Single Target', [2] = 'AOE' }
+                    return { [0] = 'Single-Target', [2] = 'AOE' }
                   elseif Hekili.DB.profile['Switch Type'] == 0 then
-                    return { [0] = 'Single Target', [3] = 'Auto' }
+                    return { [0] = 'Single-Target', [3] = 'Auto-Detect' }
                   end
                 end,
                 order = 22

@@ -56,7 +56,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addTalent( 'greater_judgment', 218178 )
 
         addTalent( 'fist_of_justice', 198054 )
-        addTalent( 'repentence', 20066 )
+        addTalent( 'repentance', 20066 )
         addTalent( 'blinding_light', 115750 )
 
         addTalent( 'virtues_blade', 202271 )
@@ -78,16 +78,32 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         -- Player Buffs.
         addAura( 'avenging_wrath', 31884 )
-        addAura( 'blade_of_wrath', 202270 )
-        addAura( 'crusade', 224668 )
-        addAura( 'divine_purpose', 223819 )
+        addAura( 'blade_of_wrath', 202270 )        
+        addAura( 'blessing_of_freedom', 1044, 'duration', 8 )
+        addAura( 'blessing_of_protection', 1022, 'duration', 10 )
+        addAura( 'blinding_light', 115750, 'duration', 6 )
+        addAura( 'crusade', 224668, 'max_stack', 15 )
         addAura( 'divine_hammer', 198137 )
+        addAura( 'divine_purpose', 223819 )
+        addAura( 'divine_shield', 642, 'duration', 8 )
+        addAura( 'divine_steed', 221883, 'duration', 3 )
         addAura( 'execution_sentence', 213757, 'duration', 7 )
+        addAura( 'eye_for_an_eye', 205191, 'duration', 10 )
+        addAura( 'forbearance', 25771, 'duration', 30 )
+        addAura( 'greater_blessing_of_kings', 203538, 'duration', 3600 )
+        addAura( 'greater_blessing_of_might', 203528, 'duration', 3600 )
+        addAura( 'greater_blessing_of_wisdom', 203539, 'duration', 3600 )
         addAura( 'hammer_of_justice', 853, 'duration', 6 )
+        addAura( 'hand_of_hindrance', 183218, 'duration', 10 )
+        addAura( 'hand_of_reckoning', 62124, 'duration', 3 )
+        addAura( 'repentance', 62124, 'duration', 60 )
+        addAura( 'seal_of_light', 202273, 'duration', 20 )
         addAura( 'shield_of_vengeance', 184662, 'duration', 15 )
         addAura( 'the_fires_of_justice', 209785 )
+        addAura( 'wake_of_ashes', 205273, 'duration', 6 )
         addAura( 'whisper_of_the_nathrezim', 207633 )
         addAura( 'zeal', 217020, 'max_stack', 3 )
+
 
 
         -- Fake Buffs.
@@ -185,6 +201,12 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             state.gain( ticks_before - ticks_after, 'holy_power' )
 
             return t
+        end )
+
+        addHook( 'spend', function( amt, resource )
+            if state.buff.crusade.up and resource == 'holy_power' then
+                state.addStack( 'crusade', state.buff.crusade.remains, amt )
+            end
         end )
 
         --[[ LegionFix:  Set up HoPo for prediction over time (for Liadrin's Fury Unleashed).
@@ -300,6 +322,39 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
 
+        addAbility( 'blessing_of_freedom', {
+            id = 1044,
+            spend = 0.15,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 300
+        } )
+
+        addHandler( 'blessing_of_freedom', function ()
+            applyBuff( 'blessing_of_freedom', 8 )
+        end )
+
+
+        addAbility( 'blessing_of_protection', {
+            id = 1022,
+            spend = 0.15,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 300
+        } )
+
+        modifyAbility( 'blessing_of_protection', 'cooldown', function( x )
+            return x * ( 1 - ( artifact.protector_of_the_ashen_blade.rank * 0.1 ) )
+        end )
+
+        addHandler( 'blessing_of_protection', function ()
+            applyBuff( 'blessing_of_protection', 10 )
+            applyDebuff( 'player', 'forbearance', 30 - ( artifact.endless_resolve.rank * 10 ) )
+        end )
+
+
         --[[ removed in 7.1
         
         addAbility( 'blade_of_wrath', {
@@ -319,6 +374,32 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'blade_of_wrath', function ()
             applyDebuff( 'target', 'blade_of_wrath', 6 * haste )
         end ) ]]
+
+
+        addAbility( 'blinding_light', {
+            id = 115750,
+            spend = 0.08,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 90,
+            known = function() return talent.blinding_light.enabled end
+        } )
+
+        addHandler( 'blinding_light', function ()
+            applyDebuff( 'target', 'blinding_light', 6 )
+            active_dot.blinding_light = active_enemies
+        end )
+
+
+        addAbility( 'cleanse_toxins', {
+            id = 213644,
+            spend = 0.105,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 8,
+        } )
 
 
         addAbility( 'consecration', {
@@ -378,31 +459,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
 
-        addAbility( 'divine_storm', {
-            id = 53385,
-            spend = 3,
-            spend_type = 'holy_power',
-            cast = 0,
-            gcdType = 'melee',
-            cooldown = 0,
-        } )
-
-        modifyAbility( 'divine_storm', 'spend', function( x )
-            if buff.divine_purpose.up then return 0
-			elseif buff.the_fires_of_justice.up then return x - 1 end
-            return x
-        end )
-
-        addHandler( 'divine_storm', function ()
-            if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
-            elseif buff.the_fires_of_justice.up then removeBuff( 'the_fires_of_justice' ) end
-            if equipped.whisper_of_the_nathrezim then applyBuff( 'whisper_of_the_nathrezim', 4 ) end
-            if talent.fist_of_justice.enabled then
-                setCooldown( 'hammer_of_justice', cooldown.hammer_of_justice.remains - 8 )
-            end
-        end )
-
-
         addAbility( 'divine_hammer', {
             id = 198034,
             spend = -2,
@@ -418,6 +474,65 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
 
+        addAbility( 'divine_shield', {
+            id = 642,
+            spend = 0,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 300, 
+            usable = function () return not debuff.forbearance.up end
+        } )
+
+        modifyAbility( 'divine_shield', 'cooldown', function( x )
+            return x * ( talent.divine_intervention.enabled and 0.5 or 1 )
+        end )
+
+        addHandler( 'divine_shield', function ()
+            applyBuff( 'divine_shield', 8 )
+            applyDebuff( 'player', 'forbearance', 30 - ( artifact.endless_resolve.rank * 10 ) )
+        end )
+
+
+        addAbility( 'divine_steed', {
+            id = 190784,
+            spend = 0,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 45,
+            charges = 1,
+            recharge = 45
+        } )
+
+        modifyAbility( 'divine_steed', 'charges', function( x )
+            return x + ( talent.cavalier.enabled and 1 or 0 )
+        end )
+
+
+        addAbility( 'divine_storm', {
+            id = 53385,
+            spend = 3,
+            spend_type = 'holy_power',
+            cast = 0,
+            gcdType = 'melee',
+            cooldown = 0,
+        } )
+
+        modifyAbility( 'divine_storm', 'spend', function( x )
+            if buff.divine_purpose.up then return 0
+            elseif buff.the_fires_of_justice.up then return x - 1 end
+            return x
+        end )
+
+        addHandler( 'divine_storm', function ()
+            if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
+            elseif buff.the_fires_of_justice.up then removeBuff( 'the_fires_of_justice' ) end
+            if equipped.whisper_of_the_nathrezim then applyBuff( 'whisper_of_the_nathrezim', 4 ) end
+            if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
+        end )
+
+
         addAbility( 'execution_sentence', {
             id = 213757,
             spend = 3,
@@ -429,12 +544,92 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         } )
 
 		modifyAbility( 'execution_sentence', 'spend', function( x )
-			if buff.the_fires_of_justice.up then return x -1 end
+			if buff.the_fires_of_justice.up then return x - 1 end
 			return x
 		end )
 
+        modifyAbility( 'execution_sentence', 'cooldown', function( x )
+            return x * haste
+        end )
+
         addHandler( 'execution_sentence', function ()
-            applyDebuff( 'target', 'execution_sentence', 7 ) 
+            applyDebuff( 'target', 'execution_sentence', 7 * haste ) 
+            if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
+        end )
+
+
+        addAbility( 'eye_for_an_eye', {
+            id = 205191,
+            spend = 0,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 60,
+            known = function () return talent.eye_for_an_eye.enabled end
+        } )
+
+        addHandler( 'eye_for_an_eye', function ()
+            applyBuff( 'eye_for_an_eye', 10 )
+        end )
+
+
+        addAbility( 'flash_of_light', {
+            id = 19750,
+            spend = 0.22,
+            spend_type = 'mana',
+            cast = 1.5,
+            gcdType = 'spell',
+            cooldown = 0,
+        } )
+
+        modifyAbility( 'flash_of_light', 'cast', function( x )
+            return x * haste
+        end )
+
+        addHandler( 'flash_of_light', function ()
+            health.current = min( health.max, health.current + ( stat.spell_power * 4.5 * ( 1 + ( artifact.embrace_the_light.rank * 0.15 ) ) ) )
+        end )
+
+
+        addAbility( 'greater_blessing_of_might', {
+            id = 203528,
+            spend = 0,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 0,
+        } )
+
+        addHandler( 'greater_blessing_of_might', function ()
+            applyBuff( 'player', 'greater_blessing_of_might', 3600 )
+        end )
+
+
+        addAbility( 'greater_blessing_of_kings', {
+            id = 203538,
+            spend = 0,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 0,
+        } )
+
+        addHandler( 'greater_blessing_of_kings', function ()
+            applyBuff( 'player', 'greater_blessing_of_kings', 3600 )
+        end )
+
+
+        addAbility( 'greater_blessing_of_wisdom', {
+            id = 203539,
+            spend = 0,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 0,
+        } )
+
+        addHandler( 'greater_blessing_of_wisdom', function ()
+            applyBuff( 'player', 'greater_blessing_of_wisdom', 3600 )
         end )
 
 
@@ -456,6 +651,34 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'hammer_of_justice', function ()
             applyDebuff( 'target', 'hammer_of_justice', 6 )
+        end )
+
+
+        addAbility( 'hand_of_hindrance', {
+            id = 183218,
+            spend = 0.105,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 30
+        } )
+
+        addHandler( 'hand_of_hindrance', function ()
+            applyDebuff( 'target', 'hand_of_hindrance', 10 )
+        end )
+
+
+        addAbility( 'hand_of_reckoning', {
+            id = 62124,
+            spend = 0.035,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 8,
+        } )
+
+        addHandler( 'hand_of_reckoning', function ()
+            applyDebuff( 'target', 'hand_of_reckoning', 3 )
         end )
 
 
@@ -486,6 +709,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'judgment', function ()
             applyDebuff( 'target', 'judgment', 8 )
+            if talent.greater_judgment.enabled then active_dot.judgment = max( active_enemies, active_dot.judgment + 2 ) end
         end )
 
 
@@ -508,6 +732,23 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'justicars_vengeance', function ()
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             elseif buff.the_fires_of_justice.up then removeBuff( 'the_fires_of_justice' ) end
+            if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
+        end )
+
+
+        addAbility( 'lay_on_hands', {
+            id = 633,
+            spend = 0,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'off',
+            cooldown = 600,
+            usable = function () return debuff.forbearance.down end,
+        } )
+
+        addHandler( 'lay_on_hands', function ()
+            health.current = health.max
+            applyDebuff( 'player', 'forbearance', 30 - ( artifact.endless_resolve.rank * 10 ) )
         end )
 
 
@@ -527,6 +768,46 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
 
+        addAbility( 'repentance', {
+            id = 20066,
+            spend = 0.10,
+            spend_type = 'mana',
+            cast = 1.5,
+            gcdType = 'spell',
+            cooldown = 15,
+            known = function () return talent.repentance.enabled end,
+        } )
+
+        modifyAbility( 'repentance', 'cast', function( x )
+            return x * haste
+        end )
+
+        addHandler( 'repentance', function ()
+            interrupt()
+            applyDebuff( 'target', 'repentance', 60 )
+        end )
+
+
+        addAbility( 'seal_of_light', {
+            id = 202273,
+            spend = 1,
+            spend_type = 'holy_power',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 0,
+            known = function () return talent.seal_of_light.enabled end
+        } )
+
+        modifyAbility( 'seal_of_light', 'spend', function( x )
+            return x - ( buff.the_fires_of_justice.up and 1 or 0 )
+        end )
+
+        addHandler( 'seal_of_light', function ()
+            applyBuff( 'seal_of_light', 20 + ( 20 * min( 4, holy_power.current ) ) )
+            spend( min( 4, holy_power.current ), 'holy_power' )
+        end )
+
+
         addAbility( 'shield_of_vengeance', {
             id = 184662,
             spend = 0,
@@ -536,6 +817,10 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 120,
             usable = function () return settings.shield_damage == 0 or incoming_damage_3s > ( health.max * settings.shield_damage / 100 ) end,
         } )
+
+        modifyAbility( 'shield_of_vengeance', 'cooldown', function( x )
+            return x - ( 10 * artifact.deflection.rank )
+        end )
 
         addHandler( 'shield_of_vengeance', function ()
             applyBuff( 'shield_of_vengeance', 15 )
@@ -561,6 +846,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             elseif buff.the_fires_of_justice.up then removeBuff( 'the_fires_of_justice' ) end
             if equipped.whisper_of_the_nathrezim then applyBuff( 'whisper_of_the_nathrezim', 4 ) end
+            if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
         end )
 
 
@@ -575,8 +861,29 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         } )
 
         modifyAbility( 'wake_of_ashes', 'spend', function( x ) 
-            if artifact.ashes_to_ashes.enabled then return -5 end
+            if artifact.ashes_to_ashes.enabled then return - 5 end
             return x
+        end )
+
+        addHandler( 'wake_of_ashes', function ()
+            if target.is_undead or target.is_demon then applyDebuff( 'target', 'wake_of_ashes', 6 ) end
+        end )
+
+
+        addAbility( 'word_of_glory', {
+            id = 210191,
+            spend = 3,
+            spend_type = 'holy_power',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 60,
+            charges = 2,
+            recharge = 60,
+            known = function () return talent.word_of_glory.enabled end
+        } )
+
+        addHandler( 'word_of_glory', function ()
+            health.current = min( health.max, health.current + stat.spell_power * 8 )
         end )
 
 

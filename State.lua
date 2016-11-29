@@ -610,6 +610,7 @@ state.gain = gain
 local function spend( amount, resource )
 
   state[ resource ].actual = max( 0, state[ resource ].actual - amount )
+  callHook( 'spend', amount, resource )
 
 end
 state.spend = spend
@@ -943,7 +944,7 @@ local mt_stat = {
       return Hekili.State.runic_power and Hekili.State.runic_power.max
 
     elseif k == 'spell_power' then
-      return GetSpellBonusPower(7)
+      return GetSpellBonusDamage(7)
 
     elseif k == 'mp5' then
       return t.mana and Hekili.State.mana.regen or 0
@@ -1244,6 +1245,12 @@ local mt_target = {
       end
       t.k = false
       return t.k
+
+    elseif k == 'is_demon' then
+        return UnitCreatureType( 'target' ) == PET_TYPE_DEMON
+
+    elseif k == 'is_undead' then
+        return UnitCreatureType( 'target' ) == BATTLE_PET_NAME_4
 
     elseif k:sub(1, 6) == 'within' then
       local maxR = k:match( "^within(%d+)$" )
