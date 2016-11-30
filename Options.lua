@@ -3785,8 +3785,10 @@ function ns.serializeDisplay( display )
         end
     end
 
-    return TableToString( Hekili.DB.profile.displays[ display ], true )
+    return TableToString( serial, true )
 end
+
+Hekili.SerializeDisplay = ns.serializeDisplay
 
 
 function ns.deserializeDisplay( str )
@@ -3795,12 +3797,15 @@ function ns.deserializeDisplay( str )
     -- Check for dupes.
     for i, prio in pairs( display.Queues ) do
         if prio['Action List'] ~= 0 then
+            local fixed = false
             for j, list in ipairs( Hekili.DB.profile.actionLists ) do
                 if prio['Action List'] == list.Name then
                     prio['Action List'] = j
+                    fixed = true
+                    break
                 end
             end
-            if type( prio['Action List'] ) == 'string' then
+            if not fixed or type( prio['Action List'] ) == 'string' then
                 prio['Action List'] = 0
             end
         end
@@ -3808,6 +3813,8 @@ function ns.deserializeDisplay( str )
 
     return display
 end
+
+Hekili.DeserializeDisplay = ns.deserializeDisplay
 
 
 function ns.serializeActionList( num ) 
