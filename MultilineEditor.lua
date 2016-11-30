@@ -217,6 +217,44 @@ local function GetOptionsMemberValue(membername, option, options, path, appName,
 end
 
 
+local function __genOrderedIndex( t )
+    local orderedIndex = {}
+    for key in pairs( t ) do
+        table.insert( orderedIndex, key )
+    end
+    table.sort( orderedIndex )
+    return orderedIndex
+end
+
+
+local function orderedNext( t, state )
+    local key = nil
+
+    if state == nil then
+        t.__orderedIndex = __genOrderedIndex( t )
+        key = t.__orderedIndex[ 1 ] 
+    else
+        for i = 1, table.getn( t.__orderedIndex ) do
+            if t.__orderedIndex[ i ] == state then
+                key = t.__orderedIndex[ i+1 ]
+            end
+        end
+    end
+
+    if key then
+        return key, t[ key ]
+    end
+
+    t.__orderedIndex = nil
+    return
+end
+
+
+function orderedPairs( t )
+    return orderedNext, t, nil
+end
+
+
 local function GenerateDiagnosticTooltip(widget, event)
   --show a tooltip/set the status bar to the desc text
   local user = widget:GetUserDataTable()
@@ -249,15 +287,26 @@ local function GenerateDiagnosticTooltip(widget, event)
     if actID then
       action = Hekili.DB.profile.actionLists[ listID ].Actions[ actID ].Ability
 
-      local result, warning = ns.checkScript( 'A', listID..':'..actID, action )
+      if path[4] ~= 'ReadyTime' then
+          local result, warning = ns.checkScript( 'A', listID..':'..actID, action )
 
-      GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
+          GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
 
-      if warning then
-        GameTooltip:AddLine( warning, 1, 1, 1 )
+          if warning then
+            GameTooltip:AddLine( warning, 1, 0, 0 )
+          end
+
+          tested = true
+      else
+        local script = ns.scripts.A[ listID .. ':' .. actID ]
+
+        if script.ReadyError then
+            GameTooltip:AddLine( '|cFFFF0000ERROR:|r ' .. ns.formatValue( script.ReadyError ), 1, 1, 1 )
+        end
+
+        GameTooltip:AddDoubleLine( "Result", ns.formatValue( script.Ready and script.Ready( arg.delay, arg.spend, arg.spend_type ) or "n/a" ), 1, 1, 1, 1, 1, 1 )
+        tested = true
       end
-
-      tested = true
     end
 
   elseif path[1] == 'displays' and path[4] == 'Script' then
@@ -288,10 +337,11 @@ local function GenerateDiagnosticTooltip(widget, event)
   end
 
   if arg then
+
     if tested then GameTooltip:AddLine(" ") end
 
     GameTooltip:AddLine( "Values" )
-    for k, v in pairs( arg ) do
+    for k, v in orderedPairs( arg ) do
       GameTooltip:AddDoubleLine( k, ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
     end
   end

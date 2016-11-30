@@ -10,7 +10,7 @@ local state = ns.state
 
 local trim = string.trim
 
-
+Hekili.Scripts = scripts.A
 
 -- Convert SimC syntax to Lua conditionals.
 local SimToLua = function( str, modifier )
@@ -78,6 +78,26 @@ local storeValues = function( tbl, node )
   end
 end
 ns.storeValues = storeValues
+
+
+function ns.storeReadyValues( tbl, node )
+
+    if not node.Elements then
+        return
+    end
+
+    if node.ReadyElements then
+        for k, v in pairs( node.ReadyElements ) do
+            local success, result = pcall( v )
+
+            if success then tbl[k] = result
+            elseif type( result ) == 'string' then
+                tbl[k] = result:match( "lua:%d+: (.*)" ) or result
+            else tbl[k] = 'nil' end
+        end
+    end
+
+end
 
 
 local stripScript = function( str, thorough )
@@ -172,6 +192,31 @@ local convertScript = function( node, hasModifiers )
     end
   end
 
+  if hasModifiers and ( node.ReadyTime and node.ReadyTime ~= '' ) then
+    local tReady = SimToLua( node.ReadyTime, true )
+    local rFunction, rError
+
+    if tReady then
+        rFunction, rError = loadstring( 'return function( delay, spend, spend_type )\n' ..
+            'return max( 0, delay, ' .. tReady .. ' )\n' ..
+            'end' )
+    end
+
+    if rFunction then
+        _, rFunction = pcall( rFunction )
+        setfenv( rFunction, state )
+    end
+
+    if rError then
+        rError = rError:match( ":%d+: (.*)" )
+    end
+
+    Output.Ready = rFunction
+    Output.ReadyError = rError
+    Output.ReadyLua = tReady
+    Output.ReadyElements = tReady and getScriptElements( tReady )
+  end
+
   return Output
 end
 
@@ -209,6 +254,19 @@ ns.checkScript = function( cat, key, action, override, delay )
 
 end
 local checkScript = ns.checkScript
+
+
+function ns.checkTimeScript( entry, delay, spend, spend_type )
+
+    local script = scripts.A[ entry ]
+
+    if not entry or not script or not script.Ready then return delay end
+
+    local out = script.Ready( delay, spend, spend_type )
+
+    return out
+
+end
 
 
 ns.getModifiers = function( list, entry )
@@ -301,8 +359,18 @@ function ns.implantDebugData( queue )
 
   if queue.list and queue.action then
     local scrAction = scripts.A[ queue.list..':'..queue.action ]
-    queue.ActScript = scrAction.SimC
-    queue.ActElements = queue.ActElements or {}
-    storeValues( queue.ActElements, scrAction )
+    
+    if queue.scriptType == 'simc' then
+        queue.ActScript = scrAction.SimC
+        queue.ActElements = queue.ActElements or {}
+        storeValues( queue.ActElements, scrAction )
+    elseif queue.scriptType == 'time' then
+        queue.ActScript = scrAction.ReadyLua
+        queue.ActElements = queue.ReadyElements or {}
+        ns.storeReadyValues( queue.ActElements, scrAction )
+    else
+        queue.ActElements = queue.ActElements or {}
+
+    end
   end
 end

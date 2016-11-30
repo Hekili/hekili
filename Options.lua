@@ -5,6 +5,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 
 local class = ns.class
+local scripts = ns.scripts
 
 local format = string.format
 local match = string.match
@@ -1453,11 +1454,17 @@ ns.newActionOption = function( aList, index )
           ns.state.this_action = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability
           ns.storeValues( results, ns.scripts.A[ listIdx..':'..actIdx ] )
 
-          return results
+          return results, true
         end,
         multiline = 6,
         order = 10,
-        width = 'full'
+        width = 'full',
+        hidden = function (info)
+          local listKey, actKey = info[2], info[3]
+          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+
+          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType == 'time'
+        end,
       },
       Args = { -- should rename at some point.
         type = 'input',
@@ -1468,7 +1475,7 @@ ns.newActionOption = function( aList, index )
           local listKey, actKey = info[2], info[3]
           local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
 
-          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability == 'potion'
+          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType == 'time' or Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability == 'potion'
         end
       },
       ConsumableArgs = { -- should rename at some point.
@@ -1487,8 +1494,87 @@ ns.newActionOption = function( aList, index )
           local listKey, actKey = info[2], info[3]
           local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
 
-          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability ~= 'potion'
+          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType == 'time' or Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability ~= 'potion'
         end
+      },
+      ReadyTime = {
+        type = 'input',
+        name = 'Time Script',
+        desc = 'This is an experimental feature that allows an action list author to provide additional information ' ..
+            'about |cFF00D1D1when|r the criteria will be met for this ability.  While the |cFFFFD100Conditions|r above ' ..
+            'tell the addon that an action should or should not be shown, when properly scripted, the |cFFFFD100Time Script|r tells ' ..
+            'the addon when the entry will be ready.',
+        dialogControl = "HekiliCustomEditor",
+        multiline = 6,
+        order = 10,
+        arg = function(info)
+          local listKey, actKey = info[2], info[3]
+          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+          
+          local action = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability
+
+          local results = {}
+
+          ns.state.reset()
+          results.delay = action and ns.state.action[ action ].ready_time or 0
+
+          local ability = ns.state.class.abilities[ action ]
+
+          if ability then
+            if ability.spend then 
+                if type( ns.state.class.abilities[ action ].spend ) == 'function' then
+                    results.spend, results.spend_type = ability.spend()
+                else
+                    results.spend, results.spend_type = ability.spend, ability.spend_type
+                end
+            end
+          end
+
+          ns.storeReadyValues( results, ns.scripts.A[ listIdx..':'..actIdx ] )
+
+          return results
+        end,
+        hidden = function (info)
+          local listKey, actKey = info[2], info[3]
+          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+
+          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType ~= 'time'
+        end,
+        width = 'full',
+      },
+      ReadyTimeDescription = {
+        type = 'description',
+        name = "|cFFFFD100Time Script:|r\n" ..
+            "This is an experimental feature that allows an action list author to provide additional information " ..
+            "about |cFF00D1D1when|r the criteria will be met for this ability.  While the |cFFFFD100Conditions|r are " ..
+            "checked when the ability is ready, a proper |cFFFFD100Time Script|r script will tell the addon |cFF00D1D1when|r " ..
+            "the ability will be ready *and* its Conditions will be met.",
+        hidden = function (info)
+          local listKey, actKey = info[2], info[3]
+          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+
+          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType ~= 'time'
+        end,
+        order = 11,
+      },     
+      ScriptType = {
+        type = 'select',
+        name = 'Script Type',
+        values = {
+            simc = 'SimC-like Conditions',
+            time = 'Time Script'
+        },
+        get = function( info )
+          local listKey, actKey = info[2], info[3]
+          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+          
+          local value = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType
+          if value == nil then value = 'simc' end
+
+          return value
+        end,
+        order = 12,
+        width = 'full',
       },
       deleteHeader = {
         type = 'header',
@@ -3499,6 +3585,10 @@ function Hekili:SetOption( info, input, ... )
 
         elseif option == 'Script' or option == 'Args' then
           input = input:trim()
+          RebuildScripts = true
+
+        elseif option == 'ReadyTime' then
+          list[ option ] = input:trim()
           RebuildScripts = true
 
         elseif option == 'ConsumableArgs' then

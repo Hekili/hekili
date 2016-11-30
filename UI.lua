@@ -453,16 +453,30 @@ function Hekili:ShowDiagnosticTooltip( q )
   end
 
   if q.ActScript and q.ActScript ~= "" then
-    ns.Tooltip:AddLine( "\nAction Criteria" )
+    if q.scriptType == 'simc' then
+        ns.Tooltip:AddLine( "\nAction Criteria" )
 
-    local Text = Format ( q.ActScript )
-    ns.Tooltip:AddLine( ns.lib.Format:ColorString( Text, SyntaxColors ), 1, 1, 1, 1 )
+        local Text = Format ( q.ActScript )
+        ns.Tooltip:AddLine( ns.lib.Format:ColorString( Text, SyntaxColors ), 1, 1, 1, 1 )
 
-    if q.ActElements then
-      ns.Tooltip:AddLine( "Values" )
-      for k,v in pairs( q.ActElements ) do
-        ns.Tooltip:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
-      end
+        if q.ActElements then
+          ns.Tooltip:AddLine( "Values" )
+          for k,v in pairs( q.ActElements ) do
+            ns.Tooltip:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
+          end
+        end
+    elseif q.scriptType == 'time' then
+        ns.Tooltip:AddLine( "\nTime Script" )
+
+        local Text = Format( q.ActScript )
+        ns.Tooltip:AddLine( ns.lib.Format:ColorString( Text, SyntaxColors ), 1, 1, 1, 1 )
+
+        if q.ActElements then
+          ns.Tooltip:AddLine( "Values" )
+          for k,v in pairs( q.ActElements ) do
+            ns.Tooltip:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
+          end
+        end
     end
   end
   ns.Tooltip:Show()

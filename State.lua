@@ -422,7 +422,7 @@ function state.gainChargeTime( action, time )
 
     if cooldown.charge == ability.charges then return end
 
-    if cooldown.next_charge < state.time + time then
+    if cooldown.next_charge < state.now + state.offset + time then
         cooldown.charge = min( ability.charges, cooldown.charge + 1 )
 
         -- We have a charge, reset cooldown.
@@ -442,6 +442,45 @@ function state.gainChargeTime( action, time )
     end
 
 end
+
+--[[
+function state.spendChargeTime( action, time )
+
+    local ability = class.abilities[ action ]
+
+    if not ability or not ability.charges then return end
+
+    local cooldown = state.cooldown[ action ]
+
+    if cooldown.charges_fractional == 0 then return end
+
+    local charges_before = cooldown.charges_fractional
+    local charges_after = cooldown.charges_fractional - ( time / cooldown.recharge_time )
+
+    if floor( charges_after ) < floor( charges_before ) then
+        -- We reduced our number of charges.
+        cooldown.charge = 
+
+    if cooldown.next_charge < state.now + state.offset + time then
+        cooldown.charge = min( ability.charges, cooldown.charge + 1 )
+
+        -- We have a charge, reset cooldown.
+        cooldown.duration = 0
+        cooldown.expires = 0
+    end
+
+
+    if cooldown.charge == ability.charges then
+        cooldown.next_charge = 0
+        cooldown.recharge = 0
+        cooldown.recharge_began = 0
+    else
+        cooldown.recharge_began = cooldown.next_charge
+        cooldown.next_charge = cooldown.next_charge + ability.recharge
+        cooldown.recharge = cooldown.next_charge - ( state.time + time )
+    end
+
+end ]]
 
 
 -- Apply a buff to the current game state.
@@ -862,6 +901,9 @@ local mt_state = {
 
     elseif k == 't18_class_trinket' then
       return t.set_bonus[k]
+
+    elseif k == 'actionEntry' then
+        return nil -- if it's not there, we want it to be nil.
     
     else
       -- Check if this is a resource table pre-init.
@@ -2220,6 +2262,9 @@ local mt_default_action = {
     elseif k == 'charges_fractional' then
       return state.cooldown[ t.action ].charges_fractional
 
+    elseif k == 'recharge_time' then
+      return class.abilities[ t.action ].recharge and state.cooldown[ t.action ].recharge or 0
+
     elseif k == 'max_charges' then
       return class.abilities[ t.action ].charges or 0
 
@@ -2665,7 +2710,7 @@ ns.resourceType = function( ability )
 
   if not action then return end
 
-  if action.spend then
+  if action.spend ~= nil then
     if type( action.spend ) == 'number' then
       return action.spend_type or class.primaryResource
 
@@ -2687,7 +2732,7 @@ ns.spendResources = function( ability )
     if not action then return end
 
     -- First, spend resources.
-    if action.spend then
+    if action.spend ~= nil then
         local spend, resource
 
         if type( action.spend ) == 'number' then
@@ -2726,7 +2771,7 @@ ns.isKnown = function( sID )
         return false
     end
 
-    if ability.known then
+    if ability.known ~= nil then
         if type( ability.known ) == 'number' then
             return IsSpellKnown( ability.known )
         else
@@ -2742,20 +2787,24 @@ end
 -- Filter out non-resource driven issues with abilities.
 ns.isUsable = function( spell )
 
-  local ability = class.abilities[ spell ]
+    local ability = class.abilities[ spell ]
 
-  if not ability then return true end
-  
-  if state.rangefilter == 'xclude' and UnitExists( 'target' ) and ns.lib.SpellRange.IsSpellInRange( ability.id, 'target' ) == 0 then
-    return false
-  end
+    if not ability then return true end
 
-  if ability.usable then
-    if type( ability.usable ) == 'number' then return IsUsableSpell( ability.usable )
-    elseif type( ability.usable ) == 'function' then return ability.usable() end
-  end
+    if state.rangefilter == 'xclude' and UnitExists( 'target' ) and ns.lib.SpellRange.IsSpellInRange( ability.id, 'target' ) == 0 then
+        return false
+    end
 
-  return true
+    --[[ if ability.usable ~= nil then
+        if type( ability.usable ) == 'function' then return ability.usable() end
+    end ]]
+
+    if ability.usable ~= nil then
+        if type( ability.usable ) == 'number' then return IsUsableSpell( ability.usable )
+        elseif type( ability.usable ) == 'function' then return ability.usable() end
+    end
+
+    return true
 
 end
 
@@ -2767,7 +2816,7 @@ ns.hasRequiredResources = function( ability )
   if not action then return end
 
   -- First, spend resources.
-  if action.spend then
+  if action.spend and action.spend ~= 0 then
     local spend, resource
 
     if type( action.spend ) == 'number' then
@@ -2806,10 +2855,9 @@ ns.timeToReady = function( action )
     delay = ns.callHook( "timeToReady", delay, action )
 
     local ability = class.abilities[ action ]
+    local spend, resource
 
     if ability.spend then
-        local spend, resource
-
         if type( ability.spend ) == 'number' then
             spend = ability.spend
             resource = ability.spend_type or class.primaryResource
@@ -2819,66 +2867,25 @@ ns.timeToReady = function( action )
 
         spend = ns.callHook( 'timeToReady_spend', spend )
 
-        -- Override if a 'ready' value is given by the action table.
-        spend = ability.ready or spend
+        local ready = ability.ready
+        if type( ready ) == 'number' then spend = ability.ready or spend end
 
-        if spend > state[ resource ].current then
-            if resource == 'focus' or resource == 'energy' then
-                delay = max( delay, 0 + ( ( spend - state[ resource ].current ) / state[ resource ].regen ) )
+        if type( ready ) ~= 'function' then
+            if spend > state[ resource ].current then
+                if resource == 'focus' or resource == 'energy' then
+                    delay = max( delay, 0 + ( ( spend - state[ resource ].current ) / state[ resource ].regen ) )
 
-            elseif resource == 'maelstrom' then --[[]
-                local proj = state.maelstrom.current
-                local offset = state.offset
-
-                local mh, mhs, oh, ohs
-
-                if state.time > 0 then
-
-                    mh = state.swings.mainhand
-                    mhs = state.swings.mainhand_speed
-                    oh = state.swings.offhand
-                    ohs = state.swings.offhand_speed
-
-                else
-
-                    mhs = state.swings.mainhand_speed or 2.6
-                    mh = state.query_time + ( mhs / 2 )
-                    ohs = state.swings.offhand_speed or 2.6
-                    oh = state.query_time + ( ohs / 2 )
+                elseif resource == 'maelstrom' then 
 
                 end
-
-                while mh < state.query_time do mh = mh + mhs end
-                while oh < state.query_time do oh = oh + ohs end
-
-                if state.swings.mainhand > state.time or state.swings.offhand > state.time then
-
-                    local iter = 0
-
-                    while( proj < spend and iter < 10 ) do
-                        iter = iter + 1
-                        if mh < oh then
-                            state.offset = mh - state.now
-                            proj = proj + ( 5 * ( state.buff.doom_winds.up and 3 or 1 ) )
-                            mh = mh + state.swings.mainhand_speed
-                        else
-                            state.offset = oh - state.now
-                            proj = proj + ( 5 + ( state.buff.doom_winds.up and 3 or 1 ) )
-                            oh = oh + state.swings.offhand_speed
-                        end
-                    end
-
-                    state.offset = offset
-                    if iter == 10 then
-                        delay = 3600
-                    elseif mh > oh then
-                        delay = mh - mhs - ( state.query_time )
-                    else
-                        delay = oh - ohs - ( state.query_time )
-                    end
-                end ]]
             end
+        else
+            delay = max( delay, ready() )
         end
+    end
+
+    if state.actionEntry then
+        delay = ns.checkTimeScript( state.actionEntry, delay, spend, resource )
     end
 
     return delay

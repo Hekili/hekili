@@ -352,12 +352,20 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
         state.this_args = entry.Args
         state.delay = nil
 
+        local ability = class.abilities[ entry.Ability ]
+
         local wait_time = 999
         local clash = 0
 
         if isKnown( state.this_action ) then
-          wait_time = timeToReady( state.this_action )
-          clash = clashOffset( state.this_action )
+            if entry.ScriptType == 'time' then
+                state.actionEntry = listID..':'..actID
+            else
+                state.actionEntry = nil
+            end
+
+            wait_time = timeToReady( state.this_action )
+            clash = clashOffset( state.this_action )
         end
 
         state.delay = wait_time
@@ -396,9 +404,10 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
         elseif entry.Ability == 'potion' then
           local potion = class.potions[ entry.Args:sub(6) ]
 
-          if potion and isUsable( state.this_action ) and max( 0, wait_time - clash ) < max( 0, chosen_wait - chosen_clash ) and checkScript( 'A', listID..':'..actID, nil, nil, wait_time ) then
+          if potion and isUsable( state.this_action ) and max( 0, wait_time - clash ) < max( 0, chosen_wait - chosen_clash ) and ( entry.ScriptType == 'time' or checkScript( 'A', listID..':'..actID, nil, nil, wait_time ) ) then
             -- do potion things
             
+            slot.scriptType = entry.ScriptType or 'simc'
             slot.display = dispID
             slot.button = i
 
@@ -423,8 +432,9 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
 
           end
 
-        elseif isUsable( state.this_action ) and max( 0, wait_time - clash ) < max( 0, chosen_wait - chosen_clash ) and ns.hasRequiredResources( state.this_action ) and checkScript( 'A', listID..':'..actID, nil, nil, wait_time ) then
+        elseif isUsable( state.this_action ) and max( 0, wait_time - clash ) < max( 0, chosen_wait - chosen_clash ) and ns.hasRequiredResources( state.this_action ) and ( entry.ScriptType == 'time' or checkScript( 'A', listID..':'..actID, nil, nil, wait_time ) ) then
 
+          slot.scriptType = entry.ScriptType or 'simc'
           slot.display = dispID
           slot.button = i
 
@@ -467,127 +477,135 @@ end
 
 function Hekili:ProcessHooks( dispID, solo )
 
-  if not self.DB.profile.Enabled then
-    return
-  end
+    if not self.DB.profile.Enabled then return end
+    
+    if not self.Pause then
+        local display = self.DB.profile.displays[ dispID ]
 
-  if not self.Pause then
-    local display = self.DB.profile.displays[ dispID ]
+        ns.queue[ dispID ] = ns.queue[ dispID ] or {}
+        local Queue = ns.queue[ dispID ]
 
-    ns.queue[ dispID ] = ns.queue[ dispID ] or {}
-    local Queue = ns.queue[ dispID ]
+        if display and ns.visible.display[ dispID ] then
 
-    if display and ns.visible.display[ dispID ] then
+            state.reset( dispID )
 
-      state.reset( dispID )
-
-      if Queue then
-        for k, v in pairs( Queue ) do
-          for l, w in pairs( v ) do
-            if type( Queue[ k ][ l ] ) ~= 'table' then
-              Queue[k][l] = nil
-            end
-          end
-        end
-      end
-
-      if ( self.Config or checkScript( 'D', dispID )  ) then
-
-        for i = 1, display['Icons Shown'] do
-
-          local chosen_action
-          local chosen_wait, chosen_clash = 999, 0
-
-          Queue[i] = Queue[i] or {}
-
-          local slot = Queue[i]
-
-          for hookID, hook in ipairs( display.Queues ) do
-
-            if ns.visible.hook[ dispID..':'..hookID ] and hookID and checkScript( 'P', dispID..':'..hookID ) then
-
-              local listID = hook[ 'Action List' ]
-              local outcome, wait, clash = self:ProcessActionList( dispID, hookID, listID, slot )
-              
-              if outcome then -- and wait < chosen_wait then
-                chosen_action, chosen_wait, chosen_clash = outcome, wait, clash
-              end
-              
-              if chosen_wait == 0 then break end
-
+            if Queue then
+                for k, v in pairs( Queue ) do
+                    for l, w in pairs( v ) do
+                        if type( Queue[ k ][ l ] ) ~= 'table' then
+                            Queue[k][l] = nil
+                        end
+                    end
+                end
             end
 
-          end -- end Hook
+            if ( self.Config or checkScript( 'D', dispID )  ) then
+
+                for i = 1, display['Icons Shown'] do
+
+                    local chosen_action
+                    local chosen_wait, chosen_clash = 999, 0
+
+                    Queue[i] = Queue[i] or {}
+
+                    local slot = Queue[i]
+
+                    local attempts = 0
+
+                    while attempts < 2 do
+                        for hookID, hook in ipairs( display.Queues ) do
+
+                            if ns.visible.hook[ dispID..':'..hookID ] and hookID and checkScript( 'P', dispID..':'..hookID ) then
+
+                                local listID = hook[ 'Action List' ]
+                                local outcome, wait, clash = self:ProcessActionList( dispID, hookID, listID, slot )
+                      
+                                if outcome then -- and wait < chosen_wait then
+                                    chosen_action, chosen_wait, chosen_clash = outcome, wait, clash
+                                end
+                      
+                                if chosen_wait == 0 then break end
+
+                            end
+
+                        end -- end Hook
+
+                        if chosen_action then break end
+
+                        state.advance( 1 )
+                        attempts = attempts + 1
+                    end
 
 
-          if chosen_action then
-            -- We have our actual action, so let's get the script values if we're debugging.
-            
-            if self.DB.profile.Debug then
-              ns.implantDebugData( slot )
-            end
+                    if chosen_action then
+                        -- We have our actual action, so let's get the script values if we're debugging.
+                
+                        if self.DB.profile.Debug then ns.implantDebugData( slot ) end
 
-            if i == display['Icons Shown'] then
-                slot.time = state.offset + state.delay
-                slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
+                        if i == display['Icons Shown'] then
+                            slot.time = state.offset + state.delay
+                            slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
 
-            else
-                -- Advance through the wait time.
-                state.advance( chosen_wait )
+                        else
+                            -- Advance through the wait time.
+                            state.advance( chosen_wait )
 
-                slot.time = state.offset
-                slot.since = i > 1 and ( state.offset - Queue[i - 1].time ) or 0
+                            slot.time = state.offset
+                            slot.since = i > 1 and ( state.offset - Queue[i - 1].time ) or 0
 
-                local action = class.abilities[ chosen_action ]
+                            local action = class.abilities[ chosen_action ]
 
-                -- Start the GCD.
-                state.setCooldown( 'global_cooldown', action.gcdType ~= 'off' and state.gcd or 0 )
+                            -- Start the GCD.
+                            if action.gcdType ~= 'off' then
+                                state.setCooldown( 'global_cooldown', state.gcd )
+                            end
 
-                -- Advance the clock by cast_time.
-                if action.cast > 0 then state.advance( action.cast ) end
+                            -- Advance the clock by cast_time.
+                            if action.cast > 0 then state.advance( action.cast ) end
 
-                -- Put the action on cooldown.  (It's slightly premature, but addresses CD resets like Echo of the Elements.)
-                if class.abilities[ chosen_action ].charges and action.recharge > 0 then
-                  state.spendCharges( chosen_action, 1 )
-                elseif chosen_action ~= class.gcd then
-                  state.setCooldown( chosen_action, action.cooldown )
+                            -- Put the action on cooldown.  (It's slightly premature, but addresses CD resets like Echo of the Elements.)
+                            if class.abilities[ chosen_action ].charges and action.recharge > 0 then
+                                state.spendCharges( chosen_action, 1 )
+                            elseif chosen_action ~= class.gcd then
+                                state.setCooldown( chosen_action, action.cooldown )
+                            end
+
+                            -- Perform the action.
+                            ns.runHandler( chosen_action, slot.list, slot.action ) -- , ns.getModifiers( slot.actionlist, slot.action )  )
+
+                            -- Spend resources.
+                            ns.spendResources( chosen_action )
+
+                            -- Move the clock forward if the GCD hasn't expired.
+                            if state.cooldown.global_cooldown.remains > 0 then
+                                state.advance( state.cooldown.global_cooldown.remains )
+                            end
+
+                        end
+
+                    else
+                        for n = i, display['Icons Shown'] do
+                            slot[n] = nil
+                        end
+                        break
+                    end
+
                 end
 
-                -- Perform the action.
-                ns.runHandler( chosen_action, slot.list, slot.action ) -- , ns.getModifiers( slot.actionlist, slot.action )  )
-
-                -- Spend resources.
-                ns.spendResources( chosen_action )
-
-                -- Move the clock forward if the GCD hasn't expired.
-                if state.cooldown.global_cooldown.remains > 0 then
-                  state.advance( state.cooldown.global_cooldown.remains )
-                end
-
             end
-
-          else
-            for n = i, display['Icons Shown'] do
-              slot[n] = nil
-            end
-            break
-          end
 
         end
-
-      end
 
     end
 
-  end
-
-  -- if not solo then C_Timer.After( 1 / self.DB.profile['Updates Per Second'], self[ 'ProcessDisplay'..dispID ] ) end
-  updatedDisplays[ dispID ] = true
-  -- Hekili:UpdateDisplay( dispID )
+    -- if not solo then C_Timer.After( 1 / self.DB.profile['Updates Per Second'], self[ 'ProcessDisplay'..dispID ] ) end
+    updatedDisplays[ dispID ] = true
+    -- Hekili:UpdateDisplay( dispID )
 
 end
 
 Hekili.ud = updatedDisplays
+
 
 local pvpZones = {
   arena = true,
