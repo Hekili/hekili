@@ -604,6 +604,9 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
 
         modifyAbility( 'earthquake', 'spend', function( x )
             return buff.echoes_of_the_great_sundering.up and 0 or x
+        end )
+
+        addHandler( 'earthquake', function ()
             if equipped.eye_of_the_twisting_nether then
                 applyBuff( 'shock_of_the_twisting_nether', 8 )
             end
@@ -1111,7 +1114,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             removeStack( 'stormbringer' )
 
             if equipped.storm_tempests then
-                applyDebuff( 'target', 'storm_tempests', 15 ) )
+                applyDebuff( 'target', 'storm_tempests', 15 )
             end
 
             if equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
@@ -1235,7 +1238,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             removeStack( 'stormbringer' )
 
             if equipped.storm_tempests then
-                applyDebuff( 'target', 'storm_tempests', 15 ) )
+                applyDebuff( 'target', 'storm_tempests', 15 )
             end
 
             if equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
