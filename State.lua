@@ -384,6 +384,9 @@ local function spendCharges( action, charges )
     if state.cooldown[ action ].charge == 0 then
       state.cooldown[ action ].duration = class.abilities[ action ].recharge
       state.cooldown[ action ].expires = state.cooldown[ action ].next_charge
+    else
+      state.cooldown[ action ].duration = 0
+      state.cooldown[ action ].expires = 0
     end
   end
 end
@@ -649,7 +652,7 @@ state.gain = gain
 local function spend( amount, resource )
 
   state[ resource ].actual = max( 0, state[ resource ].actual - amount )
-  callHook( 'spend', amount, resource )
+  ns.callHook( 'spend', amount, resource )
 
 end
 state.spend = spend
@@ -785,10 +788,10 @@ local mt_state = {
         return t[k]
 
     elseif k == 'haste' or k == 'spell_haste' then
-      return ( 1 / ( 1 + UnitSpellHaste('player') / 100 ) )
+      return ( 1 / ( 1 + t.stat.spell_haste ) )
 
     elseif k == 'melee_haste' then
-      return ( 1 / ( 1 + GetMeleeHaste('player') / 100 ) )
+      return ( 1 / ( 1 + t.stat.melee_haste ) )
 
     elseif k == 'mastery_value' then
       return ( GetMastery() / 100 )
@@ -811,6 +814,9 @@ local mt_state = {
 
     elseif k == 'duration' then
       return ( class.auras[ t.this_action ].duration )
+
+    elseif k == 'refreshable' then
+        return t.dot[ t.this_action ].remains < 0.3 * class.auras[ t.this_action ].duration
 
     elseif k == 'ticking' then
       if class.auras[ t.this_action ] then return ( t.dot[ t.this_action ].ticking ) or t.buff[ t.this_action ].up end
@@ -2450,6 +2456,10 @@ function state.reset( dispID )
     state.active_dot[ k ] = nil
   end
 
+  for k in pairs( state.stat ) do
+    state.stat[ k ] = nil
+  end
+
   -- A decent start, but assumes our first ability is always aggressive.  Not necessarily true...
   -- FIX: MOVE THIS TO A HOOK!
   if state.class.file == 'SHAMAN' then
@@ -2598,18 +2608,18 @@ function state.reset( dispID )
   end
 
   -- Delay to end of GCD.
-  local delay = state.cooldown[ class.gcd ].remains
+  local delay = state.cooldown.global_cooldown.remains
 
   delay = ns.callHook( "reset_postcast", delay )
 
-  if delay > 0 then
+  if delay > 0 and delay ~= state.cooldown.global_cooldown.remains  then
     state.advance( delay )
   end
 
 end
 
 
-state.advance = function( time )
+function state.advance( time )
 
   if time <= 0 then
     return
@@ -2617,13 +2627,18 @@ state.advance = function( time )
   
   time = ns.callHook( 'advance', time )
 
+  local newtime = tonumber( format( "%.2f", time ) )
+
+  time = newtime < time and newtime + 0.01 or newtime
+
   --if time == 3600 then error( time ) end
 
   state.offset = state.offset + time
   state.delay = 0
 
   for k, cd in pairs( state.cooldown ) do
-    if class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset then
+    while class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset do 
+    -- if class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset then
       cd.charge = cd.charge + 1
       if cd.charge < class.abilities[ k ].charges then
         cd.recharge_began = cd.next_charge
@@ -2700,6 +2715,8 @@ state.advance = function( time )
       resource.actual = min( resource.max, resource.actual + ( resource.regen * time ) )
     end
   end
+
+  ns.callHook( 'advance_end', time )
 
 end
 
@@ -2847,7 +2864,7 @@ end
 
 
 -- Needs to be expanded to handle energy regen before Rogue, Monk, Druid will work.
-ns.timeToReady = function( action )
+function ns.timeToReady( action )
 
     -- Need to ignore the delay for this part.
     local delay = state.cooldown[ action ].remains
@@ -2907,7 +2924,7 @@ ns.isReady = function( action )
       spend, resource = ability.spend()
     end
     
-    if resource == 'focus' or resource == 'energy' then
+    if resource == 'focus' or resource == 'energy' or state.actionEntry then
       return ns.timeToReady( action ) <= state.delay
     end
     

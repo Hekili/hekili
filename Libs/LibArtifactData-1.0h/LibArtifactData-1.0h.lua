@@ -197,7 +197,7 @@ end
 
 local function ScanRelics(artifactID)
 	local relics = {}
-	for i = 1, GetNumRelicSlots() do
+	for i = 1, ( GetNumRelicSlots() or 0 ) do
 		local slotType = GetRelicSlotType(i)
 		local lockedReason, name, icon, link = GetRelicInfo(i)
 		local isLocked = lockedReason and true or false
@@ -332,7 +332,7 @@ function private.ARTIFACT_UPDATE(event, newItem)
 		GetViewedArtifactData()
 	else
 		local newRelics = ScanRelics()
-		local oldRelics = artifacts[viewedID].relics
+		local oldRelics = artifacts[viewedID] and artifacts[viewedID].relics or {}
 
 		for i = 1, #newRelics do
 			local newRelic = newRelics[i]

@@ -580,6 +580,8 @@ addAura( 'archmages_greater_incandescence_str', 177175, 'duration', 10 )
 addAura( 'maalus', 187620, 'duration', 15 )
 addAura( 'thorasus', 187619, 'duration', 15 )
 
+addAura( 'xavarics_magnum_opus', 207428, 'duration', 30 )
+
 -- Raid Buffs
 addAura( 'str_agi_int', -1, 'duration', 3600 )
 addAura( 'stamina', -2, 'duration', 3600 )

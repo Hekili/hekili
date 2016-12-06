@@ -2898,13 +2898,13 @@ function Hekili:GetOptions()
               local out = ''
               
               for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                out = out .. "    storeDefault( '" .. list.Name .. "', 'actionLists', " .. date("%Y%m%d.1") .. ", [[" .. ns.serializeActionList( i ) .. "]] )\n\n"
+                out = out .. "    storeDefault( [[" .. list.Name .. "]], 'actionLists', " .. date("%Y%m%d.1") .. ", [[" .. ns.serializeActionList( i ) .. "]] )\n\n"
               end
               
               out = out .. "\n"
               
               for i, display in ipairs( Hekili.DB.profile.displays ) do
-                out = out .. "    storeDefault( '" .. display.Name .. "', 'displays', " .. date("%Y%m%d.1") .. ", [[" .. ns.serializeDisplay( i ) .. "]] )\n\n"
+                out = out .. "    storeDefault( [[" .. display.Name .. "]], 'displays', " .. date("%Y%m%d.1") .. ", [[" .. ns.serializeDisplay( i ) .. "]] )\n\n"
               end
               
               return out
@@ -4526,6 +4526,18 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
       -- Action, Modifiers, Conditions
     elseif commas > 1 and condis == 1 then
       local ability, modifiers, conditions = i:match("(.-),(.-),if=(.-)$")
+      if not ability then
+        -- try 'target_if' ?
+        ability, modifiers, conditions = i:match( "(.i),if=(.-),target_if=(.-)$")
+        
+        if not ability then
+            table.insert( warnings, "Line " .. line .. ": Could not interpret 'i', supplying a dummy entry instead.")
+            ability = 'wait'
+            modifiers = 'sec=0'
+            conditions = 'false'
+        end
+
+      end
 
       if modifiers == "moving=1" then
         table.insert( warnings, "Line " .. line .. ": Converted 'moving=1' modifier to 'moving' conditional.")
@@ -4563,25 +4575,8 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
             if class.auras[ ability ].friendly then             
               output[#output].conditions = 'group' .. ( conditions:len() > 0 and ( '&(' .. conditions .. ')' ) )
               output[#output].conditions = accommodate_targets( 'group_members', ability, output[#output].conditions, line, warnings )
-
-              --[[
-              output[#output].conditions = output[#output].conditions:gsub( "d?e?buff%."..insert_ability.."%.up", "active_dot."..insert_ability.. ">=group_members" )
-              output[#output].conditions = output[#output].conditions:gsub( "d?e?buff%."..insert_ability.."%.down", "active_dot."..insert_ability.. "<group_members" )
-              output[#output].conditions = output[#output].conditions:gsub( "dot%."..insert_ability.."%.up", "active_dot."..insert_ability..'>=group_members' )
-              output[#output].conditions = output[#output].conditions:gsub( "dot%."..insert_ability.."%.down", "active_dot."..insert_ability..'<group_members' )
-              output[#output].conditions = output[#output].conditions:gsub( "[^%.]up", "active_dot."..insert_ability..">="..'group_members' )
-              output[#output].conditions = output[#output].conditions:gsub( "[^%.]ticking", "active_dot."..insert_ability..">="..'group_members' )
-              output[#output].conditions = output[#output].conditions:gsub( "[^%.]down", "active_dot."..insert_ability.."<"..'group_members' ) ]]
             else
               output[#output].conditions = accommodate_targets( enemies, ability, output[#output].conditions, line, warnings )
-              --[[ output[#output].conditions = 'active_enemies>active_dot.' .. ability .. ( conditions:len() > 0 and ( '&(' .. conditions .. ')' ) )
-              output[#output].conditions = output[#output].conditions:gsub( "[^%.]up", "%1active_dot." .. insert_ability .. ">=" .. enemies )
-              output[#output].conditions = output[#output].conditions:gsub( "[^%.]ticking", "%1active_dot." .. insert_ability .. ">=" .. enemies )
-              output[#output].conditions = output[#output].conditions:gsub( "[^%.]down", "%1active_dot." .. insert_ability .. "<" .. enemies )
-              output[#output].conditions = output[#output].conditions:gsub( "d?e?buff%."..insert_ability.."%.up", "active_dot."..insert_ability .. ">=".. enemies )
-              output[#output].conditions = output[#output].conditions:gsub( "d?e?buff%."..insert_ability.."%.down", "active_dot."..insert_ability .. "<".. enemies )
-              output[#output].conditions = output[#output].conditions:gsub( "[^_]dot%."..insert_ability.."%.up", "active_dot."..insert_ability.. ">=" .. enemies )
-              output[#output].conditions = output[#output].conditions:gsub( "[^_]dot%."..insert_ability.."%.down", "active_dot."..insert_ability.. "<" .. enemies ) ]]
             end
           end
           line = line + 1
@@ -4597,24 +4592,6 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
           if target and target > 1 then
             table.insert( warnings, "Line " .. line .. ": Converted 'target=X' (X>1) modifier to use active_dot syntax rather than buff/debuff." )
             output[#output].conditions = accommodate_targets( target, ability, output[#output].conditions, line, warnings )
-
-            --[[ local insert_enemies = target
-            local insert_ability = ability
-            
-            if ability == 'storm_earth_and_fire' then
-              insert_enemies = target-1
-              insert_ability = 'storm_earth_and_fire_target'
-            elseif ability == 'windstrike' then
-              insert_ability = 'stormstrike'
-            end
-            
-            output[#output].conditions = output[#output].conditions:gsub( "d?e?buff%."..insert_ability.."%.up", "active_dot."..insert_ability.. '>=' .. insert_enemies )
-            output[#output].conditions = output[#output].conditions:gsub( "d?e?buff%."..insert_ability.."%.down", "active_dot."..insert_ability.. "<" .. insert_enemies )
-            output[#output].conditions = output[#output].conditions:gsub( "[^%.]up", "active_dot."..insert_ability..">="..insert_enemies )
-            output[#output].conditions = output[#output].conditions:gsub( "[^%.]ticking", "active_dot."..insert_ability..">="..insert_enemies )
-            output[#output].conditions = output[#output].conditions:gsub( "^%.[down]", "active_dot."..insert_ability.."<"..insert_enemies )
-            output[#output].conditions = output[#output].conditions:gsub( "dot%."..insert_ability.."%.%a+", "active_dot."..insert_ability..( state ~= 'down' and ">=" or "<" ) .. insert_enemies )
-            output[#output].conditions = enemies..">="..target.."&("..output[#output].conditions..")" ]]
           end
         end
 

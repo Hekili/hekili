@@ -8,6 +8,7 @@ local class = ns.class
 
 local getInverseDirection = ns.getInverseDirection
 local multiUnpack = ns.multiUnpack
+local orderedPairs = ns.orderedPairs
 local round = ns.round
 
 local Masque, MasqueGroup
@@ -442,7 +443,7 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     if q.HookElements then
       local applied = false
-      for k, v in pairs( q.HookElements ) do
+      for k, v in orderedPairs( q.HookElements ) do
         if not applied then
           ns.Tooltip:AddLine( "Values" )
           applied = true
@@ -461,7 +462,7 @@ function Hekili:ShowDiagnosticTooltip( q )
 
         if q.ActElements then
           ns.Tooltip:AddLine( "Values" )
-          for k,v in pairs( q.ActElements ) do
+          for k,v in orderedPairs( q.ActElements ) do
             ns.Tooltip:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
           end
         end
@@ -473,7 +474,7 @@ function Hekili:ShowDiagnosticTooltip( q )
 
         if q.ActElements then
           ns.Tooltip:AddLine( "Values" )
-          for k,v in pairs( q.ActElements ) do
+          for k,v in orderedPairs( q.ActElements ) do
             ns.Tooltip:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
           end
         end
@@ -524,10 +525,24 @@ function Hekili:CreateButton( display, ID )
   button.Icon:Hide()
 
   button.Caption = button.Caption or button:CreateFontString(name.."Caption", "OVERLAY" )
-  button.Caption:SetSize( scaleFactor * button:GetWidth(), scaleFactor * button:GetHeight() / 2)
+  button.Caption:SetSize( scaleFactor * button:GetWidth(), scaleFactor * button:GetHeight() / 2 )
   button.Caption:SetPoint( "BOTTOM", button, "BOTTOM" )
   button.Caption:SetJustifyV( "BOTTOM" )
   button.Caption:SetTextColor(1, 1, 1, 1)
+
+  button.Keybinding = button.Keybinding or button:CreateFontString(name.."KB", "OVERLAY" )
+  button.Keybinding:SetSize( scaleFactor * button:GetWidth(), scaleFactor * button:GetHeight() / 2 )
+  button.Keybinding:SetPoint( "TOPRIGHT", button, "TOPRIGHT" )
+  button.Keybinding:SetJustifyV( "TOP" )
+  button.Keybinding:SetJustifyH( "RIGHT" )
+  button.Keybinding:SetTextColor(1, 1, 1, 1)
+
+  button.Delay = button.Delay or button:CreateFontString( name.."Delay", "OVERLAY" )
+  button.Delay:SetSize( scaleFactor * button:GetWidth(), scaleFactor * button:GetHeight() / 2 )
+  button.Delay:SetPoint( "TOPLEFT", button, "TOPLEFT" )
+  button.Delay:SetJustifyV( "TOP" )
+  button.Delay:SetJustifyH( "LEFT" )
+  button.Delay:SetTextColor(1, 1, 1, 1)
 
   button.Cooldown = button.Cooldown or CreateFrame("Cooldown", name .. "_Cooldown", button, "CooldownFrameTemplate")
   button.Cooldown:SetAllPoints(button)
@@ -542,7 +557,9 @@ function Hekili:CreateButton( display, ID )
     button.Overlay:SetAllPoints(button)
     button.Overlay:Hide()
 
-    button.Caption:SetFont( ns.lib.SharedMedia:Fetch("font", disp.Font), disp['Primary Font Size'], "OUTLINE" )
+    button.Caption:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'], "OUTLINE" )
+    button.Keybinding:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'] * 0.67, "OUTLINE" )
+    button.Delay:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'] * 0.67, "OUTLINE" )
 
     button:SetPoint( getInverseDirection( btnDirection ), ns.UI.Displays[ display ], getInverseDirection( btnDirection ) )
     -- button:SetPoint( "LEFT", ns.UI.Displays[ display ], "LEFT" ) -- self.DB.profile.displays[ display ].rel or "CENTER", self.DB.profile.displays[ display ].x, self.DB.profile.displays[ display ].y )

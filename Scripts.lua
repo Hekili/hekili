@@ -60,12 +60,12 @@ end
 
 local storeValues = function( tbl, node )
 
-  if not node.Elements then
-    return
-  end
-
   for k in pairs( tbl ) do
     tbl[k] = nil
+  end
+
+  if not node.Elements then
+    return
   end
 
   for k, v in pairs( node.Elements ) do

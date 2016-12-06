@@ -19,6 +19,7 @@ local _G = _G
 -- local utilities
 local multiUnpack = ns.multiUnpack
 local formatValue = ns.lib.formatValue
+local orderedPairs = ns.orderedPairs
 
 -- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
 -- List them here for Mikk's FindGlobals script
@@ -214,44 +215,6 @@ local function GetOptionsMemberValue(membername, option, options, path, appName,
     --The value isnt a function to call, return it
     return member
   end
-end
-
-
-local function __genOrderedIndex( t )
-    local orderedIndex = {}
-    for key in pairs( t ) do
-        table.insert( orderedIndex, key )
-    end
-    table.sort( orderedIndex )
-    return orderedIndex
-end
-
-
-local function orderedNext( t, state )
-    local key = nil
-
-    if state == nil then
-        t.__orderedIndex = __genOrderedIndex( t )
-        key = t.__orderedIndex[ 1 ] 
-    else
-        for i = 1, table.getn( t.__orderedIndex ) do
-            if t.__orderedIndex[ i ] == state then
-                key = t.__orderedIndex[ i+1 ]
-            end
-        end
-    end
-
-    if key then
-        return key, t[ key ]
-    end
-
-    t.__orderedIndex = nil
-    return
-end
-
-
-function orderedPairs( t )
-    return orderedNext, t, nil
 end
 
 

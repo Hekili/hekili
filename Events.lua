@@ -10,6 +10,7 @@ local TTD = ns.TTD
 
 -- local Artifact = ns.lib.LegionArtifacts
 local AD = ns.lib.ArtifactData
+local RC = ns.lib.RangeCheck
 
 local formatKey = ns.formatKey
 local getSpecializationInfo = ns.getSpecializationInfo
@@ -365,25 +366,59 @@ local dynamic_keys = setmetatable( {}, {
     end
 } )
 
+ns.spells_in_flight = {}
+local spells_in_flight = ns.spells_in_flight
+
 RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, _, spellID )
 
         if unit == 'player' then
+
+            local now = GetTime()
+
             if not class.castExclusions[ spellID ] then
                 state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
-                state.player.casttime = GetTime()
+                state.player.casttime = now
 
                 if class.abilities[ spellID ] then
                     if class.abilities[ spellID ].gcdType ~= 'off' then
                         state.player.lastgcd = class.abilities[ spellID ].key
-                        state.player.lastgcdtime = GetTime()
+                        state.player.lastgcdtime = now
                     else
                         state.player.lastoffgcd = class.abilities[ spellID ].key
-                        state.player.lastoffgcdtime = GetTime()
+                        state.player.lastoffgcdtime = now
                     end
                 end
             end
+
+            -- This is an ability with a travel time.
+            if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
+
+                local lands = now + 1
+
+                -- If we have a hostile target, we'll assume we're waiting for them to get hit.
+                if UnitExists( 'target' ) and not UnitIsFriend( 'target' ) then
+                    -- Let's presume that the target is at max range.
+                    local _, range = select( 2, RC:GetRange( 'target' ) ) or 0
+                    lands = range > 0 and range * class.abilities[ spellID ].velocity or lands
+                end
+
+                table.insert( spells_in_flight, 1, {
+                    spell = class.abilities[ spellID ].key,
+                    time = now + lands
+                } )
+
+                for i = #spells_in_flight, 1, -1 do
+                    if spells_in_flight[i].time < now then
+                        table.remove( spells_in_flight, i )
+                    else
+                        break
+                    end
+                end
+
+            end
+
             for i = 1, #Hekili.DB.profile.displays do
-                displayUpdates[ i ] = GetTime() - ( ( 1 / Hekili.DB.profile['Updates Per Second'] ) / 2 )
+                displayUpdates[ i ] = now - ( ( 1 / Hekili.DB.profile['Updates Per Second'] ) / 2 )
             end
         end
 

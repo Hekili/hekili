@@ -350,6 +350,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
         local entry = list.Actions[ actID ]
         state.this_action = entry.Ability
         state.this_args = entry.Args
+        
         state.delay = nil
 
         local ability = class.abilities[ entry.Ability ]
@@ -369,6 +370,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
         end
 
         state.delay = wait_time
+
         
         -- NYI: state.args = ns.getModifiers( listID, actID )
         importModifiers( listID, actID )
@@ -542,16 +544,13 @@ function Hekili:ProcessHooks( dispID, solo )
                 
                         if self.DB.profile.Debug then ns.implantDebugData( slot ) end
 
-                        if i == display['Icons Shown'] then
-                            slot.time = state.offset + state.delay
-                            slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
+                        slot.time = state.offset + chosen_wait
+                        slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
 
-                        else
+                        if i < display['Icons Shown'] then
+
                             -- Advance through the wait time.
                             state.advance( chosen_wait )
-
-                            slot.time = state.offset
-                            slot.since = i > 1 and ( state.offset - Queue[i - 1].time ) or 0
 
                             local action = class.abilities[ chosen_action ]
 
@@ -561,12 +560,14 @@ function Hekili:ProcessHooks( dispID, solo )
                             end
 
                             -- Advance the clock by cast_time.
-                            if action.cast > 0 then state.advance( action.cast ) end
+                            if action.cast > 0 and not action.channeled then
+                                state.advance( action.cast )
+                            end
 
                             -- Put the action on cooldown.  (It's slightly premature, but addresses CD resets like Echo of the Elements.)
                             if class.abilities[ chosen_action ].charges and action.recharge > 0 then
                                 state.spendCharges( chosen_action, 1 )
-                            elseif chosen_action ~= class.gcd then
+                            elseif chosen_action ~= 'global_cooldown' then
                                 state.setCooldown( chosen_action, action.cooldown )
                             end
 
@@ -575,6 +576,11 @@ function Hekili:ProcessHooks( dispID, solo )
 
                             -- Spend resources.
                             ns.spendResources( chosen_action )
+
+                            -- Advance the clock by cast_time.
+                            if action.cast > 0 and action.channeled then
+                                state.advance( action.cast )
+                            end
 
                             -- Move the clock forward if the GCD hasn't expired.
                             if state.cooldown.global_cooldown.remains > 0 then
@@ -868,6 +874,7 @@ function Hekili:UpdateDisplay( dispID )
           end
 
           local start, duration = GetSpellCooldown( class.abilities[ aKey ].id )
+          local gcd_remains = gcd_start + gcd_duration - GetTime()
 
           if class.abilities[ aKey ].gcdType ~= 'off' and ( not start or start == 0 or ( start + duration ) < ( gcd_start + gcd_duration ) ) then
             start = gcd_start
@@ -880,6 +887,14 @@ function Hekili:UpdateDisplay( dispID )
             if ns.lib.SpellFlash and display['Use SpellFlash'] and GetTime() >= flashes[dispID] + 0.2 then
               ns.lib.SpellFlash.FlashAction( class.abilities[ aKey ].id, display['SpellFlash Color'] )
               flashes[dispID] = GetTime()
+            end
+
+            if Queue[i].time ~= gcd_remains and Queue[i].time ~= start + duration - GetTime() then
+                -- button.Texture:SetDesaturated( Queue[i].time > 0 )
+                button.Delay:SetText( Queue[i].time > 0 and format( "%.1f", Queue[i].time ) or nil )
+            else
+                -- button.Texture:SetDesaturated( false )
+                button.Delay:SetText( nil )
             end
 
           else
