@@ -70,6 +70,7 @@ local function Mover_OnMouseUp( self, btn )
         ns.UI.Buttons[i][j]:EnableMouse( MouseInteract )
       end
     end
+    ns.UI.Notification:EnableMouse( MouseInteract )
     -- Hekili:SetOption( { "locked" }, true )
     GameTooltip:Hide()
   end
@@ -100,6 +101,7 @@ local function Button_OnMouseUp( self, btn )
         ns.UI.Buttons[i][j]:EnableMouse( MouseInteract )
       end
     end
+    ns.UI.Notification:EnableMouse( MouseInteract )
     -- Hekili:SetOption( { "locked" }, true )
     GameTooltip:Hide()
   end

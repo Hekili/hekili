@@ -314,7 +314,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         -- Using these to abstract the 'Wake of Ashes' options so the same keybinds/toggles work in Protection spec.
         addMetaFunction( 'toggle', 'artifact_ability', function()
-            return state.settings.wake_of_ashes
+            return state.toggle.wake_of_ashes
         end )
 
         addMetaFunction( 'settings', 'artifact_cooldown', function()
@@ -828,7 +828,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 60,
-            known = function () return equipped.truthgaurd and ( toggle.wake_of_ashes or ( toggle.cooldowns and settings.wake_of_ashes_cooldown ) ) end
+            known = function () return equipped.truthguard and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end
         } )
 
         addHandler( 'eye_of_tyr', function ()

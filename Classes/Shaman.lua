@@ -265,7 +265,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             if resource == 'maelstrom' and state.spec.elemental and state.talent.aftershock.enabled then
                 local refund = amt * 0.25
                 refund = refund - ( refund % 1 )
-                gain( refund, 'maelstrom' )
+                state.gain( refund, 'maelstrom' )
             end
         end )
 
