@@ -1438,11 +1438,10 @@ local mt_default_cooldown = {
             return class.abilities[ t.key ].charges
 
         elseif k == 'remains' then
-            local remains = t.expires <= state.query_time and 0 or t.expires - state.query_time
+            return max( 0, t.expires - state.query_time )
 
-            if t.key == 'global_cooldown' then return remains end
-
-            return max( class.abilities[ t.key ].gcdType ~= 'off' and state.cooldown.global_cooldown.remains or 0, remains )
+            --[[ if t.key == 'global_cooldown' then return remains end
+            return max( class.abilities[ t.key ].gcdType ~= 'off' and state.cooldown.global_cooldown.remains or 0, remains ) ]]
 
         elseif k == 'charges_fractional' then
             if class.abilities[ t.key ].charges then                

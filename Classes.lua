@@ -661,22 +661,22 @@ addAbility( 'arcane_torrent', {
 
 modifyAbility( 'arcane_torrent', 'id', function( x )
     if class.file == 'PALADIN' then return 155145
-        elseif class.file == 'MONK' then return 129597 end
-        return x
-        end )
+    elseif class.file == 'MONK' then return 129597 end
+    return x
+end )
 
 addHandler( 'arcane_torrent', function ()
 
     interrupt()
     
     if class.death_knight then gain( 20, "runic_power" )
-        elseif class.hunter then gain( 15, "focus" )
-            elseif class.monk then gain( 1, "chi" )
-                elseif class.paladin then gain( 1, "holy_power" )
-                    elseif class.rogue then gain( 15, "energy" )
-                        elseif class.warrior then gain( 15, "rage" ) end
+    elseif class.hunter then gain( 15, "focus" )
+    elseif class.monk then gain( 1, "chi" )
+    elseif class.paladin then gain( 1, "holy_power" )
+    elseif class.rogue then gain( 15, "energy" )
+    elseif class.warrior then gain( 15, "rage" ) end
 
-                        end ) 
+end )
 
 
 addAbility( 'call_action_list', {
@@ -710,7 +710,7 @@ addAbility( 'potion', {
     gcdType = 'off',
     cooldown = 60,
     passive = true,
-    toggle = 'cooldowns',
+    toggle = 'potions',
     usable = function () return toggle.potions end
 } )
 
