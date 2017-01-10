@@ -7,7 +7,7 @@ Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSeria
 local format = string.format
 
 
-ns.PTR = select( 4, GetBuildInfo() ) > 70100
+ns.PTR == GetBuildInfo() ~= "7.1.5"
 
 
 ns.lib = {
@@ -69,7 +69,7 @@ ns.visible = {
 -- Default Keybinding UI
 BINDING_HEADER_HEKILI_HEADER = "Hekili"
 BINDING_NAME_HEKILI_TOGGLE_PAUSE = "Pause"
-BINDING_NAME_HEKILI_SNAPSHOT = "Snapshot"
+-- BINDING_NAME_HEKILI_SNAPSHOT = "Snapshot"
 BINDING_NAME_HEKILI_TOGGLE_COOLDOWNS = "Toggle Cooldowns"
 BINDING_NAME_HEKILI_TOGGLE_POTIONS = "Toggle Potions"
 BINDING_NAME_HEKILI_TOGGLE_INTERRUPTS = "Toggle Interrupts"

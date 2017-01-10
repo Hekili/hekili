@@ -2845,7 +2845,7 @@ function state.advance( time )
             nextOH = nextOH + OH
 
         elseif nextFoA > 0 and nextFoA < nextMH and nextFoA < nextOH then
-            resource.actual = max( 0, resource.actual - ( PTR and 3 or 5 ) )
+            resource.actual = max( 0, resource.actual - 3 )
             -- print( 'predicted mp loss from foa' )
 
             if resource.actual == 0 then
