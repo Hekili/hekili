@@ -637,7 +637,7 @@ state.setStance = setStance
 
 local function interrupt()
   state.target.casting = false
-  state.removeDebuff( 'casting' )
+  state.removeDebuff( 'target', 'casting' )
 end
 state.interrupt = interrupt
 
