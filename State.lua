@@ -2776,7 +2776,7 @@ function state.advance( time )
 
   state.offset = state.offset + time
 
-  local bonus_cdr = ns.callHook( 'advance_bonus_cdr', time ) or 0
+  local bonus_cdr = ns.callHook( 'advance_bonus_cdr', 0 ) or 0
 
   for k, cd in pairs( state.cooldown ) do
     if ns.isKnown( k ) then
