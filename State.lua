@@ -2095,7 +2095,7 @@ local mt_active_dot = {
       return t[k]
 
     else
-      error("UNK: " .. k)
+      return 0
 
     end
   end
