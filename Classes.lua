@@ -430,16 +430,27 @@ local function runHandler( key, ... )
 
     state.prev.last = key
     state[ ability.gcdType == 'off' and 'prev_off_gcd' or 'prev_gcd' ].last = key
+
+    table.insert( state.predictions, 1, key )
+    table.insert( state[ ability.gcdType == 'off' and 'predictionsOff' or 'predictionsOn' ], 1, key )
+    state.predictions[6] = nil
+    state.predictionsOn[6] = nil
+    state.predictionsOff[6] = nil
     
     if not ability.passive and state.time == 0 then
-        state.false_start = state.now + state.offset
+        state.false_start = state.query_time
+
+        -- Generate fake weapon swings.
+        state.nextMH = state.query_time + 0.01
+        state.nextOH = state.swings.oh_speed and state.query_time + ( state.swings.oh_speed / 2 ) or 0
+
+        if state.swings.mh_actual < state.query_time then        
+            state.swings.mh_pseudo = state.query_time + 0.01
+            if state.swings.oh_speed then state.swings.oh_pseudo = state.query_time + ( state.swings.oh_speed / 2 ) end
+        end
+        
     end
 
-    if ability.gcdType == 'melee' and state.swings.mh_actual < state.combat then
-        state.swings.mh_pseudo = state.now + state.offset
-        if state.swings.oh_speed then state.swings.oh_pseudo = state.now + state.offset + ( state.swings.oh_speed / 2 ) end
-    end
-    
     state.cast_start = 0
     
     ns.callHook( 'runHandler', key, ... )
@@ -593,6 +604,22 @@ addAura( 'mastery', -7, 'duration', 3600 )
 addAura( 'multistrike', -8, 'duration', 3600 )
 addAura( 'versatility', -9, 'duration', 3600 )
 
+addAura( 'casting', -10, 'feign', function()
+    if target.casting then
+        debuff.casting.count = 1
+        debuff.casting.expires = target.cast_end
+        debuff.casting.applied = state.now
+        debuff.casting.caster = 'target'
+        return
+    end
+
+    debuff.casting.count = 0
+    debuff.casting.expires = 0
+    debuff.csating.applied = 0
+    debuff.casting.caster = 'unknown'
+end )
+
+
 
 addAbility( 'global_cooldown',
 {
@@ -690,6 +717,17 @@ addAbility( 'call_action_list', {
 } )
 
 
+addAbility( 'run_action_list', {
+    id = -2,
+    name = 'Run Action List',
+    spend = 0,
+    cast = 0,
+    gcdType = 'off',
+    cooldown = 0,
+    passive = true
+} )
+
+
 -- Special Instructions
 addAbility( 'wait', {
     id = -3,
@@ -702,49 +740,7 @@ addAbility( 'wait', {
 } )
 
 
-addAbility( 'potion', {
-    id = -4,
-    name = 'Potion',
-    spend = 0,
-    cast = 0,
-    gcdType = 'off',
-    cooldown = 60,
-    passive = true,
-    toggle = 'potions',
-    usable = function () return toggle.potions end
-} )
-
-modifyAbility( 'potion', 'cooldown', function ( x )
-    if time > 0 then return 3600 end
-    return x
-    end )
-
-addHandler( 'potion', function ()
-    local potion = args.name or class.potion
-    
-    if args.name and class.potions[ args.name ] then
-        applyBuff( potion.buff, potion.duration or 25 )
-    end
-    
-    end )
-
 class.potions = {
-    draenic_agility = {
-        item = 109217,
-        buff = 'draenic_agility_potion'
-    },
-    draenic_armor = {
-        item = 109220,
-        buff = 'draenic_armor_potion'
-    },
-    draenic_intellect = {
-        item = 109218,
-        buff = 'draenic_intellect_potion'
-    },
-    draenic_strength = {
-        item = 109219,
-        buff = 'draenic_strength_potion'
-    },
     old_war = {
         item = 127844,
         buff = 'old_war'
@@ -758,6 +754,46 @@ class.potions = {
         buff = 'prolonged_power'
     },
 }
+
+
+
+addAbility( 'potion', {
+    id = -4,
+    name = 'Potion',
+    spend = 0,
+    cast = 0,
+    gcdType = 'off',
+    cooldown = 60,
+    passive = true,
+    toggle = 'potions',
+    usable = function ()
+
+        if not toggle.potions then return false end
+
+        local pName = args.ModName or args.name or class.potion
+        local potion = class.potions[ pName ]
+
+        if not potion or GetItemCount( potion.item ) == 0 then return false end
+        return true
+    end
+} )
+
+modifyAbility( 'potion', 'cooldown', function ( x )
+    if time > 0 then return 3600 end
+    return x
+end )
+
+addHandler( 'potion', function ()
+    local potion = args.ModName or args.name or class.potion
+    local potion = class.potions[ potion ]
+    
+    if potion then
+        applyBuff( potion.buff, potion.duration or 25 )
+    end
+    
+end )
+
+
 
 --[[ 
 addAbility( 'use_item', {
@@ -1782,32 +1818,44 @@ for k, v in pairs( class.trinkets ) do
                 class.trinkets[ k ].buff = ns.formatKey( buff )
             end
         end
-        elseif type( buffs ) == 'number' then
-            local buff = GetSpellInfo( buffs )
-            if buff then
-                addAura( ns.formatKey( buff ), buffs, 'stat', v.stat, v.duration and "duration", v.duration )
-                class.trinkets[ k ].buff = ns.formatKey( buff )
-            end
+    elseif type( buffs ) == 'number' then
+        local buff = GetSpellInfo( buffs )
+        if buff then
+            addAura( ns.formatKey( buff ), buffs, 'stat', v.stat, v.duration and "duration", v.duration )
+            class.trinkets[ k ].buff = ns.formatKey( buff )
         end
     end
+end
     
     
     
+-- DEFAULTS
+
+
+class.retiredDefaults = {}
+
+function ns.retireDefaults( ... )
+    local defaults = select( "#", ... )
+
+    for i = 1, defaults do
+        table.insert( class.retiredDefaults, select( i, ... ), true )
+    end
+end
+
+
     
-    -- DEFAULTS
-    
-    ns.storeDefault = function( name, category, version, import )
+ns.storeDefault = function( name, category, version, import )
 
     if not ( name and category and version and import ) then
         return
     end
 
     class.defaults[ #class.defaults + 1 ] = {
-    name = name,
-    type = category,
-    version = version,
-    import = import:gsub("([^|])|([^|])", "%1||%2")
-}
+        name = name,
+        type = category,
+        version = version,
+        import = import:gsub("([^|])|([^|])", "%1||%2")
+    }
 
 end
 

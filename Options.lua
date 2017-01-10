@@ -1361,6 +1361,26 @@ ns.newAction = function( aList, name )
 
 end
 
+local function getActionKeys( info )
+    return info[2], info[3]
+end
+
+
+local function getActionIndexes( info )
+    local k1, k2 = getActionKeys( info )
+
+    return tonumber( k1:match("^L(%d+)") ), tonumber( k2:match( "^A(%d+)" ) )
+end
+
+
+local function getActionEntry( info )
+    local lID, aID = getActionIndexes( info )
+
+    if lID and aID then return Hekili.DB.profile.actionLists[ lID ].Actions[ aID ] end
+
+    return nil
+end
+
 
 --- NewActionOption()
 -- Add a new action to the action list options.
@@ -1368,9 +1388,11 @@ end
 -- index	(number)	index of the action in the action list.
 ns.newActionOption = function( aList, index )
 
-  if not index or not Hekili.DB.profile.actionLists[ aList ].Actions[ index ] then
-    return nil
-  end
+  if not index then return nil end
+
+  local entry = Hekili.DB.profile.actionLists[ aList ].Actions[ index ]
+
+  if not entry then return nil end
 
   local actOption = {
     type = "group",
@@ -1385,19 +1407,13 @@ ns.newActionOption = function( aList, index )
         name = 'Enabled',
         desc = "If disabled, this action will not be shown under any circumstances.",
         order = 00,
-      },
-      Ability = {
-        type = 'select',
-        name = 'Ability',
-        desc = "Select the ability for this action entry.  Only abilities supported by the addon's prediction engine will be shown.",
-        order = 01,
-        values = class.searchAbilities
+        width = 'double'
       },
       ['Move'] = {
         type = 'select',
         name = 'Position',
         desc = "Select another position in the action list and move this item to that location.",
-        order = 02,
+        order = 01,
         values = function(info)
           local listKey, actKey = info[2], info[3]
           local listIdx, actIdx = tonumber( listKey:match("^L(%d+)") ), tonumber( actKey:match("^A(%d+)") )
@@ -1430,6 +1446,7 @@ ns.newActionOption = function( aList, index )
         desc = "Enter a caption to be displayed on this action's icon when the action is shown.",
         order = 04,
       },
+
       Indicator = {
         type = 'select',
         name = 'Indicator',
@@ -1441,6 +1458,69 @@ ns.newActionOption = function( aList, index )
           cycle = "|TInterface\\Addons\\Hekili\\Textures\\Cycle2:0|t Cycle Targets"
         },
       },
+
+      Ability = {
+        type = 'select',
+        name = 'Ability',
+        desc = "Select the ability for this action entry.  Only abilities supported by the addon's prediction engine will be shown.",
+        order = 06,
+        values = class.searchAbilities,
+        width = 'single'
+      },
+
+
+      -- Special Settings Per Ability Here.
+      WaitSeconds = {
+        type = 'input',
+        name = 'Time to Wait',
+        desc = "Specify the number of seconds that addon should delay before checking its next recommendation.  " ..
+            "This can be specified as a number or an expression that evaluates to a number.  For instance, |cFFFFD100cooldown.judgment.remains|r " ..
+            "will tell the addon to wait until the remaining cooldown on Judgment has passed.\n\n" ..
+            "If left blank, the addon will wait |cFFFFD1001|r second.",
+        order = 07,
+        hidden = function( info )
+            local action = getActionEntry( info )
+            return not action or action.Ability ~= 'wait'
+        end,
+        width = "double",
+      },
+      ModName = {
+        type = 'select',
+        name = "Ability Settings",
+        desc = "Select the appropriate option for the chosen ability.",
+        order = 09,
+        values = function( info )
+            local action = getActionEntry( info )
+            local opts = {}
+
+            if action.Ability == 'call_action_list' or action.Ability == 'run_action_list' then
+                for i, list in ipairs( Hekili.DB.profile.actionLists ) do
+                    opts[ '"' .. list.Name .. '"' ] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
+                end
+            elseif action.Ability == 'potion' then
+                for key, potion in pairs( class.potions ) do
+                    opts[ '"' .. key .. '"' ] = GetItemInfo( potion.item )
+                end
+            end
+
+            --[[ if action.ModName and not opts[ action.ModName ] then
+                opts[ action.ModName ] = action.ModName
+            end ]]  
+
+            return opts
+        end,
+        hidden = function( info )
+            local action = getActionEntry( info )
+
+            if not action then return true
+            elseif action.Ability == 'potion' then return false
+            elseif ( action.Ability == 'call_action_list' or action.Ability == 'run_action_list' ) then return false end
+
+            return true
+        end,
+        width = "double"
+      },
+
       Script = {
         type = 'input',
         name = 'Conditions',
@@ -1457,45 +1537,36 @@ ns.newActionOption = function( aList, index )
           return results, true
         end,
         multiline = 6,
-        order = 10,
+        order = 20,
         width = 'full',
-        hidden = function (info)
+        --[[ hidden = function (info)
           local listKey, actKey = info[2], info[3]
           local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
 
           return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType == 'time'
-        end,
+        end, ]]
       },
-      Args = { -- should rename at some point.
-        type = 'input',
-        name = 'Modifiers',
-        order = 11,
-        width = 'full',
-        hidden = function( info )
-          local listKey, actKey = info[2], info[3]
-          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
-
-          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType == 'time' or Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability == 'potion'
-        end
-      },
-      ConsumableArgs = { -- should rename at some point.
+      whenReady = {
         type = 'select',
-        name = 'Consumable',
-        order = 11,
+        name = 'Check When...',
+        order = 10,
         width = 'full',
-        values = function ()
-          local v = { none = 'None' }
-          for key, potion in pairs( class.potions ) do
-            v[ 'name='..key ] = GetItemInfo( potion.item )
-          end
-          return v
-        end,
-        hidden = function( info )
+        desc = "\n|cFFFFD100Automatic|r:  This entry is checked when its assigned action is off-cooldown and the resources that are required are available.  This is the default setting.\n" ..
+            "|cFFFFD100Script|r:  The entry is checked based on the value of a script, similar to the |cFFFFD100Conditions|r that are tested to determine if the entry will be used.\n\n" ..
+            "Scripts have access to the simulated game state, and must return a number value in seconds (or else the addon will revert to the 'Automatic' value).",
+        values = {
+            auto = 'Automatic',
+            script = 'Script'
+        },
+        get = function( info )
           local listKey, actKey = info[2], info[3]
           local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+          
+          local value = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].whenReady
+          if value == nil then value = 'auto' end
 
-          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType == 'time' or Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability ~= 'potion'
-        end
+          return value
+        end,
       },
       ReadyTime = {
         type = 'input',
@@ -1506,7 +1577,7 @@ ns.newActionOption = function( aList, index )
             'the addon when the entry will be ready.',
         dialogControl = "HekiliCustomEditor",
         multiline = 6,
-        order = 10,
+        order = 11,
         arg = function(info)
           local listKey, actKey = info[2], info[3]
           local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
@@ -1521,12 +1592,13 @@ ns.newActionOption = function( aList, index )
           local ability = ns.state.class.abilities[ action ]
 
           if ability then
-            if ability.spend then 
+            if ability.spend then
                 if type( ns.state.class.abilities[ action ].spend ) == 'function' then
-                    results.spend, results.spend_type = ability.spend()
+                    results.cost, results.resource = ability.spend()
                 else
-                    results.spend, results.spend_type = ability.spend, ability.spend_type
+                    results.cost, results.resource = ability.spend, ability.spend_type
                 end
+                results.resource = results.resource or ability.spend_type or class.primaryResource
             end
           end
 
@@ -1538,7 +1610,7 @@ ns.newActionOption = function( aList, index )
           local listKey, actKey = info[2], info[3]
           local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
 
-          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType ~= 'time'
+          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].whenReady ~= 'script'
         end,
         width = 'full',
       },
@@ -1555,9 +1627,151 @@ ns.newActionOption = function( aList, index )
 
           return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType ~= 'time'
         end,
-        order = 11,
-      },     
-      ScriptType = {
+        order = 22,
+      },
+      ShowModifiers = {
+        type = 'toggle',
+        name = 'Show Modifiers',
+        desc = "Modifiers are additional action list criteria used by the addon (and often by SimulationCraft) to " ..
+            "make additional decisions about what abilities to recommend.  For instance, the |cFFFFD100wait|r action " ..
+            "has a modifier called |cFFFFD100sec|r that specifies (or calculates) how many seconds to wait.\n\n" ..
+            "The |cFFFFD100potion|r action has a modifier of |cFFFFD100name|r to specify which potion to use.\n\n" ..
+            "For most actions, no modifiers are required.",
+        order = 30,
+        width = 'full'
+      },
+      CheckMovement = {
+        type = 'toggle',
+        name = 'Check Movement',
+        desc = "If toggled, this action will also test whether your character is currently moving when deciding " ..
+            "whether to recommend this action.  You can specify whether to the action is recommended when moving or " ..
+            "when stationary.",
+        order = 33,
+        hidden = function( info )
+            local action = getActionEntry( info )
+            return not action or not action.ShowModifiers
+        end,
+        width = 'single',
+      },
+      Moving = {
+        type = 'select',
+        name = "Show Only If...",
+        desc = "When |cFFFFD100Check Movement|r is selected, this setting specifies whether the ability is recommended " ..
+            "when |cFFFFD100Moving|r or when |cFFFFD100Stationary|r.",
+        order = 34,
+        disabled = function( info )
+            local action = getActionEntry( info )
+            return not action or not action.CheckMovement
+        end,
+        hidden = function( info )
+            local action = getActionEntry( info )
+            return not action or not action.ShowModifiers
+        end,
+        values = {
+            [0] = 'Stationary',
+            [1] = 'Moving'
+        },
+        get = function( info )
+            local action = getActionEntry( info )
+
+            if not action or not action.Moving then return 0 end
+            
+            return type( action.Moving ) == 'number' and action.Moving or tonumber( action.Moving )
+        end,
+        set = function( info, val )
+            getActionEntry( info ).Moving = val
+        end,
+        width = 'double'
+      },
+
+      CycleTargets = {
+        type = 'toggle',
+        name = 'Cycle Targets',
+        desc = "If toggled, this action will show an indicator to swap to another target when your current target is " ..
+            "already afflicted by any debuffs applied by this ability.  For instance, if the ability in question is " ..
+            "Tiger Palm for a Windwalker Monk, the addon will recommend hitting another target if your current target " ..
+            "is already afflicted by Mark of the Crane (and by Eye of the Tiger, if talented).\n\n" ..
+            "If a |cFFFFD100Maximum Targets|r value is specified, the addon will only recommend target swapping if/when " ..
+            "fewer than |cFFFFD100Maximum Targets|r are afflicted by this ability's debuffs.",
+        order = 35,
+        width = 'single',
+        get = function( info )
+            local action = getActionEntry( info )
+            return action.CycleTargets
+        end,
+        set = function( info, val )
+            local action = getActionEntry( info )
+            if not action then return end
+            action.CycleTargets = val and 1 or 0
+        end,
+        hidden = function( info )
+            local action = getActionEntry( info )
+            return not action or not action.ShowModifiers
+        end,
+      },
+      MaximumTargets = {
+        type = 'input',
+        name = 'Maximum Targets',
+        desc = "When |cFFFFD100Cycle Targets|r is enabled, this setting specified the maximum number of targets " ..
+            "that the addon should attempt debuff using this ability.  For instance, if the ability in question is " ..
+            "Tiger Palm for a Windwalker Monk, setting this value to |cFFFFD1003|r means the addon will make recommendations " ..
+            "to keep Mark of the Crane applied to a maximum of 3 targets.",
+        order = 36,
+        width = 'double',
+        -- dialogControl = "HekiliCustomEditor",
+        disabled = function( info )
+            local action = getActionEntry( info )
+            if not action or not action.CycleTargets or action.CycleTargets == 0 then return true end
+            return false
+        end,
+        get = function( info )
+            local action = getActionEntry( info )
+            if not action or not action.MaximumTargets then return "" end
+            return action.MaximumTargets
+        end,
+        set = function( info, val )
+            local action = getActionEntry( info )
+            if not action then return end
+
+            action.MaximumTargets = val:trim()
+        end,
+        hidden = function( info )
+            local action = getActionEntry( info )
+            return not action or not action.ShowModifiers
+        end,
+      },
+
+      Args = { -- should rename at some point.
+        type = 'input',
+        name = 'Custom Modifiers',
+        order = 39,
+        width = 'full',
+        hidden = function( info )
+            local action = getActionEntry( info )
+            return not action or not action.ShowModifiers
+        end,
+      },
+
+      --[[ ConsumableArgs = { -- should rename at some point.
+        type = 'select',
+        name = 'Consumable',
+        order = 30,
+        width = 'full',
+        values = function ()
+          local v = { none = 'None' }
+          for key, potion in pairs( class.potions ) do
+            v[ 'name='..key ] = GetItemInfo( potion.item )
+          end
+          return v
+        end,
+        hidden = function( info )
+          local listKey, actKey = info[2], info[3]
+          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+
+          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability ~= 'potion'
+        end
+      }, ]]
+      --[[ ScriptType = {
         type = 'select',
         name = 'Script Type',
         values = {
@@ -1575,7 +1789,7 @@ ns.newActionOption = function( aList, index )
         end,
         order = 12,
         width = 'full',
-      },
+      }, ]]
       deleteHeader = {
         type = 'header',
         name = 'Delete',
@@ -1602,8 +1816,84 @@ ns.newActionOption = function( aList, index )
           ns.refreshOptions()
         end
       },
-    }
+    },    
+    plugins = {}
   }
+
+  --[[ if not entry.attr then entry.attr = {} end
+
+  local attributeOption = {}
+  local attributes = 0
+
+  local supportedAttributes = {
+    target = {
+        eng = "Name",
+        dep = { potion = true, use_item = true } },
+
+    cycle_targets = {
+        eng = "Cycle Targets" },
+
+    max_cycle_targets = {
+        eng = "Max Cycle Targets" },
+
+    sec = {
+        eng = "Seconds",
+        dep = { wait = true } },
+
+    moving = {
+        eng = "Moving" },
+
+    line_cd = {
+        eng = "Line Cooldown",
+        dep = { none = true } },
+
+    sync = {
+        eng = "Synchronize with..." },
+
+    interrupt = {
+        eng = "Interrupt" },
+
+    interrupt_if = {
+        eng = "Interrupt if..." },
+
+    interrupt_immediate = {
+        eng = "Interrupt Immediate" },
+
+    chain = {
+        eng = "Chain Channel (last tick)" },
+
+    early_chain_if = {
+        eng = "Chain Channel (early)" },
+
+    travel_speed = {
+        eng = "Set Velocity" },
+
+    wait_on_ready = {
+        eng = "Wait Until Ready" },
+
+    choose = {
+        eng = "Choose Stance",
+        dep = { stance = true } },
+  }
+
+  for k,v in pairs( entry.attr ) do
+    attributes = attributes + 1
+
+    attributeOption[ k ] = {
+        type = 'input',
+        name = k,
+        order = 100 + attributes,
+        width = 'full',
+        get = function( info )
+            return entry.attr[ k ]
+        end,
+        set = function( info, val )
+            entry.attr[ k ] = val
+        end
+    }
+  end
+
+  actOption.plugins.newAttributes = attributeOption ]]
 
   return actOption
 
@@ -1840,6 +2130,8 @@ ns.SimulationCraftImporter = function ()
             APL = APL:gsub( "active_enemies", "my_enemies" )
           end
 
+          APL = APL:gsub( "spell_targets%.[a-zA-Z0-9_]+", importerOpts.enemies == 'string' and "my_enemies" or "active_enemies" )
+
           -- gather other lists
           for list, action in APL:gmatch( "\nactions%.(%S-)%+?=/?([^\n^$]*)" ) do
             list = ns.titlefy( list )
@@ -1872,13 +2164,19 @@ ns.SimulationCraftImporter = function ()
                 end
               end
             end
+
+            if action:sub( 1, 6 ) == "potion" then
+                local pot = action:match( "name=(.-),")
+                pot = pot or action:match( "name=(.-)$" )
+                action = action:gsub( pot, "\""..pot.."\"" )
+            end
               
-            if action:sub( 1, 16 ) == "call_action_list" then
-              local called = action:match( "name=(.-)," )
-              if not called then called = action:match( "name=(.-)$" ) end
+            if action:sub( 1, 16 ) == "call_action_list" or action:sub( 1, 15 ) == "run_action_list" then
+              local called = action:match( "name=[\"]?(.-)[\"]?," )
+              if not called then called = action:match( "name=[\"]?(.-)[\"]?$" ) end
               if called then
-                local updated = '"' .. importerOpts.prefix .. ': ' .. ns.titlefy( called ) .. '"'
-                action = action:gsub( "name="..called, "name="..updated )
+                local updated = importerOpts.prefix .. ': ' .. ns.titlefy( called )
+                action = action:gsub( "name=[\"]?"..called.."[\"]?", "name=\""..updated.."\"" )
               end
             end
             
@@ -1932,39 +2230,52 @@ ns.SimulationCraftImporter = function ()
               list.Enabled = true
 
               if import then
-                for i = 1, #import do
-                  local key = ns.newAction( target, class.abilities[ import[ i ].ability ].name )
+                for i, entry in ipairs( import ) do
 
-                  list.Actions[ i ].Ability = import[ i ].ability
-                  list.Actions[ i ].Args = import[ i ].modifiers
+                  local ability = class.abilities[ entry.Ability ]
 
-                  if import[ i ].modifiers then
-                    local cycle = import[ i ].modifiers:match("cycle_targets=1")
-                    local target = import[ i ].modifiers:match("target=(%d+)")
+                  local key = ns.newAction( target, ability.name )
+
+                  local action = list.Actions[ i ]
+
+                  action.Ability = entry.Ability
+                  action.Args = entry.Args
+
+                  action.CycleTargets = entry.CycleTargets
+                  action.MaximumTargets = entry.MaximumTargets
+                  action.CheckMovement = entry.CheckMovement or false
+                  action.Moving = entry.Moving
+                  action.ModName = entry.ModName or ''
+
+                  --[[ if entry.Args then
+                    local cycle = entry.Args:match("cycle_targets=1")
+                    local target = entry.Args:match("target=(%d+)")
                     if target then target = tonumber( target ) end
 
                     if cycle or ( target and target > 1 ) then
-                      list.Actions[ i ].Indicator = "cycle"
+                      action.Indicator = "cycle"
                     end
                   else
-                    list.Actions[ i ].Indicator = "none"
-                  end
+                    action.Indicator = "none"
+                  end ]]
 
-                  if class.abilities[ import[ i ].ability ].toggle then
-                    if import[ i ].conditions and import[ i ].conditions:len() > 0 then
-                      list.Actions[ i ].Script = 'toggle.' .. class.abilities[ import[ i ].ability ].toggle .. '&(' .. import[ i ].conditions .. ')'
+
+
+                  if class.abilities[ entry.Ability ].toggle then
+                    if entry.Script and entry.Script:len() > 0 then
+                      action.Script = 'toggle.' .. ability.toggle .. '&(' .. entry.Script .. ')'
                     else
-                      list.Actions[ i ].Script = 'toggle.' .. class.abilities[ import[ i ].ability ].toggle
+                      action.Script = 'toggle.' .. ability.toggle
                     end
                   else
-                    list.Actions[ i ].Script = import[ i ].conditions
+                    action.Script = entry.Script
                   end
                   
-                  if import[ i ].ability == 'heroism' or import[ i ].ability == 'bloodlust' then
-                    addWarning( "Found " .. import[ i ].ability .. " in " .. list.Name .. " (#" .. i .. ").  This entry is disabled.  You can manually enable it if so desired." )
-                    list.Actions[ i ].Enabled = false
+                  if entry.Ability == 'heroism' or entry.Ability == 'bloodlust' then
+                    addWarning( "Found " .. entry.Ability .. " in " .. list.Name .. " (#" .. i .. ").  This entry is disabled.  You can manually enable it if so desired." )
+                    action.Enabled = false
                   else
-                    list.Actions[ i ].Enabled = true
+                    action.Enabled = true
                   end
                 end
                 count = count + 1
@@ -3544,20 +3855,30 @@ function Hekili:SetOption( info, input, ... )
 
           table.wipe( list.Actions )
 
-          for i = 1, #import do
-            local key = ns.newAction( listID, class.abilities[ import[ i ].ability ].name )
+          for i, entry in ipairs( import ) do
 
-            list.Actions[ i ].Ability = import[ i ].ability
-            list.Actions[ i ].Args = import[ i ].modifiers
+            local key = ns.newAction( listID, class.abilities[ entry.Ability ].name )
 
-            if import[ i ].modifiers and import[ i ].modifiers:match("cycle_targets=1") then
-              list.Actions[ i ].Indicator = "cycle"
+            local action = list.Actions[ i ]
+
+            action.Ability = entry.Ability
+            action.Args = entry.Args
+
+            action.CycleTargets = entry.CycleTargets
+            action.MaximumTargets = entry.MaximumTargets
+            action.CheckMovement = entry.CheckMovement or false
+            action.Movement = entry.Movement
+            action.ModName = entry.ModName or ''
+
+            --[[ if entry.Args and entry.Args:match("cycle_targets=1") then
+              action.Indicator = "cycle"
             else
-              list.Actions[ i ].Indicator = "none"
-            end
+              action.Indicator = "none"
+            end ]]
+            action.Indicator = 'none'
 
-            list.Actions[ i ].Script = import[ i ].conditions
-            list.Actions[ i ].Enabled = true
+            action.Script = entry.Script
+            action.Enabled = true
           end
 
           Rebuild = true
@@ -3940,6 +4261,8 @@ local function sanitize( segment, i, line, warnings )
     ['*'] = true,
     ['%%'] = true
   }
+
+  local times = 0
   
   
   for v in pairs( class.resources ) do
@@ -3977,7 +4300,9 @@ local function sanitize( segment, i, line, warnings )
     local itemName = GetItemInfo( itemID )
     local itemKey = formatKey( itemName )
 
-    i = i:gsub( tostring( itemID ), itemKey )
+    if itemKey and itemKey ~= '' then
+        i = i:gsub( tostring( itemID ), itemKey )
+    end
 
   end
 
@@ -3992,6 +4317,16 @@ local function sanitize( segment, i, line, warnings )
   if times > 0 then
     table.insert( warnings, "Line " .. line .. ": Converted 'gcd.max' to 'gcd' (" .. times .. "x)." )
   end
+
+  i, times = i:gsub( "gcd%.remains", "cooldown.global_cooldown.remains" )
+  if times > 0 then
+    table.insert( warnings, "Line " .. line .. ": Converted gcd.remains to cooldown.global_cooldown.remains (" .. times .. "x)." )
+  end
+
+  --[[ i, times = i:gsub( "spell_targets%.[a-zA-Z0-9_]+", "active_enemies" )
+  if times > 0 then
+      table.insert( warnings, "Line " .. line .. ": Converted spell_targets.X syntax to active_enemies(" .. times .. "x)." )
+  end ]]
   
 
   for token in i:gmatch( "incoming_damage_%d+m?s" ) do
@@ -4320,7 +4655,7 @@ local function sanitize( segment, i, line, warnings )
       end
       i = i:gsub( '\v', token )
     end
-  end
+  end  
 
 
   for token in i:gmatch( "player" ) do
@@ -4345,7 +4680,6 @@ local function sanitize( segment, i, line, warnings )
     i = i:gsub( '\v', token )
   end
 
-
   --[[ i,times = i:gsub( "(set_bonus%.[^%.=|&]+)=1", "%1" )
   if times > 0 then
     table.insert( warnings, "Line " .. line .. ": Converted set_bonus.X=1 to set_bonus.X (" .. times .. "x)." )
@@ -4359,252 +4693,164 @@ local function sanitize( segment, i, line, warnings )
 end
 
 
-function Hekili:ImportSimulationCraftActionList( str, enemies )
-  local import = str and str or Hekili.ImportString
-  local output, warnings = {}, {}
-  local line, times = 0, 0
+local function strsplit( str, delimiter )
+    local result = {}
+    local from = 1
 
-  import = import:gsub("(|)([^|])", "%1|%2"):gsub("|||", "||")
-  enemies = enemies or "active_enemies"
-
-  for i in import:gmatch("action.-=/?([^\n^$]*)") do
-    line = line + 1
-
-    if i:sub(1, 3) == 'jab' then
-      for token in i:gmatch( 'cooldown%.expel_harm%.remains>=gcd' ) do
-      
-        local times = 0
-        while (i:find(token)) do
-          local strpos, strend = i:find(token)
-          
-          local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
-          local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
-          local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
-          
-          local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
-          local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
-
-          i = start .. repl .. finish
-          times = times + 1
-        end
-        table.insert( warnings, "Line " .. line .. ": Removed unnecessary expel_harm cooldown check from action entry for jab (" .. times .. "x)." )
-      end
+    if not delimiter or delimiter == "" then
+        result[1] = str
+        return result
     end
 
-    for token in i:gmatch( 'spell_targets%.[%a_]+' ) do
-    
-      local times = 0
-      while (i:find(token)) do
-        local strpos, strend = i:find(token)
-        
-        local start = strpos > 2 and i:sub( 1, strpos - 1 ) or ''
-        local finish = strend < i:len() - 1 and i:sub( strend + 1 ) or ''
+    local delim_from, delim_to = string.find( str, delimiter, from )
 
-        i = start .. enemies .. finish
-        times = times + 1
-      end
-      table.insert( warnings, "Line " .. line .. ": Replaced unsupported '" .. token .. "' with '" .. enemies .. "' (" .. times .. "x)." )
+    while delim_from do
+        table.insert( result, string.sub( str, from, delim_from - 1 ) )
+        from = delim_to + 1
+        delim_from, delim_to = string.find( str, delimiter, from )
     end
-      
-    --[[
-      local pre, post = i:match( "(.?)cooldown%.expel_harm%.remains>=gcd(.?)" )
-      
-      if not pre or not post or pre == post then
-        local replace = ( pre and pre or post ) or ""
-        pre = pre or ""
-        post = post or ""
-        i = i:gsub( escapeMagic( pre .. "cooldown%.expel_harm%.remains>=gcd" .. post ), replace )
-        table.insert( warnings, "Line " .. line .. ": Removed unnecessary expel_harm cooldown check from action entry for jab." )
-      end
-    end ]]
 
-    if i:sub(1, 13) == 'fists_of_fury' then
-      for token in i:gmatch( "energy.time_to_max>cast_time" ) do
-        local times = 0
-        while (i:find(token)) do
-          local strpos, strend = i:find(token)
-          
-          local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
-          local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
-          local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
-          
-          local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
-          local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
+    table.insert( result, string.sub( str, from ) )
+    return result
+end
 
-          i = start .. repl .. finish
-          times = times + 1
-        end
-        table.insert( warnings, "Line " .. line .. ": Removed unnecessary energy cap check from action entry for fists_of_fury (" .. times .. "x)." )
-      end
+
+local function storeModifier( entry, key, value )
+
+    if key ~= 'if' and key ~= 'ability' then
+        if not entry.Args then entry.Args = key .. '=' .. value
+        else entry.Args = entry.Args .. "," .. key .. "=" .. value end
     end
-  
-    local _, commas = i:gsub(",", "")
-    local _, condis = i:gsub(",if=", "")
 
-    -- Action
-    if commas == 0 then
-      local ability = i:trim()
+    if key == 'if' then
+        entry.Script = value
 
-      if ability and class.abilities[ ability ] then
-        output[#output + 1] = {
-          ability = ability
-        }
-      elseif not ignore_actions[ ability ] then
-        table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
-      end
+    elseif key == 'cycle_targets' then
+        entry.CycleTargets = tonumber( value ) == 1 and true or false
 
-      -- Action and Conditions
-    elseif commas == 1 and condis == 1 then
-      local ability, conditions = i:match("(.-),if=(.-)$")
+    elseif key == 'max_cycle_targets' then
+        entry.MaximumTargets = value
 
-      if ability and conditions and class.abilities[ ability ] then
+    elseif key == 'moving' then
+        entry.CheckMovement = true
+        entry.Moving = tonumber( value )
 
-        output[#output + 1] = {
-          ability = ability,
-          conditions = sanitize( 'c', conditions, line, warnings )
-        }
-
-      elseif not ignore_actions[ ability ] then
-        table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "' with conditions '" .. conditions .. "'." )
-      end
-
-      -- Action and Modifiers
-    elseif commas >= 1 and condis == 0 then
-      local ability, modifier = i:match("(.-),(.-)$")
-      local conditions = nil
-
-      if modifier == "moving=1" then
-        table.insert( warnings, "Line " .. line .. ": Converted 'moving=1' modifier to 'moving' conditional.")
-        conditions = "moving"
-        modifier = ""
-      end
-
-      if modifier:sub(1, 5) == 'sync=' then
-        table.insert( warnings, "Line " .. line .. ": Converted 'sync=' modifier to 'action.X.ready' conditional.")
-        conditions = "action." .. modifier:sub(6) .. ".ready&("..conditions..")"
-        modifier = ""
-      end
-
-      if ability and modifier and class.abilities[ ability ] then
-
-        output[#output + 1] = {
-          ability = ability,
-          modifiers = sanitize( 'm', modifier, line, warnings ),
-          conditions = sanitize( 'c', conditions, line, warnings )
-        }
-
-        if modifier == 'cycle_targets=1' then
-          table.insert( warnings, "Line " .. line .. ": Converted 'cycle_targets=1' modifier to two entries." )
-          output[#output].modifiers = ''
-
-          output[#output + 1] = {
-            ability = ability,
-            modifiers = modifiers
-          }
-
-          line = line + 1
-
-          if class.auras[ ability ] then
-            if class.auras[ ability ].friendly then
-              output[#output].conditions = 'group&buff.' .. ability .. '.up'
-            else
-              output[#output].conditions = enemies .. '>active_dot.' .. ability
-            end
-          else
-            output[#output].conditions = conditions
-          end
-
-          output[#output].conditions = sanitize( 'c', output[#output].conditions, line, warnings )
-          
-        end
-        
-
-      elseif not ignore_actions[ ability ] then
-        table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "' with modifiers '" .. modifier .. "'." )
-      end
-
-      -- Action, Modifiers, Conditions
-    elseif commas > 1 and condis == 1 then
-      local ability, modifiers, conditions = i:match("(.-),(.-),if=(.-)$")
-      if not ability then
-        -- try 'target_if' ?
-        ability, modifiers, conditions = i:match( "(.i),if=(.-),target_if=(.-)$")
-        
-        if not ability then
-            table.insert( warnings, "Line " .. line .. ": Could not interpret 'i', supplying a dummy entry instead.")
-            ability = 'wait'
-            modifiers = 'sec=0'
-            conditions = 'false'
-        end
-
-      end
-
-      if modifiers == "moving=1" then
-        table.insert( warnings, "Line " .. line .. ": Converted 'moving=1' modifier to 'moving' conditional.")
-        conditions = "moving&("..conditions..")"
-        modifiers = ""
-      end
-
-      if modifiers:sub(1, 5) == 'sync=' then
-        table.insert( warnings, "Line " .. line .. ": Converted 'sync=' modifier to 'action.X.ready' conditional.")
-        conditions = "action." .. modifiers:sub(6) .. ".ready&("..conditions..")"
-        modifiers = ""
-      end
-
-      if ability and modifiers and conditions and class.abilities[ ability ] then
-
-        output[#output + 1] = {
-          ability = ability,
-          modifiers = sanitize( 'm', modifiers, line, warnings ),
-          conditions = sanitize( 'c', conditions, line, warnings )
-        }
-
-        if modifiers == 'cycle_targets=1' then
-          table.insert( warnings, "Line " .. line .. ": Converted 'cycle_targets=1' modifier to two entries." )
-          output[#output].modifiers = ''
-
-          output[#output + 1] = {
-            ability = ability,
-            modifiers = modifiers,
-            conditions = conditions
-          }
-
-          local insert_ability = ability
-          
-          if class.auras[ ability ] then
-            if class.auras[ ability ].friendly then             
-              output[#output].conditions = 'group' .. ( conditions:len() > 0 and ( '&(' .. conditions .. ')' ) )
-              output[#output].conditions = accommodate_targets( 'group_members', ability, output[#output].conditions, line, warnings )
-            else
-              output[#output].conditions = accommodate_targets( enemies, ability, output[#output].conditions, line, warnings )
-            end
-          end
-          line = line + 1
-          output[#output].conditions = sanitize( 'c', output[#output].conditions, line, warnings )
-          
-        elseif modifiers:sub(1, 7) == 'target=' then
-          local target = modifiers:sub(8)
-          if target then
-            target = tonumber( target )
-          end
-          
-          
-          if target and target > 1 then
-            table.insert( warnings, "Line " .. line .. ": Converted 'target=X' (X>1) modifier to use active_dot syntax rather than buff/debuff." )
-            output[#output].conditions = accommodate_targets( target, ability, output[#output].conditions, line, warnings )
-          end
-        end
-
-      elseif not ignore_actions[ ability ] then
-        table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "' with modifiers '" .. modifiers .. "' and conditions '" .. conditions .. "'." )
-      end
+    elseif key == 'name' then
+        entry.ModName = value
 
     end
-  end
-
-  return #output > 0 and output or nil, #warnings > 0 and warnings or nil
 
 end
+
+
+
+function Hekili:ImportSimulationCraftActionList( str, enemies )
+    local import = str and str or Hekili.ImportString
+    local output, warnings = {}, {}
+    local line, times = 0, 0
+
+    import = import:gsub("(|)([^|])", "%1|%2"):gsub("|||", "||")
+    enemies = enemies or "active_enemies"
+
+    for i in import:gmatch("action.-=/?([^\n^$]*)") do
+        line = line + 1
+
+        if i:sub(1, 3) == 'jab' then
+            for token in i:gmatch( 'cooldown%.expel_harm%.remains>=gcd' ) do
+
+                local times = 0
+                while (i:find(token)) do
+                    local strpos, strend = i:find(token)
+
+                    local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
+                    local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
+                    local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
+
+                    local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
+                    local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
+
+                    i = start .. repl .. finish
+                    times = times + 1
+                end
+                table.insert( warnings, "Line " .. line .. ": Removed unnecessary expel_harm cooldown check from action entry for jab (" .. times .. "x)." )
+            end
+        end
+
+        for token in i:gmatch( 'spell_targets%.[%a_]+' ) do
+
+            local times = 0
+            while (i:find(token)) do
+                local strpos, strend = i:find(token)
+
+                local start = strpos > 2 and i:sub( 1, strpos - 1 ) or ''
+                local finish = strend < i:len() - 1 and i:sub( strend + 1 ) or ''
+
+                i = start .. enemies .. finish
+                times = times + 1
+            end
+            table.insert( warnings, "Line " .. line .. ": Replaced unsupported '" .. token .. "' with '" .. enemies .. "' (" .. times .. "x)." )
+        end
+
+        if i:sub(1, 13) == 'fists_of_fury' then
+            for token in i:gmatch( "energy.time_to_max>cast_time" ) do
+                local times = 0
+                while (i:find(token)) do
+                    local strpos, strend = i:find(token)
+
+                    local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
+                    local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
+                    local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
+
+                    local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
+                    local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
+
+                    i = start .. repl .. finish
+                    times = times + 1
+                end
+                table.insert( warnings, "Line " .. line .. ": Removed unnecessary energy cap check from action entry for fists_of_fury (" .. times .. "x)." )
+            end
+        end
+
+        local components = strsplit( i, "," )
+        local result = {}
+
+        for a, str in ipairs( components ) do
+
+            -- First element is the action, if supported.
+            if a == 1 then
+                local ability = str:trim()
+
+                if ability and class.abilities[ ability ] then
+                    result.Ability = ability
+                elseif not ignore_actions[ ability ] then
+                    table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
+                end
+
+            else
+                local key, value = str:match( "^(.-)=(.-)$" )
+
+                if key and value then
+                    storeModifier( result, key, value )
+                end
+            end
+
+        end
+
+        if result.Script then
+            result.Script = sanitize( 'c', result.Script, line, warnings )
+        end
+
+        if result.Ability then
+            table.insert( output, result )
+        end
+
+    end
+
+    return #output > 0 and output or nil, #warnings > 0 and warnings or nil
+
+end
+
+
 
 -- Key Bindings
 function Hekili:TogglePause()

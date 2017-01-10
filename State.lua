@@ -8,7 +8,10 @@ local class = ns.class
 local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
 local round = ns.round
+local safeMin, safeMax = ns.safeMin, ns.safeMax
 local tableCopy = ns.tableCopy
+
+local PTR = ns.PTR
 
 
 -- This will be our environment table for local functions.
@@ -44,11 +47,21 @@ state.player = {
   lastoffgcd = 'none',
   casttime = 0
 }
-state.prev = {}
-state.prev_gcd = {}
-state.prev_off_gcd = {}
+state.prev = {
+    meta = 'castsAll'
+}
+state.prev_gcd = {
+    meta = 'castsOn'
+}
+state.prev_off_gcd = {
+    meta = 'castsOff'
+}
+state.predictions = {}
+state.predictionsOff = {}
+state.predictionsOn = {}
 state.purge = {}
 state.race = {}
+state.script = {}
 state.set_bonus = {}
 state.settings = {}
 state.spec = {}
@@ -140,6 +153,16 @@ state.trinket = {
   }
 }
 state.trinket.proc = state.trinket.stat
+
+--[[ Future Multi-Target Handling:
+state.unitDB = {
+    IDs = {},
+    plates = {},
+
+    debuff = {},
+    health = {},
+    dot = {},
+} ]]
 
 state.using_apl = setmetatable( {}, {
   __index = function( t, k )
@@ -337,10 +360,12 @@ local mt_trinkets_has_stacking_stat = {
 setmetatable( state.trinket.has_stacking_stat, mt_trinkets_has_stacking_stat )
 
   
-state.max = max
-state.min = min
+state.max = safeMax
+state.min = safeMin
 state.print = print
 
+state.GetItemCount = GetItemCount
+state.GetTotemInfo = GetTotemInfo
 state.IsUsableSpell = IsUsableSpell
 state.UnitBuff = UnitBuff
 state.UnitDebuff = UnitDebuff
@@ -489,6 +514,12 @@ end ]]
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value )
 
+  if state.cycle then
+    if duration == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] - 1
+    else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+    return
+  end
+
   if duration == 0 then
     state.buff[ aura ].expires = 0
     state.buff[ aura ].count = 0
@@ -511,7 +542,7 @@ local function applyBuff( aura, duration, stacks, value )
   
   if aura == 'heroism' or aura == 'time_warp' or aura == 'ancient_hysteria' then
     applyBuff( 'bloodlust', duration, stacks, value )
-  elseif class.auras[ aura ].id == class.auras.potion.id then
+  elseif class.auras[ aura ].id == class.auras.potion.id and aura ~= 'potion' then
     applyBuff( 'potion', duration, stacks, value )
   end
 
@@ -558,6 +589,12 @@ state.removeStack = removeStack
 -- Needs to actually use 'unit' !
 local function applyDebuff( unit, aura, duration, stacks, value )
 
+  if state.cycle then
+    if duration == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] - 1
+    else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+    return
+  end
+
   if duration == 0 then
     state.debuff[ aura ].expires = 0
     state.debuff[ aura ].count = 0
@@ -600,6 +637,7 @@ state.setStance = setStance
 
 local function interrupt()
   state.target.casting = false
+  state.removeDebuff( 'casting' )
 end
 state.interrupt = interrupt
 
@@ -760,31 +798,44 @@ local mt_state = {
       return ns.numDebuffs( 'Flame Shock' )
 
     elseif k == 'active_enemies' then
-        local enemies = ns.getNameplateTargets()
+        --[[ local enemies = ns.getNameplateTargets()
       
-        t[k] = max( 1, enemies, ns.numTargets() )
+        t[k] = max( 1, enemies, ns.numTargets() ) ]]
+
+        -- The above is not needed as the nameplate target system will add missing enemies.
+        t[k] = ns.getNameplateTargets()
 
         if t.min_targets > 0 then t[k] = max( t.min_targets, t[k] ) end
         if t.max_targets > 0 then t[k] = min( t.max_targets, t[k] ) end
+
+        t[k] = max( 1, t[k] )
 
         return t[k]
 
     elseif k == 'my_enemies' then
-        local enemies = ns.getNameplateTargets()
+        --[[ local enemies = ns.getNameplateTargets()
 
-        t[k] = max( 1, enemies, ns.numMyTargets() )
+        t[k] = max( 1, enemies, ns.numMyTargets() ) ]]
+
+        -- The above is not needed as the nameplate target system will add missing enemies.
+        t[k] = ns.numTargets()
         if t.min_targets > 0 then t[k] = max( t.min_targets, t[k] ) end
         if t.max_targets > 0 then t[k] = min( t.max_targets, t[k] ) end
+
+        t[k] = max( 1, t[k] )
+
         return t[k]
 
     elseif k == 'true_active_enemies' then
-        local enemies = ns.getNameplateTargets()        
-        t[k] = max( 1, enemies, ns.numTargets() )
+        --[[ local enemies = ns.getNameplateTargets()        
+        t[k] = max( 1, enemies, ns.numTargets() ) ]]
+        t[k] = max( 1, ns.getNameplateTargets() )
         return t[k]
 
     elseif k == 'true_my_enemies' then
-        local enemies = ns.getNameplateTargets()        
-        t[k] = max( 1, enemies, ns.numTargets() )
+        --[[ local enemies = ns.getNameplateTargets()        
+        t[k] = max( 1, enemies, ns.numTargets() ) ]]
+        t[k] = max( 1, ns.numTargets() )
         return t[k]
 
     elseif k == 'haste' or k == 'spell_haste' then
@@ -802,9 +853,7 @@ local mt_state = {
 
     elseif k == 'gcd' then
       local gcdType = class.abilities[ t.this_action ].gcdType
-
       if gcdType == 'totem' then return 1.0 end
-
       return max( 0.75, 1.5 * t.haste )
 
     elseif k == 'cast_time' then
@@ -907,9 +956,6 @@ local mt_state = {
 
     elseif k == 't18_class_trinket' then
       return t.set_bonus[k]
-
-    elseif k == 'actionEntry' then
-        return nil -- if it's not there, we want it to be nil.
     
     else
       -- Check if this is a resource table pre-init.
@@ -921,7 +967,7 @@ local mt_state = {
 
     end
 
-    return error("UNK: " .. k )
+    return -- error("UNK: " .. k )
 
   end, __newindex = function(t, k, v)
     rawset(t, k, v)
@@ -1040,11 +1086,17 @@ local mt_stat = {
     elseif k == 'multistrike_pct' then
       return GetMultistrike()
 
+    elseif k == 'mod_haste_pct' then
+      return 0
+
     elseif k == 'spell_haste' then
-      return ( UnitSpellHaste('player') / 100 )
+      return ( UnitSpellHaste('player') + ( t.mod_haste_pct or 0 ) ) / 100
 
     elseif k == 'melee_haste' then
-      return ( GetMeleeHaste('player') / 100 )
+      return ( GetMeleeHaste('player') + ( t.mod_haste_pct or 0 ) ) / 100
+
+    elseif k == 'haste' then
+      return t.spell_haste or t.melee_haste
 
     end
 
@@ -1280,19 +1332,18 @@ local mt_target = {
         local _, _, _, _, _, endCast, _, _, notInterruptible = UnitCastingInfo("target")
 
         if endCast ~= nil and not notInterruptible then
-          t.k = (endCast / 1000) > state.query_time
-          return t.k
+          t.cast_end = endCast / 1000
+          return (endCast / 1000) > state.query_time
         end
 
         _, _, _, _, _, endCast, _, notInterruptible = UnitChannelInfo("target")
 
         if endCast ~= nil and not notInterruptible then
-          t.k = (endCast / 1000) > state.query_time
-          return t.k
+          t.cast_end = endCast / 1000
+          return (endCast / 1000) > state.query_time
         end
       end
-      t.k = false
-      return t.k
+      return false
 
     elseif k == 'is_demon' then
         return UnitCreatureType( 'target' ) == PET_TYPE_DEMON
@@ -1372,6 +1423,7 @@ local mt_default_cooldown = {
             t.id = class.abilities[ t.key ].id
 
             local start, duration = GetSpellCooldown( t.id )
+            local true_duration = duration
 
             if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
                 start = state.now
@@ -1383,7 +1435,7 @@ local mt_default_cooldown = {
                 duration = class.abilities[ 'ascendance' ].cooldown
 
             elseif t.key == 'potion' then
-                local itemName = state.args.name or class.potion
+                local itemName = state.args.ModName or state.args.name or class.potion
                 local potion = class.potions[ itemName ]
 
                 if state.toggle.potions and potion and GetItemCount( potion.item ) > 0 then
@@ -1397,11 +1449,13 @@ local mt_default_cooldown = {
             
             elseif not ns.isKnown( t.id ) then
                 start = state.now
-                duration = 3600
+                duration = 0
             end
 
             t.duration = duration or 0
             t.expires = start and ( start + duration ) or 0
+            t.true_duration = true_duration
+            t.true_expires = start and ( start + true_duration ) or 0
 
             if class.abilities[ t.key ].charges then
                 local charges, maxCharges, start, duration = GetSpellCharges( t.name )
@@ -1437,21 +1491,27 @@ local mt_default_cooldown = {
         elseif k == 'charges_max' then
             return class.abilities[ t.key ].charges
 
-        elseif k == 'remains' then
-            return max( 0, t.expires - state.query_time )
+        elseif k == 'remains' then           
+            local bonus_cdr = 0
+            bonus_cdr = t.key ~= 'global_cooldown' and ns.callHook( "cooldown_recovery", bonus_cdr ) or bonus_cdr
+            return ns.isKnown( t.key ) and max( 0, t.expires - state.query_time - bonus_cdr ) or 0
+
+        elseif k == 'true_remains' then
+            return max( 0, t.true_expires - state.query_time )
 
             --[[ if t.key == 'global_cooldown' then return remains end
             return max( class.abilities[ t.key ].gcdType ~= 'off' and state.cooldown.global_cooldown.remains or 0, remains ) ]]
 
         elseif k == 'charges_fractional' then
-            if class.abilities[ t.key ].charges then                
+            if not ns.isKnown( t.key ) then return 1
+            elseif class.abilities[ t.key ].charges then                
                 if t.charge < class.abilities[ t.key ].charges then
                     return min( class.abilities[ t.key ].charges, t.charge + ( max( 0, state.query_time - t.recharge_began ) / t.recharge ) )
 --                    return t.charges + ( 1 - ( class.abilities[ t.key ].recharge - t.recharge_time ) / class.abilities[ t.key ].recharge )
                 end
                 return t.charge
             end
-            return 0
+            return t.remains > 0 and 0 or 1
 
         elseif k == 'recharge_time' then
             if class.abilities[ t.key ].charges then
@@ -1499,7 +1559,7 @@ local mt_cooldowns = {
       duration = class.abilities[k].cooldown
 
     elseif k == 'potion' then
-      local itemName = state.this_args:sub(6)
+      local itemName = state.args.ModName or state.args.name or class.potion
       local potion = class.potions[ itemName ]
 
       if state.toggle.potions and potion and GetItemCount( potion.item ) > 0 then
@@ -1513,7 +1573,7 @@ local mt_cooldowns = {
 
     elseif not ns.isKnown( ability ) then
         start = state.now
-        duration = 3600
+        duration = 0
     end
 
     if start then
@@ -1567,13 +1627,53 @@ local mt_dot = {
 ns.metatables.mt_dot = mt_dot
 
 
-local mt_prev = {
-  __index = function(t, k)
-    if k == t.last then
-      return true
+local mt_prev_lookup = {
+    __index = function( t, k )
+        local idx = t.index
+
+        if t.meta == 'castsAll' then
+            -- Check predictions first.
+            if state.predictions[ idx ] then return state.predictions[ idx ] == k end
+            -- There isn't a prediction for that entry yet, go back to actual collected data.
+            return ns.castsAll[ idx - #state.predictions ] == k
+
+        elseif t.meta == 'castsOn' then
+            -- Check predictions first.
+            if state.predictionsOn[ idx ] then return state.predictionsOn[ idx ] == k end
+            -- There isn't a prediction for that entry yet, go back to actual collected data.
+            return ns.castsOn[ idx - #state.predictionsOn ] == k
+
+        end
+
+        -- castsOff
+        if state.predictionsOff[ idx ] then return state.predictionsOff[ idx ] == k end
+        return ns.castsOff[ idx - #state.predictionsOff ] == k
+
     end
-    return false
-  end
+}
+
+local prev_lookup = setmetatable( {
+    index = 1,
+    meta = 'castsAll'
+}, mt_prev_lookup )
+
+
+local mt_prev = {
+    __index = function( t, k )
+        if type( k ) == 'number' then
+            -- This is a SimulationCraft 7.1.5 or later indexed lookup, we support up to #5.
+            if k < 1 or k > 5 then return false end
+            prev_lookup.meta = t.meta -- Which data to use?  castsAll, castsOn (GCD), castsOff (offGCD)?
+            prev_lookup.index = k
+            return prev_lookup
+        end
+
+        if k == t.last then
+            return true
+        end
+
+        return false
+    end
 }
 ns.metatables.mt_prev = mt_prev
 
@@ -2080,6 +2180,8 @@ ns.metatables.mt_totem = mt_totem
 -- Won't catch fake set names.  Should revise.
 local mt_set_bonuses = {
   __index = function(t, k)
+    if type(k) == 'number' then return 0 end
+
     local set, pieces, class = k:match("^(.-)_"), tonumber( k:match("_(%d+)pc") ), k:match("pc(.-)$")
 
     if not pieces or not set then
@@ -2425,6 +2527,17 @@ function state.reset( dispID )
   state.my_enemies = nil
   state.true_active_enemies = nil
   state.true_my_enemies = nil
+
+
+  local spells_in_flight = ns.spells_in_flight
+
+  for i = #spells_in_flight, 1, -1 do
+      if spells_in_flight[i].time < state.now then
+          table.remove( spells_in_flight, i )
+      else
+          break
+      end
+  end
   
   if dispID and Hekili.DB.profile.displays[ dispID ] then
     local display = Hekili.DB.profile.displays[ dispID ]
@@ -2464,30 +2577,33 @@ function state.reset( dispID )
 
   -- A decent start, but assumes our first ability is always aggressive.  Not necessarily true...
   -- FIX: MOVE THIS TO A HOOK!
-  if state.class.file == 'SHAMAN' then
+  if state.class.file == 'SHAMAN' and state.spec.enhancement then
     state.nextMH = ( state.combat ~= 0 and state.swings.mh_projected > state.now ) and state.swings.mh_projected or state.now + 0.01
     state.nextOH = ( state.combat ~= 0 and state.swings.oh_projected > state.now ) and state.swings.oh_projected or state.now + ( state.swings.oh_speed / 2 )
-    state.nextFoA = state.buff.fury_of_air.up and tonumber( format( "%.0f", state.now ) ) + ( state.buff.fury_of_air.applied % 1 ) or 0
-    if state.nextFoA > 0 and state.nextFoA < state.now then state.nextFoA = state.nextFoA + 1 end
+    -- state.nextFoA = state.buff.fury_of_air.up and tonumber( format( "%.0f", state.now ) ) + ( state.buff.fury_of_air.applied % 1 ) or 0
+    state.nextFoA = state.buff.fury_of_air.up and state.swings.last_foa_tick or state.now + 0.5
+    while state.nextFoA > 0 and state.nextFoA < state.now do state.nextFoA = state.nextFoA + 1 end
   end
 
-  for k in pairs( state.buff ) do
+  for k, v in pairs( state.buff ) do
     if class.auras[ k ].id < 0 then
-      state.buff[ k ].name = nil
+      v.name = nil
     end
-    state.buff[ k ].caster = nil
-    state.buff[ k ].count = nil
-    state.buff[ k ].expires = nil
-    state.buff[ k ].applied = nil
+    v.caster = nil
+    v.count = nil
+    v.expires = nil
+    v.applied = nil
   end
 
-  for k in pairs( state.cooldown ) do
-    state.cooldown[ k ].duration = nil
-    state.cooldown[ k ].expires = nil
-    state.cooldown[ k ].charge = nil
-    state.cooldown[ k ].next_charge = nil
-    state.cooldown[ k ].recharge_began = nil
-    state.cooldown[ k ].recharge_duration = nil
+  for k, v in pairs( state.cooldown ) do
+    v.duration = nil
+    v.expires = nil
+    v.charge = nil
+    v.next_charge = nil
+    v.recharge_began = nil
+    v.recharge_duration = nil
+    v.true_expires = nil
+    v.true_remains = nil
   end
   
   state.trinket.t1.cooldown.duration = nil
@@ -2530,9 +2646,16 @@ function state.reset( dispID )
   state.prev.last = state.player.lastcast
   state.prev_gcd.last = state.player.lastgcd
   state.prev_off_gcd.last = state.player.lastoffgcd
+
+  for i = 1, 5 do
+    state.predictions[i] = nil
+    state.predictionsOn[i] = nil
+    state.predictionsOff[i] = nil
+  end
   
   -- interrupts
   state.target.casting = nil
+  state.target.cast_end = nil
 
   for k, _ in pairs( class.resources ) do
 
@@ -2585,10 +2708,10 @@ function state.reset( dispID )
 
   if cast_time and casting then
     local ability = class.abilities[ casting ]
-    if not ability or ( not ability.channeled or ability.break_channel ) then state.advance( cast_time ) end
+
+    state.advance( cast_time )
 
     if ability and not ability.channeled then
-      -- state.cooldown[ casting ].expires = state.query_time + class.abilities[ casting ].cooldown
 
       -- Put the action on cooldown.  (It's slightly premature, but addresses CD resets like Echo of the Elements.)
       if ability.charges and ability.recharge > 0 then
@@ -2601,10 +2724,6 @@ function state.reset( dispID )
       ns.runHandler( casting )
 
       ns.spendResources( casting )
-
-      -- Start the GCD.
-      -- LegionFix:  GCD should start at beginning of the cast...
-      -- state.setCooldown( ns.class.gcd, ns.class.abilities[ casting ].gcdType ~= 'off' and state.gcd or 0 )
     end
 
   end
@@ -2614,7 +2733,7 @@ function state.reset( dispID )
 
   delay = ns.callHook( "reset_postcast", delay )
 
-  if delay > 0 and delay ~= state.cooldown.global_cooldown.remains  then
+  if delay > 0 then -- and delay ~= state.cooldown.global_cooldown.remains 
     state.advance( delay )
   end
 
@@ -2629,25 +2748,56 @@ function state.advance( time )
   
   time = ns.callHook( 'advance', time )
 
-  local newtime = tonumber( format( "%.2f", time ) )
-
-  time = newtime < time and newtime + 0.01 or newtime
+  --[[ local newtime = tonumber( format( "%.2f", time ) )
+  time = newtime < time and newtime + 0.01 or newtime ]]
 
   --if time == 3600 then error( time ) end
 
-  state.offset = state.offset + time
   state.delay = 0
 
+  local projected = ns.spells_in_flight
+
+  if projected and #projected > 0 then
+    local saved_offset = state.offset
+
+    for i = #projected, 1, -1 do
+        local proj = projected[i]
+
+        if proj.time > state.query_time and proj.time < state.query_time + time then
+            state.offset = proj.time - state.query_time
+            ns.runHandler( proj.spell )
+        else
+            break
+        end
+    end
+
+    offset = saved_offset
+  end
+
+  state.offset = state.offset + time
+
+  local bonus_cdr = ns.callHook( 'advance_bonus_cdr', time ) or 0
+
   for k, cd in pairs( state.cooldown ) do
-    while class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset do 
-    -- if class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset then
-      cd.charge = cd.charge + 1
-      if cd.charge < class.abilities[ k ].charges then
-        cd.recharge_began = cd.next_charge
-        cd.next_charge = cd.next_charge + class.abilities[ k ].recharge
-      else        
-        cd.next_charge = 0
-      end
+    if ns.isKnown( k ) then
+        if bonus_cdr > 0 then
+            if cd.next_charge > 0 then
+                cd.next_charge = cd.next_charge - bonus_cdr
+            end
+            cd.expires = max( 0, cd.expires - bonus_cdr )
+            cd.true_expires = max( 0, cd.expires - bonus_cdr )
+        end
+
+        while class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset do 
+        -- if class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset then
+          cd.charge = cd.charge + 1
+          if cd.charge < class.abilities[ k ].charges then
+            cd.recharge_began = cd.next_charge
+            cd.next_charge = cd.next_charge + class.abilities[ k ].recharge
+          else        
+            cd.next_charge = 0
+          end
+        end
     end
   end
 
@@ -2657,40 +2807,46 @@ function state.advance( time )
     -- MOVE TO WARRIOR MODULE
     if k == 'maelstrom' and state.target.within5 then
 
+
       local MH, OH = UnitAttackSpeed( 'player' )
 
       local nextMH = ( MH and state.nextMH > 0 ) and state.nextMH or 0
       local nextOH = ( OH and state.nextOH > 0 ) and state.nextOH or 0
-      local nextFoA = ( state.nextFoA > 0 ) and state.nextFoA or 0
+      local nextFoA = state.nextFoA and ( ( state.nextFoA > 0 ) and state.nextFoA ) or 0
 
       local iter = 0
 
       local offset = state.offset
 
+      -- print( 'checking maelstrom', state.query_time, nextMH, nextOH )
+
       while( iter < 10 and ( ( nextMH > 0 and nextMH < state.query_time ) or
         ( nextOH > 0 and nextOH < state.query_time ) or
         ( nextFoA > 0 and nextFoA < state.query_time ) ) ) do
 
-        if nextMH > 0 and nextMH < nextOH and nextMH < nextFoA then
+        if nextMH > 0 and nextMH < nextOH and ( nextMH < nextFoA or nextFoA == 0 ) then
             state.offset = nextMH - state.now
             local gain = state.buff.doom_winds.up and 15 or 5
             state.offset = offset
 
             resource.actual = min( resource.max, resource.actual + gain )
+            -- print( 'predicted mp gain from mh' )
             state.nextMH = state.nextMH + MH
             nextMH = nextMH + MH
 
-        elseif nextOH > 0 and nextOH < nextMH and nextOH < nextFoA then
+        elseif nextOH > 0 and nextOH < nextMH and ( nextOH < nextFoA or nextFoA == 0 ) then
             state.offset = nextOH - state.now
             local gain = state.buff.doom_winds.up and 15 or 5
             state.offset = offset
 
             resource.actual = min( resource.max, resource.actual + gain )
+            -- print( 'predicted mp gain from mh' )
             state.nextOH = state.nextOH + OH
             nextOH = nextOH + OH
 
         elseif nextFoA > 0 and nextFoA < nextMH and nextFoA < nextOH then
-            resource.actual = max( 0, resource.actual - 5 )
+            resource.actual = max( 0, resource.actual - ( PTR and 3 or 5 ) )
+            -- print( 'predicted mp loss from foa' )
 
             if resource.actual == 0 then
                 state.offset = nextOH - state.now
@@ -2887,7 +3043,7 @@ function ns.timeToReady( action )
         spend = ns.callHook( 'timeToReady_spend', spend )
 
         local ready = ability.ready
-        if type( ready ) == 'number' then spend = ability.ready or spend end
+        if type( ready ) == 'number' then spend = ready or spend end
 
         if type( ready ) ~= 'function' then
             if spend > state[ resource ].current then
@@ -2903,8 +3059,8 @@ function ns.timeToReady( action )
         end
     end
 
-    if state.actionEntry then
-        delay = ns.checkTimeScript( state.actionEntry, delay, spend, resource )
+    if state.script.entry then
+        delay = ns.checkTimeScript( state.script.entry, delay, spend, resource ) or delay
     end
 
     return delay
@@ -2926,7 +3082,7 @@ ns.isReady = function( action )
       spend, resource = ability.spend()
     end
     
-    if resource == 'focus' or resource == 'energy' or state.actionEntry then
+    if resource == 'focus' or resource == 'energy' or state.script.entry then
       return ns.timeToReady( action ) <= state.delay
     end
     

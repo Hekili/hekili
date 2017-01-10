@@ -14,45 +14,43 @@ local eIndex = {}
 
 ns.Error = function( ... )
 
-  local output = format( ... )
-  if not errors[ output ] then
-    errors[ output ] = {
-      n = 1,
-      last = date( "%X", time() )
-    }
-    eIndex[ #eIndex + 1 ] = output
-    if Hekili.DB.profile.Verbose then Hekili:Print( output ) end
-  else
-    errors[ output ].n = errors[ output ].n + 1
-    errors[ output ].last = date( "%X", time() )
-  end
+local output = format( ... )
+    if not errors[ output ] then
+        errors[ output ] = {
+            n = 1,
+            last = date( "%X", time() )
+        }
+        eIndex[ #eIndex + 1 ] = output
 
+        if Hekili.DB.profile.Verbose then Hekili:Print( output ) end
+    else
+        errors[ output ].n = errors[ output ].n + 1
+        errors[ output ].last = date( "%X", time() )
+    end
 end
 
 
 function Hekili:GetErrors()
 
-  for i = 1, #eIndex do
-    Hekili:Print( eIndex[i] .. " (n = " .. errors[ eIndex[i] ].n .. "), last at " .. errors[ eIndex[i] ].last .. "." )
-  end
+    for i = 1, #eIndex do
+        Hekili:Print( eIndex[i] .. " (n = " .. errors[ eIndex[i] ].n .. "), last at " .. errors[ eIndex[i] ].last .. "." )
+    end
 
 end
 
 
 -- Converts `s' to a SimC-like key: strip non alphanumeric characters, replace spaces with _, convert to lower case.
-ns.formatKey = function( s )
-
-  return ( lower(s):gsub("[^a-z0-9_ ]", ""):gsub("%s", "_") )
-
+function ns.formatKey( s )
+    return ( lower( s or '' ):gsub("[^a-z0-9_ ]", ""):gsub("%s", "_") )
 end
 
 
 ns.titleCase = function( s )
-  local helper = function( first, rest )
-    return first:upper()..rest:lower()
-  end
+    local helper = function( first, rest )
+        return first:upper()..rest:lower()
+    end
 
-  return s:gsub( "_", " " ):gsub( "(%a)([%w_']*)", helper ):gsub( "[Aa]oe", "AOE" ):gsub( "[Rr]jw", "RJW" ):gsub( "[Cc]hix", "ChiX" ):gsub( "(%W?)[Ss]t(%W?)", "%1ST%2" )
+    return s:gsub( "_", " " ):gsub( "(%a)([%w_']*)", helper ):gsub( "[Aa]oe", "AOE" ):gsub( "[Rr]jw", "RJW" ):gsub( "[Cc]hix", "ChiX" ):gsub( "(%W?)[Ss]t(%W?)", "%1ST%2" )
 end
 
 
@@ -62,28 +60,28 @@ end
 
 
 ns.escapeMagic = function( s )
-  return s:gsub( "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1" )
+    return s:gsub( "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1" )
 end
 
 
 ns.multiUnpack = function( ... )
 
-  local merge = {}
+    local merge = {}
 
-  for i = 1, select( '#', ... ) do
-    for _, value in ipairs( select( i, ... ) ) do
-      merge[ #merge + 1 ] = value
+    for i = 1, select( '#', ... ) do
+        for _, value in ipairs( select( i, ... ) ) do
+            merge[ #merge + 1 ] = value
+        end
     end
-  end
 
-  return unpack( merge )
+    return unpack( merge )
 
 end
 
 
 ns.round = function( num, places )
 
-  return tonumber( format( "%." .. ( places or 0 ) .. "f", num ) )
+    return tonumber( format( "%." .. ( places or 0 ) .. "f", num ) )
 
 end
 
@@ -91,26 +89,25 @@ end
 -- Deep Copy
 -- from http://stackoverflow.com/questions/640642/how-do-you-copy-a-lua-table-by-value
 local function tableCopy( obj, seen )
-  if type(obj) ~= 'table' then return obj end
-  if seen and seen[obj] then return seen[obj] end
-  local s = seen or {}
-  local res = setmetatable({}, getmetatable(obj))
-  s[obj] = res
-  for k, v in pairs(obj) do res[ tableCopy(k, s) ] = tableCopy(v, s) end
-  return res
+    if type(obj) ~= 'table' then return obj end
+    if seen and seen[obj] then return seen[obj] end
+    local s = seen or {}
+    local res = setmetatable({}, getmetatable(obj))
+    s[obj] = res
+    for k, v in pairs(obj) do res[ tableCopy(k, s) ] = tableCopy(v, s) end
+    return res
 end
 ns.tableCopy = tableCopy
 
 
 local toc = {}
 local exclusions = { min = true, max = true, _G = true }
+
 ns.commitKey = function( key )
-
-  if not toc[ key ] and not exclusions[ key ] then
-    ns.keys[ #ns.keys + 1 ] = key
-    toc[ key ] = 1
-  end
-
+    if not toc[ key ] and not exclusions[ key ] then
+        ns.keys[ #ns.keys + 1 ] = key
+        toc[ key ] = 1
+    end
 end
 
 
@@ -151,3 +148,58 @@ end
 function ns.orderedPairs( t )
     return orderedNext, t, nil
 end
+
+
+function ns.safeMin( ... )
+    local result
+
+    for i = 1, select( "#", ... ) do
+        local val = select( i, ... )
+        if val then result = ( not result or val < result ) and val or result end
+    end
+
+    return result or 0
+end
+
+
+function ns.safeMax( ... )
+    local result
+
+    for i = 1, select( "#", ... ) do
+        local val = select( i, ... )
+        if val then result = ( not result or val > result ) and val or result end
+    end
+
+    return result or 0
+end
+
+
+--[[
+function ns.safeMin( ... )
+    local values = {}
+
+    for i = 1, select( "#", ... ) do
+        local val = select( i, ... )
+
+        if val ~= nil and type( val ) == 'number' then
+            values[ #values + 1 ] = val
+        end
+    end
+
+    return min( unpack( values ) ) or 0
+end
+
+
+function ns.safeMax( ... )
+    local values = {}
+
+    for i = 1, select( "#", ... ) do
+        local val = select( i, ... )
+
+        if val ~= nil and type( val ) == 'number' then
+            values[ #values + 1 ] = val
+        end
+    end
+
+    return max( unpack( values ) ) or 0
+end ]]

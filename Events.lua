@@ -369,60 +369,82 @@ local dynamic_keys = setmetatable( {}, {
 ns.spells_in_flight = {}
 local spells_in_flight = ns.spells_in_flight
 
+ns.castsOff = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' }
+ns.castsOn = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' }
+ns.castsAll = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' }
+
+local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
+
+
 RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, _, spellID )
 
-        if unit == 'player' then
+    if unit == 'player' then
 
-            local now = GetTime()
+        local now = GetTime()
 
-            if not class.castExclusions[ spellID ] then
-                state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
-                state.player.casttime = now
+        if not class.castExclusions[ spellID ] then
+            state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
+            state.player.casttime = now
 
-                if class.abilities[ spellID ] then
-                    if class.abilities[ spellID ].gcdType ~= 'off' then
-                        state.player.lastgcd = class.abilities[ spellID ].key
-                        state.player.lastgcdtime = now
-                    else
-                        state.player.lastoffgcd = class.abilities[ spellID ].key
-                        state.player.lastoffgcdtime = now
-                    end
+            local ability = class.abilities[ spellID ]
+
+            if ability then
+                table.insert( castsAll, 1, ability.key )
+                castsAll[ 6 ] = nil
+
+                if ability.gcdType ~= 'off' then
+                    table.insert( castsOn, 1, ability.key )
+                    castsOn[ 6 ] = nil
+
+                    state.player.lastgcd = ability.key
+                    state.player.lastgcdtime = now
+                else
+                    table.insert( castsOff, 1, ability.key )
+                    castsOff[ 6 ] = nil
+
+                    state.player.lastoffgcd = ability.key
+                    state.player.lastoffgcdtime = now
                 end
-            end
-
-            -- This is an ability with a travel time.
-            if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
-
-                local lands = now + 1
-
-                -- If we have a hostile target, we'll assume we're waiting for them to get hit.
-                if UnitExists( 'target' ) and not UnitIsFriend( 'target' ) then
-                    -- Let's presume that the target is at max range.
-                    local _, range = select( 2, RC:GetRange( 'target' ) ) or 0
-                    lands = range > 0 and range * class.abilities[ spellID ].velocity or lands
-                end
-
-                table.insert( spells_in_flight, 1, {
-                    spell = class.abilities[ spellID ].key,
-                    time = now + lands
-                } )
-
-                for i = #spells_in_flight, 1, -1 do
-                    if spells_in_flight[i].time < now then
-                        table.remove( spells_in_flight, i )
-                    else
-                        break
-                    end
-                end
-
-            end
-
-            for i = 1, #Hekili.DB.profile.displays do
-                displayUpdates[ i ] = now - ( ( 1 / Hekili.DB.profile['Updates Per Second'] ) / 2 )
             end
         end
 
+        -- This is an ability with a travel time.
+        if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
+
+            local lands = 1
+
+            -- If we have a hostile target, we'll assume we're waiting for them to get hit.
+            if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
+                -- Let's presume that the target is at max range.
+                local _, range = RC:GetRange( 'target' )
+
+                if range then
+                    lands = range > 0 and range / class.abilities[ spellID ].velocity or 1
+                end
+            end
+
+            table.insert( spells_in_flight, 1, {
+                spell = class.abilities[ spellID ].key,
+                time = now + lands
+            } )
+
+        end
+
+        for i = 1, #Hekili.DB.profile.displays do
+            displayUpdates[ i ] = now - ( 1 / Hekili.DB.profile['Updates Per Second'] ) + 0.01
+        end
+    end
+
 end )
+
+
+function ns.removeSpellFromFlight( spell )
+    for i = #spells_in_flight, 1, -1 do
+        if spells_in_flight[i].spell == spell then
+            table.remove( spells_in_flight, i )
+        end
+    end
+end
 
 
 RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
@@ -439,89 +461,100 @@ end )
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
 RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
-        if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' and ns.isTarget( destGUID ) then
-            ns.eliminateUnit( destGUID )
-            return
+    if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' and ns.isTarget( destGUID ) then
+        ns.eliminateUnit( destGUID )
+        return
+    end
+
+    if subtype == 'SPELL_SUMMON' and sourceGUID == state.GUID then
+        ns.updateMinion( destGUID, time )
+        return
+    end
+
+    local hostile = ( bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 )
+    local time = GetTime()
+
+    if sourceGUID ~= state.GUID and not ( state.role.tank and destGUID == state.GUID ) and not ns.isMinion( sourceGUID ) then
+        return
+    end
+
+    if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
+        ns.updateTarget( sourceGUID, time, true )
+
+    elseif subtype:sub( 1, 5 ) == 'SWING' and not multistrike then
+        if subtype == 'SWING_MISSED' then offhand = spellName end
+
+        local sw = state.swings
+
+        if offhand and time > sw.oh_actual and sw.oh_speed then
+            sw.oh_actual = time
+            sw.oh_speed = select( 2, UnitAttackSpeed( 'player' ) )
+            sw.oh_projected = sw.oh_actual + sw.oh_speed
+
+        elseif not offhand and time > sw.mh_actual then
+            sw.mh_actual = time
+            sw.mh_speed = UnitAttackSpeed( 'player' )
+            sw.mh_projected = sw.mh_actual + sw.mh_speed
+
         end
 
-        if subtype == 'SPELL_SUMMON' and sourceGUID == state.GUID then
-            ns.updateMinion( destGUID, time )
-            return
-        end
+    -- Player/Minion Event
+    elseif not class.exclusions[ spellID ] then
+        if hostile and sourceGUID ~= destGUID and not ( class.auras[ spellID ] and class.auras[ spellID ].friendly ) then
 
-        local hostile = ( bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 )
-        local time = GetTime()
+            -- Aura Tracking
+            if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
 
-        if sourceGUID ~= state.GUID and not ( state.role.tank and destGUID == state.GUID ) and not ns.isMinion( sourceGUID ) then
-            return
-        end
+                ns.trackDebuff( spellName, destGUID, time, true )
+                ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
-        if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
-            ns.updateTarget( sourceGUID, time, true )
+            elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
+                ns.trackDebuff( spellName, destGUID, time )
+                ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
-        elseif subtype:sub( 1, 5 ) == 'SWING' and not multistrike then
-                if subtype == 'SWING_MISSED' then offhand = spellName end
+            elseif subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_MISSED' then
+                ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
-                local sw = state.swings
+            elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
+                ns.trackDebuff( spellName, destGUID )
 
-                if offhand and time > sw.oh_actual and sw.oh_speed then
-                        sw.oh_actual = time
-                        sw.oh_speed = select( 2, UnitAttackSpeed( 'player' ) )
-                        sw.oh_projected = sw.oh_actual + sw.oh_speed
+            end
 
-                elseif not offhand and time > sw.mh_actual then
-                        sw.mh_actual = time
-                        sw.mh_speed = UnitAttackSpeed( 'player' )
-                        sw.mh_projected = sw.mh_actual + sw.mh_speed
+            if subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
+                ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
-                end
-        
-        -- Player/Minion Event
-        elseif not class.exclusions[ spellID ] then
-            if hostile and sourceGUID ~= destGUID and not ( class.auras[ spellID ] and class.auras[ spellID ].friendly ) then
-
-                -- Aura Tracking
-                if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
-
-                    ns.trackDebuff( spellName, destGUID, time, true )
-                    ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
-
-                elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
-                    ns.trackDebuff( spellName, destGUID, time )
-                    ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
-
-                elseif subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_MISSED' then
-                    ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
-
-                elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
-                    ns.trackDebuff( spellName, destGUID )
-
+                if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
+                    state.swings.last_foa_tick = time
                 end
 
-                if subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
-                    ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+            end
 
-                end
+            local action = class.abilities[ spellID ]
+            
+            if subtype ~= 'SPELL_CAST_SUCCESS' and action and action.velocity then
+                ns.removeSpellFromFlight( class.abilities[ spellID ].key )
+            end
 
-            elseif sourceGUID == state.GUID and class.auras[ spellID ] and class.auras[ spellID ].friendly then -- friendly effects
 
-                if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
-                    ns.trackDebuff( spellName, destGUID, time, true )
+        elseif sourceGUID == state.GUID and class.auras[ spellID ] and class.auras[ spellID ].friendly then -- friendly effects
 
-                elseif subtype == 'SPELL_PERIODIC_HEAL' or subtype == 'SPELL_PERIODIC_MISSED' then
-                    ns.trackDebuff( spellName, destGUID, time )
+            if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
+                ns.trackDebuff( spellName, destGUID, time, true )
 
-                elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
-                    ns.trackDebuff( spellName, destGUID )
+            elseif subtype == 'SPELL_PERIODIC_HEAL' or subtype == 'SPELL_PERIODIC_MISSED' then
+                ns.trackDebuff( spellName, destGUID, time )
 
-                end
+            elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
+                ns.trackDebuff( spellName, destGUID )
 
             end
 
         end
 
-        -- This is dumb.  Just let modules used the event handler.
-        ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", event, nil, subtype, nil, sourceGUID, sourceName, nil, nil, destGUID, destName, destFlags, nil, spellID, spellName, nil, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
+    end
+
+    -- This is dumb.  Just let modules used the event handler.
+    ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", event, nil, subtype, nil, sourceGUID, sourceName, nil, nil, destGUID, destName, destFlags, nil, spellID, spellName, nil, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
 end )
 

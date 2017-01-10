@@ -8,6 +8,8 @@ local class = ns.class
 local scripts = ns.scripts
 local state = ns.state
 
+local safeMax = ns.safeMax
+
 local trim = string.trim
 
 Hekili.Scripts = scripts.A
@@ -53,6 +55,14 @@ local SimToLua = function( str, modifier )
   -- Condense parenthetical spaces.
   str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")")
 
+  -- Address equipped.number => equipped[number]
+  str = str:gsub("equipped%.(%d+)", "equipped[%1]")
+
+  str = str:gsub("prev%.(%d+)", "prev[%1]")
+  str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
+  str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
+
+
   return str
 
 end
@@ -80,7 +90,7 @@ end
 ns.storeValues = storeValues
 
 
-function ns.storeReadyValues( tbl, node )
+local function storeReadyValues( tbl, node )
 
     if not node.Elements then
         return
@@ -98,6 +108,7 @@ function ns.storeReadyValues( tbl, node )
     end
 
 end
+ns.storeReadyValues = storeReadyValues
 
 
 local stripScript = function( str, thorough )
@@ -145,6 +156,15 @@ local getScriptElements = function( script )
 end
 
 
+local specialModifiers = {
+    CycleTargets = true,
+    MaximumTargets = true,
+    CheckMovement = true,
+    Movement = true,
+    ModName = true
+}
+
+
 local convertScript = function( node, hasModifiers )
   local Translated = SimToLua( node.Script )
   local sFunction, Error
@@ -168,38 +188,59 @@ local convertScript = function( node, hasModifiers )
     Error = Error,
     Elements = sElements,
     Modifiers = {},
+    SpecialMods = "",
 
     Lua = Translated,
     SimC = node.Script and trim( node.Script ) or nil
   }
 
-  if hasModifiers and ( node.Args and node.Args ~= '' ) then
-    local tModifiers = SimToLua( node.Args, true )
+  if hasModifiers then -- and ( node.Args and node.Args ~= '' ) then
+    
+    if node.Args and node.Args ~= '' then
+        local tModifiers = SimToLua( node.Args, true )
 
-    for m in tModifiers:gmatch("[^,|^$]+") do
-      local Key, Value = m:match("^(.-)=(.-)$")
+        for m in tModifiers:gmatch("[^,|^$]+") do
+          local Key, Value = m:match("^(.-)=(.-)$")
 
-      if Key and Value then
-        local sFunction, Error = loadstring( 'return ' .. Value )
+          if Key and Value then
+            local sFunction, Error = loadstring( 'return ' .. Value )
 
-        if sFunction then
-          setfenv( sFunction, state )
-          Output.Modifiers[ Key ] = sFunction
-        else
-          Output.Modifiers[ Key ] = Error
+            if sFunction then
+              setfenv( sFunction, state )
+              Output.Modifiers[ Key ] = sFunction
+            else
+              Output.Modifiers[ Key ] = Error
+            end
+          end
         end
-      end
+    end
+
+    for m in pairs( specialModifiers ) do
+        if node[ m ] then
+            Output.SpecialMods = Output.SpecialMods .. " - " .. m .. " : " .. tostring( node[m] )
+            local sFunction, Error = loadstring( 'return ' .. tostring( node[ m ] ) )
+            if sFunction then
+                setfenv( sFunction, state )
+                Output.Modifiers[ m ] = sFunction
+            else
+                Output.Modifiers[ m ] = Error
+            end
+        end
     end
   end
 
-  if hasModifiers and ( node.ReadyTime and node.ReadyTime ~= '' ) then
+  if node.ReadyTime and node.ReadyTime ~= '' then
     local tReady = SimToLua( node.ReadyTime, true )
     local rFunction, rError
 
     if tReady then
-        rFunction, rError = loadstring( 'return function( delay, spend, spend_type )\n' ..
+        if tReady:sub( 1, 8 ) == 'function' then
+            rFunction, rError = loadstring( 'return ' .. tReady )
+        else
+            rFunction, rError = loadstring( 'return function( delay, spend, resource )\n' ..
             'return max( 0, delay, ' .. tReady .. ' )\n' ..
             'end' )
+        end
     end
 
     if rFunction then
@@ -289,9 +330,12 @@ state.getModifiers = getModifiers
 
 ns.importModifiers = function( list, entry )
 
+  local key = list..':'..entry
+
   for k in pairs( state.args ) do
     state.args[ k ] = nil
   end
+
 
   if not scripts['A'][list..':'..entry].Modifiers then return end
 
@@ -335,6 +379,7 @@ ns.loadScripts = function()
       Actions[ aKey ] = convertScript( action, true )
     end
   end
+
 end
 local loadScripts = ns.loadScripts
 
@@ -359,18 +404,27 @@ function ns.implantDebugData( queue )
 
   if queue.list and queue.action then
     local scrAction = scripts.A[ queue.list..':'..queue.action ]
-    
-    if queue.scriptType == 'simc' then
-        queue.ActScript = scrAction.SimC
-        queue.ActElements = queue.ActElements or {}
-        storeValues( queue.ActElements, scrAction )
-    elseif queue.scriptType == 'time' then
-        queue.ActScript = scrAction.ReadyLua
-        queue.ActElements = queue.ReadyElements or {}
-        ns.storeReadyValues( queue.ActElements, scrAction )
-    else
-        queue.ActElements = queue.ActElements or {}
+    queue.ActScript = scrAction.SimC
+    queue.ActElements = queue.ActElements or {}
+    storeValues( queue.ActElements, scrAction )
 
-    end
+    local delay = ns.state.delay
+    ns.state.delay = 0
+
+    queue.ReadyScript = scrAction.ReadyLua
+    queue.ReadyElements = queue.ReadyElements or {}
+    storeReadyValues( queue.ReadyElements, scrAction )
+
+    ns.state.delay = delay
   end
+end
+
+
+local function implantTimeScriptData( queue )
+    if queue.list and queue.action then
+        local action = scripts.A[ queue.list..':'..queue.action ]
+        queue.ReadyScript = scrAction.ReadyLua
+        queue.ReadyElements = queue.ReadyElements or {}
+        storeReadyValues( queue.ReadyElements, scrAction )
+    end
 end

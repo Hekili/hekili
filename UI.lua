@@ -420,69 +420,78 @@ end
 
 
 function Hekili:ShowDiagnosticTooltip( q )
-  -- Grab the default backdrop and copy it with a solid background.
-  local backdrop = GameTooltip:GetBackdrop()
-  backdrop.bgFile = [[Interface\Buttons\WHITE8X8]]
-  ns.Tooltip:SetBackdrop( backdrop )
 
-  ns.Tooltip:SetOwner( UIParent, "ANCHOR_CURSOR" )
-  ns.Tooltip:SetBackdropColor( 0, 0, 0, 1 )
-  ns.Tooltip:SetText( class.abilities[ q.actionName ].name )
-  ns.Tooltip:AddDoubleLine( q.listName.." #"..q.action, "+" .. round( q.time or 0, 2 ) .."s", 1, 1, 1, 1, 1, 1 )
-  
+    local tt = ns.Tooltip
+    local fmt = ns.lib.Format
 
-  if q.HookHeader or ( q.HookScript and q.HookScript ~= "" ) then
-    if q.HookHeader then
-      ns.Tooltip:AddLine( "\n"..q.HookHeader )
-    else
-      ns.Tooltip:AddLine( "\nHook Criteria" )
+    -- Grab the default backdrop and copy it with a solid background.
+    local backdrop = GameTooltip:GetBackdrop()
+    backdrop.bgFile = [[Interface\Buttons\WHITE8X8]]
+
+    tt:SetBackdrop( backdrop )
+
+    tt:SetOwner( UIParent, "ANCHOR_CURSOR" )
+    tt:SetBackdropColor( 0, 0, 0, 1 )
+    tt:SetText( class.abilities[ q.actionName ].name )
+    tt:AddDoubleLine( q.listName.." #"..q.action, "+" .. ns.formatValue( round( q.time or 0, 2 ) ), 1, 1, 1, 1, 1, 1 )
+
+    if q.resources and q.resources[ q.resource_type ] then
+        tt:AddDoubleLine( q.resource_type, ns.formatValue( q.resources[ q.resource_type ] ), 1, 1, 1, 1, 1, 1 )
     end
 
-    if q.HookScript and q.HookScript ~= "" then
-      local Text = Format ( q.HookScript )
-      ns.Tooltip:AddLine( ns.lib.Format:ColorString( Text, SyntaxColors ), 1, 1, 1, 1 )
-    end
-
-    if q.HookElements then
-      local applied = false
-      for k, v in orderedPairs( q.HookElements ) do
-        if not applied then
-          ns.Tooltip:AddLine( "Values" )
-          applied = true
+    if q.HookHeader or ( q.HookScript and q.HookScript ~= "" ) then
+        if q.HookHeader then
+            tt:AddLine( "\n"..q.HookHeader )
+        else
+            tt:AddLine( "\nHook Criteria" )
         end
-        ns.Tooltip:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
-      end
-    end
-  end
 
-  if q.ActScript and q.ActScript ~= "" then
-    if q.scriptType == 'simc' then
-        ns.Tooltip:AddLine( "\nAction Criteria" )
+        if q.HookScript and q.HookScript ~= "" then
+            local Text = Format ( q.HookScript )
+            tt:AddLine( fmt:ColorString( Text, SyntaxColors ), 1, 1, 1, 1 )
+        end
+
+        if q.HookElements then
+            local applied = false
+            for k, v in orderedPairs( q.HookElements ) do
+                if not applied then
+                    tt:AddLine( "Values" )
+                    applied = true
+                end
+                tt:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
+            end
+        end
+    end
+
+    if q.ReadyScript and q.ReadyScript ~= "" then
+        tt:AddLine("\nTime Script" )
+
+        local Text = Format( q.ReadyScript )
+        tt:AddLine( fmt:ColorString( Text, SyntaxColors ), 1, 1, 1, 1 )
+
+        if q.ReadyElements then
+            tt:AddLine( "Values" )
+            for k,v in orderedPairs( q.ReadyElements ) do
+                tt:AddDoubleLine( k, ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
+            end
+        end
+    end
+
+    if q.ActScript and q.ActScript ~= "" then
+        tt:AddLine( "\nAction Criteria" )
 
         local Text = Format ( q.ActScript )
-        ns.Tooltip:AddLine( ns.lib.Format:ColorString( Text, SyntaxColors ), 1, 1, 1, 1 )
+        tt:AddLine( fmt:ColorString( Text, SyntaxColors ), 1, 1, 1, 1 )
 
         if q.ActElements then
-          ns.Tooltip:AddLine( "Values" )
-          for k,v in orderedPairs( q.ActElements ) do
-            ns.Tooltip:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
-          end
-        end
-    elseif q.scriptType == 'time' then
-        ns.Tooltip:AddLine( "\nTime Script" )
-
-        local Text = Format( q.ActScript )
-        ns.Tooltip:AddLine( ns.lib.Format:ColorString( Text, SyntaxColors ), 1, 1, 1, 1 )
-
-        if q.ActElements then
-          ns.Tooltip:AddLine( "Values" )
-          for k,v in orderedPairs( q.ActElements ) do
-            ns.Tooltip:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
-          end
+            tt:AddLine( "Values" )
+            for k,v in orderedPairs( q.ActElements ) do
+                tt:AddDoubleLine( k, ns.formatValue( v ) , 1, 1, 1, 1, 1, 1 )
+            end
         end
     end
-  end
-  ns.Tooltip:Show()
+    tt:Show()
+    
 end
 
 
@@ -521,7 +530,7 @@ function Hekili:CreateButton( display, ID )
     button.Texture:SetAlpha(1)
   end
 
-  button.Icon = button.Icon or button:CreateTexture(nil, "LOW")
+  button.Icon = button.Icon or button:CreateTexture(nil, "OVERLAY")
   button.Icon:SetSize( scaleFactor * button:GetWidth() * 0.5, scaleFactor * button:GetHeight() * 0.5 )
   button.Icon:SetPoint( "TOPRIGHT", button, "TOPRIGHT" )
   button.Icon:Hide()
@@ -555,7 +564,7 @@ function Hekili:CreateButton( display, ID )
   button:ClearAllPoints()
 
   if ID == 1 then
-    button.Overlay = button.Overlay or button:CreateTexture( nil, "LOW" )
+    button.Overlay = button.Overlay or button:CreateTexture( nil, "OVERLAY" )
     button.Overlay:SetAllPoints(button)
     button.Overlay:Hide()
 

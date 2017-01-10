@@ -1,5 +1,5 @@
-## Interface: 70100 
-## Version: 7.1.0
+## Interface: 70105 
+## Version: 7.1.5
 ## Title: Hekili
 ## Author: Hekili
 ## Notes: Priority helper for Shamans, Paladins, Monks, and Hunters with support for in-game modifications.

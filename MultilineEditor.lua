@@ -259,7 +259,6 @@ local function GenerateDiagnosticTooltip(widget, event)
             GameTooltip:AddLine( warning, 1, 0, 0 )
           end
 
-          tested = true
       else
         local script = ns.scripts.A[ listID .. ':' .. actID ]
 
@@ -268,8 +267,9 @@ local function GenerateDiagnosticTooltip(widget, event)
         end
 
         GameTooltip:AddDoubleLine( "Result", ns.formatValue( script.Ready and script.Ready( arg.delay, arg.spend, arg.spend_type ) or "n/a" ), 1, 1, 1, 1, 1, 1 )
-        tested = true
       end
+
+      tested = true
     end
 
   elseif path[1] == 'displays' and path[4] == 'Script' then
@@ -299,7 +299,8 @@ local function GenerateDiagnosticTooltip(widget, event)
 
   end
 
-  if arg then
+
+  if arg then -- and #arg > 0 then
 
     if tested then GameTooltip:AddLine(" ") end
 
