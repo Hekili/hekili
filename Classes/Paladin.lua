@@ -287,7 +287,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
         addMetaFunction( 'state', 'judgment_override', function()
-            return spec.retribution and debuff.judgment.up or ( not settings.strict_finishers and cooldown.judgment.remains > gcd * 2 and holy_power.current >= 5 )
+            return spec.retribution and ( debuff.judgment.up or ( not settings.strict_finishers and cooldown.judgment.remains > gcd * 2 and holy_power.current >= 5 ) )
         end )
 
 
@@ -662,7 +662,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
 
         addAbility( 'crusade', {
-            id = 224668,
+            id = 231895,
             spend = 0,
             spend_type = 'mana',
             cast = 0,
@@ -1033,10 +1033,10 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
         addHandler( 'judgment', function ()
+            if talent.judgment_of_light.enabled then applyDebuff( 'target', 'judgment_of_light', 30, 40 ) end
             if spec.protection then
                 gainChargeTime( 'shield_of_the_righteous', 2 )
                 if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
-                if talent.judgment_of_light.enabled then applyDebuff( 'target', 'judgment_of_light', 30, 40 ) end
             else
                 applyDebuff( 'target', 'judgment', 8 )
                 if talent.greater_judgment.enabled then active_dot.judgment = max( active_enemies, active_dot.judgment + 2 ) end
