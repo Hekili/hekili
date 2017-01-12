@@ -438,7 +438,7 @@ local function runHandler( key, ... )
     state.predictionsOff[6] = nil
     
     if not ability.passive and state.time == 0 then
-        state.false_start = state.query_time
+        state.false_start = state.query_time - 0.01
 
         -- Generate fake weapon swings.
         state.nextMH = state.query_time + 0.01

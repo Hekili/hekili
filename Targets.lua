@@ -89,10 +89,8 @@ end ) ]]
 
 
 -- New Nameplate Proximity System
-function ns.getNameplateTargets()
-    if GetCVar( 'nameplateShowEnemies' ) ~= "1" then
-        return -1
-    end
+function ns.getNumberTargets()
+    local showNPs = GetCVar( 'nameplateShowEnemies' ) == "1"
 
     for k,v in pairs( nameplates ) do
         nameplates[k] = nil
@@ -100,18 +98,20 @@ function ns.getNameplateTargets()
 
     npCount = 0
 
-    for i = 1, 80 do
-        local unit = 'nameplate'..i
+    if showNPs and ( Hekili.DB.profile['Count Nameplate Targets'] and not state.ranged ) then
+        for i = 1, 80 do
+            local unit = 'nameplate'..i
 
-        local _, maxRange = RC:GetRange( unit )
+            local _, maxRange = RC:GetRange( unit )
 
-        if maxRange and maxRange <= ( class.range or 5 ) and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
-            nameplates[ UnitGUID( unit ) ] = maxRange
-            npCount = npCount + 1
+            if maxRange and maxRange <= ( Hekili.DB.profile['Nameplate Detection Range'] or 5 ) and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
+                nameplates[ UnitGUID( unit ) ] = maxRange
+                npCount = npCount + 1
+            end
         end
     end
 
-    if addMissingTargets then
+    if Hekili.DB.profile['Count Targets by Damage'] or not Hekili.DB.profile['Count Nameplate Targets'] or not showNPs or state.ranged then
         for k,v in pairs( myTargets ) do
             if not nameplates[ k ] then
                 nameplates[ k ] = true

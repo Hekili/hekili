@@ -777,7 +777,7 @@ function Hekili:UpdateDisplay( dispID )
                 if aKey then
                     button:Show()
                     button:SetAlpha(alpha)
-                    button.Texture:SetTexture( Queue[i].texture or GetSpellTexture( class.abilities[ aKey ].name ) )
+                    button.Texture:SetTexture( Queue[i].texture or GetSpellTexture( class.abilities[ aKey ].id ) )
                     local zoom = ( display.Zoom or 0 ) / 200
                     button.Texture:SetTexCoord( zoom, 1 - zoom, zoom, 1 - zoom )
                     button.Texture:Show()
@@ -812,7 +812,7 @@ function Hekili:UpdateDisplay( dispID )
                         -- local detected = ns.getNameplateTargets()
                         -- if detected == -1 then detected = ns.numTargets() end
 
-                        local detected = max( 1, ns.getNameplateTargets(), ns.numTargets() )
+                        local detected = max( 1, ns.getNumberTargets() )
                         local targets = detected
 
                         if min_targets > 0 then targets = max( min_targets, targets ) end

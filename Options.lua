@@ -34,7 +34,10 @@ function Hekili:GetDefaults()
       Hardcasts = true,
 
       Clash = 0,
-      ['Audit Targets'] = 5,
+      ['Audit Targets'] = 6,
+      ['Count Nameplate Targets'] = true,
+      ['Nameplate Detection Range'] = 5,
+      ['Count Targets by Damage'] = true,
       ['Updates Per Second'] = 20,
 
       ['Notification Enabled'] = true,
@@ -1702,7 +1705,7 @@ ns.newActionOption = function( aList, index )
         set = function( info, val )
             local action = getActionEntry( info )
             if not action then return end
-            action.CycleTargets = val and 1 or 0
+            action.CycleTargets = val
         end,
         hidden = function( info )
             local action = getActionEntry( info )
@@ -2469,11 +2472,102 @@ function Hekili:GetOptions()
             desc = "If checked, the addon will collect additional information that you can view by pausing the addon and placing your mouse over your displayed abilities.",
             order = 3
           },
+          ['Counter'] = {
+            type = "group",
+            name = "Target Count",
+            inline = true,
+            order = 5,
+            args = {
+              ['Delay Description'] = {
+                type = 'description',
+                name = "This addon includes a mechanism for counting targets with whom you are actively engaged.  Targets can be detected via nameplates, or by tracking any target that you damage, or is damaged by your pets/totems/guardians.  You can specify how targets are counted below.  Targets using damage-based detection are removed when they are killed or if you do not damage them within the following 'Grace Period'.",
+                order = 0,
+                width = 'full'
+              },
+              ['Count Nameplate Targets'] = {
+                type = 'toggle',
+                name = "Count Targets by Nameplate",
+                desc = "If checked, the addon will check to see how many hostile nameplates are within the specified range and count them as enemies.\n\n" ..
+                    "If enemy nameplates are not enabled, the addon will fallback to damage-based detection regardless of these settings.\n\n" ..
+                    "This feature is not used by ranged specializations.",
+                order = 1,
+
+              },
+              ['Nameplate Detection Range'] = {
+                type = 'range',
+                name = 'Nameplate Detection Range',
+                desc = "When |cFFFFD100Count Nameplate Targets|r is checked, the addon will count enemy nameplates within this many yards as active enemies.\n\n" ..
+                    "This value will 'snap' to valid enemy ranges that can be used for target detection.",
+                min = 5,
+                max = 100,
+                step = 1,
+                set = function( info, val )
+                    -- local values = { [5] = 5, [6] = 6, [8] = 8, [10] = 10, [15] = 15, [20] = 20, [25] = 25, [30] = 30, [35] = 35, [40] = 40, [45] = 45, [50] = 50, [60] = 60, [70] = 70, [80] = 80, [100] = 100 }
+                    local values = { 5, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 100 }
+
+                    local closest, difference = 0, 100
+
+                    for _, value in ipairs( values ) do
+                        local diff = abs( val - value )
+                        if diff < difference then
+                            closest = value
+                            difference = diff
+                        end
+
+                        if closest > val then break end
+                    end
+
+                    Hekili.DB.profile['Nameplate Detection Range'] = closest
+                end,
+                order = 2,
+                width = 'double',
+              },
+              ['Count Targets by Damage'] = {
+                type = 'toggle',
+                name = 'Count Targets by Damage',
+                desc = "If checked, the addon will track which units you have recently attacked or have recently attacked you and count them as enemies.\n\n" ..
+                    "If nameplate target detection is turned off, this feature will be used regardless of this setting.\n\n" ..
+                    "For ranged specializations, this feature is always active.",
+                order = 3,
+              },
+              ['Audit Targets'] = {
+                type = 'range',
+                name = "Grace Period",
+                min = 3,
+                max = 20,
+                step = 1,
+                width = 'double',
+                order = 4
+              },
+            }
+          },
+          ['Engine'] = {
+            type = "group",
+            name = "Engine Settings",
+            inline = true,
+            order = 4,
+            args = {
+              ['Engine Description'] = {
+                type = 'description',
+                name = "Set the frequency with which you want the addon to update your priority displays.  More frequent updates require more processor time (and can impact your frame rate); less frequent updates use less CPU, but may cause the display to be sluggish or to respond slowly to game events.  The default setting is 10 updates per second.",
+                order = 0
+              },
+              ['Updates Per Second'] = {
+                type = 'range',
+                name = "Updates Per Second",
+                min = 4,
+                max = 40,
+                step = 1,
+                width = 'full',
+                order = 1
+              }
+            }
+          },
           ['Clash'] = {
             type = "group",
             name = "Cooldown Clash",
             inline = true,
-            order = 4,
+            order = 6,
             args = {
               ['Clash Description'] = {
                 type = 'description',
@@ -2491,50 +2585,6 @@ function Hekili:GetOptions()
               }
             }
           },
-          ['Counter'] = {
-            type = "group",
-            name = "Target Count",
-            inline = true,
-            order = 5,
-            args = {
-              ['Delay Description'] = {
-                type = 'description',
-                name = "This addon includes a mechanism for counting targets with whom you are actively engaged.  Any target that you damage, or is damaged by your pets/totems/guardians, is included in this target count.  Targets are removed when they are killed or if you do not damage them within the following 'Grace Period'.",
-                order = 0
-              },
-              ['Audit Targets'] = {
-                type = 'range',
-                name = "Grace Period",
-                min = 3,
-                max = 20,
-                step = 1,
-                width = 'full',
-                order = 1
-              }
-            }
-          },
-          ['Engine'] = {
-            type = "group",
-            name = "Engine Settings",
-            inline = true,
-            order = 6,
-            args = {
-              ['Engine Description'] = {
-                type = 'description',
-                name = "Set the frequency with which you want the addon to update your priority displays.  More frequent updates require more processor time (and can impact your frame rate); less frequent updates use less CPU, but may cause the display to be sluggish or to respond slowly to game events.  The default setting is 10 updates per second.",
-                order = 0
-              },
-              ['Updates Per Second'] = {
-                type = 'range',
-                name = "Updates Per Second",
-                min = 4,
-                max = 40,
-                step = 1,
-                width = 'full',
-                order = 1
-              }
-            }
-          }
         }
       },
       notifs = {

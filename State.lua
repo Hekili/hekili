@@ -362,6 +362,7 @@ setmetatable( state.trinket.has_stacking_stat, mt_trinkets_has_stacking_stat )
   
 state.max = safeMax
 state.min = safeMin
+state.floor = math.floor
 state.print = print
 
 state.GetItemCount = GetItemCount
@@ -767,6 +768,9 @@ local mt_state = {
     elseif k == 'delay' then
       return 0
 
+    elseif k == 'ranged' then
+      return false
+
     elseif k == 'query_time' then
         return t.now + t.offset + t.delay
 
@@ -798,12 +802,8 @@ local mt_state = {
       return ns.numDebuffs( 'Flame Shock' )
 
     elseif k == 'active_enemies' then
-        --[[ local enemies = ns.getNameplateTargets()
-      
-        t[k] = max( 1, enemies, ns.numTargets() ) ]]
-
         -- The above is not needed as the nameplate target system will add missing enemies.
-        t[k] = ns.getNameplateTargets()
+        t[k] = ns.getNumberTargets()
 
         if t.min_targets > 0 then t[k] = max( t.min_targets, t[k] ) end
         if t.max_targets > 0 then t[k] = min( t.max_targets, t[k] ) end
@@ -813,10 +813,6 @@ local mt_state = {
         return t[k]
 
     elseif k == 'my_enemies' then
-        --[[ local enemies = ns.getNameplateTargets()
-
-        t[k] = max( 1, enemies, ns.numMyTargets() ) ]]
-
         -- The above is not needed as the nameplate target system will add missing enemies.
         t[k] = ns.numTargets()
         if t.min_targets > 0 then t[k] = max( t.min_targets, t[k] ) end
@@ -827,14 +823,10 @@ local mt_state = {
         return t[k]
 
     elseif k == 'true_active_enemies' then
-        --[[ local enemies = ns.getNameplateTargets()        
-        t[k] = max( 1, enemies, ns.numTargets() ) ]]
-        t[k] = max( 1, ns.getNameplateTargets() )
+        t[k] = max( 1, ns.getNumberTargets() )
         return t[k]
 
     elseif k == 'true_my_enemies' then
-        --[[ local enemies = ns.getNameplateTargets()        
-        t[k] = max( 1, enemies, ns.numTargets() ) ]]
         t[k] = max( 1, ns.numTargets() )
         return t[k]
 
@@ -1100,7 +1092,8 @@ local mt_stat = {
 
     end
 
-    return error("UNK: " .. k)
+    Hekili:Error( "Unknown state.stat key: '" .. k .. "'." )
+    return
   end
 }
 ns.metatables.mt_stat = mt_stat
@@ -2776,7 +2769,7 @@ function state.advance( time )
 
   state.offset = state.offset + time
 
-  local bonus_cdr = ns.callHook( 'advance_bonus_cdr', 0 ) or 0
+  local bonus_cdr = 0 -- ns.callHook( 'advance_bonus_cdr', 0 )
 
   for k, cd in pairs( state.cooldown ) do
     if ns.isKnown( k ) then
@@ -2804,72 +2797,9 @@ function state.advance( time )
   for k, _ in pairs( class.resources ) do
     local resource = state[ k ]
 
-    -- MOVE TO WARRIOR MODULE
-    if k == 'maelstrom' and state.target.within5 then
+    local override = ns.callHook( 'advance_resource_regen', false, k, time )
 
-
-      local MH, OH = UnitAttackSpeed( 'player' )
-
-      local nextMH = ( MH and state.nextMH > 0 ) and state.nextMH or 0
-      local nextOH = ( OH and state.nextOH > 0 ) and state.nextOH or 0
-      local nextFoA = state.nextFoA and ( ( state.nextFoA > 0 ) and state.nextFoA ) or 0
-
-      local iter = 0
-
-      local offset = state.offset
-
-      -- print( 'checking maelstrom', state.query_time, nextMH, nextOH )
-
-      while( iter < 10 and ( ( nextMH > 0 and nextMH < state.query_time ) or
-        ( nextOH > 0 and nextOH < state.query_time ) or
-        ( nextFoA > 0 and nextFoA < state.query_time ) ) ) do
-
-        if nextMH > 0 and nextMH < nextOH and ( nextMH < nextFoA or nextFoA == 0 ) then
-            state.offset = nextMH - state.now
-            local gain = state.buff.doom_winds.up and 15 or 5
-            state.offset = offset
-
-            resource.actual = min( resource.max, resource.actual + gain )
-            -- print( 'predicted mp gain from mh' )
-            state.nextMH = state.nextMH + MH
-            nextMH = nextMH + MH
-
-        elseif nextOH > 0 and nextOH < nextMH and ( nextOH < nextFoA or nextFoA == 0 ) then
-            state.offset = nextOH - state.now
-            local gain = state.buff.doom_winds.up and 15 or 5
-            state.offset = offset
-
-            resource.actual = min( resource.max, resource.actual + gain )
-            -- print( 'predicted mp gain from mh' )
-            state.nextOH = state.nextOH + OH
-            nextOH = nextOH + OH
-
-        elseif nextFoA > 0 and nextFoA < nextMH and nextFoA < nextOH then
-            resource.actual = max( 0, resource.actual - 3 )
-            -- print( 'predicted mp loss from foa' )
-
-            if resource.actual == 0 then
-                state.offset = nextOH - state.now
-                state.removeBuff( 'fury_of_air' )
-                state.offset = offset
-
-                state.nextFoA = 0
-                nextFoA = 0
-            else
-                state.nextFoA = state.nextFoA + 1
-                nextFoA = nextFoA + 1
-            end
-        
-        else
-            break
-
-        end
-
-        iter = iter + 1
-
-      end
-
-    elseif resource.regen and resource.regen ~= 0 then
+    if not override and resource.regen and resource.regen ~= 0 then
       resource.actual = min( resource.max, resource.actual + ( resource.regen * time ) )
     end
   end
