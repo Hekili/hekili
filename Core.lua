@@ -912,7 +912,7 @@ function Hekili:UpdateDisplay( dispID )
                             flashes[dispID] = GetTime()
                         end
 
-                        if class.file == 'MONK' and Queue[i].time ~= gcd_remains and Queue[i].time ~= start + duration - GetTime() then
+                        if class.file == 'MONK' and Queue[i].time and Queue[i].time ~= gcd_remains and Queue[i].time ~= start + duration - GetTime() then
                                 -- button.Texture:SetDesaturated( Queue[i].time > 0 )
                                 button.Delay:SetText( Queue[i].time > 0 and format( "%.1f", Queue[i].time ) or nil )
                         else

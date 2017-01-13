@@ -376,58 +376,61 @@ ns.castsAll = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' 
 local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
-RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, _, spellID )
+local function spellcastEvents( event, unit, spell, _, _, spellID )
 
     if unit == 'player' then
 
         local now = GetTime()
 
-        if not class.castExclusions[ spellID ] then
-            state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
-            state.player.casttime = now
+        if event == 'UNIT_SPELLCAST_SUCCEEDED' then
 
-            local ability = class.abilities[ spellID ]
+            if not class.castExclusions[ spellID ] then
+                state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
+                state.player.casttime = now
 
-            if ability then
-                table.insert( castsAll, 1, ability.key )
-                castsAll[ 6 ] = nil
+                local ability = class.abilities[ spellID ]
 
-                if ability.gcdType ~= 'off' then
-                    table.insert( castsOn, 1, ability.key )
-                    castsOn[ 6 ] = nil
+                if ability then
+                    table.insert( castsAll, 1, ability.key )
+                    castsAll[ 6 ] = nil
 
-                    state.player.lastgcd = ability.key
-                    state.player.lastgcdtime = now
-                else
-                    table.insert( castsOff, 1, ability.key )
-                    castsOff[ 6 ] = nil
+                    if ability.gcdType ~= 'off' then
+                        table.insert( castsOn, 1, ability.key )
+                        castsOn[ 6 ] = nil
 
-                    state.player.lastoffgcd = ability.key
-                    state.player.lastoffgcdtime = now
-                end
-            end
-        end
+                        state.player.lastgcd = ability.key
+                        state.player.lastgcdtime = now
+                    else
+                        table.insert( castsOff, 1, ability.key )
+                        castsOff[ 6 ] = nil
 
-        -- This is an ability with a travel time.
-        if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
-
-            local lands = 1
-
-            -- If we have a hostile target, we'll assume we're waiting for them to get hit.
-            if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
-                -- Let's presume that the target is at max range.
-                local _, range = RC:GetRange( 'target' )
-
-                if range then
-                    lands = range > 0 and range / class.abilities[ spellID ].velocity or 1
+                        state.player.lastoffgcd = ability.key
+                        state.player.lastoffgcdtime = now
+                    end
                 end
             end
 
-            table.insert( spells_in_flight, 1, {
-                spell = class.abilities[ spellID ].key,
-                time = now + lands
-            } )
+            -- This is an ability with a travel time.
+            if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
 
+                local lands = 1
+
+                -- If we have a hostile target, we'll assume we're waiting for them to get hit.
+                if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
+                    -- Let's presume that the target is at max range.
+                    local _, range = RC:GetRange( 'target' )
+
+                    if range then
+                        lands = range > 0 and range / class.abilities[ spellID ].velocity or 1
+                    end
+                end
+
+                table.insert( spells_in_flight, 1, {
+                    spell = class.abilities[ spellID ].key,
+                    time = now + lands
+                } )
+
+            end
         end
 
         for i = 1, #Hekili.DB.profile.displays do
@@ -435,7 +438,11 @@ RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, _, spell
         end
     end
 
-end )
+end
+
+RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", spellcastEvents )
+RegisterEvent( "UNIT_SPELLCAST_START", spellcastEvents )
+
 
 
 function ns.removeSpellFromFlight( spell )
