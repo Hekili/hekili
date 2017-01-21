@@ -777,7 +777,7 @@ function Hekili:UpdateDisplay( dispID )
                 if aKey then
                     button:Show()
                     button:SetAlpha(alpha)
-                    button.Texture:SetTexture( Queue[i].texture or GetSpellTexture( class.abilities[ aKey ].id ) )
+                    button.Texture:SetTexture( Queue[i].texture or class.abilities[ aKey ].texture or GetSpellTexture( class.abilities[ aKey ].id ) )
                     local zoom = ( display.Zoom or 0 ) / 200
                     button.Texture:SetTexCoord( zoom, 1 - zoom, zoom, 1 - zoom )
                     button.Texture:Show()
@@ -912,7 +912,7 @@ function Hekili:UpdateDisplay( dispID )
                             flashes[dispID] = GetTime()
                         end
 
-                        if class.file == 'MONK' and Queue[i].time and Queue[i].time ~= gcd_remains and Queue[i].time ~= start + duration - GetTime() then
+                        if ( class.file == 'HUNTER' or class.file == 'MONK' ) and Queue[i].time and Queue[i].time ~= gcd_remains and Queue[i].time ~= start + duration - GetTime() then
                                 -- button.Texture:SetDesaturated( Queue[i].time > 0 )
                                 button.Delay:SetText( Queue[i].time > 0 and format( "%.1f", Queue[i].time ) or nil )
                         else

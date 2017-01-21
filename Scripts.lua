@@ -264,34 +264,49 @@ end
 
 ns.checkScript = function( cat, key, action, override, delay )
 
-  if action then state.this_action = action end
+    if action then state.this_action = action end
 
-  local tblScript = scripts[ cat ][ key ]
+    local tblScript = scripts[ cat ][ key ]
 
-  if not tblScript then
-    return false
+    if not tblScript then
+        return false
 
-  elseif tblScript.Error then
-    return false, tblScript.Error
+    elseif tblScript.Error then
+        return false, tblScript.Error
 
-  elseif tblScript.Conditions == nil then
-    return true
+    elseif tblScript.Conditions == nil then
+        return true
 
-  else
-    delay = delay or 0
-    local offset = state.offset
-    state.offset = offset + delay
+    else
+        delay = delay or 0
 
-    local success, value = pcall( tblScript.Conditions )
+        local offset = state.offset
+        state.offset = offset + delay
 
-    state.offset = offset
+        local success, value = pcall( tblScript.Conditions )
 
-    if success then
-      return value
+        state.offset = offset
+
+        if success then
+            return value
+
+            --[[ 0.2s recheck.
+            state.offset = state.offset + 0.2
+
+            local recheck, revalue = pcall( tblScript.Conditions )
+
+            if recheck and value == revalue then
+                state.offset = offset
+                return value
+            end ]]
+
+        end
+
+        state.offset = offset
+
     end
-  end
 
-  return false
+    return false
 
 end
 local checkScript = ns.checkScript

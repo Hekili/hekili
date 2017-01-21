@@ -134,6 +134,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         addAura( 'flame_shock', 188389, 'duration', 30 )
         addAura( 'frost_shock', 196840, 'duration', 5 )
         addAura( 'icefury', 210714, 'duration', 15, 'max_stack', 4 )
+        addAura( 'lava_surge', 77756, 'duration', 10 )
         addAura( 'lightning_rod', 210689, 'duration', 10 )
         addAura( 'power_of_the_maelstrom', 191877, 'duration', 20, 'max_stack', 3 )
         addAura( 'resonance_totem', 202192 )
@@ -1065,11 +1066,12 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         end )
 
         modifyAbility( 'lava_burst', 'cooldown', function( x )
-            if buff.ascendance.up then return 0 end
+            if buff.ascendance.up or buff.lava_surge.up then return 0 end
             return x
         end )
 
         addHandler( 'lava_burst', function ()
+            removeBuff( 'lava_surge' ) 
             if talent.path_of_flame.enabled then active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 1 ) end
             if artifact.elementalist.enabled then
                 if talent.storm_elemental.enabled then

@@ -647,7 +647,7 @@ local function summonPet( name, duration )
 
   state.pet[ name ] = rawget( state.pet, name ) or {}
   state.pet[ name ].name = name
-  state.pet[ name ].expires = state.query_time + duration
+  state.pet[ name ].expires = state.query_time + ( duration or 3600 )
   state.pet.exists = true
 
 end
@@ -1089,6 +1089,12 @@ local mt_stat = {
 
     elseif k == 'haste' then
       return t.spell_haste or t.melee_haste
+
+    elseif k == 'mod_crit_pct' then
+      return 0
+
+    elseif k == 'crit' then
+      return ( GetCritChance( 'player' ) + ( t.mod_crit_pct or 0 ) )
 
     end
 
@@ -2610,13 +2616,14 @@ function state.reset( dispID )
     state.debuff[ k ].v1 = nil
     state.debuff[ k ].v2 = nil
     state.debuff[ k ].v3 = nil
-    state.debuff[ k ].unit = class.auras[ k ].unit or nil
+    state.debuff[ k ].unit = class.auras[ k ] and class.auras[ k ].unit or nil
   end
 
   state.pet.exists = nil
-  for k in pairs( state.pet ) do
-    state.pet[ k ].expires = nil
+  for k, v in pairs( state.pet ) do
+    if type(v) == 'table' then v.expires = nil end
   end
+  rawset( state.pet, 'exists', UnitExists( 'pet' ) )
 
   for k in pairs( state.stance ) do
     state.stance[ k ] = nil
@@ -2978,10 +2985,7 @@ function ns.timeToReady( action )
         if type( ready ) ~= 'function' then
             if spend > state[ resource ].current then
                 if resource == 'focus' or resource == 'energy' then
-                    delay = max( delay, 0 + ( ( spend - state[ resource ].current ) / state[ resource ].regen ) )
-
-                elseif resource == 'maelstrom' then 
-
+                    delay = max( delay, 0.1 + ( ( spend - state[ resource ].current ) / state[ resource ].regen ) )
                 end
             end
         else
