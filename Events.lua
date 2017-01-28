@@ -232,13 +232,12 @@ RegisterEvent( "ENCOUNTER_END", function () state.boss = false end )
 
 
 local gearInitialized = false
+
 ns.updateGear = function ()
 
     for set, items in pairs( class.gearsets ) do
         state.set_bonus[ set ] = 0
         for item, _ in pairs( items ) do
-            local itemName = GetItemInfo( item )
-
             if IsEquippedItem( GetItemInfo( item ) ) then
                 state.set_bonus[ set ] = state.set_bonus[ set ] + 1
             end

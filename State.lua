@@ -1191,7 +1191,7 @@ local mt_pets = {
 
     end
 
-    error("UNK: " .. k)
+    return
 
   end, __newindex = function(t, k, v)
     if type(v) == 'table' then
@@ -1457,7 +1457,7 @@ local mt_default_cooldown = {
             t.true_expires = start and ( start + true_duration ) or 0
 
             if class.abilities[ t.key ].charges then
-                local charges, maxCharges, start, duration = GetSpellCharges( t.name )
+                local charges, maxCharges, start, duration = GetSpellCharges( t.id )
 
                 if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
                     charges = 1
@@ -1586,7 +1586,7 @@ local mt_cooldowns = {
     end
 
     if class.abilities[ k ].charges then
-      local charges, maxCharges, start, duration = GetSpellCharges( t[k].name )
+      local charges, maxCharges, start, duration = GetSpellCharges( t[k].id )
       t[ k ].charge = charge or 1
       if charges then
         if start + duration < state.query_time then
@@ -1850,9 +1850,6 @@ local mt_default_aura = {
 
     elseif k == 'cooldown_remains' then
       return state.cooldown[ t.key ].remains
-
-    elseif k == 'duration' then
-      return class.auras[ t.key ].duration
 
     elseif k == 'max_stack' then
       return class.auras[ t.key ].max_stack or 1
@@ -2985,7 +2982,7 @@ function ns.timeToReady( action )
         if type( ready ) ~= 'function' then
             if spend > state[ resource ].current then
                 if resource == 'focus' or resource == 'energy' then
-                    delay = max( delay, 0.1 + ( ( spend - state[ resource ].current ) / state[ resource ].regen ) )
+                    delay = max( delay, 0.05 + ( ( spend - state[ resource ].current ) / state[ resource ].regen ) )
                 end
             end
         else

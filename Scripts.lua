@@ -262,7 +262,7 @@ local convertScript = function( node, hasModifiers )
 end
 
 
-ns.checkScript = function( cat, key, action, override, delay )
+ns.checkScript = function( cat, key, action, recheck )
 
     if action then state.this_action = action end
 
@@ -278,31 +278,23 @@ ns.checkScript = function( cat, key, action, override, delay )
         return true
 
     else
-        delay = delay or 0
-
-        local offset = state.offset
-        state.offset = offset + delay
-
         local success, value = pcall( tblScript.Conditions )
 
-        state.offset = offset
-
         if success then
-            return value
+            
+            if not recheck then return value end
 
-            --[[ 0.2s recheck.
-            state.offset = state.offset + 0.2
+            state.delay = state.delay + recheck
 
             local recheck, revalue = pcall( tblScript.Conditions )
 
+            state.delay = state.delay - recheck
+
             if recheck and value == revalue then
-                state.offset = offset
                 return value
-            end ]]
+            end
 
         end
-
-        state.offset = offset
 
     end
 

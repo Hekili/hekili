@@ -388,14 +388,14 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
                                 break
                             end
                         end
-                        if called_list > 0 and checkScript( 'A', listID..':'..actID, nil, nil, wait_time ) then
+                        if called_list > 0 and checkScript( 'A', listID..':'..actID ) then
                             chosen_action, chosen_wait, chosen_clash = Hekili:ProcessActionList( dispID, listID..':'..actID, called_list, slot )
                         end
                     end
 
                 elseif entry.Ability == 'wait' then
 
-                    if checkScript( 'A', listID..':'..actID, nil, nil, wait_time ) then
+                    if checkScript( 'A', listID..':'..actID ) then
                         -- local args = ns.getModifiers( listID, actID )
                         if not state.args.sec then state.args.sec = 1 end
                         if state.args.sec > 0 then
@@ -411,7 +411,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
                     local potionName = state.args.ModName or state.args.name or class.potion
                     local potion = class.potions[ potionName ]
 
-                    if potion and isUsable( state.this_action ) and max( 0, wait_time - clash ) < max( 0, chosen_wait - chosen_clash ) and checkScript( 'A', listID..':'..actID, nil, nil, wait_time ) then
+                    if potion and isUsable( state.this_action ) and max( 0, wait_time - clash ) < max( 0, chosen_wait - chosen_clash ) and checkScript( 'A', listID..':'..actID ) then
                         -- do potion things
                         
                         slot.scriptType = entry.ScriptType or 'simc'
@@ -439,7 +439,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
 
                     end
 
-                elseif isUsable( state.this_action ) and max( 0, wait_time - clash ) < max( 0, chosen_wait - chosen_clash ) and ns.hasRequiredResources( state.this_action ) and checkScript( 'A', listID..':'..actID, nil, nil, wait_time ) then
+                elseif isUsable( state.this_action ) and max( 0, wait_time - clash ) < max( 0, chosen_wait - chosen_clash ) and ns.hasRequiredResources( state.this_action ) and checkScript( 'A', listID..':'..actID ) then
 
                     slot.scriptType = entry.ScriptType or 'simc'
                     slot.display = dispID
@@ -587,9 +587,9 @@ function Hekili:ProcessHooks( dispID, solo )
                             -- Put the action on cooldown.  (It's slightly premature, but addresses CD resets like Echo of the Elements.)
                             if class.abilities[ chosen_action ].charges and action.recharge > 0 then
                                 state.spendCharges( chosen_action, 1 )
-                                elseif chosen_action ~= 'global_cooldown' then
-                                    state.setCooldown( chosen_action, action.cooldown )
-                                end
+                            elseif chosen_action ~= 'global_cooldown' then
+                                state.setCooldown( chosen_action, action.cooldown )
+                            end
 
                             state.cycle = slot.indicator == 'cycle'
 

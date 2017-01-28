@@ -378,7 +378,7 @@ local function addGearSet( name, ... )
     class.gearsets[ name ] = class.gearsets[ name ] or {}
 
     for i = 1, select( '#', ... ) do
-        class.gearsets[ name ][ select( i, ... ) ] = 1
+        class.gearsets[ name ][ select( i, ... ) ] = ns.formatKey( GetItemInfo( select( i, ... ) ) or "nothing" )
     end
 
     ns.commitKey( name )
@@ -701,7 +701,8 @@ addHandler( 'arcane_torrent', function ()
     elseif class.monk then gain( 1, "chi" )
     elseif class.paladin then gain( 1, "holy_power" )
     elseif class.rogue then gain( 15, "energy" )
-    elseif class.warrior then gain( 15, "rage" ) end
+    elseif class.warrior then gain( 15, "rage" )
+    elseif class.hunter then gain( 15, "focus" ) end
 
 end )
 
