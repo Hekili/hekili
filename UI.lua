@@ -542,8 +542,9 @@ function Hekili:CreateButton( display, ID )
   button.Caption:SetTextColor(1, 1, 1, 1)
 
   button.Keybinding = button.Keybinding or button:CreateFontString(name.."KB", "OVERLAY" )
+  button.Keybinding:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'], "OUTLINE" )
   button.Keybinding:SetSize( scaleFactor * button:GetWidth(), scaleFactor * button:GetHeight() / 2 )
-  button.Keybinding:SetPoint( "TOPRIGHT", button, "TOPRIGHT" )
+  button.Keybinding:SetPoint( "TOPRIGHT", button, "TOPRIGHT", 0, -2 )
   button.Keybinding:SetJustifyV( "TOP" )
   button.Keybinding:SetJustifyH( "RIGHT" )
   button.Keybinding:SetTextColor(1, 1, 1, 1)
@@ -569,7 +570,6 @@ function Hekili:CreateButton( display, ID )
     button.Overlay:Hide()
 
     button.Caption:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'], "OUTLINE" )
-    button.Keybinding:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'] * 0.67, "OUTLINE" )
     button.Delay:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'] * 0.67, "OUTLINE" )
 
     button:SetPoint( getInverseDirection( btnDirection ), ns.UI.Displays[ display ], getInverseDirection( btnDirection ) )

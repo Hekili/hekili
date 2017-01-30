@@ -86,6 +86,17 @@ ns.round = function( num, places )
 end
 
 
+function ns.roundUp( num, places )
+
+    local x = tonumber( format( "%." .. ( places or 0 ) .. "f", num ) )
+
+    if x < num then x = x + ( 1 * ( 10 ^ ( -1 * ( places or 0 ) ) ) ) end
+
+    return x
+
+end
+
+
 -- Deep Copy
 -- from http://stackoverflow.com/questions/640642/how-do-you-copy-a-lua-table-by-value
 local function tableCopy( obj, seen )

@@ -44,6 +44,7 @@ ns.class = {
 	talents = {},
 	toggles = {}
 }
+ns.hotkeys = {}
 ns.keys = {}
 ns.queue = {}
 ns.scripts = {

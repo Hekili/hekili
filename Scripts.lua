@@ -8,6 +8,8 @@ local class = ns.class
 local scripts = ns.scripts
 local state = ns.state
 
+local ceil = math.ceil
+local roundUp = ns.roundUp
 local safeMax = ns.safeMax
 
 local trim = string.trim
@@ -281,18 +283,27 @@ ns.checkScript = function( cat, key, action, recheck )
         local success, value = pcall( tblScript.Conditions )
 
         if success then
+
+            if not recheck then recheck = Hekili.DB.profile[ 'Recommendation Window' ] end
             
-            if not recheck then return value end
+            if not recheck or recheck == 0 then return value end
 
-            state.delay = state.delay + recheck
+            local checks = ceil( recheck * Hekili.DB.profile[ 'Updates Per Second' ] )
+            local orig = state.delay
 
-            local recheck, revalue = pcall( tblScript.Conditions )
+            for i = 1, checks do
+                state.delay = orig + ( recheck * i / checks )
 
-            state.delay = state.delay - recheck
+                local resuccess, revalue = pcall( tblScript.Conditions )
 
-            if recheck and value == revalue then
-                return value
+                if not resuccess or not revalue then
+                    state.delay = orig
+                    return false
+                end
             end
+
+            state.delay = orig
+            return true
 
         end
 
@@ -312,7 +323,7 @@ function ns.checkTimeScript( entry, delay, spend, spend_type )
 
     local out = script.Ready( delay, spend, spend_type )
 
-    return out
+    return out -- and roundUp( out, 2 ) or 0
 
 end
 

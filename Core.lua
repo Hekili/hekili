@@ -185,9 +185,11 @@ function Hekili:OnInitialize()
     self:RegisterChatCommand( "hekili", "CmdLine" )
     self:RegisterChatCommand( "hek", "CmdLine" )
 
-    if not self.DB.profile.Version or self.DB.profile.Version < 2 or not self.DB.profile.Release or self.DB.profile.Release < 20160000 then
+    if not self.DB.profile.Version or self.DB.profile.Version < 7 or not self.DB.profile.Release or self.DB.profile.Release < 20161000 then
         self.DB:ResetDB()
     end
+
+    self.DB.profile.Release = self.DB.profile.Release or 20161003.1
 
     initializeClassModule()
     refreshBindings()
@@ -201,7 +203,6 @@ function Hekili:OnInitialize()
 
     ns.primeTooltipColors()
 
-    self.DB.profile.Release = self.DB.profile.Release or 20161003.1
 
     callHook( "onInitialize" )
 
@@ -264,11 +265,6 @@ function Hekili:OnEnable()
 
     -- May want to refresh configuration options, key bindings.
     if self.DB.profile.Enabled then
-
-        --[[ for i = 1, #self.DB.profile.displays do
-            self:ProcessHooks( i )
-            updatedDisplays[ i ] = true
-        end ]]
 
         self:UpdateDisplays()
         ns.Audit()
@@ -558,6 +554,7 @@ function Hekili:ProcessHooks( dispID, solo )
                         if self.DB.profile.Debug then ns.implantDebugData( slot ) end
 
                         slot.time = state.offset + chosen_wait
+                        slot.exact_time = state.now + state.offset + chosen_wait
                         slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
                         slot.resources = slot.resources or {}
 
@@ -626,13 +623,11 @@ function Hekili:ProcessHooks( dispID, solo )
 
     end
 
--- if not solo then C_Timer.After( 1 / self.DB.profile['Updates Per Second'], self[ 'ProcessDisplay'..dispID ] ) end
-updatedDisplays[ dispID ] = true
--- Hekili:UpdateDisplay( dispID )
+    -- if not solo then C_Timer.After( 1 / self.DB.profile['Updates Per Second'], self[ 'ProcessDisplay'..dispID ] ) end
+    updatedDisplays[ dispID ] = true
+    -- Hekili:UpdateDisplay( dispID )
 
 end
-
-Hekili.ud = updatedDisplays
 
 
 local pvpZones = {
@@ -753,6 +748,7 @@ function Hekili:UpdateDisplay( dispID )
             local Queue = ns.queue[ dispID ]
 
             local gcd_start, gcd_duration = GetSpellCooldown( class.abilities.global_cooldown.id )
+            local now = GetTime()
 
             _G[ "HekiliDisplay" .. dispID ]:Show()
 
@@ -822,6 +818,13 @@ function Hekili:UpdateDisplay( dispID )
 
                         if detected < targets then targColor = '|cFFFF0000'
                         elseif detected > targets then targColor = '|cFF00C0FF' end
+
+                        if display['Show Keybindings'] then
+                            button.Keybinding:SetText( self:GetBindingForAction( aKey, display[ 'Keybinding Style' ] ~= 1 ) )
+                            button.Keybinding:Show()
+                        else
+                            button.Keybinding:Hide()
+                        end
 
                         if i == 1 then
                             if display.Overlay and IsSpellOverlayed( class.abilities[ aKey ].id ) then
@@ -912,9 +915,9 @@ function Hekili:UpdateDisplay( dispID )
                             flashes[dispID] = GetTime()
                         end
 
-                        if ( class.file == 'HUNTER' or class.file == 'MONK' ) and Queue[i].time and Queue[i].time ~= gcd_remains and Queue[i].time ~= start + duration - GetTime() then
+                        if ( class.file == 'HUNTER' or class.file == 'MONK' ) and Queue[i].exact_time and Queue[i].exact_time ~= gcd_start + gcd_duration and Queue[i].exact_time > now then
                                 -- button.Texture:SetDesaturated( Queue[i].time > 0 )
-                                button.Delay:SetText( Queue[i].time > 0 and format( "%.1f", Queue[i].time ) or nil )
+                                button.Delay:SetText( format( "%.1f", Queue[i].exact_time - now ) )
                         else
                                 -- button.Texture:SetDesaturated( false )
                                 button.Delay:SetText( nil )
@@ -971,8 +974,8 @@ end
 
 
 function Hekili:UpdateDisplays()
-        for display in pairs( updatedDisplays ) do
-                Hekili:UpdateDisplay( display )
-                updatedDisplays[ display ] = nil
-        end
+    for display in pairs( updatedDisplays ) do
+        Hekili:UpdateDisplay( display )
+        updatedDisplays[ display ] = nil
+    end
 end

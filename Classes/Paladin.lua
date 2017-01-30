@@ -371,7 +371,19 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
                 "This may have adverse effects in situations where you are target swapping.\r\n\r\n" ..
                 "You may incorporate this into your custom action lists with the |cFFFFD100settings.strict_finishers|r flag.  It is also " ..
                 "bundled into the |cFFFFD100judgment_override|r flag, which is |cFF00FF00true|r when all of the following is true:  Strict " ..
-                " Finishers is disabled, Judgment remains on cooldown for 2 GCDs, and your Holy Power is greater than or equal to 5.",
+                "Finishers is disabled, Judgment remains on cooldown for 2 GCDs, and your Holy Power is greater than or equal to 5.",
+            width = "full"
+        } )
+
+        addSetting( 'maximum_wake_power', 1, {
+            name = "Retribution: Maximum Wake of Ashes Power",
+            type = "range",
+            min = 0,
+            max = 5,
+            step = 1,
+            desc = "Specify the amount of Holy Power that the Wake of Ashes ability can waste.  For instance, if this is set to |cFFFFD1001|r, " ..
+                "the addon will not recommend Ashes to Ashes when you have more than 1 Holy Power (if you have the Ashes to Ashes artifact trait), " ..
+                "because you would end up overcapping Holy Power by more than 1 point.\r\n\r\n",
             width = "full"
         } )
 
@@ -1262,7 +1274,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 30,
-            known = function () return equipped.ashbringer and ( toggle.wake_of_ashes or ( toggle.cooldowns and settings.wake_of_ashes_cooldown ) ) end
+            known = function () return equipped.ashbringer and ( toggle.wake_of_ashes or ( toggle.cooldowns and settings.wake_of_ashes_cooldown ) ) end,
+            usable = function () return not artifact.ashes_to_ashes.enabled or holy_power.current <= settings.maximum_wake_power end
         } )
 
         modifyAbility( 'wake_of_ashes', 'spend', function( x ) 

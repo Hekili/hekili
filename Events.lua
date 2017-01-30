@@ -16,7 +16,7 @@ local formatKey = ns.formatKey
 local getSpecializationInfo = ns.getSpecializationInfo
 local getSpecializationKey = ns.getSpecializationKey
 
-local match = string.match
+local match, upper = string.match, string.upper
 
 -- Abandoning AceEvent in favor of darkend's solution from:
 -- http://andydote.co.uk/2014/11/23/good-design-in-warcraft-addons.html
@@ -433,14 +433,23 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
         end
 
         for i = 1, #Hekili.DB.profile.displays do
-            displayUpdates[ i ] = now - ( 1 / Hekili.DB.profile['Updates Per Second'] ) + 0.01
+            -- displayUpdates[ i ] = now - ( 1 / Hekili.DB.profile['Updates Per Second'] ) + 0.01
+            displayUpdates[ i ] = nil
         end
+
     end
 
 end
 
 RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", spellcastEvents )
 RegisterEvent( "UNIT_SPELLCAST_START", spellcastEvents )
+
+
+local function forceUpdate()
+    for i = 1, #Hekili.DB.profile.displays do
+        displayUpdates[ i ] = nil
+    end
+end
 
 
 
@@ -455,11 +464,14 @@ end
 
 RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
     if unit == 'player' then
-        for i = 1, #Hekili.DB.profile.displays do
-            displayUpdates[ i ] = GetTime() - ( ( 1 / Hekili.DB.profile['Updates Per Second'] ) / 2 )
-        end
+        forceUpdate()
     end
 end )
+
+RegisterEvent( "PLAYER_TARGET_CHANGED", forceUpdate )
+RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
+RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
+RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
 
 
 -- Use dots/debuffs to count active targets.
@@ -633,3 +645,68 @@ RegisterEvent( "UNIT_HEALTH", function( _, unit )
     ttd.sec = projectedTTD
 
 end )
+
+
+local keys = ns.hotkeys
+
+local function improvedGetBindingText( binding )
+    return binding and binding:gsub( "CTRL%-", "c" ):gsub( "ALT%-", "a" ):gsub( "SHIFT%-", "s" ):gsub( "STRG%-", "st" ) or ""
+end
+
+local function scrapeKeybindings( button )
+
+    if not button then return end
+
+    -- Presumably, the action will not have changed, just the hotkey.
+    local action = button.action
+    local bname = button:GetName()
+
+    local buttonType = button.buttonType or "ACTIONBUTTON"
+    local buttonID = buttonType == "MULTICASTACTIONBUTTON" and button.buttonIndex or button:GetID()
+
+    local key = GetBindingKey( buttonType .. buttonID )
+    local binding = GetBindingText( key, nil, true )
+
+    local type, id = GetActionInfo( action )
+    local ability
+
+    if type == "spell" then
+        ability = class.abilities[ id ] and class.abilities[ id ].key
+
+    elseif type == "macro" then
+        id = select( 3, GetMacroSpell( id ) )
+
+        ability = id and class.abilities[ id ] and class.abilities[ id ].key
+
+    end
+
+    if ability then
+        keys[ ability ] = keys[ ability ] or {}
+        keys[ ability ].button = bname
+        keys[ ability ].binding = improvedGetBindingText( key )
+        keys[ ability ].upper = upper( keys[ ability ].binding )
+    end
+end
+
+
+local function rescrapeBindings()
+    for k, v in pairs( keys ) do
+        scrapeBindings( _G[ v.button ] )
+    end
+end
+
+
+function Hekili:GetBindingForAction( key, caps )
+    return ( key and keys[ key ] ) and ( caps and keys[ key ].upper or keys[ key ].binding ) or ""
+end
+
+
+function Hekili:DumpBindings()
+    return keys
+end
+
+
+-- hooksecurefunc( "ActionButton_UpdateHotkeys", scrapeKeybindings )
+hooksecurefunc( "ActionButton_Update", scrapeKeybindings )
+
+hooksecurefunc( "SaveBindings", rescrapeBindings )

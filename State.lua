@@ -21,10 +21,12 @@ state.iteration = 0
 
 state.now = 0
 state.offset = 0
+state.delay = 0
+state.latency = 0
+
 state.mainhand_speed = 0
 state.offhand_speed = 0
 
-state.delay = 0
 state.min_targets = 0
 state.max_targets = 0
 
@@ -2524,6 +2526,8 @@ function state.reset( dispID )
   state.true_active_enemies = nil
   state.true_my_enemies = nil
 
+  state.latency = select( 4, GetNetStats() ) / 1000
+
 
   local spells_in_flight = ns.spells_in_flight
 
@@ -2982,7 +2986,7 @@ function ns.timeToReady( action )
         if type( ready ) ~= 'function' then
             if spend > state[ resource ].current then
                 if resource == 'focus' or resource == 'energy' then
-                    delay = max( delay, 0.05 + ( ( spend - state[ resource ].current ) / state[ resource ].regen ) )
+                    delay = max( delay, ( spend - state[ resource ].current ) / state[ resource ].regen )
                 end
             end
         else
