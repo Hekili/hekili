@@ -354,7 +354,10 @@ end )
 
 
 RegisterEvent( "PLAYER_REGEN_DISABLED", function () state.combat = GetTime() end )
-RegisterEvent( "PLAYER_REGEN_ENABLED", function () state.combat = 0 end )
+RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
+    ns.updateGear()
+    state.combat = 0
+end )
 
 local dynamic_keys = setmetatable( {}, {
     __index = function( t, k, v )
@@ -648,65 +651,105 @@ end )
 
 
 local keys = ns.hotkeys
+local updatedKeys = {}
+
+
+local bindingSubs = {
+    ["CTRL%-"] = "c",
+    ["ALT%-"] = "a",
+    ["SHIFT%-"] = "s",
+    ["STRG%-"] = "st",
+    ["%s+"] = "",
+    ["NUMPAD"] = "n",
+    ["PLUS"] = "+",
+    ["MINUS"] = "-",
+    ["MULTIPLY"] = "*",
+    ["DIVIDE"] = "/"
+}
 
 local function improvedGetBindingText( binding )
-    return binding and binding:gsub( "CTRL%-", "c" ):gsub( "ALT%-", "a" ):gsub( "SHIFT%-", "s" ):gsub( "STRG%-", "st" ) or ""
+    if not binding then return "" end
+
+    for k, v in pairs( bindingSubs ) do
+        binding = binding:gsub( k, v )
+    end
+
+    return binding
 end
 
-local function scrapeKeybindings( button )
 
-    if not button then return end
+local function StoreKeybindInfo( key, aType, id )
 
-    -- Presumably, the action will not have changed, just the hotkey.
-    local action = button.action
-    local bname = button:GetName()
+    if not key then return end
 
-    local buttonType = button.buttonType or "ACTIONBUTTON"
-    local buttonID = buttonType == "MULTICASTACTIONBUTTON" and button.buttonIndex or button:GetID()
-
-    local key = GetBindingKey( buttonType .. buttonID )
-    local binding = GetBindingText( key, nil, true )
-
-    local type, id = GetActionInfo( action )
     local ability
 
-    if type == "spell" then
+    if aType == "spell" then
         ability = class.abilities[ id ] and class.abilities[ id ].key
 
-    elseif type == "macro" then
-        id = select( 3, GetMacroSpell( id ) )
+    elseif aType == "macro" then
+        local _, _, sID = GetMacroSpell( id )
 
-        ability = id and class.abilities[ id ] and class.abilities[ id ].key
+        ability = sID and class.abilities[ sID ] and class.abilities[ sID ].key
 
     end
 
     if ability then
         keys[ ability ] = keys[ ability ] or {}
-        keys[ ability ].button = bname
         keys[ ability ].binding = improvedGetBindingText( key )
         keys[ ability ].upper = upper( keys[ ability ].binding )
+        updatedKeys[ ability ] = true
     end
-end
+end        
 
 
-local function rescrapeBindings()
-    for k, v in pairs( keys ) do
-        scrapeBindings( _G[ v.button ] )
+local function ReadKeybindings()
+
+    for k in pairs( updatedKeys ) do
+        updatedKeys[ k ] = nil
     end
-end
+
+    for i = 1, 12 do
+        StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
+    end
+
+    for i = 13, 24 do
+        StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
+    end
+
+    for i = 25, 36 do
+        StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
+    end
+
+    for i = 37, 48 do
+        StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR4BUTTON" .. i - 36 ), GetActionInfo( i ) )
+    end
+
+    for i = 49, 60 do
+        StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR2BUTTON" .. i - 48 ), GetActionInfo( i ) )
+    end
+
+    for i = 61, 72 do
+        StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
+    end
+
+    for i = 73, 120 do
+        StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. ( i - 60 ) % 12 ), GetActionInfo( i ) )
+    end
+
+    for k in pairs( keys ) do
+        if not updatedKeys[ k ] then keys[ k ] = nil end
+    end
+
+end    
+
+
+RegisterEvent( "UPDATE_BINDINGS", ReadKeybindings )
+RegisterEvent( "PLAYER_ENTERING_WORLD", ReadKeybindings )
+RegisterEvent( "ACTIONBAR_SLOT_CHANGED", ReadKeybindings )
+RegisterEvent( "ACTIONBAR_SHOWGRID", ReadKeybindings )
 
 
 function Hekili:GetBindingForAction( key, caps )
     return ( key and keys[ key ] ) and ( caps and keys[ key ].upper or keys[ key ].binding ) or ""
 end
-
-
-function Hekili:DumpBindings()
-    return keys
-end
-
-
--- hooksecurefunc( "ActionButton_UpdateHotkeys", scrapeKeybindings )
-hooksecurefunc( "ActionButton_Update", scrapeKeybindings )
-
-hooksecurefunc( "SaveBindings", rescrapeBindings )
