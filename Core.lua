@@ -758,7 +758,7 @@ function Hekili:UpdateDisplay( dispID )
             local checksum = ""
 
             for i = 1, #Queue do
-                checksum = checksum .. Queue[i].actionName .. ":"
+                checksum = checksum .. ( Queue[i].actionName or "" ) .. ":"
             end
 
             checksums[ dispID ] = checksums[ dispID ] or {}
