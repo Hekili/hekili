@@ -2526,7 +2526,7 @@ function state.reset( dispID )
   local _, zone = GetInstanceInfo()
 
   state.bg = zone == 'pvp'
-  state.arena = zone == 'arena'/
+  state.arena = zone == 'arena'
 
   state.min_targets = 0
   state.max_targets = 0
