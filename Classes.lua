@@ -415,7 +415,7 @@ end
 ns.addHandler = addHandler
 
 
-local function runHandler( key, ... )
+local function runHandler( key, no_start )
 
     local ability = class.abilities[ key ]
 
@@ -425,7 +425,7 @@ local function runHandler( key, ... )
     end
         
     if ability.elem[ 'handler' ] then
-        ability.elem[ 'handler' ]( ... )
+        ability.elem[ 'handler' ]()
     end
 
     state.prev.last = key
@@ -437,7 +437,7 @@ local function runHandler( key, ... )
     state.predictionsOn[6] = nil
     state.predictionsOff[6] = nil
     
-    if not ability.passive and state.time == 0 then
+    if state.time == 0 and not no_start and not ability.passive then
         state.false_start = state.query_time - 0.01
 
         -- Generate fake weapon swings.
@@ -453,7 +453,7 @@ local function runHandler( key, ... )
 
     state.cast_start = 0
     
-    ns.callHook( 'runHandler', key, ... )
+    ns.callHook( 'runHandler', key )
     
 end
 ns.runHandler = runHandler
@@ -523,10 +523,11 @@ end
 addAura( 'ancient_hysteria', 90355, 'duration', 40 )
 addAura( 'heroism', 32182, 'duration', 40 )
 addAura( 'time_warp', 80353, 'duration', 40 )
+addAura( 'netherwinds', 160452, 'duration', 40 )
 
 -- bloodlust is the "umbrella" aura for all burst haste effects.
 addAura( 'bloodlust', 2825, 'duration', 40, 'feign', function ()
-    local bloodlusts = { 'ancient_hysteria', 'heroism', 'time_warp' }
+    local bloodlusts = { 'ancient_hysteria', 'heroism', 'time_warp', 'netherwinds' }
     
     for i = 1, #bloodlusts do
         local aura = bloodlusts[ i ]
@@ -553,7 +554,8 @@ addAura( 'bloodlust', 2825, 'duration', 40, 'feign', function ()
     buff.bloodlust.expires = 0
     buff.bloodlust.applied = 0
     buff.bloodlust.caster = 'unknown'
-    end )
+
+end )
 
 -- Sated.
 addAura( 'exhaustion', 57723, 'duration', 600 )

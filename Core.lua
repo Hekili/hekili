@@ -720,6 +720,8 @@ end
 
 local flashes = {}
 
+local checksums = {}
+
 function Hekili:UpdateDisplay( dispID )
 
     local self = self or Hekili
@@ -751,6 +753,45 @@ function Hekili:UpdateDisplay( dispID )
             local now = GetTime()
 
             _G[ "HekiliDisplay" .. dispID ]:Show()
+
+
+            local checksum = ""
+
+            for i = 1, #Queue do
+                checksum = checksum .. Queue[i].actionName .. ":"
+            end
+
+            checksums[ dispID ] = checksums[ dispID ] or {}
+
+            -- print( checksums[dispID][1] .. "\n" .. checksums[dispID][2] .. "\n" .. checksums[dispID][3] .. "\n..." )
+
+            local different = false
+            local differences = 0
+            local snapbacks = 0
+
+            for i = 1, #checksums[ dispID ] do
+                if not different then
+                    if checksum ~= checksums[dispID][i] then
+                        different = true
+                        differences = differences + 1
+                    else
+                        different = false
+                    end
+                else
+                    if checksum ~= checksums[dispID][i] then
+                        different = true
+                    else
+                        snapbacks = snapbacks + 1
+                        different = false
+                    end
+                end
+            end
+
+            if snapbacks > 0 then return end
+
+            table.insert( checksums[ dispID ], 1, checksum )
+            checksums[ dispID ][10] = nil
+
 
             for i, button in ipairs( ns.UI.Buttons[dispID] ) do
                 if not Queue or not Queue[i] and ( self.DB.profile.Enabled or self.Config ) then

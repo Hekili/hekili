@@ -415,7 +415,7 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
             -- This is an ability with a travel time.
             if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
 
-                local lands = 1
+                local lands = 0.05
 
                 -- If we have a hostile target, we'll assume we're waiting for them to get hit.
                 if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
@@ -423,7 +423,7 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
                     local _, range = RC:GetRange( 'target' )
 
                     if range then
-                        lands = range > 0 and range / class.abilities[ spellID ].velocity or 1
+                        lands = range > 0 and range / class.abilities[ spellID ].velocity or 0.05
                     end
                 end
 
@@ -467,6 +467,15 @@ end
 
 RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
     if unit == 'player' then
+        --[[ if power == "FOCUS" then
+            local now = GetTime()
+            state.focus.last_tick = now - state.focus.last_tick > 0.1 and now or state.focus.last_tick
+        
+        elseif power == "ENERGY" then
+            state.energy.last_tick = now - state.energy.last_tick > 0.1 and now or state.energy.last_tick
+
+        end ]]
+
         forceUpdate()
     end
 end )

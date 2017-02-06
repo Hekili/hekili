@@ -774,7 +774,7 @@ local mt_state = {
       return false
 
     elseif k == 'query_time' then
-        return t.now + t.offset + t.delay
+        return t.now + t.offset + t.delay + t.latency
 
     elseif k == 'time' then
       -- Calculate time in combat.
@@ -2528,7 +2528,6 @@ function state.reset( dispID )
 
   state.latency = select( 4, GetNetStats() ) / 1000
 
-
   local spells_in_flight = ns.spells_in_flight
 
   for i = #spells_in_flight, 1, -1 do
@@ -2766,7 +2765,8 @@ function state.advance( time )
 
         if proj.time > state.query_time and proj.time < state.query_time + time then
             state.offset = proj.time - state.query_time
-            ns.runHandler( proj.spell )
+            -- print( proj.spell, proj.time, state.query_time )
+            ns.runHandler( proj.spell, true )
         else
             break
         end
@@ -2943,6 +2943,10 @@ ns.hasRequiredResources = function( ability )
       -- Thought: We'll already delay CD based on time to get energy/focus.
       -- So let's leave it alone.
       return true
+    
+    elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
+        -- Holy Power is a time-regen resource during AW/Crusade, if you have the legendary ring.
+        return true
     end
 
     if spend > 0 and spend < 1 then
@@ -2986,7 +2990,46 @@ function ns.timeToReady( action )
         if type( ready ) ~= 'function' then
             if spend > state[ resource ].current then
                 if resource == 'focus' or resource == 'energy' then
-                    delay = max( delay, ( spend - state[ resource ].current ) / state[ resource ].regen )
+
+                    if state.spec.survival and state.buff.spitting_cobra.up then
+                        local regen = state.focus.regen + 3
+                        local deficit = spend - state.focus.current
+                        local pre_delay = deficit / regen
+                        local remains = state.buff.spitting_cobra.remains
+
+                        if pre_delay <= state.buff.spitting_cobra.remains then
+                            -- The buff is up the whole time, so ticks are fine...ish.
+                            -- Go to the next spitting_cobra tick, just to be sure.
+                            local next_tick = pre_delay + ( state.buff.spitting_cobra.remains % 1 )
+                            local prev_tick = next_tick - 1
+
+                            local prev_regen = prev_tick * regen
+                            local next_regen = prev_tick + ( ( deficit - prev_regen ) / state.focus.regen )
+
+                            delay = max( delay, 0.06 + min( next_tick, next_regen ) )
+
+                        else
+                            -- The buff will be exhausted, generate its ticks and then use real regen.
+                            local new_deficit = deficit + ( remains * regen )
+                            delay = max( delay, 0.06 + pre_delay + ( new_deficit / state.focus.regen ) )
+
+                        end
+                    else
+                        delay = max( delay, 0.06 + ( spend - state[ resource ].current ) / state[ resource ].regen )
+                    end
+                
+                elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
+                    local buff_remaining = state.buff.crusade.up and state.buff.crusade.remains or state.buff.avenging_wrath.remains
+                    local deficit = spend - state.holy_power.current
+                    
+                    local ticks_remain = math.floor( buff_remaining / 4 )
+                    
+                    if ticks_remain < spend - state[ resource ].current then
+                        -- We won't generate enough holy_power from Liadrin's.
+                        delay = 999
+                    else
+                        delay = max( delay, 0.06 + buff_remaining - ( deficit * 4 ) )
+                    end
                 end
             end
         else
