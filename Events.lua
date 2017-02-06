@@ -465,14 +465,39 @@ function ns.removeSpellFromFlight( spell )
 end
 
 
+local power_tick_data = {
+    focus_avg = 0.10,
+    focus_ticks = 1,
+    energy_avg = 0.10,
+    energy_ticks = 1
+}
+
+
 RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
     if unit == 'player' then
         if power == "FOCUS" then
             local now = GetTime()
-            state.focus.last_tick = now - state.focus.last_tick > 0.09 and now or state.focus.last_tick
-        
+            local elapsed = now - state.focus.last_tick
+
+            elapsed = elapsed > power_tick_data.focus_avg * 1.5 and power_tick_data.focus_avg or elapsed
+
+            if elapsed > 0.075 then
+                power_tick_data.focus_avg = ( elapsed + ( power_tick_data.focus_avg * power_tick_data.focus_ticks ) ) / ( power_tick_data.focus_ticks + 1 )
+                power_tick_data.focus_ticks = power_tick_data.focus_ticks + 1
+                state.focus.last_tick = now
+            end
+
         elseif power == "ENERGY" then
-            state.energy.last_tick = now - state.energy.last_tick > 0.09 and now or state.energy.last_tick
+            local now = GetTime()
+            local elapsed = min( 0.12, now - state.focus.last_tick )
+
+            elapsed = elapsed > power_tick_data.focus_avg * 1.5 and power_tick_data.focus_avg or elapsed
+
+            if elapsed > 0.075 then
+                power_tick_data.energy_avg = ( elapsed + ( power_tick_data.energy_avg * power_tick_data.energy_ticks ) ) / ( power_tick_data.energy_ticks + 1 )
+                power_tick_data.energy_ticks = power_tick_data.energy_ticks + 1
+                state.energy.last_tick = now
+            end
 
         end
 

@@ -2674,6 +2674,7 @@ function state.reset( dispID )
     state[ k ].max = UnitPowerMax( 'player', ns.getResourceID( k ) )
     state[ k ].resource = k
     state[ k ].last_tick = rawget( state[ k ], 'last_tick' ) or 0
+    state[ k ].tick_rate = rawget( state[ k ], 'tick_rate' ) or 0.1
 
     if k == class.primaryResource then
       local active, inactive = GetPowerRegen()
@@ -2974,6 +2975,8 @@ ns.hasRequiredResources = function( ability )
 end
 
 
+local power_tick_rate = 0.115
+
 -- Needs to be expanded to handle energy regen before Rogue, Monk, Druid will work.
 function ns.timeToReady( action )
 
@@ -3001,40 +3004,10 @@ function ns.timeToReady( action )
         if type( ready ) ~= 'function' then
             if spend > state[ resource ].current then
                 if resource == 'focus' or resource == 'energy' then
+                    local time_to_next_tick = state[ resource ].tick_rate - ( ( state.query_time - state[ resource ].last_tick ) % state[ resource ].tick_rate )
+                    local ticks_to_ready = ceil( ( spend - state[ resource ].current ) / state[ resource ].regen ) - 1
 
-                    if state.spec.survival and state.buff.spitting_cobra.up then
-                        local regen = state.focus.regen + 3
-                        local deficit = spend - state.focus.current
-                        local pre_delay = deficit / regen
-                        local remains = state.buff.spitting_cobra.remains
-
-                        if pre_delay <= state.buff.spitting_cobra.remains then
-                            -- The buff is up the whole time, so ticks are fine...ish.
-                            -- Go to the next spitting_cobra tick, just to be sure.
-                            local next_tick = pre_delay + ( state.buff.spitting_cobra.remains % 1 )
-                            local prev_tick = next_tick - 1
-
-                            local prev_regen = prev_tick * regen
-                            local next_regen = state.query_time + prev_tick + ( ( deficit - prev_regen ) / state.focus.regen )
-                            next_regen = next_regen + ( 0.115 - ( next_regen % 0.115 ) )
-
-                            delay = max( delay, min( next_tick, next_regen ) )
-
-                        else
-                            -- The buff will be exhausted, generate its ticks and then use real regen.
-                            local new_deficit = deficit + ( remains * regen )
-                            local final_tick = state.query_time + pre_delay + ( new_deficit / state.focus.regen )
-                            final_tick = final_tick + ( 0.115 - ( final_tick % 0.115 ) )
-                            delay = max( delay, final_tick )
-
-                        end
-                    else
-                        local last_tick = state[ resource ].last_tick
-                        local final_tick = state.query_time + ( spend - state[ resource ].current ) / state[ resource ].regen
-                        final_tick = final_tick + ( 0.115 - ( final_tick % 0.115 ) )
-
-                        delay = max( delay, final_tick )
-                    end
+                    delay = max( delay, 0.01 + time_to_next_tick + ( ticks_to_ready * state[ resource ].tick_rate ) )
                 
                 elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
                     local buff_remaining = state.buff.crusade.up and state.buff.crusade.remains or state.buff.avenging_wrath.remains
