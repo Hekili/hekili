@@ -2526,7 +2526,7 @@ function state.reset( dispID )
   local _, zone = GetInstanceInfo()
 
   state.bg = zone == 'pvp'
-  state.arena = zone == 'arena'
+  state.arena = zone == 'arena'/
 
   state.min_targets = 0
   state.max_targets = 0
@@ -3015,7 +3015,7 @@ function ns.timeToReady( action )
                             local prev_tick = next_tick - 1
 
                             local prev_regen = prev_tick * regen
-                            local next_regen = prev_tick + ( ( deficit - prev_regen ) / state.focus.regen )
+                            local next_regen = state.query_time + prev_tick + ( ( deficit - prev_regen ) / state.focus.regen )
                             next_regen = next_regen + ( 0.115 - ( next_regen % 0.115 ) )
 
                             delay = max( delay, min( next_tick, next_regen ) )
@@ -3023,14 +3023,14 @@ function ns.timeToReady( action )
                         else
                             -- The buff will be exhausted, generate its ticks and then use real regen.
                             local new_deficit = deficit + ( remains * regen )
-                            local final_tick = pre_delay + ( new_deficit / state.focus.regen )
+                            local final_tick = state.query_time + pre_delay + ( new_deficit / state.focus.regen )
                             final_tick = final_tick + ( 0.115 - ( final_tick % 0.115 ) )
                             delay = max( delay, final_tick )
 
                         end
                     else
                         local last_tick = state[ resource ].last_tick
-                        local final_tick = ( spend - state[ resource ].current ) / state[ resource ].regen
+                        local final_tick = state.query_time + ( spend - state[ resource ].current ) / state[ resource ].regen
                         final_tick = final_tick + ( 0.115 - ( final_tick % 0.115 ) )
 
                         delay = max( delay, final_tick )
