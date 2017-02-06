@@ -24,6 +24,9 @@ state.offset = 0
 state.delay = 0
 state.latency = 0
 
+state.arena = false
+state.bg = false
+
 state.mainhand_speed = 0
 state.offhand_speed = 0
 
@@ -2180,6 +2183,8 @@ local mt_set_bonuses = {
   __index = function(t, k)
     if type(k) == 'number' then return 0 end
 
+    if k ~= class.artifact and ( state.bg or state.arena ) then return 0 end
+
     local set, pieces, class = k:match("^(.-)_"), tonumber( k:match("_(%d+)pc") ), k:match("pc(.-)$")
 
     if not pieces or not set then
@@ -2518,6 +2523,11 @@ function state.reset( dispID )
   state.cast_start = 0
   state.false_start = 0
 
+  local _, zone = GetInstanceInfo()
+
+  state.bg = zone == 'pvp'
+  state.arena = zone == 'arena'
+
   state.min_targets = 0
   state.max_targets = 0
 
@@ -2663,6 +2673,7 @@ function state.reset( dispID )
     state[ k ].actual = UnitPower( 'player', ns.getResourceID( k ) )
     state[ k ].max = UnitPowerMax( 'player', ns.getResourceID( k ) )
     state[ k ].resource = k
+    state[ k ].last_tick = rawget( state[ k ], 'last_tick' ) or 0
 
     if k == class.primaryResource then
       local active, inactive = GetPowerRegen()
@@ -3005,17 +3016,24 @@ function ns.timeToReady( action )
 
                             local prev_regen = prev_tick * regen
                             local next_regen = prev_tick + ( ( deficit - prev_regen ) / state.focus.regen )
+                            next_regen = next_regen + ( 0.115 - ( next_regen % 0.115 ) )
 
-                            delay = max( delay, 0.06 + min( next_tick, next_regen ) )
+                            delay = max( delay, min( next_tick, next_regen ) )
 
                         else
                             -- The buff will be exhausted, generate its ticks and then use real regen.
                             local new_deficit = deficit + ( remains * regen )
-                            delay = max( delay, 0.06 + pre_delay + ( new_deficit / state.focus.regen ) )
+                            local final_tick = pre_delay + ( new_deficit / state.focus.regen )
+                            final_tick = final_tick + ( 0.115 - ( final_tick % 0.115 ) )
+                            delay = max( delay, final_tick )
 
                         end
                     else
-                        delay = max( delay, 0.06 + ( spend - state[ resource ].current ) / state[ resource ].regen )
+                        local last_tick = state[ resource ].last_tick
+                        local final_tick = ( spend - state[ resource ].current ) / state[ resource ].regen
+                        final_tick = final_tick + ( 0.115 - ( final_tick % 0.115 ) )
+
+                        delay = max( delay, final_tick )
                     end
                 
                 elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
@@ -3028,7 +3046,7 @@ function ns.timeToReady( action )
                         -- We won't generate enough holy_power from Liadrin's.
                         delay = 999
                     else
-                        delay = max( delay, 0.06 + buff_remaining - ( deficit * 4 ) )
+                        delay = max( delay, 0.01 + buff_remaining - ( deficit * 4 ) )
                     end
                 end
             end

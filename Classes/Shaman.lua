@@ -29,6 +29,7 @@ local registerInterrupt = ns.registerInterrupt
 
 local removeResource = ns.removeResource
 
+local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
@@ -281,6 +282,10 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         addGearSet( 'class', 139698, 139699, 139700, 139701, 139702, 139703, 139704, 139705 )
         addGearSet( 'doomhammer', 128819 )
         addGearSet( 'fist_of_raden', 128935 )
+
+        if state.spec.enhancement then setArtifact( 'doomhammer' )
+        elseif state.spec.elemental then setArtifact( 'fist_of_raden' )
+        else setArtifact() end
 
         addGearSet( 'akainus_absolute_justice', 137084 )
         addGearSet( 'alakirs_acrimony', 137102 )

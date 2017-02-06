@@ -135,6 +135,7 @@ _G.mt_modifiers = mt_modifiers
 
 
 ns.setClass = function( name ) class.file = name end
+ns.setArtifact = function( name ) class.artifact = name end
 
 
 function ns.setRange( value )

@@ -321,7 +321,7 @@ local z_PVP = {
 
 local palStack = {}
 
-function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
+function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth )
     
     local list = self.DB.profile.actionLists[ listID ]
     
@@ -330,7 +330,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
     else palStack[ list.Name ] = true end
     
     local chosen_action
-    local chosen_clash, chosen_wait = 0, 999
+    local chosen_clash, chosen_wait, chosen_depth = 0, 999, depth or 0
     local stop = false
 
     if ns.visible.list[ listID ] then
@@ -349,6 +349,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
                 state.this_args = entry.Args
                 
                 state.delay = nil
+                depth = depth + 1
 
                 local ability = class.abilities[ entry.Ability ]
 
@@ -385,7 +386,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
                             end
                         end
                         if called_list > 0 and checkScript( 'A', listID..':'..actID ) then
-                            chosen_action, chosen_wait, chosen_clash = Hekili:ProcessActionList( dispID, listID..':'..actID, called_list, slot )
+                            chosen_action, chosen_wait, chosen_clash, chosen_depth = Hekili:ProcessActionList( dispID, listID..':'..actID, called_list, slot, depth )
                         end
                     end
 
@@ -432,6 +433,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
                         chosen_action = state.this_action
                         chosen_wait = wait_time
                         chosen_clash = clash
+                        chosen_depth = depth
 
                     end
 
@@ -459,6 +461,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
                     chosen_action = state.this_action
                     chosen_wait = wait_time
                     chosen_clash = clash
+                    chosen_depth = depth
 
                 end
 
@@ -481,7 +484,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot  )
     end
     
     palStack[ list.Name ] = nil
-    return chosen_action, chosen_wait, chosen_clash
+    return chosen_action, chosen_wait, chosen_clash, chosen_depth
 
 end
 
@@ -515,7 +518,7 @@ function Hekili:ProcessHooks( dispID, solo )
                 for i = 1, display['Icons Shown'] do
 
                     local chosen_action
-                    local chosen_wait, chosen_clash = 999, 0
+                    local chosen_wait, chosen_clash, chosen_depth = 999, 0, 0
 
                     Queue[i] = Queue[i] or {}
 
@@ -529,10 +532,10 @@ function Hekili:ProcessHooks( dispID, solo )
                             if ns.visible.hook[ dispID..':'..hookID ] and hookID and checkScript( 'P', dispID..':'..hookID ) then
 
                                 local listID = hook[ 'Action List' ]
-                                local outcome, wait, clash = self:ProcessActionList( dispID, hookID, listID, slot )
+                                local outcome, wait, clash, depth = self:ProcessActionList( dispID, hookID, listID, slot, chosen_depth )
 
                                 if outcome then -- and wait < chosen_wait then
-                                    chosen_action, chosen_wait, chosen_clash = outcome, wait, clash
+                                    chosen_action, chosen_wait, chosen_clash, chosen_depth = outcome, wait, clash, depth
                                 end
 
                                 if chosen_wait == 0 then break end
@@ -557,6 +560,7 @@ function Hekili:ProcessHooks( dispID, solo )
                         slot.exact_time = state.now + state.offset + chosen_wait
                         slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
                         slot.resources = slot.resources or {}
+                        slot.depth = chosen_depth
 
                         for k,v in pairs( class.resources ) do
                             slot.resources[k] = state[k].current
@@ -719,8 +723,8 @@ end
 
 
 local flashes = {}
-
 local checksums = {}
+local applied = {}
 
 function Hekili:UpdateDisplay( dispID )
 
@@ -758,11 +762,12 @@ function Hekili:UpdateDisplay( dispID )
             local checksum = ""
 
             for i = 1, #Queue do
-                checksum = checksum .. ( Queue[i].actionName or "" ) .. ":"
+                checksum = format( "%s%02d", checksum, Queue[i].depth )
             end
 
-            checksums[ dispID ] = checksums[ dispID ] or {}
+            checksum = tonumber(checksum)
 
+            checksums[ dispID ] = checksums[ dispID ] or {}
 
             local different = false
             local differences = 0
@@ -779,6 +784,7 @@ function Hekili:UpdateDisplay( dispID )
                 else
                     if checksum ~= checksums[dispID][i] then
                         different = true
+                        differences = differences + 1
                     else
                         snapbacks = snapbacks + 1
                         different = false
@@ -787,12 +793,11 @@ function Hekili:UpdateDisplay( dispID )
             end
 
             table.insert( checksums[ dispID ], 1, checksum )
-            checksums[ dispID ][10] = nil
+            checksums[ dispID ][ 10 ] = nil
 
-            if snapbacks > 0 then return end
+            -- if snapbacks > 0 then return end
 
-
-            for i, button in ipairs( ns.UI.Buttons[dispID] ) do
+            for i, button in ipairs( ns.UI.Buttons[ dispID ] ) do
                 if not Queue or not Queue[i] and ( self.DB.profile.Enabled or self.Config ) then
                     for n = i, display['Icons Shown'] do
                         ns.UI.Buttons[dispID][n].Texture:SetTexture( 'Interface\\ICONS\\Spell_Nature_BloodLust' )

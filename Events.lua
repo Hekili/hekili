@@ -467,14 +467,14 @@ end
 
 RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
     if unit == 'player' then
-        --[[ if power == "FOCUS" then
+        if power == "FOCUS" then
             local now = GetTime()
-            state.focus.last_tick = now - state.focus.last_tick > 0.1 and now or state.focus.last_tick
+            state.focus.last_tick = now - state.focus.last_tick > 0.09 and now or state.focus.last_tick
         
         elseif power == "ENERGY" then
-            state.energy.last_tick = now - state.energy.last_tick > 0.1 and now or state.energy.last_tick
+            state.energy.last_tick = now - state.energy.last_tick > 0.09 and now or state.energy.last_tick
 
-        end ]]
+        end
 
         forceUpdate()
     end

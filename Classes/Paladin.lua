@@ -32,6 +32,7 @@ local registerCustomVariable = ns.registerCustomVariable
 
 local removeResource = ns.removeResource
 
+local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
@@ -295,8 +296,13 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addGearSet( 'tier19', 138350, 138353, 138356, 138359, 138362, 138369 )
         addGearSet( 'class', 139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697 )
         addGearSet( 'ashbringer', 120978 )
-        addGearSet( 'whisper_of_the_nathrezim', 137020 )
         addGearSet( 'truthguard', 128866 )
+        addGearSet( 'whisper_of_the_nathrezim', 137020 )
+
+
+        if state.spec.retribution then setArtifact( 'ashbringer' )
+        elseif state.spec.protection then setArtifact( 'truthguard' )
+        else setArtifact() end        
 
 
         addHook( 'specializationChanged', function ()
