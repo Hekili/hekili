@@ -590,11 +590,11 @@ function Hekili:ProcessHooks( dispID, solo )
 
                             state.cycle = slot.indicator == 'cycle'
 
-                            -- Perform the action.
-                            ns.runHandler( chosen_action, slot.list, slot.action ) -- , ns.getModifiers( slot.actionlist, slot.action )  )
-
                             -- Spend resources.
                             ns.spendResources( chosen_action )
+
+                            -- Perform the action.
+                            ns.runHandler( chosen_action )
 
                             -- Advance the clock by cast_time.
                             if action.cast > 0 and action.channeled then
@@ -763,7 +763,6 @@ function Hekili:UpdateDisplay( dispID )
 
             checksums[ dispID ] = checksums[ dispID ] or {}
 
-            -- print( checksums[dispID][1] .. "\n" .. checksums[dispID][2] .. "\n" .. checksums[dispID][3] .. "\n..." )
 
             local different = false
             local differences = 0
@@ -787,10 +786,10 @@ function Hekili:UpdateDisplay( dispID )
                 end
             end
 
-            if snapbacks > 0 then return end
-
             table.insert( checksums[ dispID ], 1, checksum )
             checksums[ dispID ][10] = nil
+
+            if snapbacks > 0 then return end
 
 
             for i, button in ipairs( ns.UI.Buttons[dispID] ) do

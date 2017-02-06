@@ -3024,7 +3024,7 @@ function ns.timeToReady( action )
                     
                     local ticks_remain = math.floor( buff_remaining / 4 )
                     
-                    if ticks_remain < spend - state[ resource ].current then
+                    if ticks_remain < deficit then
                         -- We won't generate enough holy_power from Liadrin's.
                         delay = 999
                     else
