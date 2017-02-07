@@ -778,7 +778,7 @@ local mt_state = {
       return false
 
     elseif k == 'query_time' then
-        return t.now + t.offset + t.delay + t.latency
+        return t.now + t.offset + t.delay
 
     elseif k == 'time' then
       -- Calculate time in combat.
@@ -2825,10 +2825,12 @@ function state.advance( time )
             -- We're using a ticking resource.
             -- Only add what is actually generated in the interval.
             local time_to_next_tick = resource.tick_rate - ( ( state.now + state.offset - resource.last_tick ) % resource.tick_rate )
-            local ticks_in_time = 1 + floor( ( time - time_to_next_tick ) / resource.tick_rate )
-            local gain_per_tick = resource.regen / resource.tick_rate
 
-            resource.actual = min( resource.max, resource.actual + ( gain_per_tick * ticks_in_time ) )
+            if time > time_to_next_tick then
+                local ticks_in_time = 1 + floor( ( time - time_to_next_tick ) / resource.tick_rate )
+                local gain_per_tick = resource.regen / resource.tick_rate
+                resource.actual = min( resource.max, resource.actual + ( gain_per_tick * ticks_in_time ) )
+            end
         else
             resource.actual = min( resource.max, resource.actual + ( resource.regen * time ) )
         end
@@ -3018,7 +3020,8 @@ function ns.timeToReady( action )
                     local time_to_next_tick = state[ resource ].tick_rate - ( ( state.query_time - state[ resource ].last_tick ) % state[ resource ].tick_rate )
                     local ticks_to_ready = ceil( ( spend - state[ resource ].current ) / state[ resource ].regen ) - 1
 
-                    delay = max( delay, 0.01 + time_to_next_tick + ( ticks_to_ready * state[ resource ].tick_rate ) )
+                    delay = max( delay, ticks_to_ready * state[ resource ].tick_rate )
+                    -- delay = max( delay, state[ resource ].tick_rate + ( ticks_to_ready * state[ resource ].tick_rate ) )
                 
                 elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
                     local buff_remaining = state.buff.crusade.up and state.buff.crusade.remains or state.buff.avenging_wrath.remains
@@ -3074,8 +3077,7 @@ end
 
 ns.clashOffset = function( action )
 
-  local clash = Hekili.DB.profile.Clash or 0
-
+  local clash = Hekili.DB.profile.Clash or Hekili.DB.profile['Recommendation Window'] or 0.1
   return ns.callHook( "clash", clash, action )
 
 end

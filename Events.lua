@@ -468,8 +468,9 @@ end
 local power_tick_data = {
     focus_avg = 0.10,
     focus_ticks = 1,
+
     energy_avg = 0.10,
-    energy_ticks = 1
+    energy_ticks = 1,
 }
 
 
@@ -481,7 +482,7 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
 
             elapsed = elapsed > power_tick_data.focus_avg * 1.5 and power_tick_data.focus_avg or elapsed
 
-            if elapsed > 0.075 then
+            if elapsed > 0.09 then
                 power_tick_data.focus_avg = ( elapsed + ( power_tick_data.focus_avg * power_tick_data.focus_ticks ) ) / ( power_tick_data.focus_ticks + 1 )
                 power_tick_data.focus_ticks = power_tick_data.focus_ticks + 1
                 state.focus.last_tick = now
@@ -493,7 +494,7 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
 
             elapsed = elapsed > power_tick_data.energy_avg * 1.5 and power_tick_data.energy_avg or elapsed
 
-            if elapsed > 0.075 then
+            if elapsed > 0.09 then
                 power_tick_data.energy_avg = ( elapsed + ( power_tick_data.energy_avg * power_tick_data.energy_ticks ) ) / ( power_tick_data.energy_ticks + 1 )
                 power_tick_data.energy_ticks = power_tick_data.energy_ticks + 1
                 state.energy.last_tick = now
