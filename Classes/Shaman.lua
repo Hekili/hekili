@@ -1394,7 +1394,6 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             interrupt()
         end )
 
-
         registerInterrupt( 'wind_shear' )
 
 

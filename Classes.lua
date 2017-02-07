@@ -232,6 +232,7 @@ ns.addAbility = addAbility
 
 
 class.interrupts = {}
+
 function ns.registerInterrupt( key )
     if class.abilities[ key ] and class.abilities[ key ].toggle and class.abilities[ key ].toggle == 'interrupts' then
         class.interrupts[ key ] = true
@@ -714,6 +715,8 @@ addHandler( 'arcane_torrent', function ()
     elseif class.hunter then gain( 15, "focus" ) end
 
 end )
+
+ns.registerInterrupt( 'arcane_torrent' )
 
 
 addAbility( 'call_action_list', {

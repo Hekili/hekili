@@ -29,6 +29,7 @@ local addToggle = ns.addToggle
 local addMetaFunction = ns.addMetaFunction
 
 local registerCustomVariable = ns.registerCustomVariable
+local registerInterrupt = ns.registerInterrupt
 
 local removeResource = ns.removeResource
 
@@ -1137,6 +1138,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'rebuke', function ()
             interrupt()
         end )
+
+        registerInterrupt( 'rebuke' )
 
 
         addAbility( 'repentance', {

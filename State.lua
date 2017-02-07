@@ -1496,10 +1496,22 @@ local mt_default_cooldown = {
         elseif k == 'charges_max' then
             return class.abilities[ t.key ].charges
 
-        elseif k == 'remains' then           
+        elseif k == 'remains' then
+
+            if t.key == 'global_cooldown' then
+                return max( 0, t.expires - state.query_time )
+            end
+
+            if not ns.isKnown( t.key ) then return 0 end
+
             local bonus_cdr = 0
-            bonus_cdr = t.key ~= 'global_cooldown' and ns.callHook( "cooldown_recovery", bonus_cdr ) or bonus_cdr
-            return ns.isKnown( t.key ) and max( 0, t.expires - state.query_time - bonus_cdr ) or 0
+            bonus_cdr = ns.callHook( "cooldown_recovery", bonus_cdr ) or bonus_cdr
+
+            if not class.interrupts[ t.key ] then
+                return max( 0, state.cooldown.global_cooldown.remains, t.expires - state.query_time - bonus_cdr )
+            end
+
+            return max( 0, t.expires - state.query_time - bonus_cdr )
 
         elseif k == 'true_remains' then
             return max( 0, t.true_expires - state.query_time )
@@ -2746,9 +2758,9 @@ function state.reset( dispID )
 
   delay = ns.callHook( "reset_postcast", delay )
 
-  --[[ if delay > 0 then -- and delay ~= state.cooldown.global_cooldown.remains 
+  if delay > 0 then -- and delay ~= state.cooldown.global_cooldown.remains 
     state.advance( delay )
-  end ]]
+  end
 
 end
 
@@ -2877,7 +2889,7 @@ ns.spendResources = function( ability )
             spend = action.spend
             resource = action.spend_type or class.primaryResource
         elseif type( action.spend ) == 'function' then
-            spend, resource = action.spend( true ) -- the 
+            spend, resource = action.spend( true )
         end
 
         if spend > 0 and spend < 1 then
@@ -3016,11 +3028,13 @@ function ns.timeToReady( action )
 
         if type( ready ) ~= 'function' then
             if spend > state[ resource ].current then
+                local tick_ready = 0
+
                 if resource == 'focus' or resource == 'energy' then
                     local time_to_next_tick = state[ resource ].tick_rate - ( ( state.query_time - state[ resource ].last_tick ) % state[ resource ].tick_rate )
                     local ticks_to_ready = ceil( ( spend - state[ resource ].current ) / state[ resource ].regen ) - 1
 
-                    delay = max( delay, ticks_to_ready * state[ resource ].tick_rate )
+                    tick_ready = ticks_to_ready * state[ resource ].tick_rate
                     -- delay = max( delay, state[ resource ].tick_rate + ( ticks_to_ready * state[ resource ].tick_rate ) )
                 
                 elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
@@ -3031,11 +3045,13 @@ function ns.timeToReady( action )
                     
                     if ticks_remain < deficit then
                         -- We won't generate enough holy_power from Liadrin's.
-                        delay = 999
+                        tick_ready = 999
                     else
-                        delay = max( delay, 0.01 + buff_remaining - ( deficit * 4 ) )
+                        tick_ready = 0.01 + buff_remaining - ( deficit * 4 )
                     end
                 end
+
+                delay = max( delay, tick_ready, ( spend - state[ resource ].current ) / state[ resource ].regen )
             end
         else
             delay = max( delay, ready() )
