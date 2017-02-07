@@ -283,9 +283,8 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         addGearSet( 'doomhammer', 128819 )
         addGearSet( 'fist_of_raden', 128935 )
 
-        if state.spec.enhancement then setArtifact( 'doomhammer' )
-        elseif state.spec.elemental then setArtifact( 'fist_of_raden' )
-        else setArtifact() end
+        setArtifact( 'doomhammer' )
+        setArtifact( 'fist_of_raden' )
 
         addGearSet( 'akainus_absolute_justice', 137084 )
         addGearSet( 'alakirs_acrimony', 137102 )

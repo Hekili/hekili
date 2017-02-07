@@ -685,9 +685,10 @@ end
 state.setDistance = setDistance
 
 
-local function gain( amount, resource )
+local function gain( amount, resource, overcap )
 
-  state[ resource ].actual = min( state[ resource ].max, state[ resource ].actual + amount )
+    if overcap then state[ resource ].actual = state[ resource ].actual + amount
+    else state[ resource ].actual = min( state[ resource ].max, state[ resource ].actual + amount ) end
 
 end
 state.gain = gain
@@ -2183,7 +2184,7 @@ local mt_set_bonuses = {
   __index = function(t, k)
     if type(k) == 'number' then return 0 end
 
-    if k ~= class.artifact and ( state.bg or state.arena ) then return 0 end
+    if not class.artifacts[ k ] and ( state.bg or state.arena ) then return 0 end
 
     local set, pieces, class = k:match("^(.-)_"), tonumber( k:match("_(%d+)pc") ), k:match("pc(.-)$")
 
@@ -2745,9 +2746,9 @@ function state.reset( dispID )
 
   delay = ns.callHook( "reset_postcast", delay )
 
-  if delay > 0 then -- and delay ~= state.cooldown.global_cooldown.remains 
+  --[[ if delay > 0 then -- and delay ~= state.cooldown.global_cooldown.remains 
     state.advance( delay )
-  end
+  end ]]
 
 end
 
@@ -2820,12 +2821,14 @@ function state.advance( time )
     local override = ns.callHook( 'advance_resource_regen', false, k, time )
 
     if not override and resource.regen and resource.regen ~= 0 then
-        if resource.last_tick and resource.tick_rate then -- We're using a ticking resource.  Only add what is actually generated in the interval.
+        if resource.last_tick and resource.tick_rate then 
+            -- We're using a ticking resource.
+            -- Only add what is actually generated in the interval.
             local time_to_next_tick = resource.tick_rate - ( ( state.now + state.offset - resource.last_tick ) % resource.tick_rate )
-            local ticks_in_time = floor( ( time - time_to_next_tick ) / resource.tick_rate )
+            local ticks_in_time = 1 + floor( ( time - time_to_next_tick ) / resource.tick_rate )
             local gain_per_tick = resource.regen / resource.tick_rate
 
-            resource.actual = min( resource.max, resource.actual + ( gain_per_tick * ( 1 + ticks_in_time ) ) )
+            resource.actual = min( resource.max, resource.actual + ( gain_per_tick * ticks_in_time ) )
         else
             resource.actual = min( resource.max, resource.actual + ( resource.regen * time ) )
         end
@@ -2872,7 +2875,7 @@ ns.spendResources = function( ability )
             spend = action.spend
             resource = action.spend_type or class.primaryResource
         elseif type( action.spend ) == 'function' then
-            spend, resource = action.spend()
+            spend, resource = action.spend( true ) -- the 
         end
 
         if spend > 0 and spend < 1 then

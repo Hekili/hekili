@@ -300,9 +300,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addGearSet( 'whisper_of_the_nathrezim', 137020 )
 
 
-        if state.spec.retribution then setArtifact( 'ashbringer' )
-        elseif state.spec.protection then setArtifact( 'truthguard' )
-        else setArtifact() end        
+        setArtifact( 'ashbringer' )
+        setArtifact( 'truthguard' )
 
 
         addHook( 'specializationChanged', function ()
