@@ -489,9 +489,9 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
 
         elseif power == "ENERGY" then
             local now = GetTime()
-            local elapsed = min( 0.12, now - state.focus.last_tick )
+            local elapsed = min( 0.12, now - state.energy.last_tick )
 
-            elapsed = elapsed > power_tick_data.focus_avg * 1.5 and power_tick_data.focus_avg or elapsed
+            elapsed = elapsed > power_tick_data.energy_avg * 1.5 and power_tick_data.energy_avg or elapsed
 
             if elapsed > 0.075 then
                 power_tick_data.energy_avg = ( elapsed + ( power_tick_data.energy_avg * power_tick_data.energy_ticks ) ) / ( power_tick_data.energy_ticks + 1 )
