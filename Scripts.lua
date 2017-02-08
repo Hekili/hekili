@@ -287,7 +287,7 @@ ns.checkScript = function( cat, key, action, recheck )
             return value
 
             -- This is presently too CPU expensive to use.
-            
+
             --[[ if not recheck then recheck = Hekili.DB.profile[ 'Recommendation Window' ] end
             
             if not recheck or recheck == 0 then return value end
@@ -327,7 +327,7 @@ function ns.checkTimeScript( entry, delay, spend, spend_type )
 
     local out = script.Ready( delay, spend, spend_type )
 
-    return out -- and roundUp( out, 2 ) or 0
+    return out and roundUp( out, 2 ) or 0
 
 end
 
