@@ -1049,7 +1049,7 @@ ns.newActionList = function( name )
   Hekili.DB.profile.actionLists[index] = {
     Enabled = false,
     Name = name,
-    Release = Hekili.DB.profile.Release,
+    Release = tonumber( date("%Y%m%d.1") ),
     Specialization = ns.getSpecializationID() or 0,
     Script = '',
     Actions = {}
@@ -2286,9 +2286,7 @@ ns.SimulationCraftImporter = function ()
                     action.Indicator = "none"
                   end ]]
 
-
-
-                  if class.abilities[ entry.Ability ].toggle then
+                  if ability.toggle then
                     if entry.Script and entry.Script:len() > 0 then
                       action.Script = 'toggle.' .. ability.toggle .. '&(' .. entry.Script .. ')'
                     else
