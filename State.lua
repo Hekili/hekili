@@ -7,7 +7,7 @@ local Hekili = _G[ addon ]
 local class = ns.class
 local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
-local round = ns.round
+local round, roundUp = ns.round, ns.roundUp
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 local tableCopy = ns.tableCopy
 
@@ -1507,9 +1507,9 @@ local mt_default_cooldown = {
             local bonus_cdr = 0
             bonus_cdr = ns.callHook( "cooldown_recovery", bonus_cdr ) or bonus_cdr
 
-            if not class.interrupts[ t.key ] then
-                return max( 0, state.cooldown.global_cooldown.remains, t.expires - state.query_time - bonus_cdr )
-            end
+            --[[ if not class.interrupts[ t.key ] then
+                return max( 0, t.expires - state.query_time - bonus_cdr )
+            end ]]
 
             return max( 0, t.expires - state.query_time - bonus_cdr )
 
@@ -1705,7 +1705,7 @@ end
 
 local mt_resource = {
   __index = function(t, k)
-    local result = resource_meta_functions[ name ] and resource_meta_functions[ name ]( t ) or 'nofunc'
+    local result = resource_meta_functions[ k ] and resource_meta_functions[ k ]( t ) or 'nofunc'
 
     if result ~= 'nofunc' then
         return result
@@ -1728,8 +1728,14 @@ local mt_resource = {
       return t.max -- need to accommodate buffs that increase mana, etc.
 
     elseif k == 'time_to_max' then
-      if not t.regen or t.regen <= 0 then return 0 end
-      return ( t.max - t.current ) / t.regen
+      if not t.regen or t.regen <= 0 or t.current == t.max then return 0 end
+
+      local time_to_next_tick = t.tick_rate - ( ( state.query_time - t.last_tick ) % t.tick_rate )
+      local ticks_to_ready = ceil( ( t.max - t.current ) / t.regen )
+      local tick_time = ticks_to_ready * state[ resource ].tick_rate
+
+      return roundUp( max( tick_time, t.deficit / t.regen ), 3 )
+      -- return roundUp( ( t.max - t.current ) / t.regen, 2 )
 
     elseif k == 'regen' then
       -- Not a regenerating resource.
@@ -2444,7 +2450,7 @@ local mt_default_action = {
       return 0
 
     elseif k == 'cast_regen' then
-      return max( t.gcd, t.cast_time ) * state[ class.primaryResource ].regen
+      return floor( max( t.gcd, t.cast_time ) * state[ class.primaryResource ].regen )
 
     else
         return class.abilities[ t.action ][ k ] or 0
@@ -2758,7 +2764,7 @@ function state.reset( dispID )
 
   delay = ns.callHook( "reset_postcast", delay )
 
-  if delay > 0 then -- and delay ~= state.cooldown.global_cooldown.remains 
+  if delay > 0 then
     state.advance( delay )
   end
 
@@ -2770,6 +2776,8 @@ function state.advance( time )
   if time <= 0 then
     return
   end
+
+  roundUp( time, 2 )
   
   time = ns.callHook( 'advance', time )
 
@@ -2838,13 +2846,13 @@ function state.advance( time )
             -- Only add what is actually generated in the interval.
             local time_to_next_tick = resource.tick_rate - ( ( state.now + state.offset - resource.last_tick ) % resource.tick_rate )
 
-            if time > time_to_next_tick then
+            if time >= time_to_next_tick then
                 local ticks_in_time = 1 + floor( ( time - time_to_next_tick ) / resource.tick_rate )
                 local gain_per_tick = resource.regen / resource.tick_rate
                 resource.actual = min( resource.max, resource.actual + ( gain_per_tick * ticks_in_time ) )
             end
         else
-            resource.actual = min( resource.max, resource.actual + ( resource.regen * time ) )
+            resource.actual = min( resource.max, resource.actual + floor( resource.regen * time ) )
         end
     end
   end
@@ -3047,11 +3055,11 @@ function ns.timeToReady( action )
                         -- We won't generate enough holy_power from Liadrin's.
                         tick_ready = 999
                     else
-                        tick_ready = 0.01 + buff_remaining - ( deficit * 4 )
+                        tick_ready = buff_remaining - ( deficit * 4 )
                     end
                 end
 
-                delay = max( delay, tick_ready, ( spend - state[ resource ].current ) / state[ resource ].regen )
+                delay = roundUp( max( delay, tick_ready, ( spend - state[ resource ].current ) / state[ resource ].regen ), 3 )
             end
         else
             delay = max( delay, ready() )

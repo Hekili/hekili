@@ -7,7 +7,6 @@ local Hekili = _G[ addon ]
 
 local class = ns.class
 local state = ns.state
-local unitDB = state.unitDB
 
 local targetCount = 0
 local targets = {}
@@ -21,6 +20,7 @@ local nameplates = {}
 local npCount = 0
 local addMissingTargets = true
 
+local formatKey = ns.formatKey
 local RegisterEvent = ns.RegisterEvent
 
 -- New Actor/Target System for 7.1.5
@@ -317,6 +317,12 @@ ns.Audit = function ()
     end
   end
 
+  for guid, entity in pairs( ns.entities ) do
+    if now > entity.last_seen + grace then
+        ns.entities[ guid ] = nil
+    end
+  end
+
   if Hekili.DB.profile.Enabled then
     C_Timer.After( 1, ns.Audit )
   end
@@ -354,3 +360,224 @@ ns.getTTD = function( unit )
   return TTD[ GUID ].sec or 300
 
 end
+
+
+
+
+
+-- NEW TARGETS
+-- FEB 2017
+
+local entity_count = 0
+
+ns.entities = setmetatable( {}, {
+    __index = function( t, k )
+        t[ k ] = {
+            health = 0,
+            max_health = 1,
+
+            buff = {},
+            debuff = {},
+
+            last_seen = GetTime()
+        }
+        entity_count = entity_count + 1
+        return t[ k ]
+    end
+} )
+local entities = ns.entities
+
+
+local function GetEntity( unit )
+
+    local guid = UnitGUID( unit )
+
+    if not guid then
+        return
+    end
+
+    return entities[ guid ]
+end
+
+
+local function RemoveEntity( unit )
+
+    local guid = UnitGUID( unit )
+
+    if not guid then
+        return
+    end
+
+    if rawget( entities, guid ) then
+        entities[ guid ] = nil
+        entity_count = max( 0, entity_count - 1 )
+    end
+end
+
+
+local function UpdateEntityHealth( event, unit )
+    local entity = GetEntity( unit )
+
+    if not entity then return end
+
+    entity.health = UnitHealth( unit )
+    entity.max_health = UnitHealthMax( unit )
+    
+    entity.last_seen = GetTime()
+    entity.last_unit = unit
+end
+
+
+RegisterEvent( "UNIT_HEALTH", UpdateEntityHealth )
+RegisterEvent( "UNIT_HEALTH_FREQUENT", UpdateEntityHealth )
+RegisterEvent( "UNIT_MAXHEALTH", UpdateEntityHealth )
+
+
+local autoKey = setmetatable( {}, {
+    __index = function( t, k )
+        t[ k ] = class.auras[ k ] and class.auras[ k ].key or formatKey( GetSpellInfo( k ) )
+        return t[ k ]
+    end
+} )
+
+
+-- TODO: Use this to maintain debuff counts for active_dot, etc.
+local function UpdateEntityAuras( event, unit )
+
+    local entity = GetEntity( unit )
+
+    if not entity then return end
+
+    -- Wipe all buffs, debuffs.
+    local buffs = entity.buff
+    local debuffs = entity.debuff
+    
+    for k in pairs( buffs ) do buffs[ k ] = nil end
+    for k in pairs( debuffs ) do debuffs[ k ] = nil end
+
+    -- Rebuild the aura DBs.
+    local i = 1
+    while( true ) do
+        local name, rank, icon, count, dispelType, duration, expires, caster, isStealable, _, spellID, canApplyAura, isBossDebuff, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
+
+        if not name then break end
+
+        buffs[ spellID ] = {
+            key = autoKey[ spellID ],
+            name = name,
+            rank = rank,
+            icon = icon,
+            count = count > 0 and count or 1,
+            dispelType = dispelType,
+            duration = duration,
+            expires = expires,
+            caster = caster or 'unknown',
+            isStealable = isStealable,
+            canApplyAura = canApplyAura,
+            timeMod = timeMod,
+            v1 = v1,
+            v2 = v2,
+            v3 = v3
+        }
+
+        i = i + 1
+    end
+
+    i = 1
+    while( true ) do
+        local name, rank, icon, count, dispelType, duration, expires, caster, isStealable, _, spellID, canApplyAura, isBossDebuff, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i )
+
+        if not name then break end
+
+        debuffs[ spellID ] = {
+            key = autoKey[ spellID ],
+            name = name,
+            rank = rank,
+            icon = icon,
+            count = count > 0 and count or 1,
+            dispelType = dispelType,
+            duration = duration,
+            expires = expires,
+            caster = caster or 'unknown',
+            isStealable = isStealable,
+            canApplyAura = canApplyAura,
+            timeMod = timeMod,
+            v1 = v1,
+            v2 = v2,
+            v3 = v3
+        }
+
+        i = i + 1
+    end
+
+    entity.last_seen = GetTime()
+    entity.last_unit = unit 
+end
+
+
+RegisterEvent( "UNIT_AURA", UpdateEntityAuras )
+
+RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
+    UpdateEntityHealth( nil, 'player' )
+    UpdateEntityAuras( nil, 'player' )
+end )
+
+
+Hekili.entities = entities
+
+
+
+--[[
+
+frame:RegisterUnitEvent("UNIT_MAXHEALTH", unit, displayedUnit);
+frame:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit);
+frame:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", unit, displayedUnit);
+frame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
+frame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
+frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
+end
+
+frame:RegisterEvent("UNIT_NAME_UPDATE");
+frame:RegisterUnitEvent("UNIT_LEVEL", unit, displayedUnit);
+
+if(self.db.units[frame.UnitType].healthbar.enable or frame.isTarget) then
+if(frame.UnitType == "ENEMY_NPC") then
+frame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit);
+end
+
+if(self.db.units[frame.UnitType].powerbar.enable) then
+frame:RegisterUnitEvent("UNIT_POWER", unit, displayedUnit)
+frame:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit, displayedUnit)
+frame:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit, displayedUnit)
+frame:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit)
+end
+
+if(self.db.units[frame.UnitType].castbar.enable) then
+frame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+frame:RegisterEvent("UNIT_SPELLCAST_DELAYED");
+frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
+frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+frame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
+frame:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+frame:RegisterUnitEvent("UNIT_SPELLCAST_START", unit, displayedUnit);
+frame:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit, displayedUnit);
+frame:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit, displayedUnit);
+end
+
+frame:RegisterEvent("PLAYER_ENTERING_WORLD");
+
+if(self.db.units[frame.UnitType].buffs.enable or self.db.units[frame.UnitType].debuffs.enable) then
+frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
+end
+frame:RegisterEvent("RAID_TARGET_UPDATE")
+mod.OnEvent(frame, "PLAYER_ENTERING_WORLD")
+end
+
+frame:RegisterEvent("UNIT_ENTERED_VEHICLE")
+frame:RegisterEvent("UNIT_EXITED_VEHICLE")
+frame:RegisterEvent("UNIT_PET")
+frame:RegisterEvent("PLAYER_TARGET_CHANGED");
+frame:RegisterEvent("PLAYER_ROLES_ASSIGNED")
+frame:RegisterEvent("UNIT_FACTION")
+end ]]
