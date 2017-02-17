@@ -117,7 +117,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         addAura( 'landslide', 202004 )
         addAura( 'lightning_shield', 192109 )
         addAura( 'rainfall', 215864 )
-        addAura( 'stormbringer', 201845 )
+        addAura( 'stormbringer', 201845, 'max_stack', 2 )
         addAura( 'windsong', 201898 )
 
         addAura( 'ancestral_guidance', 108281 )
