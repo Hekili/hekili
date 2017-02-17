@@ -1733,10 +1733,10 @@ local mt_resource = {
       if not t.tick_rate or not t.last_tick then
         return roundUp( t.deficit / t.regen, 3 )
       end
-      
+
       local time_to_next_tick = t.tick_rate - ( ( state.query_time - t.last_tick ) % t.tick_rate )
-      local ticks_to_ready = ceil( ( t.max - t.current ) / t.regen )
-      local tick_time = ticks_to_ready * t.tick_rate
+      local ticks_to_ready = floor( ( t.max - t.current ) / t.regen )
+      local tick_time = time_to_next_tick + ( ticks_to_ready * t.tick_rate )
 
       return roundUp( max( tick_time, t.deficit / t.regen ), 3 )
       -- return roundUp( ( t.max - t.current ) / t.regen, 2 )
@@ -2839,7 +2839,7 @@ function state.advance( time )
     end
   end
 
-  for k, _ in pairs( class.resources ) do
+  for k in pairs( class.resources ) do
     local resource = state[ k ]
 
     local override = ns.callHook( 'advance_resource_regen', false, k, time )
@@ -2852,7 +2852,8 @@ function state.advance( time )
 
             if time >= time_to_next_tick then
                 local ticks_in_time = 1 + floor( ( time - time_to_next_tick ) / resource.tick_rate )
-                local gain_per_tick = resource.regen / resource.tick_rate
+                local gain_per_tick = resource.regen * resource.tick_rate
+
                 resource.actual = min( resource.max, resource.actual + ( gain_per_tick * ticks_in_time ) )
             end
         else
