@@ -674,6 +674,12 @@ ns.newDisplayOption = function( key )
               return { a = 'Left', b = 'Right', c = 'Center' }
             end
           },
+          ['Blank I&L Space'] = {
+            type = 'description',
+            name = ' ',
+            order = 08,
+            width = 'single',
+          },
           ['Icons Shown'] = {
             type = 'range',
             name = 'Icons Shown',

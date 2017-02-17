@@ -1730,9 +1730,13 @@ local mt_resource = {
     elseif k == 'time_to_max' then
       if not t.regen or t.regen <= 0 or t.current == t.max then return 0 end
 
+      if not t.tick_rate or not t.last_tick then
+        return roundUp( t.deficit / t.regen, 3 )
+      end
+      
       local time_to_next_tick = t.tick_rate - ( ( state.query_time - t.last_tick ) % t.tick_rate )
       local ticks_to_ready = ceil( ( t.max - t.current ) / t.regen )
-      local tick_time = ticks_to_ready * state[ resource ].tick_rate
+      local tick_time = ticks_to_ready * t.tick_rate
 
       return roundUp( max( tick_time, t.deficit / t.regen ), 3 )
       -- return roundUp( ( t.max - t.current ) / t.regen, 2 )
