@@ -2032,6 +2032,9 @@ ns.SimulationCraftImporter = function ()
     get = 'sciGet',
     set = 'sciSet',
     order = 75,
+    hidden = function ()
+        return Hekili.AllowSimCImports ~= true
+    end,
     args = {
       displayGroup = {
         type = 'group',
@@ -4023,14 +4026,18 @@ function Hekili:SetOption( info, input, ... )
 end
 
 
+
 function Hekili:CmdLine( input )
-  if not input or input:trim() == "" or input:trim() == "makedefaults" or input:trim() == 'force' then
+  if not input or input:trim() == "" or input:trim() == "makedefaults" or input:trim() == 'force' or input:trim() == 'import' then
     if InCombatLockdown() and input:trim() ~= 'force' then
-      Hekili:Print( "This addon cannot be configured while in combat." )
-      return
+        Hekili:Print( "This addon cannot be configured while in combat." )
+        return
     end
     if input:trim() == 'makedefaults' then
-      Hekili.MakeDefaults = true
+        Hekili.MakeDefaults = true
+    end
+    if input:trim() == 'import' then
+        Hekili.AllowSimCImports = true
     end
     ns.StartConfiguration()
 

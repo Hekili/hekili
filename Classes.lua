@@ -691,7 +691,7 @@ addAbility( 'arcane_torrent', {
     id = 28730,
     spend = 0,
     cast = 0,
-    gcdType = 'spell',
+    gcdType = 'off',
     cooldown = 120,
     toggle = 'cooldowns'
     }, 50613, 80483, 129597, 155145, 25046, 69179 )

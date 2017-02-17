@@ -476,7 +476,7 @@ local power_tick_data = {
 
 RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
     if unit == 'player' then
-        if power == "FOCUS" then
+        if power == "FOCUS" and state.focus then
             local now = GetTime()
             local elapsed = now - state.focus.last_tick
 
@@ -488,7 +488,7 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
                 state.focus.last_tick = now
             end
 
-        elseif power == "ENERGY" then
+        elseif power == "ENERGY" and state.energy then
             local now = GetTime()
             local elapsed = min( 0.12, now - state.energy.last_tick )
 

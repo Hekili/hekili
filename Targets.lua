@@ -23,70 +23,6 @@ local addMissingTargets = true
 local formatKey = ns.formatKey
 local RegisterEvent = ns.RegisterEvent
 
--- New Actor/Target System for 7.1.5
--- Keep actual live information stored at all times.
--- This lets 'cycle_targets' and such things work (mostly), as long as enemy nameplates are active.
-
-
---[[ RegisterEvent( "UNIT_AURA", )
-
-
-RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
-
-    if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' and unitDB.IDs[ destGUID ] then
-        if orphans[ destGUID ] then
-            orphans[ destGUID ] = nil
-            num_orphans = num_orphans - 1
-        end
-
-        local debuffs, health = unitDB.debuff[ destGUID ], unitDB.health[ destGUID ]
-
-        for token in pairs( debuffs ) do
-            debuffs[ token ] = nil
-        end
-
-        for token in pairs( health ) do
-            health[ token ] = nil
-        end
-
-        debuffs = nil
-        health = nil
-        
-        unitDB.debuff[ destGUID ] = nil
-        unitDB.health[ destGUID ] = nil
-
-        local unit = unitDB.IDs[ destGUID ]
-
-        if unitDB.plates[ unit ] == destGUID then unitDB.plates[ unit ] = nil end
-        unitDB.IDs[ destGUID ] = nil
-    end
-
-end )
-
-
-ns.RegisterEvent( "NAME_PLATE_UNIT_ADDED", function( unit )
-
-    local unitID = UnitGUID( unit )
-
-    if unitID then
-        -- If they're an enemy, see if we already know them.
-        if actorMap[ unitID ] then
-            refreshActor( unitID )
-        else
-            actors[ unitID ] = newActor( unit, nameplate )
-        end        
-    end
-
-end )
-
-
-ns.RegisterEvent( "NAME_PLATE_UNIT_REMOVED", function( unit )
-
-    local unitID = UnitGUID( unit )
-    if unitID then actors[ unitID ] = nil end
-
-end ) ]]
-
 
 -- New Nameplate Proximity System
 function ns.getNumberTargets()
@@ -280,6 +216,38 @@ function ns.healingInLast( t )
 end
 
 
+local TTD = ns.TTD
+
+-- Borrowed TTD linear regression model from 'Nemo' by soulwhip (with permission).
+ns.initTTD = function( unit )
+
+  if not unit then return end
+
+  local GUID = UnitGUID( unit )
+
+  TTD[ GUID ] = TTD[ GUID ] or {}
+  TTD[ GUID ].n = 1
+  TTD[ GUID ].timeSum = GetTime()
+  TTD[ GUID ].healthSum = UnitHealth( unit ) or 0
+  TTD[ GUID ].timeMean = TTD[ GUID ].timeSum * TTD[ GUID ].timeSum
+  TTD[ GUID ].healthMean = TTD[ GUID ].timeSum * TTD[ GUID ].healthSum
+  TTD[ GUID ].name = UnitName( unit )
+  TTD[ GUID ].sec = 300
+
+end
+
+
+ns.getTTD = function( unit )
+
+  local GUID = UnitGUID( unit )
+
+  if not TTD[ GUID ] then return 300 end
+
+  return TTD[ GUID ].sec or 300
+
+end
+
+
 -- Auditor should clean things up for us.
 ns.Audit = function ()
 
@@ -317,12 +285,6 @@ ns.Audit = function ()
     end
   end
 
-  for guid, entity in pairs( ns.entities ) do
-    if now > entity.last_seen + grace then
-        ns.entities[ guid ] = nil
-    end
-  end
-
   if Hekili.DB.profile.Enabled then
     C_Timer.After( 1, ns.Audit )
   end
@@ -330,254 +292,144 @@ ns.Audit = function ()
 end
 
 
-local TTD = ns.TTD
 
--- Borrowed TTD linear regression model from 'Nemo' by soulwhip (with permission).
-ns.initTTD = function( unit )
-
-  if not unit then return end
-
-  local GUID = UnitGUID( unit )
-
-  TTD[ GUID ] = TTD[ GUID ] or {}
-  TTD[ GUID ].n = 1
-  TTD[ GUID ].timeSum = GetTime()
-  TTD[ GUID ].healthSum = UnitHealth( unit ) or 0
-  TTD[ GUID ].timeMean = TTD[ GUID ].timeSum * TTD[ GUID ].timeSum
-  TTD[ GUID ].healthMean = TTD[ GUID ].timeSum * TTD[ GUID ].healthSum
-  TTD[ GUID ].name = UnitName( unit )
-  TTD[ GUID ].sec = 300
-
-end
-
-
-ns.getTTD = function( unit )
-
-  local GUID = UnitGUID( unit )
-
-  if not TTD[ GUID ] then return 300 end
-
-  return TTD[ GUID ].sec or 300
-
-end
-
-
-
-
-
--- NEW TARGETS
--- FEB 2017
-
-local entity_count = 0
-
-ns.entities = setmetatable( {}, {
-    __index = function( t, k )
-        t[ k ] = {
-            health = 0,
-            max_health = 1,
-
-            buff = {},
-            debuff = {},
-
-            last_seen = GetTime()
-        }
-        entity_count = entity_count + 1
-        return t[ k ]
-    end
-} )
-local entities = ns.entities
-
-
-local function GetEntity( unit )
-
-    local guid = UnitGUID( unit )
-
-    if not guid then
-        return
-    end
-
-    return entities[ guid ]
-end
-
-
-local function RemoveEntity( unit )
-
-    local guid = UnitGUID( unit )
-
-    if not guid then
-        return
-    end
-
-    if rawget( entities, guid ) then
-        entities[ guid ] = nil
-        entity_count = max( 0, entity_count - 1 )
-    end
-end
-
-
-local function UpdateEntityHealth( event, unit )
-    local entity = GetEntity( unit )
-
-    if not entity then return end
-
-    entity.health = UnitHealth( unit )
-    entity.max_health = UnitHealthMax( unit )
-    
-    entity.last_seen = GetTime()
-    entity.last_unit = unit
-end
-
-
-RegisterEvent( "UNIT_HEALTH", UpdateEntityHealth )
-RegisterEvent( "UNIT_HEALTH_FREQUENT", UpdateEntityHealth )
-RegisterEvent( "UNIT_MAXHEALTH", UpdateEntityHealth )
-
-
-local autoKey = setmetatable( {}, {
-    __index = function( t, k )
-        t[ k ] = class.auras[ k ] and class.auras[ k ].key or formatKey( GetSpellInfo( k ) )
-        return t[ k ]
-    end
-} )
-
-
--- TODO: Use this to maintain debuff counts for active_dot, etc.
-local function UpdateEntityAuras( event, unit )
-
-    local entity = GetEntity( unit )
-
-    if not entity then return end
-
-    -- Wipe all buffs, debuffs.
-    local buffs = entity.buff
-    local debuffs = entity.debuff
-    
-    for k in pairs( buffs ) do buffs[ k ] = nil end
-    for k in pairs( debuffs ) do debuffs[ k ] = nil end
-
-    -- Rebuild the aura DBs.
-    local i = 1
-    while( true ) do
-        local name, rank, icon, count, dispelType, duration, expires, caster, isStealable, _, spellID, canApplyAura, isBossDebuff, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
-
-        if not name then break end
-
-        buffs[ spellID ] = {
-            key = autoKey[ spellID ],
-            name = name,
-            rank = rank,
-            icon = icon,
-            count = count > 0 and count or 1,
-            dispelType = dispelType,
-            duration = duration,
-            expires = expires,
-            caster = caster or 'unknown',
-            isStealable = isStealable,
-            canApplyAura = canApplyAura,
-            timeMod = timeMod,
-            v1 = v1,
-            v2 = v2,
-            v3 = v3
-        }
-
-        i = i + 1
-    end
-
-    i = 1
-    while( true ) do
-        local name, rank, icon, count, dispelType, duration, expires, caster, isStealable, _, spellID, canApplyAura, isBossDebuff, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i )
-
-        if not name then break end
-
-        debuffs[ spellID ] = {
-            key = autoKey[ spellID ],
-            name = name,
-            rank = rank,
-            icon = icon,
-            count = count > 0 and count or 1,
-            dispelType = dispelType,
-            duration = duration,
-            expires = expires,
-            caster = caster or 'unknown',
-            isStealable = isStealable,
-            canApplyAura = canApplyAura,
-            timeMod = timeMod,
-            v1 = v1,
-            v2 = v2,
-            v3 = v3
-        }
-
-        i = i + 1
-    end
-
-    entity.last_seen = GetTime()
-    entity.last_unit = unit 
-end
-
-
-RegisterEvent( "UNIT_AURA", UpdateEntityAuras )
-
-RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
-    UpdateEntityHealth( nil, 'player' )
-    UpdateEntityAuras( nil, 'player' )
-end )
-
-
-Hekili.entities = entities
-
-
+-- More New Target Stuff.
+-- UGH.
 
 --[[
 
-frame:RegisterUnitEvent("UNIT_MAXHEALTH", unit, displayedUnit);
-frame:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit);
-frame:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", unit, displayedUnit);
-frame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
-frame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
-frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
+local TargetDB = {
+    buffDB = {},
+    buff = {}
+}
+
+
+local mt_default_value = {
+    __index = function( t, k )
+        return t.default
+    end
+}
+
+
+local function setDefault( value )
+    return setmetatable( { default = value }, mt_default_value )
 end
 
-frame:RegisterEvent("UNIT_NAME_UPDATE");
-frame:RegisterUnitEvent("UNIT_LEVEL", unit, displayedUnit);
 
-if(self.db.units[frame.UnitType].healthbar.enable or frame.isTarget) then
-if(frame.UnitType == "ENEMY_NPC") then
-frame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit);
+
+local mt_buff_q = {
+    __index = function( t, k )
+        -- Calculations.
+        local e, id = state.enemy, t.id
+    end
+}
+
+
+local mt_buff_attr = {
+    __index = function( t, k )
+        t[ k ] = t.db[ k ]
+        return t[ k ]
+    end
+}
+
+
+local function addQueryAttribute( spellID, attr )
+    return setmetatable( {
+        id = spellID,
+        attr = attr,
+        db = TargetDB.buffDB[ spellID ][ attr ]
+    }, mt_buff_attr )
 end
 
-if(self.db.units[frame.UnitType].powerbar.enable) then
-frame:RegisterUnitEvent("UNIT_POWER", unit, displayedUnit)
-frame:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit, displayedUnit)
-frame:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit, displayedUnit)
-frame:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit)
+
+local function newBuff( spellID, key )
+
+    -- Don't overwrite an existing DB.
+    if TargetDB.buffDB[ spellID ] then return end
+
+    local db = {
+        id = spellID,
+        key = key or ( class.auras[ spellID ] and class.auras[ spellID ].key ) or formatKey( GetSpellInfo( spellID ) ),
+
+        count = setDefault( 0 ),
+        duration = setDefault( 0 ),
+        expires = setDefault( 0 ),
+        caster = setDefault( 'nobody' ),
+        isStealable = setDefault( false ),
+        canApplyAura = setDefault( false ),
+        isBossDebuff = setDefault( false ),
+        timeMod = setDefault( 1 ),
+        v1 = setDefault( 0 ),
+        v2 = setDefault( 0 ),
+        v3 = setDefault( 0 )
+    }
+
+    TargetDB.buffDB[ spellID ] = db
+
+    -- Set up the buff query item.
+    local query = {
+        id = spellID,
+        key = key or ( class.auras[ spellID ] and class.auras[ spellID ].key )  or formatKey( GetSpellInfo( spellID ) ),
+
+        count           = addQueryAttribute( spellID, 'count' ),
+        duration        = addQueryAttribute( spellID, 'duration' ),
+        expires         = addQueryAttribute( spellID, 'expires' ),
+        caster          = addQueryAttribute( spellID, 'caster' ),
+        isStealable     = addQueryAttribute( spellID, 'isStealable' ),
+        canApplyAura    = addQueryAttribute( spellID, 'canApplyAura' ),
+        isBossDebuff    = addQueryAttribute( spellID, 'isBossDebuff' ),
+        timeMod         = addQueryAttribute( spellID, 'timeMod' ),
+        v1              = addQueryAttribute( spellID, 'v1' ),
+        v2              = addQueryAttribute( spellID, 'v2' ),
+        v3              = addQueryAttribute( spellID, 'v3' )
+    }
+
+    TargetDB.buffDB[ spellID ] = db
+    TargetDB.buff[ spellID ] = query
+
 end
 
-if(self.db.units[frame.UnitType].castbar.enable) then
-frame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
-frame:RegisterEvent("UNIT_SPELLCAST_DELAYED");
-frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START");
-frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
-frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
-frame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
-frame:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
-frame:RegisterUnitEvent("UNIT_SPELLCAST_START", unit, displayedUnit);
-frame:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit, displayedUnit);
-frame:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit, displayedUnit);
-end
 
-frame:RegisterEvent("PLAYER_ENTERING_WORLD");
+RegisterEvent( "UNIT_AURA", function( event, unit )
+    if unit == "player" then
+        local guid = UnitGUID( unit )
 
-if(self.db.units[frame.UnitType].buffs.enable or self.db.units[frame.UnitType].debuffs.enable) then
-frame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
-end
-frame:RegisterEvent("RAID_TARGET_UPDATE")
-mod.OnEvent(frame, "PLAYER_ENTERING_WORLD")
-end
+        for _, aura in pairs( TargetDB.buffDB ) do
+            aura.count[ guid ] = nil
+            aura.duration[ guid ] = nil
+            aura.expires[ guid ] = nil
+            aura.isStealable[ guid ] = nil
+            aura.isBossDebuff[ guid ] = nil
+            aura.timeMod[ guid ] = nil
+            aura.v1[ guid ] = nil
+            aura.v2[ guid ] = nil
+            aura.v3[ guid ] = nil
+        end
 
-frame:RegisterEvent("UNIT_ENTERED_VEHICLE")
-frame:RegisterEvent("UNIT_EXITED_VEHICLE")
-frame:RegisterEvent("UNIT_PET")
-frame:RegisterEvent("PLAYER_TARGET_CHANGED");
-frame:RegisterEvent("PLAYER_ROLES_ASSIGNED")
-frame:RegisterEvent("UNIT_FACTION")
-end ]]
+        local i = 1
+        while( true ) do
+            local name, _, _, count, _, duration, expires, caster, isStealable, _, sID, canApplyAura, isBossDebuff, _, _, timeMod, v1, v2, v3 = UnitBuff( 'player', i )
+
+            if not name then break end
+
+            if not TargetDB.buffDB[ sID ] then newBuff( sID ) end
+            local aura = TargetDB.buffDB[ sID ]
+
+            aura.count[ guid ] = count > 0 and count or 1
+            aura.duration[ guid ] = duration
+            aura.expires[ guid ] = expires
+            aura.caster[ guid ] = caster
+            aura.isStealable[ guid ] = isStealable
+            aura.canApplyAura[ guid ] = canApplyAura
+            aura.isBossDebuff[ guid ] = isBossDebuff
+            aura.timeMod[ guid ] = timeMod
+            aura.v1[ guid ] = v1
+            aura.v2[ guid ] = v2
+            aura.v3[ guid ] = v3
+
+            i = i + 1
+        end
+    end
+end )
+
+Hekili.TDB = TargetDB ]]
