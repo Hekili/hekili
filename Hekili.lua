@@ -13,7 +13,7 @@ ns.PTR = GetBuildInfo() ~= "7.1.5"
 ns.lib = {
     AceConfig = LibStub( "AceConfig-3.0" ),
     AceConfigDialog = LibStub( "AceConfigDialog-3.0" ),
-    ArtifactData = LibStub( "LibArtifactData-1.0" ),
+    ArtifactData = LibStub( "LibArtifactData-1.0h" ),
     -- LegionArtifacts = LibStub:GetLibrary( "LegionArtifacts-1.1" ),
 	Format = {}, -- filled by Formatting.lua
 	LibDualSpec = LibStub( "LibDualSpec-1.0" ),
