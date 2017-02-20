@@ -780,7 +780,6 @@ addAbility( 'potion', {
     passive = true,
     toggle = 'potions',
     usable = function ()
-
         if not toggle.potions then return false end
 
         local pName = args.ModName or args.name or class.potion

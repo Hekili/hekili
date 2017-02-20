@@ -327,7 +327,7 @@ function ns.checkTimeScript( entry, delay, spend, spend_type )
 
     local out = script.Ready( delay, spend, spend_type )
 
-    return out and roundUp( out, 3 ) or 0
+    return ( out and out > 0 ) and roundUp( out, 2 ) or 0
 
 end
 

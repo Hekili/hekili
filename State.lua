@@ -1731,14 +1731,14 @@ local mt_resource = {
       if not t.regen or t.regen <= 0 or t.current == t.max then return 0 end
 
       if not t.tick_rate or not t.last_tick then
-        return roundUp( t.deficit / t.regen, 3 )
+        return roundUp( t.deficit / t.regen, 2 )
       end
 
       local time_to_next_tick = t.tick_rate - ( ( state.query_time - t.last_tick ) % t.tick_rate )
       local ticks_to_ready = floor( ( t.max - t.current ) / t.regen )
       local tick_time = time_to_next_tick + ( ticks_to_ready * t.tick_rate )
 
-      return roundUp( max( tick_time, t.deficit / t.regen ), 3 )
+      return roundUp( max( tick_time, t.deficit / t.regen ), 2 )
       -- return roundUp( ( t.max - t.current ) / t.regen, 2 )
 
     elseif k == 'regen' then
@@ -1875,6 +1875,9 @@ local mt_default_aura = {
         return 0
 
       end
+
+    elseif k == 'refreshable' then
+      return t.remains < 0.3 * class.auras[ t.key ].duration
 
     elseif k == 'cooldown_remains' then
       return state.cooldown[ t.key ].remains
@@ -2297,6 +2300,9 @@ local mt_default_debuff = {
         return 0
 
       end
+
+    elseif k == 'refreshable' then
+      return t.remains < 0.3 * class.auras[ t.key ].duration
 
     elseif k == 'stack' or k == 'react' then
       if t.up then return ( t.count ) else return 0 end
@@ -2902,7 +2908,7 @@ ns.spendResources = function( ability )
             spend = action.spend
             resource = action.spend_type or class.primaryResource
         elseif type( action.spend ) == 'function' then
-            spend, resource = action.spend( true )
+            spend, resource = action.spend()
         end
 
         if spend > 0 and spend < 1 then
@@ -3015,8 +3021,28 @@ end
 
 local power_tick_rate = 0.115
 
+
+local cacheTTR = {}
+local TTRtime = 0
+
+
 -- Needs to be expanded to handle energy regen before Rogue, Monk, Druid will work.
 function ns.timeToReady( action )
+
+
+    local now = state.now + state.offset
+
+    if cacheTTR[ action ] then
+        -- Check to see when this happened.
+        if TTRtime == now then
+            return cacheTTR[ action ]
+        end
+
+        for k in pairs( cacheTTR ) do
+            cacheTTR[ k ] = nil
+        end
+    end
+
 
     -- Need to ignore the delay for this part.
     local delay = state.cooldown[ action ].remains
@@ -3035,46 +3061,48 @@ function ns.timeToReady( action )
         end
 
         spend = ns.callHook( 'timeToReady_spend', spend )
+    end
 
-        local ready = ability.ready
-        if type( ready ) == 'number' then spend = ready or spend end
+    if ability.ready and type( ability.ready ) == 'number' then
+        spend = ability.ready
+    end
 
-        if type( ready ) ~= 'function' then
-            if spend > state[ resource ].current then
-                local tick_ready = 0
+    if resource and spend > state[ resource ].current then
+        local tick_ready = 0
 
-                if resource == 'focus' or resource == 'energy' then
-                    local time_to_next_tick = state[ resource ].tick_rate - ( ( state.query_time - state[ resource ].last_tick ) % state[ resource ].tick_rate )
-                    local ticks_to_ready = ceil( ( spend - state[ resource ].current ) / state[ resource ].regen ) - 1
+        if resource == 'focus' or resource == 'energy' then
+            --[[ local time_to_next_tick = state[ resource ].tick_rate - ( ( state.query_time - state[ resource ].last_tick ) % state[ resource ].tick_rate )
+            local ticks_to_ready = ceil( ( spend - state[ resource ].current ) / state[ resource ].regen )
 
-                    tick_ready = ticks_to_ready * state[ resource ].tick_rate
-                    -- delay = max( delay, state[ resource ].tick_rate + ( ticks_to_ready * state[ resource ].tick_rate ) )
-                
-                elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
-                    local buff_remaining = state.buff.crusade.up and state.buff.crusade.remains or state.buff.avenging_wrath.remains
-                    local deficit = spend - state.holy_power.current
-                    
-                    local ticks_remain = math.floor( buff_remaining / 4 )
-                    
-                    if ticks_remain < deficit then
-                        -- We won't generate enough holy_power from Liadrin's.
-                        tick_ready = 999
-                    else
-                        tick_ready = buff_remaining - ( deficit * 4 )
-                    end
-                end
-
-                delay = roundUp( max( delay, tick_ready, ( spend - state[ resource ].current ) / state[ resource ].regen ), 3 )
+            tick_ready = ticks_to_ready * state[ resource ].tick_rate
+            -- delay = max( delay, state[ resource ].tick_rate + ( ticks_to_ready * state[ resource ].tick_rate ) ) ]]
+        
+        elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
+            local buff_remaining = state.buff.crusade.up and state.buff.crusade.remains or state.buff.avenging_wrath.remains
+            local deficit = spend - state.holy_power.current
+            
+            local ticks_remain = math.floor( buff_remaining / 4 )
+            
+            if ticks_remain < deficit then
+                -- We won't generate enough holy_power from Liadrin's.
+                tick_ready = 999
+            else
+                tick_ready = buff_remaining - ( deficit * 4 )
             end
-        else
-            delay = max( delay, ready() )
         end
+
+        delay = roundUp( max( delay, tick_ready, ( ( spend - state[ resource ].current ) / state[ resource ].regen ) ), 2 )
+    end
+
+    if ability.ready and type( ability.ready ) == 'function' then
+        delay = max( delay, ability.ready() )
     end
 
     if state.script.entry then
         delay = ns.checkTimeScript( state.script.entry, delay, spend, resource ) or delay
     end
 
+    cacheTTR[ action ] = delay
     return delay
 
 end

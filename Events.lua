@@ -25,7 +25,10 @@ local match, upper = string.match, string.upper
 
 local events = CreateFrame( "Frame" )
 local handlers = {}
-local displayUpdates = {}
+
+ns.displayUpdates = {}
+local displayUpdates = ns.displayUpdates
+
 
 function ns.StartEventHandler()
 
@@ -378,6 +381,15 @@ ns.castsAll = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' 
 local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
+
+
+local function forceUpdate()
+    for i = 1, #Hekili.DB.profile.displays do
+        displayUpdates[ i ] = nil
+    end
+end
+
+
 local function spellcastEvents( event, unit, spell, _, _, spellID )
 
     if unit == 'player' then
@@ -435,24 +447,14 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
             end
         end
 
-        for i = 1, #Hekili.DB.profile.displays do
-            -- displayUpdates[ i ] = now - ( 1 / Hekili.DB.profile['Updates Per Second'] ) + 0.01
-            displayUpdates[ i ] = nil
-        end
+        forceUpdate()
 
     end
 
 end
 
 RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", spellcastEvents )
-RegisterEvent( "UNIT_SPELLCAST_START", spellcastEvents )
-
-
-local function forceUpdate()
-    for i = 1, #Hekili.DB.profile.displays do
-        displayUpdates[ i ] = nil
-    end
-end
+-- RegisterEvent( "UNIT_SPELLCAST_START", spellcastEvents )
 
 
 
@@ -474,6 +476,14 @@ local power_tick_data = {
 }
 
 
+local spell_names = setmetatable( {}, {
+    __index = function( t, k )
+        t[ k ] = GetSpellInfo( k )
+        return t[ k ]
+    end
+} )
+
+
 RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
     if unit == 'player' then
         if power == "FOCUS" and state.focus then
@@ -491,7 +501,6 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
         elseif power == "ENERGY" and state.energy then
             local now = GetTime()
             local elapsed = min( 0.12, now - state.energy.last_tick )
-
             elapsed = elapsed > power_tick_data.energy_avg * 1.5 and power_tick_data.energy_avg or elapsed
 
             if elapsed > 0.09 then
@@ -508,7 +517,6 @@ end )
 
 RegisterEvent( "PLAYER_TARGET_CHANGED", forceUpdate )
 RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
-RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
 RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
 
 

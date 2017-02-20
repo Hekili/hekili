@@ -628,6 +628,7 @@ function Hekili:ProcessHooks( dispID, solo )
     end
 
     -- if not solo then C_Timer.After( 1 / self.DB.profile['Updates Per Second'], self[ 'ProcessDisplay'..dispID ] ) end
+    ns.displayUpdates[ dispID ] = GetTime()
     updatedDisplays[ dispID ] = true
     -- Hekili:UpdateDisplay( dispID )
 
@@ -961,11 +962,11 @@ function Hekili:UpdateDisplay( dispID )
                         end
 
                         if ( class.file == 'HUNTER' or class.file == 'MONK' ) and Queue[i].exact_time and Queue[i].exact_time ~= gcd_start + gcd_duration and Queue[i].exact_time > now then
-                                -- button.Texture:SetDesaturated( Queue[i].time > 0 )
-                                button.Delay:SetText( format( "%.1f", Queue[i].exact_time - now ) )
+                            -- button.Texture:SetDesaturated( Queue[i].time > 0 )
+                            button.Delay:SetText( format( "%.1f", Queue[i].exact_time - now ) )
                         else
-                                -- button.Texture:SetDesaturated( false )
-                                button.Delay:SetText( nil )
+                            -- button.Texture:SetDesaturated( false )
+                            button.Delay:SetText( nil )
                         end
 
                     else

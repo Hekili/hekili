@@ -93,12 +93,6 @@ function ns.roundUp( num, places )
 
     return ceil( num * tens ) / tens
 
-    --[[ local x = tonumber( format( "%." .. ( places or 0 ) .. "f", num ) )
-
-    if x < num then x = x + ( 1 * ( 10 ^ ( -1 * ( places or 0 ) ) ) ) end
-
-    return x ]]
-
 end
 
 
