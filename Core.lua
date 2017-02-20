@@ -988,7 +988,8 @@ function Hekili:UpdateDisplay( dispID )
                             ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 1, 1)
                         end
                     elseif display['Range Checking'] == 'ability' then
-                        if ns.lib.SpellRange.IsSpellInRange( class.abilities[ aKey ].name, 'target' ) == 0 then
+                        local rangeSpell = class.abilities[ aKey ].range and GetSpellInfo( class.abilities[ aKey ].range ) or class.abilities[ aKey ].name
+                        if ns.lib.SpellRange.IsSpellInRange( rangeSpell, 'target' ) == 0 then
                             ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 0, 0)
                         elseif i == 1 and select(2, IsUsableSpell( class.abilities[ aKey ].id )) then
                             ns.UI.Buttons[dispID][i].Texture:SetVertexColor(0.4, 0.4, 0.4)

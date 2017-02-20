@@ -1031,7 +1031,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 12,
             charges = 1,
             recharge = 12,
-            velocity = 30
+            velocity = 30,
+            range = 62124,
         } )
 
         modifyAbility( 'judgment', 'cooldown', function( x )
