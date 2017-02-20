@@ -203,18 +203,17 @@ function Hekili:OnInitialize()
 
     ns.primeTooltipColors()
 
-
     callHook( "onInitialize" )
 
     if class.file == 'NONE' then
         if self.DB.profile.Enabled then
-                self.DB.profile.Enabled = false
-                self.DB.profile.AutoDisabled = true
+            self.DB.profile.Enabled = false
+            self.DB.profile.AutoDisabled = true
         end
         for i, buttons in ipairs( ns.UI.Buttons ) do
-                for j, _ in ipairs( buttons ) do
-                        buttons[j]:Hide()
-                end
+            for j, _ in ipairs( buttons ) do
+                buttons[j]:Hide()
+            end
         end
     end
 
@@ -251,6 +250,7 @@ function Hekili:ReInitialize()
             end
         end
     end
+
 end    
 
 

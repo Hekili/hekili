@@ -242,6 +242,18 @@ function ns.StopConfiguration()
 end
 
 
+local function MasqueUpdate( Addon, Group, SkinID, Gloss, Backdrop, Colors, Disabled )
+    if Disabled then
+        for dispID, display in ipairs( ns.UI.Buttons ) do
+            for btnID, button in ipairs( display ) do
+                button.__MSQ_NormalTexture:Hide()
+                button.Texture:SetAllPoints( button )
+            end
+        end
+    end
+end
+
+
 -- Builds and maintains the visible UI elements.
 -- Buttons (as frames) are never deleted, but should get reused effectively.
 function ns.buildUI()
@@ -249,7 +261,10 @@ function ns.buildUI()
   if not Masque then
     Masque = LibStub( "Masque", true )
 
-    if Masque then MasqueGroup = Masque:Group( addon ) end
+    if Masque then
+        Masque:Register( "Hekili", MasqueUpdate, Hekili )
+        MasqueGroup = Masque:Group( addon )
+    end
   end
 
   ns.cacheCriteria()
@@ -525,10 +540,10 @@ function Hekili:CreateButton( display, ID )
 
   if not button.Texture then
     button.Texture = button:CreateTexture(nil, "LOW")
-    button.Texture:SetAllPoints(button)
     button.Texture:SetTexture('Interface\\ICONS\\Spell_Nature_BloodLust')
     button.Texture:SetAlpha(1)
   end
+  button.Texture:SetAllPoints(button)
 
   button.Icon = button.Icon or button:CreateTexture(nil, "OVERLAY")
   button.Icon:SetSize( scaleFactor * button:GetWidth() * 0.5, scaleFactor * button:GetHeight() * 0.5 )
