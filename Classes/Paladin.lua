@@ -116,7 +116,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'blessing_of_sacrifice', 6940, 'duration', 12 )
         addAura( 'blessing_of_spellwarding', 204018, 'duration', 10 )
         addAura( 'blinding_light', 115750, 'duration', 6 )
-        addAura( 'consecration', 188370, 'duration', 8 )
+        -- addAura( 'consecration', 188370, 'duration', 8 )
         addAura( 'crusade', 224668, 'max_stack', 15 )
         addAura( 'divine_hammer', 198137 )
         addAura( 'divine_purpose', 223819 )
@@ -198,8 +198,9 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             if unit ~= 'player' then return end
 
             if spell == class.abilities.consecration.name then
-                state.last_cons_internal = GetTime()
-                state.expire_cons_internal = state.last_cons_internal + ( 9 * state.haste )
+                local start, duration = GetSpellCooldown( 26573 )
+                state.last_cons_internal = start
+                state.expire_cons_internal = start + max( duration, 9 * state.haste )
             
             elseif spell == class.abilities.shield_of_the_righteous.name then
                 state.last_sotr_internal = GetTime()
@@ -224,9 +225,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         local consecration = GetSpellInfo( 188370 )
 
         addAura( 'consecration', 188370, 'name', consecration, 'duration', 9, 'feign', function ()
-
-            buff.consecration = rawget( buff, 'consecration' ) or {}
-            buff.consecration.name = consecration
 
             if spec.protection then
                 local up = UnitBuff( 'player', consecration, nil, 'PLAYER' ) and now + offset < expire_consecration
