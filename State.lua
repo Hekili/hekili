@@ -1147,53 +1147,14 @@ ns.metatables.mt_default_pet = mt_default_pet
 local mt_pets = {
   __index = function(t, k)
     -- Should probably add all totems, but holding off for now.
-    if k == 'searing_totem' or k == 'magma_totem' or k == 'fire_elemental_totem' then
-      local present, name, start, duration = GetTotemInfo(1)
-
-      if present and name == class.abilities[ k ].name then
-        t[k] = {
-          key = k, totem = 1, expires = start + duration
-        }
-      else
-        t[k] = {
-          key = k, totem = 1, expires = 0
-        }
-
-      end
-      return t[k]
-
-    elseif k == 'storm_elemental_totem' then
-      local present, name, start, duration = GetTotemInfo(4)
-
-      if present and name == class.abilities[ k ].name then
-        t[k] = {
-          key = k, totem = 4, expires = start + duration
-        }
-      else
-        t[k] = {
-          key = k, totem = 4, expires = 0
-        }
-
-      end
-      return t[k]
-
-    elseif k == 'earth_elemental_totem' then
-      local present, name, start, duration = GetTotemInfo(2)
-
-      if present and name == class.abilities[ k ].name then
-        t[k] = {
-          key = k, totem = 2, expires = start + duration
-        }
-      else
-        t[k] = {
-          key = k, totem = 2, expires = 0
-        }
-
-      end
-      return t[k]
-
-    elseif k == 'up' or k == 'exists' then
+    if k == 'up' or k == 'exists' then
       return UnitExists( 'pet' )
+
+    elseif k == 'alive' then
+        return not UnitIsDead( 'pet' )
+
+    elseif k == 'dead' then
+        return UnitIsDead( 'pet' )
 
     end
 
@@ -2752,20 +2713,27 @@ function state.reset( dispID )
 
     state.advance( cast_time )
 
-    if ability and not ability.channeled then
+    if ability then 
 
-      -- Put the action on cooldown.  (It's slightly premature, but addresses CD resets like Echo of the Elements.)
-      if ability.charges and ability.recharge > 0 then
-        state.spendCharges( casting, 1 )
-      else
-        state.setCooldown( casting, ability.cooldown )
-      end
+        if not ability.channeled then
+            -- Put the action on cooldown.  (It's slightly premature, but addresses CD resets like Echo of the Elements.)
+            if ability.charges and ability.recharge > 0 then
+            state.spendCharges( casting, 1 )
+            else
+            state.setCooldown( casting, ability.cooldown )
+            end
 
-      -- Perform the action.
-      ns.runHandler( casting )
+            -- Perform the action.
+            ns.runHandler( casting )
 
-      ns.spendResources( casting )
+            ns.spendResources( casting )
+
+        elseif ability.postchannel then
+            ability.postchannel()
+
+        end
     end
+
   end
 
   -- Delay to end of GCD.
