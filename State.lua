@@ -2818,7 +2818,7 @@ function state.advance( time )
     local override = ns.callHook( 'advance_resource_regen', false, k, time )
 
     if not override and resource.regen and resource.regen ~= 0 then
-        if resource.last_tick and resource.tick_rate then 
+        if false and resource.last_tick and resource.tick_rate then 
             -- We're using a ticking resource.
             -- Only add what is actually generated in the interval.
             local time_to_next_tick = resource.tick_rate - ( ( state.now + state.offset - resource.last_tick ) % resource.tick_rate )

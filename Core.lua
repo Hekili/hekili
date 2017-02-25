@@ -563,7 +563,8 @@ function Hekili:ProcessHooks( dispID, solo )
                         slot.depth = chosen_depth
 
                         for k,v in pairs( class.resources ) do
-                            slot.resources[k] = state[k].current
+                            slot.resources[k] = state[k].current 
+                            if state[k].regen then slot.resources[k] = slot.resources[k] + ( state[k].regen * chosen_wait ) end
                         end
 
                         slot.resource_type = ns.resourceType( chosen_action )
