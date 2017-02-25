@@ -1731,14 +1731,14 @@ local mt_resource = {
       if not t.regen or t.regen <= 0 or t.current == t.max then return 0 end
 
       if not t.tick_rate or not t.last_tick then
-        return roundUp( t.deficit / t.regen, 2 )
+        return t.deficit / t.regen
       end
 
       local time_to_next_tick = t.tick_rate - ( ( state.query_time - t.last_tick ) % t.tick_rate )
       local ticks_to_ready = floor( ( t.max - t.current ) / t.regen )
       local tick_time = time_to_next_tick + ( ticks_to_ready * t.tick_rate )
 
-      return roundUp( max( tick_time, t.deficit / t.regen ), 2 )
+      return max( tick_time, t.deficit / t.regen )
       -- return roundUp( ( t.max - t.current ) / t.regen, 2 )
 
     elseif k == 'regen' then
@@ -2766,7 +2766,6 @@ function state.reset( dispID )
 
       ns.spendResources( casting )
     end
-
   end
 
   -- Delay to end of GCD.
@@ -2787,7 +2786,7 @@ function state.advance( time )
     return
   end
 
-  roundUp( time, 2 )
+  -- roundUp( time, 2 )
   
   time = ns.callHook( 'advance', time )
 
@@ -3032,7 +3031,7 @@ function ns.timeToReady( action )
 
     local now = state.now + state.offset
 
-    if cacheTTR[ action ] then
+    if cacheTTR[ action ] and not state.script.entry then
         -- Check to see when this happened.
         if TTRtime == now then
             return cacheTTR[ action ]
@@ -3042,7 +3041,7 @@ function ns.timeToReady( action )
             cacheTTR[ k ] = nil
         end
     end
-
+    
 
     -- Need to ignore the delay for this part.
     local delay = state.cooldown[ action ].remains
@@ -3091,7 +3090,7 @@ function ns.timeToReady( action )
             end
         end
 
-        delay = roundUp( max( delay, tick_ready, ( ( spend - state[ resource ].current ) / state[ resource ].regen ) ), 2 )
+        delay = max( delay, tick_ready, ( ( spend - state[ resource ].current ) / state[ resource ].regen ) )
     end
 
     if ability.ready and type( ability.ready ) == 'function' then

@@ -4945,6 +4945,8 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
 end
 
 
+local forceUpdate = ns.forceUpdate
+
 
 -- Key Bindings
 function Hekili:TogglePause()
@@ -4960,6 +4962,8 @@ function Hekili:TogglePause()
 
   Hekili:Print( (not self.Pause and "UN" or "") .. "PAUSED." )
   Hekili:Notify( (not self.Pause and "UN" or "") .. "PAUSED" )
+
+  forceUpdate()
 end
 
 
@@ -4995,6 +4999,7 @@ local modeMsgs = {
   }
 }
 
+
 function Hekili:ToggleMode()
   local switch = Hekili.DB.profile['Switch Type']
 
@@ -5004,6 +5009,8 @@ function Hekili:ToggleMode()
   Hekili:Notify( modeMsgs[ Hekili.DB.profile['Mode Status'] ].n )
 
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_MODE', Hekili.DB.profile['Mode Status'] ) end
+
+  forceUpdate()
 end
 
 
@@ -5012,6 +5019,8 @@ function Hekili:ToggleInterrupts()
   Hekili:Print( Hekili.DB.profile.Interrupts and "Interrupts |cFF00FF00ENABLED|r." or "Interrupts |cFFFF0000DISABLED|r." )
   Hekili:Notify( "Interrupts " .. ( Hekili.DB.profile.Interrupts and "ON" or "OFF" ) )
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_INTERRUPTS', Hekili.DB.profile.Interrupts ) end
+
+  forceUpdate()
 end
 
 
@@ -5020,6 +5029,8 @@ function Hekili:ToggleCooldowns()
   Hekili:Print( Hekili.DB.profile.Cooldowns and "Cooldowns |cFF00FF00ENABLED|r." or "Cooldowns |cFFFF0000DISABLED|r." )
   Hekili:Notify( "Cooldowns " .. ( Hekili.DB.profile.Cooldowns and "ON" or "OFF" ) )
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_COOLDOWNS', Hekili.DB.profile.Cooldowns ) end
+
+  forceUpdate()
 end
 
 
@@ -5028,6 +5039,8 @@ function Hekili:TogglePotions()
   Hekili:Print( Hekili.DB.profile.Potions and "Potions |cFF00FF00ENABLED|r." or "Potions |cFFFF0000DISABLED|r." )
   Hekili:Notify( "Potions " .. ( Hekili.DB.profile.Potions and "ON" or "OFF" ) )
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_POTIONS', Hekili.DB.profile.Potions ) end
+
+  forceUpdate()
 end
 
 
@@ -5047,6 +5060,8 @@ function Hekili:ClassToggle( name )
   Hekili:Notify( Hekili.DB.profile[key] and ( toggle .. " ON" ) or ( toggle .. " OFF" ) )
 
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_CLASS_TOGGLE', name, Hekili.DB.profile[ key ] ) end
+
+  forceUpdate()
 end
 
 

@@ -629,7 +629,7 @@ function Hekili:ProcessHooks( dispID, solo )
 
     -- if not solo then C_Timer.After( 1 / self.DB.profile['Updates Per Second'], self[ 'ProcessDisplay'..dispID ] ) end
     ns.displayUpdates[ dispID ] = GetTime()
-    updatedDisplays[ dispID ] = true
+    updatedDisplays[ dispID ] = 0
     -- Hekili:UpdateDisplay( dispID )
 
 end
@@ -759,8 +759,7 @@ function Hekili:UpdateDisplay( dispID )
 
             _G[ "HekiliDisplay" .. dispID ]:Show()
 
-
-            local checksum = ""
+            --[[ local checksum = ""
 
             for i = 1, #Queue do
                 checksum = format( "%s%02d", checksum, Queue[i].depth )
@@ -794,7 +793,7 @@ function Hekili:UpdateDisplay( dispID )
             end
 
             table.insert( checksums[ dispID ], 1, checksum )
-            checksums[ dispID ][ 10 ] = nil
+            checksums[ dispID ][ 10 ] = nil ]]
 
             -- if snapbacks > 0 then return end
 
@@ -1021,8 +1020,12 @@ end
 
 
 function Hekili:UpdateDisplays()
-    for display in pairs( updatedDisplays ) do
-        Hekili:UpdateDisplay( display )
-        updatedDisplays[ display ] = nil
+    local now = GetTime()
+
+    for display, update in pairs( updatedDisplays ) do
+        if now - update > 0.033 then
+            Hekili:UpdateDisplay( display )
+            updatedDisplays[ display ] = now
+        end
     end
 end

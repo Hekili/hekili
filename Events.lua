@@ -113,10 +113,12 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
     ns.restoreDefaults( nil, true )
     ns.buildUI()
 end )
+
 RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
     ns.specializationChanged()
     ns.checkImports()
 end )
+
 RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( _, unit )
     if unit == 'player' then
         ns.specializationChanged()
@@ -169,6 +171,7 @@ end
 
 RegisterEvent( "PLAYER_TALENT_UPDATE", function ()
     ns.updateTalents()
+    ns.forceUpdate()
 end )
 
 
@@ -389,6 +392,8 @@ local function forceUpdate()
         displayUpdates[ i ] = nil
     end
 end
+
+ns.forceUpdate = forceUpdate
 
 
 local function spellcastEvents( event, unit, spell, _, _, spellID )

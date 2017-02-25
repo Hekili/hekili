@@ -14,7 +14,7 @@ local safeMax = ns.safeMax
 
 local trim = string.trim
 
-Hekili.Scripts = scripts.A
+Hekili.Scripts = scripts
 
 -- Convert SimC syntax to Lua conditionals.
 local SimToLua = function( str, modifier )
@@ -327,7 +327,7 @@ function ns.checkTimeScript( entry, delay, spend, spend_type )
 
     local out = script.Ready( delay, spend, spend_type )
 
-    return ( out and out > 0 ) and roundUp( out, 2 ) or 0
+    return out or 0
 
 end
 
