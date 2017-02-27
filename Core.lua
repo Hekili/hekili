@@ -574,6 +574,9 @@ function Hekili:ProcessHooks( dispID, solo )
                             -- Advance through the wait time.
                             state.advance( chosen_wait )
 
+                            -- Wipe out the delay, as we've advanced to the cast time.
+                            state.delay = 0
+
                             local action = class.abilities[ chosen_action ]
 
                             -- Start the GCD.

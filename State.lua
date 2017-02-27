@@ -1104,7 +1104,7 @@ local mt_stat = {
 
     end
 
-    Hekili:Error( "Unknown state.stat key: '" .. k .. "'." )
+    -- Hekili:Error( "Unknown state.stat key: '" .. k .. "'." )
     return
   end
 }
@@ -1457,6 +1457,9 @@ local mt_default_cooldown = {
         elseif k == 'charges_max' then
             return class.abilities[ t.key ].charges
 
+        elseif k == 'time_to_max_charges' then
+            return ( class.abilities[ t.key ].charges - t.charges_fractional ) * class.abilities[ t.key ].recharge
+
         elseif k == 'remains' then
 
             if t.key == 'global_cooldown' then
@@ -1506,7 +1509,7 @@ local mt_default_cooldown = {
 
         end
 
-        error("UNK: " .. k )
+        return
 
     end
 }
@@ -1691,16 +1694,7 @@ local mt_resource = {
     elseif k == 'time_to_max' then
       if not t.regen or t.regen <= 0 or t.current == t.max then return 0 end
 
-      if not t.tick_rate or not t.last_tick then
-        return t.deficit / t.regen
-      end
-
-      local time_to_next_tick = t.tick_rate - ( ( state.query_time - t.last_tick ) % t.tick_rate )
-      local ticks_to_ready = floor( ( t.max - t.current ) / t.regen )
-      local tick_time = time_to_next_tick + ( ticks_to_ready * t.tick_rate )
-
-      return max( tick_time, t.deficit / t.regen )
-      -- return roundUp( ( t.max - t.current ) / t.regen, 2 )
+      return t.deficit / t.regen
 
     elseif k == 'regen' then
       -- Not a regenerating resource.
@@ -2675,6 +2669,12 @@ function state.reset( dispID )
         state[ k ].regen = inactive
       end
     end
+
+    --[[ local time_since = state.now - state[ k ].last_tick
+    if state[ k ].last_tick > 0 and time_since < state[ k ].tick_rate and state[ k ].actual < state[ k ].max then
+        gain( state[ k ].regen * time_since, k )
+    end ]]
+
   end
 
   state.health = rawget( state, 'health' ) or setmetatable( { resource = 'health' }, mt_resource )

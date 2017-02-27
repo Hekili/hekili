@@ -1565,6 +1565,7 @@ ns.newActionOption = function( aList, index )
 
           ns.state.reset()
           ns.state.this_action = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability
+          ns.state.this_args = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Args
           ns.storeValues( results, ns.scripts.A[ listIdx..':'..actIdx ] )
 
           return results, true
@@ -1616,10 +1617,15 @@ ns.newActionOption = function( aList, index )
           local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
           
           local action = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability
+          local args = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Args
 
           local results = {}
 
           ns.state.reset()
+          
+          ns.state.this_action = action
+          ns.state.this_args = args
+
           results.delay = action and ns.state.action[ action ].ready_time or 0
 
           local ability = ns.state.class.abilities[ action ]

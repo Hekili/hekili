@@ -126,7 +126,6 @@ RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( _, unit )
     end
 end )
 
-
 RegisterEvent( "BARBER_SHOP_OPEN", function ()
     Hekili.Barber = true
 end )
@@ -498,7 +497,7 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
 
             elapsed = elapsed > power_tick_data.focus_avg * 1.5 and power_tick_data.focus_avg or elapsed
 
-            if elapsed > 0.09 then
+            if elapsed > 0.075 then
                 power_tick_data.focus_avg = ( elapsed + ( power_tick_data.focus_avg * power_tick_data.focus_ticks ) ) / ( power_tick_data.focus_ticks + 1 )
                 power_tick_data.focus_ticks = power_tick_data.focus_ticks + 1
                 state.focus.last_tick = now
@@ -509,7 +508,7 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
             local elapsed = min( 0.12, now - state.energy.last_tick )
             elapsed = elapsed > power_tick_data.energy_avg * 1.5 and power_tick_data.energy_avg or elapsed
 
-            if elapsed > 0.09 then
+            if elapsed > 0.075 then
                 power_tick_data.energy_avg = ( elapsed + ( power_tick_data.energy_avg * power_tick_data.energy_ticks ) ) / ( power_tick_data.energy_ticks + 1 )
                 power_tick_data.energy_ticks = power_tick_data.energy_ticks + 1
                 state.energy.last_tick = now

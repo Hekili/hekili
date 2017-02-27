@@ -94,7 +94,11 @@ ns.storeValues = storeValues
 
 local function storeReadyValues( tbl, node )
 
-    if not node.Elements then
+    for k in pairs( tbl ) do
+        tbl[k] = nil
+    end
+
+    if not node.ReadyElements then
         return
     end
 
@@ -439,14 +443,4 @@ function ns.implantDebugData( queue )
 
     ns.state.delay = delay
   end
-end
-
-
-local function implantTimeScriptData( queue )
-    if queue.list and queue.action then
-        local action = scripts.A[ queue.list..':'..queue.action ]
-        queue.ReadyScript = scrAction.ReadyLua
-        queue.ReadyElements = queue.ReadyElements or {}
-        storeReadyValues( queue.ReadyElements, scrAction )
-    end
 end
