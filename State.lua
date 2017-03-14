@@ -783,7 +783,7 @@ local mt_state = {
     elseif k == 'time' then
       -- Calculate time in combat.
       if t.combat == 0 and t.false_start == 0 then return 0
-      else return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) end
+      else return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) + ( ( t.combat > 0 or t.false_start ) and t.delay or 0 ) end
 
     elseif k == 'time_to_die' then
       -- Harvest TTD calculation from Hekili.
@@ -908,6 +908,9 @@ local mt_state = {
 
     elseif k == 'max_charges' then
         return class.abilities[ t.this_action ].charges or 0
+
+    elseif k == 'recharge' then
+        return t.cooldown[ t.this_action ].recharge
 
     elseif k == 'recharge_time' then
       return t.cooldown[ t.this_action ].recharge_time
@@ -1456,6 +1459,9 @@ local mt_default_cooldown = {
 
         elseif k == 'charges_max' then
             return class.abilities[ t.key ].charges
+
+        elseif k == 'recharge' then
+            return class.abilities[ t.key ].recharge
 
         elseif k == 'time_to_max_charges' then
             return ( class.abilities[ t.key ].charges - t.charges_fractional ) * class.abilities[ t.key ].recharge
@@ -2775,7 +2781,6 @@ function state.advance( time )
 
         if proj.time > state.query_time and proj.time < state.query_time + time then
             state.offset = proj.time - state.query_time
-            -- print( proj.spell, proj.time, state.query_time )
             ns.runHandler( proj.spell, true )
         else
             break
@@ -2936,8 +2941,11 @@ ns.isUsable = function( spell )
     end ]]
 
     if ability.usable ~= nil then
-        if type( ability.usable ) == 'number' then return IsUsableSpell( ability.usable )
-        elseif type( ability.usable ) == 'function' then return ability.usable() end
+        if type( ability.usable ) == 'number' then 
+            return IsUsableSpell( ability.usable )
+        elseif type( ability.usable ) == 'function' then
+            return ability.usable()
+        end
     end
 
     return true
@@ -2996,25 +3004,12 @@ local TTRtime = 0
 -- Needs to be expanded to handle energy regen before Rogue, Monk, Druid will work.
 function ns.timeToReady( action )
 
-
     local now = state.now + state.offset
 
-    if cacheTTR[ action ] and not state.script.entry then
-        -- Check to see when this happened.
-        if TTRtime == now then
-            return cacheTTR[ action ]
-        end
+    -- Need to ignore the wait for this part.
+    local wait = max( state.cooldown.global_cooldown.remains, state.cooldown[ action ].remains )
 
-        for k in pairs( cacheTTR ) do
-            cacheTTR[ k ] = nil
-        end
-    end
-    
-
-    -- Need to ignore the delay for this part.
-    local delay = state.cooldown[ action ].remains
-
-    delay = ns.callHook( "timeToReady", delay, action )
+    wait = ns.callHook( "timeToReady", wait, action )
 
     local ability = class.abilities[ action ]
     local spend, resource
@@ -3034,43 +3029,47 @@ function ns.timeToReady( action )
         spend = ability.ready
     end
 
-    if resource and spend > state[ resource ].current then
+    if resource and spend > state[ resource ].actual then
         local tick_ready = 0
 
-        if resource == 'focus' or resource == 'energy' then
-            --[[ local time_to_next_tick = state[ resource ].tick_rate - ( ( state.query_time - state[ resource ].last_tick ) % state[ resource ].tick_rate )
-            local ticks_to_ready = ceil( ( spend - state[ resource ].current ) / state[ resource ].regen )
+        if state[ resource ].regen and state[ resource ].regen > 0 then
+            if resource == 'focus' or resource == 'energy' then
+                --[[ local time_to_next_tick = state[ resource ].tick_rate - ( ( state.query_time - state[ resource ].last_tick ) % state[ resource ].tick_rate )
+                local ticks_to_ready = ceil( ( spend - state[ resource ].current ) / state[ resource ].regen )
 
-            tick_ready = ticks_to_ready * state[ resource ].tick_rate
-            -- delay = max( delay, state[ resource ].tick_rate + ( ticks_to_ready * state[ resource ].tick_rate ) ) ]]
-        
+                tick_ready = ticks_to_ready * state[ resource ].tick_rate
+                -- wait = max( wait, state[ resource ].tick_rate + ( ticks_to_ready * state[ resource ].tick_rate ) ) ]]
+            
+            end
+            wait = max( wait, tick_ready, ( spend - state[ resource ].actual ) / state[ resource ].regen )
         elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
             local buff_remaining = state.buff.crusade.up and state.buff.crusade.remains or state.buff.avenging_wrath.remains
-            local deficit = spend - state.holy_power.current
+            local deficit = spend - state.holy_power.actual
             
             local ticks_remain = math.floor( buff_remaining / 4 )
             
             if ticks_remain < deficit then
                 -- We won't generate enough holy_power from Liadrin's.
-                tick_ready = 999
+                tick_ready = 3600
             else
                 tick_ready = buff_remaining - ( deficit * 4 )
             end
+            wait = max( wait, tick_ready, ( spend - state[ resource ].actual ) / state[ resource ].regen )
+        else
+            wait = 3600
         end
-
-        delay = max( delay, tick_ready, ( ( spend - state[ resource ].current ) / state[ resource ].regen ) )
     end
 
     if ability.ready and type( ability.ready ) == 'function' then
-        delay = max( delay, ability.ready() )
+        wait = max( wait, ability.ready() )
     end
 
     if state.script.entry then
-        delay = ns.checkTimeScript( state.script.entry, delay, spend, resource ) or delay
+        wait = ns.checkTimeScript( state.script.entry, wait, spend, resource ) or wait
     end
 
-    cacheTTR[ action ] = delay
-    return delay
+    -- cacheTTR[ action ] = wait
+    return wait
 
 end
 

@@ -38,8 +38,7 @@ function Hekili:GetDefaults()
       ['Count Nameplate Targets'] = true,
       ['Nameplate Detection Range'] = 8,
       ['Count Targets by Damage'] = true,
-      ['Updates Per Second'] = 20,
-      ['Recommendation Window'] = 0.1,
+      ['Updates Per Second'] = 4,
 
       ['Notification Enabled'] = true,
       ['Notification Font'] = 'Arial Narrow',
@@ -2438,6 +2437,16 @@ local getColoredName = function( tab )
 end
 
 
+local snapshots = {
+    displays = {},
+    snaps = {},
+    empty = {},
+
+    display = "none",
+    snap = {},
+}
+
+
 function Hekili:GetOptions()
   local Options = {
     name = "Hekili",
@@ -2454,7 +2463,7 @@ function Hekili:GetOptions()
         args = {
           headerWarn = {
             type = 'description',
-            name	=	"Welcome to Hekili v7 for |cFF00FF00Legion|r.  This addon's default settings will give you similar behavior to the original version. " ..
+            name	=	"Welcome to Hekili v7.1.5 for |cFF00FF00Legion|r.  This addon's default settings will give you similar behavior to the original version. " ..
             'Please report bugs to hekili.tcn@gmail.com / @Hekili808 on Twitter / Hekili on MMO-C.\n',
             order = 0,
           },
@@ -2475,7 +2484,7 @@ function Hekili:GetOptions()
           whatsNew = {
             type = 'description',
             name = "|cFFFFD100What's New!|r\n\n" ..
-            "|cFF00FF00Monks!|r - Windwalker and Brewmaster Monks are supported through an additional class module.  You can download it from http://curse.com/addons/wow/hekili-monks/.",
+            "|cFF00FF00Improved Debugging|r - When using the Debug and Pause features, Debug Snapshots can be taken which will breakdown the entire decision-making process of the addon.  These can be viewed in the |cFFFFD100Debug Snapshots|r section.",
             order = 2
           },
           endCap = { -- just here to trigger scrolling if needed.
@@ -2486,6 +2495,76 @@ function Hekili:GetOptions()
 
         }
       },
+
+
+      snapshots = {
+        type = "group",
+        name = "Debug Snapshots",
+        order = 70,
+        args = {
+
+            Display = {
+                type = "select",
+                name = "Display",
+                desc = "Select the display to show (if any snapshots have been taken).",
+                order = 1,
+                values = function( info )
+                    local displays = snapshots.displays
+
+                    for k in pairs( ns.snapshots ) do
+                        displays[k] = k
+                    end
+
+                    return displays
+                end,
+                set = function( info, val )
+                    snapshots.display = val
+                end,
+                get = function( info )
+                    return snapshots.display
+                end,
+                width = "double"
+            },
+            SnapID = {
+                type = "select",
+                name = "Display",
+                desc = "Select the display to show (if any snapshots have been taken).",
+                order = 2,
+                values = function( info )
+                    for k, v in pairs( ns.snapshots ) do
+                        snapshots.snaps[k] = snapshots.snaps[k] or {}
+
+                        for idx in pairs( v ) do
+                            snapshots.snaps[k][idx] = idx
+                        end
+                    end
+
+                    return snapshots.display and snapshots.snaps[ snapshots.display ] or snapshots.empty
+                end,
+                set = function( info, val )
+                    snapshots.snap[ snapshots.display ] = val
+                end,
+                get = function( info )
+                    return snapshots.snap[ snapshots.display ]
+                end
+            },
+            Snapshot = {
+                type = 'input',
+                name = "Snapshot",
+                desc = "Any available debug information is available here.",
+                order = 3,
+                get = function( info )
+                    local display = snapshots.display
+                    local snap = display and snapshots.snap[ display ]
+
+                    return snap and ns.snapshots[ display ][ snap ]
+                end,
+                multiline = 25,
+                width = "full",
+            }
+        }
+      },
+
       general = {
         type = "group",
         name = "General",
@@ -2596,16 +2675,31 @@ function Hekili:GetOptions()
                 max = 40,
                 step = 1,
                 width = 'full',
+                hidden = function ()
+                    return not Hekili.LowImpact
+                end,
                 order = 1
               },
-              ['Recommendation Window'] = {
+              ['LI - Updates Per Second'] = {
                 type = 'range',
-                name = "Recommendation Window",
-                min = 0,
-                max = 0.25,
-                step = 0.01,
-                width = 'full',
-                order = 2
+                name = "Updates Per Second",
+                min = 4,
+                max = 40,
+                step = 1,
+                width = 'double',
+                hidden = function ()
+                    return Hekili.LowImpact
+                end,
+                order = 1
+              },
+              ['Low Impact Mode'] = {
+                type = 'toggle',
+                name = "Low Impact Mode",
+                desc = "By default, the addon will retest recommendations multiple times at small intervals.  This helps give higher quality recommendations when a high-priority ability is becoming available in the near future.  However, this additional testing uses additional CPU time.  Checking this box will disable the retests and reduce CPU usage.  This may improve your frame rate while using this addon.",
+                order = 2,
+                hidden = function()
+                    return Hekili.LowImpact
+                end,
               }
             }
           },
@@ -2981,7 +3075,12 @@ function Hekili:GetOptions()
                 type = 'toggle',
                 name = 'Pause',
                 order = 11,
-                width = 'double',
+              },
+              PauseSnapshot = {
+                type = 'toggle',
+                name = 'Snapshot Only',
+                desc = "If checked, the addon will only take a snapshot when the Pause key is tapped, rather than freezing the display.",
+                order = 12,
               },
               HEKILI_TOGGLE_MODE = {
                 type = 'keybinding',
@@ -3447,6 +3546,7 @@ function Hekili:GetOption( info, input )
   local profile = Hekili.DB.profile
 
   if category == 'general' then
+    if option == "LI - Updates Per Second" then option = "Updates Per Second" end
     return profile[option]
 
   elseif category == 'class' then
@@ -3588,6 +3688,8 @@ function Hekili:SetOption( info, input, ... )
   local profile = Hekili.DB.profile
 
   if category == 'general' then
+    if option == 'LI - Updates Per Second' then option = "Updates Per Second" end
+
     -- We'll preset the option here; works for most options.
     profile[ option ] = input
 
@@ -3668,6 +3770,9 @@ function Hekili:SetOption( info, input, ... )
     elseif option == 'Pause' then
       profile[option] = revert
       self:TogglePause()
+      return
+
+    elseif option == 'PauseSnapshot' then
       return
 
     elseif option == 'Cooldowns' then
@@ -4954,22 +5059,40 @@ end
 local forceUpdate = ns.forceUpdate
 
 
+local warnOnce = false
+
 -- Key Bindings
 function Hekili:TogglePause()
-  self.Pause = not self.Pause
 
-  local MouseInteract = ( self.DB.profile.Debug and self.Pause ) or self.Config or ( not Hekili.DB.profile.Locked )
-
-  for i = 1, #ns.UI.Buttons do
-    for j = 1, #ns.UI.Buttons[i] do
-      ns.UI.Buttons[i][j]:EnableMouse( MouseInteract )
+    if not self.Pause then
+        if Hekili.DB.profile.Debug then
+            Hekili:SaveDebugSnapshot()
+            Hekili:Print( "Snapshot saved." )
+            if not warnOnce then
+                Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
+                warnOnce = true
+            end
+        end
     end
-  end
 
-  Hekili:Print( (not self.Pause and "UN" or "") .. "PAUSED." )
-  Hekili:Notify( (not self.Pause and "UN" or "") .. "PAUSED" )
+    if not Hekili.DB.profile.PauseSnapshot or self.Pause then
+        self.Pause = not self.Pause
+    end
 
-  forceUpdate()
+    local MouseInteract = ( self.DB.profile.Debug and self.Pause ) or self.Config or ( not Hekili.DB.profile.Locked )
+
+    for i = 1, #ns.UI.Buttons do
+        for j = 1, #ns.UI.Buttons[i] do
+            ns.UI.Buttons[i][j]:EnableMouse( MouseInteract )
+        end
+    end
+
+    if not Hekili.DB.profile.PauseSnapshot then
+        Hekili:Print( (not self.Pause and "UN" or "") .. "PAUSED." )
+        Hekili:Notify( (not self.Pause and "UN" or "") .. "PAUSED" )
+    end
+    
+    forceUpdate()
 end
 
 

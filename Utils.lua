@@ -121,9 +121,14 @@ ns.commitKey = function( key )
 end
 
 
+local orderedIndex = {}
 
 local function __genOrderedIndex( t )
-    local orderedIndex = {}
+    
+    for i = #orderedIndex, 1, -1 do
+        orderedIndex[i] = nil
+    end
+    
     for key in pairs( t ) do
         table.insert( orderedIndex, key )
     end

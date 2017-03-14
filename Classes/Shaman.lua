@@ -47,6 +47,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
     ns.initializeClassModule = function ()
 
         setClass( 'SHAMAN' )
+        Hekili.LowImpact = true
 
         -- addResource( SPELL_POWER_HEALTH )
         addResource( 'mana', true )

@@ -52,7 +52,6 @@ ns.scripts = {
     P = {},
     A = {}
 }
-ns.snapshots = {}
 ns.state = {}
 ns.targets = {}
 ns.TTD = {}
@@ -65,6 +64,10 @@ ns.visible = {
     list = {},
     action = {}
 }
+
+
+ns.debug = {}
+ns.snapshots = {}
 
 
 -- Default Keybinding UI
@@ -116,6 +119,64 @@ function Hekili:Run( ... )
     return func( select( fn, ... ) )
 
 end
+
+
+local debug = ns.debug
+local active_debug
+local current_display
+
+
+function Hekili:SetupDebug( display )
+
+    if not self.DB.profile.Debug then return end
+    if not display then return end
+
+    current_display = display
+
+    debug[ current_display ] = debug[ current_display ] or {
+        log = {},
+        index = 1
+    }
+    active_debug = debug[ current_display ]
+    active_debug.index = 1
+
+    self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ).", display, date( "%H:%M:%S"), GetTime() )
+
+end
+
+function Hekili:Debug( ... )
+
+    if not Hekili.DB.profile.Debug then return end
+    if not active_debug then return end
+
+    active_debug.log[ active_debug.index ] = format( ... )
+    active_debug.index = active_debug.index + 1
+
+end
+
+
+local snapshots = ns.snapshots
+
+function Hekili:SaveDebugSnapshot()
+
+    for k, v in pairs( debug ) do
+
+        if not snapshots[ k ] then
+            snapshots[ k ] = {}
+        end
+
+        for i = #v.log, v.index, -1 do
+            v.log[ i ] = nil
+        end
+
+        table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
+
+    end
+
+end
+
+Hekili.Snapshots = ns.snapshots
+
 
 
 ns.Tooltip = CreateFrame( "GameTooltip", "HekiliTooltip", UIParent, "GameTooltipTemplate" )

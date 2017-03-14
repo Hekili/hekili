@@ -9,6 +9,7 @@ local scripts = ns.scripts
 local state = ns.state
 
 local ceil = math.ceil
+local orderedPairs = ns.orderedPairs
 local roundUp = ns.roundUp
 local safeMax = ns.safeMax
 
@@ -67,6 +68,15 @@ local SimToLua = function( str, modifier )
 
   return str
 
+end
+
+
+local SpaceOutSim = function( str )
+    str = str:gsub( "([!<>=|&()])", " %1 " ):gsub("%s+", " ")
+
+    str = str:gsub( "([<>~!|]) ([|=])", "%1%2" )
+
+    return str
 end
 
 
@@ -146,7 +156,7 @@ end
 local getScriptElements = function( script )
   local Elements, Check = {}, stripScript( script, true )
 
-  for i in Check:gmatch( "%S+" ) do
+  for i in Check:gmatch( "[^ ]+" ) do
     if not Elements[i] and not tonumber(i) then
       local eFunction = loadstring( 'return '.. (i or true) )
 
@@ -196,8 +206,8 @@ local convertScript = function( node, hasModifiers )
     Modifiers = {},
     SpecialMods = "",
 
-    Lua = Translated,
-    SimC = node.Script and trim( node.Script ) or nil
+    Lua = Translated and trim( SpaceOutSim( Translated ) ) or nil,
+    SimC = node.Script and trim( SpaceOutSim( node.Script ) ) or nil
   }
 
   if hasModifiers then -- and ( node.Args and node.Args ~= '' ) then
@@ -243,8 +253,8 @@ local convertScript = function( node, hasModifiers )
         if tReady:sub( 1, 8 ) == 'function' then
             rFunction, rError = loadstring( 'return ' .. tReady )
         else
-            rFunction, rError = loadstring( 'return function( delay, spend, resource )\n' ..
-            'return max( 0, delay, ' .. tReady .. ' )\n' ..
+            rFunction, rError = loadstring( 'return function( wait, spend, resource )\n' ..
+            'return max( 0, wait, ' .. tReady .. ' )\n' ..
             'end' )
         end
     end
@@ -323,13 +333,13 @@ end
 local checkScript = ns.checkScript
 
 
-function ns.checkTimeScript( entry, delay, spend, spend_type )
+function ns.checkTimeScript( entry, wait, spend, spend_type )
 
     local script = scripts.A[ entry ]
 
     if not entry or not script or not script.Ready then return delay end
 
-    local out = script.Ready( delay, spend, spend_type )
+    local out = script.Ready( wait, spend, spend_type )
 
     return out or 0
 
@@ -443,4 +453,41 @@ function ns.implantDebugData( queue )
 
     ns.state.delay = delay
   end
+end
+
+
+local key_cache = setmetatable( {}, {
+    __index = function( t, k )
+        t.k = k:gsub( "(%S+)%[(%d+)]", "%1.%2" )
+        return t.k
+    end
+})
+
+
+function ns.getConditionsAndValues( sType, sID )
+
+    local script = scripts[ sType ]
+    script = script and script[ sID ]
+
+    if Hekili.DB.profile.Debug and script and script.SimC and script.SimC ~= "" then
+        local output = script.SimC
+
+        if script.Elements then
+            for k, v in pairs( script.Elements ) do
+                local key = key_cache[ k ]
+                local value = v()
+
+                if type(value) == 'number' then
+                    output = output:gsub( key, format( key .. "[%.2f]", value ) )
+                else
+                    output = output:gsub( key, format( key .. "[%s]", tostring( value ) ) )
+                end
+            end
+        end
+
+        return output
+    end
+
+    return "NONE"
+
 end

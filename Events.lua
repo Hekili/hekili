@@ -168,9 +168,9 @@ ns.updateTalents = function ()
 end
 
 
-RegisterEvent( "PLAYER_TALENT_UPDATE", function ()
+RegisterEvent( "PLAYER_TALENT_UPDATE", function ( event )
     ns.updateTalents()
-    ns.forceUpdate()
+    ns.forceUpdate( event )
 end )
 
 
@@ -386,7 +386,7 @@ local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
 
-local function forceUpdate()
+local function forceUpdate( from )
     for i = 1, #Hekili.DB.profile.displays do
         displayUpdates[ i ] = nil
     end
@@ -452,14 +452,14 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
             end
         end
 
-        forceUpdate()
+        forceUpdate( event )
 
     end
 
 end
 
 RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", spellcastEvents )
--- RegisterEvent( "UNIT_SPELLCAST_START", spellcastEvents )
+RegisterEvent( "UNIT_SPELLCAST_START", spellcastEvents )
 
 
 
@@ -489,7 +489,7 @@ local spell_names = setmetatable( {}, {
 } )
 
 
-RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
+RegisterEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
     if unit == 'player' then
         if power == "FOCUS" and state.focus then
             local now = GetTime()
@@ -516,7 +516,13 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( _, unit, power)
 
         end
 
-        forceUpdate()
+        -- forceUpdate( event ) 
+    end
+end )
+
+RegisterEvent( "UNIT_POWER", function( event, unit, power )
+    if unit == 'player' then
+        forceUpdate( event )
     end
 end )
 

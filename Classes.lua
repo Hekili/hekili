@@ -570,6 +570,7 @@ addAura( 'exhaustion', 57723, 'duration', 600 )
 addAura( 'insanity', 95809, 'duration', 600 )
 addAura( 'sated', 57724, 'duration', 600 )
 addAura( 'temporal_displacement', 80354, 'duration', 600 )
+addAura( 'fatigued', 160455, 'duration', 600 )
 
 -- Enchants.
 addAura( 'dancing_steel', 104434, 'duration', 12, 'max_stack', 2 )
