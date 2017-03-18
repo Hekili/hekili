@@ -2527,7 +2527,7 @@ function Hekili:GetOptions()
             },
             SnapID = {
                 type = "select",
-                name = "Display",
+                name = "Snapshot",
                 desc = "Select the display to show (if any snapshots have been taken).",
                 order = 2,
                 values = function( info )
@@ -2550,7 +2550,7 @@ function Hekili:GetOptions()
             },
             Snapshot = {
                 type = 'input',
-                name = "Snapshot",
+                name = "Log",
                 desc = "Any available debug information is available here.",
                 order = 3,
                 get = function( info )

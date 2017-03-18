@@ -3054,7 +3054,7 @@ function ns.timeToReady( action )
             else
                 tick_ready = buff_remaining - ( deficit * 4 )
             end
-            wait = max( wait, tick_ready, ( spend - state[ resource ].actual ) / state[ resource ].regen )
+            wait = max( wait, tick_ready, 0.05 + ( spend - state[ resource ].actual ) / state[ resource ].regen )
         else
             wait = 3600
         end
