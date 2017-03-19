@@ -1698,9 +1698,20 @@ local mt_resource = {
       return t.max -- need to accommodate buffs that increase mana, etc.
 
     elseif k == 'time_to_max' then
-      if not t.regen or t.regen <= 0 or t.current == t.max then return 0 end
+        if t.current == t.max then return 0
+        elseif t.regen <= 0 then return 3600 end
 
-      return t.deficit / t.regen
+        return max( 0, ( t.max - t.current ) / t.regen )
+
+    elseif k:sub(1, 8) == 'time_to_' then
+        local amount = k:sub(9)
+        amount = tonumber(amount)
+
+        if not amount or amount > t.max then return 3600
+        elseif t.current >= amount then return 0
+        elseif t.regen <= 0 then return 3600 end
+
+        return max( 0, ( amount - t.current ) / t.regen )
 
     elseif k == 'regen' then
       -- Not a regenerating resource.

@@ -29,6 +29,7 @@ local handlers = {}
 ns.displayUpdates = {}
 local displayUpdates = ns.displayUpdates
 
+local lastRefresh = {}
 
 function ns.StartEventHandler()
 
@@ -43,10 +44,13 @@ function ns.StartEventHandler()
     end )
 
     events:SetScript( "OnUpdate", function( self, elapsed )
+        local now = GetTime()
+
         for i = 1, #Hekili.DB.profile.displays do
-            if not displayUpdates[i] or ( GetTime() - displayUpdates[i] >= ( 1 / Hekili.DB.profile['Updates Per Second'] ) ) then
+            if not displayUpdates[i] and ( not lastRefresh[i] or now - lastRefresh[i] >= 0.05 ) then -- or ( GetTime() - displayUpdates[i] >= ( 1 / Hekili.DB.profile['Updates Per Second'] ) ) then
                 Hekili:ProcessHooks( i )
-            end
+                lastRefresh[i] = now
+            end            
         end
         Hekili:UpdateDisplays()
     end )
@@ -516,15 +520,15 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
 
         end
 
-        -- forceUpdate( event ) 
+        forceUpdate( event ) 
     end
 end )
 
-RegisterEvent( "UNIT_POWER", function( event, unit, power )
+--[[ RegisterEvent( "UNIT_POWER", function( event, unit, power )
     if unit == 'player' then
         forceUpdate( event )
     end
-end )
+end ) ]]
 
 RegisterEvent( "PLAYER_TARGET_CHANGED", forceUpdate )
 RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
