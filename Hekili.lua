@@ -7,7 +7,7 @@ Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSeria
 local format = string.format
 
 
-ns.PTR = GetBuildInfo() ~= "7.1.5"
+ns.PTR = GetBuildInfo() ~= "7.2.0"
 
 
 ns.lib = {

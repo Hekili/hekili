@@ -522,7 +522,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
         addHandler( 'blade_of_justice', function ()
-            if PTR then removeBuff( 'righteous_verdict' ) end
+            removeBuff( 'righteous_verdict' )
         end )
 
         
@@ -1238,7 +1238,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'shield_of_the_righteous', function ()
             last_shield_of_the_righteous = now + offset
             applyBuff( 'shield_of_the_righteous', buff.shield_of_the_righteous.remains + 4.5 )
-            if PTR then removeBuff( 'blessed_stalwart' ) end
+            removeBuff( 'blessed_stalwart' )
 
             if talent.righteous_protector.enabled then
                 if talent.hand_of_the_protector.enabled then setCooldown( 'hand_of_the_protector', max( 0, cooldown.hand_of_the_protector.remains - 3 ) )
