@@ -19,6 +19,8 @@ local state = ns.state
 
 state.iteration = 0
 
+state.PTR = PTR
+
 state.now = 0
 state.offset = 0
 state.delay = 0
@@ -526,6 +528,8 @@ local function applyBuff( aura, duration, stacks, value )
     return
   end
 
+  if not state.buff[ aura ] then return end
+
   if duration == 0 then
     state.buff[ aura ].expires = 0
     state.buff[ aura ].count = 0
@@ -821,6 +825,7 @@ local mt_state = {
     elseif k == 'my_enemies' then
         -- The above is not needed as the nameplate target system will add missing enemies.
         t[k] = ns.numTargets()
+
         if t.min_targets > 0 then t[k] = max( t.min_targets, t[k] ) end
         if t.max_targets > 0 then t[k] = min( t.max_targets, t[k] ) end
 
@@ -1387,7 +1392,7 @@ ns.metatables.mt_target_health = mt_target_health
 local mt_default_cooldown = {
     __index = function(t, k)
 
-        if k == 'duration' or k == 'expires' or k == 'next_charge' or k == 'charge' then
+        if k == 'duration' or k == 'expires' or k == 'next_charge' or k == 'charge' or k == 'recharge_began' then
             -- Refresh the ID in case we changed specs and ability is spec dependent.
             t.id = class.abilities[ t.key ].id
 
@@ -2549,21 +2554,44 @@ function state.reset( dispID )
       end
   end
   
-  if dispID and Hekili.DB.profile.displays[ dispID ] then
-    local display = Hekili.DB.profile.displays[ dispID ]
-  
-    if state.single then
-      if display['Single - Minimum'] > 0 then state.min_targets = display['Single - Minimum'] end
-      if display['Single - Maximum'] > 0 then state.max_targets = display['Single - Maximum'] end
-    elseif state.aoe then
-      if display['AOE - Minimum'] > 0 then state.min_targets = display['AOE - Minimum'] end
-      if display['AOE - Maximum'] > 0 then state.max_targets = display['AOE - Maximum'] end
-    elseif state.auto then
-      if display['Auto - Minimum'] > 0 then state.min_targets = display['Auto - Minimum'] end
-      if display['Auto - Maximum'] > 0 then state.max_targets = display['Auto - Maximum'] end
-    end
+  local display = dispID and Hekili.DB.profile.displays[ dispID ]
+  if display then
+    local mode = Hekili.DB.profile['Mode Status'] or 0
+
+    if display.displayType == 'a' then -- Primary
+        if mode == 3 then
+            state.min_targets = 0
+            state.max_targets = 0
+        else
+            state.min_targets = 0
+            state.max_targets = 1
+        end
+
+    elseif display.displayType == 'b' then -- Single-Target
+        state.min_targets = 0
+        state.max_targets = 1
+
+    elseif display.displayType == 'c' then -- AOE
+        state.min_targets = ( display.simpleAOE or 2 )
+        state.max_targets = 0
     
-    state.rangefilter = display['Range Checking']
+    elseif display.displayType == 'd' then -- Auto
+        -- do nothing
+
+    elseif display.displayType == 'z' then -- Custom, old style.
+        if mode == 0 then
+            if display.minST > 0 then state.min_targets = display.minST end
+            if display.maxST > 0 then state.max_targets = display.maxST end
+        elseif mode == 2 then
+            if display.minAE > 0 then state.min_targets = display.minAE end
+            if display.maxAE > 0 then state.max_targets = display.maxAE end
+        elseif mode == 3 then
+            if display.minAuto > 0 then state.min_targets = display.minAuto end
+            if display.maxAuto > 0 then state.max_targets = display.maxAuto end
+        end
+    end
+
+    state.rangefilter = display.rangeType == 'xclude'
   else
     state.rangefilter = false
   end
@@ -2943,7 +2971,7 @@ ns.isUsable = function( spell )
 
     if not ability then return true end
 
-    if state.rangefilter == 'xclude' and UnitExists( 'target' ) and ns.lib.SpellRange.IsSpellInRange( ability.id, 'target' ) == 0 then
+    if state.rangefilter and UnitExists( 'target' ) and ns.lib.SpellRange.IsSpellInRange( ability.id, 'target' ) == 0 then
         return false
     end
 
@@ -3065,7 +3093,7 @@ function ns.timeToReady( action )
             else
                 tick_ready = buff_remaining - ( deficit * 4 )
             end
-            wait = max( wait, tick_ready, 0.05 + ( spend - state[ resource ].actual ) / state[ resource ].regen )
+            wait = max( wait, tick_ready, ( spend - state[ resource ].actual ) / state[ resource ].regen )
         else
             wait = 3600
         end

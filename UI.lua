@@ -167,7 +167,7 @@ function ns.StartConfiguration( external )
       v:SetBackdrop( {
         bgFile	 	= "Interface/Tooltips/UI-Tooltip-Background",
         edgeFile 	= "Interface/Tooltips/UI-Tooltip-Border",
-        tile		  = false,
+        tile		= false,
         tileSize 	= 0,
         edgeSize 	= 2,
         insets 		= { left = 0, right = 0, top = 0, bottom = 0 }
@@ -193,7 +193,7 @@ function ns.StartConfiguration( external )
   -- HekiliNotification:EnableMouse(true)
   -- HekiliNotification:SetMovable(true)
   if not external then
-    ns.lib.AceConfigDialog:SetDefaultSize( "Hekili", 785, 555 )
+    ns.lib.AceConfigDialog:SetDefaultSize( "Hekili", 805, 605 )
     ns.lib.AceConfigDialog:Open("Hekili")
     ns.OnHideFrame = ns.OnHideFrame or CreateFrame("Frame", nil)
     ns.OnHideFrame:SetParent( ns.lib.AceConfigDialog.OpenFrames["Hekili"].frame )
@@ -313,10 +313,10 @@ function ns.buildUI()
 
     local f = ns.UI.Displays[dispID] or CreateFrame( "Frame", "HekiliDisplay"..dispID, UIParent )
 
-    if display['Queue Direction'] == 'TOP' or display['Queue Direction'] == 'BOTTOM' then
-      f:SetSize( max( Hekili.DB.profile.displays[dispID]['Primary Icon Size'], Hekili.DB.profile.displays[dispID]['Queued Icon Size'] ), Hekili.DB.profile.displays[dispID]['Primary Icon Size'] + ( Hekili.DB.profile.displays[dispID]['Queued Icon Size'] * ( Hekili.DB.profile.displays[dispID]['Icons Shown'] - 1 ) ) + ( Hekili.DB.profile.displays[dispID]['Spacing'] * ( Hekili.DB.profile.displays[dispID]['Icons Shown'] - 1 ) ) )
+    if display.queueDirection == 'TOP' or display.queueDirection == 'BOTTOM' then
+      f:SetSize( max( Hekili.DB.profile.displays[dispID].primaryIconSize, Hekili.DB.profile.displays[dispID].queuedIconSize ), Hekili.DB.profile.displays[dispID].primaryIconSize + ( Hekili.DB.profile.displays[dispID].queuedIconSize * ( Hekili.DB.profile.displays[dispID].numIcons - 1 ) ) + ( Hekili.DB.profile.displays[dispID].iconSpacing * ( Hekili.DB.profile.displays[dispID].numIcons - 1 ) ) )
     else
-      f:SetSize( Hekili.DB.profile.displays[dispID]['Primary Icon Size'] + ( Hekili.DB.profile.displays[dispID]['Queued Icon Size'] * ( Hekili.DB.profile.displays[dispID]['Icons Shown'] - 1 ) ) + ( Hekili.DB.profile.displays[dispID]['Spacing'] * ( Hekili.DB.profile.displays[dispID]['Icons Shown'] - 1 ) ), max( Hekili.DB.profile.displays[dispID]['Primary Icon Size'], Hekili.DB.profile.displays[dispID]['Queued Icon Size'] ) )
+      f:SetSize( Hekili.DB.profile.displays[dispID].primaryIconSize + ( Hekili.DB.profile.displays[dispID].queuedIconSize * ( Hekili.DB.profile.displays[dispID].numIcons - 1 ) ) + ( Hekili.DB.profile.displays[dispID].iconSpacing * ( Hekili.DB.profile.displays[dispID].numIcons - 1 ) ), max( Hekili.DB.profile.displays[dispID].primaryIconSize, Hekili.DB.profile.displays[dispID].queuedIconSize ) )
     end
     f:SetPoint( "CENTER", Screen, "CENTER", Hekili.DB.profile.displays[ dispID ].x, Hekili.DB.profile.displays[ dispID ].y )
     f:SetFrameStrata( "MEDIUM" )
@@ -333,11 +333,11 @@ function ns.buildUI()
       end
     end
 
-    for i = 1, max( #ns.UI.Buttons[dispID], display['Icons Shown'] ) do
+    for i = 1, max( #ns.UI.Buttons[dispID], display.numIcons ) do
       ns.UI.Buttons[dispID][i] = Hekili:CreateButton( dispID, i )
       ns.UI.Buttons[dispID][i]:Hide()
 
-      if Hekili.DB.profile.Enabled and ns.visible.display[ dispID ] and i <= display[ 'Icons Shown' ] then
+      if Hekili.DB.profile.Enabled and ns.visible.display[ dispID ] and i <= display.numIcons then
         local alpha = ns.CheckDisplayCriteria and ns.CheckDisplayCriteria( dispID ) or 0
         if alpha > 0 then
           ns.UI.Buttons[dispID][i]:SetAlpha( alpha )
@@ -519,13 +519,13 @@ function Hekili:CreateButton( display, ID )
 
   local btnSize
   if ID == 1 then
-    btnSize = disp['Primary Icon Size']
+    btnSize = disp.primaryIconSize
   else
-    btnSize = disp['Queued Icon Size']
+    btnSize = disp.queuedIconSize
   end
-  local btnDirection = disp['Queue Direction']
-  local btnAlignment = disp['Queue Alignment'] or 'c'
-  local btnSpacing = disp['Spacing']
+  local btnDirection = disp.queueDirection
+  local btnAlignment = disp.queueAlignment or 'c'
+  local btnSpacing = disp.iconSpacing
 
   local scaleFactor = 1
   if GetCVar( "UseUIScale" ) == 1 then
@@ -545,31 +545,63 @@ function Hekili:CreateButton( display, ID )
   end
   button.Texture:SetAllPoints(button)
 
-  button.Icon = button.Icon or button:CreateTexture(nil, "OVERLAY")
-  button.Icon:SetSize( scaleFactor * button:GetWidth() * 0.5, scaleFactor * button:GetHeight() * 0.5 )
-  button.Icon:SetPoint( "TOPRIGHT", button, "TOPRIGHT" )
+  -- Indicator Icons
+  button.Icon = button.Icon or button:CreateTexture( nil, "OVERLAY" )
+  button.Icon:SetSize( max( 10, button:GetWidth() / 3 ), max( 10, button:GetHeight() / 3 ) )
+  local iconAnchor = disp.indicatorAnchor or "RIGHT"
+  button.Icon:SetPoint( iconAnchor, button, iconAnchor, disp.xOffsetIndicators or 0, disp.yOffsetIndicators or 0 )
   button.Icon:Hide()
 
   button.Caption = button.Caption or button:CreateFontString(name.."Caption", "OVERLAY" )
-  button.Caption:SetSize( scaleFactor * button:GetWidth(), scaleFactor * button:GetHeight() / 2 )
-  button.Caption:SetPoint( "BOTTOM", button, "BOTTOM" )
-  button.Caption:SetJustifyV( "BOTTOM" )
+  local capFont = disp.captionFont or ( ElvUI and "PT Sans Narrow" or "Arial Narrow" )  
+  button.Caption:SetFont( ns.lib.SharedMedia:Fetch( "font", capFont ), disp.captionFontSize or 12, disp.captionFontStyle or "OUTLINE" )
+  button.Caption:SetSize( button:GetWidth(), button:GetHeight() / 2 )
+  local capAnchor = disp.captionAnchor or "BOTTOM"
+  button.Caption:ClearAllPoints()
+  button.Caption:SetPoint( capAnchor, button, capAnchor, disp.xOffsetCaptions or 0, disp.yOffsetCaptions or 0 )
+  button.Caption:SetJustifyV( capAnchor )
+  button.Caption:SetJustifyH( disp.captionAlign or "CENTER" )
   button.Caption:SetTextColor(1, 1, 1, 1)
 
+  if ID == 1 then
+      button.Targets = button.Targets or button:CreateFontString( name.."Targets", "OVERLAY" )
+
+      local tarFont = disp.targetFont or ( ElvUI and "PT Sans Narrow" or "Arial Narrow" )
+      button.Targets:SetFont( ns.lib.SharedMedia:Fetch( "font", tarFont ), disp.targetFontSize or 12, disp.targetFontStyle or "OUTLINE" )
+      button.Targets:SetSize( button:GetWidth() / 2, button:GetHeight() / 2 )
+      
+      local tarAnchor = disp.targetAnchor or "BOTTOM"
+      button.Targets:ClearAllPoints()
+      button.Targets:SetPoint( tarAnchor, button, tarAnchor, disp.xOffsetTargets or 0, disp.yOffsetTargets or 0 )
+      
+      local tarAlign = tarAnchor:match( "RIGHT" ) and "RIGHT" or ( tarAnchor:match( "LEFT" ) and "LEFT" or "CENTER" )
+      button.Targets:SetJustifyH( tarAlign )
+      local tarAlignV = tarAnchor:match( "TOP" ) and "TOP" or ( tarAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" )
+      button.Targets:SetJustifyV( tarAlignV )
+      
+      button.Targets:SetTextColor( 1, 1, 1, 1 )
+  end
+
+  -- Keybinding Text
   button.Keybinding = button.Keybinding or button:CreateFontString(name.."KB", "OVERLAY" )
-  button.Keybinding:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'], "OUTLINE" )
-  button.Keybinding:SetSize( scaleFactor * button:GetWidth(), scaleFactor * button:GetHeight() / 2 )
-  button.Keybinding:SetPoint( "TOPRIGHT", button, "TOPRIGHT", 0, -2 )
-  button.Keybinding:SetJustifyV( "TOP" )
-  button.Keybinding:SetJustifyH( "RIGHT" )
-  button.Keybinding:SetTextColor(1, 1, 1, 1)
+  local kbFont = disp.kbFont or ( ElvUI and "PT Sans Narrow" or "Arial Narrow" )
+  button.Keybinding:SetFont( ns.lib.SharedMedia:Fetch( "font", kbFont ), disp.kbFontSize or 12, disp.kbFontStyle or "OUTLINE" )
+  button.Keybinding:SetSize( button:GetWidth(), button:GetHeight() / 2 )
+  local kbAnchor = disp.kbAnchor or "TOPRIGHT"
+  button.Keybinding:ClearAllPoints()
+  button.Keybinding:SetPoint( kbAnchor, button, kbAnchor, disp.xOffsetKBs or 0, disp.yOffsetKBs or 0 )
+  local kbAlign = kbAnchor:match( "RIGHT" ) and "RIGHT" or ( kbAnchor:match( "LEFT" ) and "LEFT" or "CENTER" )
+  button.Keybinding:SetJustifyH( kbAlign )
+  local kbAlignV = kbAnchor:match( "TOP" ) and "TOP" or ( kbAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" )
+  button.Keybinding:SetJustifyV( kbAlignV )
+  button.Keybinding:SetTextColor( 1, 1, 1, 1 )
 
   button.Delay = button.Delay or button:CreateFontString( name.."Delay", "OVERLAY" )
-  button.Delay:SetSize( scaleFactor * button:GetWidth(), scaleFactor * button:GetHeight() / 2 )
+  button.Delay:SetSize( button:GetWidth(), button:GetHeight() / 2 )
   button.Delay:SetPoint( "TOPLEFT", button, "TOPLEFT" )
   button.Delay:SetJustifyV( "TOP" )
   button.Delay:SetJustifyH( "LEFT" )
-  button.Delay:SetTextColor(1, 1, 1, 1)
+  button.Delay:SetTextColor( 1, 1, 1, 1 )
 
   button.Cooldown = button.Cooldown or CreateFrame("Cooldown", name .. "_Cooldown", button, "CooldownFrameTemplate")
   button.Cooldown:SetAllPoints(button)
@@ -584,14 +616,14 @@ function Hekili:CreateButton( display, ID )
     button.Overlay:SetAllPoints(button)
     button.Overlay:Hide()
 
-    button.Caption:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'], "OUTLINE" )
-    button.Delay:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp['Primary Font Size'] * 0.67, "OUTLINE" )
+    -- button.Caption:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp.primaryFontSize, "OUTLINE" )
+    button.Delay:SetFont( ns.lib.SharedMedia:Fetch( "font", disp.Font ), disp.primaryFontSize * 0.67, "OUTLINE" )
 
     button:SetPoint( getInverseDirection( btnDirection ), ns.UI.Displays[ display ], getInverseDirection( btnDirection ) )
     -- button:SetPoint( "LEFT", ns.UI.Displays[ display ], "LEFT" ) -- self.DB.profile.displays[ display ].rel or "CENTER", self.DB.profile.displays[ display ].x, self.DB.profile.displays[ display ].y )
 
   else
-    button.Caption:SetFont( ns.lib.SharedMedia:Fetch("font", disp.Font), disp['Queued Font Size'], "OUTLINE" )
+    -- button.Caption:SetFont( ns.lib.SharedMedia:Fetch("font", disp.Font), disp.queuedFontSize, "OUTLINE" )
 
     if btnDirection == 'RIGHT' then
       local align

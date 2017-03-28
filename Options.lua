@@ -12,6 +12,7 @@ local match = string.match
 
 local callHook = ns.callHook
 local restoreDefaults = ns.restoreDefaults
+local getSpecializationID = ns.getSpecializationID
 
 local escapeMagic = ns.escapeMagic
 local formatKey = ns.formatKey
@@ -22,15 +23,17 @@ function Hekili:GetDefaults()
   local defaults = {
     profile = {
       Version = 7,
-      Release = 20170100,
+      Release = 20170300,
       Legion = true,
       Enabled = true,
-      Locked = false,
-      Debug = false,
+      Locked = true,
+      Debug = true,
+
+      PauseSnapshot = true,
 
       ['Switch Type'] = 0,
       ['Mode Status'] = 3,
-      Interrupts = true,
+      Interrupts = false,
       Hardcasts = true,
 
       Clash = 0,
@@ -59,93 +62,350 @@ function Hekili:GetDefaults()
 end
 
 
--- DISPLAYS
--- Add a display to the profile (to be stored in SavedVariables).
-ns.newDisplay = function( name )
 
-  if not name then
-    return nil
-  end
-
-  for i,v in ipairs( Hekili.DB.profile.displays ) do
-    if v.Name == name then
-      ns.Error( "newDisplay() - display '" .. name .. "' already exists." )
-      return nil
-    end
-  end
-
-  local index = #Hekili.DB.profile.displays + 1
-
-  -- FIX: REPLACE HEARTBEAT
-  if not Hekili[ 'ProcessDisplay'..index ] then
-    Hekili[ 'ProcessDisplay'..index ] = function()
-      Hekili:ProcessHooks( index )
-    end
-  end
-
-  Hekili.DB.profile.displays[ index ] = {
-    Name = name,
-    Release = Hekili.DB.profile.Release,
-
+local displayTemplate = {
     Enabled = true,
-
-    ['PvE - Default'] = true,
-    ['PvE - Default Alpha'] = 1,
-    ['PvE - Target'] = false,
-    ['PvE - Target Alpha'] = 1,
-    ['PvE - Combat'] = false,
-    ['PvE - Combat Alpha'] = 1,
-
-    ['PvP - Default'] = true,
-    ['PvP - Default Alpha'] = 1,
-    ['PvP - Target'] = false,
-    ['PvP - Target Alpha'] = 1,
-    ['PvP - Combat'] = false,
-    ['PvP - Combat Alpha'] = 1,
+    Default = false,
 
     Script = '',
 
-    ['Auto - Minimum'] = 0,
-    ['Auto - Maximum'] = 0,
-    ['Single - Minimum'] = 0,
-    ['Single - Maximum'] = 1,
-    ['AOE - Minimum'] = 3,
-    ['AOE - Maximum'] = 0,
+    displayType = 'd', -- Automatic
+    simpleAOE = 2,
 
-    ['Use SpellFlash'] = false,
-    ['SpellFlash Color'] = { r = 1, g = 1, b = 1, a = 1 },
+    showST = true,
+    showAE = true,
+    showAuto = true,
 
-    -- Talent Group: Primary, Secondary, Both
-    ['Talent Group'] = 0,
-    ['Specialization'] = ns.getSpecializationID(),
-    ['Icons Shown'] = 5,
-    ['Maximum Time'] = 30,
-    ['Queue Direction'] = 'RIGHT',
-    ['Queue Alignment'] = 'c',
+    minST = 0,
+    minAE = 3,
+    minAuto = 0,
 
-    -- Captions
-    ['Action Captions'] = true,
-    -- Primary Caption: Default, # Targets, Buff ________ Stacks, Debuff ________ Count, Debuff ________ Count / # Targets
-    ['Primary Caption'] = 'default',
-    ['Primary Caption Aura'] = '',
+    maxST = 1,
+    maxAE = 0,
+    maxAuto = 0,
 
-    -- Visual Elements
-    Font = 'Arial Narrow',
-    ['Primary Icon Size'] = 50,
-    ['Primary Font Size'] = 12,
-    ['Queued Icon Size'] = 40,
-    ['Queued Font Size'] = 12,
-    Spacing = 5,
-    Zoom = 0.0,
-    Overlay = false,
-    ['Show Keybindings'] = true,
-    ['Keybinding Style'] = 1,
-    ['Range Checking'] = 'ability',
+    rel = "CENTER",
+    x = 0,
+    y = 0,
 
-    Queues = {}
-  }
+    numIcons = 4,
+    queueDirection = 'RIGHT',
+    queueAlignment = 'c',
+    primaryIconSize = 40,
+    queuedIconSize = 40,
+    iconSpacing = 5,
+    iconZoom = 15,
 
-  return ( 'D' .. index ), index
+    font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+    primaryFontSize = 12,
+    queuedFontSize = 12,
+
+    rangeCheck = true,
+    rangeType = 'ability',
+
+    blizzGlow = false,
+    blizzGlowAll = false,
+
+    spellFlash = false,
+    spellFlashColor = { r = 1, g = 1, b = 1, a = 1 },
+
+    showCaptions = false,
+    queuedCaptions = true,
+    captionFont = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+    captionFontSize = 12,
+    captionFontStyle = 'OUTLINE',
+    captionAlign = 'CENTER',
+    captionAnchor = 'BOTTOM',
+    xOffsetCaptions = 0,
+    yOffsetCaptions = 0,
+    -- capLayer = 0,
+
+    showIndicators = true,
+    queuedIndicators = true,
+    indicatorAnchor = 'RIGHT',
+    xOffsetIndicators = 0,
+    yOffsetIndicators = 0,
+    -- indLayer = 0,
+
+    showTargets = true,
+    targetFont = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+    targetFontSize = 12,
+    targetFontStyle = 'OUTLINE',
+    targetAnchor = 'BOTTOMRIGHT',
+    xOffsetTargets = 0,
+    yOffsetTargets = 0,
+    -- countLayer = 0,
+
+    showAuraInfo = false,
+    auraInfoType = 'buff',
+    auraSpellID = 0,
+    auraUnit = 'player',
+    auraType = 'buff',
+    auraMine = true,
+    auraAnchor = 'BOTTOMLEFT',
+    xOffsetAura = 0,
+    yOffsetAura = 0,
+    -- auraLayer = 0,
+
+    visibilityType = 'b',
+
+    showPvE = true,
+    alphaShowPvE = 1,
+
+    showPvP = true,
+    alphaShowPvP = 1,
+
+    alwaysPvE = true,
+    alphaAlwaysPvE = 1,
+    targetPvE = false,
+    alphaTargetPvE = 1,
+    combatPvE = false,
+    alphaCombatPvE = 1,
+
+    alwaysPvP = true,
+    alphaAlwaysPvP = 1,
+    targetPvP = false,
+    alphaTargetPvP = 1,
+    combatPvP = false,
+    alphaCombatPvP = 1,
+
+    showKeybindings = true,
+    queuedKBs = true,
+    kbFont = ElvUI and "PT Sans Narrow" or "Arial",
+    kbFontStyle = "OUTLINE",
+    kbFontSize = 12,
+    kbAnchor = "TOPRIGHT",
+    xOffsetKBs = 0,
+    yOffsetKBs = 0,
+
+    precombatAPL = 0,
+    defaultAPL = 0
+}
+
+
+-- DISPLAYS
+-- Add a display to the profile (to be stored in SavedVariables).
+function ns.newDisplay( name )
+
+    if not name then
+        return nil
+    end
+
+    for i,v in ipairs( Hekili.DB.profile.displays ) do
+        if v.Name == name then
+            ns.Error( "newDisplay() - display '" .. name .. "' already exists." )
+            return nil
+        end
+    end
+
+    local index = #Hekili.DB.profile.displays + 1
+
+    -- FIX: REPLACE HEARTBEAT
+    if not Hekili[ 'ProcessDisplay'..index ] then
+        Hekili[ 'ProcessDisplay'..index ] = function()
+            Hekili:ProcessHooks( index )
+        end
+    end
+
+    local display = {}
+
+    display.Release = date("%Y%m%d.1")
+    display.Name = name
+    display.Specialization = getSpecializationID()
+
+    for k,v in pairs( displayTemplate ) do
+        display[k] = v
+    end
+
+    Hekili.DB.profile.displays[ index ] = display
+
+    return ( 'D' .. index ), index
+
+end
+
+
+local displayKeyMap = {
+    ['Icons Shown'] = 'numIcons',
+    ['Queue Direction'] = 'queueDirection',
+    ['Queue Alignment'] = 'queueAlignment',
+
+    ['PvE - Default'] = 'alwaysPvE',
+    ['PvE - Default Alpha'] = 'alphaAlwaysPvE',
+    ['PvE - Target'] = 'targetPvE',
+    ['PvE - Target Alpha'] = 'alphaTargetPvE',
+    ['PvE - Combat'] = 'combatPvE',
+    ['PvE - Combat Alpha'] = 'alphaCombatPvE',
+
+    ['PvP - Default'] = 'alwaysPvP',
+    ['PvP - Default Alpha'] = 'alphaAlwaysPvP',
+    ['PvP - Target'] = 'targetPvP',
+    ['PvP - Target Alpha'] = 'alphaTargetPvP',
+    ['PvP - Combat'] = 'combatPvP',
+    ['PvP - Combat Alpha'] = 'alphaCombatPvP',
+
+    ['Auto - Minimum'] = 'minAuto',
+    ['Auto - Maximum'] = 'maxAuto',
+    ['Single - Minimum'] = 'minST',
+    ['Single - Maximum'] = 'maxST',
+    ['AOE - Minimum'] = 'minAE',
+    ['AOE - Maximum'] = 'maxAE',
+
+    ['Use SpellFlash'] = 'spellFlash',
+    ['SpellFlash Color'] = 'spellFlashColor',
+
+    ['Action Captions'] = 'showCaptions',
+    -- Primary Caption
+    -- Primary Caption Aura
+
+    ['Font'] = 'font',
+    ['Primary Icon Size'] = 'primaryIconSize',
+    ['Primary Font Size'] = 'primaryFontSize',
+    ['Queued Icon Size'] = 'queuedIconSize',
+    ['Queued Font Size'] = 'queuedFontSize',
+    ['Spacing'] = 'iconSpacing',
+    ['Zoom'] = 'iconZoom',
+    ['Overlay'] = 'blizzGlow',
+    ['Show Keybindings'] = 'showKeybindings',
+    -- ['Keybinding Style'] -- upper vs. lowercase
+
+    ['Range Checking'] = 'rangeType'
+}
+
+
+function convertDisplay( id )
+
+    local display = Hekili.DB.profile.displays[ id ]
+
+    if not display then return end
+
+    for key, newKey in pairs( displayKeyMap ) do
+        if display[ key ] ~= nil then
+            display[ newKey ] = display[ key ]
+            display[ key ] = nil
+        end
+    end
+
+    -- Special Value Conversions
+    if display.rangeType == 'off' then
+        display.rangeType = 'ability'
+        display.rangeCheck = false
+    end
+
+    for k, v in pairs( displayTemplate ) do
+        if display[ k ] == nil then display[ k ] = v end
+    end
+
+end
+
+
+function ns.convertDisplays()
+    for i in ipairs( Hekili.DB.profile.displays ) do
+        convertDisplay( i )
+    end
+end
+
+
+local displayOptionInfo = {
+    displays = {},
+    lists = {},
+
+    quickStyle = 'z',
+
+    templates = {
+        a = {
+            numIcons = 4,
+            primaryIconSize = 40,
+            queuedIconSize = 40,
+            queueAlignment = 'c',
+        },
+        b = {
+            numIcons = 5,
+            primaryIconSize = 40,
+            queuedIconSize = 30,
+            queueAlignment = 'c',
+        },
+        c = {
+            numIcons = 2,
+            primaryIconSize = 40,
+            queuedIconSize = 20,
+            queueAlignment = 'a',
+        },
+        d = {
+            numIcons = 1,
+            primaryIconSize = 40,
+            queueAlignment = 'c',
+        }
+    },
+
+    iconOffset = 40
+}
+
+
+function Hekili:GetDisplayOption( info )
+
+    local n = #info
+    local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
+    local option = info[n]
+
+    local display = dispID and self.DB.profile.displays[ dispID ]
+
+    if not display then return end
+
+    if option == 'auraSpellID' then
+        return tostring( display[ option ] )
+    
+    elseif option == 'quickStyle' then
+        return displayOptionInfo.quickStyle
+
+    end
+
+    return display[ option ]
+
+end
+
+
+function Hekili:SetDisplayOption( info, val )
+
+    local n = #info
+    local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
+    local option = info[n]
+
+    local display = dispID and self.DB.profile.displays[ dispID ]
+
+    if not display then return end
+
+    if option == 'x' or option == 'y' then
+        display[ option ] = tonumber( val )
+        ns.buildUI()
+        return
+
+    elseif option == 'auraSpellID' then
+        local nVal = tonumber( val )
+        local sVal = tostring( nVal )
+
+        if val ~= sVal then
+            -- We were given a string; check for spell.
+            local id = select( 7, GetSpellInfo( val ) )
+
+            if id then display[ option ] = id end
+            return
+        end
+
+        display.auraSpellID = 0
+    
+    elseif option == 'quickStyle' then
+        if val ~= 'z' then
+            for k, v  in pairs( displayOptionInfo.templates[ val ] ) do
+                display[k] = v
+            end
+            ns.buildUI()
+        end       
+        display.quickStyle = val
+        return
+
+    end
+
+    display[ option ] = val
 
 end
 
@@ -166,672 +426,1614 @@ ns.newDisplayOption = function( key )
       return Hekili.DB.profile.displays[key].Name
     end,
     order = key,
+    childGroups = 'tab',
     args = {
-      Enabled = {
-        type = 'toggle',
-        name = 'Enabled',
-        desc = 'Enable this display (hides the display and ignores its hooked action list(s) if unchecked).',
-        order = 1,
-        width = 'double'
-      },
-      Default = {
-        type = 'toggle',
-        name = 'Default',
-        desc = function(info, val)
-          local disp = tonumber( match( info[#info-1], "^D(%d+)" ) )
-          return 'This display is a default, and is updated automatically updated when the addon is updated.  Unchecking this setting will prevent the addon from automatically updating this display.  This cannot be undone without reloading the display.\n|cFF00C0FF' .. Hekili.DB.profile.displays[ disp ].Release .. '|r'
-        end,
-        order = 3,
-        hidden = function(info, val)
-          return not Hekili.DB.profile.displays[key].Default
-        end,
-        width = 'single',
-      },
-      UndefBlank = {
-        type = "description",
-        name = " ",
-        width = "single",
-        order = 3,
-        hidden = function(info, val)
-          return Hekili.DB.profile.displays[key].Default
-        end
-      },
-      ['Name'] = {
-        type = 'input',
-        name = 'Name',
-        desc = 'Rename this display.',
-        order = 20,
-        validate = function(info, val)
-          local key = tonumber( info[2]:match("^D(%d+)") )
-          for i, display in pairs( Hekili.DB.profile.displays ) do
-            if i ~= key and display.Name == val then
-              return "That display name is already in use."
-            end
-          end
-          return true
-        end,
-        width = 'full',
-      },
-      ['Talent Group'] = {
-        type = 'select',
-        name = 'Talent Group',
-        desc = 'Choose the talent group(s) for this display.',
-        order = 30,
-        values = {
-          [0] = 'Both',
-          [1] = 'Primary',
-          [2] = 'Secondary'
-        },
-        width = "single"
-      },
-      ['Specialization'] = {
-        type = 'select',
-        name = 'Specialization',
-        desc = 'Choose the talent specialization(s) for this display.',
-        order = 40,
-        values = function(info)
-          local class = select(2, UnitClass("player"))
-          if not class then return nil end
+        displaySettings = {
+            type = 'group',
+            name = "Display",
+            order = 0,
+            args = {
+                Enabled = {
+                    type = 'toggle',
+                    name = 'Enabled',
+                    desc = 'Enable this display (hides the display and ignores its hooked action list(s) if unchecked).',
+                    order = 1,
+                    width = 'full'
+                },
+                Default = {
+                    type = 'toggle',
+                    name = '|cFF00C0FFDefault|r',
+                    desc = function(info, val)
+                      local disp = tonumber( info[2]:match("^D(%d+)") )
+                      return "This display is a default, and is updated automatically updated when the addon is updated.  " ..
+                        "Unchecking this setting will prevent the addon from automatically updating this display.  " ..
+                        "This cannot be undone without reloading the display.\n\n" ..
+                        "Current Version:  |cFF00C0FF" .. Hekili.DB.profile.displays[ disp ].Release .. "|r"            
+                    end,
+                    order = 2,
+                    hidden = function(info, val)
+                      return not Hekili.DB.profile.displays[key].Default
+                    end,
+                    width = 'full',
+                },
+                ['Name'] = {
+                    type = 'input',
+                    name = 'Name',
+                    desc = 'Rename this display.',
+                    order = 5,
+                    validate = function(info, val)
+                      local key = tonumber( info[2]:match("^D(%d+)") )
+                      for i, display in pairs( Hekili.DB.profile.displays ) do
+                        if i ~= key and display.Name == val then
+                          return "That display name is already in use."
+                        end
+                      end
+                      return true
+                    end,
+                    width = 'full',
+                },
+                ['Specialization'] = {
+                    type = 'select',
+                    name = 'Specialization',
+                    desc = 'Choose the talent specialization(s) for this display.',
+                    order = 10,
+                    values = function(info)
+                      local class = select(2, UnitClass("player"))
+                      if not class then return nil end
 
-          local num = GetNumSpecializations()
-          local list = {}
+                      local num = GetNumSpecializations()
+                      local list = {}
 
-          for i = 1, num do
-            local specID, name = GetSpecializationInfoForClassID( ns.getClassID(class), i )
-            list[specID] = '|T' .. select( 4, GetSpecializationInfoByID( specID ) ) .. ':0|t ' .. name
-          end
+                      for i = 1, num do
+                        local specID, name = GetSpecializationInfoForClassID( ns.getClassID(class), i )
+                        list[specID] = '|T' .. select( 4, GetSpecializationInfoByID( specID ) ) .. ':0|t ' .. name
+                      end
 
-          list[ 0 ] = '|TInterface\\Addons\\Hekili\\Textures\\' .. class .. '.blp:0|t Any'
-          return list
-        end,
-        width = 'single',
-      },
-      ['Range Checking'] = {
-        type = 'select',
-        name = 'Range Checking',
-        desc = "Select the type of range checking to use when coloring abilities that are in or out of range.\n" ..
-          "|cFFFFD100Per Ability|r - Each ability is individually highlighted in red if that ability is out of range.\n" ..
-          "|cFFFFD100Melee|r - All abilities are highlighted in red if you are out of melee range.\n" ..
-          "|cFFFFD100No Range Checking|r - Do not warn in red if an ability is out of range.\n" ..
-          "|cFFFFD100Disable Out of Range|r - Treat abilities as unusable if not in range.\n",
-        values = { ability = "Per Ability",
-          melee = "Melee",
-          off = "No Range Checking",
-          xclude = "Disable Out of Range" },
-        order = 41
-      },
-      ['Mode Overrides'] = {
-        type = 'group',
-        inline = true,
-        name = 'Mode Overrides',
-        order = 45,
-        args = {
-          ['Auto - Minimum'] = {
-            type = 'range',
-            min = 0,
-            max = 20,
-            step = 1,
-            name = 'Auto: Minimum',
-            desc = "This display will always act as though there are at least this many targets when your mode is set to Auto.  If set to 0, this will be ignored.",
+                      list[ 0 ] = '|TInterface\\Addons\\Hekili\\Textures\\' .. class .. '.blp:0|t Any'
+                      return list
+                    end,
+                    width = 'full',
+                },
 
-            order = 1
-          },
-          ['Single - Minimum'] = {
-            type = 'range',
-            min = 0,
-            max = 20,
-            step = 1,
-            name = 'Single: Minimum',
-            desc = "This display will always act as though there are at least this many targets when your mode is set to Single Target.  If set to 0, this will be ignored.",
+                displaySpacer1 = {
+                    type = 'description',
+                    name = "\n",
+                    width = "full",
+                    order = 11
+                },
 
-            order = 2
-          },
-          ['AOE - Minimum'] = {
-            type = 'range',
-            min = 0,
-            max = 20,
-            step = 1,
-            name = 'AOE: Minimum',
-            desc = "This display will always act as though there are at least this many targets when your mode is set to AOE.  If set to 0, this will be ignored.",
-            order = 3
-          },
-          ['Auto - Maximum'] = {
-            type = 'range',
-            min = 0,
-            max = 20,
-            step = 1,
-            name = 'Auto: Maximum',
-            desc = "This display will always act as though there are no more than this many targets when your mode is set to Auto.  If set to 0, this will be ignored.",
-            order = 4
-          },
-          ['Single - Maximum'] = {
-            type = 'range',
-            min = 0,
-            max = 20,
-            step = 1,
-            name = 'Single: Maximum',
-            desc = "This display will always act as though there are no more than this many targets when your mode is set to Single Target.  If set to 0, this will be ignored.",
-            order = 5
-          },
-          ['AOE - Maximum'] = {
-            type = 'range',
-            min = 0,
-            max = 20,
-            step = 1,
-            name = 'AOE: Maximum',
-            desc = "This display will always act as though there are no more than this many targets when your mode is set to AOE.  If set to 0, this will be ignored.",
-            order = 6
-          },
-        },
-      },
-      ['SpellFlash Group'] = {
-        type = 'group',
-        inline = true,
-        name = "SpellFlash",
-        order = 50,
-        hidden = function(info, val)
-          return ns.lib.SpellFlash == nil
-        end,
-        args = {
-          ['Use SpellFlash'] = {
-            type = 'toggle',
-            name = 'Use SpellFlash',
-            desc = "If enabled and SpellFlash (or SpellFlashCore) is installed, the addon will cause the action buttons for recommended abilities to flash.",
-            order = 3,
-            width = 'double'
-          },
-          ['SpellFlash Color'] = {
-            type = 'color',
-            name = 'SpellFlash Color',
-            desc = "If SpellFlash is installed, actions recommended from this display will flash with the selected color.",
-            order = 4,
-            width = 'single'
-          }
-        }
-      },
-      PvE = {
-        type = 'group',
-        inline = true,
-        name = "PvE Visibility",
-        order = 60,
-        args = {
-          ["PvE - Default"] = {
-            type = 'toggle',
-            name = 'Show Always',
-            desc = 'Show this display at all times, regardless of combat state and whether you have a target.',
-            order = 1
-          },
-          ['PvE - Default Alpha'] = {
-            type = 'range',
-            name = 'Alpha',
-            desc = "When this display is shown due to 'Show Always', set the alpha transparency to this value.",
-            order = 2,
-            min = 0,
-            max = 1,
-            step = 0.01,
-            width = "double",
-          },
-          ['PvE - Target'] = {
-            type = 'toggle',
-            name = 'Show with Target',
-            desc = 'Show this display whenever you have a hostile enemy targeted, regardless of whether you are in combat.',
-            order = 3,
-          },
-          ['PvE - Target Alpha'] = {
-            type = 'range',
-            name = 'Alpha',
-            desc = "When this display is shown due to 'Show with Target', set the alpha transparency to this value.",
-            order = 4,
-            min = 0,
-            max = 1,
-            step = 0.01,
-            width = "double"
-          },
-          ['PvE - Combat'] = {
-            type = 'toggle',
-            name = 'Show in Combat',
-            desc = "Show this display whenever you are in combat.",
-            order = 5
-          },
-          ['PvE - Combat Alpha'] = {
-            type = 'range',
-            name = 'Alpha',
-            desc = "When the display is shown because you are in combat, set the transparency to this value.",
-            order = 6,
-            min = 0,
-            max = 1,
-            step = 0.01,
-            width = 'double'
+                displayPos = {
+                    type = 'group',
+                    name = 'Position',
+                    order = 12,
+                    inline = true,
+                    get = 'GetDisplayOption',
+                    set = 'SetDisplayOption',
+                    args = {
+                        setupPosition = {
+                            type = 'description',
+                            name = ' ',
+                            order = 0,
+                            hidden = function( info )
+                                local option = Hekili.Options
+                                local display = info[2]:match( "^D(%d+)" )
 
-          }
-        }
-      },
-      PvP = {
-        type = 'group',
-        inline = true,
-        name = "PvP Visibility",
-        order = 65,
-        args = {
-          ["PvP - Default"] = {
-            type = 'toggle',
-            name = 'Show Always',
-            desc = 'Show this display at all times, regardless of combat state and whether you have a target.',
-            order = 1
-          },
-          ['PvP - Default Alpha'] = {
-            type = 'range',
-            name = 'Alpha',
-            desc = "When this display is shown due to 'Show Always', set the alpha transparency to this value.",
-            order = 2,
-            min = 0,
-            max = 1,
-            step = 0.01,
-            width = "double",
-          },
-          ['PvP - Target'] = {
-            type = 'toggle',
-            name = 'Show with Target',
-            desc = 'Show this display whenever you have a hostile enemy targeted, regardless of whether you are in combat.',
-            order = 3,
-          },
-          ['PvP - Target Alpha'] = {
-            type = 'range',
-            name = 'Alpha',
-            desc = "When this display is shown due to 'Show with Target', set the alpha transparency to this value.",
-            order = 4,
-            min = 0,
-            max = 1,
-            step = 0.01,
-            width = "double"
-          },
-          ['PvP - Combat'] = {
-            type = 'toggle',
-            name = 'Show in Combat',
-            desc = "Show this display whenever you are in combat.",
-            order = 5
-          },
-          ['PvP - Combat Alpha'] = {
-            type = 'range',
-            name = 'Alpha',
-            desc = "When the display is shown because you are in combat, set the transparency to this value.",
-            order = 6,
-            min = 0,
-            max = 1,
-            step = 0.01,
-            width = 'double'
+                                for i = 1, #info - 1 do
+                                    option = option.args[ info[i] ]
+                                end
 
-          }
-        }
-      },
-      Script = {
-        type = 'input',
-        name = 'Conditions',
-        desc = 'Enter the conditions (Lua or SimC-like syntax) for this display to be visible.',
-        dialogControl = "HekiliCustomEditor",
-        arg = function(info)
-          local dispKey = info[2]
-          local dispIdx = tonumber( dispKey:match("^D(%d+)" ) )
-          local results = {}
+                                option = option.args
 
-          ns.state.reset()
-          ns.state.this_action = 'wait'
-          ns.storeValues( results, ns.scripts.D[ dispIdx ] )
-          return results
-        end,
-        multiline = 6,
-        order = 70,
-        usage = 'See http://www.curse.com/addons/wow/hekili for a reference list of game state options.',
-        width = 'full'
-      },
-      BLANK = {
-        type = "description",
-        name = " ",
-        width = "full",
-        order = 80
-      },
-      ['Add Hook'] = {
-        type = "execute",
-        name = "Add Hook",
-        desc = "Adds a new hook for an action list.  You can specific which action list to use, and under which conditions to use the list.",
-        order = 90,
-        func = function (info)
-          local dispKey, display = info[2], tonumber( info[2]:match("^D(%d+)") )
+                                local resolution = select( GetCurrentResolution(), GetScreenResolutions() )
+                                local width, height = resolution:match( "(%d+)x(%d+)" )
 
-          local clear, suffix, name, result = 0, 1, "New Hook", "New Hook"
-          while clear < #Hekili.DB.profile.displays[ display ].Queues do
-            for i, queue in ipairs( Hekili.DB.profile.displays[ display ].Queues ) do
-              if queue.Name == result then
-                result = name .. ' (' .. suffix .. ')'
-                suffix = suffix + 1
-              else
-                clear = clear + 1
-              end
-            end
-          end
+                                option.x.min = -width/2 or -512
+                                option.x.max = width/2 or 512
+                                option.y.min = -height/2 or -384
+                                option.y.max = height/2 or 384
 
-          local key, index = ns.newHook( display, result )
-          if key then
-            Hekili.Options.args.displays.args[ dispKey ].args[ key ] = ns.newHookOption( display, index )
-            ns.refreshOptions()
-          end
-          ns.cacheCriteria()
-          ns.loadScripts()
-        end
-      },
-      Reload = {
-        type = "execute",
-        name = "Reload Display",
-        desc = function( info, ... )
-          local dispKey, dispID = info[2], tonumber( string.match( info[2], "^D(%d+)" ) )
-          local display = Hekili.DB.profile.displays[ dispID ]
+                                return true
+                            end,                        
+                        },
+                        
+                        x = {
+                            type = 'range',
+                            name = "(X)",
+                            width = "full",
+                            min = -1024,
+                            max = 1024,
+                            step = 0.1,
+                            bigStep = 1,
+                            order = 1,
+                        },
+                        y = {
+                            type = 'range',
+                            name = "(Y)",
+                            width = "full",
+                            min = -768,
+                            max = 768,
+                            step = 0.1,
+                            bigStep = 1,
+                            order = 2,
+                        },
+                    },
+                },
 
-          local _, defaultID = ns.isDefault( display.Name, 'displays' )
+                displaySpacer2 = {
+                    type = 'description',
+                    name = "\n",
+                    width = "full",
+                    order = 13
+                },
 
-          local output = "Reloads this display from the default options available. Style settings are left untouched, but hooks and criteria are reset."
+                precombatAPL = {
+                    type = 'select',
+                    name = "Out of Combat Action List",
+                    desc = "Select the action list to be processed when you are out of combat.  " ..
+                        "This generally corresponds to actions.|cFFFFD100precombat|r action lists in " ..
+                        "SimulationCraft.",
+                    order = 20,
+                    width = 'double',
+                    values = function( info )
+                        local lists = displayOptionInfo.lists
 
-          if class.defaults[ defaultID ].version > ( display.Release or 0 ) then
-            output = output .. "\n|cFF00FF00The default display is newer (" .. class.defaults[ defaultID ].version .. ") than your existing display (" .. ( display.Release or "2.00" ) .. ").|r"
-          end
+                        for k in pairs( lists ) do
+                            lists[k] = nil
+                        end
 
-          return output
-        end,
-        confirm = true,
-        confirmText = "Reload the default settings for this default display?",
-        order = 91,
-        hidden = function( info, ... )
-          local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
-          local display = Hekili.DB.profile.displays[ dispID ]
+                        for i, list in pairs( Hekili.DB.profile.actionLists ) do
+                            if list.Specialization then                                
+                                lists[i] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
+                            else
+                                lists[i] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t ' .. list.Name
+                            end
+                        end
 
-          if ns.isDefault( display.Name, 'displays' ) then
-            return false
-          end
+                        lists[0] = '(none)'
 
-          return true
-        end,
-        func = function( info, ... )
-          local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
-          local display = Hekili.DB.profile.displays[ dispID ]
+                        return lists
+                    end,
+                },
+                gotoPrecombat = {
+                    type = 'execute',
+                    name = "See Action List",
+                    order = 21,
+                    func = function( info )
+                        local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = dispID and Hekili.DB.profile.displays[ dispID ]
 
-          local _, defaultID = ns.isDefault( display.Name, 'displays' )
+                        local list = display and display.precombatAPL
 
-          local import = ns.deserializeDisplay( class.defaults[ defaultID ].import )
+                        if list then
+                            ns.lib.AceConfigDialog:SelectGroup( "Hekili", 'actionLists', 'L'..list )
+                        end
+                    end,
+                    disabled = function( info )
+                        local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = dispID and Hekili.DB.profile.displays[ dispID ]
 
-          if not import then
-            Hekili:Print("Unable to import " .. class.defaults[ defaultID ].name .. ".")
-            return
-          end
+                        local list = display and display.precombatAPL
 
-          local settings_to_keep = { "Primary Icon Size", "Queued Font Size", "Primary Font Size", "Primary Caption Aura", "rel", "Spacing", "Queue Direction", "Queued Icon Size", "Font", "x", "y", "Icons Shown", "Action Captions", "Primary Caption", "Primary Caption Aura" }
+                        if not list then return true end
+                        return false
+                    end,
+                },
 
-          for _, k in pairs( settings_to_keep ) do
-            import[ k ] = display[ k ]
-          end
+                defaultAPL = {
+                    type = 'select',
+                    name = "Default Action List",
+                    desc = "Select the action list to be processed when you are in combat.  " ..
+                        "This generally corresponds to the |cFFFFD100actions|r list in " ..
+                        "SimulationCraft.",
+                    order = 22,
+                    width = 'double',
+                    values = function( info )
+                        local lists = displayOptionInfo.lists
 
-          Hekili.DB.profile.displays[ dispID ] = import
-          Hekili.DB.profile.displays[ dispID ].Name = class.defaults[ defaultID ].name
-          Hekili.DB.profile.displays[ dispID ].Release = class.defaults[ defaultID ].version
-          Hekili.DB.profile.displays[ dispID ].Default = true
-          ns.checkImports()
-          ns.refreshOptions()
-          ns.loadScripts()
-          ns.buildUI()
-        end,
-      },
-      BLANK2 = {
-        type = "description",
-        name = " ",
-        order = 92,
-        hidden = function( info, ... )
-          local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
-          local display = Hekili.DB.profile.displays[ dispID ]
+                        for k in pairs( lists ) do
+                            lists[k] = nil
+                        end
 
-          if ns.isDefault( display.Name, 'displays' ) then
-            return true
-          end
+                        for i, list in pairs( Hekili.DB.profile.actionLists ) do
+                            if list.Specialization then                                
+                                lists[i] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
+                            else
+                                lists[i] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t ' .. list.Name
+                            end
+                        end
 
-          return false
-        end,
-        width = "single",
-      },
-      Delete = {
-        type = "execute",
-        name = "Delete Display",
-        desc = "Deletes this display and all associated action list hooks and criteria.  The action lists will remain untouched.",
-        confirm = true,
-        confirmText = "Permanently delete this display and all associated action list hooks?",
-        order = 93,
-        func		=	function(info, ...)
-          if not info[2] then return end
+                        lists[0] = '(none)'
 
-          -- Key to Current Display (string)
-          local dispKey = info[2]
-          local dispIdx = tonumber( match( info[2], "^D(%d+)" ) )
+                        return lists
+                    end,
+                },
+                gotoDefault = {
+                    type = 'execute',
+                    name = "See Action List",
+                    order = 23,
+                    func = function( info )
+                        local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = dispID and Hekili.DB.profile.displays[ dispID ]
 
-          for i, queue in ipairs( Hekili.DB.profile.displays[dispIdx].Queues ) do
-            for k,v in pairs( queue ) do
-              queue[k] = nil
-            end
-            table.remove( Hekili.DB.profile.displays[dispIdx].Queues, i)
-          end
+                        local list = display and display.defaultAPL
 
-          -- Will need to be more elaborate later.
-          table.remove( Hekili.DB.profile.displays, dispIdx )
-          table.remove( ns.queue, dispIdx )
-          ns.refreshOptions()
-          ns.loadScripts()
-          ns.buildUI()
-          ns.lib.AceConfigDialog:SelectGroup( "Hekili", 'displays' )
-        end
-      },
-      ['UI and Style'] = {
-        type = 'group',
-        name = 'UI and Style',
-        order = 9,
-        args = {
-          x = {
-            type = 'input',
-            name = "Position (X)",
-            desc = "Enter the horizontal position of this display's primary icon relative to the center of your screen.  Negative numbers move the icon left, positive numbers move the icon right.",
-            order = 2,
-          },
-          y = {
-            type = 'input',
-            name = "Position (Y)",
-            desc = "Enter the vertical position of this display's primary icon relative to the center of your screen.  Negative numbers move the icon up, positive numbers move the icon down.",
-            order = 3,
-          },
-          iconHeader = {
-            type = 'header',
-            name = 'Icons and Layout',
-            order = 5,
-          },
-          ['Queue Direction'] = {
-            type = 'select',
-            name = 'Queue Direction',
-            order = 06,
-            values = {
-              TOP = 'Up',
-              BOTTOM = 'Down',
-              LEFT = 'Left',
-              RIGHT = 'Right'
+                        if list then
+                            ns.lib.AceConfigDialog:SelectGroup( "Hekili", 'actionLists', 'L'..list )
+                        end
+                    end,
+                    disabled = function( info )
+                        local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = dispID and Hekili.DB.profile.displays[ dispID ]
+
+                        local list = display and display.defaultAPL
+
+                        if not list then return true end
+                        return false
+                    end,
+                },
+
+
+                displaySpacer3 = {
+                    type = 'description',
+                    name = "\n",
+                    width = "full",
+                    order = 25,
+                },
+
+                displayType = {
+                    type = "select",
+                    name = "Display Type",
+                    desc = "Choose the type of display for this display.\n\n" ..
+                        "|cFFFFD100Primary|r means the display will interact with the 'Mode Toggle' feature.  In Automatic Mode, this display's recommendations " ..
+                        "will be made based on the number of targets detected.  In Single-Target and AOE Mode, the display will make recommendations based on only " ..
+                        "one target.  It is expected that a second display would provide AOE information if needed.\n\n" ..
+                        "|cFFFFD100Single-Target|r means this display will always make recommendations assuming there is only one enemy, ignoring the 'Mode Toggle' " ..
+                        "feature.\n\n" ..
+                        "|cFFFFD100AOE|r means this display will always make recommendations assuming there are multiple enemies, regardless of the 'Mode Toggle' " ..
+                        "feature.\n\n" ..
+                        "|cFFFFD100Automatic|r means this display will always make recommendations based on the number of detected targets, regardless of the 'Mode Toggle' " ..
+                        "feature.\n\n" ..
+                        "|cFFFFD100Custom|r allows you to manually specify the minimum and maximum number of targets this display will use in making its recommendations, " ..
+                        "based on each available 'Mode Toggle' setting.  This is an advanced feature.",
+                    order = 30,
+                    values = {
+                        a = "Primary",
+                        b = "Single-Target",
+                        c = "AOE",
+                        d = "Automatic",
+                        z = "Custom"
+                    },
+                    width = "full"
+                },
+
+                simpleAOE = {
+                    type = "range",
+                    name = "AOE Minimum Targets",
+                    desc = "When the 'Mode Toggle' feature is set to AOE, this display will assume there are at |cFFFF0000least|r this many enemies when making its " ..
+                        "recommendations.",
+                    order = 31,
+                    min = 2,
+                    max = 20,
+                    step = 1,
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].displayType ~= 'c'
+                    end,
+                    width = 'full',
+                },
+
+                minST = {
+                    type = 'range',
+                    min = 0,
+                    max = 20,
+                    step = 1,
+                    name = 'Single-Target, Minimum',
+                    desc = "This display will always act as though there are at least this many targets when your mode is set to Single Target.  If set to 0, this will be ignored.",
+                    order = 31,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
+                    end
+                },
+                maxST = {
+                    type = 'range',
+                    min = 0,
+                    max = 20,
+                    step = 1,
+                    name = 'Single-Target, Maximum',
+                    desc = "This display will always act as though there are no more than this many targets when your mode is set to Single Target.  If set to 0, this will be ignored.",
+                    order = 32,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
+                    end
+                },
+                minAE = {
+                    type = 'range',
+                    min = 0,
+                    max = 20,
+                    step = 1,
+                    name = 'AOE, Minimum',
+                    desc = "This display will always act as though there are at least this many targets when your mode is set to AOE.  If set to 0, this will be ignored.",
+                    order = 33,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
+                    end
+                },
+                maxAE = {
+                    type = 'range',
+                    min = 0,
+                    max = 20,
+                    step = 1,
+                    name = 'AOE, Maximum',
+                    desc = "This display will always act as though there are no more than this many targets when your mode is set to AOE.  If set to 0, this will be ignored.",
+                    order = 34,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
+                    end
+                },
+                minAuto = {
+                    type = 'range',
+                    min = 0,
+                    max = 20,
+                    step = 3,
+                    name = 'Automatic, Minimum',
+                    desc = "This display will always act as though there are at least this many targets when your mode is set to Auto.  If set to 0, this will be ignored.",
+                    order = 35,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
+                    end
+                },
+                maxAuto = {
+                    type = 'range',
+                    min = 0,
+                    max = 20,
+                    step = 1,
+                    name = 'Automatic, Maximum',
+                    desc = "This display will always act as though there are no more than this many targets when your mode is set to Auto.  If set to 0, this will be ignored.",
+                    order = 36,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
+                    end
+                },
+
+                displaySpacer4 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 50,
+                    width = 'full',
+                },
+
+                Reload = {
+                    type = "execute",
+                    name = "Reload Display",
+                    desc = function( info, ... )
+                      local dispKey, dispID = info[2], tonumber( string.match( info[2], "^D(%d+)" ) )
+                      local display = Hekili.DB.profile.displays[ dispID ]
+
+                      local _, defaultID = ns.isDefault( display.Name, 'displays' )
+
+                      local output = "Reloads this display from the default options available. Style settings are left untouched, but hooks and criteria are reset."
+
+                      if class.defaults[ defaultID ].version > ( display.Release or 0 ) then
+                        output = output .. "\n|cFF00FF00The default display is newer (" .. class.defaults[ defaultID ].version .. ") than your existing display (" .. ( display.Release or "N/A" ) .. ").|r"
+                      end
+
+                      return output
+                    end,
+                    confirm = true,
+                    confirmText = "Reload the default settings for this default display?",
+                    order = 91,
+                    hidden = function( info, ... )
+                      local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
+                      local display = Hekili.DB.profile.displays[ dispID ]
+
+                      if ns.isDefault( display.Name, 'displays' ) then
+                        return false
+                      end
+
+                      return true
+                    end,
+                    func = function( info, ... )
+                      local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
+                      local display = Hekili.DB.profile.displays[ dispID ]
+
+                      local _, defaultID = ns.isDefault( display.Name, 'displays' )
+
+                      local import = ns.deserializeDisplay( class.defaults[ defaultID ].import )
+
+                      if not import then
+                        Hekili:Print("Unable to import " .. class.defaults[ defaultID ].name .. ".")
+                        return
+                      end
+
+                      local settings_to_keep = { "Primary Icon Size", "Queued Font Size", "Primary Font Size", "Primary Caption Aura", "rel", "Spacing", "Queue Direction", "Queued Icon Size", "Font", "x", "y", "Icons Shown", "Action Captions", "Primary Caption", "Primary Caption Aura" }
+
+                      for _, k in pairs( settings_to_keep ) do
+                        import[ k ] = display[ k ]
+                      end
+
+                      Hekili.DB.profile.displays[ dispID ] = import
+                      Hekili.DB.profile.displays[ dispID ].Name = class.defaults[ defaultID ].name
+                      Hekili.DB.profile.displays[ dispID ].Release = class.defaults[ defaultID ].version
+                      Hekili.DB.profile.displays[ dispID ].Default = true
+                      ns.checkImports()
+                      ns.refreshOptions()
+                      ns.loadScripts()
+                      ns.buildUI()
+                    end,
+                },
+                BLANK2 = {
+                    type = "description",
+                    name = " ",
+                    order = 92,
+                    hidden = function( info, ... )
+                      local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
+                      local display = Hekili.DB.profile.displays[ dispID ]
+
+                      if ns.isDefault( display.Name, 'displays' ) then
+                        return true
+                      end
+
+                      return false
+                    end,
+                    width = "single",
+                },
+                Delete = {
+                    type = "execute",
+                    name = "Delete Display",
+                    desc = "Deletes this display and all associated action list hooks and criteria.  The action lists will remain untouched.",
+                    confirm = true,
+                    confirmText = "Permanently delete this display and all associated action list hooks?",
+                    order = 93,
+                    func        =   function(info, ...)
+                      if not info[2] then return end
+
+                      -- Key to Current Display (string)
+                      local dispKey = info[2]
+                      local dispIdx = tonumber( match( info[2], "^D(%d+)" ) )
+
+                      --[[ for i, queue in ipairs( Hekili.DB.profile.displays[dispIdx].Queues ) do
+                        for k,v in pairs( queue ) do
+                          queue[k] = nil
+                        end
+                        table.remove( Hekili.DB.profile.displays[dispIdx].Queues, i)
+                      end ]]
+
+                      -- Will need to be more elaborate later.
+                      table.remove( Hekili.DB.profile.displays, dispIdx )
+                      table.remove( ns.queue, dispIdx )
+                      ns.refreshOptions()
+                      ns.loadScripts()
+                      ns.buildUI()
+                      ns.lib.AceConfigDialog:SelectGroup( "Hekili", 'displays' )
+                    end
+                },
             },
-          },
-          ['Queue Alignment'] = {
-            type = 'select',
-            name = 'Queue Alignment',
-            order = 07,
-            values = function( info )
-              local dispIdx = tonumber( match( info[2], "^D(%d+)" ) )
-              local display = dispIdx and Hekili.DB.profile.displays[ dispIdx ]
-              
-              if not display then return nil end
-              
-              if display['Queue Direction'] == 'LEFT' or display['Queue Direction'] == 'RIGHT' then
-                return { a = 'Top', b = 'Bottom', c = 'Center' }
-              end
-              
-              return { a = 'Left', b = 'Right', c = 'Center' }
-            end
-          },
-          ['Blank I&L Space'] = {
-            type = 'description',
-            name = ' ',
-            order = 08,
-            width = 'single',
-          },
-          ['Icons Shown'] = {
-            type = 'range',
-            name = 'Icons Shown',
-            desc = "Select the number of icons to display.  This also determines the number of actions the addon will try to predict.",
-            min = 1,
-            max = 10,
-            order = 10,
-            step = 1,
-          },
-          Spacing = {
-            type = 'range',
-            name = 'Icon Spacing',
-            desc = "Select the number of pixels to skip between icons in this display.",
-            min = -10,
-            max = 50,
-            order = 11,
-            step = 1,
-          },
-          Zoom = {
-            type = 'range',
-            name = 'Icon Zoom',
-            desc = "Select the zoom percentage for the icon textures in this display.  (Roughly 15% will trim off the default Blizzard borders.)",
-            min = 0,
-            max = 100,
-            order = 12,
-            step = 1
-          },
-          ['Primary Icon Size'] = {
-            type = 'range',
-            name = 'Primary Icon Size',
-            desc = "Select the size of the primary icon.",
-            min = 10,
-            max = 500,
-            order = 21,
-            step = 1,
-          },
-          ['Queued Icon Size'] = {
-            type = 'range',
-            name = 'Queued Icon Size',
-            desc = "Select the size of the queued icons.",
-            min = 10,
-            max = 500,
-            order = 22,
-            step = 1,
-          },
-          fontHeader = {
-            type = 'header',
+        },
+
+        styleSettings = {
+            type = 'group',
             name = 'Style',
-            order = 30,
-          },
-          Font = {
-            type = 'select',
-            name = 'Font',
-            desc = "Select the font to use on all icons in this display.",
-            dialogControl = 'LSM30_Font',
-            order = 31,
-            values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
-          },
-          ['Primary Font Size'] = {
-            type = 'range',
-            name = 'Primary Font Size',
-            desc = "Enter the size of the font for primary icon captions.",
-            min = 6,
-            max = 100,
-            order = 32,
-            step = 1,
-          },
-          ['Queued Font Size'] = {
-            type = 'range',
-            name = 'Queued Font Size',
-            desc = "Enter the size of the font for queued icon captions.",
-            min = 6,
-            max = 100,
-            order = 33,
-            step = 1,
-          },
-          ['Show Keybindings'] = {
-            type = 'toggle',
-            name = "Show Keybindings",
-            desc = "If checked, the addon will show keybindings for recommended actions.",
-            order = 34,
-          },
-          ['Keybinding Style'] = {
-            type = "select",
-            name = "Keybinding Style",
-            values = {
-                "Lowercase",
-                "Uppercase"
+            order = 2,
+            args = {
+
+                quickStyle = {
+                    type = 'select',
+                    name = 'Quick Style',
+                    desc = 'Select a standard display template to automatically set most of your display settings.',
+                    order = 0,
+                    values = {
+                        a = 'Standard, 4-Icon Display',
+                        b = 'Extended, 5-Icon Display with Smaller Queued Icons',
+                        c = 'Short, 2-Icon Display with Smaller Queued Icon',
+                        d = 'Single Icon',
+                        z = 'Select a Template',
+                    },
+                    get = 'GetDisplayOption',
+                    set = 'SetDisplayOption',
+                    width = 'full',
+                    hidden = function( info )
+                        displayOptionInfo.quickStyle = 'z'
+                        return false
+                    end
+                },
+
+                numIcons = {
+                    type = 'range',
+                    name = "Icons Shown",
+                    min = 1,
+                    max = 10,
+                    step = 1,
+                    width = "full",
+                    order = 1,
+                },
+
+                styleSpacer1 = {
+                    type = 'description',
+                    name = '\n',
+                    width = 'full',
+                    order = 2
+                },
+
+                queueDirection = {
+                    type = 'select',
+                    name = 'Queue Direction',
+                    values = {
+                        TOP = 'Up',
+                        BOTTOM = 'Down',
+                        LEFT = 'Left',
+                        RIGHT = 'Right'
+                    },
+                    width = "full",
+                    order = 6,
+                },
+
+                queueAlignment = {
+                    type = 'select',
+                    name = 'Queue Alignment',
+                    values = function( info )
+                      local dispIdx = tonumber( match( info[2], "^D(%d+)" ) )
+                      local display = dispIdx and Hekili.DB.profile.displays[ dispIdx ]
+                      
+                      if not display then return nil end
+
+                      if display.queueDirection == 'LEFT' or display.queueDirection == 'RIGHT' then
+                        return { a = 'Top', b = 'Bottom', c = 'Center' }
+                      end
+                      
+                      return { a = 'Left', b = 'Right', c = 'Center' }
+                    end,
+                    width = "full",
+                    order = 7,
+                },
+
+                styleSpacer2 = {
+                    type = 'description',
+                    name = "\n",
+                    width = "full",
+                    order = 9,
+                },
+
+                primaryIconSize = {
+                    type = 'range',
+                    name = 'Primary Icon Size',
+                    desc = "Select the size of the primary icon.",
+                    min = 10,
+                    max = 500,
+                    step = 0.1,
+                    bigStep = 1,
+                    width = 'full',
+                    order = 10,
+                },
+
+                queuedIconSize = {
+                    type = 'range',
+                    name = 'Queued Icon Size',
+                    desc = "Select the size of the queued icons.",
+                    min = 10,
+                    max = 500,
+                    step = 0.1,
+                    bigStep = 1,
+                    order = 11,
+                    width = 'full'
+                },
+
+                iconSpacing = {
+                    type = 'range',
+                    name = 'Icon Spacing',
+                    desc = "Select the number of pixels to skip between icons in this display.",
+                    min = -10,
+                    max = 50,
+                    step = 1,
+                    order = 12,
+                    width = 'full'
+                },
+
+                iconZoom = {
+                    type = 'range',
+                    name = 'Icon Zoom',
+                    desc = "Select the zoom percentage for the icon textures in this display.  (Roughly 15% will trim off the default Blizzard borders.)",
+                    min = 0,
+                    max = 100,
+                    step = 1,
+                    order = 13,
+                    width = 'full'
+                },
+
+                --[[ Font = {
+                    type = 'select',
+                    name = 'Font',
+                    desc = "Select the font to use on all icons in this display.",
+                    dialogControl = 'LSM30_Font',
+                    order = 31,
+                    values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                },
+                primaryFontSize = {
+                    type = 'range',
+                    name = 'Primary Font Size',
+                    desc = "Enter the size of the font for primary icon captions.",
+                    min = 6,
+                    max = 100,
+                    order = 32,
+                    step = 1,
+                },
+                queuedFontSize = {
+                    type = 'range',
+                    name = 'Queued Font Size',
+                    desc = "Enter the size of the font for queued icon captions.",
+                    min = 6,
+                    max = 100,
+                    order = 33,
+                    step = 1,
+                }, ]]
             },
-            get = function( info )
-              local dispKey, display = info[2], tonumber( info[2]:match("^D(%d+)") )
+        },
 
-              return Hekili.DB.profile.displays[ display ]['Keybinding Style'] or 1
-            end,
-            order = 35,
-          },
-          Overlay = {
-            type = "toggle",
-            name = "Show Overlay Glow",
-            desc = "If checked, the primary icon will glow if the ability has an active overlay (i.e., Stormbringer for Stormstrike or Hot Hand for Lava Lash).",
-            order = 39,
+        extraSettings = {
+            type = 'group',
+            name = 'Extras',
+            order = 4,
+            args = {
+                esDescription = {
+                    type = 'description',
+                    name = "These extra settings allow you to specify what additional information is shown on your display.",
+                    fontSize = 'medium',
+                    order = 0,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
 
-          },
-          captionHeader = {
-            type = 'header',
-            name = 'Captions',
-            order = 40,
-          },
-          -- Captions
-          ['Action Captions'] = {
-            type = 'toggle',
-            name = 'Action Captions',
-            desc = "Enable or disable action captions.  This allows you to display additional information about a particular action when shown.",
-            order = 51,
-            width = 'full'
-          },
-          ['Primary Caption'] = {
-            type = 'select',
-            name = 'Primary Caption',
-            desc = "This allows you to override the caption on the primary icon under a variety of circumstances.",
-            hidden = function(info)
-              local display = tonumber( match( info[2], "^D(%d+)" ) )
-              if not Hekili.DB.profile.displays[ display ]['Action Captions'] then
-                return true
-              end
-              return false
-            end,
-            order = 52,
-            values = {
-              default = 'Use Default Captions',
-              targets = 'Show # of Targets',
-              buff = 'Buff Stacks',
-              debuff = 'Debuff Count',
-              ratio = 'Debuff Count / # Targets',
-              sratio = 'Buff Stacks / # Targets'
+                        if display then
+                            displayOptionInfo.iconOffset = display and max( display.primaryIconSize, display.queuedIconSize ) or 100
+                        end
+
+                        return false
+                    end
+                },
+
+                rangeType = {
+                    type = 'select',
+                    name = 'Range Checking',
+                    desc = "Select the kind of range checking and range coloring to be used by this display.\n\n" ..
+                        "|cFFFFD100Ability|r - Each ability is highlighted in red if that ability is out of range.\n\n" ..
+                        "|cFFFFD100Melee|r - All abilities are highlighted in red if you are out of melee range.\n\n" ..
+                        "|cFFFFD100No Coloring|r - Do not indicate that abilities are out of range.\n\n" ..
+                        "|cFFFFD100Unusable Out of Range|r - Do not recommend abilities if/when you are out of range.",
+                    values = {
+                        ability = "Ability",
+                        melee = "Melee",
+                        off = "No Coloring",
+                        xclude = "Unusable"
+                    },
+                    order = 1,
+                    width = 'full'
+                },
+
+                esSpacer1 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 2,
+                    width = 'full'
+                },
+
+                blizzGlow = {
+                    type = "toggle",
+                    name = "Enable Glow",
+                    desc = "If checked, the primary icon will glow if the ability has an active overlay (i.e., Stormbringer for Stormstrike or Hot Hand for Lava Lash).",
+                    order = 5,
+                    width = 'full',
+                },
+                queuedBlizzGlow = {
+                    type = "toggle",
+                    name = "Enable Glow on Queued Abilities",
+                    desc = "If checked, queued abilities will also glow if the ability has an active overlay.",
+                    order = 6,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.blizzGlow
+                    end
+                },
+                esSpacer2 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 9,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.blizzGlow
+                    end
+                },
+
+                ['SpellFlash Group'] = {
+                    type = 'group',
+                    inline = true,
+                    name = "SpellFlash",
+                    order = 10,
+                    hidden = function( info, val )
+                        return ns.lib.SpellFlash == nil
+                    end,
+                    args = {
+                        spellFlash = {
+                            type = 'toggle',
+                            name = 'Use SpellFlash',
+                            desc = "If enabled and SpellFlash (or SpellFlashCore) is installed, the addon will cause the action buttons for recommended abilities to flash.",
+                            order = 1,
+                            width = 'full'
+                        },
+                        spellFlashColor = {
+                            type = 'color',
+                            name = 'SpellFlash Color',
+                            desc = "If SpellFlash is installed, actions recommended from this display will flash with the selected color.",
+                            order = 2,
+                            width = 'full'
+                        }
+                    },
+                },
+                esSpacer3 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 11,
+                    width = 'full',
+                    hidden = function( info, val )
+                        return ns.lib.SpellFlash == nil
+                    end,
+                },
+
+                showKeybindings = {
+                    type = 'toggle',
+                    name = 'Show Keybindings',
+                    order = 12,
+                    width = 'full'
+                },
+                keybindingGroup = {
+                    type = 'group',
+                    inline = true,
+                    name = "Keybindings",
+                    order = 15,
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showKeybindings
+                    end,
+                    args = {
+                        queuedKBs = {
+                            type = 'toggle',
+                            name = 'Show on Queued Abilities',
+                            order = 2,
+                            width = 'full'
+                        },
+                        lowercaseKBs = {
+                            type = 'toggle',
+                            name = 'Lowercase',
+                            order = 3,
+                            width = 'full'
+                        },
+
+                        kbFont = {
+                            type = 'select',
+                            name = 'Font',
+                            desc = "Select the font to use for keybindings.",
+                            dialogControl = 'LSM30_Font',
+                            order = 5,
+                            values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                            width = 'full',
+                        },
+                        kbFontStyle = {
+                            type = 'select',
+                            name = 'Style',
+                            order = 6,
+                            values = {
+                                ["MONOCHROME"] = "Monochrome",
+                                ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
+                                ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
+                                ["NONE"] = "None",
+                                ["OUTLINE"] = "Outline",
+                                ["THICKOUTLINE"] = "Thick Outline"
+                            },
+                            width = 'full'
+                        },
+                        kbFontSize = {
+                            type = 'range',
+                            name = 'Size',
+                            desc = "Select the size of the font to use.",
+                            min = 6,
+                            max = 72,
+                            order = 6,
+                            step = 1,
+                            width = 'full'
+                        },
+                        kbSpacer1 = {
+                            type = 'description',
+                            name = '\n',
+                            order = 7,
+                            width = 'full',
+                        },
+
+                        kbAnchor = {
+                            type = 'select',
+                            name = 'Anchor Point',
+                            order = 8,
+                            width = 'full',
+                            values = {
+                                TOPLEFT = 'Top Left',
+                                TOP = 'Top',
+                                TOPRIGHT = 'Top Right',
+                                LEFT = 'Left',
+                                CENTER = 'Center',
+                                RIGHT = 'Right',
+                                BOTTOMLEFT = 'Bottom Left',
+                                BOTTOM = 'Bottom',
+                                BOTTOMRIGHT = 'Bottom Right'
+                            }
+                        },
+                        xOffsetKBs = {
+                            type = 'range',
+                            name = 'X Offset',
+                            order = 9,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                        yOffsetKBs = {
+                            type = 'range',
+                            name = 'Y Offset',
+                            order = 10,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                    },
+
+                },
+                ezSpacer4 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 16,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showKeybindings
+                    end,
+                },
+
+                showCaptions = {
+                    type = 'toggle',
+                    name = 'Show Captions',
+                    order = 20,
+                    width = 'full',
+                },
+                captionsGroup = {
+                    type = 'group',
+                    inline = true,
+                    name = "Captions",
+                    order = 21,
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showCaptions
+                    end,
+                    args = {
+                        queuedCaptions = {
+                            type = 'toggle',
+                            name = 'Show on Queued Abilities',
+                            order = 2,
+                            width = 'full'
+                        },
+
+                        captionFont = {
+                            type = 'select',
+                            name = 'Font',
+                            desc = "Select the font to use for keybindings.",
+                            dialogControl = 'LSM30_Font',
+                            order = 5,
+                            values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                            width = 'full',
+                        },
+                        captionFontStyle = {
+                            type = 'select',
+                            name = 'Style',
+                            order = 6,
+                            values = {
+                                ["MONOCHROME"] = "Monochrome",
+                                ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
+                                ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
+                                ["NONE"] = "None",
+                                ["OUTLINE"] = "Outline",
+                                ["THICKOUTLINE"] = "Thick Outline"
+                            },
+                            width = 'full'
+                        },
+                        captionFontSize = {
+                            type = 'range',
+                            name = 'Size',
+                            desc = "Select the size of the font to use.",
+                            min = 6,
+                            max = 72,
+                            order = 6,
+                            step = 1,
+                            width = 'full'
+                        },
+                        captionSpacer1 = {
+                            type = 'description',
+                            name = '\n',
+                            order = 7,
+                            width = 'full',
+                        },
+
+                        captionAnchor = {
+                            type = 'select',
+                            name = 'Anchor Point',
+                            order = 8,
+                            width = 'full',
+                            values = {
+                                TOP = 'Top',
+                                BOTTOM = 'Bottom',
+                            }
+                        },
+                        captionAlign = {
+                            type = 'select',
+                            name = 'Alignment',
+                            order = 9,
+                            width = 'full',
+                            values = {
+                                LEFT = "Left",
+                                RIGHT = "Right",
+                                CENTER = "Center"
+                            }
+                        },
+
+                        xOffsetCaptions = {
+                            type = 'range',
+                            name = 'X Offset',
+                            order = 10,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                        yOffsetCaptions = {
+                            type = 'range',
+                            name = 'Y Offset',
+                            order = 11,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                    },
+
+                },
+                ezSpacer5 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 22,
+                    width = 'full',
+                    hidden = function( info, val )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showCaptions
+                    end
+                },
+
+                showIndicators = {
+                    type = 'toggle',
+                    name = 'Show Indicators',
+                    order = 25,
+                    width = 'full'
+                },
+                indicatorGroup = {
+                    type = 'group',
+                    inline = true,
+                    name = "Indicators",
+                    order = 26,
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showIndicators
+                    end,
+                    args = {
+                        queuedIndicators = {
+                            type = 'toggle',
+                            name = 'Show on Queued Abilities',
+                            order = 2,
+                            width = 'full'
+                        },
+
+                        indicatorAnchor = {
+                            type = 'select',
+                            name = 'Anchor Point',
+                            order = 8,
+                            width = 'full',
+                            values = {
+                                TOPLEFT = 'Top Left',
+                                TOP = 'Top',
+                                TOPRIGHT = 'Top Right',
+                                LEFT = 'Left',
+                                CENTER = 'Center',
+                                RIGHT = 'Right',
+                                BOTTOMLEFT = 'Bottom Left',
+                                BOTTOM = 'Bottom',
+                                BOTTOMRIGHT = 'Bottom Right'
+                            }
+                        },
+                        xOffsetIndicators = {
+                            type = 'range',
+                            name = 'X Offset',
+                            order = 9,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                        yOffsetIndicators = {
+                            type = 'range',
+                            name = 'Y Offset',
+                            order = 10,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                    },
+
+                },
+                ezSpacer6 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 27,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showIndicators
+                    end,
+                },
+
+                showTargets = {
+                    type = 'toggle',
+                    name = 'Show Target Count',
+                    order = 30,
+                    width = 'full',
+                },
+                targetGroup = {
+                    type = 'group',
+                    inline = true,
+                    name = "Target Count",
+                    order = 31,
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showTargets
+                    end,
+                    args = {
+                        targetFont = {
+                            type = 'select',
+                            name = 'Font',
+                            desc = "Select the font to use for the target count.",
+                            dialogControl = 'LSM30_Font',
+                            order = 1,
+                            values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                            width = 'full',
+                        },
+                        targetFontStyle = {
+                            type = 'select',
+                            name = 'Style',
+                            order = 2,
+                            values = {
+                                ["MONOCHROME"] = "Monochrome",
+                                ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
+                                ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
+                                ["NONE"] = "None",
+                                ["OUTLINE"] = "Outline",
+                                ["THICKOUTLINE"] = "Thick Outline"
+                            },
+                            width = 'full'
+                        },
+                        targetFontSize = {
+                            type = 'range',
+                            name = 'Size',
+                            desc = "Select the size of the font to use.",
+                            min = 6,
+                            max = 72,
+                            step = 1,
+                            order = 3,
+                            width = 'full'
+                        },
+                        targetSpacer1 = {
+                            type = 'description',
+                            name = '\n',
+                            order = 4,
+                            width = 'full',
+                        },
+
+                        targetAnchor = {
+                            type = 'select',
+                            name = 'Anchor Point',
+                            order = 5,
+                            width = 'full',
+                            values = {
+                                TOPLEFT = 'Top Left',
+                                TOP = 'Top',
+                                TOPRIGHT = 'Top Right',
+                                LEFT = 'Left',
+                                CENTER = 'Center',
+                                RIGHT = 'Right',
+                                BOTTOMLEFT = 'Bottom Left',
+                                BOTTOM = 'Bottom',
+                                BOTTOMRIGHT = 'Bottom Right'
+                            }
+                        },
+                        xOffsetTargets = {
+                            type = 'range',
+                            name = 'X Offset',
+                            order = 6,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                        yOffsetTargets = {
+                            type = 'range',
+                            name = 'Y Offset',
+                            order = 7,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                    },
+
+                },
+                ezSpacer7 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 32,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showTargets
+                    end,
+                },
+
+                showAuraInfo = {
+                    type = 'toggle',
+                    name = 'Show Aura Info',
+                    order = 35,
+                    width = 'full',
+                },
+                auraInfoGroup = {
+                    type = 'group',
+                    inline = true,
+                    name = "Aura Info",
+                    order = 36,
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showAuraInfo
+                    end,
+                    args = {
+                        auraInfoType = {
+                            type = 'select',
+                            name = 'Type',
+                            order = 1,
+                            width = 'full',
+                            values = {
+                                buff = "Buff Stacks",
+                                debuff = "Debuff Stacks",
+                                count = "Debuff Count"
+                            }
+                        },
+
+                        auraSpellID = {
+                            type = 'input',
+                            name = 'Spell',
+                            order = 4,
+                            width = 'single',
+                            get = 'GetDisplayOption',
+                            set = 'SetDisplayOption'
+                        },
+                        auraSpellName = {
+                            type = 'description',
+                            name = 'Not Available',
+                            order = 5,
+                            hidden = function( info )
+                                local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                                local display = id and Hekili.DB.profile.displays[ id ]
+                                local option = Hekili.Options
+
+                                for i = 1, #info do
+                                    option = option.args[ info[i] ]
+                                end
+
+                                local default = " Not Set"
+
+                                if display then
+                                    if display.auraSpellID then
+                                        local name, _, texture = GetSpellInfo( display.auraSpellID )
+
+                                        if name and texture then
+                                            option.name = format( " |T%s:0|t %s", texture, name )
+                                        else
+                                            option.name = default
+                                        end
+                                    else
+                                        option.name = default
+                                    end
+                                else
+                                    option.name = default
+                                end
+
+                                return false
+                            end,
+                            fontSize = 'medium',
+                            width = 'single'
+                        },
+                        auraUnit = {
+                            type = 'select',
+                            name = 'Unit',
+                            order = 6,
+                            values = {
+                                player = "Player",
+                                pet = "Pet",
+                                target = "Target"
+                            },
+                            hidden = function( info )
+                                local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                                local display = id and Hekili.DB.profile.displays[ id ]
+
+                                return not display or display.auraInfoType == 'count'
+                            end,
+                            width = 'full'
+                        },
+                        auraMine = {
+                            type = 'toggle',
+                            name = 'Mine Only',
+                            order = 7,
+                            width = 'full',
+                            hidden = function( info )
+                                local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                                local display = id and Hekili.DB.profile.displays[ id ]
+
+                                return not display or display.auraInfoType == 'count'
+                            end,
+                        },
+
+                        auraSpacer1 = {
+                            type = 'description',
+                            name = '\n',
+                            order = 8,
+                            width = 'full',
+                        },
+
+                        auraAnchor = {
+                            type = 'select',
+                            name = 'Anchor Point',
+                            order = 9,
+                            width = 'full',
+                            values = {
+                                TOPLEFT = 'Top Left',
+                                TOP = 'Top',
+                                TOPRIGHT = 'Top Right',
+                                LEFT = 'Left',
+                                CENTER = 'Center',
+                                RIGHT = 'Right',
+                                BOTTOMLEFT = 'Bottom Left',
+                                BOTTOM = 'Bottom',
+                                BOTTOMRIGHT = 'Bottom Right'
+                            }
+                        },
+                        xOffsetAura = {
+                            type = 'range',
+                            name = 'X Offset',
+                            order = 10,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                        yOffsetAura = {
+                            type = 'range',
+                            name = 'Y Offset',
+                            order = 11,
+                            width = 'full',
+                            
+                            min = -displayOptionInfo.iconOffset,
+                            max = displayOptionInfo.iconOffset,
+                            step = 0.1,
+                            bigStep = 1,
+                        },
+                    },
+
+                },
+                ezSpacer8 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 37,
+                    width = 'full',
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return not display or not display.showAuraInfo
+                    end,
+                },
+
             }
-          },
-          -- Should probably use the autocomplete aura tool.
-          ['Primary Caption Aura'] = {
-            type = 'input',
-            name = 'Aura',
-            desc = "Enter the name of the aura to check for certain Primary Caption overrides.",
-            hidden = function(info)
-              local display = tonumber( match( info[2], "^D(%d+)" ) )
-              if not Hekili.DB.profile.displays[ display ]['Action Captions'] then
-                return true
-              end
-              return false
-            end,
-            order = 53,
-          }
-        }
-      },
+        },
+
+
+        visibilitySettings = {
+            type = 'group',
+            name = 'Visibility',
+            order = 3,
+            args = {
+                showST = {
+                    type = 'toggle',
+                    name = 'Show in Single-Target',
+                    desc = "If checked, this display will be shown when the addon is in Single-Target mode.",
+                    order = 1,
+                },
+                showAE = {
+                    type = 'toggle',
+                    name = 'Show in AOE',
+                    desc = "If checked, this display will be shown when the addon is in AOE mode.",
+                    order = 2,
+                },
+                showAuto = {
+                    type = 'toggle',
+                    name = 'Show in Automatic',
+                    desc = "If checked, this display will be shown when the addon is in Automatic mode.",
+                    order = 3,
+                },
+
+                showSpacer1 = {
+                    type = 'description',
+                    name = '\n',
+                    order = 20,
+                    width = 'full',
+                },
+
+
+                visibilityType = {
+                    type = 'select',
+                    name = "Visibility Options",
+                    width = "full",
+                    values = {
+                        a = "Simple",
+                        b = "Advanced"
+                    },
+                    order = 30,
+                },
+
+                simpleVisibilityGroup = {
+                    type = 'group',
+                    inline = true,
+                    name = " ",
+                    order = 31,
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].visibilityType ~= 'a'
+                    end,
+                    args = {
+                        showPvE = {
+                            type = 'toggle',
+                            name = "Show in PvE",
+                            desc = "Show this display in non-PvP settings.",
+                            order = 1,
+                        },
+                        alphaShowPvE = {
+                            type = 'range',
+                            name = "Alpha",
+                            desc = "Set the alpha transparency for when this display is visible in PvE settings.",
+                            order = 2,
+                            min = 0,
+                            max = 1,
+                            step = 0.01,
+                            width = "double",
+                        },
+                        showPvP = {
+                            type = 'toggle',
+                            name = "Show in PvP",
+                            desc = "Show this display in PvP settings.",
+                            order = 3,
+                        },
+                        alphaShowPvP = {
+                            type = 'range',
+                            name = "Alpha",
+                            desc = "Set the alpha transparency for when this display is visible in PvP settings.",
+                            order = 4,
+                            min = 0,
+                            max = 1,
+                            step = 0.01,
+                            width = "double",
+                        }
+                    }
+                },
+
+                PvE = {
+                    type = 'group',
+                    inline = true,
+                    name = "PvE Visibility",
+                    order = 32,
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].visibilityType ~= 'b'
+                    end,
+                    args = {
+                      alwaysPvE = {
+                        type = 'toggle',
+                        name = 'Show Always',
+                        desc = 'Show this display at all times, regardless of combat state and whether you have a target.',
+                        order = 1
+                      },
+                      alphaAlwaysPvE = {
+                        type = 'range',
+                        name = 'Alpha',
+                        desc = "When this display is shown due to 'Show Always', set the alpha transparency to this value.",
+                        order = 2,
+                        min = 0,
+                        max = 1,
+                        step = 0.01,
+                        width = "double",
+                      },
+                      targetPvE = {
+                        type = 'toggle',
+                        name = 'Show with Target',
+                        desc = 'Show this display whenever you have a hostile enemy targeted, regardless of whether you are in combat.',
+                        order = 3,
+                      },
+                      alphaTargetPvE = {
+                        type = 'range',
+                        name = 'Alpha',
+                        desc = "When this display is shown due to 'Show with Target', set the alpha transparency to this value.",
+                        order = 4,
+                        min = 0,
+                        max = 1,
+                        step = 0.01,
+                        width = "double"
+                      },
+                      combatPvE = {
+                        type = 'toggle',
+                        name = 'Show in Combat',
+                        desc = "Show this display whenever you are in combat.",
+                        order = 5
+                      },
+                      alphaCombatPvE = {
+                        type = 'range',
+                        name = 'Alpha',
+                        desc = "When the display is shown because you are in combat, set the transparency to this value.",
+                        order = 6,
+                        min = 0,
+                        max = 1,
+                        step = 0.01,
+                        width = 'double'
+
+                      }
+                    }
+                },
+                PvP = {
+                    type = 'group',
+                    inline = true,
+                    name = "PvP Visibility",
+                    order = 33,
+                    hidden = function( info )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+
+                        return Hekili.DB.profile.displays[ id ].visibilityType ~= 'b'
+                    end,
+                    args = {
+                      alwaysPvP = {
+                        type = 'toggle',
+                        name = 'Show Always',
+                        desc = 'Show this display at all times, regardless of combat state and whether you have a target.',
+                        order = 1
+                      },
+                      alphaAlwaysPvP = {
+                        type = 'range',
+                        name = 'Alpha',
+                        desc = "When this display is shown due to 'Show Always', set the alpha transparency to this value.",
+                        order = 2,
+                        min = 0,
+                        max = 1,
+                        step = 0.01,
+                        width = "double",
+                      },
+                      targetPvP = {
+                        type = 'toggle',
+                        name = 'Show with Target',
+                        desc = 'Show this display whenever you have a hostile enemy targeted, regardless of whether you are in combat.',
+                        order = 3,
+                      },
+                      alphaTargetPvP = {
+                        type = 'range',
+                        name = 'Alpha',
+                        desc = "When this display is shown due to 'Show with Target', set the alpha transparency to this value.",
+                        order = 4,
+                        min = 0,
+                        max = 1,
+                        step = 0.01,
+                        width = "double"
+                      },
+                      combatPvP = {
+                        type = 'toggle',
+                        name = 'Show in Combat',
+                        desc = "Show this display whenever you are in combat.",
+                        order = 5
+                      },
+                      alphaCombatPvP = {
+                        type = 'range',
+                        name = 'Alpha',
+                        desc = "When the display is shown because you are in combat, set the transparency to this value.",
+                        order = 6,
+                        min = 0,
+                        max = 1,
+                        step = 0.01,
+                        width = 'double'
+
+                      }
+                    }
+                },            
+            },
+        },
+
+
       ['Import/Export'] = {
         type = 'group',
         name = 'Import/Export',
@@ -891,6 +2093,7 @@ end
 
 -- DISPLAYS > HOOKS
 -- Add a hook to a display.
+--[[ 032517 - Deprecated.
 ns.newHook = function( display, name )
 
   if not name then
@@ -924,8 +2127,8 @@ end
 
 
 -- Add a hook to the options UI.
--- display	(number)	The index of the display to which this entry is attached.
--- key		(number)	The index for this particular hook.
+-- display  (number)    The index of the display to which this entry is attached.
+-- key      (number)    The index for this particular hook.
 ns.newHookOption = function( display, key )
 
   if not key or not Hekili.DB.profile.displays[display].Queues[ key ] then
@@ -934,7 +2137,7 @@ ns.newHookOption = function( display, key )
 
   local pqOption = {
     type = "group",
-    name = '|cFFFFD100' .. key .. '.|r ' .. Hekili.DB.profile.displays[ display ] .Queues[ key ].Name,
+    name = '|cFFFFD100' .. key .. '.|r ' .. Hekili.DB.profile.displays[ display ].Queues[ key ].Name,
     order = 50 + key,
     -- childGroups = "tab",
     -- This number must be index + number of options in "Display Queues" section.
@@ -1020,7 +2223,7 @@ ns.newHookOption = function( display, key )
         confirm = true,
         -- confirmText = '
         order = 999,
-        func		=	function(info, ...)
+        func        =   function(info, ...)
           -- Key to Current Display (string)
           local dispKey = info[2]
           local dispIdx = tonumber( match( dispKey, "^D(%d+)" ) )
@@ -1038,7 +2241,7 @@ ns.newHookOption = function( display, key )
 
   return pqOption
 
-end
+end ]]
 
 
 -- ACTION LISTS
@@ -1320,7 +2523,7 @@ ns.newActionListOption = function( index )
         desc = "Delete this action list, and all actions associated with this list.",
         confirm = true,
         order = 999,
-        func		=	function(info, ...)
+        func        =   function(info, ...)
           local actKey = info[2]
           local actIdx = tonumber( match( actKey, "^L(%d+)" ) )
 
@@ -1333,6 +2536,10 @@ ns.newActionListOption = function( index )
                 list['Action List'] = list['Action List'] - 1
               end
             end
+            if display.precombatAPL == actIdx then display.precombatAPL = 0
+            elseif display.precombatAPL > actIdx then display.precombatAPL = display.precombatAPL - 1 end
+            if display.defaultAPL == actIdx then display.defaultAPL = 0
+            elseif display.defaultAPL > actIdx then display.defaultAPL = display.defaultAPL - 1 end
           end
 
           table.remove( Hekili.DB.profile.actionLists, actIdx )
@@ -1416,8 +2623,8 @@ end
 
 --- NewActionOption()
 -- Add a new action to the action list options.
--- aList	(number)	index of the action list.
--- index	(number)	index of the action in the action list.
+-- aList    (number)    index of the action list.
+-- index    (number)    index of the action in the action list.
 ns.newActionOption = function( aList, index )
 
   if not index then return nil end
@@ -1839,7 +3046,7 @@ ns.newActionOption = function( aList, index )
         confirm = true,
         -- confirmText = '
         order = 999,
-        func		=	function(info, ...)
+        func        =   function(info, ...)
           -- Key to Current Display (string)
           local listKey = info[2]
           local listIdx = tonumber( match( listKey, "^L(%d+)" ) )
@@ -2361,25 +3568,40 @@ ns.SimulationCraftImporter = function ()
                 table.remove( display.Queues, i )
               end
 
+              display.defaultAPL = 0
+              display.precombatAPL = 0
+
             end
 
-            if #hooks > 0 then
+            for i, list in ipairs( Hekili.DB.profile.actionLists ) do
+                if list.Name == importerOpts.prefix .. ': default' then
+                    display.defaultAPL = i
+                elseif list.Name == importerOpts.prefix .. ': precombat' then
+                    display.precombatAPL = i
+                end
+            end
+
+            --[[ if #hooks > 0 then
               for i = 1, #hooks do
                 local name, criteria = hooks[i]:match( "^(.*),if=(.-)$" )
                 name = ns.titlefy( name or hooks[i] ) -- no criteria
 
+                if list.Name 
+
                 local _, hookIdx = ns.newHook( dispIdx, importerOpts.prefix .. ': ' .. name )
                 display.Queues[ i ].Script = criteria
+
+
 
                 for l, list in ipairs( Hekili.DB.profile.actionLists ) do
                   if list.Name == importerOpts.prefix .. ': ' .. name then
                     display.Queues[ i ]['Action List'] = l
                     display.Queues[ i ].Enabled = true
                   end
-                end
+                end            
 
               end
-            end
+            end ]]
           end
 
           ns.refreshOptions()
@@ -2447,6 +3669,53 @@ local snapshots = {
 }
 
 
+local config = {
+    qsDisplay = 99999,
+
+    qsShowTypeGroup = false,
+    qsDisplayType = 99999,
+    qsTargetsAOE = 3,
+
+    displays = {}, -- auto-populated and recycled.
+    displayTypes = {
+        [1] = "Primary",
+        [2] = "AOE",
+        [3] = "Automatic",
+        [99999] = " "
+    },
+}
+
+
+function Hekili:NewGetOption( info )
+
+    local depth = #info
+    local option = depth and info[depth] or nil
+
+    if not option then return end
+
+    if config[ option ] then return config[ option ] end
+
+    return
+end
+
+
+function Hekili:NewSetOption( info, value )
+
+    local depth = #info
+    local option = depth and info[depth] or nil
+
+    if not option then return end
+
+    local nValue = tonumber( value )
+    local sValue = tostring( value )
+
+    if option == 'qsShowTypeGroup' then config[option] = value
+    else config[option] = nValue end
+
+    return
+end
+
+
 function Hekili:GetOptions()
   local Options = {
     name = "Hekili",
@@ -2456,14 +3725,16 @@ function Hekili:GetOptions()
     set = 'SetOption',
     childGroups = "tree",
     args = {
-      welcome = {
+
+
+      --[[ welcome = {
         type = "group",
         name = "Welcome",
         order = 10,
         args = {
           headerWarn = {
             type = 'description',
-            name	=	"Welcome to Hekili v7.1.5 for |cFF00FF00Legion|r.  This addon's default settings will give you similar behavior to the original version. " ..
+            name    =   "Welcome to Hekili v7.1.5 for |cFF00FF00Legion|r.  This addon's default settings will give you similar behavior to the original version. " ..
             'Please report bugs to hekili.tcn@gmail.com / @Hekili808 on Twitter / Hekili on MMO-C.\n',
             order = 0,
           },
@@ -2494,76 +3765,152 @@ function Hekili:GetOptions()
           }
 
         }
-      },
+      }, ]]
 
 
-      snapshots = {
-        type = "group",
-        name = "Debug Snapshots",
-        order = 70,
+      --[[ core = {
+        type = 'group',
+        name = "Core Options",
+        order = 10,
+        get = 'NewGetOption',
+        set = 'NewSetOption',
         args = {
+            
+            byline = {
+                type = 'description',
+                name = "Welcome to Hekili.  This addon has some complex settings that you can modify to impact how information is presented and how decisions are made.\n\n" ..
+                    "Please report bugs to |cFFFFD100hekili.tcn@gmail.com|r / |cFFFFD100@Hekili808|r on Twitter / http://curse.com/addons/wow/hekili.",
+                order = 0
+            },
 
-            Display = {
-                type = "select",
-                name = "Display",
-                desc = "Select the display to show (if any snapshots have been taken).",
+            updates = {
+                type = "group",
+                name = "Recommendations",
                 order = 1,
-                values = function( info )
-                    local displays = snapshots.displays
+                inline = true,
+                args = {
 
-                    for k in pairs( ns.snapshots ) do
-                        displays[k] = k
-                    end
+                    internalCooldown = {
+                        type = "range",
+                        name = "Internal Cooldown",
+                        desc = "The addon updates its recommendation abilities whenever combat circumstances change.  This includes when you and your target gain buffs " ..
+                            "or debuffs, when you gain or lose resources, when you use an ability or change targets, and more.  When set above zero, this setting will prevent the " ..
+                            "addon from rechecking its recommendations more frequently than specified, except in the cases of specific critical events.  Increasing this Internal " ..
+                            "Cooldown may result in less CPU usage but may leave the addon feeling less responsive.",
+                        min = 0,
+                        max = 1,
+                        step = 0.01,
+                        order = 0,
+                        width = "full"
+                    },
 
-                    return displays
-                end,
-                set = function( info, val )
-                    snapshots.display = val
-                end,
-                get = function( info )
-                    return snapshots.display
-                end,
-                width = "double"
+                    allowRechecks = {
+                        type = "toggle",
+                        name = "Recheck Recommendations",
+                        desc = "When making its recommendations, this addon will retest actions that are not ready yet, to see if they will be ready very soon.  This " ..
+                            "allows the addon to more consistently recommend higher priority abilities, using slightly more CPU time.  Unchecking this setting will reduce CPU " ..
+                            "usage, but may result in seeing last-second changes to recommendations or abilities seeming to 'pop' up late in the recommendation queue.",
+                        order = 1,
+                        width = "full",
+
+                    }
+                }
             },
-            SnapID = {
-                type = "select",
-                name = "Snapshot",
-                desc = "Select the display to show (if any snapshots have been taken).",
-                order = 2,
-                values = function( info )
-                    for k, v in pairs( ns.snapshots ) do
-                        snapshots.snaps[k] = snapshots.snaps[k] or {}
-
-                        for idx in pairs( v ) do
-                            snapshots.snaps[k][idx] = idx
-                        end
-                    end
-
-                    return snapshots.display and snapshots.snaps[ snapshots.display ] or snapshots.empty
-                end,
-                set = function( info, val )
-                    snapshots.snap[ snapshots.display ] = val
-                end,
-                get = function( info )
-                    return snapshots.snap[ snapshots.display ]
-                end
-            },
-            Snapshot = {
-                type = 'input',
-                name = "Log",
-                desc = "Any available debug information is available here.",
-                order = 3,
-                get = function( info )
-                    local display = snapshots.display
-                    local snap = display and snapshots.snap[ display ]
-
-                    return snap and ns.snapshots[ display ][ snap ]
-                end,
-                multiline = 25,
-                width = "full",
-            }
         }
       },
+
+      quickSetup = {
+        type = 'group',
+        name = "Quick Setup",
+        get = 'NewGetOption',
+        set = 'NewSetOption',
+        order = 11,
+        args = {
+
+            qsDisplay = {
+                type = 'select',
+                name = "Display to Configure",
+                desc = "Select a display to configure using the Quick Setup tool.  This will allow you to quickly apply a standard template to a display and update " ..
+                    "many of its settings at one time.  If you want to adjust specific settings for a display, you should select it under Displays in the left-hand column instead.",
+                values = function( info )
+                    local v = config.displays
+
+                    for i in pairs( v ) do
+                        v[i] = nil
+                    end
+
+                    for i, display in pairs( Hekili.DB.profile.displays ) do
+                        v[i] = display.Name or ( "ERROR: No Display Name #" .. i )
+                    end
+
+                    v[999] = " "
+
+                    return v
+                end,
+                order = 0,
+                width = 'full'
+
+            },
+
+            qsShowTypeGroup = {
+                type = 'toggle',
+                name = 'Change Display Type',
+                desc = "Click here to change the type of display.  This allows you to quickly set up how the display responds to Mode Toggles, how many targets are used " ..
+                    "for AOE combat decisions, and so forth.",
+                order = 10,
+                width = 'full',
+            },
+
+            qsTypeGroup = {
+                type = 'group',
+                name = "Display Type",
+                inline = true,
+                order = 11,
+                width = 'full',
+                hidden = function()
+                    return not config.qsShowTypeGroup
+                end,
+                args = {
+                    qsDisplayType = {
+                        type = 'select',
+                        name = "Display Type",
+                        desc = "Select the type of functionality you want for this display.  The display type determines whether a display responds to the addon's Mode Toggle " ..
+                            "system and how it affects the addon's recommendations.\n\n" ..
+                            "|cFFFFD100Primary|r - the display's recommendations are based on the addon's current Mode.  When the Mode is set to Single-Target, the display will show single-target " ..
+                            "recommendations no matter how many targets are recommended.  When Mode is set to Auto, the display will show recommendations based on the number of detected targets.  " ..
+                            "When Mode is set to AOE, the display will assume there are multiple targets at all times.\n" ..
+                            "|cFFFFD100AOE|r - the display will always assume that there are multiple targets at all times, regardless of Mode.\n" ..
+                            "|cFFFFD100Automatic|r - the display will always make its recommendations based on the number of targets detected by the addon, regardless of Mode.\n",
+                        values = config.displayTypes,
+                        order = 0,
+                        width = 'full'
+                    },
+
+                    qsTargetsAOE = {
+                        type = 'range',
+                        name = "AOE Targets",
+                        desc = "Specify the minimum number of targets the addon will assume are present when a display is making AOE recommendations.  If the display is set up to show " ..
+                            "the number of targets that were detected, the number will be shown in red when there are fewer than the actual number of targets specified.",
+                        min = 2,
+                        max = 10,
+                        step = 1,
+                        order = 1,
+                        width = 'full'
+                    },
+
+                    qsApplyTypeSettings = {
+                        type = 'execute',
+                        name = "Apply Type Settings",
+                        desc = "Click to update the display's settings.  This will overwrite any existing settings.",
+                        disabled = function()
+                            return config.qsDisplay == 99999 or config.qsDisplayType == 99999
+                        end,
+                        order = 2
+                    }
+                },
+            },
+        },
+      }, ]]
 
       general = {
         type = "group",
@@ -2880,6 +4227,7 @@ function Hekili:GetOptions()
               end
 
               ns.checkImports()
+              ns.convertDisplays()
               ns.refreshOptions()
               ns.loadScripts()
               ns.buildUI()
@@ -2906,7 +4254,7 @@ function Hekili:GetOptions()
 
                   if import then
                     if exists[ default.name ] then
-                      local settings_to_keep = { "Primary Icon Size", "Queued Font Size", "Primary Font Size", "Primary Caption Aura", "rel", "Spacing", "Queue Direction", "Queued Icon Size", "Font", "x", "y", "Icons Shown", "Action Captions", "Primary Caption", "Primary Caption Aura", "PvE - Default", "PvE - Default Alpha", "PvE - Target", "PvE - Target Alpha", "PvE - Combat", "PvE - Combat Alpha", "PvP - Default", "PvP - Default Alpha", "PvP - Target", "PvP - Target Alpha", "PvP - Combat", "PvP - Combat Alpha" }
+                      local settings_to_keep = { 'primaryIconSize', 'queuedIconSize', 'primaryFontSize', 'rel', 'x', 'y', 'numIcons', 'showCaptions', 'showAuraInfo', 'auraSpellID', 'visibilityType', 'showPvE', 'alphaShowPvE', 'showPvP', 'alphaShowPvP', 'alwaysPvP', 'alphaAlwaysPvP', 'targetPvP', 'alphaTargetPvP', 'combatPvP', 'alphaCombatPvP', 'alwaysPvE', 'alphaAlwaysPvE', 'targetPvE', 'alphaTargetPvE', 'combatPvE', 'alphaCombatPvP' }
 
                       for _, k in pairs( settings_to_keep ) do
                         import[ k ] = Hekili.DB.profile.displays[ index ][ k ]
@@ -2930,6 +4278,8 @@ function Hekili:GetOptions()
                 end
               end
 
+              ns.checkImports()
+              ns.convertDisplays()
               ns.refreshOptions()
               ns.loadScripts()
               ns.buildUI()
@@ -2955,7 +4305,7 @@ function Hekili:GetOptions()
             desc = "Enter a name for this action list and press ENTER.",
             width = "full",
             validate = function(info, val)
-              if val == '' then return true	end
+              if val == '' then return true end
               for k,v in pairs(Hekili.DB.profile.actionLists) do
                 if val == v.Name then
                   Hekili:Print("That name is already in use.")
@@ -3384,6 +4734,73 @@ function Hekili:GetOptions()
           }
         }
       },
+      snapshots = {
+        type = "group",
+        name = "Debug Snapshots",
+        order = 70,
+        args = {
+
+            Display = {
+                type = "select",
+                name = "Display",
+                desc = "Select the display to show (if any snapshots have been taken).",
+                order = 1,
+                values = function( info )
+                    local displays = snapshots.displays
+
+                    for k in pairs( ns.snapshots ) do
+                        displays[k] = k
+                    end
+
+                    return displays
+                end,
+                set = function( info, val )
+                    snapshots.display = val
+                end,
+                get = function( info )
+                    return snapshots.display
+                end,
+                width = "double"
+            },
+            SnapID = {
+                type = "select",
+                name = "Snapshot",
+                desc = "Select the display to show (if any snapshots have been taken).",
+                order = 2,
+                values = function( info )
+                    for k, v in pairs( ns.snapshots ) do
+                        snapshots.snaps[k] = snapshots.snaps[k] or {}
+
+                        for idx in pairs( v ) do
+                            snapshots.snaps[k][idx] = idx
+                        end
+                    end
+
+                    return snapshots.display and snapshots.snaps[ snapshots.display ] or snapshots.empty
+                end,
+                set = function( info, val )
+                    snapshots.snap[ snapshots.display ] = val
+                end,
+                get = function( info )
+                    return snapshots.snap[ snapshots.display ]
+                end
+            },
+            Snapshot = {
+                type = 'input',
+                name = "Log",
+                desc = "Any available debug information is available here.",
+                order = 3,
+                get = function( info )
+                    local display = snapshots.display
+                    local snap = display and snapshots.snap[ display ]
+
+                    return snap and ns.snapshots[ display ][ snap ]
+                end,
+                multiline = 25,
+                width = "full",
+            }
+        }
+      },
       make_defaults = {
         type = 'group',
         name = 'Defaults',
@@ -3429,11 +4846,11 @@ function Hekili:GetOptions()
     local dispKey = 'D' .. i
     Options.args.displays.args[ dispKey ] = ns.newDisplayOption( i )
 
-    if v.Queues then
+    --[[ if v.Queues then
       for key, value in ipairs( v.Queues ) do
         Options.args.displays.args[ dispKey ].args[ 'P' .. key ] = ns.newHookOption( i, key )
       end
-    end
+    end ]]
 
   end
 
@@ -3443,7 +4860,7 @@ function Hekili:GetOptions()
 
     if v.Actions then
       for key, value in ipairs( v.Actions ) do
-        --				Options.args.actionLists.args[ listKey ].args['Actions'].args[ 'A' .. key ] = ns.newActionOption( i, key )
+        --              Options.args.actionLists.args[ listKey ].args['Actions'].args[ 'A' .. key ] = ns.newActionOption( i, key )
         Options.args.actionLists.args[ listKey ].args[ 'A' .. key ] = ns.newActionOption( i, key )
       end
     end
@@ -3479,6 +4896,7 @@ function Hekili:TotalRefresh()
     end
   end
   
+  ns.convertDisplays()
   ns.checkImports()
   ns.refreshOptions()
   ns.buildUI()
@@ -3502,12 +4920,12 @@ ns.refreshOptions = function()
     local dispKey = 'D' .. i
     Hekili.Options.args.displays.args[ dispKey ] = ns.newDisplayOption( i )
 
-    if v.Queues then
+    --[[ if v.Queues then
       for p, value in ipairs( v.Queues ) do
         local hookKey = 'P' .. p
         Hekili.Options.args.displays.args[ dispKey ].args[ hookKey ] = ns.newHookOption( i, p )
       end
-    end
+    end ]]
   end
 
   for k,_ in pairs(Hekili.Options.args.actionLists.args) do
@@ -4169,11 +5587,12 @@ function Hekili:CmdLine( input )
     Hekili.DB.profile.displays = {}
     Hekili.DB.profile.actionLists = {}
     ns.restoreDefaults()
+    ns.convertDisplays()
     ns.buildUI()
     Hekili:Print("Default displays and action lists restored.")
 
   else
-    LibStub("AceConfigCmd-3.0"):HandleCommand("hekili", "Hekili", input)
+    LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
   end
 end
 
@@ -4305,11 +5724,8 @@ function ns.serializeDisplay( display )
     local serial = tableCopy( Hekili.DB.profile.displays[ display ] )
 
     -- Change actionlist IDs to actionlist names so we can validate later.
-    for i,v in ipairs( serial.Queues ) do
-        if serial.Queues[i]['Action List'] ~= 0 then
-            serial.Queues[i]['Action List'] = Hekili.DB.profile.actionLists[ v['Action List'] ].Name
-        end
-    end
+    if serial.precombatAPL ~= 0 then serial.precombatAPL = Hekili.DB.profile.actionLists[ serial.precombatAPL ].Name end
+    if serial.defaultAPL ~= 0 then serial.defaultAPL = Hekili.DB.profile.actionLists[ serial.defaultAPL ].Name end
 
     return TableToString( serial, true )
 end
@@ -4320,20 +5736,29 @@ Hekili.SerializeDisplay = ns.serializeDisplay
 function ns.deserializeDisplay( str )
     local display = StringToTable( str, true )
 
-    -- Check for dupes.
-    for i, prio in pairs( display.Queues ) do
-        if prio['Action List'] ~= 0 then
-            local fixed = false
-            for j, list in ipairs( Hekili.DB.profile.actionLists ) do
-                if prio['Action List'] == list.Name then
-                    prio['Action List'] = j
-                    fixed = true
-                    break
-                end
+    if type( display.precombatAPL ) == 'string' then
+        for i, list in ipairs( Hekili.DB.profile.actionLists ) do
+            if display.precombatAPL == list.Name then
+                display.precombatAPL = i
+                break
             end
-            if not fixed or type( prio['Action List'] ) == 'string' then
-                prio['Action List'] = 0
+        end
+
+        if type( display.precombatAPL ) == 'string' then
+            display.precombatAPL = 0
+        end
+    end
+
+    if type( display.defaultAPL ) == 'string' then
+        for i, list in ipairs( Hekili.DB.profile.actionLists ) do
+            if display.defaultAPL == list.Name then
+                display.defaultAPL = i
+                break
             end
+        end
+
+        if type( display.defaultAPL ) == 'string' then
+            display.defaultAPL = 0
         end
     end
 
@@ -5139,7 +6564,7 @@ function Hekili:ToggleMode()
 
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_MODE', Hekili.DB.profile['Mode Status'] ) end
 
-  forceUpdate()
+  forceUpdate( "HEKILI_TOGGLE_MODE", true )
 end
 
 
@@ -5149,7 +6574,7 @@ function Hekili:ToggleInterrupts()
   Hekili:Notify( "Interrupts " .. ( Hekili.DB.profile.Interrupts and "ON" or "OFF" ) )
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_INTERRUPTS', Hekili.DB.profile.Interrupts ) end
 
-  forceUpdate()
+  forceUpdate( "HEKILI_TOGGLE_INTERRUPTS", true )
 end
 
 
@@ -5159,7 +6584,7 @@ function Hekili:ToggleCooldowns()
   Hekili:Notify( "Cooldowns " .. ( Hekili.DB.profile.Cooldowns and "ON" or "OFF" ) )
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_COOLDOWNS', Hekili.DB.profile.Cooldowns ) end
 
-  forceUpdate()
+  forceUpdate( "HEKILI_TOGGLE_COOLDOWNS", true )
 end
 
 
@@ -5169,7 +6594,7 @@ function Hekili:TogglePotions()
   Hekili:Notify( "Potions " .. ( Hekili.DB.profile.Potions and "ON" or "OFF" ) )
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_POTIONS', Hekili.DB.profile.Potions ) end
 
-  forceUpdate()
+  forceUpdate( "HEKILI_TOGGLE_POTIONS", true )
 end
 
 
@@ -5190,7 +6615,7 @@ function Hekili:ClassToggle( name )
 
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_CLASS_TOGGLE', name, Hekili.DB.profile[ key ] ) end
 
-  forceUpdate()
+  forceUpdate( "HEKILI_CLASS_TOGGLE", true )
 end
 
 
@@ -5198,5 +6623,7 @@ function Hekili:GetToggleState( name, class )
     if class then
         return Hekili.DB.profile[ 'Toggle State: ' .. name ]
     end
+
+
     return Hekili.DB.profile[ name ]
 end

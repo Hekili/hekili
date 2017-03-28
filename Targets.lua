@@ -17,10 +17,13 @@ local myTargets = {}
 local RC = ns.lib.RangeCheck
 
 local nameplates = {}
-local npCount = 0
 local addMissingTargets = true
 
+local npCount = 0
+local lastNpCount = 0
+
 local formatKey = ns.formatKey
+local FeignEvent = ns.FeignEvent
 local RegisterEvent = ns.RegisterEvent
 
 
@@ -60,6 +63,17 @@ function ns.getNumberTargets()
 end
 
 
+function ns.recountTargets()
+    lastNpCount = npCount
+
+    npCount = ns.getNumberTargets()
+
+    if lastNpCount ~= npCount then
+        ns.forceUpdate()
+    end
+end
+
+
 function ns.dumpNameplateInfo()
     return nameplates
 end
@@ -71,6 +85,7 @@ ns.updateTarget = function( id, time, mine )
     if not targets[ id ] then
       targetCount = targetCount + 1
       targets[id] = time
+      ns.updatedTargetCount = true
     else
       targets[id] = time
     end
@@ -79,6 +94,7 @@ ns.updateTarget = function( id, time, mine )
       if not myTargets[ id ] then
         myTargetCount = myTargetCount + 1
         myTargets[id] = time
+      ns.updatedTargetCount = true
       else
         myTargets[id] = time
       end
@@ -94,6 +110,7 @@ ns.updateTarget = function( id, time, mine )
       myTargetCount = max(0, myTargetCount - 1)
       myTargets[id] = nil
     end
+    ns.updatedTargetCount = true
   end
 end
 

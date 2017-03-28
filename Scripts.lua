@@ -403,10 +403,10 @@ ns.loadScripts = function()
   for i, display in ipairs( Hekili.DB.profile.displays ) do
     Displays[ i ] = convertScript( display )
 
-    for j, priority in ipairs( display.Queues ) do
+    --[[ for j, priority in ipairs( display.Queues ) do
       local pKey = i..':'..j
       Hooks[ pKey ] = convertScript( priority )
-    end
+    end ]]
   end
 
   for i, list in ipairs( Hekili.DB.profile.actionLists ) do

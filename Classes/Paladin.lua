@@ -112,10 +112,12 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'avenging_wrath', 31884 )
         addAura( 'blade_of_wrath', 202270 )        
         addAura( 'blessed_hammer', 204019, 'duration', 2 )
+        addAura( 'blessed_stalwart', 242869, 'duration', 10 )
         addAura( 'blessing_of_freedom', 1044, 'duration', 8 )
         addAura( 'blessing_of_protection', 1022, 'duration', 10 )
         addAura( 'blessing_of_sacrifice', 6940, 'duration', 12 )
         addAura( 'blessing_of_spellwarding', 204018, 'duration', 10 )
+        addAura( 'blessing_of_the_ashbringer', 242981, 'duration', 3600 )
         addAura( 'blinding_light', 115750, 'duration', 6 )
         -- addAura( 'consecration', 188370, 'duration', 8 )
         addAura( 'crusade', 224668, 'max_stack', 15 )
@@ -123,6 +125,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'divine_purpose', 223819 )
         addAura( 'divine_shield', 642, 'duration', 8 )
         addAura( 'divine_steed', 221883, 'duration', 3 )
+        addAura( 'defender_of_truth', 240059, 'duration', 10 )
         addAura( 'execution_sentence', 213757, 'duration', 7 )
         addAura( 'eye_for_an_eye', 205191, 'duration', 10 )
         addAura( 'eye_of_tyr', 209202, 'duration', 9 )
@@ -137,6 +140,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'judgment_of_light', 183778, 'duration', 30, 'max_stack', 40 )
         addAura( 'light_of_the_titans', 209539, 'duration', 15 )
         addAura( 'repentance', 62124, 'duration', 60 )
+        addAura( 'righteous_verdict', 238996, 'duration', 15 )
         addAura( 'seal_of_light', 202273, 'duration', 20 )
         addAura( 'seraphim', 152262, 'duration', 30 )
         addAura( 'shield_of_the_righteous', 132403, 'duration', 4.5 )
@@ -517,6 +521,10 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             return x * haste
         end )
 
+        addHandler( 'blade_of_justice', function ()
+            if PTR then removeBuff( 'righteous_verdict' ) end
+        end )
+
         
         addAbility( 'blessed_hammer', {
             id = 204019,
@@ -732,6 +740,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'divine_hammer', function ()
             applyBuff( 'divine_hammer', 12 )
+            removeBuff( 'righteous_verdict' )
         end )
 
 
@@ -890,6 +899,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'greater_blessing_of_kings', function ()
             applyBuff( 'greater_blessing_of_kings', 3600 )
+            applyBuff( 'blessing_of_the_ashbringer', 3600 )
         end )
 
 
@@ -905,6 +915,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'greater_blessing_of_wisdom', function ()
             applyBuff( 'greater_blessing_of_wisdom', 3600 )
+            applyBuff( 'blessing_of_the_ashbringer', 3600 )
         end )
 
 
@@ -933,13 +944,16 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         modifyAbility( 'hammer_of_justice', 'cooldown', function( x )
             if equipped.justice_gaze and target.health.percent > 75 then
-                return x * 0.75
+                return x * 0.25
             end
             return x
         end )
 
         addHandler( 'hammer_of_justice', function ()
             applyDebuff( 'target', 'hammer_of_justice', 6 )
+            if equipped.justice_gaze and target.health.percent > 75 then
+                gain( 1, 'holy_power' )
+            end
         end )
 
 
@@ -1224,6 +1238,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'shield_of_the_righteous', function ()
             last_shield_of_the_righteous = now + offset
             applyBuff( 'shield_of_the_righteous', buff.shield_of_the_righteous.remains + 4.5 )
+            if PTR then removeBuff( 'blessed_stalwart' ) end
 
             if talent.righteous_protector.enabled then
                 if talent.hand_of_the_protector.enabled then setCooldown( 'hand_of_the_protector', max( 0, cooldown.hand_of_the_protector.remains - 3 ) )

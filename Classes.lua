@@ -131,7 +131,7 @@ local mt_modifiers = {
         return nil
     end
 }
-_G.mt_modifiers = mt_modifiers
+ns.mt_modifiers = mt_modifiers
 
 
 ns.setClass = function( name ) class.file = name end
@@ -754,6 +754,17 @@ addAbility( 'wait', {
 } )
 
 
+-- Universal Gear Stuff
+addGearSet( 'rethus_incessant_courage', 146667 )
+addAura( 'rethus_incessant_courage', 241330 )
+
+addGearSet( 'vigilance_perch', 146668 )
+addAura( 'vigilance_perch', 241332, 'duration', 60, 'max_stack', 5 )
+
+addGearSet( 'the_sentinels_eternal_refuge', 146669 )
+addAura( 'the_sentinels_eternal_refuge', 241331, 'duration', 60, 'max_stack', 5 )
+
+
 class.potions = {
     old_war = {
         item = 127844,
@@ -768,7 +779,6 @@ class.potions = {
         buff = 'prolonged_power'
     },
 }
-
 
 
 addAbility( 'potion', {
@@ -1977,48 +1987,48 @@ ns.restoreDefaults = function( category, purge )
                         if index then
                             local existing = profile.displays[index]
                             import.Enabled = existing.Enabled
-                            import['Use SpellFlash'] = existing['Use SpellFlash']
-                            import['SpellFlash Color'] = existing['SpellFlash Color']
+                            import.spellFlash = existing.spellFlash
+                            import.spellFlashColor = existing.spellFlashColor
                             
                             -- import['PvE Visibility'] = existing['PvE Visibility']
-                            import['PvE - Default'] = existing['PvE - Default']
-                            import['PvE - Default Alpha'] = existing['PvE - Default Alpha']
-                            import['PvE - Target'] = existing['PvE - Target']
-                            import['PvE - Target Alpha'] = existing['PvE - Target Alpha']
-                            import['PvE - Combat'] = existing['PvE - Combat']
-                            import['PvE - Combat Alpha'] = existing['PvE - Combat Alpha']
+                            import.alwaysPvE = existing.alwaysPvE
+                            import.alphaAlwaysPvE = existing.alphaAlwaysPvE
+                            import.targetPvE = existing.targetPvE
+                            import.alphaTargetPvE = existing.alphaTargetPvE
+                            import.combatPvE = existing.combatPvE
+                            import.alphaCombatPvE = existing.alphaCombatPvE
                             -- import['PvE Visibility'] = existing['PvE Visibility']
-                            import['PvP - Default'] = existing['PvP - Default']
-                            import['PvP - Default Alpha'] = existing['PvP - Default Alpha']
-                            import['PvP - Target'] = existing['PvP - Target']
-                            import['PvP - Target Alpha'] = existing['PvP - Target Alpha']
-                            import['PvP - Combat'] = existing['PvP - Combat']
-                            import['PvP - Combat Alpha'] = existing['PvP - Combat Alpha']
+                            import.alwaysPvP = existing.alwaysPvP
+                            import.alphaAlwaysPvP = existing.alphaAlwaysPvP
+                            import.targetPvP = existing.targetPvP
+                            import.alphaTargetPvP = existing.alphaTargetPvP
+                            import.combatPvP = existing.combatPvP
+                            import.alphaCombatPvP = existing.alphaCombatPvP
                             --[[ Mode Overrides - cancel, go ahead and overwrite them
-                            import['Auto - Minimum'] = existing['Auto - Minimum']
-                            import['Auto - Maximum'] = existing['Auto - Maximum']
-                            import['Single - Minimum'] = existing['Single - Minimum']
-                            import['Single - Maximum'] = existing['Single - Maximum']
-                            import['AOE - Minimum'] = existing['AOE - Minimum']
-                            import['AOE - Maximum'] = existing['AOE - Maximum'] ]]
+                            import.minAuto = existing.minAuto
+                            import.maxAuto = existing.maxAuto
+                            import.minST = existing.minST
+                            import.maxST = existing.maxST
+                            import.minAE = existing.minAE
+                            import.maxAE = existing.maxAE ]]
                             
                             import.x = existing.x
                             import.y = existing.y
                             import.rel = existing.rel
                             
-                            import['Icons Shown'] = existing['Icons Shown']
-                            import['Spacing'] = existing['Spacing']
-                            import['Queue Direction'] = existing['Queue Direction']
-                            import['Queue Alignment'] = existing['Queue Alignment']
-                            import['Primary Icon Size'] = existing['Primary Icon Size']
-                            import['Queued Icon Size'] = existing['Queued Icon Size']
+                            import.numIcons = existing.numIcons
+                            import.iconSpacing = existing.iconSpacing
+                            import.queueDirection = existing.queueDirection
+                            import.queueAlignment = existing.queueAlignment
+                            import.primaryIconSize = existing.primaryIconSize
+                            import.queuedIconSize = existing.queuedIconSize
                             
-                            import['Font'] = existing['Font']
-                            import['Primary Font Size'] = existing['Primary Font Size']
-                            import['Queued Font Size'] = existing['Queued Font Size']
-                            import['Range Checking'] = existing['Range Checking']
+                            import.font = existing.font
+                            import.primaryFontSize = existing.primaryFontSize
+                            import.queuedFontSize = existing.queuedFontSize
+                            import.rangeType = existing.rangeType
                             
-                            import['Action Captions'] = existing['Action Captions']
+                            import.showCaptions = existing.showCaptions
                             import['Primary Caption'] = existing['Primary Caption']
                             import['Primary Caption Aura'] = existing['Primary Caption Aura']
                         else
