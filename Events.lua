@@ -500,7 +500,7 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
             end
         end
 
-        forceUpdate( event, true )
+        -- forceUpdate( event, true )
 
     end
 
@@ -602,6 +602,11 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
     if sourceGUID ~= state.GUID and not ( state.role.tank and destGUID == state.GUID ) and not ns.isMinion( sourceGUID ) then
         return
     end
+
+    if sourceGUID == state.GUID and ( subtype == 'SPELL_CAST_SUCCESS' or subtype == 'SPELL_CAST_START' ) then
+        forceUpdate( subtype, true )
+    end
+
 
     if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
         ns.updateTarget( sourceGUID, time, true )
