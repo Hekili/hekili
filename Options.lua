@@ -27,7 +27,7 @@ function Hekili:GetDefaults()
       Legion = true,
       Enabled = true,
       Locked = true,
-      Debug = true,
+      Debug = false,
 
       PauseSnapshot = true,
 
@@ -283,12 +283,6 @@ function convertDisplay( id )
             display[ newKey ] = display[ key ]
             display[ key ] = nil
         end
-    end
-
-    -- Special Value Conversions
-    if display.rangeType == 'off' then
-        display.rangeType = 'ability'
-        display.rangeCheck = false
     end
 
     for k, v in pairs( displayTemplate ) do
@@ -4821,13 +4815,13 @@ function Hekili:GetOptions()
               local out = ''
               
               for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                out = out .. "    storeDefault( [[" .. list.Name .. "]], 'actionLists', " .. date("%Y%m%d.1") .. ", [[" .. ns.serializeActionList( i ) .. "]] )\n\n"
+                out = out .. "    storeDefault( [[" .. list.Name .. "]], 'actionLists', " .. date("%Y%m%d.%H%M%S") .. ", [[" .. ns.serializeActionList( i ) .. "]] )\n\n"
               end
               
               out = out .. "\n"
               
               for i, display in ipairs( Hekili.DB.profile.displays ) do
-                out = out .. "    storeDefault( [[" .. display.Name .. "]], 'displays', " .. date("%Y%m%d.1") .. ", [[" .. ns.serializeDisplay( i ) .. "]] )\n\n"
+                out = out .. "    storeDefault( [[" .. display.Name .. "]], 'displays', " .. date("%Y%m%d.%H%M%S") .. ", [[" .. ns.serializeDisplay( i ) .. "]] )\n\n"
               end
               
               return out

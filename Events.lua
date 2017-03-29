@@ -16,6 +16,7 @@ local formatKey = ns.formatKey
 local getSpecializationInfo = ns.getSpecializationInfo
 local getSpecializationKey = ns.getSpecializationKey
 
+local abs = math.abs
 local lower, match, upper = string.lower, string.match, string.upper
 
 -- Abandoning AceEvent in favor of darkend's solution from:
@@ -564,13 +565,15 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
 
         end
 
-        -- forceUpdate( event ) 
+        --[[ if abs( power ) > 2 then
+            hardUpdate( event )
+        end ]]
     end
 end )
 
 RegisterEvent( "UNIT_POWER", function( event, unit, power )
     if unit == 'player' then
-        forceUpdate( event )
+        hardUpdate( event )
     end
 end )
 
@@ -604,7 +607,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
     end
 
     if sourceGUID == state.GUID and ( subtype == 'SPELL_CAST_SUCCESS' or subtype == 'SPELL_CAST_START' ) then
-        forceUpdate( subtype, true )
+        hardUpdate( subtype )
     end
 
 

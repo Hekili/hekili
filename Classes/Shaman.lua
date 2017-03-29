@@ -105,7 +105,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
 
 
         -- Player Buffs.
-        addAura( 'ascendance', 114051 )
+        addAura( 'ascendance', 114051, 'duration', 15 )
         addAura( 'astral_shift', 108271, 'duration', 8 )
         addAura( 'boulderfist', 218825 )
         addAura( 'crash_lightning', 187874 )
