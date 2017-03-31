@@ -565,17 +565,17 @@ RegisterEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
 
         end
 
-        --[[ if abs( power ) > 2 then
+        -- if abs( power ) > 2 then
             hardUpdate( event )
-        end ]]
+        -- end
     end
 end )
 
-RegisterEvent( "UNIT_POWER", function( event, unit, power )
+--[[ RegisterEvent( "UNIT_POWER", function( event, unit, power )
     if unit == 'player' then
         hardUpdate( event )
     end
-end )
+end ) ]]
 
 
 

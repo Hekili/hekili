@@ -55,6 +55,8 @@ function Hekili:GetDefaults()
       },
       actionLists = {
       },
+      runOnce = {
+      },
     }
   }
 
@@ -62,12 +64,96 @@ function Hekili:GetDefaults()
 end
 
 
+local defaultAPLs = {
+    ['Survival Primary'] = { "SimC Survival: precombat", "SimC Survival: default" },
+    ['Survival AOE'] = { "SimC Survival: precombat", "SimC Survival: default" },
+
+    ['Windwalker Primary'] = { "SimC Windwalker: precombat", "SimC Windwalker: default" },
+    ['Windwalker AOE'] = { "SimC Windwalker: precombat", "SimC Windwalker: default" },
+
+    ['Brewmaster Primary'] = { 0, "Brewmaster: Default" },
+    ['Brewmaster AOE'] = { 0, "Brewmaster: Default" },
+    ['Brewmaster Defensives'] = { 0, "Brewmaster: Defensives" },
+
+    ['Enhancement Primary'] = { 'SimC Enhancement: precombat', 'SimC Enhancement: default' },
+    ['Enhancement AOE'] = { 'SimC Enhancement: precombat', 'SimC Enhancement: default' },
+
+    ['Elemental Primary'] = { 'SEL Elemental Precombat', 'SEL Elemental Default' },
+    ['Elemental AOE'] = { 'SEL Elemental Precombat', 'SEL Elemental Default' },
+
+    ['Retribution Primary'] = { 'SimC Retribution: precombat', 'SimC Retribution: default' },
+    ['Retribution AOE'] = { 'SimC Retribution: precombat', 'SimC Retribution: default' },
+
+    ['Protection Primary'] = { 0, 'Protection Default' }
+}    
+
+
+-- One Time Fixes
+local oneTimeFixes = {
+    turnOffDebug_03302017 = function( profile )
+        profile.Debug = false
+    end,
+
+    attachDefaultAPLs_03312017 = function( profile )
+        for dID, display in ipairs( profile.displays ) do
+            local APLs = defaultAPLs[ display.Name ]
+
+            if APLs then
+                local precombat, default = 0, 0
+
+                for i, list in ipairs( Hekili.DB.profile.actionLists ) do
+                    if list.Name == APLs[1] then precombat = i end
+                    if list.Name == APLs[2] then default = i end
+                end
+
+                display.precombatAPL = precombat
+                display.defaultAPL = default
+            end
+        end
+    end,
+
+    setDisplayTypes_03312017 = function( profile )
+        for d, display in ipairs( profile.displays ) do
+            if display.Name:match( "Primary" ) then
+                display.displayType = 'a'
+                display.showST = true
+                display.showAE = true
+                display.showAuto = true
+            elseif display.Name:match( "AOE" ) then
+                display.displayType = 'c'
+                display.showST = true
+                display.showAE = true
+                display.showAuto = false
+            end
+        end
+    end,
+
+}
+
+
+function ns.runOneTimeFixes()
+
+    print( 'in rOTF' )
+
+    local profile = Hekili.DB.profile
+    if not profile then print( 'no profile?' ); return end
+
+    profile.runOnce = profile.runOnce or {}
+
+    for k, v in pairs( oneTimeFixes ) do
+        if not profile.runOnce[ k ] then
+            profile.runOnce[k] = true
+            v( profile )
+        end
+    end
+
+end
+
+
 
 local displayTemplate = {
     Enabled = true,
     Default = false,
-
-    Script = '',
 
     displayType = 'd', -- Automatic
     simpleAOE = 2,
@@ -180,6 +266,7 @@ local displayTemplate = {
 
     precombatAPL = 0,
     defaultAPL = 0
+
 }
 
 
@@ -278,6 +365,8 @@ function convertDisplay( id )
 
     if not display then return end
 
+    display.runOnce = nil
+
     for key, newKey in pairs( displayKeyMap ) do
         if display[ key ] ~= nil then
             display[ newKey ] = display[ key ]
@@ -288,7 +377,6 @@ function convertDisplay( id )
     for k, v in pairs( displayTemplate ) do
         if display[ k ] == nil then display[ k ] = v end
     end
-
 end
 
 
@@ -2522,14 +2610,6 @@ ns.newActionListOption = function( index )
           local actIdx = tonumber( match( actKey, "^L(%d+)" ) )
 
           for d_key, display in ipairs( Hekili.DB.profile.displays ) do
-            for l_key, list in ipairs ( display.Queues ) do
-              if list['Action List'] == actIdx then
-                list['Action List'] = 0
-                list.Enabled = false
-              elseif list['Action List'] > actIdx then
-                list['Action List'] = list['Action List'] - 1
-              end
-            end
             if display.precombatAPL == actIdx then display.precombatAPL = 0
             elseif display.precombatAPL > actIdx then display.precombatAPL = display.precombatAPL - 1 end
             if display.defaultAPL == actIdx then display.defaultAPL = 0
@@ -4891,6 +4971,7 @@ function Hekili:TotalRefresh()
   end
   
   ns.convertDisplays()
+  ns.runOneTimeFixes()
   ns.checkImports()
   ns.refreshOptions()
   ns.buildUI()
