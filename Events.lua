@@ -26,6 +26,7 @@ local lower, match, upper = string.lower, string.match, string.upper
 
 local events = CreateFrame( "Frame" )
 local handlers = {}
+local unitEvents = {}
 
 ns.displayUpdates = {}
 local lastRefresh = {}
@@ -91,6 +92,17 @@ end
 local RegisterEvent = ns.RegisterEvent
 
 
+ns.RegisterUnitEvent = function( event, handler, u1, u2 )
+
+    handlers[ event ] = handlers[ event ] or {}
+    table.insert( handlers[ event ], handler )
+
+    events:RegisterUnitEvent( event, u1, u2 )
+
+end
+local RegisterUnitEvent = ns.RegisterUnitEvent
+
+
 ns.FeignEvent = function( event, ... )
     local eventHandlers = handlers[ event ]
 
@@ -149,12 +161,10 @@ RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
     ns.checkImports()
 end )
 
-RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( _, unit )
-    if unit == 'player' then
-        ns.specializationChanged()
-        ns.checkImports()
-    end
-end )
+RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( _, unit )
+    ns.specializationChanged()
+    ns.checkImports()
+end, 'player' )
 
 RegisterEvent( "BARBER_SHOP_OPEN", function ()
     Hekili.Barber = true
@@ -446,70 +456,60 @@ end
 
 local function spellcastEvents( event, unit, spell, _, _, spellID )
 
-    if unit == 'player' then
+    local now = GetTime()
 
-        local now = GetTime()
+    if not class.castExclusions[ spellID ] then
+        state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
+        state.player.casttime = now
 
-        if event == 'UNIT_SPELLCAST_SUCCEEDED' then
+        local ability = class.abilities[ spellID ]
 
-            if not class.castExclusions[ spellID ] then
-                state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
-                state.player.casttime = now
+        if ability then
+            table.insert( castsAll, 1, ability.key )
+            castsAll[ 6 ] = nil
 
-                local ability = class.abilities[ spellID ]
+            if ability.gcdType ~= 'off' then
+                table.insert( castsOn, 1, ability.key )
+                castsOn[ 6 ] = nil
 
-                if ability then
-                    table.insert( castsAll, 1, ability.key )
-                    castsAll[ 6 ] = nil
+                state.player.lastgcd = ability.key
+                state.player.lastgcdtime = now
+            else
+                table.insert( castsOff, 1, ability.key )
+                castsOff[ 6 ] = nil
 
-                    if ability.gcdType ~= 'off' then
-                        table.insert( castsOn, 1, ability.key )
-                        castsOn[ 6 ] = nil
-
-                        state.player.lastgcd = ability.key
-                        state.player.lastgcdtime = now
-                    else
-                        table.insert( castsOff, 1, ability.key )
-                        castsOff[ 6 ] = nil
-
-                        state.player.lastoffgcd = ability.key
-                        state.player.lastoffgcdtime = now
-                    end
-                end
+                state.player.lastoffgcd = ability.key
+                state.player.lastoffgcdtime = now
             end
+        end
+    end
 
-            -- This is an ability with a travel time.
-            if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
+    -- This is an ability with a travel time.
+    if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
 
-                local lands = 0.05
+        local lands = 0.05
 
-                -- If we have a hostile target, we'll assume we're waiting for them to get hit.
-                if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
-                    -- Let's presume that the target is at max range.
-                    local _, range = RC:GetRange( 'target' )
+        -- If we have a hostile target, we'll assume we're waiting for them to get hit.
+        if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
+            -- Let's presume that the target is at max range.
+            local _, range = RC:GetRange( 'target' )
 
-                    if range then
-                        lands = range > 0 and range / class.abilities[ spellID ].velocity or 0.05
-                    end
-                end
-
-                table.insert( spells_in_flight, 1, {
-                    spell = class.abilities[ spellID ].key,
-                    time = now + lands
-                } )
-
+            if range then
+                lands = range > 0 and range / class.abilities[ spellID ].velocity or 0.05
             end
         end
 
-        -- forceUpdate( event, true )
+        table.insert( spells_in_flight, 1, {
+            spell = class.abilities[ spellID ].key,
+            time = now + lands
+        } )
 
     end
 
 end
 
-RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", spellcastEvents )
-RegisterEvent( "UNIT_SPELLCAST_START", spellcastEvents )
-
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", spellcastEvents, 'player' )
+-- RegisterUnitEvent( "UNIT_SPELLCAST_START", spellcastEvents, 'player' )
 
 
 function ns.removeSpellFromFlight( spell )
@@ -538,38 +538,36 @@ local spell_names = setmetatable( {}, {
 } )
 
 
-RegisterEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
-    if unit == 'player' then
-        if power == "FOCUS" and state.focus then
-            local now = GetTime()
-            local elapsed = now - state.focus.last_tick
+RegisterUnitEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
+    if power == "FOCUS" and state.focus then
+        local now = GetTime()
+        local elapsed = now - state.focus.last_tick
 
-            elapsed = elapsed > power_tick_data.focus_avg * 1.5 and power_tick_data.focus_avg or elapsed
+        elapsed = elapsed > power_tick_data.focus_avg * 1.5 and power_tick_data.focus_avg or elapsed
 
-            if elapsed > 0.075 then
-                power_tick_data.focus_avg = ( elapsed + ( power_tick_data.focus_avg * power_tick_data.focus_ticks ) ) / ( power_tick_data.focus_ticks + 1 )
-                power_tick_data.focus_ticks = power_tick_data.focus_ticks + 1
-                state.focus.last_tick = now
-            end
-
-        elseif power == "ENERGY" and state.energy then
-            local now = GetTime()
-            local elapsed = min( 0.12, now - state.energy.last_tick )
-            elapsed = elapsed > power_tick_data.energy_avg * 1.5 and power_tick_data.energy_avg or elapsed
-
-            if elapsed > 0.075 then
-                power_tick_data.energy_avg = ( elapsed + ( power_tick_data.energy_avg * power_tick_data.energy_ticks ) ) / ( power_tick_data.energy_ticks + 1 )
-                power_tick_data.energy_ticks = power_tick_data.energy_ticks + 1
-                state.energy.last_tick = now
-            end
-
+        if elapsed > 0.075 then
+            power_tick_data.focus_avg = ( elapsed + ( power_tick_data.focus_avg * power_tick_data.focus_ticks ) ) / ( power_tick_data.focus_ticks + 1 )
+            power_tick_data.focus_ticks = power_tick_data.focus_ticks + 1
+            state.focus.last_tick = now
         end
 
-        -- if abs( power ) > 2 then
-            hardUpdate( event )
-        -- end
+    elseif power == "ENERGY" and state.energy then
+        local now = GetTime()
+        local elapsed = min( 0.12, now - state.energy.last_tick )
+        elapsed = elapsed > power_tick_data.energy_avg * 1.5 and power_tick_data.energy_avg or elapsed
+
+        if elapsed > 0.075 then
+            power_tick_data.energy_avg = ( elapsed + ( power_tick_data.energy_avg * power_tick_data.energy_ticks ) ) / ( power_tick_data.energy_ticks + 1 )
+            power_tick_data.energy_ticks = power_tick_data.energy_ticks + 1
+            state.energy.last_tick = now
+        end
+
     end
-end )
+
+    -- if abs( power ) > 2 then
+        hardUpdate( event )
+    -- end
+end, 'player' )
 
 --[[ RegisterEvent( "UNIT_POWER", function( event, unit, power )
     if unit == 'player' then
@@ -582,6 +580,11 @@ end ) ]]
 RegisterEvent( "PLAYER_TARGET_CHANGED", hardUpdate )
 RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
 RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
+
+
+RegisterUnitEvent( "UNIT_AURA", function( event, unit )
+    forceUpdate( event )
+end, 'player', 'target' )
 
 
 -- Use dots/debuffs to count active targets.
@@ -692,21 +695,21 @@ end )
 
 
 
-RegisterEvent( "UNIT_COMBAT", function( event, unitID, action, descriptor, damage, damageType )
+RegisterUnitEvent( "UNIT_COMBAT", function( event, unitID, action, descriptor, damage, damageType )
 
-        if unitID == 'player' and damage > 0 then
-            if action == 'WOUND' then
-                ns.storeDamage( GetTime(), damage, damageType )
-            elseif action == 'HEAL' then
-                ns.storeHealing( GetTime(), damage )
-            end
+    if damage > 0 then
+        if action == 'WOUND' then
+            ns.storeDamage( GetTime(), damage, damageType )
+        elseif action == 'HEAL' then
+            ns.storeHealing( GetTime(), damage )
         end
+    end
         
-end )
+end, 'player' )
 
 
 -- Time to die calculations.
-RegisterEvent( "UNIT_HEALTH", function( _, unit )
+RegisterUnitEvent( "UNIT_HEALTH", function( _, unit )
 
     if not unit then return end
 
@@ -758,7 +761,7 @@ RegisterEvent( "UNIT_HEALTH", function( _, unit )
 
     ttd.sec = projectedTTD
 
-end )
+end, 'player' )
 
 
 local keys = ns.hotkeys

@@ -753,14 +753,14 @@ local pvpZones = {
 local function CheckDisplayCriteria( dispID )
 
     local display = Hekili.DB.profile.displays[ dispID ]
-    local mode = Hekili.DB.profile['Mode Status']
+    local switch, mode = Hekili.DB.profile['Switch Type'], Hekili.DB.profile['Mode Status']
     local _, zoneType = IsInInstance()
 
     -- if C_PetBattles.IsInBattle() or Hekili.Barber or UnitInVehicle( 'player' ) or not ns.visible.display[ dispID ] then
     if C_PetBattles.IsInBattle() or UnitOnTaxi( 'player' ) or Hekili.Barber or HasVehicleActionBar() or not ns.visible.display[ dispID ] then
         return 0
 
-    elseif ( mode == 0 and not display.showST ) or ( mode == 3 and not display.showAuto ) or ( mode == 2 and not display.showAE ) then
+    elseif ( switch == 0 and not display.showSwitchAuto ) or ( switch == 1 and not display.showSwitchAE ) or ( mode == 0 and not display.showST ) or ( mode == 3 and not display.showAuto ) or ( mode == 2 and not display.showAE ) then
         return 0
 
     elseif not pvpZones[ zoneType ] then
@@ -939,12 +939,12 @@ function Hekili:UpdateDisplay( dispID )
                             local mode = Hekili.DB.profile['Mode Status']
 
                             if display.displayType == 'a' then -- Primary
-                                if mode == 3 then
-                                    min_targets = 0
-                                    max_targets = 0
-                                else
+                                if mode == 0 then
                                     min_targets = 0
                                     max_targets = 1
+                                elseif mode == 2 then
+                                    min_targets = display.simpleAOE or 2
+                                    max_targets = 0
                                 end
 
                             elseif display.displayType == 'b' then -- Single-Target
@@ -952,7 +952,7 @@ function Hekili:UpdateDisplay( dispID )
                                 max_targets = 1
 
                             elseif display.displayType == 'c' then -- AOE
-                                min_targets = ( display.simpleAOE or 2 )
+                                min_targets = display.simpleAOE or 2
                                 max_targets = 0
                             
                             elseif display.displayType == 'd' then -- Auto

@@ -2029,8 +2029,6 @@ ns.restoreDefaults = function( category, purge )
                             import.rangeType = existing.rangeType
                             
                             import.showCaptions = existing.showCaptions
-                            import['Primary Caption'] = existing['Primary Caption']
-                            import['Primary Caption Aura'] = existing['Primary Caption Aura']
                         else
                             index = #profile.displays + 1
                         end

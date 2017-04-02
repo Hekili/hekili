@@ -2558,13 +2558,17 @@ function state.reset( dispID )
   if display then
     local mode = Hekili.DB.profile['Mode Status'] or 0
 
+-- 0 = single
+-- 2 = cleave
+-- 2 = aoe
+-- 3 = auto
     if display.displayType == 'a' then -- Primary
-        if mode == 3 then
-            state.min_targets = 0
-            state.max_targets = 0
-        else
+        if mode == 0 then
             state.min_targets = 0
             state.max_targets = 1
+        elseif mode == 2 then
+            state.min_targets = display.simpleAOE or 2
+            state.max_targets = 0
         end
 
     elseif display.displayType == 'b' then -- Single-Target
