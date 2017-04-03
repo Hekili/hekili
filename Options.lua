@@ -1359,45 +1359,46 @@ ns.newDisplayOption = function( key )
                     end
                 },
 
-                ['SpellFlash Group'] = {
-                    type = 'group',
-                    inline = true,
-                    name = "SpellFlash",
-                    order = 10,
+                spellFlash = {
+                    type = 'toggle',
+                    name = 'Use SpellFlash',
+                    desc = "If enabled and SpellFlash (or SpellFlashCore) is installed, the addon will cause the action buttons for recommended abilities to flash.",
+                    order = 11,
                     hidden = function( info, val )
                         return ns.lib.SpellFlash == nil
                     end,
-                    args = {
-                        spellFlash = {
-                            type = 'toggle',
-                            name = 'Use SpellFlash',
-                            desc = "If enabled and SpellFlash (or SpellFlashCore) is installed, the addon will cause the action buttons for recommended abilities to flash.",
-                            order = 1,
-                            width = 'full'
-                        },
-                        spellFlashColor = {
-                            type = 'color',
-                            name = 'SpellFlash Color',
-                            desc = "If SpellFlash is installed, actions recommended from this display will flash with the selected color.",
-                            order = 2,
-                            width = 'full'
-                        }
-                    },
+                    width = 'full'
+                },
+                spellFlashColor = {
+                    type = 'color',
+                    name = 'SpellFlash Color',
+                    desc = "If SpellFlash is installed, actions recommended from this display will flash with the selected color.",
+                    order = 12,
+                    hidden = function( info, val )
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return ns.lib.SpellFlash == nil or not display or not display.spellFlash
+                    end,
+                    width = 'full'
                 },
                 esSpacer3 = {
                     type = 'description',
                     name = '\n',
-                    order = 11,
+                    order = 13,
                     width = 'full',
                     hidden = function( info, val )
-                        return ns.lib.SpellFlash == nil
+                        local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                        local display = id and Hekili.DB.profile.displays[ id ]
+
+                        return ns.lib.SpellFlash == nil or not display or not display.spellFlash
                     end,
                 },
 
                 showKeybindings = {
                     type = 'toggle',
                     name = 'Show Keybindings',
-                    order = 12,
+                    order = 14,
                     width = 'full'
                 },
                 keybindingGroup = {
