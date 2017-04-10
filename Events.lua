@@ -30,13 +30,10 @@ local unitEvents = {}
 
 ns.displayUpdates = {}
 local lastRefresh = {}
-local hardUpdate = {}
-
 local lastRecount = 0
 local displayUpdates = ns.displayUpdates
 
 local refreshes = {}
-
 
 function ns.StartEventHandler()
 
@@ -57,14 +54,12 @@ function ns.StartEventHandler()
             ns.recountTargets()
         end
 
-        local updatePeriod = 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 )
+        local updatePeriod = state.boss and 1 or ( 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 ) )
         
         for i = 1, #Hekili.DB.profile.displays do
-            if hardUpdate[i] or not displayUpdates[i] or not lastRefresh[i] or now - lastRefresh[i] >= updatePeriod then
+            if not displayUpdates[i] or not lastRefresh[i] or now - lastRefresh[i] >= updatePeriod then
                 Hekili:ProcessHooks( i )
                 lastRefresh[i] = now
-                hardUpdate[i] = nil
-                -- refreshes[i] = refreshes[i] and ( refreshes[i] + 1 ) or 1
             end
         end
         Hekili:UpdateDisplays()
@@ -439,19 +434,26 @@ local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
 
-local function forceUpdate( from, hard )
+local function forceUpdate( from, super )
+
+    if super then
+        for i = 1, #Hekili.DB.profile.displays do
+            displayUpdates[ i ] = nil
+        end
+        return
+    end
+
+    local updatePeriod = 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 )
+    local now = GetTime()
+
+    local new_delay = GetTime() - updatePeriod
+
     for i = 1, #Hekili.DB.profile.displays do
-        displayUpdates[ i ] = nil
-        hardUpdate[i] = hardUpdate[i] or hard
+        displayUpdates[ i ] = displayUpdates[ i ] and min( displayUpdates[ i ], new_delay )
     end
 end
 
 ns.forceUpdate = forceUpdate
-
-
-local function hardUpdate( from )
-    forceUpdate( from, true )
-end
 
 
 local function spellcastEvents( event, unit, spell, _, _, spellID )
@@ -508,8 +510,20 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
 
 end
 
-RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", spellcastEvents, 'player' )
+-- RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", spellcastEvents, 'player' )
 -- RegisterUnitEvent( "UNIT_SPELLCAST_START", spellcastEvents, 'player' )
+
+
+--[[ WiP - Fire quicker on UNIT_SPELLCAST_SUCCEEDED, but be prepared to revise the cast queue.
+
+local queueTime = 0
+
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
+    local window = GetCVar( 'spellQueueWindow' ) / 1000
+    local latency = state.latency or 50
+
+    -- We need to test to see if our last cast queued something.
+... ]]
 
 
 function ns.removeSpellFromFlight( spell )
@@ -565,24 +579,164 @@ RegisterUnitEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
     end
 
     -- if abs( power ) > 2 then
-        hardUpdate( event )
+        forceUpdate( event )
     -- end
 end, 'player' )
 
 --[[ RegisterEvent( "UNIT_POWER", function( event, unit, power )
     if unit == 'player' then
-        hardUpdate( event )
+        forceUpdate( event )
     end
 end ) ]]
 
 
 
-RegisterEvent( "PLAYER_TARGET_CHANGED", hardUpdate )
+RegisterEvent( "PLAYER_TARGET_CHANGED", forceUpdate )
 RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
 RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
 
 
+local autoAuraKey = setmetatable( {}, {
+    __index = function( t, k )
+        local name = GetSpellInfo( k )
+
+        if not name then return end
+
+        local key = formatKey( name )
+
+        if class.auras[ key ] then
+            local i = 1
+
+            while ( true ) do 
+                local new = key .. '_' .. i
+                
+                if not class.auras[ new ] then
+                    key = new
+                    break
+                end
+
+                i = i + 1
+            end
+        end
+
+        -- Store the aura and save the key if we can.
+        if ns.addAura then
+            ns.addAura( key, k, 'name', name )
+            t[k] = key
+        end
+
+        return t[k]
+    end
+} )
+
+-- 04072017:  Let's go ahead and cache aura information to reduce overhead.
+
+local function scrapeUnitAuras( unit )
+
+    local i = 1
+    local db = ns.auras[ unit ]
+    
+    for k,v in pairs( db.buff ) do
+        v.name = nil
+        v.count = 0
+        v.expires = 0
+        v.applied = 0
+        v.duration = class.auras[ k ] and class.auras[ k ].duration or 0
+        v.caster = 'nobody'
+        v.timeMod = 1
+        v.v1 = 0
+        v.v2 = 0
+        v.v3 = 0
+        v.unit = unit
+    end
+
+
+    for k,v in pairs( db.debuff ) do
+        v.name = nil
+        v.count = 0
+        v.expires = 0
+        v.applied = 0
+        v.duration = class.auras[ k ] and class.auras[ k ].duration or 0
+        v.caster = 'nobody'
+        v.timeMod = 1
+        v.v1 = 0
+        v.v2 = 0
+        v.v3 = 0
+        v.unit = unit
+    end
+
+    while ( true ) do
+        local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
+        if not name then break end
+
+        local key = class.auras[ spellID ] and class.auras[ spellID ].key or autoAuraKey[ spellID ]
+
+        if key then 
+            db.buff[ key ] = db.buff[ key ] or {}
+            local buff = db.buff[ key ]
+
+            if expires == 0 then
+                expires = GetTime() + 3600
+                duration = 7200
+            end
+
+            buff.key = key
+            buff.id = spellID
+            buff.name = name
+            buff.count = count > 0 and count or 1
+            buff.expires = expires
+            buff.duration = duration
+            buff.applied = expires - duration
+            buff.caster = caster
+            buff.timeMod = timeMod
+            buff.v1 = v1
+            buff.v2 = v2
+            buff.v3 = v3
+
+            buff.unit = unit
+        end
+
+        i = i + 1
+    end
+
+    while ( true ) do
+        local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i )
+        if not name then break end
+
+        local key = class.auras[ spellID ] and class.auras[ spellID ].key or autoAuraKey[ spellID ]
+
+        if key then 
+            db.debuff[ key ] = db.debuff[ key ] or {}
+            local debuff = db.debuff[ key ]
+
+            if expires == 0 then
+                expires = GetTime() + 3600
+                duration = 7200
+            end
+
+            debuff.key = key
+            debuff.id = spellID
+            debuff.name = name
+            debuff.count = count > 0 and count or 1
+            debuff.expires = expires
+            debuff.applied = expires - duration
+            debuff.caster = caster
+            debuff.timeMod = timeMod
+            debuff.v1 = v1
+            debuff.v2 = v2
+            debuff.v3 = v3
+
+            debuff.unit = unit
+        end
+
+        i = i + 1
+    end
+
+end
+
+
 RegisterUnitEvent( "UNIT_AURA", function( event, unit )
+    scrapeUnitAuras( unit )
     forceUpdate( event )
 end, 'player', 'target' )
 
@@ -610,7 +764,8 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
     end
 
     if sourceGUID == state.GUID and ( subtype == 'SPELL_CAST_SUCCESS' or subtype == 'SPELL_CAST_START' ) then
-        hardUpdate( subtype )
+        if subtype == 'SPELL_CAST_SUCCESS' then spellcastEvents( subtype, sourceGUID, spellName, _, _, spellID ) end
+        forceUpdate( subtype, true )
     end
 
 
@@ -764,9 +919,9 @@ RegisterUnitEvent( "UNIT_HEALTH", function( _, unit )
 end, 'player' )
 
 
+
 local keys = ns.hotkeys
 local updatedKeys = {}
-
 
 local bindingSubs = {
     ["CTRL%-"] = "c",

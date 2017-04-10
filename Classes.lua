@@ -242,53 +242,50 @@ end
 
 local storeAuraElements = function( key, ... )
 
-local aura = class.auras[ key ]
+    local aura = class.auras[ key ]
 
-if not aura then
-    ns.Error( "storeAuraElements() - no aura '" .. key .. "' in auras table." )
-    return
-end
+    if not aura then
+        ns.Error( "storeAuraElements() - no aura '" .. key .. "' in auras table." )
+        return
+    end
 
-for i = 1, select( "#", ... ), 2 do
-    local k, v = select( i, ... ), select( i+1, ... )
+    for i = 1, select( "#", ... ), 2 do
+        local k, v = select( i, ... ), select( i+1, ... )
 
-    if k and v then
-        if k == 'id' or k == 'name' then aura[k] = v
+        if k and v then
+            if k == 'id' or k == 'name' then aura[k] = v
             elseif type(v) == 'function' then aura.elem[k] = setfenv( v, state )
-                else aura.elem[k] = v end
-            end
+            else aura.elem[k] = v end
         end
-
     end
-    ns.storeAuraElements = storeAuraElements
+
+end
+ns.storeAuraElements = storeAuraElements
 
 
-    local function modifyAura( key, elem, func )
-
-        modifyElement( 'auras', key, elem, func )
-
-    end
-    ns.modifyAura = modifyAura
+local function modifyAura( key, elem, func )
+    modifyElement( 'auras', key, elem, func )
+end
+ns.modifyAura = modifyAura
 
 
-    local function addAura( key, id, ... )
+local function addAura( key, id, ... )
 
-        local name = GetSpellInfo( id )
+    local name = GetSpellInfo( id )
 
-        if not class.auras[ key ] then
+    if not class.auras[ key ] then
 
-            class.auras[ key ] = setmetatable( {
-                id = id,
-                key = key,
-                name = name,
-                elem = {},
-                mods = {}
-                }, mt_modifiers )
+        class.auras[ key ] = setmetatable( {
+            id = id,
+            key = key,
+            elem = {},
+            mods = {}
+        }, mt_modifiers )
 
-            ns.commitKey( key )
+        ns.commitKey( key )
 
         -- Add the elements, front-loading defaults and just overriding them if something else is specified.
-        storeAuraElements( key, 'duration', 30, 'max_stack', 1, ... )
+        storeAuraElements( key, 'name', GetSpellInfo( id ), 'duration', 30, 'max_stack', 1, ... )
         
     end
     

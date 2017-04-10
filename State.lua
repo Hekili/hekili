@@ -4,12 +4,14 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
+local auras = ns.auras
 local class = ns.class
 local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
 local round, roundUp = ns.round, ns.roundUp
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 local tableCopy = ns.tableCopy
+
 
 local PTR = ns.PTR
 
@@ -41,6 +43,7 @@ state.args = {}
 state.artifact = {}
 state.aura = {}
 state.buff = state.aura
+state.auras = auras
 state.cooldown = {}
 state.debuff = {}
 state.dot = {}
@@ -1730,301 +1733,182 @@ local mt_resource = {
 ns.metatables.mt_resource = mt_resource
 
 
+local default_buff_values = {
+    count = 0,
+    duration = 0,
+    expires = 0,
+    applied = 0,
+    caster = 'nobody',
+    timeMod = 1,
+    v1 = 0,
+    v2 = 0,
+    v3 = 0,
+    unit = 'player'
+}
+
 -- Table of default handlers for auras (buffs, debuffs).
-local mt_default_aura = {
-  __index = function(t, k)
-    if k == 'name' then
-      if class.auras[ t.key ].elem.feign then
-        class.auras[ t.key ].feign()
-        return t.name
-      end
+local mt_default_buff = {
+    __index = function(t, k)
+        if k == 'name' or k == 'count' or k == 'duration' or k == 'expires' or k == 'applied' or k == 'caster' or k == 'id' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then
 
-      -- Check for raid buff.
-      if class.auras[ t.key ].id < 0 then
-        local name = GetRaidBuffTrayAuraInfo( -1 * class.auras[ t.key ].id )
-        t.name = name
-        return name
-      end
+            if class.auras[ t.key ].elem.feign then
+                class.auras[ t.key ].feign()
+                return t[k]
+            end
 
-      t.name = class.auras[ t.key ].name
-      return class.auras[ t.key ].name
-      
-    elseif k == 'duration' then
-      return class.auras[ t.key ].duration
+            local real = auras.player.buff[ t.key ] or auras.target.buff[ t.key ]
 
-    elseif k == 'count' or k == 'expires' or k == 'caster' or k == 'applied' then
+            if real then
+                t.name = real.name
+                t.count = real.count
+                t.duration = real.duration
+                t.expires = real.expires
+                t.applied = max( 0, real.expires - real.duration )
+                t.caster = real.caster
+                t.id = real.id
+                t.timeMod = real.timeMod
+                t.v1 = real.v1
+                t.v2 = real.v2
+                t.v3 = real.v3
 
-      if class.auras[ t.key ].elem.feign then
-        class.auras[ t.key ].feign()
-        return t[k]
+                t.unit = real.unit
+            else
 
-      --[[ elseif class.auras[ t.key ].id < 0 then
-        local id = -1 * class.auras[ t.key ].id
-        local name, _, _, duration, expires, spellID, slot = GetRaidBuffTrayAuraInfo( id )
-        local applied = 0
+                for attr, a_val in pairs( default_buff_values ) do
+                    t[ attr ] = a_val
+                end
+            end
 
-        if name then
-          duration = duration > 0 and duration or 3600
-          expires = expires > 0 and expires or state.now + 3600
-          applied = expires - duration
-        end
+            return t[k]
 
-        t.id = class.auras[ t.key ].id
-        t.name = name
-        t.count = name and 1 or 0
-        t.expires = expires
-        t.applied = applied
-        t.caster = select( 8, UnitBuff( 'player', name ) ) or 'unknown'
+        elseif k == 'up' or k == 'ticking' then
+          return ( t.count > 0 and t.expires > ( state.query_time ) )
 
-        return t[k] ]]
+        elseif k == 'down' then
+          return ( t.count == 0 or t.expires <= ( state.query_time ) )
 
-      end
+        elseif k == 'remains' then
+          if t.expires > ( state.query_time ) then
+            return ( t.expires - ( state.query_time ) )
+          else
+            return 0
 
-      if not t.name then
-        t.count = 0
-        t.expires = 0
-        t.applied = 0
-        t.caster = 'unknown'
-        return t[k]
-      end
-    
-      if class.auras[ t.key ].fullscan then
-        for i = 1, 40 do
-          local name, _, _, count, _, duration, expires, caster, _, _, id, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( 'player', i )
-
-          if not name then
-            break
           end
 
-          if id == t.id then
-            count = max(1, count)
-            if expires == 0 then expires = state.now + 3600 end
+        elseif k == 'refreshable' then
+          return t.remains < 0.3 * t.duration
 
-            t.count = count or 0
-            t.expires = expires or 0
-            t.applied = expires and ( expires - duration ) or 0
-            t.caster = caster or 'unknown'
-            t.applied = expires - duration
-            t.timeMod = timeMod or 1
-            t.v1 = v1 or 0
-            t.v2 = v2 or 0
-            t.v3 = v3 or 0
+        elseif k == 'cooldown_remains' then
+          return state.cooldown[ t.key ].remains
 
-            return t[ k ]
-          end
+        elseif k == 'max_stack' then
+          return class.auras[ t.key ].max_stack or 1
+
+        elseif k == 'mine' then
+          return t.caster == 'player'
+
+        elseif k == 'stack' or k == 'stacks' or k == 'react' then
+          if t.up then return ( t.count ) else return 0 end
+
+        elseif k == 'stack_pct' then
+          if t.up then return ( 100 * t.count / t.max_stack ) else return 0 end
+
+
         end
 
-      else
-
-        local name, _, _, count, _, duration, expires, caster, _, _, id, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( 'player', t.name )
-
-        if name then
-          count = max(1, count)
-          if expires == 0 then expires = state.now + 3600 end
-        end
-
-        t.count = count or 0
-        t.expires = expires or 0
-        t.applied = expires and ( expires - duration ) or 0
-        t.caster = caster or 'unknown'
-
-        return t[k]
-
-      end
-
-      t.count = 0
-      t.expires = 0
-      t.applied = 0
-      t.caster = 'unknown'
-
-      return t[ k ]
-
-    elseif k == 'up' or k == 'ticking' then
-      return ( t.count > 0 and t.expires > ( state.query_time ) )
-
-    elseif k == 'down' then
-      return ( t.count == 0 or t.expires <= ( state.query_time ) )
-
-    elseif k == 'remains' then
-      if t.expires > ( state.query_time ) then
-        return ( t.expires - ( state.query_time ) )
-      else
-        return 0
-
-      end
-
-    elseif k == 'refreshable' then
-      return t.remains < 0.3 * class.auras[ t.key ].duration
-
-    elseif k == 'cooldown_remains' then
-      return state.cooldown[ t.key ].remains
-
-    elseif k == 'max_stack' then
-      return class.auras[ t.key ].max_stack or 1
-
-    elseif k == 'mine' then
-      return t.caster == 'player'
-
-    elseif k == 'stack' or k == 'stacks' or k == 'react' then
-      if t.up then return ( t.count ) else return 0 end
-
-    elseif k == 'stack_pct' then
-      if t.up then return ( 100 * t.count / t.max_stack ) else return 0 end
-
+        error("UNK: " .. k)
 
     end
-
-    error("UNK: " .. k)
-
-  end
 }
-ns.metatables.mt_default_aura = mt_default_aura
+ns.metatables.mt_default_buff = mt_default_buff
 
 
 local unknown_buff = setmetatable( {
-  count = 0,
-  expires = 0,
-  applied = 0,
-  caster = 'unknown' }, mt_default_aura )
+    count = 0,
+    duration = 0,
+    expires = 0,
+    applied = 0,
+    caster = 'nobody',
+    timeMod = 1,
+    v1 = 0,
+    v2 = 0,
+    v3 = 0
+}, mt_default_buff )
 
 -- This will currently accept any key and make an honest effort to find the buff on the player.
 -- Unfortunately, that means a buff.dog_farts.up check will actually get a return value.
 
 -- Fullscan definitely needs revamping, but it works for now.
 local mt_buffs = {
-  -- The action doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
-  __index = function(t, k)
+    -- The action doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
+    __index = function(t, k)
 
-    if k == '__scanned' then
-      return false
-    end
-
-    if not class.auras[ k ] then
-      return unknown_buff
-    end
-
-    if class.auras[ k ].fullscan then
-      local found = false
-
-      for i = 1, 40 do
-        local name, _, _, count, _, duration, expires, caster, _, _, id, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( 'player', i )
-
-        if not name then break end
-
-        if class.auras[ k ].id == id then
-          local key = class.auras[ id ].key
-
-          count = max(1, count)
-          if expires == 0 then expires = state.now + 3600 end
-          if duration == 0 then duration = class.auras[ name ].duration end
-
-          t[ key ] = {
-            key = key,
-            id = id,
-            name = name,
-            count = count or 0,
-            expires = expires or 0,
-            caster = caster or 'unknown',
-            applied = expires - duration,
-            timeMod = timeMod,
-            v1 = v1 or 0,
-            v2 = v2 or 0,
-            v3 = v3 or 0
-          }
-
-          found = true
-          break
+        if k == '__scanned' then
+            return false
         end
-      end
 
-      if not found then
-        t[k] = {
-          key = k,
-          id = class.auras[ k ].id,
-          name = name,
-          count = 0,
-          expires = 0,
-          applied = 0,
-          caster = 'unknown',
-          timeMod = 1,
-          v1 = 0,
-          v2 = 0,
-          v3 = 0
+        local class_aura = class.auras[ k ]
+
+        if not class_aura then
+            return unknown_buff
+        end
+
+        if class_aura.elem.feign then
+            t[k] = {
+                key = k,
+                name = class_aura.name
+            }
+            class_aura.feign()
+            return t[k]
+        end
+
+        local real = auras.player.buff[ k ] or auras.target.buff[ k ]
+
+        t[ k ] = {
+            key = k,
+            name = class_aura.name
         }
-      end
 
-      return t[k]
+        local buff = t[ k ]
+
+        if real then
+            buff.name = real.name
+            buff.count = real.count
+            buff.duration = real.duration
+            buff.expires = real.expires
+            buff.applied = max( 0, real.expires - real.duration )
+            buff.caster = real.caster
+            buff.id = real.id
+            buff.timeMod = real.timeMod
+            buff.v1 = real.v1
+            buff.v2 = real.v2
+            buff.v3 = real.v3
+
+            buff.unit = real.unit
+
+        else
+            buff.name = class_aura.name or "No Name"
+            buff.count = 0
+            buff.duration = class_aura.duration or 30
+            buff.expires = 0
+            buff.applied = 0
+            buff.caster = 'nobody'
+            buff.id = nil
+            buff.timeMod = 1
+            buff.v1 = 0
+            buff.v2 = 0
+            buff.v3 = 0
+
+            buff.unit = class_aura.unit or 'player'
+        end
+
+        return t[k]
+
+    end,
+
+    __newindex = function(t, k, v)
+        rawset( t, k, setmetatable( v, mt_default_buff ) )
     end
-
-    if class.auras[ k ].elem.feign then
-      t[k] = {
-        key = k,
-        name = class.auras[ k ].name
-      }
-      class.auras[ k ].feign()
-      return t[k]
-
-    elseif class.auras[ k ].id < 0 then
-      local id = -1 * class.auras[ k ].id
-      local name, _, _, duration, expires, spellID, slot = GetRaidBuffTrayAuraInfo( id )
-      local applied = 0
-
-      if name then
-        duration = duration > 0 and duration or 3600
-        expires = expires > 0 and expires or state.now + 3600
-        applied = expires - duration
-      end
-
-      t[k] = {
-        key = k,
-        id = class.auras[ k ].id,
-        name = name, count = name and 1 or 0,
-        expires = expires,
-        applied = applied
-      }
-      return t[k]
-
-    end
-
-    local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( 'player', class.auras[ k ].name )
-
-    if name then
-      if expires == 0 then expires = state.now + 3600 end
-    else
-      t[k] = {
-        key = k,
-        id = class.auras[ k ].id,
-        name = name,
-        count = 0,
-        expires = 0,
-        applied = 0,
-        caster = 'unknown',
-        timeMod = 1,
-        v1 = 0,
-        v2 = 0,
-        v3 = 0
-      }
-      return t[k]
-    end
-
-    t[k] = {
-      key = k,
-      id = spellID,
-      name = name,
-      count = 1,
-      expires = expires,
-      applied = expires - duration,
-      caster = caster,
-      timeMod = 1,
-      v1 = 0,
-      v2 = 0,
-      v3 = 0
-    }
-    return ( t[k] )
-
-  end, __newindex = function(t, k, v)
-    rawset( t, k, setmetatable( v, mt_default_aura ) )
-  end
 }
 ns.metatables.mt_buffs = mt_buffs
 
@@ -2219,82 +2103,75 @@ local mt_equipped = {
 ns.metatables.mt_equipped = mt_equipped
 
 
+local default_debuff_values = {
+    count = 0,
+    expires = 0,
+    applied = 0,
+    duration = 0,
+    caster = 'nobody',
+    timeMod = 1,
+    v1 = 0,
+    v2 = 0,
+    v3 = 0,
+    unit = 'target'
+}
+
+
 -- Table of default handlers for debuffs.
 -- Needs review.
 local mt_default_debuff = {
-  __index = function(t, k)
-    if k == 'name' then
-        if class.auras[ t.key ].elem.feign then
-            class.auras[ t.key ].feign()
-            return t.name
-        end
-        t.name = class.auras[ t.key ].name
-        return t.name
+    __index = function(t, k)
+        local class_aura = class.auras[ t.key ]
 
-    elseif k == 'unit' then
-      t.unit = class.auras[ t.key ].unit or "target"
-      return t.unit
+        if k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then
 
-    elseif k == 'duration' then
-      return class.auras[ t.key ].duration
-    
-    elseif k == 'count' or k == 'expires' or k == 'v1' or k == 'v2' or k == 'v3' then
+            if class_aura.elem.feign then
+                class_aura.feign()
+                return t[ k ]
+            end
 
-        if class.auras[ t.key ].elem.feign then
-            class.auras[ t.key ].feign()
+            local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
+
+            for key, value in pairs( real or default_debuff_values ) do
+                t[ key ] = value
+            end
+
             return t[ k ]
+
+        elseif k == 'up' then
+            return ( t.count > 0 and t.expires > state.query_time )
+
+        elseif k == 'down' then
+            return ( t.count == 0 or t.expires <= state.query_time )
+
+        elseif k == 'remains' then
+            if t.expires > state.query_time then
+                return ( t.expires - state.query_time )
+
+            end
+            return 0
+
+        elseif k == 'refreshable' then
+            return t.remains < 0.3 * ( class_aura.duration or 30 )
+
+        elseif k == 'stack' or k == 'react' then
+            if t.up then return ( t.count ) else return 0 end
+
+        elseif k == 'stack_pct' then
+            if t.up then
+                class_aura.max_stack = max( class_aura.max_stack or 1, t.count )
+                return ( 100 * t.count / class_aura.max_stack )
+            end 
+
+            return 0
+
+        elseif k == 'ticking' then
+            return t.up
+
         end
 
-      local name, _, _, count, _, _, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( t.unit, t.name, nil, 'PLAYER' )
-
-      if name then
-        count = max(1, count)
-        if expires == 0 then expires = state.now + 3600 end
-      end
-
-      t.id = spellID or 0
-      t.count = count or 0
-      t.expires = expires or 0
-      t.caster = caster or 'unknown'
-      t.timeMod = timeMod or 1
-      t.v1 = v1 or 0
-      t.v2 = v2 or 0
-      t.v3 = v3 or 0
-
-      return t[ k ]
-
-    elseif k == 'up' then
-      return ( t.count > 0 and t.expires > ( state.query_time ) )
-
-    elseif k == 'down' then
-      return ( t.count == 0 or t.expires <= ( state.query_time ) )
-
-    elseif k == 'remains' then
-      if t.expires > ( state.query_time ) then
-        return ( t.expires - ( state.query_time ) )
-
-      else
-        return 0
-
-      end
-
-    elseif k == 'refreshable' then
-      return t.remains < 0.3 * class.auras[ t.key ].duration
-
-    elseif k == 'stack' or k == 'react' then
-      if t.up then return ( t.count ) else return 0 end
-
-    elseif k == 'stack_pct' then
-      if t.up then return ( 100 * t.count / t.count ) else return 0 end
-
-    elseif k == 'ticking' then
-      return t.up
-
+        error ("UNK: " .. k)
     end
-
-    error ("UNK: " .. k)
-
-  end
 }
 ns.metatables.mt_default_debuff = mt_default_debuff
 
@@ -2312,50 +2189,41 @@ local unknown_debuff = setmetatable( {
 -- Table of debuffs applied to the target by the player.
 -- Needs review.
 local mt_debuffs = {
-  -- The debuff/ doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
-  __index = function(t, k)
+    -- The debuff/ doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
+    __index = function(t, k)
 
-    if k == 'bloodlust' then -- check for whole list.
+        local class_aura = class.auras[ k ]
 
-    elseif not class.auras[ k ] then
-      return unknown_debuff
+        --[[ if k == 'bloodlust' then -- check for whole list.
 
-    else
+        elseif not class_aura then
+            return unknown_debuff
 
-      if class.auras[ k ].elem.feign then
+        end ]]
+
         t[k] = {
             key = k,
-            name = class.auras[ k ].name
+            name = class_aura.name
         }
-        class.auras[ k ].feign()
+
+        if class_aura.feign then
+            class_aura.feign()
+            return t[k]
+        end
+
+        local real = auras.target.debuff[ k ] or auras.player.debuff[ k ]
+        local debuff = t[k]
+
+        for key, value in pairs( real or default_debuff_values ) do
+            debuff[ key ] = value
+        end
+
         return t[k]
-      end
+    end, 
 
-      local unit = class.auras[ k ].unit or 'target'
-      local name, _, _, count, _, _, expires, _, _, _, _, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, class.auras[ k ].name, nil, 'PLAYER' )
-
-      if name then
-        count = max(1, count)
-        if expires == 0 then expires = state.now + 3600 end
-      end
-
-      t[k] = {
-        key = k,
-        id = class.auras[ k ].id,
-        count = count or 0,
-        expires = expires or 0,
-        unit = unit,
-        timeMod = timeMod or 1,
-        v1 = v1 or 0,
-        v2 = v2 or 0,
-        v3 = v3 or 0
-      }
-      return ( t[k] )
-
+    __newindex = function(t, k, v)
+        rawset( t, k, setmetatable( v, mt_default_debuff ) )
     end
-  end, __newindex = function(t, k, v)
-    rawset( t, k, setmetatable( v, mt_default_debuff ) )
-  end
 }
 ns.metatables.mt_debuffs = mt_debuffs
 
@@ -2629,12 +2497,11 @@ function state.reset( dispID )
 
   for k, v in pairs( state.buff ) do
     if class.auras[ k ].id < 0 then
-      v.name = nil
+        v.name = nil
     end
-    v.caster = nil
-    v.count = nil
-    v.expires = nil
-    v.applied = nil
+    for attr in pairs( default_buff_values ) do
+        v[ attr ] = nil
+    end
   end
 
   for k, v in pairs( state.cooldown ) do
@@ -2653,13 +2520,10 @@ function state.reset( dispID )
   state.trinket.t2.cooldown.duration = nil
   state.trinket.t2.cooldown.expires = nil
 
-  for k in pairs( state.debuff ) do
-    state.debuff[ k ].count = nil
-    state.debuff[ k ].expires = nil
-    state.debuff[ k ].v1 = nil
-    state.debuff[ k ].v2 = nil
-    state.debuff[ k ].v3 = nil
-    state.debuff[ k ].unit = class.auras[ k ] and class.auras[ k ].unit or nil
+  for k, v in pairs( state.debuff ) do
+    for attr in pairs( default_debuff_values ) do
+        v[ attr ] = nil
+    end
   end
 
   state.pet.exists = nil

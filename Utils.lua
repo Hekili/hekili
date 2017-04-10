@@ -41,7 +41,7 @@ end
 
 -- Converts `s' to a SimC-like key: strip non alphanumeric characters, replace spaces with _, convert to lower case.
 function ns.formatKey( s )
-    return ( lower( s or '' ):gsub("[^a-z0-9_ ]", ""):gsub("%s", "_") )
+    return ( lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s", "_" ) )
 end
 
 
