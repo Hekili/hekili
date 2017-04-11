@@ -292,7 +292,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
         addMetaFunction( 'state', 'judgment_override', function()
-            return spec.retribution and ( debuff.judgment.up or ( not settings.strict_finishers and cooldown.judgment.remains > gcd * 2 and holy_power.current >= 5 ) )
+            return spec.retribution and ( debuff.judgment.up or ( not settings.strict_finishers and cooldown.judgment.remains > gcd * 2 ) )
         end )
 
 

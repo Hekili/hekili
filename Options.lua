@@ -128,6 +128,11 @@ local oneTimeFixes = {
         end
     end,
 
+    removeActionListEnabled_04102017 = function( profile )
+        for a, list in ipairs( profile.actionLists ) do
+            list.Enabled = nil
+        end
+    end,
 }
 
 
@@ -2458,13 +2463,6 @@ ns.newActionListOption = function( index )
     end,
     order = 10 + index,
     args = {
-      Enabled = {
-        type = 'toggle',
-        name = 'Enabled',
-        desc = "Enable or disable this action list for processing in all displays.",
-        order = 1,
-        width = 'double',
-      },
       Default = {
         type = 'toggle',
         name = 'Default',
@@ -2883,7 +2881,7 @@ ns.newActionOption = function( aList, index )
       },
       ModName = {
         type = 'select',
-        name = "Ability Settings",
+        name = "Select a Value",
         desc = "Select the appropriate option for the chosen ability.",
         order = 09,
         values = function( info )
@@ -2917,6 +2915,20 @@ ns.newActionOption = function( aList, index )
         end,
         width = "double"
       },
+      ModVarName = {
+        type = 'input',
+        name = "Variable Name",
+        desc = "Enter a name for this stored value (the value will be referenced elsewhere in the action list by this name).",
+        order = 09,
+        width = "double",
+        hidden = function( info )
+            local action = getActionEntry( info )
+
+            if action.Ability == 'variable' then return false end
+
+            return true
+        end,
+      },
 
       Script = {
         type = 'input',
@@ -2937,11 +2949,10 @@ ns.newActionOption = function( aList, index )
         multiline = 6,
         order = 20,
         width = 'full',
-        --[[ hidden = function (info)
-          local listKey, actKey = info[2], info[3]
-          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+        --[[ hidden = function( info )
+            local action = getActionEntry( info )
 
-          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType == 'time'
+            return action.Ability == 'variable'
         end, ]]
       },
       whenReady = {
@@ -2964,6 +2975,11 @@ ns.newActionOption = function( aList, index )
           if value == nil then value = 'auto' end
 
           return value
+        end,
+        hidden = function( info )
+          local action = getActionEntry( info )
+
+          return action.Ability == 'variable' or action.Ability == 'call_action_list' or action.Ability == 'run_action_list'
         end,
       },
       ReadyTime = {
@@ -3010,27 +3026,11 @@ ns.newActionOption = function( aList, index )
           return results
         end,
         hidden = function (info)
-          local listKey, actKey = info[2], info[3]
-          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+          local action = getActionEntry( info )
 
-          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].whenReady ~= 'script'
+          return action.whenReady ~= 'script' or action.Ability == 'variable' or action.Ability == 'call_action_list' or action.Ability == 'run_action_list'
         end,
         width = 'full',
-      },
-      ReadyTimeDescription = {
-        type = 'description',
-        name = "|cFFFFD100Time Script:|r\n" ..
-            "This is an experimental feature that allows an action list author to provide additional information " ..
-            "about |cFF00D1D1when|r the criteria will be met for this ability.  While the |cFFFFD100Conditions|r are " ..
-            "checked when the ability is ready, a proper |cFFFFD100Time Script|r script will tell the addon |cFF00D1D1when|r " ..
-            "the ability will be ready *and* its Conditions will be met.",
-        hidden = function (info)
-          local listKey, actKey = info[2], info[3]
-          local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
-
-          return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType ~= 'time'
-        end,
-        order = 22,
       },
       ShowModifiers = {
         type = 'toggle',
@@ -3633,7 +3633,6 @@ ns.SimulationCraftImporter = function ()
 
               local list = Hekili.DB.profile.actionLists[ target ]
               list.Name = importerOpts.prefix .. ': ' .. new_list
-              list.Enabled = true
 
               if import then
                 for i, entry in ipairs( import ) do
@@ -3651,7 +3650,13 @@ ns.SimulationCraftImporter = function ()
                   action.MaximumTargets = entry.MaximumTargets
                   action.CheckMovement = entry.CheckMovement or false
                   action.Moving = entry.Moving
-                  action.ModName = entry.ModName or ''
+                  if action.Ability == 'variable' then
+                    action.ModVarName = entry.ModName or ''
+                    action.ModName = ''
+                  else
+                    action.ModName = entry.ModName or ''
+                    action.ModVarName = ''
+                  end
 
                   --[[ if entry.Args then
                     local cycle = entry.Args:match("cycle_targets=1")
@@ -6526,6 +6531,9 @@ local function storeModifier( entry, key, value )
 
     elseif key == 'name' then
         entry.ModName = value
+
+    elseif key == 'value' then -- for 'variable' type, overwrites Script
+        entry.Script = value
 
     end
 

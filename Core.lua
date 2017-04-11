@@ -411,7 +411,17 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                         if debug then self:Debug( "This action is not available in time for consideration ( %.2f vs. %.2f ).  Skipping.", wait_time, chosen_wait ) end
                     else
                         -- APL checks.
-                        if entry.Ability == 'call_action_list' or entry.Ability == 'run_action_list' then
+                        if entry.Ability == 'variable' then
+                            local aScriptValue = checkScript( 'A', scriptID )
+
+                            local varName = state.args.ModVarName or state.args.name
+
+                            if varName ~= nil and aScriptValue ~= nil then
+                                print( "Setting", varName, "to", tostring( aScriptValue ) )
+                                state.variable[ varName ] = aScriptValue
+                            end
+
+                        elseif entry.Ability == 'call_action_list' or entry.Ability == 'run_action_list' then
                             -- We handle these here to avoid early forking between starkly different APLs.
                             local aScriptPass = true
 
@@ -636,6 +646,10 @@ function Hekili:ProcessHooks( dispID, solo )
                     local attempts = 0
 
                     if debug then self:Debug( "\n[ ** ] Checking for recommendation #%d ( time offset: %.2f ).", i, state.offset ) end
+
+                    for k in pairs( state.variable ) do
+                        state.variable[ k ] = nil
+                    end
 
                     if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
                         -- We have a precombat display and combat hasn't started.

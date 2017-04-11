@@ -115,7 +115,10 @@ local Specializations = {
 
   warrior_arms = 71,
   warrior_fury = 72,
-  warrior_protection = 73
+  warrior_protection = 73,
+
+  demonhunter_havoc = 577,
+  demonhunter_vengeance = 581
 }
 
 ns.getSpecializationID = function ( key )
@@ -168,6 +171,9 @@ local SpecializationKeys = {
   [71] = 'arms',
   [72] = 'fury',
   [73] = 'protection',
+
+  [577] = 'havoc',
+  [581] = 'vengeance'
 }
 
 ns.getSpecializationKey = function ( id )

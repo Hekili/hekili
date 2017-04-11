@@ -828,6 +828,16 @@ addAbility( 'use_item', {
 
 class.items = {
 } ]]
+
+
+addAbility( 'variable', {
+    id = -5,
+    name = 'Store Value',
+    spend = 0,
+    cast = 0,
+    gcdType = 'off',
+    cooldown = 0,
+} )
     
     
 class.trinkets = {
@@ -1916,7 +1926,7 @@ ns.restoreDefaults = function( category, purge )
             end
             if disable then
                 list.Default = false
-                list.Enabled = false
+                -- list.Enabled = false
             end
         end
     end

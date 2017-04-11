@@ -18,6 +18,7 @@ Events.lua
 Classes.lua
 Classes\Paladin.lua
 Classes\Shaman.lua
+Classes\DemonHunter.lua
 Targets.lua
 Options.lua
 UI.lua

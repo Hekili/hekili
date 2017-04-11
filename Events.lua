@@ -128,9 +128,9 @@ ns.cacheCriteria = function()
 
     for i, list in ipairs( Hekili.DB.profile.actionLists ) do
 
-        if list.Enabled == nil then list.Enabled = true end
+        -- if list.Enabled == nil then list.Enabled = true end
 
-        ns.visible.list[ i ] = list.Enabled and ( list.Specialization == 0 or list.Specialization == state.spec.id )
+        ns.visible.list[ i ] = ( list.Specialization == 0 or list.Specialization == state.spec.id )
 
         for j, action in ipairs( list.Actions ) do
             ns.visible.action[ i..':'..j ] = action.Enabled and action.Ability

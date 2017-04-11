@@ -180,6 +180,10 @@ state.using_apl = setmetatable( {}, {
   end
 } )
 
+
+state.variable = {}
+
+
 state.role = setmetatable( {}, {
   __index = function( t, k )
     return false
@@ -1692,6 +1696,9 @@ local mt_resource = {
     if k == 'pct' or k == 'percent' then
         return 100 * ( t.current / t.max )
 
+    elseif k == 'deficit_pct' or k == 'deficit_percent' then
+        return 100 - t.pct
+
     elseif k == 'current' then
       -- This accommodates testing energy levels after a delay (i.e., use 'jab' in 3 seconds, conditions need to know energy at that time).
       if t.resource == 'energy' or t.resource == 'focus' then
@@ -1773,7 +1780,6 @@ local mt_default_buff = {
 
                 t.unit = real.unit
             else
-
                 for attr, a_val in pairs( default_buff_values ) do
                     t[ attr ] = a_val
                 end
@@ -1799,7 +1805,7 @@ local mt_default_buff = {
           return t.remains < 0.3 * t.duration
 
         elseif k == 'cooldown_remains' then
-          return state.cooldown[ t.key ].remains
+          return state.cooldown[ t.key ] and state.cooldown[ t.key ].remains or 0
 
         elseif k == 'max_stack' then
           return class.auras[ t.key ].max_stack or 1
@@ -1824,6 +1830,7 @@ ns.metatables.mt_default_buff = mt_default_buff
 
 
 local unknown_buff = setmetatable( {
+    key = 'unknown_buff',
     count = 0,
     duration = 0,
     expires = 0,
@@ -1834,6 +1841,7 @@ local unknown_buff = setmetatable( {
     v2 = 0,
     v3 = 0
 }, mt_default_buff )
+
 
 -- This will currently accept any key and make an honest effort to find the buff on the player.
 -- Unfortunately, that means a buff.dog_farts.up check will actually get a return value.
@@ -2194,12 +2202,10 @@ local mt_debuffs = {
 
         local class_aura = class.auras[ k ]
 
-        --[[ if k == 'bloodlust' then -- check for whole list.
-
-        elseif not class_aura then
+        if not class_aura then
             return unknown_debuff
 
-        end ]]
+        end
 
         t[k] = {
             key = k,
@@ -2496,9 +2502,6 @@ function state.reset( dispID )
   end
 
   for k, v in pairs( state.buff ) do
-    if class.auras[ k ].id < 0 then
-        v.name = nil
-    end
     for attr in pairs( default_buff_values ) do
         v[ attr ] = nil
     end
