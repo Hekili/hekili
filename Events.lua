@@ -788,7 +788,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
 
         if offhand and time > sw.oh_actual and sw.oh_speed then
             sw.oh_actual = time
-            sw.oh_speed = select( 2, UnitAttackSpeed( 'player' ) )
+            sw.oh_speed = select( 2, UnitAttackSpeed( 'player' ) ) or sw.oh_speed
             sw.oh_projected = sw.oh_actual + sw.oh_speed
 
         elseif not offhand and time > sw.mh_actual then
