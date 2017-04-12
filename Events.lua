@@ -668,7 +668,9 @@ local function scrapeUnitAuras( unit )
         local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
         if not name then break end
 
-        local key = class.auras[ spellID ] and class.auras[ spellID ].key or autoAuraKey[ spellID ]
+        local key = class.auras[ spellID ] and class.auras[ spellID ].key
+        if not key then key = class.auras[ name ] and class.auras[ name ].key end
+        if not key then key = autoAuraKey[ spellID ] end
 
         if key then 
             db.buff[ key ] = db.buff[ key ] or {}
@@ -700,10 +702,12 @@ local function scrapeUnitAuras( unit )
 
     i = 1
     while ( true ) do
-        local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i )
+        local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, "PLAYER" )
         if not name then break end
 
-        local key = class.auras[ spellID ] and class.auras[ spellID ].key or autoAuraKey[ spellID ]
+        local key = class.auras[ spellID ] and class.auras[ spellID ].key
+        if not key then key = class.auras[ name ] and class.auras[ name ].key end
+        if not key then key = autoAuraKey[ spellID ] end
 
         if key then 
             db.debuff[ key ] = db.debuff[ key ] or {}

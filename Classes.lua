@@ -285,12 +285,13 @@ local function addAura( key, id, ... )
         ns.commitKey( key )
 
         -- Add the elements, front-loading defaults and just overriding them if something else is specified.
-        storeAuraElements( key, 'name', GetSpellInfo( id ), 'duration', 30, 'max_stack', 1, ... )
+        storeAuraElements( key, 'name', name, 'duration', 30, 'max_stack', 1, ... )
         
     end
     
-    -- Allow reference by ID as well.
-    class.auras[ id ] = class.auras[ key ] 
+    -- Allow reference by ID and name as well.
+    class.auras[ id ] = class.auras[ key ]
+    if name then class.auras[ name ] = class.auras[ key ] end
     
 end
 ns.addAura = addAura
