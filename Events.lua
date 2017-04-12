@@ -591,7 +591,6 @@ end ) ]]
 
 
 
-RegisterEvent( "PLAYER_TARGET_CHANGED", forceUpdate )
 RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
 RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
 
@@ -633,7 +632,6 @@ local autoAuraKey = setmetatable( {}, {
 
 local function scrapeUnitAuras( unit )
 
-    local i = 1
     local db = ns.auras[ unit ]
     
     for k,v in pairs( db.buff ) do
@@ -665,6 +663,7 @@ local function scrapeUnitAuras( unit )
         v.unit = unit
     end
 
+    local i = 1
     while ( true ) do
         local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
         if not name then break end
@@ -699,6 +698,7 @@ local function scrapeUnitAuras( unit )
         i = i + 1
     end
 
+    i = 1
     while ( true ) do
         local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i )
         if not name then break end
@@ -739,6 +739,11 @@ RegisterUnitEvent( "UNIT_AURA", function( event, unit )
     scrapeUnitAuras( unit )
     forceUpdate( event )
 end, 'player', 'target' )
+
+RegisterEvent( "PLAYER_TARGET_CHANGED", function ()
+    scrapeUnitAuras( 'target' )
+    forceUpdate()
+end )
 
 
 -- Use dots/debuffs to count active targets.

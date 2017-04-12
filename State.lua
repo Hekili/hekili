@@ -815,9 +815,6 @@ local mt_state = {
     elseif k == 'active' then
       return false
 
-    elseif k == 'active_flame_shock' then
-      return ns.numDebuffs( 'Flame Shock' )
-
     elseif k == 'active_enemies' then
         -- The above is not needed as the nameplate target system will add missing enemies.
         t[k] = ns.getNumberTargets()
