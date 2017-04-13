@@ -26,7 +26,8 @@ local lower, match, upper = string.lower, string.match, string.upper
 
 local events = CreateFrame( "Frame" )
 local handlers = {}
-local unitEvents = {}
+local unitEvents = CreateFrame( "Frame" )
+local unitHandlers = {}
 
 ns.displayUpdates = {}
 local lastRefresh = {}
@@ -39,6 +40,16 @@ function ns.StartEventHandler()
 
     events:SetScript( "OnEvent", function( self, event, ... )
         local eventHandlers = handlers[ event ]
+
+        if not eventHandlers then return end
+
+        for i, handler in pairs( eventHandlers ) do
+            handler( event, ... )
+        end
+    end )
+
+    unitEvents:SetScript( "OnEvent", function( self, event, ... )
+        local eventHandlers = unitHandlers[ event ]
 
         if not eventHandlers then return end
 
@@ -71,6 +82,7 @@ end
 function ns.StopEventHandler()
 
     events:SetScript( "OnEvent", nil )
+    unitEvents:SetScript( "OnEvent", nil )
     events:SetScript( "OnUpdate", nil )
 
 end
@@ -87,12 +99,14 @@ end
 local RegisterEvent = ns.RegisterEvent
 
 
+-- For our purposes, all UnitEvents are player/target oriented.
 ns.RegisterUnitEvent = function( event, handler, u1, u2 )
 
-    handlers[ event ] = handlers[ event ] or {}
-    table.insert( handlers[ event ], handler )
+    unitHandlers[ event ] = unitHandlers[ event ] or {}
 
-    events:RegisterUnitEvent( event, u1, u2 )
+    table.insert( unitHandlers[ event ], handler )
+
+    unitEvents:RegisterUnitEvent( event, 'player', 'target' )
 
 end
 local RegisterUnitEvent = ns.RegisterUnitEvent
@@ -156,10 +170,10 @@ RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
     ns.checkImports()
 end )
 
-RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( _, unit )
+RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function ()
     ns.specializationChanged()
     ns.checkImports()
-end, 'player' )
+end )
 
 RegisterEvent( "BARBER_SHOP_OPEN", function ()
     Hekili.Barber = true
@@ -489,7 +503,7 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
     -- This is an ability with a travel time.
     if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
 
-        local lands = 0.05
+        local lands = latency
 
         -- If we have a hostile target, we'll assume we're waiting for them to get hit.
         if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
@@ -510,7 +524,49 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
 
 end
 
--- RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", spellcastEvents, 'player' )
+
+-- Need to make caching system.
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
+    if unit ~= 'player' then return end
+
+    local now = GetTime()
+    local ability = class.abilities[ spellID ]
+
+    if not class.castExclusions[ spellID ] then
+
+        state.player.queued_ability = ability and ability.key or dynamic_keys[ spellID ]
+        state.player.queued_time = now
+
+        state.player.queued_gcd = ability and ( ability.gcdType ~= 'off' ) or nil
+        state.player.queued_off = ability and ( ability.gcdType == 'off' ) or nil
+
+        if ability then
+            local lands = state.latency or 0.05
+
+            if ability.velocity and UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
+                -- Let's presume that the target is at max range.
+                local _, range = RC:GetRange( 'target' )
+
+                if range then
+                    lands = range > 0 and range / ability.velocity or state.latency
+                end
+            end
+
+            state.player.queued_tt = lands
+        end
+    end
+
+    forceUpdate( event, true )
+
+    --[[ local ability = class.abilities[ spellID ] and class.abilities[ spellID ].key
+
+    if ability then
+        if state.queued_ability and state.queued_ability == ability then
+            -- do nothing, we already tried this.
+    if state.queued_ability and 
+    forceUpdate() ]]
+end )
+
 -- RegisterUnitEvent( "UNIT_SPELLCAST_START", spellcastEvents, 'player' )
 
 
@@ -553,6 +609,8 @@ local spell_names = setmetatable( {}, {
 
 
 RegisterUnitEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
+    if unit ~= 'player' then return end
+
     if power == "FOCUS" and state.focus then
         local now = GetTime()
         local elapsed = now - state.focus.last_tick
@@ -578,10 +636,8 @@ RegisterUnitEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
 
     end
 
-    -- if abs( power ) > 2 then
-        forceUpdate( event )
-    -- end
-end, 'player' )
+    forceUpdate( event )
+end )
 
 --[[ RegisterEvent( "UNIT_POWER", function( event, unit, power )
     if unit == 'player' then
@@ -741,12 +797,13 @@ end
 
 RegisterUnitEvent( "UNIT_AURA", function( event, unit )
     scrapeUnitAuras( unit )
-    forceUpdate( event )
-end, 'player', 'target' )
+    forceUpdate( event, true )
+end )
 
-RegisterEvent( "PLAYER_TARGET_CHANGED", function ()
+
+RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
     scrapeUnitAuras( 'target' )
-    forceUpdate()
+    forceUpdate( event, true )
 end )
 
 
@@ -773,7 +830,14 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
     end
 
     if sourceGUID == state.GUID and ( subtype == 'SPELL_CAST_SUCCESS' or subtype == 'SPELL_CAST_START' ) then
-        if subtype == 'SPELL_CAST_SUCCESS' then spellcastEvents( subtype, sourceGUID, spellName, _, _, spellID ) end
+        if subtype == 'SPELL_CAST_SUCCESS' then
+            spellcastEvents( subtype, sourceGUID, spellName, _, _, spellID )
+            state.player.queued_ability = nil
+            state.player.queued_time = nil
+            state.player.queued_tt = nil
+            state.player.queued_gcd = nil
+            state.player.queued_off = nil
+        end
         forceUpdate( subtype, true )
     end
 
@@ -859,7 +923,9 @@ end )
 
 
 
-RegisterUnitEvent( "UNIT_COMBAT", function( event, unitID, action, descriptor, damage, damageType )
+RegisterUnitEvent( "UNIT_COMBAT", function( event, unit, action, descriptor, damage, damageType )
+
+    if unit ~= 'player' then return end
 
     if damage > 0 then
         if action == 'WOUND' then
@@ -869,11 +935,11 @@ RegisterUnitEvent( "UNIT_COMBAT", function( event, unitID, action, descriptor, d
         end
     end
         
-end, 'player' )
+end )
 
 
 -- Time to die calculations.
-RegisterUnitEvent( "UNIT_HEALTH", function( _, unit )
+RegisterEvent( "UNIT_HEALTH", function( event, unit )
 
     if not unit then return end
 
@@ -925,7 +991,7 @@ RegisterUnitEvent( "UNIT_HEALTH", function( _, unit )
 
     ttd.sec = projectedTTD
 
-end, 'player' )
+end )
 
 
 

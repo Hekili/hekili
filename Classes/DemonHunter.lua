@@ -149,12 +149,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         -- Fake Buffs.
         RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, spellID )
 
+            if unit ~= 'player' then return end
+
             if spell == class.abilities[ 'darkness' ].name then
                 state.last_darkness = GetTime()
             
             end
 
-        end, 'player' )
+        end )
 
 
         -- Pick an instant cast ability for checking the GCD.

@@ -35,6 +35,7 @@ local setPotion = ns.setPotion
 local setRole = ns.setRole
 
 local RegisterEvent = ns.RegisterEvent
+local RegisterUnitEvent = ns.RegisterUnitEvent
 local storeDefault = ns.storeDefault
 
 
@@ -161,7 +162,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         registerCustomVariable( 'last_ascendance', 0 )
         registerCustomVariable( 'last_totem_mastery', 0 )
 
-        RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, spellID )
+        RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, spellID )
 
             if unit ~= 'player' then return end
 

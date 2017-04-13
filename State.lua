@@ -1631,18 +1631,36 @@ local mt_prev_lookup = {
             -- Check predictions first.
             if state.predictions[ idx ] then return state.predictions[ idx ] == k end
             -- There isn't a prediction for that entry yet, go back to actual collected data.
+            if state.player.queued_ability then
+                if idx == #state.predictions + 1 then
+                    return state.player.queued_ability
+                end
+                return ns.castsAll[ idx - #state.predictions + 1 ]
+            end
             return ns.castsAll[ idx - #state.predictions ] == k
 
         elseif t.meta == 'castsOn' then
             -- Check predictions first.
             if state.predictionsOn[ idx ] then return state.predictionsOn[ idx ] == k end
             -- There isn't a prediction for that entry yet, go back to actual collected data.
+            if state.player.queued_ability and state.player.queued_gcd then
+                if idx == np + 1 then
+                    return state.player.queued_ability
+                end
+                return ns.castsOn[ idx - #state.predictionsOn + 1 ]
+            end
             return ns.castsOn[ idx - #state.predictionsOn ] == k
 
         end
 
         -- castsOff
         if state.predictionsOff[ idx ] then return state.predictionsOff[ idx ] == k end
+        if state.player.queued_ability and state.player.queued_off then
+            if idx == np + 1 then
+                return state.player.queued_ability
+            end
+            return ns.castsOff[ idx - #state.predictionsOff + 1 ]
+        end
         return ns.castsOff[ idx - #state.predictionsOff ] == k
 
     end
@@ -2686,7 +2704,7 @@ function state.advance( time )
     for i = #projected, 1, -1 do
         local proj = projected[i]
 
-        if proj.time > state.query_time and proj.time < state.query_time + time then
+        if proj.time > state.query_time and proj.time <= state.query_time + time then
             state.offset = proj.time - state.query_time
             ns.runHandler( proj.spell, true )
         else
@@ -2694,7 +2712,7 @@ function state.advance( time )
         end
     end
 
-    offset = saved_offset
+    state.offset = saved_offset
   end
 
   state.offset = state.offset + time
