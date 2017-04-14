@@ -133,6 +133,28 @@ local oneTimeFixes = {
             list.Enabled = nil
         end
     end,
+
+    removeExtraQuotes_04142017_3 = function( profile )
+        for a, list in ipairs( profile.actionLists ) do
+            for _, entry in ipairs( list.Actions ) do
+                if entry.ModName then entry.ModName = entry.ModName:gsub( [["(.*)"]], [[%1]] ) end
+            end
+        end
+    end,
+
+    spruceUpActionListNames_04142017 = function( profile )
+        for _, list in ipairs( profile.actionLists ) do
+            for _, entry in ipairs( list.Actions ) do
+                if entry.Args and entry.Args:match( "name=" ) then
+                    if entry.Ability == 'variable' and not entry.ModVarName then
+                        entry.ModVarName = entry.Args:match( [[name="(.-)"]] )
+                    else
+                        entry.ModName = entry.Args:match( [[name="(.-)"]] )
+                    end
+                end
+            end
+        end
+    end,
 }
 
 
@@ -2890,11 +2912,11 @@ ns.newActionOption = function( aList, index )
 
             if action.Ability == 'call_action_list' or action.Ability == 'run_action_list' then
                 for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                    opts[ '"' .. list.Name .. '"' ] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
+                    opts[ list.Name ] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
                 end
             elseif action.Ability == 'potion' then
                 for key, potion in pairs( class.potions ) do
-                    opts[ '"' .. key .. '"' ] = GetItemInfo( potion.item )
+                    opts[ key ] = GetItemInfo( potion.item )
                 end
             end
 
@@ -5652,6 +5674,7 @@ function Hekili:SetOption( info, input, ... )
             action.CheckMovement = entry.CheckMovement or false
             action.Movement = entry.Movement
             action.ModName = entry.ModName or ''
+            action.ModVarName = entry.ModVarName or ''
 
             --[[ if entry.Args and entry.Args:match("cycle_targets=1") then
               action.Indicator = "cycle"
@@ -6530,7 +6553,9 @@ local function storeModifier( entry, key, value )
         entry.Moving = tonumber( value )
 
     elseif key == 'name' then
-        entry.ModName = value
+        entry.ModName = value:match( [["(.*)"]] ) or value
+        entry.ModVarName = value:match( [["(.*)"]] ) or value
+
 
     elseif key == 'value' then -- for 'variable' type, overwrites Script
         entry.Script = value

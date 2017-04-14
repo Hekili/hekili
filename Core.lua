@@ -452,7 +452,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                                         stop = entry == 'run_action_list'
                                         calledList = true
                                     else
-                                        if debug then self:Debug( "The action list for %s ( %s ) was not found.", entry.Ability, aList ) end
+                                        if debug then self:Debug( "The action list for %s ( %s ) was not found - %s / %s.", entry.Ability, aList, entry.ModName or "nil", state.args.name or "nil" ) end
                                     end
                                 end
 

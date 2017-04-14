@@ -498,7 +498,7 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
     -- This is an ability with a travel time.
     if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
 
-        local lands = latency
+        local lands = state.latency or 0.05
 
         -- If we have a hostile target, we'll assume we're waiting for them to get hit.
         if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
@@ -506,7 +506,7 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
             local _, range = RC:GetRange( 'target' )
 
             if range then
-                lands = range > 0 and range / class.abilities[ spellID ].velocity or 0.05
+                lands = range > 0 and ( range / class.abilities[ spellID ].velocity ) or lands
             end
         end
 
