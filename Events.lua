@@ -65,15 +65,16 @@ function ns.StartEventHandler()
         end
 
         local updatePeriod = state.combat == 0 and 1 or ( 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 ) )
-        local once = false        
+
         for i = 1, #Hekili.DB.profile.displays do
             if not displayUpdates[i] then
-                -- if not once then print( GetTime(), "ProcessHooks" ); once = true end
                 Hekili:ProcessHooks( i )
                 lastRefresh[i] = now
+
             elseif ( not lastRefresh[i] or now - lastRefresh[i] >= updatePeriod ) then
                 Hekili:ProcessHooks( i )
                 lastRefresh[i] = now
+
             end
         end
 
@@ -647,125 +648,19 @@ local autoAuraKey = setmetatable( {}, {
     end
 } )
 
--- 04072017:  Let's go ahead and cache aura information to reduce overhead.
-
-local function scrapeUnitAuras( unit )
-
-    local db = ns.auras[ unit ]
-    
-    for k,v in pairs( db.buff ) do
-        v.name = nil
-        v.count = 0
-        v.expires = 0
-        v.applied = 0
-        v.duration = class.auras[ k ] and class.auras[ k ].duration or 0
-        v.caster = 'nobody'
-        v.timeMod = 1
-        v.v1 = 0
-        v.v2 = 0
-        v.v3 = 0
-        v.unit = unit
-    end
-
-
-    for k,v in pairs( db.debuff ) do
-        v.name = nil
-        v.count = 0
-        v.expires = 0
-        v.applied = 0
-        v.duration = class.auras[ k ] and class.auras[ k ].duration or 0
-        v.caster = 'nobody'
-        v.timeMod = 1
-        v.v1 = 0
-        v.v2 = 0
-        v.v3 = 0
-        v.unit = unit
-    end
-
-    local i = 1
-    while ( true ) do
-        local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
-        if not name then break end
-
-        local key = class.auras[ spellID ] and class.auras[ spellID ].key
-        if not key then key = class.auras[ name ] and class.auras[ name ].key end
-        if not key then key = autoAuraKey[ spellID ] end
-
-        if key then 
-            db.buff[ key ] = db.buff[ key ] or {}
-            local buff = db.buff[ key ]
-
-            if expires == 0 then
-                expires = GetTime() + 3600
-                duration = 7200
-            end
-
-            buff.key = key
-            buff.id = spellID
-            buff.name = name
-            buff.count = count > 0 and count or 1
-            buff.expires = expires
-            buff.duration = duration
-            buff.applied = expires - duration
-            buff.caster = caster
-            buff.timeMod = timeMod
-            buff.v1 = v1
-            buff.v2 = v2
-            buff.v3 = v3
-
-            buff.unit = unit
-        end
-
-        i = i + 1
-    end
-
-    i = 1
-    while ( true ) do
-        local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, "PLAYER" )
-        if not name then break end
-
-        local key = class.auras[ spellID ] and class.auras[ spellID ].key
-        if not key then key = class.auras[ name ] and class.auras[ name ].key end
-        if not key then key = autoAuraKey[ spellID ] end
-
-        if key then 
-            db.debuff[ key ] = db.debuff[ key ] or {}
-            local debuff = db.debuff[ key ]
-
-            if expires == 0 then
-                expires = GetTime() + 3600
-                duration = 7200
-            end
-
-            debuff.key = key
-            debuff.id = spellID
-            debuff.name = name
-            debuff.count = count > 0 and count or 1
-            debuff.expires = expires
-            debuff.applied = expires - duration
-            debuff.caster = caster
-            debuff.timeMod = timeMod
-            debuff.v1 = v1
-            debuff.v2 = v2
-            debuff.v3 = v3
-
-            debuff.unit = unit
-        end
-
-        i = i + 1
-    end
-
-end
-
 
 RegisterUnitEvent( "UNIT_AURA", function( event, unit )
-    scrapeUnitAuras( unit )
-    forceUpdate( event, true )
+    if unit == 'player' then
+        state.player.updated = true
+        forceUpdate( event, true )
+    else
+        state.target.updated = true
+    end
 end )
 
 
 RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
-    scrapeUnitAuras( 'target' )
+    state.target.updated = true
     forceUpdate( event, true )
 end )
 
