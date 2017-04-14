@@ -6648,22 +6648,25 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
 end
 
 
+
 local forceUpdate = ns.forceUpdate
-
-
 local warnOnce = false
 
 -- Key Bindings
 function Hekili:TogglePause()
 
     if not self.Pause then
-        if Hekili.DB.profile.Debug then
-            Hekili:SaveDebugSnapshot()
-            Hekili:Print( "Snapshot saved." )
-            if not warnOnce then
-                Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
-                warnOnce = true
-            end
+        Hekili.ActiveDebug = true
+        for i = 1, #Hekili.DB.profile.displays do
+            Hekili:ProcessHooks( i )
+        end
+        Hekili.ActiveDebug = false
+        Hekili:UpdateDisplays()
+        Hekili:SaveDebugSnapshot()
+        Hekili:Print( "Snapshot saved." )
+        if not warnOnce then
+            Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
+            warnOnce = true
         end
     end
 

@@ -327,7 +327,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
     local display = self.DB.profile.displays[ dispID ]
     local list = self.DB.profile.actionLists[ listID ]
 
-    local debug = self.DB.profile.Debug
+    local debug = self.ActiveDebug
 
     -- if debug then self:Debug( "Testing action list [ %d - %s ].", listID, list and list.Name or "ERROR - Does Not Exist"  ) end
     if debug then self:Debug( "Previous Recommendation:  %s at +%.2fs, clash is %.2f.", action or "NO ACTION", wait or 30, clash or 0 ) end
@@ -414,10 +414,11 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                         if entry.Ability == 'variable' then
                             local aScriptValue = checkScript( 'A', scriptID )
 
-                            local varName = state.args.ModVarName or state.args.name
+                            local varName = entry.ModVarName or state.args.name
+
+                            if debug then self:Debug( "Will attempt to store value " .. tostring( aScriptValue ) .. " in variable '%s'", varName or "MISSING" ) end
 
                             if varName ~= nil and aScriptValue ~= nil then
-                                print( "Setting", varName, "to", tostring( aScriptValue ) )
                                 state.variable[ varName ] = aScriptValue
                             end
 
@@ -433,7 +434,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
 
                             if aScriptPass then
 
-                                local aList = state.args.ModName or state.args.name
+                                local aList = entry.ModName or state.args.name
 
                                 if aList then
                                     -- check to see if we have a real list name.
@@ -609,7 +610,7 @@ function Hekili:ProcessHooks( dispID, solo )
 
             state.reset( dispID )
 
-            local debug = self.DB.profile.Debug
+            local debug = self.ActiveDebug
 
             if debug then self:SetupDebug( display.Name ) end
 

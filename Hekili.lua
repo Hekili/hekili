@@ -148,7 +148,7 @@ local current_display
 
 function Hekili:SetupDebug( display )
 
-    if not self.DB.profile.Debug then return end
+    if not self.DB.profile.Debug and not self.ActiveDebug then return end
     if not display then return end
 
     current_display = display
@@ -166,7 +166,7 @@ end
 
 function Hekili:Debug( ... )
 
-    if not Hekili.DB.profile.Debug then return end
+    if not self.DB.profile.Debug and not self.ActiveDebug then return end
     if not active_debug then return end
 
     active_debug.log[ active_debug.index ] = format( ... )

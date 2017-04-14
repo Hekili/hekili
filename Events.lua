@@ -30,11 +30,10 @@ local unitEvents = CreateFrame( "Frame" )
 local unitHandlers = {}
 
 ns.displayUpdates = {}
+
 local lastRefresh = {}
 local lastRecount = 0
 local displayUpdates = ns.displayUpdates
-
-local refreshes = {}
 
 function ns.StartEventHandler()
 
@@ -65,14 +64,19 @@ function ns.StartEventHandler()
             ns.recountTargets()
         end
 
-        local updatePeriod = state.boss and 1 or ( 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 ) )
-        
+        local updatePeriod = state.combat == 0 and 1 or ( 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 ) )
+        local once = false        
         for i = 1, #Hekili.DB.profile.displays do
-            if not displayUpdates[i] or not lastRefresh[i] or now - lastRefresh[i] >= updatePeriod then
+            if not displayUpdates[i] then
+                -- if not once then print( GetTime(), "ProcessHooks" ); once = true end
+                Hekili:ProcessHooks( i )
+                lastRefresh[i] = now
+            elseif ( not lastRefresh[i] or now - lastRefresh[i] >= updatePeriod ) then
                 Hekili:ProcessHooks( i )
                 lastRefresh[i] = now
             end
         end
+
         Hekili:UpdateDisplays()
     end )
 
@@ -410,19 +414,11 @@ end )
 
 RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
     state.combat = GetTime()
-    for i in ipairs( refreshes ) do
-        refreshes[i] = 0
-    end
 end )
 
 
 RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     ns.updateGear()
-    --[[ for i, v in ipairs( refreshes ) do
-        local freq = v / ( GetTime() - state.combat )
-        local output = format( "Display #%d - %d updates, %.2f per second.", i, v, freq )
-        print( output )
-    end ]]
     state.combat = 0
 end )
 
@@ -450,21 +446,20 @@ local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 local function forceUpdate( from, super )
 
-    if super then
-        for i = 1, #Hekili.DB.profile.displays do
-            displayUpdates[ i ] = nil
-        end
-        return
+    for i = 1, #Hekili.DB.profile.displays do
+        displayUpdates[ i ] = nil
     end
 
-    local updatePeriod = 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 )
+    return
+
+    --[[ local updatePeriod = 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 )
     local now = GetTime()
 
-    local new_delay = GetTime() - updatePeriod
+    local new_delay = now - updatePeriod
 
     for i = 1, #Hekili.DB.profile.displays do
-        displayUpdates[ i ] = displayUpdates[ i ] and min( displayUpdates[ i ], new_delay )
-    end
+        lastRefresh[ i ] = lastRefresh[ i ] and min( lastRefresh[ i ], new_delay )
+    end ]]
 end
 
 ns.forceUpdate = forceUpdate
@@ -527,44 +522,7 @@ end
 
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
-    if unit ~= 'player' then return end
-
-    local now = GetTime()
-    local ability = class.abilities[ spellID ]
-
-    if not class.castExclusions[ spellID ] then
-
-        state.player.queued_ability = ability and ability.key or dynamic_keys[ spellID ]
-        state.player.queued_time = now
-
-        state.player.queued_gcd = ability and ( ability.gcdType ~= 'off' ) or nil
-        state.player.queued_off = ability and ( ability.gcdType == 'off' ) or nil
-
-        if ability then
-            local lands = state.latency or 0.05
-
-            if ability.velocity and UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
-                -- Let's presume that the target is at max range.
-                local _, range = RC:GetRange( 'target' )
-
-                if range then
-                    lands = range > 0 and range / ability.velocity or state.latency
-                end
-            end
-
-            state.player.queued_tt = lands
-        end
-    end
-
-    forceUpdate( event, true )
-
-    --[[ local ability = class.abilities[ spellID ] and class.abilities[ spellID ].key
-
-    if ability then
-        if state.queued_ability and state.queued_ability == ability then
-            -- do nothing, we already tried this.
-    if state.queued_ability and 
-    forceUpdate() ]]
+    if unit == 'player' then forceUpdate( event, true ) end
 end )
 
 -- RegisterUnitEvent( "UNIT_SPELLCAST_START", spellcastEvents, 'player' )
@@ -636,6 +594,11 @@ RegisterUnitEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
 
     end
 
+    -- forceUpdate( event )
+end )
+
+RegisterUnitEvent( "UNIT_POWER", function( event, unit, power )
+    if unit ~= 'player' then return end
     forceUpdate( event )
 end )
 
@@ -647,7 +610,7 @@ end ) ]]
 
 
 
-RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
+-- RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
 RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
 
 
@@ -835,6 +798,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
             state.player.queued_ability = nil
             state.player.queued_time = nil
             state.player.queued_tt = nil
+            state.player.queued_lands = nil
             state.player.queued_gcd = nil
             state.player.queued_off = nil
         end

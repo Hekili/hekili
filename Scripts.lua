@@ -469,7 +469,7 @@ function ns.getConditionsAndValues( sType, sID )
     local script = scripts[ sType ]
     script = script and script[ sID ]
 
-    if Hekili.DB.profile.Debug and script and script.SimC and script.SimC ~= "" then
+    if script and script.SimC and script.SimC ~= "" then
         local output = script.SimC
 
         if script.Elements then

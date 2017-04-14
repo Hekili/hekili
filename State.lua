@@ -593,8 +593,10 @@ state.addStack = addStack
 
 local function removeStack( aura, stacks )
 
-  if state.buff[ aura ].count > ( stacks or 1 ) then
-    state.buff[ aura ].count = max( 0, state.buff[ aura ].count - ( stacks or 1 ) )
+  stacks = stacks or 1
+
+  if state.buff[ aura ].count > stacks then
+    state.buff[ aura ].count = max( 1, state.buff[ aura ].count - stacks )
   else
     removeBuff( aura )
   end
@@ -1631,36 +1633,36 @@ local mt_prev_lookup = {
             -- Check predictions first.
             if state.predictions[ idx ] then return state.predictions[ idx ] == k end
             -- There isn't a prediction for that entry yet, go back to actual collected data.
-            if state.player.queued_ability then
+            --[[ if state.player.queued_ability then
                 if idx == #state.predictions + 1 then
                     return state.player.queued_ability
                 end
                 return ns.castsAll[ idx - #state.predictions + 1 ]
-            end
+            end ]]
             return ns.castsAll[ idx - #state.predictions ] == k
 
         elseif t.meta == 'castsOn' then
             -- Check predictions first.
             if state.predictionsOn[ idx ] then return state.predictionsOn[ idx ] == k end
             -- There isn't a prediction for that entry yet, go back to actual collected data.
-            if state.player.queued_ability and state.player.queued_gcd then
+            --[[ if state.player.queued_ability and state.player.queued_gcd then
                 if idx == np + 1 then
                     return state.player.queued_ability
                 end
                 return ns.castsOn[ idx - #state.predictionsOn + 1 ]
-            end
+            end ]]
             return ns.castsOn[ idx - #state.predictionsOn ] == k
 
         end
 
         -- castsOff
         if state.predictionsOff[ idx ] then return state.predictionsOff[ idx ] == k end
-        if state.player.queued_ability and state.player.queued_off then
+        --[[ if state.player.queued_ability and state.player.queued_off then
             if idx == np + 1 then
                 return state.player.queued_ability
             end
             return ns.castsOff[ idx - #state.predictionsOff + 1 ]
-        end
+        end ]]
         return ns.castsOff[ idx - #state.predictionsOff ] == k
 
     end
@@ -2649,9 +2651,9 @@ function state.reset( dispID )
         if not ability.channeled then
             -- Put the action on cooldown.  (It's slightly premature, but addresses CD resets like Echo of the Elements.)
             if ability.charges and ability.recharge > 0 then
-            state.spendCharges( casting, 1 )
+                state.spendCharges( casting, 1 )
             else
-            state.setCooldown( casting, ability.cooldown )
+                state.setCooldown( casting, ability.cooldown )
             end
 
             -- Perform the action.
@@ -2695,6 +2697,18 @@ function state.advance( time )
   --if time == 3600 then error( time ) end
 
   state.delay = 0
+
+  if state.player.queued_ability then
+    local saved_offset = state.offset
+    local lands = max( state.now + 0.01, state.player.queued_lands )
+
+    if lands > state.query_time and lands <= state.query_time + time then
+        state.offset = lands - state.query_time
+        ns.runHandler( state.player.queued_ability, true )
+    end
+
+    state.offset = saved_offset
+  end
 
   local projected = ns.spells_in_flight
 
