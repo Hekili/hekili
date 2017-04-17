@@ -2098,10 +2098,10 @@ end
 
 
 function Hekili.RetrieveFromNamespace( key )
-    return ns[ key ]
+    return nil
 end
 
 
 function Hekili.StoreInNamespace( key, value )
-    ns[ key ] = value
+    -- ns[ key ] = value
 end

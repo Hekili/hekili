@@ -902,6 +902,15 @@ local function StoreKeybindInfo( key, aType, id )
         keys[ ability ].binding = lower( improvedGetBindingText( key ) )
         keys[ ability ].upper = upper( keys[ ability ].binding )
         updatedKeys[ ability ] = true
+
+        if ability.bind then
+            local bind = ability.bind
+
+            keys[ bind ] = keys[ bind ] or {}
+            keys[ bind ].binding = keys[ ability ].binding
+            keys[ bind ].upper = keys[ ability ].upper
+            updatedKeys[ bind ] = true
+        end
     end
 end        
 
@@ -947,10 +956,14 @@ local function ReadKeybindings()
 end    
 
 
+ns.ReadKeybindings = ReadKeybindings
+
+
 RegisterEvent( "UPDATE_BINDINGS", ReadKeybindings )
 RegisterEvent( "PLAYER_ENTERING_WORLD", ReadKeybindings )
 RegisterEvent( "ACTIONBAR_SLOT_CHANGED", ReadKeybindings )
 RegisterEvent( "ACTIONBAR_SHOWGRID", ReadKeybindings )
+RegisterEvent( "UPDATE_SHAPESHIFT_FORM", ReadKeybindings )
 
 
 function Hekili:GetBindingForAction( key, caps )

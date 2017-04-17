@@ -118,11 +118,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         -- Auras.
         addAura( 'blade_dance', 188499, 'duration', 1 )
         addAura( 'blur', 198589, 'duration', 10 )
+        addAura( 'chaos_nova', 179067, 'duration', 5 )
         addAura( 'darkness', 209426, 'duration', 8 )
         addAura( 'death_sweep', 210152, 'duration', 1 )
         addAura( 'fel_barrage', 211053, 'duration', 1 )
         addAura( 'imprison', 217832, 'duration', 60 )
         addAura( 'metamorphosis', 162264, 'duration', 30 )
+
+            class.auras[ 187827 ] = class.auras.metamorphosis
 
             modifyAura( 'metamorphosis', 'id', function( x )
                 if spec.vengeance then return 187827 end
@@ -134,6 +137,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addAura( 'spectral_sight', 188501, 'duration', 10 )
         addAura( 'demon_spikes', 203819, 'duration', 6 )
         addAura( 'immolation_aura', 178740, 'duration', 6 )
+        addAura( 'prepared', 203650, 'duration', 5 )
         addAura( 'soul_fragments', 203981, 'duration', 3600 )
         addAura( 'soul_barrier', 227225, 'duration', 12 )
 
@@ -192,7 +196,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         end )
 
         addHook( 'advance', function( t )
-            if state.spec.havoc then return t end
+            if state.spec.havoc then
+
+                if state.buff.prepared.up then
+                    state.gain( floor( state.buff.prepared.remains / 0.125 ), 'fury' )
+                end
+
+                return t
+            end
 
             if state.buff.metamorphosis.up then
                 local ticks_remain = ceil( state.buff.metamorphosis.remains )
@@ -277,7 +288,23 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         } )
 
         addHandler( 'consume_magic', function ()
+            if target.casting then
+                gain( 50, spec.vengeance and 'pain' or 'fury' )
+            end
             interrupt()
+        end )
+
+
+        addAbility( 'darkness', {
+            id = 196718,
+            spend = 0,
+            spend_type = 'fury',
+            gcdType = 'off',
+            cooldown = 180,
+        } )
+
+        addHandler( 'darkness', function ()
+            applyBuff( 'darkness', 8 )
         end )
 
 
@@ -298,7 +325,9 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             spend_type = 'fury',
             cast = 0,
             gcdType = 'melee',
-            cooldown = 0
+            cooldown = 0,
+            known = function() return spec.havoc and buff.metamorphosis.down end,
+            bind = 'annihilation'
         } )
 
         modifyAbility( 'chaos_strike', 'spend', function( x )
@@ -313,7 +342,9 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             spend_type = 'fury',
             cast = 0,
             gcdType = 'melee',
-            cooldown = 0
+            cooldown = 0,
+            known = function() return spec.havoc and buff.metamorphosis.up end,
+            bind = 'chaos_strike'
         } )
 
         modifyAbility( 'annihilation', 'spend', function( x )
@@ -328,11 +359,31 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             spend_type = 'fury',
             cast = 0,
             gcdType = 'melee',
-            cooldown = 10
+            cooldown = 10,
+            known = function() return spec.havoc and buff.metamorphosis.down end,
+            bind = 'death_sweep'
         } )
+
+        modifyAbility( 'blade_dance', 'spend', function( x )
+            return talent.first_blood.enabled and ( x - 20 ) or x 
+        end )
 
         addHandler( 'blade_dance', function ()
             applyBuff( 'blade_dance', 1 )
+        end )
+
+
+        addAbility( 'chaos_nova', {
+            id = 179057,
+            spend = 30,
+            spend_type = 'fury',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 60
+        } )
+
+        addHandler( 'chaos_nova', function ()
+            applyDebuff( 'target', 'chaos_nova', 5 )
         end )
 
 
@@ -342,8 +393,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             spend_type = 'fury',
             cast = 0,
             gcdType = 'melee',
-            cooldown = 8
+            cooldown = 8,
+            known = function() return spec.havoc and buff.metamorphosis.up end,
+            bind = 'blade_dance'
         } )
+
+        modifyAbility( 'death_sweep', 'spend', function( x )
+            return talent.first_blood.enabled and ( x - 20 ) or x 
+        end )
 
         addHandler( 'death_sweep', function ()
             applyBuff( 'death_sweep', 1 )
@@ -378,7 +435,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         end )
 
         addHandler( 'eye_beam', function ()
-            gain( 105, 'fury' )
+            if talent.blind_fury.enabled then gain( 105, 'fury' ) end
+            if talent.demonic.enabled then
+                if buff.metamorphosis.up then
+                    buff.metamorphosis.remains = buff.metamorphosis.remains + 8
+                else
+                    applyBuff( 'metamorphosis', action.eye_beam.cast + 8 ) -- Cheating here, since channels fire handlers at start of cast.
+                end
+            end
         end )
 
 
@@ -391,11 +455,18 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             recharge = 10,
             gcdType = 'melee',
             cooldown = 10,
+            velocity = 50,
         }, 204157 )
 
         modifyAbility( 'throw_glaive', 'id', function( x )
             if spec.vengeance then return 204157 end
             return x
+        end )
+
+        addHandler( 'throw_glaive', function ()
+            if talent.bloodlet.enabled then
+                applyDebuff( 'target', 'bloodlet', 10 )
+            end
         end )
 
 
@@ -427,6 +498,10 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cooldown = 10,
         } )
 
+        addHandler( 'fel_rush', function ()
+            if talent.fel_mastery.enabled then gain( 30, 'fury' ) end
+        end )
+
 
         addAbility( 'vengeful_retreat', {
             id = 198793,
@@ -435,11 +510,17 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 25,
+            usable = function () return target.within5 end
         } )
+
+        modifyAbility( 'vengeful_retreat', 'cooldown', function( x )
+            return talent.prepared.enabled and ( x - 10 ) or x
+        end )
 
         addHandler( 'vengeful_retreat', function ()
             applyDebuff( 'target', 'vengeful_retreat', 3 )
             active_dot.vengeful_retreat = max( active_dot.vengeful_retreat, active_enemies )
+            if talent.prepared.enabled then applyBuff( 'prepared', 5 ) end
         end )
 
 
@@ -448,7 +529,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             spend = 0,
             spend_type = 'fury',
             cast = 0,
-            gcdType = 'spell',
+            gcdType = 'off',
             cooldown = 60,
         } )
 
@@ -475,7 +556,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addHandler( 'metamorphosis', function ()
             applyBuff( 'metamorphosis', 30 )
             stat.haste = stat.haste + 25
-            stat.leech = stat.leech + 30
+            -- stat.leech = stat.leech + 30
         end )
 
 
@@ -515,7 +596,8 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cast = 0,
             gcdType = 'off',
             cooldown = 120,
-            toggle = 'cooldowns'
+            toggle = 'cooldowns',
+            known = function () return talent.chaos_blades.enabled end,
         } )
 
         addHandler( 'chaos_blades', function ()

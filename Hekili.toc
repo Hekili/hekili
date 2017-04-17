@@ -16,9 +16,11 @@ Constants.lua
 State.lua
 Events.lua
 Classes.lua
+Classes\DemonHunter.lua
+Classes\Hunter.lua
+Classes\Monk.lua
 Classes\Paladin.lua
 Classes\Shaman.lua
-Classes\DemonHunter.lua
 Targets.lua
 Options.lua
 UI.lua

@@ -93,12 +93,17 @@ ns.snapshots = {}
 -- Default Keybinding UI
 BINDING_HEADER_HEKILI_HEADER = "Hekili"
 BINDING_NAME_HEKILI_TOGGLE_PAUSE = "Pause"
--- BINDING_NAME_HEKILI_SNAPSHOT = "Snapshot"
+
 BINDING_NAME_HEKILI_TOGGLE_COOLDOWNS = "Toggle Cooldowns"
 BINDING_NAME_HEKILI_TOGGLE_POTIONS = "Toggle Potions"
 BINDING_NAME_HEKILI_TOGGLE_INTERRUPTS = "Toggle Interrupts"
 BINDING_NAME_HEKILI_TOGGLE_MODE = "Toggle Mode"
 
+BINDING_NAME_HEKILI_TOGGLE_1 = "Custom Toggle 1"
+BINDING_NAME_HEKILI_TOGGLE_2 = "Custom Toggle 2"
+BINDING_NAME_HEKILI_TOGGLE_3 = "Custom Toggle 3"
+BINDING_NAME_HEKILI_TOGGLE_4 = "Custom Toggle 4"
+BINDING_NAME_HEKILI_TOGGLE_5 = "Custom Toggle 5"
 
 ns.refreshBindings = function ()
 
@@ -108,7 +113,11 @@ ns.refreshBindings = function ()
     profile[ 'HEKILI_TOGGLE_PAUSE' ] = GetBindingKey( "HEKILI_TOGGLE_PAUSE" )
     profile[ 'HEKILI_TOGGLE_COOLDOWNS' ] = GetBindingKey( "HEKILI_TOGGLE_COOLDOWNS" )
     profile[ 'HEKILI_TOGGLE_POTIONS' ] = GetBindingKey( "HEKILI_TOGGLE_POTIONS" )
-    -- profile[ 'HEKILI_SNAPSHOT' ] = GetBindingKey( "HEKILI_SNAPSHOT" )
+    profile[ 'HEKILI_TOGGLE_1' ] = GetBindingKey( "HEKILI_TOGGLE_1" )
+    profile[ 'HEKILI_TOGGLE_2' ] = GetBindingKey( "HEKILI_TOGGLE_2" )
+    profile[ 'HEKILI_TOGGLE_3' ] = GetBindingKey( "HEKILI_TOGGLE_3" )
+    profile[ 'HEKILI_TOGGLE_4' ] = GetBindingKey( "HEKILI_TOGGLE_4" )
+    profile[ 'HEKILI_TOGGLE_5' ] = GetBindingKey( "HEKILI_TOGGLE_5" )
 
 end
 
@@ -148,7 +157,7 @@ local current_display
 
 function Hekili:SetupDebug( display )
 
-    if not self.DB.profile.Debug and not self.ActiveDebug then return end
+    if not self.ActiveDebug then return end
     if not display then return end
 
     current_display = display
@@ -166,7 +175,7 @@ end
 
 function Hekili:Debug( ... )
 
-    if not self.DB.profile.Debug and not self.ActiveDebug then return end
+    if not self.ActiveDebug then return end
     if not active_debug then return end
 
     active_debug.log[ active_debug.index ] = format( ... )

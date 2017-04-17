@@ -18,6 +18,11 @@ local escapeMagic = ns.escapeMagic
 local formatKey = ns.formatKey
 local tableCopy = ns.tableCopy
 
+
+local LDB = LibStub( "LibDataBroker-1.1", true )
+local LDBIcon = LibStub( "LibDBIcon-1.0", true )
+
+
 -- Default Table
 function Hekili:GetDefaults()
   local defaults = {
@@ -27,14 +32,11 @@ function Hekili:GetDefaults()
       Legion = true,
       Enabled = true,
       Locked = true,
-      Debug = false,
-
-      PauseSnapshot = true,
+      MinimapIcon = true, -- true == hide
 
       ['Switch Type'] = 0,
       ['Mode Status'] = 3,
       Interrupts = false,
-      Hardcasts = true,
 
       Clash = 0,
       ['Audit Targets'] = 6,
@@ -57,7 +59,10 @@ function Hekili:GetDefaults()
       },
       runOnce = {
       },
-    }
+      iconStore = {
+        hide = true,
+      },
+    },
   }
 
   return defaults
@@ -90,8 +95,8 @@ local defaultAPLs = {
 
 -- One Time Fixes
 local oneTimeFixes = {
-    turnOffDebug_04022017 = function( profile )
-        profile.Debug = false
+    turnOffDebug_04162017 = function( profile )
+        profile.Debug = nil
     end,
 
     attachDefaultAPLs_04022017 = function( profile )
@@ -142,7 +147,7 @@ local oneTimeFixes = {
         end
     end,
 
-    spruceUpActionListNames_04142017 = function( profile )
+    spruceUpActionListNames_04162017 = function( profile )
         for _, list in ipairs( profile.actionLists ) do
             for _, entry in ipairs( list.Actions ) do
                 if entry.Args and entry.Args:match( "name=" ) then
@@ -4114,10 +4119,10 @@ function Hekili:GetOptions()
             desc = "Locks or unlocks all displays for movement, except when the options window is open.",
             order = 2
           },
-          Debug = {
+          MinimapIcon = {
             type = "toggle",
-            name = "Debug",
-            desc = "If checked, the addon will collect additional information that you can view by pausing the addon and placing your mouse over your displayed abilities.",
+            name = "Hide Minimap Icon",
+            desc = "If checked, the minimap icon will be hidden.",
             order = 3
           },
           ['Counter'] = {
@@ -4610,12 +4615,7 @@ function Hekili:GetOptions()
                 type = 'toggle',
                 name = 'Pause',
                 order = 11,
-              },
-              PauseSnapshot = {
-                type = 'toggle',
-                name = 'Snapshot Only',
-                desc = "If checked, the addon will only take a snapshot when the Pause key is tapped, rather than freezing the display.",
-                order = 12,
+                width = "double"
               },
               HEKILI_TOGGLE_MODE = {
                 type = 'keybinding',
@@ -4921,7 +4921,7 @@ function Hekili:GetOptions()
       },
       snapshots = {
         type = "group",
-        name = "Debug Snapshots",
+        name = "Snapshots",
         order = 70,
         args = {
 
@@ -5087,6 +5087,8 @@ function Hekili:TotalRefresh()
   ns.refreshOptions()
   ns.buildUI()
   ns.overrideBinds()
+
+  LibStub("LibDBIcon-1.0"):Refresh( "Hekili", self.DB.profile.iconStore )
 
 end
 
@@ -5318,7 +5320,19 @@ function Hekili:SetOption( info, input, ... )
         for i, v in ipairs( ns.UI.Buttons ) do
           ns.UI.Buttons[i][1]:EnableMouse( not input )
         end
+        ns.UI.Notification:EnableMouse( not input )
       end
+
+    elseif option == 'MinimapIcon' then
+        profile.iconStore.hide = input
+
+        if LDBIcon then
+            if input then
+                LDBIcon:Hide( "Hekili" )
+            else
+                LDBIcon:Show( "Hekili" )
+            end
+        end
 
     elseif option == 'Audit Targets' or option == 'Updates Per Second' then
       return
@@ -5374,9 +5388,6 @@ function Hekili:SetOption( info, input, ... )
     elseif option == 'Pause' then
       profile[option] = revert
       self:TogglePause()
-      return
-
-    elseif option == 'PauseSnapshot' then
       return
 
     elseif option == 'Cooldowns' then
@@ -5741,6 +5752,8 @@ function Hekili:SetOption( info, input, ... )
     if RebuildCache and not RebuildUI then ns.cacheCriteria() end
   end
 
+  if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+
   if Select then
     ns.lib.AceConfigDialog:SelectGroup( "Hekili", category, info[2], Select )
   end
@@ -5782,6 +5795,9 @@ function Hekili:CmdLine( input )
     LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
   end
 end
+
+
+
 
 
 
@@ -6678,7 +6694,7 @@ local forceUpdate = ns.forceUpdate
 local warnOnce = false
 
 -- Key Bindings
-function Hekili:TogglePause()
+function Hekili:TogglePause( ... )
 
     if not self.Pause then
         Hekili.ActiveDebug = true
@@ -6695,11 +6711,9 @@ function Hekili:TogglePause()
         end
     end
 
-    if not Hekili.DB.profile.PauseSnapshot or self.Pause then
-        self.Pause = not self.Pause
-    end
+    self.Pause = not self.Pause
 
-    local MouseInteract = ( self.DB.profile.Debug and self.Pause ) or self.Config or ( not Hekili.DB.profile.Locked )
+    local MouseInteract = ( self.Pause ) or self.Config or ( not Hekili.DB.profile.Locked )
 
     for i = 1, #ns.UI.Buttons do
         for j = 1, #ns.UI.Buttons[i] do
@@ -6707,10 +6721,8 @@ function Hekili:TogglePause()
         end
     end
 
-    if not Hekili.DB.profile.PauseSnapshot then
-        Hekili:Print( (not self.Pause and "UN" or "") .. "PAUSED." )
-        Hekili:Notify( (not self.Pause and "UN" or "") .. "PAUSED" )
-    end
+    Hekili:Print( (not self.Pause and "UN" or "") .. "PAUSED." )
+    Hekili:Notify( (not self.Pause and "UN" or "") .. "PAUSED" )
     
     forceUpdate()
 end
@@ -6758,6 +6770,7 @@ function Hekili:ToggleMode()
   Hekili:Notify( modeMsgs[ Hekili.DB.profile['Mode Status'] ].n )
 
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_MODE', Hekili.DB.profile['Mode Status'] ) end
+  if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
 
   forceUpdate( "HEKILI_TOGGLE_MODE", true )
 end
@@ -6767,7 +6780,10 @@ function Hekili:ToggleInterrupts()
   Hekili.DB.profile.Interrupts = not Hekili.DB.profile.Interrupts
   Hekili:Print( Hekili.DB.profile.Interrupts and "Interrupts |cFF00FF00ENABLED|r." or "Interrupts |cFFFF0000DISABLED|r." )
   Hekili:Notify( "Interrupts " .. ( Hekili.DB.profile.Interrupts and "ON" or "OFF" ) )
+
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_INTERRUPTS', Hekili.DB.profile.Interrupts ) end
+  if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+
 
   forceUpdate( "HEKILI_TOGGLE_INTERRUPTS", true )
 end
@@ -6777,7 +6793,9 @@ function Hekili:ToggleCooldowns()
   Hekili.DB.profile.Cooldowns = not Hekili.DB.profile.Cooldowns
   Hekili:Print( Hekili.DB.profile.Cooldowns and "Cooldowns |cFF00FF00ENABLED|r." or "Cooldowns |cFFFF0000DISABLED|r." )
   Hekili:Notify( "Cooldowns " .. ( Hekili.DB.profile.Cooldowns and "ON" or "OFF" ) )
+
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_COOLDOWNS', Hekili.DB.profile.Cooldowns ) end
+  if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
 
   forceUpdate( "HEKILI_TOGGLE_COOLDOWNS", true )
 end
@@ -6787,9 +6805,24 @@ function Hekili:TogglePotions()
   Hekili.DB.profile.Potions = not Hekili.DB.profile.Potions
   Hekili:Print( Hekili.DB.profile.Potions and "Potions |cFF00FF00ENABLED|r." or "Potions |cFFFF0000DISABLED|r." )
   Hekili:Notify( "Potions " .. ( Hekili.DB.profile.Potions and "ON" or "OFF" ) )
+
   if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_POTIONS', Hekili.DB.profile.Potions ) end
+  if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
 
   forceUpdate( "HEKILI_TOGGLE_POTIONS", true )
+end
+
+
+function Hekili:ToggleCustom( num )
+  Hekili.DB.profile['Toggle_' .. num] = not Hekili.DB.profile['Toggle_' .. num]
+
+  if Hekili.DB.profile['Toggle ' .. num .. ' Name'] then
+    Hekili:Print( Hekili.DB.profile['Toggle_' .. num] and ( 'Toggle \'' .. Hekili.DB.profile['Toggle ' .. num .. ' Name'] .. "' |cFF00FF00ENABLED|r." ) or ( 'Toggle \'' .. Hekili.DB.profile['Toggle ' .. num .. ' Name'] .. "' |cFFFF0000DISABLED|r." ) )
+    Hekili:Notify( Hekili.DB.profile['Toggle_' .. num] and ( Hekili.DB.profile['Toggle ' .. num .. ' Name']:gsub("^%l", string.upper) .. " ON" ) or ( Hekili.DB.profile['Toggle ' .. num .. ' Name']:gsub("^%l", string.upper) .. " OFF" ) )
+  else
+    Hekili:Print( Hekili.DB.profile['Toggle_' .. num] and ( "Custom Toggle #" .. num .. " |cFF00FF00ENABLED|r." ) or ( "Custom Toggle #" .. num .. " |cFFFF0000DISABLED|r." ) )
+    Hekili:Notify( Hekili.DB.profile['Toggle_' .. num] and ( "Toggle #" .. num .. " ON" ) or ( "Toggle #" .. num .. " OFF" ) )
+  end
 end
 
 

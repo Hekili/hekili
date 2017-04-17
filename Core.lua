@@ -182,11 +182,51 @@ function Hekili:OnInitialize()
     self:RegisterChatCommand( "hekili", "CmdLine" )
     self:RegisterChatCommand( "hek", "CmdLine" )
 
+    local LDB = LibStub( "LibDataBroker-1.1", true )
+    local LDBIcon = LDB and LibStub( "LibDBIcon-1.0", true )
+    if LDB then
+        ns.UI.Minimap = LDB:NewDataObject( "Hekili", {
+            type = "launcher",
+            text = "Hekili",
+            icon = "Interface\\ICONS\\spell_nature_bloodlust",
+            OnClick = function( f, button )
+                if button == "RightButton" then ns.StartConfiguration()
+                else
+                    ToggleDropDownMenu( 1, nil, Hekili_Menu, f:GetName(), 0, 0 )
+                end
+                GameTooltip:Hide()
+            end,
+            OnTooltipShow = function( tt )
+                tt:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
+                tt:AddLine( "Left-click to make quick adjustments." )
+                tt:AddLine( "Right-click to open the options interface." )
+            end,
+        } )
+
+        function ns.UI.Minimap:RefreshDataText()
+            local p = Hekili.DB.profile
+
+            self.text = format( "|cFFFFD100%s|r %sC|r %sI|r %sP|r",
+                p['Mode Status'] == 0 and "Single" or ( p['Mode Status'] == 2 and "AOE" or ( p['Mode Status'] == 3 and "Auto" or "X" ) ),
+                p.Cooldowns and "|cFF00FF00" or "|cFFFF0000",
+                p.Interrupts and "|cFF00FF00" or "|cFFFF0000",
+                p.Potions and "|cFF00FF00" or "|cFFFF0000" )
+        end
+
+        ns.UI.Minimap:RefreshDataText()
+
+        if LDBIcon then
+            LDBIcon:Register( "Hekili", ns.UI.Minimap, self.DB.profile.iconStore )
+        end
+    end
+
+
     if not self.DB.profile.Version or self.DB.profile.Version < 7 or not self.DB.profile.Release or self.DB.profile.Release < 20161000 then
         self.DB:ResetDB()
     end
 
-    self.DB.profile.Release = self.DB.profile.Release or 20161003.1
+    self.DB.profile.Release = self.DB.profile.Release or 20170416.0
+
 
     initializeClassModule()
     refreshBindings()
@@ -261,18 +301,16 @@ function Hekili:OnEnable()
     ns.StartEventHandler()
     buildUI()
     ns.overrideBinds()
+    ns.ReadKeybindings()
 
     Hekili.s = ns.state
 
     -- May want to refresh configuration options, key bindings.
     if self.DB.profile.Enabled then
-
         self:UpdateDisplays()
         ns.Audit()
-
     else
         self:Disable()
-
     end
 
 end
@@ -281,6 +319,14 @@ end
 function Hekili:OnDisable()
     self.DB.profile.Enabled = false
     ns.StopEventHandler()
+    buildUI()
+end
+
+
+function Hekili:Toggle()
+    self.DB.profile.Enabled = not self.DB.profile.Enabled
+    if self.DB.profile.Enabled then self:Enable()
+    else self:Disable() end
 end
 
 
@@ -677,7 +723,7 @@ function Hekili:ProcessHooks( dispID, solo )
                     if chosen_action then
                         -- We have our actual action, so let's get the script values if we're debugging.
 
-                        if self.DB.profile.Debug then ns.implantDebugData( slot ) end
+                        if self.ActiveDebug then ns.implantDebugData( slot ) end
 
                         slot.time = state.offset + chosen_wait
                         slot.exact_time = state.now + state.offset + chosen_wait

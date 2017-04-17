@@ -64,7 +64,7 @@ local function Mover_OnMouseUp( self, btn )
       stopScreenMovement( self )
     end
     Hekili.DB.profile.Locked = true
-    local MouseInteract = ( Hekili.DB.profile.Debug and Hekili.Pause ) or Hekili.Config or ( not Hekili.DB.profile.Locked )
+    local MouseInteract = ( Hekili.Pause ) or Hekili.Config or ( not Hekili.DB.profile.Locked )
     for i = 1, #ns.UI.Buttons do
       for j = 1, #ns.UI.Buttons[i] do
         ns.UI.Buttons[i][j]:EnableMouse( MouseInteract )
@@ -95,7 +95,7 @@ local function Button_OnMouseUp( self, btn )
       stopScreenMovement( mover )
     end
     Hekili.DB.profile.Locked = true
-    local MouseInteract = ( Hekili.DB.profile.Debug and Hekili.Pause ) or Hekili.Config or ( not Hekili.DB.profile.Locked )
+    local MouseInteract = ( Hekili.Pause ) or Hekili.Config or ( not Hekili.DB.profile.Locked )
     for i = 1, #ns.UI.Buttons do
       for j = 1, #ns.UI.Buttons[i] do
         ns.UI.Buttons[i][j]:EnableMouse( MouseInteract )
@@ -216,7 +216,7 @@ function ns.StopConfiguration()
     scaleFactor = GetScreenHeight() / select( GetCurrentResolution(), GetScreenResolutions() ):match("%d+x(%d+)")
   end
 
-  local MouseInteract = ( Hekili.DB.profile.Debug and Hekili.Pause ) or ( not Hekili.DB.profile.Locked )
+  local MouseInteract = ( Hekili.Pause ) or ( not Hekili.DB.profile.Locked )
 
   for i,v in ipairs(ns.UI.Buttons) do
     for j, btn in ipairs(v) do
@@ -254,6 +254,198 @@ local function MasqueUpdate( Addon, Group, SkinID, Gloss, Backdrop, Colors, Disa
 end
 
 
+local menuInfo = {}
+
+local function menu_Enabled()
+    Hekili:Toggle()
+end
+
+local function menu_Locked()
+    local p = Hekili.DB.profile
+
+    p.Locked = not p.Locked
+
+    for _, v in ipairs( ns.UI.Buttons ) do
+        v[1]:EnableMouse( not p.Locked )
+    end
+    ns.UI.Notification:EnableMouse( not p.Locked )
+end
+
+local function menu_Paused()
+    Hekili:TogglePause()
+end
+
+local function menu_Auto()
+    local p = Hekili.DB.profile
+
+    p[ 'Mode Status' ] = 3
+    p[ 'Switch Type' ] = 0
+    ns.UI.Minimap:RefreshDataText()
+end
+
+local function menu_AOE()
+    local p = Hekili.DB.profile
+
+    p[ 'Mode Status' ] = 2
+    p[ 'Switch Type' ] = 0
+    ns.UI.Minimap:RefreshDataText()
+end
+
+local function menu_Single()
+    local p = Hekili.DB.profile
+
+    p[ 'Mode Status' ] = 0
+    ns.UI.Minimap:RefreshDataText()
+end
+
+local function menu_Cooldowns()
+    local p = Hekili.DB.profile
+
+    p.Cooldowns = not p.Cooldowns
+    ns.UI.Minimap:RefreshDataText()
+end
+
+local function menu_Interrupts()
+    local p = Hekili.DB.profile
+
+    p.Interrupts = not p.Interrupts
+    ns.UI.Minimap:RefreshDataText()
+end
+
+local function menu_Potions()
+    local p = Hekili.DB.profile
+
+    p.Potions = not p.Potions
+    ns.UI.Minimap:RefreshDataText()
+end
+
+
+
+
+Hekili_Menu = CreateFrame( "Frame", "HekiliMenu" )
+Hekili_Menu.displayMode = "MENU"
+Hekili_Menu.initialize = function( self, level ) 
+    if not level then return end
+
+    wipe( menuInfo )
+    local p = Hekili.DB.profile
+    local i = menuInfo
+
+    if level == 1 then
+
+        i.isTitle = 1
+        i.text = "Hekili"
+        i.notCheckable = 1
+        UIDropDownMenu_AddButton( i, level )
+
+        i.isTitle = nil
+        i.disabled = nil
+        i.notCheckable = nil
+
+        i.text = "Enable"
+        i.func = menu_Enabled
+        i.checked = p.Enabled
+        UIDropDownMenu_AddButton( i, level )
+
+        i.text = "Lock"
+        i.func = menu_Locked
+        i.checked = p.Locked
+        UIDropDownMenu_AddButton( i, level )
+
+        i.text = " "
+        i.func = nil
+        i.notCheckable = 1
+        i.disabled = 1
+        UIDropDownMenu_AddButton( i, level )
+
+        i.notCheckable = nil
+        i.disabled = nil
+
+        i.isTitle = 1
+        i.text = "Target Mode"
+        i.notCheckable = 1
+        UIDropDownMenu_AddButton( i, level )
+
+        i.isTitle = nil
+        i.notCheckable = nil
+        i.disabled = nil
+
+        i.text = "Single-Target"
+        i.func = menu_Single
+        i.checked = p[ 'Mode Status' ] == 0
+        UIDropDownMenu_AddButton( i, level )
+
+        i.text = "AOE"
+        i.func = menu_AOE
+        i.checked = p[ 'Mode Status' ] == 2
+        UIDropDownMenu_AddButton( i, level )
+
+        i.text = "Automatic"
+        i.func = menu_Auto
+        i.checked = p[ 'Mode Status' ] == 3
+        UIDropDownMenu_AddButton( i, level )
+
+        i.notCheckable = nil
+        i.tooltipText = nil
+        i.tooltipTitle = nil
+        i.tooltipOnButton = nil
+
+        i.text = " "
+        i.func = nil
+        i.notCheckable = 1
+        i.disabled = 1
+        UIDropDownMenu_AddButton( i, level )
+
+        i.notCheckable = nil
+        i.disabled = nil
+
+        i.isTitle = 1
+        i.text = "Toggles"
+        i.notCheckable = 1
+        UIDropDownMenu_AddButton( i, level )
+
+        i.isTitle = nil
+        i.notCheckable = nil
+        i.disabled = nil
+
+        i.text = "Cooldowns"
+        i.func = menu_Cooldowns
+        i.checked = p.Cooldowns
+        UIDropDownMenu_AddButton( i, level )
+
+        i.text = "Interrupts"
+        i.func = menu_Interrupts
+        i.checked = p.Interrupts
+        UIDropDownMenu_AddButton( i, level )
+
+        i.text = "Potions"
+        i.func = menu_Potions
+        i.checked = p.Potions
+        UIDropDownMenu_AddButton( i, level )       
+
+        i.notCheckable = nil
+        i.hasArrow = nil
+        i.value = nil
+
+        i.text = " "
+        i.func = nil
+        i.notCheckable = 1
+        i.disabled = 1
+        UIDropDownMenu_AddButton( i, level )
+
+        i.notCheckable = nil
+        i.disabled = nil
+
+        i.text = "Pause"
+        i.func = menu_Paused
+        i.checked = Hekili.Pause
+        UIDropDownMenu_AddButton( i, level )
+
+    end
+end
+
+
+
 -- Builds and maintains the visible UI elements.
 -- Buttons (as frames) are never deleted, but should get reused effectively.
 function ns.buildUI()
@@ -281,7 +473,7 @@ function ns.buildUI()
     scaleFactor = GetScreenHeight() / select( GetCurrentResolution(), GetScreenResolutions() ):match("%d+x(%d+)")
   end
 
-  local MouseInteract = ( Hekili.DB.profile.Debug and Hekili.Pause ) or ( not Hekili.DB.profile.Locked )
+  local MouseInteract = ( Hekili.Pause ) or ( not Hekili.DB.profile.Locked )
 
   local f = ns.UI.Notification or CreateFrame( "Frame", "HekiliNotification", UIParent )
   f:SetSize( Hekili.DB.profile['Notification Width'] * scaleFactor, Hekili.DB.profile['Notification Height'] * scaleFactor )
@@ -298,6 +490,12 @@ function ns.buildUI()
   f.Text:SetTextColor(1, 1, 1, 1)
 
   ns.UI.Notification = f
+
+
+  ns.UI.Menu = ns.UI.Menu or CreateFrame( "Frame", "HekiliEasyMenu", UIParent, "UIDropDownMenuTemplate" )
+
+
+
 
   if not Hekili.DB.profile['Notification Enabled'] then
     ns.UI.Notification:Hide()
