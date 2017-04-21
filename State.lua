@@ -2491,6 +2491,8 @@ local function scrapeUnitAuras( unit )
         v.unit = unit
     end
 
+    if not UnitExists( unit ) then return end
+
     local i = 1
     while ( true ) do
         local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i, "PLAYER" )

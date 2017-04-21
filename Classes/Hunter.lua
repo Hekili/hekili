@@ -7,26 +7,22 @@ local Hekili = _G[ addon ]
 local class = ns.class
 local state = ns.state
 
-local addHook = ns.addHook
-
 local addAbility = ns.addAbility
-local modifyAbility = ns.modifyAbility
-local addHandler = ns.addHandler
-
 local addAura = ns.addAura
-local modifyAura = ns.modifyAura
-
 local addCastExclusion = ns.addCastExclusion
 local addGearSet = ns.addGearSet
 local addGlyph = ns.addGlyph
+local addHandler = ns.addHandler
+local addHook = ns.addHook
 local addMetaFunction = ns.addMetaFunction
-local addTalent =  ns.addTalent
-local addPerk = ns.addPerk
 local addResource = ns.addResource
-local addStance = ns.addStance
-
 local addSetting = ns.addSetting
+local addStance = ns.addStance
+local addTalent =  ns.addTalent
 local addToggle = ns.addToggle
+local addTrait = ns.addTrait
+local modifyAbility = ns.modifyAbility
+local modifyAura = ns.modifyAura
 
 local registerCustomVariable = ns.registerCustomVariable
 local registerInterrupt = ns.registerInterrupt
@@ -84,6 +80,31 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addTalent( 'spitting_cobra', 194407 )
         addTalent( 'expert_trapper', 199543 )
         addTalent( 'aspect_of_the_beast', 191384 )
+
+
+        addTrait( "aspect_of_the_skylord", 203755 )
+        addTrait( "bird_of_prey", 224764 )
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "eagles_bite", 203757 )
+        addTrait( "echoes_of_ohnara", 238125 )
+        addTrait( "embrace_of_the_aspects", 225092 )
+        addTrait( "explosive_force", 203670 )
+        addTrait( "ferocity_of_the_unseen_path", 241115 )
+        addTrait( "fluffy_go", 203669 )
+        addTrait( "fury_of_the_eagle", 203415 )
+        addTrait( "hellcarver", 203673 )
+        addTrait( "hunters_bounty", 203749 )
+        addTrait( "hunters_guile", 203752 )
+        addTrait( "iron_talons", 221773 )
+        addTrait( "jaws_of_the_mongoose", 238053 )
+        addTrait( "lacerating_talons", 203578 )
+        addTrait( "my_beloved_monster", 203577 )
+        addTrait( "raptors_cry", 203638 )
+        addTrait( "sharpened_fang", 203566 )
+        addTrait( "talon_bond", 238089 )
+        addTrait( "talon_strike", 203563 )
+        addTrait( "terms_of_engagement", 203754 )
+        addTrait( "voice_of_the_wild_gods", 214916 )
 
 
         -- Buffs/Debuffs

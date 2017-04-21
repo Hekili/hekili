@@ -21,7 +21,7 @@ local addGearSet = ns.addGearSet
 local addGlyph = ns.addGlyph
 local addMetaFunction = ns.addMetaFunction
 local addTalent =  ns.addTalent
-local addPerk = ns.addPerk
+local addTrait = ns.addTrait
 local addResource = ns.addResource
 local addStance = ns.addStance
 
@@ -86,7 +86,57 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addTalent( 'special_delivery', 196730 )
         addTalent( 'summon_black_ox_statue', 115315 )
         addTalent( 'whirling_dragon_punch', 152175 )
-        addTalent( 'mystic_vitality', 237076 )            
+        addTalent( 'mystic_vitality', 237076 )
+
+
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "crosswinds", 195650 )
+        addTrait( "dark_skies", 195265 )
+        addTrait( "death_art", 195266 )
+        addTrait( "ferocity_of_the_broken_temple", 241136 )
+        addTrait( "fists_of_the_wind", 195291 )
+        addTrait( "gale_burst", 195399 )
+        addTrait( "good_karma", 195295 )
+        addTrait( "healing_winds", 195380 )
+        addTrait( "inner_peace", 195243 )
+        addTrait( "light_on_your_feet", 195244 )
+        addTrait( "master_of_combinations", 238095 )
+        addTrait( "power_of_a_thousand_cranes", 195269 )
+        addTrait( "rising_winds", 195263 )
+        addTrait( "spiritual_focus", 195298 )
+        addTrait( "split_personality", 238059 )
+        addTrait( "strength_of_xuen", 195267 )
+        addTrait( "strike_of_the_windlord", 205320 )
+        addTrait( "thunderfist", 238131 )
+        addTrait( "tiger_claws", 218607 )
+        addTrait( "tornado_kicks", 196082 )
+        addTrait( "transfer_the_power", 195300 )
+        addTrait( "windborne_blows", 214922 )
+
+
+        addTrait( "brewstache", 214372 )
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "dark_side_of_the_moon", 227689 )
+        addTrait( "dragonfire_brew", 213183 )
+        addTrait( "draught_of_darkness", 238057 )
+        addTrait( "endurance_of_the_broken_temple", 241131 )
+        addTrait( "exploding_keg", 214326 )
+        addTrait( "face_palm", 213116 )
+        addTrait( "fortification", 213340 )
+        addTrait( "full_keg", 214428 )
+        addTrait( "gifted_student", 213136 )
+        addTrait( "healthy_appetite", 213133 )
+        addTrait( "hot_blooded", 227685 )
+        addTrait( "obsidian_fists", 213051 )
+        addTrait( "obstinate_determination", 216424 )
+        addTrait( "overflow", 213180 )
+        addTrait( "potent_kick", 213047 )
+        addTrait( "quick_sip", 238129 )
+        addTrait( "smashed", 213050 )
+        addTrait( "staggering_around", 213055 )
+        addTrait( "stave_off", 238093 )
+        addTrait( "swift_as_a_coursing_river", 213161 )
+        addTrait( "wanderers_hardiness", 214920 )
 
 
         -- Buffs/Debuffs

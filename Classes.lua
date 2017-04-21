@@ -67,6 +67,10 @@ local overrideInitialized = false
 
 ns.overrideBinds = function()
 
+    if InCombatLockdown() then
+        C_Timer.After( 5, ns.overrideBinds )
+    end
+
     if overrideInitialized then
         ClearOverrideBindings( Hekili_Keyhandler )
     end 
@@ -139,8 +143,16 @@ ns.setClass = function( name ) class.file = name end
 
 class.artifacts = {}
 
-ns.setArtifact = function( name, remove )
+function ns.setArtifact( name, remove )
     class.artifacts[ name ] = remove and false or true
+end
+
+
+class.traits = {}
+
+function ns.addTrait( key, id )
+    class.traits[ key ] = id
+    class.traits[ id ] = key
 end
 
 

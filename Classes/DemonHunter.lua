@@ -22,6 +22,7 @@ local addMetaFunction = ns.addMetaFunction
 local addSetting = ns.addSetting
 local addTalent = ns.addTalent
 local addToggle = ns.addToggle
+local addTrait = ns.addTrait
 local addPerk = ns.addPerk
 local addResource = ns.addResource
 local addStance = ns.addStance
@@ -115,10 +116,64 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addTalent( 'soul_barrier', 227225 )
 
 
+        -- Traits
+        -- Havoc
+        addTrait( "anguish_of_the_deceiver", 201473 )
+        addTrait( "balanced_blades", 201470 )
+        addTrait( "bladedancers_grace", 243188 )
+        addTrait( "chaos_burn", 214907 )
+        addTrait( "chaos_vision", 201456 )
+        addTrait( "chaotic_onslaught", 238117 )
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "contained_fury", 201454 )
+        addTrait( "critical_chaos", 201455 )
+        addTrait( "deceivers_fury", 201463 )
+        addTrait( "demon_rage", 201458 )
+        addTrait( "demon_speed", 201469 )
+        addTrait( "feast_on_the_souls", 201468 )
+        addTrait( "fury_of_the_illidari", 201467 )
+        addTrait( "illidari_ferocity", 241090 )
+        addTrait( "illidari_knowledge", 201459 )
+        addTrait( "inner_demons", 201471 )
+        addTrait( "overwhelming_power", 201464 )
+        addTrait( "rage_of_the_illidari", 201472 )
+        addTrait( "sharpened_glaives", 201457 )
+        addTrait( "unleashed_demons", 201460 )
+        addTrait( "warglaives_of_chaos", 214795 )
+        addTrait( "wide_eyes", 238045 )
+
+
+        -- Vengeance
+        addTrait( "aldrachi_design", 207343 )
+        addTrait( "aura_of_pain", 207347 )
+        addTrait( "charred_warblades", 213010 )
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "defensive_spikes", 212829 )
+        addTrait( "demonic_flames", 212894 )
+        addTrait( "devour_souls", 212821 )
+        addTrait( "embrace_the_pain", 212816 )
+        addTrait( "erupting_souls", 238082 )
+        addTrait( "fiery_demise", 212817 )
+        addTrait( "flaming_soul", 238118 )
+        addTrait( "fueled_by_pain", 213017 )
+        addTrait( "honed_warblades", 207352 )
+        addTrait( "illidari_durability", 241091 )
+        addTrait( "infernal_force", 207375 )
+        addTrait( "lingering_ordeal", 238046 )
+        addTrait( "painbringer", 207387 )
+        addTrait( "shatter_the_souls", 212827 )
+        addTrait( "siphon_power", 218910 )
+        addTrait( "soul_carver", 207407 )
+        addTrait( "soulgorger", 214909 )
+        addTrait( "tormented_souls", 214744 )
+        addTrait( "will_of_the_illidari", 212819 )
+
+
         -- Auras.
         addAura( 'blade_dance', 188499, 'duration', 1 )
         addAura( 'blur', 198589, 'duration', 10 )
         addAura( 'chaos_nova', 179067, 'duration', 5 )
+        addAura( 'chaos_blades', 211048, 'duration', 12 )
         addAura( 'darkness', 209426, 'duration', 8 )
         addAura( 'death_sweep', 210152, 'duration', 1 )
         addAura( 'fel_barrage', 211053, 'duration', 1 )
@@ -479,7 +534,8 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             charges = 5,
             recharge = 30,
             gcdType = 'spell',
-            cooldown = 30
+            cooldown = 30,
+            known = function () return talent.fel_barrage.enabled end
         } )
 
         addHandler( 'fel_barrage', function ()

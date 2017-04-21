@@ -198,15 +198,17 @@ function Hekili:OnInitialize()
             end,
             OnTooltipShow = function( tt )
                 tt:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
-                tt:AddLine( "Left-click to make quick adjustments." )
-                tt:AddLine( "Right-click to open the options interface." )
+                tt:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
+                tt:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
             end,
         } )
 
         function ns.UI.Minimap:RefreshDataText()
             local p = Hekili.DB.profile
+            local color = "FFFFD100"
 
-            self.text = format( "|cFFFFD100%s|r %sC|r %sI|r %sP|r",
+            self.text = format( "|c%s%s|r  %sCD|r  %sInt|r  %sPot|r",
+                color,
                 p['Mode Status'] == 0 and "Single" or ( p['Mode Status'] == 2 and "AOE" or ( p['Mode Status'] == 3 and "Auto" or "X" ) ),
                 p.Cooldowns and "|cFF00FF00" or "|cFFFF0000",
                 p.Interrupts and "|cFF00FF00" or "|cFFFF0000",
@@ -976,7 +978,6 @@ function Hekili:UpdateDisplay( dispID )
                         button.Icon:Hide()
                     end
 
-
                     if display.showCaptions and ( i == 1 or display.queuedCaptions ) then
                         button.Caption:SetText( caption )
                     else
@@ -988,7 +989,6 @@ function Hekili:UpdateDisplay( dispID )
                     else
                         button.Keybinding:SetText( nil )
                     end
-
 
                     if i == 1 then
                         if display.showTargets then
@@ -1115,6 +1115,8 @@ function Hekili:UpdateDisplay( dispID )
                     end
 
                 else
+
+                    print( "no aKey", dispID, display.Name, i )
                     ns.UI.Buttons[dispID][i].Texture:SetTexture( nil )
                     ns.UI.Buttons[dispID][i].Cooldown:SetCooldown( 0, 0 )
                     ns.UI.Buttons[dispID][i]:Hide()
@@ -1124,6 +1126,7 @@ function Hekili:UpdateDisplay( dispID )
             end
 
         else
+
             for i, button in ipairs(ns.UI.Buttons[dispID]) do
                 button:Hide()
 

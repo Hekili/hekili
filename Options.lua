@@ -32,7 +32,7 @@ function Hekili:GetDefaults()
       Legion = true,
       Enabled = true,
       Locked = true,
-      MinimapIcon = true, -- true == hide
+      MinimapIcon = false, -- true == hide
 
       ['Switch Type'] = 0,
       ['Mode Status'] = 3,
@@ -60,7 +60,7 @@ function Hekili:GetDefaults()
       runOnce = {
       },
       iconStore = {
-        hide = true,
+        hide = false,
       },
     },
   }

@@ -19,10 +19,10 @@ local modifyAura = ns.modifyAura
 local addGearSet = ns.addGearSet
 local addGlyph = ns.addGlyph
 local addMetaFunction = ns.addMetaFunction
-local addTalent = ns.addTalent
-local addPerk = ns.addPerk
 local addResource = ns.addResource
 local addStance = ns.addStance
+local addTalent = ns.addTalent
+local addTrait = ns.addTrait
 
 local addSetting = ns.addSetting
 local addToggle = ns.addToggle
@@ -104,6 +104,58 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addTalent( 'righteous_protector', 204074 )
         addTalent( 'seraphim', 152262 )
         addTalent( 'last_defender', 203791 )
+
+
+        -- Artifact Traits
+        -- Retribution
+        addTrait( "ashbringers_light", 207604 )
+        addTrait( "ashes_to_ashes", 179546 )
+        addTrait( "blade_of_light", 214081 )
+        addTrait( "blessing_of_the_ashbringer", 238098 )
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "deflection", 184778 )
+        addTrait( "deliver_the_justice", 186927 )
+        addTrait( "divine_tempest", 186773 )
+        addTrait( "echo_of_the_highlord", 186788 )
+        addTrait( "embrace_the_light", 186934 )
+        addTrait( "endless_resolve", 185086 )
+        addTrait( "ferocity_of_the_silver_hand", 241147 )
+        addTrait( "healing_storm", 193058 )
+        addTrait( "highlords_judgment", 186941 )
+        addTrait( "judge_unworthy", 238134 )
+        addTrait( "might_of_the_templar", 185368 )
+        addTrait( "protector_of_the_ashen_blade", 186944 )
+        addTrait( "righteous_blade", 184843 )
+        addTrait( "righteous_verdict", 238062 )
+        addTrait( "sharpened_edge", 184759 )
+        addTrait( "unbreakable_will", 182234 )
+        addTrait( "wake_of_ashes", 205273 )
+        addTrait( "wrath_of_the_ashbringer", 186945 )
+
+        -- Protection
+        addTrait( "bastion_of_truth", 209216 )
+        addTrait( "blessed_stalwart", 238133 )
+        addTrait( "bulwark_of_order", 209389 )
+        addTrait( "bulwark_of_the_silver_hand", 241146 )
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "consecration_in_flame", 209218 )
+        addTrait( "defender_of_truth", 238097 )
+        addTrait( "eye_of_tyr", 209202 )
+        addTrait( "faiths_armor", 209225 )
+        addTrait( "forbearant_faithful", 209376 )
+        addTrait( "hammer_time", 209229 )
+        addTrait( "holy_aegis", 238061 )
+        addTrait( "light_of_the_titans", 209539 )
+        addTrait( "painful_truths", 209341 )
+        addTrait( "resolve_of_truth", 209224 )
+        addTrait( "righteous_crusader", 209226 )
+        addTrait( "sacrifice_of_the_just", 209285 )
+        addTrait( "scatter_the_shadows", 209223 )
+        addTrait( "stern_judgment", 209217 )
+        addTrait( "truthguards_light", 221841 )
+        addTrait( "tyrs_enforcer", 209474 )
+        addTrait( "unflinching_defense", 209220 )
+        addTrait( "unrelenting_light", 214924 )
 
 
         -- Player Buffs.
