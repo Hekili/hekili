@@ -20,7 +20,7 @@ local addGearSet = ns.addGearSet
 local addGlyph = ns.addGlyph
 local addMetaFunction = ns.addMetaFunction
 local addTalent = ns.addTalent
-local addPerk = ns.addPerk
+local addTrait = ns.addTrait
 local addResource = ns.addResource
 local addStance = ns.addStance
 
@@ -103,6 +103,58 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
 
         addTalent( 'lightning_rod', 210689 )
         addTalent( 'liquid_magma_totem', 192222 )
+
+
+        -- Traits
+        -- Enhancement
+        addTrait( "alpha_wolf", 198434 )
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "crashing_hammer", 238070 )
+        addTrait( "doom_vortex", 199107 )
+        addTrait( "doom_winds", 204945 )
+        addTrait( "doom_wolves", 198505 )
+        addTrait( "earthshattering_blows", 214932 )
+        addTrait( "elemental_healing", 198248 )
+        addTrait( "forged_in_lava", 198236 )
+        addTrait( "gathering_of_the_maelstrom", 198349 )
+        addTrait( "gathering_storms", 198299 )
+        addTrait( "hammer_of_storms", 198228 )
+        addTrait( "lashing_flames", 238142 )
+        addTrait( "might_of_the_earthen_ring", 241203 )
+        addTrait( "raging_storms", 198361 )
+        addTrait( "spirit_of_the_maelstrom", 198238 )
+        addTrait( "spiritual_healing", 198296 )
+        addTrait( "stormflurry", 198367 )
+        addTrait( "unleash_doom", 198736 )
+        addTrait( "weapons_of_the_elements", 215381 )
+        addTrait( "wind_strikes", 198292 )
+        addTrait( "wind_surge", 198247 )
+        addTrait( "winds_of_change", 238106 )
+
+        -- Elemental
+        addTrait( "call_the_thunder", 191493 )
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "earthen_attunement", 191598 )
+        addTrait( "electric_discharge", 191577 )
+        addTrait( "elemental_destabilization", 238069 )
+        addTrait( "elementalist", 191512 )
+        addTrait( "firestorm", 191740 )
+        addTrait( "fury_of_the_storms", 191717 )
+        addTrait( "lava_imbued", 191504 )
+        addTrait( "master_of_the_elements", 191647 )
+        addTrait( "molten_blast", 191572 )
+        addTrait( "power_of_the_earthen_ring", 241202 )
+        addTrait( "power_of_the_maelstrom", 191861 )
+        addTrait( "protection_of_the_elements", 191569 )
+        addTrait( "seismic_storm", 238141 )
+        addTrait( "shamanistic_healing", 191582 )
+        addTrait( "static_overload", 191602 )
+        addTrait( "stormkeeper", 205495 )
+        addTrait( "stormkeepers_power", 214931 )
+        addTrait( "surge_of_power", 215414 )
+        addTrait( "swelling_maelstrom", 238105 )
+        addTrait( "the_ground_trembles", 191499 )
+        addTrait( "volcanic_inferno", 192630 )
 
 
         -- Player Buffs.
@@ -1137,9 +1189,9 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
 
         addHandler( 'lava_lash', function ()
             removeBuff( 'hot_hand' )
-            if artifact.lashing_flames.enabled then removeDebuff( 'target', 'lashing_flames' ) end
+            removeDebuff( 'target', 'lashing_flames' )
             if buff.rainfall.up then
-                buff.rainfall.expires = max( buff.rainfall.applied + 30, buff.rainfall.expires + 3 )
+                buff.rainfall.expires = min( buff.rainfall.applied + 30, buff.rainfall.expires + 3 )
             end
             if equipped.eye_of_the_twisting_nether then
                 applyBuff( 'fire_of_the_twisting_nether', 8 )
