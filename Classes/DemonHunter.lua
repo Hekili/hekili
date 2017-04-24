@@ -534,7 +534,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             return x
         end )
 
-            return x - ( 1.0 * talent.blind_fury.enabled ))
+            return x - ( 1.0 * talent.blind_fury.enabled )
 
         modifyAbility( 'eye_beam', 'spend', function( x )
             return x - ( 5 * artifact.wide_eyes.rank )
