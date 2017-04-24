@@ -3049,6 +3049,11 @@ ns.isKnown = function( sID )
 
     local ability = class.abilities[ sID ]
 
+    local bl = Hekili.DB.profile.blacklist
+    if bl and bl[ ability.key ] then
+        return false
+    end
+
     if not ability then
         ns.Error( "isKnown() - " .. sID .. " not found in abilities table." )
         return false

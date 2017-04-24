@@ -16,6 +16,7 @@ local getSpecializationID = ns.getSpecializationID
 
 local escapeMagic = ns.escapeMagic
 local formatKey = ns.formatKey
+local orderedPairs = ns.orderedPairs
 local tableCopy = ns.tableCopy
 
 
@@ -59,6 +60,11 @@ function Hekili:GetDefaults()
       },
       runOnce = {
       },
+
+
+      blacklist = {
+      },
+
       iconStore = {
         hide = false,
       },
@@ -3386,6 +3392,33 @@ ns.ClassSettings = function ()
     option.args.settings.args[ setting.name ].order = i
   end
 
+  option.args.exclusions = {
+    type = 'group',
+    name = 'Exclusions',
+    order = 30,
+    inline = true,
+    args = {},
+  }
+
+  local abilities = {}  
+  for _, v in pairs( class.abilities ) do
+    if v.id > 0 then
+        abilities[ v.name ] = v.key
+    end
+  end
+
+  local i = 1
+  for k, v in orderedPairs( abilities ) do
+    option.args.exclusions.args[ v ] = {
+        type = 'toggle',
+        name = k,
+        desc = "If checked, this ability will be excluded from the addon's recommendations.",
+        -- width = 'full',
+        order = i
+    }
+    i = i + 1
+  end
+
   return option
 
 end
@@ -4270,7 +4303,7 @@ function Hekili:GetOptions()
         name = "Notifications",
         childGroups = "tree",
         cmdHidden = true,
-        order = 40,
+        order = 70,
         args = {
           ['Notification Enabled'] = {
             type = 'toggle',
@@ -5081,7 +5114,7 @@ function Hekili:TotalRefresh()
       Hekili.DB.profile['Class Option: '..v.name] = v.state
     end
   end
-  
+
   ns.convertDisplays()
   ns.runOneTimeFixes()
   ns.checkImports()
@@ -5162,6 +5195,9 @@ function Hekili:GetOption( info, input )
 
     elseif info[2] == 'settings' then
       return profile['Class Option: '..option]
+
+    elseif info[2] == 'exclusions' then
+      return profile.blacklist[ option ]
 
     end
 
@@ -5356,6 +5392,10 @@ function Hekili:SetOption( info, input, ... )
 
     elseif subcategory == 'settings' then
       profile[ 'Class Option: '..option] = input
+
+    elseif subcategory == 'exclusions' then
+      profile.blacklist[ option ] = input
+      ns.forceUpdate()
 
     end
 
