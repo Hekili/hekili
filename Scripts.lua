@@ -475,7 +475,9 @@ function ns.getConditionsAndValues( sType, sID )
         if script.Elements then
             for k, v in pairs( script.Elements ) do
                 local key = key_cache[ k ]
-                local value = v()
+                local value, emsg = pcall( v )
+
+                if emsg then value = emsg end
 
                 if type(value) == 'number' then
                     output = output:gsub( key, format( key .. "[%.2f]", value ) )
