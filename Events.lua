@@ -961,6 +961,14 @@ local function ReadKeybindings()
         if not updatedKeys[ k ] then keys[ k ] = nil end
     end
 
+    for k in pairs( keys ) do
+        local ability = class.abilities[ k ]
+
+        if ability and ability.bind then
+            keys[ ability.bind ] = keys[ k ]
+        end
+    end
+
 end    
 
 
@@ -977,3 +985,5 @@ RegisterEvent( "UPDATE_SHAPESHIFT_FORM", ReadKeybindings )
 function Hekili:GetBindingForAction( key, caps )
     return ( key and keys[ key ] ) and ( caps and keys[ key ].upper or keys[ key ].binding ) or ""
 end
+
+

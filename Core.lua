@@ -460,14 +460,14 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                     else
                         -- APL checks.
                         if entry.Ability == 'variable' then
-                            local aScriptValue = checkScript( 'A', scriptID )
-
+                            -- local aScriptValue = checkScript( 'A', scriptID )
                             local varName = entry.ModVarName or state.args.name
 
-                            if debug then self:Debug( "Will attempt to store value " .. tostring( aScriptValue ) .. " in variable '%s'", varName or "MISSING" ) end
+                            if debug then self:Debug( " - variable.%s will refer to this action's script.", varName or "MISSING" ) end
 
-                            if varName ~= nil and aScriptValue ~= nil then
-                                state.variable[ varName ] = aScriptValue
+                            if varName ~= nil then -- and aScriptValue ~= nil then
+                                state.variable[ "_" .. varName ] = scriptID
+                                -- We just store the scriptID so that the variable actually gets tested at time of comparison.
                             end
 
                         elseif entry.Ability == 'call_action_list' or entry.Ability == 'run_action_list' then
@@ -1116,7 +1116,7 @@ function Hekili:UpdateDisplay( dispID )
 
                 else
 
-                    print( "no aKey", dispID, display.Name, i )
+                    -- print( "no aKey", dispID, display.Name, i )
                     ns.UI.Buttons[dispID][i].Texture:SetTexture( nil )
                     ns.UI.Buttons[dispID][i].Cooldown:SetCooldown( 0, 0 )
                     ns.UI.Buttons[dispID][i]:Hide()

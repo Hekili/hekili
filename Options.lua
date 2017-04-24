@@ -6079,7 +6079,8 @@ local function sanitize( segment, i, line, warnings )
 
   if i == nil then return i end
 
-  local operators = { [">"] = true,
+  local operators = {
+    [">"] = true,
     ["<"] = true,
     ["="] = true,
     ["~"] = true,
@@ -6089,7 +6090,8 @@ local function sanitize( segment, i, line, warnings )
     ["*"] = true
   }
   
-  local maths = { ['+'] = true,
+  local maths = {
+    ['+'] = true,
     ['-'] = true,
     ['*'] = true,
     ['%%'] = true
@@ -6138,8 +6140,7 @@ local function sanitize( segment, i, line, warnings )
     end
 
   end
-
-  
+ 
 
   i, times = i:gsub( "pet%.%w+%.([%w_]+)%.", "%1." )
   if times > 0 then
@@ -6154,6 +6155,78 @@ local function sanitize( segment, i, line, warnings )
   i, times = i:gsub( "gcd%.remains", "cooldown.global_cooldown.remains" )
   if times > 0 then
     table.insert( warnings, "Line " .. line .. ": Converted gcd.remains to cooldown.global_cooldown.remains (" .. times .. "x)." )
+  end
+
+  i, times = i:gsub( "[!+-%*]?raid_event[.a-z0-9_><=~%-%+*]+", "" )
+  if times > 0 then
+    table.insert( warnings, "Line " .. line .. ": Removed 'raid_event' check(s) (" .. times .. "x)." )
+
+    local cleaning = true
+    i = i:gsub( "||", "|" )
+    while( cleaning ) do
+
+        cleaning = false
+        i, times = i:gsub( "%(%)", "" )
+        cleaning = cleaning or times > 0
+
+        i, times = i:gsub( "^[|&]+", "" )
+        cleaning = cleaning or times > 0
+
+        i, times = i:gsub( "[|&]+$", "" )
+        cleaning = cleaning or times > 0
+
+        i, times = i:gsub( "%([|&]+", "(" )
+        cleaning = cleaning or times > 0
+
+        i, times = i:gsub( "[|&]+%)", ")" )
+        cleaning = cleaning or times > 0
+
+        i = i:gsub( "||", "|" )
+        i = i:gsub( "|&", "|" )
+        i = i:gsub( "&|", "|" )
+        i = i:gsub( "&&", "&" )
+
+        -- i, times = i:gsub( "([|&])[|&]", "%1" )
+        -- cleaning = cleaning or times > 0
+
+    end
+    i = i:gsub( "|", "||" )
+  end
+
+
+  i, times = i:gsub( "desired_targets", "1" )
+  if times > 0 then
+    table.insert( warnings, "Line " .. line .. ": Replaced 'desired_targets' with '1' (" .. times .. "x)." )
+  end
+
+  i, times = i:gsub( "min:[a-z0-9_%+%-%%]", "" )
+  if times > 0 then
+    table.insert( warnings, "Line " .. line .. ": Removed min:X check (not available in emulation) -- (" .. times .. "x)." )
+  end
+
+  i, times = i:gsub( "max:[a-z0-9_%+%-%%]", "" )
+  if times > 0 then
+    table.insert( warnings, "Line " .. line .. ": Removed max:X check (not available in emulation) -- (" .. times .. "x)." )
+  end
+
+  i, times = i:gsub( "buff.out_of_range.up", "target.in_range" )
+  if times > 0 then
+    table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.up' with 'target.in_range' (" .. times .. "x)." )
+  end
+
+  i, times = i:gsub( "buff.out_of_range.down", "!target.in_range" )
+  if times > 0 then
+    table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.down' with '!target.in_range' (" .. times .. "x)." )
+  end
+
+  i, times = i:gsub( "movement.distance", "target.distance" )
+  if times > 0 then
+    table.insert( warnings, "Line " .. line .. ": Replaced 'movement.distance' with 'target.distance' (" .. times .. "x)." )
+  end
+
+  i, times = i:gsub( "buff.metamorphosis.extended_by_demonic", "buff.demonic_extended_metamorphosis.up" )
+  if times > 0 then
+    table.insert( warnings, "Line " .. line .. ": Replaced 'buff.metamorphosis.extended_by_demonic' with 'buff.demonic_extended_metamorphosis.up' (" .. times .. "x)." )
   end
 
   --[[ i, times = i:gsub( "spell_targets%.[a-zA-Z0-9_]+", "active_enemies" )
@@ -6572,9 +6645,11 @@ local function storeModifier( entry, key, value )
         entry.ModName = value:match( [["(.*)"]] ) or value
         entry.ModVarName = value:match( [["(.*)"]] ) or value
 
-
     elseif key == 'value' then -- for 'variable' type, overwrites Script
         entry.Script = value
+
+    elseif key == 'target_if' then
+        entry.TargetIf = value
 
     end
 
@@ -6614,7 +6689,7 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
             end
         end
 
-        for token in i:gmatch( 'spell_targets%.[%a_]+' ) do
+        for token in i:gmatch( 'spell_targets[.%a_]-' ) do
 
             local times = 0
             while (i:find(token)) do
@@ -6672,6 +6747,11 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
                 end
             end
 
+        end
+
+        if result.Script and result.TargetIf then
+            -- We merge these and don't really use it for target swapping.
+            result.Script = format( "(%s)&(%s)", result.Script, result.TargetIf )
         end
 
         if result.Script then

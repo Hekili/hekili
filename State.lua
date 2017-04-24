@@ -96,6 +96,9 @@ state.target = {
 state.toggle = {}
 state.totem = {}
 
+
+
+
 state.trinket = {
   t1 = {
     slot = 't1',
@@ -181,9 +184,6 @@ state.using_apl = setmetatable( {}, {
     return false
   end
 } )
-
-
-state.variable = {}
 
 
 state.role = setmetatable( {}, {
@@ -1310,10 +1310,13 @@ local mt_target = {
     elseif k == 'distance' then
       -- Need to identify a couple of spells to roughly get the distance to an enemy.
       -- We'd probably use IsSpellInRange() on an individual action instead, so maybe not.
-      return 5
+      return ( t.minR + t.maxR ) / 2
 
     elseif k == 'moving' then
       return GetUnitSpeed( 'target' ) > 0
+
+    elseif k == 'exists' then
+      return UnitExists( 'target' )
 
     elseif k == 'casting' then
       if UnitName("target") and UnitCanAttack("player", "target") and UnitHealth("target") > 0 then
@@ -1332,6 +1335,15 @@ local mt_target = {
         end
       end
       return false
+
+    elseif k == 'in_range' then
+        local ability = state.this_action and class.abilities[ state.this_action ]
+
+        if ability then
+            return ( not state.target.exists or ns.lib.SpellRange.IsSpellInRange( ability.id, 'target' ) )
+        end
+
+        return true
 
     elseif k == 'is_demon' then
         return UnitCreatureType( 'target' ) == PET_TYPE_DEMON
@@ -1375,7 +1387,7 @@ local mt_target = {
         rawset( t, k, minR )
         return t[k]
       end
-      return 30
+      return 5
 
     elseif k == 'maxR' then
       local maxR = select( 2, ns.lib.RangeCheck:GetRange( 'target' ) )
@@ -1493,7 +1505,7 @@ local mt_default_cooldown = {
         elseif k == 'time_to_max_charges' then
             return ( class.abilities[ t.key ].charges - t.charges_fractional ) * class.abilities[ t.key ].recharge
 
-        elseif k == 'remains' then
+        elseif k == 'remains' or k == 'adjusted_remains' then
 
             if t.key == 'global_cooldown' then
                 return max( 0, t.expires - state.query_time )
@@ -2104,6 +2116,24 @@ local mt_totem = {
 ns.metatables.mt_totem = mt_totem
 
 
+local mt_variable = {
+    __index = function( t, k )
+        local id = rawget( t, "_" .. k )
+
+        if id then
+            local value = ns.checkScript( 'A', id )
+
+            return value
+        end
+
+        return false
+    end
+}
+ns.metatables.mt_variable = mt_Variable
+
+state.variable = setmetatable( {}, mt_variable )
+
+
 -- Table of set bonuses.  Some string manipulation to honor the SimC syntax.
 -- Currently returns 1 for true, 0 for false to be consistent with SimC conditionals.
 -- Won't catch fake set names.  Should revise.
@@ -2656,6 +2686,10 @@ function state.reset( dispID )
   
   for k in pairs( state.args ) do
     state.args[ k ] = nil
+  end
+
+  for k in pairs( state.variable ) do
+    state.variable[ k ] = nil
   end
 
   for k in pairs( state.active_dot ) do

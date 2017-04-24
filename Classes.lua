@@ -69,6 +69,7 @@ ns.overrideBinds = function()
 
     if InCombatLockdown() then
         C_Timer.After( 5, ns.overrideBinds )
+        return
     end
 
     if overrideInitialized then
@@ -636,9 +637,10 @@ addAura( 'casting', -10, 'feign', function()
 
     debuff.casting.count = 0
     debuff.casting.expires = 0
-    debuff.csating.applied = 0
+    debuff.casting.applied = 0
     debuff.casting.caster = 'unknown'
 end )
+
 
 
 
