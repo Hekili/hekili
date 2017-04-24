@@ -301,6 +301,10 @@ local gearInitialized = false
 
 ns.updateGear = function ()
 
+    for thing in pairs( state.set_bonus ) do
+        state.set_bonus[ thing ] = nil
+    end
+
     for set, items in pairs( class.gearsets ) do
         state.set_bonus[ set ] = 0
         for item, _ in pairs( items ) do
@@ -414,8 +418,8 @@ end
 
 
 RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", function()
-        ns.updateGear()
-        -- ns.updateArtifact()
+    ns.updateGear()
+    -- ns.updateArtifact()
 end )
 
 
