@@ -664,7 +664,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         end )
 
         modifyAbility( 'metamorphosis', 'cooldown', function( x )
-            if spec.havoc then return x - ( 20 * talent.unleashed_demons.rank ) end
+            if spec.havoc then return x - ( 20 * artifact.unleashed_demons.rank ) end
             return x
         end )
 
