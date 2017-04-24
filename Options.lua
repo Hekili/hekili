@@ -3601,6 +3601,7 @@ ns.SimulationCraftImporter = function ()
             if action:sub( 1, 6 ) == "potion" then
                 local pot = action:match( "name=(.-),")
                 pot = pot or action:match( "name=(.-)$" )
+                pot = pot or class.potion or ""
                 action = action:gsub( pot, "\""..pot.."\"" )
             end
               
