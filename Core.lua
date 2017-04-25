@@ -30,12 +30,11 @@ local tableCopy = ns.tableCopy
 local timeToReady = ns.timeToReady
 local trim = string.trim
 
-
 local mt_resource = ns.metatables.mt_resource
-
 
 local AD = ns.lib.ArtifactData
 local SF = ns.lib.SpellFlash
+local ToggleDropDownMenu = Lib_ToggleDropDownMenu
 
 local updatedDisplays = {}
 
@@ -161,6 +160,9 @@ function ns.pruneDefaults()
 end
 
 
+
+local hookOnce = false
+
 -- OnInitialize()
 -- Addon has been loaded by the WoW client (1x).
 function Hekili:OnInitialize()
@@ -192,7 +194,16 @@ function Hekili:OnInitialize()
             OnClick = function( f, button )
                 if button == "RightButton" then ns.StartConfiguration()
                 else
-                    ToggleDropDownMenu( 1, nil, Hekili_Menu, f:GetName(), 0, 0 )
+                    if not hookOnce then 
+                        hooksecurefunc("Lib_UIDropDownMenu_InitializeHelper", function(frame)
+                            for i = 1, LIB_UIDROPDOWNMENU_MAXLEVELS do
+                                if _G["Lib_DropDownList"..i.."Backdrop"].SetTemplate then _G["Lib_DropDownList"..i.."Backdrop"]:SetTemplate("Transparent") end
+                                if _G["Lib_DropDownList"..i.."MenuBackdrop"].SetTemplate then _G["Lib_DropDownList"..i.."MenuBackdrop"]:SetTemplate("Transparent") end
+                            end
+                        end )
+                        hookOnce = true
+                    end
+                    ToggleDropDownMenu( 1, nil, Hekili_Menu, f:GetName(), "MENU" )
                 end
                 GameTooltip:Hide()
             end,
