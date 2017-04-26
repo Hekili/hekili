@@ -923,6 +923,7 @@ local flashes = {}
 local checksums = {}
 local applied = {}
 
+
 function Hekili:UpdateDisplay( dispID )
 
     local self = self or Hekili
@@ -999,6 +1000,43 @@ function Hekili:UpdateDisplay( dispID )
                         button.Keybinding:SetText( self:GetBindingForAction( aKey, not display.lowercaseKBs == true ) )
                     else
                         button.Keybinding:SetText( nil )
+                    end
+
+                    if display.showAuraInfo and i == 1 then
+                        if type( display.auraSpellID ) == 'string' or display.auraSpellID > 0 then
+                            local aura = class.auras[ display.auraSpellID ]
+
+                            if not aura then 
+                                button.Auras:SetText(nil)
+                            else
+                                if display.auraInfoType == 'count' then
+                                    local c = ns.numDebuffs( aura.name )
+                                    button.Auras:SetText( c > 0 and c or "" )
+
+                                elseif display.auraInfoType == 'buff' then
+                                    local name, _, _, count = UnitBuff( display.auraUnit, aura.name, nil, display.auraMine and "PLAYER" or "" )
+                                    if not name then button.Auras:SetText( nil )
+                                    else button.Auras:SetText( max( 1, count ) ) end
+
+                                elseif display.auraInfoType == 'debuff' then
+                                    local name, _, _, count = UnitDebuff( display.auraUnit, aura.name, nil, display.auraMine and "PLAYER" or "" )
+
+                                    if not name then button.Auras:SetText( nil )
+                                    else button.Auras:SetText( max( 1, count ) ) end
+
+                                elseif display.auraInfoType == 'buffRem' then
+                                    local name, _, _, _, _, _, expires = UnitBuff( display.auraUnit, aura.name, nil, display.auraMine and "PLAYER" or "" )
+                                    if not name then button.Auras:SetText( nil )
+                                    else button.Auras:SetText( format( "%.1f", expires - now ) ) end
+
+                                elseif display.auraInfoType == 'debuffRem' then
+                                    local name, _, _, _, _, _, expires = UnitDebuff( display.auraUnit, aura.name, nil, display.auraMine and "PLAYER" or "" )
+                                    if not name then button.Auras:SetText( nil )
+                                    else button.Auras:SetText( format( "%.1f", expires - now ) ) end
+                                    
+                                end
+                            end
+                        else button.Auras:SetText( nil ) end
                     end
 
                     if i == 1 then

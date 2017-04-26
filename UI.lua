@@ -757,14 +757,14 @@ function Hekili:CreateButton( display, ID )
   button.Caption:SetPoint( capAnchor, button, capAnchor, disp.xOffsetCaptions or 0, disp.yOffsetCaptions or 0 )
   button.Caption:SetJustifyV( capAnchor )
   button.Caption:SetJustifyH( disp.captionAlign or "CENTER" )
-  button.Caption:SetTextColor(1, 1, 1, 1)
+  button.Caption:SetTextColor( 1, 1, 1, 1 )
 
   if ID == 1 then
       button.Targets = button.Targets or button:CreateFontString( name.."Targets", "OVERLAY" )
 
       local tarFont = disp.targetFont or ( ElvUI and "PT Sans Narrow" or "Arial Narrow" )
       button.Targets:SetFont( ns.lib.SharedMedia:Fetch( "font", tarFont ), disp.targetFontSize or 12, disp.targetFontStyle or "OUTLINE" )
-      button.Targets:SetSize( button:GetWidth() / 2, button:GetHeight() / 2 )
+      button.Targets:SetSize( button:GetWidth(), button:GetHeight() / 2 )
       
       local tarAnchor = disp.targetAnchor or "BOTTOM"
       button.Targets:ClearAllPoints()
@@ -776,6 +776,25 @@ function Hekili:CreateButton( display, ID )
       button.Targets:SetJustifyV( tarAlignV )
       
       button.Targets:SetTextColor( 1, 1, 1, 1 )
+  
+      
+      button.Auras = button.Auras or button:CreateFontString( name.."Auras", "OVERLAY" )
+
+      local auraFont = disp.auraFont or ( ElvUI and "PT Sans Narrow" or "Arial Narrow" )
+      button.Auras:SetFont( ns.lib.SharedMedia:Fetch( "font", auraFont ), disp.auraFontSize or 12, disp.auraFontStyle or "OUTLINE" )
+      button.Auras:SetSize( button:GetWidth(), button:GetHeight() / 2 )
+
+      local auraAnchor = disp.auraAnchor or "BOTTOM"
+      button.Auras:ClearAllPoints()
+      button.Auras:SetPoint( auraAnchor, button, auraAnchor, disp.xOffsetAuras or 0, disp.yOffsetAuras or 0 )
+
+      local auraAlign = auraAnchor:match( "RIGHT" ) and "RIGHT" or ( auraAnchor:match( "LEFT" ) and "LEFT" or "CENTER" )
+      button.Auras:SetJustifyH( auraAlign )
+      local auraAlignV = auraAnchor:match( "TOP" ) and "TOP" or ( auraAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" )
+      button.Auras:SetJustifyV( auraAlignV )
+      
+      button.Auras:SetTextColor( 1, 1, 1, 1 )
+
   end
 
   -- Keybinding Text

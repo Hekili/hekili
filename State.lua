@@ -1826,7 +1826,7 @@ local mt_default_buff = {
                 t.unit = real.unit
             else
                 for attr, a_val in pairs( default_buff_values ) do
-                    t[ attr ] = a_val
+                    t[ attr ] = class.auras[ t.key ] and class.auras[ t.key ][ attr ] or a_val
                 end
             end
 
@@ -2203,8 +2203,24 @@ local mt_default_debuff = {
 
             local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
 
-            for key, value in pairs( real or default_debuff_values ) do
-                t[ key ] = value
+            if real then
+                t.name = real.name
+                t.count = real.count
+                t.duration = real.duration
+                t.expires = real.expires
+                t.applied = max( 0, real.expires - real.duration )
+                t.caster = real.caster
+                t.id = real.id
+                t.timeMod = real.timeMod
+                t.v1 = real.v1
+                t.v2 = real.v2
+                t.v3 = real.v3
+
+                t.unit = real.unit
+            else
+                for attr, a_val in pairs( default_debuff_values ) do
+                    t[ attr ] = class.auras[ t.key ] and class.auras[ t.key ][ attr ] or a_val
+                end
             end
 
             return t[ k ]

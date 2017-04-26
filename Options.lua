@@ -522,17 +522,26 @@ function Hekili:SetDisplayOption( info, val )
         return
 
     elseif option == 'auraSpellID' then
-        local nVal = tonumber( val )
+        local nVal = tonumber( val:trim() )
         local sVal = tostring( nVal )
 
-        if val ~= sVal then
-            -- We were given a string; check for spell.
-            local id = select( 7, GetSpellInfo( val ) )
+        if val == sVal then
+            -- We were given a spell ID.
+            if GetSpellInfo( nVal ) then
+                display[ option ] = nVal
+            else
+                display[ option ] = 0
+            end
 
-            if id then display[ option ] = id end
-            return
+        else
+            -- We were given a spell's name.
+            if GetSpellInfo( val ) then
+                display[ option ] = val
+            else
+                display[ option ] = 0
+            end
+
         end
-        display.auraSpellID = 0
         return
     
     elseif option == 'quickStyle' then
@@ -1902,11 +1911,12 @@ ns.newDisplayOption = function( key )
                             width = 'full',
                             values = {
                                 buff = "Buff Stacks",
+                                buffRem = "Buff Remaining Time",
                                 debuff = "Debuff Stacks",
+                                debuffRem = "Debuff Remaining Time",
                                 count = "Debuff Count"
                             }
                         },
-
                         auraSpellID = {
                             type = 'input',
                             name = 'Spell',
@@ -1988,10 +1998,50 @@ ns.newDisplayOption = function( key )
                             width = 'full',
                         },
 
+                        auraFont = {
+                            type = 'select',
+                            name = 'Font',
+                            desc = "Select the font to use for the aura information.",
+                            dialogControl = 'LSM30_Font',
+                            order = 9,
+                            values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                            width = 'full',
+                        },
+                        auraFontStyle = {
+                            type = 'select',
+                            name = 'Style',
+                            order = 10,
+                            values = {
+                                ["MONOCHROME"] = "Monochrome",
+                                ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
+                                ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
+                                ["NONE"] = "None",
+                                ["OUTLINE"] = "Outline",
+                                ["THICKOUTLINE"] = "Thick Outline"
+                            },
+                            width = 'full'
+                        },
+                        auraFontSize = {
+                            type = 'range',
+                            name = 'Size',
+                            desc = "Select the size of the font to use.",
+                            min = 6,
+                            max = 72,
+                            step = 1,
+                            order = 11,
+                            width = 'full'
+                        },
+                        auraSpacer2 = {
+                            type = 'description',
+                            name = '\n',
+                            order = 12,
+                            width = 'full',
+                        },
+
                         auraAnchor = {
                             type = 'select',
                             name = 'Anchor Point',
-                            order = 9,
+                            order = 13,
                             width = 'full',
                             values = {
                                 TOPLEFT = 'Top Left',
@@ -2008,7 +2058,7 @@ ns.newDisplayOption = function( key )
                         xOffsetAura = {
                             type = 'range',
                             name = 'X Offset',
-                            order = 10,
+                            order = 14,
                             width = 'full',
                             
                             min = -displayOptionInfo.iconOffset,
@@ -2019,7 +2069,7 @@ ns.newDisplayOption = function( key )
                         yOffsetAura = {
                             type = 'range',
                             name = 'Y Offset',
-                            order = 11,
+                            order = 15,
                             width = 'full',
                             
                             min = -displayOptionInfo.iconOffset,
@@ -5020,6 +5070,29 @@ function Hekili:GetOptions()
             }
         }
       },
+      --[[ skeleton = {
+        type = "group",
+        name = "Skeleton",
+        order = 71,
+        args = {
+            type = "input",
+            name = "Skeleton",
+            desc = "A rough skeleton of your current spec, for development purposes only.",
+            order = 1,
+            get = function( info )
+
+                local template = "" ..
+                    "if (select(2, UnitClass('player')) == '%s') then\n\n" ..
+                    "    ns.initializeClassModule = function ()\n\n" ..
+                    "        local current_spec = GetSpecialization()\n\n" ..
+                    "        setClass( '%s' )\n" ..
+                    "        -- Hekili.LowImpact = true\n"
+
+            end,
+            multiline = 25,
+            width = "full"
+        },
+      },]]
       make_defaults = {
         type = 'group',
         name = 'Defaults',
@@ -6790,9 +6863,13 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
 
         end
 
-        if result.Script and result.TargetIf then
-            -- We merge these and don't really use it for target swapping.
-            result.Script = format( "(%s)&(%s)", result.Script, result.TargetIf )
+        if result.TargetIf then
+            if result.Script and result.Script:len() > 0 then
+                -- We merge these and don't really use it for target swapping.
+                result.Script = format( "(%s)&(%s)", result.Script, result.TargetIf )
+            else
+                result.Script = result.TargetIf
+            end
         end
 
         if result.Script then

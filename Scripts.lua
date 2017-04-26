@@ -464,6 +464,8 @@ local key_cache = setmetatable( {}, {
 })
 
 
+local checked = {}
+
 function ns.getConditionsAndValues( sType, sID )
 
     local script = scripts[ sType ]
@@ -473,16 +475,21 @@ function ns.getConditionsAndValues( sType, sID )
         local output = script.SimC
 
         if script.Elements then
+            table.wipe( checked )
             for k, v in pairs( script.Elements ) do
-                local key = key_cache[ k ]
-                local value, emsg = pcall( v )
+                if not checked[ k ] then
+                    local key = key_cache[ k ]
+                    local value, emsg = pcall( v )
 
-                if emsg then value = emsg end
+                    if emsg then value = emsg end
 
-                if type(value) == 'number' then
-                    output = output:gsub( key, format( key .. "[%.2f]", value ) )
-                else
-                    output = output:gsub( key, format( key .. "[%s]", tostring( value ) ) )
+                    if type(value) == 'number' then
+                        output = output:gsub( "([^.]"..key..")", format( "%%1[%.2f]", value ) )
+                        output = output:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
+                    else
+                        output = output:gsub( key, format( key .. "[%s]", tostring( value ) ) )
+                    end
+                    checked[ k ] = true
                 end
             end
         end
