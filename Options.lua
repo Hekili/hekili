@@ -685,7 +685,9 @@ ns.newDisplayOption = function( key )
 
                                 option = option.args
 
-                                local resolution = select( GetCurrentResolution(), GetScreenResolutions() )
+                                local monitor = ( tonumber( GetCVar( 'gxMonitor' ) ) or 0 ) + 1
+                                local resolutions = { GetScreenResolutions() }
+                                local resolution = resolutions[ GetCurrentResolution() ] or GetCVar( "gxWindowedResolution" )
                                 local width, height = resolution:match( "(%d+)x(%d+)" )
 
                                 option.x.min = -width/2 or -512
@@ -743,7 +745,7 @@ ns.newDisplayOption = function( key )
                         end
 
                         for i, list in pairs( Hekili.DB.profile.actionLists ) do
-                            if list.Specialization then                                
+                            if list.Specialization > 0 then                                
                                 lists[i] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
                             else
                                 lists[i] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t ' .. list.Name
@@ -796,7 +798,7 @@ ns.newDisplayOption = function( key )
                         end
 
                         for i, list in pairs( Hekili.DB.profile.actionLists ) do
-                            if list.Specialization then                                
+                            if list.Specialization > 0 then                                
                                 lists[i] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
                             else
                                 lists[i] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t ' .. list.Name
@@ -2973,7 +2975,11 @@ ns.newActionOption = function( aList, index )
 
             if action.Ability == 'call_action_list' or action.Ability == 'run_action_list' then
                 for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                    opts[ list.Name ] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
+                    if list.Specialization > 0 then
+                        opts[ list.Name ] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
+                    else
+                        opts[ list.Name ] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t ' .. list.Name
+                    end                        
                 end
             elseif action.Ability == 'potion' then
                 for key, potion in pairs( class.potions ) do

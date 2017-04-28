@@ -1787,7 +1787,6 @@ ns.metatables.mt_resource = mt_resource
 
 local default_buff_values = {
     count = 0,
-    duration = 0,
     expires = 0,
     applied = 0,
     caster = 'nobody',
@@ -2178,7 +2177,6 @@ local default_debuff_values = {
     count = 0,
     expires = 0,
     applied = 0,
-    duration = 0,
     caster = 'nobody',
     timeMod = 1,
     v1 = 0,
@@ -2513,7 +2511,7 @@ local function scrapeUnitAuras( unit )
         v.count = 0
         v.expires = 0
         v.applied = 0
-        v.duration = class.auras[ k ] and class.auras[ k ].duration or 0
+        v.duration = class.auras[ k ] and class.auras[ k ].duration
         v.caster = 'nobody'
         v.timeMod = 1
         v.v1 = 0
@@ -2528,7 +2526,7 @@ local function scrapeUnitAuras( unit )
         v.count = 0
         v.expires = 0
         v.applied = 0
-        v.duration = class.auras[ k ] and class.auras[ k ].duration or 0
+        v.duration = class.auras[ k ] and class.auras[ k ].duration 
         v.caster = 'nobody'
         v.timeMod = 1
         v.v1 = 0
