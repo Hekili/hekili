@@ -1156,7 +1156,7 @@ local mt_default_pet = {
                     return t.expires
                 end
             end
-            
+
             t.expires = 0            
             return t[ k ]
             
@@ -1184,7 +1184,7 @@ local mt_pets = {
         -- Should probably add all totems, but holding off for now.
         if k == 'up' or k == 'exists' then
             for k, v in pairs( t ) do
-                if v.up then return true end
+                if type( v ) == 'table' and v.up then return true end
             end
             return UnitExists( 'pet' )
             

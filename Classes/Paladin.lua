@@ -52,7 +52,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         -- addResource( SPELL_POWER_HEALTH )
         addResource( 'mana', true )
-        addResource( 'holy_power' )
+        addResource( 'holy_power', nil, true )
 
         addTalent( 'final_verdict', 198038 )
         addTalent( 'execution_sentence', 213757 )

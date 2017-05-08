@@ -56,7 +56,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         setClass( 'MONK' )
 
         addResource( 'energy', true )
-        addResource( 'chi' )
+        addResource( 'chi', nil, true )
 
         addTalent( 'ascension', 115396 )
         addTalent( 'black_ox_brew', 115399 )

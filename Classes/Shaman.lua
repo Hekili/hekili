@@ -52,7 +52,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
 
         -- addResource( SPELL_POWER_HEALTH )
         addResource( 'mana', true )
-        addResource( 'maelstrom' )
+        addResource( 'maelstrom', nil, true )
 
         addTalent( 'windsong', 201898 )
         addTalent( 'hot_hand', 201900 )
