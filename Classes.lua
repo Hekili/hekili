@@ -371,11 +371,13 @@ end
 ns.addTalent = addTalent
 
 
-local function addResource( resource, primary )
+local function addResource( resource, primary, no_regen )
 
-    class.resources[ resource ] = true
+    class.resources[ resource ] = 1 + ( no_regen and 1 or 0 )
 
     if primary or #class.resources == 1 then class.primaryResource = resource end
+
+
 
     ns.commitKey( resource )
 

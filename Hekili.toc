@@ -16,7 +16,9 @@ Constants.lua
 State.lua
 Events.lua
 Classes.lua
+Classes\DeathKnight.lua
 Classes\DemonHunter.lua
+Classes\Druid.lua
 Classes\Hunter.lua
 Classes\Monk.lua
 Classes\Paladin.lua

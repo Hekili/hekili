@@ -55,7 +55,7 @@ end
 
 
 ns.titlefy = function( s )
-    return s:gsub( "_", " " ):gsub( "[Aa]oe", "AOE" ):gsub( "[Rr]jw", "RJW" ):gsub( "[Cc]hix", "ChiX" ):gsub( "(%W?)[Ss]t(%W?)", "%1ST%2" ):gsub( "[Cc]d", "CD" )
+    return s:gsub( "_", " " ):gsub( "[Aa]oe", "AOE" ):gsub( "[Rr]jw", "RJW" ):gsub( "[Cc]hix", "ChiX" ):gsub( "(^%W)[Ss]t(^%W)", "%1ST%2" ):gsub( "[Cc]d", "CD" )
 end
 
 

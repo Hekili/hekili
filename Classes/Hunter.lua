@@ -216,6 +216,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             return gcd + settings.refresh_padding
         end )
 
+        addMetaFunction( 'state', 'rebuff_window', function ()
+            return gcd + settings.refresh_padding
+        end )
+
         addMetaFunction( 'state', 'active_mongoose_fury', function ()
             return buff.mongoose_fury.remains > latency * 2
         end )

@@ -317,6 +317,21 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             end
         } )
 
+
+        addHook( 'reset_precast', function( x )
+            -- A decent start, but assumes our first ability is always aggressive. Not necessarily true...
+            if state.spec.enhancement then
+                state.nextMH = ( state.combat ~= 0 and state.swings.mh_projected > state.now ) and state.swings.mh_projected or state.now + 0.01
+                state.nextOH = ( state.combat ~= 0 and state.swings.oh_projected > state.now ) and state.swings.oh_projected or state.now + ( state.swings.oh_speed / 2 )
+
+                local next_foa_tick = ( state.buff.fury_of_air.applied % 1 ) - ( state.now % 1 )
+                if next_foa_tick < 0 then next_foa_tick = next_foa_tick + 1 end                
+
+                state.nextFoA = state.buff.fury_of_air.up and ( state.now + next_foa_tick ) or 0
+                while state.nextFoA > 0 and state.nextFoA < state.now do state.nextFoA = state.nextFoA + 1 end
+            end
+        end )
+
         addHook( 'reset_postcast', function( x )
             state.feral_spirit.cast_time = nil 
             -- if state.talent.ascendance.enabled then state.setCooldown( 'ascendance', max( 0, state.last_ascendance + 180 - state.now ) ) end
@@ -369,8 +384,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
                 local iter = 0
 
                 local offset = state.offset
-
-                -- print( 'checking maelstrom', state.query_time, nextMH, nextOH )
+                local ms = state.maelstrom
 
                 while( iter < 10 and ( ( nextMH > 0 and nextMH < state.query_time ) or
                     ( nextOH > 0 and nextOH < state.query_time ) or
@@ -381,7 +395,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
                         local gain = state.buff.doom_winds.up and 15 or 5
                         state.offset = offset
 
-                        resource.actual = min( resource.max, resource.actual + gain )
+                        ms.actual = min( ms.max, ms.actual + gain )
                         state.nextMH = state.nextMH + MH
                         nextMH = nextMH + MH
 
@@ -390,15 +404,15 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
                         local gain = state.buff.doom_winds.up and 15 or 5
                         state.offset = offset
 
-                        resource.actual = min( resource.max, resource.actual + gain )
+                        ms.actual = min( ms.max, ms.actual + gain )
                         state.nextOH = state.nextOH + OH
                         nextOH = nextOH + OH
 
                     elseif nextFoA > 0 and nextFoA < nextMH and nextFoA < nextOH then
-                        resource.actual = max( 0, resource.actual - 3 )
+                        ms.actual = max( 0, ms.actual - 3 )
 
-                        if resource.actual == 0 then
-                            state.offset = nextOH - state.now
+                        if ms.actual == 0 then
+                            state.offset = nextFoA - state.now
                             state.removeBuff( 'fury_of_air' )
                             state.offset = offset
 

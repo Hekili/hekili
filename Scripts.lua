@@ -458,8 +458,8 @@ end
 
 local key_cache = setmetatable( {}, {
     __index = function( t, k )
-        t.k = k:gsub( "(%S+)%[(%d+)]", "%1.%2" )
-        return t.k
+        t[k] = k:gsub( "(%S+)%[(%d+)]", "%1.%2" )
+        return t[k]
     end
 })
 
@@ -479,9 +479,9 @@ function ns.getConditionsAndValues( sType, sID )
             for k, v in pairs( script.Elements ) do
                 if not checked[ k ] then
                     local key = key_cache[ k ]
-                    local value, emsg = pcall( v )
+                    local success, value = pcall( v )
 
-                    if emsg then value = emsg end
+                    -- if emsg then value = emsg end
 
                     if type(value) == 'number' then
                         output = output:gsub( "([^.]"..key..")", format( "%%1[%.2f]", value ) )
@@ -500,3 +500,5 @@ function ns.getConditionsAndValues( sType, sID )
     return "NONE"
 
 end
+
+Hekili.dumpKeyCache = key_cache
