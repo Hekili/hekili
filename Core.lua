@@ -458,13 +458,25 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                     local scriptID = listID .. ':' .. actID
                     
                     -- Used to notify timeToReady() about an artificial delay for this ability.
-                    state.script.entry = entry.whenReady == 'script' and scriptID or nil
-                    
-                    wait_time = timeToReady( state.this_action )
-                    clash = clashOffset( state.this_action )
-                    
-                    state.delay = wait_time
+                    state.script.entry = entry.whenReady == 'script' and scriptID or nil                    
                     importModifiers( listID, actID )
+
+                    wait_time = timeToReady( state.this_action )
+
+                    if state.this_action == 'use_item' then
+                        local cd = state.cooldown.use_item
+                        cd.duration = nil
+                        cd.expires = nil
+                        cd.charge = nil
+                        cd.next_charge = nil
+                        cd.recharge_began = nil
+                        cd.recharge_duration = nil
+                        cd.true_expires = nil
+                        cd.true_remains = nil
+                    end
+
+                    clash = clashOffset( state.this_action )                    
+                    state.delay = wait_time
                     
                     if wait_time >= chosen_wait then
                         if debug then self:Debug( "This action is not available in time for consideration ( %.2f vs. %.2f ). Skipping.", wait_time, chosen_wait ) end
@@ -594,6 +606,37 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                                                         slot.caption = entry.Caption
                                                         slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
                                                         slot.texture = select( 10, GetItemInfo( potion.item ) )
+                                                        
+                                                        chosen_action = state.this_action
+                                                        chosen_wait = state.delay
+                                                        chosen_clash = clash
+                                                        break
+                                                    end
+                                                    
+                                                elseif entry.Ability == 'use_item' then
+                                                    local itemName = state.args.ModName or state.args.name
+                                                    local item = class.usable_items[ itemName ]
+                                                    
+                                                    if item then
+                                                        -- do item things
+                                                        slot.scriptType = entry.ScriptType or 'simc'
+                                                        slot.display = dispID
+                                                        slot.button = i
+                                                        
+                                                        slot.wait = state.delay
+                                                        
+                                                        slot.hook = hookID
+                                                        slot.list = listID
+                                                        slot.action = actID
+                                                        
+                                                        slot.actionName = state.this_action
+                                                        slot.listName = list.Name
+                                                        
+                                                        slot.resource = ns.resourceType( chosen_action )
+                                                        
+                                                        slot.caption = entry.Caption
+                                                        slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
+                                                        slot.texture = select( 10, GetItemInfo( item.item ) )
                                                         
                                                         chosen_action = state.this_action
                                                         chosen_wait = state.delay
@@ -795,7 +838,9 @@ function Hekili:ProcessHooks( dispID, solo )
                             if state.cooldown.global_cooldown.remains > 0 then
                                 state.advance( state.cooldown.global_cooldown.remains )
                             end
-                            
+
+                            -- state.cooldown.use_item.start = nil
+                            -- state.cooldown.use_item.duration = nil
                         end
                         
                     else

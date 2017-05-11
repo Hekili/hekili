@@ -375,7 +375,8 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
 
             if state.spec.enhancement and resource == 'maelstrom' then
 
-                local MH, OH, in_melee = UnitAttackSpeed( 'player' ), state.target.within5
+                local MH, OH = UnitAttackSpeed( 'player' )
+                local in_melee = state.target.within5
 
                 local nextMH = ( in_melee and state.settings.forecast_swings and MH and state.nextMH > 0 ) and state.nextMH or 0
                 local nextOH = ( in_melee and state.settings.forecast_swings and OH and state.nextOH > 0 ) and state.nextOH or 0

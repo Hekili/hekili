@@ -1473,6 +1473,19 @@ local mt_default_cooldown = {
                     
                 end
                 
+            elseif t.key == 'use_item' then
+                local itemName = state.args.ModName or state.args.name or "no_item_set"
+                local usable = class.usable_items[ itemName ]
+
+                if usable and state.equipped[ itemName ] then
+                    start, duration = GetItemCooldown( usable.item )
+
+                else
+                    start = state.now
+                    duration = 3600
+
+                end
+
             elseif not ns.isKnown( t.id ) then
                 start = state.now
                 duration = 3600 -- was 0... consider implications.
@@ -1586,7 +1599,7 @@ local mt_cooldowns = {
     -- The action doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
     __index = function(t, k)
         if not class.abilities[ k ] then
-            error( "UNK: " .. k )
+            -- error( "UNK: " .. k )
             return
         end
         
@@ -1614,7 +1627,20 @@ local mt_cooldowns = {
                 duration = 3600
                 
             end
-            
+
+        elseif k == 'use_item' then
+            local itemName = state.args.ModName or state.args.name or "no_item_set"
+            local usable = class.usable_items[ itemName ]
+
+            if usable and state.equipped[ itemName ] then
+                start, duration = GetItemCooldown( usable )
+
+            else
+                start = state.now
+                duration = 3600
+
+            end
+
         elseif not ns.isKnown( ability ) then
             start = state.now
             duration = 3600
@@ -1662,7 +1688,7 @@ ns.metatables.mt_cooldowns = mt_cooldowns
 
 local mt_dot = {
     __index = function(t, k)
-        if class.auras[k].friendly then
+        if class.auras[k] and class.auras[k].friendly then
             return state.buff[k]
         end
         return state.debuff[k]

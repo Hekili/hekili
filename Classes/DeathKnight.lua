@@ -56,8 +56,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         -- setSpecialization( "unholy" )
 
         -- Resources
-        addResource( "runic_power" )
-        addResource( "runes", nil, true ) -- handle mechanically below.
+        addResource( "runic_power", nil, true )
+        addResource( "runes", nil, true )
 
         registerCustomVariable( 'runes', 
             setmetatable( {
@@ -194,12 +194,14 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
 
         addHook( 'advance_resource_regen', function( override, resource, time )
-            
-            if resource ~= 'runic_power' or not state.spec.frost then return false end
 
+            if resource ~= 'runic_power' or not state.spec.frost then return false end
+            
             if state.spec.frost and resource == 'runic_power' then
 
-                local MH, OH, in_melee = UnitAttackSpeed( 'player' ), state.target.within8
+
+                local MH, OH = UnitAttackSpeed( 'player' )
+                local in_melee = state.target.within8
 
                 local nextMH = ( in_melee and state.settings.forecast_swings and MH and state.nextMH > 0 ) and state.nextMH or 0
                 local nextOH = ( in_melee and state.settings.forecast_swings and OH and state.nextOH > 0 ) and state.nextOH or 0
@@ -208,7 +210,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
                 local iter = 0
 
                 local offset = state.offset
-                local rp = state[ resource ]
+                local rp = state.runic_power
 
                 while( iter < 10 and ( ( nextMH > 0 and nextMH < state.query_time ) or
                     ( nextOH > 0 and nextOH < state.query_time ) or
@@ -216,7 +218,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
                     if nextMH > 0 and nextMH < nextOH and ( nextMH < nextBoS or nextBoS == 0 ) then
                         state.offset = nextMH - state.now
-                        local gain = talent.runic_attenuation.enabled and 1 or 0
+                        local gain = state.talent.runic_attenuation.enabled and 1 or 0
                         state.offset = offset
 
                         rp.actual = min( rp.max, rp.actual + gain )
@@ -225,15 +227,14 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
                     elseif nextOH > 0 and nextOH < nextMH and ( nextOH < nextBoS or nextBoS == 0 ) then
                         state.offset = nextOH - state.now
-                        local gain = talent.runic_attenuation.enabled and 1 or 0
+                        local gain = state.talent.runic_attenuation.enabled and 1 or 0
                         state.offset = offset
 
                         rp.actual = min( rp.max, rp.actual + gain )
                         state.nextOH = state.nextOH + OH
                         nextOH = nextOH + OH
 
-                    elseif nextBoS > 0 and nextBoS < nextMH and nextBoS < nextOH then
-                        
+                    elseif nextBoS > 0 and nextBoS < nextMH and nextBoS < nextOH then                       
                         if rp.actual < 15 then
                             state.offset = nextBoS - state.now
                             state.removeBuff( 'breath_of_sindragosa' )
@@ -452,7 +453,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "defile_buff", 218100, "duration", 5, "max_stack", 10 )
         addAura( "festering_wound", 194310, "duration", 24, "max_stack", 8 )
         addAura( "frost_fever", 55095, "duration", 24 )
-        addAura( "hungering_rune_weapon", 207127 )
+        addAura( "hungering_rune_weapon", 207127, "duration", 15 )
         addAura( "icebound_fortitude", 48792, "duration", 8 )
         addAura( "icy_talons", 194879, "duration", 6, "max_stack", 3 )
         addAura( "killing_machine", 51128, "duration", 10 )
@@ -466,7 +467,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "perseverance_of_the_ebon_martyr", 216059 )
         addAura( "pillar_of_frost", 51271, "duration", 20 )
         addAura( "razorice", 50401, "duration", 15, "max_stack", 5 )
-        addAura( "remorseless_winter", 196770, "duration", 8 )
+        addAura( "remorseless_winter", 196770, "duration", 8, "friendly", true )
         addAura( "rime", 59057 )
         addAura( "runic_corruption", 51462 )
         addAura( "runic_empowerment", 81229 )
@@ -895,9 +896,9 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         modifyAbility( "empower_rune_weapon", "recharge", function( x ) return x / ( equipped.seal_of_necrofantasia and 1.10 or 1 ) end)
 
         addHandler( "empower_rune_weapon", function ()
-            for i = 1, 6 do
-                runes.start[i] = 0
-            end
+            print( "erw", rune )
+            gain( 6, "runes" )
+            print( "end erw", rune )
         end )
 
 
@@ -1080,6 +1081,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             charges = 1,
             recharge = 180,
             toggle = "cooldowns",
+            known = function () return talent.hungering_rune_weapon.enabled end,
             -- min_range = 0,
             -- max_range = 0,
         } )
@@ -1273,8 +1275,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         } )
 
         addHandler( "remorseless_winter", function ()
-            applyDebuff( "target", "remorseless_winter", 20 )
-            active_dot.remorseless_winter = max( active_dot.remorseless_winter, 8 )
+            applyBuff( "remorseless_winter", 8 )
+            -- active_dot.remorseless_winter = max( active_dot.remorseless_winter, 8 )
         end )
 
 
@@ -1309,7 +1311,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAbility( "sindragosas_fury", {
             id = 190778,
             spend = 0,
-            spend_type = "runes",
+            spend_type = "runic_power",
             cast = 0,
             gcdType = "spell",
             cooldown = 300,

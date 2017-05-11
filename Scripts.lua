@@ -233,8 +233,9 @@ local convertScript = function( node, hasModifiers )
 
     for m in pairs( specialModifiers ) do
         if node[ m ] then
-            Output.SpecialMods = Output.SpecialMods .. " - " .. m .. " : " .. tostring( node[m] )
-            local sFunction, Error = loadstring( 'return ' .. tostring( node[ m ] ) )
+            local o = tostring( node[m] )
+            Output.SpecialMods = Output.SpecialMods .. " - " .. m .. " : " .. o
+            local sFunction, Error = loadstring( 'return ' .. o .. ' ~= nil and ' .. o .. ' or "' .. o .. '"'  )
             if sFunction then
                 setfenv( sFunction, state )
                 Output.Modifiers[ m ] = sFunction
@@ -372,7 +373,6 @@ ns.importModifiers = function( list, entry )
     state.args[ k ] = nil
   end
 
-
   if not scripts['A'][list..':'..entry].Modifiers then return end
 
   for k,v in pairs( scripts['A'][list..':'..entry].Modifiers ) do
@@ -487,7 +487,8 @@ function ns.getConditionsAndValues( sType, sID )
                         output = output:gsub( "([^.]"..key..")", format( "%%1[%.2f]", value ) )
                         output = output:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
                     else
-                        output = output:gsub( key, format( key .. "[%s]", tostring( value ) ) )
+                        output = output:gsub( "([^.]"..key..")", format( "%%1[%s]", tostring( value ) ) )
+                        output = output:gsub( "^("..key..")", format( "%%1[%s]", tostring( value ) ) )
                     end
                     checked[ k ] = true
                 end

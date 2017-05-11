@@ -2985,11 +2985,12 @@ ns.newActionOption = function( aList, index )
                         for key, potion in pairs( class.potions ) do
                             opts[ key ] = GetItemInfo( potion.item )
                         end
+                    elseif action.Ability == 'use_item' then
+                        for key, item in pairs( class.usable_items ) do
+                            opts[ key ] = GetItemInfo( item.item )
+                        end
+
                     end
-                    
-                    --[[ if action.ModName and not opts[ action.ModName ] then
-                    opts[ action.ModName ] = action.ModName
-                end ]] 
                     
                     return opts
                 end,
@@ -2998,7 +2999,9 @@ ns.newActionOption = function( aList, index )
                     
                     if not action then return true
                     elseif action.Ability == 'potion' then return false
-                        elseif ( action.Ability == 'call_action_list' or action.Ability == 'run_action_list' ) then return false end
+                    elseif action.Ability == 'use_item' then return false
+                    elseif ( action.Ability == 'call_action_list' or action.Ability == 'run_action_list' ) then return false
+                    end
                     
                     return true
                 end,
@@ -3017,7 +3020,7 @@ ns.newActionOption = function( aList, index )
                     
                     return true
                 end,
-            },
+            },            
             
             Script = {
                 type = 'input',

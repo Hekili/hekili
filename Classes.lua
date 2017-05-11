@@ -708,7 +708,7 @@ addAbility( 'arcane_torrent', {
     cast = 0,
     gcdType = 'off',
     cooldown = 120,
-    toggle = 'cooldowns'
+    -- toggle = 'cooldowns'
     }, 50613, 80483, 129597, 155145, 25046, 69179 )
 
 modifyAbility( 'arcane_torrent', 'id', function( x )
@@ -832,19 +832,52 @@ end )
 
 
 
---[[ 
+
+
+--[[ class.usable_items = {
+    draught_of_souls = {
+        item = 140808,
+        cooldown = 80,
+        cast = 3,
+        channeled = true,
+        gcdType = 'spell',
+        passive = false,
+        handler = setfenv( function () end, state )
+    }
+}
+
+addGearSet( "draught_of_souls", 140808 )
+
 addAbility( 'use_item', {
-    id = -3,
-    name = 'Use Item',
+    id = -6,
+    name = 'Use Item (Stub)',
     spend = 0,
     cast = 0,
-    gcdType = 'off',
-    cooldown = 60,
-    toggle = 'cooldowns'
+    gcdType = 'spell',
+    cooldown = 0,
+    channeled = false,
+    passive = false,
+    known = function () return args.name and equipped[ args.name ] end,
+    usable = function ()
+        local iName = args.ModName or args.name
+        return iName ~= nil and class.usable_items[ iName ] and equipped[ iName ]
+    end,
 } )
 
-class.items = {
-} ]]
+modifyAbility( 'use_item', 'cooldown',  function( x ) return class.usable_items[ args.ModName ].cooldown or x end )
+modifyAbility( 'use_item', 'cast',      function( x ) return class.usable_items[ args.ModName ].cast or x end )
+modifyAbility( 'use_item', 'channeled', function( x ) return class.usable_items[ args.ModName ].channeled or x end )
+-- modifyAbility( 'use_item', 'gcdType',   function( x ) return class.usable_items[ args.ModName ].gcdType or x end )
+modifyAbility( 'use_item', 'passive',   function( x ) return class.usable_items[ args.ModName ].passive or x end )
+
+addHandler( 'use_item', function ()
+    local iName = args.ModName or args.name
+    local item = class.usable_items[ iName ]
+
+    if item and item.handler then
+        item.handler()
+    end
+end ) ]]
 
 
 addAbility( 'variable', {
