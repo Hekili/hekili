@@ -896,9 +896,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         modifyAbility( "empower_rune_weapon", "recharge", function( x ) return x / ( equipped.seal_of_necrofantasia and 1.10 or 1 ) end)
 
         addHandler( "empower_rune_weapon", function ()
-            print( "erw", rune )
             gain( 6, "runes" )
-            print( "end erw", rune )
         end )
 
 
