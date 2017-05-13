@@ -561,7 +561,12 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                                     
                                     if readyFirst then
                                         local hasResources = ns.hasRequiredResources( state.this_action )
-                                        if debug then self:Debug( " - the required resources are %s.", hasResources and "AVAILABLE" or "NOT AVAILABLE" ) end
+                                        if debug then
+                                            self:Debug( " - the required resources are %s.", hasResources and "AVAILABLE" or "NOT AVAILABLE" )
+                                            self:Debug( "   REQUIRES: %d %s.", ability.spend or 0, ability.spend_type or "NONE" )
+                                            local resource = ability.spend_type and state[ ability.spend_type ]
+                                            if resource then self:Debug( "   PRESENT:  %d %s.", resource.current, ability.spend_type ) end
+                                        end
                                         
                                         if hasResources then
                                             local aScriptPass = true
@@ -810,7 +815,7 @@ function Hekili:ProcessHooks( dispID, solo )
                             end
                             
                             -- Advance the clock by cast_time.
-                            if action.cast > 0 and not action.channeled then
+                            if action.cast > 0 and not action.channeled and not class.resetCastExclusions[ chosen_action ] then
                                 state.advance( action.cast )
                             end
                             
@@ -830,7 +835,7 @@ function Hekili:ProcessHooks( dispID, solo )
                             ns.runHandler( chosen_action )
                             
                             -- Advance the clock by cast_time.
-                            if action.cast > 0 and action.channeled then
+                            if action.cast > 0 and action.channeled and not class.resetCastExclusions[ chosen_action ] then
                                 state.advance( action.cast )
                             end
                             

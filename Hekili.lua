@@ -41,6 +41,7 @@ ns.class = {
     abilities = {},
     auras = {},
     castExclusions = {},
+    resetCastExclusions = {},
     defaults = {},
 	exclusions = {}, -- exclude from target detection
 	gearsets = {},

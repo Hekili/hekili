@@ -101,6 +101,11 @@ ns.addCastExclusion = function( spellID )
 end
 
 
+ns.ignoreCastOnReset = function( spellID )
+    class.resetCastExclusions[ spellID ] = true
+end
+
+
 ns.addHook = function( hook, func )
     class.hooks[ hook ] = func
 end

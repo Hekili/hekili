@@ -2896,7 +2896,7 @@ function state.reset( dispID )
     
     ns.callHook( "reset_precast" )
     
-    if cast_time and casting then
+    if cast_time and casting and not class.resetCastExclusions[ casting ] then
         local ability = class.abilities[ casting ]
         
         state.advance( cast_time )
@@ -3102,13 +3102,21 @@ ns.isKnown = function( sID )
     
     local ability = class.abilities[ sID ]
     
+    if not ability then
+        ns.Error( "isKnown() - " .. sID .. " not found in abilities table." )
+        return false
+    end
+
     local bl = Hekili.DB.profile.blacklist
     if bl and bl[ ability.key ] then
         return false
     end
     
-    if not ability then
-        ns.Error( "isKnown() - " .. sID .. " not found in abilities table." )
+    if ability.talent and not state.talent[ ability.talent ].enabled then
+        return false
+    end
+
+    if ability.notalent and state.talent[ ability.talent ].enabled then
         return false
     end
     
