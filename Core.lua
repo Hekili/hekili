@@ -446,13 +446,13 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                 if debug then self:Debug( "\n[ %2d ] Testing entry %s:%d ( %s ) with modifiers ( %s ).", chosen_depth, list.Name, actID, entry.Ability, entry.Args or "NONE" ) end
                 
                 local ability = class.abilities[ entry.Ability ]
-                
+
                 local wait_time = 30
                 local clash = 0
                 
-                local known = isKnown( state.this_action )
+                local known = ability and isKnown( state.this_action )
                 
-                if debug then self:Debug( "%s is %s.", ability.name, known and "KNOWN" or "NOT KNOWN" ) end
+                if debug then self:Debug( "%s is %s.", ability and ability.name or entry.Ability, known and "KNOWN" or "NOT KNOWN" ) end
                 
                 if known then
                     local scriptID = listID .. ':' .. actID

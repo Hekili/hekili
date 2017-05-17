@@ -245,7 +245,7 @@ local function addAbility( key, values, ... )
     end
 
     if values.item then
-        values.name = GetItemInfo( values.item )
+        values.name = GetItemInfo( values.item ) or "no_item_detected"
         values.texture = select( 10, GetItemInfo( values.item ) )
         addUsableItem( key, values.item )
     end
