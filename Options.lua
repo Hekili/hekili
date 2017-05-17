@@ -45,6 +45,7 @@ function Hekili:GetDefaults()
             ['Nameplate Detection Range'] = 8,
             ['Count Targets by Damage'] = true,
             ['Updates Per Second'] = 4,
+            ['Low Impact Mode'] = true,
             
             ['Notification Enabled'] = true,
             ['Notification Font'] = 'Arial Narrow',
@@ -2987,7 +2988,7 @@ ns.newActionOption = function( aList, index )
                         end
                     elseif action.Ability == 'use_item' then
                         for key, item in pairs( class.usable_items ) do
-                            opts[ key ] = GetItemInfo( item.item )
+                            if type( key ) ~= 'number' then opts[ key ] = GetItemInfo( item.item ) end
                         end
 
                     end

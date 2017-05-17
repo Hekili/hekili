@@ -906,6 +906,11 @@ local function StoreKeybindInfo( key, aType, id )
         local _, _, sID = GetMacroSpell( id )
 
         ability = sID and class.abilities[ sID ] and class.abilities[ sID ].key
+    
+    elseif aType == "item" then
+        local name = GetItemInfo( id )
+        ability = class.abilities[ name ] and class.abilities[ name ].key or "unknown"
+
     end
 
     if ability then

@@ -463,18 +463,6 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
 
                     wait_time = timeToReady( state.this_action )
 
-                    if state.this_action == 'use_item' then
-                        local cd = state.cooldown.use_item
-                        cd.duration = nil
-                        cd.expires = nil
-                        cd.charge = nil
-                        cd.next_charge = nil
-                        cd.recharge_began = nil
-                        cd.recharge_duration = nil
-                        cd.true_expires = nil
-                        cd.true_remains = nil
-                    end
-
                     clash = clashOffset( state.this_action )                    
                     state.delay = wait_time
                     
@@ -596,6 +584,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                                                         slot.scriptType = entry.ScriptType or 'simc'
                                                         slot.display = dispID
                                                         slot.button = i
+                                                        slot.item = nil
                                                         
                                                         slot.wait = state.delay
                                                         
@@ -627,6 +616,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                                                         slot.scriptType = entry.ScriptType or 'simc'
                                                         slot.display = dispID
                                                         slot.button = i
+                                                        slot.item = itemName
                                                         
                                                         slot.wait = state.delay
                                                         
@@ -653,6 +643,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                                                     slot.scriptType = entry.ScriptType or 'simc'
                                                     slot.display = dispID
                                                     slot.button = i
+                                                    slot.item = nil
                                                     
                                                     slot.wait = state.delay
                                                     
@@ -1050,7 +1041,11 @@ function Hekili:UpdateDisplay( dispID )
                     end
                     
                     if display.showKeybindings and ( display.queuedKBs or i == 1 ) then
-                        button.Keybinding:SetText( self:GetBindingForAction( aKey, not display.lowercaseKBs == true ) )
+                        if aKey == 'use_item' then
+                            button.Keybinding:SetText( self:GetBindingForAction( aKey .. '-' .. Queue[i].item, not display.lowercaseKBs == true ) )
+                        else
+                            button.Keybinding:SetText( self:GetBindingForAction( aKey, not display.lowercaseKBs == true ) )
+                        end
                     else
                         button.Keybinding:SetText( nil )
                     end
@@ -1161,7 +1156,14 @@ function Hekili:UpdateDisplay( dispID )
                         ActionButton_HideOverlayGlow( button )
                     end
                     
-                    local start, duration = GetSpellCooldown( class.abilities[ aKey ].id )
+                    local start, duration
+                    if aKey == 'use_item' then
+                        local item = Queue[i].item
+                        local item = class.usable_items[ item ].item
+                        start, duration = GetItemCooldown( item )
+                    else
+                        start, duration = GetSpellCooldown( class.abilities[ aKey ].id )
+                    end
                     local gcd_remains = gcd_start + gcd_duration - GetTime()
                     
                     if class.abilities[ aKey ].gcdType ~= 'off' and ( not start or start == 0 or ( start + duration ) < ( gcd_start + gcd_duration ) ) then

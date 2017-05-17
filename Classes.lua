@@ -203,6 +203,31 @@ end
 ns.modifyElement = modifyElement
 
 
+local function addGearSet( name, ... )
+
+    class.gearsets[ name ] = class.gearsets[ name ] or {}
+
+    for i = 1, select( '#', ... ) do
+        local id = select( i, ... )
+        local key = ns.formatKey( GetItemInfo( select( i, ... ) ) or "nothing" )
+        class.gearsets[ name ][ id ] = key
+    end
+
+    ns.commitKey( name )
+
+end
+ns.addGearSet = addGearSet
+
+
+local function addUsableItem( key, id )
+    class.items = class.items or {}
+    class.items[ key ] = id
+
+    addGearSet( key, id )
+end
+ns.addUsableItem = addUsableItem
+
+
 -- Wrapper for the ability table.
 local function modifyAbility( k, elem, value )
 
@@ -218,8 +243,14 @@ local function addAbility( key, values, ... )
         ns.Error( "addAbility( " .. key .. " ) - values table is missing 'id' element." )
         return
     end
+
+    if values.item then
+        values.name = GetItemInfo( values.item )
+        values.texture = select( 10, GetItemInfo( values.item ) )
+        addUsableItem( key, values.item )
+    end
     
-    local name = GetSpellInfo( values.id )
+    local name = values.name or GetSpellInfo( values.id )
     if not name and values.id > 0 then
         ns.Error( "addAbility( " .. key .. " ) - unable to get name of spell #" .. values.id .. "." )
         return
@@ -238,12 +269,16 @@ local function addAbility( key, values, ... )
     for i = 1, select( "#", ... ) do
         class.abilities[ select( i, ... ) ] = class.abilities[ key ]
     end
-    
+
     ns.commitKey( key )
     
     storeAbilityElements( key, values )
     
-    class.searchAbilities[ key ] = '|T' .. ( GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t ' .. class.abilities[ key ].name
+    if values.item then
+        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t [' .. class.abilities[ key ].name .. ']'
+    else
+        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t ' .. class.abilities[ key ].name
+    end
     
 end
 ns.addAbility = addAbility
@@ -397,20 +432,6 @@ local function removeResource( resource )
 
 end
 ns.removeResource = removeResource
-
-
-local function addGearSet( name, ... )
-
-    class.gearsets[ name ] = class.gearsets[ name ] or {}
-
-    for i = 1, select( '#', ... ) do
-        class.gearsets[ name ][ select( i, ... ) ] = ns.formatKey( GetItemInfo( select( i, ... ) ) or "nothing" )
-    end
-
-    ns.commitKey( name )
-
-end
-ns.addGearSet = addGearSet
 
 
 local function setPotion( potion )
@@ -633,6 +654,7 @@ addAura( 'mastery', -7, 'duration', 3600 )
 addAura( 'multistrike', -8, 'duration', 3600 )
 addAura( 'versatility', -9, 'duration', 3600 )
 
+
 addAura( 'casting', -10, 'feign', function()
     if target.casting then
         debuff.casting.count = 1
@@ -648,6 +670,8 @@ addAura( 'casting', -10, 'feign', function()
     debuff.casting.caster = 'unknown'
 end )
 
+
+addAura( 'unknown_buff', -11 )
 
 
 
@@ -840,20 +864,72 @@ end )
 
 
 --[[ class.usable_items = {
+    no_item = {
+        key = "no_item",
+        item = -1,
+        cooldown = 3600,
+        cast = 0,
+        gcdType = 'off',
+        passive = 'false',
+    },
     draught_of_souls = {
+        key = "draught_of_souls",
         item = 140808,
         cooldown = 80,
-        cast = 3,
-        channeled = true,
-        gcdType = 'spell',
+        cast = 0,
+        gcdType = 'off',
+        passive = false,
+        handler = setfenv( function ()
+            applyBuff( "fel_crazed_rage", 3 )
+            setCooldown( "global_cooldown", 3 )
+        end, state )
+    },
+    kiljaedens_burning_wish = {
+        key = "kiljaedens_burning_wish",
+        item = 144259,
+        cooldown = 75,
+        cast = 0,
+        gcdType = 'off',
         passive = false,
         handler = setfenv( function () end, state )
     }
 }
+for k,v in pairs( class.usable_items ) do
+    class.usable_items[ v.item ] = v
+end ]]
 
-addGearSet( "draught_of_souls", 140808 )
 
-addAbility( 'use_item', {
+addUsableItem( "draught_of_souls", 140808 )
+addAura( "fel_crazed_rage", 225141, "duration", 3 )
+
+addAbility( "draught_of_souls", {
+    id = -7,
+    item = 140808,
+    spend = 0,
+    cast = 0,
+    cooldown = 80,
+    gcdType = 'off',
+} )
+
+addHandler( "draught_of_souls", function ()
+    applyBuff( "fel_crazed_rage", 3 )
+    setCooldown( "global_cooldown", 3 )
+end )
+
+
+addUsableItem( "kiljaedens_burning_wish", 144259 )
+
+addAbility( "kiljaedens_burning_wish", {
+    id = -8,
+    item = 144259,
+    spend = 0,
+    cast = 0,
+    cooldown = 75,
+    gcdType = 'off',
+} )
+
+
+--[[ addAbility( 'use_item', {
     id = -6,
     name = 'Use Item (Stub)',
     spend = 0,
@@ -869,11 +945,11 @@ addAbility( 'use_item', {
     end,
 } )
 
-modifyAbility( 'use_item', 'cooldown',  function( x ) return class.usable_items[ args.ModName ].cooldown or x end )
-modifyAbility( 'use_item', 'cast',      function( x ) return class.usable_items[ args.ModName ].cast or x end )
-modifyAbility( 'use_item', 'channeled', function( x ) return class.usable_items[ args.ModName ].channeled or x end )
--- modifyAbility( 'use_item', 'gcdType',   function( x ) return class.usable_items[ args.ModName ].gcdType or x end )
-modifyAbility( 'use_item', 'passive',   function( x ) return class.usable_items[ args.ModName ].passive or x end )
+modifyAbility( 'use_item', 'cooldown',  function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].cooldown or x end )
+modifyAbility( 'use_item', 'cast',      function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].cast or x end )
+modifyAbility( 'use_item', 'channeled', function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].channeled or x end )
+modifyAbility( 'use_item', 'gcdType',   function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].gcdType or x end )
+modifyAbility( 'use_item', 'passive',   function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].passive or x end )
 
 addHandler( 'use_item', function ()
     local iName = args.ModName or args.name
@@ -882,7 +958,11 @@ addHandler( 'use_item', function ()
     if item and item.handler then
         item.handler()
     end
-end ) ]]
+end )
+
+state.cooldown.use_item.items = {}
+setmetatable( state.cooldown.use_item, ns.metatables.mt_use_item_cooldown )
+setmetatable( state.cooldown.use_item.items, ns.metatables.mt_use_item_db ) ]]
 
 
 addAbility( 'variable', {

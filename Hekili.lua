@@ -47,6 +47,7 @@ ns.class = {
 	gearsets = {},
 	glyphs = {},
 	hooks = {},
+    items = {},
 	perks = {},
     range = 8,
 	resources = {},

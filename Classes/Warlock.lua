@@ -236,7 +236,7 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
 
 
         ignoreCastOnReset( "drain_soul" ) -- testing for breaking channels.
-
+        setPotion( "prolonged_power" )
 
         -- Abilities
 
@@ -416,7 +416,7 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
             spend = 0,
             min_cost = 0,
             spend_type = "mana",
-            cast = 6,
+            cast = 1.5,
             channeled = true,
             gcdType = "spell",
             cooldown = 0,
@@ -677,7 +677,7 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
         modifyAbility( "soulstone", "cast", function( x ) return x * haste end )
 
         addHandler( "soulstone", function ()
-            applyBuff( "target", "soulstone", 900 )
+            applyBuff( "soulstone", 900 )
         end )
 
 

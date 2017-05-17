@@ -45,6 +45,7 @@ state.aura = {}
 state.buff = state.aura
 state.auras = auras
 state.cooldown = {}
+state.item_cd = {}
 state.debuff = {}
 state.dot = {}
 state.equipped = {}
@@ -406,11 +407,18 @@ state._G = 0
 
 -- Place an ability on cooldown in the simulated game state.
 local function setCooldown( action, duration )
-    
-    state.cooldown[ action ] = state.cooldown[ action ] or {}
-    -- state.cooldown[ action ].start = state.query_time
-    state.cooldown[ action ].duration = duration
-    state.cooldown[ action ].expires = state.query_time + duration
+
+    --[[ if action == 'use_item' then
+        local item = state.args.name or state.args.ModName or "no_item"
+        local cd = state.cooldown.use_item.items[ item ]
+        cd.duration = duration
+        cd.expires = state.query_time + duration
+    else ]]
+        state.cooldown[ action ] = state.cooldown[ action ] or {}
+        -- state.cooldown[ action ].start = state.query_time
+        state.cooldown[ action ].duration = duration
+        state.cooldown[ action ].expires = state.query_time + duration
+    --[[ end ]]
     
 end
 state.setCooldown = setCooldown
@@ -1443,12 +1451,21 @@ ns.metatables.mt_target_health = mt_target_health
 -- Table of default handlers for specific ability cooldowns.
 local mt_default_cooldown = {
     __index = function(t, k)
+
+        local ability = t.key and class.abilities[ t.key ]
+        local GetSpellCooldown = _G.GetSpellCooldown
+        local id = ability.id
+
+        if ability and ability.item then
+            GetSpellCooldown = _G.GetItemCooldown
+            id = ability.item
+        end
         
         if k == 'duration' or k == 'expires' or k == 'next_charge' or k == 'charge' or k == 'recharge_began' then
             -- Refresh the ID in case we changed specs and ability is spec dependent.
-            t.id = class.abilities[ t.key ].id
+            t.id = ability.id
             
-            local start, duration = GetSpellCooldown( t.id )
+            local start, duration = GetSpellCooldown( id )
             local true_duration = duration
             
             if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
@@ -1473,7 +1490,7 @@ local mt_default_cooldown = {
                     
                 end
                 
-            elseif t.key == 'use_item' then
+            --[[ elseif t.key == 'use_item' then
                 local itemName = state.args.ModName or state.args.name or "no_item_set"
                 local usable = class.usable_items[ itemName ]
 
@@ -1484,7 +1501,7 @@ local mt_default_cooldown = {
                     start = state.now
                     duration = 3600
 
-                end
+                end ]]
 
             elseif not ns.isKnown( t.id ) then
                 start = state.now
@@ -1592,6 +1609,127 @@ local mt_default_cooldown = {
 ns.metatables.mt_default_cooldown = mt_default_cooldown
 
 
+--[[ local mt_use_item_cooldown = {
+    __index = function(t, k)
+        local itemname = state.args.name or state.args.ModName
+        local item = itemname and state.equipped[ itemname ] and class.usable_items[ itemname ]
+
+        if t.items[ itemname ] and t.items[ itemname ][ k ] then
+            return t.items[ itemname ][ k ]
+        end
+
+        itemname = itemname or "no_item"
+        item = item or class.usable_items.no_item
+
+        t.items[ itemname ] = t.items[ itemname ] or {
+            name = itemname
+        }
+        local db = t.items[ itemname ]
+
+        if k == 'start' or k == 'duration' or k == 'expires' or k == 'true_duration' or k == 'true_expires' or k == 'charge' or k == 'next_charge' or k == 'recharge_began' then
+            if db and db[ k ] then
+                return db[ k ]
+            end
+
+            local start, duration
+
+            if not item or item.item < 0 then
+                start, duration = state.now, 3600
+            else
+                start, duration = GetItemCooldown( item.item )
+            end
+
+            db.start = start or state.now
+            db.duration = duration or 3600
+            db.expires = db.start and ( db.start + db.duration ) or 0
+
+            db.true_duration = duration or 3600
+            db.true_expires = start and ( start + true_duration ) or 0
+
+            db.charge = db.expires < state.query_time and 1 or 0
+            db.next_charge = db.expires > state.query_time and db.expires or 0
+            db.recharge_began = db.expires - db.duration
+
+            return db[k]
+
+        elseif k == 'charges' then
+            return floor( db.charges_fractional )
+            
+        elseif k == 'charges_max' then
+            return item.charges or 1
+            
+        elseif k == 'recharge' then
+            return item.recharge or 0
+            
+        elseif k == 'time_to_max_charges' then
+            return ( ( item.charges or 1 ) - t.charges_fractional ) * item.recharge
+            
+        elseif k == 'remains' or k == 'adjusted_remains' then            
+            return max( 0, db.expires - state.query_time )
+            
+        elseif k == 'true_remains' then
+            return max( 0, db.true_expires - state.query_time )
+            
+        elseif k == 'up' then
+            return ( db.remains == 0 )
+            
+        end
+        
+        return
+        
+    end
+}
+ns.metatables.mt_use_item_cooldown = mt_use_item_cooldown
+
+
+local mt_item_cooldown = {
+    __index = function( t, k )
+        if k == 'start' or k == 'duration' or k == 'expires' or k == 'true_duration' or k == 'true_expires' or k == 'charge' or k == 'next_charge' or k == 'recharge_began' then
+            if not ( state.equipped[ t.name ] and class.usable_items[ t.name ] ) then
+                t.start = state.now
+                t.duration = 3600
+                t.expires = state.now + 3600
+                t.true_duration = t.duration
+                t.true_expires = t.expires
+                t.charge = state.now
+                t.next_charge = 3600
+                t.recharge_began = state.now
+
+                return t[ k ]
+            end
+
+            local id = class.usable_items[ t.name ].item
+
+            local start, duration
+            if id > 0 then
+                start, duration = GetItemCooldown( id )
+            end
+
+            t.start = start or state.now
+            t.duration = duration or 3600
+            t.expires = start and ( start + duration ) or ( state.now + 3600 )
+            t.true_duration = t.duration
+            t.true_expires = t.expires
+            t.charge = t.expires < state.query_time and 1 or 0
+            t.next_charge = t.expires > state.query_time and t.expires or 0
+            t.recharge_began = t.expires - t.duration
+
+            return t[ k ]
+        end
+
+        return
+    end
+}
+
+local mt_use_item_db = {
+    __newindex = function( t, k, v )
+        rawset( t, k, setmetatable( v, mt_item_cooldown ) )
+        v.name = k
+    end
+}
+ns.metatables.mt_use_item_db = mt_use_item_db ]]
+
+
 -- Table for gathering cooldown information. Some abilities with odd behavior are getting embedded here.
 -- Probably need a better system that I can keep in the class modules.
 -- Needs review.
@@ -1628,7 +1766,7 @@ local mt_cooldowns = {
                 
             end
 
-        elseif k == 'use_item' then
+        --[[ elseif k == 'use_item' then
             local itemName = state.args.ModName or state.args.name or "no_item_set"
             local usable = class.usable_items[ itemName ]
 
@@ -1639,7 +1777,7 @@ local mt_cooldowns = {
                 start = state.now
                 duration = 3600
 
-            end
+            end]]
 
         elseif not ns.isKnown( ability ) then
             start = state.now
@@ -2789,6 +2927,17 @@ function state.reset( dispID )
         v.true_expires = nil
         v.true_remains = nil
     end
+
+    --[[ for _, item in pairs( state.cooldown.use_item.items ) do
+        item.duration = nil
+        item.expires = nil
+        item.charge = nil
+        item.next_charge = nil
+        item.recharge_began = nil
+        item.recharge_duration = nil
+        item.true_expires = nil
+        item.true_remains = nil
+    end ]]
     
     state.trinket.t1.cooldown.duration = nil
     state.trinket.t1.cooldown.expires = nil
@@ -3119,16 +3268,18 @@ ns.isKnown = function( sID )
     if ability.notalent and state.talent[ ability.talent ].enabled then
         return false
     end
-    
-    if ability.known ~= nil then
+
+    if ability.item and not state.equipped[ ability.item ] then
+        return false
+
+    elseif ability.known ~= nil then
         if type( ability.known ) == 'number' then
             return IsSpellKnown( ability.known )
-        else
-            return ability.known()
         end
+        return ability.known()
     end
     
-    return ( IsSpellKnown( sID ) or IsSpellKnown( sID, true ) )
+    return ( ability.item and true ) or ( IsSpellKnown( sID ) or IsSpellKnown( sID, true ) )
     
 end
 
@@ -3139,20 +3290,21 @@ ns.isUsable = function( spell )
     local ability = class.abilities[ spell ]
     
     if not ability then return true end
+
+    if ability.item then
+        return state.equipped[ ability.item ]
+
+    else
+        if state.rangefilter and UnitExists( 'target' ) and ns.lib.SpellRange.IsSpellInRange( ability.id, 'target' ) == 0 then
+            return false
+        end
     
-    if state.rangefilter and UnitExists( 'target' ) and ns.lib.SpellRange.IsSpellInRange( ability.id, 'target' ) == 0 then
-        return false
-    end
-    
-    --[[ if ability.usable ~= nil then
-    if type( ability.usable ) == 'function' then return ability.usable() end
-end ]]
-    
-    if ability.usable ~= nil then
-        if type( ability.usable ) == 'number' then 
-            return IsUsableSpell( ability.usable )
-        elseif type( ability.usable ) == 'function' then
-            return ability.usable()
+        if ability.usable ~= nil then
+            if type( ability.usable ) == 'number' then 
+                return IsUsableSpell( ability.usable )
+            elseif type( ability.usable ) == 'function' then
+                return ability.usable()
+            end
         end
     end
     

@@ -56,7 +56,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
 
         addTalent( 'windsong', 201898 )
         addTalent( 'hot_hand', 201900 )
-        addTalent( 'boulderfist', 201897 )
+        addTalent( 'landslide', 197992 )
 
         addTalent( 'rainfall', 215864 )
         addTalent( 'feral_lunge', 196884 )
@@ -79,7 +79,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         addTalent( 'sundering', 197214 )
 
         addTalent( 'ascendance', 114051 )
-        addTalent( 'landslide', 197992 )
+        addTalent( 'boulderfist', PTR and 246035 or 201897 )
         addTalent( 'earthen_spike', 188089 )
 
 
@@ -626,7 +626,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             spend_type = 'mana',
             cast = 0,
             gcdType = 'off',
-            known = function () return talent.ascendance.enabled end,
+            talent = 'ascendance',
             cooldown = 180,
             passive = true,
             toggle = 'cooldowns'
@@ -641,8 +641,8 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
 
         addHandler( 'ascendance', function ()
             applyBuff( 'ascendance', 15 )
-            setCooldown( 'stormstrike', 0 )
-            gainCharges( 'lava_burst', class.abilities.lava_burst.charges )
+            if spec.enhancement then setCooldown( 'stormstrike', 0 ); setCooldown( 'windstrike', 0 ) end
+            if spec.elemental then gainCharges( 'lava_burst', class.abilities.lava_burst.charges ) end
         end )
 
 
@@ -672,39 +672,41 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         } )
 
 
-        addAbility( 'boulderfist', {
-            id = 201897,
-            spend = -25,
-            spend_type = 'maelstrom',
-            cast = 0,
-            gcdType = 'spell',
-            known = function () return talent.boulderfist.enabled end,
-            cooldown = 6,
-            charges = 2,
-            recharge = 6
-        } )
+        if not PTR then
+            addAbility( 'boulderfist', {
+                id = 201897,
+                spend = -25,
+                spend_type = 'maelstrom',
+                cast = 0,
+                gcdType = 'spell',
+                known = function () return talent.boulderfist.enabled end,
+                cooldown = 6,
+                charges = 2,
+                recharge = 6
+            } )
 
-        modifyAbility( 'boulderfist', 'spend', function( x )
-            return x - artifact.gathering_of_the_maelstrom.rank
-        end )
+            modifyAbility( 'boulderfist', 'spend', function( x )
+                return x - artifact.gathering_of_the_maelstrom.rank
+            end )
 
-        addHandler( 'boulderfist', function ()
-            applyBuff( 'boulderfist', 10 )
-            if talent.landslide.enabled then
-                applyBuff( 'landslide', 10 )
-            end
-            if equipped.eye_of_the_twisting_nether then
-                applyBuff( 'shock_of_the_twisting_nether', 8 )
-            end
-        end )
+            addHandler( 'boulderfist', function ()
+                applyBuff( 'boulderfist', 10 )
+                if talent.landslide.enabled then
+                    applyBuff( 'landslide', 10 )
+                end
+                if equipped.eye_of_the_twisting_nether then
+                    applyBuff( 'shock_of_the_twisting_nether', 8 )
+                end
+            end )
 
-        modifyAbility( 'boulderfist', 'cooldown', function( x )
-            return x * haste
-        end )
+            modifyAbility( 'boulderfist', 'cooldown', function( x )
+                return x * haste
+            end )
 
-        modifyAbility( 'boulderfist', 'recharge', function( x )
-            return x * haste
-        end )
+            modifyAbility( 'boulderfist', 'recharge', function( x )
+                return x * haste
+            end )
+        end
 
 
         addAbility( 'chain_lightning', {
@@ -1330,16 +1332,29 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         -- LegionFix: Adjust spend value based on artifact traits.
         addAbility( 'rockbiter', {
             id = 193786,
-            spend = -20,
+            spend = PTR and -25 or -20,
             spend_type = 'maelstrom',
             cast = 0,
             gcdType = 'spell',
-            cooldown = 0,
-            known = function() return not talent.boulderfist.enabled end
+            cooldown = PTR and 6 or 0,
+            charges = PTR and 2 or nil,
+            recharge = PTR and 6 or nil,
+            known = function() return PTR or not talent.boulderfist.enabled end
         } )
 
         modifyAbility( 'rockbiter', 'spend', function( x  )
             return x - ( artifact.gathering_of_the_maelstrom.rank )
+        end )
+
+        modifyAbility( 'rockbiter', 'cooldown', function( x )
+            if PTR and talent.boulderfist.enabled then x = x * 0.85 end
+            return x
+        end )
+
+        modifyAbility( 'rockbiter', 'recharge', function( x )
+            if not PTR then return nil end
+            if talent.boulderfist.enabled then x = x * 0.85 end
+            return x
         end )
 
         addHandler( 'rockbiter', function ()
@@ -1402,18 +1417,27 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         } )
 
         modifyAbility( 'stormstrike', 'spend', function( x )
-            return buff.stormbringer.up and x / 2 or x
+            if buff.stormbringer.up then x = x / 2 end
+            if PTR and buff.ascendance.up then x = x / 4 end
+            return cost
         end )
 
         modifyAbility( 'stormstrike', 'cooldown', function( x )
-            return buff.stormbringer.up and 0 or x * haste
+            if PTR and buff.ascendance.up then x = x / 4 end
+            if buff.stormbringer.up then x = x / 2 end
+            return x * haste
         end )
 
         addHandler( 'stormstrike', function ()
             if buff.rainfall.up then
                 buff.rainfall.expires = min( buff.rainfall.applied + 30, buff.rainfall.expires + 3 )
             end
-            removeStack( 'stormbringer' )
+            
+            if PTR then
+                removeBuff( 'stormbringer' )
+            else
+                removeStack( 'stormbringer' )
+            end
 
             if equipped.storm_tempests then
                 applyDebuff( 'target', 'storm_tempests', 15 )
@@ -1528,19 +1552,28 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         } )
 
         modifyAbility( 'windstrike', 'spend', function( x )
-            return buff.stormbringer.up and x / 2 or x
+            if buff.stormbringer.up then x = x / 2 end
+            if PTR and buff.ascendance.up then x = x / 4 end
+            return cost
         end )
 
         modifyAbility( 'windstrike', 'cooldown', function( x )
-            return buff.stormbringer.up and 0 or x * haste
+            if PTR and buff.ascendance.up then x = x / 4 end
+            if buff.stormbringer.up then x = x / 2 end
+            return x * haste
         end )
 
         addHandler( 'windstrike', function ()
             if buff.rainfall.up then
                 buff.rainfall.expires = min( buff.rainfall.applied + 30, buff.rainfall.expires + 3 )
             end
+            
+            if PTR then
+                removeBuff( 'stormbringer' )
+            else
+                removeStack( 'stormbringer' )
+            end
 
-            removeStack( 'stormbringer' )
 
             if equipped.storm_tempests then
                 applyDebuff( 'target', 'storm_tempests', 15 )
