@@ -1419,7 +1419,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         modifyAbility( 'stormstrike', 'spend', function( x )
             if buff.stormbringer.up then x = x / 2 end
             if PTR and buff.ascendance.up then x = x / 4 end
-            return cost
+            return x
         end )
 
         modifyAbility( 'stormstrike', 'cooldown', function( x )
@@ -1554,7 +1554,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         modifyAbility( 'windstrike', 'spend', function( x )
             if buff.stormbringer.up then x = x / 2 end
             if PTR and buff.ascendance.up then x = x / 4 end
-            return cost
+            return x
         end )
 
         modifyAbility( 'windstrike', 'cooldown', function( x )

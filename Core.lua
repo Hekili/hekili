@@ -1017,11 +1017,12 @@ function Hekili:UpdateDisplay( dispID )
                 end
                 
                 local aKey, caption, indicator = Queue[i].actionName, Queue[i].caption, Queue[i].indicator
+                local ability = aKey and class.abilities[ aKey ]
                 
-                if aKey then
+                if ability then
                     button:Show()
                     button:SetAlpha(alpha)
-                    button.Texture:SetTexture( Queue[i].texture or class.abilities[ aKey ].texture or GetSpellTexture( class.abilities[ aKey ].id ) )
+                    button.Texture:SetTexture( Queue[i].texture or ability.texture or GetSpellTexture( ability.id ) )
                     local zoom = ( display.iconZoom or 0 ) / 200
                     button.Texture:SetTexCoord( zoom, 1 - zoom, zoom, 1 - zoom )
                     button.Texture:Show()
@@ -1041,11 +1042,7 @@ function Hekili:UpdateDisplay( dispID )
                     end
                     
                     if display.showKeybindings and ( display.queuedKBs or i == 1 ) then
-                        if aKey == 'use_item' then
-                            button.Keybinding:SetText( self:GetBindingForAction( aKey .. '-' .. Queue[i].item, not display.lowercaseKBs == true ) )
-                        else
-                            button.Keybinding:SetText( self:GetBindingForAction( aKey, not display.lowercaseKBs == true ) )
-                        end
+                        button.Keybinding:SetText( self:GetBindingForAction( aKey, not display.lowercaseKBs == true ) )
                     else
                         button.Keybinding:SetText( nil )
                     end
@@ -1150,23 +1147,21 @@ function Hekili:UpdateDisplay( dispID )
                         end
                     end
                     
-                    if display.blizzGlow and ( i == 1 or display.queuedBlizzGlow ) and IsSpellOverlayed( class.abilities[ aKey ].id ) then
+                    if display.blizzGlow and ( i == 1 or display.queuedBlizzGlow ) and IsSpellOverlayed( ability.id ) then
                         ActionButton_ShowOverlayGlow( button )
                     else
                         ActionButton_HideOverlayGlow( button )
                     end
                     
                     local start, duration
-                    if aKey == 'use_item' then
-                        local item = Queue[i].item
-                        local item = class.usable_items[ item ].item
-                        start, duration = GetItemCooldown( item )
+                    if ability.item then
+                        start, duration = GetItemCooldown( ability.item )
                     else
-                        start, duration = GetSpellCooldown( class.abilities[ aKey ].id )
+                        start, duration = GetSpellCooldown( ability.id )
                     end
                     local gcd_remains = gcd_start + gcd_duration - GetTime()
                     
-                    if class.abilities[ aKey ].gcdType ~= 'off' and ( not start or start == 0 or ( start + duration ) < ( gcd_start + gcd_duration ) ) then
+                    if ability.gcdType ~= 'off' and ( not start or start == 0 or ( start + duration ) < ( gcd_start + gcd_duration ) ) then
                         start = gcd_start
                         duration = gcd_duration
                     end
@@ -1175,7 +1170,7 @@ function Hekili:UpdateDisplay( dispID )
                         button.Cooldown:SetCooldown( start, duration )
                         
                         if SF and display.spellFlash and GetTime() >= flashes[dispID] + 0.2 then
-                            SF.FlashAction( class.abilities[ aKey ].id, display.spellFlashColor )
+                            SF.FlashAction( ability.id, display.spellFlashColor )
                             flashes[dispID] = GetTime()
                         end
                         
@@ -1200,16 +1195,16 @@ function Hekili:UpdateDisplay( dispID )
                         
                         if minR and minR >= 5 then 
                             ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 0, 0)
-                        elseif i == 1 and select(2, IsUsableSpell( class.abilities[ aKey ].id ) ) then
+                        elseif i == 1 and select(2, IsUsableSpell( ability.id ) ) then
                             ns.UI.Buttons[dispID][i].Texture:SetVertexColor(0.4, 0.4, 0.4)
                         else
                             ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 1, 1)
                         end
                     elseif display.rangeType == 'ability' then
-                        local rangeSpell = class.abilities[ aKey ].range and GetSpellInfo( class.abilities[ aKey ].range ) or class.abilities[ aKey ].name
+                        local rangeSpell = ability.range and GetSpellInfo( ability.range ) or ability.name
                         if ns.lib.SpellRange.IsSpellInRange( rangeSpell, 'target' ) == 0 then
                             ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 0, 0)
-                        elseif i == 1 and select(2, IsUsableSpell( class.abilities[ aKey ].id )) then
+                        elseif i == 1 and select(2, IsUsableSpell( ability.id )) then
                             ns.UI.Buttons[dispID][i].Texture:SetVertexColor(0.4, 0.4, 0.4)
                         else
                             ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 1, 1)

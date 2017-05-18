@@ -171,6 +171,16 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
     ns.restoreDefaults( nil, true )
     ns.convertDisplays()
     ns.buildUI()
+
+    for key, ability in pairs( class.abilities ) do
+        if ability.recheck_name then
+            ability.name = GetItemInfo( ability.item )
+            ability.texture = select( 10, GetItemInfo( ability.item ) )
+            ability.recheck_name = nil
+            class.abilities[ ability.name ] = ability
+        end
+    end
+
 end )
 
 RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()

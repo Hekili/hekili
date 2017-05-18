@@ -228,6 +228,9 @@ end
 ns.addUsableItem = addUsableItem
 
 
+
+
+
 -- Wrapper for the ability table.
 local function modifyAbility( k, elem, value )
 
@@ -245,8 +248,14 @@ local function addAbility( key, values, ... )
     end
 
     if values.item then
-        values.name = GetItemInfo( values.item ) or "no_item_detected"
-        values.texture = select( 10, GetItemInfo( values.item ) )
+        values.name = GetItemInfo( values.item )
+
+        if not values.name then
+            values.name = key
+            values.recheck_name = true
+        end
+
+        values.texture = select( 10, GetItemInfo( values.item ) ) or 'Interface\\ICONS\\Spell_Nature_BloodLust'
         addUsableItem( key, values.item )
     end
     
