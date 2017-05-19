@@ -123,7 +123,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
                 state.gain( amount * 10, 'runic_power' )
 
                 if state.talent.gathering_storm.enabled and state.buff.remorseless_winter.up then
-                    state.applyBuff( "remorseless_winter", state.buff.remorseless_winter.remains + 0.5 )
+                    state.applyBuff( "remorseless_winter", state.buff.remorseless_winter.remains + ( 0.5 * amount ) )
                 end
             end
         end
