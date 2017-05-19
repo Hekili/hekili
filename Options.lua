@@ -6491,9 +6491,10 @@ local ignore_actions = {
     run_action_list = 1,
     snapshot_stats = 1,
     auto_attack = 1,
-    use_item = 1,
+    -- use_item = 1,
     flask = 1,
-    food = 1
+    food = 1,
+    augmentation = 1
 }
 
 
@@ -6641,8 +6642,7 @@ local function sanitize( segment, i, line, warnings )
             i = i:gsub( tostring( itemID ), itemKey )
         end
         
-    end
-    
+    end   
     
     i, times = i:gsub( "pet%.%w+%.([%w_]+)%.", "%1." )
     if times > 0 then
@@ -6729,6 +6729,11 @@ local function sanitize( segment, i, line, warnings )
     i, times = i:gsub( "buff.metamorphosis.extended_by_demonic", "buff.demonic_extended_metamorphosis.up" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.metamorphosis.extended_by_demonic' with 'buff.demonic_extended_metamorphosis.up' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "buff.active_uas", "unstable_afflictions" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Replaced 'buff.active_uas' with 'unstable_afflictions' (" .. times .. "x)." )
     end
     
     --[[ i, times = i:gsub( "spell_targets%.[a-zA-Z0-9_]+", "active_enemies" )
@@ -7127,7 +7132,7 @@ local function storeModifier( entry, key, value )
     
     if key ~= 'if' and key ~= 'ability' then
         if not entry.Args then entry.Args = key .. '=' .. value
-    else entry.Args = entry.Args .. "," .. key .. "=" .. value end
+        else entry.Args = entry.Args .. "," .. key .. "=" .. value end
     end
     
     if key == 'if' then
@@ -7144,8 +7149,12 @@ local function storeModifier( entry, key, value )
         entry.Moving = tonumber( value )
         
     elseif key == 'name' then
-        entry.ModName = value:match( [["(.*)"]] ) or value
-        entry.ModVarName = value:match( [["(.*)"]] ) or value
+        local v = value:match( [["(.*)"]] ) or value
+
+        entry.ModName = v
+        entry.ModVarName = v
+
+        if entry.Ability == 'use_item' and class.abilities[ v ] then entry.Ability = v end
         
     elseif key == 'value' then -- for 'variable' type, overwrites Script
         entry.Script = value
@@ -7240,7 +7249,7 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
             if a == 1 then
                 local ability = str:trim()
                 
-                if ability and class.abilities[ ability ] then
+                if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then
                     result.Ability = ability
                 elseif not ignore_actions[ ability ] then
                     table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
