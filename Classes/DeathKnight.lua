@@ -19,6 +19,7 @@ local modifyAura = ns.modifyAura
 local addGearSet = ns.addGearSet
 local addGlyph = ns.addGlyph
 local addMetaFunction = ns.addMetaFunction
+local addPet = ns.addPet
 local addTalent = ns.addTalent
 local addTrait = ns.addTrait
 local addResource = ns.addResource
@@ -168,6 +169,33 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addMetaFunction( 'state', 'rune', function () return runes.count end )
 
+        addPet( 'ghoul' )
+        addPet( 'abomination' )
+        addPet( 'army_of_the_dead' )
+        addPet( 'valkyr_battlemaiden' )
+
+        registerCustomVariable( "last_army", 0 )
+        registerCustomVariable( "last_valkyr", 0 )
+        registerCustomVariable( "last_transform", 0 )
+
+        RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, _, spellID )
+
+            if unit ~= 'player' then return end
+
+            if spellID == class.abilities.army_of_the_dead.id then
+                state.last_army = GetTime()
+            
+            elseif spellID == class.abilities.dark_arbiter.id then
+                state.last_valkyr = GetTime()
+
+            elseif spellID == class.abilities.dark_transformation.id then
+                state.last_transform = GetTime()
+
+            end
+
+        end )
+
+
         addHook( 'reset_precast', function ()
             state.runes.start[1], state.runes.regen = GetRuneCooldown(1)
             for i = 2, 6 do
@@ -188,6 +216,19 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
                 state.nextBoS = state.buff.breath_of_sindragosa.up and ( state.now + next_bos_tick ) or 0
                 while state.nextBoS > 0 and state.nextBoS < state.now do state.nextBoS = state.nextBoS + 1 end
+            end
+
+            state.pet.valkyr_battlemaiden.expires = state.last_valkyr > 0 and state.last_valkyr + 15 or 0
+            state.pet.army_of_the_dead.expires = state.last_army > 0 and state.last_army + 40 or 0
+
+            if state.talent.sludge_belcher.enabled then
+                if UnitExists( 'pet' ) then state.pet.abomination.expires = state.query_time + 3600
+                else state.pet.abomination.expires = 0 end
+                state.pet.ghoul.expires = 0
+            else
+                if UnitExists( 'pet' ) then state.pet.ghoul.expires = state.query_time + 3600
+                else state.pet.ghoul.expires = 0 end
+                state.pet.abomination.expires = 0
             end
 
         end )
@@ -278,8 +319,10 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             end
         end )
 
+
         setPotion( "old_war" )
         setRole( "attack" )
+
 
 
         -- Talents: Unholy
@@ -447,7 +490,6 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "breath_of_sindragosa", 152279, "duration", 3600, "friendly", true )
         addAura( "dark_command", 56222, "duration", 3 )
         addAura( "dark_succor", 178819 )
-        addAura( "dark_transformation", 63560, "duration", 20 )
         addAura( "death_and_decay", 188290, "duration", 10 )
         addAura( "defile", 156004, "duration", 10 )
         addAura( "defile_buff", 218100, "duration", 5, "max_stack", 10 )
@@ -472,15 +514,29 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "runic_corruption", 51462 )
         addAura( "runic_empowerment", 81229 )
         addAura( "soul_reaper", 130736, "duration", 5 )
-        addAura( "sudden_doom", 49530 )
+        addAura( "sudden_doom", 81340, "duration", 10 )
         addAura( "temptation", 234143, "duration", 30 )
         addAura( "unholy_strength", 53365, "duration", 15 )
         addAura( "virulent_plague", 191587, "duration", 21 )
         addAura( "wraith_walk", 212552, "duration", 3 )
 
 
+        addAura( "dark_transformation", 63560, "duration", 20, "feign", function ()
+            local duration = 20 + ( artifact.eternal_agony.rank * 2 )
+            local up = ( pet.ghoul.up or pet.abomination.up ) and last_transform + duration > state.query_time
+            buff.dark_transformation.name = class.abilities.dark_transformation.name
+            buff.dark_transformation.count = up and 1 or 0
+            buff.dark_transformation.expires = up and last_transform + duration or 0
+            buff.dark_transformation.applied = up and last_transform or 0
+            buff.dark_transformation.caster = 'player'
+        end )
+
+
+
         addGearSet( "blades_of_the_fallen_prince", 128292 )
         setArtifact( "blades_of_the_fallen_prince" )
+        addGearSet( "apocalypse", 128403 )
+        setArtifact( "apocalypse" )
 
         addGearSet( "tier19", 138355, 138361, 138364, 138349, 138352, 138358 )
         addGearSet( "tier20", 147124, 147126, 147122, 147121, 147123, 147125 )

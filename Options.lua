@@ -3757,11 +3757,8 @@ ns.SimulationCraftImporter = function ()
                             
                             if import then
                                 for i, entry in ipairs( import ) do
-                                    
                                     local ability = class.abilities[ entry.Ability ]
-                                    
                                     local key = ns.newAction( target, ability.name )
-                                    
                                     local action = list.Actions[ i ]
                                     
                                     action.Ability = entry.Ability
@@ -7150,11 +7147,8 @@ local function storeModifier( entry, key, value )
         
     elseif key == 'name' then
         local v = value:match( [["(.*)"]] ) or value
-
         entry.ModName = v
         entry.ModVarName = v
-
-        if entry.Ability == 'use_item' and class.abilities[ v ] then entry.Ability = v end
         
     elseif key == 'value' then -- for 'variable' type, overwrites Script
         entry.Script = value
@@ -7272,6 +7266,13 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
             else
                 result.Script = result.TargetIf
             end
+        end
+
+        if result.Ability == 'use_item' then
+            result.Ability = result.ModName
+            result.ModName = nil
+            result.ModVarName = nil
+            if not class.abilities[ result.Ability ] then result.Ability = nil end
         end
         
         if result.Script then

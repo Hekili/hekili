@@ -240,7 +240,6 @@ function Hekili:OnInitialize()
     
     self.DB.profile.Release = self.DB.profile.Release or 20170416.0
     
-    
     initializeClassModule()
     refreshBindings()
     restoreDefaults()

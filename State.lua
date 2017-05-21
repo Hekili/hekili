@@ -2963,6 +2963,10 @@ function state.reset( dispID )
     for k in pairs( state.totem ) do
         state.totem[ k ].expires = nil
     end
+
+    for k in pairs( state.pet ) do
+        state.pet[ k ].expires = 0
+    end
     
     state.target.health.actual = nil
     state.target.health.current = nil

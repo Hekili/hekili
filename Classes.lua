@@ -379,6 +379,16 @@ end
 ns.addGlyph = addGlyph 
 
 
+local function addPet( key )
+    state.pet[ key ] = rawget( state.pet, key ) or {}
+    state.pet[ key ].name = key
+    state.pet[ key ].expires = 0
+
+    ns.commitKey( key )
+end
+ns.addPet = addPet
+
+
 local function addPerk( key, id )
 
     local name = GetSpellInfo( id )
@@ -389,13 +399,12 @@ local function addPerk( key, id )
     end
 
     class.perks[ key ] = {
-    id = id,
-    key = key,
-    name = name
-}
+        id = id,
+        key = key,
+        name = name
+    }
 
-ns.commitKey( key )
-
+    ns.commitKey( key )
 end
 ns.addPerk = addPerk
 
