@@ -137,7 +137,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
 
         -- Gear Sets
-        addGearSet( 'tier19', 138342, 138344, 138813, 138339, 138347, 138368 )
+        addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
         addGearSet( 'talonclaw', 128808 )
 
         setArtifact( 'talonclaw' )
@@ -447,7 +447,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         } )
 
         addHandler( 'exhilaration', function ()
-            health.current = min( health.max, health.current + ( health.max * 0.3 ) )
+            health.actual = min( health.max, health.actual + ( health.max * 0.3 ) )
             -- NYI: Also heal pet.
         end )
 
@@ -464,7 +464,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
         addHandler( 'feign_death', function ()
             applyBuff( 'feign_death', 360 )
-            if equipped.the_shadow_hunters_voodoo_mask then health.current = min( health.max, health.current + ( health.max * 0.2 ) ) end
+            if equipped.the_shadow_hunters_voodoo_mask then health.actual = min( health.max, health.actual + ( health.max * 0.2 ) ) end
         end )
         
 

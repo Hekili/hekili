@@ -838,7 +838,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         } )
 
         addHandler( "renewal", function ()
-            health.current = min( health.max, health.current + ( health.max * 0.3 ) )
+            health.actual = min( health.max, health.actual + ( health.max * 0.3 ) )
         end )
 
 

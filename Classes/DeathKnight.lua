@@ -171,11 +171,15 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addPet( 'ghoul' )
         addPet( 'abomination' )
+
         addPet( 'army_of_the_dead' )
+
+        addPet( 'gargoyle' )
         addPet( 'valkyr_battlemaiden' )
 
         registerCustomVariable( "last_army", 0 )
         registerCustomVariable( "last_valkyr", 0 )
+        registerCustomVariable( "last_gargoyle", 0 )
         registerCustomVariable( "last_transform", 0 )
 
         RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, _, spellID )
@@ -190,6 +194,9 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
             elseif spellID == class.abilities.dark_transformation.id then
                 state.last_transform = GetTime()
+
+            elseif spellID == class.abilities.summon_gargoyle.id then
+                state.last_gargoyle = GetTime()
 
             end
 
@@ -321,8 +328,12 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
 
         setPotion( "old_war" )
-        setRole( "attack" )
+        setRole( state.spec.blood and 'tank' or 'attack' )
 
+        addHook( 'specializationChanged', function ()
+            setPotion( 'old_war' )
+            setRole( state.spec.blood and 'tank' or 'attack' )
+        end )
 
 
         -- Talents: Unholy
@@ -485,7 +496,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "aggramars_stride", 207438, "duration", 3600 )
         addAura( "antimagic_shell", 48707, "duration", 5 )
             modifyAura( "antimagic_shell", "duration", function( x ) return x + ( talent.spell_eater.enabled and 5 or 0 ) end )
-        addAura( "army_of_the_dead", 42650, "duration", 40 )
+        addAura( "army_of_the_dead", 42650, "duration", 4 )
         addAura( "blinding_sleet", 207167, "duration", 4 )
         addAura( "breath_of_sindragosa", 152279, "duration", 3600, "friendly", true )
         addAura( "dark_command", 56222, "duration", 3 )
@@ -514,7 +525,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "runic_corruption", 51462 )
         addAura( "runic_empowerment", 81229 )
         addAura( "soul_reaper", 130736, "duration", 5 )
-        addAura( "sudden_doom", 81340, "duration", 10 )
+        addAura( "sudden_doom", 81340, "duration", 10, "max_stack", 1 )
+            modifyAura( "sudden_doom", "max_stack", function( x ) return x + ( artifact.sudden_doom.enabled and 1 or 0 ) end )
         addAura( "temptation", 234143, "duration", 30 )
         addAura( "unholy_strength", 53365, "duration", 15 )
         addAura( "virulent_plague", 191587, "duration", 21 )
@@ -532,9 +544,9 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         end )
 
 
-
         addGearSet( "blades_of_the_fallen_prince", 128292 )
         setArtifact( "blades_of_the_fallen_prince" )
+
         addGearSet( "apocalypse", 128403 )
         setArtifact( "apocalypse" )
 
@@ -641,6 +653,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         } )
 
         addHandler( "army_of_the_dead", function ()
+            applyBuff( "army_of_the_dead", 4 )
             -- not sure if we need to summon ghouls as pets, watch these mechanics.
         end )
 
@@ -733,7 +746,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             gcdType = "melee",
             cooldown = 0,
             max_range = 30,
-            usable = function () return talent.clawing_shadows.enabled end,
+            talent = "clawing_shadows"
         } )
 
         addHandler( "clawing_shadows", function ()
@@ -778,7 +791,6 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             cooldown = 120,
             -- min_range = 0,
             max_range = 30,
-            usable = function () return talent.dark_arbiter.enabled end,
             toggle = 'cooldowns'
         } )
 
@@ -1347,7 +1359,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             cooldown = 0,
             -- min_range = 0,
             -- max_range = 0,
-            known = function () return not talent.clawing_shadows.enabled end,
+            notalent = "clawing_shadows"
         } )
 
         addHandler( "scourge_strike", function ()
@@ -1408,7 +1420,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             cooldown = 180,
             -- min_range = 0,
             max_range = 30,
-            usable = function () return not talent.dark_arbiter.enabled end,
+            notalent = "dark_arbiter",
             toggle = 'cooldowns'
         } )
 

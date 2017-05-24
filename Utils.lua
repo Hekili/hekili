@@ -54,8 +54,22 @@ ns.titleCase = function( s )
 end
 
 
+local replacements = {
+    ['_'] = " ",
+    aoe = "AOE",
+    rjw = "RJW",
+    chix = "ChiX",
+    st = "ST",
+    cd = "CD"
+}
+
 ns.titlefy = function( s )
-    return s:gsub( "_", " " ):gsub( "[Aa]oe", "AOE" ):gsub( "[Rr]jw", "RJW" ):gsub( "[Cc]hix", "ChiX" ):gsub( "(^%W)[Ss]t(^%W)", "%1ST%2" ):gsub( "[Cc]d", "CD" )
+
+    for k, v in pairs( replacements ) do
+        s = s:gsub( '%f[%w]' .. k .. '%f[%W]', v )
+    end
+
+    return s
 end
 
 
@@ -64,17 +78,19 @@ ns.escapeMagic = function( s )
 end
 
 
+local tblUnpack = {}
+
 ns.multiUnpack = function( ... )
 
-    local merge = {}
+    table.wipe( tblUnpack )
 
     for i = 1, select( '#', ... ) do
         for _, value in ipairs( select( i, ... ) ) do
-            merge[ #merge + 1 ] = value
+            tblUnpack[ #tblUnpack + 1 ] = value
         end
     end
 
-    return unpack( merge )
+    return unpack( tblUnpack )
 
 end
 

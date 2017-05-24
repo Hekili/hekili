@@ -393,6 +393,7 @@ state.IsUsableSpell = IsUsableSpell
 state.UnitBuff = UnitBuff
 state.UnitDebuff = UnitDebuff
 state.floor = math.floor
+state.abs = math.abs
 
 state.boss = false
 state.combat = 0
@@ -815,11 +816,11 @@ local mt_state = {
         elseif k == 'time' then
             -- Calculate time in combat.
             if t.combat == 0 and t.false_start == 0 then return 0
-        else return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) + ( ( t.combat > 0 or t.false_start ) and t.delay or 0 ) end
+            else return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) + ( ( t.combat > 0 or t.false_start ) and t.delay or 0 ) end
             
         elseif k == 'time_to_die' then
             -- Harvest TTD calculation from Hekili.
-            return ns.getTTD() - ( t.offset )
+            return ns.getTTD( 'target' ) - ( t.offset + t.delay )
             
         elseif k == 'moving' then
             return ( GetUnitSpeed('player') > 0 )
@@ -1001,7 +1002,10 @@ local mt_state = {
                     return nil
                 end
             end
-            
+
+            if t.variable[k] ~= nil then return t.variable[k] end
+            if t.settings[k] ~= nil then return t.settings[k] end
+            if t.toggle[k] ~= nil then return t.toggle[k] end
         end
         
         return -- error("UNK: " .. k )
@@ -1280,7 +1284,7 @@ local mt_toggle = {
                 end
             end
             
-            return false
+            return
             
         end
     end
@@ -1296,7 +1300,7 @@ local mt_settings = {
             return Hekili.DB.profile[ 'Class Option: '..k ]
         end
         
-        return false
+        return
     end
 }
 ns.metatables.mt_settings = mt_settings
@@ -1315,7 +1319,7 @@ local mt_target = {
             return UnitGUID( 'target' ) or 'unknown'
             
         elseif k == 'time_to_die' then
-            return max( 0, ( ns.getTTD( UnitGUID( 'target' ) or 0 ) - ( state.offset + state.delay ) ) )
+            return max( 0, ( ns.getTTD( 'target' ) - ( state.offset + state.delay ) ) )
             
         elseif k == 'health_current' then
             return ( UnitHealth('target') > 0 and UnitHealth('target') or 50000 )
@@ -1597,7 +1601,7 @@ local mt_default_cooldown = {
             end
             return t.remains
             
-        elseif k == 'up' then
+        elseif k == 'up' or k == 'ready' then
             return ( t.remains == 0 )
             
         end
@@ -2304,11 +2308,10 @@ local mt_variable = {
         
         if id then
             local value = ns.checkScript( 'A', id )
-            
             return value
         end
         
-        return false
+        return
     end
 }
 ns.metatables.mt_variable = mt_Variable
@@ -2964,8 +2967,10 @@ function state.reset( dispID )
         state.totem[ k ].expires = nil
     end
 
-    for k in pairs( state.pet ) do
-        state.pet[ k ].expires = 0
+    for k, v in pairs( state.pet ) do
+        if type(v) == 'table' then
+            state.pet[ k ].expires = 0
+        end
     end
     
     state.target.health.actual = nil
@@ -2977,6 +2982,7 @@ function state.reset( dispID )
     -- range checks
     state.target.minR = nil
     state.target.maxR = nil
+    state.target.distance = nil
     
     state.prev.last = state.player.lastcast
     state.prev_gcd.last = state.player.lastgcd
@@ -3269,7 +3275,7 @@ ns.isKnown = function( sID )
         return false
     end
 
-    if ability.notalent and state.talent[ ability.talent ].enabled then
+    if ability.notalent and state.talent[ ability.notalent ].enabled then
         return false
     end
 

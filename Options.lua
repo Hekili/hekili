@@ -6,6 +6,7 @@ local Hekili = _G[ addon ]
 
 local class = ns.class
 local scripts = ns.scripts
+local state = ns.state
 
 local format = string.format
 local match = string.match
@@ -167,6 +168,10 @@ local oneTimeFixes = {
             end
         end
     end,
+
+    dontDisableGlobalCooldownYouFools_05232017 = function( profile )
+        profile.blacklist.global_cooldown = nil
+    end
 }
 
 
@@ -2877,6 +2882,7 @@ ns.newActionOption = function( aList, index )
     
     local actOption = {
         type = "group",
+        -- inline = true,
         name = '|cFFFFD100' .. index .. '.|r ' .. Hekili.DB.profile.actionLists[ aList ].Actions[ index ].Name,
         order = index * 10,
         -- childGroups = "tab",
@@ -3462,7 +3468,7 @@ ns.ClassSettings = function ()
     
     local abilities = {} 
     for _, v in pairs( class.abilities ) do
-        if v.id > 0 then
+        if v.id > 0 and v.id ~= 61304 then
             abilities[ v.name ] = v.key
         end
     end
@@ -3790,7 +3796,7 @@ ns.SimulationCraftImporter = function ()
                                     
                                     if ability.toggle then
                                         if entry.Script and entry.Script:len() > 0 then
-                                            action.Script = 'toggle.' .. ability.toggle .. '&(' .. entry.Script .. ')'
+                                            action.Script = 'toggle.' .. ability.toggle .. ' & ( ' .. entry.Script .. ' )'
                                         else
                                             action.Script = 'toggle.' .. ability.toggle
                                         end
@@ -5348,6 +5354,94 @@ function Hekili:GetOptions()
                 hidden = function()
                     return not Hekili.Skeleton
                 end,
+            },
+            IssueReport = {
+                type = "group",
+                name = "Issue Reporting",
+                order = 81,
+                args = {
+                    header = {
+                        type = "description",
+                        name = "If you are having a technical issue with the addon, please submit an issue report via the link below.  When submitting your report, please include the information " ..
+                            "below (specialization, talents, traits, gear), which can be copied and pasted for your convenience.",
+                        order = 10,
+                        fontSize = "medium",
+                        width = "full",
+                    },
+                    profile = {
+                        type = "input",
+                        name = "Character Data",
+                        order = 20,
+                        width = "full",
+                        multiline = 10,
+                        get = function ()
+                            local s = state
+
+                            local spec = s.spec.key
+
+                            local talents
+                            for k, v in orderedPairs( s.talent ) do
+                                if v.enabled then
+                                    if talents then talents = format( "%s\n    %s", talents, k )
+                                    else talents = k end
+                                end
+                            end
+
+                            local traits
+                            for k, v in orderedPairs( s.artifact ) do
+                                if v.rank > 0 then
+                                    if traits then traits = format( "%s\n    %s=%d", traits, k, v.rank )
+                                    else traits = format( "%s=%d", k, v.rank ) end
+                                end
+                            end
+
+                            local sets
+                            for k, v in orderedPairs( class.gearsets ) do
+                                if s.set_bonus[ k ] > 0 then
+                                    if sets then sets = format( "%s\n    %s=%d", sets, k, s.set_bonus[k] )
+                                    else sets = format( "%s=%d", k, s.set_bonus[k] ) end
+                                end
+                            end
+
+                            local gear
+                            for i = 1, 19 do
+                                local item = GetInventoryItemID( 'player', i )
+
+                                if item then
+                                    local key = GetItemInfo( item )
+                                    key = formatKey( key )
+
+                                    if gear then gear = format( "%s\n    %s=%d", gear, key, s.set_bonus[key] )
+                                    else gear = format( "%s=%d", key, s.set_bonus[key] ) end
+                                end
+                            end
+
+                            return format( "level: %d\n" ..
+                                "class: %s\n" ..
+                                "spec: %s\n\n" ..
+                                "talents: %s\n\n" ..
+                                "traits: %s\n\n" ..
+                                "sets/legendaries/artifacts: %s\n\n" ..
+                                "gear: %s",
+                                UnitLevel( 'player' ) or 0,
+                                class.file or "NONE",
+                                spec or "none",
+                                talents or "none",
+                                traits or "none",
+                                sets or "none",
+                                gear or "none" )
+                        end,
+                        set = function () return end
+                    },
+                    link = {
+                        type = "input",
+                        name = "Link",
+                        order = 30,
+                        width = "full",
+                        get = function() return "https://wow.curseforge.com/projects/hekili/issues" end,
+                        set = function() return end,
+                    }
+                }
             },
             make_defaults = {
                 type = 'group',
@@ -7277,7 +7371,12 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
         
         if result.Script then
             result.Script = sanitize( 'c', result.Script, line, warnings )
+            local SpaceOutSim = ns.SpaceOutSim
+            if SpaceOutSim then
+                result.Script = SpaceOutSim( result.Script )
+            end
         end
+
         
         if result.Ability then
             table.insert( output, result )

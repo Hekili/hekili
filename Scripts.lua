@@ -23,6 +23,8 @@ local SimToLua = function( str, modifier )
   -- If no conditions were provided, function should return true.
   if not str or str == '' then return nil end
 
+  str = str:gsub( "%s", "" )
+
   -- Strip comments.
   str = str:gsub("^%-%-.-\n", "")
 
@@ -48,12 +50,14 @@ local SimToLua = function( str, modifier )
   end
 
   -- Replace '!' with ' not '.
+  -- str = str:gsub("!%s-(%S+)%s", " not (%1) " )
+  -- str = str:gsub("!%s-(%S+)$", " not (%1)" )
   str = str:gsub("!(.-) ", " not (%1) " )
   str = str:gsub("!(.-)$", " not (%1)" )
   str = str:gsub("!([^=])", " not %1")
 
   -- Condense whitespace.
-  str = str:gsub("%s+", " ")
+  str = str:gsub("%s%s", " ")
 
   -- Condense parenthetical spaces.
   str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")")
@@ -72,12 +76,15 @@ end
 
 
 local SpaceOutSim = function( str )
-    str = str:gsub( "([!<>=|&()])", " %1 " ):gsub("%s+", " ")
+    str = str:gsub( "([!<>=|&()*%-%+%%])", " %1 " ):gsub("%s+", " ")
 
     str = str:gsub( "([<>~!|]) ([|=])", "%1%2" )
 
+    str = str:trim()
+
     return str
 end
+ns.SpaceOutSim = SpaceOutSim
 
 
 local storeValues = function( tbl, node )
@@ -96,7 +103,8 @@ local storeValues = function( tbl, node )
     if success then tbl[k] = result
     elseif type( result ) == 'string' then
       tbl[k] = result:match( "lua:%d+: (.*)" ) or result
-    else tbl[k] = 'nil' end
+    end
+    if tbl[k] == nil then tbl[k] = 'nil' end
   end
 end
 ns.storeValues = storeValues
@@ -177,7 +185,7 @@ local specialModifiers = {
     MaximumTargets = true,
     CheckMovement = true,
     Movement = true,
-    ModName = true
+    ModName = false
 }
 
 
@@ -206,8 +214,8 @@ local convertScript = function( node, hasModifiers )
     Modifiers = {},
     SpecialMods = "",
 
-    Lua = Translated and trim( SpaceOutSim( Translated ) ) or nil,
-    SimC = node.Script and trim( SpaceOutSim( node.Script ) ) or nil
+    Lua = Translated and trim( Translated ) or nil,
+    SimC = node.Script and trim( node.Script ) or nil
   }
 
   if hasModifiers then -- and ( node.Args and node.Args ~= '' ) then
@@ -231,11 +239,16 @@ local convertScript = function( node, hasModifiers )
         end
     end
 
-    for m in pairs( specialModifiers ) do
+    for m, value in pairs( specialModifiers ) do
         if node[ m ] then
             local o = tostring( node[m] )
             Output.SpecialMods = Output.SpecialMods .. " - " .. m .. " : " .. o
-            local sFunction, Error = loadstring( 'return ' .. o .. ' ~= nil and ' .. o .. ' or "' .. o .. '"'  )
+            local sFunction, Error
+            if value then
+                sFunction, Error = loadstring( 'return ' .. o )
+            else
+                sFunction, Error = loadstring( 'return "' .. o .. '"' )
+            end
             if sFunction then
                 setfenv( sFunction, state )
                 Output.Modifiers[ m ] = sFunction
@@ -255,7 +268,7 @@ local convertScript = function( node, hasModifiers )
             rFunction, rError = loadstring( 'return ' .. tReady )
         else
             rFunction, rError = loadstring( 'return function( wait, spend, resource )\n' ..
-            'return max( 0, wait, ' .. tReady .. ' )\n' ..
+            '    return max( 0, wait, ' .. tReady .. ' )\n' ..
             'end' )
         end
     end

@@ -659,8 +659,6 @@ addAura( 'archmages_greater_incandescence_str', 177175, 'duration', 10 )
 addAura( 'maalus', 187620, 'duration', 15 )
 addAura( 'thorasus', 187619, 'duration', 15 )
 
-addAura( 'xavarics_magnum_opus', 207428, 'duration', 30 )
-
 -- Raid Buffs
 addAura( 'str_agi_int', -1, 'duration', 3600 )
 addAura( 'stamina', -2, 'duration', 3600 )
@@ -825,6 +823,15 @@ addAura( 'vigilance_perch', 241332, 'duration', 60, 'max_stack', 5 )
 addGearSet( 'the_sentinels_eternal_refuge', 146669 )
 addAura( 'the_sentinels_eternal_refuge', 241331, 'duration', 60, 'max_stack', 5 )
 
+addGearSet( 'prydaz_xavarics_magnum_opus', 132444 )
+addAura( 'xavarics_magnum_opus', 207428, 'duration', 30 )
+
+addGearSet( 'aggramars_stride', 132443 )
+addAura( 'aggramars_stride', 207438, 'duration', 3600 )
+
+addGearSet( 'sephuzs_secret', 132452 )
+addAura( 'sephuzs_secret', 208051, 'duration', 10 )
+
 
 class.potions = {
     old_war = {
@@ -921,7 +928,7 @@ addUsableItem( "draught_of_souls", 140808 )
 addAura( "fel_crazed_rage", 225141, "duration", 3 )
 
 addAbility( "draught_of_souls", {
-    id = -7,
+    id = -100,
     item = 140808,
     spend = 0,
     cast = 0,
@@ -938,7 +945,7 @@ end )
 addUsableItem( "kiljaedens_burning_wish", 144259 )
 
 addAbility( "kiljaedens_burning_wish", {
-    id = -8,
+    id = -101,
     item = 144259,
     spend = 0,
     cast = 0,
@@ -947,40 +954,23 @@ addAbility( "kiljaedens_burning_wish", {
 } )
 
 
---[[ addAbility( 'use_item', {
-    id = -6,
-    name = 'Use Item (Stub)',
+addUsableItem( "faulty_countermeasure", 137539 )
+
+addAbility( "faulty_countermeasure", {
+    id = -102,
+    item = 137539,
     spend = 0,
     cast = 0,
-    gcdType = 'spell',
-    cooldown = 0,
-    channeled = false,
-    passive = false,
-    known = function () return args.name and equipped[ args.name ] end,
-    usable = function ()
-        local iName = args.ModName or args.name
-        return iName ~= nil and class.usable_items[ iName ] and equipped[ iName ]
-    end,
+    cooldown = 120,
+    gcdType = 'off',
 } )
 
-modifyAbility( 'use_item', 'cooldown',  function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].cooldown or x end )
-modifyAbility( 'use_item', 'cast',      function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].cast or x end )
-modifyAbility( 'use_item', 'channeled', function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].channeled or x end )
-modifyAbility( 'use_item', 'gcdType',   function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].gcdType or x end )
-modifyAbility( 'use_item', 'passive',   function( x ) return class.usable_items[ args.name or args.ModName or 'no_item' ].passive or x end )
+addAura( "sheathed_in_frost", 214962, "duration", 30 )
 
-addHandler( 'use_item', function ()
-    local iName = args.ModName or args.name
-    local item = class.usable_items[ iName ]
-
-    if item and item.handler then
-        item.handler()
-    end
+addHandler( "faulty_countermeasure", function ()
+    applyBuff( "sheathed_in_frost", 30 )
 end )
 
-state.cooldown.use_item.items = {}
-setmetatable( state.cooldown.use_item, ns.metatables.mt_use_item_cooldown )
-setmetatable( state.cooldown.use_item.items, ns.metatables.mt_use_item_db ) ]]
 
 
 addAbility( 'variable', {

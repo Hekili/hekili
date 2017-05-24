@@ -388,7 +388,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
     local debug = self.ActiveDebug
     
     -- if debug then self:Debug( "Testing action list [ %d - %s ].", listID, list and list.Name or "ERROR - Does Not Exist" ) end
-    if debug then self:Debug( "Previous Recommendation: %s at +%.2fs, clash is %.2f.", action or "NO ACTION", wait or 30, clash or 0 ) end
+    if debug then self:Debug( "Previous Recommendation: %s at +%.2fs, clash is %.2f.", action or "NO ACTION", wait or 60, clash or 0 ) end
     
     -- the stack will prevent list loops, but we need to keep this from destroying existing data... later.
     if not list then
@@ -403,7 +403,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
     
     local chosen_action = action
     local chosen_clash = clash or 0
-    local chosen_wait = wait or 30
+    local chosen_wait = wait or 60
     local chosen_depth = depth or 0
     
     local stop = false
@@ -446,7 +446,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                 
                 local ability = class.abilities[ entry.Ability ]
 
-                local wait_time = 30
+                local wait_time = 60
                 local clash = 0
                 
                 local known = ability and isKnown( state.this_action )
@@ -738,7 +738,7 @@ function Hekili:ProcessHooks( dispID, solo )
                 for i = 1, ( display.numIcons or 4 ) do
                     
                     local chosen_action
-                    local chosen_wait, chosen_clash, chosen_depth = 30, self.DB.profile.Clash or 0, 0
+                    local chosen_wait, chosen_clash, chosen_depth = 60, self.DB.profile.Clash or 0, 0
                     
                     Queue[i] = Queue[i] or {}
                     

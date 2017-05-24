@@ -239,29 +239,29 @@ local TTD = ns.TTD
 -- Borrowed TTD linear regression model from 'Nemo' by soulwhip (with permission).
 ns.initTTD = function( unit )
 
-  if not unit then return end
+    if not unit then return end
 
-  local GUID = UnitGUID( unit )
+    local GUID = UnitGUID( unit )
 
-  TTD[ GUID ] = TTD[ GUID ] or {}
-  TTD[ GUID ].n = 1
-  TTD[ GUID ].timeSum = GetTime()
-  TTD[ GUID ].healthSum = UnitHealth( unit ) or 0
-  TTD[ GUID ].timeMean = TTD[ GUID ].timeSum * TTD[ GUID ].timeSum
-  TTD[ GUID ].healthMean = TTD[ GUID ].timeSum * TTD[ GUID ].healthSum
-  TTD[ GUID ].name = UnitName( unit )
-  TTD[ GUID ].sec = 300
+    TTD[ GUID ] = TTD[ GUID ] or {}
+    TTD[ GUID ].n = 1
+    TTD[ GUID ].timeSum = GetTime()
+    TTD[ GUID ].healthSum = UnitHealth( unit ) or 0
+    TTD[ GUID ].timeMean = TTD[ GUID ].timeSum * TTD[ GUID ].timeSum
+    TTD[ GUID ].healthMean = TTD[ GUID ].timeSum * TTD[ GUID ].healthSum
+    TTD[ GUID ].name = UnitName( unit )
+    TTD[ GUID ].sec = state.boss and 300 or 15
 
 end
 
 
 ns.getTTD = function( unit )
 
-  local GUID = UnitGUID( unit )
+  local GUID = UnitGUID( unit ) or unit
 
-  if not TTD[ GUID ] then return 300 end
+  if not TTD[ GUID ] then return 15 end
 
-  return TTD[ GUID ].sec or 300
+  return TTD[ GUID ].sec or 15
 
 end
 
