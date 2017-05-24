@@ -2541,9 +2541,27 @@ ns.newActionListOption = function( index )
     local listOption = {
         type = "group",
         name = function(info, val)
-            if Hekili.DB.profile.actionLists[ index ].Default then
-                return "|cFF00C0FF" .. name .. "|r"
+            local name = name
+            local num = #Hekili.DB.profile.actionLists[ index ].Actions
+            local flag = false
+
+            for i = 1, num do
+                local script = Hekili.Scripts.A[ index .. ':' .. i ] 
+
+                if script and script.Error then
+                    flag = true
+                    break
+                end
             end
+
+            if Hekili.DB.profile.actionLists[ index ].Default then
+                name = "|cFF00C0FF" .. name .. "|r"
+            end
+
+            if flag then
+                name = " |TInterface\\Addons\\Hekili\\Textures\\WARNING:0|t " .. name
+            end
+
             return name
         end,
         icon = function(info)
@@ -2885,6 +2903,17 @@ ns.newActionOption = function( aList, index )
         -- inline = true,
         name = '|cFFFFD100' .. index .. '.|r ' .. Hekili.DB.profile.actionLists[ aList ].Actions[ index ].Name,
         order = index * 10,
+        hidden = function( info )
+            local name = '|cFFFFD100' .. index .. '.|r ' .. Hekili.DB.profile.actionLists[ aList ].Actions[ index ].Name
+            local script = Hekili.Scripts.A[ aList .. ':' .. index ]
+
+            if script and script.Error then
+                name = '|cFFFFD100' .. index .. '.|r |cFFFF0000' .. Hekili.DB.profile.actionLists[ aList ].Actions[ index ].Name .. '|r'
+            end
+
+            Hekili.Options.args.actionLists.args[ 'L'..aList ].args[ 'A'..index ].name = name
+            return false
+        end,
         -- childGroups = "tab",
         -- This number must be index + number of options in "Display Queues" section.
         -- order = index + 2,
