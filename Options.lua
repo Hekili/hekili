@@ -5445,13 +5445,15 @@ function Hekili:GetOptions()
                                 end
                             end
 
-                            return format( "level: %d\n" ..
+                            return format( "build: %s\n" ..
+                                "level: %d\n" ..
                                 "class: %s\n" ..
                                 "spec: %s\n\n" ..
                                 "talents: %s\n\n" ..
                                 "traits: %s\n\n" ..
                                 "sets/legendaries/artifacts: %s\n\n" ..
                                 "gear: %s",
+                                Hekili.Version or "no info",
                                 UnitLevel( 'player' ) or 0,
                                 class.file or "NONE",
                                 spec or "none",
