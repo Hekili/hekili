@@ -296,7 +296,7 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
                 uas.apps[1].expires = state.query_time + ( 6 * state.haste )
 
             else
-                local index = uas.stack + 1
+                local index = min( 5, uas.stack + 1 )
                 local app = uas.apps[ index ]
 
                 app.start = state.query_time
