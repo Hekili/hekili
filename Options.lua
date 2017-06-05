@@ -16,6 +16,7 @@ local restoreDefaults = ns.restoreDefaults
 local getSpecializationID = ns.getSpecializationID
 
 local escapeMagic = ns.escapeMagic
+local fsub = ns.fsub
 local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
 local tableCopy = ns.tableCopy
@@ -2857,6 +2858,7 @@ ns.newAction = function( aList, name )
         Caption = nil,
         Indicator = 'none',
         Arguments = nil,
+        Resources = {},
         Script = '',
     }
     
@@ -3058,31 +3060,6 @@ ns.newActionOption = function( aList, index )
                 end,
             },            
             
-            Script = {
-                type = 'input',
-                name = 'Conditions',
-                dialogControl = "HekiliCustomEditor",
-                arg = function(info)
-                    local listKey, actKey = info[2], info[3]
-                    local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
-                    local results = {}
-                    
-                    ns.state.reset()
-                    ns.state.this_action = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability
-                    ns.state.this_args = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Args
-                    ns.storeValues( results, ns.scripts.A[ listIdx..':'..actIdx ] )
-                    
-                    return results, true
-                end,
-                multiline = 6,
-                order = 20,
-                width = 'full',
-                --[[ hidden = function( info )
-                local action = getActionEntry( info )
-                
-                return action.Ability == 'variable'
-            end, ]]
-            },
             whenReady = {
                 type = 'select',
                 name = 'Check When...',
@@ -3093,7 +3070,7 @@ ns.newActionOption = function( aList, index )
                 "Scripts have access to the simulated game state, and must return a number value in seconds (or else the addon will revert to the 'Automatic' value).",
                 values = {
                     auto = 'Automatic',
-                    script = 'Script'
+                    script = 'Script',
                 },
                 get = function( info )
                     local listKey, actKey = info[2], info[3]
@@ -3160,6 +3137,34 @@ ns.newActionOption = function( aList, index )
                 end,
                 width = 'full',
             },
+
+            Script = {
+                type = 'input',
+                name = 'Conditions',
+                dialogControl = "HekiliCustomEditor",
+                arg = function(info)
+                    local listKey, actKey = info[2], info[3]
+                    local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
+                    local results = {}
+                    
+                    ns.state.reset()
+                    ns.state.this_action = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability
+                    ns.state.this_args = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Args
+                    ns.importModifiers( listIdx, actIdx )
+                    ns.storeValues( results, ns.scripts.A[ listIdx..':'..actIdx ] )
+                    
+                    return results, true
+                end,
+                multiline = 6,
+                order = 20,
+                width = 'full',
+                --[[ hidden = function( info )
+                local action = getActionEntry( info )
+                
+                return action.Ability == 'variable'
+            end, ]]
+            },
+            
             ShowModifiers = {
                 type = 'toggle',
                 name = 'Show Modifiers',

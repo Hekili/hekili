@@ -348,7 +348,11 @@ local function addAura( key, id, ... )
 
         -- Add the elements, front-loading defaults and just overriding them if something else is specified.
         storeAuraElements( key, 'name', name, 'duration', 30, 'max_stack', 1, ... )
-        
+
+        if class.auras[ key ].incapacitate then
+            table.insert( class.incapacitates, key )
+        end
+                
     end
     
     -- Allow reference by ID and name as well.
@@ -435,8 +439,6 @@ local function addResource( resource, primary, no_regen )
 
     if primary or #class.resources == 1 then class.primaryResource = resource end
 
-
-
     ns.commitKey( resource )
 
 end
@@ -446,10 +448,19 @@ ns.addResource = addResource
 local function removeResource( resource )
 
     class.resources[ resource ] = nil
+    class.resourceModels[ resource ] = nil
+
     if class.primaryResource == resource then class.primaryResource = nil end
 
 end
 ns.removeResource = removeResource
+
+
+local function addResourceModel( resource, event, db )
+    class.resourceModels[ resource ] = class.resourceModels[ resource ] or {}
+    class.resourceModels[ resource ][ event ] = db
+end
+ns.addResourceModel = addResourceModel
 
 
 local function setPotion( potion )
@@ -925,7 +936,8 @@ end ]]
 
 
 addUsableItem( "draught_of_souls", 140808 )
-addAura( "fel_crazed_rage", 225141, "duration", 3 )
+addAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )
+
 
 addAbility( "draught_of_souls", {
     id = -100,

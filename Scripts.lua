@@ -23,10 +23,17 @@ local SimToLua = function( str, modifier )
   -- If no conditions were provided, function should return true.
   if not str or str == '' then return nil end
 
-  str = str:gsub( "%s", "" )
+  -- str = str:gsub( "%s", "" )
 
   -- Strip comments.
   str = str:gsub("^%-%-.-\n", "")
+
+  -- Replace '!' with ' not '.
+  -- str = str:gsub("!%s-(%S+)%s", " not (%1) " )
+  -- str = str:gsub("!%s-(%S+)$", " not (%1)" )
+  str = str:gsub("!([^=][^&|]+)", " not (%1)" )
+  -- str = str:gsub("!(.-)$", " not %1" )
+  -- str = str:gsub("!([^=])", " not %1")
 
   -- Replace '%' for division with actual division operator '/'.
   str = str:gsub("%%", "/")
@@ -49,13 +56,6 @@ local SimToLua = function( str, modifier )
     str = str:gsub("~=+", "~=")
   end
 
-  -- Replace '!' with ' not '.
-  -- str = str:gsub("!%s-(%S+)%s", " not (%1) " )
-  -- str = str:gsub("!%s-(%S+)$", " not (%1)" )
-  str = str:gsub("!(.-) ", " not (%1) " )
-  str = str:gsub("!(.-)$", " not (%1)" )
-  str = str:gsub("!([^=])", " not %1")
-
   -- Condense whitespace.
   str = str:gsub("%s%s", " ")
 
@@ -68,7 +68,6 @@ local SimToLua = function( str, modifier )
   str = str:gsub("prev%.(%d+)", "prev[%1]")
   str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
   str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
-
 
   return str
 
@@ -164,7 +163,7 @@ end
 local getScriptElements = function( script )
   local Elements, Check = {}, stripScript( script, true )
 
-  for i in Check:gmatch( "[^ ]+" ) do
+  for i in Check:gmatch( "[^ ,]+" ) do
     if not Elements[i] and not tonumber(i) then
       local eFunction = loadstring( 'return '.. (i or true) )
 
@@ -260,16 +259,17 @@ local convertScript = function( node, hasModifiers )
   end
 
   if node.ReadyTime and node.ReadyTime ~= '' then
-    local tReady = SimToLua( node.ReadyTime, true )
+    local tReady = SimToLua( node.ReadyTime )
     local rFunction, rError
 
     if tReady then
         if tReady:sub( 1, 8 ) == 'function' then
-            rFunction, rError = loadstring( 'return ' .. tReady )
+            rFunction, rError = loadstring( format( "return %s", tReady ) )
         else
-            rFunction, rError = loadstring( 'return function( wait, spend, resource )\n' ..
-            '    return max( 0, wait, ' .. tReady .. ' )\n' ..
-            'end' )
+            rFunction, rError = loadstring( format(
+                "return function( wait, spend, resource )\n" ..
+                "    return max( 0, wait, %s )\n" ..
+                "end", tReady ) )
         end
     end
 

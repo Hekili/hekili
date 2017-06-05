@@ -307,6 +307,10 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         end )
 
+
+        -- TODO:  Sigil of Flame stuff.
+        -- in_flight
+
         --[[ addHook( 'spend', function( amt, resource )
             if resource == 'maelstrom' and state.spec.elemental and state.talent.aftershock.enabled then
                 local refund = amt * 0.3
@@ -848,15 +852,17 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             id = 189110,
             spend = 0,
             spend_type = 'pain',
-            cast = 0,
+            cast = 1,
             cooldown = 20,
             charges = 2,
             recharge = 20,
-            gcdType = 'spell',
+            gcdType = 'off',
+            velocity = 30,
         } )
 
         addHandler( 'infernal_strike', function ()
             setDistance( 0, 5 )
+
         end )
 
 

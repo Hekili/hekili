@@ -20,6 +20,7 @@ local addGearSet = ns.addGearSet
 local addGlyph = ns.addGlyph
 local addMetaFunction = ns.addMetaFunction
 local addResource = ns.addResource
+local addResourceModel = ns.addResourceModel
 local addStance = ns.addStance
 local addTalent = ns.addTalent
 local addTrait = ns.addTrait
@@ -53,6 +54,35 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         -- addResource( SPELL_POWER_HEALTH )
         addResource( 'mana', true )
         addResource( 'holy_power', nil, true )
+
+        addResourceModel( 'holy_power', 'liadrins_fury_crusade', {
+            spec = 'retribution',
+            equip = 'liadrins_fury_unleashed',
+            aura = 'crusade',
+            last = function ()
+                local t = state.query_time - state.buff.crusade.applied
+                t = floor( t / 4 )
+
+                return state.buff.crusade.applied + ( t * 4 )
+            end,
+            interval = 4,
+            value = 1
+        } )         
+
+        addResourceModel( 'holy_power', 'liadrins_fury_aw', {
+            spec = 'retribution',
+            equip = 'liadrins_fury_unleashed',
+            aura = 'avenging_wrath',
+            last = function ()
+                local t = state.query_time - state.buff.avenging_wrath.applied
+                t = floor( t / 4 )
+
+                return state.buff.avenging_wrath.applied + ( t * 4 )
+            end,
+            interval = 4,
+            value = 1
+        } )         
+
 
         addTalent( 'final_verdict', 198038 )
         addTalent( 'execution_sentence', 213757 )
@@ -564,6 +594,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'avenging_wrath', function ()
             applyBuff( 'avenging_wrath', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2.5 ) )
             if equipped.chain_of_thrayn then applyBuff( 'chain_of_thrayn', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2.5 ) ) end
+            if equipped.liadrins_fury_unleashed then gain( 1, 'holy_power' ) end
         end )
 
 
@@ -778,6 +809,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'crusade', function ()
             applyBuff( 'crusade', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2.5 ) )
             if equipped.chain_of_thrayn then applyBuff( 'chain_of_thrayn', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2.5 ) ) end
+            if equipped.liadrins_fury_unleashed then gain( 1, 'holy_power' ) end
         end )
 
 

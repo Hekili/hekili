@@ -22,6 +22,7 @@ local addMetaFunction = ns.addMetaFunction
 local addTalent = ns.addTalent
 local addTrait = ns.addTrait
 local addResource = ns.addResource
+local addResourceModel = ns.addResourceModel
 local addStance = ns.addStance
 
 local registerCustomVariable = ns.registerCustomVariable
@@ -53,6 +54,65 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         -- addResource( SPELL_POWER_HEALTH )
         addResource( 'mana', true )
         addResource( 'maelstrom', nil, true )
+
+        local swing = state.swings
+
+        addResourceModel( 'maelstrom', 'mainhand', {
+            spec = 'enhancement',
+            last = function ()
+                local t = state.query_time - swing.mainhand
+                t = floor( t / swing.mainhand_speed )
+
+                return swing.mainhand + ( t * swing.mainhand_speed )
+            end,
+            interval = 'mainhand_speed',
+            value = function( x )
+                if state.buff.doom_winds.remains > x then return 15 end
+                return 5
+            end,
+        } )
+
+        addResourceModel( 'maelstrom', 'offhand', {
+            spec = 'enhancement',
+            last = function ()
+                local t = state.query_time - swing.offhand
+                t = ceil( t / swing.offhand_speed )
+
+                return swing.offhand + ( t * swing.offhand_speed )
+            end,
+            interval = 'offhand_speed',
+            value = function( x )
+                if state.buff.doom_winds.remains > x then return 15 end
+                return 5
+            end,
+        } )
+
+        addResourceModel( 'maelstrom', 'fury_of_air', {
+            spec = 'enhancement',
+            aura = 'fury_of_air',
+            last = function ()
+                return state.buff.fury_of_air.applied + floor( state.query_time - state.buff.fury_of_air.applied )
+            end,
+            stop = function ( x ) return x < 3 end,
+            interval = 1,
+            value = -3
+        } )
+
+        -- Enhancement generates 12 mp/sec in Ascendance.
+        -- The addon will automatically stop modeling this when the buff falls off.
+        addResourceModel( 'maelstrom', 'enh_ascend', {
+            spec = 'enhancement',
+            talent = 'ascendance',
+            aura = 'ascendance',
+            last = function ()
+                return state.buff.ascendance.applied + floor( state.query_time - state.buff.ascendance.applied )
+            end,
+            interval = 1,
+            value = 12
+        } )
+
+        -- TODO:  Decide if modeling feral_spirit gain is worth it.
+
 
         addTalent( 'windsong', 201898 )
         addTalent( 'hot_hand', 201900 )

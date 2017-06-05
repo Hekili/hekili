@@ -65,50 +65,29 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
                 end
             end } )
             
-        --[[ registerCustomVariable( 'soul_shards', 
+        registerCustomVariable( 'soul_shards', 
             setmetatable( {
-                start = { 0, 0, 0, 0, 0},
-                regen = 7,
+                actual = nil,
                 max = 5
             }, { __index = function( t, k )
-                if k == 'count' or k == 'actual' or k == 'current' then
-                    local ct = 0
-                    ct = UnitPower("player",7) -- just get the UP count
-                    return ct
+                if k == 'count' or k == 'current' then
+                    return t.actual
 
-                elseif k == 'time_to_next' then
-                    local time = state.query_time
-                    local rune = 3600
-
-                    for i = 1, 5 do
-                        local tts = t.start[i] + t.regen - state.query_time
-
-                        if ttr > 0 then
-                            return tts
-                        end
-                    end
-                    return 0
-
+                elseif k == 'actual' then
+                    t.actual = UnitPower( "player", SPELL_POWER_SOUL_SHARDS )
+                    return t.actual
                 end
-
-                local ttr = k:match( "time_to_(%d)" )
-                if ttr then
-                    ttr = min( t.max, ttr )
-                    local val = max( 0, t.start[ ttr ] + t.regen - state.query_time )
-                    return val
-                end
-
             end } ) )
 
         addHook( 'timeToReady', function( wait, action )
             local ability = action and class.abilities[ action ]
 
-            if ability and ability.spend_type == "soul_shards" and ability.spend > 0 then
-                wait = max( wait, state.soul_shards[ "time_to_" .. ability.spend ] )
+            if ability and ability.spend_type == "soul_shards" and ability.spend > state.soul_shards.current then
+                wait = 3600
             end
 
             return wait
-        end ) ]]
+        end )
 
         
         -- Talents
@@ -208,6 +187,7 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
         addAura( "dark_pact", 108416, "duration", 20 )
         addAura( "deadwind_harvester", 216708, "duration", 60 )
         addAura( "demonic_circle", 48018, "duration", 900 )
+        addAura( "empowered_life_tap", 235156, "duration", 20 )
         addAura( "enslave_demon", 1098, "duration", 300 )
         addAura( "eye_of_kilrogg", 126, "duration", 45 )
         addAura( "mastery_potent_afflictions", 77215 )
@@ -284,6 +264,8 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
 
                 table.sort( apps, s )
             end
+
+            state.soul_shards.actual = nil
 
         end )
 
@@ -613,11 +595,13 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
             cooldown = 0,
             min_range = 0,
             max_range = 0,
+            aura = 'empowered_life_tap'
         } )
 
         addHandler( "life_tap", function ()
             gain( mana.max * 0.3, "mana" )
             gain( health.max * -0.1, "health" )
+            if talent.empowered_life_tap.enabled then applyBuff( "empowered_life_tap", 20 + buff.empowered_life_tap.remains ) end
         end )
 
 

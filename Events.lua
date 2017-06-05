@@ -70,7 +70,6 @@ function ns.StartEventHandler()
 
         for i = 1, #Hekili.DB.profile.displays do
             if not displayUpdates[i] then 
-                -- if not forced then print( now, "Updating." ); forced = true; end
                 Hekili:ProcessHooks( i )
                 lastRefresh[i] = now
 
@@ -181,9 +180,11 @@ RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
     ns.checkImports()
 end )
 
-RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function ()
-    ns.specializationChanged()
-    ns.checkImports()
+RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event, unit )
+    if unit == 'player' then
+        ns.specializationChanged()
+        ns.checkImports()
+    end
 end )
 
 RegisterEvent( "BARBER_SHOP_OPEN", function ()
@@ -320,54 +321,6 @@ ns.updateGear = function ()
     ns.Tooltip:SetOwner( UIParent, "ANCHOR_NONE")
     ns.Tooltip:ClearLines()
 
-    local MH = GetInventoryItemLink( "player", 16 )
-
-    if MH then
-        ns.Tooltip:SetInventoryItem( "player", 16 )
-        local lines = ns.Tooltip:NumLines()
-
-        for i = 2, lines do
-            line = _G[ "HekiliTooltipTextRight"..i ]:GetText()
-
-            if line then
-                local speed = tonumber( line:match( "%d[.,]%d+" ) )
-
-                if speed then
-                    state.mainhand_speed = speed
-                    break
-                end
-            end
-        end
-
-        gearInitialized = true
-    else
-        state.mainhand_speed = 0
-    end
-    
-    ns.Tooltip:ClearLines()
-
-    if OffhandHasWeapon() then
-        ns.Tooltip:SetInventoryItem( "player", 17 )
-        local lines = ns.Tooltip:NumLines()
-
-        for i = 2, lines do
-            line = _G[ "HekiliTooltipTextRight"..i ]:GetText()
-
-            if line then
-                local speed = tonumber( line:match( "%d[.,]%d+" ) )
-
-                if speed then
-                    state.offhand_speed = speed
-                    break
-                end
-            end
-        end
-    else
-        state.offhand_speed = 0
-    end
-    
-    ns.Tooltip:ClearLines()
-    
     local T1 = GetInventoryItemID( "player", 13 )
     
     if T1 then
@@ -406,7 +359,7 @@ ns.updateGear = function ()
                 key = formatKey( key )
                 state.set_bonus[ key ] = 1
                 state.set_bonus[ item ] = 1
-                gearInitCompleted = true
+                gearInitialized = true
             end
         end
     end
@@ -422,6 +375,7 @@ end
 
 RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", function()
     ns.updateGear()
+    ns.updateTalents()
     -- ns.updateArtifact()
 end )
 
@@ -459,8 +413,6 @@ local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
 local function forceUpdate( from, super )
-
-    -- print( GetTime(), from or "NONE", tostring( super ) )
 
     for i = 1, #Hekili.DB.profile.displays do
         displayUpdates[ i ] = nil
@@ -731,7 +683,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
 
         elseif not offhand and time > sw.mh_actual then
             sw.mh_actual = time
-            sw.mh_speed = UnitAttackSpeed( 'player' )
+            sw.mh_speed = UnitAttackSpeed( 'player' ) or sw.mh_speed
             sw.mh_projected = sw.mh_actual + sw.mh_speed
 
         end

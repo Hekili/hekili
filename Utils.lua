@@ -64,12 +64,16 @@ local replacements = {
 }
 
 ns.titlefy = function( s )
-
     for k, v in pairs( replacements ) do
         s = s:gsub( '%f[%w]' .. k .. '%f[%W]', v )
     end
 
     return s
+end
+
+
+ns.fsub = function( s, pattern, repl )
+    return s:gsub( "%f[%w]" .. k .. "%f[%W]", repl )
 end
 
 

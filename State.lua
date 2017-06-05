@@ -86,10 +86,10 @@ state.stance = {}
 state.stat = {}
 state.swings = {
     mh_actual = GetTime(),
-    mh_speed = 2.6,
+    mh_speed = UnitAttackSpeed( 'player' ) > 0 and UnitAttackSpeed( 'player' ) or 2.6,
     mh_projected = GetTime() + 2.6,
     oh_actual = GetTime() + 1.3,
-    oh_speed = 2.6,
+    oh_speed = select( 2, UnitAttackSpeed( 'player' ) ) or 2.6,
     oh_projected = GetTime() + 3.9
 }
 state.talent = {}
@@ -101,8 +101,6 @@ state.target = {
 }
 state.toggle = {}
 state.totem = {}
-
-
 
 
 state.trinket = {
@@ -711,8 +709,8 @@ state.summonTotem = summonTotem
 
 -- Useful for things like leap/charge/etc.
 local function setDistance( minimum, maximum )
-    state.target.minR = minimum
-    state.target.maxR = maximum
+    state.target.minR = minimum or 5
+    state.target.maxR = maximum or minimum or 5
 end
 state.setDistance = setDistance
 
@@ -721,8 +719,11 @@ local function gain( amount, resource, overcap )
     
     if overcap then state[ resource ].actual = state[ resource ].actual + amount
     else state[ resource ].actual = min( state[ resource ].max, state[ resource ].actual + amount ) end
-    ns.callHook( 'gain', amount, resource, overcap )
     
+    ns.callHook( 'gain', amount, resource, overcap )
+
+    if state[ resource ].model then state.modelResource( resource ) end
+
 end
 state.gain = gain
 
@@ -731,6 +732,8 @@ local function spend( amount, resource )
     
     state[ resource ].actual = max( 0, state[ resource ].actual - amount )
     ns.callHook( 'spend', amount, resource )
+    
+    if state[ resource ].model then state.modelResource( resource ) end
     
 end
 state.spend = spend
@@ -918,6 +921,8 @@ local mt_state = {
             return t.cooldown[ t.this_action ].remains == 0
             
         elseif k == 'cast_delay' then return 0
+
+        elseif k == 'in_flight' then return t.action[ t.this_action ].in_flight
             
         elseif k == 'single' then
             return t.toggle.mode == 0 or ( t.toggle.mode == 3 and active_enemies == 1 )
@@ -1072,11 +1077,11 @@ local mt_stat = {
         elseif k == 'maximum_focus' then
             return Hekili.State.focus and Hekili.State.focus.max or 0
             
-        elseif k == 'runic' then
+        elseif k == 'runic' or k == 'runic_power' then
             return Hekili.State.runic_power and Hekili.State.runic_power.current or 0
             
-        elseif k == 'maximum_runic' then
-            return Hekili.State.runic_power and Hekili.State.runic_power.max
+        elseif k == 'maximum_runic' or k == 'maximum_runic_power' then
+            return Hekili.State.runic_power and Hekili.State.runic_power.max or 0
             
         elseif k == 'spell_power' then
             return GetSpellBonusDamage(7)
@@ -1918,10 +1923,13 @@ end
 
 local mt_resource = {
     __index = function(t, k)
-        local result = resource_meta_functions[ k ] and resource_meta_functions[ k ]( t ) or 'nofunc'
+
+        if resource_meta_functions[ k ] then
+            local result = resource_meta_functions[ k ]( t )
         
-        if result ~= 'nofunc' then
-            return result
+            if result then
+                return result
+            end
         end
         
         if k == 'pct' or k == 'percent' then
@@ -1931,10 +1939,75 @@ local mt_resource = {
             return 100 - t.pct
             
         elseif k == 'current' then
+            -- If this is a modeled resource, use our lookup system.
+            if t.model then
+                local pos = t.map[ state.delay ]
+
+                -- We have an existing data point, reuse it.
+                if pos then
+                    return t.forecast[ pos ].amount
+
+                end
+
+                -- We have to insert a data point.
+                local found = 0
+                local delay = state.delay
+                local amount = t.actual
+                local offset = 0
+
+                local i = 1
+                local count = t.fcount
+
+                if count == 0 then
+                    return t.actual
+                end
+
+                while( i <= count ) do
+                    if t.forecast[ i ] and t.forecast[ i ].delay > delay then
+                        found = i
+                        amount = i > 1 and t.forecast[i].amount or amount
+                        offset = i > 1 and ( delay - t.forecast[ i ].delay ) or delay
+                        break
+                    end
+                    i = i + 1
+                end
+
+                if found == 0 then
+                    found = count + 1
+                    amount = t.forecast[ count ].amount
+                    offset = delay - t.forecast[ count ].delay
+                end
+
+                local regen = t.regen > 0 and t.regen or 0
+                local bonus = regen * ( delay - offset )
+
+                amount = amount + bonus
+
+                if t.forecast[ count + 1 ] then
+                    local slot = table.remove( t.forecast, count + 1 )
+                    table.insert( t.forecast, found, slot )
+                else
+                    table.insert( t.forecast, found, {} )
+                end
+
+                t.forecast[ found ].delay = delay
+                t.forecast[ found ].amount = amount
+
+                for i in pairs( t.map ) do
+                    if i > delay then t.map[ i ] = t.map[ i ] + 1 end
+                end
+
+                t.fcount = count + 1
+                t.map[ delay ] = found
+
+                return amount
+            end
+
             -- This accommodates testing energy levels after a delay (i.e., use 'jab' in 3 seconds, conditions need to know energy at that time).
-            if t.resource == 'energy' or t.resource == 'focus' then
+            if t.regen > 0 then
                 return min( t.max, floor( t.actual + ( t.regen * state.delay ) ) )
             end
+
             return t.actual
             
         elseif k == 'deficit' then
@@ -1944,24 +2017,126 @@ local mt_resource = {
             return t.max -- need to accommodate buffs that increase mana, etc.
             
         elseif k == 'time_to_max' then
-            if t.current == t.max then return 0
-                elseif t.regen <= 0 then return 3600 end
+            return t[ 'time_to_' .. t.max ]
+            --[[ if t.current == t.max then return 0 end
+
+            elseif t.regen <= 0 then return 3600 end
             
-            return max( 0, ( t.max - t.current ) / t.regen )
+            return max( 0, ( t.max - t.current ) / t.regen ) ]]
             
         elseif k:sub(1, 8) == 'time_to_' then
             local amount = k:sub(9)
             amount = tonumber(amount)
             
             if not amount or amount > t.max then return 3600
-            elseif t.current >= amount then return 0
-                elseif t.regen <= 0 then return 3600 end
-            
+            elseif t.current >= amount then return 0 end
+
+            -- For a modeled resource, we'll step through until we find that value.
+            if t.model then
+                -- We already cached this, just reuse it.
+                if t.ttv[ amount ] then
+                    return t.ttv[ amount ]
+                end
+
+                -- If we have no base regen, we'll only look at actual steps.
+                if t.regen <= 0 then
+                    for i, slice in ipairs( t.forecast ) do
+                        if i > t.fcount then
+                            -- We didn't find a valid slice.
+                            break
+                        end
+
+                        -- We found the first slice >= our target, this is the right delay.
+                        if slice.amount >= amount then
+                            t.ttv[ amount ] = slice.delay
+                            return slice.delay
+                        end
+                    end
+
+                    -- If we reach this point, we didn't find it.
+                    t.ttv[ amount ] = 3600
+                    return 3600
+                end
+
+                -- This resource regenerates as well as steps.
+                -- We have to find the slice before a 'tick' generates enough and see if we would've regenerated enough before then.
+                -- Otherwise, just use the tick.
+                for i, slice in ipairs( t.forecast ) do
+                    -- This slice has enough resources.  Could we have gotten there sooner?
+                    if slice.amount >= amount then
+                        local preslice = t.forecast[ i - 1 ]
+
+                        -- No slice before, so no, just use this one.
+                        if not preslice then
+                            t.ttv[ amount ] = slice.delay
+                            return slice.delay
+
+                        end
+
+                        local start = preslice.delay
+                        local r_diff = amount - preslice.amount
+                        local r_time = diff / t.regen
+
+                        -- Yes, we regenerated the resource in time, don't wait for tick.
+                        if start + r_time < slice.delay then 
+                            t.ttv[ amount ] = start + r_time
+                            return start + r_time
+                        end
+
+                        -- No, we didn't regenerate enough, use the slice.
+                        t.ttv[ amount ] = slice.delay
+                        return slice.delay
+                    end
+                end
+
+                t.ttv[ amount ] = 3600
+            end
+
+            -- This wasn't a modeled resource,, just look at regen time.
+            if t.regen <= 0 then return 3600 end
+
             return max( 0, ( amount - t.current ) / t.regen )
-            
+
+        elseif k:sub( 1, 9 ) == 'falls_to_' then
+            local amount = k:sub( 10 )
+            amount = tonumber( amount )
+
+            if not amount or amount < 0 then return 3600
+            elseif t.current <= amount then return 0 end
+
+            if t.model then
+                if t.ftv[ amount ] then
+                    return t.ftv[ amount ]
+                end
+
+                for i, slice in ipairs( t.forecast ) do
+                    if i > t.fcount then
+                        break
+                    end
+
+                    if slice.amount <= amount then
+                        t.ftv[ amount ] = slice.delay
+                        return slice.delay
+                    end
+                end
+
+                t.ftv[ amount ] = 3600
+                return 3600
+            end
+
+            if t.regen >= 0 then return 3600 end
+
+            return max( 0, ( t.current - amount ) / t.regen )
+
         elseif k == 'regen' then
             -- Not a regenerating resource.
             return 0
+
+        elseif k == 'model' then
+            return
+
+        elseif k == 'onAdvance' then
+            return
             
         end
         
@@ -2571,6 +2746,14 @@ local mt_default_action = {
             
         elseif k == 'cast_regen' then
             return floor( max( t.gcd, t.cast_time ) * state[ class.primaryResource ].regen )
+
+        elseif k == 'in_flight' then
+            for i, spell in pairs( ns.spells_in_flight ) do
+                if spell.key == t.action then
+                    return true
+                end
+            end
+            return false
             
         else
             return class.abilities[ t.action ][ k ] or 0
@@ -2593,7 +2776,10 @@ local mt_actions = {
         if not action then return nil end
         
         t[k] = {
-            action = k, name = action.name, base_cast = action.elem.cast, gcdType = action.gcdType
+            action = k,
+            name = action.name,
+            base_cast = action.elem.cast,
+            gcdType = action.gcdType
         }
         
         return ( t[k] )
@@ -2802,6 +2988,245 @@ local function scrapeUnitAuras( unit )
 end
 
 
+-- Resource Modeling!
+-- It's about to get real messy up in here.  I want to cache resource values for resources that are impacted by normal regeneration.
+
+-- Temporary table, used to sort through which resource events actually matter to us.
+local events = {}
+
+local function resourceModelSort( a, b )
+    return b == nil or ( a.next < b.next )
+end
+
+
+-- The maximum amount of time to look forward.  Given we're typically trying to do something at the next GCD, 10 seconds is very generous.
+local max_forecast = 30
+
+function state.modelResource( resource, t )
+
+    -- essential tables
+    local res = state[ resource ] -- the resource table.
+    local db = res.forecast -- the forecasted resource values (will be overwritten )
+    local models = class.resourceModels[ resource ] -- the models, as supplied by addResourceModel() in class module.
+
+
+    -- abort if any required table is missing.
+    if not res or not db or not models then return end
+
+
+    -- wipe the map of time-delay vs. forecast index.
+    local map = res.map
+    table.wipe( map )
+
+
+    -- wipe any soft-calculated time_to_x calculations.
+    table.wipe( res.ttv )
+    table.wipe( res.ftv )
+
+
+    -- empty the forecast database of time/resource values.
+    for i, v in ipairs( db ) do
+        v.delay = nil
+        v.amount = nil
+    end
+
+    -- Identify which resource events are actually relevant to us.
+    table.wipe( events )
+
+    for k, v in pairs( models ) do
+        if ( not v.spec or state.spec[ v.spec ] ) and ( not v.equip or state.equipped[ v.equip ] ) and ( not v.talent or state.talent[ v.talent ].enabled ) and ( not v.aura or state.buff[ v.aura ].up ) and ( not v.setting or state.settings[ v.setting ] ) then
+            
+            v.next = v.last() + ( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( 0, res.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ) )
+            v.name = k
+
+            if v.next >= 0 then
+                events[ #events + 1 ] = v
+            end
+        end
+    end
+
+    -- Sort the table in chronological order.
+    table.sort( events, resourceModelSort )
+
+    -- Start from time = 0; currently assuming modelResource() will be called after the clock is advanced.
+    local time = 0
+    local val = res.actual
+
+    -- Count = number of predictions, we need this to end up in res.fcount when we're done predicting things.
+    local count = 1
+
+    db[ count ] = db[ count ] or {}
+    db[ count ].delay = time
+    db[ count ].amount = val
+
+    map[ 0 ] = 1
+
+    local regen = res.regen > 0 and res.regen or 0
+    local prev = time
+
+    -- if resource == 'runes' then print( 'start rune forecast' ) end
+
+    while( #events > 0 and time < max_forecast ) do
+        local e = events[1]
+
+        if e.next - state.query_time > max_forecast then
+            -- print( 'no time left', e.next - state.query_time, max_forecast )
+            -- This event happens after our maximum forecast.  Since these are sorted, we can assume that there are no more events to manage.
+            break
+        
+        else
+            time = e.next - state.query_time
+
+            -- Stop value checks current resource amount level.
+            if ( e.stop and e.stop( val ) ) or ( e.aura and state.buff[ e.aura ].remains < time ) then
+                -- if resource == 'runes' then print( 'stop', time ) end
+                events[1] = nil
+
+            else
+                local bonus = regen * ( time - prev )
+                prev = time
+
+                -- If a function, e.value takes the delay value (to ascertain if a buff expired, typically).
+                -- if resource == 'runes' then print( 'at', time, 'go from', val ) end
+                val = max( 0, min( res.max, val + bonus + ( type( e.value ) == 'number' and e.value or e.value( time ) ) ) )
+                -- if resource == 'runes' then print( 'to', val ) end
+
+                count = count + 1
+                db[ count ] = db[ count ] or {}
+                db[ count ].delay = time
+                db[ count ].amount = val
+
+                -- mapping for faster lookup
+                map[ time ] = count
+
+                -- print( format( "%s : %2d : %2.2f : %2d : %3d : %s", 'rp', rp_count, time, bonus, val, e.name ) )
+
+                -- interval() takes the last tick and the current value to remember the next step.
+                local step = type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( time, val ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) )
+
+                e.next = e.next + step               
+                if e.next - state.query_time > max_forecast then
+                    -- if resource == 'runes' then print( 'reached end', e.next - state.query_time ) end
+                    events[1] = nil
+                end
+            end
+        end
+
+        if #events > 1 then table.sort( events, resourceModelSort ) end
+    end
+
+    res.fcount = count
+
+end
+
+
+function state.modelResources( t )
+
+    local delay = state.delay
+    state.delay = t
+
+    for k, v in pairs( class.resources ) do
+        if state[ k ].model then
+            state.modelResource( k, t )
+        end
+    end
+
+    state.delay = delay
+end
+
+
+--[[ function state.regenerateResource( resource, t )
+
+    print( 'regenerating', t, 'worth of', resource )
+
+    -- essential tables
+    local res = state[ resource ] -- the resource table.
+    local db = res.forecast -- the forecasted resource values (will be overwritten )
+    local models = class.resourceModels[ resource ] -- the models, as supplied by addResourceModel() in class module.
+
+    -- abort if any required table is missing.
+    if not res or not db or not models then return end
+
+    -- Identify which resource events are actually relevant to us.
+    table.wipe( events )
+
+    for k, v in pairs( models ) do
+        if ( not v.spec or state.spec[ v.spec ] ) and ( not v.equip or state.equipped[ v.equip ] ) and ( not v.talent or state.talent[ v.talent ].enabled ) and ( not v.aura or state.buff[ v.aura ].up ) then
+            
+            v.next = v.last() + ( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( 0, res.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ) )
+            v.name = k
+
+            if v.next >= 0 then
+                events[ #events + 1 ] = v
+            end
+        end
+    end
+
+    -- Sort the table in chronological order.
+    table.sort( events, resourceModelSort )
+
+    -- Start from time = 0; currently assuming modelResource() will be called after the clock is advanced.
+    local time = 0
+    local val = res.actual
+
+    local regen = res.regen > 0 and res.regen or 0
+    local prev = time
+
+    -- if resource == 'runes' then print( 'start rune forecast' ) end
+
+    while( #events > 0 and time < t ) do
+        local e = events[1]
+
+        if e.next - state.query_time > t then
+            -- We're out of timely events.
+            -- Add any bonus-regen resources, and quit.
+            res.actual = res.actual + ( regen * ( time - prev ) )
+            break
+        
+        else
+            time = e.next - state.query_time
+
+            -- Stop value checks current resource amount level.
+            if ( e.stop and e.stop( val ) ) or ( e.aura and state.buff[ e.aura ].remains < time ) then
+                -- if resource == 'runes' then print( 'stop', time ) end
+                events[1] = nil
+
+            else
+                local bonus = regen * ( time - prev )
+                prev = time
+
+                -- If a function, e.value takes the delay value (to ascertain if a buff expired, typically).
+                res.actual = max( 0, min( res.max, val + bonus + ( type( e.value ) == 'number' and e.value or e.value( time ) ) ) )
+
+                local step = type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( time, val ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) )
+                e.next = e.next + step               
+
+                if e.next - state.query_time > max_forecast then
+                    events[1] = nil
+                end
+            end
+        end
+
+        if #events > 1 then table.sort( events, resourceModelSort ) end
+    end
+end
+
+
+function state.regenerateResources( t )
+
+    local delay = state.delay
+    state.delay = t
+
+    for k, v in pairs( class.resources ) do
+        if state[ k ].model then
+            state.regenerateResource( k, t )
+        end
+    end
+
+    state.delay = delay
+end ]]
+
+
 function state.reset( dispID )
     
     state.now = GetTime()
@@ -2930,17 +3355,6 @@ function state.reset( dispID )
         v.true_expires = nil
         v.true_remains = nil
     end
-
-    --[[ for _, item in pairs( state.cooldown.use_item.items ) do
-        item.duration = nil
-        item.expires = nil
-        item.charge = nil
-        item.next_charge = nil
-        item.recharge_began = nil
-        item.recharge_duration = nil
-        item.true_expires = nil
-        item.true_remains = nil
-    end ]]
     
     state.trinket.t1.cooldown.duration = nil
     state.trinket.t1.cooldown.expires = nil
@@ -3006,7 +3420,8 @@ function state.reset( dispID )
         state[ k ].resource = k
         state[ k ].last_tick = rawget( state[ k ], 'last_tick' ) or 0
         state[ k ].tick_rate = rawget( state[ k ], 'tick_rate' ) or 0.1
-        
+        state[ k ].regen = 0
+
         if regen < 2 then
             local active, inactive = GetPowerRegen()
             
@@ -3016,11 +3431,19 @@ function state.reset( dispID )
                 state[ k ].regen = inactive
             end
         end
-        
-        --[[ local time_since = state.now - state[ k ].last_tick
-        if state[ k ].last_tick > 0 and time_since < state[ k ].tick_rate and state[ k ].actual < state[ k ].max then
-            gain( state[ k ].regen * time_since, k )
-        end ]]
+
+        state[ k ].model = false
+
+        if class.resourceModels[ k ] then
+
+            state[ k ].forecast = rawget( state[ k ], 'forecast' ) or {}
+            state[ k ].map = rawget( state[ k ], 'map' ) or {}
+            state[ k ].ttv = rawget( state[ k ], 'ttv' ) or {}
+            state[ k ].ftv = rawget( state[ k ], 'ftv' ) or {}
+            state[ k ].fcount = 0
+            state[ k ].model = true
+
+        end
         
     end
    
@@ -3028,6 +3451,9 @@ function state.reset( dispID )
     state.health.resource = 'health'
     state.health.actual = UnitHealth( 'player' )
     state.health.max = UnitHealthMax( 'player' )
+
+    state.mainhand_speed = state.swings.mh_speed
+    state.offhand_speed = state.swings.oh_speed
     
     state.nextMH = state.swings.mh_projected
     state.nextOH = state.swings.oh_projected
@@ -3052,6 +3478,8 @@ function state.reset( dispID )
         cast_time = ( endCast / 1000) - GetTime()
         casting = formatKey( spellcast )
     end
+
+    state.modelResources()
     
     ns.callHook( "reset_precast" )
     
@@ -3082,6 +3510,12 @@ function state.reset( dispID )
         end
         
     end
+
+    for _, aura in pairs( class.incapacitates ) do
+        if state.buff[ aura ].up then
+            state.advance( state.buff[ aura ].remains )
+        end
+    end
     
     -- Delay to end of GCD.
     local delay = state.cooldown.global_cooldown.remains
@@ -3095,6 +3529,9 @@ function state.reset( dispID )
 end
 
 
+
+
+
 function state.advance( time )
     
     if time <= 0 then
@@ -3104,13 +3541,12 @@ function state.advance( time )
     -- roundUp( time, 2 )
     
     time = ns.callHook( 'advance', time )
+    state.delay = time
     
     --[[ local newtime = tonumber( format( "%.2f", time ) )
     time = newtime < time and newtime + 0.01 or newtime ]]
     
     --if time == 3600 then error( time ) end
-    
-    state.delay = 0
     
     if state.player.queued_ability then
         local saved_offset = state.offset
@@ -3142,9 +3578,30 @@ function state.advance( time )
         
         state.offset = saved_offset
     end
-    
+
+    for k in pairs( class.resources ) do
+
+        local resource = state[ k ]
+
+        local model = class.resourceModels[ k ]
+
+        if model then
+            if resource.onAdvance then resource.onAdvance( time )
+            else resource.actual = resource.current end
+            state.modelResource( k )
+
+        else
+            local override = ns.callHook( 'advance_resource_regen', false, k, time )
+            
+            if not override and resource.regen and resource.regen ~= 0 then
+                resource.actual = min( resource.max, resource.actual + floor( resource.regen * time ) )
+            end
+        end
+    end
+
+    state.delay = 0
     state.offset = state.offset + time
-    
+
     local bonus_cdr = 0 -- ns.callHook( 'advance_bonus_cdr', 0 )
     
     for k, cd in pairs( state.cooldown ) do
@@ -3166,29 +3623,6 @@ function state.advance( time )
                 else 
                     cd.next_charge = 0
                 end
-            end
-        end
-    end
-    
-    for k in pairs( class.resources ) do
-        local resource = state[ k ]
-        
-        local override = ns.callHook( 'advance_resource_regen', false, k, time )
-        
-        if not override and resource.regen and resource.regen ~= 0 then
-            if false and resource.last_tick and resource.tick_rate then 
-                -- We're using a ticking resource.
-                -- Only add what is actually generated in the interval.
-                local time_to_next_tick = resource.tick_rate - ( ( state.now + state.offset - resource.last_tick ) % resource.tick_rate )
-                
-                if time >= time_to_next_tick then
-                    local ticks_in_time = 1 + floor( ( time - time_to_next_tick ) / resource.tick_rate )
-                    local gain_per_tick = resource.regen * resource.tick_rate
-                    
-                    resource.actual = min( resource.max, resource.actual + ( gain_per_tick * ticks_in_time ) )
-                end
-            else
-                resource.actual = min( resource.max, resource.actual + floor( resource.regen * time ) )
             end
         end
     end
@@ -3243,6 +3677,8 @@ ns.spendResources = function( ability )
         if spend ~= 0 then
             state[ resource ].actual = min( max(0, state[ resource ].actual - spend ), state[ resource ].max )
             ns.callHook( "spendResources", spend, resource )
+           
+           if state[ resource ].model then state.modelResource( resource ) end
         end
     end
     
@@ -3394,24 +3830,29 @@ function ns.timeToReady( action )
         
         spend = ns.callHook( 'timeToReady_spend', spend )
     end
-    
+
+    -- For special cases where we want to pool more of a resource than is required for usage.
     if ability.ready and type( ability.ready ) == 'number' then
         spend = ability.ready
     end
-    
+
+    -- Okay, so we don't have enough of the resource.
     if resource and spend > state[ resource ].actual then
-        local tick_ready = 0
+        wait = max( wait, state[ resource ][ 'time_to_' .. spend ] or 0 )
+
+        --[[ local tick_ready = 0
         
         if state[ resource ].regen and state[ resource ].regen > 0 then
             if resource == 'focus' or resource == 'energy' then
-                --[[ local time_to_next_tick = state[ resource ].tick_rate - ( ( state.query_time - state[ resource ].last_tick ) % state[ resource ].tick_rate )
+                local time_to_next_tick = state[ resource ].tick_rate - ( ( state.query_time - state[ resource ].last_tick ) % state[ resource ].tick_rate )
                 local ticks_to_ready = ceil( ( spend - state[ resource ].current ) / state[ resource ].regen )
                 
                 tick_ready = ticks_to_ready * state[ resource ].tick_rate
-                -- wait = max( wait, state[ resource ].tick_rate + ( ticks_to_ready * state[ resource ].tick_rate ) ) ]]
+                -- wait = max( wait, state[ resource ].tick_rate + ( ticks_to_ready * state[ resource ].tick_rate ) )
                 
             end
             wait = max( wait, tick_ready, ( spend - state[ resource ].actual ) / state[ resource ].regen )
+
         elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
             local buff_remaining = state.buff.crusade.up and state.buff.crusade.remains or state.buff.avenging_wrath.remains
             local deficit = spend - state.holy_power.actual
@@ -3438,16 +3879,18 @@ function ns.timeToReady( action )
             end
             
             wait = max( wait, tick_ready )
-        end
+        end ]]
     end
     
     if ability.ready and type( ability.ready ) == 'function' then
         wait = max( wait, ability.ready() )
     end
-    
+
     if state.script.entry then
         wait = ns.checkTimeScript( state.script.entry, wait, spend, resource ) or wait
     end
+
+   
     
     -- cacheTTR[ action ] = wait
     return wait
@@ -3477,6 +3920,13 @@ ns.isReady = function( action )
     
     return ns.hasRequiredResources( action ) and state.cooldown[ action ].remains <= state.delay
 end
+
+
+function ns.isReadyNow( action )
+    return ns.hasRequiredResources( action ) and state.cooldown[ action ].remains == 0
+end
+
+_G.isReadyNow = ns.isReadyNow
 
 
 ns.clashOffset = function( action )
