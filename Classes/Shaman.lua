@@ -22,7 +22,6 @@ local addMetaFunction = ns.addMetaFunction
 local addTalent = ns.addTalent
 local addTrait = ns.addTrait
 local addResource = ns.addResource
-local addResourceModel = ns.addResourceModel
 local addStance = ns.addStance
 
 local registerCustomVariable = ns.registerCustomVariable
@@ -34,6 +33,7 @@ local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
+local setRegenModel = ns.setRegenModel
 
 local RegisterEvent = ns.RegisterEvent
 local RegisterUnitEvent = ns.RegisterUnitEvent
@@ -55,61 +55,95 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         addResource( 'mana', true )
         addResource( 'maelstrom', nil, true )
 
-        local swing = state.swings
 
-        addResourceModel( 'maelstrom', 'mainhand', {
-            spec = 'enhancement',
-            last = function ()
-                local t = state.query_time - swing.mainhand
-                t = floor( t / swing.mainhand_speed )
+        setRegenModel( {
+            mainhand = {
+                resource = 'maelstrom',
 
-                return swing.mainhand + ( t * swing.mainhand_speed )
-            end,
-            interval = 'mainhand_speed',
-            value = function( x )
-                if state.buff.doom_winds.remains > x then return 15 end
-                return 5
-            end,
+                spec = 'enhancement',
+                setting = 'forecast_swings',
+
+                last = function ()
+                    local swing = state.swings.mainhand
+                    local t = state.query_time
+
+                    return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
+                end,
+
+                interval = 'mainhand_speed',
+
+                value = function( x )
+                    if state.buff.doom_winds.expires > x then return 15 end
+                    return 5
+                end,
+            },
+
+            offhand = {
+                resource = 'maelstrom',
+
+                spec = 'enhancement',
+                setting = 'forecast_swings',
+
+                last = function ()
+                    local swing = state.swings.offhand
+                    local t = state.query_time
+
+                    return swing + ( floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed )
+                end,
+
+                interval = 'offhand_speed',
+
+                value = function( x )
+                    if state.buff.doom_winds.expires > x then return 15 end
+                    return 5
+                end,
+            },
+
+            fury_of_air = {
+                resource = 'maelstrom',
+                setting = 'forecast_fury',
+
+                spec = 'enhancement',
+                talent = 'fury_of_air',
+                aura = 'fury_of_air',
+
+                last = function ()
+                    local app = state.buff.fury_of_air.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                stop = function( x )
+                    return x < 3
+                end,
+
+                interval = 1,
+                value = -3,
+            },
+
+            enh_ascendance = {
+                resource = 'maelstrom',
+
+                spec = 'enhancement',
+                talent = 'ascendance',
+                aura = 'ascendance',
+
+                last = function ()
+                    local app = state.buff.ascendance.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                stop = function( x )
+                    return state.buff.ascendance.expires < x end,
+
+                interval = 1,
+                value = 12
+            },
         } )
 
-        addResourceModel( 'maelstrom', 'offhand', {
-            spec = 'enhancement',
-            last = function ()
-                local t = state.query_time - swing.offhand
-                t = ceil( t / swing.offhand_speed )
-
-                return swing.offhand + ( t * swing.offhand_speed )
-            end,
-            interval = 'offhand_speed',
-            value = function( x )
-                if state.buff.doom_winds.remains > x then return 15 end
-                return 5
-            end,
-        } )
-
-        addResourceModel( 'maelstrom', 'fury_of_air', {
-            spec = 'enhancement',
-            aura = 'fury_of_air',
-            last = function ()
-                return state.buff.fury_of_air.applied + floor( state.query_time - state.buff.fury_of_air.applied )
-            end,
-            stop = function ( x ) return x < 3 end,
-            interval = 1,
-            value = -3
-        } )
-
-        -- Enhancement generates 12 mp/sec in Ascendance.
-        -- The addon will automatically stop modeling this when the buff falls off.
-        addResourceModel( 'maelstrom', 'enh_ascend', {
-            spec = 'enhancement',
-            talent = 'ascendance',
-            aura = 'ascendance',
-            last = function ()
-                return state.buff.ascendance.applied + floor( state.query_time - state.buff.ascendance.applied )
-            end,
-            interval = 1,
-            value = 12
-        } )
 
         -- TODO:  Decide if modeling feral_spirit gain is worth it.
 

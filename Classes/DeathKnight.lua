@@ -24,7 +24,6 @@ local addPet = ns.addPet
 local addTalent = ns.addTalent
 local addTrait = ns.addTrait
 local addResource = ns.addResource
-local addResourceModel = ns.addResourceModel
 local addStance = ns.addStance
 
 local addSetting = ns.addSetting
@@ -39,6 +38,7 @@ local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
+local setRegenModel = ns.setRegenModel
 
 
 local RegisterEvent = ns.RegisterEvent
@@ -48,9 +48,6 @@ local storeDefault = ns.storeDefault
 
 
 local PTR = ns.PTR or false
-
-
--- TODO:  MODEL GATHERING STORM
 
 
 -- This table gets loaded only if there's a supported class/specialization.
@@ -65,105 +62,143 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addResource( "runic_power", nil, true )
         addResource( "runes", nil, true )
 
-        local swing = state.swings
 
-        addResourceModel( 'runic_power', 'frost_mh', {
-            spec = 'frost',
-            talent = 'runic_attenuation',
-            setting = 'forecast_swings',
-            last = function ()
-                local t = state.query_time - swing.mainhand
-                t = floor( t / swing.mainhand_speed )
+        setRegenModel( {
+            frost_mh = {
+                resource = 'runic_power',
 
-                return swing.mainhand + ( t * swing.mainhand_speed )
-            end,
-            interval = 'mainhand_speed',
-            value = 1
-        } )
+                spec = 'frost',
+                talent = 'runic_attenuation',
+                setting = 'forecast_swings',
 
-        addResourceModel( 'runic_power', 'frost_oh', {
-            spec = 'frost',
-            talent = 'runic_attenuation',
-            setting = 'forecast_swings',
-            last = function ()
-                local t = state.query_time - swing.offhand
-                t = ceil( t / swing.offhand_speed )
+                last = function ()
+                    local t = state.query_time - state.swings.mainhand
+                    t = floor( t / state.swings.mainhand_speed )
 
-                return swing.offhand + ( t * swing.offhand_speed )
-            end,
-            interval = 'offhand_speed',
-            value = 1
-        } )
+                    return state.swings.mainhand + ( t * state.swings.mainhand_speed )
+                end,
 
-        addResourceModel( 'runic_power', 'breath', {
-            spec = 'frost',
-            aura = 'breath_of_sindragosa',
-            setting = 'forecast_breath',
-            last = function ()
-                return state.buff.breath_of_sindragosa.applied + floor( state.query_time - state.buff.breath_of_sindragosa.applied )
-            end,
-            stop = function ( x ) return x < 15 end,
-            interval = 1,
-            value = -15
-        } )
+                interval = 'mainhand_speed',
+                value = 1
+            },
 
-        addResourceModel( 'runic_power', 'hungering', {
-            spec = 'frost',
-            talent = 'hungering_rune_weapon',
-            aura = 'hungering_rune_weapon',
-            -- setting = 'model_hungering',
-            last = function ()
-                return state.buff.hungering_rune_weapon.applied + floor( state.query_time - state.buff.hungering_rune_weapon.applied )
-            end,
-            interval = 1,
-            value = 5
-        } )
+            frost_oh = {
+                resource = 'runic_power',
 
+                spec = 'frost',
+                talent = 'runic_attenuation',
+                setting = 'forecast_swings',
 
-        local bonus_runes = 0
+                last = function ()
+                    local t = state.query_time - state.swings.offhand
+                    t = ceil( t / state.swings.offhand_speed )
 
-        addResourceModel( 'runes', 'regen', {
-            last = function ()
-                bonus_runes = 0
-                return state.query_time
-            end,
-            interval = function( time, val )
-                local r = state.runes
+                    return state.swings.offhand + ( t * state.swings.offhand_speed )
+                end,
+                interval = 'offhand_speed',
+                value = 1
+            },
 
-                if val == 6 then return -1 end
-                local next_rune = 1 + ( val - bonus_runes )
+            breath = {
+                resource = 'runic_power',
 
-                return r.expiry[ next_rune ] - time
-            end,
-            stop = function( x )
-                return x == 6 
-            end,
-            value = 1,
-        } )
+                spec = 'frost',
+                aura = 'breath_of_sindragosa',
+                setting = 'forecast_breath',
 
-        addResourceModel( 'runes', 'hungering', {
-            spec = 'frost',
-            talent = 'hungering_rune_weapon',
-            aura = 'hungering_rune_weapon',
-            -- setting = 'model_hungering',
-            last = function ()
-                bonus_runes = 0
-                return state.buff.hungering_rune_weapon.applied + floor( state.query_time - state.buff.hungering_rune_weapon.applied )
-            end,
-            interval = 1,
-            stop = function ( x )
-                bonus_runes = bonus_runes + 1
-                return x == 6 end,
-            value = 1
+                last = function ()
+                    return state.buff.breath_of_sindragosa.applied + floor( state.query_time - state.buff.breath_of_sindragosa.applied )
+                end,
+
+                stop = function ( x ) return x < 15 end,
+
+                interval = 1,
+                value = -15
+            },
+
+            hungering_rp = {
+                resource = 'runic_power',
+
+                spec = 'frost',
+                talent = 'hungering_rune_weapon',
+                aura = 'hungering_rune_weapon',
+
+                last = function ()
+                    return state.buff.hungering_rune_weapon.applied + floor( state.query_time - state.buff.hungering_rune_weapon.applied )
+                end,
+
+                interval = 1,
+                value = 5
+            },
+
+            hungering_rune = {
+                resource = 'runes',
+
+                spec = 'frost',
+                talent = 'hungering_rune_weapon',
+                aura = 'hungering_rune_weapon',
+
+                last = function ()
+                    return state.buff.hungering_rune_weapon.applied + floor( state.query_time - state.buff.hungering_rune_weapon.applied )
+                end,
+
+                fire = function ( time, val )
+                    local r = state.runes
+
+                    r.expiry[6] = 0
+                    table.sort( r.expiry )
+                end,
+
+                stop = function ( x )
+                    local r = state.runes
+
+                    return r.actual == 6
+                end,
+
+                interval = 1,
+                value = 1
+            },
+
+            rune_regen = {
+                resource = 'runes',
+
+                last = function ()
+                    return state.query_time
+                end,
+    
+                interval = function( time, val )
+                    local r = state.runes
+                    local v = r.actual
+
+                    if v == 6 then return -1 end
+
+                    return r.expiry[ v + 1 ] - time
+                end,
+
+                fire = function( time, val )
+                    local r = state.runes 
+                    local v = r.actual
+
+                    if v == 6 then return end
+
+                    r.expiry[ v + 1 ] = 0
+                    table.sort( r.expiry )
+                end,
+    
+                stop = function( x )
+                    local r = state.runes
+
+                    return r.actual == 6
+                end,
+
+                value = 1,    
+            }
         } )
 
 
         registerCustomVariable( 'runes', setmetatable(
             {
-                debugmsg = false,
-
                 expiry = { 0, 0, 0, 0, 0, 0 },
-                real = { 0, 0, 0, 0, 0, 0 },
                 cooldown = 10,
                 regen = 0,
                 max = 6,
@@ -173,12 +208,10 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
                     for i = 1, 6 do
                         local start, duration, ready = GetRuneCooldown( i )
-                        t.real[ i ] = ready and 0 or start + duration
-                        t.expiry[ i ] = t.real[ i ]
+                        t.expiry[ i ] = ready and 0 or start + duration
                         t.cooldown = duration
                     end
 
-                    table.sort( t.real )
                     table.sort( t.expiry )
 
                     t.actual = nil
@@ -205,23 +238,10 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
                     t.actual = nil
                 end,
-
-                onAdvance = function( time )
-                    if state.buff.hungering_rune_weapon.up then
-                        local ticks = state.buff.hungering_rune_weapon.remains
-                        local ticks_after = ticks - time
-
-                        local procs = floor( ticks - ticks_after )
-                        state.gain( procs, 'runes' )
-                    end
-                end
             },
             {
                 __index = function( t, k, v )
-
-                    local debug = t.debugmsg
-
-                    if k == 'actual' then
+                    if k == 'actual' or k == 'current' then
                         local amount = 0
 
                         for i = 1, 6 do
@@ -230,129 +250,27 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
                         return amount
 
-                    elseif k == 'current' or k == 'actual' then
-                        local pos = t.map[ state.delay ]
-
-                        -- We have an existing data point, reuse it.
-                        if pos then
-                            return t.forecast[ pos ].amount
-
-                        end
-
-                        -- We have to insert a data point.
-                        local found = 0
-                        local delay = state.delay
-                        local amount = t.actual
-                        local offset = 0
-
-                        local i = 1
-                        local count = t.fcount
-
-                        if count == 0 then
-                            return t.actual
-                        end
-
-                        while( i <= count ) do
-                            if t.forecast[ i ] and t.forecast[ i ].delay > delay then
-                                found = i
-                                amount = i > 1 and t.forecast[i].amount or amount
-                                offset = i > 1 and ( delay - t.forecast[ i ].delay ) or delay
-                                break
-                            end
-                            i = i + 1
-                        end
-
-                        if found == 0 then
-                            found = count + 1
-                            amount = t.forecast[ count ].amount
-                            offset = delay - t.forecast[ count ].delay
-                        end
-
-                        if t.forecast[ count + 1 ] then
-                            local slot = table.remove( t.forecast, count + 1 )
-                            table.insert( t.forecast, found, slot )
-                        else
-                            table.insert( t.forecast, found, {} )
-                        end
-
-                        t.forecast[ found ].delay = delay
-                        t.forecast[ found ].amount = amount
-
-                        for i in pairs( t.map ) do
-                            if i > delay then t.map[ i ] = t.map[ i ] + 1 end
-                        end
-
-                        t.fcount = count + 1
-                        t.map[ delay ] = found
-
-                        return amount
-
-                    elseif k:sub(1, 8) == 'time_to_' then
-                        local amount = k:sub(9)
-                        amount = tonumber(amount)
-                        
-                        if not amount or amount > t.max then return 3600
-                        elseif t.current >= amount then return 0 end
-
-                        -- We already cached this, just reuse it.
-                        if t.ttv[ amount ] then
-                            return t.ttv[ amount ]
-                        end
-
-                        for i, slice in ipairs( t.forecast ) do
-                            if i > t.fcount then
-                                -- We didn't find a valid slice.
-                                break
-                            end
-
-                            -- We found the first slice >= our target, this is the right delay.
-                            if slice.amount >= amount then
-                                t.ttv[ amount ] = slice.delay
-                                return slice.delay
-                            end
-                        end
-
-                        -- If we reach this point, we didn't find it.
-                        t.ttv[ amount ] = 3600
-                        return 3600
-
-                    elseif k:sub( 1, 9 ) == 'falls_to_' then
-                        local amount = k:sub( 10 )
-                        amount = tonumber( amount )
-
-                        if not amount or amount < 0 then return 3600
-                        elseif t.current <= amount then return 0 end
-
-                        if t.ftv[ amount ] then
-                            return t.ftv[ amount ]
-                        end
-
-                        for i, slice in ipairs( t.forecast ) do
-                            if i > t.fcount then
-                                break
-                            end
-
-                            if slice.amount <= amount then
-                                t.ftv[ amount ] = slice.delay
-                                return slice.delay
-                            end
-                        end
-
-                        t.ftv[ amount ] = 3600
-                        return 3600
-
                     elseif k == 'time_to_next' then
-
                         return t[ 'time_to_' .. t.current + 1 ]
 
-                    elseif k:sub( 1, 8 ) == 'time_to_' then
+                    elseif k == 'time_to_max' then
+                        return t.current == 6 and 0 or max( 0, t.expiry[6] - state.query_time )
 
-                        return 3600 
+                    elseif k:sub( 1, 8 ) == 'time_to_' then
+                        local amount = tonumber( k:sub(9) )
+
+                        if not amount or amount > 6 then return 3600 end
+
+                        return t.current >= amount and 0 or max( 0, t.expiry[ amount ] - state.query_time )
 
                     end
 
                 end
             } ) )
+
+
+        local rp_spent_since_pof = 0
+        local virtual_rp_spent_since_pof = 0
 
         local function runeSpender( amount, resource )
             if resource == 'runes' then
@@ -364,8 +282,22 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
                 state.gain( amount * 10, 'runic_power' )
 
-                if state.talent.gathering_storm.enabled and state.buff.remorseless_winter.up then
+                if state.spec.frost and state.talent.gathering_storm.enabled and state.buff.remorseless_winter.up then
                     state.applyBuff( "remorseless_winter", state.buff.remorseless_winter.remains + ( 0.5 * amount ) )
+                end
+
+                if state.spec.unholy and state.set_bonus.tier20_4pc == 1 then
+                    state.setCooldown( 'army_of_the_dead', cooldown.army_of_the_dead.remains - ( 6 * amount ) )
+                end
+
+            elseif resource == 'runic_power' then
+                if state.set_bonus.tier20_2pc == 1 and state.buff.pillar_of_frost.up then
+                    virtual_rp_spent_since_pof = virtual_rp_spent_since_pof + amount
+
+                    while( virtual_rp_spent_since_pof > 40 ) do
+                        state.applyBuff( 'pillar_of_frost', state.buff.pillar_of_frost.remains + 1 )
+                        virtual_rp_spent_since_pof = virtual_rp_spent_since_pof - 40
+                    end
                 end
             end
         end
@@ -420,6 +352,9 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             elseif spellID == class.abilities.summon_gargoyle.id then
                 state.last_gargoyle = GetTime()
 
+            elseif spellID == class.abilities.pillar_of_frost.id then
+                rp_spent_since_pof = 0
+                virtual_rp_spent_since_pof = 0
             end
 
         end )
@@ -432,6 +367,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
             state.pet.valkyr_battlemaiden.expires = state.last_valkyr > 0 and state.last_valkyr + 15 or 0
             state.pet.army_of_the_dead.expires = state.last_army > 0 and state.last_army + 40 or 0
+
+            virtual_rp_spent_since_pof = rp_spent_since_pof
 
             if state.talent.sludge_belcher.enabled then
                 if UnitExists( 'pet' ) then state.pet.abomination.expires = state.query_time + 3600
@@ -585,7 +522,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addTalent( "winter_is_coming", 207170 ) -- 22525
 
 
-        -- Traits
+        -- Traits (Frost)
         addTrait( "ambidexterity", 189092 )
         addTrait( "bad_to_the_bone", 189147 )
         addTrait( "blades_of_frost", 218931 )
@@ -611,6 +548,32 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addTrait( "thronebreaker", 238115 )
 
 
+        -- Traits (Unholy)
+        addTrait( "apocalypse", 220143 )
+        addTrait( "armies_of_the_damned", 191731 )
+        addTrait( "black_claws", 238116 )
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "cunning_of_the_ebon_blade", 241050 )
+        addTrait( "deadliest_coil", 191419 )
+        addTrait( "deadly_durability", 191565 )
+        addTrait( "deaths_harbinger", 238080 )
+        addTrait( "double_doom", 191741 )
+        addTrait( "eternal_agony", 208598 )
+        addTrait( "feast_of_souls", 218280 )
+        addTrait( "fleshsearer", 214906 )
+        addTrait( "gravitational_pull", 191721 )
+        addTrait( "lash_of_shadows", 238044 )
+        addTrait( "plaguebearer", 191485 )
+        addTrait( "portal_to_the_underworld", 191637 )
+        addTrait( "rotten_touch", 191442 )
+        addTrait( "runic_tattoos", 191592 )
+        addTrait( "scourge_of_worlds", 191747 )
+        addTrait( "scourge_the_unbeliever", 191494 )
+        addTrait( "the_darkest_crusade", 191488 )
+        addTrait( "the_shambler", 191760 )
+        addTrait( "unholy_endurance", 191584 )
+
+
         -- Auras
         addAura( "aggramars_stride", 207438, "duration", 3600 )
         addAura( "antimagic_shell", 48707, "duration", 5 )
@@ -618,6 +581,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "army_of_the_dead", 42650, "duration", 4 )
         addAura( "blinding_sleet", 207167, "duration", 4 )
         addAura( "breath_of_sindragosa", 152279, "duration", 3600, "friendly", true )
+        if PTR then addAura( "chilled_heart", 235592, "duration", 3600, "max_stack", 20 ) end
         addAura( "dark_command", 56222, "duration", 3 )
         addAura( "dark_succor", 178819 )
         addAura( "death_and_decay", 188290, "duration", 10 )
@@ -675,14 +639,27 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addGearSet( "acherus_drapes", 132376 )
         addGearSet( "aggramars_stride", 132443 )
         addGearSet( "consorts_cold_core", 144293 )
+        addGearSet( "death_march", 144280 )
+        addGearSet( "draugr_girdle_of_the_everlasting_king", 132441 )
         addGearSet( "kiljaedens_burning_wish", 144259 )
         addGearSet( "koltiras_newfound_will", 132366 )
+        addGearSet( "lanathels_lament", 133974 )
         addGearSet( "perseverance_of_the_ebon_martyr", 132459 )
         addGearSet( "prydaz_xavarics_magnum_opus", 132444 )
         addGearSet( "rethus_incessant_courage", 146667 )
         addGearSet( "seal_of_necrofantasia", 137223 )
         addGearSet( "sephuzs_secret", 132452 )
+        addGearSet( "shackles_of_bryndaor", 132365 ) -- NYI
+        addGearSet( "the_instructors_fourth_lesson", 132448 )
         addGearSet( "toravons_whiteout_bindings", 132458 )
+        addGearSet( "uvanimor_the_unbeautiful", 137037 )
+        
+        if PTR then
+            addGearSet( "cold_heart", 151796 ) -- chilled_heart stacks NYI
+            -- addGearSet( "death_screamers", 151797 )
+            addGearSet( "soul_of_the_deathlord", 151740 )
+            addGearSet( "soulflayers_corruption", 151795 )
+        end
 
 
         addToggle( 'artifact_ability', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
@@ -762,6 +739,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             else
                 removeDebuff( "target", "festering_wound" )
             end
+            if artifact.deaths_harbinger.enabled then gain( 2, 'runes' ) end
         end )
         
 
@@ -864,6 +842,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addHandler( "chains_of_ice", function ()
             applyDebuff( "target", "chains_of_ice", 8 )
+            if PTR and equipped.cold_heart then removeBuff( "chilled_heart" ) end
         end )
 
 
@@ -926,7 +905,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         } )
 
         addHandler( "dark_arbiter", function ()
-            summonPet( "valkyr_battlemaiden", 15 )
+            summonPet( "valkyr_battlemaiden", PTR and 20 or 15 )
         end )
 
 
@@ -992,8 +971,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addAbility( "death_coil", {
             id = 47541,
-            spend = 35,
-            min_cost = 35,
+            spend = PTR and 45 or 35,
+            min_cost = PTR and 45 or 35,
             spend_type = "runic_power",
             cast = 0,
             gcdType = "spell",
@@ -1009,6 +988,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addHandler( "death_coil", function ()
             if talent.necrosis.enabled then applyBuff( "necrosis" ) end
+            if talent.shadow_infusion.enabled and buff.dark_transformation.down then setCooldown( 'dark_transformation', cooldown.dark_transformation.remains - ( PTR and 7 or 5 ) ) end
             removeBuff( "sudden_doom" )
         end )
 
@@ -1051,6 +1031,10 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addHandler( "death_strike", function ()
             removeBuff( "dark_succor" )
+            if spec.unholy and equipped.death_march then
+                local a = talent.defile.enabled and "defile" or "death_and_decay"
+                setCooldown( a, cooldown[ a ].remains - 2 )
+            end
         end )
 
 
@@ -1088,8 +1072,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             toggle = "cooldowns",
             -- min_range = 0,
             -- max_range = 0,
-            talent = 'hungering_rune_weapon',
-            usable = function () return not buff.hungering_rune_weapon.up end,
+            notalent = 'hungering_rune_weapon',
         } )
         
         modifyAbility( "empower_rune_weapon", "charges", function( x ) return x + ( equipped.seal_of_necrofantasia and 1 or 0 ) end )
@@ -1264,7 +1247,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             active_dot.frost_fever = max( active_dot.frost_fever, active_enemies )
             if buff.rime.up then
                 if set_bonus.tier19_4pc == 1 then
-                    gain( 8, "runic_power" )
+                    gain( PTR and 6 or 8, "runic_power" )
                 end
                 removeBuff( "rime" )
             end
@@ -1285,7 +1268,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             charges = 1,
             recharge = 180,
             toggle = "cooldowns",
-            known = function () return talent.hungering_rune_weapon.enabled end,
+            talent = 'hungering_rune_weapon',
+            usable = function () return not buff.hungering_rune_weapon.up end,
             -- min_range = 0,
             -- max_range = 0,
         } )
@@ -1439,6 +1423,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addHandler( "pillar_of_frost", function ()
             applyBuff( "pillar_of_frost" )
+            virtual_rp_spent_since_pof = 0
         end )
 
 

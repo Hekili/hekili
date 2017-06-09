@@ -362,8 +362,8 @@ local i_textures = setmetatable( {},
 } )
 
 -- Insert textures that don't work well with predictions.
-s_textures[GetSpellInfo(115356)] = 1029585 -- Windstrike
-s_textures[GetSpellInfo(17364)] = 132314 -- Stormstrike
+s_textures[ 115356 ] = 1029585 -- Windstrike
+s_textures[ 17364 ] = 132314 -- Stormstrike
 -- NYI: Need Chain Lightning/Lava Beam here.
 
 local function GetSpellTexture( spell )
@@ -1076,11 +1076,7 @@ function Hekili:oldProcessHooks( dispID, solo )
                         
                         for k,v in pairs( class.resources ) do
                             slot.resources[ k ] = state[ k ].current 
-                            if state[ k ].regen then
-                                state.delay = chosen_wait
-                                slot.resources[ k ] = state[ k ].current
-                                state.delay = 0
-                            end
+                            if state[ k ].regen ~= 0 then slot.resources[ k ] = min( state[ k ].max, slot.resources[ k ] + ( state[ k ].regen * chosen_wait ) ) end
                         end
                         
                         slot.resource_type = ns.resourceType( chosen_action )
@@ -1235,12 +1231,14 @@ function Hekili:newProcessHooks( dispID, solo )
                             delay = 0.25 * state.gcd
                         else
                             step = ( 0.25 * state.gcd )
-                            delay = ( 0.25 + state.gcd ) * ( iteration - 2 )
+                            delay = ( 0.25 * state.gcd ) * ( iteration - 2 )
                         end
                         
                         if debug then self:Debug( "Iteration %d; additional time offset is %.2f.", iteration, delay ) end
 
-                        if iteration > 1 then state.advance( state.gcd * 0.25 ) end
+                        if iteration > 1 then state.advance( step ) end
+
+                        if debug then self:Debug( "Offset is now %.2f.", state.offset ) end
 
                         if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
                             -- We have a precombat display and combat hasn't started.
@@ -1273,9 +1271,14 @@ function Hekili:newProcessHooks( dispID, solo )
                     slot.time = state.offset
                     slot.exact_time = state.now + state.offset
                     slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
-                    slot.resources = slot.resources or {}
-                    -- slot.resources[ k ] = state[ k ].current
                     slot.depth = chosen_depth
+
+                    slot.resources = slot.resources or {}
+
+                    for k,v in pairs( class.resources ) do
+                        slot.resources[ k ] = state[ k ].current 
+                    end
+                    
                     slot.resource_type = ns.resourceType( chosen_action )
                     
                     if chosen_action and i < display.numIcons then
@@ -1637,6 +1640,8 @@ function Hekili:UpdateDisplay( dispID )
                     local start, duration
                     if ability.item then
                         start, duration = GetItemCooldown( ability.item )
+                    elseif not ability.cooldown or ability.cooldown == 0 then
+                        start, duration = 0, 0
                     else
                         start, duration = GetSpellCooldown( ability.id )
                     end
@@ -1655,7 +1660,7 @@ function Hekili:UpdateDisplay( dispID )
                             flashes[dispID] = GetTime()
                         end
                         
-                        if ( class.file == 'HUNTER' or class.file == 'MONK' ) and Queue[i].exact_time and Queue[i].exact_time ~= gcd_start + gcd_duration and Queue[i].exact_time > now then
+                        if ( class.file == 'HUNTER' or class.file == 'MONK' or class.file == 'DEATHKNIGHT' ) and Queue[i].exact_time and Queue[i].exact_time ~= gcd_start + gcd_duration and Queue[i].exact_time > now then
                             -- button.Texture:SetDesaturated( Queue[i].time > 0 )
                             button.Delay:SetText( format( "%.1f", Queue[i].exact_time - now ) )
                         else

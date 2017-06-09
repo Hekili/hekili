@@ -17,6 +17,87 @@ local trim = string.trim
 
 Hekili.Scripts = scripts
 
+
+-- Forgive the name, but this should properly replace ! characters with not, accounting for appropriate bracketing.
+-- Why so complex?  Because "! 0 > 1" converted to Lua is "not 0 > 1" which evaluates to "false > 1" -- not the goal.
+-- This should convert:
+-- example 1:  ! 0 > 1
+--             not ( 0 > 1 )
+--
+-- example 2:  ! ( 0 > 1 & ! ( false | true ) )
+--             not ( 0 > 1 & not ( false | true ) )
+--
+-- example 3:  ! cooldown.x.remains > 1 * ( gcd * ( 8 % 3 ) )
+--             not ( cooldown.x.remains > 1 * ( gcd * ( 8 % 3 ) ) )
+--
+-- Hopefully.
+
+local exprBreak = {
+   ["&"] = true,
+   ["|"] = true,
+}
+
+local function forgetMeNots( str )
+   -- First, handle already bracketed "!(X)" -> "not (X)".
+   local found = 1
+   
+   while found > 0 do
+      str, found = str:gsub( "%s*!%s*(%b())%s*", " not %1 " )
+   end
+   
+   -- The remaining conditions are not bracketed, but may include brackets.
+   -- Such as !5>2+(1*3).
+   -- So we'll start from the !, then go through the string until it's time to stop.
+   
+   local i = 1
+   local substring
+   
+   while( str:find("!") ) do   
+      local start = str:find("!")
+      
+      --while str:sub( start, start ):match("%s") do
+      --   start = start + 1
+      --      end
+      
+      local parens = 0
+      local finish = -1
+      
+      for j = start, str:len() do
+         local char = str:sub( j, j )
+         
+         if char == "(" then         
+            parens = parens + 1
+            
+         elseif char == ")" then         
+            if parens > 0 then parens = parens - 1
+            else finish = j - 1; break end
+            
+         elseif parens == 0 then
+            -- We are not within a bracketed part of the string.  We can end here.
+            if exprBreak[ char ] then
+               finish = j - 1
+               break
+            end
+         end
+      end
+      
+      if finish == -1 then finish = str:len() end
+      
+      substring = str:sub( start + 1, finish )
+      substring = substring:trim()
+
+      str = format( "%s not ( %s ) %s", str:sub( 1, start - 1 ) or "", substring, str:sub( finish + 1, str:len() ) or "" )
+
+      i = i + 1
+      if i >= 100 then self:Debug( "Was unable to convert '!' to 'not' in string [%s].", str ); break end
+   end
+   
+   str = str:gsub( "%s%s", " " )
+
+   return str
+end
+
+
 -- Convert SimC syntax to Lua conditionals.
 local SimToLua = function( str, modifier )
 
@@ -29,11 +110,11 @@ local SimToLua = function( str, modifier )
   str = str:gsub("^%-%-.-\n", "")
 
   -- Replace '!' with ' not '.
-  -- str = str:gsub("!%s-(%S+)%s", " not (%1) " )
-  -- str = str:gsub("!%s-(%S+)$", " not (%1)" )
-  str = str:gsub("!([^=][^&|]+)", " not (%1)" )
-  -- str = str:gsub("!(.-)$", " not %1" )
+  -- str = str:gsub( "!%s-", "!") -- eliminate spacing.
+  -- str = str:gsub( "!([^=%(][^&|()]+)", " not (%1) " )
+  -- str = str:gsub( "!%(", " not (" )
   -- str = str:gsub("!([^=])", " not %1")
+  str = forgetMeNots( str )
 
   -- Replace '%' for division with actual division operator '/'.
   str = str:gsub("%%", "/")

@@ -155,7 +155,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addAura( 'gale_burst', 195399, 'duration', 8 )
         addAura( 'healing_winds', 195380, 'duration', 6 )
         addAura( 'hidden_masters_forbidden_touch', 213112, 'duration', 3 )
-        addAura( 'hit_combo', 196741, 'max_stack', 8, 'duration', 10 )
+        addAura( 'hit_combo', 196741, 'max_stack', PTR and 6 or 8, 'duration', 10 )
         addAura( 'ironskin_brew', 115308, 'duration', 6 )
         addAura( 'keg_smash', 121253, 'duration', 15 )
         addAura( 'leg_sweep', 119381, 'duration', 5 )
@@ -173,7 +173,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addAura( 'strike_of_the_windlord', 205320, 'duration', 6 )
         addAura( 'swift_as_a_coursing_river', 213177, 'duration', 15, 'max_stack', 5 )
         addAura( 'the_emperors_capacitor', 235054, 'duration', 30, 'max_stack', 20 )
-        addAura( 'thunderfist', 242387, 'duration', 30, 'max_stack', 99 )
+        if PTR then addAura( 'the_wind_blows', 248101, 'duration', 3600 ) end -- Check spell ID and duration.
+        addAura( 'thunderfist', 242387, 'duration', 30, 'max_stack', 99 )        
         addAura( 'tigers_lust', 116841, 'duration', 6 )
         addAura( 'touch_of_death', 115080, 'duration', 8 )
         addAura( 'touch_of_karma', 122470, 'duration', 10 )
@@ -206,11 +207,13 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         -- Gear Sets
         addGearSet( 'tier19', 138325, 138328, 138331, 138334, 138337, 138367 )
+        addGearSet( 'tier20', 147154, 147156, 147152, 147151, 147153, 147155 )
         addGearSet( 'class', 139731, 139732, 139733, 139734, 139735, 139736, 139737, 139738 )
+        
         addGearSet( 'fists_of_the_heavens', 128940 )
-        addGearSet( 'fu_zan_the_wanderers_companion', 128938 )
-
         setArtifact( 'fists_of_the_heavens' )
+
+        addGearSet( 'fu_zan_the_wanderers_companion', 128938 )
         setArtifact( 'fu_zan_the_wanderers_companion' )
 
         addGearSet( 'cenedril_reflector_of_hatred', 137019 )
@@ -227,6 +230,12 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addGearSet( 'salsalabims_lost_tunic', 137016 )
         addGearSet( 'sephuzs_secret', 132452 )
         addGearSet( 'the_emperors_capacitor', 144239 )
+
+        if PTR then
+            addGearSet( 'soul_of_the_grandmaster', 151643 )
+            addGearSet( 'stormstouts_last_gasp', 151788 )
+            addGearSet( 'the_wind_blows', 151811 )
+        end
 
 
         addHook( 'specializationChanged', function ()
@@ -575,6 +584,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addHandler( 'blackout_strike', function ()
             if talent.blackout_combo.enabled then
                 applyBuff( 'blackout_combo', 15 )
+                if PTR then addStack( 'elusive_brawler', 10, 1 ) end
             end
         end )
 
@@ -591,7 +601,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         modifyAbility( 'breath_of_fire', 'cooldown', function( x )
             if buff.blackout_combo.up then
-                return x - 6
+                return x - ( PTR and 3 or 6 )
             end
             return x
         end )
@@ -599,7 +609,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addHandler( 'breath_of_fire', function ()
             if debuff.keg_smash.up then applyDebuff( 'target', 'breath_of_fire', 8 ) end
             if equipped.firestone_walkers then setCooldown( 'fortifying_brew', max( 0, cooldown.fortifying_brew.remains - ( min( 6, active_enemies * 2 ) ) ) ) end
-            -- cooldown.fortifying_brew.expires = max( state.query_time, cooldown.fortifying_brew.expires - 4 + ( buff.blackout_combo.up and 2 or 0 ) )
+            addStack( 'elusive_brawler', 10, active_enemies )
             removeBuff( 'blackout_combo' )
         end )
 
@@ -739,6 +749,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         } )
 
         addHandler( 'expel_harm', function ()
+            if spec.brewmaster and set_bonus.tier20_4pc == 1 then stagger.amount = stagger.amount * ( 1 - ( 0.05 * healing_sphere.count ) ) end
             healing_sphere.count = 0
         end )
 
@@ -785,11 +796,12 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         -- the addon's next prediction will wait until the global cooldown ends.
         -- We should watch this for unintended consequences.
         addHandler( 'fists_of_fury', function ()
-            applyBuff( 'fists_of_fury', 4 * haste )
+            -- applyBuff( 'fists_of_fury', 4 * haste ) -- now set as channeled, watch this.
             if talent.hit_combo.enabled then
                 if prev_gcd.fists_of_fury then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
+            -- NYI: T20 buff after Fists of Fury to increase RSK crit.
         end )
 
 
@@ -854,6 +866,9 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addHandler( 'ironskin_brew', function ()
             applyBuff( 'ironskin_brew', buff.ironskin_brew.remains + 6 + ( artifact.potent_kick.rank * 0.5 ) )
             spendCharges( 'purifying_brew', 1 )
+            
+            if set_bonus.tier20_2pc == 1 then healing_sphere.count = healing_sphere.count + 1 end
+
             if artifact.quick_sip.enabled then
                 stagger.amount = stagger.amount * 0.95
                 stagger.tick = stagger.tick * 0.95
@@ -887,12 +902,21 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'melee',
             cooldown = 8,
+            charges = PTR and 1 or nil,
+            recharge = PTR and 8 or nil,
             cycle = 'keg_smash',
             velocity = 30
         } )
 
         modifyAbility( 'keg_smash', 'cooldown', function( x )
             return x * haste
+        end )
+
+        modifyAbility( 'keg_smash', 'charges', function( x )
+            if PTR and equipped.stormstouts_last_gasp then
+                return x + 1
+            end
+            return x
         end )
 
         addHandler( 'keg_smash', function ()
@@ -983,6 +1007,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         addHandler( 'purifying_brew', function ()
             spendCharges( 'ironskin_brew', 1 )
+            if set_bonus.tier20_2pc == 1 then healing_sphere.count = healing_sphere.count + 1 end
+
             if buff.blackout_combo.up then
                 addStack( 'elusive_brawler', 10, 1 )
                 removeBuff( 'blackout_combo' )
@@ -992,8 +1018,13 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             if artifact.quick_sip.enabled then
                 applyBuff( 'ironskin_brew', buff.ironskin_brew.remains + 1 )
             end
-            stagger.amount = stagger.amount * 0.5
-            stagger.tick = stagger.tick * 0.5
+
+            local reduction = ( PTR and 0.4 or 0.5 )
+            reduction = reduction + ( artifact.staggering_around.rank / 100 )
+            reduction = reduction * ( talent.elusive_dance.enabled and 1.2 or 1 )
+
+            stagger.amount = stagger.amount * ( 1 - reduction )
+            stagger.tick = stagger.tick * ( 1 - reduction )
             if equipped.gai_plins_soothing_sash then gain( stagger.amount * 0.25, 'health' ) end -- LegionFix: Purify doesn't always purify 50% stagger, resolve this later.
         end )
 
@@ -1090,10 +1121,11 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         end )
 
         addHandler( 'rushing_jade_wind', function ()
-            applyBuff( 'rushing_jade_wind', 6 * haste )
-            
-            if spec.windwalker then
-                active_dot.mark_of_the_crane = min( active_enemies, active_dot.mark_of_the_crane + 4 )
+            if spec.brewmaster then
+                applyBuff( 'rushing_jade_wind', 6 * ( PTR and 1.5 or 1 ) * haste )
+            elseif spec.windwalker then
+                applyBuff( 'rushing_jade_wind', 6 * haste )
+                active_dot.mark_of_the_crane = min( active_enemies, active_dot.mark_of_the_crane + ( PTR and 2 or 4 ) )
                 applyDebuff( 'target', 'mark_of_the_crane', 15 )
             end
 
@@ -1115,9 +1147,11 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             toggle = 'cooldowns'
         } )
 
+        local sp_cdr = { 5, 10, 15, 20, 24, 28, 31, 34 }
+
         modifyAbility( 'serenity', 'cooldown', function( x )
             if artifact.split_personality.enabled then
-                return x - ( artifact.split_personality.rank * 3 )
+                return x - sp_cdr[ artifact.split_personality.rank ]
             end
 
             return x
@@ -1190,7 +1224,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         modifyAbility( 'storm_earth_and_fire', 'cooldown', function( x )
             if artifact.split_personality.enabled then
-                return x - ( artifact.split_personality.rank * 3 )
+                return x - sp_cdr[ artifact.split_personality.rank ]
             end
 
             return x
@@ -1198,7 +1232,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         modifyAbility( 'storm_earth_and_fire', 'recharge', function( x )
             if artifact.split_personality.enabled then
-                return x - ( artifact.split_personality.rank * 3 )
+                return x - sp_cdr[ artifact.split_personality.rank ]
             end
 
             return x
@@ -1222,9 +1256,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         } )
 
         modifyAbility( 'strike_of_the_windlord', 'cooldown', function( x )
-            if buff.serenity.up then
-                x = max( 0, x - ( buff.serenity.remains / 2 ) )
-            end
+            x = equipped.the_wind_blows and ( x * 0.8 ) or x
+            x = buff.serenity.up and max( 0, x - ( buff.serenity.remains / 2 ) ) or x
             return x
         end )
 
@@ -1238,6 +1271,9 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             active_dot.strike_of_the_windlord = active_enemies
             if artifact.thunderfist.enabled then
                 applyBuff( 'thunderfist', 30, active_enemies )
+            end
+            if PTR and equipped.the_wind_blows then
+                applyBuff( 'the_wind_blows', 3600 )
             end
             if talent.hit_combo.enabled then
                 if prev_gcd.strike_of_the_windlord then removeBuff( 'hit_combo' )

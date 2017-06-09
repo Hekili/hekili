@@ -20,7 +20,6 @@ local addGearSet = ns.addGearSet
 local addGlyph = ns.addGlyph
 local addMetaFunction = ns.addMetaFunction
 local addResource = ns.addResource
-local addResourceModel = ns.addResourceModel
 local addStance = ns.addStance
 local addTalent = ns.addTalent
 local addTrait = ns.addTrait
@@ -38,6 +37,7 @@ local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
+local setRegenModel = ns.setRegenModel
 
 local RegisterEvent = ns.RegisterEvent
 local storeDefault = ns.storeDefault
@@ -55,34 +55,42 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addResource( 'mana', true )
         addResource( 'holy_power', nil, true )
 
-        addResourceModel( 'holy_power', 'liadrins_fury_crusade', {
-            spec = 'retribution',
-            equip = 'liadrins_fury_unleashed',
-            aura = 'crusade',
-            last = function ()
-                local t = state.query_time - state.buff.crusade.applied
-                t = floor( t / 4 )
+        setRegenModel( {
+            liadrins_fury_crusade = {
+                resource = 'holy_power',
 
-                return state.buff.crusade.applied + ( t * 4 )
-            end,
-            interval = 4,
-            value = 1
+                spec = 'retribution',
+                equip = 'liadrins_fury_unleashed',
+                aura = 'crusade',
+
+                last = function ()
+                    local app = state.buff.crusade.applied
+                    local t = state.query_time
+
+                    return app + ( floor( ( t - app ) / 4 ) * 4 )
+                end,
+
+                interval = 4,
+                value = 1
+            },
+            liadrins_fury_aw = {
+                resource = 'holy_power',
+
+                spec = 'retribution',
+                equip = 'liadrins_fury_unleashed',
+                aura = 'avenging_wrath',
+
+                last = function ()
+                    local app = state.buff.avenging_wrath.applied
+                    local t = state.query_time
+
+                    return app + ( floor( ( t - app ) / 4 ) * 4 )
+                end,
+
+                interval = 4,
+                value = 1
+            }
         } )         
-
-        addResourceModel( 'holy_power', 'liadrins_fury_aw', {
-            spec = 'retribution',
-            equip = 'liadrins_fury_unleashed',
-            aura = 'avenging_wrath',
-            last = function ()
-                local t = state.query_time - state.buff.avenging_wrath.applied
-                t = floor( t / 4 )
-
-                return state.buff.avenging_wrath.applied + ( t * 4 )
-            end,
-            interval = 4,
-            value = 1
-        } )         
-
 
         addTalent( 'final_verdict', 198038 )
         addTalent( 'execution_sentence', 213757 )
@@ -191,6 +199,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         -- Player Buffs.
         addAura( 'aegis_of_light', 204150, 'duration', 6 )
         addAura( 'ardent_defender', 31850, 'duration', 8 )
+        if PTR then addAura( 'avengers_protection', 242265, 'duration', 10 ) end
         addAura( 'avenging_wrath', 31884 )
         addAura( 'blade_of_wrath', 202270 )        
         addAura( 'blessed_hammer', 204019, 'duration', 2 )
@@ -223,6 +232,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'light_of_the_titans', 209539, 'duration', 15 )
         addAura( 'repentance', 62124, 'duration', 60 )
         addAura( 'righteous_verdict', 238996, 'duration', 15 )
+        addAura( 'sacred_judgment', 246973, 'duration', 8 )
         addAura( 'seal_of_light', 202273, 'duration', 20 )
         addAura( 'seraphim', 152262, 'duration', 30 )
         addAura( 'shield_of_the_righteous', 132403, 'duration', 4.5 )
@@ -269,8 +279,12 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         registerCustomVariable( 'last_consecration', 0 )
         registerCustomVariable( 'last_cons_internal', 0 )        
+        
         registerCustomVariable( 'expire_consecration', 0 )
         registerCustomVariable( 'expire_cons_internal', 0 )
+
+        registerCustomVariable( 'last_divine_storm', 0 )
+        registerCustomVariable( 'last_divine_storm_internal', 0 )
 
         registerCustomVariable( 'last_blessed_hammer', 0 )
         registerCustomVariable( 'last_bh_internal', 0 )
@@ -294,6 +308,9 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             elseif spell == class.abilities.blessed_hammer.name then
                 state.last_bh_internal = GetTime()
 
+            elseif spell == class.abilities.divine_storm.name then
+                state.last_divine_storm_internal = GetTime()
+
             end
 
         end )
@@ -303,6 +320,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             state.last_blessed_hammer = state.last_bh_internal
             state.last_shield_of_the_righteous = state.last_sotr_internal
             state.expire_consecration = state.expire_cons_internal
+            state.last_divine_storm = state.last_divine_storm_internal
 
             return x
         end )
@@ -332,6 +350,11 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         -- This will cause the addon to predict HoPo gains during Crusader/AW uptime if you have the ring.
         -- LegionFix:  Will want to enable Forbearant Faithful through advance, as well.
         addHook( 'advance', function( t )
+            -- NYI: scarlet_inquisitors_expurgation
+        end )
+
+
+        --[[
             if not state.equipped.liadrins_fury_unleashed then return t end
 
             local buff_remaining = 0
@@ -347,7 +370,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             state.gain( ticks_before - ticks_after, 'holy_power' )
 
             return t
-        end )
+        end ) ]]
 
         addHook( 'spend', function( amt, resource )
             if state.buff.crusade.up and resource == 'holy_power' then
@@ -401,6 +424,12 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addGearSet( 'liadrins_fury_unleashed', 137048 )
             addAura( 'liadrins_fury_unleashed', 208410 )
 
+        if PTR then
+            addGearSet( "soul_of_the_highlord", 151644 )
+            addGearSet( "pillars_of_inmost_light", 151812 )
+            addGearSet( "scarlet_inquisitors_expurgation", 151813 )
+                addAura( "scarlet_inquisitors_expurgation", 248289, "duration", 3600, "max_stack", 30 )
+        end
 
         addHook( 'specializationChanged', function ()
             setPotion( 'old_war' )
@@ -574,6 +603,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'avengers_shield', function ()
             interrupt()
+            if PTR and set_bonus.tier20_4pc == 1 then applyDebuff( 'target', 'avengers_protection', 10 ) end
         end )
 
 
@@ -625,6 +655,10 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         modifyAbility( 'blade_of_justice', 'cooldown', function( x )
             return x * haste
+        end )
+
+        modifyAbility( 'blade_of_justice', 'spend', function( x )
+            return set_bonus.tier20_2pc == 1 and ( x - 1 ) or x
         end )
 
         addHandler( 'blade_of_justice', function ()
@@ -972,6 +1006,10 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             known = function () return equipped.truthguard and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end
         } )
 
+        modifyAbility( 'eye_of_tyr', 'cooldown', function( x )
+            return equipped.pillars_of_inmost_light and ( x * 0.75 ) or x
+        end )
+
         addHandler( 'eye_of_tyr', function ()
             applyDebuff( 'target', 'eye_of_tyr', 9 )
         end )
@@ -1180,6 +1218,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             else
                 applyDebuff( 'target', 'judgment', 8 )
                 if talent.greater_judgment.enabled then active_dot.judgment = max( active_enemies, active_dot.judgment + 2 ) end
+                if PTR and set_bonus.tier20_4pc == 1 then applyBuff( 'sacred_judgment', 8 ) end
             end
         end )
 

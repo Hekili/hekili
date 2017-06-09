@@ -125,6 +125,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addAura( 'lacerate', 185855, 'duration', 12 )
         addAura( 'moknathal_tactics', 201081, 'duration', 10, 'max_stack', 4 )
         addAura( 'mongoose_fury', 190931, 'duration', 14, 'max_stack', 6 )
+        addAura( 'mongoose_power', 211362, 'duration', 10 )
         addAura( 'on_the_trail', 204081, 'duration', 12 )
         addAura( 'posthaste', 118922, 'duration', 5 )
         addAura( 'rangers_net', 206755, 'duration', 15 )
@@ -138,20 +139,28 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
         -- Gear Sets
         addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
-        addGearSet( 'talonclaw', 128808 )
+        addGearSet( 'tier20', 147142, 147144, 147140, 147139, 147141, 147143 )
 
+        addGearSet( 'talonclaw', 128808 )
         setArtifact( 'talonclaw' )
 
-        addGearSet( 'the_shadow_hunters_voodoo_mask', 137064 )
-        addGearSet( 'prydaz_xavarics_magnum_opus', 132444 )
         addGearSet( 'butchers_bone_apron', 144361 )
         addGearSet( 'call_of_the_wild', 137101 )
-        addGearSet( 'helbrine_rope_of_the_mist_marauder', 137082 )
-        addGearSet( 'roots_of_shaladrassil', 132466 )
-        addGearSet( 'nesingwarys_trapping_threads', 137034 )
-        addGearSet( 'sephuzs_secret', 132452 )
         addGearSet( 'frizzos_fingertrap', 137043 )
+        addGearSet( 'helbrine_rope_of_the_mist_marauder', 137082 )
         addGearSet( 'kiljaedens_burning_wish', 144259 )
+        addGearSet( 'nesingwarys_trapping_threads', 137034 )
+        addGearSet( 'prydaz_xavarics_magnum_opus', 132444 )
+        addGearSet( 'roots_of_shaladrassil', 132466 )
+        addGearSet( 'sephuzs_secret', 132452 )
+        addGearSet( 'the_shadow_hunters_voodoo_mask', 137064 )
+
+        if PTR then 
+            addGearSet( 'soul_of_the_huntermaster', 151641 )
+            addGearSet( 'celerity_of_the_windrunners', 151803 )
+            addGearSet( 'parsels_tongue', 151805 )
+            addGearSet( 'unseen_predators_cloak', 151807 )
+        end
 
 
         addHook( 'specializationChanged', function ()
@@ -581,7 +590,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
         addHandler( 'lacerate', function ()
             -- if settings.moknathal_padding and talent.way_of_the_moknathal.enabled then gain( max( 0, 25 - focus.regen * max( 0, buff.moknathal_tactics.remains - gcd ) ), 'focus', true ) end
-            applyDebuff( 'target', 'lacerate', 12 )
+            applyDebuff( 'target', 'lacerate', 12 + ( set_bonus.tier20_2pc == 1 and 6 or 0 ) )
         end )
 
 
@@ -604,7 +613,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             if equipped.butchers_bone_apron then
                 addStack( 'butchers_bone_apron', 3600, 1 )
             end
+            if buff.mongoose_fury.stack == 5 and set_bonus.tier19_4pc == 1 then
+                applyBuff( 'mongoose_power', 10 )
+            end
             applyBuff( 'mongoose_fury', buff.mongoose_fury.remains > 0 and buff.mongoose_fury.remains or 14, min( 6, buff.mongoose_fury.stack + 1 ) )
+
         end )
         
 

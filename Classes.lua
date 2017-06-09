@@ -279,15 +279,15 @@ local function addAbility( key, values, ... )
         class.abilities[ select( i, ... ) ] = class.abilities[ key ]
     end
 
-    ns.commitKey( key )
-    
     storeAbilityElements( key, values )
     
     if values.item then
-        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t [' .. class.abilities[ key ].name .. ']'
+        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t [' .. ( class.abilities[ key ].name or key ) .. ']'
     else
-        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t ' .. class.abilities[ key ].name
+        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t ' .. ( class.abilities[ key ].name or key )
     end
+
+    ns.commitKey( key )    
     
 end
 ns.addAbility = addAbility
@@ -448,7 +448,7 @@ ns.addResource = addResource
 local function removeResource( resource )
 
     class.resources[ resource ] = nil
-    class.resourceModels[ resource ] = nil
+    class.regenModel = nil
 
     if class.primaryResource == resource then class.primaryResource = nil end
 
@@ -456,11 +456,10 @@ end
 ns.removeResource = removeResource
 
 
-local function addResourceModel( resource, event, db )
-    class.resourceModels[ resource ] = class.resourceModels[ resource ] or {}
-    class.resourceModels[ resource ][ event ] = db
+local function setRegenModel( db )
+    class.regenModel = db
 end
-ns.addResourceModel = addResourceModel
+ns.setRegenModel = setRegenModel
 
 
 local function setPotion( potion )

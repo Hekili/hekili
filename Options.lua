@@ -5173,8 +5173,7 @@ function Hekili:GetOptions()
                             
                             SocketInventoryItem(16)
                             local powers = C_ArtifactUI.GetPowers()
-                            HideUIPanel(ArtifactFrame)
-                            
+                            HideUIPanel(ArtifactFrame)                            
                             
                             if powers then
                                 local traits = {}

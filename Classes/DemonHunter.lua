@@ -36,6 +36,7 @@ local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
+local setRegenModel = ns.setRegenModel
 
 local RegisterEvent = ns.RegisterEvent
 local RegisterUnitEvent = ns.RegisterUnitEvent
@@ -171,12 +172,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         -- Auras.
         addAura( 'blade_dance', 188499, 'duration', 1 )
+        addAura( 'blade_turning', 247254, 'duration', 5 )
         addAura( 'blur', 198589, 'duration', 10 )
         addAura( 'chaos_nova', 179067, 'duration', 5 )
         addAura( 'chaos_blades', 211048, 'duration', 12 )
         addAura( 'darkness', 209426, 'duration', 8 )
         addAura( 'death_sweep', 210152, 'duration', 1 )
-        addAura( 'fel_barrage', 211053, 'duration', 1 )
+        addAura( 'empower_wards', 218256, 'duration', 6 )
+        addAura( 'fel_barrage', 211053, 'duration', 2 )
         addAura( 'imprison', 217832, 'duration', 60 )
         addAura( 'metamorphosis', 162264, 'duration', 30 )
 
@@ -226,6 +229,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         registerCustomVariable( 'last_metamorphosis', 0 )
         registerCustomVariable( 'last_eye_beam', 0 )
 
+
         addAura( 'demonic_extended_metamorphosis', -20, 'name', 'Demonic: Extended Metamorphosis', 'feign', function()
             if buff.metamorphosis.up and last_eye_beam > last_metamorphosis then
                 buff.demonic_extended_metamorphosis.count = 1
@@ -242,15 +246,83 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         end )
 
 
-        -- Pick an instant cast ability for checking the GCD.
         addHook( 'spend', function( amt, resource )
             if state.equipped.delusions_of_grandeur and resource == 'fury' then
                 state.setCooldown( 'metamorphosis', max( 0, state.cooldown.metamorphosis.remains - ( 30 / amt ) ) )
             end
         end )
 
+        addHook( 'gain', function( amt, resource, overcap )
+            if PTR and state.spec.vengeance and state.talent.blade_turning.enabled and state.buff.blade_turning.up and resource == 'pain' then
+                state.pain.actual = max( 0, min( state.pain.max, state.pain.actual + ( 0.2 * amount ) ) )
+            end
+        end )
+
+
+
+
+        setRegenModel( {
+            prepared = {
+                resource = 'fury',
+
+                spec = 'havoc',
+                talent = 'prepared',
+                aura = 'prepared',
+
+                last = function ()
+                    local app = state.buff.prepared.applied
+                    local t = state.query_time
+
+                    local step = PTR and 0.1 or 0.125
+
+                    return app + ( floor( ( t - app ) / step ) * step )
+                end,
+
+                interval = PTR and 0.1 or 0.125,
+
+                value = 1
+            },
+
+            metamorphosis = {
+                resource = 'pain',
+
+                spec = 'vengeance',
+                aura = 'metamorphosis',
+
+                last = function ()
+                    local app = state.buff.metamorphosis.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                interval = 1,
+                value = 7 
+            },
+
+            immolation = {
+                resource = 'pain',
+
+                spec = 'vengeance',
+                aura = 'immolation_aura',
+
+                last = function ()
+                    local app = state.buff.immolation_aura.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                interval = 1,
+                value = 2
+            },
+
+        } )
+
+
         -- Gear Sets       
         addGearSet( 'tier19', 138375, 138376, 138377, 138378, 138379, 138380 )
+        addGearSet( 'tier20', 147130, 147132, 147128, 147127, 147129, 147131 )
         addGearSet( 'class', 139715, 139716, 139717, 139718, 139719, 139720, 139721, 139722 )
         
         addGearSet( 'twinblades_of_the_deceiver', 127829 )
@@ -271,40 +343,16 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addGearSet( 'sephuzs_secret', 132452 )
         addGearSet( 'the_sentinels_eternal_refuge', 146669 )
 
+        if PTR then
+            addGearSet( "soul_of_the_slayer", 151639 )
+            addGearSet( "chaos_theory", 151798 )
+            addGearSet( "oblivions_embrace", 151799 )
+        end
+
 
         addHook( 'specializationChanged', function ()
             setPotion( 'prolonged_power' )
             setRole( 'attack' )
-        end )
-
-        addHook( 'advance', function( t )
-            if state.spec.havoc then
-
-                if state.buff.prepared.up then
-                    state.gain( floor( state.buff.prepared.remains / 0.125 ), 'fury' )
-                end
-
-                return t
-            end
-
-            if state.buff.metamorphosis.up then
-                local ticks_remain = ceil( state.buff.metamorphosis.remains )
-                local ticks_after = floor( ticks_remain - t )
-                local ticks = ticks_remain - ticks_after
-
-                state.gain( 7 * ticks, 'pain' )
-            end
-
-            if state.buff.immolation_aura.up then
-                local ticks_remain = ceil( state.buff.immolation_aura.remains )
-                local ticks_after = floor( ticks_remain - t )
-                local ticks = ticks_remain - ticks_after
-
-                state.gain( floor( 3.334 * ticks ), 'pain' )
-            end
-
-            return t
-
         end )
 
 
@@ -332,6 +380,13 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             name = "Havoc: Keep Fel Rush Recharging",
             type = "toggle",
             desc = "If |cFF00FF00true|r, the addon will enable use of Fel Rush when solely for the purpose of keeping the ability recharging.  This is optimal by a small margin but may introduce movement and positioning issues in your gameplay.",
+            width = "full"
+        } )
+
+        addSetting( 'fury_range_aoe', true, {
+            name = "Havoc: Fury of the Illidari, Require Target(s)",
+            type = "toggle",
+            desc = "If |cFF00FF00true|r, the addon will require either (1) your target is within range or (2) you have multiple other nearby targets before recommending Fury of the Illidari.",
             width = "full"
         } )
 
@@ -473,6 +528,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         addHandler( 'blade_dance', function ()
             applyBuff( 'blade_dance', 1 )
+            if set_bonus.tier20_2pc == 1 and target.within8 then gain( 20, 'fury' ) end
         end )
 
 
@@ -508,6 +564,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         addHandler( 'death_sweep', function ()
             applyBuff( 'death_sweep', 1 )
+            if set_bonus.tier20_2pc == 1 and target.within8 then gain( 20, 'fury' ) end
         end )
 
 
@@ -519,6 +576,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             gcdType = 'melee',
             cooldown = 60,
             known = function() return equipped.twinblades_of_the_deceiver and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end,
+            usable = function () return ( not settings.fury_range_aoe ) or target.within8 or active_enemies > 1 end,
         } )
 
 
@@ -596,17 +654,18 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             id = 211053,
             spend = 0,
             spend_type = 'fury',
-            cast = 1,
+            cast = PTR and 2 or 1,
             channeled = true,
-            charges = 5,
-            recharge = 30,
+            charges = PTR and 1 or 5,
+            recharge = PTR and 60 or 30,
             gcdType = 'spell',
-            cooldown = 30,
-            known = function () return talent.fel_barrage.enabled end
+            cooldown = PTR and 60 or 30,
+            talent = 'fel_barrage',
         } )
 
         addHandler( 'fel_barrage', function ()
-            applyBuff( 'fel_barrage', 1 )
+            applyBuff( 'fel_barrage', PTR and 2 or 1 )
+            spendCharges( 'fel_barrage', cooldown.fel_barrage.charges )
         end )
 
 
@@ -624,7 +683,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addHandler( 'fel_rush', function ()
             if talent.fel_mastery.enabled then gain( 30, 'fury' ) end
             if talent.momentum.enabled then applyBuff( 'momentum', 4 ) end
-            target.distance = abs( target.distance - 15 )
+            setDistance( abs( target.distance - 15 ) )
         end )
 
 
@@ -635,7 +694,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 25,
-            -- usable = function () return target.within5 end
+            usable = function () return target.within8 end
         } )
 
         modifyAbility( 'vengeful_retreat', 'cooldown', function( x )
@@ -733,7 +792,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         } )
 
         addHandler( 'chaos_blades', function ()
-            applyBuff( 'chaos_blades', 12 )
+            applyBuff( 'chaos_blades', PTR and 18 or 12 )
         end )
 
 
@@ -772,7 +831,12 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cast = 0,
             gcdType = 'melee',
             cooldown = 15,
+            usable = function () return target.within15 end
         } )
+
+        addHandler( 'felblade', function ()
+            setDistance( 5 )
+        end )
 
 
         addAbility( 'demon_spikes', {
@@ -786,8 +850,59 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             gcdType = 'spell'
         } )
 
+        modifyAbility( 'demon_spikes', 'charges', function( x )
+            if PTR and equipped.oblivions_embrace then return x + 1 end
+            return x
+        end )
+
         addHandler( 'demon_spikes', function ()
             applyBuff( 'demon_spikes', 6 )
+        end )
+
+
+        -- Demonic Infusion
+        --[[ Draw from the power of the Twisting Nether to instantly activate and then refill your charges of Demon Spikes.    Generates 60 Pain. ]]
+
+        addAbility( "demonic_infusion", {
+            id = 236189,
+            spend = -60,
+            spend_type = 'pain',
+            cast = 0,
+            gcdType = "spell",
+            talent = "demonic_infusion",
+            cooldown = 120,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        addHandler( "demonic_infusion", function ()
+            applyBuff( 'demon_spikes', 6 )
+            gainCharges( 'demon_spikes', 2 )
+        end )
+
+
+        -- Empower Wards
+        --[[ Reduces magical damage taken by 30% for 6 sec. ]]
+
+        addAbility( "empower_wards", {
+            id = 218256,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 20,
+            charges = PTR and 1 or nil,
+            recharge = PTR and 20 or nil,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        modifyAbility( 'empower_wards', 'charges', function( x )
+            if PTR and equipped.oblivions_embrace then return x + 1 end
+            return x
+        end )
+
+        addHandler( "empower_wards", function ()
+            applyBuff( "empower_wards", 6 )
         end )
 
 
@@ -800,6 +915,8 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cooldown = 60,
             gcdType = 'spell',
         } )
+
+        modifyAbility( 'fel_devastation', 'cast', function( x ) return x * haste end )
 
         addHandler( 'fel_devastation', function ()
             health.actual = min( health.max, health.actual + ( stat.attack_power * 25 ) ) 
@@ -822,7 +939,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         addAbility( 'fracture', {
             id = 209795,
-            spend = 20,
+            spend = PTR and 30 or 20,
             spend_type = 'pain',
             cast = 0,
             cooldown = 0,
@@ -836,13 +953,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         addAbility( 'immolation_aura', {
             id = 178740,
-            spend = 0,
+            spend = -8,
             spend_type = 'pain',
             cast = 0,
             cooldown = 15,
             gcdType = 'spell',
         } )
 
+        -- Modeled as 8 pain immediately, + 6 ticks of 2 per sec.
         addHandler( 'immolation_aura', function ()
             applyBuff( 'immolation_aura', 6 )
         end )
@@ -886,6 +1004,8 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             passive = true,
         } )
 
+        -- NYI: Sigil Placed
+
 
         addAbility( 'soul_barrier', {
             id = 227225,
@@ -897,6 +1017,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         } )
 
         addHandler( 'soul_barrier', function ()
+            gainChargeTime( 'demon_spikes', buff.soul_fragments.stack )
             removeBuff( 'soul_fragments' )
             applyBuff( 'soul_barrier', 12 )
         end )
@@ -928,6 +1049,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         addHandler( 'soul_cleave', function ()
             spend( max( 0, min( 30, pain.current - 30 ) ), 'pain' )
+            gainChargeTime( 'demon_spikes', buff.soul_fragments.stack )
             removeBuff( 'soul_fragments' )
         end )
 
@@ -942,7 +1064,10 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         } )
 
         addHandler( 'spirit_bomb', function ()
+            gainChargeTime( 'demon_spikes', buff.soul_fragments.stack )
+            removeBuff( 'soul_fragments' )
             applyDebuff( 'target', 'frailty', 20 )
+            active_dot.frailty = max( 1, active_enemies )
         end )
 
     end
