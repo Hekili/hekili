@@ -36,6 +36,8 @@ function Hekili:GetDefaults()
             Enabled = true,
             Locked = true,
             MinimapIcon = false, -- true == hide
+
+            ['Use Old Engine'] = false,
             
             ['Switch Type'] = 0,
             ['Mode Status'] = 3,
@@ -4358,6 +4360,14 @@ function Hekili:GetOptions()
                                 fontSize = "medium",
                                 order = 0
                             },
+                            --[[ ['Use Old Engine'] = {
+                                type = 'toggle',
+                                name = "Use Old Prediction Engine",
+                                desc = "If checked, the addon will use the prediction engine from before patch 7.2.5 for making its recommendations.  If you experience odd recommendations after patch 7.2.5, " ..
+                                    "try enabling this checkbox and see if the behavior resolves itself.  Please report any issues at the CurseForge link shown above.",
+                                order = 1,
+                                width = "full"
+                            }, ]]
                         }
                     },
                     --[[ ['Clash'] = {

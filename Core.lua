@@ -993,10 +993,10 @@ end
 
 
 function Hekili:ProcessHooks( dispID, solo )
-    if self.UseProjection then
+    -- if self.DB.profile[ 'Use Old Engine' ] then
         return self:oldProcessHooks( dispID, solo )
-    end
-    return self:newProcessHooks( dispID, solo )
+    -- end
+    -- return self:newProcessHooks( dispID, solo )
 end
 
 
@@ -1209,6 +1209,7 @@ function Hekili:newProcessHooks( dispID, solo )
                     
                     local chosen_action
                     local chosen_clash, chosen_depth = self.DB.profile.Clash or 0, 0
+                    local chosen_wait = 60 -- needed for fallback mechanism.
                     
                     Queue[i] = Queue[i] or {}
                     
@@ -1228,22 +1229,35 @@ function Hekili:newProcessHooks( dispID, solo )
                     local startOffset = state.offset
 
                     if hasAPLs then 
-                        while( chosen_action == nil ) do
+
+                        local fallback = false
+
+                        while( chosen_action == nil and ( not fallback ) ) do
                             
-                            local delay, step
+                            local delay = 0
+                            local step = 0
+                            local useOld = self.DB.profile[ 'Use Old Engine' ]
 
-                            if iteration == 0 then step = 0                       --  0      = no step
-                            elseif iteration <= 10 then step = 0.10               --  1 - 20 = 0.1s
-                            else step = 0.25 * state.gcd end                      -- 11+     /= GCD / 4
+                            if useOld then
+                                fallback = true
 
-                            if iteration > 0 then state.advance( step ) end
-                            
-                            iteration = iteration + 1
+                            elseif iteration == 50 then
+                                if debug then self:Debug( "Reached more than 50 iterations, switching to old engine." ) end
+                                fallback = true
 
-                            if iteration > 50 then if debug then self:Debug( "Reached more than 50 iterations, discontinuing loop." ) end; break end
+                            else
+                                if iteration == 0 then step = 0
+                                elseif iteration <= 10 then step = 0.1 * state.gcd
+                                else step = 0.25 * state.gcd end
 
-                            delay = state.offset - startOffset
-                            
+                                if iteration > 0 and iteration < 50 then
+                                    state.advance( step )
+                                    delay = state.offset - startOffset
+                                end
+                                
+                                iteration = iteration + 1
+                            end
+
                             if debug then self:Debug( "Iteration %d; additional time offset is %.2f; offset is %.2f.", iteration, delay, state.offset ) end
 
                             if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
@@ -1251,7 +1265,13 @@ function Hekili:newProcessHooks( dispID, solo )
                                 local listName = self.DB.profile.actionLists[ display.precombatAPL ].Name
                                 
                                 if debug then self:Debug( "Processing precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
-                                chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_clash )
+
+                                if fallback then
+                                    chosen_action, chosen_wait, chosen_clash, chosen_depth = self:oldProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
+                                else
+                                    chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_clash )
+                                end
+                                
                                 if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
                             
                             end
@@ -1260,16 +1280,23 @@ function Hekili:newProcessHooks( dispID, solo )
                                 local listName = self.DB.profile.actionLists[ display.defaultAPL ].Name
                                 
                                 if debug then self:Debug("Processing default action list [ %d - %s ].", display.default, listName ) end
-                                chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_clash )
+
+                                if fallback then
+                                    chosen_action, chosen_wait, chosen_clash, chosen_depth = self:oldProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
+                                else
+                                    chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_clash )
+                                end
+                                
                                 if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.defaultAPL, listName ) end
                             end
                         
                             if debug then
-                                if chosen_action then self:Debug( "Recommendation #%d is %s at %.2f ( %.2f ).", i, chosen_action or "NO ACTION", state.offset, delay )
-                                else self:Debug( "No recommendation for slot #%d at %.2f ( %.2f ).", i, state.offset, delay ) end
+                                if chosen_action then
+                                    self:Debug( "Recommendation #%d is %s at %.2f ( %.2f ).", i, chosen_action or "NO ACTION", state.offset, delay )
+                                else
+                                    self:Debug( "No recommendation for slot #%d at %.2f ( %.2f ).", i, state.offset, delay )
+                                end
                             end
-
-                            if iteration >= 200 then break end
                         end
                     end
                     
