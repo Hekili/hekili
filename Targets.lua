@@ -48,6 +48,21 @@ function ns.getNumberTargets()
                 npCount = npCount + 1
             end
         end
+
+        for i = 1, 5 do
+            local unit = 'boss'..i
+
+            local guid = UnitGUID( unit )
+
+            if not nameplates[ guid ] then
+                local maxRange = RC:GetRange( unit )
+
+                if maxRange and maxRange <= ( Hekili.DB.profile['Nameplate Detection Range'] or 5 ) and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
+                    nameplates[ UnitGUID( unit ) ] = maxRange
+                    npCount = npCount + 1
+                end
+            end
+        end
     end
 
     if Hekili.DB.profile['Count Targets by Damage'] or not Hekili.DB.profile['Count Nameplate Targets'] or not showNPs or state.ranged then
@@ -140,6 +155,12 @@ ns.isMinion = function( id ) return minions[ id ] ~= nil end
 
 local debuffs = {}
 local debuffCount = {}
+local debuffMods = {}
+
+
+function ns.saveDebuffModifier( name, val )
+    debuffMods[ name ] = val
+end
 
 
 ns.wipeDebuffs = function()
@@ -150,7 +171,7 @@ ns.wipeDebuffs = function()
 end
 
 
-ns.trackDebuff = function( spell, target, time )
+ns.trackDebuff = function( spell, target, time, application )
 
   debuffs[ spell ] = debuffs[ spell ] or {}
   debuffCount[ spell ] = debuffCount[ spell ] or 0
@@ -172,7 +193,26 @@ ns.trackDebuff = function( spell, target, time )
 
     debuff.last_seen = time
     debuff.applied = debuff.applied or time
+
+    if application then
+        debuff.pmod = debuffMods[ spell ]
+    else
+        debuff.pmod = debuff.pmod or 1
+    end
   end
+
+end
+
+
+function ns.getModifier( spell, target )
+
+    local debuff = debuffs[ spell ]
+    if not debuff then return 1 end
+
+    local app = debuff[ target ]
+    if not app then return 1 end
+
+    return app.pmod or 1
 
 end
 

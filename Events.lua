@@ -64,7 +64,7 @@ function ns.StartEventHandler()
             ns.recountTargets()
         end
 
-        local updatePeriod = state.combat == 0 and 1 or ( 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 ) )
+        local updatePeriod = state.combat == 0 and 1 or 0.25
 
         local forced = false
 
@@ -420,14 +420,6 @@ local function forceUpdate( from, super )
 
     return
 
-    --[[ local updatePeriod = 1 / ( Hekili.DB.profile['Updates Per Second'] or 5 )
-    local now = GetTime()
-
-    local new_delay = now - updatePeriod
-
-    for i = 1, #Hekili.DB.profile.displays do
-        lastRefresh[ i ] = lastRefresh[ i ] and min( lastRefresh[ i ], new_delay )
-    end ]]
 end
 
 ns.forceUpdate = forceUpdate
@@ -486,6 +478,10 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
     end
 
 end
+
+
+
+
 
 
 -- Need to make caching system.
@@ -728,7 +724,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
         elseif sourceGUID == state.GUID and class.auras[ spellID ] and class.auras[ spellID ].friendly then -- friendly effects
 
             if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
-                ns.trackDebuff( spellName, destGUID, time, true )
+                ns.trackDebuff( spellName, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
 
             elseif subtype == 'SPELL_PERIODIC_HEAL' or subtype == 'SPELL_PERIODIC_MISSED' then
                 ns.trackDebuff( spellName, destGUID, time )
@@ -887,6 +883,8 @@ end
 
 
 local function ReadKeybindings()
+
+    if class.file == "DRUID" then return end
 
     for k in pairs( updatedKeys ) do
         updatedKeys[ k ] = nil

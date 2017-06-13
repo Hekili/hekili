@@ -35,6 +35,7 @@ local removeResource = ns.removeResource
 local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
+local setRegenModel = ns.setRegenModel
 local setRole = ns.setRole
 
 
@@ -60,6 +61,41 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addResource( "energy" )
         addResource( "rage", nil, true )
         addResource( "combo_points", nil, true )
+
+        setRegenModel( {
+            elunes_guidance = {
+                resource = 'combo_points',
+
+                spec = 'feral',
+                aura = 'elunes_guidance',
+                setting = nil,
+
+                last = function ()
+                    return state.buff.elunes_guidance.applied + floor( state.query_time - state.buff.elunes_guidance.applied )
+                end,
+
+                interval = 1,
+                value = 1
+            },
+
+            energy = {
+                resource = "energy",
+
+                spec = "feral",
+                aura = "cat_form",
+
+                last = function () 
+                    local app = state.energy.last_tick > 0 and state.energy.last_tick or state.now
+                    local t = state.query_time
+
+                    return app + ( floor( ( t - app ) / 0.1 ) * 0.1 )
+                end,
+
+                interval = 0.1,
+                value = 0,
+            }
+        } )
+
 
         setPotion( "old_war" )
         setRole( "attack" )
@@ -160,9 +196,12 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "berserk", 106951 )
         addAura( "bloodtalons", 145152, "max_stack", 2, "duration", 30 )
         addAura( "cat_form", 768, "duration", 3600 )
-        addAura( "clearcasting", 16870 )
+        addAura( "clearcasting", 135700, "duration", 15, "max_stack", 1 )
+            modifyAura( "clearcasting", "max_stack", function( x )
+                return talent.moment_of_clarity.enabled and 3 or x
+            end )
         addAura( "dash", 1850 )
-        addAura( "displacer_beast", 102280 )
+        addAura( "displacer_beast", 102280, "duration", 2 )
         addAura( "elunes_guidance", 202060, 'duration', 8 )
         addAura( "fiery_red_maimers", 212875)
         addAura( "feline_swiftness", 131768 )
@@ -174,18 +213,36 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "mastery_razor_claws", 77493 )
         addAura( "moonkin_form", 197625 )
         addAura( "omen_of_clarity", 16864 )
-        addAura( "predatory_swiftness", 16974 )
+        addAura( "predatory_swiftness", 69369, "duration", 12 )
         addAura( "primal_fury", 159286 )
         addAura( "prowl", 5215, "duration", 3600 )
-        addAura( "rake", 155722, "duration", 15 )
+        addAura( "rake", 155722, "duration", 15, "tick_time", 3 )
+            modifyAura( "rake", "duration", function( x )
+                return talent.jagged_wounds.enabled and x * 0.75 or x
+            end )
+            modifyAura( "rake", "tick_time", function( x )
+                return talent.jagged_wounds.enabled and x * 0.75 or x
+            end )
         addAura( "regrowth", 8936, "duration", 12 )
-        addAura( "rip", 1079, "duration", 24 )
+        addAura( "rip", 1079, "duration", 24, "tick_time", 2 )
+            modifyAura( "rip", "duration", function( x )
+                return talent.jagged_wounds.enabled and x * 0.75 or x
+            end )
+            modifyAura( "rip", "tick_time", function( x )
+                return talent.jagged_wounds.enabled and x * 0.75 or x
+            end )
         addAura( "savage_roar", 52610, "duration", 24 )
         addAura( "shadowmeld", 58984, "duration", 3600 )
         addAura( "survival_instincts", 61336 )
         addAura( "thick_hide", 16931 )
         addAura( "thrash_bear", 77758, "duration", 15, "max_stack", 3 )
-        addAura( "thrash_cat", 106830, "duration", 15 )
+        addAura( "thrash_cat", 106830, "duration", 15, "tick_time", 3 )
+            modifyAura( "thrash_cat", "duration", function( x )
+                return talent.jagged_wounds.enabled and x * 0.75 or x
+            end )
+            modifyAura( "thrash_cat", "tick_time", function( x )
+                return talent.jagged_wounds.enabled and x * 0.75 or x
+            end )
         addAura( "tigers_fury", 5217 )
         addAura( "travel_form", 783 )
         addAura( "wild_charge", 102401 )
@@ -203,10 +260,63 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             width = "full"
         } )
 
+        addSetting( 'regrowth_instant', true, {
+            name = "Regrowth: Instant Only",
+            type = "toggle",
+            desc = "If |cFF00FF00true|r, Regrowth will only be usable in Cat Form when "
+            })
+
+
+        addGearSet( 'fangs_of_ashamane', 128860 )
+        setArtifact( 'fangs_of_ashamane' )
+
 
         addMetaFunction( 'state', 'gcd', function()
             return 1.0
         end )
+
+
+
+        local moc_spells = { shred = true, thrash_cat = true, swipe_cat = true }
+
+
+        addMetaFunction( 'state', 'persistent_multiplier', function ()
+            local mult = 1
+
+            mult = mult * ( buff.bloodtalons.up and 1.5 or 1 )
+            mult = mult * ( buff.tigers_fury.up and 1.15 or 1 )
+            mult = mult * ( buff.savage_roar.up and 1.25 or 1 )
+
+            if this_action and moc_spells[ this_action ] then
+                mult = mult * ( buff.clearcasting.up and 1.15 or 1 )
+            end
+
+            return mult
+        end )
+
+
+        local clearcasting_spells = { [5221] = true, [106830] = true, [106785] = true }
+
+        local function persistent_modifier( spellID  )
+            local bloodtalons = UnitBuff( "player", class.auras.bloodtalons.name, nil, "PLAYER" )
+            local tigers_fury = UnitBuff( "player", class.auras.tigers_fury.name, nil, "PLAYER" )
+            local savage_roar = UnitBuff( "player", class.auras.savage_roar.name, nil, "PLAYER" )
+            local clearcasting = UnitBuff( "player", class.auras.clearcasting.name, nil, "PLAYER" )
+
+            return 1 * ( bloodtalons and 1.5 or 1 ) * ( tigers_fury and 1.15 or 1 ) * ( savage_roar and 1.25 or 1 ) * ( ( clearcasting_spells[ spellID ] and clearcasting ) and 1.15 or 1 )
+        end
+
+        
+        RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
+
+            if unit == 'player' then
+                if class.abilities[ spell ] then
+                    ns.saveDebuffModifier( spell, persistent_modifier( spellID ) )
+                end
+            end
+
+        end )  
+
 
         addMetaFunction( 'state', 'break_stealth', function ()
             removeBuff( "shadowmeld" )
@@ -234,8 +344,37 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             end
         end )
 
+        addHook( "reset_precast", function ()
+            if state.buff.cat_form.down then
+                state.energy.regen = 10 + ( state.stat.haste * 10 )
+            end
+            state.debuff.rip.pmultiplier = nil
+            state.debuff.rake.pmultiplier = nil
+            state.debuff.thrash.pmultiplier = nil
+        end )
+
 
         -- Abilities
+
+        -- Ashamane's Frenzy
+        --[[ Unleash Ashamane's Frenzy, clawing your target 15 times over 3 sec for 19,365 Physical damage and an additional 58,095 Bleed damage over 6 sec.    Awards 3 combo points. ]]
+
+        addAbility( "ashamanes_frenzy", {
+            id = 210722,
+            spend = -3,
+            spend_type = 'combo_points',
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 75,
+            min_range = 0,
+            max_range = 0,
+            known = function() return equipped.fangs_of_ashamane and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end,
+        } )
+
+        addHandler( "ashamanes_frenzy", function ()
+            removeStack( "bloodtalons" )
+        end )
+
 
         -- Bear Form
         --[[ Shapeshift into Bear Form, increasing armor by 200% and Stamina by 55%, granting protection from Polymorph effects, and increasing threat generation.  The act of shapeshifting frees you from movement impairing effects. ]]
@@ -374,6 +513,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             removeBuff( "bear_form" )
             removeBuff( "moonkin_form" )
             removeBuff( "travel_form" )
+            applyBuff( "displacer_beast", 2 )
         end )
 
 
@@ -411,12 +551,17 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             max_range = 35,
         } )
 
+        modifyAbility( "entangling_roots", "cast", function( x )
+            if buff.predatory_swiftness.up then return 0 end
+            return x * haste
+        end )
+
         modifyAbility( "entangling_roots", "cooldown", function( x )
             return x * haste
         end )
         
         addHandler( "entangling_roots", function ()
-            -- proto
+            removeBuff( "predatory_swiftness" )
         end )
 
 
@@ -425,17 +570,18 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addAbility( "ferocious_bite", {
             id = 22568,
-            spend = 1,
-            spend_type = "combo_points",
+            spend = 25,
+            spend_type = "energy",
             cast = 0,
             gcdType = "spell",
             cooldown = 0,
             min_range = 0,
             max_range = 0,
+            usable = function () return buff.cat_form.up and combo_points.current > 0 end,
         } )
 
         addHandler( "ferocious_bite", function ()
-            spend( min( 3, combo_points.current ), "combo_points" )
+            spend( min( 5, combo_points.current ), "combo_points" )
             spend( min( 25, energy.current ), "energy" )
             removeStack( "bloodtalons" )
         end )
@@ -561,20 +707,19 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addAbility( "maim", {
             id = 22570,
-            spend = 1,
-            spend_type = "combo_points",
+            spend = 35,
+            spend_type = "energy",
             cast = 0,
             gcdType = "spell",
             cooldown = 10,
             min_range = 0,
             max_range = 0,
-            usable = function () return buff.cat_form.up end,
+            usable = function () return buff.cat_form.up and combo_points.current > 0 end,
         } )
 
         addHandler( "maim", function ()
-            local cost = 1 + min( 4, combo_points.current )
-            spend( cost - 1, "combo_points" )
-            applyDebuff( "target", "maim", cost )
+            applyDebuff( "target", "maim", combo_points.current )
+            spend( combo_points.current, "combo_points" )
             removeStack( "bloodtalons" )
         end )
 
@@ -698,7 +843,13 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             min_range = 0,
             max_range = 0,
             passive = true,
+            usable = function () return not buff.prowl.up end,
         } )
+
+        modifyAbility( 'prowl', 'cooldown', function( x )
+            if buff.prowl.up then return 0 end
+            return x
+        end )
 
         addHandler( "prowl", function ()
             applyBuff( "cat_form" )
@@ -721,11 +872,18 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             cooldown = 0,
             min_range = 0,
             max_range = 0,
+            cycle = 'rake',
             usable = function () return buff.cat_form.up end,
         } )
 
+        modifyAbility( "rake", "spend", function( x )
+            return buff.berserk.up and x * 0.5 or x 
+        end )
+
         addHandler( "rake", function ()
-            applyDebuff( "target", "rake", 12 * haste )
+            applyDebuff( "target", "rake" )
+            debuff.rip.pmultiplier = persistent_multiplier
+
             gain( 1, "combo_points" )
             removeStack( "bloodtalons" )
         end )
@@ -745,6 +903,8 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             max_range = 40,
         } )
 
+
+
         addHandler( "rebirth", function ()
             -- proto
         end )
@@ -763,10 +923,20 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             min_range = 0,
             max_range = 40,
             passive = true, 
-            usable = function () return not talent.bloodtalons.enabled or not buff.bloodtalons.up end,
+            usable = function ()
+                if not talent.bloodtalons.enabled then return false end
+                if buff.bloodtalons.up then return false end
+
+                if buff.cat_form.up then
+                    return not settings.regrowth_instant or buff.predatory_swiftness.up
+                end
+
+                return true
+            end,
         } )
 
         modifyAbility( "regrowth", "cast", function( x )
+            if buff.predatory_swiftness.up then return 0 end
             return x * haste
         end )
 
@@ -776,10 +946,11 @@ if (select(2, UnitClass('player')) == 'DRUID') then
                 removeBuff( "bear_form" )
                 removeBuff( "travel_form" )
             end
+            removeBuff( "predatory_swiftness" )
             if talent.bloodtalons.enabled then
                 applyBuff( "bloodtalons", 30, 2 )
-                applyBuff( "regrowth", 12 )
             end
+            applyBuff( "regrowth", 12 )
         end )
 
 
@@ -868,19 +1039,21 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addAbility( "rip", {
             id = 1079,
-            spend = 1,
-            spend_type = "combo_points",
+            spend = 30,
+            spend_type = "energy",
             cast = 0,
             gcdType = "spell",
             cooldown = 0,
             min_range = 0,
             max_range = 0,
-            usable = function () return buff.cat_form.up end,
+            cycle = 'rip',
+            usable = function () return buff.cat_form.up and combo_points.current > 0 end,
         } )
 
         addHandler( "rip", function ()
-            spend( min( 4, combo_points.current ), "combo_points" )
-            applyDebuff( "target", "rip", 18 )
+            spend( combo_points.current, "combo_points" )
+            applyDebuff( "target", "rip" )
+            debuff.rip.pmultiplier = persistent_multiplier
             removeStack( "bloodtalons" )
         end )
 
@@ -890,21 +1063,22 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addAbility( "savage_roar", {
             id = 52610,
-            spend = 1,
-            spend_type = "combo_points",
+            spend = 40,
+            spend_type = "energy",
             cast = 0,
             gcdType = "spell",
             talent = "savage_roar",
             cooldown = 0,
             min_range = 0,
             max_range = 100,
-            known = function () return talent.savage_roar.enabled and buff.cat_form.up end,
+            talent = 'savage_roar',
+            usable = function () return buff.cat_form.up and combo_points.current > 0 end,
         } )
 
         addHandler( "savage_roar", function ()
-            local cost = min( 4, combo_points.current )
+            local cost = min( 5, combo_points.current )
             spend( cost, "combo_points" )
-            applyBuff( "savage_roar", 8 + ( 4 * cost ) )
+            applyBuff( "savage_roar", 4 + ( 4 * cost ) )
         end )
 
 
@@ -922,9 +1096,16 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             max_range = 0,
         } )
 
+        modifyAbility( "shred", "spend", function( x )
+            if buff.clearcasting.up then return 0
+            elseif buff.berserk.up then return x * 0.5 end
+            return x
+        end )
+
         addHandler( "shred", function ()
             gain( 1, "combo_points" )
             removeStack( "bloodtalons" )
+            removeStack( "clearcasting" )
         end )
 
 
@@ -1084,12 +1265,20 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             cooldown = 0,
             min_range = 0,
             max_range = 8,
-            usable = function () return buff.cat_form.up end,
+            known = function () return buff.cat_form.up end,
+            -- usable = function () return buff.cat_form.up end,
         } )
+
+        modifyAbility( "swipe_cat", "spend", function( x )
+            if buff.clearcasting.up then return 0
+            elseif buff.berserk.up then return x * 0.5 end
+            return x
+        end )
 
         addHandler( "swipe_cat", function ()
             gain( 1, "combo_points" ) 
             removeStack( "bloodtalons" )
+            removeStack( "clearcasting" )            
         end )
 
 
@@ -1126,13 +1315,22 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             cooldown = 0,
             min_range = 0,
             max_range = 0,
+            aura = 'thrash_cat',
+            cycle = 'thrash_cat',
             known = function () return buff.cat_form.up or buff.bear_form.up end,
         } )
 
+        modifyAbility( "thrash_cat", "spend", function( x )
+            if buff.clearcasting.up then return 0
+            elseif buff.berserk.up then return x * 0.5 end
+            return x
+        end )
+
         addHandler( "thrash_cat", function ()
-            applyDebuff( "target", "thrash_cat", 15 )
+            applyDebuff( "target", "thrash_cat" )
             active_dot.thrash_cat = max( active_dot.thrash_cat, true_active_enemies )
             removeStack( "bloodtalons" )
+            removeStack( "clearcasting" )
         end )
 
 
@@ -1141,7 +1339,8 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addAbility( "tigers_fury", {
             id = 5217,
-            spend = 0,
+            spend = -60,
+            spend_type = "energy",
             cast = 0,
             gcdType = "spell",
             cooldown = 30,
@@ -1151,7 +1350,6 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addHandler( "tigers_fury", function ()
             applyBuff( "tigers_fury" )
-            gain( 60, "energy" )
         end )
 
 
@@ -1208,16 +1406,14 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             cooldown = 15,
             min_range = 5,
             max_range = 25,
-            usable = function () if buff.cat_form.up then return target.exists end
-                return true
+            usable = function () if buff.cat_form.up and target.outside8 and target.within25 then return target.exists end
+                return false
             end,
         } )
 
         addHandler( "wild_charge", function ()
-            if buff.cat_form.up and target.exists then
-                target.minR = 5
-                target.maxR = 5
-            end
+            setDistance( 5 )
+            applyDebuff( "target", "dazed", 3 )
         end )
 
 

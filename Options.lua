@@ -46,8 +46,6 @@ function Hekili:GetDefaults()
             ['Count Nameplate Targets'] = true,
             ['Nameplate Detection Range'] = 8,
             ['Count Targets by Damage'] = true,
-            ['Updates Per Second'] = 4,
-            ['Low Impact Mode'] = true,
             
             ['Notification Enabled'] = true,
             ['Notification Font'] = 'Arial Narrow',
@@ -172,7 +170,26 @@ local oneTimeFixes = {
 
     dontDisableGlobalCooldownYouFools_05232017 = function( profile )
         profile.blacklist.global_cooldown = nil
-    end
+    end,
+
+    useNewAPLsForDemonHunters_06132017_1 = function( profile )
+        local APL
+
+        for idx, list in ipairs( profile.actionLists ) do
+            if list.Name == "Icy Veins: Default" then
+                APL = idx
+            end
+        end
+
+        if APL then
+            for _, display in ipairs( profile.displays ) do
+                if display.Name == "Havoc Primary" or display.Name == "Havoc AOE" then
+                    display.precombatAPL = APL
+                    display.defaultAPL = APL
+                end
+            end
+        end
+    end,
 }
 
 
@@ -3869,7 +3886,7 @@ ns.SimulationCraftImporter = function ()
                             
                             if display then
                                 display = Hekili.DB.profile.displays[ dispIdx ]
-                                C_Timer.After( 1 / Hekili.DB.profile['Updates Per Second'], Hekili[ 'ProcessDisplay'..dispIdx ] )
+                                C_Timer.After( 0.25, Hekili[ 'ProcessDisplay'..dispIdx ] )
                             else
                                 addWarning( "Failed to create a new display with name '" ..importerOpts.newDisplay .. "'." )
                                 return
@@ -4264,18 +4281,20 @@ function Hekili:GetOptions()
                         args = {
                             ['Delay Description'] = {
                                 type = 'description',
-                                name = "This addon includes a mechanism for counting targets with whom you are actively engaged. Targets can be detected via nameplates, or by tracking any target that you damage, or is damaged by your pets/totems/guardians. You can specify how targets are counted below. Targets using damage-based detection are removed when they are killed or if you do not damage them within the following 'Grace Period'.",
+                                name = "In order to make accurate recommendations based on the number of enemies you are fighting, this addon uses two processes to count targets.  " ..
+                                    "The first method is to |cFFFFD100Count Nameplates|r and check whether those enemies are within your |cFFFFD100Nameplate Detection Range|r (typically 8 yards for melee).  " ..
+                                    "The second method is to |cFFFFD100Track Damage|r and count enemies you've damaged within the |cFFFFD100Grace Period|r.  Both methods have strengths and disadvantages.\n",
                                 order = 0,
+                                fontSize = "medium",
                                 width = 'full'
                             },
                             ['Count Nameplate Targets'] = {
                                 type = 'toggle',
-                                name = "Count Targets by Nameplate",
+                                name = "Count Nameplates",
                                 desc = "If checked, the addon will check to see how many hostile nameplates are within the specified range and count them as enemies.\n\n" ..
                                 "If enemy nameplates are not enabled, the addon will fallback to damage-based detection regardless of these settings.\n\n" ..
                                 "This feature is not used by ranged specializations.",
                                 order = 1,
-                                
                             },
                             ['Nameplate Detection Range'] = {
                                 type = 'range',
@@ -4308,7 +4327,7 @@ function Hekili:GetOptions()
                             },
                             ['Count Targets by Damage'] = {
                                 type = 'toggle',
-                                name = 'Count Targets by Damage',
+                                name = 'Track Damage',
                                 desc = "If checked, the addon will track which units you have recently attacked or have recently attacked you and count them as enemies.\n\n" ..
                                 "If nameplate target detection is turned off, this feature will be used regardless of this setting.\n\n" ..
                                 "For ranged specializations, this feature is always active.",
@@ -4321,7 +4340,7 @@ function Hekili:GetOptions()
                                 max = 20,
                                 step = 1,
                                 width = 'double',
-                                order = 4
+                                order = 4,
                             },
                         }
                     },
@@ -4333,45 +4352,15 @@ function Hekili:GetOptions()
                         args = {
                             ['Engine Description'] = {
                                 type = 'description',
-                                name = "Set the frequency with which you want the addon to update your priority displays. More frequent updates require more processor time (and can impact your frame rate); less frequent updates use less CPU, but may cause the display to be sluggish or to respond slowly to game events. The default setting is 10 updates per second.",
+                                name = "|cFFFF0000NEW!|r\nAs of 7.2.5, the Hekili addon engine updates its recommendations four times per second as a baseline, with additional updates occuring as needed -- " ..
+                                    "you use an ability, your cooldowns update, your buffs or debuffs are refreshed, a proc occurs, your target changes, etc.  If you notice a decrease in performance after " ..
+                                    "7.2.5, please reach out to me on CurseForge at |cFF00FFFFhttps://wow.curseforge.com/projects/hekili/issues|r and submit a ticket.\n",
+                                fontSize = "medium",
                                 order = 0
                             },
-                            ['Updates Per Second'] = {
-                                type = 'range',
-                                name = "Updates Per Second",
-                                min = 4,
-                                max = 40,
-                                step = 1,
-                                width = 'full',
-                                hidden = function ()
-                                    return not Hekili.LowImpact
-                                end,
-                                order = 1
-                            },
-                            ['LI - Updates Per Second'] = {
-                                type = 'range',
-                                name = "Updates Per Second",
-                                min = 4,
-                                max = 40,
-                                step = 1,
-                                width = 'double',
-                                hidden = function ()
-                                    return Hekili.LowImpact
-                                end,
-                                order = 1
-                            },
-                            ['Low Impact Mode'] = {
-                                type = 'toggle',
-                                name = "Low Impact Mode",
-                                desc = "By default, the addon will retest recommendations multiple times at small intervals. This helps give higher quality recommendations when a high-priority ability is becoming available in the near future. However, this additional testing uses additional CPU time. Checking this box will disable the retests and reduce CPU usage. This may improve your frame rate while using this addon.",
-                                order = 2,
-                                hidden = function()
-                                    return Hekili.LowImpact
-                                end,
-                            }
                         }
                     },
-                    ['Clash'] = {
+                    --[[ ['Clash'] = {
                         type = "group",
                         name = "Cooldown Clash",
                         inline = true,
@@ -4392,7 +4381,7 @@ function Hekili:GetOptions()
                                 order = 1
                             }
                         }
-                    },
+                    }, ]]
                 }
             },
             notifs = {
@@ -4539,7 +4528,7 @@ function Hekili:GetOptions()
                                             Hekili[ 'ProcessDisplay' .. index ] = function()
                                                 Hekili:ProcessHooks( index )
                                             end
-                                            C_Timer.After( 2 / Hekili.DB.profile['Updates Per Second'], Hekili[ 'ProcessDisplay' .. index ] )
+                                            C_Timer.After( 0.5, Hekili[ 'ProcessDisplay' .. index ] )
                                         end
                                     else
                                         Hekili:Print("Unable to import " .. default.name .. ".")
@@ -4591,7 +4580,7 @@ function Hekili:GetOptions()
                                             Hekili[ 'ProcessDisplay' .. index ] = function()
                                                 Hekili:ProcessHooks( index )
                                             end
-                                            C_Timer.After( 2 / Hekili.DB.profile['Updates Per Second'], Hekili[ 'ProcessDisplay' .. index ] )
+                                            C_Timer.After( 0.5, Hekili[ 'ProcessDisplay' .. index ] )
                                         end
                                     else
                                         Hekili:Print("Unable to import " .. default.name .. ".")
@@ -5644,7 +5633,6 @@ function Hekili:GetOption( info, input )
     local profile = Hekili.DB.profile
     
     if category == 'general' then
-        if option == "LI - Updates Per Second" then option = "Updates Per Second" end
         return profile[option]
         
     elseif category == 'class' then
@@ -5789,8 +5777,6 @@ function Hekili:SetOption( info, input, ... )
     local profile = Hekili.DB.profile
     
     if category == 'general' then
-        if option == 'LI - Updates Per Second' then option = "Updates Per Second" end
-        
         -- We'll preset the option here; works for most options.
         profile[ option ] = input
         
@@ -5829,7 +5815,7 @@ function Hekili:SetOption( info, input, ... )
                 end
             end
             
-        elseif option == 'Audit Targets' or option == 'Updates Per Second' then
+        elseif option == 'Audit Targets' then
             return
             
         end
@@ -5946,7 +5932,7 @@ function Hekili:SetOption( info, input, ... )
                 
                 if not key then return end
                 
-                C_Timer.After( 1 / profile['Updates Per Second'], Hekili[ 'ProcessDisplay'..index ] )
+                C_Timer.After( 0.25, Hekili[ 'ProcessDisplay'..index ] )
                 
             elseif option == 'Import Display' then
                 local import = ns.deserializeDisplay( input )
@@ -6020,7 +6006,7 @@ function Hekili:SetOption( info, input, ... )
                         Hekili[ 'ProcessDisplay'..index ] = function ()
                             Hekili:ProcessHooks( index )
                         end
-                        C_Timer.After( 1 / self.DB.profile['Updates Per Second'], self[ 'ProcessDisplay'..index ] )
+                        C_Timer.After( 0.25, self[ 'ProcessDisplay'..index ] )
                     end
                     Rebuild = true
                     
@@ -6770,9 +6756,14 @@ local function sanitize( segment, i, line, warnings )
         
     end   
     
-    i, times = i:gsub( "pet%.%w+%.([%w_]+)%.", "%1." )
+    i, times = i:gsub( "pet%.[%w_]+%.([%w_]+)%.", "%1." )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'pet.X.Y...' to 'Y...' (" .. times .. "x)." )
+    end
+    
+    i, times = i:gsub( "pet%.[%w_]+%.[%w_]+%.([%w_]+)%.", "%1." )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'pet.X.Y.Z...' to 'Z...' (" .. times .. "x)." )
     end
     
     i, times = i:gsub( "gcd%.max", "gcd" )

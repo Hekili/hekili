@@ -65,7 +65,7 @@ local replacements = {
 
 ns.titlefy = function( s )
     for k, v in pairs( replacements ) do
-        s = s:gsub( '%f[%w]' .. k .. '%f[%W]', v )
+        s = s:gsub( '%f[%w]' .. k .. '%f[%W]', v ):gsub( "_", " " )
     end
 
     return s

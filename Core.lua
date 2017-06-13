@@ -699,6 +699,9 @@ function Hekili:oldProcessActionList( dispID, hookID, listID, slot, depth, actio
 end
 
 
+-- Used to cache reusable criteria in an APL loop.
+local criteria = {}
+
 function Hekili:newProcessActionList( dispID, hookID, listID, slot, depth, action, clash )
     
     local display = self.DB.profile.displays[ dispID ]
@@ -726,6 +729,15 @@ function Hekili:newProcessActionList( dispID, hookID, listID, slot, depth, actio
     local chosen_depth = depth or 0
     
     local stop = false
+
+    if chosen_depth == 0 then
+        for k, v in pairs( criteria ) do
+            v.known = nil
+            v.ready = nil
+            v.usable = nil
+        end
+    end
+
     
     if ns.visible.list[ listID ] then
         local actID = 1
@@ -748,6 +760,9 @@ function Hekili:newProcessActionList( dispID, hookID, listID, slot, depth, actio
                 state.delay = nil
                 chosen_depth = chosen_depth + 1
                 
+                criteria[ state.this_action ] = criteria[ state.this_action ] or {}
+                local tests = criteria[ state.this_action ]
+                
                 -- Need to expand on modifiers, gather from other settings as needed.
                 if debug then self:Debug( "\n[ %2d ] Testing entry %s:%d ( %s ) with modifiers ( %s ).", chosen_depth, list.Name, actID, entry.Ability, entry.Args or "NONE" ) end
                 
@@ -755,18 +770,18 @@ function Hekili:newProcessActionList( dispID, hookID, listID, slot, depth, actio
 
                 local clash = 0
                 
-                local known = ability and isKnown( state.this_action )
+                if tests.known == nil then tests.known = isKnown( state.this_action ) end
                 
-                if debug then self:Debug( "%s is %s.", ability and ability.name or entry.Ability, known and "KNOWN" or "NOT KNOWN" ) end
+                if debug then self:Debug( "%s is %s.", ability and ability.name or entry.Ability, tests.known and "KNOWN" or "NOT KNOWN" ) end
                 
-                if known then
+                if tests.known then
                     local scriptID = listID .. ':' .. actID
                     
                     importModifiers( listID, actID )
 
-                    local ready = ns.isReadyNow( state.this_action )
+                    if tests.ready == nil then tests.ready = ns.isReadyNow( state.this_action ) end
 
-                    if not ready then
+                    if not tests.ready then
                         if debug then self:Debug( "This action is not ready at +%.2f. Skipping.", state.offset ) end
                     else
                         clash = clashOffset( state.this_action )
@@ -822,11 +837,11 @@ function Hekili:newProcessActionList( dispID, hookID, listID, slot, depth, actio
                             end
                             
                         else
-                            local usable = isUsable( state.this_action )
+                            if tests.usable == nil then tests.usable = isUsable( state.this_action ) end
                             
                             if debug then self:Debug( "Ability ( %s ) is %s.", entry.Ability, usable and "USABLE" or "NOT USABLE" ) end
                             
-                            if usable then
+                            if tests.usable then
                                 if debug then
                                     self:Debug( "   REQUIRES: %d %s.", ability.spend or 0, ability.spend_type or "NONE" )
                                     local resource = ability.spend_type and state[ ability.spend_type ]
@@ -1142,18 +1157,13 @@ function Hekili:oldProcessHooks( dispID, solo )
         
     end
     
-    -- if not solo then C_Timer.After( 1 / self.DB.profile['Updates Per Second'], self[ 'ProcessDisplay'..dispID ] ) end
     ns.displayUpdates[ dispID ] = GetTime()
     updatedDisplays[ dispID ] = 0
-    -- Hekili:UpdateDisplay( dispID )
     
 end
 
 
-
-local fixed_delays = {
-    
-}
+local criteriaCheck = {}
 
 function Hekili:newProcessHooks( dispID, solo )
     
@@ -1214,56 +1224,53 @@ function Hekili:newProcessHooks( dispID, solo )
                     
                     local iteration = 0
 
-                    while( chosen_action == nil ) do
-                        
-                        iteration = iteration + 1
+                    local hasAPLs = ( display.precombatAPL and display.precombatAPL > 0 ) or ( display.defaultAPL and display.defaultAPL > 0 )
+                    local startOffset = state.offset
 
-                        local delay, step
-
-                        if iteration == 1 then
-                            step = 0
-                            delay = 0
-                        elseif iteration == 2 then
-                            step = 0.1
-                            delay = 0.1
-                        elseif iteration == 3 then
-                            step = ( 0.25 * state.gcd ) - 0.1
-                            delay = 0.25 * state.gcd
-                        else
-                            step = ( 0.25 * state.gcd )
-                            delay = ( 0.25 * state.gcd ) * ( iteration - 2 )
-                        end
-                        
-                        if debug then self:Debug( "Iteration %d; additional time offset is %.2f.", iteration, delay ) end
-
-                        if iteration > 1 then state.advance( step ) end
-
-                        if debug then self:Debug( "Offset is now %.2f.", state.offset ) end
-
-                        if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
-                            -- We have a precombat display and combat hasn't started.
-                            local listName = self.DB.profile.actionLists[ display.precombatAPL ].Name
+                    if hasAPLs then 
+                        while( chosen_action == nil ) do
                             
-                            if debug then self:Debug( "Processing precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
-                            chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_clash )
-                            if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
-                        
-                        end
+                            local delay, step
 
-                        if not chosen_action and display.defaultAPL and display.defaultAPL > 0 then
-                            local listName = self.DB.profile.actionLists[ display.defaultAPL ].Name
+                            if iteration == 0 then step = 0                       --  0      = no step
+                            elseif iteration <= 10 then step = 0.10               --  1 - 20 = 0.1s
+                            else step = 0.25 * state.gcd end                      -- 11+     /= GCD / 4
+
+                            if iteration > 0 then state.advance( step ) end
                             
-                            if debug then self:Debug("Processing default action list [ %d - %s ].", display.default, listName ) end
-                            chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_clash )
-                            if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.defaultAPL, listName ) end
-                        end
-                    
-                        if debug then
-                            if chosen_action then self:Debug( "Recommendation #%d is %s at %.2f ( %.2f ).", i, chosen_action or "NO ACTION", state.offset, delay )
-                            else self:Debug( "No recommendation for slot #%d at %.2f ( %.2f ).", i, state.offset, delay ) end
-                        end
+                            iteration = iteration + 1
 
-                        if iteration >= 100 then print( "Gave up."); break end
+                            if iteration > 50 then if debug then self:Debug( "Reached more than 50 iterations, discontinuing loop." ) end; break end
+
+                            delay = state.offset - startOffset
+                            
+                            if debug then self:Debug( "Iteration %d; additional time offset is %.2f; offset is %.2f.", iteration, delay, state.offset ) end
+
+                            if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
+                                -- We have a precombat display and combat hasn't started.
+                                local listName = self.DB.profile.actionLists[ display.precombatAPL ].Name
+                                
+                                if debug then self:Debug( "Processing precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
+                                chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_clash )
+                                if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
+                            
+                            end
+
+                            if not chosen_action and display.defaultAPL and display.defaultAPL > 0 then
+                                local listName = self.DB.profile.actionLists[ display.defaultAPL ].Name
+                                
+                                if debug then self:Debug("Processing default action list [ %d - %s ].", display.default, listName ) end
+                                chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_clash )
+                                if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.defaultAPL, listName ) end
+                            end
+                        
+                            if debug then
+                                if chosen_action then self:Debug( "Recommendation #%d is %s at %.2f ( %.2f ).", i, chosen_action or "NO ACTION", state.offset, delay )
+                                else self:Debug( "No recommendation for slot #%d at %.2f ( %.2f ).", i, state.offset, delay ) end
+                            end
+
+                            if iteration >= 200 then break end
+                        end
                     end
                     
                     if debug then ns.implantDebugData( slot ) end
@@ -1338,10 +1345,8 @@ function Hekili:newProcessHooks( dispID, solo )
         
     end
     
-    -- if not solo then C_Timer.After( 1 / self.DB.profile['Updates Per Second'], self[ 'ProcessDisplay'..dispID ] ) end
     ns.displayUpdates[ dispID ] = GetTime()
     updatedDisplays[ dispID ] = 0
-    -- Hekili:UpdateDisplay( dispID )
     
 end
 
@@ -1662,7 +1667,9 @@ function Hekili:UpdateDisplay( dispID )
                         
                         if ( class.file == 'HUNTER' or class.file == 'MONK' or class.file == 'DEATHKNIGHT' ) and Queue[i].exact_time and Queue[i].exact_time ~= gcd_start + gcd_duration and Queue[i].exact_time > now then
                             -- button.Texture:SetDesaturated( Queue[i].time > 0 )
-                            button.Delay:SetText( format( "%.1f", Queue[i].exact_time - now ) )
+                            local delay = Queue[ i ].exact_time - now
+
+                            button.Delay:SetText( format( delay > 1 and "%d" or "%.1f", delay ) )
                         else
                             -- button.Texture:SetDesaturated( false )
                             button.Delay:SetText( nil )

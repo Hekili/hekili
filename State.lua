@@ -900,7 +900,9 @@ local mt_state = {
             return t.dot[ t.this_action ].remains < 0.3 * class.auras[ t.this_action ].duration
             
         elseif k == 'ticking' then
-            if class.auras[ t.this_action ] then return ( t.dot[ t.this_action ].ticking ) or t.buff[ t.this_action ].up end
+            local a = class.abilities[ t.this_action ].aura or t.this_action
+
+            if class.auras[ a ] then return ( t.dot[ a ].ticking ) or t.buff[ a ].up end
             return false
             
         elseif k == 'ticks' then return 0
@@ -910,7 +912,8 @@ local mt_state = {
         elseif k == 'remains' then
             return t.dot[ t.this_action ].remains
             
-        elseif k == 'tick_time' then return 0
+        elseif k == 'tick_time' then
+            return class.auras[ t.this_action ].tick_time or 0
             
         elseif k == 'travel_time' then return 0
             
@@ -1203,7 +1206,7 @@ local mt_pets = {
             for k, v in pairs( t ) do
                 if type( v ) == 'table' and v.up then return true end
             end
-            return UnitExists( 'pet' )
+            return UnitExists( 'pet' ) and ( not UnitIsDead( 'pet' ) )
             
         elseif k == 'alive' then
             return not UnitIsDead( 'pet' )
@@ -2611,6 +2614,10 @@ local mt_default_debuff = {
             end 
             
             return 0
+
+        elseif k == 'pmultiplier' then
+            -- Persistent modifier, used by Druids.
+            return ns.getModifier( class_aura.name, state.target.unit )
             
         elseif k == 'ticking' then
             return t.up
@@ -2678,7 +2685,7 @@ local mt_default_action = {
                 -- This needs a class/spec check to confirm GCD is reduced by haste.
             elseif t.gcdType == 'melee' then return max( 0.75, 1.5 * state.haste )
             elseif t.gcdType == 'totem' then return 1
-        else return 1.5 end
+            else return 1.5 end
             
         elseif k == 'execute_time' then
             return max( t.gcd, t.cast_time )
@@ -2746,6 +2753,11 @@ local mt_default_action = {
             
         elseif k == 'cast_regen' then
             return floor( max( t.gcd, t.cast_time ) * state[ class.primaryResource ].regen )
+
+        elseif k == 'cost' then
+            local a = class.abilities[ t.action ].spend
+            if type( a ) == 'function' then a = a() end
+            return a
 
         elseif k == 'in_flight' then
             for i, spell in pairs( ns.spells_in_flight ) do
@@ -2990,6 +3002,7 @@ end
 
 -- Resource Modeling!
 local events = {}
+local remains = {}
 
 
 local function resourceModelSort( a, b )
@@ -3006,6 +3019,13 @@ local function modelResources( time )
 
     -- Identify which resource events are actually relevant to us.
     table.wipe( events )
+    table.wipe( remains )
+
+    for k, v in pairs( class.resources ) do
+        if state[ k ].regen ~= 0 then
+            remains[ k ] = time
+        end
+    end
 
     for k, v in pairs( models ) do
         if  ( not v.spec or state.spec[ v.spec ] ) and
@@ -3062,6 +3082,8 @@ local function modelResources( time )
                 -- interval() takes the last tick and the current value to remember the next step.
                 local step = type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( time, val ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) )
 
+                remains[ e.resource ] = finish - e.next
+
                 e.next = e.next + step
                 if e.next > finish then
                     table.remove( events, 1 )
@@ -3070,6 +3092,11 @@ local function modelResources( time )
         end
 
         if #events > 1 then table.sort( events, resourceModelSort ) end
+    end
+
+    -- Regen any remaining resources.
+    for k, v in pairs( remains ) do
+        state[ k ].actual = min( state[ k ].max, state[ k ].actual + ( v * state[ k ].regen ) )
     end
 
 end
@@ -3416,7 +3443,7 @@ function state.advance( time )
 
             local override = ns.callHook( 'advance_resource_regen', false, k, time )
 
-            if not override and resource.regen ~= 0 then
+            if not override and resource.regen and resource.regen ~= 0 then
                 resource.actual = min( resource.max, max( 0, resource.actual + ( resource.regen * time ) ) )
             end
         end

@@ -789,6 +789,22 @@ end )
 ns.registerInterrupt( 'arcane_torrent' )
 
 
+addAura( "shadowmeld", 58984, "duration", 3600 )
+
+addAbility( "shadowmeld", {
+    id = 58984,
+    spend = 0,
+    cast = 0,
+    gcdType = "spell",
+    cooldown = 120,
+    known = function () return race.night_elf end,
+} )
+
+addHandler( "shadowmeld", function ()
+    applyBuff( "shadowmeld" )
+end )
+
+
 addAbility( 'call_action_list', {
     id = -1,
     name = 'Call Action List',

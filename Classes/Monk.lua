@@ -192,14 +192,6 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             return x
         end )
 
-        --[[ addHook( 'advance_bonus_cdr', function( x )
-            if state.buff.serenity.up then
-                return min( x, state.buff.serenity.remains )
-            end
-
-            return 0
-        end ) ]]
-
 
         -- Fake Buffs.
         -- None at this time.
@@ -243,6 +235,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             setRole( state.spec.brewmaster and 'tank' or 'attack' )
         end )
 
+
         addHook( 'reset_precast', function ()
             if state.spec.windwalker and state.talent.hit_combo.enabled and state.prev_gcd.tiger_palm and state.chi.current == 0 then
                 -- We won't proc Hit Combo from Tiger Palm, but we don't have anything else to hit.
@@ -254,6 +247,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             state.spinning_crane_kick.count = nil
             state.healing_sphere.count = nil
         end )
+
 
         addHook( 'spend', function( amt, resource )
             if state.equipped.drinking_horn_cover and resource == 'chi' and state.buff.storm_earth_and_fire.up then
