@@ -1138,8 +1138,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             spend = 25,
             min_cost = 25,
             ready = function ()
-                if buff.breath_of_sindragosa.up then return settings.bos_frost_strike_rp end
-                return 25
+                if buff.breath_of_sindragosa.up then return runic_power[ 'time_to_' .. settings.bos_frost_strike_rp ] end
+                return runic_power.time_to_25
             end,
             spend_type = "runic_power",
             cast = 0,
