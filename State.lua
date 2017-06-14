@@ -1518,6 +1518,7 @@ local mt_default_cooldown = {
             elseif not ns.isKnown( t.id ) then
                 start = state.now
                 duration = 3600 -- was 0... consider implications.
+            
             end
             
             t.duration = duration or 0
@@ -2769,7 +2770,14 @@ local mt_default_action = {
             return false
             
         else
-            return class.abilities[ t.action ][ k ] or 0
+            local val = class.abilities[ t.action ][ k ]
+
+            if val then
+                if type( val ) == 'function' then return val() end
+                return val
+            end
+
+            return 0
             
         end
         
@@ -3538,10 +3546,12 @@ ns.isKnown = function( sID )
     
     if not sID then
         return false -- no ability
+
     elseif sID < 0 then
         return true
-    end -- fake ability (i.e., wait)
-    
+
+    end
+
     local ability = class.abilities[ sID ]
     
     if not ability then
