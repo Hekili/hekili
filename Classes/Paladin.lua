@@ -656,7 +656,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'melee',
             cooldown = 10.5,
-            notalent = 'divine_hammer'
+            notalent = 'divine_hammer',
+            bind = 'divine_hammer'
         } )
 
         modifyAbility( 'blade_of_justice', 'cooldown', function( x )
@@ -884,6 +885,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             gcdType = 'spell',
             cooldown = 12,
             talent = 'divine_hammer',
+            known = function () return talent.divine_hammer.enabled end,
+            bind = 'blade_of_justice'
         } )
 
         addHandler( 'divine_hammer', function ()
