@@ -2504,7 +2504,7 @@ local mt_set_bonuses = {
     __index = function(t, k)
         if type(k) == 'number' then return 0 end
         
-        if not class.artifacts[ k ] and ( state.bg or state.arena ) then return 0 end
+        if ( not class.artifacts[ k ] ) and ( state.bg or state.arena ) then return 0 end
         
         local set, pieces, class = k:match("^(.-)_"), tonumber( k:match("_(%d+)pc") ), k:match("pc(.-)$")
         
@@ -2531,6 +2531,7 @@ ns.metatables.mt_set_bonuses = mt_set_bonuses
 
 local mt_equipped = {
     __index = function(t, k)
+        if not class.artifacts[ k ] and ( state.bg or state.arena ) then return false end
         return state.set_bonus[k] > 0
     end
 }
@@ -3388,18 +3389,15 @@ function state.reset( dispID )
 end
 
 
-
-
-
 function state.advance( time )
     
     if time <= 0 then
         return
     end
     
-    -- roundUp( time, 2 )
-    
     time = ns.callHook( 'advance', time ) or time
+
+    time = roundUp( time, 3 )
     
     state.delay = 0
     
