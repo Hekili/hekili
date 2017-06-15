@@ -55,6 +55,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
     ns.initializeClassModule = function ()
 
+        -- Hekili.UseNewEngine = true
+
         setClass( "DEATHKNIGHT" )
         -- setSpecialization( "unholy" )
 

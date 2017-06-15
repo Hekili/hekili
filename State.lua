@@ -722,8 +722,6 @@ local function gain( amount, resource, overcap )
     
     ns.callHook( 'gain', amount, resource, overcap )
 
-    if state[ resource ].model then state.modelResource( resource ) end
-
 end
 state.gain = gain
 
@@ -732,8 +730,6 @@ local function spend( amount, resource )
     
     state[ resource ].actual = max( 0, state[ resource ].actual - amount )
     ns.callHook( 'spend', amount, resource )
-    
-    if state[ resource ].model then state.modelResource( resource ) end
     
 end
 state.spend = spend
@@ -2182,7 +2178,7 @@ local mt_default_buff = {
                 t.expires = real.expires
                 t.applied = max( 0, real.expires - real.duration )
                 t.caster = real.caster
-                t.id = real.id
+                t.id = real.id or class.auras[ t.key ].id
                 t.timeMod = real.timeMod
                 t.v1 = real.v1
                 t.v2 = real.v2
@@ -3012,7 +3008,8 @@ end
 -- Resource Modeling!
 local events = {}
 local remains = {}
-
+local ticks = {}
+local original = {}
 
 local function resourceModelSort( a, b )
     return b == nil or ( a.next < b.next )
@@ -3020,6 +3017,8 @@ end
 
 
 local function modelResources( time )
+
+    -- print( format( "Model resources over by %.2fs.", time ) )
 
     if time <= 0 then return end
 
@@ -3029,11 +3028,13 @@ local function modelResources( time )
     -- Identify which resource events are actually relevant to us.
     table.wipe( events )
     table.wipe( remains )
+    table.wipe( ticks )
+    table.wipe( original )
 
     for k, v in pairs( class.resources ) do
-        if state[ k ].regen ~= 0 then
-            remains[ k ] = time
-        end
+        remains[ k ] = time
+        ticks[ k ] = 0
+        original[ k ] = state[ k ].actual
     end
 
     for k, v in pairs( models ) do
@@ -3063,10 +3064,12 @@ local function modelResources( time )
     local finish = now + time
 
     local prev = now
+    local iter = 0
 
-    while( #events > 0 and now <= finish ) do
+    while( #events > 0 and now <= finish and iter < 20 ) do
         local e = events[1]
         local res = state[ e.resource ]
+        iter = iter + 1
 
         if e.next > finish or not res then
             table.remove( events, 1 )
@@ -3076,7 +3079,7 @@ local function modelResources( time )
 
             -- Stop value checks current resource amount level.
             if ( e.stop and e.stop( res.actual ) ) or ( e.aura and state.buff[ e.aura ].expires < now ) then
-                -- if resource == 'runes' then print( 'stop', time ) end
+                -- if resource == 'runes' then -- print( 'stop', time ) end
                 table.remove( events, 1 )
 
             else
@@ -3084,9 +3087,13 @@ local function modelResources( time )
                 prev = now
 
                 -- If a function, e.value takes the delay value (to ascertain if a buff expired, typically).
-                -- if resource == 'runes' then print( 'at', time, 'go from', val ) end
+                -- if resource == 'runes' then -- print( 'at', time, 'go from', val ) end
                 if e.fire then e.fire( now )
-                else res.actual = max( 0, min( res.max, res.actual + bonus + ( type( e.value ) == 'number' and e.value or e.value( time ) ) ) ) end
+                else
+                    res.actual = max( 0, min( res.max, res.actual + bonus + ( type( e.value ) == 'number' and e.value or e.value( now ) ) ) )
+                end
+
+                ticks[ e.resource ] = ticks[ e.resource ] + 1
 
                 -- interval() takes the last tick and the current value to remember the next step.
                 local step = type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( time, val ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) )
@@ -3094,7 +3101,7 @@ local function modelResources( time )
                 remains[ e.resource ] = finish - e.next
 
                 e.next = e.next + step
-                if e.next > finish then
+                if e.next > finish or step < 0 then
                     table.remove( events, 1 )
                 end
             end
@@ -3108,11 +3115,16 @@ local function modelResources( time )
         state[ k ].actual = min( state[ k ].max, state[ k ].actual + ( v * state[ k ].regen ) )
     end
 
+    for k, v in pairs( remains ) do
+        -- print( format( "[ %12s ] From %.1f to %.1f (%d ticks).", k, original[ k ], state[ k ].actual, ticks[ k ] ) )
+    end
 end
 
 
 function state.reset( dispID )
     
+    -- print( "Reset." )
+
     state.now = GetTime()
     state.offset = 0
     state.delay = 0
@@ -3354,6 +3366,7 @@ function state.reset( dispID )
     if cast_time and casting and not class.resetCastExclusions[ casting ] then
         local ability = class.abilities[ casting ]
         
+        -- print( format( "Advancing %.2f to cast %s.", cast_time, casting ) )
         state.advance( cast_time )
         
         if ability then 
@@ -3381,6 +3394,7 @@ function state.reset( dispID )
 
     for _, aura in pairs( class.incapacitates ) do
         if state.buff[ aura ].up then
+            -- print( format( "Advancing %.2f due to incapacitate from %s.", state.buff[ aura ].remains, aura ) )
             state.advance( state.buff[ aura ].remains )
         end
     end
@@ -3391,6 +3405,7 @@ function state.reset( dispID )
     delay = ns.callHook( "reset_postcast", delay )
     
     if delay > 0 then
+        -- print( format( "Advancing %.2f due to remaining GCD.", delay ) )
         state.advance( delay )
     end
     
@@ -3399,6 +3414,8 @@ end
 
 function state.advance( time )
     
+    -- print( format( "Advance %.2f at %.2f + %.2f.", time, state.now, state.offset ) )
+
     if time <= 0 then
         return
     end

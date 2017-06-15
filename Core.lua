@@ -413,7 +413,7 @@ function Hekili:oldProcessActionList( dispID, hookID, listID, slot, depth, actio
     if ns.visible.list[ listID ] then
         local actID = 1
         
-        while actID <= #list.Actions and chosen_wait do
+        while actID <= #list.Actions do
             if chosen_wait <= state.cooldown.global_cooldown.remains then
                 if debug then self:Debug( "The last selected ability ( %s ) is available at (or before) the next GCD. End loop.", chosen_action ) end
                 if debug then self:Debug( "Removing %s from list of processed action lists.", list.Name ) end
@@ -440,8 +440,6 @@ function Hekili:oldProcessActionList( dispID, hookID, listID, slot, depth, actio
                 
                 state.delay = nil
                 chosen_depth = chosen_depth + 1
-                
-                local minWait = state.cooldown.global_cooldown.remains
                 
                 -- Need to expand on modifiers, gather from other settings as needed.
                 if debug then self:Debug( "\n[ %2d ] Testing entry %s:%d ( %s ) with modifiers ( %s ).", chosen_depth, list.Name, actID, entry.Ability, entry.Args or "NONE" ) end
@@ -511,6 +509,7 @@ function Hekili:oldProcessActionList( dispID, hookID, listID, slot, depth, actio
                                     if called_list > 0 then
                                         if debug then self:Debug( "The action list for %s ( %s ) was found.", entry.Ability, aList ) end
                                         chosen_action, chosen_wait, chosen_clash, chosen_depth = self:oldProcessActionList( dispID, listID .. ':' .. actID , called_list, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
+                                        if debug then self:Debug( "The action list ( %s ) returned with recommendation %s after %.2f seconds.", aList, chosen_action or "none", chosen_wait ) end
                                         stop = entry == 'run_action_list'
                                         calledList = true
                                     else
@@ -607,54 +606,21 @@ function Hekili:oldProcessActionList( dispID, hookID, listID, slot, depth, actio
                                                         chosen_clash = clash
                                                         break
                                                     end
-                                                    
-                                                elseif entry.Ability == 'use_item' then
-                                                    local itemName = state.args.ModName or state.args.name
-                                                    local item = class.usable_items[ itemName ]
-                                                    
-                                                    if item then
-                                                        -- do item things
-                                                        slot.scriptType = entry.ScriptType or 'simc'
-                                                        slot.display = dispID
-                                                        slot.button = i
-                                                        slot.item = itemName
-                                                        
-                                                        slot.wait = state.delay
-                                                        
-                                                        slot.hook = hookID
-                                                        slot.list = listID
-                                                        slot.action = actID
-                                                        
-                                                        slot.actionName = state.this_action
-                                                        slot.listName = list.Name
-                                                        
-                                                        slot.resource = ns.resourceType( chosen_action )
-                                                        
-                                                        slot.caption = entry.Caption
-                                                        slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
-                                                        slot.texture = select( 10, GetItemInfo( item.item ) )
-                                                        
-                                                        chosen_action = state.this_action
-                                                        chosen_wait = state.delay
-                                                        chosen_clash = clash
-                                                        break
-                                                    end
-                                                    
+
                                                 else
                                                     slot.scriptType = entry.ScriptType or 'simc'
                                                     slot.display = dispID
                                                     slot.button = i
-                                                    slot.item = nil
-                                                    
+
                                                     slot.wait = state.delay
-                                                    
+
                                                     slot.hook = hookID
                                                     slot.list = listID
                                                     slot.action = actID
-                                                    
+
                                                     slot.actionName = state.this_action
                                                     slot.listName = list.Name
-                                                    
+
                                                     slot.resource = ns.resourceType( chosen_action )
                                                     
                                                     slot.caption = entry.Caption
@@ -664,24 +630,26 @@ function Hekili:oldProcessActionList( dispID, hookID, listID, slot, depth, actio
                                                     chosen_action = state.this_action
                                                     chosen_wait = state.delay
                                                     chosen_clash = clash
-                                                    if debug then self:Debug( "Action Chosen: %s at %.2f!", chosen_action, chosen_wait ) end
                                                 end
-                                                
+
+                                                if debug then self:Debug( "Action Chosen: %s at %f!", chosen_action, chosen_wait ) end
+
                                                 if entry.CycleTargets and state.active_enemies > 1 and ability and ability.cycle then
                                                     if state.dot[ ability.cycle ].up and state.active_dot[ ability.cycle ] < ( state.args.MaxTargets or state.active_enemies ) then
                                                         slot.indicator = 'cycle'
                                                     end
                                                 end
-                                                
-                                                break 
-                                            end
+
+                                                break                                               
+                                            end                                                    
                                         end
                                     end
                                 end
                             end
                             
                             state.delay = preservedWait
-                            
+
+                            if chosen_wait == 0 then break end                            
                         end
                     end
                 end
@@ -956,7 +924,7 @@ function Hekili:newProcessActionList( dispID, hookID, listID, slot, depth, actio
                                         chosen_clash = clash
 
                                         if debug then
-                                            self:Debug( "Action Chosen: %s at %.2f!", chosen_action, state.offset )
+                                            self:Debug( "Action Chosen: %s at %f!", chosen_action, state.offset )
                                         end
 
                                         if entry.CycleTargets and state.active_enemies > 1 and ability and ability.cycle then
@@ -989,14 +957,6 @@ function Hekili:newProcessActionList( dispID, hookID, listID, slot, depth, actio
     palStack[ list.Name ] = nil
     return chosen_action, chosen_clash, chosen_depth
 
-end
-
-
-function Hekili:ProcessHooks( dispID, solo )
-    -- if self.DB.profile[ 'Use Old Engine' ] then
-        return self:oldProcessHooks( dispID, solo )
-    -- end
-    -- return self:newProcessHooks( dispID, solo )
 end
 
 
@@ -1065,12 +1025,12 @@ function Hekili:oldProcessHooks( dispID, solo )
                         if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
                     end
                     
-                    if display.defaultAPL and display.defaultAPL > 0 and chosen_wait > 0 then
+                    if ( not chosen_action ) and display.defaultAPL and display.defaultAPL > 0 and chosen_wait > 0 then
                         local listName = self.DB.profile.actionLists[ display.defaultAPL ].Name
                         
-                        if debug then self:Debug("Processing default action list [ %d - %s ].", display.default, listName ) end
+                        if debug then self:Debug("Processing default action list [ %d - %s ].", display.defaultAPL, listName ) end
                         chosen_action, chosen_wait, chosen_clash, chosen_depth = self:oldProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
-                        if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.defaultAPL, listName ) end
+                        if debug then self:Debug( "Completed default action list [ %d - %s ].", display.defaultAPL, listName ) end
                     end
                     
                     if debug then self:Debug( "Recommendation #%d is %s at %.2f.", i, chosen_action or "NO ACTION", state.offset + chosen_wait ) end
@@ -1209,7 +1169,6 @@ function Hekili:newProcessHooks( dispID, solo )
                     
                     local chosen_action
                     local chosen_clash, chosen_depth = self.DB.profile.Clash or 0, 0
-                    local chosen_wait = 60 -- needed for fallback mechanism.
                     
                     Queue[i] = Queue[i] or {}
                     
@@ -1230,34 +1189,31 @@ function Hekili:newProcessHooks( dispID, solo )
 
                     if hasAPLs then 
 
-                        local fallback = false
-
-                        while( chosen_action == nil and ( not fallback ) ) do
+                        while( chosen_action == nil and iteration <= 100 ) do
                             
                             local delay = 0
                             local step = 0
-                            local useOld = self.DB.profile[ 'Use Old Engine' ]
 
-                            if useOld then
-                                fallback = true
+                            if iteration == 50 then
+                                if debug then self:Debug( "WARNING:  REACHED ITERATION 50." ) end
 
-                            elseif iteration == 50 then
-                                if debug then self:Debug( "Reached more than 50 iterations, switching to old engine." ) end
-                                fallback = true
+                            elseif iteration == 100 then
+                                if debug then self:Debug( "FAILURE:  REACHED ITERATION 100." ) end
+                                break
 
-                            else
-                                if iteration == 0 then step = 0
-                                elseif iteration <= 10 then step = 0.1 * state.gcd
-                                else step = 0.25 * state.gcd end
-
-                                if iteration > 0 and iteration < 50 then
-                                    state.advance( step )
-                                    delay = state.offset - startOffset
-                                end
-                                
-                                iteration = iteration + 1
                             end
 
+                            if iteration == 0 then step = 0
+                            elseif iteration <= 10 then step = 0.1 * state.gcd
+                            else step = 0.25 * state.gcd end
+
+                            if iteration > 0 and iteration < 100 then
+                                state.advance( step )
+                                delay = state.offset - startOffset
+                            end
+                            
+                            iteration = iteration + 1
+    
                             if debug then self:Debug( "Iteration %d; additional time offset is %.2f; offset is %.2f.", iteration, delay, state.offset ) end
 
                             if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
@@ -1266,11 +1222,7 @@ function Hekili:newProcessHooks( dispID, solo )
                                 
                                 if debug then self:Debug( "Processing precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
 
-                                if fallback then
-                                    chosen_action, chosen_wait, chosen_clash, chosen_depth = self:oldProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
-                                else
-                                    chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_clash )
-                                end
+                                chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_clash )
                                 
                                 if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
                             
@@ -1281,11 +1233,7 @@ function Hekili:newProcessHooks( dispID, solo )
                                 
                                 if debug then self:Debug("Processing default action list [ %d - %s ].", display.default, listName ) end
 
-                                if fallback then
-                                    chosen_action, chosen_wait, chosen_clash, chosen_depth = self:oldProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
-                                else
-                                    chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_clash )
-                                end
+                                chosen_action, chosen_clash, chosen_depth = self:newProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_clash )
                                 
                                 if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.defaultAPL, listName ) end
                             end
@@ -1293,6 +1241,7 @@ function Hekili:newProcessHooks( dispID, solo )
                             if debug then
                                 if chosen_action then
                                     self:Debug( "Recommendation #%d is %s at %.2f ( %.2f ).", i, chosen_action or "NO ACTION", state.offset, delay )
+                                    break
                                 else
                                     self:Debug( "No recommendation for slot #%d at %.2f ( %.2f ).", i, state.offset, delay )
                                 end
@@ -1375,6 +1324,14 @@ function Hekili:newProcessHooks( dispID, solo )
     ns.displayUpdates[ dispID ] = GetTime()
     updatedDisplays[ dispID ] = 0
     
+end
+
+
+function Hekili:ProcessHooks( dispID, solo )
+    if Hekili.UseNewEngine then
+        return self:newProcessHooks( dispID, solo )
+    end
+    return self:oldProcessHooks( dispID, solo )
 end
 
 
@@ -1692,11 +1649,19 @@ function Hekili:UpdateDisplay( dispID )
                             flashes[dispID] = GetTime()
                         end
                         
-                        if ( class.file == 'HUNTER' or class.file == 'MONK' or class.file == 'DEATHKNIGHT' ) and Queue[i].exact_time and Queue[i].exact_time ~= gcd_start + gcd_duration and Queue[i].exact_time > now then
-                            -- button.Texture:SetDesaturated( Queue[i].time > 0 )
-                            local delay = Queue[ i ].exact_time - now
+                        if ( class.file == 'HUNTER' or class.file == 'MONK' or class.file == 'DEATHKNIGHT' ) then
+                            local exact = Queue[i].exact_time
+                            local end_gcd = gcd_start + gcd_duration
+                            local diff = abs( exact - end_gcd )
 
-                            button.Delay:SetText( format( delay > 1 and "%d" or "%.1f", delay ) )
+                            if Queue[i].exact_time > now and diff >= 0.2 then
+                                local delay = Queue[ i ].exact_time - now
+
+                                button.Delay:SetText( format( delay > 1 and "%d" or "%.1f", delay ) )
+                            else
+                                button.Delay:SetText( nil )
+                            end
+
                         else
                             -- button.Texture:SetDesaturated( false )
                             button.Delay:SetText( nil )
