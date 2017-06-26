@@ -38,6 +38,7 @@ local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
 local setRegenModel = ns.setRegenModel
+local setTalentLegendary = ns.setTalentLegendary
 
 local RegisterEvent = ns.RegisterEvent
 
@@ -156,7 +157,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addAura( 'gale_burst', 195399, 'duration', 8 )
         addAura( 'healing_winds', 195380, 'duration', 6 )
         addAura( 'hidden_masters_forbidden_touch', 213112, 'duration', 3 )
-        addAura( 'hit_combo', 196741, 'max_stack', PTR and 6 or 8, 'duration', 10 )
+        addAura( 'hit_combo', 196741, 'max_stack', 6, 'duration', 10 )
         addAura( 'ironskin_brew', 115308, 'duration', 6 )
         addAura( 'keg_smash', 121253, 'duration', 15 )
         addAura( 'leg_sweep', 119381, 'duration', 5 )
@@ -174,7 +175,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addAura( 'strike_of_the_windlord', 205320, 'duration', 6 )
         addAura( 'swift_as_a_coursing_river', 213177, 'duration', 15, 'max_stack', 5 )
         addAura( 'the_emperors_capacitor', 235054, 'duration', 30, 'max_stack', 20 )
-        if PTR then addAura( 'the_wind_blows', 248101, 'duration', 3600 ) end -- Check spell ID and duration.
+        addAura( 'the_wind_blows', 248101, 'duration', 3600 )
         addAura( 'thunderfist', 242387, 'duration', 30, 'max_stack', 99 )        
         addAura( 'tigers_lust', 116841, 'duration', 6 )
         addAura( 'touch_of_death', 115080, 'duration', 8 )
@@ -224,11 +225,12 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addGearSet( 'sephuzs_secret', 132452 )
         addGearSet( 'the_emperors_capacitor', 144239 )
 
-        if PTR then
-            addGearSet( 'soul_of_the_grandmaster', 151643 )
-            addGearSet( 'stormstouts_last_gasp', 151788 )
-            addGearSet( 'the_wind_blows', 151811 )
-        end
+        addGearSet( 'soul_of_the_grandmaster', 151643 )
+        addGearSet( 'stormstouts_last_gasp', 151788 )
+        addGearSet( 'the_wind_blows', 151811 )
+
+        setTalentLegendary( 'soul_of_the_grandmaster', 'brewmaster', 'mystic_vitality' )
+        setTalentLegendary( 'soul_of_the_grandmaster', 'windwalker', 'chi_orbit' )
 
 
         addHook( 'specializationChanged', function ()
@@ -579,7 +581,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addHandler( 'blackout_strike', function ()
             if talent.blackout_combo.enabled then
                 applyBuff( 'blackout_combo', 15 )
-                if PTR then addStack( 'elusive_brawler', 10, 1 ) end
+                addStack( 'elusive_brawler', 10, 1 )
             end
         end )
 
@@ -596,7 +598,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         modifyAbility( 'breath_of_fire', 'cooldown', function( x )
             if buff.blackout_combo.up then
-                return x - ( PTR and 3 or 6 )
+                return x - 3
             end
             return x
         end )
@@ -897,8 +899,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'melee',
             cooldown = 8,
-            charges = PTR and 1 or nil,
-            recharge = PTR and 8 or nil,
+            charges = 1,
+            recharge = 8,
             cycle = 'keg_smash',
             velocity = 30
         } )
@@ -908,7 +910,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         end )
 
         modifyAbility( 'keg_smash', 'charges', function( x )
-            if PTR and equipped.stormstouts_last_gasp then
+            if equipped.stormstouts_last_gasp then
                 return x + 1
             end
             return x
@@ -1014,7 +1016,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
                 applyBuff( 'ironskin_brew', buff.ironskin_brew.remains + 1 )
             end
 
-            local reduction = ( PTR and 0.4 or 0.5 )
+            local reduction = 0.4
             reduction = reduction + ( artifact.staggering_around.rank / 100 )
             reduction = reduction * ( talent.elusive_dance.enabled and 1.2 or 1 )
 
@@ -1117,10 +1119,10 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         addHandler( 'rushing_jade_wind', function ()
             if spec.brewmaster then
-                applyBuff( 'rushing_jade_wind', 6 * ( PTR and 1.5 or 1 ) * haste )
+                applyBuff( 'rushing_jade_wind', 6 * 1.5 * haste )
             elseif spec.windwalker then
                 applyBuff( 'rushing_jade_wind', 6 * haste )
-                active_dot.mark_of_the_crane = min( active_enemies, active_dot.mark_of_the_crane + ( PTR and 2 or 4 ) )
+                active_dot.mark_of_the_crane = min( active_enemies, active_dot.mark_of_the_crane + 2 )
                 applyDebuff( 'target', 'mark_of_the_crane', 15 )
             end
 
@@ -1267,7 +1269,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             if artifact.thunderfist.enabled then
                 applyBuff( 'thunderfist', 30, active_enemies )
             end
-            if PTR and equipped.the_wind_blows then
+            if equipped.the_wind_blows then
                 applyBuff( 'the_wind_blows', 3600 )
             end
             if talent.hit_combo.enabled then

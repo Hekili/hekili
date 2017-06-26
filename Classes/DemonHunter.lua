@@ -37,6 +37,7 @@ local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
 local setRegenModel = ns.setRegenModel
+local setTalentLegendary = ns.setTalentLegendary
 
 local RegisterEvent = ns.RegisterEvent
 local RegisterUnitEvent = ns.RegisterUnitEvent
@@ -54,7 +55,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         local current_spec = GetSpecialization()
 
         setClass( 'DEMONHUNTER' )
-        Hekili.LowImpact = true
+        -- Hekili.LowImpact = true
 
         addResource( 'fury', SPELL_POWER_FURY, true )
         addResource( 'pain', SPELL_POWER_PAIN, true )
@@ -253,7 +254,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         end )
 
         addHook( 'gain', function( amt, resource, overcap )
-            if PTR and state.spec.vengeance and state.talent.blade_turning.enabled and state.buff.blade_turning.up and resource == 'pain' then
+            if state.spec.vengeance and state.talent.blade_turning.enabled and state.buff.blade_turning.up and resource == 'pain' then
                 state.pain.actual = max( 0, min( state.pain.max, state.pain.actual + ( 0.2 * amount ) ) )
             end
         end )
@@ -273,12 +274,12 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
                     local app = state.buff.prepared.applied
                     local t = state.query_time
 
-                    local step = PTR and 0.1 or 0.125
+                    local step = 0.1
 
                     return app + ( floor( ( t - app ) / step ) * step )
                 end,
 
-                interval = PTR and 0.1 or 0.125,
+                interval = 0.1,
 
                 value = 1
             },
@@ -343,12 +344,12 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addGearSet( 'sephuzs_secret', 132452 )
         addGearSet( 'the_sentinels_eternal_refuge', 146669 )
 
-        if PTR then
-            addGearSet( "soul_of_the_slayer", 151639 )
-            addGearSet( "chaos_theory", 151798 )
-            addGearSet( "oblivions_embrace", 151799 )
-        end
+        addGearSet( "soul_of_the_slayer", 151639 )
+        addGearSet( "chaos_theory", 151798 )
+        addGearSet( "oblivions_embrace", 151799 )
 
+        setTalentLegendary( 'soul_of_the_slayer', 'havoc',      'first_blood' )
+        setTalentLegendary( 'soul_of_the_slayer', 'vengeance',  'fallout' )
 
         addHook( 'specializationChanged', function ()
             setPotion( 'prolonged_power' )
@@ -654,17 +655,17 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             id = 211053,
             spend = 0,
             spend_type = 'fury',
-            cast = PTR and 2 or 1,
+            cast = 2,
             channeled = true,
-            charges = PTR and 1 or 5,
-            recharge = PTR and 60 or 30,
+            charges = 1,
+            recharge = 60,
             gcdType = 'spell',
-            cooldown = PTR and 60 or 30,
+            cooldown = 60,
             talent = 'fel_barrage',
         } )
 
         addHandler( 'fel_barrage', function ()
-            applyBuff( 'fel_barrage', PTR and 2 or 1 )
+            applyBuff( 'fel_barrage', 2 )
             spendCharges( 'fel_barrage', cooldown.fel_barrage.charges )
         end )
 
@@ -797,7 +798,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         } )
 
         addHandler( 'chaos_blades', function ()
-            applyBuff( 'chaos_blades', PTR and 18 or 12 )
+            applyBuff( 'chaos_blades', 18 )
         end )
 
 
@@ -856,7 +857,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         } )
 
         modifyAbility( 'demon_spikes', 'charges', function( x )
-            if PTR and equipped.oblivions_embrace then return x + 1 end
+            if equipped.oblivions_embrace then return x + 1 end
             return x
         end )
 
@@ -895,14 +896,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cast = 0,
             gcdType = "spell",
             cooldown = 20,
-            charges = PTR and 1 or nil,
-            recharge = PTR and 20 or nil,
+            charges = 1,
+            recharge = 20,
             min_range = 0,
             max_range = 0,
         } )
 
         modifyAbility( 'empower_wards', 'charges', function( x )
-            if PTR and equipped.oblivions_embrace then return x + 1 end
+            if equipped.oblivions_embrace then return x + 1 end
             return x
         end )
 
@@ -944,7 +945,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         addAbility( 'fracture', {
             id = 209795,
-            spend = PTR and 30 or 20,
+            spend = 30,
             spend_type = 'pain',
             cast = 0,
             cooldown = 0,

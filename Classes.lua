@@ -584,8 +584,8 @@ ns.specializationChanged = function()
     state.GUID = UnitGUID( 'player' )
     state.player.unit = UnitGUID( 'player' )
 
-    ns.updateTalents()
     ns.updateGear()
+    ns.updateTalents()
 
     ns.callHook( 'specializationChanged' )
     ns.cacheCriteria()

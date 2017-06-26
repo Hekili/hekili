@@ -33,6 +33,7 @@ local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
+local setTalentLegendary = ns.setTalentLegendary
 
 local RegisterEvent = ns.RegisterEvent
 
@@ -155,13 +156,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addGearSet( 'sephuzs_secret', 132452 )
         addGearSet( 'the_shadow_hunters_voodoo_mask', 137064 )
 
-        if PTR then 
-            addGearSet( 'soul_of_the_huntermaster', 151641 )
-            addGearSet( 'celerity_of_the_windrunners', 151803 )
-            addGearSet( 'parsels_tongue', 151805 )
-            addGearSet( 'unseen_predators_cloak', 151807 )
-        end
+        addGearSet( 'soul_of_the_huntmaster', 151641 )
+        addGearSet( 'celerity_of_the_windrunners', 151803 )
+        addGearSet( 'parsels_tongue', 151805 )
+        addGearSet( 'unseen_predators_cloak', 151807 )
 
+        setTalentLegendary( 'soul_of_the_huntmaster', 'survival', 'serpent_sting' )
 
         addHook( 'specializationChanged', function ()
             setPotion( 'old_war' ) -- true for Sv, anyway.

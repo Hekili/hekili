@@ -38,9 +38,13 @@ local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
 local setRegenModel = ns.setRegenModel
+local setTalentLegendary = ns.setTalentLegendary
 
 local RegisterEvent = ns.RegisterEvent
 local storeDefault = ns.storeDefault
+
+
+local PTR = ns.PTR or false
 
 
 -- This table gets loaded only if there's a supported class/specialization.
@@ -199,7 +203,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         -- Player Buffs.
         addAura( 'aegis_of_light', 204150, 'duration', 6 )
         addAura( 'ardent_defender', 31850, 'duration', 8 )
-        if PTR then addAura( 'avengers_protection', 242265, 'duration', 10 ) end
+        addAura( 'avengers_protection', 242265, 'duration', 10 )
         addAura( 'avenging_wrath', 31884 )
         addAura( 'blade_of_wrath', 202270 )        
         addAura( 'blessed_hammer', 204019, 'duration', 2 )
@@ -435,6 +439,9 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addGearSet( "scarlet_inquisitors_expurgation", 151813 )
             addAura( "scarlet_inquisitors_expurgation", 248289, "duration", 3600, "max_stack", 30 )
 
+        setTalentLegendary( 'soul_of_the_highlord', 'retribution',  'divine_purpose' )
+        setTalentLegendary( 'soul_of_the_highlord', 'protection',   'divine_purpose' )
+
         addHook( 'specializationChanged', function ()
             setPotion( 'old_war' )
             setRole( state.spec.protection and 'tank' or 'attack' )
@@ -607,7 +614,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'avengers_shield', function ()
             interrupt()
-            if PTR and set_bonus.tier20_4pc == 1 then applyDebuff( 'target', 'avengers_protection', 10 ) end
+            if set_bonus.tier20_4pc > 0 then applyDebuff( 'target', 'avengers_protection', 10 ) end
         end )
 
 
@@ -1225,7 +1232,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             else
                 applyDebuff( 'target', 'judgment', 8 )
                 if talent.greater_judgment.enabled then active_dot.judgment = max( active_enemies, active_dot.judgment + 2 ) end
-                if PTR and set_bonus.tier20_4pc == 1 then applyBuff( 'sacred_judgment', 8 ) end
+                if set_bonus.tier20_4pc > 0 then applyBuff( 'sacred_judgment', 8 ) end
             end
         end )
 

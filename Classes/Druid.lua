@@ -37,7 +37,7 @@ local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRegenModel = ns.setRegenModel
 local setRole = ns.setRole
-
+local setTalentLegendary = ns.setTalentLegendary
 
 local RegisterEvent = ns.RegisterEvent
 local RegisterUnitEvent = ns.RegisterUnitEvent
@@ -269,6 +269,11 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addGearSet( 'fangs_of_ashamane', 128860 )
         setArtifact( 'fangs_of_ashamane' )
+
+
+        addGearSet( 'soul_of_the_archdruid', 151636 )
+        setTalentLegendary( 'soul_of_the_archdruid', 'feral',       'soul_of_the_forest' )
+        setTalentLegendary( 'soul_of_the_archdruid', 'guardian',    'soul_of_the_forest' )
 
 
         addMetaFunction( 'state', 'gcd', function()

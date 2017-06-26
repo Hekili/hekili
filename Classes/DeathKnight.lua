@@ -922,7 +922,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addHandler( "chains_of_ice", function ()
             applyDebuff( "target", "chains_of_ice", 8 )
-            if PTR and equipped.cold_heart then removeBuff( "chilled_heart" ) end
+            if equipped.cold_heart then removeBuff( "chilled_heart" ) end
         end )
 
 
@@ -985,7 +985,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         } )
 
         addHandler( "dark_arbiter", function ()
-            summonPet( "valkyr_battlemaiden", PTR and 20 or 15 )
+            summonPet( "valkyr_battlemaiden", 20 )
         end )
 
 
@@ -1051,8 +1051,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addAbility( "death_coil", {
             id = 47541,
-            spend = PTR and 45 or 35,
-            min_cost = PTR and 45 or 35,
+            spend = 45,
+            min_cost = 45,
             spend_type = "runic_power",
             cast = 0,
             gcdType = "spell",
@@ -1068,7 +1068,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addHandler( "death_coil", function ()
             if talent.necrosis.enabled then applyBuff( "necrosis" ) end
-            if talent.shadow_infusion.enabled and buff.dark_transformation.down then setCooldown( 'dark_transformation', cooldown.dark_transformation.remains - ( PTR and 7 or 5 ) ) end
+            if talent.shadow_infusion.enabled and buff.dark_transformation.down then setCooldown( 'dark_transformation', cooldown.dark_transformation.remains - 7 ) end
             removeBuff( "sudden_doom" )
         end )
 
@@ -1327,7 +1327,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             active_dot.frost_fever = max( active_dot.frost_fever, active_enemies )
             if buff.rime.up then
                 if set_bonus.tier19_4pc == 1 then
-                    gain( PTR and 6 or 8, "runic_power" )
+                    gain( 6, "runic_power" )
                 end
                 removeBuff( "rime" )
             end

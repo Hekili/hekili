@@ -34,6 +34,7 @@ local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
 local setRegenModel = ns.setRegenModel
+local setTalentLegendary = ns.setTalentLegendary
 
 local RegisterEvent = ns.RegisterEvent
 local RegisterUnitEvent = ns.RegisterUnitEvent
@@ -433,9 +434,15 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         addGearSet( 'eye_of_the_twisting_nether', 137050 )
         addGearSet( 'pristine_protoscale_girdle', 137083 )
         addGearSet( 'prydaz_xavarics_magnum_opus', 132444 )
+        addGearSet( 'smouldering_heart', 151819 )
+        addGearSet( 'soul_of_the_farseer', 151647 )
         addGearSet( 'spiritual_journey', 138117 )
         addGearSet( 'storm_tempests', 137103 )
         addGearSet( 'uncertain_reminder', 143732 )
+
+
+        setTalentLegendary( 'soul_of_the_farseer', 'enhancement',   'tempest' )
+        setTalentLegendary( 'soul_of_the_farseer', 'elemental',     'echo_of_the_elements' )
 
 
         addHook( 'specializationChanged', function ()

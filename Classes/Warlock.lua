@@ -36,6 +36,7 @@ local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
+local setTalentLegendary = ns.setTalentLegendary
 
 
 local RegisterEvent = ns.RegisterEvent
