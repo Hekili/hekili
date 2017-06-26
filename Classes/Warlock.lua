@@ -73,6 +73,9 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
                 active_regen = 0,
                 inactive_regen = 0,
                 forecast = {},
+                times = {},
+                values = {},
+                fcount = 0,
                 regen = 0,
                 regenerates = false,
             }, { __index = function( t, k )
