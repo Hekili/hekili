@@ -52,6 +52,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         -- Hekili.LowImpact = true
 
         addResource( 'mana', SPELL_POWER_MANA )
+        addResource( 'maelstrom', SPELL_POWER_MAELSTROM, true )
 
         if not Hekili.DB.profile.clashes.windstrike then Hekili.DB.profile.clashes.windstrike = 0.25 end
 
