@@ -67,6 +67,8 @@ function Hekili:GetDefaults()
             
             blacklist = {
             },
+            clashes = {
+            },
             
             iconStore = {
                 hide = false,
@@ -3513,7 +3515,7 @@ ns.ClassSettings = function ()
     
     option.args.exclusions = {
         type = 'group',
-        name = 'Exclusions',
+        name = 'Exclusions and Clashes',
         order = 30,
         inline = true,
         args = {},
@@ -3530,12 +3532,25 @@ ns.ClassSettings = function ()
     for k, v in orderedPairs( abilities ) do
         option.args.exclusions.args[ v ] = {
             type = 'toggle',
-            name = k,
+            name = 'Disable ' .. k,
             desc = "If checked, this ability will be excluded from the addon's recommendations.",
-            -- width = 'full',
+            width = 'single',
             order = i
         }
         i = i + 1
+
+        option.args.exclusions.args[ 'clash_' ..v ] = {
+            type = 'range',
+            name = 'Clash ' .. k,
+            desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.",
+            width = "double",
+            min = 0,
+            max = 1.5,
+            step = 0.05,
+            order = i
+        }
+        i = i + 1
+
     end
     
     return option
@@ -4538,7 +4553,7 @@ function Hekili:GetOptions()
                                             Hekili[ 'ProcessDisplay' .. index ] = function()
                                                 Hekili:ProcessHooks( index )
                                             end
-                                            C_Timer.After( 0.5, Hekili[ 'ProcessDisplay' .. index ] )
+                                            C_Timer.After( 0.4, Hekili[ 'ProcessDisplay' .. index ] )
                                         end
                                     else
                                         Hekili:Print("Unable to import " .. default.name .. ".")
@@ -4590,7 +4605,7 @@ function Hekili:GetOptions()
                                             Hekili[ 'ProcessDisplay' .. index ] = function()
                                                 Hekili:ProcessHooks( index )
                                             end
-                                            C_Timer.After( 0.5, Hekili[ 'ProcessDisplay' .. index ] )
+                                            C_Timer.After( 0.4, Hekili[ 'ProcessDisplay' .. index ] )
                                         end
                                     else
                                         Hekili:Print("Unable to import " .. default.name .. ".")
@@ -5497,13 +5512,13 @@ function Hekili:GetOptions()
                             local out = ''
                             
                             for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                                out = out .. " storeDefault( [[" .. list.Name .. "]], 'actionLists', " .. date("%Y%m%d.%H%M%S") .. ", [[" .. ns.serializeActionList( i ) .. "]] )\n\n"
+                                out = out .. "    storeDefault( [[" .. list.Name .. "]], 'actionLists', " .. date("%Y%m%d.%H%M%S") .. ", [[" .. ns.serializeActionList( i ) .. "]] )\n\n"
                             end
                             
                             out = out .. "\n"
                             
                             for i, display in ipairs( Hekili.DB.profile.displays ) do
-                                out = out .. " storeDefault( [[" .. display.Name .. "]], 'displays', " .. date("%Y%m%d.%H%M%S") .. ", [[" .. ns.serializeDisplay( i ) .. "]] )\n\n"
+                                out = out .. "    storeDefault( [[" .. display.Name .. "]], 'displays', " .. date("%Y%m%d.%H%M%S") .. ", [[" .. ns.serializeDisplay( i ) .. "]] )\n\n"
                             end
                             
                             return out
@@ -5653,8 +5668,9 @@ function Hekili:GetOption( info, input )
             return profile['Class Option: '..option]
             
         elseif info[2] == 'exclusions' then
+            if option:sub( 1, 6 ) == 'clash_' then return profile.clashes[ option:sub( 7 ) ] or 0 end
             return profile.blacklist[ option ]
-            
+
         end
         
     elseif category == 'notifs' then
@@ -5848,9 +5864,10 @@ function Hekili:SetOption( info, input, ... )
             profile[ 'Class Option: '..option] = input
             
         elseif subcategory == 'exclusions' then
-            profile.blacklist[ option ] = input
+            if option:sub( 1, 6 ) == 'clash_' then profile.clashes[ option:sub(7) ] = tonumber( input ) or 0
+            else profile.blacklist[ option ] = input end
             ns.forceUpdate()
-            
+
         end
         
         return
@@ -6753,7 +6770,7 @@ local function sanitize( segment, i, line, warnings )
         end 
         
     end
-    
+
     for token in i:gmatch( "equipped%.[0-9]+" ) do
         
         local itemID = tonumber( token:match( "([0-9]+)" ) )
@@ -6812,7 +6829,7 @@ local function sanitize( segment, i, line, warnings )
             
             i = i:gsub( "||", "|" )
             i = i:gsub( "|&", "|" )
-            i = i:gsub( "&|", "|" )
+            i = i:gsub( "&|", "&" )
             i = i:gsub( "&&", "&" )
             
             -- i, times = i:gsub( "([|&])[|&]", "%1" )
@@ -6861,6 +6878,11 @@ local function sanitize( segment, i, line, warnings )
     i, times = i:gsub( "buff.active_uas", "unstable_afflictions" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.active_uas' with 'unstable_afflictions' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "rune%.([a-z0-9_]+)", "runes.%1")
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Replaced 'rune.X' with 'runes.X' (" .. times .. "x)." )
     end
     
     --[[ i, times = i:gsub( "spell_targets%.[a-zA-Z0-9_]+", "active_enemies" )
@@ -7455,7 +7477,7 @@ function Hekili:TogglePause( ... )
     
     self.Pause = not self.Pause
     
-    local MouseInteract = ( self.Pause ) or self.Config or ( not Hekili.DB.profile.Locked )
+    local MouseInteract = self.Pause or self.Config or ( not Hekili.DB.profile.Locked )
     
     for i = 1, #ns.UI.Buttons do
         for j = 1, #ns.UI.Buttons[i] do
@@ -7463,8 +7485,8 @@ function Hekili:TogglePause( ... )
         end
     end
     
-    Hekili:Print( (not self.Pause and "UN" or "") .. "PAUSED." )
-    Hekili:Notify( (not self.Pause and "UN" or "") .. "PAUSED" )
+    Hekili:Print( ( not self.Pause and "UN" or "" ) .. "PAUSED." )
+    Hekili:Notify( ( not self.Pause and "UN" or "" ) .. "PAUSED" )
     
     forceUpdate()
 end

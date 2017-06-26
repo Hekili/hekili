@@ -11,6 +11,8 @@ local state = ns.state
 local getResourceID = ns.getResourceID
 local getSpecializationKey = ns.getSpecializationKey
 
+local mt_resource = ns.metatables.mt_resource
+
 
 ns.initializeClassModule = function()
     -- do nothing, overwrite this stub with a class module.
@@ -433,11 +435,20 @@ end
 ns.addTalent = addTalent
 
 
-local function addResource( resource, primary, no_regen )
+local function addResource( resource, power_type )
 
-    class.resources[ resource ] = 1 + ( no_regen and 1 or 0 )
+    class.resources[ resource ] = power_type
 
     if primary or #class.resources == 1 then class.primaryResource = resource end
+
+    state[ resource ] = rawget( state, resource ) or setmetatable( {
+        resource = key,
+        forecast = {},
+        fcount = 0,
+        times = {},
+        values = {}
+    }, mt_resource )
+    state[ resource ].regenerates = not no_regen
 
     ns.commitKey( resource )
 
@@ -589,6 +600,13 @@ ns.specializationChanged = function()
 end
 
 
+local function setTalentLegendary( item, spec, talent )
+
+    class.talentLegendary[ item ] = class.talentLegendary[ item ] or {}
+    class.talentLegendary[ item ][ spec ] = talent
+
+end
+ns.setTalentLegendary = setTalentLegendary
 
 ------------------------------
 -- SHARED SPELLS/BUFFS/ETC. --
@@ -950,9 +968,31 @@ for k,v in pairs( class.usable_items ) do
 end ]]
 
 
-addUsableItem( "draught_of_souls", 140808 )
-addAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )
+addAbility( "use_items", {
+    id = -99,
+    item = 0,
+    spend = 0,
+    cast = 0,
+    cooldown = 120,
+    gcdType = 'off',
+    handler = function () return end
+} )
 
+-- Returns the first available usable item.
+local function available_item()
+    for k, v in pairs( class.items ) do
+        if state.equipped[ k ] and state.cooldown[ k ] then return class.abilities[ k ] end
+    end
+    return
+end
+
+modifyAbility( 'use_items', 'item', function( x )
+    local item = available_item()
+    return item and item.item or x
+end )
+
+
+addUsableItem( "draught_of_souls", 140808 )
 
 addAbility( "draught_of_souls", {
     id = -100,
@@ -962,6 +1002,9 @@ addAbility( "draught_of_souls", {
     cooldown = 80,
     gcdType = 'off',
 } )
+
+addAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )
+
 
 addHandler( "draught_of_souls", function ()
     applyBuff( "fel_crazed_rage", 3 )
@@ -997,6 +1040,53 @@ addAura( "sheathed_in_frost", 214962, "duration", 30 )
 addHandler( "faulty_countermeasure", function ()
     applyBuff( "sheathed_in_frost", 30 )
 end )
+
+
+addUsableItem( "umbral_moonglaives", 147012 )
+
+addAbility( "umbral_moonglaives", {
+    id = -103,
+    item = 147012,
+    spend = 0,
+    cast = 0,
+    cooldown = 90,
+    gcdType = 'off'
+} )
+
+-- Umbral Moonglaives:  No Aura or Handler Needed.
+
+
+addUsableItem( "specter_of_betrayal", 151190 )
+
+addAbility( "specter_of_betrayal", {
+    id = -103,
+    item = 151190,
+    spend = 0,
+    cast = 0,
+    cooldown = 45,
+    gcdType = 'off',
+} )
+
+-- Specter of Betrayal:  Is there an aura here?
+
+
+addUsableItem( "vial_of_ceaseless_toxins", 147011 )
+
+addAbility( "vial_of_ceaseless_toxins", {
+    id = -104,
+    item = 147011,
+    spend = 0,
+    cast = 0,
+    cooldown = 60,
+    gcdType = 'off',
+} )
+
+addAura( "ceaseless_toxin", 242497, "duration", 20 )
+
+addHandler( "vial_of_ceaseless_toxins", function ()
+    applyDebuff( "target", "ceaseless_toxin", 20 )
+end )
+
 
 
 

@@ -54,8 +54,8 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
         --setSpecialization( "affliction" )
 
         -- Resources
-        addResource( "mana", nil, false )
-        addResource( "soul_shards", nil, true )   
+        addResource( "mana", SPELL_POWER_MANA )
+        addResource( "soul_shards", SPELL_POWER_SOUL_SHARDS, true )   
      
         state.seeds_of_corruption = setmetatable( {}, {
             __index = function( t, k, v )
@@ -68,7 +68,12 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
         registerCustomVariable( 'soul_shards', 
             setmetatable( {
                 actual = nil,
-                max = 5
+                max = 5,
+                active_regen = 0,
+                inactive_regen = 0,
+                forecast = {},
+                regen = 0,
+                regenerates = false,
             }, { __index = function( t, k )
                 if k == 'count' or k == 'current' then
                     return t.actual

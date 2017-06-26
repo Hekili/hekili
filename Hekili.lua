@@ -59,6 +59,7 @@ ns.class = {
 	searchAbilities = {},
 	settings = {},
 	stances = {},
+    talentLegendary = {},
 	talents = {},
 	toggles = {}
 }

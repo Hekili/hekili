@@ -43,7 +43,7 @@ function ns.getNumberTargets()
 
             local _, maxRange = RC:GetRange( unit )
 
-            if maxRange and maxRange <= ( Hekili.DB.profile['Nameplate Detection Range'] or 5 ) and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
+            if maxRange and maxRange <= ( Hekili.DB.profile['Nameplate Detection Range'] or 5 ) and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and UnitInPhase( unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
                 nameplates[ UnitGUID( unit ) ] = maxRange
                 npCount = npCount + 1
             end
@@ -57,7 +57,7 @@ function ns.getNumberTargets()
             if not nameplates[ guid ] then
                 local maxRange = RC:GetRange( unit )
 
-                if maxRange and maxRange <= ( Hekili.DB.profile['Nameplate Detection Range'] or 5 ) and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
+                if maxRange and maxRange <= ( Hekili.DB.profile['Nameplate Detection Range'] or 5 ) and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and UnitInPhase( unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
                     nameplates[ UnitGUID( unit ) ] = maxRange
                     npCount = npCount + 1
                 end

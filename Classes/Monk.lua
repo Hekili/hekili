@@ -37,6 +37,7 @@ local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
+local setRegenModel = ns.setRegenModel
 
 local RegisterEvent = ns.RegisterEvent
 
@@ -55,8 +56,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         setClass( 'MONK' )
 
-        addResource( 'energy', true )
-        addResource( 'chi', nil, true )
+        addResource( 'energy', SPELL_POWER_ENERGY )
+        addResource( 'chi', SPELL_POWER_CHI, true )
 
         addTalent( 'ascension', 115396 )
         addTalent( 'black_ox_brew', 115399 )
@@ -1098,7 +1099,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 6,
-            known = function () return talent.rushing_jade_wind.enabled end,
+            talent = 'rushing_jade_wind',
             cycle = 'mark_of_the_crane'
         } )
 

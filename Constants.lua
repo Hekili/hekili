@@ -45,23 +45,24 @@ end
 
 
 local Resources = {
-  health = -2,
-  mana = SPELL_POWER_MANA,
-  rage = SPELL_POWER_RAGE,
-  combo_points = SPELL_POWER_COMBO_POINTS,
-  focus = SPELL_POWER_FOCUS,
-  energy = SPELL_POWER_ENERGY,
-  runes = SPELL_POWER_RUNES,
-  runic_power = SPELL_POWER_RUNIC_POWER,
-  soul_shards = SPELL_POWER_SOUL_SHARDS,
-  eclipse = SPELL_POWER_ECLIPSE,
-  holy_power = SPELL_POWER_HOLY_POWER,
-  alternate_power = SPELL_POWER_ALTERNATE_POWER,
-  chi = SPELL_POWER_CHI,
-  shadow_orbs = SPELL_POWER_SHADOW_ORBS,
-  burning_embers = SPELL_POWER_BURNING_EMBERS,
-  demonic_fury = SPELL_POWER_DEMONIC_FURY,
-  maelstrom = SPELL_POWER_MAELSTROM
+    health = -2,
+    mana = SPELL_POWER_MANA,
+    rage = SPELL_POWER_RAGE,
+    focus = SPELL_POWER_FOCUS,
+    energy = SPELL_POWER_ENERGY,
+    combo_points = SPELL_POWER_COMBO_POINTS,
+    runes = SPELL_POWER_RUNES,
+    runic_power = SPELL_POWER_RUNIC_POWER,
+    soul_shards = SPELL_POWER_SOUL_SHARDS,
+    lunar_power = SPELL_POWER_LUNAR_POWER,
+    holy_power = SPELL_POWER_HOLY_POWER,
+    alternate_power = SPELL_POWER_ALTERNATE_POWER,
+    maelstrom = SPELL_POWER_MAELSTROM,
+    chi = SPELL_POWER_CHI,
+    insanity = SPELL_POWER_INSANITY,
+    arcane_charges = SPELL_POWER_ARCANE_CHARGES,
+    fury = SPELL_POWER_FURY,
+    pain = SPELL_POWER_PAIN,
 }
 
 ns.getResourceID = function ( key )

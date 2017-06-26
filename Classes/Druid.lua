@@ -57,10 +57,10 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         -- setSpecialization( "feral" )
 
         -- Resources
-        addResource( "mana" )
-        addResource( "energy" )
-        addResource( "rage", nil, true )
-        addResource( "combo_points", nil, true )
+        addResource( "mana", SPELL_POWER_MANA )
+        addResource( "energy", SPELL_POWER_ENERGY )
+        addResource( "rage", SPELL_POWER_RAGE, true )
+        addResource( "combo_points", SPELL_POWER_COMBO_POINTS, true )
 
         setRegenModel( {
             elunes_guidance = {

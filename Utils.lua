@@ -60,7 +60,8 @@ local replacements = {
     rjw = "RJW",
     chix = "ChiX",
     st = "ST",
-    cd = "CD"
+    cd = "CD",
+    cds = "CDs"
 }
 
 ns.titlefy = function( s )

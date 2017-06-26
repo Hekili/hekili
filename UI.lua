@@ -268,10 +268,12 @@ local function menu_Locked()
 
     p.Locked = not p.Locked
 
+    local MouseInteract = Hekili.Pause or Hekili.Config or ( not p.Locked )
+
     for _, v in ipairs( ns.UI.Buttons ) do
-        v[1]:EnableMouse( not p.Locked )
+        v[1]:EnableMouse( MouseInteract )
     end
-    ns.UI.Notification:EnableMouse( not p.Locked )
+    ns.UI.Notification:EnableMouse( MouseInteract )
 end
 
 local function menu_Paused()
