@@ -577,7 +577,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             gcdType = 'spell',
             channeled = true,
             cooldown = 300,
-            known = function () return talent.aegis_of_light.enabled end
+            talent = 'aegis_of_light'
         } )
 
 
@@ -627,8 +627,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 120,
             charges = 1,
             recharge = 120,
-            known = function () return not talent.crusade.enabled end,
-            usable = function () return not talent.crusade.enabled and not buff.avenging_wrath.up end,
+            notalent = 'crusade',
+            usable = function () return not buff.avenging_wrath.up end,
             toggle = 'cooldowns'
         } )
 
@@ -646,7 +646,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'off',
             cooldown = 120,
-            known = function () return talent.bastion_of_light.enabled end
+            talent = 'bastion_of_light',
         } )
 
         addHandler( 'bastion_of_light', function ()
@@ -688,7 +688,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             charges = 3,
             recharge = 4.5,
             ready = function () return max( 0, last_blessed_hammer + ( gcd * 2 ) - query_time ) end,
-            known = function () return talent.blessed_hammer.enabled end
+            talent = 'blessed_hammer'
         } )
 
         modifyAbility( 'blessed_hammer', 'cooldown', function( x )
@@ -726,7 +726,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 300,
-            known = function () return not talent.blessing_of_spellwarding.enabled end
+            talent = 'blessing_of_spellwarding'
         } )
 
         modifyAbility( 'blessing_of_protection', 'cooldown', function( x )
@@ -789,7 +789,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 90,
-            known = function() return talent.blinding_light.enabled end
+            talent = 'blinding_light'
         } )
 
         addHandler( 'blinding_light', function ()
@@ -847,7 +847,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 120,
             charges = 1,
             recharge = 120,
-            known = function () return talent.crusade.enabled end,
+            talent = 'crusade',
             usable = function () return not buff.crusade.up end,
             toggle = 'cooldowns'
         } )
@@ -868,7 +868,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 4.5,
             charges = 2,
             recharge = 4.5,
-            known = function () return not talent.zeal.enabled end
+            notalent = 'zeal'
         } )
 
         modifyAbility( 'crusader_strike', 'cooldown', function( x )
@@ -890,7 +890,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             gcdType = 'spell',
             cooldown = 12,
             talent = 'divine_hammer',
-            known = function () return talent.divine_hammer.enabled end,
+            talent = 'divine_hammer',
             bind = 'blade_of_justice'
         } )
 
@@ -974,7 +974,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 20,
-            known = function () return talent.execution_sentence.enabled end
+            talent = 'execution_sentence'
         } )
 
 		modifyAbility( 'execution_sentence', 'spend', function( x )
@@ -1002,7 +1002,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 60,
-            known = function () return talent.eye_for_an_eye.enabled end
+            talent = 'eye_for_an_eye'
         } )
 
         addHandler( 'eye_for_an_eye', function ()
@@ -1126,7 +1126,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 4.5,
             charges = 2,
             recharge = 4.5,
-            known = function () return not talent.blessed_hammer.enabled end
+            notalent = 'blessed_hammer'
         } )
 
         modifyAbility( 'hammer_of_the_righteous', 'cooldown', function( x )
@@ -1169,7 +1169,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 10,
-            known = function () return talent.hand_of_the_protector.enabled end
+            talent = 'hand_of_the_protector'
         } )
 
         modifyAbility( 'hand_of_the_protector', 'cooldown', function( x )
@@ -1192,7 +1192,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 180,
-            known = function() return talent.holy_wrath.enabled end,
+            talent = 'holy_wrath',
             toggle = 'cooldowns'
         } )
 
@@ -1244,7 +1244,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 0,
-            known = function () return talent.justicars_vengeance.enabled end
+            talent = 'justicars_vengeance'
         } )
 
         modifyAbility( 'justicars_vengeance', 'spend', function( x )
@@ -1324,7 +1324,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 1.5,
             gcdType = 'spell',
             cooldown = 15,
-            known = function () return talent.repentance.enabled end,
+            talent = 'repentance'
         } )
 
         modifyAbility( 'repentance', 'cast', function( x )
@@ -1344,7 +1344,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'off',
             cooldown = 30,
-            known = function () return talent.seraphim.enabled end
+            talent = 'seraphim'
         } )
 
         modifyAbility( 'seraphim', 'spend', function( x )
@@ -1458,7 +1458,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 30,
-            known = function () return equipped.ashbringer and ( toggle.wake_of_ashes or ( toggle.cooldowns and settings.wake_of_ashes_cooldown ) ) end,
+            known = function () return equipped.ashbringer and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end,
             usable = function () return not artifact.ashes_to_ashes.enabled or holy_power.current <= settings.maximum_wake_power end
         } )
 
@@ -1485,7 +1485,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 60,
             charges = 2,
             recharge = 60,
-            known = function () return talent.word_of_glory.enabled end
+            talent = 'word_of_glory'
         } )
 
         modifyAbility( 'word_of_glory', 'spend', function( x )
@@ -1511,7 +1511,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 4.5,
             charges = 2,
             recharge = 4.5,
-            known = function () return talent.zeal.enabled end
+            talent = 'zeal'
         } )
 
         modifyAbility( 'zeal', 'cooldown', function( x )
