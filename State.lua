@@ -3622,7 +3622,7 @@ ns.isKnown = function( sID )
 
     if ability.known ~= nil then
         if type( ability.known ) == 'number' then
-            return IsSpellKnown( ability.known )
+            return IsPlayerSpell( ability.known )
         end
         return ability.known()
     end

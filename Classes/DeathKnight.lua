@@ -1018,6 +1018,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             cooldown = 60,
             -- min_range = 0,
             max_range = 100,
+            usable = function () return pet.alive end,
         } )
 
         addHandler( "dark_transformation", function ()
