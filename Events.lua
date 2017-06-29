@@ -384,13 +384,15 @@ ns.updateGear = function ()
         if item and state.equipped[ item ] then
             local tal = specs[ state.spec.key ]
 
-            if tal and rawget( state.talent, tal ) then
-                state.talent[ tal ].enabled = true
-                state.talent[ tal ].i_enabled = 1
-            else state.talent[ tal ] = {
-                    enabled = true,
-                    i_enabled = 1
-                }
+            if tal then
+                if rawget( state.talent, tal ) then
+                    state.talent[ tal ].enabled = true
+                    state.talent[ tal ].i_enabled = 1
+                else state.talent[ tal ] = {
+                        enabled = true,
+                        i_enabled = 1
+                    }
+                end
             end
         end
     end
@@ -926,9 +928,9 @@ local function ReadKeybindings()
         StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
     end
 
-    for i = 13, 24 do
+    --[[ for i = 13, 24 do
         StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
-    end
+    end ]]
 
     for i = 25, 36 do
         StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
@@ -946,9 +948,9 @@ local function ReadKeybindings()
         StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
     end
 
-    for i = 73, 120 do
+    --[[ for i = 73, 120 do
         StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. ( i - 60 ) % 12 ), GetActionInfo( i ) )
-    end
+    end ]]
 
     for k in pairs( keys ) do
         if not updatedKeys[ k ] then keys[ k ] = nil end

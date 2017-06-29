@@ -24,6 +24,7 @@ Classes\Monk.lua
 Classes\Paladin.lua
 Classes\Shaman.lua
 Classes\Warlock.lua
+Classes\Warrior.lua
 Targets.lua
 Options.lua
 UI.lua

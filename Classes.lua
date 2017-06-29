@@ -446,7 +446,8 @@ local function addResource( resource, power_type )
         forecast = {},
         fcount = 0,
         times = {},
-        values = {}
+        values = {},
+        last_tick = 0
     }, mt_resource )
     state[ resource ].regenerates = not no_regen
 
