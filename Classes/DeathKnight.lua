@@ -365,7 +365,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
                 end
 
                 if state.spec.unholy and state.set_bonus.tier20_4pc == 1 then
-                    state.setCooldown( 'army_of_the_dead', cooldown.army_of_the_dead.remains - ( 6 * amount ) )
+                    state.setCooldown( 'army_of_the_dead', state.cooldown.army_of_the_dead.remains - ( 6 * amount ) )
                 end
 
             elseif resource == 'runic_power' then

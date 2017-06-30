@@ -1434,7 +1434,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             end
 
             if set_bonus.tier20_4pc > 0 then
-                addStack( 'crashing_lightning', 16, 2 )
+                addStack( 'crashing_lightning', 16, 1 )
             end
 
             if equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
@@ -1570,7 +1570,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             end
 
             if set_bonus.tier20_4pc > 0 then
-                addStack( 'crashing_lightning', 16, 2 )
+                addStack( 'crashing_lightning', 16, 1 )
             end
 
             if equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
