@@ -85,7 +85,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addTalent( 'unleashed_power', 206477 )
         addTalent( 'demon_reborn', 193897 )
 
-        addTalent( 'chaos_blades', 211048 )
+        addTalent( 'chaos_blades', 247938 )
         addTalent( 'fel_barrage', 211053 )
         addTalent( 'demonic', 213410 )
 
@@ -176,7 +176,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addAura( 'blade_turning', 247254, 'duration', 5 )
         addAura( 'blur', 198589, 'duration', 10 )
         addAura( 'chaos_nova', 179067, 'duration', 5 )
-        addAura( 'chaos_blades', 211048, 'duration', 12 )
+        addAura( 'chaos_blades', 247938, 'duration', 18 )
         addAura( 'darkness', 209426, 'duration', 8 )
         addAura( 'death_sweep', 210152, 'duration', 1 )
         addAura( 'empower_wards', 218256, 'duration', 6 )
@@ -787,7 +787,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
 
         addAbility( 'chaos_blades', {
-            id = 211048,
+            id = 247938,
             spend = 0,
             spend_type = 'fury',
             cast = 0,
