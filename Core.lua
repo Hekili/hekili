@@ -383,7 +383,6 @@ local z_PVP = {
 local palStack = {}
 local cachedResults = {}
 
-Hekili.cr = cachedResults
 
 function checkAPLConditions()
     for k, v in pairs( palStack ) do

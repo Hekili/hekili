@@ -65,11 +65,7 @@ function ns.StartEventHandler()
         local forced = false
 
         for i = 1, #Hekili.DB.profile.displays do
-            if not displayUpdates[i] then 
-                Hekili:ProcessHooks( i )
-                lastRefresh[i] = now
-
-            elseif ( not lastRefresh[i] or now - lastRefresh[i] >= updatePeriod ) then
+            if not displayUpdates[i] or ( not lastRefresh[i] or now - lastRefresh[i] >= updatePeriod ) then 
                 Hekili:ProcessHooks( i )
                 lastRefresh[i] = now
 
@@ -252,7 +248,7 @@ local artifactInitialized = false
 function ns.updateArtifact()
 
     local artifact = state.artifact
-    local AD = LibStub( "LibArtifactData-1.0" )
+    local AD = LibStub( "LibArtifactData-1.0h" )
 
     for k in pairs( artifact ) do
         artifact[ k ].rank = 0
