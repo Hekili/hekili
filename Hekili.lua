@@ -14,6 +14,10 @@ ns.PTR = GetBuildInfo() ~= "7.2.0"
 
 
 ns.lib = {
+    Format = {}
+}
+
+--[[ ns.lib = {
     AceConfig = LibStub( "AceConfig-3.0" ),
     AceConfigDialog = LibStub( "AceConfigDialog-3.0" ),
     ArtifactData = LibStub( "LibArtifactData-1.0h" ),
@@ -25,7 +29,7 @@ ns.lib = {
 	SpellFlash = SpellFlash or SpellFlashCore,
 	SpellRange = LibStub( "SpellRange-1.0" ),
 	SharedMedia = LibStub( "LibSharedMedia-3.0", true )
-}
+} ]]
 
 -- 04072017:  Let's go ahead and cache aura information to reduce overhead.
 ns.auras = {

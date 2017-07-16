@@ -45,7 +45,7 @@ local PTR = ns.PTR or false
 
 
 -- This table gets loaded only if there's a supported class/specialization.
-if (select(2, UnitClass('player')) == 'SHAMAN') then
+if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
     ns.initializeClassModule = function ()
 
@@ -55,7 +55,8 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         addResource( 'mana', SPELL_POWER_MANA )
         addResource( 'maelstrom', SPELL_POWER_MAELSTROM, true )
 
-        if not Hekili.DB.profile.clashes.windstrike then Hekili.DB.profile.clashes.windstrike = 0.25 end
+        -- Hackish to just leave this here, but...
+        Hekili.DB.profile.clashes.windstrike = Hekili.DB.profile.clashes.windstrike or 0.25
 
         setRegenModel( {
             mainhand = {
@@ -243,7 +244,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
         addAura( 'flametongue', 194084, 'duration', 16 )
         addAura( 'frostbrand', 196834, 'duration', 16 )
         addAura( 'fury_of_air', 197211 )
-        addAura( 'hot_hand', 215785, 'duraiton', 15 )
+        addAura( 'hot_hand', 215785, 'duration', 15 )
         addAura( 'landslide', 202004, 'duration', 10 )
         addAura( 'lashing_flames', 240842, 'duration', 10, 'max_stack', 99 )
         addAura( 'lightning_crash', 242284, 'duration', 16 )
@@ -443,6 +444,7 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
 
         setTalentLegendary( 'soul_of_the_farseer', 'enhancement',   'tempest' )
         setTalentLegendary( 'soul_of_the_farseer', 'elemental',     'echo_of_the_elements' )
+        setTalentLegendary( 'soul_of_the_farseer', 'restoration',   'echo_of_the_elements' )
 
 
         addHook( 'specializationChanged', function ()
@@ -533,6 +535,20 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
                 "can result in occasional recommendations that are overly optimistic about your Maelstrom income.  This can also be inaccurate if you are frequently outside of melee range of your " ..
                 "target.  The default value is |cFFFFD100true|r.",
             width = "full"
+        } )
+
+        ns.addToggle( 'hold_t20_stacks', false, 'Save Crash Lightning Stacks', "(Enhancement)  If checked, the addon will |cFFFF0000STOP|r recommending Crash Lightning when you have the specified number of Crashing Lightning stacks (or more).  " ..
+            "This only applies when you have the tier 20 four-piece set bonus.  This may help to save stacks for a big burst of AOE instead of refreshing the tier 20 two-piece bonus." )
+
+        ns.addSetting( 't20_stack_threshold', 12, {
+            name = 'Enhancement: Crashing Lightning Stack Threshold',
+            type = 'range',
+            desc = "If |cFFFFD100Save Crash Lightning Stacks|r is enabled, the addon will stop recommending Crash Lightning when you at least this number of Crashing Lightning Stacks.  " ..
+                "This only applies when you have the tier 20 four-piece set bonus.",
+            width = "full",
+            min = 0,
+            max = 15,
+            step = 1
         } )
 
         --[[ ns.addSetting( 'safety_window', 0, {
@@ -736,7 +752,11 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             spend_type = 'maelstrom',
             cast = 0,
             gcdType = 'spell',
-            cooldown = 6
+            cooldown = 6,
+            usable = function ()
+                if set_bonus.tier20_4pc == 1 and toggle.hold_t20_stacks and buff.crashing_lightning.stack >= settings.t20_stack_threshold and active_enemies == 1 then return false end
+                return true
+            end
         } )
 
         addHandler( 'crash_lightning', function ()
@@ -1409,6 +1429,8 @@ if (select(2, UnitClass('player')) == 'SHAMAN') then
             cooldown = 15,
             usable = function() return not buff.ascendance.up end
         } )
+
+        class.abilities.strike = class.abilities.stormstrike -- For SimC compatibility.
 
         modifyAbility( 'stormstrike', 'spend', function( x )
             if buff.stormbringer.up then x = x / 2 end

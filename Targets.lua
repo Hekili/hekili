@@ -14,8 +14,6 @@ local targets = {}
 local myTargetCount = 0
 local myTargets = {}
 
-local RC = ns.lib.RangeCheck
-
 local nameplates = {}
 local addMissingTargets = true
 
@@ -38,6 +36,8 @@ function ns.getNumberTargets()
     npCount = 0
 
     if showNPs and ( Hekili.DB.profile['Count Nameplate Targets'] and not state.ranged ) then
+        local RC = LibStub( "LibRangeCheck-2.0" )
+
         for i = 1, 80 do
             local unit = 'nameplate'..i
 

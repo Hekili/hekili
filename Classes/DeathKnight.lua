@@ -658,6 +658,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             modifyAura( "antimagic_shell", "duration", function( x ) return x + ( talent.spell_eater.enabled and 5 or 0 ) end )
         addAura( "army_of_the_dead", 42650, "duration", 4 )
         addAura( "blinding_sleet", 207167, "duration", 4 )
+        addAura( "blighted_rune_weapon", 194918, "duration", 30, "max_stack", 5 )
         addAura( "breath_of_sindragosa", 152279, "duration", 3600, "friendly", true )
         addAura( "chilled_heart", 235592, "duration", 3600, "max_stack", 20 )
         addAura( "dark_command", 56222, "duration", 3 )
@@ -1180,7 +1181,6 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             recharge = 10,
             -- min_range = 0,
             -- max_range = 0,
-            usable = function () return talent.epidemic.enabled end,
         } )
 
         modifyAbility( "epidemic", "cooldown", function( x ) return x * haste end )

@@ -796,7 +796,7 @@ ns.newDisplayOption = function( key )
                             local list = display and display.precombatAPL
                             
                             if list then
-                                ns.lib.AceConfigDialog:SelectGroup( "Hekili", 'actionLists', 'L'..list )
+                                LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", 'actionLists', 'L'..list )
                             end
                         end,
                         disabled = function( info )
@@ -849,7 +849,7 @@ ns.newDisplayOption = function( key )
                             local list = display and display.defaultAPL
                             
                             if list then
-                                ns.lib.AceConfigDialog:SelectGroup( "Hekili", 'actionLists', 'L'..list )
+                                LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", 'actionLists', 'L'..list )
                             end
                         end,
                         disabled = function( info )
@@ -1191,7 +1191,7 @@ ns.newDisplayOption = function( key )
                             ns.refreshOptions()
                             ns.loadScripts()
                             ns.buildUI()
-                            ns.lib.AceConfigDialog:SelectGroup( "Hekili", 'displays' )
+                            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", 'displays' )
                         end
                     },
                 },
@@ -1309,7 +1309,7 @@ ns.newDisplayOption = function( key )
                         name = 'Icon Spacing',
                         desc = "Select the number of pixels to skip between icons in this display.",
                         min = -10,
-                        max = 50,
+                        max = 500,
                         step = 1,
                         order = 12,
                         width = 'full'
@@ -1332,7 +1332,7 @@ ns.newDisplayOption = function( key )
                         desc = "Select the font to use on all icons in this display.",
                         dialogControl = 'LSM30_Font',
                         order = 31,
-                        values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                        values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
                     },
                     primaryFontSize = {
                         type = 'range',
@@ -1442,7 +1442,7 @@ ns.newDisplayOption = function( key )
                         desc = "If enabled and SpellFlash (or SpellFlashCore) is installed, the addon will cause the action buttons for recommended abilities to flash.",
                         order = 11,
                         hidden = function( info, val )
-                            return ns.lib.SpellFlash == nil
+                            return not ( SpellFlash or SpellFlashCore )
                         end,
                         width = 'full'
                     },
@@ -1455,7 +1455,7 @@ ns.newDisplayOption = function( key )
                             local id = tonumber( info[2]:match( "^D(%d+)" ) )
                             local display = id and Hekili.DB.profile.displays[ id ]
                             
-                            return ns.lib.SpellFlash == nil or not display or not display.spellFlash
+                            return ( SpellFlash or SpellFlashCore ) or not display or not display.spellFlash
                         end,
                         width = 'full'
                     },
@@ -1468,7 +1468,7 @@ ns.newDisplayOption = function( key )
                             local id = tonumber( info[2]:match( "^D(%d+)" ) )
                             local display = id and Hekili.DB.profile.displays[ id ]
                             
-                            return ns.lib.SpellFlash == nil or not display or not display.spellFlash
+                            return ( SpellFlash or SpellFlashCore ) or not display or not display.spellFlash
                         end,
                     },
                     
@@ -1509,7 +1509,7 @@ ns.newDisplayOption = function( key )
                                 desc = "Select the font to use for keybindings.",
                                 dialogControl = 'LSM30_Font',
                                 order = 5,
-                                values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                                values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
                                 width = 'full',
                             },
                             kbFontStyle = {
@@ -1629,7 +1629,7 @@ ns.newDisplayOption = function( key )
                                 desc = "Select the font to use for keybindings.",
                                 dialogControl = 'LSM30_Font',
                                 order = 5,
-                                values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                                values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
                                 width = 'full',
                             },
                             captionFontStyle = {
@@ -1827,7 +1827,7 @@ ns.newDisplayOption = function( key )
                                 desc = "Select the font to use for the target count.",
                                 dialogControl = 'LSM30_Font',
                                 order = 1,
-                                values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                                values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
                                 width = 'full',
                             },
                             targetFontStyle = {
@@ -2034,7 +2034,7 @@ ns.newDisplayOption = function( key )
                                 desc = "Select the font to use for the aura information.",
                                 dialogControl = 'LSM30_Font',
                                 order = 9,
-                                values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                                values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
                                 width = 'full',
                             },
                             auraFontStyle = {
@@ -2832,7 +2832,7 @@ ns.newActionListOption = function( index )
                     table.remove( Hekili.DB.profile.actionLists, actIdx )
                     ns.loadScripts()
                     ns.refreshOptions()
-                    ns.lib.AceConfigDialog:SelectGroup( "Hekili", "actionLists" )
+                    LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "actionLists" )
                     
                 end
             }
@@ -3366,7 +3366,7 @@ ns.newActionOption = function( aList, index )
                     local actIdx = tonumber( match( actKey, "^A(%d+)" ) )
                     
                     -- Will need to be more elaborate later.
-                    ns.lib.AceConfigDialog:SelectGroup("Hekili", 'actionLists', listKey )
+                    LibStub( "AceConfigDialog-3.0" ):SelectGroup("Hekili", 'actionLists', listKey )
                     table.remove( Hekili.DB.profile.actionLists[ listIdx ].Actions, actIdx )
                     Hekili.Options.args.actionLists.args[ listKey ].args[ actKey ] = nil
                     ns.loadScripts()
@@ -3541,7 +3541,7 @@ ns.ClassSettings = function ()
 
         option.args.exclusions.args[ 'clash_' ..v ] = {
             type = 'range',
-            name = 'Clash ' .. k,
+            name = 'Clash: ' .. k,
             desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.",
             width = "double",
             min = 0,
@@ -4469,7 +4469,7 @@ function Hekili:GetOptions()
                         desc = "Select the font to use in the Notification panel.",
                         dialogControl = 'LSM30_Font',
                         order = 7,
-                        values = ns.lib.SharedMedia:HashTable("font"), -- pull in your font list from LSM
+                        values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
                     },
                     ['Notification Font Size'] = {
                         type = 'range',
@@ -5629,13 +5629,15 @@ ns.refreshOptions = function()
     end
     
     for i,v in ipairs(Hekili.DB.profile.actionLists) do
-        local listKey = 'L' .. i
-        Hekili.Options.args.actionLists.args[ listKey ] = ns.newActionListOption( i )
-        
-        if v.Actions then
-            for a,_ in ipairs( v.Actions ) do
-                local actKey = 'A' .. a
-                Hekili.Options.args.actionLists.args[ listKey ].args[ actKey ] = ns.newActionOption( i, a )
+        if not v.Hidden then
+            local listKey = 'L' .. i
+            Hekili.Options.args.actionLists.args[ listKey ] = ns.newActionListOption( i )
+            
+            if v.Actions then
+                for a,_ in ipairs( v.Actions ) do
+                    local actKey = 'A' .. a
+                    Hekili.Options.args.actionLists.args[ listKey ].args[ actKey ] = ns.newActionOption( i, a )
+                end
             end
         end
     end
@@ -6267,7 +6269,7 @@ function Hekili:SetOption( info, input, ... )
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
     
     if Select then
-        ns.lib.AceConfigDialog:SelectGroup( "Hekili", category, info[2], Select )
+        LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", category, info[2], Select )
     end
     
 end

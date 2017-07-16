@@ -28,8 +28,8 @@ ns.addToggle = function( name, default, optionName, optionDesc )
         oDesc = optionDesc
     } )
 
-    if Hekili.DB.profile['Toggle State: '..name] == nil then
-        Hekili.DB.profile['Toggle State: '..name] = default
+    if Hekili.DB.profile[ 'Toggle State: ' .. name ] == nil then
+        Hekili.DB.profile[ 'Toggle State: ' .. name ] = default
     end
 
 end
@@ -43,8 +43,8 @@ ns.addSetting = function( name, default, options )
         option = options
     } )
 
-    if Hekili.DB.profile['Class Option: '..name] == nil then
-        Hekili.DB.profile['Class Option: '..name] = default
+    if Hekili.DB.profile[ 'Class Option: ' .. name ] == nil then
+        Hekili.DB.profile[ 'Class Option: ' ..name ] = default
     end
 
 end
@@ -80,12 +80,12 @@ ns.overrideBinds = function()
 
     for i, toggle in ipairs( class.toggles ) do
         for j = 1, 5 do
-            if Hekili.DB.profile['Toggle '..j..' Name'] == toggle.name then
-                Hekili.DB.profile['Toggle '..j..' Name'] = nil
+            if Hekili.DB.profile[ 'Toggle ' .. j .. ' Name' ] == toggle.name then
+                Hekili.DB.profile[ 'Toggle ' .. j .. ' Name' ] = nil
             end
         end
-        if Hekili.DB.profile['Toggle Bind: ' .. toggle.name] then
-            SetOverrideBindingClick( Hekili_Keyhandler, true, Hekili.DB.profile['Toggle Bind: '..toggle.name], "Hekili_Keyhandler", toggle.name )
+        if Hekili.DB.profile[ 'Toggle Bind: ' .. toggle.name ] then
+            SetOverrideBindingClick( Hekili_Keyhandler, true, Hekili.DB.profile[ 'Toggle Bind: ' .. toggle.name ], "Hekili_Keyhandler", toggle.name )
             overrideInitialized = true
         end
     end
@@ -229,6 +229,10 @@ local function addUsableItem( key, id )
 end
 ns.addUsableItem = addUsableItem
 
+
+local function setUsableItemCooldown( cd )
+    state.setCooldown( "usable_items", cd or 10 )
+end
 
 
 
@@ -591,12 +595,13 @@ ns.specializationChanged = function()
     ns.callHook( 'specializationChanged' )
     ns.cacheCriteria()
 
-    for i, v in ipairs( ns.queue ) do
+    ns.forceUpdate()
+    --[[ for i, v in ipairs( ns.queue ) do
         for j = 1, #v do
             ns.queue[i][j] = nil
         end
         ns.queue[i] = nil
-    end
+    end ]]
 
 end
 
@@ -907,6 +912,7 @@ addAbility( 'potion', {
         if not toggle.potions then return false end
 
         local pName = args.ModName or args.name or class.potion
+
         local potion = class.potions[ pName ]
 
         if not potion or GetItemCount( potion.item ) == 0 then return false end
@@ -971,26 +977,12 @@ end ]]
 
 addAbility( "use_items", {
     id = -99,
-    item = 0,
+    name = "Use Items",
     spend = 0,
     cast = 0,
     cooldown = 120,
     gcdType = 'off',
-    handler = function () return end
 } )
-
--- Returns the first available usable item.
-local function available_item()
-    for k, v in pairs( class.items ) do
-        if state.equipped[ k ] and state.cooldown[ k ] then return class.abilities[ k ] end
-    end
-    return
-end
-
-modifyAbility( 'use_items', 'item', function( x )
-    local item = available_item()
-    return item and item.item or x
-end )
 
 
 addUsableItem( "draught_of_souls", 140808 )
@@ -1005,7 +997,6 @@ addAbility( "draught_of_souls", {
 } )
 
 addAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )
-
 
 addHandler( "draught_of_souls", function ()
     applyBuff( "fel_crazed_rage", 3 )
@@ -1054,8 +1045,6 @@ addAbility( "umbral_moonglaives", {
     gcdType = 'off'
 } )
 
--- Umbral Moonglaives:  No Aura or Handler Needed.
-
 
 addUsableItem( "specter_of_betrayal", 151190 )
 
@@ -1067,8 +1056,6 @@ addAbility( "specter_of_betrayal", {
     cooldown = 45,
     gcdType = 'off',
 } )
-
--- Specter of Betrayal:  Is there an aura here?
 
 
 addUsableItem( "vial_of_ceaseless_toxins", 147011 )
@@ -1102,991 +1089,8 @@ addAbility( 'variable', {
     
     
 class.trinkets = {
-        [0] = { -- for when nothing is equipped.
-        },
-        [124225] = { -- Soul Capacitor
-        duration = 10,
-        },
-        [114429] = {
-        stat = 'mastery',
-        duration = 10,
-        },
-        [109998] = {
-        stat = 'multistrike',
-        duration = 15,
-        cooldown = 90,
-        },
-        [114430] = {
-        stat = 'haste',
-        duration = 10,
-        },
-        [110007] = {
-        stat = 'critical_strike',
-        duration = 20,
-        cooldown = 120,
-        },
-        [109999] = {
-        stat = 'haste',
-        duration = 10,
-        },
-        [110008] = {
-        stat = 'mastery',
-        duration = 15,
-        cooldown = 90,
-        },
-        [110009] = {
-        stat = 'versatility',
-        duration = 10,
-        },
-        [114427] = {
-        stat = 'critical_strike',
-        duration = 10,
-        },
-        [110012] = {
-        stat = 'critical_strike',
-        duration = 20,
-        cooldown = 120,
-        },
-        [110013] = {
-        stat = 'versatility',
-        duration = 15,
-        cooldown = 90,
-        },
-        [110002] = {
-        stat = 'haste',
-        duration = 20,
-        cooldown = 120,
-        },
-        [110014] = {
-        stat = 'haste',
-        duration = 10,
-        },
-        [114428] = {
-        stat = 'versatility',
-        duration = 10,
-        },
-        [110003] = {
-        stat = 'versatility',
-        duration = 15,
-        cooldown = 90
-        },
-        [109997] = {
-        stat = 'mastery',
-        duration = 20,
-        cooldown = 120,
-        },
-        [110017] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [110004] = {
-        stat = 'multistrike',
-        duration = 10,
-        },
-        [110018] = {
-        stat = 'mastery',
-        duration = 15,
-        cooldown = 90
-        },
-        [110019] = {
-        stat = 'mastery',
-        duration = 10,
-        },
-        [114431] = {
-        stat = 'versatility',
-        duration = 10,
-        },
-        [119937] = {
-        stat = 'strength',
-        duration = 20,
-        },
-        [120049] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [109262] = {
-        stat = 'primary',
-        duration = 15,
-        },
-        [115149] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [115150] = {
-        stat = 'agility',
-        duration = 20,
-        },
-        [115151] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [115152] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [115153] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [115154] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [115155] = {
-        stat = 'intellect',
-        duration = 20,
-        },
-        [115159] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [115160] = {
-        stat = 'strength',
-        duration = 20
-        },
-        [115521] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [119926] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [119927] = {
-        stat = 'agility',
-        duration = 20,
-        },
-        [119928] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [119929] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [119930] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [119934] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [119932] = {
-        stat = 'intellect',
-        duration = 20,
-        },
-        [119936] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [110018] = {
-        stat = 'mastery',
-        duration = 15,
-        cooldown = 90,
-        },
-        [110019] = {
-        stat = 'mastery',
-        duration = 10,
-        },
-        [110014] = {
-        stat = 'haste',
-        duration = 10,
-        },
-        [110013] = {
-        stat = 'versatility',
-        duration = 15,
-        cooldown = 90,
-        },
-        [110012] = {
-        stat = 'critical_strike',
-        duration = 20,
-        cooldown = 120,
-        },
-        [110009] = {
-        stat = 'versatility',
-        duration = 10,
-        },
-        [110008] = {
-        stat = 'mastery',
-        duration = 15,
-        cooldown = 90,
-        },
-        [110007] = {
-        stat = 'critical_strike',
-        duration = 20,
-        cooldown = 120,
-        },
-        [114488] = {
-        stat = 'mastery',
-        duration = 15,
-        cooldown = 90,
-        },
-        [114489] = {
-        stat = 'haste',
-        duration = 20,
-        cooldown = 120,
-        },
-        [114490] = {
-        stat = 'mastery',
-        duration = 15,
-        cooldown = 90,
-        },
-        [114491] = {
-        stat = 'multistrike',
-        duration = 20,
-        cooldown = 120,
-        },
-        [114492] = {
-        stat = 'haste',
-        duration = 15,
-        cooldown = 90,
-        },
-        [117357] = {
-        stat = 'bonus_armor',
-        duration = 20,
-        cooldown = 120,
-        },
-        [117360] = {
-        stat = 'critical_strike',
-        duration = 10,
-        },
-        [117359] = {
-        stat = 'haste',
-        duration = 10,
-        cooldown = 55,
-        internal = true,
-        },
-        [117358] = {
-        stat = 'critical_strike',
-        duration = 10,
-        cooldown = 55,
-        internal = true,
-        },
-        [122601] = {
-        stat = 'primary',
-        duration = 15,
-        },
-        [116292] = {
-        stat = 'versatility',
-        duration = 10,
-        },
-        [116291] = {
-        stat = 'critical_strike',
-        duration = 10,
-        },
-        [112317] = {
-        stat = 'spirit',
-        duration = 20,
-        cooldown = 115,
-        internal = true,
-        },
-        [112318] = {
-        stat = 'critical_strike',
-        duration = 20,
-        cooldown = 115,
-        internal = true,
-        },
-        [112319] = {
-        stat = 'critical_strike',
-        duration = 20,
-        cooldown = 115,
-        internal = true,
-        },
-        [112320] = {
-        stat = 'critical_strike',
-        duration = 20,
-        cooldown = 115,
-        internal = true,
-        },
-        [114613] = {
-        stat = 'multistrike',
-        duration = 10,
-        },
-        [113645] = {
-        stat = 'critical_strike',
-        duration = 10,
-        },
-        [113612] = {
-        stat = 'multistrike',
-        duration = 10,
-        },
-        [113861] = {
-        stat = 'armor',
-        duration = 10,
-        },
-        [113842] = {
-        stat = 'haste',
-        duration = 20,
-        cooldown = 120,
-        },
-        [113835] = {
-        stat = 'haste',
-        duration = 20,
-        cooldown = 120,
-        },
-        [113834] = {
-        stat = 'mastery',
-        duration = 20,
-        cooldown = 120,
-        },
-        [113663] = {
-        stat = 'mastery',
-        duration = 10,
-        },
-        [114610] = {
-        stat = 'mastery',
-        duration = 10,
-        },
-        [122602] = {
-        stat = 'primary',
-        duration = 15,
-        },
-        [116318] = {
-        stat = 'critical_strike',
-        duration = 10,
-        },
-        [114611] = {
-        stat = 'mastery',
-        duration = 10,
-        },
-        [114612] = {
-        stat = 'haste',
-        duration = 10,
-        },
-        [116315] = {
-        stat = 'haste',
-        duration = 10,
-        },
-        [116314] = {
-        stat = 'multistrike',
-        duration = 10,
-        },
-        [114614] = {
-        stat = 'haste',
-        duration = 10,
-        },
-        [115752] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [115751] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [111222] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [111228] = {
-        stat = 'intellect',
-        duration = 20,
-        },
-        [115760] = {
-        stat = 'strength',
-        duration = 20,
-        },
-        [122754] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [111223] = {
-        stat = 'agility',
-        duration = 20,
-        },
-        [115496] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [111224] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [115753] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [115495] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [115755] = {
-        stat = 'intellect',
-        duration = 20,
-        },
-        [111233] = {
-        stat = 'strength',
-        duration = 20,
-        },
-        [111225] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [115749] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [111232] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [111226] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [115750] = {
-        stat = 'agility',
-        duration = 20,
-        },
-        [115759] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [111227] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [118884] = {
-        stat = 'max_health',
-        duration = 20,
-        cooldown = 120,
-        },
-        [118882] = {
-        stat = 'strength',
-        duration = 15,
-        cooldown = 90
-        },
-        [118880] = {
-        stat = 'mana',
-        cooldown = 120,
-        },
-        [118878] = {
-        stat = 'spell_power',
-        duration = 20,
-        cooldown = 120,
-        },
-        [118876] = {
-        stat = 'agility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [113842] = {
-        stat = 'haste',
-        duration = 20,
-        cooldown = 120,
-        },
-        [113987] = {
-        stacking_stat = 'haste',
-        inverse = true,
-        duration = 10,
-        },
-        [122603] = {
-        stat = 'primary',
-        duration = 15,
-        },
-        [113986] = {
-        stacking_stat = 'haste',
-        inverse = true,
-        duration = 10,
-        },
-        [113985] = {
-        stacking_stat = 'critical_strike',
-        inverse = true,
-        duration = 10,
-        },
-        [113984] = {
-        stacking_stat = 'multistrike',
-        inverse = true,
-        duration = 10,
-        },
-        [118114] = {
-        stat = 'haste',
-        duration = 10,
-        },
-        [113983] = {
-        stacking_stat = 'multistrike',
-        inverse = true,
-        duration = 10,
-        },
-        [113969] = {
-        stat = 'multistrike',
-        duration = 20,
-        cooldown = 120,
-        },
-        [113948] = {
-        stat = 'haste',
-        duration = 10,
-        },
-        [113931] = {
-        stat = 'multistrike',
-        duration = 20,
-        cooldown = 120,
-        },
-        [113905] = {
-        stat = 'bonus_armor',
-        duration = 20,
-        cooldown = 120,
-        },
-        [113893] = {
-        stat = 'mastery',
-        duration = 10,
-        },
-        [113889] = {
-        stat = 'multistrike',
-        duration = 10,
-        },
-        [119192] = {
-        stat = 'spirit',
-        duration = 10,
-        },
-        [119193] = {
-        stat = 'mastery',
-        duration = 10,
-        },
-        [119194] = {
-        stat = 'critical_strike',
-        duration = 10,
-        },
-        [125508] = {
-        stat = 'agility',
-        duration = 20,
-        },
-        [126634] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [126633] = { 
-        stat = 'strength',
-        duration = 20,
-        },
-        [126632] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [126627] = {
-        stat = 'intellect',
-        duration = 20,
-        },
-        [126626] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [126625] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [126624] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [126623] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [126622] = {
-        stat = 'agility',
-        duration = 20,
-        },
-        [126621] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [126157] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [126156] = {
-        stat = 'strength',
-        duration = 20,
-        },
-        [126155] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [126150] = {
-        stat = 'intellect',
-        duration = 20,
-        },
-        [126149] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [126148] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [126147] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [126146] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [126145] = {
-        stat = 'agility',
-        duration = 20,
-        },
-        [126144] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [125520] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [125519] = {
-        stat = 'strength',
-        duration = 20,
-        },
-        [125518] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [125513] = {
-        stat = 'intellect',
-        duration = 20,
-        },
-        [125512] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [125511] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [125510] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [125509] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [125507] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [125030] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [125031] = {
-        stat = 'agility',
-        duration = 20,
-        },
-        [125032] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [125033] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [125034] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120,
-        },
-        [125035] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [125036] = {
-        stat = 'intellect',
-        duration = 20,
-        },
-        [125041] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [125042] = {
-        stat = 'strength',
-        duration = 20,
-        },
-        [125043] = {
-        stat = 'versatility',
-        duration = 20,
-        cooldown = 120,
-        },
-        [124228] = {
-        stat = 'intellect',
-        duration = 20,
-        },
-        [124226] = {
-        stat = 'agility',
-        duration = 20,
-        },
-        [124241] = {
-        stat = 'mastery',
-        duration = 10,
-        },
-        [124236] = {
-        stacking_stat = 'strength',
-        inverse = true,
-        duration = 20,
-            -- need a stack counter function, based on # of attacks.
-            },
-            [124232] = {
-            stat = 'critical_strike',
-            duration = 15,
-            cooldown = 90,
-            },
-            [126460] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [126459] = {
-            stat = 'strength',
-            duration = 20,
-            },
-            [126458] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [124856] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [124857] = {
-            stat = 'agility',
-            duration = 20,
-            },
-            [124858] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [124859] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [124860] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [124861] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [124862] = {
-            stat = 'intellect',
-            duration = 20,
-            },
-            [124867] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [124868] = {
-            stat = 'strength',
-            duration = 20,
-            },
-            [124869] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [125335] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [125336] = {
-            stat = 'agility',
-            duration = 20,
-            },
-            [125337] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [125338] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [125339] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [125340] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [125341] = {
-            stat = 'intellect',
-            duration = 20,
-            },
-            [125344] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [125345] = {
-            stat = 'strength',
-            duration = 20,
-            },
-            [125346] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [126455] = {
-            stat = 'intellect',
-            duration = 20,
-            },
-            [125970] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [125971] = {
-            stat = 'agility',
-            duration = 20,
-            },
-            [125972] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [125973] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [125974] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [125975] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [125976] = {
-            stat = 'intellect',
-            duration = 20,
-            },
-            [125981] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [125982] = {
-            stat = 'strength',
-            duration = 20,
-            },
-            [125983] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [126449] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-            [126450] = {
-            stat = 'agility',
-            duration = 20,
-            },
-            [126451] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [126452] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [126453] = {
-            stat = 'max_health',
-            duration = 15,
-            cooldown = 120,
-            },
-            [126454] = {
-            stat = 'versatility',
-            duration = 20,
-            cooldown = 120,
-            },
-
-        --heirlooms
-        [122530] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120
-        },
-        [93900] = {
-        stat = 'max_health',
-        duration = 15,
-        cooldown = 120
-    }
+    [0] = { -- for when nothing is equipped.
+    },
 }
 
 
@@ -2097,27 +1101,32 @@ end
 } )
 
 
-for k, v in pairs( class.trinkets ) do
-    local item = k
-    local buffs = ns.lib.LibItemBuffs:GetItemBuffs( k )
+-- Initialize trinket stuff.
+do
+    local LIB = LibStub( "LibItemBuffs-1.0", true )
+    if LIB then
+        for k, v in pairs( class.trinkets ) do
+            local item = k
+            local buffs = LIB:GetItemBuffs( k )
 
-    if type( buffs ) == 'table' then
-        for i, buff in ipairs( buffs ) do
-            buff = GetSpellInfo( buff )
-            if buff then
-                addAura( ns.formatKey( buff ), i, 'stat', v.stat, v.duration and "duration", v.duration )
-                class.trinkets[ k ].buff = ns.formatKey( buff )
+            if type( buffs ) == 'table' then
+                for i, buff in ipairs( buffs ) do
+                    buff = GetSpellInfo( buff )
+                    if buff then
+                        addAura( ns.formatKey( buff ), i, 'stat', v.stat, v.duration and "duration", v.duration )
+                        class.trinkets[ k ].buff = ns.formatKey( buff )
+                    end
+                end
+            elseif type( buffs ) == 'number' then
+                local buff = GetSpellInfo( buffs )
+                if buff then
+                    addAura( ns.formatKey( buff ), buffs, 'stat', v.stat, v.duration and "duration", v.duration )
+                    class.trinkets[ k ].buff = ns.formatKey( buff )
+                end
             end
-        end
-    elseif type( buffs ) == 'number' then
-        local buff = GetSpellInfo( buffs )
-        if buff then
-            addAura( ns.formatKey( buff ), buffs, 'stat', v.stat, v.duration and "duration", v.duration )
-            class.trinkets[ k ].buff = ns.formatKey( buff )
         end
     end
 end
-    
     
     
 -- DEFAULTS
@@ -2356,7 +1365,7 @@ ns.isDefault = function( name, category )
 end
 
 
-
+-- Was for module support; disabled.
 function Hekili.RetrieveFromNamespace( key )
     return nil
 end

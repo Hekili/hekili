@@ -104,16 +104,10 @@ local SimToLua = function( str, modifier )
   -- If no conditions were provided, function should return true.
   if not str or str == '' then return nil end
 
-  -- str = str:gsub( "%s", "" )
-
   -- Strip comments.
   str = str:gsub("^%-%-.-\n", "")
 
   -- Replace '!' with ' not '.
-  -- str = str:gsub( "!%s-", "!") -- eliminate spacing.
-  -- str = str:gsub( "!([^=%(][^&|()]+)", " not (%1) " )
-  -- str = str:gsub( "!%(", " not (" )
-  -- str = str:gsub("!([^=])", " not %1")
   str = forgetMeNots( str )
 
   -- Replace '%' for division with actual division operator '/'.
@@ -126,8 +120,8 @@ local SimToLua = function( str, modifier )
   str = str:gsub("||", " or "):gsub("|", " or ")
 
   if not modifier then
-    -- Replace assignment '=' with conditional '=='
-    str = str:gsub("=", "==")
+    -- Replace assignment '=' with comparison '=='
+    str = str:gsub("([^=])=([^=])", "%1==%2" )
 
     -- Fix any conditional '==' that got impacted by previous.
     str = str:gsub("==+", "==")
@@ -436,7 +430,11 @@ function ns.checkTimeScript( entry, wait, spend, spend_type )
 
     local out = script.Ready( wait, spend, spend_type )
 
-    return out or 0
+    out = out or 0
+
+    out = out > 0 and roundUp( out, 2 ) or out
+
+    return out
 
 end
 

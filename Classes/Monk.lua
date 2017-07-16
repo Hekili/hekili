@@ -165,6 +165,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addAura( 'master_of_combinations', 238095, 'duration', 6 )
         addAura( 'paralysis', 115078, 'duration', 15 )
         addAura( 'power_strikes', 129914 )
+        addAura( 'pressure_point', 247255, 'duration', 5 )
         addAura( 'provoke', 115546, 'duration', 8 )
         addAura( 'ring_of_peace', 116844, 'duration', 8 )
         addAura( 'rising_sun_kick', 107428, 'duration', 10 )
@@ -786,6 +787,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             if buff.serenity.up then
                 x = max( 0, x - ( buff.serenity.remains / 2 ) )
             end
+
+            if set_bonus.tier20_2pc > 4 then applyBuff( 'pressure_point', 5 + action.fists_of_fury.cast ) end
             return x * haste
         end )
 
@@ -1061,6 +1064,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         addHandler( 'rising_sun_kick', function ()
             applyDebuff( 'target', 'mark_of_the_crane', 15 )
+            removeBuff( 'pressure_point' )
 
             if talent.hit_combo.enabled then
                 if prev_gcd.rising_sun_kick then removeBuff( 'hit_combo' )

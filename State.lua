@@ -10,7 +10,8 @@ local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
 local round, roundUp = ns.round, ns.roundUp
 local safeMin, safeMax = ns.safeMin, ns.safeMax
-local tableCopy = ns.tableCopy
+local tCopy = ns.tableCopy
+local tSort = table.sort
 
 
 local PTR = ns.PTR
@@ -173,24 +174,14 @@ state.trinket = {
 }
 state.trinket.proc = state.trinket.stat
 
---[[ Future Multi-Target Handling:
-state.unitDB = {
-    IDs = {},
-    plates = {},
-    
-    debuff = {},
-    health = {},
-    dot = {},
-} ]]
-
-    state.using_apl = setmetatable( {}, {
+state.using_apl = setmetatable( {}, {
     __index = function( t, k )
         return false
     end
 } )
 
 
-    state.role = setmetatable( {}, {
+state.role = setmetatable( {}, {
     __index = function( t, k )
         return false
     end
@@ -204,6 +195,7 @@ local mt_no_trinket_stacking_stat = {
 
 local mt_no_trinket_stat = {
 }
+
 
 local mt_no_trinket = {
     __index = function( t, k )
@@ -259,11 +251,6 @@ local mt_trinket_any_stat = {
 }
 
 setmetatable( state.trinket.stat, mt_trinket_any_stat )
-
-
-
-
-
 
 
 local mt_trinket = {
@@ -880,7 +867,7 @@ local mt_state = {
             return max( t.gcd, class.abilities[ t.this_action ].cast )
             
         elseif k == 'gcd' then
-            local gcdType = class.abilities[ t.this_action ].gcdType
+            local gcdType = t.this_action and class.abilities[ t.this_action ] and class.abilities[ t.this_action ].gcdType or "spell"
             if gcdType == 'totem' then return 1.0 end
             return max( 0.75, 1.5 * t.haste )
             
@@ -1374,7 +1361,7 @@ local mt_target = {
             local ability = state.this_action and class.abilities[ state.this_action ]
             
             if ability then
-                return ( not state.target.exists or ns.lib.SpellRange.IsSpellInRange( ability.id, 'target' ) )
+                return ( not state.target.exists or LibStub( "SpellRange-1.0" ).IsSpellInRange( ability.id, 'target' ) )
             end
             
             return true
@@ -1416,7 +1403,7 @@ local mt_target = {
             return ( t.minR >= tonumber( minR ) and t.maxR <= tonumber( maxR ) )
             
         elseif k == 'minR' then
-            local minR = ns.lib.RangeCheck:GetRange( 'target' )
+            local minR = LibStub( "LibRangeCheck-2.0" ):GetRange( 'target' )
             if minR then
                 rawset( t, k, minR )
                 return t[k]
@@ -1424,7 +1411,7 @@ local mt_target = {
             return 5
             
         elseif k == 'maxR' then
-            local maxR = select( 2, ns.lib.RangeCheck:GetRange( 'target' ) )
+            local maxR = select( 2, LibStub( "LibRangeCheck-2.0" ):GetRange( 'target' ) )
             if maxR then
                 rawset( t, k, maxR )
                 return t[k]
@@ -1478,7 +1465,7 @@ local mt_default_cooldown = {
             
             if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
                 start = state.now
-                duration = 3600
+                duration = 0
             end
             
             if t.key == 'ascendance' and state.buff.ascendance.up then
@@ -1494,13 +1481,13 @@ local mt_default_cooldown = {
                     
                 else
                     start = state.now
-                    duration = 3600
+                    duration = 0
                     
                 end
                 
             elseif not ns.isKnown( t.id ) then
                 start = state.now
-                duration = 3600
+                duration = 0
             
             end
             
@@ -1516,7 +1503,7 @@ local mt_default_cooldown = {
                     charges = 1
                     maxCharges = 1
                     start = state.now
-                    duration = 3600
+                    duration = 0
                 end
                 
                 t.charge = charges or 1
@@ -1758,7 +1745,7 @@ local mt_cooldowns = {
                 
             else
                 start = state.now
-                duration = 3600
+                duration = 0
                 
             end
 
@@ -1777,7 +1764,7 @@ local mt_cooldowns = {
 
         elseif not ns.isKnown( ability ) then
             start = state.now
-            duration = 3600
+            duration = 0
         end
         
         if start then
@@ -2909,8 +2896,9 @@ end
 local FORECAST_DURATION = 15
 
 local function forecastResources()
+
     -- Forecasts the next 10s of resources.
-    if state.delay > 0 then print( "WARNING: FORECASTING RESOURCES WITH DELAY ABOVE ZERO!", state.delay ) end
+    if state.delay > 0 then Hekili:Error( "WARNING: FORECASTING RESOURCES WITH DELAY ABOVE ZERO [ %.2f ]!", state.delay ) end
     local models = class.regenModel
 
     table.wipe( events )
@@ -2918,7 +2906,7 @@ local function forecastResources()
 
     for k, v in pairs( class.resources ) do
         remains[ k ] = FORECAST_DURATION
-        table.wipe( state[ k ].forecast )
+        -- table.wipe( state[ k ].forecast )
         table.wipe( state[ k ].times )
         table.wipe( state[ k ].values )
         state[ k ].fcount = 0
@@ -2956,7 +2944,7 @@ local function forecastResources()
         end
     end
 
-    table.sort( events, resourceModelSort )
+    tSort( events, resourceModelSort )
 
     local finish = now + FORECAST_DURATION
 
@@ -3024,7 +3012,7 @@ local function forecastResources()
             end
         end
 
-        if #events > 1 then table.sort( events, resourceModelSort ) end
+        if #events > 1 then tSort( events, resourceModelSort ) end
     end
 
     for k, v in pairs( remains ) do
@@ -3043,8 +3031,6 @@ ns.forecastResources = forecastResources
 
 
 local function modelResources( time )
-
-    -- print( format( "Model resources over by %.2fs.", time ) )
 
     if time <= 0 then return end
 
@@ -3078,7 +3064,7 @@ local function modelResources( time )
     end
 
     -- Sort the table in chronological order.
-    table.sort( events, resourceModelSort )
+    tSort( events, resourceModelSort )
 
     -- Start from time = 0; currently assuming modelResource() will be called after the clock is advanced.
 
@@ -3127,12 +3113,21 @@ local function modelResources( time )
             end
         end
 
-        if #events > 1 then table.sort( events, resourceModelSort ) end
+        if #events > 1 then tSort( events, resourceModelSort ) end
     end
 
     -- Regen any remaining resources.
     for k, v in pairs( remains ) do
         state[ k ].actual = min( state[ k ].max, state[ k ].actual + ( v * state[ k ].regen ) )
+    end
+end
+
+
+function state.putTrinketsOnCD( val )
+    val = val or 10
+
+    for k, _ in pairs( class.items ) do
+        setCooldown( k, max( val, state.cooldown[ k ].remains ) )
     end
 end
 
@@ -3448,7 +3443,7 @@ function state.advance( time )
     end
     
     time = ns.callHook( 'advance', time ) or time
-    time = roundUp( time, 3 )
+    -- time = roundUp( time, 3 )
     
     state.delay = 0
     
@@ -3636,7 +3631,7 @@ _G.isKnown = ns.isKnown
 
 -- Filter out non-resource driven issues with abilities.
 ns.isUsable = function( spell )
-    
+
     local ability = class.abilities[ spell ]
     
     if not ability then return true end
@@ -3645,7 +3640,7 @@ ns.isUsable = function( spell )
         return state.equipped[ ability.item ]
 
     else
-        if state.rangefilter and UnitExists( 'target' ) and ns.lib.SpellRange.IsSpellInRange( ability.id, 'target' ) == 0 then
+        if state.rangefilter and UnitExists( 'target' ) and LibStub( "SpellRange-1.0" ).IsSpellInRange( ability.id, 'target' ) == 0 then
             return false
         end
     
