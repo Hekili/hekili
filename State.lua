@@ -1289,6 +1289,8 @@ local mt_settings = {
             return metafunctions.settings[ k ]()
         elseif Hekili.DB.profile[ 'Class Option: '..k ] ~= nil then
             return Hekili.DB.profile[ 'Class Option: '..k ]
+        elseif Hekili.DB.profile.trinkets[ state.this_action ] ~= nil then
+            return Hekili.DB.profile.trinkets[ state.this_action ][ k ]
         end
         
         return
@@ -3425,8 +3427,6 @@ function state.reset( dispID )
     
     if delay > 0 then
         state.advance( delay )
-    else
-        forecastResources()
     end
 
     forecastResources()
@@ -3636,20 +3636,19 @@ ns.isUsable = function( spell )
     
     if not ability then return true end
 
-    if ability.item then
-        return state.equipped[ ability.item ]
+    if ability.item and not state.equipped[ ability.item ] then
+        return false
+    end
 
-    else
-        if state.rangefilter and UnitExists( 'target' ) and LibStub( "SpellRange-1.0" ).IsSpellInRange( ability.id, 'target' ) == 0 then
-            return false
-        end
-    
-        if ability.usable ~= nil then
-            if type( ability.usable ) == 'number' then 
-                return IsUsableSpell( ability.usable )
-            elseif type( ability.usable ) == 'function' then
-                return ability.usable()
-            end
+    if state.rangefilter and UnitExists( 'target' ) and LibStub( "SpellRange-1.0" ).IsSpellInRange( ability.id, 'target' ) == 0 then
+        return false
+    end
+
+    if ability.usable ~= nil then
+        if type( ability.usable ) == 'number' then 
+            return IsUsableSpell( ability.usable )
+        elseif type( ability.usable ) == 'function' then
+            return ability.usable()
         end
     end
     

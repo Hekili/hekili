@@ -157,11 +157,23 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
     ns.convertDisplays()
     ns.buildUI()
 
+    local options = Hekili.Options.args.trinkets.args
+
     for key, ability in pairs( class.abilities ) do
         if ability.recheck_name then
+            local name, link = GetItemInfo( ability.item )
+            local icon = select( 10, GetItemInfo( ability.item ) )
+
             ability.elem.name = GetItemInfo( ability.item )
-            ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
+            ability.elem.texture = icon
             ability.recheck_name = nil
+
+            if options[ key ] then
+                options[ key ].args.icon.image = icon 
+                options[ key ].args.icon.name = link
+                options[ key ].args.disabled.name = "Disable " .. name
+            end
+
             class.abilities[ ability.name ] = ability
         end
     end

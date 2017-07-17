@@ -221,20 +221,80 @@ end
 ns.addGearSet = addGearSet
 
 
-local function addUsableItem( key, id )
-    class.items = class.items or {}
-    class.items[ key ] = id
-
-    addGearSet( key, id )
-end
-ns.addUsableItem = addUsableItem
-
-
 local function setUsableItemCooldown( cd )
     state.setCooldown( "usable_items", cd or 10 )
 end
 
 
+-- For Trinket Settings.
+class.itemSettings = {}
+
+function addItemSettings( key, itemID, options )
+
+    local name, link = GetItemInfo( itemID )
+    name = name or tostring( itemID )
+    link = link or tostring( itemID )
+
+    options = options or {}
+
+    options.icon = {
+        type = "description",
+        name = link,
+        order = 1,
+        image = select( 10, GetItemInfo( itemID ) ),
+        imageCoords = { 0.2, 0.8, 0.2, 0.8 },
+        width = "full",
+        fontSize = "large"
+    }
+
+    options.disabled = {
+        type = "toggle",
+        name = "Disable " .. name,
+        desc = "If disabled, the addon will not recommend this trinket under any circumstances.",
+        order = 2,
+        width = "full"
+    }
+
+    options.minimum = {
+        type = "range",
+        name = "Minimum Targets",
+        desc = "The addon will only recommend this trinket when there are at least this many targets available to hit.",
+        order = 3,
+        width = "full",
+        min = 1,
+        max = 10,
+        step = 1
+    }
+
+    options.maximum = {
+        type = "range",
+        name = "Maximum Targets",
+        desc = "The addon will only recommend this trinket when there are no more than this many targets detected.\n\n" ..
+            "This setting is ignored if set to 0.",
+        order = 4,
+        width = "full",
+        min = 0,
+        max = 10,
+        step = 1
+    }
+
+    table.insert( class.itemSettings, {
+        key = key,
+        item = itemID,
+        options = options
+    } )  
+
+end
+
+
+local function addUsableItem( key, id )
+    class.items = class.items or {}
+    class.items[ key ] = id
+
+    addGearSet( key, id )
+    addItemSettings( key, id )
+end
+ns.addUsableItem = addUsableItem
 
 
 -- Wrapper for the ability table.
@@ -863,6 +923,7 @@ addAbility( 'wait', {
 } )
 
 
+
 -- Universal Gear Stuff
 addGearSet( 'rethus_incessant_courage', 146667 )
 addAura( 'rethus_incessant_courage', 241330 )
@@ -938,40 +999,34 @@ end )
 
 
 
+--[[ ns.addToggle = function( name, default, optionName, optionDesc )
 
---[[ class.usable_items = {
-    no_item = {
-        key = "no_item",
-        item = -1,
-        cooldown = 3600,
-        cast = 0,
-        gcdType = 'off',
-        passive = 'false',
-    },
-    draught_of_souls = {
-        key = "draught_of_souls",
-        item = 140808,
-        cooldown = 80,
-        cast = 0,
-        gcdType = 'off',
-        passive = false,
-        handler = setfenv( function ()
-            applyBuff( "fel_crazed_rage", 3 )
-            setCooldown( "global_cooldown", 3 )
-        end, state )
-    },
-    kiljaedens_burning_wish = {
-        key = "kiljaedens_burning_wish",
-        item = 144259,
-        cooldown = 75,
-        cast = 0,
-        gcdType = 'off',
-        passive = false,
-        handler = setfenv( function () end, state )
-    }
-}
-for k,v in pairs( class.usable_items ) do
-    class.usable_items[ v.item ] = v
+    table.insert( class.toggles, {
+        name = name,
+        state = default,
+        option = optionName,
+        oDesc = optionDesc
+    } )
+
+    if Hekili.DB.profile[ 'Toggle State: ' .. name ] == nil then
+        Hekili.DB.profile[ 'Toggle State: ' .. name ] = default
+    end
+
+end
+
+
+ns.addSetting = function( name, default, options )
+
+    table.insert( class.settings, {
+        name = name,
+        state = default,
+        option = options
+    } )
+
+    if Hekili.DB.profile[ 'Class Option: ' .. name ] == nil then
+        Hekili.DB.profile[ 'Class Option: ' ..name ] = default
+    end
+
 end ]]
 
 
@@ -985,7 +1040,69 @@ addAbility( "use_items", {
 } )
 
 
-addUsableItem( "draught_of_souls", 140808 )
+addAbility( "kiljaedens_burning_wish", {
+    id = -101,
+    item = 144259,
+    spend = 0,
+    cast = 0,
+    cooldown = 75,
+    gcdType = 'off',
+    usable = function() return  ( not settings.disabled ) and
+                                ( active_enemies >= settings.minimum ) and
+                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
+} )
+
+
+addUsableItem( "umbral_moonglaives", 147012 )
+
+addAbility( "umbral_moonglaives", {
+    id = -103,
+    item = 147012,
+    spend = 0,
+    cast = 0,
+    cooldown = 90,
+    gcdType = 'off',
+    usable = function() return  ( not settings.disabled ) and
+                                ( active_enemies >= settings.minimum ) and
+                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
+} )
+
+
+addUsableItem( "specter_of_betrayal", 151190 )
+
+addAbility( "specter_of_betrayal", {
+    id = -103,
+    item = 151190,
+    spend = 0,
+    cast = 0,
+    cooldown = 45,
+    gcdType = 'off',
+    usable = function() return  ( not settings.disabled ) and
+                                ( active_enemies >= settings.minimum ) and
+                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
+} )
+
+
+addUsableItem( "vial_of_ceaseless_toxins", 147011 )
+
+addAbility( "vial_of_ceaseless_toxins", {
+    id = -104,
+    item = 147011,
+    spend = 0,
+    cast = 0,
+    cooldown = 60,
+    gcdType = 'off',
+    usable = function() return  ( not settings.disabled ) and
+                                ( active_enemies >= settings.minimum ) and
+                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
+} )
+
+addAura( "ceaseless_toxin", 242497, "duration", 20 )
+
+addHandler( "vial_of_ceaseless_toxins", function ()
+    applyDebuff( "target", "ceaseless_toxin", 20 )
+end )
+
 
 addAbility( "draught_of_souls", {
     id = -100,
@@ -994,6 +1111,9 @@ addAbility( "draught_of_souls", {
     cast = 0,
     cooldown = 80,
     gcdType = 'off',
+    usable = function() return  ( not settings.disabled ) and
+                                ( active_enemies >= settings.minimum ) and
+                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
 } )
 
 addAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )
@@ -1003,20 +1123,6 @@ addHandler( "draught_of_souls", function ()
     setCooldown( "global_cooldown", 3 )
 end )
 
-
-addUsableItem( "kiljaedens_burning_wish", 144259 )
-
-addAbility( "kiljaedens_burning_wish", {
-    id = -101,
-    item = 144259,
-    spend = 0,
-    cast = 0,
-    cooldown = 75,
-    gcdType = 'off',
-} )
-
-
-addUsableItem( "faulty_countermeasure", 137539 )
 
 addAbility( "faulty_countermeasure", {
     id = -102,
@@ -1032,50 +1138,6 @@ addAura( "sheathed_in_frost", 214962, "duration", 30 )
 addHandler( "faulty_countermeasure", function ()
     applyBuff( "sheathed_in_frost", 30 )
 end )
-
-
-addUsableItem( "umbral_moonglaives", 147012 )
-
-addAbility( "umbral_moonglaives", {
-    id = -103,
-    item = 147012,
-    spend = 0,
-    cast = 0,
-    cooldown = 90,
-    gcdType = 'off'
-} )
-
-
-addUsableItem( "specter_of_betrayal", 151190 )
-
-addAbility( "specter_of_betrayal", {
-    id = -103,
-    item = 151190,
-    spend = 0,
-    cast = 0,
-    cooldown = 45,
-    gcdType = 'off',
-} )
-
-
-addUsableItem( "vial_of_ceaseless_toxins", 147011 )
-
-addAbility( "vial_of_ceaseless_toxins", {
-    id = -104,
-    item = 147011,
-    spend = 0,
-    cast = 0,
-    cooldown = 60,
-    gcdType = 'off',
-} )
-
-addAura( "ceaseless_toxin", 242497, "duration", 20 )
-
-addHandler( "vial_of_ceaseless_toxins", function ()
-    applyDebuff( "target", "ceaseless_toxin", 20 )
-end )
-
-
 
 
 addAbility( 'variable', {
@@ -1363,6 +1425,10 @@ ns.isDefault = function( name, category )
 
     return false
 end
+
+
+-- Trinket APL
+ns.storeDefault( "Usable Items", 'actionLists', 20170716.1803, [[dGZUdaGAcLwpHGxcIYUar12iK0Sr5teQ62syNkAVu7gX(LOHrQ(nQoSO)QqdwbdhKoOGAzKKJrkNJqkleuwQqTyKA5e9qHepv1JL0ZbMiHktvGjtW0L6IcXvjbEgHOUos2iHuTvcr2mjA7cPMgisFLqrFge(oHcJKqItR0OjHgpjOtkiFJK6AGiopO6Yq3KqOxlK0wZb(rijndfmmFXHktkwBA)dfRBYwri7Lt8u3pCTxob4ap1CGFessZqbdZFMfOVONuSgE5qu4uKgLfycOKOFmc4uYkcCGB)W0lBB4(ktkwdFSYPinklWeqjr)qeHTMnx6t4e0pgzycqpvPRPwt3)v5cT9D7Pkh4hHK0muWW8Nzb6RGcAzYkheroNabl3OrGFmc4uYkcCGB)W0lBB4(uf0YKnwW5eiy5gnc8dre2A2CPpHtq)yKHja9uLUMAnD)xLl023TNISd8JqsAgkyy(VkxOTVFiIWwZMl9jCc6hJmmbONQ01uRP7hJaoLSIah42pm9Y2gUVGmPGqXEKRCeWPya)zwG(ItMuqOyxoWvwoCofd42ti1b(rijndfmm)zwG(q2YeVytuajIhuoaJsswceLdI5cu0pgbCkzfboWTFy6LTnC)OUmXMOasaJ0usYsGyumwGI(HicBnBU0NWjOFmYWeGEQsxtTMU)RYfA772tiXb(rijndfmm)zwG(I0MSYbUYYHOGjaziauoeWv4sa(XiGtjRiWbU9dtVSTH7h9MSrUYXkMaKHaWyZv4sa(HicBnBU0NWjOFmYWeGEQsxtTMU)RYfA772tr1b(rijndfmm)zwG(hkwBuwoWvwoadBzcpz(XiGtjRiWbU9dtVSTH7dGI1gLJCLJ0ylt4jZperyRzZL(eob9JrgMa0tv6AQ109FvUqBF3U9JrgMa0tv6AQ1vRlAqUM)RYfA77lkRGasmm)zwG(kaK0mSCiuJfa32a]] )
 
 
 -- Was for module support; disabled.

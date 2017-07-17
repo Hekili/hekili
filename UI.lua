@@ -115,7 +115,9 @@ end
 local function Button_OnMouseDown( self, btn )
   local display = self:GetName():match("Hekili_D(%d+)_B(%d+)")
   local mover = _G[ "HekiliDisplay" .. display ]
-  startScreenMovement( mover )
+  if ( Hekili.Config or not Hekili.DB.profile.Locked ) and btn == "LeftButton" and not mover.Moving then
+    startScreenMovement( mover )
+  end
 end
 
 

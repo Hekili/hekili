@@ -382,14 +382,16 @@ local z_PVP = {
 
 local palStack = {}
 local cachedResults = {}
+local cachedValues = {}
 
 
 function checkAPLConditions()
     for k, v in pairs( palStack ) do
         if v ~= 0 then
             cachedResults[ k ][ state.delay ] = cachedResults[ k ][ state.delay ] or checkScript( 'A', v )
+            cachedValues[ k ][ state.delay ] = cachedValues[ k ][ state.delay ] or ns.getConditionsAndValues( 'A', v )
 
-            if Hekili.ActiveDebug then Hekili:Debug( "The conditions for %s would%s pass at %.2f.", k, cachedResults[ k ][ state.delay ] and "" or " NOT", state.delay ) end
+            if Hekili.ActiveDebug then Hekili:Debug( "The conditions for %s would%s pass at %.2f.\n%s", k, cachedResults[ k ][ state.delay ] and "" or " NOT", state.delay, cachedValues[ k ][ state.delay ] ) end
             if not cachedResults[ k ][ state.delay ] then return false end
         end
     end
@@ -703,7 +705,8 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
     else
         if debug then self:Debug( "Adding %s to the list of processed action lists.", list.Name ) end
         palStack[ list.Name ] = hookID or 0
-        cachedResults[ list.Name ] = cachedResults[ list.Name ] or {}        
+        cachedResults[ list.Name ] = cachedResults[ list.Name ] or {}
+        cachedValues[ list.Name ] = cachedValues[ list.Name ] or {}
     end
     
     local chosen_action = action
@@ -722,18 +725,21 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                 if debug then self:Debug( "Removing %s from list of processed action lists.", list.Name ) end
                 palStack[ list.Name ] = nil
                 table.wipe( cachedResults[ list.Name ] )
+                table.wipe( cachedValues[ list.Name ] )
                 return chosen_action, chosen_wait, chosen_clash, chosen_depth
             elseif chosen_wait == 0 then
                 if debug then self:Debug( "The last selected ability ( %s ) has no wait time. End loop.", chosen_action ) end
                 if debug then self:Debug( "Removing %s from list of processed action lists.", list.Name ) end
                 palStack[ list.Name ] = nil
                 table.wipe( cachedResults[ list.Name ] )
+                table.wipe( cachedValues[ list.Name ] )
                 return chosen_action, chosen_wait, chosen_clash, chosen_depth
             elseif stop then
                 if debug then self:Debug( "Returning to parent list after completing Run_Action_List ( %d - %s ).", listID, list.Name ) end
                 if debug then self:Debug( "Removing %s from list of processed action lists.", list.Name ) end
                 palStack[ list.Name ] = nil
                 table.wipe( cachedResults[ list.Name ] )
+                table.wipe( cachedValues[ list.Name ] )
                 return chosen_action, chosen_wait, chosen_clash, chosen_depth
             end
             
@@ -885,17 +891,15 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                     end
                                     
                                     if hasResources then
-                                        local aScriptPass = true
-                                        
-                                        if not entry.Script or entry.Script == '' then 
-                                            if debug then self:Debug( ' - this ability has no required conditions.' ) end
-                                        else 
-                                            aScriptPass = checkAPLConditions()
+                                        local aScriptPass = checkAPLConditions()
 
-                                            if not aScriptPass then
-                                                if debug then self:Debug( "This action entry is not available as the called action list would not be processed at %.2f.", state.delay ) end
+                                        if not aScriptPass then
+                                            if debug then self:Debug( "This action entry is not available as the called action list would not be processed at %.2f.", state.delay ) end
 
-                                            else
+                                        else
+                                            if not entry.Script or entry.Script == '' then 
+                                                if debug then self:Debug( ' - this ability has no required conditions.' ) end
+                                            else 
                                                 aScriptPass = checkScript( 'A', scriptID )
                                                 if debug then self:Debug( "Conditions %s: %s", aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
                                             end
@@ -979,6 +983,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
 
     palStack[ list.Name ] = nil
     table.wipe( cachedResults[ list.Name ] )
+    table.wipe( cachedValues[ list.Name ] )
     return chosen_action, chosen_wait, chosen_clash, chosen_depth
 
 end
@@ -2404,12 +2409,14 @@ function Hekili:ProcessHooks( dispID, solo )
                             if action.cast > 0 and not action.channeled and not class.resetCastExclusions[ chosen_action ] then
                                 state.advance( action.cast )
                             end
+
+                            local cooldown = action.cooldown
                             
                             -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
                             if class.abilities[ chosen_action ].charges and action.recharge > 0 then
                                 state.spendCharges( chosen_action, 1 )
                             elseif chosen_action ~= 'global_cooldown' then
-                                state.setCooldown( chosen_action, action.cooldown )
+                                state.setCooldown( chosen_action, cooldown )
                             end
                             
                             state.cycle = slot.indicator == 'cycle'
@@ -2421,7 +2428,7 @@ function Hekili:ProcessHooks( dispID, solo )
                             ns.runHandler( chosen_action )
 
                             if action.item then
-                                state.putTrinketsOnCD()
+                                state.putTrinketsOnCD( cooldown / 6 )
                             end
 
                             -- Complete the channel.
@@ -2814,14 +2821,23 @@ function Hekili:UpdateDisplay( dispID )
                         end
                     elseif display.rangeType == 'ability' then
                         local rangeSpell = ability.range and GetSpellInfo( ability.range ) or ability.name
-                        
-                        local SpellRange = LibStub( "SpellRange-1.0" )
-                        if SpellRange.IsSpellInRange( rangeSpell, 'target' ) == 0 then
-                            ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 0, 0)
-                        elseif i == 1 and select(2, IsUsableSpell( ability.id )) then
-                            ns.UI.Buttons[dispID][i].Texture:SetVertexColor(0.4, 0.4, 0.4)
+
+                        if ability.item then
+                            if UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and not IsItemInRange( ability.item, "target" ) then
+                                ns.UI.Buttons[ dispID ][ i ].Texture:SetVertexColor( 1, 0, 0 )
+                            else
+                                ns.UI.Buttons[ dispID ][ i ].Texture:SetVertexColor( 1, 1, 1 )
+                            end
+
                         else
-                            ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 1, 1)
+                            local SpellRange = LibStub( "SpellRange-1.0" )
+                            if SpellRange.IsSpellInRange( rangeSpell, 'target' ) == 0 then
+                                ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 0, 0)
+                            elseif i == 1 and select(2, IsUsableSpell( ability.id )) then
+                                ns.UI.Buttons[dispID][i].Texture:SetVertexColor(0.4, 0.4, 0.4)
+                            else
+                                ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 1, 1)
+                            end
                         end
 
                     elseif display.rangeType == 'off' then

@@ -67,6 +67,8 @@ function Hekili:GetDefaults()
             
             blacklist = {
             },
+            trinkets = {
+            },
             clashes = {
             },
             
@@ -3558,6 +3560,39 @@ ns.ClassSettings = function ()
 end
 
 
+ns.TrinketSettings = function ()
+    
+    local option = {
+        type = 'group',
+        name = "Trinket Settings",
+        order = 21,
+        args = {
+        },
+    }
+
+    local trinkets = Hekili.DB.profile.trinkets
+
+    for i, setting in pairs( class.itemSettings ) do
+        option.args[ setting.key ] = {
+            type = "group",
+            name = " ",
+            order = 10 + i,
+            inline = true,
+            args = setting.options
+        }
+
+        trinkets[ setting.key ] = trinkets[ setting.key ] or {
+            disabled = false,
+            minimum = 1,
+            maximum = 0
+        }
+    end
+    
+    return option
+    
+end
+
+
 local importerOpts = {
     importToDisplay = false,
     destinationType = 'new',
@@ -5648,6 +5683,7 @@ ns.refreshOptions = function()
     
     Hekili.Options.args.class = nil
     Hekili.Options.args.class = ns.ClassSettings()
+    Hekili.Options.args.trinkets = ns.TrinketSettings()
     
     -- Until I feel like making this better at managing memory.
     collectgarbage()
@@ -5674,6 +5710,12 @@ function Hekili:GetOption( info, input )
             return profile.blacklist[ option ]
 
         end
+
+    elseif category == 'trinkets' then
+        local subcategory = info[2]
+
+        if profile.trinkets[ subcategory ] ~= nil then return profile.trinkets[ subcategory ][ option ] end
+        return
         
     elseif category == 'notifs' then
         if option == 'Notification X' or option == 'Notification Y' then
@@ -5873,6 +5915,12 @@ function Hekili:SetOption( info, input, ... )
         end
         
         return
+
+    elseif category == 'trinkets' then
+        subcategory = info[2]
+
+        profile.trinkets[ subcategory ] = profile.trinkets[ subcategory ] or {}
+        profile.trinkets[ subcategory ][ option ] = input
         
     elseif category == 'notifs' then
         profile[ option ] = input
@@ -6886,6 +6934,11 @@ local function sanitize( segment, i, line, warnings )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'rune.X' with 'runes.X' (" .. times .. "x)." )
     end
+
+    i, times = i:gsub( "cooldown%.strike%.", "cooldown.stormstrike." )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Replaced 'cooldown.strike' with 'cooldown.stormstrike' (" .. times .. "x)." )
+    end
     
     --[[ i, times = i:gsub( "spell_targets%.[a-zA-Z0-9_]+", "active_enemies" )
     if times > 0 then
@@ -7367,7 +7420,8 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
             end
             table.insert( warnings, "Line " .. line .. ": Replaced unsupported '" .. token .. "' with '" .. enemies .. "' (" .. times .. "x)." )
         end
-        
+
+
         if i:sub(1, 13) == 'fists_of_fury' then
             for token in i:gmatch( "energy.time_to_max>cast_time" ) do
                 local times = 0
