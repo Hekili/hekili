@@ -796,6 +796,11 @@ local mt_state = {
         elseif k == 'ranged' then
             return false
             
+        elseif k == 'wait_for_gcd' then 
+            -- For specs that have to weave a lot off off GCD stuff.
+            -- i.e., Frost DK.
+            return false
+
         elseif k == 'query_time' then
             return t.now + t.offset + t.delay
             

@@ -2437,7 +2437,7 @@ function Hekili:ProcessHooks( dispID, solo )
                             end
                             
                             -- Move the clock forward if the GCD hasn't expired.
-                            if state.cooldown.global_cooldown.remains > 0 then
+                            if not state.wait_for_gcd and state.cooldown.global_cooldown.remains > 0 then
                                 state.advance( state.cooldown.global_cooldown.remains )
                             end
                         end
@@ -2823,7 +2823,7 @@ function Hekili:UpdateDisplay( dispID )
                         local rangeSpell = ability.range and GetSpellInfo( ability.range ) or ability.name
 
                         if ability.item then
-                            if UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and not IsItemInRange( ability.item, "target" ) then
+                            if UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and IsItemInRange( ability.item, "target" ) == false then
                                 ns.UI.Buttons[ dispID ][ i ].Texture:SetVertexColor( 1, 0, 0 )
                             else
                                 ns.UI.Buttons[ dispID ][ i ].Texture:SetVertexColor( 1, 1, 1 )
