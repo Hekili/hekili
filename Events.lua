@@ -897,7 +897,7 @@ local function StoreKeybindInfo( key, aType, id )
     
     elseif aType == "item" then
         local name = GetItemInfo( id )
-        ability = class.abilities[ name ] and class.abilities[ name ].key or "unknown"
+        ability = class.abilities[ name ] and class.abilities[ name ].key or nil
 
     end
 

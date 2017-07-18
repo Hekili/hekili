@@ -1470,10 +1470,10 @@ local mt_default_cooldown = {
             local start, duration = GetSpellCooldown( id )
             local true_duration = duration
             
-            if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
+            --[[ if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
                 start = state.now
                 duration = 0
-            end
+            end ]]
             
             if t.key == 'ascendance' and state.buff.ascendance.up then
                 start = state.buff.ascendance.expires - class.auras.ascendance.duration
@@ -1506,12 +1506,12 @@ local mt_default_cooldown = {
             if class.abilities[ t.key ].charges then
                 local charges, maxCharges, start, duration = GetSpellCharges( t.id )
                 
-                if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
+                --[[ if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
                     charges = 1
                     maxCharges = 1
                     start = state.now
                     duration = 0
-                end
+                end ]]
                 
                 t.charge = charges or 1
                 t.recharge = duration or class.abilities[ t.key ].recharge
