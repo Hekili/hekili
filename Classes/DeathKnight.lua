@@ -467,7 +467,6 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addHook( 'specializationChanged', function ()
             setPotion( 'old_war' )
             setRole( state.spec.blood and 'tank' or 'attack' )
-            state.wait_for_gcd = state.spec.frost
         end )
 
 

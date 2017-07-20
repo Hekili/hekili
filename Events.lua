@@ -162,6 +162,7 @@ function ns.auditItemNames()
             local name = GetItemInfo( ability.item )
 
             if name then
+                ability.name = name
                 ability.elem.name = name
                 ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
 
