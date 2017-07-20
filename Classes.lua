@@ -231,25 +231,21 @@ class.itemSettings = {}
 
 function addItemSettings( key, itemID, options )
 
-    local name, link = GetItemInfo( itemID )
-    name = name or tostring( itemID )
-    link = link or tostring( itemID )
-
     options = options or {}
 
     options.icon = {
         type = "description",
-        name = link,
+        name = function () return select( 2, GetItemInfo( itemID ) ) end,
         order = 1,
-        image = select( 10, GetItemInfo( itemID ) ),
-        imageCoords = { 0.2, 0.8, 0.2, 0.8 },
+        image = function () return select( 10, GetItemInfo( itemID ) ), 60, 60 end,
+        imageCoords = { 0.1, 0.9, 0.1, 0.9 },
         width = "full",
         fontSize = "large"
     }
 
     options.disabled = {
         type = "toggle",
-        name = "Disable " .. name,
+        name = function () return format( "Disable %s", select( 2, GetItemInfo( itemID ) ) or ( "[" .. itemID .. "]" ) ) end,
         desc = "If disabled, the addon will not recommend this trinket under any circumstances.",
         order = 2,
         width = "full"
@@ -1047,9 +1043,6 @@ addAbility( "kiljaedens_burning_wish", {
     cast = 0,
     cooldown = 75,
     gcdType = 'off',
-    usable = function() return  ( not settings.disabled ) and
-                                ( active_enemies >= settings.minimum ) and
-                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
 } )
 
 
@@ -1062,9 +1055,6 @@ addAbility( "umbral_moonglaives", {
     cast = 0,
     cooldown = 90,
     gcdType = 'off',
-    usable = function() return  ( not settings.disabled ) and
-                                ( active_enemies >= settings.minimum ) and
-                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
 } )
 
 
@@ -1077,9 +1067,6 @@ addAbility( "specter_of_betrayal", {
     cast = 0,
     cooldown = 45,
     gcdType = 'off',
-    usable = function() return  ( not settings.disabled ) and
-                                ( active_enemies >= settings.minimum ) and
-                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
 } )
 
 
@@ -1092,9 +1079,6 @@ addAbility( "vial_of_ceaseless_toxins", {
     cast = 0,
     cooldown = 60,
     gcdType = 'off',
-    usable = function() return  ( not settings.disabled ) and
-                                ( active_enemies >= settings.minimum ) and
-                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
 } )
 
 addAura( "ceaseless_toxin", 242497, "duration", 20 )
@@ -1111,9 +1095,6 @@ addAbility( "draught_of_souls", {
     cast = 0,
     cooldown = 80,
     gcdType = 'off',
-    usable = function() return  ( not settings.disabled ) and
-                                ( active_enemies >= settings.minimum ) and
-                                ( settings.maximum == 0 or active_enemies <= settings.maximum ) end,
 } )
 
 addAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )

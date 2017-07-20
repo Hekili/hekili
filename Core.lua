@@ -2437,7 +2437,7 @@ function Hekili:ProcessHooks( dispID, solo )
                             end
                             
                             -- Move the clock forward if the GCD hasn't expired.
-                            if not state.wait_for_gcd and state.cooldown.global_cooldown.remains > 0 then
+                            if state.cooldown.global_cooldown.remains > 0 then
                                 state.advance( state.cooldown.global_cooldown.remains )
                             end
                         end

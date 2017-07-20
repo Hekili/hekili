@@ -149,6 +149,38 @@ end
 RegisterEvent( "UPDATE_BINDINGS", function () ns.refreshBindings() end )
 RegisterEvent( "DISPLAY_SIZE_CHANGED", function () ns.buildUI() end )
 
+
+local itemAuditComplete = false
+
+function ns.auditItemNames()
+
+    local options = Hekili.Options.args.trinkets.args
+    local failure = false
+
+    for key, ability in pairs( class.abilities ) do
+        if ability.recheck_name then
+            local name = GetItemInfo( ability.item )
+
+            if name then
+                ability.elem.name = name
+                ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
+
+                class.abilities[ ability.name ] = ability
+                ability.recheck_name = nil
+            else
+                failure = true
+            end
+        end
+    end
+
+    if failure then
+        C_Timer( 1, ns.auditItemNames )
+    else
+        itemAuditComplete = true
+    end
+end
+
+
 RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
     ns.specializationChanged()
     ns.checkImports()
@@ -157,27 +189,7 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
     ns.convertDisplays()
     ns.buildUI()
 
-    local options = Hekili.Options.args.trinkets.args
-
-    for key, ability in pairs( class.abilities ) do
-        if ability.recheck_name then
-            local name, link = GetItemInfo( ability.item )
-            local icon = select( 10, GetItemInfo( ability.item ) )
-
-            ability.elem.name = GetItemInfo( ability.item )
-            ability.elem.texture = icon
-            ability.recheck_name = nil
-
-            if options[ key ] then
-                options[ key ].args.icon.image = icon 
-                options[ key ].args.icon.name = link
-                options[ key ].args.disabled.name = "Disable " .. name
-            end
-
-            class.abilities[ ability.name ] = ability
-        end
-    end
-
+    ns.auditItemNames()
 end )
 
 RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
