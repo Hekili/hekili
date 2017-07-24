@@ -163,10 +163,12 @@ function ns.auditItemNames()
 
             if name then
                 ability.name = name
+                ability.texture = nil
                 ability.elem.name = name
                 ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
 
-                class.abilities[ ability.name ] = ability
+                class.abilities[ name ] = ability
+                class.searchAbilities[ key ] = '|T' .. ( ability.texture or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t [' .. ( name or key ) .. ']'                
                 ability.recheck_name = nil
             else
                 failure = true
@@ -175,7 +177,7 @@ function ns.auditItemNames()
     end
 
     if failure then
-        C_Timer( 1, ns.auditItemNames )
+        C_Timer.After( 1, ns.auditItemNames )
     else
         itemAuditComplete = true
     end

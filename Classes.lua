@@ -235,9 +235,15 @@ function addItemSettings( key, itemID, options )
 
     options.icon = {
         type = "description",
-        name = function () return select( 2, GetItemInfo( itemID ) ) end,
+        name = function () return select( 2, GetItemInfo( itemID ) ) or ( "[" .. itemID .. "]" )  end,
         order = 1,
-        image = function () return select( 10, GetItemInfo( itemID ) ), 60, 60 end,
+        image = function ()
+            local tex = select( 10, GetItemInfo( itemID ) )
+            if tex then
+                return tex, 50, 50 
+            end
+            return nil
+        end,
         imageCoords = { 0.1, 0.9, 0.1, 0.9 },
         width = "full",
         fontSize = "large"
@@ -310,7 +316,7 @@ local function addAbility( key, values, ... )
     end
 
     if values.item then
-        values.name = GetItemInfo( values.item )
+        values.name = select( 2, GetItemInfo( values.item ) )
 
         if not values.name then
             values.name = key
@@ -344,9 +350,9 @@ local function addAbility( key, values, ... )
     storeAbilityElements( key, values )
     
     if values.item then
-        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t [' .. ( class.abilities[ key ].name or key ) .. ']'
+        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t ' .. ( name or key )
     else
-        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t ' .. ( class.abilities[ key ].name or key )
+        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t ' .. ( name or key )
     end
 
     ns.commitKey( key )    

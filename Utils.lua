@@ -203,7 +203,7 @@ function ns.safeMax( ... )
 
     for i = 1, select( "#", ... ) do
         local val = select( i, ... )
-        if val then result = ( not result or val > result ) and val or result end
+        if val and type(val) == 'number' then result = ( not result or val > result ) and val or result end
     end
 
     return result or 0
