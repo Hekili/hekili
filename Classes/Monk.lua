@@ -353,6 +353,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         end
 
+        local bt = BrewmasterTools
 
         state.stagger = setmetatable( {}, {
             __index = function( t, k, v )
@@ -367,20 +368,27 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
                 end
 
                 if k == 'tick' then
+                    if bt then
+                        return state.stagger.amount / 20
+                    end
                     return state.stagger.amount / state.stagger.ticks_remain
 
                 elseif k == 'ticks_remain' then
                     return math.floor( stagger.remains / 0.5 )
 
                 elseif k == 'amount' then
-                    t[k] = UnitStagger( 'player' )
-                    return t[k]
+                    if bt then
+                        t.amount = bt.GetNormalStagger()
+                    else
+                        t.amount = UnitStagger( 'player' )
+                    end
+                    return t.amount
 
                 elseif k == 'incoming_per_second' then
                     return avg_stagger_ps_in_last( 10 )
 
                 elseif k == 'time_to_death' then
-                    return math.ceil( health.current / stagger.v1 )
+                    return math.ceil( state.health.current / ( state.stagger.tick * 2 ) )
 
                 elseif k == 'percent_max_hp' then
                     return ( 100 * state.stagger.amount / state.health.max )

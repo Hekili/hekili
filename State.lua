@@ -3125,7 +3125,11 @@ local function modelResources( time )
 
     -- Regen any remaining resources.
     for k, v in pairs( remains ) do
-        state[ k ].actual = min( state[ k ].max, state[ k ].actual + ( v * state[ k ].regen ) )
+        local r = state[ k ]
+
+        if r.regen and r.regen > 0 then
+            r.actual = min( r.max, r.actual + ( v * r.regen ) )
+        end
     end
 end
 
@@ -3141,8 +3145,6 @@ end
 
 function state.reset( dispID )
     
-    -- print( "Reset." )
-
     state.now = GetTime()
     state.offset = 0
     state.delay = 0
@@ -3498,8 +3500,6 @@ function state.advance( time )
         end
     end
 
-    forecastResources()
-
     state.offset = state.offset + time
 
     local bonus_cdr = 0 -- ns.callHook( 'advance_bonus_cdr', 0 )
@@ -3527,6 +3527,8 @@ function state.advance( time )
         end
     end
     
+    forecastResources()
+
     ns.callHook( 'advance_end', time )
     
 end
