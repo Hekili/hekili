@@ -3567,6 +3567,16 @@ ns.TrinketSettings = function ()
         name = "Trinket Settings",
         order = 21,
         args = {
+            heading = {
+                type = 'description',
+                name = "These settings apply to trinkets that are executed via the [Use Items] action in your action lists.  Instead of " ..
+                    "manually editing your action lists, you can enable/disable specific trinkets or require a minimum or maximum number of " ..
+                    "enemies before allowing the trinket to be used.\n\n" ..
+                    "If your action list has a specific entry for a certain trinket with specific criteria, you will likely want to disable " ..
+                    "the trinket here.",
+                order = 1,
+                width = "full",
+            }
         },
     }
 

@@ -252,7 +252,7 @@ function addItemSettings( key, itemID, options )
     options.disabled = {
         type = "toggle",
         name = function () return format( "Disable %s", select( 2, GetItemInfo( itemID ) ) or ( "[" .. itemID .. "]" ) ) end,
-        desc = "If disabled, the addon will not recommend this trinket under any circumstances.",
+        desc = "If disabled, the addon will not recommend this trinket via the [Use Items] action.  You can still manually include the trinket in your action lists with your own tailored criteria.",
         order = 2,
         width = "full"
     }
@@ -260,7 +260,7 @@ function addItemSettings( key, itemID, options )
     options.minimum = {
         type = "range",
         name = "Minimum Targets",
-        desc = "The addon will only recommend this trinket when there are at least this many targets available to hit.",
+        desc = "The addon will only recommend this trinket (via [Use Items]) when there are at least this many targets available to hit.",
         order = 3,
         width = "full",
         min = 1,
@@ -271,7 +271,7 @@ function addItemSettings( key, itemID, options )
     options.maximum = {
         type = "range",
         name = "Maximum Targets",
-        desc = "The addon will only recommend this trinket when there are no more than this many targets detected.\n\n" ..
+        desc = "The addon will only recommend this trinket (via [Use Items]) when there are no more than this many targets detected.\n\n" ..
             "This setting is ignored if set to 0.",
         order = 4,
         width = "full",
