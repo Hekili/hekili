@@ -250,6 +250,15 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addAura( "avatar", 107574 )
         addAura( "battle_cry", 1719 )
         addAura( "berserker_rage", 18499 )
+        addAura( "bladestorm", 46924, "duration", 6, "incapacitate", true ) -- Fury.
+            modifyAbility( "bladestorm", "duration", function( x )
+                return x * haste
+            end )
+            modifyAbility( "bladestorm", "id", function( x )
+                return spec.arms and 227847 or 46924
+            end )
+            class.auras[ 227847 ] = class.auras[ 46924 ]
+
         addAura( "bloodbath", 12292 )
         addAura( "dragon_roar", 118000 )
         addAura( "enrage_one", 184361 )
@@ -257,14 +266,16 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addAura( "enraged_regeneration", 184364 )
         addAura( "mastery_unshackled_fury", 76856 )
         addAura( "titans_grip", 46917 )
+
         -- Auras Arms
         addAura( "defensive_stance", 197690 )
         addAura( "die_by_the_sword", 118038 )
         addAura( "focused_rage", 207982 )
         addAura( "mastery_colossal_might", 76838 )
         addAura( "ravager", 152277 )
+        addAura( "rend", 772, "duration", 8 )
         addAura( "tactician", 184783 )
-        addAura("frothing_berserker", 215572)
+        addAura( "frothing_berserker", 215572)
 
         -- Abilities
         -- Garrison Ability
@@ -384,7 +395,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "bladestorm", function ()
-            -- proto
+            setCooldown( "global_cooldown", 6 * haste )
         end )
 
 
@@ -454,19 +465,21 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             min_range = 8,
             max_range = 25,
             spend_type = "rage",
+            usable = function () return target[ 'within'..25 ] and target[ 'outside'..8 ] end
         } )
 
-        addHandler( "charge", function ()
-            -- proto
+        modifyAbility( "charge", "charges", function( x )
+            return x + ( talent.double_time.enabled and 1 or 0 )
         end )
-        
+
         addHandler( 'charge', function()
-            if(talent.frothing_berserker.enabled) then
-              if(rage.current + 15 >= 100) then        
-                applyBuff( 'frothing_berserker', 6)
-              end
+            if talent.frothing_berserker.enabled then
+                if rage.current + 15 >= 100 then        
+                    applyBuff( 'frothing_berserker', 6 )
+                end
             end
-            gain( 15, 'rage' )
+            gain( 20, 'rage' )
+            setDistance( 5 )
         end )
 
         -- Cleave

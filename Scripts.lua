@@ -369,17 +369,21 @@ end
 
 ns.checkScript = function( cat, key, action, recheck )
 
+    local prev_action = state.this_action
     if action then state.this_action = action end
 
     local tblScript = scripts[ cat ][ key ]
 
     if not tblScript then
+        state.this_action = prev_action
         return false
 
     elseif tblScript.Error then
+        state.this_action = prev_action
         return false, tblScript.Error
 
     elseif tblScript.Conditions == nil then
+        state.this_action = prev_action
         return true
 
     else
@@ -387,6 +391,7 @@ ns.checkScript = function( cat, key, action, recheck )
 
         if success then
 
+            state.this_action = prev_action
             return value
 
             -- This is presently too CPU expensive to use.
@@ -416,10 +421,22 @@ ns.checkScript = function( cat, key, action, recheck )
 
     end
 
+    state.this_action = prev_action
     return false
 
 end
 local checkScript = ns.checkScript
+
+
+function ns.isTimeSensitive( cat, key, action )
+    local Script = scripts[ cat ][ key ]
+
+    if not Script then
+        return false
+    end
+
+    return Script.TimeSensitive
+end
 
 
 function ns.checkTimeScript( entry, wait, spend, spend_type )
@@ -505,6 +522,15 @@ ns.loadScripts = function()
     for a, action in ipairs( list.Actions ) do
       local aKey = i..':'..a
       Actions[ aKey ] = convertScript( action, true )
+      if action.Ability == 'call_action_list' or action.Ability == 'run_action_list' then
+        -- check for time sensitive conditions.
+        local lua = Actions[ aKey ].Lua
+        if lua and ( lua:match( "time" ) or lua:match( "cooldown" ) or lua:match( "charges" ) or lua:match( "buff" ) or lua:match( "focus" ) or lua:match( "energy" ) ) then
+            Actions[ aKey ].TimeSensitive = true
+        else
+            Actions[ aKey ].TimeSensitive = false
+        end
+      end
     end
   end
 

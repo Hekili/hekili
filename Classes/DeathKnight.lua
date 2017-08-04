@@ -62,14 +62,12 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addResource( "runic_power", SPELL_POWER_RUNIC_POWER, true )
         addResource( "runes", SPELL_POWER_RUNES, true )
 
-
         setRegenModel( {
             frost_mh = {
-                resource = 'runic_power',
-
-                spec = 'frost',
-                talent = 'runic_attenuation',
-                setting = 'forecast_swings',
+                resource    = 'runic_power',
+                spec        = 'frost',
+                talent      = 'runic_attenuation',
+                setting     = 'forecast_swings',
 
                 last = function ()
                     local t = state.query_time - state.swings.mainhand
@@ -83,11 +81,10 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             },
 
             frost_oh = {
-                resource = 'runic_power',
-
-                spec = 'frost',
-                talent = 'runic_attenuation',
-                setting = 'forecast_swings',
+                resource    = 'runic_power',
+                spec        = 'frost',
+                talent      = 'runic_attenuation',
+                setting     = 'forecast_swings',
 
                 last = function ()
                     local t = state.query_time - state.swings.offhand
@@ -100,11 +97,10 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             },
 
             breath = {
-                resource = 'runic_power',
-
-                spec = 'frost',
-                aura = 'breath_of_sindragosa',
-                setting = 'forecast_breath',
+                resource    = 'runic_power',
+                spec        = 'frost',
+                aura        = 'breath_of_sindragosa',
+                setting     = 'forecast_breath',
 
                 last = function ()
                     return state.buff.breath_of_sindragosa.applied + floor( state.query_time - state.buff.breath_of_sindragosa.applied )
@@ -117,26 +113,24 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             },
 
             hungering_rp = {
-                resource = 'runic_power',
-
-                spec = 'frost',
-                talent = 'hungering_rune_weapon',
-                aura = 'hungering_rune_weapon',
+                resource    = 'runic_power',
+                spec        = 'frost',
+                talent      = 'hungering_rune_weapon',
+                aura        = 'hungering_rune_weapon',
 
                 last = function ()
                     return state.buff.hungering_rune_weapon.applied + floor( state.query_time - state.buff.hungering_rune_weapon.applied )
                 end,
 
-                interval = 1,
+                interval = 1.5,
                 value = 5
             },
 
             hungering_rune = {
-                resource = 'runes',
-
-                spec = 'frost',
-                talent = 'hungering_rune_weapon',
-                aura = 'hungering_rune_weapon',
+                resource    = 'runes',
+                spec        = 'frost',
+                talent      = 'hungering_rune_weapon',
+                aura        = 'hungering_rune_weapon',
 
                 last = function ()
                     return state.buff.hungering_rune_weapon.applied + floor( state.query_time - state.buff.hungering_rune_weapon.applied )
@@ -150,12 +144,10 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
                 end,
 
                 stop = function ( x )
-                    local r = state.runes
-
-                    return r.actual == 6
+                    return x == 6
                 end,
 
-                interval = 1,
+                interval = 1.5,
                 value = 1
             },
 
@@ -185,9 +177,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
                 end,
     
                 stop = function( x )
-                    local r = state.runes
-
-                    return r.actual == 6
+                    return x == 6
                 end,
 
                 value = 1,    
@@ -224,9 +214,9 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
                     local t = state.runes
 
                     for i = 1, amount do
-                        t.expiry[ 6 ] = 0
-                        table.sort( t.expiry )
+                        t.expiry[ 7 - i ] = 0
                     end
+                    table.sort( t.expiry )
 
                     t.actual = nil
                 end,
@@ -361,7 +351,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
                 state.gain( amount * 10 * spendMod, 'runic_power' )
 
                 if state.spec.frost and state.talent.gathering_storm.enabled and state.buff.remorseless_winter.up then
-                    state.applyBuff( "remorseless_winter", state.buff.remorseless_winter.remains + ( 0.5 * amount ) )
+                    state.buff.remorseless_winter.expires = state.buff.remorseless_winter.expires + ( 0.5 * amount )
                 end
 
                 if state.spec.unholy and state.set_bonus.tier20_4pc == 1 then

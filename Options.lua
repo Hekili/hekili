@@ -6899,6 +6899,10 @@ local function sanitize( segment, i, line, warnings )
         i = i:gsub( "|", "||" )
     end
     
+    i, times = i:gsub( "debuff%.judgment%.up", "judgment_override" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Replaced 'debuff.judgment.up' with 'judgment_override' (" .. times .. "x)." )
+    end
     
     i, times = i:gsub( "desired_targets", "1" )
     if times > 0 then

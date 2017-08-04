@@ -235,7 +235,7 @@ function addItemSettings( key, itemID, options )
 
     options.icon = {
         type = "description",
-        name = function () return select( 2, GetItemInfo( itemID ) ) or ( "[" .. itemID .. "]" )  end,
+        name = function () return select( 2, GetItemInfo( itemID ) ) or format( "[%d]", itemID )  end,
         order = 1,
         image = function ()
             local tex = select( 10, GetItemInfo( itemID ) )
@@ -319,7 +319,7 @@ local function addAbility( key, values, ... )
         values.name = select( 2, GetItemInfo( values.item ) )
 
         if not values.name then
-            values.name = key
+            values.name = tostring( key )
             values.recheck_name = true
         end
 
@@ -328,6 +328,7 @@ local function addAbility( key, values, ... )
     end
     
     local name = values.name or GetSpellInfo( values.id )
+
     if not name and values.id > 0 then
         ns.Error( "addAbility( " .. key .. " ) - unable to get name of spell #" .. values.id .. "." )
         return
@@ -349,10 +350,8 @@ local function addAbility( key, values, ... )
 
     storeAbilityElements( key, values )
     
-    if values.item then
-        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t ' .. ( name or key )
-    else
-        class.searchAbilities[ key ] = '|T' .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t ' .. ( name or key )
+    if not values.item or not values.recheck_name then
+        class.searchAbilities[ key ] = format( "|T%s:0|t %s", tostring( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ), name )
     end
 
     ns.commitKey( key )    
@@ -1041,6 +1040,7 @@ addAbility( "use_items", {
     gcdType = 'off',
 } )
 
+addUsableItem( "kiljaedens_burning_wish", 144259 )
 
 addAbility( "kiljaedens_burning_wish", {
     id = -101,
@@ -1055,7 +1055,7 @@ addAbility( "kiljaedens_burning_wish", {
 addUsableItem( "umbral_moonglaives", 147012 )
 
 addAbility( "umbral_moonglaives", {
-    id = -103,
+    id = -102,
     item = 147012,
     spend = 0,
     cast = 0,

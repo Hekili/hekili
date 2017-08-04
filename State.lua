@@ -702,12 +702,166 @@ end
 state.setDistance = setDistance
 
 
+-- Resource Modeling!
+local events = {}
+local remains = {}
+
+local function resourceModelSort( a, b )
+    return b == nil or ( a.next < b.next )
+end
+
+
+local FORECAST_DURATION = 15
+
+local function forecastResources( resource )
+
+    -- Forecasts the next 10s of resources.
+    local models = class.regenModel
+
+    table.wipe( events )
+    table.wipe( remains )
+
+    if resource then
+        remains[ resource ] = FORECAST_DURATION
+        table.wipe( state[ resource ].times )
+        table.wipe( state[ resource ].values )
+        state[ resource ].fcount = 0
+    else
+        for k, v in pairs( class.resources ) do
+            remains[ k ] = FORECAST_DURATION
+            table.wipe( state[ k ].times )
+            table.wipe( state[ k ].values )
+            state[ k ].fcount = 0
+        end
+    end
+
+    local now = state.now + state.offset
+
+    if models then
+        for k, v in pairs( models ) do
+            if  ( not resource  or v.resource == resource ) and
+                ( not v.spec    or state.spec[ v.spec ] ) and
+                ( not v.equip   or state.equipped[ v.equip ] ) and 
+                ( not v.talent  or state.talent[ v.talent ].enabled ) and
+                ( not v.aura    or state.buff[ v.aura ].up ) and
+                ( not v.setting or state.settings[ v.setting ] ) then
+
+                local r = state[ v.resource ]
+
+                local l = v.last()
+                local i = ( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ) )
+
+                v.next = v.last() + ( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ) )
+                v.name = k
+
+                if r.fcount == 0 then
+                    r.forecast[1] = r.forecast[1] or {}
+                    r.forecast[1].t = now
+                    r.forecast[1].v = r.actual
+                    r.fcount = 1
+                end
+
+                if v.next >= 0 then
+                    table.insert( events, v )
+                end
+            end
+        end
+    end
+
+    tSort( events, resourceModelSort )
+
+    local finish = now + FORECAST_DURATION
+
+    local prev = now
+    local iter = 0
+
+    while( #events > 0 and now <= finish and iter < 20 ) do
+        local e = events[1]
+        local r = state[ e.resource ]
+        iter = iter + 1
+
+        if e.next > finish or not r then
+            table.remove( events, 1 )
+
+        else
+            now = e.next
+            local bonus = r.regen * ( now - prev )
+
+            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state.buff[ e.aura ].expires < now ) then
+                table.remove( events, 1 )
+               
+                local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
+                local idx
+
+                if r.forecast[ r.fcount ].t == now then
+                    -- Reuse the last one.
+                    idx = r.fcount
+                else
+                    idx = r.fcount + 1
+                end
+
+                r.forecast[ idx ] = r.forecast[ idx ] or {}
+                r.forecast[ idx ].t = now
+                r.forecast[ idx ].v = v
+                r.fcount = idx
+            else
+                prev = now
+
+                local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
+
+                local v = max( 0, min( r.max, val + bonus + ( type( e.value ) == 'number' and e.value or e.value( now ) ) ) )
+                local idx
+
+                if r.forecast[ r.fcount ].t == now then
+                    -- Reuse the last one.
+                    idx = r.fcount
+                else
+                    idx = r.fcount + 1
+                end
+
+                r.forecast[ idx ] = r.forecast[ idx ] or {}
+                r.forecast[ idx ].t = now
+                r.forecast[ idx ].v = v
+                r.fcount = idx
+
+                -- interval() takes the last tick and the current value to remember the next step.
+                local step = type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, val ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) )
+
+                remains[ e.resource ] = finish - e.next
+                e.next = e.next + step
+
+                if e.next > finish or step < 0 then
+                    table.remove( events, 1 )
+                end
+            end
+        end
+
+        if #events > 1 then tSort( events, resourceModelSort ) end
+    end
+
+    for k, v in pairs( remains ) do
+        local r = state[ k ]
+        local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
+        local idx = r.fcount + 1
+
+        r.forecast[ idx ] = r.forecast[ idx ] or {}
+        r.forecast[ idx ].t = finish
+        r.forecast[ idx ].v = min( r.max, val + ( v * r.regen ) )
+        r.fcount = idx
+    end
+end
+ns.forecastResources = forecastResources
+
+
 local function gain( amount, resource, overcap )
     
-    if overcap then state[ resource ].actual = state[ resource ].actual + amount
-    else state[ resource ].actual = min( state[ resource ].max, state[ resource ].actual + amount ) end
-    
+    -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
+    if overcap then state[ resource ].actual = state[ resource ].current + amount
+    else state[ resource ].actual = min( state[ resource ].max, state[ resource ].current + amount ) end
+
     ns.callHook( 'gain', amount, resource, overcap )
+
+    if amount ~= 0 then forecastResources( resource ) end
 
 end
 state.gain = gain
@@ -715,8 +869,11 @@ state.gain = gain
 
 local function spend( amount, resource )
     
+    -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     state[ resource ].actual = max( 0, state[ resource ].actual - amount )
     ns.callHook( 'spend', amount, resource )
+
+    if amount ~= 0 then forecastResources( resource ) end    
     
 end
 state.spend = spend
@@ -1948,6 +2105,7 @@ local mt_resource = {
             if t.regen ~= 0 then
                 return max( 0, min( t.max, t.actual + ( t.regen * state.delay ) ) )
             end
+
             return t.actual
             
         elseif k == 'deficit' then
@@ -2891,153 +3049,7 @@ local function scrapeUnitAuras( unit )
 end
 
 
--- Resource Modeling!
-local events = {}
-local remains = {}
-
-local function resourceModelSort( a, b )
-    return b == nil or ( a.next < b.next )
-end
-
-
-local FORECAST_DURATION = 15
-
-local function forecastResources()
-
-    -- Forecasts the next 10s of resources.
-    if state.delay > 0 then Hekili:Error( "WARNING: FORECASTING RESOURCES WITH DELAY ABOVE ZERO [ %.2f ]!", state.delay ) end
-    local models = class.regenModel
-
-    table.wipe( events )
-    table.wipe( remains )
-
-    for k, v in pairs( class.resources ) do
-        remains[ k ] = FORECAST_DURATION
-        -- table.wipe( state[ k ].forecast )
-        table.wipe( state[ k ].times )
-        table.wipe( state[ k ].values )
-        state[ k ].fcount = 0
-    end
-
-    local now = state.now + state.offset
-
-    if models then
-        for k, v in pairs( models ) do
-            if  ( not v.spec    or state.spec[ v.spec ] ) and
-                ( not v.equip   or state.equipped[ v.equip ] ) and 
-                ( not v.talent  or state.talent[ v.talent ].enabled ) and
-                ( not v.aura    or state.buff[ v.aura ].up ) and
-                ( not v.setting or state.settings[ v.setting ] ) then
-
-                local r = state[ v.resource ]
-
-                local l = v.last()
-                local i = ( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ) )
-
-                v.next = v.last() + ( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ) )
-                v.name = k
-
-                if r.fcount == 0 then
-                    r.forecast[1] = r.forecast[1] or {}
-                    r.forecast[1].t = now
-                    r.forecast[1].v = r.actual
-                    r.fcount = 1
-                end
-
-                if v.next >= 0 then
-                    table.insert( events, v )
-                end
-            end
-        end
-    end
-
-    tSort( events, resourceModelSort )
-
-    local finish = now + FORECAST_DURATION
-
-    local prev = now
-    local iter = 0
-
-    while( #events > 0 and now <= finish and iter < 20 ) do
-        local e = events[1]
-        local r = state[ e.resource ]
-        iter = iter + 1
-
-        if e.next > finish or not r then
-            table.remove( events, 1 )
-
-        else
-            now = e.next
-            local bonus = r.regen * ( now - prev )
-
-            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state.buff[ e.aura ].expires < now ) then
-                table.remove( events, 1 )
-               
-                local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
-                local idx
-
-                if r.forecast[ r.fcount ].t == now then
-                    -- Reuse the last one.
-                    idx = r.fcount
-                else
-                    idx = r.fcount + 1
-                end
-
-                r.forecast[ idx ] = r.forecast[ idx ] or {}
-                r.forecast[ idx ].t = now
-                r.forecast[ idx ].v = v
-                r.fcount = idx
-            else
-                prev = now
-
-                local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
-
-                local v = max( 0, min( r.max, val + bonus + ( type( e.value ) == 'number' and e.value or e.value( now ) ) ) )
-                local idx
-
-                if r.forecast[ r.fcount ].t == now then
-                    -- Reuse the last one.
-                    idx = r.fcount
-                else
-                    idx = r.fcount + 1
-                end
-
-                r.forecast[ idx ] = r.forecast[ idx ] or {}
-                r.forecast[ idx ].t = now
-                r.forecast[ idx ].v = v
-                r.fcount = idx
-
-                -- interval() takes the last tick and the current value to remember the next step.
-                local step = type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, val ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) )
-
-                remains[ e.resource ] = finish - e.next
-                e.next = e.next + step
-
-                if e.next > finish or step < 0 then
-                    table.remove( events, 1 )
-                end
-            end
-        end
-
-        if #events > 1 then tSort( events, resourceModelSort ) end
-    end
-
-    for k, v in pairs( remains ) do
-        local r = state[ k ]
-        local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
-        local idx = r.fcount + 1
-
-        r.forecast[ idx ] = r.forecast[ idx ] or {}
-        r.forecast[ idx ].t = finish
-        r.forecast[ idx ].v = min( r.max, val + ( v * r.regen ) )
-        r.fcount = idx
-    end
-end
-ns.forecastResources = forecastResources
-
-
-
-local function modelResources( time )
+--[[ local function modelResources( time )
 
     if time <= 0 then return end
 
@@ -3050,6 +3062,8 @@ local function modelResources( time )
 
     for k, v in pairs( class.resources ) do
         remains[ k ] = time
+        table.wipe( state[ k ].times )
+        table.wipe( state[ k ].values )
     end
 
     for k, v in pairs( models ) do
@@ -3130,8 +3144,11 @@ local function modelResources( time )
         if r.regen and r.regen > 0 then
             r.actual = min( r.max, r.actual + ( v * r.regen ) )
         end
+
+        table.wipe( r.times )
+        table.wipe( r.values )
     end
-end
+end ]]
 
 
 function state.putTrinketsOnCD( val )
@@ -3356,6 +3373,8 @@ function state.reset( dispID )
         end
 
     end
+
+    forecastResources()
    
     state.health = rawget( state, 'health' ) or setmetatable( { resource = 'health' }, mt_resource )
     state.health.actual = UnitHealth( 'player' )
@@ -3435,8 +3454,6 @@ function state.reset( dispID )
     if delay > 0 then
         state.advance( delay )
     end
-
-    forecastResources()
     
 end
 
@@ -3485,10 +3502,7 @@ function state.advance( time )
         state.offset = saved_offset
     end
 
-    if class.regenModel then
-        modelResources( time )
-    
-    else
+    if not class.regenModel then
         for k in pairs( class.resources ) do
             local resource = state[ k ]
 
@@ -3499,6 +3513,8 @@ function state.advance( time )
             end
         end
     end
+
+    -- forecastResources()
 
     state.offset = state.offset + time
 
@@ -3527,8 +3543,6 @@ function state.advance( time )
         end
     end
     
-    forecastResources()
-
     ns.callHook( 'advance_end', time )
     
 end
@@ -3563,23 +3577,21 @@ ns.spendResources = function( ability )
     
     -- First, spend resources.
     if action.spend ~= nil then
-        local spend, resource
+        local cost, resource
         
         if type( action.spend ) == 'number' then
-            spend = action.spend
+            cost = action.spend
             resource = action.spend_type or class.primaryResource
         elseif type( action.spend ) == 'function' then
-            spend, resource = action.spend()
+            cost, resource = action.spend()
         end
         
-        if spend > 0 and spend < 1 then
-            spend = ( spend * state[ resource ].max )
+        if cost > 0 and cost < 1 then
+            cost = ( cost * state[ resource ].max )
         end
         
-        if spend ~= 0 then
-            state[ resource ].actual = min( max(0, state[ resource ].actual - spend ), state[ resource ].max )
-            ns.callHook( "spendResources", spend, resource )
-            forecastResources()
+        if cost ~= 0 then
+            state.spend( cost, resource )            
         end
     end
 
@@ -3718,7 +3730,7 @@ function ns.timeToReady( action )
     local now = state.now + state.offset
     
     -- Need to ignore the wait for this part.
-    local wait = max( state.cooldown.global_cooldown.remains, state.cooldown[ action ].remains )
+    local wait = state.cooldown[ action ].remains -- max( state.cooldown.global_cooldown.remains, state.cooldown[ action ].remains )
     
     wait = ns.callHook( "timeToReady", wait, action )
     
@@ -3752,9 +3764,7 @@ function ns.timeToReady( action )
 
     if state.script.entry then
         wait = ns.checkTimeScript( state.script.entry, wait, spend, resource ) or wait
-    end
-
-   
+    end  
     
     -- cacheTTR[ action ] = wait
     return wait   

@@ -30,6 +30,8 @@ ns.displayUpdates = {}
 local lastRefresh = {}
 local lastRecount = 0
 local displayUpdates = ns.displayUpdates
+local lastDisplay = 0
+
 
 function ns.StartEventHandler()
 
@@ -62,13 +64,17 @@ function ns.StartEventHandler()
 
         local updatePeriod = state.combat == 0 and 1 or 0.2
 
-        local forced = false
+        local numDisplays = #Hekili.DB.profile.displays
 
-        for i = 1, #Hekili.DB.profile.displays do
-            if not displayUpdates[i] or ( not lastRefresh[i] or now - lastRefresh[i] >= updatePeriod ) then 
-                Hekili:ProcessHooks( i )
-                lastRefresh[i] = now
+        for i = 1, numDisplays do
+            local index = lastDisplay + i
+            index = index > numDisplays and index - numDisplays or index
 
+            if ns.visible.display[ index ] and ( not displayUpdates[ index ] or ( not lastRefresh[ index ] or now - lastRefresh[ index ] >= updatePeriod ) ) then 
+                Hekili:ProcessHooks( index )
+                lastRefresh[ index ] = now
+                lastDisplay = index
+                break
             end
         end
 
@@ -159,7 +165,7 @@ function ns.auditItemNames()
 
     for key, ability in pairs( class.abilities ) do
         if ability.recheck_name then
-            local name = GetItemInfo( ability.item )
+            local _, name = GetItemInfo( ability.item )
 
             if name then
                 ability.name = name
@@ -168,7 +174,7 @@ function ns.auditItemNames()
                 ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
 
                 class.abilities[ name ] = ability
-                class.searchAbilities[ key ] = '|T' .. ( ability.texture or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ':O|t [' .. ( name or key ) .. ']'                
+                class.searchAbilities[ ability.key ] = format( "|T%s:0|t %s", ( ability.texture or 'Interface\\ICONS\\Spell_Nature_BloodLust' ), name )
                 ability.recheck_name = nil
             else
                 failure = true
@@ -179,6 +185,7 @@ function ns.auditItemNames()
     if failure then
         C_Timer.After( 1, ns.auditItemNames )
     else
+        ns.ReadKeybindings()
         itemAuditComplete = true
     end
 end
@@ -911,8 +918,8 @@ local function StoreKeybindInfo( key, aType, id )
         ability = sID and class.abilities[ sID ] and class.abilities[ sID ].key
     
     elseif aType == "item" then
-        local name = GetItemInfo( id )
-        ability = class.abilities[ name ] and class.abilities[ name ].key or nil
+        ability = select( 2, GetItemInfo( id ) )
+        ability = class.abilities[ ability ] and class.abilities[ ability ].key
 
     end
 
