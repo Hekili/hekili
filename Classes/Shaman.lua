@@ -272,6 +272,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         addAura( 'lightning_rod', 197209, 'duration', 10 )
         addAura( 'power_of_the_maelstrom', 191877, 'duration', 20, 'max_stack', 3 )
         addAura( 'resonance_totem', 202192 )
+        addAura( 'static_overload', 191634, 'duration', 15 )
         addAura( 'storm_tempests', 214265, 'duration', 15 )
         addAura( 'storm_totem', 210652 )
         addAura( 'stormkeeper', 205495, 'duration', 15, 'max_stack', 3 )
@@ -744,7 +745,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         end )
 
         addHandler( 'chain_lightning', function ()
-            local overload = floor( settings.optimistic_overload and stat.mastery_value > 0.50 and ( 0.75 * max( 5, active_enemies ) * 6 ) or 0 )
+            local overload = floor( ( buff.static_overload.up or ( settings.optimistic_overload and stat.mastery_value > 0.50 ) ) and ( 0.75 * max( 5, active_enemies ) * 6 ) or 0 )
             gain( 6 * max( 5, active_enemies ) + overload, 'maelstrom' )
             removeStack( 'stormkeeper', 1 )
             removeStack( 'elemental_focus' )
@@ -1262,8 +1263,8 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
         modifyAbility( 'lightning_bolt', 'spend', function( x )
             if spec.elemental then
-                local overload = settings.optimistic_overload and stat.mastery_value > 50 and 6 or 0
-                return -1 * ( 8 + ( overload ) +  ( buff.power_of_the_maelstrom.up and 6 or 0 ) )
+                local overload = ( buff.static_overload.up or ( settings.optimistic_overload and stat.mastery_value > 50 ) ) and 6 or 0
+                return -1 * ( 8 + ( overload ) + ( buff.power_of_the_maelstrom.up and 6 or 0 ) )
             end
 
             if talent.overcharge.enabled then
@@ -1424,6 +1425,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
         addHandler( 'stormkeeper', function ()
             applyBuff( 'stormkeeper', 15, 3 )
+            if artifact.static_overload.enabled then applyBuff( 'static_overload', 15 ) end
             if artifact.fury_of_the_storms.enabled then summonPet( 'fury_of_the_storms', 8 ) end
         end )
 

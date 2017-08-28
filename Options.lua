@@ -3887,6 +3887,7 @@ ns.SimulationCraftImporter = function ()
                                     action.MaximumTargets = entry.MaximumTargets
                                     action.CheckMovement = entry.CheckMovement or false
                                     action.Moving = entry.Moving
+
                                     if action.Ability == 'variable' then
                                         action.ModVarName = entry.ModName or ''
                                         action.ModName = ''
@@ -3906,15 +3907,23 @@ ns.SimulationCraftImporter = function ()
                                 else
                                     action.Indicator = "none"
                                 end ]]
+
+                                    action.Script = entry.Script
                                     
                                     if ability.toggle then
-                                        if entry.Script and entry.Script:len() > 0 then
-                                            action.Script = 'toggle.' .. ability.toggle .. ' & ( ' .. entry.Script .. ' )'
+                                        if action.Script and action.Script:len() > 0 then
+                                            action.Script = 'toggle.' .. ability.toggle .. ' & ( ' .. action.Script .. ' )'
                                         else
                                             action.Script = 'toggle.' .. ability.toggle
                                         end
-                                    else
-                                        action.Script = entry.Script
+                                    end
+
+                                    if entry.PctHealth then
+                                        if action.Script and action.Script:len() > 0 then
+                                            action.Script = 'health.pct < ' .. entry.PctHealth .. ' & ( ' .. action.Script .. ' )'
+                                        else
+                                            action.Script = 'health.pct < ' .. entry.PctHealth
+                                        end
                                     end
                                     
                                     if entry.Ability == 'heroism' or entry.Ability == 'bloodlust' then
@@ -7376,6 +7385,12 @@ local function storeModifier( entry, key, value )
         
     elseif key == 'target_if' then
         entry.TargetIf = value
+
+    elseif key == 'pct_health' then
+        entry.PctHealth = value
+
+    elseif key == 'interval' then
+        entry.Interval = value
         
     end
     
@@ -7465,8 +7480,8 @@ function Hekili:ImportSimulationCraftActionList( str, enemies )
             if a == 1 then
                 local ability = str:trim()
                 
-                if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then
-                    result.Ability = ability
+                if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then                   
+                    result.Ability = class.abilities[ ability ] and class.abilities[ ability ].key or ability
                 elseif not ignore_actions[ ability ] then
                     table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
                 end

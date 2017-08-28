@@ -202,7 +202,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             end )
         addAura( "dash", 1850 )
         addAura( "displacer_beast", 102280, "duration", 2 )
-        addAura( "elunes_guidance", 202060, 'duration', 8 )
+        addAura( "elunes_guidance", 202060, 'duration', PTR and 5 or 8 )
         addAura( "fiery_red_maimers", 212875)
         addAura( "feline_swiftness", 131768 )
         addAura( "feral_instinct", 16949 )
@@ -218,18 +218,18 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "prowl", 5215, "duration", 3600 )
         addAura( "rake", 155722, "duration", 15, "tick_time", 3 )
             modifyAura( "rake", "duration", function( x )
-                return talent.jagged_wounds.enabled and x * 0.75 or x
+                return talent.jagged_wounds.enabled and x * ( PTR and 0.8333 or 0.75 ) or x
             end )
             modifyAura( "rake", "tick_time", function( x )
-                return talent.jagged_wounds.enabled and x * 0.75 or x
+                return talent.jagged_wounds.enabled and x * ( PTR and 0.8333 or 0.75 ) or x
             end )
         addAura( "regrowth", 8936, "duration", 12 )
         addAura( "rip", 1079, "duration", 24, "tick_time", 2 )
             modifyAura( "rip", "duration", function( x )
-                return talent.jagged_wounds.enabled and x * 0.75 or x
+                return talent.jagged_wounds.enabled and x * ( PTR and 0.8333 or 0.75 ) or x
             end )
             modifyAura( "rip", "tick_time", function( x )
-                return talent.jagged_wounds.enabled and x * 0.75 or x
+                return talent.jagged_wounds.enabled and x * ( PTR and 0.8333 or 0.75 ) or x
             end )
         addAura( "savage_roar", 52610, "duration", 24 )
         addAura( "shadowmeld", 58984, "duration", 3600 )
@@ -238,10 +238,10 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "thrash_bear", 77758, "duration", 15, "max_stack", 3 )
         addAura( "thrash_cat", 106830, "duration", 15, "tick_time", 3 )
             modifyAura( "thrash_cat", "duration", function( x )
-                return talent.jagged_wounds.enabled and x * 0.75 or x
+                return talent.jagged_wounds.enabled and x * ( PTR and 0.8333 or 0.75 ) or x
             end )
             modifyAura( "thrash_cat", "tick_time", function( x )
-                return talent.jagged_wounds.enabled and x * 0.75 or x
+                return talent.jagged_wounds.enabled and x * ( PTR and 0.8333 or 0.75 ) or x
             end )
         addAura( "tigers_fury", 5217 )
         addAura( "travel_form", 783 )
@@ -290,7 +290,6 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
             mult = mult * ( buff.bloodtalons.up and 1.5 or 1 )
             mult = mult * ( buff.tigers_fury.up and 1.15 or 1 )
-            mult = mult * ( buff.savage_roar.up and 1.25 or 1 )
 
             if this_action and moc_spells[ this_action ] then
                 mult = mult * ( buff.clearcasting.up and 1.15 or 1 )
@@ -302,13 +301,12 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         local clearcasting_spells = { [5221] = true, [106830] = true, [106785] = true }
 
-        local function persistent_modifier( spellID  )
+        local function persistent_modifier( spellID )
             local bloodtalons = UnitBuff( "player", class.auras.bloodtalons.name, nil, "PLAYER" )
             local tigers_fury = UnitBuff( "player", class.auras.tigers_fury.name, nil, "PLAYER" )
-            local savage_roar = UnitBuff( "player", class.auras.savage_roar.name, nil, "PLAYER" )
             local clearcasting = UnitBuff( "player", class.auras.clearcasting.name, nil, "PLAYER" )
 
-            return 1 * ( bloodtalons and 1.5 or 1 ) * ( tigers_fury and 1.15 or 1 ) * ( savage_roar and 1.25 or 1 ) * ( ( clearcasting_spells[ spellID ] and clearcasting ) and 1.15 or 1 )
+            return 1 * ( bloodtalons and ( PTR and 1.2 or 1.5 ) or 1 ) * ( tigers_fury and 1.15 or 1 ) * ( ( clearcasting_spells[ spellID ] and clearcasting ) and ( PTR and 1.2 or 1.15 ) or 1 )
         end
 
         
@@ -326,7 +324,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addMetaFunction( 'state', 'break_stealth', function ()
             removeBuff( "shadowmeld" )
             if buff.prowl.up then
-                setCooldown( "prowl", 10 )
+                setCooldown( "prowl", 6 )
                 removeBuff( "prowl" )
             end
         end )
@@ -531,7 +529,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             cast = 0,
             gcdType = "spell",
             talent = "elunes_guidance",
-            cooldown = 45,
+            cooldown = 30,
             min_range = 0,
             max_range = 0,
         } )
@@ -567,6 +565,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         
         addHandler( "entangling_roots", function ()
             removeBuff( "predatory_swiftness" )
+            if talent.bloodtalons.enabled then applyBuff( "bloodtalons", 30, 2 ) end
         end )
 
 
@@ -1083,7 +1082,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addHandler( "savage_roar", function ()
             local cost = min( 5, combo_points.current )
             spend( cost, "combo_points" )
-            applyBuff( "savage_roar", 4 + ( 4 * cost ) )
+            applyBuff( "savage_roar", ( PTR and 6 or 4 ) + ( ( PTR and 6 or 4 ) * cost ) )
         end )
 
 
@@ -1263,7 +1262,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         --[[ Swipe nearby enemies, inflicting X to Y Physical damage.  Deals 20% increased damage against bleeding targets. ]]
         addAbility( "swipe_cat", {
             id = 106785,
-            spend = 45,
+            spend = PTR and 40 or 45,
             spend_type = "energy",
             cast = 0,
             gcdType = "melee",
@@ -1313,7 +1312,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addAbility( "thrash_cat", {
             id = 106832,
-            spend = 50,
+            spend = PTR and 45 or 50,
             spend_type = "energy",
             cast = 0,
             gcdType = "spell",
@@ -1336,6 +1335,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             active_dot.thrash_cat = max( active_dot.thrash_cat, true_active_enemies )
             removeStack( "bloodtalons" )
             removeStack( "clearcasting" )
+            if target.within8 then gain( 1, "combo_points" ) end            
         end )
 
 

@@ -583,8 +583,13 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         --[[ Volatile Shielding: Your Anti-Magic Shell turns your enemies' magic against them, absorbing 35% more damage, but generating no Runic Power.    When it expires, 25% of all damage absorbed is dealt as Shadow damage divided among nearby enemies. ]]
         addTalent( "volatile_shielding", 207188 ) -- 22527
 
-        --[[ White Walker: You take 30% reduced damage while Wraith Walk is active. When you enter or leave Wraith Walk, all nearby enemies are slowed by 70% for 3 sec. ]]
-        addTalent( "white_walker", 212765 ) -- 22031
+        if not PTR then
+            --[[ White Walker: You take 30% reduced damage while Wraith Walk is active. When you enter or leave Wraith Walk, all nearby enemies are slowed by 70% for 3 sec. ]]
+            addTalent( "white_walker", 212765 ) -- 22031
+        else
+            addTalent( "inexorable_assault", 253593 ) 
+            addAura( "inexorable_assault", 253595, "duration", 10, "max_stack", 10 )
+        end
 
         --[[ Winter is Coming: Enemies struck 5 times by Remorseless Winter while your Pillar of Frost is active are stunned for 4 sec. ]]
         addTalent( "winter_is_coming", 207170 ) -- 22525
@@ -658,7 +663,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "defile_buff", 218100, "duration", 5, "max_stack", 10 )
         addAura( "festering_wound", 194310, "duration", 24, "max_stack", 8 )
         addAura( "frost_fever", 55095, "duration", 24 )
-        addAura( "hungering_rune_weapon", 207127, "duration", 15 )
+        addAura( "hungering_rune_weapon", 207127, "duration", PTR and 12 or 15 )
         addAura( "icebound_fortitude", 48792, "duration", 8 )
         addAura( "icy_talons", 194879, "duration", 6, "max_stack", 3 )
         addAura( "killing_machine", 51128, "duration", 10 )
@@ -666,7 +671,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "mastery_frozen_heart", 77514 )
         addAura( "necrosis", 207346, "duration", 30 )
         addAura( "on_a_pale_horse", 51986 )
-        addAura( "obliteration", 207256, "duration", 8 )
+        addAura( "obliteration", 207256, "duration", PTR and 10 or 8 )
         addAura( "outbreak", 196782, "duration", 6 )
         addAura( "path_of_frost", 3714, "duration", 600 )
         addAura( "perseverance_of_the_ebon_martyr", 216059 )
@@ -1285,7 +1290,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             cast = 0,
             gcdType = "spell",
             talent = "horn_of_winter",
-            cooldown = 30,
+            cooldown = PTR and 45 or 30,
             -- min_range = 0,
             -- max_range = 0,
         } )
@@ -1316,6 +1321,11 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addHandler( "howling_blast", function ()
             applyDebuff( "target", "frost_fever", 24 )
             active_dot.frost_fever = max( active_dot.frost_fever, active_enemies )
+
+            if PTR and buff.obliteration.up then
+                applyBuff( "killing_machine" )
+            end
+
             if buff.rime.up then
                 if set_bonus.tier19_4pc == 1 then
                     gain( 6, "runic_power" )
@@ -1349,7 +1359,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addHandler( "hungering_rune_weapon", function ()
             gain( 1, "runes" )
-            applyBuff( "hungering_rune_weapon", 15 )
+            applyBuff( "hungering_rune_weapon", PTR and 12 or 15 )
+            if PTR then stat.spell_haste = ( ( 1 + stat.spell_haste ) * 1.2 ) - 1 end
         end )
 
 

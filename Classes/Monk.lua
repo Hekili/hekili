@@ -897,6 +897,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             known = function() return talent.invoke_xuen.enabled end,
             toggle = 'cooldowns'
         } )
+        class.abilities.invoke_xuen_the_white_tiger = class.abilities.invoke_xuen
 
         addHandler( 'invoke_xuen', function ()
             summonPet( 'xuen', 45 )
