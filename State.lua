@@ -751,7 +751,7 @@ local function forecastResources( resource )
                 local l = v.last()
                 local i = ( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ) )
 
-                v.next = v.last() + ( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ) )
+                v.next = l + i
                 v.name = k
 
                 if r.fcount == 0 then
@@ -3374,6 +3374,8 @@ function state.reset( dispID )
             res.inactive_regen = res.inactive_regen or 0
 
         end
+
+        if res.reset then res.reset() end
 
     end
 
