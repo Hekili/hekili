@@ -635,7 +635,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'avenging_wrath', function ()
             applyBuff( 'avenging_wrath', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2.5 ) )
-            if equipped.chain_of_thrayn then applyBuff( 'chain_of_thrayn', 20 + ( artifact.wrath_of_the_ashbringer.rank * ( PTR and 2 or 2.5 ) ) ) end
+            if equipped.chain_of_thrayn then applyBuff( 'chain_of_thrayn', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2 ) ) end
             if equipped.liadrins_fury_unleashed then gain( 1, 'holy_power' ) end
         end )
 
@@ -1344,7 +1344,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             spend_type = 'holy_power',
             cast = 0,
             gcdType = 'off',
-            cooldown = PTR and 45 or 30,
+            cooldown = 45,
             talent = 'seraphim'
         } )
 

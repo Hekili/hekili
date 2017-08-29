@@ -168,6 +168,8 @@ local function ScanTraits(artifactID)
 	local traits = {}
 	local powers = GetPowers()
 
+    if not powers then return end
+
 	for i = 1, #powers do
 		local traitID = powers[i]
 		local info = GetPowerInfo(traitID)
