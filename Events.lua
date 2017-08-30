@@ -58,8 +58,9 @@ function ns.StartEventHandler()
     events:SetScript( "OnUpdate", function( self, elapsed )
         local now = GetTime()
 
-        if now - lastRecount >= 0.1 then
+        if now - lastRecount >= 0.05 then
             ns.recountTargets()
+            lastRecount = now
         end
 
         local updatePeriod = state.combat == 0 and 1 or 0.2
