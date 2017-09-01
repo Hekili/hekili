@@ -196,6 +196,34 @@ local oneTimeFixes = {
             end
         end
     end,
+
+    forceRetToRefreshAPLsFor730_09012017 = function( profile )
+        if state.class.file == "PALADIN" then
+            local exists = {}
+            
+            for i, list in ipairs( profile.actionLists ) do
+                exists[ list.Name ] = i
+            end
+            
+            for i, default in ipairs( class.defaults ) do
+                if default.type == 'actionLists' then
+                    local index = exists[ default.name ] or #profile.actionLists + 1
+                    
+                    local import = ns.deserializeActionList( default.import )
+                    
+                    if import then
+                        profile.actionLists[ index ] = import
+                        profile.actionLists[ index ].Name = default.name
+                        profile.actionLists[ index ].Release = default.version
+                        profile.actionLists[ index ].Default = true
+                    end
+                end
+            end
+            
+            ns.loadScripts()
+        end
+    end,
+
 }
 
 
