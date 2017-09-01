@@ -12,9 +12,9 @@ local orderedPairs = ns.orderedPairs
 local round = ns.round
 
 local Masque, MasqueGroup
-local UIDropDownMenuTemplate = Lib_UIDropDownMenuTemplate
-local UIDropDownMenu_AddButton = Lib_UIDropDownMenu_AddButton
-local UIDropDownMenu_AddSeparator = Lib_UIDropDownMenu_AddSeparator
+local UIDropDownMenuTemplate = L_UIDropDownMenuTemplate
+local UIDropDownMenu_AddButton = L_UIDropDownMenu_AddButton
+local UIDropDownMenu_AddSeparator = L_UIDropDownMenu_AddSeparator
 
 
 function Hekili:GetScale()
@@ -489,7 +489,7 @@ function ns.buildUI()
   f.Text:SetTextColor(1, 1, 1, 1)
 
   ns.UI.Notification = f
-  ns.UI.Menu = ns.UI.Menu or CreateFrame( "Frame", "Hekili_Menu", UIParent, "Lib_UIDropDownMenuTemplate" )
+  ns.UI.Menu = ns.UI.Menu or CreateFrame( "Frame", "Hekili_Menu", UIParent, "L_UIDropDownMenuTemplate" )
 
   if not Hekili.DB.profile['Notification Enabled'] then
     ns.UI.Notification:Hide()

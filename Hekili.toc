@@ -4,7 +4,7 @@
 ## Author: Hekili
 ## Notes: Priority helper for Shamans, Paladins, Monks, and Hunters with support for in-game modifications.
 ## SavedVariables: HekiliDB
-## OptionalDeps: LibArtifactData-1.0, BrewmasterTools, Masque, SpellFlash, SpellFlashCore, WeakAuras
+## OptionalDeps: LibArtifactData-1.0, BrewmasterTools, Masque, SpellFlash, SpellFlashCore, WeakAuras, LibUIDropDownMenu
 
 embeds.xml
 
