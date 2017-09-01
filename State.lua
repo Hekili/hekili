@@ -1052,13 +1052,28 @@ local mt_state = {
             
         elseif k == 'ticks' then return 0
             
-        elseif k == 'ticks_remain' then return 0
+        elseif k == 'ticks_remain' then
+            local aura =  class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
+            local dot = class.auras[ aura ]
+
+            if not t.dot[ aura ].up or not dot or not dot.tick_time then return 0 end
+
+            return floor( t.dot[ aura ].remains / dot.tick_time )
+
+        elseif k == 'tick_time_remains' then
+            local aura =  class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
+            local dot = class.auras[ aura ]
+
+            if not t.dot[ aura ].up or not dot or not dot.tick_time then return 0 end
             
         elseif k == 'remains' then
             return t.dot[ t.this_action ].remains
             
         elseif k == 'tick_time' then
-            return class.auras[ t.this_action ].tick_time or 0
+            local aura = class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
+            local dot = class.auras[ aura ]
+
+            return t.dot[ aura ].up and class.auras[ aura ].tick_time or 0
             
         elseif k == 'travel_time' then return 0
             
@@ -2666,6 +2681,10 @@ local mt_default_debuff = {
             
         elseif k == 'ticking' then
             return t.up
+
+        elseif k == 'tick_time_remains' then
+            if not class_aura.tick_time then return t.remains end
+            return t.remains % class_aura.tick_time
             
         end
         
@@ -2771,7 +2790,7 @@ local mt_default_action = {
         elseif k == 'remains' then
             return ( state.dot[ t.action ].remains )
             
-        elseif k == 'tick_time' then
+        --[[ elseif k == 'tick_time' then
             if IsWatchedDoT( t.action ) then
                 return ( GetWatchedDoT( t.action ).tick_time * state.haste )
             end
@@ -2781,7 +2800,7 @@ local mt_default_action = {
             if IsWatchedDoT( t.action ) then
                 return select(2, GetWatchedDoT( t.action ).handler() )
             end
-            return 0
+            return 0 ]]
             
         elseif k == 'travel_time' then
             -- NYI: maybe capture the last travel time for the spell and use that?

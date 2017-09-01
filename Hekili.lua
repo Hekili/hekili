@@ -10,7 +10,7 @@ Hekili.Version = GetAddOnMetadata("Hekili", "Version");
 local format = string.format
 
 
-ns.PTR = GetBuildInfo() ~= "7.2.0"
+ns.PTR = GetBuildInfo() ~= "7.3.0"
 
 
 ns.lib = {

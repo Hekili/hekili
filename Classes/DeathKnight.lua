@@ -667,7 +667,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "necrosis", 207346, "duration", 30 )
         addAura( "on_a_pale_horse", 51986 )
         addAura( "obliteration", 207256, "duration", 10 )
-        addAura( "outbreak", 196782, "duration", 6 )
+        addAura( "outbreak", 196782, "duration", 6, "tick_time", 1.5 )
         addAura( "path_of_frost", 3714, "duration", 600 )
         addAura( "perseverance_of_the_ebon_martyr", 216059 )
         addAura( "pillar_of_frost", 51271, "duration", 20 )
@@ -681,7 +681,15 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             modifyAura( "sudden_doom", "max_stack", function( x ) return x + ( artifact.sudden_doom.enabled and 1 or 0 ) end )
         addAura( "temptation", 234143, "duration", 30 )
         addAura( "unholy_strength", 53365, "duration", 15 )
-        addAura( "virulent_plague", 191587, "duration", 21 )
+        addAura( "virulent_plague", 191587, "duration", 21, "tick_time", 3 )
+            modifyAura( "virulent_plague", "duration", function( x )
+                if talent.ebon_fever.enabled then return x / 2 end
+                return x
+            end )
+            modifyAura( "virulent_plague", "tick_time", function( x )
+                if talent.ebon_fever.enabled then return x / 2 end
+                return x 
+            end )
         addAura( "wraith_walk", 212552, "duration", 3 )
 
 
@@ -1457,6 +1465,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             cooldown = 0,
             -- min_range = 0,
             max_range = 30,
+            -- aura = 'virulent_plague'
         } )
 
         addHandler( "outbreak", function ()
