@@ -2461,7 +2461,7 @@ function Hekili:ProcessHooks( dispID, solo )
                             chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, 0, predicted_clash, predicted_depth
 
                             if debug then self:Debug( "No better recommendation found within 2 GCDs; using the prediction engine's recommendation.\n" ..
-                                "Selected action [ %s ] at +%.2fs.", chosen_action, state.offset ) end
+                                "Selected action [ %s ] at +%.2fs.", chosen_action or "NO ACTION FOUND", state.offset ) end
                         end
 
                     end
