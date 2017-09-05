@@ -83,9 +83,9 @@ function ns.recountTargets()
 
     npCount = ns.getNumberTargets()
 
-    if lastNpCount ~= npCount then
+    --[[ if lastNpCount ~= npCount then
         ns.forceUpdate()
-    end
+    end ]]
 end
 
 
