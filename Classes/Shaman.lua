@@ -504,13 +504,13 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             return gcd + ( settings.safety_window or 0 )
         end )
 
-        ns.addSetting( 'st_fury', false, {
+        --[[ ns.addSetting( 'st_fury', false, {
             name = "Enhancement: Single-Target Fury",
             type = "toggle",
             desc = "If |cFFFF0000false|r, the addon will not recommend Fury of Air when there is only one enemy.  It will still budget and pool Maelstrom for Fury of Air (if talented accordingly), in case of AOE.\n\n" ..
                 "If you are wearing the Smoldering Heart legendary, you will want to set this to |cFF00FF00true|r so that Fury of Air will help proc Ascendance.  Otherwise, simulations for 7.2.5 suggest that Fury of Air is slightly DPS negative in single-target, meaning there is a small DPS loss from using it in single-target.",
             width = "full",
-        } )
+        } ) ]]
 
         ns.addSetting( 'allow_dw_desync', true, {
             name = "Enhancement: Allow Doom Winds to Desynchronize from Ascendance",
@@ -1058,7 +1058,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             gcdType = 'spell',
             cooldown = 0,
             talent = 'fury_of_air',
-            usable = function () return active_enemies > 1 or settings.st_fury end,
+            -- usable = function () return active_enemies > 1 or settings.st_fury end,
             passive = true,
         } )
 
