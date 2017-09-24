@@ -66,9 +66,6 @@ externals:
     Libs/LibRangeCheck-2.0:
         url: svn://svn.wowace.com/wow/librangecheck-2-0/mainline/trunk
         tag: latest
-    Libs/LibArtifactData-1.0:
-        url: git://git.wowace.com/wow/libartifactdata-1-0/mainline.git
-        tag: latest
     Libs/LibCompress:
         url: svn://svn.wowace.com/wow/libcompress/mainline/trunk
         tag: latest
