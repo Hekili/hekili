@@ -525,7 +525,7 @@ ns.addResource = addResource
 local function removeResource( resource )
 
     class.resources[ resource ] = nil
-    class.regenModel = nil
+    -- class.regenModel = nil
 
     if class.primaryResource == resource then class.primaryResource = nil end
 

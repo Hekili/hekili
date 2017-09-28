@@ -392,7 +392,7 @@ function checkAPLConditions()
             cachedResults[ k ][ state.delay ] = cachedResults[ k ][ state.delay ] or checkScript( 'A', v )
             cachedValues[ k ][ state.delay ] = cachedValues[ k ][ state.delay ] or ns.getConditionsAndValues( 'A', v )
 
-            if Hekili.ActiveDebug then Hekili:Debug( "The conditions for %s would%s pass at %.2f.\n%s", k, cachedResults[ k ][ state.delay ] and "" or " NOT", state.delay, cachedValues[ k ][ state.delay ] ) end
+            if Hekili.ActiveDebug then Hekili:Debug( "The conditions for %s would%s pass at %.2f.\n - %s", k, cachedResults[ k ][ state.delay ] and "" or " NOT", state.delay, cachedValues[ k ][ state.delay ] ) end
             if not cachedResults[ k ][ state.delay ] then return false end
         end
     end
@@ -805,7 +805,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                     if debug then self:Debug( "The Usable Items's conditions will be tested along with each action." ) end
                                 else
                                     aScriptPass = checkAPLConditions() and checkScript( 'A', scriptID )
-                                    if debug then self:Debug( "The conditions for this entry are not time sensitive and %s at ( %.2f + %.2f ).", aScriptPass and "PASS" or "DO NOT PASS", state.offset, state.delay ) end
+                                    if debug then self:Debug( "The conditions for this entry are not time sensitive%s and %s at ( %.2f + %.2f ).", aScriptPass and "PASS" or "DO NOT PASS", state.offset, state.delay ) end
                                 end
                             end
 
@@ -841,12 +841,12 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                 if debug then self:Debug( "%s does not have any required conditions.", ability.name ) end
                                 
                             else
-                                if isTimeSensitive( 'A', scriptID ) then 
+                                if isTimeSensitive( 'A', scriptID ) and not entry.StrictCheck then 
                                     -- aScriptPass = checkAPLConditions() and checkScript( 'A', scriptID )
-                                    if debug then self:Debug( "The APL's conditions will be tested along with each action." ) end
+                                    if debug then self:Debug( "The action list's conditions will be tested along with each action." ) end
                                 else
                                     aScriptPass = checkAPLConditions() and checkScript( 'A', scriptID )
-                                    if debug then self:Debug( "The conditions for this entry are not time sensitive and %s at ( %.2f + %.2f ).", aScriptPass and "PASS" or "DO NOT PASS", state.offset, state.delay ) end
+                                    if debug then self:Debug( "The conditions for this action list are not time sensitive%s and %s at ( %.2f + %.2f ).", entry.StrictCheck and " (STRICT)" or "", aScriptPass and "PASS" or "DO NOT PASS", state.offset, state.delay ) end
                                 end
                             end
                             
@@ -2369,15 +2369,13 @@ function Hekili:ProcessHooks( dispID, solo )
 
                     if debug then
                         for k in pairs( class.resources ) do
-                            self:Debug( "[ ** ] %s %d/%d", k, state[ k ].current, state[ k ].max )
+                            self:Debug( "[ ** ] %s, %d / %d", k, state[ k ].current, state[ k ].max )
                         end
                     end
-
 
                     state.delay = 0
 
                     local predicted_action, predicted_wait, predicted_clash, predicted_depth = self:GetNextPrediction( dispID, slot )
-
                     if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs.\n", predicted_action or "NO ACTION", predicted_wait or 60 ) end
 
                     local gcd_remains = state.cooldown.global_cooldown.remains

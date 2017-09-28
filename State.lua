@@ -721,21 +721,32 @@ local function forecastResources( resource )
     table.wipe( events )
     table.wipe( remains )
 
+    local now = state.now + state.offset
+
     if resource then
+        local r = state[ resource ]
+
         remains[ resource ] = FORECAST_DURATION
-        table.wipe( state[ resource ].times )
-        table.wipe( state[ resource ].values )
-        state[ resource ].fcount = 0
+
+        table.wipe( r.times )
+        table.wipe( r.values )
+        r.forecast[1] = r.forecast[1] or {}
+        r.forecast[1].t = now
+        r.forecast[1].v = r.actual
+        r.fcount = 1
     else
         for k, v in pairs( class.resources ) do
+            local r = state[ k ]
             remains[ k ] = FORECAST_DURATION
-            table.wipe( state[ k ].times )
-            table.wipe( state[ k ].values )
-            state[ k ].fcount = 0
+
+            table.wipe( r.times )
+            table.wipe( r.values )
+            r.forecast[1] = r.forecast[1] or {}
+            r.forecast[1].t = now
+            r.forecast[1].v = r.actual
+            state[ k ].fcount = 1
         end
     end
-
-    local now = state.now + state.offset
 
     if models then
         for k, v in pairs( models ) do
@@ -754,12 +765,12 @@ local function forecastResources( resource )
                 v.next = l + i
                 v.name = k
 
-                if r.fcount == 0 then
+                --[[ if r.fcount == 0 then
                     r.forecast[1] = r.forecast[1] or {}
                     r.forecast[1].t = now
                     r.forecast[1].v = r.actual
                     r.fcount = 1
-                end
+                end ]]
 
                 if v.next >= 0 then
                     table.insert( events, v )
@@ -2179,7 +2190,7 @@ local mt_resource = {
                             t.times[ amount ] = ( slice.t + regen_time )
                         else
                             t.times[ amount ] = after.t
-                        end                        
+                        end
                         return max( 0, t.times[ amount ] - q )
                     end
                 end
@@ -2192,8 +2203,7 @@ local mt_resource = {
             return max( 0, ( amount - t.current ) / t.regen )
 
         elseif k == 'regen' then
-            if state.time > 0 then return t.active_regen or 0 end
-            return 0
+            return t.active_regen
 
         elseif k == 'model' then
             return

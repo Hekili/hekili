@@ -3227,6 +3227,7 @@ ns.newActionOption = function( aList, index )
                 order = 30,
                 width = 'full'
             },
+
             CheckMovement = {
                 type = 'toggle',
                 name = 'Check Movement',
@@ -3270,6 +3271,18 @@ ns.newActionOption = function( aList, index )
                 end,
                 width = 'double'
             },
+
+            StrictCheck = {
+                type = 'toggle',
+                name = 'Strict Check',
+                desc = "If Strict Checking is enabled, the addon will not recheck this entry's criteria for any dependent actions.  This applies only to Call Action List or Run Action List entries.",
+                order = 35,
+                hidden = function( info )
+                    local action = getActionEntry( info )
+                    return not action or not action.ShowModifiers
+                end,
+                width = "full",
+            },
             
             CycleTargets = {
                 type = 'toggle',
@@ -3280,7 +3293,7 @@ ns.newActionOption = function( aList, index )
                 "is already afflicted by Mark of the Crane (and by Eye of the Tiger, if talented).\n\n" ..
                 "If a |cFFFFD100Maximum Targets|r value is specified, the addon will only recommend target swapping if/when " ..
                 "fewer than |cFFFFD100Maximum Targets|r are afflicted by this ability's debuffs.",
-                order = 35,
+                order = 38,
                 width = 'single',
                 get = function( info )
                     local action = getActionEntry( info )
@@ -3303,7 +3316,7 @@ ns.newActionOption = function( aList, index )
                 "that the addon should attempt debuff using this ability. For instance, if the ability in question is " ..
                 "Tiger Palm for a Windwalker Monk, setting this value to |cFFFFD1003|r means the addon will make recommendations " ..
                 "to keep Mark of the Crane applied to a maximum of 3 targets.",
-                order = 36,
+                order = 39,
                 width = 'double',
                 -- dialogControl = "HekiliCustomEditor",
                 disabled = function( info )
@@ -3331,7 +3344,7 @@ ns.newActionOption = function( aList, index )
             Args = { -- should rename at some point.
                 type = 'input',
                 name = 'Custom Modifiers',
-                order = 39,
+                order = 40,
                 width = 'full',
                 hidden = function( info )
                     local action = getActionEntry( info )

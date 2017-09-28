@@ -51,7 +51,6 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         Hekili:Print("Initializing Hunter Class Module.")
 
         setClass( 'HUNTER' )
-
         addResource( 'focus', true )
 
         addTalent( 'animal_instincts', 204315 )

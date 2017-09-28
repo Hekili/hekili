@@ -525,7 +525,7 @@ ns.loadScripts = function()
       if action.Ability == 'call_action_list' or action.Ability == 'run_action_list' then
         -- check for time sensitive conditions.
         local lua = Actions[ aKey ].Lua
-        if lua and ( lua:match( "time" ) or lua:match( "cooldown" ) or lua:match( "charges" ) or lua:match( "buff" ) or lua:match( "focus" ) or lua:match( "energy" ) ) then
+        if lua and ( lua:match( "time" ) or lua:match( "cooldown" ) or lua:match( "charge" ) or lua:match( "buff" ) or lua:match( "focus" ) or lua:match( "energy" ) ) then
             Actions[ aKey ].TimeSensitive = true
         else
             Actions[ aKey ].TimeSensitive = false
