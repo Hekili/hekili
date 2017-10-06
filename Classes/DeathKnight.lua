@@ -433,7 +433,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
             state.runic_power.regen = 0
 
-            state.pet.valkyr_battlemaiden.expires = state.last_valkyr > 0 and state.last_valkyr + 15 or 0
+            state.pet.valkyr_battlemaiden.expires = state.last_valkyr > 0 and state.last_valkyr + 23 or 0
             state.pet.army_of_the_dead.expires = state.last_army > 0 and state.last_army + 40 or 0
 
             virtual_rp_spent_since_pof = rp_spent_since_pof
