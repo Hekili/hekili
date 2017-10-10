@@ -954,9 +954,11 @@ local function ReadKeybindings()
         StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
     end
 
-    --[[ for i = 13, 24 do
-        StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
-    end ]]
+    if class.file == 'DRUID' then
+        for i = 13, 24 do
+            StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
+        end
+    end
 
     for i = 25, 36 do
         StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
@@ -974,9 +976,11 @@ local function ReadKeybindings()
         StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
     end
 
-    --[[ for i = 73, 120 do
-        StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. ( i - 60 ) % 12 ), GetActionInfo( i ) )
-    end ]]
+    if class.file == 'DRUID' then
+        for i = 73, 120 do
+            StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. ( i - 60 ) % 12 ), GetActionInfo( i ) )
+        end
+    end
 
     for k in pairs( keys ) do
         if not updatedKeys[ k ] then keys[ k ] = nil end

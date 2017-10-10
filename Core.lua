@@ -2797,7 +2797,7 @@ function Hekili:UpdateDisplay( dispID )
                             flashes[dispID] = GetTime()
                         end
                         
-                        if ( class.file == 'HUNTER' or class.file == 'MONK' or class.file == 'DEATHKNIGHT' ) then
+                        if ( class.file == 'HUNTER' or class.file == 'MONK' or class.file == 'DEATHKNIGHT' or class.file == 'DRUID' ) then
                             local exact = Queue[i].exact_time
                             local end_gcd = gcd_start + gcd_duration
                             local diff = abs( exact - end_gcd )
