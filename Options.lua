@@ -233,6 +233,14 @@ local oneTimeFixes = {
             profile.trinkets.umbral_moonglaives.disabled = true
         end
     end,
+
+    disableSpecterForPaladins_10102017 = function( profile )
+        if state.class.file == "PALADIN" then
+            profile.trinkets = profile.trinkets or {}
+            profile.trinkets.specter_of_betrayal = profile.trinkets.specter_of_betrayal or {}
+            profile.trinkets.specter_of_betrayal.disabled = true
+        end
+    end,
 }
 
 
