@@ -427,6 +427,7 @@ ns.updateGear = function ()
         C_Timer.After( 3, ns.updateGear )
     else
         ns.updateArtifact()
+        ns.ReadKeybindings()
     end
 
 end
@@ -995,8 +996,6 @@ local function ReadKeybindings()
     end
 
 end    
-
-
 ns.ReadKeybindings = ReadKeybindings
 
 
