@@ -872,7 +872,7 @@ local function gain( amount, resource, overcap )
 
     ns.callHook( 'gain', amount, resource, overcap )
 
-    if amount ~= 0 then forecastResources( resource ) end
+    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
 
 end
 state.gain = gain
