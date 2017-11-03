@@ -868,7 +868,8 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                         if debug then self:Debug( "The action list for %s ( %s ) was found.", entry.Ability, aList ) end
                                         chosen_action, chosen_wait, chosen_clash, chosen_depth = self:GetPredictionFromAPL( dispID, listID .. ':' .. actID, called_list, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
                                         if debug then self:Debug( "The action list ( %s ) returned with recommendation %s after %.2f seconds.", aList, chosen_action or "none", chosen_wait ) end
-                                        stop = entry == 'run_action_list'
+                                        stop = entry.Ability == 'run_action_list'
+                                        -- Revisit this -- Run APL might need to check if a recommendation was actually found here.
                                         calledList = true
                                     else
                                         if debug then self:Debug( "The action list for %s ( %s ) was not found - %s / %s.", entry.Ability, aList, entry.ModName or "nil", state.args.name or "nil" ) end
@@ -1126,7 +1127,7 @@ function Hekili:ProcessIterativeActionList( dispID, hookID, listID, slot, depth,
                                     if called_list > 0 then
                                         if debug then self:Debug( "The action list for %s ( %s ) was found.", entry.Ability, aList ) end
                                         chosen_action, chosen_clash, chosen_depth = self:ProcessIterativeActionList( dispID, listID .. ':' .. actID , called_list, slot, chosen_depth, chosen_action, chosen_clash )
-                                        stop = entry == 'run_action_list'
+                                        stop = entry.Ability == 'run_action_list'
                                         calledList = true
                                     else
                                         if debug then self:Debug( "The action list for %s ( %s ) was not found - %s / %s.", entry.Ability, aList, entry.ModName or "nil", state.args.name or "nil" ) end

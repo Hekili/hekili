@@ -41,6 +41,9 @@ local setRegenModel = ns.setRegenModel
 local setTalentLegendary = ns.setTalentLegendary
 
 local RegisterEvent = ns.RegisterEvent
+local UnregisterEvent = ns.UnregisterEvent
+local RegisterUnitEvent = ns.RegisterUnitEvent
+local UnregisterUnitEvent = ns.UnregisterUnitEvent
 
 local retireDefaults = ns.retireDefaults
 local storeDefault = ns.storeDefault
@@ -234,11 +237,6 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         setTalentLegendary( 'soul_of_the_grandmaster', 'windwalker', 'chi_orbit' )
 
 
-        addHook( 'specializationChanged', function ()
-            setPotion( 'prolonged_power' )
-            setRole( state.spec.brewmaster and 'tank' or 'attack' )
-        end )
-
 
         addHook( 'reset_precast', function ()
             if state.spec.windwalker and state.talent.hit_combo.enabled and state.prev_gcd.tiger_palm and state.chi.current == 0 then
@@ -286,9 +284,9 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         local myGUID = UnitGUID( 'player' )
 
-        RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, arg1, _, _, _, arg5, _, _, arg8, _, _, arg11 )
-
-            if state.spec.brewmaster and destGUID == myGUID and subtype == 'SPELL_ABSORBED' then
+        local function trackBrewmasterDamage( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, arg1, _, _, _, arg5, _, _, arg8, _, _, arg11 )
+            
+            if destGUID == myGUID and subtype == 'SPELL_ABSORBED' then
 
                 local now = GetTime()
 
@@ -313,7 +311,18 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
                 end
             end
 
+        end
+
+        addHook( 'specializationChanged', function ()
+            setPotion( 'prolonged_power' )
+            setRole( state.spec.brewmaster and 'tank' or 'attack' )
+            if state.spec.brewmaster then
+                RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", trackBrewmasterDamage )
+            else
+                UnregisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", trackBrewmasterDamage )
+            end
         end )
+
 
         local function stagger_in_last( t )
 
@@ -409,7 +418,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             end } )
 
 
-        addToggle( 'strike_of_the_windlord', true, 'Artifact Ability',
+        --[[ addToggle( 'strike_of_the_windlord', true, 'Artifact Ability',
             'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
 
         addSetting( 'strike_cooldown', true, {
@@ -417,7 +426,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             type = "toggle",
             desc = "If |cFF00FF00true|r, when your Cooldown toggle is |cFF00FF00ON|r then the toggle for your artifact ability will be overridden and your artifact ability will be shown regardless of its toggle above.",
             width = "full"
-        } )
+        } ) ]]
 
         addToggle( 'use_defensives', true, "Brewmaster: Use Defensives",
             "Set a keybinding to toggle your defensive abilities on/off in your priority lists." )
@@ -500,13 +509,13 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
 
         -- Using these to abstract the 'Strike of the Windlord' options so the same keybinds/toggles work in Brewmaster spec.
-        addMetaFunction( 'toggle', 'artifact_ability', function()
+        --[[ addMetaFunction( 'toggle', 'artifact_ability', function()
             return state.toggle.strike_of_the_windlord
         end )
 
         addMetaFunction( 'settings', 'artifact_cooldown', function()
             return state.settings.strike_cooldown
-        end )
+        end ) ]]
 
         addMetaFunction( 'state', 'gcd', function()
             return 1.0
@@ -767,7 +776,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 75,
-            known = function () return equipped.fu_zan_the_wanderers_companion and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end,
+            known = function () return equipped.fu_zan_the_wanderers_companion end,
+            toggle = 'artifact'
         } )
 
 
@@ -1262,7 +1272,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'melee',
             cooldown = 40,
-            known = function () return equipped.fists_of_the_heavens and ( toggle.strike_of_the_windlord or ( toggle.cooldowns and settings.strike_cooldown ) ) end,
+            known = function () return equipped.fists_of_the_heavens end,
+            toggle = 'artifact'
         } )
 
         modifyAbility( 'strike_of_the_windlord', 'cooldown', function( x )

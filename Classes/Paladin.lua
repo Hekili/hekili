@@ -450,7 +450,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
 
         -- Class/Spec Settings
-        addToggle( 'wake_of_ashes', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
+        --[[ addToggle( 'wake_of_ashes', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
 
         addSetting( 'wake_of_ashes_cooldown', true, {
             name = "Artifact Ability: Cooldown Override",
@@ -462,12 +462,12 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         -- Using these to abstract the 'Wake of Ashes' options so the same keybinds/toggles work in Protection spec.
         addMetaFunction( 'toggle', 'artifact_ability', function()
-            return state.toggle.wake_of_ashes
+            return state.toggle.wake_of_ashes and not Hekili.DB.profile.blacklist.wake_of_ashes
         end )
 
         addMetaFunction( 'settings', 'artifact_cooldown', function()
             return state.settings.wake_of_ashes_cooldown
-        end )
+        end ) ]]
 
 
         addToggle( 'use_defensives', true, "Protection: Use Defensives",
@@ -1459,8 +1459,9 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 30,
-            known = function () return equipped.ashbringer and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end,
-            usable = function () return not artifact.ashes_to_ashes.enabled or holy_power.current <= settings.maximum_wake_power end
+            known = function () return equipped.ashbringer end,
+            usable = function () return not artifact.ashes_to_ashes.enabled or holy_power.current <= settings.maximum_wake_power end,
+            toggle = 'artifact'
         } )
 
         modifyAbility( 'wake_of_ashes', 'spend', function( x ) 

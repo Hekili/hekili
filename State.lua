@@ -1173,6 +1173,9 @@ local mt_state = {
             
         elseif k == 't18_class_trinket' then
             return t.set_bonus[k]
+
+        elseif k == 'prowling' then
+            return t.buff.prowl.up or ( t.buff.cat_form.up and t.buff.shadowform.up )
             
         else
             -- Check if this is a resource table pre-init.
@@ -1426,6 +1429,9 @@ local mt_toggle = {
             
         elseif k == 'cooldowns' then
             return ( Hekili.DB.profile.Cooldowns or ( Hekili.DB.profile.BloodlustCooldowns and state.buff.bloodlust.up ) ) or false
+
+        elseif k == 'artifact' then
+            return ( Hekili.DB.profile.Artifact or ( Hekili.DB.profile.CooldownArtifact and state.toggle.cooldowns ) ) or false
             
         elseif k == 'potions' then
             return Hekili.DB.profile.Potions or false
@@ -2753,7 +2759,13 @@ ns.metatables.mt_debuffs = mt_debuffs
 -- Needs review.
 local mt_default_action = {
     __index = function(t, k)
-        if k == 'gcd' then
+        if k == 'enabled' then
+            local ability = t.action
+            local toggle = class.abilities[ ability ].toggle
+
+            return not Hekili.DB.profile.blacklist[ ability ] and ( not toggle or state.toggle[ toggle ] )
+
+        elseif k == 'gcd' then
             if t.gcdType == 'offGCD' then return 0
             elseif t.gcdType == 'spell' then return max( 0.75, 1.5 * state.haste )
                 -- This needs a class/spec check to confirm GCD is reduced by haste.
@@ -3655,7 +3667,7 @@ ns.isKnown = function( sID )
     if bl and bl[ ability.key ] then
         return false
     end
-    
+
     if ability.talent and not state.talent[ ability.talent ].enabled then
         return false
     end
@@ -3697,6 +3709,10 @@ ns.isUsable = function( spell )
         return false
     end
 
+    if ability.toggle and not state.toggle[ ability.toggle ] then
+        return false
+    end
+    
     if ability.usable ~= nil then
         if type( ability.usable ) == 'number' then 
             return IsUsableSpell( ability.usable )
@@ -3764,11 +3780,15 @@ function ns.timeToReady( action )
     local now = state.now + state.offset
     
     -- Need to ignore the wait for this part.
-    local wait = state.cooldown[ action ].remains -- max( state.cooldown.global_cooldown.remains, state.cooldown[ action ].remains )
+    local wait = state.cooldown[ action ].remains
+    local ability = class.abilities[ action ]
+
+    if ability.gcdType ~= 'off' then
+        wait = max( wait, state.cooldown.global_cooldown.remains )
+    end
     
     wait = ns.callHook( "timeToReady", wait, action )
     
-    local ability = class.abilities[ action ]
     local spend, resource
     
     if ability.spend then

@@ -463,14 +463,14 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         end )
 
 
-        ns.addToggle( 'doom_winds', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
+        --[[ ns.addToggle( 'doom_winds', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
 
         ns.addSetting( 'doom_winds_cooldown', true, {
             name = "Artifact Ability: Cooldown Override",
             type = "toggle",
             desc = "If |cFF00FF00true|r, when your Cooldown toggle is |cFF00FF00ON|r then the toggle for artifact ability will be overriden and Doom Winds will be shown regardless of your Doom Winds toggle.",
             width = "full"
-        } )
+        } ) ]]
 
         ns.addSetting( 'elemental_gambling', false, {
             name = "Elemental: Use Gambling Action List",
@@ -633,13 +633,13 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
 
 
-        addMetaFunction( 'toggle', 'artifact_ability', function()
-            return state.toggle.doom_winds
+        --[[ addMetaFunction( 'toggle', 'artifact_ability', function()
+            return state.toggle.artifact
         end )
 
         addMetaFunction( 'settings', 'artifact_cooldown', function()
             return state.settings.doom_winds_cooldown
-        end )
+        end ) ]]
 
         -- Overriding the default active_enemies handler because Elemental needs to count targets based on what's been hit.
         --[[ addMetaFunction( 'state', 'active_enemies', function ()
@@ -804,9 +804,8 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             gcdType = 'off',
             cooldown = 60,
             known = function() return equipped.doomhammer end,
-            usable = function () return toggle.doom_winds or ( toggle.cooldowns and settings.doom_winds_cooldown ) end,
             passive = true,
-            -- toggle = 'cooldowns'
+            toggle = 'artifact'
         } )
 
         addHandler( 'doom_winds', function ()
@@ -1415,8 +1414,8 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             gcdType = 'spell',
             cooldown = 60,
             known = function() return equipped.fist_of_raden end,
-            usable = function () return toggle.artifact_ability or ( toggle.cooldowns and settings.artifact ) end,
             passive = true,
+            toggle = 'artifact'
         } )
 
         modifyAbility( 'stormkeeper', 'cast', function( x )

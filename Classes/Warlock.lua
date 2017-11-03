@@ -307,14 +307,14 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
 
 
         -- Options.
-        addToggle( 'artifact_ability', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
+        --[[ addToggle( 'artifact_ability', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
 
         addSetting( 'artifact_cooldown', true, {
             name = "Artifact Ability: Cooldown Override",
             type = "toggle",
             desc = "If |cFF00FF00true|r, when your Cooldown toggle is |cFF00FF00ON|r then the toggle for artifact ability will be overriden and your Artifact Ability will be shown regardless of your Artifact Ability toggle.",
             width = "full"
-        } )
+        } ) ]]
 
 
         ignoreCastOnReset( "drain_soul" ) -- testing for breaking channels.
@@ -652,7 +652,8 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
             cooldown = 5,
             min_range = 0,
             max_range = 0,
-            usable = function () return buff.tormented_souls.up and equipped.ulthalesh_the_deadwind_harvester and ( toggle.artifact_ability or ( toggle.artifact_cooldown and toggle.cooldowns ) ) end,
+            usable = function () return buff.tormented_souls.up and equipped.ulthalesh_the_deadwind_harvester end,
+            toggle = 'artifact'
         } )
 
         addHandler( "reap_souls", function ()

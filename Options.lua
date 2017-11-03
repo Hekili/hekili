@@ -4926,6 +4926,23 @@ function Hekili:GetOptions()
                                 desc = "When checked, the addon will also show cooldowns when Bloodlust (Heroism, Time Warp, etc.) is active, even if Show Cooldowns is disabled.",
                                 order = 32,
                             },
+                            HEKILI_TOGGLE_ARTIFACT = {
+                                type = 'keybinding',
+                                name = 'Artifact',
+                                desc = 'Set a key for toggling your artifact on and off. This option is used by testing the criterion |cFFFFD100toggle.artifact|r in your condition scripts.',
+                                order = 33,
+                            },
+                            Artifact = {
+                                type = 'toggle',
+                                name = 'Show Artifact Ability',
+                                order = 34,
+                            },
+                            CooldownArtifact = {
+                                type = 'toggle',
+                                name = 'Cooldown Override',
+                                desc = "When checked, the addon will also show your artifact ability when Show Cooldowns is enabled.",
+                                order = 34.1,
+                            },
                             HEKILI_TOGGLE_POTIONS = {
                                 type = 'keybinding',
                                 name = 'Potions',
@@ -6033,6 +6050,11 @@ function Hekili:SetOption( info, input, ... )
             profile[option] = revert
             self:ToggleCooldowns()
             return
+
+        elseif option == 'Artifact' then
+            profile[option] = revert
+            self:ToggleArtifact()
+            return
             
         elseif option == 'Potions' then
             profile[option] = revert
@@ -6063,7 +6085,7 @@ function Hekili:SetOption( info, input, ... )
                 end
             end
             
-        elseif option == 'Mode Status' or option:match("Toggle_") or option == 'BloodlustCooldowns' then
+        elseif option == 'Mode Status' or option:match("Toggle_") or option == 'BloodlustCooldowns' or option == 'CooldownArtifact' then
             -- do nothing, we're good.
             
         else -- Toggle Names.
@@ -7020,7 +7042,7 @@ local function sanitize( segment, i, line, warnings )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'cooldown.strike' with 'cooldown.stormstrike' (" .. times .. "x)." )
     end
-    
+
     --[[ i, times = i:gsub( "spell_targets%.[a-zA-Z0-9_]+", "active_enemies" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted spell_targets.X syntax to active_enemies(" .. times .. "x)." )
@@ -7135,6 +7157,7 @@ local function sanitize( segment, i, line, warnings )
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. "' to '" .. token .. ">0' (" .. times .. "x)." )
         end
+        table.insert( warnings, "Line " .. line .. ": This entry checks the cooldown for '" .. token .. "' which can be result in odd behavior if '" .. token .. "' is toggled off/disabled." )
     end
     
     for token in i:gmatch( "artifact%.[%a_]+%.rank" ) do
@@ -7705,6 +7728,18 @@ function Hekili:ToggleCooldowns()
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
     
     forceUpdate( "HEKILI_TOGGLE_COOLDOWNS", true )
+end
+
+
+function Hekili:ToggleArtifact()
+    Hekili.DB.profile.Artifact = not Hekili.DB.profile.Artifact
+    Hekili:Print( Hekili.DB.profile.Artifact and "Artifact |cFF00FF00ENABLED|r." or "Artifact |cFFFF0000DISABLED|r." )
+    Hekili:Notify( "Artifact " .. ( Hekili.DB.profile.Artifact and "ON" or "OFF" ) )
+
+    if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_ARTIFACT', Hekili.DB.profile.Artifact ) end
+    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+
+    forceUpdate( "HEKILI_TOGGLE_ARTIFACT", true )
 end
 
 

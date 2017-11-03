@@ -1,6 +1,7 @@
 <Bindings>
     <Binding name="HEKILI_TOGGLE_PAUSE" header="HEKILI_HEADER">Hekili:TogglePause();</Binding>
     <Binding name="HEKILI_TOGGLE_COOLDOWNS">Hekili:ToggleCooldowns();</Binding>
+    <Binding name="HEKILI_TOGGLE_ARTIFACT">Hekili:ToggleArtifact();</Binding>
     <Binding name="HEKILI_TOGGLE_POTIONS">Hekili:TogglePotions();</Binding>
     <Binding name="HEKILI_TOGGLE_INTERRUPTS">Hekili:ToggleInterrupts();</Binding>
     <Binding name="HEKILI_TOGGLE_MODE">Hekili:ToggleMode();</Binding>

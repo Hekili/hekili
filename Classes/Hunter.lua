@@ -192,7 +192,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
-        addToggle( 'artifact_ability', true, 'Artifact Ability',
+        --[[ addToggle( 'artifact_ability', true, 'Artifact Ability',
             'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
 
         addSetting( 'artifact_cooldown', true, {
@@ -200,7 +200,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             type = "toggle",
             desc = "If |cFF00FF00true|r, when your Cooldown toggle is |cFF00FF00ON|r then the toggle for your artifact ability will be overridden and your artifact ability will be shown regardless of its toggle above.",
             width = "full"
-        } )
+        } ) ]]
 
         addSetting( 'moknathal_padding', true, {
             name = "Way of the Mok'Nathal Padding",
@@ -529,7 +529,8 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'melee',
             cooldown = 45,
             velocity = 60,
-            known = function () return equipped.talonclaw and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end,
+            known = function () return equipped.talonclaw end,
+            toggle = 'artifact',
             channeled = true
         } )
 

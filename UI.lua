@@ -67,13 +67,13 @@ local function Mover_OnMouseUp( self, btn )
       stopScreenMovement( self )
     end
     Hekili.DB.profile.Locked = true
-    local MouseInteract = ( Hekili.Pause ) or Hekili.Config or ( not Hekili.DB.profile.Locked )
+    local MouseInteract = Hekili.Pause or Hekili.Config or not Hekili.DB.profile.Locked
     for i = 1, #ns.UI.Buttons do
       for j = 1, #ns.UI.Buttons[i] do
         ns.UI.Buttons[i][j]:EnableMouse( MouseInteract )
       end
     end
-    ns.UI.Notification:EnableMouse( MouseInteract )
+    ns.UI.Notification:EnableMouse( Hekili.Config or ( not Hekili.DB.profile.Locked ) )
     -- Hekili:SetOption( { "locked" }, true )
     GameTooltip:Hide()
   end
@@ -104,7 +104,7 @@ local function Button_OnMouseUp( self, btn )
         ns.UI.Buttons[i][j]:EnableMouse( MouseInteract )
       end
     end
-    ns.UI.Notification:EnableMouse( MouseInteract )
+    ns.UI.Notification:EnableMouse( Hekili.Config or ( not Hekili.DB.profile.Locked ) )
     -- Hekili:SetOption( { "locked" }, true )
     GameTooltip:Hide()
   end
@@ -225,8 +225,8 @@ function ns.StopConfiguration()
     end
   end
 
-  HekiliNotification:EnableMouse( MouseInteract )
-  HekiliNotification:SetMovable( not Hekili.DB.profile.Locked )
+  HekiliNotification:EnableMouse( false )
+  HekiliNotification:SetMovable( false )
   HekiliNotification.Mover:Hide()
   -- HekiliNotification.Mover.Header:Hide()
 

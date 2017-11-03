@@ -368,14 +368,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             end
         end ) ]]
 
-        addToggle( 'artifact_ability', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
+        --[[ addToggle( 'artifact_ability', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
 
         addSetting( 'artifact_cooldown', true, {
             name = "Artifact Ability: Cooldown Override",
             type = "toggle",
             desc = "If |cFF00FF00true|r, when your Cooldown toggle is |cFF00FF00ON|r then the toggle for artifact ability will be overriden and Doom Winds will be shown regardless of your Artifact Ability toggle.",
             width = "full"
-        } )
+        } ) ]]
 
         addSetting( 'use_fel_rush', false, {
             name = "Havoc: Use Fel Rush",
@@ -576,7 +576,8 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cast = 0,
             gcdType = 'melee',
             cooldown = 60,
-            known = function() return equipped.twinblades_of_the_deceiver and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end,
+            known = function() return equipped.twinblades_of_the_deceiver end,
+            toggle = 'artifact',
             usable = function () return ( not settings.fury_range_aoe ) or target.within8 or active_enemies > 1 end,
         } )
 

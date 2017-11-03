@@ -105,17 +105,42 @@ end
 local RegisterEvent = ns.RegisterEvent
 
 
+function ns.UnregisterEvent( event, handler )
+    local hands = handlers[ event ]
+
+    if not hands then return end
+
+    for i = #hands, 1, -1 do
+        if hands[i] == handler then
+            table.remove( hands, i )
+        end
+    end
+end
+
+
 -- For our purposes, all UnitEvents are player/target oriented.
 ns.RegisterUnitEvent = function( event, handler, u1, u2 )
 
     unitHandlers[ event ] = unitHandlers[ event ] or {}
-
     table.insert( unitHandlers[ event ], handler )
 
     unitEvents:RegisterUnitEvent( event, 'player', 'target' )
 
 end
 local RegisterUnitEvent = ns.RegisterUnitEvent
+
+
+function ns.UnregisterUnitEvent( event, handler )
+    local hands = unitHandlers[ event ]
+
+    if not hands then return end
+
+    for i = #hands, 1, -1 do
+        if hands[i] == handler then
+            table.remove( hands, i )
+        end
+    end
+end
 
 
 ns.FeignEvent = function( event, ... )

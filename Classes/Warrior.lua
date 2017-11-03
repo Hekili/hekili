@@ -307,6 +307,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             min_range = 0,
             max_range = 0,
             usable = function () return equipped.warswords_of_the_valarjar end,--and ( toggle.artifact_ability or ( toggle.artifact_cooldown and toggle.cooldowns ) ) end,
+            toggle = 'artifact'
         } )        
 
          -- Bladestorm

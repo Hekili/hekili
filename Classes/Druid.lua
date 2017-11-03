@@ -1266,6 +1266,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             spend_type = "energy",
             cast = 0,
             gcdType = "melee",
+            notalent = "brutal_slash",
             cooldown = 0,
             min_range = 0,
             max_range = 8,
