@@ -351,7 +351,8 @@ local function addAbility( key, values, ... )
     storeAbilityElements( key, values )
     
     if not values.item or not values.recheck_name then
-        class.searchAbilities[ key ] = format( "|T%s:0|t %s", tostring( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ), name )
+        class.searchAbilities[ key ] = "|T" .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ":0|t " .. name
+        if values.suffix then class.searchAbilities[ key ] = class.searchAbilities[ key ] .. " " .. values.suffix end
     end
 
     ns.commitKey( key )    
@@ -883,6 +884,7 @@ addAbility( "shadowmeld", {
     gcdType = "spell",
     cooldown = 120,
     known = function () return race.night_elf end,
+    usable = function () return boss end, -- Only use in boss combat, dropping aggro is for the birds.
 } )
 
 addHandler( "shadowmeld", function ()

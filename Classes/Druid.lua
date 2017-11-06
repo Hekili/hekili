@@ -97,10 +97,15 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         } )
 
 
-        setPotion( "old_war" )
-        setRole( "attack" )
+        setPotion( "prolonged_power" )
+        setRole( state.spec.guardian and "tank" or "attack" )
 
-        -- Talents
+        addHook( 'specializationChanged', function ()
+            setPotion( 'prolonged_power' )
+            setRole( state.spec.guardian and "tank" or "attack" )
+        end )
+
+        -- Talents: Feral
         --[[ Balance Affinity: You gain:   Astral Influence  Increases the range of all of your abilities by 5 yards.  You also learn:   Moonkin Form   Starsurge   Lunar Strike   Solar Wrath   Sunfire ]]
         addTalent( "balance_affinity", 197488 ) -- 22163
 
@@ -155,7 +160,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         --[[ Savage Roar: Finishing move that grants 25% increased damage to your Cat Form attacks for their full duration. Lasts longer per combo point:     1 point  : 8 seconds   2 points: 12 seconds   3 points: 16 seconds   4 points: 20 seconds   5 points: 24 seconds ]]
         addTalent( "savage_roar", 52610 ) -- 21702
 
-        --[[ Soul of the Forest: Your finishing moves grant 12 Energy per combo point. ]]
+        --[[ Soul of the Forest: Your finishing moves grant 5 Energy per combo point. ]]
         addTalent( "soul_of_the_forest", 158476 ) -- 21708
 
         --[[ Typhoon: Strikes targets within 15 yards in front of you with a violent Typhoon, knocking them back and dazing them for 6 sec. Usable in all shapeshift forms. ]]
@@ -165,36 +170,126 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addTalent( "wild_charge", 102401 ) -- 18571
 
 
+        -- Talents: Guardian
+        --[[ Balance Affinity: You gain:     Astral Influence  Increases the range of all of your abilities by 5 yards.    You also learn:     Moonkin Form   Starsurge   Lunar Strike   Solar Wrath   Sunfire ]]
+        addTalent( "balance_affinity", 197488 ) -- 22163
+
+        --[[ Blood Frenzy: Thrash also generates 2 Rage each time it deals damage. ]]
+        addTalent( "blood_frenzy", 203962 ) -- 22420
+
+        --[[ Brambles: Sharp brambles protect you, absorbing and reflecting up to 2,002 damage from each attack.    While Barkskin is active, the brambles also deal 1,802 Nature damage to all nearby enemies every 1 sec. ]]
+        addTalent( "brambles", 203953 ) -- 22419
+
+        --[[ Bristling Fur: Bristle your fur, causing you to generate Rage based on damage taken for 8 sec. ]]
+        addTalent( "bristling_fur", 155835 ) -- 22418
+
+        --[[ Earthwarden: When you deal direct damage with Thrash, you gain a charge of Earthwarden, reducing the damage of the next auto attack you take by 30%. Earthwarden may have up to 3 charges. ]]
+        addTalent( "earthwarden", 203974 ) -- 22423
+
+        --[[ Feral Affinity: You gain:     Feline Swiftness  Increases your movement speed by 15%.    You also learn:     Shred   Rake   Rip   Ferocious Bite    Your energy regeneration is increased by 35%. ]]
+        addTalent( "feral_affinity", 202155 ) -- 22156
+
+        --[[ Galactic Guardian: Your damage has a 7% chance to trigger a free automatic Moonfire on that target.     When this occurs, the next Moonfire you cast generates 8 Rage, and deals 300% increased direct damage. ]]
+        addTalent( "galactic_guardian", 203964 ) -- 22421
+
+        --[[ Guardian of Elune: Mangle increases the duration of your next Ironfur by 2 sec, or the healing of your next Frenzied Regeneration by 20%. ]]
+        addTalent( "guardian_of_elune", 155578 ) -- 21712
+
+        --[[ Guttural Roars: Increases the radius of Stampeding Roar by 200%, the radius of Incapacitating Roar by 100%, and reduces the cooldown of Stampeding Roar by 50%. ]]
+        addTalent( "guttural_roars", 204012 ) -- 22424
+
+        --[[ Incarnation: Guardian of Ursoc: An improved Bear Form that reduces the cooldown on all melee damage abilities and Growl to 1.5 sec, causes Mangle to hit up to 3 targets, and increases armor by 15%.    Lasts 30 sec. You may freely shapeshift in and out of this improved Bear Form for its duration. ]]
+        addTalent( "incarnation_guardian_of_ursoc", 102558 ) -- 21706
+
+        --[[ Intimidating Roar: Unleash a terrifying roar, causing all enemies within 20 yards to cower in fear, disorienting them for 3 sec. Usable in all shapeshift forms. ]]
+        addTalent( "intimidating_roar", 236748 ) -- 22916
+
+        --[[ Lunar Beam: Summons a beam of lunar light at your location, dealing 60,072 Arcane damage and healing you for 200,232 over 8 sec. ]]
+        addTalent( "lunar_beam", 204066 ) -- 22427
+
+        --[[ Mass Entanglement: Roots the target and all enemies with 15 yards in place for 30 sec. Damage may interrupt the effect. Usable in all shapeshift forms. ]]
+        addTalent( "mass_entanglement", 102359 ) -- 18576
+
+        --[[ Mighty Bash: Invokes the spirit of Ursoc to stun the target for 5 sec. Usable in all shapeshift forms. ]]
+        addTalent( "mighty_bash", 5211 ) -- 21778
+
+        --[[ Pulverize: A devastating blow that consumes 2 stacks of your Thrash on the target to deal 45,350 Physical damage, and reduces all damage you take by 9% for 20 sec. ]]
+        addTalent( "pulverize", 80313 ) -- 22425
+
+        --[[ Rend and Tear: While in Bear Form, Thrash also increases your damage dealt to the target, and reduces your damage taken from the target by 2% per application of Thrash. ]]
+        addTalent( "rend_and_tear", 204053 ) -- 22426
+
+        --[[ Restoration Affinity: You gain:     Ysera's Gift  Heals you for 1.5% of your maximum health every 5 sec. If you are at full health, a injured party or raid member will be healed instead.    You also learn:     Rejuvenation   Healing Touch   Swiftmend ]]
+        addTalent( "restoration_affinity", 197492 ) -- 22159
+
+        --[[ Soul of the Forest: Mangle generates 5 more Rage and deals 25% more damage. ]]
+        addTalent( "soul_of_the_forest", 158477 ) -- 21709
+
+        --[[ Survival of the Fittest: Reduces the cooldowns of Barkskin and Survival Instincts by 33%. ]]
+        addTalent( "survival_of_the_fittest", 203965 ) -- 22422
+
+        --[[ Typhoon: Strikes targets within 15 yards in front of you with a violent Typhoon, knocking them back and dazing them for 6 sec. Usable in all shapeshift forms. ]]
+        addTalent( "typhoon", 132469 ) -- 18577
+
+        --[[ Wild Charge: Fly to a nearby ally's position. ]]
+        addTalent( "wild_charge", 102401 ) -- 18571
+
+
+
         -- Traits
+        addTrait( "adaptive_fur", 200850 )
         addTrait( "ashamanes_bite", 210702 )
         addTrait( "ashamanes_energy", 210579 )
         addTrait( "ashamanes_frenzy", 210722 )
         addTrait( "attuned_to_nature", 210590 )
+        addTrait( "bear_hug", 215799 )
+        addTrait( "bestial_fortitude", 200414 )
         addTrait( "bloodletters_frailty", 238120 )
+        addTrait( "bloody_paws", 200515 )
         addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "embrace_of_the_nightmare", 200855 )
         addTrait( "fangs_of_the_first", 214911 )
         addTrait( "feral_instinct", 210631 )
         addTrait( "feral_power", 210571 )
         addTrait( "ferocity_of_the_cenarion_circle", 241100 )
+        addTrait( "fleshknitting", 238085 )
+        addTrait( "fortitude_of_the_cenarion_circle", 241101 )
         addTrait( "fury_of_ashamane", 238084 )
+        addTrait( "gory_fur", 200854 )
         addTrait( "hardened_roots", 210638 )
         addTrait( "honed_instincts", 210557 )
+        addTrait( "iron_claws", 215061 )
+        addTrait( "jagged_claws", 200409 )
+        addTrait( "mauler", 208762 )
         addTrait( "open_wounds", 210666 )
+        addTrait( "pawsitive_outlook", 238121 )
+        addTrait( "perpetual_spring", 200402 )
         addTrait( "powerful_bite", 210575 )
         addTrait( "protection_of_ashamane", 210650 )
+        addTrait( "rage_of_the_sleeper", 200851 )
         addTrait( "razor_fangs", 210570 )
+        addTrait( "reinforced_fur", 200395 )
+        addTrait( "roar_of_the_crowd", 214996 )
         addTrait( "scent_of_blood", 210663 )
+        addTrait( "scintillating_moonlight", 238049 )
         addTrait( "shadow_thrash", 210676 )
         addTrait( "sharpened_claws", 210637 )
+        addTrait( "sharpened_instincts", 200415 )
         addTrait( "shredder_fangs", 214736 )
         addTrait( "tear_the_flesh", 210593 )
         addTrait( "thrashing_claws", 238048 )
+        addTrait( "ursocs_bond", 214912 )
+        addTrait( "ursocs_endurance", 200399 )
+        addTrait( "vicious_bites", 200440 )
+        addTrait( "wildflesh", 200400 )
 
         -- Auras
         addAura( "astral_influence", 197524 )
+        addAura( "barkskin", 22812 )
         addAura( "bear_form", 5487, 'duration', 3600 )
         addAura( "berserk", 106951 )
         addAura( "bloodtalons", 145152, "max_stack", 2, "duration", 30 )
+        addAura( "bristling_fur", 155835 )
         addAura( "cat_form", 768, "duration", 3600 )
         addAura( "clearcasting", 135700, "duration", 15, "max_stack", 1 )
             modifyAura( "clearcasting", "max_stack", function( x )
@@ -207,15 +302,19 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "feline_swiftness", 131768 )
         addAura( "feral_instinct", 16949 )
         addAura( "frenzied_regeneration", 22842 )
-        addAura( "incarnation", 117679 )
+        addAura( "gore", 210706 )
+        addAura( "incarnation_guardian_of_ursoc", 102558, "duration", 30 )
+        addAura( "incarnation_king_of_the_jungle", 117679, "duration", 30 )
         addAura( "infected_wounds", 48484 )
         addAura( "ironfur", 192081 )
-        addAura( "mastery_razor_claws", 77493 )
+        addAura( "lightning_reflexes", 231065 )
         addAura( "moonkin_form", 197625 )
         addAura( "omen_of_clarity", 16864 )
         addAura( "predatory_swiftness", 69369, "duration", 12 )
         addAura( "primal_fury", 159286 )
         addAura( "prowl", 5215, "duration", 3600 )
+        addAura( "pulverize", 138792, "duration", 20 )
+        addAura( "rage_of_the_sleeper", 200851, "duration", 10 )
         addAura( "rake", 155722, "duration", 15, "tick_time", 3 )
             modifyAura( "rake", "duration", function( x )
                 return talent.jagged_wounds.enabled and x * 0.8333 or x
@@ -235,7 +334,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "shadowmeld", 58984, "duration", 3600 )
         addAura( "survival_instincts", 61336 )
         addAura( "thick_hide", 16931 )
-        addAura( "thrash_bear", 77758, "duration", 15, "max_stack", 3 )
+        addAura( "thrash_bear", 192090, "duration", 15, "max_stack", 3 )
         addAura( "thrash_cat", 106830, "duration", 15, "tick_time", 3 )
             modifyAura( "thrash_cat", "duration", function( x )
                 return talent.jagged_wounds.enabled and x * 0.8333 or x
@@ -243,14 +342,18 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             modifyAura( "thrash_cat", "tick_time", function( x )
                 return talent.jagged_wounds.enabled and x * 0.8333 or x
             end )
-        addAura( "tigers_fury", 5217 )
+        addAura( "tigers_fury", 5217, "duration", 8 )
+            modifyAura( "tigers_fury", "duration", function( x )
+                if talent.predator.enabled then return x + 4 end
+                return x
+            end )
         addAura( "travel_form", 783 )
         addAura( "wild_charge", 102401 )
         -- addAura( "wild_charge_movement", )
         addAura( "yseras_gift", 145108 )
 
 
-        addToggle( 'artifact_ability', true, 'Artifact Ability',
+        --[[ addToggle( 'artifact_ability', true, 'Artifact Ability',
             'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
 
         addSetting( 'artifact_cooldown', true, {
@@ -258,7 +361,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             type = "toggle",
             desc = "If |cFF00FF00true|r, when your Cooldown toggle is |cFF00FF00ON|r then the toggle for your artifact ability will be overridden and your artifact ability will be shown regardless of its toggle above.",
             width = "full"
-        } )
+        } ) ]]
 
         addSetting( 'regrowth_instant', true, {
             name = "Regrowth: Instant Only",
@@ -269,6 +372,9 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addGearSet( 'fangs_of_ashamane', 128860 )
         setArtifact( 'fangs_of_ashamane' )
+
+        addGearSet( 'claws_of_ursoc', 128821 )
+        setArtifact( 'claws_of_ursoc' )
 
 
         addGearSet( 'soul_of_the_archdruid', 151636 )
@@ -284,7 +390,6 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         local moc_spells = { shred = true, thrash_cat = true, swipe_cat = true }
 
-
         addMetaFunction( 'state', 'persistent_multiplier', function ()
             local mult = 1
 
@@ -298,7 +403,6 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             return mult
         end )
 
-
         local clearcasting_spells = { [5221] = true, [106830] = true, [106785] = true }
 
         local function persistent_modifier( spellID )
@@ -309,7 +413,6 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             return 1 * ( bloodtalons and 1.2 or 1 ) * ( tigers_fury and 1.15 or 1 ) * ( ( clearcasting_spells[ spellID ] and clearcasting ) and 1.2 or 1 )
         end
 
-        
         RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
 
             if unit == 'player' then
@@ -319,7 +422,6 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             end
 
         end )  
-
 
         addMetaFunction( 'state', 'break_stealth', function ()
             removeBuff( "shadowmeld" )
@@ -356,6 +458,15 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             state.debuff.thrash.pmultiplier = nil
         end )
 
+        local function comboSpender( amount, resource )
+            if resource == 'combo_points' and state.talent.soul_of_the_forest.enabled then
+                state.gain( amount * 5, 'energy' )
+            end
+        end
+
+        addHook( 'spend', comboSpender )
+        addHook( 'spendResources', comboSpender )
+        
 
         -- Abilities
 
@@ -371,11 +482,30 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             cooldown = 75,
             min_range = 0,
             max_range = 0,
-            known = function() return equipped.fangs_of_ashamane and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end,
+            toggle = 'artifact',
+            known = function() return equipped.fangs_of_ashamane end,
         } )
 
         addHandler( "ashamanes_frenzy", function ()
             removeStack( "bloodtalons" )
+        end )
+
+
+        -- Barkskin
+        --[[ Your skin becomes as tough as bark, reducing all damage you take by 20% and preventing damage from delaying your spellcasts. Lasts 12 sec.    Usable while stunned, frozen, incapacitated, feared, or asleep, and in all shapeshift forms. ]]
+
+        addAbility( "barkskin", {
+            id = 22812,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 60,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        addHandler( "barkskin", function ()
+            applyBuff( 'barkskin', 12 )
         end )
 
 
@@ -414,10 +544,30 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             max_range = 0,
             usable = function () return buff.cat_form.up end,
             toggle = "cooldowns",
+            notalent = 'incarnation_king_of_the_jungle'
         } )
 
         addHandler( "berserk", function ()
             applyBuff( "berserk", 15 )
+        end )
+
+
+        -- Bristling Fur
+        --[[ Bristle your fur, causing you to generate Rage based on damage taken for 8 sec. ]]
+
+        addAbility( "bristling_fur", {
+            id = 155835,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            talent = "bristling_fur",
+            cooldown = 40,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        addHandler( "bristling_fur", function ()
+            applyBuff( 'bristling_fur', 8 )
         end )
 
 
@@ -600,16 +750,17 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             spend_type = "rage",
             cast = 0,
             gcdType = "spell",
-            cooldown = 22.046,
+            cooldown = 24,
             charges = 2,
-            recharge = 22.046,
+            recharge = 24,
             min_range = 0,
             max_range = 0,
             usable = function () return buff.bear_form.up end,
         } )
 
         addHandler( "frenzied_regeneration", function ()
-            applyBuff( "frenzied_regeneration" )
+            applyBuff( "frenzied_regeneration", 3 )
+            gain( health.max * 0.05, "health" )
         end )
 
 
@@ -635,12 +786,13 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         -- Incarnation: King of the Jungle
         --[[ An improved Cat Form that allows the use of Prowl while in combat, causes Shred and Rake to deal damage as if stealth were active, reduces the cost of all Cat Form abilities by 60%, and increases maximum Energy by 50.  Lasts 30 sec. You may shapeshift in and out of this improved Cat Form for its duration. ]]
 
-        addAbility( "incarnation", {
+        addAbility( "incarnation_king_of_the_jungle", {
             id = 102543,
             spend = 0,
             cast = 0,
             gcdType = "spell",
-            talent = "incarnation",
+            talent = "incarnation_king_of_the_jungle",
+            toggle = 'cooldowns',
             cooldown = 180,
             min_range = 0,
             max_range = 0,
@@ -706,6 +858,63 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         end )
 
 
+        -- Incapacitating Roar
+        --[[ Invokes the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 20 yards for 3 sec. Damage will cancel the effect. Usable in all shapeshift forms. ]]
+
+        addAbility( "incapacitating_roar", {
+            id = 99,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 30,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        addHandler( "incapacitating_roar", function ()
+            applyDebuff( "target", "incapacitating_roar", 3 )
+        end )
+
+
+        -- Incarnation: Guardian of Ursoc
+        --[[ An improved Bear Form that reduces the cooldown on all melee damage abilities and Growl to 1.5 sec, causes Mangle to hit up to 3 targets, and increases armor by 15%.    Lasts 30 sec. You may freely shapeshift in and out of this improved Bear Form for its duration. ]]
+
+        addAbility( "incarnation_guardian_of_ursoc", {
+            id = 102558,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            talent = "incarnation_guardian_of_ursoc",
+            cooldown = 180,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        addHandler( "incarnation_guardian_of_ursoc", function ()
+            applyBuff( "incarnation_guardian_of_ursoc", 30 )
+        end )
+
+
+        -- Ironfur
+        --[[ Increases armor by 65% for 6 sec. Multiple uses of this ability may overlap. ]]
+
+        addAbility( "ironfur", {
+            id = 192081,
+            spend = 45,
+            min_cost = 45,
+            spend_type = "rage",
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 0.5,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        addHandler( "ironfur", function ()
+            addStack( "ironfur", 6, 1 )
+        end )
+
+
         -- Maim
         --[[ Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point:     1 point  : 5445.0 to 6000.6 damage, 1 sec   2 points: 10890.1 to 12001.3 damage, 2 sec   3 points: 16335.1 to 18001.9 damage, 3 sec   4 points: 21780.2 to 24002.5 damage, 4 sec   5 points: 27225.2 to 30003.2 damage, 5 sec ]]
 
@@ -765,6 +974,26 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addHandler( "mass_entanglement", function ()
             applyDebuff( "target", "mass_entanglement" )
+        end )
+
+
+        -- Maul
+        --[[ Maul the target for 41,615 Physical damage. ]]
+
+        addAbility( "maul", {
+            id = 6807,
+            spend = 45,
+            min_cost = 45,
+            spend_type = "rage",
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 0,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        addHandler( "maul", function ()
+            -- proto
         end )
 
 
@@ -861,6 +1090,51 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             removeBuff( "moonkin_form" )
             removeBuff( "bear_form" )
             removeBuff( "travel_form" )
+        end )
+
+
+        -- Pulverize
+        --[[ A devastating blow that consumes 2 stacks of your Thrash on the target to deal 79,072 Physical damage, and reduces all damage you take by 9% for 20 sec. ]]
+
+        addAbility( "pulverize", {
+            id = 80313,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            talent = "pulverize",
+            cooldown = 0,
+            min_range = 0,
+            max_range = 0,
+            usable = function () return debuff.thrash_bear.stack >= 2 end,
+        } )
+
+        addHandler( "pulverize", function ()
+            if debuff.thrash_bear.stack > 2 then
+                applyDebuff( "target", "thrash_bear", debuff.thrash_bear.remains, debuff.thrash_bear.stack - 2 )
+            else
+                removeDebuff( "target", "thrash_bear" )
+            end
+            applyBuff( "pulverize", 20 )
+        end )
+
+
+        -- Rage of the Sleeper
+        --[[ Unleashes the rage of Ursoc for 10 sec, preventing 25% of all damage you take and reflecting 21,062 Nature damage back at your attackers. ]]
+
+        addAbility( "rage_of_the_sleeper", {
+            id = 200851,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 90,
+            min_range = 0,
+            max_range = 0,
+            toggle = 'artifact',
+            known = function () return equipped.claws_of_ursoc end,
+        } )
+
+        addHandler( "rage_of_the_sleeper", function ()
+            applyBuff( "rage_of_the_sleeper", 10 )
         end )
 
 
@@ -1124,7 +1398,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             cooldown = 15,
             min_range = 0,
             max_range = 13,
-            usable = function() return toggle.interrupts and target.casting end,
+            usable = function() return target.casting end,
             toggle = 'interrupts'
         } )
 
@@ -1166,6 +1440,11 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             min_range = 0,
             max_range = 10,
         } )
+
+        modifyAbility( "stampeding_roar", "cooldown", function( x )
+            if talent.guttural_roars.enabled then return x / 2 end
+            return x
+        end )
 
         addHandler( "stampeding_roar", function ()
             applyBuff( "stampeding_roar", 8 )
@@ -1258,32 +1537,47 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         end )
 
 
-        -- Swipe (Cat)
-        --[[ Swipe nearby enemies, inflicting X to Y Physical damage.  Deals 20% increased damage against bleeding targets. ]]
-        addAbility( "swipe_cat", {
-            id = 106785,
-            spend = 40,
-            spend_type = "energy",
+        -- Swipe
+        --[[ Swipe nearby enemies, inflicting Physical damage. Damage varies by shapeshift form. ]]
+
+        addAbility( "swipe", {
+            id = 213764,
+            spend = 0,
+            spend_type = "rage",
             cast = 0,
             gcdType = "melee",
-            notalent = "brutal_slash",
             cooldown = 0,
             min_range = 0,
             max_range = 8,
-            known = function () return buff.cat_form.up end,
-            -- usable = function () return buff.cat_form.up end,
-        } )
+            known = function() return buff.bear_form.up end,
+        }, 213771, 106785 )
 
-        modifyAbility( "swipe_cat", "spend", function( x )
-            if buff.clearcasting.up then return 0
-            elseif buff.berserk.up then return x * 0.5 end
+        modifyAbility( "swipe", "id", function( x )
+            if buff.bear_form.up then return 213771
+            elseif buff.cat_form.up then return 106785 end
             return x
         end )
 
-        addHandler( "swipe_cat", function ()
-            gain( 1, "combo_points" ) 
-            removeStack( "bloodtalons" )
-            removeStack( "clearcasting" )            
+        modifyAbility( "swipe", "spend", function( x )
+            if buff.cat_form.up then
+                if buff.clearcasting.up then return 0 end
+                if buff.berserk.up then return 20 end
+                return 40
+            end
+            return x
+        end )
+
+        modifyAbility( "swipe", "spend_type", function( x )
+            if buff.cat_form.up then return "energy" end
+            return x
+        end )
+
+        addHandler( "swipe", function ()
+            if buff.cat_form.up then
+                gain( 1, "combo_points" ) 
+                removeStack( "bloodtalons" )
+                removeStack( "clearcasting" )
+            end
         end )
 
 
@@ -1311,7 +1605,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         -- Thrash
         --[[ Thrash all nearby enemies, dealing immediate physical damage and periodic bleed damage. Damage varies by shapeshift form. ]]
 
-        addAbility( "thrash_cat", {
+        addAbility( "thrash", {
             id = 106832,
             spend = 45,
             spend_type = "energy",
@@ -1322,21 +1616,55 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             max_range = 0,
             aura = 'thrash_cat',
             cycle = 'thrash_cat',
-            known = function () return buff.cat_form.up or buff.bear_form.up end,
-        } )
+            known = function () return buff.bear_form.up or buff.cat_form.up end,
+        }, 77758, 106830 )
 
-        modifyAbility( "thrash_cat", "spend", function( x )
-            if buff.clearcasting.up then return 0
-            elseif buff.berserk.up then return x * 0.5 end
+        modifyAbility( "thrash", "id", function( x )
+            if buff.cat_form.up then return 106830
+            elseif buff.bear_form.up then return 77758 end
             return x
         end )
 
-        addHandler( "thrash_cat", function ()
-            applyDebuff( "target", "thrash_cat" )
-            active_dot.thrash_cat = max( active_dot.thrash_cat, true_active_enemies )
-            removeStack( "bloodtalons" )
-            removeStack( "clearcasting" )
-            if target.within8 then gain( 1, "combo_points" ) end            
+        modifyAbility( "thrash", "spend", function( x )
+            if buff.cat_form.up then
+                if buff.clearcasting.up then return 0
+                elseif buff.berserk.up then return x * 0.5 end
+            elseif buff.bear_form.up then
+                return -4
+            end
+        end )
+
+        modifyAbility( "thrash", "spend_type", function( x )
+            if buff.bear_form.up then return "rage" end
+            return x
+        end )
+
+        modifyAbility( "thrash", "aura", function( x )
+            if buff.bear_form.up then return "thrash_bear" end
+            return x
+        end )
+        
+        modifyAbility( "thrash", "cycle", function( x )
+            if buff.bear_form.up then return "thrash_bear" end
+            return x
+        end )
+
+        modifyAbility( "thrash", "cooldown", function( x )
+            if buff.bear_form.up then return 6 * haste end
+            return x
+        end )
+
+        addHandler( "thrash", function ()
+            if buff.cat_form.up then
+                applyDebuff( "target", "thrash_cat" )
+                active_dot.thrash_cat = max( active_dot.thrash_cat, true_active_enemies )
+                removeStack( "bloodtalons" )
+                removeStack( "clearcasting" )
+                if target.within8 then gain( 1, "combo_points" ) end
+            elseif buff.bear_form.up then
+                applyDebuff( "target", "thrash_bear", 15, min( 5, debuff.thrash_bear.stack + 1 ) )
+                active_dot.thrash_bear = active_enemies
+            end
         end )
 
 
@@ -1445,29 +1773,38 @@ if (select(2, UnitClass('player')) == 'DRUID') then
     end
 
 
-    storeDefault( [[SimC Feral: opener]], 'actionLists', 20171006.174729, [[dGZvgaGEcrAtsP2ff2gHGMTQ6MsXTr0ovQ9k2nP2pGrriKHHGFl50u5XQyWanCcoirXPOQOoMsCCQQAHeQwQsAXQ0Yb9qcPNIAzQsEojhwXurOjtPPJ0fjuoVuYLHUUuTrQkyReL2mvz7uuFMiTocbMgvfzEeI4VQIVPk1OjINriQtsu13jQCnQQCpQk0HOQ0NieQxtrolHyyX0Z9J2CdVhsmm7iffa0hq48fbaGLaQry4v8JJcZ(fHL3e8JWIXsywapU57ePd1v6SxiiYHL5qDLwfIzVeIHftp3pAJ4H5d0jqdF7EEgcWsUVrxiSmx33rBfgoMWWYRTUZqlyyDPXWnLv2bUhsmC49qIHxhty4v8JJcZ(fHL3lecVIQQdpOkednSOsWJPMYmsIAAUHBk7EiXWHM9RqmSy65(rBepmFGobA4B3ZZqnMhP4dSgOHTKthwMR77OTcRgZJu8bwdmS8AR7m0cgwxAmCtzLDG7HedhEpKyyEmpsraW1AGHxXpokm7xewEVqi8kQQo8GQqm0WIkbpMAkZijQP5gUPS7HedhA2ICigwm9C)OnIhMpqNanmTKk9JgNQ(2soTcaSnaOica8298muJ5rk(aRbA0faaBda6lai6F3jiGwdlC6sLqFkVhv1)kaqFoSmx33rBf(IqfcnfwET1DgAbdRlngUPSYoW9qIHdVhsmS4iuHqtHxXpokm7xewEVqi8kQQo8GQqm0WIkbpMAkZijQP5gUPS7HedhA2(uigwm9C)OnIhMpqNan8T75zCrOcHMm6caGTba9fae9V7eeqRHfoDPsOpL3JQ6FvyzUUVJ2km1jfHQhVoSvy51w3zOfmSU0y4MYk7a3djgo8EiXWeDsrOiwba6dDyRWR4hhfM9lclVxieEfvvhEqvigAyrLGhtnLzKe10Cd3u29qIHdnB)cXWIPN7hTr8W8b6eOHpf5TEekNMQmoDie1uaqFea0paW2aG3UNNX9xLLo)sRmSLCAaW2aG3UNNHaeTdTGTEuY58OAuPm6caGTba9fae9V7eeqRHfoDPsOpL3JQ6FvyzUUVJ2kmeLcl5OsclV26odTGH1Lgd3uwzh4EiXWH3djgEfLcl5OscVIFCuy2ViS8EHq4vuvD4bvHyOHfvcEm1uMrsutZnCtz3djgo0SfHHyyX0Z9J2iEy(aDc0WNI8wpcLttvgNoeIAkaOpca6hayBaWB3ZZ4(RYsNFPvgDbaW2aG(caI(3DccO1WcNUuj0NY7rv9VkSmx33rBfg6eclV26odTGH1Lgd3uwzh4EiXWH3djgE1jeEf)4OWSFry59cHWROQ6WdQcXqdlQe8yQPmJKOMMB4MYUhsmCOz)oedlMEUF0gXdZhOtGg(uK36rOCAQY40HqutbafjaG(ba2ga8298muJ5rk(aRbA0faaBda6lai6F3jiGwdlC6sLqFkVhv1)QWYCDFhTvyLeiAdlV26odTGH1Lgd3uwzh4EiXWH3djgMLarB4v8JJcZ(fHL3lecVIQQdpOkednSOsWJPMYmsIAAUHBk7EiXWHgAy(aDc0WHMa]] )
+    storeDefault( [[SimC Feral: opener]], 'actionLists', 20171105.231639, [[dOZzgaGEeQ0MKQAxKY2qu0SvXnLkxg6BuQESQStv1Ef7MI9dyuiuYWqWVLCyfNxjmyGgobhKi6uiu0XusNJuPSqeYsvklwLwoOhseEkQLPe9CsMicfMkImzQA6iDrevNMkpdrPUUu2icvTvIkBMs2oLYRjv9DsftdrjZdHsDBc9zI0Ojk)vP6KevDiPkUgPsUhIchxQsFcHkwhPs1znKctUzUh0NBywaFU54iUd1vM8xjq2HjgO10o0qu4n8GJcZFjHv7ReiqMAR2jl7l1TW8d6eOHdl5J6kJkKYFnKctUzUh0hIcZpOtGg(2SS0eGLohTMqyjVUJJUimC0JHL34DVHwWWMYGH7kVCd8pIy4W)redVn6XWB4bhfM)scR2xjeEdvvd(qvifAyjKHp9DLnuen0Cd3v()iIHdn)LHuyYnZ9G(quy(bDc0W3MLLMASnsXDynqnFPJjSKx3Xrxewn2gP4oSgyy5nE3BOfmSPmy4UYl3a)Jigo8FeXW8yBKIaGB1adVHhCuy(ljSAFLq4nuvn4dvHuOHLqg(03v2qr0qZnCx5)Jigo08j7qkm5M5EqFikm)GobAyAjv6b1EvD8LogfayFaqIfa4TzzPPgBJuChwduRjaa2haShaqS3Mtqa9AE40KkJUxw7QQDuaGeZWsEDhhDr4lcviuFy5nE3BOfmSPmy4UYl3a)Jigo8FeXWeHqfc1hEdp4OW8xsy1(kHWBOQAWhQcPqdlHm8PVRSHIOHMB4UY)hrmCO5twHuyYnZ9G(quy(bDc0W3MLL2fHkeQxRjaa2haShaqS3Mtqa9AE40KkJUxw7QQDuHL86oo6IWuNueQ2TAWfHL34DVHwWWMYGH7kVCd8pIy4W)redtYjfHehfaiX3GlcVHhCuy(ljSAFLq4nuvn4dvHuOHLqg(03v2qr0qZnCx5)Jigo081vifMCZCpOpefMFqNan8ReV1Uq5muL2RbHOHcasgaG6caSpa4TzzPDpv5PZPmknFPJbaSpa4TzzPjar)ql4IDLoolQbvkTMaayFaWEaaXEBobb0R5HttQm6EzTRQ2rfwYR74OlcdrPWshQSWYB8U3qlyytzWWDLxUb(hrmC4)iIH3qPWshQSWB4bhfM)scR2xjeEdvvd(qvifAyjKHp9DLnuen0Cd3v()iIHdnFYmKctUzUh0hIcZpOtGg(vI3AxOCgQs71Gq0qbajdaqDba2ha82SS0UNQ805ugLwtaaSpaypaGyVnNGa618WPjvgDVS2vv7Ocl51DC0fHHoHWYB8U3qlyytzWWDLxUb(hrmC4)iIH3CcH3Wdokm)LewTVsi8gQQg8HQqk0WsidF67kBOiAO5gUR8)redhA(2dPWKBM7b9HOW8d6eOHFL4T2fkNHQ0EnienuaqInaOUaa7daEBwwAQX2if3H1a1AcaG9ba7bae7T5eeqVMhonPYO7L1UQAhvyjVUJJUiSsge9HL34DVHwWWMYGH7kVCd8pIy4W)redZYGOp8gEWrH5VKWQ9vcH3qv1GpufsHgwcz4tFxzdfrdn3WDL)pIy4qdn8FeXWStucaqIhHZr3balb0GWqta]] )
 
-    storeDefault( [[SimC Feral: default]], 'actionLists', 20171006.174729, [[d8dsjaqAIwpkQ8suuLDrO2gPO0(ef0mjfvESKMTIMpkk3KK2KOi3wjNNuANsSxQDJ0(jyuKIIHPqJJuK8As03qGbJsdNqoOO0PifHJrQohPiAHiulvQAXiA5O6HsLEkyzsfpxKjsksnvLQjlLPRYfrihsuuxg66kyJKcTvuKnlQSDrvRdbXNjHPHIQ67iOEMOqoSWOvk)ff6KOGfjkW1ifCpeKwjPOQFRQpjkuBDVBGiAqoXMjnuIfAaKRUcSAe5XKqeyByUyyEg6Xjgj0LoJ6emQHrDX6garyvgtjZfN8PUOpMrgYwp5ttE3fDVBGiAqoXMj2au5srNH2FI5srIpzvPKQqGLzmtG9KluGndfy11GHSKYP80AGpqzmQN8PmoLPZad0MSg3ZnqFkAq9Bmf8sSqdgkXcn0pqfyZwp5tfy1CY0zilxrYanwiHMbGC1vGvJipMeIaBssvmrb2l4kWldm0JtmsOlDg1jqF0qpM(bEftE3NHUByvP6Nhxi9mPb1VvIfAaKRUcSAe5XKqeytsQIjkWEbxbE(CPJ3nqeniNyZeBaQCPOZqMfypzvPKQqGLzmtGLCixoXI4pHNIhezilPCkpTg4Hs0ad0MSg3ZnqFkAq9Bmf8sSqdgkXcn0hkrd94eJe6sNrDc0hn0JPFGxXK39zO7gwvQ(5XfsptAq9BLyHg85sg5DderdYj2mXgGkxk6mKzbwYHC5exJJXCpFjEqKHSKYP80AOfPndmqBYACp3a9POb1VXuWlXcnyOel0GMosBg6Xjgj0LoJ6eOpAOht)aVIjV7Zq3nSQu9ZJlKEM0G63kXcn4ZfMV3nqeniNyZeBaQCPOZqMfyjhYLtCkYhkqg5FWfpiYqws5uEAnKI8HcKr(hCdmqBYACp3a9POb1VXuWlXcnyOel0ae5dfOaB)hCd94eJe6sNrDc0hn0JPFGxXK39zO7gwvQ(5XfsptAq9BLyHg85Ig8UbIOb5eBMydqLlfDgUxHIjkU()S9eMMmKLuoLNwdKipHCLgyG2K14EUb6trdQFJPGxIfAWqjwObIrEc5kn0JtmsOlDg1jqF0qpM(bEftE3NHUByvP6Nhxi9mPb1VvIfAWNlAwVBGiAqoXMj2qws5uEAniP1GtJt(udmqBYACp3a9POb1VXuWlXcnyOel0ad0AWPXjFkHiWY8KufcSFob2Bdfy18duft0qpoXiHU0zuNa9rd9y6h4vm5DFg6UHvLQFECH0ZKgu)wjwObFUqG3nqeniNyZeBilPCkpTgoPcKNym3axRbgOnznUNBG(u0G63yk4LyHgmuIfAyxQa5zCsGvJdCTg6Xjgj0LoJ6eOpAOht)aVIjV7Zq3nSQu9ZJlKEM0G63kXcn4ZfnL3nqeniNyZeBilPCkpTgI0wSckMymhhPmNwdmqBYACp3a9POb1VXuWlXcnyOel0q20wSckMXjbwnYrkZP1qpoXiHU0zuNa9rd9y6h4vm5DFg6UHvLQFECH0ZKgu)wjwObFUOj9UbIOb5eBMydqLlfDg0mcSxmr6jofKi)()2eJ0GCInbwMXmbwYHC5elIJT4EUwgtewM7OykjEqKaRMqGntcSxmr6jMC(F7I5ttIrAqoXMaBMeyjhYLtm58)2fZNMe3EctfyZKaB9xKpJIEj9sIRdCospbwcvGvdgYskNYtRboQG)e(2mWaTjRX9Cd0NIgu)gtbVel0GHsSqd9Oc(t4BZqpoXiHU0zuNa9rd9y6h4vm5DFg6UHvLQFECH0ZKgu)wjwObFUOp6DderdYj2mXgGkxk6mu)f5ZOOxsVK46aNJ0tGLqfy1GHSKYP80AGlfzGbAtwJ75gOpfnO(nMcEjwObdLyHg6LIm0JtmsOlDg1jqF0qpM(bEftE3NHUByvP6Nhxi9mPb1VvIfAWNl66E3ar0GCIntSbOYLIodzwG9KvLsQcb2mjWMp4YGCIIhsiJ3gpsBcSzOa7OHSKYP80A424rAJXACgyG2K14EUb6trdQFJPGxIfAWqjwOH9nEK2m0JtmsOlDg1jqF0qpM(bEftE3NHUByvP6Nhxi9mPb1VvIfAWNl6D8UbIOb5eBMydzjLt5P1qAJJndmqBYACp3a9POb1VXuWlXcnyOel0aSXXMHECIrcDPZOob6Jg6X0pWRyY7(m0DdRkv)84cPNjnO(TsSqd(8zaQCPOZGpB]] )
+    storeDefault( [[SimC Feral: default]], 'actionLists', 20171105.231639, [[da0AjaqiPiTirPytIs1NeLuJIKeDkssXUiudtkDms1YevEMOeMMOKCnPi2MOu6BIQghjP05ijvRtkk3dfH9jfvoOeSqLupujzIIs0frbBKKOtIcTsss4LsrvZKKKCtszNsAPkXtHMQQ0wrrTxQ)kHgmbhwyXQQhROjRWLbBMK6ZeYOvfNMOvtss9As0SLQBRu7gPFJy4KWYr1Zfz6QCDjA7sHVJI05ffRhfrZNKW(rPTUFnYan(Dy4VrubmLrxYKXjjux1BZcJzjOok7NxBCb6qKaxZ1QNxVTnBfRNpRYNt1nItUuXz0yH5jj0KFDv3VgzGg)om8AJ4KlvCghKtmxQq8jNkLurScQqfScNCdScnhRGEtmw4l7YlJrEjTympjHwSltNrgPd5moc3iLqbJAKbZbVgBWOXASbJlLuwHcZtsOScQkz6mwGlkzKgBGjYguUxXkOsGh9MXkKKurDGv4cUi4YgJlqhIe4AUw986TgxGePKpHKF9zC1dmvQrAaBGE(BuJmQXgmIY9kwbvc8O3mwHKKkQdScxWfbNpxZ5xJmqJFhgETrCYLkoJnLv4KtLsQiwbvOcwHFPA1IvWjmTlUuHXcFzxEzmYdLGrgPd5moc3iLqbJAKbZbVgBWOXASbJlHsW4c0HibUMRvpVERXfirk5ti5xFgx9atLAKgWgON)g1iJASbJ(Cnl8RrgOXVddV2io5sfNXMYk8lvRw8mUIQj8T4sfgl8LD5LX4ispgzKoKZ4iCJucfmQrgmh8ASbJgRXgmMLr6X4c0HibUMRvpVERXfirk5ti5xFgx9atLAKgWgON)g1iJASbJ(CnR8RrgOXVddV2io5sfNXMYk8lvRwCkAeIGICsWfxQWyHVSlVmgtrJqeuKtcUrgPd5moc3iLqbJAKbZbVgBWOXASbJy0iebSclKGBCb6qKaxZ1QNxV14cKiL8jK8RpJREGPsnsdyd0ZFJAKrn2GrFU2e)AKbA87WWRnItUuXz8iIe1bXtcPpimLMmw4l7YlJXpWtaxPrgPd5moc3iLqbJAKbZbVgBWOXASbJRbEc4knUaDisGR5A1ZR3ACbsKs(es(1NXvpWuPgPbSb65VrnYOgBWOpxZw)AKbA87WWRnw4l7YlJrjDgCACscTOsjvurI6I3duuvxsf1bJmshYzCeUrkHcg1idMdEn2GrJ1ydgzKodonojH2mwHMxsfXkquZkCpaRGQOKkQdgxGoejW1CT651BnUajsjFcj)6Z4QhyQuJ0a2a983OgzuJny0NR59RrgOXVddV2yHVSlVmgpPiGNkQUKNXiJ0HCghHBKsOGrnYG5GxJny0yn2GXxPiGN1jwbvwYZyCb6qKaxZ1QNxV14cKiL8jK8RpJREGPsnsdyd0ZFJAKrn2GrFUQA9RrgOXVddV2yHVSlVmgJ0tSdkKkQMduMmJrgPd5moc3iLqbJAKbZbVgBWOXASbJfspXoOqwNyfujhOmzgJlqhIe4AUw986TgxGePKpHKF9zC1dmvQrAaBGE(BuJmQXgm6Zvv3VgzGg)om8AJ4KlvCgvLScx0b6jofFGFeY9igOXVddwbvOcwHFPA1IvWHrCeEMIjMkvFuiLexQGvq1WkKDwHl6a9e)7eY4IoHMed043HbRq2zf(LQvl(3jKXfDcnjEqykLvi7SctY(tkQGiPxs8SKZb6XkWeScnXyHVSlVmg5GioHP3JrgPd5moc3iLqbJAKbZbVgBWOXASbJlGioHP3JXfOdrcCnxREE9wJlqIuYNqYV(mU6bMk1inGnqp)nQrg1ydg95QERFnYan(Dy41gXjxQ4moj7pPOcIKEjXZsohOhRatWk0eJf(YU8YyKlvyKr6qoJJWnsjuWOgzWCWRXgmASgBW4IuHXfOdrcCnxREE9wJlqIuYNqYV(mU6bMk1inGnqp)nQrg1ydg95QUUFnYan(Dy41gXjxQ4m2uwHtovkPIyfYoRqJGlJFhexMGI3dpspScnhRqRXcFzxEzmEp8i9uCgNrgPd5moc3iLqbJAKbZbVgBWOXASbJVp8i9yCb6qKaxZ1QNxV14cKiL8jK8RpJREGPsnsdyd0ZFJAKrn2GrFUQNZVgzGg)om8AJf(YU8Yym9WHHrgPd5moc3iLqbJAKbZbVgBWOXASbJ4dhggxGoejW1CT651BnUajsjFcj)6Z4QhyQuJ0a2a983OgzuJny0NpJ1ydgr5EfRGkbE0BgRWauhL9ZNna]] )
 
-    storeDefault( [[SimC Feral: precombat]], 'actionLists', 20171006.174729, [[dyJKeaGEuvv7cvLTHQknBkDtkCBjTtr2lz3OSFe0OquYWOOFRyOcPAWqQgUu1bfItHQkogQCCPOAHiILcjlgQwospuO8uvltO65I60cMQuzYqmDLUiKYJHYLbxxcBuiLTkf2mIITJQCyQMLuuMgIs9DevNhbEMqsJwIwhQQYjriFtk5AcjUNuK)Iq9zPuVgrAXPoD0yoUfqeUEYRG(d1yeIE0aQB5pcrVNcytf3xDuGf8mOuCtUwMrXKJpo93dyb3g4FFddtjoZOQhbBddlRoL4uNoAmh3ciIe9Jrd9R(6wGT8HBNbzD7WY8bmh3ci6rWd2WsGofAthY3sDIyibmFhQoByGUXG0WPjVc66jVc6OG20H8Tuhfybpdkf3KRfNPokipfumiRoT6XkbmsngEqfyRW1ngKKxbDTkfxD6OXCClGis0pgn0V6M6rWd2WsGopNgCClOtedjG57q1zdd0ngKgon5vqVideVLupxQN8kO)DOaHO3WTfGEeA7SoZRqtfzG4TK65YMXZTfqtM6Oal4zqP4MCT4m1rb5PGIbz1PvpwjGrQXWdQaBfUUXGK8kORvPOQoD0yoUfqej6hJg6xDO5fH(EaHpBbziJtm5uVVpWAN1JGhSHLaDEon44wqNigsaZ3HQZggOBminCAYRGErgiElPEUup5vq)7qbcrVHBlacrNS44h9i02zDMxHMkYaXBj1ZLnJNBlGM40rbwWZGsXn5AXzQJcYtbfdYQtRESsaJuJHhub2kCDJbj5vqxRsKT60rJ54warKOhbpydlb6y(smzgAvNigsaZ3HQZggOBminCAYRGUEYRGEmFje9On0QokWcEgukUjxlotDuqEkOyqwDA1JvcyKAm8GkWwHRBmijVc6AvkkQthnMJBberIEe8GnSeO3thYT6eXqcy(ouD2WaDJbPHttEf01tEf0JoDi3QJcSGNbLIBY1IZuhfKNckgKvNw9yLagPgdpOcSv46gdsYRGUwL4x1PJgZXTaIir)y0q)QVt72wGV(zddlRhbpydlb69ZggMormKaMVdvNnmq3yqA40KxbD9Kxb9OpByy6Oal4zqP4MCT4m1rb5PGIbz1PvpwjGrQXWdQaBfUUXGK8kORvR(XOH(vxRea]] )
+    storeDefault( [[SimC Feral: precombat]], 'actionLists', 20171105.231639, [[dGJOeaGEbLAxiQ2MirZMIBsP(gL0Lb7uI9s2nk7hrmkbfnmb(TspgkdvKWGrugoeoiL4uck5yOYXrvLwOuXsHOfJWYr6HsINQAzcYZf1ervftvQAYqA6kUOuPdt1Zeu56IyJcQARssBwKQTJQCEOsZsKKPjsQVJQYPf6ZqfJwsDBPCsOkVgQQRHQQ6EIu(lI06qvvoNGclo1R3L5egave6hbGfDtmS9jUmv4ccNo)aP7jMrD0rcgWZGkHc4SYfeKsY5SMARHcd9JrJigDDlytCzz1RcN617YCcdGQo6hJgrm6JBa2qoHzx0XnlltoWCcdGQBHiAIdU6uah6Y3uRJhdnI5Zs1zld0Tx0QoT4nqxV4nqhjGdD5BQ1rcgWZGkHc4SYfOJeYBcfdYQxJELAadF7Lh0a2icD7fT4nqxJkHuVExMtyau1r)y0iIrpq3cr0ehC1550OtyaD8yOrmFwQoBzGU9Iw1PfVb6jzG0PM65A9I3a9plfiHSQUjb0TqXjRZ8gKwsgiDQPEUov8CtcKwGosWaEgujuaNvUaDKqEtOyqw9A0Rudy4BV8GgWgrOBVOfVb6AujCQxVlZjmaQ6OFmAeXOd8BsebcaLCts6P7KYh1rGiYWjRBHiAIdU68CA0jmGoEm0iMplvNTmq3ErR60I3a9Kmq6ut9CTEXBG(NLcKqwv3KaKqwyYfw6wO4K1zEdsljdKo1upxNkEUjbsJthjyapdQekGZkxGosiVjumiREn6vQbm8TxEqdyJi0Tx0I3aDnQKA1R3L5egavD0TqenXbxDe0LpJoEm0iMplvNTmq3ErR60I3aD9I3a9uqx(m6ibd4zqLqbCw5c0rc5nHIbz1RrVsnGHV9YdAaBeHU9Iw8gORrf(x96DzoHbqvhDlertCWvhZhstFPnD8yOrmFwQoBzGU9Iw1PfVb66fVb6v8HeYc)sB6ibd4zqLqbCw5c0rc5nHIbz1RrVsnGHV9YdAaBeHU9Iw8gORrLuQE9UmNWaOQJ(XOreJ(S4GJbihXoXLL1TqenXbxDe7exMoEm0iMplvNTmq3ErR60I3aD9I3a9uStCz6ibd4zqLqbCw5c0rc5nHIbz1RrVsnGHV9YdAaBeHU9Iw8gORrJEXBG(JTkKqw4bQB4psidbfW2gHpAKa]] )
 
-    storeDefault( [[SimC Feral: generator]], 'actionLists', 20171006.174729, [[deeIpaqiQi2ev4tevOrPcoLIQvbkYRuHGBrub7cvnmI4yQOLPs5zurAAQqQRbkSnIk5BuPACQqY5iQO1PcHMhvs3JkX(OI6GeLwirXdjQ6IuPSrqr1hbfLoPkr3KiTtkAPkkpvyQuOTQsyVi)vrgSOdl1IvvpMstwvUm0MPGpRqgnO60K8AqPztv3gKDd8BugUcoorLA5eEoPMUsxhv2UkvFxfQXdkkoVkP1RcrZxHA)sMojJu4gO)E8rFkmBiKIqbjFLWCu0(JyLJqak6LjOyg6XwJK5njNUlbgso5pPigqRQ9QJSxfdqMNsCkfYAxfdOjJK5jzKc3a93JpsgkcRqnSu02vDhNqacPqDLox5zLoQ0YG(SPbMcSAElNqGGTsxRegui7x5v7vk(cUT9tAFRHtXLGNY2ltqbGbqkKYEx0cZgcPGcZgcPqgb32(kdFRHtXm0JTgjZBsoD)ucfZqnJtyrnzKwkKhoAHvk7ocHGL(uiL9mBiKcAjZBKrkCd0Fp(izOiSc1WsHLb9ztdmfy18woHabBLU6sL3Q0rLFodg4rpha1tJ4uVgyr(h7yqLoQ8qLFodg4)Eg7TTNb08CdvoECLoPYT9iy5)Eg7TTNb08iO)E8v58kDu5Hk)CgmWR779iCsWAbp3qLJhxPtQCBpcwEDFVhHtcwl4rq)94RY5ui7x5v7vkAn8gQbOEYGabh5vkUe8u2EzckamasHu27Iwy2qifuy2qifYQH3qnaLJ6kH5ceCKxPyg6XwJK5njNUFkHIzOMXjSOMmslfYdhTWkLDhHqWsFkKYEMnesbTKPtjJu4gO)E8rYqryfQHLIT9iy5rpha1tJ4uVgyrEe0Fp(Q0rLwg0NnnWuGvZB5eceSv6sLsQ0rLiafJUYB5eceSv6Slv22vXa8gqbZQyC6PVArEltVvEeQ8gmOq2VYR2RuGEoaQNgXPEnWIuCj4PS9YeuayaKcPS3fTWSHqkOWSHqkCZZbq5OUsywo1RbwKIzOhBnsM3KC6(PekMHAgNWIAYiTuipC0cRu2Decbl9Pqk7z2qif0sMhnzKc3a93JpsgkcRqnSuSThbl)xWTTFs7BnCEe0Fp(Q0rLTDv3XjeGqkuxPZUuPCsHSFLxTxPyHlAn8jBVuCj4PS9YeuayaKcPS3fTWSHqkOWSHqkmcx0A4umd9yRrY8MKt3pLqXmuZ4ewutgPLc5HJwyLYUJqiyPpfszpZgcPGwYegKrkCd0Fp(izOiSc1WsrBx1DCcbiKc1v6Slvkxui7x5v7vk0hRgWjBVuCj4PS9YeuayaKcPS3fTWSHqkOWSHqkIJvdifZqp2AKmVj509tjumd1moHf1KrAPqE4OfwPS7iecw6tHu2ZSHqkOLmLlYifUb6VhFKmuewHAyPWYG(SPbMcSAElNqGGTsxRegv6OseGIrx5TCcbc2kD2LkB7QyaErdlYBz6Tshv(ylVOHf5hG48RAWRqrLUw5n(ZkDu5NZGb(vncf6jdCIR8Cdv6OYdv(5myG)7zS32EgqZZnu54Xv6Kk32JGL)7zS32EgqZJG(7XxLZR0rLhQ0jvUThblVcyBbOxfdWJG(7XxLJhxPLX8p2XaEfW2cqVkgGxGqTcOR05kppQkNxPJkDsLFodg4vaBla9QyaEUbkK9R8Q9kfA49JDme6FuCj4PS9YeuayaKcPS3fTWSHqkOWSHqkc49JDme6Fumd9yRrY8MKt3pLqXmuZ4ewutgPLc5HJwyLYUJqiyPpfszpZgcPGwY0DYifUb6VhFKmuewHAyPWYG(SPbMcSAElNqGGTsxRegv6OYdv6KkxLfwfyuLJhx5HkDsLB7rWY)9m2BBpdO5rq)94RshvkqOwb0v6ALporVkgOsyQsj8oTY5voECLhQCBpcw(VNXEB7zanpc6VhFv6OYpNbd8FpJ922ZaAEUHkDu5HkfiuRa6kD1LkV3cv)9iVOHfNeObbQHx58kDu5ak0k9IGDcIZVQbVcfv6CLp2YlAyr(bio)Qg8kuujmvPe(JssLZRCELoQCBXiC5xfeoTSPNcRuouPaHAfqxPZvUklStRccPq2VYR2RuiAyrkKhoAHvk7ocHGL(uiL9UOfMnesbfxcEkBVmbfagaPWSHqkM1WIuiRyKMc7vRhN2wmcxTlNumd9yRrY8MKt3pLqXmuZ4ewutgPLc5VA9OXwmcxnjdfszpZgcPGwY8OiJu4gO)E8rYqryfQHLcnUtFgGtZVkuCkNth9GTsNRusLoQuGqTcOR0vxQ8Xj6vXavctvkH3Pv6Osld6ZMgykWQ5TCcbc2kDTsyuPJkpuzBx1DCcbiKc1v6SlvERYXJR8qLhQeLBo1Wa(49Cgm0thl6HbfyKUYXJR8ZzWaV1JTW26vbgXZnu58kDu5Hkr5MtnmGp(w55eSPbghWIcDLJhx5NZGb(VNXEB7zan)JDmOY5voVY5ui7x5v7vkw4IwdFY2lfYdhTWkLDhHqWsFkKYEx0cZgcPGIlbpLTxMGcadGuy2qifgHlAn8kpCoNczfJ0uyVA9402Ir4QD5KIzOhBnsM3KC6(PekMHAgNWIAYiTui)vRhn2Ir4QjzOqk7z2qif0sMYjzKc3a93JpsgkcRqnSu4Kk14o9zaon)QqXPCoD0d2kDUsjv6Osbc1kGUsxDPYhNOxfdujmvPeENwPJkpuzBx1DCcbiKc1v6SlvERYXJR8qLFodg4TESf2wVkWiEUHkDujk3CQHb8X75myONow0ddkWiDLoQ8qLOCZPggWhFR8Cc20aJdyrHUYXJR8ZzWa)3ZyVT9mGM)Xogu58kNx5CkK9R8Q9kflCrRHpz7Lc5HJwyLYUJqiyPpfszVlAHzdHuqXLGNY2ltqbGbqkmBiKcJWfTgELhUnNczfJ0uyVA9402Ir4QD5KIzOhBnsM3KC6(PekMHAgNWIAYiTui)vRhn2Ir4QjzOqk7z2qif0sMNsiJu4gO)E8rYqryfQHLcld6ZMgykWQ5TCcbc2kDTsyuPJkpu5Hkpu5zLhHkHAyMjl8wmc1vkhQ0cVfJq9KbrBxfd0(kNxjmv5jmQCELJhx5HkpuPfElgH6jdI2UkgO9v6CL34Ll5QshvUkiSsNR8usLZRCELZPq2VYR2Ru8fCB7N0(wdNIlbpLTxMGcadGuiL9UOfMnesbfMnesHmcUT9vg(wdVYdNZPyg6XwJK5njNUFkHIzOMXjSOMmslfYdhTWkLDhHqWsFkKYEMnesbTK55jzKc3a93JpsgkcRqnSuyzqF20atbwnVLtiqWwPRvcJkDuzBx1DCcbiKc1v6Slv6ukK9R8Q9kf6Jvd4KTxkUe8u2EzckamasHu27Iwy2qifuy2qifXXQbSYdNZPyg6XwJK5njNUFkHIzOMXjSOMmslfYdhTWkLDhHqWsFkKYEMnesbTK55nYifUb6VhFKmuewHAyPWYG(SPbMcSAElNqGGTsxRegv6OYdv22vDhNqacPqDLUwPtRC84k32JGL)l422pP9Tgopc6VhFvoNcz)kVAVsHgUaFuCj4PS9YeuayaKcPS3fTWSHqkOWSHqkc4c8rXm0JTgjZBsoD)ucfZqnJtyrnzKwkKhoAHvk7ocHGL(uiL9mBiKcAPLIWkudlf0sea]] )
+    storeDefault( [[SimC Feral: generator]], 'actionLists', 20171105.231639, [[dieKpaqiIQAtKQ(erPYOuuoLIQvruIxrukDlIsv7cvnmI4ykPLPu6zksmnIQ01afTnqH(gPuJtrsDoqbRJOK08Ou19OuAFukoirLfsu8qsjtKOKQlsPYgjkfFKOK4KksDtI0oPKLQiEQWujv2Qsr7f6VkXGfDyPwSQ6XuzYQYLr2mP4ZkKrdQonjVguA2u1Tbz3a)gLHRGJtuflNWZPy6QCDuz7kv9DLcJNOKY5vQSEfjz(ku7xY4kQdd7a93tp8Jrmqov7vtvFkgaTwLmfmK1jnnN)qzWyc5P2qO1wjRAVkrcmYVQT8Q9wyaJWjudhgyiN7umGb1HwROomSd0Fp9qzWiCc1WHr7o1EAHaeKImvAtLRvQVshd6ZwgykWz4DCcbbUkTVsyIHCFLxD7W4l4U2Vy8TbogtdEkxFmbgagGWqk7TzlSAicdmSAicdzeCx7Rm8Tbogtip1gcT2kzv7vjymHmmoHJmOo8Wql4KdwPS9eebo8JHu2ZQHimWdT2I6WWoq)90dLbJWjudhgog0NTmWuGZW74eccCvAVTvUTs9v(50OHN8CaYSmIt9AGJ4FSnavQVYzv(50OH)7zS31EgWWZnu54Xvk)kV2tGJ)7zS31EgWWtG(7PxLZRuFLZQ8ZPrdVP33JOfbRf8CdvoECLYVYR9e44n9(EeTiyTGNa93tVkNJHCFLxD7WOnWBOgqMfnccmv7WyAWt56JjWaWaegszVnBHvdryGHvdryiNbEd1as2zQu2iiWuTdJjKNAdHwBLSQ9QemMqggNWrguhEyOfCYbRu2EcIah(Xqk7z1qeg4Hwtb1HHDG(7PhkdgHtOgomU2tGJN8CaYSmIt9AGJ4jq)90Rs9v6yqF2YatbodVJtiiWvPTvkPs9vsasmAhVJtiiWvPn2wz7ofdWRHemNIXzw(QJ4DmZvPSTYTWed5(kV62Hb55aKzzeN61ahHX0GNY1htGbGbimKYEB2cRgIWadRgIWWophGKDMkLv4uVg4imMqEQneATvYQ2RsWyczyCchzqD4HHwWjhSsz7jicC4hdPSNvdryGhAjVOomSd0Fp9qzWiCc1WHX1EcC8Fb31(fJVnW5jq)90Rs9v2UtTNwiabPitL2yBLWagY9vE1TdJdUOnWxC9HX0GNY1htGbGbimKYEB2cRgIWadRgIWqhCrBGJXeYtTHqRTsw1EvcgtidJt4idQdpm0co5GvkBpbrGd)yiL9SAicd8qlyI6WWoq)90dLbJWjudhgT7u7PfcqqkYuPn2wjmIHCFLxD7WWSHAGWyAWt56JjWaWaegszVnBHvdryGHvdryeBOgimMqEQneATvYQ2RsWyczyCchzqD4HHwWjhSsz7jicC4hdPSNvdryGhAbJOomSd0Fp9qzWiCc1WHHJb9zldmf4m8ooHGaxL2xjmRuFLeGeJ2X74eccCvAJTv2UtXa8IgwI3XmxL6R8XoErdlXpaX5p1GxrIkTVYT8RvQVYpNgn8NAejmlA4e745gQuFLZQ8ZPrd)3ZyVR9mGHNBOYXJRu(vETNah)3ZyVR9mGHNa93tVkNxP(kNvP8R8ApboEfW1cqFkgGNa93tVkhpUshJ5FSna8kGRfG(umaVGGAfWuPnvUo1voVs9vk)k)CA0WRaUwa6tXa8Cdyi3x5v3ommW7hBdiY)WyAWt56JjWaWaegszVnBHvdryGHvdryeW7hBdiY)Wyc5P2qO1wjRAVkbJjKHXjCKb1HhgAbNCWkLTNGiWHFmKYEwneHbEOL2OomSd0Fp9qzWiCc1WHHJb9zldmf4m8ooHGaxL2xjmRuFLZQu(vEkhSkWOkhpUYzvk)kV2tGJ)7zS31EgWWtG(7PxL6RuqqTcyQ0(kFCI(umqLYsLs4NsLZRC84kNv51EcC8FpJ9U2ZagEc0Fp9QuFLFonA4)Eg7DTNbm8CdvQVYzvkiOwbmvAVTvUVfQ(7jErdlTiincYaVY5vQVYbsyuMJa3ceN)udEfjQ0MkFSJx0Ws8dqC(tn4vKOszPsj8tTKkNx58k1x51Ir0XFkiA5ylpfvPSVsbb1kGPsBQ8uoyxofeHHCFLxD7Wq0WsyOfCYbRu2EcIah(Xqk7TzlSAicdmMg8uU(ycmamaHHvdrymPHLWqoXidgUDopTCTyeDgBxXyc5P2qO1wjRAVkbJjKHXjCKb1HhgATZ5jDTyeDgugmKYEwneHbEO1uJ6WWoq)90dLbJWjudhgg6w(maNH)uKyfgwK3bxL2uPKk1xPGGAfWuP92w5Jt0NIbQuwQuc)uQuFLog0NTmWuGZW74eccCvAFLWSs9voRY2DQ90cbiifzQ0gBRCBLJhx5SkNvjjpCQHb6X750OPx2q0ddkWitLJhx5NtJgENNAHRnNcmINBOY5vQVYzvsYdNAyGE8TYZjyldmoGJeMkhpUYpNgn8FpJ9U2Zag(hBdqLZRCELZXqUVYRUDyCWfTb(IRpm0co5GvkBpbrGd)yiL92SfwneHbgtdEkxFmbgagGWWQHim0bx0g4voBDogYjgzWWTZ5PLRfJOZy7kgtip1gcT2kzv7vjymHmmoHJmOo8WqRDopPRfJOZGYGHu2ZQHimWdTGbuhg2b6VNEOmyeoHA4Wq(vAOB5ZaCg(trIvyyrEhCvAtLsQuFLccQvatL2BBLporFkgOszPsj8tPs9voRY2DQ90cbiifzQ0gBRCBLJhx5Sk)CA0W78ulCT5uGr8CdvQVssE4udd0J3ZPrtVSHOhguGrMk1x5Skj5Htnmqp(w55eSLbghWrctLJhx5NtJg(VNXEx7zad)JTbOY5voVY5yi3x5v3omo4I2aFX1hgAbNCWkLTNGiWHFmKYEB2cRgIWaJPbpLRpMadadqyy1qeg6GlAd8kNTDogYjgzWWTZ5PLRfJOZy7kgtip1gcT2kzv7vjymHmmoHJmOo8WqRDopPRfJOZGYGHu2ZQHimWdTwLG6WWoq)90dLbJWjudhgog0NTmWuGZW74eccCvAFLWSs9voRYzvoRY1kLTvc1YAlo4TyezQu2xPdElgrMfnI2DkgO9voVszPYvyw58khpUYzvoRsh8wmImlAeT7umq7R0Mk3YdJWyL6R8uquL2u5QKkNx58kNJHCFLxD7W4l4U2Vy8TbogtdEkxFmbgagGWqk7TzlSAicdmSAicdzeCx7Rm8TbELZwNJXeYtTHqRTsw1EvcgtidJt4idQdpm0co5GvkBpbrGd)yiL9SAicd8qR1vuhg2b6VNEOmyeoHA4WWXG(SLbMcCgEhNqqGRs7ReMvQVY2DQ90cbiifzQ0gBRCkyi3x5v3ommBOgimMg8uU(ycmamaHHu2BZwy1qegyy1qegXgQbQYzRZXyc5P2qO1wjRAVkbJjKHXjCKb1HhgAbNCWkLTNGiWHFmKYEwneHbEO16wuhg2b6VNEOmyeoHA4WWXG(SLbMcCgEhNqqGRs7ReMvQVYzv2UtTNwiabPitL2x5uQC84kV2tGJ)l4U2Vy8Tbopb6VNEvohd5(kV62HHbUGEymn4PC9XeyayacdPS3MTWQHimWWQHimc4c6HXeYtTHqRTsw1EvcgtidJt4idQdpm0co5GvkBpbrGd)yiL9SAicd8WddRgIWiuqAvPSHeTxwTYreGe9Xe4Hi]] )
 
-    storeDefault( [[SimC Feral: sbt opener]], 'actionLists', 20171006.174729, [[dittcaGEkfTjPODrIxtv1SLQBcu3gj7uvTxXUHSFsnmP0VvmykgoLCqa1XiPfsv0srklwflh0drQ8uultk8CLAQQIjRstxYfbWPH6Yexxj2iLQ2kLsBgq2ovPEmvomIpdKVtvY9Ou5qQsnALK1HuLtsv4VQsUMsQZtv5Ba0ZqQQprPWrnpHbaroD5Mt4pHscZyk60g7fiPtpTzFkTzSeKadtt6czl53OvfW21TQkQHzlXHjDSnjfEq5R2s)Wa7k8G25jF18egae50LB8mm7GyRkCr6cQuo9zUfPpOTIGiNUC1MMAJBOoZlRbJQTIBbcfuPn2PnR1MMAZBT5SaeqkN(m3I0h0wzXsBAQnV1M7ukqSLsHD(XiqHb(G74YxyOacoEvRc7b6IDKAGHrdscdEU2sGFcLeo8NqjHPjGGJx1QW0KUq2s(nAvbuTnmnzplqNSZtQW0TsC(bpElucQYjm45(jus4u53ipHbaroD5gpdZoi2Qc)wBUtPaXwkf25hJaPnn1g3qDMxwdgvBf3cekOsBStBwhg4dUJlFHlmibUFb0c0xypqxSJudmmAqsyWZ1wc8tOKWH)ekj8dgKaTXwBSFb6lmnPlKTKFJwvavBdtt2Zc0j78KkmDReNFWJ3cLGQCcdEUFcLeovQWSdITQWPsa]] )
+    storeDefault( [[SimC Feral: sbt opener]], 'actionLists', 20171105.231639, [[dytxcaGEPcTjfyxKyBKKmBPCti6BuHDcyVIDJy)ummf53kDzIbtPHtQoiq8yQ6yKY5ij1cbslfOwSkwoupKK4POwgj1ZvPjkvWuvvMSQmDjxur1Hb9mQiDDQ0gLQYwLQ0MvO2UuvDpPkonstJkQ(UuP(RQQETcz0kOdPQYjLk5Zq4AsfDEfLprfL1rfXTH0rlFHNtGNM8YjmRlEkSr7iSOljaAtonChKXq3wfqddwAc8kbq9KMdTPjvPO5W5ouR6WSht1RWHbXx0LCZxa0Yx45e4PjVaAy2JP6v4c2esPCA7(kyBjxfHapn5zSdmw)IE2)6lLuxfVlglKYy7Xy70yhyS)m2J74XkN2UVc2wYvXv3yhyS)m23wkyQUsr9JOeeHb5qB0AwySGaVDxdd3f5r9WAXHjlrcJCF9cXaqujCyaiQegSGaVDxdddwAc8kbq9KMdTPWGL76I9YnFPcRYqXpc52VGkKkNWi3haevcNkaQZx45e4PjVaAy2JP6v4Fg7BlfmvxPO(ruccJDGX6x0Z(xFPK6Q4DXyHugBpgBNHb5qB0Aw4IIqW3)JDXZc3f5r9WAXHjlrcJCF9cXaqujCyaiQe(JIqWo7AS95INfgS0e4vcG6jnhAtHbl31f7LB(sfwLHIFeYTFbvivoHrUpaiQeovQWaqujmtrvXy7tWWMtm27Pm2vxicovc]] )
 
-    storeDefault( [[SimC Feral: finisher]], 'actionLists', 20171006.174729, [[d4ZGoaGAikP1RGkTjfyxISnfu2NOOhlXSvQ5dPBkQ6WsDBv5Aer7uj2RWUHA)KgLsYWev(nQUhbSkik1GPmCQ4qskCkLuhJGUmYcLuzPqOfRQwoOhkPQNcSmfK1PGQmorHMQczYe10v5Iqu9zj5zebxxrBubvSvrbBMkTDrP5rGMLcQQPbrX3vO6Ve6BkugnemEjfDsIq3cIsCAuopr65u1bLu61qKdHXOaGCC)3KC8dWs)OaayV6vB4qWEp8uZLHzEeiyaqK2u7PyzOCchlNK5eMegaGdvy9MnC7JXXXIWCsia1wogh7JrXIWyuaqoU)BsoQlaGcK5CbOgQ9NUUjFNTRiriVHPPJAduBLAf(7ZfD4m85tLjes4tnbuts1qrvBLAxVj8L(W51Br)U9iKiC)3KSAduRlhlljsy6XiVAzQMq1gOwxoghN(W51Br)U9iKki0WkYRwMQLtT1QToa1(zB2jna(oBxrIqEddGeXYSsFCyaWCmfG8C5m0WL(rbial9JcaOZ2vKAiYByaqK2u7PyzOCchtyUaGi55tyH8XO4cq9iqfKYZZspcFXpa55Yl9JcqCXYqXOaGCC)3KCuxaafiZ5caKEnd7vtqbutEc7JXXQHSvlxscQnqTUCSSKiHPhJ8QLPaQjzaQ9Z2StAaoeGThbXsFbOEeOcs55zPhHV4hG8C5m0WL(rbiaselZk9XHbaZXuaw6hfGriaBpcbOwyLpafPLnjEnSIoVacdaI0MApfldLt4ycZfaejpFclKpgfxaQxAztJAyfD(OUaKNlV0pkaXflsigfaKJ7)MKJ6caOazoxa6YXYsIeMEmYRwMcOwgdqTF2MDsdGFCMdjw6laselZk9XHbaZXuaYZLZqdx6hfGaS0pkaGXzouaqK2u7PyzOCchtyUaGi55tyH8XO4cq9iqfKYZZspcFXpa55Yl9JcqCXcYeJcaYX9FtYrDbauGmNlaRuRgQDScsmCLAOOQTsni9Ag2RMGQLr1gO21Wk6siq9(qi5uo1YuTHKuTbQvd1UEt4l57pbpo)qir4(Vjz1wRgkQAoe0Z8hHpX3CFmNnJGQLPAY8lbzojN3CFmNnJGQTwTbQDnSIU0XEK4XfLzKAilQbPxZWE1YuTJvqs8ypsnKTAiJAduRWFFUOdNHpFQmHqcFQjGAsQ2a1wPgHjyL00XEK4XfFDnvtq1Y2qw)3uYHZ3mCLAOOQ9NUUPpb9eeP00rnuu1(tx3edxAiUpghNMoQHIQ2F66MO9etEXQjtUXfknDudfvTcNVL5JJthRIGEr3juAcsVMH9QjOAsqnuu180j(54PpDmckmJIiJtrTmvlNAOOQTsT)01nv2udlT)y4Q00rTbQrycwjnvMqiHp1YuTHjPARvdfvTR3e(sE(ClYDfpeirxoK8xIW9FtYQHIQwnutMFjiZjDScsmCLAOOQTsnz(LGnsucsVMH9QjOActsQ2a16YXYsIeMEmYRMGQnm1wR26au7NTzN0aazobOEeOcs55zPhHV4hG8C5m0WL(rbiaselZk9XHbaZXuaw6hfaezobOwyLpafPLnjEnSIoVacdaI0MApfldLt4ycZfaejpFclKpgfxaQxAztJAyfD(OUaKNlV0pkaXflsgJcaYX9FtYrDbauGmNlaRuBLA)PRBY3z7kseYBycsVMH9QjOaQjmxss1gO21BcFjK1UQIKfhNpXY(eH7)MKvBTAOOQTsT)01n57SDfjc5nmbPxZWE1eua1glnKARvBTAduRWFFUOdNHpFQmHqcFQjGAsQ2a1wPgHjyL00XEK4XfFDnvtq1Y2qw)3uYHZ3mCLAOOQ9NUUPpb9eeP00rnuu1(tx3edxAiUpghNMoQHIQ2F66MO9etEXQjtUXfknDudfvTcNVL5JJthRIGEr3juAcsVMH9QjOAsqnuu180j(54PpDmckmJIiJtrTmvlNAOOQTsT)01nv2udlT)y4Q00rTbQrycwjnvMqiHp1YuTHjPARvdfvTR3e(sE(ClYDfpeirxoK8xIW9FtYQHIQwnutMFjiZjDScsmCLAOOQTsnz(LGnsucsVMH9QjOActsQ2a16YXYsIeMEmYRMGQnm1wR26au7NTzN0a47SDfjc5nmaselZk9XHbaZXuaYZLZqdx6hfGaS0pkaGoBxrQHiVHQTs46aGiTP2tXYq5eoMWCbarYZNWc5JrXfG6rGkiLNNLEe(IFaYZLx6hfG4ILHfJcaYX9FtYrDbauGmNlaf(7ZfD4m85tLjes4tnbuts1gO2k16YXYsIeMEmYRwMcO2WudfvTvQ1LJLLejm9yKxTmfqnjO2a1QHAxVj8L(Box(6nh7teU)BswT1QTwTbQv4Vpx0HZWNpvMqiHp1eqnjvBGARuJWeSsA6yps84IVUMQjOAzBiR)Bk5W5BgUsnuu1(tx30NGEcIuA6OgkQA)PRBIHlne3hJJtth1qrv7pDDt0EIjVy1Kj34cLMoQHIQwHZ3Y8XXPJvrqVO7eknbPxZWE1eunjOgkQAE6e)C80NogbfMrrKXPOwMQLtnuu1wP21BcFPh)r4tK7kw2nKDsteU)BswTbQ9NUUPYMAyP9hdxLMoQTwT1bO2pBZoPbWpoZHel9fajILzL(4WaG5yka55YzOHl9Jcqaw6hfaW4mhsTvcxhaePn1EkwgkNWXeMlaisE(ewiFmkUaupcubP88S0JWx8dqEU8s)OaexSmwmkaih3)njh1faqbYCUau4Vpx0HZWNpvMqiHp1eqnjvBGA)PRBYLrqPIqsw81Shb9PPJAduBLAeMGvsth7rIhx811unbvlBdz9FtjhoFZWvQHIQ2F66M(e0tqKsth1qrv7pDDtmCPH4(yCCA6OgkQA)PRBI2tm5fRMm5gxO00rnuu1kC(wMpooDSkc6fDNqPji9Ag2RMGQjb1whGA)Sn7KgGxZEbqIyzwPpomayoMcqEUCgA4s)OaeGL(rbiFZEbarAtTNILHYjCmH5caIKNpHfYhJIla1Javqkppl9i8f)aKNlV0pkaXflzmgfaKJ7)MKJ6caOazoxak83Nl6Wz4ZNktiKWNAcOMKQnqTvQrycwjnDShjECXxxt1euTSnK1)nLC48ndxPgkQA)PRB6tqpbrknDudfvT)01nXWLgI7JXXPPJAOOQ9NUUjApXKxSAYKBCHsth1qrvRW5Bz(440XQiOx0DcLMG0RzyVAcQMeuBDaQ9Z2StAaCjiVW4tV4NDuaQhbQGuEEw6r4l(bipxodnCPFuacGeXYSsFCyaWCmfGL(rby4qqEHXNE1QJDuaQfw5dWRRPiHjyLubeo8lslBs8AyfDEbegaePn1EkwgkNWXeMlaisE(ewiFmkUauV0YMg1Wk68rDbipxEPFuaIlUaakqMZfG4Ia]] )
+    storeDefault( [[SimC Feral: finisher]], 'actionLists', 20171105.231639, [[da0Ioaqifs2KcAukvofeSkIOYSuivDlIOODjYWKehJGwMOspdI00ev01is2MOcFtuvJtb4CervRtHumpc4EeO9rK6GkeluuLhQanrIOWfjc2iru6KeHUPK0ovklfc9uGPQqTvIi7v4VeAWKoSulwv9yjMmrDzKntL(SKA0kvDAuwTcP0RHOMTsUTQSBO(nQgovSCqpNQMUkxxrBxu67qeJxb05ffRxHuz(qA)uoegJdGeW9FrYXpaahQW6fB01hJJJnHvqAaKmi3EUUiVaGiTO2tXwUveMVWkvYrsy(5m)CL8bauGmNlabyKYX4yFmo2egJdGeW9FrYrEbauGmNlaJY0)01n57SDnjc5nmnDmDOP7mTWFFUOdNHpFQmHqcFMkOPszkkQP7m96fHV0hoVEj6xTFFIW9FrYMo00UCSSKiHPhJ8MkTPcnDOPD5yCC6dNxVe9R2Vpv23WAYBQ0MwXuemfHamYNTyxMa47SDnjc5nmaselZk9XHbaZXuaQYLLud36hfGaS1pkaGoBxtMIiVHbarArTNITCRimFHvcaIKNpHfYhJJladUNkixLNLEe(IFaQYL36hfG4ITCJXbqc4(Vi5iVaakqMZfai9Ag2BQacAQ8e2hJJnvYzALesnDOPD5yzjrctpg5nvAbnvQamYNTyxMaC7HTFVyPVam4EQGCvEw6r4l(bOkxwsnCRFuacGeXYSsFCyaWCmfGT(rby8Ey73hGrG1(auYuwK41WA68ckmaislQ9uSLBfH5lSsaqK88jSq(yCCbyWmLfnUH105J8cqvU8w)OaexSH0yCaKaU)lsoYlaGcK5CbOlhlljsy6XiVPslOPdiaJ8zl2LjaEKWCOairSmR0hhgamhtbOkxwsnCRFuacWw)OaaqcZHcaI0IApfB5wry(cReaejpFclKpghxagCpvqUkpl9i8f)auLlV1pkaXfB5mghajG7)IKJ8caOazoxa2z6Om9yfKz4AtrrnDNPq61mS3ubmDaMo00RH10L2t962NCkNPsBAUsz6qthLPxVi8L89NGhNF7teU)ls2uemff1uhc6z(JWN4BUoMZIrqtL2uz(LGmNKZBUoMZIrqtrW0HMEnSMU0XEK4XfLzKPsMMcPxZWEtL20Jvqw8ypYujNP500HMw4Vpx0HZWNpvMqiHptf0uPmDOP7mLWeSot6yps84IVEGMkGPzBiR)lk5W5lgU2uuut)tx30NGEcICA6ykkQP)PRBIHlne3hJJtthtrrn9pDDt0AIjVy9Kj34cLMoMIIAAHZxYCKGthRMGEr3jmtcsVMH9MkGPi1uuut90j(54PpDmckCaI50PyQ0MwXuuut3z6F66MklQHL2FmCDA6y6qtjmbRZKktiKWNPsBAoKYuemff10Rxe(sE(CjYDfV9KOlhs(lr4(ViztrrnDuMkZVeK5KowbzgU2uuut3zQm)sWgzkbPxZWEtfWuHjPmDOPD5yzjrctpg5nvatZHPiykcbyKpBXUmbaYCcWG7PcYv5zPhHV4hGQCzj1WT(rbiaselZk9XHbaZXua26hfaezobyeyTpaLmLfjEnSMoVGcdaI0IApfB5wry(cReaejpFclKpghxagmtzrJBynD(iVauLlV1pkaXfBsfJdGeW9FrYrEbauGmNla7mDNP)PRBY3z7AseYBycsVMH9MkGGMkSsskthA61lcFPrBxxtYIiHpXY(eH7)IKnfbtrrnDNP)PRBY3z7AseYBycsVMH9MkGGMMFkxtrWuemDOPf(7ZfD4m85tLjes4ZubnvkthA6otjmbRZKo2JepU4RhOPcyA2gY6)IsoC(IHRnff10)01n9jONGiNMoMIIA6F66My4sdX9X4400Xuuut)tx3eTMyYlwpzYnUqPPJPOOMw48Lmhj40XQjOx0DcZKG0RzyVPcyksnff1upDIFoE6thJGchGyoDkMkTPvmff10DM(NUUPYIAyP9hdxNMoMo0uctW6mPYecj8zQ0MMdPmfbtrrn96fHVKNpxICxXBpj6YHK)seU)ls2uuuthLPY8lbzoPJvqMHRnff10DMkZVeSrMsq61mS3ubmvyskthAAxowwsKW0JrEtfW0CykcMIqag5ZwSlta8D2UMeH8ggajILzL(4WaG5ykav5YsQHB9Jcqa26hfaqNTRjtrK3qt3jeHaGiTO2tXwUveMVWkbarYZNWc5JXXfGb3tfKRYZspcFXpav5YB9JcqCXwoIXbqc4(Vi5iVaakqMZfGc)95IoCg(8PYecj8zQGMkLPdnDNPD5yzjrctpg5nvAbnnhMIIA6ot7YXYsIeMEmYBQ0cAksnDOPJY0Rxe(s)fNlF9IJ9jc3)fjBkcMIGPdnTWFFUOdNHpFQmHqcFMkOPsz6qt3zkHjyDM0XEK4XfF9anvatZ2qw)xuYHZxmCTPOOM(NUUPpb9ee500Xuuut)tx3edxAiUpghNMoMIIA6F66MO1etEX6jtUXfknDmff10cNVK5ibNownb9IUtyMeKEnd7nvatrQPOOM6Pt8ZXtF6yeu4aeZPtXuPnTIPOOMUZ0Rxe(sp(JWNi3vSSAi7YKiC)xKSPdn9pDDtLf1Ws7pgUonDmfbtriaJ8zl2LjaEKWCOairSmR0hhgamhtbOkxwsnCRFuacWw)OaaqcZHmDNqecaI0IApfB5wry(cReaejpFclKpghxagCpvqUkpl9i8f)auLlV1pkaXfB5hJdGeW9FrYrEbauGmNlaf(7ZfD4m85tLjes4ZubnvkthA6F66MCzemJiKKfFn7rqFA6y6qt3zkHjyDM0XEK4XfF9anvatZ2qw)xuYHZxmCTPOOM(NUUPpb9ee500Xuuut)tx3edxAiUpghNMoMIIA6F66MO1etEX6jtUXfknDmff10cNVK5ibNownb9IUtyMeKEnd7nvatrQPieGr(Sf7YeGxZEbqIyzwPpomayoMcqvUSKA4w)OaeGT(rbOAZEbarArTNITCRimFHvcaIKNpHfYhJJladUNkixLNLEe(IFaQYL36hfG4ITbeJdGeW9FrYrEbauGmNlaf(7ZfD4m85tLjes4ZubnvkthA6otjmbRZKo2JepU4RhOPcyA2gY6)IsoC(IHRnff10)01n9jONGiNMoMIIA6F66My4sdX9X4400Xuuut)tx3eTMyYlwpzYnUqPPJPOOMw48Lmhj40XQjOx0DcZKG0RzyVPcyksnfHamYNTyxMa4sqEHXNEXp7Oam4EQGCvEw6r4l(bOkxwsnCRFuacGeXYSsFCyaWCmfGT(rbqYsqEHXNEtZJDuagbw7dWRhOiHjyDgbfo6lzkls8AynDEbfgaePf1Ek2YTIW8fwjaisE(ewiFmoUamyMYIg3WA68rEbOkxERFuaIlUaS1pkaa2BqtLSeSxJgtDzyMFpbJlca]] )
 
-    storeDefault( [[SimC Feral: cooldowns]], 'actionLists', 20171006.174729, [[dieFjaqisqlsGInHc(eksnkQKofvk7IiddGJPswgk0ZeeMMarDnsGTjq13irghkIoNaHwNaLMNGO7jiTpQehef1cjP6HKuMOajUij0grr4JcKYjjrTsbs6Lce5MaANemubs1sPIEkLPssUQabBLkv7v5VuHbd5WQAXO0JfAYICzKnRs9zIQrlOonPETkQzlQBd0UL63sgUkSCu9CQA6GUoH2Ua8Db05jkRhfjZxfz)q9UMQzk2pBMsJDMWdsZmnOAyetq8phSyuSQCQcS9ZCsz690eyeWLsxaaeCPRz2bf1FwZupux9eUaeIzmhH6Q9t1eUMQzk2pBMst9zwKRpGZuigXkEFlfFOJ7IdkjEmJzwDwdLnl9(WZuUt64dl(SUAAgWk5(ZfEqA2mHhKMfuEF4zoPm9EAcmc4sPlaZCs(sKhj)un4m1ctXZaRaiqQHJDgWkj8G0SbNaJt1mf7NntPP(mlY1hWzWsU8mjfRkNQaBpgXag5kgrnXLltkkY5udXixcfJcbamIbmYvmkwvovb2sqTCI7DClYLjXjWx3EmYfmsby0PtyeR49TeulN4Eh3ICzsIhyKByKBZyMvN1qzZyjUN4NNPCN0Xhw8zD10mGvY9Nl8G0SzcpintDI7j(5zoPm9EAcmc4sPlaZCs(sKhj)un4m1ctXZaRaiqQHJDgWkj8G0SbNqiMQzk2pBMst9zwKRpGZOM4YLjLOBDudXixcfJcoGzmZQZAOSzqTCI7DClYLnt5oPJpS4Z6QPzaRK7px4bPzZeEqAMkTCIZ0EmIje5YM5KY07PjWiGlLUamZj5lrEK8t1GZulmfpdScGaPgo2zaRKWdsZgCcb5PAMI9ZMP0uFMf56d4SybYwookDd9srroNAigfkgbaJyaJOM4YLjff5CQHyKlHIrkaWmMz1znu2mkl2K3HCrD67int5oPJpS4Z6QPzaRK7px4bPzZeEqAMIzXMyApgf0e1PVJ0mNuMEpnbgbCP0fGzojFjYJKFQgCMAHP4zGvaei1WXodyLeEqA2Gtqbt1mf7NntPP(mlY1hWzutC5YKIICo1qmYLqXOqaaJyaJCfJIvLtvGTeulN4Eh3ICzsCc81ThJCbJUuagD6egXkEFlb1YjU3XTixMK4bg52mMz1znu2mDhFE)qD1ZuUt64dl(SUAAgWk5(ZfEqA2mHhKMPChFE)qD1blgfK0TCmQUXiyycJcQIT8mnZjLP3ttGraxkDbyMtYxI8i5NQbNPwykEgyfabsnCSZawjHhKMn4ec(untX(zZuAQpZIC9bCgSKlptshfuxThJyaJCfJGpxobLGAqYbSCK0egfsmk4kaJoDcJCfJGAqYbSCK0egfsm6IjbGrmGrUIrSI33sSe3t8ZsIhy0PtyeR49TKUJpVFOUAjXdmYnmYnmYTzmZQZAOSzhfux9mL7Ko(WIpRRMMbSsU)CHhKMnt4bPzb9cQREgZC5(z9dsHgmh8kxTCk54OcK4bZmNuMEpnbgbCP0fGzojFjYJKFQgCMAHP4zGvaei1WXodyLeEqA2bVYvlNsooQaj(GtqPPAMI9ZMP0uFMf56d4SybYwookDd9srroNAig5sOyeJyedyKRyKcXi4NPgkXMRkb)C1EjQF2mLWOtNWiwX7Bj2Cvj4NR2ljEGrUnJzwDwdLn79HFWVjVJBo1mLSzk3jD8HfFwxnndyLC)5cpinBMWdsZy2h(b)MyApgXeCQzkzZCsz690eyeWLsxaM5K8Lips(PAWzQfMINbwbqGudh7mGvs4bPzdobMCQMPy)Szkn1NzrU(aolwGSLJJs3qVuuKZPgIrHeJuagXagrnXLltkkY5udXixcfJ(iuxTe)ptsXYdXigWOubL4)zs6aumd1hznXXOqIrmkDHrmGrSI33sqTCI7DClYLjjEGrmGrUIrSI33sS5QsWpxTxs8aJoDcJuigb)m1qj2Cvj4NR2lr9ZMPeg5ggXag5kgPqmc(zQHs6o(8(H6QLO(zZucJoDcJIvLtvGTKUJpVFOUAjob(62JrUGrxmjg5ggXagPqmIv8(ws3XN3puxTK4XmMz1znu2mF4pvbcs50mL7Ko(WIpRRMMbSsU)CHhKMnt4bPzw4pvbcs50mNuMEpnbgbCP0fGzojFjYJKFQgCMAHP4zGvaei1WXodyLeEqA2GtiiovZuSF2mLM6ZyMvN1qzZe9KdnKa9ZuUt64dl(SUAAgWk5(ZfEqA2mHhKMfe8egPmKa9ZCsz690eyeWLsxaM5K8Lips(PAWzQfMINbwbqGudh7mGvs4bPzdo4mlY1hWzdUb]] )
+    storeDefault( [[SimC Feral: cooldowns]], 'actionLists', 20171105.231639, [[dm0NjaqiQewevP0MGiFsLunkQuofvj7IOggiDmqSmvQEgvvAAuLkxdvL2gvv13GOgNkPCoQsvRJQkAEuvL7PsY(Os6GOQAHKKEijvtKQkCrskBevf9rQeXjjjwjvIYlPsuDtiStImuQsrlLk6PuMkv4QuLcBLQWEv(ljAWOCyvTyi9yHMSOUmYMvHpJQmAQkNMuRMkr61QeZwKBdQDl1VLmCv0Yj8Cbth46OY2Pk67uP68KW6rvH5Rsz)q9GmhZuRF0eLh6m7KI6pP5JhOREsqG63z(bD8CjWuDMtkrFGM0DOqqgcuO(xgcYEhY39(zwuOpbZMXFeORomhtcYCmtT(rtuEQoZIc9jyMlWmuUJd54duEucyzUZz8JQtAGIz5p4BMkDwhFqjM1vtZquzpEH0dtZMj9W0m)4d(M5Ks0hOjDhkeKHaDMtkuCIifMJbMPUpkEbr5jbtnyOZquzPhMMnWKUphZuRF0eLNQZSOqFcMbkE8sKCSQuUCVdygsyMByg1KGNc5iNqqnaZC9kmZVqXmKWm3WSyvPC5Eld08irq5bNqHSGGFDhWmxXm(Iz3UHzOChhYanpseuEWjuiZDIzEHzEnJFuDsdumdLebsCzMkDwhFqjM1vtZquzpEH0dtZMj9W0mvjrGexM5Ks0hOjDhkeKHaDMtkuCIifMJbMPUpkEbr5jbtnyOZquzPhMMnWK87CmtT(rtuEQoZIc9jyg1KGNc5mDOJAaM56vyM)HoJFuDsdumdO5rIGYdoHIzQ0zD8bLywxnndrL94fspmnBM0dtZCO5rIRhWm(KtOyMtkrFGM0DOqqgc0zoPqXjIuyogyM6(O4feLNem1GHodrLLEyA2atY7MJzQ1pAIYt1zwuOpbZIfmAP8S0niih5ecQby2vygumdjmJAsWtHCKtiOgGzUEfMXxOZ4hvN0afZOextbL8405VJ0mv6So(GsmRRMMHOYE8cPhMMnt6HPzQL4A66bmZLWPZFhPzoPe9bAs3HcbziqN5KcfNisH5yGzQ7JIxquEsWudg6mevw6HPzdmj(ohZuRF0eLNQZSOqFcMrnj4PqoYjeudWmxVcZ8lumdjmZnmlwvkxU3YanpseuEWjuili4x3bmZvmdcFXSB3WmuUJdzGMhjckp4ekK5oXmVMXpQoPbkMP74l6hORw5fDZtzDOe4Ju6s5AEjAMkDwhFqjM1vtZquzpEH0dtZMj9W0mv64l6hOR2pXmxUU5Hz1bMb8ryMlJR5LOzoPe9bAs3HcbziqN5KcfNisH5yGzQ7JIxquEsWudg6mevw6HPzdmj)phZuRF0eLNQZSOqFcMbkE8sK8zb0vhWmKWm3WmWl4razGgMuckLznHz(dZ8pFXSB3Wm3WmGgMuckLznHz(dZGCnOygsyMBygk3XHmkjcK4Im3jMD7gMHYDCiR74l6hORwM7eZ8cZ8cZ8Ag)O6KgOy2zb0vptLoRJpOeZ6QPziQShVq6HPzZKEyAM3Sa6QNXVGxyw)W0vE7POsvZJYkpl3jH3oZjLOpqt6ouiidb6mNuO4erkmhdmtDFu8cIYtcMAWqNHOYspmn7uuPQ5rzLNL7KyGjH8CmtT(rtuEQoZIc9jywSGrlLNLUbb5iNqqnaZC9km7oMHeM5gM5cmd8jQbYOPQYGpvDqM6hnrzm72nmdL74qgnvvg8PQdYCNyMxZ4hvN0afZ(GVh(BkO8qqnFOyMkDwhFqjM1vtZquzpEH0dtZMj9W0m(d(E4VPRhWm(uqnFOyMtkrFGM0DOqqgc0zoPqXjIuyogyM6(O4feLNem1GHodrLLEyA2at6AZXm16hnr5P6mlk0NGzXcgTuEw6geKJCcb1amZFygFXmKWmQjbpfYroHGAaM56vy2hb6QLf)fsowbaMHeMLlGS4VqYNWCjG(mPjbM5pm7UmemdjmdL74qgO5rIGYdoHczUtmdjmZnmdL74qgnvvg8PQdYCNy2TByMlWmWNOgiJMQkd(u1bzQF0eLXmVWmKWm3WmxGzGprnqw3Xx0pqxTm1pAIYy2TBywSQuUCVL1D8f9d0vlli4x3bmZvmdY1WmVWmKWmxGzOChhY6o(I(b6QL5oNXpQoPbkMf895YDykLNPsN1XhuIzD10mev2Jxi9W0SzspmnZ895YDykLN5Ks0hOjDhkeKHaDMtkuCIifMJbMPUpkEbr5jbtnyOZquzPhMMnWK8(5yMA9JMO8uDg)O6KgOygxGuQbeCyMkDwhFqjM1vtZquzpEH0dtZMj9W0mVrGWmvaeCyMtkrFGM0DOqqgc0zoPqXjIuyogyM6(O4feLNem1GHodrLLEyA2admt6HPzMgwDmJpjXN8tmlwvkxU3Hb2a]] )
 
-    storeDefault( [[SimC Feral: single target]], 'actionLists', 20171006.174729, [[dSJ9faGEfk1MiPyxkY2qKY(qKQzssPztL5ts1nvj3wWobAVs7g0(Pyuiqnme63k9nuIhl0Gj1WjHdssofcWXuuhw0cPuAPQulgflhPhIOEk0YqepNQopLIPQIMmGPRQlIs1Pr1LjUUc2icARuI2mjA7ucpdb03rjnneiZtHQ(Rc5qkuz0uQwhkLtsj5ZQqxtHI7Hi51QGfrj14uOK7CplYomzCcqzkcMbPiYdKnAcfA6yZO9C4rNy0FspkFXBXjPxkijeNzzMirsBAUiQqI80Xh785lSGZejWIQIpFH(EwW5EwKDyY4eGABrms5k(IJZOzguQCkM)iLlnmnOOOkgUJ)2umM)iLlnu0kiapM)slcxOu8AbSmPGzqkwemdsrY5B0eU0qXBXjPxkijeNzzMyXBXVd0O47z)IKTlXdxRfsqGFzkETaGzqk2VGK0ZISdtgNauBlIrkxXxKzqPYjf0Lv30GcJwD1nAMbLkN82tGL1G4aMguuufd3XFBksZdsrRGa8y(lTiCHsXRfWYKcMbPyrWmifVZdsXBXjPxkijeNzzMyXBXVd0O47z)IKTlXdxRfsqGFzkETaGzqk2VGeyplYomzCcqTTOkgUJ)2umMo3Om(8foYX9FrRGa8y(lTiCHsXRfWYKcMbPyrWmifjNoNrRk(8fA0QL7)IQOh9fHzqiL1ipq2OjuOPJnJoURdyzf6TU4T4K0lfKeIZSmtS4T43bAu89SFrY2L4HR1cjiWVmfVwaWmifrEGSrtOqthBgDCxhWYk03VGeuplYomzCcqTTigPCfFX4gy2rkwo89tXbkvGVrtkJEmgTAm6pDc8NyC7c8PBH(jbMmobWOvJrZmOu5eJBxGpDl0pbSScnA1y0eSrpoJMzqPYjomMuy(8fonOWOvxDJgy)jkxXevcjh6n6XB0JLrRU6gnW(t08GmrLqYHEJE8g9ymAcOOkgUJ)2uKkhPlRV9Iwbb4X8xAr4cLIxlGLjfmdsXIGzqkElhPlRV9I3ItsVuqsioZYmXI3IFhOrX3Z(fjBxIhUwlKGa)Yu8AbaZGuSFbhtplYomzCcqTTigPCfFX4gy2rkwo89tXbkvGVrt6gnbvufd3XFBkshGJY4Zx4ih3)fTccWJ5V0IWfkfVwaltkygKIfbZGu8EaA0QIpFHgTA5(VOk6rFrygesznYdKnAcfA6yZOXtJwjhY92fQ36I3ItsVuqsioZYmXI3IFhOrX3Z(fjBxIhUwlKGa)Yu8AbaZGue5bYgnHcnDSz04PrRKd5E7c13VGKwplYomzCcqTTOkgUJ)2uKoahLXNVWroU)lAfeGhZFPfHlukETawMuWmiflcMbP49a0OvfF(cnA1Y9VrtWZeqrv0J(IWmiKYAKhiB0ek00XMrJNg9rbk08xQ36I3ItsVuqsioZYmXI3IFhOrX3Z(fjBxIhUwlKGa)Yu8AbaZGue5bYgnHcnDSz04PrFuGcn)L673VigPCfFX(Ta]] )
+    storeDefault( [[SimC Feral: single target]], 'actionLists', 20171105.231639, [[d0JbgaGEGcTjssTlf12akzFuQkZKsOztL5tj6MQuxM4BQqpwHDcXEL2nO9tXOaQyyqY4ak4WIopLKbtQHtIoij1PaQ0XuKZrsslKKyPazXq1Yr5HqXtrwMkY6ibtKsv1uvjtgW0v1fHuDAu9mssCDb2iKYwPuAZqPTtj1FfuFNe6ZQG5bu0Hak1TfA0cYRvrDskftJsW1OuL7bu1IOu55u1Vv6o1RsOdtCNau8sKszWthhmMpFHfzcLQuY(fSzG7RkLajoj9sroHA64ekuG180rlC8KQwIgmUYVuj1JNVqFVkYuVkHomXDcqvPenyCLFjW2OXdWIDEKFySllohOSKACUJ)wvAKFySllwYgiaFK)YkbxOu6EbSnzizukvcjJsjm5B0OTSyjqItsVuKtOMooHQeiXVbSH47v)sycjJZ3R1suGFXlDVaizuk1ViN6vj0HjUtaQkLObJR8lHhGf7Ss2QOBoqPrBPLgnEawSZ(qjWQyuCaZbklPgN74VvLy5zPKnqa(i)LvcUqP09cyBYqYOuQesgLsGYZsjqItsVuKtOMooHQeiXVbSH47v)sycjJZ3R1suGFXlDVaizuk1ViQsVkHomXDcqvPKACUJ)wvAKox4C88fg2X9FjBGa8r(lReCHsP7fW2KHKrPujKmkLWKoNrRE88fA0wK7)sQzh8LGzuaVDepIXOrtyPtbJESRdyve6TReiXjPxkYjuthNqvcK43a2q89QFjmHKX571AjkWV4LUxaKmkLiEeJrJMWsNcg9yxhWQi03ViwOxLqhM4obOQuIgmUYV0yJ4ByLlh((5raJjW3ObVrBpJw1g9Nob(Z4UDb(0Tq)SatCNay0Q2OXdWIDg3TlWNUf6NbwfHgTQnAWXObBJgpal2zoCKmy(8fohO0OT0sJgy)zgx5mtIjh6nAW0ObdgTLwA0a7pZYZYmtIjh6nAW0OTNrdULuJZD83Qsm5aBv8dvYgiaFK)YkbxOu6EbSnzizukvcjJsjqYb2Q4hQeiXjPxkYjuthNqvcK43a2q89QFjmHKX571AjkWV4LUxaKmkL6xe71RsOdtCNauvkrdgx5xASr8nSYLdF)8iGXe4B02NrBHsQX5o(BvjwamCoE(cd74(VKnqa(i)LvcUqP09cyBYqYOuQesgLsGcGgT6XZxOrBrU)lPMDWxcMrb82r8igJgnHLofmA6YOXYHCFiH5TReiXjPxkYjuthNqvcK43a2q89QFjmHKX571AjkWV4LUxaKmkLiEeJrJMWsNcgnDz0y5qUpKW89lcy1RsOdtCNauvkPgN74VvLybWW545lmSJ7)s2ab4J8xwj4cLs3lGTjdjJsPsizukbkaA0QhpFHgTf5(3ObNjWTKA2bFjygfWBhXJymA0ew6uWOPlJ(Gafw(lZBxjqItsVuKtOMooHQeiXVbSH47v)sycjJZ3R1suGFXlDVaizukr8igJgnHLofmA6YOpiqHL)Y897xcjJsjIhXy0OjS0PGr75WdoXO)KDq((T]] )
 
-    storeDefault( [[SimC Feral: ST finishers]], 'actionLists', 20171006.174729, [[dSJIfaGEPk0Mav2fj2MqvSpujZwvnFq4MGYTf5Xi1orYEv2nP2pLgfc1WKkJtQshMQVrsAWcgofDqq0PqehtkDEeYcjPAPiQfJQwoWdrL6PeltiToHQ0PvzQOIjRktxYfjP8mPQCzORlfBuQI2QqLnlu2of6ZG03LQGPjuvnpHOxJi9xemAky8cvLtkeoKuvDnqvDpsIvbQYZf1Vr51ootut78F8n(juEcNixIBBONiW)XRniCSHyN(YgqqEcz8JEghv0UwvB76IhL2jIjsF()6rVoMEuTD9nbs66y684mQ2XzIAAN)JVP(eHgCM1e(MyXuYUrhksaWCGYJ1d6jqYF)RiAs2n6qrcaMdMeH(D0EXat0mnobg7fNdO8eozcLNWjIB0HI2azMdMqg)ONXrfTRv12UjKXmRbqJ5Xz1eUnG0KcJzetOUg)eyShLNWjRgv0XzIAAN)JVP(eHgCM1K(TH6Oj90qTbiGWgi2gayYpD2gIufB41a86yABaE2qNsF2aj2aC2aX2q5aOyPya9FzqXKUSbUSHOW3gGZg63gk)J6sj78iOySYGcQD(p(SbsSbiGWgi2gayYpD2gIufB41a86yABaE2qNsV2aC2GjcYxUqDri18RZ8FiWg4YgESsbCMkMPMFDM)db2aj2aC2q5aOyPuxcjumcVdTbUSHENaj)9VIOjGZCse63r7fdmrZ04eySxCoGYt4KjuEcNq(mNajaAEs5aOyr4IPs)1rt6PHcbeedWKF6CKQ8AaEDmn86u6Je4iUCauSumG(VmOysxCff(W1F5FuxkzNhbfJvguqTZ)XhjqabXam5NohPkVgGxhtdVoLEHZeb5lxOUiKA(1z(peW1JvkGZuXm18RZ8FiGe4khaflL6siHIr4Dix9oHm(rpJJkAxRQTDtiJzwdGgZJZQjCBaPjfgZiMqDn(jWypkpHtwnQ(gNjQPD(p(M6teAWzwt4BIftj7gDOibaZbkam5NoBdrAdTrNaj)9VIOjz3Odfjayoyse63r7fdmrZ04eySxCoGYt4KjuEcNiUrhkAdKzoWgiULKjKXp6zCur7AvTTBczmZAa0yECwnHBdinPWygXeQRXpbg7r5jCYQrf)JZe10o)hFt9jcn4mRj8nXIPe7qarea4JqYVecYknMtGK)(xr0KKFPjrOFhTxmWentJtGXEX5akpHtMq5jCcm)stiJF0Z4OI21QAB3eYyM1aOX84SAc3gqAsHXmIjuxJFcm2JYt4KvJc(JZe10o)hFt9jqYF)RiAsmeWOpwtMa)v4Ki0VJ2lgyIMPXjWyV4CaLNWjtO8eoPNiGrFSMSnO(v4eibqZtsE8ra1iakrQ0oHm(rpJJkAxRQTDtiJzwdGgZJZQjCBaPjfgZiMqDn(jWypkpHtwTAIqdoZAYQn]] )
+    storeDefault( [[SimC Feral: ST finishers]], 'actionLists', 20171105.231639, [[d0JMfaGEPkPnHa7IeBJKq7JK0LHMTkMpi6MGQhJuFdK6WuTtKSxLDtQ9tPrHigMu53OCEe0Pv1GfmCH6GGKtHO6ys05KQelerzPOIfJQwoWdjP6PelJISoPk0eLQOMkQ0KvPPl6Iui)fHEMuvUUe2ijbBvi1MPO2UqmnPk13LQiFguMNqYRrKUTugnfmEPk4KuOoei01ij6EKuwfi45sACsv1RCCNyK25p4D8tKyK(9Z3RE(m9Ok76BspJM9ItoYMWbpOxXrzQRe6YUovuPe6EdTPEzIqd(4CYeOOZNPRJ7Okh3jgPD(dEhzteAWhNt4lmBwP6rCyiraZbkxwpPNaf)F(KWjvpIddjcyoyIX67t7jdmrZ04e4SB0oGYB4KjuEdNiEehgAdCyoych8GEfhLPUsOl7MWbRScanwh3Ltu3astkCweSH6C8tGZUuEdNSCuMg3jgPD(dEhzteAWhNtGOnKpnPVgMnajK2aj2aaB(RR2quQzd3cGNptBdqWg6u6Zgi3giWgiXgshadtfdOFsdkX0PnOQnysL2ab2aeTH0pOovQopcsglnOGAN)GxBGCBasiTbsSba28xxTHOuZgUfapFM2gGGn0P0VnqGneJG6xtuNeBfN8JppcSbvTHllvaFSsCR4KF85rGnqUnqGnKoagMk53qIjJ49rBqvBO)jqX)NpjCc4JNyS((0EYat0mnobo7gTdO8gozcL3WjC(4jqbGvNKoagMeFZQbX8Pj91WGessayZFDnk1UfapFMgcDk9robKKoagMkgq)KguIPtvnPscGy6huNkvNhbjJLguqTZFWl5qcjjaS5VUgLA3cGNptdHoL(jigb1VMOoj2ko5hFEeO6LLkGpwjUvCYp(8iGCcshadtL8BiXKr8(OQ9pHdEqVIJYuxj0LDt4GvwbGgRJ7YjQBaPjfolc2qDo(jWzxkVHtwoQ(g3jgPD(dEhzteAWhNt4lmBwP6rCyiraZbkaS5VUAdrzdLMMaf)F(KWjvpIddjcyoyIX67t7jdmrZ04e4SB0oGYB4KjuEdNiEehgAdCyoWgiPK8jCWd6vCuM6kHUSBchSYka0yDCxorDdinPWzrWgQZXpbo7s5nCYYr17XDIrAN)G3r2eHg8X5e(cZMvm)iGqIa8sS5FdbvLI4jqX)NpjCsZ)2eJ13N2tgyIMPXjWz3ODaL3WjtO8gobU)TjCWd6vCuM6kHUSBchSYka0yDCxorDdinPWzrWgQZXpbo7s5nCYYrPYXDIrAN)G3r2eO4)ZNeoXmcy0pROsK)tCIX67t7jdmrZ04e4SB0oGYB4KjuEdNOciGr)SIQnq2N4eOaWQtAEpqe1iagHQvoHdEqVIJYuxj0LDt4GvwbGgRJ7YjQBaPjfolc2qDo(jWzxkVHtwUCcL3WjY3u3gube4NE0geU2G5x)vdiOUCda]] )
 
-    storeDefault( [[SimC Feral: ST generators]], 'actionLists', 20171006.174729, [[d8dHnaWyfTEIkPnrQSlcTnIkL9rvXHfTofIQzly(KQ6MqvNxH62QYPjzNezVGDJQ9R0OuGHPQACke8ukxgzWQmCvLdrQItjuDmPQZrujAHufwkPyXqz5O8qQkTkIkwMc65u51uLMkP0KLY0LCrQIEfrLQNrGCDHSrfIyRcL2mrz7eW3iihxHinnsv67euZtH0NPQA0sLXRquoPqXTiQeUMcHUhbQ)cvoirv)gYqpOfmp5jwGAagys5JaZupF3BKqSmmY3Z0UNFItSSqmhyAOaLocKg(3lu))VCtShm7JMQmOKRzPqCqQ)xqGj)SuiUd0cs9GwW8KNybQbEaMnzQVcSkdeVeXciuRYaI7ejEIfO2E62dlsMmXpg1YcXgJZjSswXjNtm6BpD7HfjtMiwaHAvgqCNydjmFpD7nrpmeUpKIxoXzeJr8ApFe8Ed3t3Etek0qcZftxx(so5WjJrC56yrg9sf3T3O75F2atEmvqvJbJr(ziHRoWIH3uZSqmW4iobgEul2KjLpcmWKYhbMgYpdjC1bMgkqPJaPH)9c1)dMgYHIytYbAHcmF7OPx8ibOhXladm8OMu(iWGcKgcAbZtEIfOg4by2KP(kWQmq8selGqTkdiUtK4jwGA7PBpSizYe)yulleBmoNWkzfNCoXOV90ThwKmzIybeQvzaXDInKW890T3e9Wq4(qkE5eNrmgXR9e8E6DpD71qLil9sIm6LkUBVr3tVGjpMkOQXGXi)mKWvhyXWBQzwigyCeNadpQfBYKYhbgys5Jatd5NHeU62BqFCW0qbkDein8VxO(FW0qoueBsoqluG5Bhn9Ihja9iEbyGHh1KYhbguGKGaTG5jpXcud8amBYuFfy0ins99rnXufIyiCFOi(KyU90TxLbIxIybeQvzaXDIepXcuBpD7nypSizYe)yulleBmoNWkzfNCorxLtV75ZEd3tF93BWEyrYKj(XOwwi2yCoHvYko5CIUkNE3ZN963t3EnujYsVKiJEPI72B09e0EX3l(E62dlsMmrSac1QmG4oXgsyoyYJPcQAmymYpdjC1bwm8MAMfIbghXjWWJAXMmP8rGbMu(iW0q(ziHRU9gmmoyAOaLocKg(3lu)pyAihkInjhOfkW8TJMEXJeGEeVamWWJAs5JadkqsVGwW8KNybQbEaMnzQVcSCwkbiCeNEkYTNp71dM8yQGQgdgglQYaoxiDDGfdVPMzHyGXrCcm8OwSjtkFeyGjLpcmpyrvg2ZcPRdmnuGshbsd)7fQ)hmnKdfXMKd0cfy(2rtV4rcqpIxagy4rnP8rGbfinIGwW8KNybQbEaMnzQVcSb7PN9k10RI7Fp91Fpg9sf3T3O71IyzPq89KZE)IcAV47PBVb7LZsjaHJ40trU98zVH7fhm5XubvngSQJLUoCZSalgEtnZcXaJJ4ey4rTytMu(iWatkFeyA7yPRdmnuGshbsd)7fQ)hmnKdfXMKd0cfy(2rtV4rcqpIxagy4rnP8rGbfij3aTG5jpXcud8amBYuFfy6zVsn9Q4(3tF93BWE6zVkdeVeXciuRYaI7ejEIfO2E62JrVuXD7n6ETiwwkeFp5S3VOG2l(E62RsMFQel1JWviCnfTNp7PxWKhtfu1yWyPxcSy4n1mledmoItGHh1Inzs5JadmP8rGPj9sGjpZVdSkz(PcNsMG1tPMEvC)6R)a9uzG4LiwaHAvgqCNiXtSa10XOxQ4UrBrSSuiUC(ffuCDvY8tLyPEeUcHRPiF0lyAOaLocKg(3lu)pyAihkInjhOfkW8TJMEXJeGEeVamWWJAs5JadkqsiqlyEYtSa1apaZMm1xbwLbIxIybeQvzaXDIepXcuBpD7HfjtMiwaHAvgqCNy03E62BWEd2JrVuXD7nQG3tO9IVNU9(iMt5kIx4ErHs9fueBpF2RHkrw6Le)ErHs9fueBp5S3V4imI7fFpD7vjZpvIL6r4keUMI2ZN90lyYJPcQAmyS0lbwm8MAMfIbghXjWWJAXMmP8rGbMu(iW0KEP9g0hhm5z(DGvjZpv4uYeCLbIxIybeQvzaXDIepXcuthwKmzIybeQvzaXDIrF6gmGrVuXDJkyHIR7JyoLRiEH7ffk1xqrmFAOsKLEjXVxuOuFbfXKZV4imIX1vjZpvIL6r4keUMI8rVGPHcu6iqA4FVq9)GPHCOi2KCGwOaZ3oA6fpsa6r8cWadpQjLpcmOaPra0cMN8elqnWdWSjt9vGnypSizYelLFI5WjlInwm6BpD7nyVb71VNCFVxoYWn7sMFYTNCXEZUK5NC4KXYzPq8mSx89KZEmA2Lm)eUs9O9IVxCWKhtfu1yWWyrvgW5cPRdSy4n1mledmoItGHh1Inzs5JadmP8rG5blQYWEwiDD7nOpoyAOaLocKg(3lu)pyAihkInjhOfkW8TJMEXJeGEeVamWWJAs5JadkqsUe0cMN8elqnWdWSjt9vGnyp9SxPMEvC)7PV(7XOxQ4U9gDVwellfIVNC27xuq7fFpD7nypbsMkXcKyKJWvDS01TNG3B4E6R)E5Sucq4io9uKBpF2RFV4GjpMkOQXGvDS01HBMfyXWBQzwigyCeNadpQfBYKYhbgys5JatBhlDD7nOpoyAOaLocKg(3lu)pyAihkInjhOfkW8TJMEXJeGEeVamWWJAs5JadkqQ)h0cMN8elqnWdWSjt9vGnyp9SxPMEvC)7PV(7XOxQ4U9gDVwellfIVNC27xuq7fFpD7jqYujwGeJCeUQJLUU9e8E97PBpSizYeNbkzZ0vkUFXOpWKhtfu1yWQow66WnZcSy4n1mledmoItGHh1Inzs5JadmP8rGPTJLUU9gmmoyAOaLocKg(3lu)pyAihkInjhOfkW8TJMEXJeGEeVamWWJAs5JadkqQVh0cMN8elqnWdWSjt9vGLZsjaHJ40trU98zVEWKhtfu1yWCcR(iCZSalgEtnZcXaJJ4ey4rTytMu(iWatkFeyMWQpcmnuGshbsd)7fQ)hmnKdfXMKd0cfy(2rtV4rcqpIxagy4rnP8rGbfi1pe0cMN8elqnWdWKhtfu1yWCDmQbwm8MAMfIbghXjWWJAXMmP8rGbMu(iWSog1atdfO0rG0W)EH6)btd5qrSj5aTqbMVD00lEKa0J4fGbgEutkFeyqbfy2KP(kWGcaa]] )
+    storeDefault( [[SimC Feral: ST generators]], 'actionLists', 20171105.231639, [[daeKnaqicvTjsvJsO6usLwfHkVIGa3IGq2frnmOQJjvTmPINrqzAeuDnfcTncI6BGQgNcroNcbwhbHAEkKUhbP9rvXbjfwiPOhsv0eviQUivL2ibbDsHIBcv2jrwkPYtPmvsPTkuAVQ(lbgSshw0IHYJv0KLYLr2mH8zQQgTconjVMQ0SfCBq2nQ(nKHdkhxHOSCuEovMUKRlKTdQ8DcLXRqqNxHA9eez(uf2pWV)AV5lpXcu7y3my0uLbLqklfIFPE8c72iNeLrH6AEthfO0rxQd(E47XJxil3dVWHVZi4Mnzky1TBAmlfI7U2l1FT38LNybQDnVztMcwDRYaXlzSac1QmG4ozINybQbw9GflsKizymQLfInwGtmLOItoNCemWQhSyrIejJfqOwLbe3j3qIXbREWorqyibWqkE5KNrmgXlW6JqbBhWQhStek0qIXLt3qcLCYjqeJ4cPXYmckvChyhfS(NTBAGPcQA8ng5NHeRgUfdVPMzHy34ioDdhQfBYKsi62nPeIUPJ8ZqIvd30rbkD0L6GVh(E830roueBsUR91nphOPxCi4iiIxh7goutkHOBVUuNR9MV8elqTR5nBYuWQBvgiEjJfqOwLbe3jt8elqnWQhSyrIejdJrTSqSXcCIPevCY5KJGbw9GflsKizSac1QmG4o5gsmoy1d2jccdjagsXlN8mIXiEbwHcwHdw9GTHkzw6LKzeuQ4oWokyf(nnWubvn(gJ8ZqIvd3IH3uZSqSBCeNUHd1InzsjeD7Mucr30r(ziXQbWgVV7nDuGshDPo47HVh)nDKdfXMK7AFDZZbA6fhcocI41XUHd1Ksi62RljSR9MV8elqTR5nBYuWQB0ilsbdg1KtviIHeadfXNeZbw9GTYaXlzSac1QmG4ozINybQbw9GnoyXIejsggJAzHyJf4etjQ4KZj7QC6fS(a2oG1dpaBCWIfjsKmmg1YcXglWjMsuXjNt2v50ly9bS9GvpyBOsMLEjzgbLkUdSJcwHb2UGTly1dwSirIKXciuRYaI7KBiX430atfu14BmYpdjwnClgEtnZcXUXrC6goul2KjLq0TBsjeDth5NHeRgaB8oDVPJcu6Ol1bFp894VPJCOi2KCx7RBEoqtV4qWrqeVo2nCOMucr3EDjHFT38LNybQDnVztMcwDlNLcosaXjif5aRpGT)MgyQGQgFdJfvzqGlKUHBXWBQzwi2noIt3WHAXMmPeIUDtkHOBAYIQmawlKUHB6OaLo6sDW3dFp(B6ihkInj31(6MNd00loeCeeXRJDdhQjLq0TxxAeV2B(YtSa1UM3SjtbRUfhSIhSLA6vX9dwp8aSmckvChyhfSTiwwkehSIdS4Lfgy7cw9GnoyZzPGJeqCcsroW6dy7a2U30atfu14B1alDdcMzDlgEtnZcXUXrC6goul2KjLq0TBsjeDt7alDd30rbkD0L6GVh(E830roueBsUR91nphOPxCi4iiIxh7goutkHOBVUKq(AV5lpXcu7AEZMmfS6M4bBPMEvC)G1dpaBCWkEWwzG4LmwaHAvgqCNmXtSa1aREWYiOuXDGDuW2IyzPqCWkoWIxwyGTly1d2kz(PsUuqKGcjOPiW6dyf(nnWubvn(gl9s3IH3uZSqSBCeNUHd1InzsjeD7Mucr30LEPBAW87UvjZpvcuIeQ4l10RI73dpIl(kdeVKXciuRYaI7KjEIfOMEgbLkUB0wellfIlo8YcRR(kz(PsUuqKGcjOPiFe(nDuGshDPo47HVh)nDKdfXMK7AFDZZbA6fhcocI41XUHd1Ksi62Rlb)1EZxEIfO218Mnzky1TkdeVKXciuRYaI7KjEIfOgy1dwSirIKXciuRYaI7KJGbw9GnoyJdwgbLkUdSJkuWcpy7cw9GfgXCkxr8sauuOuWckIbwFaBdvYS0ljddkkukybfXaR4alE5rAebBxWQhSvY8tLCPGibfsqtrG1hWk8BAGPcQA8nw6LUfdVPMzHy34ioDdhQfBYKsi62nPeIUPl9sGnEF3BAW87UvjZpvcuIeALbIxYybeQvzaXDYepXcutpwKirYybeQvzaXDYrW0hpoJGsf3nQqHVREyeZPCfXlbqrHsblOiMpnujZsVKmmOOqPGfuetC4LhPrSR(kz(PsUuqKGcjOPiFe(nDuGshDPo47HVh)nDKdfXMK7AFDZZbA6fhcocI41XUHd1Ksi62Rlnsx7nF5jwGAxZB2KPGv3IdwSirIKlLFI5eikInwocgy1d24Gnoy7bRqayHYrOG5qY8toWkeb25qY8tobIy5SuiEgaBxWkoWYO5qY8tckfeb2UGT7nnWubvn(gglQYGaxiDd3IH3uZSqSBCeNUHd1InzsjeD7Mucr30KfvzaSwiDdGnEF3B6OaLo6sDW3dFp(B6ihkInj31(6MNd00loeCeeXRJDdhQjLq0TxxAeCT38LNybQDnVztMcwDloyfpyl10RI7hSE4byzeuQ4oWokyBrSSuioyfhyXllmW2fS6bBCWcxYujwGKJCKGAGLUbWkuW2bSE4byZzPGJeqCcsroW6dy7bB3BAGPcQA8TAGLUbbZSUfdVPMzHy34ioDdhQfBYKsi62nPeIUPDGLUbWgVV7nDuGshDPo47HVh)nDKdfXMK7AFDZZbA6fhcocI41XUHd1Ksi62Rl1J)AV5lpXcu7AEZMmfS6wCWkEWwQPxf3py9WdWYiOuXDGDuW2IyzPqCWkoWIxwyGTly1dw4sMkXcKCKJeudS0nawHc2EWQhSyrIejpduYMPRuC)YrWUPbMkOQX3Qbw6gemZ6wm8MAMfIDJJ40nCOwSjtkHOB3Ksi6M2bw6gaB8oDVPJcu6Ol1bFp894VPJCOi2KCx7RBEoqtV4qWrqeVo2nCOMucr3EDP((R9MV8elqTR5nBYuWQB5SuWrciobPihy9bS930atfu14BoXuWOBXWBQzwi2noIt3WHAXMmPeIUDtkHOBMyky0nDuGshDPo47HVh)nDKdfXMK7AFDZZbA6fhcocI41XUHd1Ksi62Rl135AV5lpXcu7AEtdmvqvJV5gyu7wm8MAMfIDJJ40nCOwSjtkHOB3Ksi6MnWO2nDuGshDPo47HVh)nDKdfXMK7AFDZZbA6fhcocI41XUHd1Ksi62Rx3Ksi6MPG8eScHeldcXG10cw)eNyzHyUx)a]] )
+
+    storeDefault( [[IV Guardian: Single]], 'actionLists', 20171105.231639, [[dCZreaGErvTlrYRHsL9jO0SPQBks52cStLSxYUHSFOOrjiPHHs)MIHkiQbdLmCr5GuHtjsvhtPEoLwOiAPuPfJWYr6Xc9uPLHOwNGqhwXurvtgQMUkxKk6QcsCzW1rLZlcBvqHnJiBxqvFekvDAv9zrLVlsLPjQYFHsz0qHVHcNef9mbfDnbP6EccMNGiBtqLXjiL1w8QordHhWfH6AcavMHbMyH9Cdf)huiIjw9r58GQl4HXcArMDZyVzZl1wTr6NDQQoI3BqwXR1w8QordHhWvs1gPF2PQUMaqnuSaMyX8GaRQdI3)xcvolGT)GaRkte(hNZqvrgeO6cEySGwKz3m2SQUG1WrJGv860PfzXR6eneEaxjvBK(zNQ6AcavEmOJfdvheV)VeQhg0XIHkte(hNZqvrgeO6cEySGwKz3m2SQUG1WrJGv860PvykEvNOHWd4kPAJ0p7uvxtaOM2GY5bvheV)VeQbdkNhuzIW)4CgQkYGavxWdJf0Im7MXMv1fSgoAeSIxNoTYt8QordHhWvs1gPF2PsWrIuQCJFI3hXwoUHI)dkfxM6Aca10mgePNcQoiE)FjudmgePNcQmr4FCodvfzqGQl4HXcArMDZyZQ6cwdhncwXRtNwHU4vDIgcpGRKQns)Stfhi4irk1HbDSyGncyOPS3eXomXkSyI1wDnbGAiZ5dpq)8bvxWdJf0Im7MXMvLjc)JZzOQidcuDbRHJgbR41P6G49)LqnJZhEG(5d60kCIx1jAi8aUsQ2i9ZovCGGJePubgdI0tHuuiyEKnKcHCrC11eaQPzmispfWeRqDNEvxWdJf0Im7MXMvLjc)JZzOQidcuDbRHJgbR41P6G49)LqnWyqKEkOtlgIx1jAi8aUsQ2i9Zov6Kdsf5OuaDHnCSQRjautB48QUGhglOfz2nJnRkte(hNZqvrgeO6cwdhncwXRt1bX7)lHAWW51PvOjEvNOHWd4kPAJ0p7uvxtaO209zGQl4HXcArMDZyZQYeH)X5muvKbbQUG1WrJGv86uDq8()sOAt3Nb60P2mi(J)ZFU3G0AZMNoja]] )
+
+    storeDefault( [[IV Guardian: 2-3]], 'actionLists', 20171105.231639, [[dGdqeaGEvK2Lq1RPIO9ji1SPQBkeUnvANIAVKDdz)cQgfvu1WqPFtXLbdLksgSq0WvHdIkDkbbhtLESiluiTubwmuTCKoSINkTmO06OIIZluMkQAYimDLUiv4Qur4zcsUokoTQ2QGqBgr2UGsFKkQmpve9zOW3vr4BiQNtPrdf9xvuojQ4wurPRjiQ7jiY0ur12eumoQi16kEvhOb3decxnpUGkNqm8iDoMHs8dYzcpsSoBOudapmwqzSSxY3l75XVQnr)JvvLBAFdYkELVIx1bAW9aHIQMhxq1jSq4rYzbxRAt0)yvv5I)(FJPYyHZ(fCTQbG1WqtGv8AvdapmwqzSSxYxwvoiIpnRHQImiqRYyfVQd0G7bcfvnpUGkpM0XIPAt0)yvv5I)(FJPUyshlMQbG1WqtGv8AvdapmwqzSSxYxwvoiIpnRHQImiqRYHs8QoqdUhiuu184cQrmim8GAt0)yvv5I)(FJP6oim8GAaynm0eyfVw1aWdJfugl7L8LvLdI4tZAOQidc0Q85Ix1bAW9aHIQMhxqncJbr6PGAt0)yvXzirkogJFs7NoddMHs8dkoZHkx83)BmvxJbr6PGAaynm0eyfVw1aWdJfugl7L8LvLdI4tZAOQidc0QCilEvhOb3dekQAECbvNIXhwG(NcQnr)JvLaWzirk(IjDSyEgom042DsozOVQCXF)VXupy8HfO)PGkheXNM1qvrgeOgawddnbwXRvna8WybLXYEjFz1QCyeVQd0G7bcfvnpUGAegdI0tHWJ05VHGAt0)yvjaCgsKI7AmispfItb35r2tgsyKiu5I)(FJP6Amispfu5Gi(0SgQkYGa1aWAyOjWkETQbGhglOmw2l5lRwLjlEvhOb3dekQAECb1iggVAt0)yvPdgq8edLcOn0HHvLl(7)nMQ7W4v5Gi(0SgQkYGa1aWAyOjWkETQbGhglOmw2l5lRwLDAXR6an4EGqrvZJlO2t8hGAt0)yvv5I)(FJPApXFaQCqeFAwdvfzqGAaynm0eyfVw1aWdJfugl7L8LvRw1EaPF8)PZ(gKYx2Z1kba]] )
+
+    storeDefault( [[IV Guardian: 4+]], 'actionLists', 20171105.231639, [[dmZndaGEQI2LkYRPK0(ePQztLBcj1TvHDkQ9I2nu7NQWWiQFl0qHemyrkdxehKcDmvAHIKLsPwmelNupv5XcwhKOEojtLitMqtxQlsbVcsOldUofDyjBvfv2mvLTdj5JqI8nkXNHu(oLe)LsQtRQrtv1vfPYjjWYiORPIIZtv6zQO00GuTnvu18sjod4cXbIeHlxhaNGZ5rAOKzPf)cJYEKg6OiNn4Gsbmlu(A5ELr)0LBb9N0CCgd9hXkkX8LsCgWfIdezkUCDaCPtbEKMGgouClO)KMJZiY7(2lNPcS(B4qXzdQOPoakkXMZgCqPaMfkFTCL5eGf)q1rnhoIb2mlKsCgWfIdezkUCDaCs(1LYp3c6pP54mI8UV9Y1(1LYpNnOIM6aOOeBoBWbLcywO81YvMtaw8dvh1C4igyZ8zPeNbCH4arMIlxhahQlmAoGBb9N0CCgrE33E5okmAoGZgurtDauuInNn4Gsbmlu(A5kZjal(HQJAoCedSzgDkXzaxioqKP4Y1bWH6ye771a3c6pP5qm957eALRc9hSgnZsl(f(KzcNrK39TxUJye771aNnOIM6aOOeBoBWbLcywO81YvMtaw8dvh1C4igyZ8zOeNbCH4arMIlxhahky6qfOFpbUf0FsZjciM(8DQ9RlLFRrGsFs1vWQP)Yze5DF7LlX0Hkq)EcCcWIFO6OMdhXaNnOIM6aOOeBoBWbLcywO81YvMnZNNsCgWfIdezkUCDaCZkFcWTG(tAooJiV7BVCkR8jaNaS4hQoQ5WrmWzdQOPoakkXMZgCqPaMfkFTCLzZMBjq4l37z1FeZ8vgD2Ka]] )
+
+    storeDefault( [[IV Guardian: Default]], 'actionLists', 20171105.231639, [[dmJgdaGEqrTjII2frP9ruy2KCtrvUnQStvzVu7gy)s1WKu)wKblLHtuDqLIJPQwOsyPkvlMilNWZL4PildLSouWefvLPIQMmitxLlQK6vGsDzORljBuuvTvqLnRKSDuuFef5WcttuzEGI8nLOZdQ6ZkLEmPojk1TaLCAf3duWZqH(oOq)vu2FZBAniKuiKLm9co0eB46nMQcb0eag6T8HRIk1zAhvyuq)yv)x()15K9BI0Ir(zY0g9njqX8(9nVP1GqsHqEHjslg5NjPQvRKvcdr2QKGtwOemcm9co00cme9w(tcotBKg1CWBscdr2QKGZeBa0OJljmbsa00oQWOG(XQ(V8xBAhlPkHglM3Np)yzEtRbHKcH8ctKwmYptH(gMXmeGCdw6nyO3(MEbhAIgWwf2B8HylEMydGgDCjHjqcGM2rfgf0pw1)L)At7yjvj0yX8(mTrAuZbVjrfil03KazQPCMYlb9co0eB46nMQcb0eag6nAaBvOp)y08Mwdcjfc5fMiTyKFMc9nmJzia5gS0BYO3(9Mm7TqFdZygcqUbl9gm1B5m9co0elyXyVXhIT4vmXgan64sctGeanTJkmkOFSQ)l)1M2XsQsOXI59zAJ0OMdEt6qPYc9njqMAkNP8sqVGdnXgUEJPQqanbGHEJfSy0NF5mVP1GqsHqEHjslg5NPqFdZygcqUbl9Mm6ngn9co0uoy3B8HylEftSbqJoUKWeibqt7OcJc6hR6)YFTPDSKQeASyEFM2inQ5G3KouQSqFtcKPMYzkVe0l4qtSHR3yQkeqtayO3YbBF(mrYr9eQbMJBsa)(158zd]] )
 
 
-    storeDefault( [[Feral Primary]], 'displays', 20171006.174729, [[dOZSgaGEjvVejQDPGQETcYmLumBP6Mib3wHEmk2jL2Ry3e2Ve6NQIHPO(nKJjjdfPgSemCeoOumnujDyQoosYcLslfvQfJQwoPEOc8uWYqs9CkMOcktvvnzuX0v6IkYvrcDzvUoI2iuARqr0MjX2HQ(OKspdkQ(SQ03LOrIkXPjA0O04HcNeQClOiDnKiNNKwhuuwlue(McQCQYpaJtSsKalsSWQ2Vapu8xdo7uagNyLibwKybz9l2kQdODX7nG9ygkTb47Y61RTJkdFa1hffZTdCIvIeMyNdGXJII52boXkrctSZbOI8ipo4yqcqw)ILRZbgLIMPyX8aurEKhNboXkrctAdO(OOyU9763BnXohWWIkHs5YW2mL2agwuzd5IsBadlQekLldBd5IsBG11V32iyyr6aTp))df4gxTC5hqnwmLAknhq9rrXClLBnXIPvbmSOYVRFV1K2adX3iyyr6a)hAUXvlx(bKcosgFr6gbdlshGBC1YLFagNyLirJGHfPd0(8)puiaqCmsVlR7RejITAgZdyyrLWpTbOI8iVHj1hZkrIaCJRwU8diihXXGeMy5AadX17y7UHDaQJ05hWJTkGo2QaVXwfGp2QSbmSOYboXkrct4dGXJII52gsTh7CaNu7FvIlapPIsGrhJgYff7Ca(USE9A7OYMEp8b8obRdSOsA8tXwfW7eS(a0iVV04NITkWWofNSVHpG3lDvdnE60gaV0i5LD5Q(vjUa8byCIvIenD5RiWGj7FI7aCKgIUR(vjUaCcODX79vjUaoVSlx1aoP2PGuCPnWq8yrIfK1VyROoG3jy9VRFVLgpDSvb0xpWGj7FI7agIR3X2DdB4d4Dcw)763BPXpfBvaQipYJdobhjJViTjTbS(4fa7P9EXc0A5ORvdSU(9wSiXcRA)c8qXFn4Stb4CkozFBORjaihhuSa2t7DmRyboNIt23adXJfjwyv7xGhk(RbNDkagXohW7eSEtV0vn04PJTkGcsSbO)flaUWuSG11AuzacTC01QyrIfK1VyROoaH(yqJ8(2qxtaqooOybSN27ywXce6JbnY7BaVtW6alQKgpDSvbgDmAMIDoWOJb8JTkW663BPXpf(aCF9ZnxaQNRgUzknxn8vbmSOsA80PnGHfvs5tLxk4ifVM0gyD97T04PdFag0iVV04NcFaVtW6n9sx1qJFk2QadXJfj2a0)IfaxykwW6AnQmGHfvItWrY4lsBsBa1hffZTnKAp25aEV0vn04NsBadlQSzkTbmSOsA8tPnadAK3xA80HpGtQ9gbdlshO95)FOqnty)b8obRpanY7lnE6yRcqfPKzimP0aRA)c4bgLc4h7CG11V3Ifjwqw)ITI6aoP2XjuqFvIlapPIsagNyLibwKydq)lwaCHPybRR1OYaoP2bIR3XnSyNdmjC((XjTbmYrI(18mfl1bmSOYgsTJtOGcFamEuum3(D97TMyNdSU(9wSiXgG(xSa4ctXcwxRrLbuFuum3ItWrY4lsBIDoagpkkMBXj4iz8fPnXohGkYJ8A6YxX4j2ambi0YrxRIJbjaz9lwUohqYGeaHZifVXsPasgKatGqJXwrPaurEKhhSiXcY6xSvuhaJhffZTuU1eBvaQipYJdLBnPnWOu0qUOyNd4KANIc5gGO7QNoBc]] )
+    storeDefault( [[Feral Primary]], 'displays', 20171105.231639, [[dWdUgaGEPuVejv7svsABQskZuvIzlvpgPUjssVwkY3Kc10qsStkTxXUjSFQWpvfdtr9BihwYqrPbtfnCeoOconrhJQCovjXcPQwkQulMelNupuk5PGLPk1ZPyIsbnvv1KrftxPlQixfjLlRY1r0grITkfOnJQ2ou1hLIADqP0NHIVtLgjuQEMuiJgfJhk5KqLBjfW1GsX5jPBRqRvvs1XrLC8YpaDrSsKGcsSWQ2Vapu7)co7ua6IyLibfKybz7lwV3b0LaZ1I5OBk(bu6Y2TBUJCJsa1hEEZTTkIvIeMyNdG1dpV52wfXkrctSZb4I8ipo4Orcq2(ILkZbgLIHPyBuaUipYJtRIyLiHj(buF45n3(lnMBnXohWWGCbx5sZmmf)aggK7a5IIFaddYfCLlnZa5IIFGT0yUDqqZG0b8F()hQYnUMX(pGASnW7gnhGhj2aSFhoHsyC40wAnYnGHb5(lnMBnXpqtkdcAgKoW)HLBCnJ9FaPGJKUwKEqqZG0b4gxZy)hGUiwjsmiOzq6a(p))dvdaehTS6Y21krIy9MBuaddYf(XpaxKh51qP(OxjseGBCnJ9Fab5ioAKWelvcyiUENsVmmTqDKo)avSEbuI1laMy9cOJ1lBaddYTvrSsKWeLay9WZBUDGuxXohOi11xL4cOqYZhySWAGCrXohqPlB3U5oYDO3JsGQtWuadYLf)uSEbQobt1cnQull(Py9c0WJVi7B8duD3s1WINn(bWlnsfzxUQFvIlGsa6IyLiXqxIreO1K9pXDaosdrVu)Qexaob0LaZ9vjUaLISlx1afPUOQuCXpqtkuqIfKTVy9EhO6em1V0yULfpBSEb0xpqRj7FI7agIR3P0ldtucuDcM6xAm3YIFkwVaCrEKhhCcos6ArAt8dyRXlaLtxDhoz1YXsRgylnMBPGelSQ9lWd1(VGZofyukgixuSZbAsHcsSWQ2Vapu7)co7uaSE45n3sDFtSEbQobtn0DlvdlE2y9cGvSZbi0YXsRsbjwq2(I17Dac9rJgvQDG9LaGCSLdNuoD1Xwhoj0hnAuP2asAK41rOXy9WMaJfwdtXohqsJearrlfyIfBcSLgZTS4NIsacTCS0Q4Orcq2(ILkZbmmixw8SXpaxKh5n0LyeJNydqhaRhEEZT4eCK01I0MyNdO(WZBUfNGJKUwK2e7CGT0yULcsSby)oCcLW4WPT0AKBaSE45n3(lnMBnXohWWGCXj4iPRfPnXpGHb5oqQlCcEuucuD3s1WIFk(bmmixw8tXpGHb5omf)a0OrLAzXZgLafPUge0miDa)N))HQVmr5hOi1fqC9oUgg7CaUiL0n1GsdSQ9lqfyukGFSZb2sJ5wkiXcY2xSEVduK6cNGh9vjUakK88bOlIvIeuqIna73HtOeghoTLwJCduDcMQfAuPww8SX6fysuk9Jt8dyKJe9B4zk23buF45n3oqQRyNd0KcfKydW(D4ekHXHtBP1i3avNGPg6ULQHf)uSEb2sJ5ww8SrjanAuPww8trjGHb5s9tvrk4ifymXpa3x)kZf77zVg7np)AVQxJPsJF)kbglSGFSEbQobtbmixw8SX6fGlYJ84qbjwq2(I17Da1hEEZTu33eBd4fGlYJ84qDFt8dW54lY(oW(saqo2YHtkNU6yRdNCo(ISVbksDrnHCdq0l1tNnb]] )
 
+    storeDefault( [[Guardian Primary]], 'displays', 20171105.231639, [[dOtOgaGEjPxIK0UGQIETuIzkjA2s1nrsCBqCyQ2jL2Ry3OA)kKFQidtr9BiRdQk1qrXGLsnCeDqP4zibDms64eOfkPwQKWIjXYP4Hkupv1JrPNtQjIe1ub1KrW0v6Ik4QirUmW1HYgjOTcvvTzcTDe6JiPwgbmnPK(UensKqNMOrJuJhQYjHk3cjW1GQkNxcFgKwluv4Bqvjh1aNZ6KReXfI473IoiFIsWvIZoKVUbkyziYeLCJZHcgtdyBj15cIbWanDjuoeaFZzZlMef1GDStUsexh7CoEtIIAWo2jxjIRJDoN0iH4McCSi(LvbX26CoejVziwkmxqmagGWyNCLiUo15ftIIAWc7gOGvh7CUMgv(s5Ys3mK6CnnQSbBrPohIJ3HJvnFDduW2WzPrM86jy4jQuboQPiCErSuGau4CoEXoNRPrLWUbky1PoVfLgolnYKdpXuboQPiCUKtqY6lY0WzPrM8kWrnfHZzDYvI4nCwAKjVEcgEIk5NeWk9USQVsepw15wZ10OYdN6CbXayaklna2vI45vGJAkcNZXGGJfX1X2AUMe07c7UMEmQJmbo3Jvnxjw1COXQMBIvnBUMgvo2jxjIRJsoEtIIAW2Gz8yNZDmJdxqcYvWefZH441GTOyNZv6YQvPUJkB69OK7DsA)0OsgIdXQM7DsAFmcIIVmehIvnNYarhRVrj37LEHMHitQZjk1sfzxUfWfKGCLCwNCLiEtxcLNpEWcpurobPMS7fWfKGCc5gNdfaxqcYDfzxUf5oMXPIKdsDElkcr89YQGyvfi37K0oSBGcwgImXQMBa98Xdw4HkY1KGExy310rj37K0oSBGcwgIdXQMligadqahNGK1xKrN6CRdbKtnMBiiD(O2mgje3uKVUbkyfI473IoiFIsWvIZoKdrYBWwuSZ5TOieX3VfDq(eLGReNDixqmagGaowe)YQGyBDo37K0EtV0l0mezIvnhVjrrnyPATow1CsJeIBkeI47LvbXQkqoPbWIGO4BdtLXoNlzrC8bcbjwv8lhIJxZqSZ5Ii(MZapQ9DUEuBRBmOY81nqbldXHOKlzr8t6Sso0yXV8kaDGRb5cmRIVuvNBfFQMR0LvRsDhvgLC8Mef1GfhNGK1xKrh7CEXKOOgS44eKS(Im6yNZx3afScr8nNbEu77C9O2w3yqL54njkQblSBGcwDSZ5AAujoobjRViJo15AAuzdMXXXfrrj37LEHMH4qQZ10OsgIdPoxtJkBgsDolcIIVmezIsUJz8golnYKxpbdprLkhecN7yg)KGEhhLJDoxqmjBl4Vu)TOdY9Cis(HJDoFDduWkeX3lRcIvvGChZ444Ii4csqUcMOyoRtUsexiIV5mWJAFNRh126gdQm37K0(yeefFziYeRA(a3v6acPoxlHq2bntdXkqEXKOOgSnygp258wueI4Bod8O2356rTTUXGkZ9ojT30l9cndXHyvZzDYvI4cr89YQGyvfiNfbrXxgIdrjxtJkPkOqrYji5q1PoxtJkziYK6CnnQ8LYLLUbBrPo37K0(PrLmezIvnxqmagGGqeFVSkiwvbYlMef1GLQ16yPa1CbXayacuTwN6CcarhRVnmvMJd)h1MAm3qq6C89O2ugi6y9n3XmoL4YnNS7fat2ea]] )
 
 
 end

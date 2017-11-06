@@ -3690,8 +3690,6 @@ ns.isKnown = function( sID )
     return ( ability.item and true ) or IsPlayerSpell( sID ) or IsSpellKnown( sID ) or IsSpellKnown( sID, true )
     
 end
-_G.isKnown = ns.isKnown
-
 
 
 -- Filter out non-resource driven issues with abilities.

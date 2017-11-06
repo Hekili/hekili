@@ -241,6 +241,23 @@ local oneTimeFixes = {
             profile.trinkets.specter_of_betrayal.disabled = true
         end
     end,
+
+    changeSwipesToSwipe_11052017 = function( profile )
+        for listID, list in ipairs( profile.actionLists ) do
+            for entryID, entry in ipairs( list.Actions ) do
+                if entry.Ability == "swipe_bear" or entry.Ability == "swipe_cat" then entry.Ability = "swipe" end
+            end
+        end
+    end,
+
+    changeIncarnation_11052017 = function( profile )
+        for listID, list in ipairs( profile.actionLists ) do
+            for entryID, entry in ipairs( list.Actions ) do
+                if entry.Ability == "incarnation" then entry.Ability = "incarnation_king_of_the_jungle" end
+            end
+        end
+    end,
+
 }
 
 

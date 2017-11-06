@@ -1384,6 +1384,7 @@ function Hekili:ProcessPredictiveHooks( dispID, solo )
                             if state[ k ].regen ~= 0 then slot.resources[ k ] = min( state[ k ].max, slot.resources[ k ] + ( state[ k ].regen * chosen_wait ) ) end
                         end
                         
+                        slot.keybind = self:GetBindingForAction( chosen_action, not display.lowercaseKBs == true )
                         slot.resource_type = ns.resourceType( chosen_action )
                         
                         if i < display.numIcons then
@@ -1615,6 +1616,7 @@ function Hekili:ProcessIterativeHooks( dispID, solo )
                             slot.resources[ k ] = state[ k ].current 
                         end
                         
+                        slot.keybind = self:GetBindingForAction( chosen_action, not display.lowercaseKBs == true )
                         slot.resource_type = ns.resourceType( chosen_action )
                         
                         if i < display.numIcons then
@@ -2118,6 +2120,7 @@ end
                         slot.resources = slot.resources or {}
                         slot.depth = chosen_depth
                         
+                        slot.keybind = self:GetBindingForAction( chosen_action, not display.lowercaseKBs == true )
                         slot.resource_type = ns.resourceType( chosen_action )
                         
                         if i < display.numIcons then
@@ -2396,6 +2399,10 @@ function Hekili:ProcessHooks( dispID, solo )
                             time_remains = time_remains - gcd_remains
                         end
 
+                        if not chosen_action then
+                            table.insert( iterationSteps, 0 )
+                        end
+
                         for j = 1, 3 do
                             if time_remains == 0 then break end
 
@@ -2476,6 +2483,7 @@ function Hekili:ProcessHooks( dispID, solo )
                         slot.resources = slot.resources or {}
                         slot.depth = chosen_depth
                         
+                        slot.keybind = self:GetBindingForAction( chosen_action, not display.lowercaseKBs == true )
                         slot.resource_type = ns.resourceType( chosen_action )
 
                         for k,v in pairs( class.resources ) do
@@ -2636,7 +2644,7 @@ function Hekili:UpdateDisplay( dispID )
                     break
                 end
                 
-                local aKey, caption, indicator = Queue[i].actionName, Queue[i].caption, Queue[i].indicator
+                local aKey, caption, indicator, binding = Queue[i].actionName, Queue[i].caption, Queue[i].indicator, Queue[i].keybind
                 local ability = aKey and class.abilities[ aKey ]
                 
                 if ability then
@@ -2662,7 +2670,7 @@ function Hekili:UpdateDisplay( dispID )
                     end
                     
                     if display.showKeybindings and ( display.queuedKBs or i == 1 ) then
-                        button.Keybinding:SetText( self:GetBindingForAction( aKey, not display.lowercaseKBs == true ) )
+                        button.Keybinding:SetText( binding )
                     else
                         button.Keybinding:SetText( nil )
                     end

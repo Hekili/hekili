@@ -930,7 +930,7 @@ local function improvedGetBindingText( binding )
 end
 
 
-local function StoreKeybindInfo( key, aType, id )
+local function StoreKeybindInfo( page, key, aType, id )
 
     if not key then return end
 
@@ -951,72 +951,118 @@ local function StoreKeybindInfo( key, aType, id )
     end
 
     if ability then
-        keys[ ability ] = keys[ ability ] or {}
-        keys[ ability ].binding = lower( improvedGetBindingText( key ) )
-        keys[ ability ].upper = upper( keys[ ability ].binding )
+        keys[ ability ] = keys[ ability ] or {
+            lower = {},
+            upper = {}
+        }
+        keys[ ability ].lower[ page ] = lower( improvedGetBindingText( key ) )
+        keys[ ability ].upper[ page ] = upper( keys[ ability ].lower[ page ] )
         updatedKeys[ ability ] = true
 
         if ability.bind then
             local bind = ability.bind
 
-            keys[ bind ] = keys[ bind ] or {}
-            keys[ bind ].binding = keys[ ability ].binding
-            keys[ bind ].upper = keys[ ability ].upper
+            keys[ bind ] = keys[ bind ] or {
+                lower = {},
+                upper = {}
+            }
+
+            keys[ bind ].lower[ page ] = keys[ ability ].lower[ page ]
+            keys[ bind ].upper[ page ] = keys[ ability ].upper[ page ]
+
             updatedKeys[ bind ] = true
         end
     end
 end        
 
 
+
+local defaultBarMap = {
+    WARRIOR = {
+        { bonus = 1, bar = 7 },
+        { bonus = 2, bar = 8 },
+    },
+    ROGUE = {
+        { bonus = 1, bar = 7 },
+        { bonus = 2, bar = 7 },
+        { bonus = 3, bar = 7 },
+    },
+    DRUID = {
+        { bonus = 1, stealth = false, bar = 7 },
+        { bonus = 1, stealth = true,  bar = 8 },
+        { bonus = 2, bar = 8 },
+        { bonus = 3, bar = 9 },
+        { bonus = 4, bar = 10 },
+    },
+    MONK = {
+        { bonus = 1, bar = 7 },
+        { bonus = 2, bar = 8 },
+        { bonus = 3, bar = 9 },
+    },
+    PRIEST = {
+        { bonus = 1, bar = 7 },
+    },
+}
+
+
+
 local function ReadKeybindings()
 
-    -- if class.file == "DRUID" then return end
-
-    for k in pairs( updatedKeys ) do
-        updatedKeys[ k ] = nil
+    for k, v in pairs( keys ) do
+        table.wipe( v.upper )
+        table.wipe( v.lower )
     end
 
     for i = 1, 12 do
-        StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
+        StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
     end
 
-    if class.file == 'DRUID' then
-        for i = 13, 24 do
-            StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
-        end
+    for i = 13, 24 do
+        StoreKeybindInfo( 2, GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
     end
 
     for i = 25, 36 do
-        StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
+        StoreKeybindInfo( 3, GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
     end
 
     for i = 37, 48 do
-        StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR4BUTTON" .. i - 36 ), GetActionInfo( i ) )
+        StoreKeybindInfo( 4, GetBindingKey( "MULTIACTIONBAR4BUTTON" .. i - 36 ), GetActionInfo( i ) )
     end
 
     for i = 49, 60 do
-        StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR2BUTTON" .. i - 48 ), GetActionInfo( i ) )
+        StoreKeybindInfo( 5, GetBindingKey( "MULTIACTIONBAR2BUTTON" .. i - 48 ), GetActionInfo( i ) )
     end
 
     for i = 61, 72 do
-        StoreKeybindInfo( GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
+        StoreKeybindInfo( 6, GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
     end
 
-    if class.file == 'DRUID' then
-        for i = 73, 120 do
-            StoreKeybindInfo( GetBindingKey( "ACTIONBUTTON" .. ( i - 60 ) % 12 ), GetActionInfo( i ) )
+    for i = 73, 120 do
+        StoreKeybindInfo( 7 + floor( ( i - 72 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. ( i - 72 ) % 12 ), GetActionInfo( i ) )
+    end
+
+    --[[ for k in pairs( keys ) do
+        if not updatedKeys[ k ] then
+            for key in pairs( keys[ k ].lower ) do
+                keys[ k ].lower[ key ] = nil
+                keys[ k ].upper[ key ] = nil
+                keys[ k ].empty = true
+            end
         end
-    end
-
-    for k in pairs( keys ) do
-        if not updatedKeys[ k ] then keys[ k ] = nil end
-    end
+    end ]]
 
     for k in pairs( keys ) do
         local ability = class.abilities[ k ]
 
         if ability and ability.bind then
-            keys[ ability.bind ] = keys[ k ]
+            for key, value in pairs( keys[ k ].lower ) do
+                keys[ ability.bind ] = keys[ ability.bind ] or {
+                    lower = {},
+                    upper = {}
+                }
+                keys[ ability.bind ].lower[ key ] = value
+                keys[ ability.bind ].upper[ key ] = keys[ k ].upper[ key ]
+            end
         end
     end
 
@@ -1037,8 +1083,39 @@ RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
 RegisterEvent( "UPDATE_SHAPESHIFT_FORM", ReadKeybindings )
 RegisterUnitEvent( "PLAYER_TALENT_UPDATE", ReadKeybindings() )
 
-function Hekili:GetBindingForAction( key, caps )
-    return ( key and keys[ key ] ) and ( caps and keys[ key ].upper or keys[ key ].binding ) or ""
+
+if select( 2, UnitClass( "player" ) ) == "DRUID" then
+    function Hekili:GetBindingForAction( key, caps )
+        if not key or not keys[ key ] then return "" end
+
+        local db = caps and keys[ key ].upper or keys[ key ].lower
+
+        if state.prowling then
+            return db[ 8 ] or db[ 7 ] or db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or ""
+
+        elseif state.buff.cat_form.up then
+            return db[ 7 ] or db[ 8 ] or db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or ""
+
+        elseif state.buff.bear_form.up then
+            return db[ 9 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 1 ] or db[ 2 ] or db [ 7 ] or db[ 8 ] or db[ 10 ] or ""
+
+        elseif state.buff.moonkin_form.up then
+            return db[ 10 ] or db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or ""
+
+        end
+    
+        return db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+    end
+else
+    function Hekili:GetBindingForAction( key, caps )
+        if not key or not keys[ key ] then return "" end
+
+        local db = caps and keys[ key ].upper or keys[ key ].lower
+
+        return db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+    end
+
 end
 
 
+Hekili.kbs = ns.hotkeys
