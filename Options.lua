@@ -258,6 +258,14 @@ local oneTimeFixes = {
         end
     end,
 
+    changeThrashCatToThrash_11062017 = function( profile )
+        for listID, list in ipairs( profile.actionLists ) do
+            for entryID, entry in ipairs( list.Actions ) do
+                if entry.Ability == "thrash_cat" or entry.Ability == "thrash_bear" then entry.Ability = "thrash" end
+            end
+        end
+    end,
+
 }
 
 

@@ -293,7 +293,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "cat_form", 768, "duration", 3600 )
         addAura( "clearcasting", 135700, "duration", 15, "max_stack", 1 )
             modifyAura( "clearcasting", "max_stack", function( x )
-                return talent.moment_of_clarity.enabled and 3 or x
+                return talent.moment_of_clarity.enabled and 2 or x
             end )
         addAura( "dash", 1850 )
         addAura( "displacer_beast", 102280, "duration", 2 )
@@ -308,8 +308,13 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "infected_wounds", 48484 )
         addAura( "ironfur", 192081 )
         addAura( "lightning_reflexes", 231065 )
+        addAura( "mass_entanglement", 102359, "duration", 30 )
         addAura( "moonkin_form", 197625 )
-        addAura( "omen_of_clarity", 16864 )
+        addAura( "omen_of_clarity", 16864, "duration", 15, 'max_stack', 1 )
+            modifyAura( "omen_of_clarity", "max_stack", function( x )
+                if talent.moment_of_clarity.enabled then return 2 end
+                return x
+            end )
         addAura( "predatory_swiftness", 69369, "duration", 12 )
         addAura( "primal_fury", 159286 )
         addAura( "prowl", 5215, "duration", 3600 )
@@ -330,7 +335,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             modifyAura( "rip", "tick_time", function( x )
                 return talent.jagged_wounds.enabled and x * 0.8333 or x
             end )
-        addAura( "savage_roar", 52610, "duration", 24 )
+        addAura( "savage_roar", 52610, "duration", 36 )
         addAura( "shadowmeld", 58984, "duration", 3600 )
         addAura( "survival_instincts", 61336 )
         addAura( "thick_hide", 16931 )
@@ -348,6 +353,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
                 return x
             end )
         addAura( "travel_form", 783 )
+        addAura( "typhoon", 61391, "duration", 6 )
         addAura( "wild_charge", 102401 )
         -- addAura( "wild_charge_movement", )
         addAura( "yseras_gift", 145108 )
@@ -423,6 +429,22 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         end )  
 
+        setRegenModel( {
+            elunes_guidance = {
+                resource    = 'combo_points',
+                spec        = 'feral',
+                talent      = 'elunes_guidance',
+                aura        = 'elunes_guidance',
+
+                last = function ()
+                    return state.buff.elunes_guidance.applied + floor( state.query_time - state.buff.elunes_guidance.applied )
+                end,
+
+                interval = 1,
+                value = 1
+            }
+        } )
+
         addMetaFunction( 'state', 'break_stealth', function ()
             removeBuff( "shadowmeld" )
             if buff.prowl.up then
@@ -459,7 +481,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         end )
 
         local function comboSpender( amount, resource )
-            if resource == 'combo_points' and state.talent.soul_of_the_forest.enabled then
+            if resource == 'combo_points' and amount > 0 and state.talent.soul_of_the_forest.enabled then
                 state.gain( amount * 5, 'energy' )
             end
         end
@@ -588,6 +610,12 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             max_range = 8,
         } )
 
+        modifyAbility( "brutal_slash", "spend", function( x )
+            if buff.clearcasting.up then return 0 end
+            if buff.berserk.up then return x / 2 end
+            return x
+        end )
+
         modifyAbility( "brutal_slash", "cooldown", function( x )
             return x * haste
         end )
@@ -686,7 +714,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addHandler( "elunes_guidance", function ()
             gain( 5, "combo_points" )
-            applyBuff( "elunes_guidance" )
+            applyBuff( "elunes_guidance", 5 )
         end )
 
 
@@ -738,6 +766,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             spend( min( 5, combo_points.current ), "combo_points" )
             spend( min( 25, energy.current ), "energy" )
             removeStack( "bloodtalons" )
+            if ( target.health_pct < 25 or talent.sabertooth.enabled ) and debuff.rip.up then debuff.rip.expires = query_time + debuff.rip.duration end
         end )
 
 
@@ -930,6 +959,11 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             usable = function () return buff.cat_form.up and combo_points.current > 0 end,
         } )
 
+        modifyAbility( "maim", "spend", function( x )
+            if buff.incarnation_king_of_the_jungle.up then return x / 2 end
+            return x
+        end )
+
         addHandler( "maim", function ()
             applyDebuff( "target", "maim", combo_points.current )
             spend( combo_points.current, "combo_points" )
@@ -973,7 +1007,8 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         } )
 
         addHandler( "mass_entanglement", function ()
-            applyDebuff( "target", "mass_entanglement" )
+            applyDebuff( "target", "mass_entanglement", 30 )
+            active_dot.mass_entanglement = max( active_dot.mass_entanglement, true_active_enemies )
         end )
 
 
@@ -1039,6 +1074,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addHandler( "moonfire", function ()
             applyDebuff( "target", "moonfire", 16 )
+            if talent.lunar_inspiration.enabled then gain( 1, "combo_points" ) end
         end )
 
 
@@ -1683,7 +1719,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         } )
 
         addHandler( "tigers_fury", function ()
-            applyBuff( "tigers_fury" )
+            applyBuff( "tigers_fury", 8 + ( talent.predator.enabled and 4 or 0 ) )
         end )
 
 
@@ -1724,7 +1760,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         } )
 
         addHandler( "typhoon", function ()
-            applyDebuff( "target", "dazed", 6 )
+            applyDebuff( "target", "typhoon", 6 )
         end )
 
 
