@@ -881,8 +881,9 @@ addAbility( "shadowmeld", {
     id = 58984,
     spend = 0,
     cast = 0,
-    gcdType = "spell",
+    gcdType = "off",
     cooldown = 120,
+    passive = true,
     known = function () return race.night_elf end,
     usable = function () return boss end, -- Only use in boss combat, dropping aggro is for the birds.
 } )

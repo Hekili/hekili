@@ -158,15 +158,15 @@ local debuffCount = {}
 local debuffMods = {}
 
 
-function ns.saveDebuffModifier( name, val )
-    debuffMods[ name ] = val
+function ns.saveDebuffModifier( id, val )
+    debuffMods[ id ] = val
 end
 
 
 ns.wipeDebuffs = function()
   for k, _ in pairs( debuffs ) do
-    table.wipe( debuffs[k] )
-    debuffCount[k] = 0
+    table.wipe( debuffs[ k ] )
+    debuffCount[ k ] = 0
   end
 end
 
@@ -204,9 +204,9 @@ ns.trackDebuff = function( spell, target, time, application )
 end
 
 
-function ns.getModifier( spell, target )
+function ns.getModifier( id, target )
 
-    local debuff = debuffs[ spell ]
+    local debuff = debuffs[ id ]
     if not debuff then return 1 end
 
     local app = debuff[ target ]
@@ -240,7 +240,6 @@ local incomingHealing = {}
 
 ns.storeDamage = function( time, damage, damageType ) table.insert( incomingDamage, { t = time, damage = damage, damageType = damageType } ) end
 ns.storeHealing = function( time, healing ) table.insert( incomingHealing, { t = time, healing = healing } ) end
-
 
 ns.damageInLast = function( t )
 

@@ -1050,10 +1050,14 @@ local mt_state = {
         elseif k == 'cooldown' then return 0
             
         elseif k == 'duration' then
-            return ( class.auras[ t.this_action ].duration )
+            local a = class.abilities[ t.this_action ].aura or t.this_action
+
+            return ( class.auras[ a ].duration )
             
         elseif k == 'refreshable' then
-            return t.dot[ t.this_action ].remains < 0.3 * class.auras[ t.this_action ].duration
+            local a = class.abilities[ t.this_action ].aura or t.this_action
+
+            return t.dot[ a ].remains < 0.3 * class.auras[ a ].duration
             
         elseif k == 'ticking' then
             local a = class.abilities[ t.this_action ].aura or t.this_action
@@ -2471,7 +2475,7 @@ ns.metatables.mt_perks = mt_perks
 local mt_active_dot = {
     __index = function(t, k)
         if class.auras[ k ] then
-            t[k] = ns.numDebuffs( class.auras[ k ].name )
+            t[k] = ns.numDebuffs( class.auras[ k ].id )
             return t[k]
             
         else
@@ -2693,7 +2697,7 @@ local mt_default_debuff = {
 
         elseif k == 'pmultiplier' then
             -- Persistent modifier, used by Druids.
-            return ns.getModifier( class_aura.name, state.target.unit )
+            return ns.getModifier( class_aura.id, state.target.unit )
             
         elseif k == 'ticking' then
             return t.up
@@ -2947,13 +2951,31 @@ setmetatable( state.totem, mt_totem )
 
 
 -- 04072017: Let's go ahead and cache aura information to reduce overhead.
-    local autoAuraKey = setmetatable( {}, {
+local autoAuraKey = setmetatable( {}, {
     __index = function( t, k )
-        local name = GetSpellInfo( k )
+        local aura_name = GetSpellInfo( k )
         
-        if not name then return end
-        
-        local key = formatKey( name )
+        if not aura_name then return end
+
+        local name
+
+        if class.auras[ aura_name ] then
+            local i = 1
+
+            while( true ) do
+                local new = aura_name .. ' ' .. i
+
+                if not class.auras[ new ] then
+                    name = new
+                    break
+                end
+
+                i = i + 1
+            end
+        end
+        name = name or aura_name
+
+        local key = formatKey( aura_name )
         
         if class.auras[ key ] then
             local i = 1
@@ -2969,7 +2991,7 @@ setmetatable( state.totem, mt_totem )
                 i = i + 1
             end
         end
-        
+
         -- Store the aura and save the key if we can.
         if ns.addAura then
             ns.addAura( key, k, 'name', name )
@@ -2999,7 +3021,6 @@ local function scrapeUnitAuras( unit )
         v.unit = unit
     end
     
-    
     for k,v in pairs( db.debuff ) do
         v.name = nil
         v.count = 0
@@ -3022,7 +3043,7 @@ local function scrapeUnitAuras( unit )
         if not name then break end
         
         local key = class.auras[ spellID ] and class.auras[ spellID ].key
-        if not key then key = class.auras[ name ] and class.auras[ name ].key end
+        -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
         if not key then key = autoAuraKey[ spellID ] end
         
         if key then 
@@ -3059,7 +3080,7 @@ local function scrapeUnitAuras( unit )
         if not name then break end
         
         local key = class.auras[ spellID ] and class.auras[ spellID ].key
-        if not key then key = class.auras[ name ] and class.auras[ name ].key end
+        -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
         if not key then key = autoAuraKey[ spellID ] end
         
         if key then 
@@ -3340,7 +3361,7 @@ function state.reset( dispID )
     
     for k, v in pairs( state.debuff ) do
         for attr in pairs( default_debuff_values ) do
-            v[ attr ] = nil
+            v[ attr ] = nil            
         end
     end
     
@@ -3708,6 +3729,10 @@ ns.isUsable = function( spell )
     end
 
     if ability.toggle and not state.toggle[ ability.toggle ] then
+        return false
+    end
+
+    if ability.form and not state.buff[ ability.form ].up then
         return false
     end
     
