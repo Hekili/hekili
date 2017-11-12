@@ -215,7 +215,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'blessing_of_the_ashbringer', 242981, 'duration', 3600 )
         addAura( 'blinding_light', 115750, 'duration', 6 )
         -- addAura( 'consecration', 188370, 'duration', 8 )
-        addAura( 'crusade', 224668, 'max_stack', 15 )
+        addAura( 'crusade', 231895, 'max_stack', 15 )
         addAura( 'divine_hammer', 198137 )
         addAura( 'divine_purpose', 223819 )
         addAura( 'divine_shield', 642, 'duration', 8 )
