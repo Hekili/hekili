@@ -35,7 +35,8 @@ function Hekili:GetDefaults()
             Legion = true,
             Enabled = true,
             Locked = true,
-            MinimapIcon = false, -- true == hide
+            MinimapIcon = false,
+            Artifact = true,
 
             ['Use Old Engine'] = false,
             

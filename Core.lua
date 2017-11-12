@@ -1333,6 +1333,8 @@ function Hekili:ProcessPredictiveHooks( dispID, solo )
                     
                     local chosen_action
                     local chosen_wait, chosen_clash, chosen_depth = 60, self.DB.profile.Clash or 0, 0
+
+                    state.this_action = nil
                     
                     Queue[i] = Queue[i] or {}
                     
@@ -2194,7 +2196,7 @@ end]]
 
 function Hekili:GetNextPrediction( dispID, slot )
     
-    local debug = false
+    local debug = self.ActiveDebug
     
     for k in pairs( palStack ) do palStack[k] = nil end
 
@@ -2204,6 +2206,8 @@ function Hekili:GetNextPrediction( dispID, slot )
     
     local chosen_action
     local chosen_wait, chosen_clash, chosen_depth = 60, self.DB.profile.Clash or 0, 0
+
+    state.this_action = nil
 
     if debug then self:Debug( "\n[ ** ] Checking for recommendation #%d ( time offset: %.2f ).", i, state.offset ) end
     
@@ -2218,6 +2222,12 @@ function Hekili:GetNextPrediction( dispID, slot )
         if debug then self:Debug("Processing precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
         chosen_action, chosen_wait, chosen_clash, chosen_depth = self:GetPredictionFromAPL( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
         if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
+    else
+        if debug then
+            if state.time > 0 then
+                self:Debug( "Precombat APL not processed because combat time is %.2f ( %s ).", state.time, state.this_action or "NONE" )
+            end
+        end
     end
     
     if display.defaultAPL and display.defaultAPL > 0 and chosen_wait > 0 then
@@ -2339,9 +2349,6 @@ function Hekili:ProcessHooks( dispID, solo )
             
             local dScriptPass = CheckDisplayCriteria( dispID ) or 0 -- checkScript( 'D', dispID )
             
-            if debug then self:Debug( "*** START OF NEW DISPLAY ***\n" ..
-                "Display %d (%s) is %s.", dispID, display.Name, ( self.Config or dScriptPass > 0 ) and "VISIBLE" or "NOT VISIBLE" ) end
-            
             -- if debug then self:Debug( "Conditions %s: %s", dScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'D', dispID ) ) end
 
             
@@ -2349,8 +2356,12 @@ function Hekili:ProcessHooks( dispID, solo )
                 
                 local debug = self.ActiveDebug
                 
-                if debug then self:SetupDebug( display.Name ) end
-
+                if debug then
+                    self:SetupDebug( display.Name )
+                    self:Debug( "*** START OF NEW DISPLAY ***\n" ..
+                                "Display %d (%s) is %s.", dispID, display.Name, ( self.Config or dScriptPass > 0 ) and "VISIBLE" or "NOT VISIBLE" ) 
+                end
+            
                 local gcd_length = rawget( state, 'gcd' ) or max( 0.75, 1.5 * state.haste )
                 
                 for i = 1, ( display.numIcons or 4 ) do

@@ -974,7 +974,7 @@ local mt_state = {
             
         elseif k == 'time' then
             -- Calculate time in combat.
-            if t.combat == 0 and t.false_start == 0 then return 0
+            if t.combat == 0 and t.false_start == 0 then return ( class.abilities[ t.this_action ].passive and 0 or t.offset )
             else return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) + ( ( t.combat > 0 or t.false_start ) and t.delay or 0 ) end
             
         elseif k == 'time_to_die' then
