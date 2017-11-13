@@ -384,6 +384,13 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             width = "full"
         } )
 
+        addSetting( 'range_mgmt', false, {
+            name = "Havoc: Estimate Range and Distance",
+            type = "toggle",
+            desc = "If |cFF00FF00true|r, the addon will try to estimate your position relative to an enemy after you Fel Rush or Vengeful Retreat.  This can be inaccurate.",
+            width = "full"
+        } )
+
         addSetting( 'fury_range_aoe', true, {
             name = "Havoc: Fury of the Illidari, Require Target(s)",
             type = "toggle",
@@ -675,6 +682,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             id = 195072,
             spend = 0,
             spend_type = 'fury',
+            ready = function () return max( cooldown.global_cooldown.remains, cooldown.fel_rush.remains ) end,
             cast = 0,
             charges = 2,
             recharge = 10,
@@ -687,7 +695,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             if cooldown.vengeful_retreat.remains < 1 then setCooldown( 'vengeful_retreat', 1 ) end
             if talent.fel_mastery.enabled then gain( 30, 'fury' ) end
             if talent.momentum.enabled then applyBuff( 'momentum', 4 ) end
-            setDistance( abs( target.distance - 15 ) )
+            if settings.range_mgmt then setDistance( abs( target.distance - 15 ) ) end
             setCooldown( 'global_cooldown', 0.25 )
         end )
 
@@ -699,7 +707,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 25,
-            usable = function () return target.within8 end
+            usable = function () return not settings.range_mgmt or target.within8 end
         } )
 
         modifyAbility( 'vengeful_retreat', 'cooldown', function( x )
@@ -753,7 +761,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addHandler( 'metamorphosis', function ()
             applyBuff( 'metamorphosis', 30 )
             stat.haste = stat.haste + 25
-            setDistance( 8 )
+            if settings.range_mgmt then setDistance( 8 ) end
             -- stat.leech = stat.leech + 30
         end )
 
@@ -838,11 +846,11 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cast = 0,
             gcdType = 'melee',
             cooldown = 15,
-            -- usable = function () return target.within15 end
+            usable = function () return not settings.range_mgmt or target.within15 end
         } )
 
         addHandler( 'felblade', function ()
-            setDistance( 5 )
+            if settings.range_mgmt then setDistance( 5 ) end
         end )
 
 
@@ -987,7 +995,6 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         addHandler( 'infernal_strike', function ()
             setDistance( 0, 5 )
-
         end )
 
 
