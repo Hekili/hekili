@@ -1083,7 +1083,8 @@ RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
 RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
 
 RegisterEvent( "UPDATE_SHAPESHIFT_FORM", ReadKeybindings )
-RegisterUnitEvent( "PLAYER_TALENT_UPDATE", ReadKeybindings() )
+RegisterUnitEvent( "PLAYER_TALENT_UPDATE", ReadKeybindings )
+RegisterUnitEvent( "PLAYER_EQUIPMENT_CHANGED", ReadKeybindings )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
