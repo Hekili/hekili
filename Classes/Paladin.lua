@@ -1018,7 +1018,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'spell',
             cooldown = 60,
-            known = function () return equipped.truthguard and ( toggle.artifact_ability or ( toggle.cooldowns and settings.artifact_cooldown ) ) end
+            known = function () return equipped.truthguard end,
+            toggle = 'artifact'
         } )
 
         modifyAbility( 'eye_of_tyr', 'cooldown', function( x )
