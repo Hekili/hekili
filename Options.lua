@@ -212,7 +212,7 @@ local oneTimeFixes = {
                     
                     local import = ns.deserializeActionList( default.import )
                     
-                    if import then
+                    if import and type( import ) ~= 'string' then
                         profile.actionLists[ index ] = import
                         profile.actionLists[ index ].Name = default.name
                         profile.actionLists[ index ].Release = default.version
@@ -2855,7 +2855,7 @@ ns.newActionListOption = function( index )
                     
                     local import = ns.deserializeActionList( class.defaults[ defaultID ].import )
                     
-                    if not import then
+                    if not import or type( import ) == 'string' then
                         Hekili:Print("Unable to import " .. class.defaults[ defaultID ].name .. ".")
                         return
                     end
@@ -4822,7 +4822,7 @@ function Hekili:GetOptions()
                                     local import = ns.deserializeActionList( default.import )
                                     local index = #Hekili.DB.profile.actionLists + 1
                                     
-                                    if import then
+                                    if import and type( import ) ~= 'string' then
                                         Hekili.DB.profile.actionLists[ index ] = import
                                         Hekili.DB.profile.actionLists[ index ].Name = default.name
                                         Hekili.DB.profile.actionLists[ index ].Release = default.version
@@ -4858,7 +4858,7 @@ function Hekili:GetOptions()
                                     
                                     local import = ns.deserializeActionList( default.import )
                                     
-                                    if import then
+                                    if import and type( import ) ~= 'string' then
                                         Hekili.DB.profile.actionLists[ index ] = import
                                         Hekili.DB.profile.actionLists[ index ].Name = default.name
                                         Hekili.DB.profile.actionLists[ index ].Release = default.version
@@ -6279,7 +6279,7 @@ function Hekili:SetOption( info, input, ... )
             elseif option == 'Import Action List' then
                 local import = ns.deserializeActionList( input )
                 
-                if not import then
+                if not import or type( import ) == 'string' then
                     Hekili:Print("Unable to import from given input string.")
                     return
                 end
@@ -6328,7 +6328,7 @@ function Hekili:SetOption( info, input, ... )
                     
                     local import = ns.deserializeActionList( input )
                     
-                    if not import then
+                    if not import or type( import ) == 'string' then
                         Hekili:Print("Unable to import from given import string.")
                         return
                     end
