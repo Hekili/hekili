@@ -306,7 +306,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "astral_influence", 197524 )
         addAura( "barkskin", 22812 )
         addAura( "bear_form", 5487, 'duration', 3600 )
-        addAura( "berserk", 106951 )
+        addAura( "berserk", 106951, "duration", 15 )
         addAura( "bloodtalons", 145152, "max_stack", 2, "duration", 30 )
         addAura( "bristling_fur", 155835 )
         addAura( "cat_form", 768, "duration", 3600 )
@@ -317,7 +317,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "dash", 1850 )
         addAura( "displacer_beast", 102280, "duration", 2 )
         addAura( "elunes_guidance", 202060, 'duration', 5 )
-        addAura( "fiery_red_maimers", 212875)
+        addAura( "fiery_red_maimers", 236757 )
         addAura( "feline_swiftness", 131768 )
         addAura( "feral_instinct", 16949 )
         addAura( "frenzied_regeneration", 22842 )
@@ -344,7 +344,12 @@ if (select(2, UnitClass('player')) == 'DRUID') then
                 return x
             end )
         
-        addAura( "predatory_swiftness", 69369, "duration", 12 )
+        addAura( "predatory_swiftness", 69369, "duration", 12, 'max_stack', 1 )
+            modifyAura( 'predatory_swiftness', 'max_stack', function( x )
+                if equipped.ailuro_pouncers then return 3 end
+                return x
+            end )
+
         addAura( "primal_fury", 159286 )
         addAura( "prowl", 5215, "duration", 3600 )
         addAura( "pulverize", 138792, "duration", 20 )
@@ -403,8 +408,14 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addGearSet( 'claws_of_ursoc', 128821 )
         setArtifact( 'claws_of_ursoc' )
 
-
+        addGearSet( 'ailuro_pouncers', 137024 )
+        addGearSet( 'behemoth_headdress', 151801 )
+        addGearSet( 'chatoyant_signet', 137040 )        
+        addGearSet( 'ekowraith_creator_of_worlds', 137015 )
         addGearSet( 'fiery_red_maimers', 144354 )
+        addGearSet( 'luffa_wrappings', 137056 )
+        addGearSet( 'the_wildshapers_clutch', 137094 )
+
 
         addGearSet( 'soul_of_the_archdruid', 151636 )
         setTalentLegendary( 'soul_of_the_archdruid', 'feral',       'soul_of_the_forest' )
@@ -547,10 +558,18 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addHook( 'spendResources', comboSpender )
         
 
+        addSetting( 'max_bite', true, {
+            name = "Ferocious Bite: Cap Energy",
+            type = "toggle",
+            desc = "If |cFF00FF00true|r, Ferocious Bite will not be recommended until you have a surplus of energy to get its damage bonus.",
+            width = "full"
+        } )
+
         addSetting( 'regrowth_instant', true, {
             name = "Regrowth: Instant Only",
             type = "toggle",
-            desc = "If |cFF00FF00true|r, Regrowth will only be usable in Cat Form when it can be cast without shifting out of form."
+            desc = "If |cFF00FF00true|r, Regrowth will only be usable in Cat Form when it can be cast without shifting out of form.",
+            width = "full"
         } )
 
         addSetting( 'aoe_rip_threshold', 4, {
@@ -587,7 +606,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addHandler( "ashamanes_frenzy", function ()
             removeStack( "bloodtalons" )
             applyDebuff( "target", "ashamanes_frenzy", 6 )
-            if equipped.fiery_red_maimers then applyBuff( "fiery_red_maimers", 10 ) end
+            if equipped.fiery_red_maimers then applyBuff( "fiery_red_maimers", 30 ) end
         end )
 
 
@@ -646,6 +665,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addHandler( "berserk", function ()
             applyBuff( "berserk", 15 )
+            energy.max = energy.max + 50
         end )
 
 
@@ -689,8 +709,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         modifyAbility( "brutal_slash", "spend", function( x )
             if buff.clearcasting.up then return 0 end
-            if buff.berserk.up then return x / 2 end
-            return x
+            return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
         end )
 
         modifyAbility( "brutal_slash", "cooldown", function( x )
@@ -834,9 +853,15 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             usable = function () return combo_points.current > 0 end,
         } )
 
+        modifyAbility( "ferocious_bite", "spend", function( x )
+            x = x + ( settings.max_bite and 25 or 0 )
+            return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
+        end )
+
         addHandler( "ferocious_bite", function ()
+            if equipped.behemoth_headdress and buff.tigers_fury.up then buff.tigers_fury.expires = buff.tigers_fury.expires + min( 5, combo_points.current ) * 0.5 end
             spend( min( 5, combo_points.current ), "combo_points" )
-            spend( min( 25, energy.current ), "energy" )
+            -- spend( min( 25, energy.current ), "energy" )
             removeStack( "bloodtalons" )
             if ( target.health_pct < 25 or talent.sabertooth.enabled ) and debuff.rip.up then debuff.rip.expires = query_time + debuff.rip.duration end
         end )
@@ -1025,12 +1050,12 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         modifyAbility( "maim", "spend", function( x )
             if buff.fiery_red_maimers.up then return 0 end
-            if buff.incarnation_king_of_the_jungle.up then return x / 2 end
-            return x
+            return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
         end )
 
         addHandler( "maim", function ()
             applyDebuff( "target", "maim", combo_points.current )
+            if equipped.behemoth_headdress and buff.tigers_fury.up then buff.tigers_fury.expires = buff.tigers_fury.expires + min( 5, combo_points.current ) * 0.5 end
             spend( combo_points.current, "combo_points" )
             removeStack( "bloodtalons" )
             removeBuff( "fiery_red_maimers" )
@@ -1262,7 +1287,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         } )
 
         modifyAbility( "rake", "spend", function( x )
-            return buff.berserk.up and x * 0.5 or x 
+            return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
         end )
 
         addHandler( "rake", function ()
@@ -1436,9 +1461,14 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             usable = function () return combo_points.current > 0 end,
         } )
 
+        modifyAbility( "rip", "spend", function( x )
+            return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
+        end )
+
         addHandler( "rip", function ()
-            spend( combo_points.current, "combo_points" )
             applyDebuff( "target", "rip", min( 1.3 * class.auras.rip.duration, debuff.rip.remains + class.auras.rip.duration ) )
+            if equipped.behemoth_headdress and buff.tigers_fury.up then buff.tigers_fury.expires = buff.tigers_fury.expires + min( 5, combo_points.current ) * 0.5 end
+            spend( combo_points.current, "combo_points" )
             debuff.rip.pmultiplier = persistent_multiplier
             removeStack( "bloodtalons" )
         end )
@@ -1462,8 +1492,13 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             usable = function () return combo_points.current > 0 end,
         } )
 
+        modifyAbility( "savage_roar", "spend", function( x )
+            return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
+        end )
+
         addHandler( "savage_roar", function ()
             local cost = min( 5, combo_points.current )
+            if equipped.behemoth_headdress and buff.tigers_fury.up then buff.tigers_fury.expires = buff.tigers_fury.expires + min( 5, combo_points.current ) * 0.5 end
             spend( cost, "combo_points" )
             applyBuff( "savage_roar", 6 + ( 6 * cost ) )
         end )
@@ -1485,9 +1520,8 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         } )
 
         modifyAbility( "shred", "spend", function( x )
-            if buff.clearcasting.up then return 0
-            elseif buff.berserk.up then return x * 0.5 end
-            return x
+            if buff.clearcasting.up then return 0 end
+            return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
         end )
 
         addHandler( "shred", function ()
@@ -1679,8 +1713,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         modifyAbility( "swipe", "spend", function( x )
             if buff.cat_form.up then
                 if buff.clearcasting.up then return 0 end
-                if buff.berserk.up then return 20 end
-                return 40
+                return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
             end
             return x
         end )
@@ -1744,18 +1777,17 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         }, 77758, 106830 )
 
         modifyAbility( "thrash", "id", function( x )
-            if buff.cat_form.up then return 106830
-            elseif buff.bear_form.up then return 77758 end
+            if buff.bear_form.up then return 77758
+            elseif buff.cat_form.up then return 106830 end
             return x
         end )
 
         modifyAbility( "thrash", "spend", function( x )
-            if buff.cat_form.up then
-                if buff.clearcasting.up then return 0
-                elseif buff.berserk.up then return x * 0.5 end
-            elseif buff.bear_form.up then
+            if buff.bear_form.up then
                 return -4
             end
+            if buff.clearcasting.up then return 0 end
+            return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
         end )
 
         modifyAbility( "thrash", "spend_type", function( x )
