@@ -583,6 +583,17 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             width = 'full'
         } )
 
+        addSetting( 'brutal_charges', 2, {
+            name = "Brutal Slash: Save Charges for AOE",
+            type = "range",
+            desc = "Set a number of Brutal Slash stacks to save for AOE situations.  This is used in the default action lists.  If set to |cFF00FF002|r, the default " ..
+                "action lists will recommend using 1 of your Brutal Slash charges in single-target but keep the remaining 2 charges on reserve for times when there are more enemies.",
+            min = 0,
+            max = 3,
+            step = 1,
+            width = "full"
+        } )
+
 
         -- Abilities
 
@@ -861,9 +872,8 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addHandler( "ferocious_bite", function ()
             if equipped.behemoth_headdress and buff.tigers_fury.up then buff.tigers_fury.expires = buff.tigers_fury.expires + min( 5, combo_points.current ) * 0.5 end
             spend( min( 5, combo_points.current ), "combo_points" )
-            -- spend( min( 25, energy.current ), "energy" )
             removeStack( "bloodtalons" )
-            if ( target.health_pct < 25 or talent.sabertooth.enabled ) and debuff.rip.up then debuff.rip.expires = query_time + debuff.rip.duration end
+            if ( target.health_pct < 25 or talent.sabertooth.enabled ) and debuff.rip.up then debuff.rip.expires = min( debuff.rip.duration * 1.3, query_time + debuff.rip.duration ) end
         end )
 
 

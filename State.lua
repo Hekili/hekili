@@ -2791,6 +2791,9 @@ local mt_default_action = {
             
         elseif k == 'max_charges' then
             return class.abilities[ t.action ].charges or 0
+
+        elseif k == 'time_to_max_charges' then
+            return ( class.abilities[ t.action ].charges - state.cooldown[ t.action ].charges_fractional ) * class.abilities[ t.action ].recharge
             
         elseif k == 'ready_time' then
             return ns.isUsable( t.action ) and ns.timeToReady( t.action ) or 999
