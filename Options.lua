@@ -7379,7 +7379,8 @@ local function sanitize( segment, i, line, warnings )
         i = i:gsub( '\a', token .. 'i_enabled' ) 
         i = i:gsub( '\v', token .. attr )
     end 
-    
+
+   
     if segment == 'c' then
         for token in i:gmatch( "target" ) do
             local times = 0
