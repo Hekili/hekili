@@ -870,9 +870,9 @@ local function gain( amount, resource, overcap )
     if overcap then state[ resource ].actual = state[ resource ].current + amount
     else state[ resource ].actual = min( state[ resource ].max, state[ resource ].current + amount ) end
 
-    ns.callHook( 'gain', amount, resource, overcap )
-
     if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
+
+    ns.callHook( 'gain', amount, resource, overcap )
 
 end
 state.gain = gain
@@ -882,10 +882,10 @@ local function spend( amount, resource )
     
     -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     state[ resource ].actual = max( 0, state[ resource ].actual - amount )
+    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end    
+    
     ns.callHook( 'spend', amount, resource )
 
-    if amount ~= 0 then forecastResources( resource ) end    
-    
 end
 state.spend = spend
 
@@ -3659,7 +3659,7 @@ ns.spendResources = function( ability )
         if cost > 0 and cost < 1 then
             cost = ( cost * state[ resource ].max )
         end
-        
+
         if cost ~= 0 then
             state.spend( cost, resource )            
         end
