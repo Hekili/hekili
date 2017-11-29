@@ -92,6 +92,15 @@ function Hekili:GetDefaults()
                 ashamanes_frenzy = true,
                 incarnation = true,
 
+                -- MONK
+                serenity = true,
+                storm_earth_and_fire = true,
+                touch_of_death = true,
+
+                -- PALADIN
+                crusade = true,
+                avenging_wrath = true,
+
                 -- SHAMAN
                 ascendance = true,
                 feral_spirit = true,

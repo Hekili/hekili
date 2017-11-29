@@ -540,7 +540,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'off',
             cooldown = 90,
-            known = function() return spec.brewmaster and talent.black_ox_brew.enabled end,
+            spec = 'brewmaster',
+            talent = 'black_ox_brew'
         } )
 
         addHandler( 'black_ox_brew', function ()
@@ -594,7 +595,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'melee',
             cooldown = '3',
-            known = function () return spec.brewmaster end
+            spec = 'brewmaster'
         } )
 
         modifyAbility( 'blackout_strike', 'cooldown', function( x )
@@ -641,7 +642,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 1,
             gcdType = 'spell',
             cooldown = 30,
-            known = function () return talent.chi_burst.enabled end
+            talent = 'chi_burst'
         } )
 
         modifyAbility( 'chi_burst', 'cast', function( x )
@@ -665,7 +666,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 15,
-            known = function () return talent.chi_wave.enabled end
+            talent = 'chi_wave'
         } )
 
         addHandler( 'chi_wave', function ()
@@ -708,7 +709,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'off',
             cooldown = 120,
-            known = function () return talent.dampen_harm.enabled end
+            talent = 'dampen_harm'
         } )
 
         addHandler( 'dampen_harm', function ()
@@ -722,7 +723,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             spend_type = 'energy',
             cast = 0,
             gcdType = 'off',
-            cooldown = 90,
+            cooldown = 90,            
             known = function () return spec.windwalker or talent.diffuse_magic.enabled end,
         } )
 
@@ -749,7 +750,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'off',
             cooldown = 60,
-            known = function () return talent.energizing_elixir.enabled end,
+            talent = 'energizing_elixir',
             usable = function () return energy.current < ee_maximum end,
         } )
 
@@ -784,7 +785,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 75,
-            known = function () return equipped.fu_zan_the_wanderers_companion end,
+            equipped= 'fu_zan_the_wanderers_companion',
             toggle = 'artifact'
         } )
 
@@ -915,7 +916,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 180,
-            known = function() return talent.invoke_xuen.enabled end,
+            talent = 'invoke_xuen',
             toggle = 'cooldowns'
         } )
         class.abilities.invoke_xuen_the_white_tiger = class.abilities.invoke_xuen
@@ -967,7 +968,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'melee',
             cooldown = 45,
-            known = function () return talent.leg_sweep.enabled end,
+            talent = 'leg_sweep'
         } )
 
         addHandler( 'leg_sweep', function ()
@@ -1066,7 +1067,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 45,
-            known = function () return talent.ring_of_peace.enabled end,
+            talent = 'ring_of_peace'
         } )
 
 
@@ -1112,7 +1113,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cooldown = 20,
             charges = 2,
             recharge = 20,
-            known = function () return not talent.chi_torpedo.enabled end
+            notalent = 'chi_torpedo'
         } )
 
         modifyAbility( 'roll', 'charges', function( x )
@@ -1174,7 +1175,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'off',
             cooldown = 90,
-            known = function () return talent.serenity.enabled end,
+            talent = 'serenity',
             toggle = 'cooldowns',
         } )
 
@@ -1248,8 +1249,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cooldown = 90,
             charges = 2,
             recharge = 90,
-            known = function () return not talent.serenity.enabled end,
-            usable = function () return not buff.storm_earth_and_fire.up end,
+            notalent = 'serenity',
+            ready = function () return buff.storm_earth_and_fire.remains end,
             toggle = 'cooldowns',
         } )
 
@@ -1283,7 +1284,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'melee',
             cooldown = 40,
-            known = function () return equipped.fists_of_the_heavens end,
+            equipped = 'fists_of_the_heavens',
             toggle = 'artifact'
         } )
 
@@ -1321,7 +1322,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 10,
-            known = function () return talent.summon_black_ox_statue.enabled end,
+            talent = 'summon_black_ox_statue',
         } )
 
         addHandler( 'summon_black_ox_statue', function ()
@@ -1451,7 +1452,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'melee',
             cooldown = 24,
-            known = function () return talent.whirling_dragon_punch.enabled end,
+            talent = 'whirling_dragon_punch',
             usable = function () return cooldown.fists_of_fury.remains > 0 and cooldown.rising_sun_kick.remains > 0 end
         } )
 
