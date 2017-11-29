@@ -3328,7 +3328,7 @@ ns.newActionOption = function( aList, index )
                     
                     return results, true
                 end,
-                multiline = 6,
+                multiline = 15,
                 order = 20,
                 width = 'full',
                 --[[ hidden = function( info )

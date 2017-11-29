@@ -1526,7 +1526,7 @@ local mt_toggle = {
             return Hekili.DB.profile['Mode Status']
             
         else
-            if Hekili.DB.profile[ 'Toggle State: '..k ] ~= nil then
+            if Hekili.DB.profile[ 'Toggle State: '.. k ] ~= nil then
                 return Hekili.DB.profile[ 'Toggle State: '..k ]
             end
             
@@ -1714,6 +1714,7 @@ local mt_default_cooldown = {
 
         local ability = t.key and class.abilities[ t.key ]
         local GetSpellCooldown = _G.GetSpellCooldown
+        local profile = Hekili.DB.profile
         local id = ability.id
 
         if ability and ability.item then
@@ -1807,10 +1808,15 @@ local mt_default_cooldown = {
                 return max( 0, t.expires - state.query_time )
             end
             
-            -- if not ns.isKnown( t.key ) then return 0 end
+            -- If the ability is toggled off in the profile, we may want to fake its CD.
+            if ns.isKnown( t.key, true ) and profile.feignCD[ t.key ] then
+                local toggle = profile.toggles[ t.key ]
 
-            if not state.action[ t.key ].enabled and Hekili.DB.profile.feignCD[ t.key ] then
-                return class.abilities[ t.key ].elem.cooldown
+                if toggle == 'default' then toggle = ability.toggle end
+
+                if toggle and not state.toggle[ ability.toggle ] then
+                    return ability.elem.cooldown
+                end
             end
             
             local bonus_cdr = 0
@@ -3731,7 +3737,7 @@ ns.spendResources = function( ability )
 end
 
 
-ns.isKnown = function( sID )
+ns.isKnown = function( sID, notoggle )
     
     if type(sID) ~= 'number' then sID = class.abilities[ sID ] and class.abilities[ sID ].id or nil end
 
@@ -3763,12 +3769,11 @@ ns.isKnown = function( sID )
         return false
     end
 
-    local pToggle = Hekili.DB.profile.toggles[ ability.key ]
+    if not notoggle then
+        local pToggle = Hekili.DB.profile.toggles[ ability.key ]
 
-    if not pToggle or pToggle == 'default' then
-        if ability.toggle and not state.toggle[ ability.toggle ] then return false end
-    elseif pToggle ~= 'none' then
-        if not state.toggle[ pToggle ] then return false end
+        if ( not pToggle or pToggle == 'default' ) and ( ability.toggle and not state.toggle[ ability.toggle ]  ) then return false
+        elseif ( pToggle and pToggle ~= 'none' ) and not state.toggle[ pToggle ] then return false end
     end
 
     if ability.talent and not state.talent[ ability.talent ].enabled then
