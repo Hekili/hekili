@@ -237,7 +237,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'light_of_the_titans', 209539, 'duration', 15 )
         addAura( 'repentance', 62124, 'duration', 60 )
         addAura( 'righteous_verdict', 238996, 'duration', 15 )
-        addAura( 'sacred_judgment', 246973, 'duration', 8 )
         addAura( 'seal_of_light', 202273, 'duration', 20 )
         addAura( 'seraphim', 152262, 'duration', 30 )
         addAura( 'shield_of_the_righteous', 132403, 'duration', 4.5 )
@@ -416,7 +415,11 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         -- Gear Sets
         addGearSet( 'tier19', 138350, 138353, 138356, 138359, 138362, 138369 )
         addGearSet( 'tier20', 147160, 147162, 147158, 147157, 147159, 147161 )
+            addAura( 'sacred_judgment', 246973, 'duration', 8 )
+
         addGearSet( 'tier21', 152151, 152153, 152149, 152148, 152150, 152152 )
+            addAura( 't21_4pc_sacred_judgment', 253806, 'duration', 15 )
+
         addGearSet( 'class', 139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697 )
         
         addGearSet( 'ashbringer', 120978 )
@@ -678,6 +681,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'blade_of_justice', function ()
             removeBuff( 'righteous_verdict' )
+            removeBuff( 'sacred_judgment' )
         end )
 
         
@@ -900,6 +904,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'divine_hammer', function ()
             applyBuff( 'divine_hammer', 12 )
             removeBuff( 'righteous_verdict' )
+            removeBuff( 'sacred_judgment' )
         end )
 
 
@@ -959,7 +964,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         modifyAbility( 'divine_storm', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
             if buff.the_fires_of_justice.up then x = x - 1 end
-            if buff.sacred_judgment.up then x = x - 1 end
+            if buff.t21_4pc_sacred_judgment.up then x = x - 1 end
             return x
         end )
 
@@ -967,7 +972,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             else
                 removeBuff( 'the_fires_of_justice' )
-                removeBuff( 'sacred_judgment' )
+                removeBuff( 't21_4pc_sacred_judgment' )
             end
             if equipped.whisper_of_the_nathrezim then applyBuff( 'whisper_of_the_nathrezim', 4 ) end
             if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
@@ -987,7 +992,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 		modifyAbility( 'execution_sentence', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
             if buff.the_fires_of_justice.up then x = x - 1 end
-            if buff.sacred_judgment.up then x = x - 1 end            
+            if buff.t21_4pc_sacred_judgment.up then x = x - 1 end            
 			return x
 		end )
 
@@ -999,7 +1004,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             else
                 removeBuff( 'the_fires_of_justice' )
-                removeBuff( 'sacred_judgment' )
+                removeBuff( 't21_4pc_sacred_judgment' )
             end
             applyDebuff( 'target', 'execution_sentence', 7 * haste ) 
             if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
@@ -1244,7 +1249,9 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             else
                 applyDebuff( 'target', 'judgment', 8 )
                 if talent.greater_judgment.enabled then active_dot.judgment = max( active_enemies, active_dot.judgment + 2 ) end
-                if set_bonus.tier21_4pc > 0 then applyBuff( 'sacred_judgment', 8 ) end
+                if set_bonus.tier20_4pc > 0 then applyBuff( 'sacred_judgment' ) end
+                if set_bonus.tier21_4pc > 0 then applyBuff( 't21_4pc_sacred_judgment', 15 ) end
+                if talent.sacred_judgment.enabled then applyBuff( 'sacred_judgment' ) end
             end
         end )
 
@@ -1262,7 +1269,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         modifyAbility( 'justicars_vengeance', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
 			if buff.the_fires_of_justice.up then x = x - 1 end
-            if buff.sacred_judgment.up then x = x - 1 end            
+            if buff.t21_4pc_sacred_judgment.up then x = x - 1 end            
             return x
         end )
 
@@ -1270,7 +1277,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             else
                 removeBuff( 'the_fires_of_justice' )
-                removeBuff( 'sacred_judgment' )
+                removeBuff( 't21_4pc_sacred_judgment' )
             end
             if spec.retribution and talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
         end )
@@ -1456,7 +1463,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         modifyAbility( 'templars_verdict', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
             if buff.the_fires_of_justice.up then x = x - 1 end
-            if buff.sacred_judgment.up then x = x - 1 end
+            if buff.t21_4pc_sacred_judgment.up then x = x - 1 end
             return x
         end )
 
@@ -1464,7 +1471,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             else
                 removeBuff( 'the_fires_of_justice' )
-                removeBuff( 'sacred_judgment' )
+                removeBuff( 't21_4pc_sacred_judgment' )
             end
             if equipped.whisper_of_the_nathrezim then applyBuff( 'whisper_of_the_nathrezim', 4 ) end
             if spec.retribution and talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
@@ -1512,7 +1519,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         modifyAbility( 'word_of_glory', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
             if buff.the_fires_of_justice.up then x = x - 1 end
-            if buff.sacred_judgment.up then x = x - 1 end
+            if buff.t21_4pc_sacred_judgment.up then x = x - 1 end
             return x
         end )
 
@@ -1521,7 +1528,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             else
                 removeBuff( 'the_fires_of_justice' )
-                removeBuff( 'sacred_judgment' )
+                removeBuff( 't21_4pc_sacred_judgment' )
             end
             health.actual = min( health.max, health.actual + ( 1.33 * stat.spell_power * 8 ) )
         end )

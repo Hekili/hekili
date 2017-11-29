@@ -1211,10 +1211,29 @@ addAbility( "specter_of_betrayal", {
 } )
 
 
+addUsableItem( "tiny_oozeling_in_a_jar", 137439 )
+
+addAbility( "tiny_oozeling_in_a_jar", {
+    id = -110,
+    item = 137439,
+    spend = 0,
+    cast = 0,
+    cooldown = 20,
+    gcdType = "off",
+    usable = function () return buff.congealing_goo.stack == 6 end,
+} )
+
+addAura( "congealing_goo", 215126, "duration", 60, "max_stack", 6 )
+
+addHandler( "tiny_oozeling_in_a_jar", function ()
+    removeBuff( "congealing_goo" )
+end )
+
+
 addUsableItem( "umbral_moonglaives", 147012 )
 
 addAbility( "umbral_moonglaives", {
-    id = -110,
+    id = -111,
     item = 147012,
     spend = 0,
     cast = 0,
@@ -1224,10 +1243,29 @@ addAbility( "umbral_moonglaives", {
 } )
 
 
+addUsableItem( "unbridled_fury", 139327 )
+
+addAbility( "unbridled_fury", {
+    id = -112,
+    item = 139327,
+    spend = 0,
+    cast = 0,
+    cooldown = 120,
+    gcdType = 'off',
+    toggle = 'cooldowns',
+} )
+
+addAura( "wild_gods_fury", 221695, "duration", 30 )
+
+addHandler( "unbridled_fury", function ()
+    applyBuff( "unbridled_fury" )
+end )
+
+
 addUsableItem( "vial_of_ceaseless_toxins", 147011 )
 
 addAbility( "vial_of_ceaseless_toxins", {
-    id = -111,
+    id = -113,
     item = 147011,
     spend = 0,
     cast = 0,
