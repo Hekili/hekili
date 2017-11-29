@@ -1102,7 +1102,7 @@ addAbility( "faulty_countermeasure", {
 addAura( "sheathed_in_frost", 214962, "duration", 30 )
 
 addHandler( "faulty_countermeasure", function ()
-    app0lyBuff( "sheathed_in_frost", 30 )
+    applyBuff( "sheathed_in_frost", 30 )
 end )
 
 
