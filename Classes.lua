@@ -1162,6 +1162,7 @@ addAbility( "kiljaedens_burning_wish", {
     spend = 0,
     cast = 0,
     cooldown = 75,
+    texture = 1357805,
     gcdType = 'off',
     toggle = 'cooldowns',
 } )
