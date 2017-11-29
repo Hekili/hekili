@@ -11,7 +11,11 @@ local getSpecializationID = ns.getSpecializationID
 local round, roundUp = ns.round, ns.roundUp
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 local tCopy = ns.tableCopy
+
+
+local tInsert = table.insert
 local tSort = table.sort
+local tWipe = table.wipe
 
 
 local PTR = ns.PTR
@@ -532,7 +536,7 @@ local function applyBuff( aura, duration, stacks, value )
     
     if state.cycle then
         if duration == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] - 1
-    else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+        else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
         return
     end
     
@@ -542,7 +546,7 @@ local function applyBuff( aura, duration, stacks, value )
     if duration == 0 then
         state.buff[ aura ].expires = 0
         state.buff[ aura ].count = 0
-        state.buff[ aura ].value = 0
+        state.buff[ aura ].v1 = 0
         state.buff[ aura ].applied = 0
         state.buff[ aura ].caster = 'unknown'
         
@@ -555,13 +559,13 @@ local function applyBuff( aura, duration, stacks, value )
         state.buff[ aura ].expires = state.query_time + ( duration or class.auras[ aura ].duration )
         state.buff[ aura ].applied = state.query_time
         state.buff[ aura ].count = stacks or 1
-        state.buff[ aura ].value = value or 0
+        state.buff[ aura ].v1 = value or 0
         state.buff[ aura ].caster = 'player'
     end
     
     if aura == 'heroism' or aura == 'time_warp' or aura == 'ancient_hysteria' then
         applyBuff( 'bloodlust', duration, stacks, value )
-    elseif class.auras[ aura ].id == class.auras.potion.id and aura ~= 'potion' then
+    elseif aura ~= 'potion' and class.auras[ aura ].id == class.auras.potion.id then
         applyBuff( 'potion', duration, stacks, value )
     end
     
@@ -750,12 +754,13 @@ local function forecastResources( resource )
 
     if models then
         for k, v in pairs( models ) do
-            if  ( not resource  or v.resource == resource ) and
-                ( not v.spec    or state.spec[ v.spec ] ) and
-                ( not v.equip   or state.equipped[ v.equip ] ) and 
-                ( not v.talent  or state.talent[ v.talent ].enabled ) and
-                ( not v.aura    or state.buff[ v.aura ].up ) and
-                ( not v.setting or state.settings[ v.setting ] ) then
+            if  ( not resource    or v.resource == resource ) and
+                ( not v.spec      or state.spec[ v.spec ] ) and
+                ( not v.equip     or state.equipped[ v.equip ] ) and 
+                ( not v.talent    or state.talent[ v.talent ].enabled ) and
+                ( not v.aura      or ( v.debuff and state.debuff[ v.aura ].up or state.buff[ v.aura ].up ) ) and
+                ( not v.set_bonus or state.set_bonus[ v.set_bonus ] > 0 ) and
+                ( not v.setting   or state.settings[ v.setting ] ) then
 
                 local r = state[ v.resource ]
 
@@ -865,7 +870,7 @@ ns.forecastResources = forecastResources
 
 
 local function gain( amount, resource, overcap )
-    
+
     -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     if overcap then state[ resource ].actual = state[ resource ].current + amount
     else state[ resource ].actual = min( state[ resource ].max, state[ resource ].current + amount ) end
@@ -882,12 +887,57 @@ local function spend( amount, resource )
     
     -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     state[ resource ].actual = max( 0, state[ resource ].actual - amount )
-    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end    
+    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
     
     ns.callHook( 'spend', amount, resource )
 
 end
 state.spend = spend
+
+
+do
+    -- Rechecking System
+    -- Setup on a per-ability basis, this gives the prediction engine a head's up that the ability may become ready in a short time.
+
+    state.recheckTimes = {}
+
+    local lastRecheckAbility = nil
+    local lastRecheckTime = 0
+
+    function state.recheck( ability, ... )
+        local args = select( "#", ... )
+
+        if ability == lastRecheckAbility and state.query_time == lastRecheckTime then
+            return
+        end
+
+        local times = state.recheckTimes
+        tWipe( times )
+
+        lastRecheckAbility = ability
+        lastRecheckTime = state.query_time
+
+        -- Hekili:Print( "Recheck given " .. args .. " args for " .. ability .. "." )
+        -- print( ... )
+
+        tInsert( times, 0.01 + state.gcd * 0.5 )
+        tInsert( times, 0.01 + state.gcd )
+
+        for i = 1, args do
+            local t = select( i, ... )
+
+            if type( t ) == 'number' and t > 0 then
+                tInsert( times, 0.01 + t )
+            else
+                -- Hekili:Print( "Arg " .. ( t and t or "(nil)" ) .. " was <= 0." )
+            end
+        end
+
+        tSort( times )
+    end
+
+end
+
 
 
 --------------------------------------
@@ -1080,18 +1130,29 @@ local mt_state = {
             local dot = class.auras[ aura ]
 
             if not t.dot[ aura ].up or not dot or not dot.tick_time then return 0 end
+            return dot.tick_time
             
         elseif k == 'remains' then
-            return t.dot[ t.this_action ].remains
+            local aura =  class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
+            local dot = class.auras[ aura ]
+
+            return dot and t.dot[ aura ].remains or 0
             
         elseif k == 'tick_time' then
             local aura = class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
             local dot = class.auras[ aura ]
 
             return t.dot[ aura ].up and class.auras[ aura ].tick_time or 0
+
+        elseif k == 'duration' then
+            local aura = class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
+            local dot = class.auras[ aura ]
+
+            return dot and dot.duration or 0
             
-        elseif k == 'travel_time' then return 0
-            
+        elseif k == 'travel_time' then 
+            return 0
+        
         elseif k == 'miss_react' then
             return false
             
@@ -1491,6 +1552,7 @@ local mt_settings = {
         elseif Hekili.DB.profile[ 'Class Option: '..k ] ~= nil then
             return Hekili.DB.profile[ 'Class Option: '..k ]
         elseif Hekili.DB.profile.trinkets[ state.this_action ] ~= nil then
+            if class.itemsInAPL[ state.spec.key ] and class.itemsInAPL[ state.spec.key ][ state.this_action ] then return false end
             return Hekili.DB.profile.trinkets[ state.this_action ][ k ]
         end
         
@@ -1593,7 +1655,7 @@ local mt_target = {
                 return false
             end
             
-            return ( t.minR >= tonumber( minR ) )
+            return ( t.minR > tonumber( minR ) )
             
         elseif k:sub(1, 5) == 'range' then
             local minR, maxR = k:match( "^range(%d+)to(%d+)$" )
@@ -1746,6 +1808,10 @@ local mt_default_cooldown = {
             end
             
             -- if not ns.isKnown( t.key ) then return 0 end
+
+            if not state.action[ t.key ].enabled and Hekili.DB.profile.feignCD[ t.key ] then
+                return class.abilities[ t.key ].elem.cooldown
+            end
             
             local bonus_cdr = 0
             bonus_cdr = ns.callHook( "cooldown_recovery", bonus_cdr ) or bonus_cdr
@@ -1783,7 +1849,7 @@ local mt_default_cooldown = {
             end
             return t.remains
             
-        elseif k == 'up' or k == 'ready' then
+        elseif k == 'up' or k == 'ready' then            
             return ( t.remains == 0 )
             
         end
@@ -2168,7 +2234,7 @@ local mt_resource = {
                 local q = state.query_time
                 local index, slice
 
-                if t.times[ amount ] then return t.times[ amount ] end
+                if t.times[ amount ] then return t.times[ amount ] - q end
 
                 if t.regen == 0 then
                     for i = 1, t.fcount do
@@ -2764,10 +2830,7 @@ ns.metatables.mt_debuffs = mt_debuffs
 local mt_default_action = {
     __index = function(t, k)
         if k == 'enabled' then
-            local ability = t.action
-            local toggle = class.abilities[ ability ].toggle
-
-            return not Hekili.DB.profile.blacklist[ ability ] and ( not toggle or state.toggle[ toggle ] )
+            return ns.isKnown( t.action )            
 
         elseif k == 'gcd' then
             if t.gcdType == 'offGCD' then return 0
@@ -3692,11 +3755,35 @@ ns.isKnown = function( sID )
         return false
     end
 
+    if ability.spec and not state.spec[ ability.spec ] then
+        return false
+    end
+
+    if ability.nospec and state.spec[ ability.nospec ] then
+        return false
+    end
+
+    local pToggle = Hekili.DB.profile.toggles[ ability.key ]
+
+    if not pToggle or pToggle == 'default' then
+        if ability.toggle and not state.toggle[ ability.toggle ] then return false end
+    elseif pToggle ~= 'none' then
+        if not state.toggle[ pToggle ] then return false end
+    end
+
     if ability.talent and not state.talent[ ability.talent ].enabled then
         return false
     end
 
     if ability.notalent and state.talent[ ability.notalent ].enabled then
+        return false
+    end
+
+    if ability.trait and not state.artifact[ ability.trait ].enabled then
+        return false
+    end
+
+    if ability.equipped and not state.equipped[ ability.equipped ] then
         return false
     end
 
@@ -3719,8 +3806,7 @@ end
 -- Filter out non-resource driven issues with abilities.
 ns.isUsable = function( spell )
 
-    local ability = class.abilities[ spell ]
-    
+    local ability = class.abilities[ spell ]    
     if not ability then return true end
 
     if ability.item and not state.equipped[ ability.item ] then
@@ -3731,11 +3817,11 @@ ns.isUsable = function( spell )
         return false
     end
 
-    if ability.toggle and not state.toggle[ ability.toggle ] then
+    if ability.form and not state.buff[ ability.form ].up then
         return false
     end
 
-    if ability.form and not state.buff[ ability.form ].up then
+    if ability.buff and not state.buff[ ability.buff ].up then
         return false
     end
     
@@ -3801,8 +3887,8 @@ local TTRtime = 0
 
 
 -- Needs to be expanded to handle energy regen before Rogue, Monk, Druid will work.
-function ns.timeToReady( action )
-    
+function ns.timeToReady( action, pool )
+
     local now = state.now + state.offset
     
     -- Need to ignore the wait for this part.
@@ -3829,22 +3915,31 @@ function ns.timeToReady( action )
     end
 
     -- For special cases where we want to pool more of a resource than is required for usage.
-    if ability.ready and type( ability.ready ) == 'number' then
+    if not pool and ability.ready and type( ability.ready ) == 'number' then
         spend = ability.ready
     end
 
-    -- Okay, so we don't have enough of the resource.
-    if resource and spend > state[ resource ].actual then
-        wait = max( wait, state[ resource ][ 'time_to_' .. spend ] or 0 )
-    end
-    
-    if ability.ready and type( ability.ready ) == 'function' then
-        wait = max( wait, ability.ready() )
+    if spend and resource and spend > 0 and spend < 0 then
+        spend = spend * state[ resource ].max
     end
 
-    if state.script.entry then
-        wait = ns.checkTimeScript( state.script.entry, wait, spend, resource ) or wait
-    end  
+    -- Okay, so we don't have enough of the resource.
+    if resource and spend > state[ resource ].current then
+        wait = max( wait, state[ resource ][ 'time_to_' .. spend ] or 0 )
+        wait = ceil( wait * 100 ) / 100 -- round to the hundredth.
+    end
+    
+    -- If ready is a function, it returns time.
+    -- Ignore this if we are just checking pool_resources.
+    if not pool then
+        if  ability.ready and type( ability.ready ) == 'function' then
+            wait = max( wait, ability.ready() )
+        end
+
+        if state.script.entry then
+            wait = ns.checkTimeScript( state.script.entry, wait, spend, resource ) or wait
+        end
+    end
     
     -- cacheTTR[ action ] = wait
     return wait   
@@ -3884,20 +3979,26 @@ function ns.isReadyNow( action )
 
     if state.cooldown[ action ].remains - clash > 0 then return false end
 
+    local wait = ns.callHook( "timeToReady", 0, action )
+
+    if wait and wait > 0 then return false end
+
+    if a.ready and type( a.ready ) == 'function' and a.ready() > 0 then return false end
+
     if a.spend and a.spend ~= 0 then
         local spend, resource
 
         if type( a.spend ) == 'number' then
             spend = a.spend
-            resource = a.spend_type
+            resource = a.spend_type or class.primaryResource
 
         elseif type( a.spend ) == 'function' then
             spend, resource = a.spend()
 
         end
 
-        if a.ready then
-            spend = type( a.ready ) == 'number' and a.ready or a.ready()
+        if a.ready and type( a.ready ) == 'number' then
+            spend = a.ready
         end
 
         if spend > 0 and spend < 1 then
@@ -3905,7 +4006,7 @@ function ns.isReadyNow( action )
         end
 
         if spend > 0 then
-            return state[ resource ].current >= spend
+            return state[ resource ].current >= spend 
         end
     end
 

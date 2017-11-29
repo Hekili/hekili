@@ -51,7 +51,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         Hekili:Print("Initializing Hunter Class Module.")
 
         setClass( 'HUNTER' )
-        addResource( 'focus', true )
+        addResource( 'focus', SPELL_POWER_FOCUS )
 
         addTalent( 'animal_instincts', 204315 )
         addTalent( 'throwing_axes', 200163 )
@@ -118,10 +118,14 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addAura( 'camouflage', 199483, 'duration', 60 )
         addAura( 'dragonsfire_grenade', 194858, 'duration', 8 )
         addAura( 'explosive_trap', 13812, 'duration', 10 )
+        addAura( "exposed_flank", 252094, "duration", 20 )
+            class.auras.t21_exposed_flank = class.auras.exposed_flank
+
         addAura( 'feign_death', 5384, 'duration', 360 )
         addAura( 'freezing_trap', 3355, 'duration', 60 )
         addAura( 'harpoon', 190927, 'duration', 3 )
         addAura( 'helbrine_rope_of_the_mist_marauder', 213154, 'duration', 10 )
+        addAura( "in_for_the_kill", 252095, "duration", 15, "max_stack", 6 )
         addAura( 'lacerate', 185855, 'duration', 12 )
         addAura( 'moknathal_tactics', 201081, 'duration', 10, 'max_stack', 4 )
         addAura( 'mongoose_fury', 190931, 'duration', 14, 'max_stack', 6 )
@@ -140,6 +144,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         -- Gear Sets
         addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
         addGearSet( 'tier20', 147142, 147144, 147140, 147139, 147141, 147143 )
+        addGearSet( 'tier21', 152133, 152135, 152131, 152130, 152132, 152134 )
 
         addGearSet( 'talonclaw', 128808 )
         setArtifact( 'talonclaw' )
@@ -243,6 +248,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
+
+        -- ignoreCastOnReset( "fury_of_the_eagle" )
+
+
+
         local function genericHasteMod( x )
             return x * haste
         end
@@ -278,7 +288,8 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cast = 0,
             gcdType = 'off',
             cooldown = 120,
-            toggle = 'cooldowns'
+            toggle = 'cooldowns',
+            recheck = function () return buff.mongoose_fury.remains - 11, buff.mongoose_fury.remains end,
         } )
 
         modifyAbility( 'aspect_of_the_eagle', 'cooldown', function( x )
@@ -322,7 +333,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             recharge = 12,
             cooldown = 12,
             velocity = 20,
-            known = function () return talent.butchery.enabled end,
+            talent = 'butchery',
+            recheck = function ()
+                local pool_goal = 90 - ( cooldown.flanking_strike.remains * focus.regen )
+                local pool_time = focus[ "time_to_" .. pool_goal ]
+                return dot.lacerate.remains - ( dot.lacerate.duration * 0.3 ), dot.lacerate.remains, dot.serpent_sting.remains - ( dot.serpent_sting.duration * 0.3 ), dot.serpent_sting.remains, pool_time
+            end
         } )
 
         modifyAbility( 'butchery', 'ready', function( x )
@@ -371,7 +387,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'spell',
             cooldown = 15,
             passive = true,
-            known = function () return talent.caltrops.enabled end,
+            talent = 'caltrops',
+            aura = 'caltrops',
+            recheck = function () return dot.caltrops.remains - ( dot.caltrops.duration * 0.3 ), dot.caltrops.remains end,
         } )
 
         -- addHandler() -- Maybe for the snare?
@@ -384,7 +402,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cast = 0,
             gcdType = 'off',
             passive = true,
-            known = function () return talent.camouflage.enabled end,
+            talent = 'camouflage',
         } )
 
         addHandler( 'camouflage', function ()
@@ -401,7 +419,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'melee',
             cooldown = 0,
             velocity = 60,
-            known = function () return not talent.butchery.enabled end,
+            notalent = 'butchery',
+            recheck = function ()
+                local pool_goal = 90 - ( cooldown.flanking_strike.remains * focus.regen )
+                local pool_time = focus[ "time_to_" .. pool_goal ]
+                return dot.lacerate.remains - ( dot.lacerate.duration * 0.3 ), dot.lacerate.remains, dot.serpent_sting.remains - ( dot.serpent_sting.duration * 0.3 ), dot.serpent_sting.remains, pool_time
+            end
         } )
 
         modifyAbility( 'carve', 'ready', function( x )
@@ -446,7 +469,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cooldown = 30,
             velocity = 20,
             passive = true, -- since it could be in the air I guess.
-            known = function () return talent.dragonsfire_grenade.enabled end,
+            talent = 'dragonsfire_grenade',
         } )
 
         addHandler( 'dragonsfire_grenade', function ()
@@ -529,9 +552,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'melee',
             cooldown = 45,
             velocity = 60,
-            known = function () return equipped.talonclaw end,
+            equipped = 'talonclaw',
             toggle = 'artifact',
-            channeled = true
+            channeled = true,
+            recheck = function () return buff.aspect_of_the_eagle.remains end,
         } )
 
         modifyAbility( 'fury_of_the_eagle', 'cast', genericHasteMod )
@@ -587,6 +611,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'melee',
             cooldown = 0,
             velocity = 60,
+            recheck = function () 
+                local pool_goal = 85 - ( cooldown.flanking_strike.remains * focus.regen )
+                local pool_time = focus[ "time_to_" .. pool_goal ]
+
+                return dot.lacerate.remains - 14, dot.lacerate.remains - ( dot.lacerate.duration * 0.3 ), dot.lacerate.remains, pool_time
+            end,
         } )
 
         modifyAbility( 'lacerate', 'ready', function( x )
@@ -614,6 +644,17 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             recharge = 12,
             cooldown = 12,
             velocity = 20,
+            recheck = function ()
+                local next_charge = ( 1 - ( charges_fractional % 1 ) ) * recharge
+
+                if charges == 0 then
+                    return next_charge, next_charge + recharge, next_charge + recharge * 2
+                elseif charges == 1 then
+                    return next_charge, next_charge + recharge
+                elseif charges == 2 then
+                    return next_charge
+                end
+            end,
         } )
 
         modifyAbility( 'mongoose_bite', 'recharge', genericHasteMod )
@@ -623,9 +664,15 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             if equipped.butchers_bone_apron then
                 addStack( 'butchers_bone_apron', 3600, 1 )
             end
+
             if buff.mongoose_fury.stack == 5 and set_bonus.tier19_4pc == 1 then
                 applyBuff( 'mongoose_power', 10 )
             end
+
+            if set_bonus.tier21_4pc > 0 then
+                applyBuff( "in_for_the_kill", 15, buff.in_for_the_kill.stack + 1 )
+            end
+
             applyBuff( 'mongoose_fury', buff.mongoose_fury.remains > 0 and buff.mongoose_fury.remains or 14, min( 6, buff.mongoose_fury.stack + 1 ) )
 
         end )
@@ -683,6 +730,15 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cast = 0,
             gcdType = 'melee',
             cooldown = 0,
+            recheck = function ()
+                local pool_goal = 75 - ( gcd * focus.regen )
+                local pool_time = focus[ "time_to_" .. pool_goal ]
+
+                if talent.way_of_the_moknathal.enabled then
+                    return buff.moknathal_tactics.remains - gcd * 4, buff.moknathal_tactics.remains - rebuff_window, buff.moknatha_tactics.remains - gcd, buff.moknathal_tactics.remains, pool_time
+                end
+                return pool_time
+            end
         } )
 
         addHandler( 'raptor_strike', function ()
@@ -693,6 +749,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             if talent.serpent_sting.enabled then
                 applyDebuff( 'target', 'serpent_sting', 15 )
             end
+
+            removeBuff( "exposed_flank" )
+            removeBuff( "in_for_the_kill" )
         end )
 
         addAbility( 'spitting_cobra', {
@@ -703,11 +762,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'spell',
             cooldown = 60,
             toggle = 'cooldowns',
-            known = function () return talent.spitting_cobra.enabled end,
+            talent = 'spitting_cobra'
         } )
 
         addHandler( 'spitting_cobra', function ()
-            summonPet( 'spiting_cobra', 30 )
+            summonPet( 'spitting_cobra', 30 )
             applyBuff( 'spitting_cobra', 30 )
             -- focus.regen = focus.regen + 3
         end )
@@ -720,8 +779,8 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cast = 0,
             gcdType = 'off',
             cooldown = 120,
-            known = function () return talent.snake_hunter.enabled end,
-            toggle = 'cooldowns'
+            talent = 'snake_hunter',
+            toggle = 'cooldowns',
         } )
 
         addHandler( 'snake_hunter', function ()
@@ -737,7 +796,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'spell',
             cooldown = 30,
             passive = true,
-            known = function () return not talent.steel_trap.enabled end,
+            notalent = 'steel_trap',
         } )
 
 
@@ -765,7 +824,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'spell',
             cooldown = 30,
             passive = true,
-            known = function () return not talent.caltrops.enabled end,
+            notalent = 'caltrops'
         } )
 
 
@@ -777,7 +836,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'spell',
             cooldown = 60,
             passive = true,
-            known = function () return talent.steel_trap.enabled end,
+            talent = 'steel_trap'
         } )
 
         addHandler( 'steel_trap', function ()
@@ -794,7 +853,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'spell',
             cooldown = 25,
             velocity = 20,
-            known = function () return talent.sticky_bomb.enabled end,
+            talent = 'sticky_bomb'
         } )
 
 
@@ -808,7 +867,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             charges = 2,
             recharge = 15,
             velocity = 40,
-            known = function () return talent.throwing_axes.enabled end
+            talent = 'throwing_axes'
         } )
 
         modifyAbility( 'throwing_axes', 'cooldown', genericHasteMod )
@@ -824,7 +883,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'spell',
             cooldown = 60,
             velocity = 60,
-            known = function () return talent.a_murder_of_crows.enabled end
+            talent = 'a_murder_of_crows'
         } )
 
         modifyAbility( 'a_murder_of_crows', 'ready', function( x )
@@ -844,28 +903,26 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
     end
 
 
-    storeDefault( [[SimC Survival: biteFill]], 'actionLists', 20170717.202456, [[dOJNhaGEKQSjPc2LuLTHQeZePQy2ICtk5BssNMIDkQ9s2nk7hPCyQ(Rq1Vr8yPCEPsdgOgUqoesvvJdvHCmj15qvKfQkSuGSyKSCqpKs5PqlJs1ZfmruL0uvLMSetxLlQk6ZQQ8mufQRJk2isvPTQQQnlu2oQ0hrQQCCuLY0qvQ(UuHETK42agnQQXJQOojsLlRCnPIUhQcADOkWWuvoOuvRA9k8jZPsRikH86I5CsNEieJwZ4jd98ZqykBVZofcAP5HPS9V6QF8I9o7vZtDAN3RkeBqt0juy)2ziSGEvUwVcFYCQ0k6HqSbnrNWJ87xA9AesQq6iliSpLjzUUcdrM7mSFXBekOlKowX08JafYiSj0Iu(7WSdmHcZoWeIrM7mSF0aBJqbDHGwAEykB)RUA9Nqqlq4aBlOxDcTXFTkweUdyStucTiLSdmH6u2UEf(K5uPv0dHydAIoHJ34yIIwPxmOHE0JeIhZW(n4b9iAG7anWfY1l5Tb9B9GlgCb(ovAc7tzsMRRqkoxJ)GDfshRyA(rGcze2eArk)Dy2bMqHzhycFW5A8hSRqqlnpmLT)vxT(tiOfiCGTf0RoH24Vwflc3bm2jkHwKs2bMqDkZJ1RWNmNkTIEieBqt0jC8ghtu0k9Ibn0JEKq8yg2VbpOhrdChObUqUEjVnOFRhCXGlW3PstyFktYCDf2Ci3jKowX08JafYiSj0Iu(7WSdmHcZoWeAZHCNqqlnpmLT)vxT(tiOfiCGTf0RoH24Vwflc3bm2jkHwKs2bMqDkZ76v4tMtLwrpeInOj6ecxm4c8DQ0e2NYKmxxHjVnOFtiDSIP5hbkKrytOfP83HzhycfMDGjK(4Tb9BcbT08Wu2(xD16pHGwGWb2wqV6eAJ)AvSiChWyNOeArkzhyc1PCN6v4tMtLwrpeInOj6e6TZWDXhBaMfObMhsdCnnWDGg4ZtJD9cdgn2fpCg2VEJ5uPvObUd0axixVWGrJDXdNH9RhCXGlW3PstyFktYCDfc9OJaJhoOPYeshRyA(rGcze2eArk)Dy2bMqHzhycb5rhbsdmEqtLje0sZdtz7F1vR)ecAbchyBb9QtOn(RvXIWDaJDIsOfPKDGjuNY8IEf(K5uPv0dH9PmjZ1vy42sXpOhjKowX08JafYiSj0Iu(7WSdmHcZoWeI3wIg4xOhje0sZdtz7F1vR)ecAbchyBb9QtOn(RvXIWDaJDIsOfPKDGjuNYv1RWNmNkTIEiSpLjzUUc94aCGLbJtIfVbjDmiKowX08JafYiSj0Iu(7WSdmHcZoWe2NgyloWYG0atIrdSniPJbHGwAEykB)RUA9Nqqlq4aBlOxDcTXFTkweUdyStucTiLSdmH6uMhPxHpzovAf9qyFktYCDfwG(pcleZax8FWX8YeshRyA(rGcze2eArk)Dy2bMqHzhyc5vO)JWcXmWrdm9doMxMqqlnpmLT)vxT(tiOfiCGTf0RoH24Vwflc3bm2jkHwKs2bMqDkZt6v4tMtLwrpe2NYKmxxHJNJsKGH7IFqpsiDSIP5hbkKrytOfP83HzhycfMDGj8jphLibd3rd8l0JecAP5HPS9V6Q1FcbTaHdSTGE1j0g)1Qyr4oGXorj0IuYoWeQt56p9k8jZPsROhcXg0eDcP)0aFMwfd7NW(uMK56kS5PdsIccPJvmn)iqHmcBcTiL)om7atOWSdmH280bjrbHGwAEykB)RUA9Nqqlq4aBlOxDcTXFTkweUdyStucTiLSdmH60jm7atiAaSrdmYbY1W1t8aAGPm3OVMusNea]] )
+    storeDefault( [[SimC Survival: CDs]], 'actionLists', 20171128.180630, [[d0Z8faGEqjAtuPAxuyBKs0(aLQVrqMnqZhuXnb0Pv42GCzv7ek7vA3eTFHgfPKgguzCksL7rkLHQiLgSGHtfhIkLCkQuCmk6WkTqfvlLuSyeTCsEiOQvPifltr8CQAIGsAQeyYiz6qUib16OsPEgOsxhHnckHTsQ0MrQTROmnsj8BrFgGVtkvJurQ6POgnu18aLYjjv8ykDnfjNNu1Fj0RPsoiO4AwbLH1tVeGOoVm2c9Y8ac(yGjuZgZwq3ogGhw9L1CWV(xSj4mfY0CY0zyc3P0ctZYSvnCqLldJfnsPVckMzfuwy5scEQoVmBvdhuz60s4nSek1LOya20wmaxCLHHCaoq6lVk7kVikvQlrL1rsnSlkvLLP8LbMu6UkSf6LlJTqVmmk7kFmiivQlrL1CWV(xSj4mfYexzn3Nek79vqrLHh)TUaMZo0LOswgysHTqVCrfBsfuwy5scEQoVmBvdhuzscAAJ17ClsmPfr4V4xaG3GWPmmKdWbsFzYR8x5Aibuwhj1WUOuvwMYxgysP7QWwOxUm2c9YZVYFLRHeqznh8R)fBcotHmXvwZ9jHYEFfuuz4XFRlG5SdDjQKLbMuyl0lxuXGBfuwy5scEQoVmBvdhuzscAAJ17ClsmPfr4V4xaG3GWPmmKdWbsFzsWmPePju6lRJKAyxuQklt5ldmP0Dvyl0lxgBHE55GzsfdWccL(YAo4x)l2eCMczIRSM7tcL9(kOOYWJ)wxaZzh6sujldmPWwOxUOIPfvqzHLlj4P68YSvnCqLjjOPnwVZTiXKweH)IFbaEdcNyW9yqRXajbnTb5v(RCnKamiCIb4aNyGKGM2GemtkrAcLEdcNyWnLHHCaoq6l7KOrklRJKAyxuQklt5ldmP0Dvyl0lxgBHE5PnrJuwwZb)6FXMGZuitCL1CFsOS3xbfvgE836cyo7qxIkzzGjf2c9YfvSPQGYclxsWt15LzRA4GkBZeKk1U0akLaY0FrYb6gw8RcW9XG2IbCXG7XajbnTbukbKP)I0ek9gQdTdPpgG9yaUXW0edaSuXG7XGwJbBMGuP2LgR35wKyslIWFXVaaVH6q7q6JbypgMkgCpgCRyGKGM2y9o3IetAre(l(fa4niCIb3uggYb4aPVSxUUUiEcj6QY6iPg2fLQYYu(YatkDxf2c9YLXwOxMLRRhdtpHeDvznh8R)fBcotHmXvwZ9jHYEFfuuz4XFRlG5SdDjQKLbMuyl0lxuX0YkOSWYLe8uDEz2QgoOYRfnMDrOucit)fPju6Jb3JbTgd2mbPsTlnGsjGm9xKCGUHf)QaCFmOTyaxmah4edKe00gqPeqM(lstO0BOo0oK(ya2IbtZyWnLHHCaoq6lVENBrIjTic)f)ca8L1rsnSlkvLLP8LbMu6UkSf6LlJTqVmmENBrXqshdi8pgeEba(YAo4x)l2eCMczIRSM7tcL9(kOOYWJ)wxaZzh6sujldmPWwOxUOIkZo3owWbSCrJuwSjtnvrTa]] )
 
-    storeDefault( [[SimC Survival: CDs]], 'actionLists', 20170717.202456, [[dSJ(faGELQOnbfTlQ02uQs7JKWSv4MkLtROVbfoSQ2jK2R0UrA)KAuIQmmOQFl8yQAOkjXGPy4kXbvsDkrvDmOY5uQcluPYsjulMGLtPhcLSkePSmQW6usktuPQAQiQjdX0v5IqPUhjrxgCDISrLK0wjjTzIA7iIPPuvEgIKptIVts1irKQBJWOjK)kkNKKY8usQUMsIZtf9ArLNlYtrDXvYLXM(cdaPcL3pi)sJR7kZlGF(J5E(3mOf1XkRuwmmGpbf1bECyGFVowXf3ESIJ9Hrz2BNlx5YR93mOPsUO4k5YytFHbG0DLzVDUCLLdVuY1lzTa90MvxLAdPWxETWCmpNLFR)Pq2fwlqVYQrrM()cBzAqHYBbIQVf9jGYLrFcO8AR)PG2qoSwGELfdd4tqrDGhhg4WxwmKcjRhsLCVYyjc852csacGEvO8wGG(eq5Ef1rjxgB6lmaKURm7TZLR8fkkdW1hXajuNM0gm1M80gbjzz3pTa(llKZorqg8kdWvArBYV8AH5yEolla2eyZnPkLvJIm9)f2Y0GcL3cevFl6taLlJ(eq5DGnb2CtQszXWa(euuh4XHbo8LfdPqY6Huj3RmwIaFUTGeGaOxfkVfiOpbuUxrjvjxgB6lmaKURm7TZLR8fkkdW1hXajuNM0gm1M80gbjzz3pTa(llKZorqg8kdWvArBYV8AH5yEollmIajtwY6SSAuKP)VWwMguO8wGO6BrFcOCz0NakVBebI2SQswNLfdd4tqrDGhhg4WxwmKcjRhsLCVYyjc852csacGEvO8wGG(eq5EfDFLCzSPVWaq6UYS3oxUYxOOma3L4MbnPnyQn5PncsYYUFAb8xwiNDIGm4vgGR0I2KF51cZX8CwEjUzqlRgfz6)lSLPbfkVfiQ(w0Nakxg9jGYRsCZGwwmmGpbf1bECyGdFzXqkKSEivY9kJLiWNBlibia6vHYBbc6taL7v0vk5YytFHbG0DLzVDUCLVqrzaU(igiH60K2GP2KN24JyGeQtDjcQsejityEGRx0BvGK2OsTbV2GP2iijl7seuLisqMSK1PRfi(jnPnQqBiL2qAAJIhrBWuBeKKLD)0c4VSqo7ebzWRmaxKqDQ2KF51cZX8Cwor)CqMij6b2YQrrM()cBzAqHYBbIQVf9jGYLrFcOmt)CG2q6s0dSLfdd4tqrDGhhg4WxwmKcjRhsLCVYyjc852csacGEvO8wGG(eq5EfDVLCzSPVWaq6UYS3oxUYxOOmaxFedKqDAsBWuBYtBeKKLDjcQsejitwY60nDVpN2OcvQno0gm1gbjzzxIGQercYKLSoDTaXpPjTrfAdP0gstBu8iAt(LxlmhZZz5pTa(llKZorqg8kdOSAuKP)VWwMguO8wGO6BrFcOCz0NakVoTa(tBczT5ebAd2VYaklggWNGI6apomWHVSyifswpKk5ELXse4ZTfKaea9Qq5Tab9jGY96vg9jGY8KalTHLSKmj5hRM2G1(t9Ab]] )
+    storeDefault( [[SimC Survival: AOE]], 'actionLists', 20171128.180630, [[dCJpdaGEOeTjjPSlLKxRKAFss1Sf18Hk1nf42k1oLyVu7gv7NO(jucddkghekdMidxqhusCkOsogIwiPYsHOfJslNKhIIEkyzi06Gq1eHqmvLyYqA6kUiPQNl0LvDDu4BqWwHQSzOuTDj1HLAAqP8zjjNMWHGq6zqfgnPy8qjDse0Jf5AiW5jL(ns)fQQrbv0M0lgqKJ9MrESodLEFdGyZuwcyOQf1DgXLLQGf6nG853X7crmKiqsseXwrIdcWgjPbiPeHJbdvsJGYJEXfsVyqpVzZh16muHvKfJwdSmMKMR0AGqoQi1dvzGt53qaffVwv69nyO07BqhJjP5kTgq(874DHigseiXya5JugQ0JEXJbMAEADaT(7ZhZAiGIw69n4XfIEXGEEZMpQ1zaskr4yarLLgrATGxLHkSISy0Ai15rrdJgiKJks9qvg4u(neqrXRvLEFdgk9(gy25rrdJgq(874DHigseiXya5JugQ0JEXJbMAEADaT(7ZhZAiGIw69n4XfC4fd65nB(OwNHkSISy0A4ynmtJI6J)O6qdeYrfPEOkdCk)gcOO41QsVVbdLEFd6XAyMgf1xwAr1Hgq(874DHigseiXya5JugQ0JEXJbMAEADaT(7ZhZAiGIw69n4XfS5fd65nB(OwNbiPeHJbCklnD(8zv8QWZh8JJGx1QZB28rLLQMSekDwfVk88b)4i4vTsDSREutZMVSeUKLWnULLWPSuNgr9X)8VfpklvDzjcKLWLHkSISy0Ai1Q6BGqoQi1dvzGt53qaffVwv69nyO07BGzRQVbKp)oExiIHebsmgq(iLHk9Ox8yGPMNwhqR)(8XSgcOOLEFdE8yacFs0zbw2JGYDHibe4Xg]] )
 
-    storeDefault( [[SimC Survival: AOE]], 'actionLists', 20170717.202456, [[dCd0daGEuQ0MGq1UGk2guj2hekZwKBsL(MuyNc2lz3iTFu0OGkPHjv9BedgQA4sLdsP6uqLQJrfNdLclKQyPq0IHYYr1drjpfSmi1Zf1eHkLPkLMSQmDvUiLYPP4YkxhfoSKTcjTzuQA7uvpwOxlfnnkbpdLIUTQ6qOuQrtjnEkHojK4ZqixdcopvP)sjADOuYprPILJAfyJwyP9eMaCBSVyKo5ra0TOPsg2TodHQaAeqqaYLwLNcO7DA0JlOrahh2ab0wOHaiYnDNab2JNHqZQvbh1kWgTWs7jpcSJzsMZRamgx064EfGc9zI1r4cOe6e4sEOw8q9NabH6pbEyCrRJ7vaYLwLNcO7DA40la5Yeg84YQvNawwxSPlXF)rpHjWL8c1Fc0PaA1kWgTWs7jpcGi30DcyBM4ptSPHIib2XmjZ5vqSshN0LfGc9zI1r4cOe6e4sEOw8q9NabH6pbSQ0XjDzbixAvEkGU3PHtVaKltyWJlRwDcyzDXMUe)9h9eMaxYlu)jqNcSPAfyJwyP9Khb2XmjZ5vWSyxIKn(ZYJxDcqH(mX6iCbucDcCjpulEO(tGGq9NaBwSlrYg)XeFlV6eGCPv5Pa6ENgo9cqUmHbpUSA1jGL1fB6s83F0tycCjVq9NaDkyb1kWgTWs7jpcGi30DcUkn6HtE8UrplZNHIiCgTWs7XepIZe)JC4KhVB0ZY8zOich(ypFzRfwAcSJzsMZRGyX9NauOptSocxaLqNaxYd1IhQ)eiiu)jGvX9NaKlTkpfq370WPxaYLjm4XLvRobSSUytxI)(JEctGl5fQ)eOtbeuRaB0clTN8iaICt3jOINXFwo6(MLzIhXyIhbb2XmjZ5vqS4(tak0NjwhHlGsOtGl5HAXd1FceeQ)eWQ4(JjEC1b3fGCPv5Pa6ENgo9cqUmHbpUSA1jGL1fB6s83F0tycCjVq9NaD6eeQ)eaMplM4bgCFJFLylM4TZo20jb]] )
+    storeDefault( [[SimC Survival: default]], 'actionLists', 20171128.180630, [[d4d2jaGEsIVra7IK02ebv7teuMjbXPvA2OCyQUPiDEfLBl41IODcL9kTBI2pe)uHIggHACIqzDeOHkcXGvvdNs5qIq6uKsoMcoNiiwijLLskwmLSCkweb1tbltr1ZfAIku1uHutgQMUkxuv0vfbPlJCDs1Jf1wjeBwvy7K43OAwkuyAku67Iq1Zii9zkvJwH8xvPtsi9qf5AIa3JKQdcjhxHkJIuQ7qrxy80dxNDvTcyEGkaByc5d6gLvXzcI8XPhUo7kOHyKhPInx8GaddZtmvheAcg7WqbiBwBxHcOY3YLXIUydfDHNs3Ir4vTcq2S2UcAJ8PXPV2Sr4Q(WSQOcp((yL2jZzCBiFTkGYAz7nRGIBw3IrfMgr5KPCfkqYRwfs54I4gmpqfEywvuHhFoo91MncVaMhOcWXneYxeNPtfqzShli9aP(dZQIk84ZXPV2Sr4JHIZ0j11MgN(AZgHR6Gqfq8yfQwf0qmYJuXMlEqGbXf0qrUUjtXIUxbrL4B2pUPGKlPcPCCmpqf6vS5fDHNs3Ir4vTcq2S2UcAJ8pNrYt1e3N9YF8EJO3apP0Vrotvs6wmch5RvbuwlBVzfuCZ6wmQW0ikNmLRqbsE1Qqkhxe3G5bQqGNeTZi5r4fW8avaoUHq(I4mDc5R9GwfqzShli9aPEGNeTZi5r4JHIZ0j11(CgjpvtCF2l)X7nIEd8Ks)g5mvjPBXiCTkOHyKhPInx8GadIlOHICDtMIfDVcIkX3SFCtbjxsfs54yEGk0RycTOl8u6wmcVQvaL1Y2Bwb9i9UhfIfevIVz)4McsUKkKYXfXnyEGkuaZduHeAKq(IEuiwqdXipsfBU4bbgexqdf56Mmfl6EfMgr5KPCfkqYRwfs54yEGk0RyJTOl8u6wmcVQvaYM12v4CJD6ufNS0F8q1ShVvAxvDBfqzTS9MviORIkmQGOs8n7h3uqYLuHuoUiUbZduHcyEGkKQRIkmQGgIrEKk2CXdcmiUGgkY1nzkw09kmnIYjt5kuGKxTkKYXX8avOxXsqrx4P0TyeEvRaKnRTRGIBw3IrQg4jr7msEeEbuwlBVzfYoJ965B5Yx2gVctJOCYuUcfi5vRcPCCrCdMhOcfW8avyYzmKpQ8TCjYxiB8kGYypwq6bsDHHnmH8bDJYQ4mbr(bEYuFLNVsHlOHyKhPInx8GadIlOHICDtMIfDVcIkX3SFCtbjxsfs54yEGkaByc5d6gLvXzcI8d8KP(kpFL9kwcVOl8u6wmcVQvaL1Y2BwHSZyVE(wU8LTXRGOs8n7h3uqYLuHuoUiUbZduHcyEGkm5mgYhv(wUe5lKnEiFTh0QakJ9ybPhi1fg2WeYh0nkRIZee5pn(OWf0qmYJuXMlEqGbXf0qrUUjtXIUxHPruozkxHcK8QvHuooMhOcWgMq(GUrzvCMGi)PXh7vmbk6cpLUfJWRAfGSzTDf88Tk0ljPWsrKFctDKVqlGYAz7nRq2zSxpFlx(Y24vyAeLtMYvOajVAviLJlIBW8avOaMhOctoJH8rLVLlr(czJhYx75AvaLXESG0dK6cdByc5d6gLvXzcI8rnMpfUGgIrEKk2CXdcmiUGgkY1nzkw09kiQeFZ(XnfKCjviLJJ5bQaSHjKpOBuwfNjiYh1y(SxXsSIUWtPBXi8QwbiBwBxHef575BvO3axANZJ07dDZScOSw2EZkKDg71Z3YLVSnEfMgr5KPCfkqYRwfs54I4gmpqfkG5bQWKZyiFu5B5sKVq24H81wOAvaLXESG0dK6cdByc5d6gLvXzcI8FSmgzIcxqdXipsfBU4bbgexqdf56Mmfl6EfevIVz)4McsUKkKYXX8ava2WeYh0nkRIZee5)yzmYe7vSesrx4P0TyeEvRaKnRTRqII898Tk0BGlTZ5r69HUzwbuwlBVzfYoJ965B5Yx2gVctJOCYuUcfi5vRcPCCrCdMhOcfW8avyYzmKpQ8TCjYxiB8q(ApwTkGYypwq6bsDHHnmH8bDJYQ4mbr(w7rOnRD7Kr4cAig5rQyZfpiWG4cAOix3KPyr3RGOs8n7h3uqYLuHuooMhOcWgMq(GUrzvCMGiFR9i0M1UDY0RydIl6cpLUfJWRAfGSzTDf88Tk0BGlTZ5r69HUzwbuwlBVzfYoJ965B5Yx2gVctJOCYuUcfi5vRcPCCrCdMhOcfW8avyYzmKpQ8TCjYxiB8q(ANaTkGYypwq6bsDHHnmH8bDJYQ4mbr(w7rjYipscxqdXipsfBU4bbgexqdf56Mmfl6EfevIVz)4McsUKkKYXX8ava2WeYh0nkRIZee5BThLiJ8i1RxbWgLxNTQ43YLfBEcsqVwa]] )
 
-    storeDefault( [[SimC Survival: default]], 'actionLists', 20170717.202456, [[d4ZMiaGEOQAtKuWUuf12uLQ2hjfzMQICALMnKdt1nfPhRW3GkopczNqzVs7MW(v0pjPsddrnoskQNtPHssvdwudhH6qKusNsvOJHGZrsPwiuPLsswmPSCHwKQKNcwMiSob1evLktLeMmsnDvUOQkxLKcDzuxxGnssfBLe1MfeBhjFwvvptvknnvP47KuIBtXRHQmAr0FrKtsI8qs11GQY9eKgLQGdQQ8BIUeQIc)eUgIPRwH3XH4bOR4waiMhRJw873kfflb(WxbvmIDlxSeKjGd53NaFptqTXxI3GtbyexIVcf(g3kf2QOyeQIc)eUgIPlUfGrCj(kCY))r8ZR44ymG4ZoZQHz(Hz(84F(EMM1ccjKNhU9wX)NdiEMFSWN2I2JOcMa8JFexqjb9o8tgliKcUqQKwzpI5gUqbm3WfsdWp(rCbvmIDlxSeKjGdbYfuXwzqCW2QOxb9K8aVujfByXvTcPsAm3Wf6vSevrHFcxdX0f3cFAlApIkeyzs7XgBbLe07WpzSGqk4cPsAL9iMB4cfWCdxqnA5zwPJn2cQye7wUyjitahcKlOITYG4GTvrVc6j5bEPsk2WIRAfsL0yUHl0RyVTkk8t4AiMU4wagXL4RW5iwCpRwCIijdH0LKjzK4j8lPJEMfUgIPl8PTO9iQWWris(4wPGeATxbLe07WpzSGqk4cPsAL9iMB4cfWCdxq3rOz(BCRumZpT2RWx8VTGWnCOVG1OpZqqKAPCu4z2iXl1xX5R4vbvmIDlxSeKjGdbYfuXwzqCW2QOxb9K8aVujfByXvTcPsAm3WfG1OpZqqKAPCu4z2iXl1xX5ROxXEtvu4NW1qmDXTWN2I2JOcdhHi5JBLcsO1EfusqVd)KXccPGlKkPv2JyUHluaZnCbDhHM5VXTsXm)0AVz(bcpw4l(3wq4go0xWA0NziisTuok8mR)o7RcQye7wUyjitahcKlOITYG4GTvrVc6j5bEPsk2WIRAfsL0yUHlaRrFMHGi1s5OWZS(7S9kg(QIc)eUgIPlUfGrCj(kOwNzFClftYif)LsltkKGirf(0w0Eevy4iejFCRuqcT2RGsc6D4NmwqifCHujTYEeZnCHcyUHlO7i0m)nUvkM5Nw7nZpK4XcFX)2cc3WH(cwJ(mdbrQLYrHNzIJmU7XQpPB5xfuXi2TCXsqMaoeixqfBLbXbBRIEf0tYd8sLuSHfx1kKkPXCdxawJ(mdbrQLYrHNzIJmU7XQpPB5Ef79vrHFcxdX0f3cWiUeFf8XTumjwWMLTZSAk0z(Tf(0w0Eevy4iejFCRuqcT2RGsc6D4NmwqifCHujTYEeZnCHcyUHlO7i0m)nUvkM5Nw7nZp82hl8f)BliCdh6lyn6ZmeePwkhfEM)u3FVkOIrSB5ILGmbCiqUGk2kdId2wf9kONKh4LkPydlUQvivsJ5gUaSg9zgcIulLJcpZFQ7VEfdNQOWpHRHy6IBHpTfThrfgocrYh3kfKqR9kOKGEh(jJfesbxivsRShXCdxOaMB4c6ocnZFJBLIz(P1EZ8dV5XcFX)2cc3WH(cwJ(mdbrQLYrHNzT9y1N0T8RcQye7wUyjitahcKlOITYG4GTvrVc6j5bEPsk2WIRAfsL0yUHlaRrFMHGi1s5OWZS2ES6t6wUxXuZvrHFcxdX0f3cFAlApIkmCeIKpUvkiHw7vqjb9o8tgliKcUqQKwzpI5gUqbm3Wf0DeAM)g3kfZ8tR9M5hW3Jf(I)TfeUHd9fSg9zgcIulLJcpZA7XQZIqVkOIrSB5ILGmbCiqUGk2kdId2wf9kONKh4LkPydlUQvivsJ5gUaSg9zgcIulLJcpZA7XQZIq9kMAxff(jCnetxCl8PTO9iQWWris(4wPGeATxbLe07WpzSGqk4cPsAL9iMB4cfWCdxq3rOz(BCRumZpT2BMF49pw4l(3wq4go0xWA0NziisTuok8mhYIqC0(QGkgXULlwcYeWHa5cQyRmioyBv0RGEsEGxQKInS4QwHujnMB4cWA0NziisTuok8mhYIqC02Rxbm3WfG1OpZqqKAPCu4zMMdXdqxVwa]] )
+    storeDefault( [[SimC Survival: precombat]], 'actionLists', 20171128.180630, [[dqdbeaGEIu1UKO02isLzlQBsIBtv7KI9I2nH9lrgMQyCejzOKuAWIKHlLoOe6yq1ZLQfkIwQuSyIA5K6Huspf8yOSoIuAIKumvk1KL00HCrj43Q8msQCDsYYuvTvvL2SevBNi(irsDyHptK40uzKeP4BIuJwegpjvDsvj)Ls01OeoVQuttIIlR8AvftCAtqnR8qvgXKemHFeaN3APuGkTeNKilTLs1Qh25LdeHMLx0hn)p4PXX)LQYIRolkdoobat7Areiued5orN20GtBcfeHCEvMKqrzx2HEtORY7pHLTdr4LO6Wc0PjioXiOC1VH2e(rGGj8JG1iNlLsTdvkfoHMLx0hn)p4PXFi0S(PsJToTjIG1ed7JYjz(jquMGYvnHFeiIMFAtOGiKZRYKekk7Yo0BcThYDccVevhwGonbXjgbLR(n0MWpcemHFeu7HCNGqZYl6JM)h804peAw)uPXwN2erWAIH9r5Km)eiktq5QMWpcerJ6OnHcIqoVktsOOSl7qVjm13MVUtYSePJwcVevhwGonbXjgbLR(n0MWpcemHFekO(281DswPu26OLqZYl6JM)h804peAw)uPXwN2erWAIH9r5Km)eiktq5QMWpcertzOnHcIqoVktsOOSl7qVj0rBzlr6OLWlr1HfOttqCIrq5QFdTj8Jabt4hbaTLlLYwhTeAwErF08)GNg)HqZ6Nkn260MicwtmSpkNK5Narzckx1e(rGiASG2ekic58QmjHIYUSd9Mqvhs5e9YD6zPu0te1r4LO6Wc0PjioXiOC1VH2e(rGGj8JGA0HuorVCNELsj16jI6i0S8I(O5)bpn(dHM1pvAS1PnreSMyyFuojZpbIYeuUQj8Jar0iD0MqbriNxLjjuu2LDO3ese627eeEjQoSaDAcItmckx9BOnHFeiyc)iinHU9obHMLx0hn)p4PXFi0S(PsJToTjIG1ed7JYjz(jquMGYvnHFeiIicq7WCr2j9bYDcA(TWcIib]] )
 
-    storeDefault( [[SimC Survival: precombat]], 'actionLists', 20170717.202456, [[dqZjeaGEIs1UOcSnQGMTi3KeFJQYoP0Er7MW(LKgMK63kgkvOgSOQHlkhKQQJrsNJOKwOKyPkXIHQLtQhsL6PGLPu9CPAIuHmvQYKLY0HCrQKttXLvDDIQdlSvLsBMiy7ePpseYJHYNjIEgrPmsIs8ALIrlQmEQioPsQBlX1ikoVsY0OI0FPIADeHAQspcUebE6nItWrxcH8eIviazhZejJShiZiODxgziS80J(PDVw1xTd3LXbQYQm7o1hbatBYqei4hdzgrNE0QspcUebE6nwHGFCtYGwrOlVugHZzhryTOzWc0OjigXjOmTTH2gLtGGnkNG7iLQM3XhvnVkHLNE0pT71Q(uRjS8(ixJ9o9iIG7ChBJYi9LlqeNGY0Sr5eiI2D6rWLiWtVXkeamTjdranskz6oiBqMr0j4h3KmOveYgKzeewlAgSanAcIrCcktBBOTr5eiyJYj44bzgbHLNE0pT71Q(uRjS8(ixJ9o9iIG7ChBJYi9LlqeNGY0Sr5eiIwzJEeCjc80BScb)4MKbTIWDswA6gP3zKoYiSw0mybA0eeJ4euM22qBJYjqWgLtWLtYst3i9vZ7PJmclp9OFA3Rv9Pwty59rUg7D6reb35o2gLr6lxGiobLPzJYjqeToLEeCjc80BScb)4MKbTIqh9NCgPJmcRfndwGgnbXiobLPTn02OCceSr5ea0FQAEpDKry5Ph9t7ETQp1AclVpY1yVtpIi4o3X2OmsF5ceXjOmnBuobIOvg6rWLiWtVXke8JBsg0kcnDi5i6sWOVZsQViANWArZGfOrtqmItqzABdTnkNabBuobhPdjhrxcg9RMxI0xeTty5Ph9t7ETQp1AclVpY1yVtpIi4o3X2OmsF5ceXjOmnBuobIO1H0JGlrGNEJvi4h3KmOveYf6SzeewlAgSanAcIrCcktBBOTr5eiyJYjilHoBgbHLNE0pT71Q(uRjS8(ixJ9o9iIG7ChBJYi9LlqeNGY0Sr5eiIic2OCcGP4UAEqUwQrAKK4Q5Z0hBk4bIisa]] )
+    storeDefault( [[SimC Survival: fillers]], 'actionLists', 20171128.180630, [[dieOlaqikv1LuffBcjvJsrCkQQwfLkELQO0TOev7cPmmvLJrvwgvLNbLKPrPsxdjLTPkc(MQuJtvKCoOKQ1PkcnpvrL9rjkhKuXcrsEOQWevfvDrvjBekP8rvruNKuPzQkICtj1ovQLIepf1uvvTvkH9k(RI0Gj6WsTys5XuzYk5YGntQ6ZivJMs50u8Ajz2kCBOA3e(nIHROoUQi1YH8CjMUkxhk2oL03PeX4PePZdLA9uQY8HsSFsoE5p8Zd6BmJlufE34qy2G)qjzmiRgR94jQK6nJbGkHPadOlq2((8E7557PO5HvuZUEEHzhYmFHdRJ7merj)z7L)WVeT2awHQWSdzMVWoczSiwIGgorqNqkWunZb0C2AeDOOKpNsIvH1rZmmh2H1pArLrqFA5qMkiSUILX1hbfwqeq4AYYIgTBCiC4DJdHXAJwuze0vs(qMkimfyaDbY23N3BVVWuGcbdYbL8Nl8dBGRQMyfWbXfTW1K1UXHW5Y2x(d)s0AdyfQcRJMzyoSdxMn3ze0N6iAOoSUILX1hbfwqeq4AYYIgTBCiC4DJdH5zZDgbDL8brd1HPadOlq2((8E79fMcuiyqoOK)CHFydCv1eRaoiUOfUMS2noeox2yv(d)s0AdyfQcRJMzyoSdVqnDIOO3GGP0rGOxqyDflJRpckSGiGW1KLfnA34q4W7ghc)8OMoru0BqGs(KrGOxqykWa6cKTVpV3EFHPafcgKdk5px4h2axvnXkGdIlAHRjRDJdHZLTDZF4xIwBaRqvy2HmZxyeOhbfBT2ausSGfL0(k5zCvgb9W6OzgMd7WJ2bO(GW6kwgxFeuybraHRjllA0UXHWH3noe(j1oa1heMcmGUaz77Z7T3xykqHGb5Gs(Zf(HnWvvtSc4G4Iw4AYA34q4CztT8h(LO1gWkufMDiZ8fwdJE90oFEt9npfS0zsbwt1pArfnmZkj1vs7RKwBKP1ganCs1FpaXbRW6OzgMd7WOE(iOPLdzQGW6kwgxFeuybraHRjllA0UXHWH3noeMspFeKsYhYubHPadOlq2((8E79fMcuiyqoOK)CHFydCv1eRaoiUOfUMS2noeox2pH8h(LO1gWkufMDiZ8fEIsE9aehTcGMbXnTCgbDAGO1gWsjPUsAFLCroAfandIBA5mc60oJRYiORK(dRJMzyoSdJ65JGMwoKPccRRyzC9rqHfebeUMSSOr7ghchE34qyk98rqkjFitfOKt88hMcmGUaz77Z7T3xykqHGb5Gs(Zf(HnWvvtSc4G4Iw4AYA34q4Cz)o)HFjATbScvHzhYmFHrGEeuS1AdqjXcwus7RKNXvze0dRJMzyoSdxoagtpuphwxXY46JGcliciCnzzrJ2noeo8UXHW8bWqj)r9CykWa6cKTVpV3EFHPafcgKdk5px4h2axvnXkGdIlAHRjRDJdHZL9tL)WVeT2awHQWSdzMVWiqpck2ATbOKyblkP9vYZ4Qmc6H1rZmmh2HD94qK5syDflJRpckSGiGW1KLfnA34q4W7ghc)OhhImxctbgqxGS995927lmfOqWGCqj)5c)Wg4QQjwbCqCrlCnzTBCiCUSX65p8lrRnGvOkSoAMH5WomyPZdsXyfMEOEoSUILX1hbfwqeq4AYYIgTBCiC4DJdHFzPZdsXyfuYFuphMcmGUaz77Z7T3xykqHGb5Gs(Zf(HnWvvtSc4G4Iw4AYA34q4Cz79L)WVeT2awHQWSdzMVWwBKP1gan9iJ9ShP86PXyMNHLssDLCroAJ2bO(aAiqpck2ATbOKuxjNOK6jomfAomieioL0YuYjk5eLKAFk5ZQK29tj9RKwUsorjNOKoczSiwIGM(rlQmc6tlhYub0qaEBefL8zus6ULs6xjTJsorj1tCyk0qaDqOK2rjP7wkPFL0Vs6xj9hwhnZWCyhwdZ5SbiSdRRyzC9rqHfebeUMSSOr7ghchE34qyQWCoBac7WuGb0fiBFFEV9(ctbkemihuYFUWpSbUQAIvahex0cxtw7ghcNlBpV8h(LO1gWkufMDiZ8f2AJmT2aOPhzSN9iLxpngZ8mSusQRKlYrB0oa1hqdb6rqXwRnaLK6k5eLupXHPqZHbHaXPKwMsorjNOKu7tjFwL0UFkPFL0YvYjk5eL0riJfXse00pArLrqFA5qMkGgcWBJOOKpJss3Tus)kPDuYjkPEIdtHgcOdcL0okjD3sj9RK(vs)kP)W6OzgMd7WUgzfcRRyzC9rqHfebeUMSSOr7ghchE34q4hnYkeMcmGUaz77Z7T3xykqHGb5Gs(Zf(HnWvvtSc4G4Iw4AYA34q4Cz75l)HFjATbScvH1rZmmh2H1pArLrqFA5qMkiSUILX1hbfwqeq4AYYIgTBCiC4DJdHXAJwuze0vs(qMkqjN45pmfyaDbY23N3BVVWuGcbdYbL8Nl8dBGRQMyfWbXfTW1K1UXHW5Y2dRYF4xIwBaRqvy2HmZx4jkP1gzATbqdNu93dqCWsjPUsQHrVEA4KkrF26X0RDNXvOHa82ikk5ZPK0DlL0okPDvs)kjwWIsorj1tCyk0CyqiqCkPLPKtuYjk5BQPKwUsQN4WuOHa6GqjTJss3Tus)kPFL0FyD0mdZHDyupFe00YHmvqyDflJRpckSGiGW1KLfnA34q4W7ghctPNpcsj5dzQaLCIp)HPadOlq2((8E79fMcuiyqoOK)CHFydCv1eRaoiUOfUMS2noeoxUW8m4m9WyV(mer2(Og1YLa]] )
 
-    storeDefault( [[SimC Survival: fillers]], 'actionLists', 20170717.202456, [[dOZNeaGEsvPnHGAxePTHaAFiiZwj3uQ6Ba40KStLAVu7gv7xWOivmme53eoSKhlLbl0WrHdkv6uevDmrCosvXcrOwkiTysz5i9qrQvrQQwgI65IAIKQWub0Kb10vCruKxrQsUSQRtepdfvTvIkBwKSDq8xuQVJannuuMhkQ8AuYNbOrtugpcWjjv6wKQORjvCEeY6ivPEk0TbANyGgzIxARdBnJ6XtvswJj2iY4nvTu6Bnkb3BYD6ye6xVY3BYKsaGebsUJ0e9PdzMbGrSrvmgJg72gLGNnqVtmqJmXlT1HnXgXgvXymwTrb5Sp)GQNdrcfIjHiHdXPwNpsZNY48HDEuCaLEEPToCis4qewmsZNY48HDEuCaLsFk6ZYkT1n2vtTudrgBffYnQlhw1QrqnYf8BSxalxr3f4nACxG3y6Ic5gH(1R89MmPeasize6Zcj02ZgOhJPL9gREbKdE(ynJ9c4DbEJE8MSbAKjEPToSj2yxn1snezCKrfeuXbKDrapBuxoSQvJGAKl43yVawUIUlWB04UaVrGYOccQ4agIDjGNnc9Rx57nzsjaKqYi0NfsOTNnqpgtl7nw9cih88XAg7fW7c8g94nZBGgzIxARdBInInQIXySAJcYzF(bvphIekejBSRMAPgIm2kkKBuxoSQvJGAKl43yVawUIUlWB04UaVX0ffYdrDsK3i0VELV3KjLaqcjJqFwiH2E2a9ymTS3y1lGCWZhRzSxaVlWB0J3mZanYeV0wh2eBeBufJXOoH4uRZhPeSiITif7r2zdkyXRrwTKEEPToCis4qutsQusbfS41iRwSNQnQwwk9GLINdrMlebSbhI6pezwikVXUAQLAiYiTymck78qvSUrD5WQwncQrUGFJ9cy5k6UaVrJ7c8gHwmgbneXHQyDJq)6v(EtMucajKmc9zHeA7zd0JX0YEJvVaYbpFSMXEb8UaVrpE3XanYeV0wh2eBeBufJXykrtswAtcLE(eIeke1je1jej3je1ZqmLOjjlLEappe1FicydoeLpe1RqStNquEJD1ul1qKrAXyeu25HQyDJ6YHvTAeuJCb)g7fWYv0DbEJg3f4ncTymcAiIdvX6HOojYBe6xVY3BYKsaiHKrOplKqBpBGEmMw2BS6fqo45J1m2lG3f4n6XJXDbEJOcmDiIsOquqQLEhIPuR1Pzp2]] )
+    storeDefault( [[SimC Survival: mokMaintain]], 'actionLists', 20171128.180630, [[dmdJbaGEGs7ss9AOA2aMpi6Mq42Q0oHYEv2nj7hXOiQggvYVjmyKgUu6GGsNIkCmPAHeflfuTyQQLtQhckEkQLbrRtsYebIMkKAYsX0fUiqQll66uLTcKSzISDQOdt5BGutdOyEGKXjj1JLy0uPoTQojq4zGW1KeNNO0FHKVdu9Cv86d9yqMsMhqmzgJz3Cm)xyiu2t78DAavrOxboc7vH9QXWtG0o5Wq6QdDVJS66oevatVpMl6Vngpg2s8c1zOhwFOhdAL5dKntMXCr)TXy5eQVNKu9vGRSWTbGkSs8LtToV2RoekueQCcvN(EssOa)vncWjuhekKqsOYjuFpjP6RaxzHBdavyL4lN6tyfCcfkcfcc1bH6ymS(pWhYowBTHqJ6e6hphdcvZxSqOhReQCmcrdOmnMDZXJXSBogU1gcnHYH(XZXWtG0o5Wq6QdD31y45r4Pl5zOxmgg3zbhHWzEtvm)Xieny2nhVyXyUnlVb8G1IxOggYkvwSb]] )
 
-    storeDefault( [[SimC Survival: preBitePhase]], 'actionLists', 20170717.202456, [[d8ZWkaqAcRxssBcvk7svyBssv7tveMPKu5WIMTuESq3KOoVQkFts1ZfStj2l1Urz)KYOufvnmvLXjjf9zuLHkjfgmPA4QshuvvNsvKCmsCCvrPfkPSuKyXi1Yr8qjXtHwgrADssjtuvKAQaAYs10v5Ia0Rrfxw56eXgvfrBfvYMbW2jjFusk13rLQPHKW8uff3gONHKOrJQA8QIkNej1FjPUMKe3djPoess6CijXVbTvmqJaYs626M24tpasjTZ1mIVlkYMOQ5jGmxKwLQyKYAldZfPFk1)QEPv5HcvPksPI6gXir8Egn(pEcilyGUOyGgbKL0T1DnJyKiEpJriS1HCN9aeY4bHHPMwC7rKFs4TGM(ZOPtLg)tlAI7NraAjJJGXtD4icoZi1SUiMhKyKbzZOmSZvskj4mASKGZ4t2sghbJNMoEebNzKYAldZfPFk1v(mszbOesCbd0NXk8xKJmu1ah7mTrzyVKGZOpxKAGgbKL0T1DnJyKiEpJhKhV2EeHWwhYDwW4FArtC)mgEf3jy8uhH0K0i1SUiMhKyKbzZOmSZvskj4mASKGZi(kUtW4PPxbstsJuwBzyUi9tPUYNrklaLqIlyG(mwH)ICKHQg4yNPnkd7LeCg95cvAGgbKL0T1DnJ)PfnX9ZyNK8GSaacYuZJmw2NrQzDrmpiXidYMrzyNRKusWz0yjbNXNMK8GSaacY00R2KXY(mszTLH5I0pL6kFgPSaucjUGb6Zyf(lYrgQAGJDM2OmSxsWz0NluHbAeqws3w31mIrI49mMXtOAQhBGIf00PAnDfnDUPPFzBS7ryK3Xo1HtW49ySKUTUMo3007W7ryK3Xo1HtW49GmailWpPBZ4FArtC)msY3dsuhoIGZmsnRlI5bjgzq2mkd7CLKscoJglj4msjFpirthpIGZmszTLH5I0pL6kFgPSaucjUGb6Zyf(lYrgQAGJDM2OmSxsWz0NlvXancilPBR7Ag)tlAI7NXWT1uFK81i1SUiMhKyKbzZOmSZvskj4mASKGZiEBnnDGK81iL1wgMls)uQR8zKYcqjK4cgOpJv4VihzOQbo2zAJYWEjbNrFUu9gOrazjDBDxZ4FArtC)mMQbLq6JOgcG6ibY9GrQzDrmpiXidYMrzyNRKusWz0yjbNX)A6Ysi9r00HaOPxHa5EWiL1wgMls)uQR8zKYcqjK4cgOpJv4VihzOQbo2zAJYWEjbNrFUu3ancilPBR7Ag)tlAI7NX9CVnyqOAQps(AKAwxeZdsmYGSzug25kjLeCgnwsWzeWN7TbdcvtthijFnszTLH5I0pL6kFgPSaucjUGb6Zyf(lYrgQAGJDM2OmSxsWz0Nlvtd0iGSKUTURzeJeX7zKmailWpPBZ4FArtC)m2Y4i5nJuZ6IyEqIrgKnJYWoxjPKGZOXscoJvxghjVzKYAldZfPFk1v(mszbOesCbd0NXk8xKJmu1ah7mTrzyVKGZOpxOkgOrazjDBDxZigjI3Z4EwjI331Faaru1QcdQbqW4nYrYxnDUPP3H3JwghjV9GmailWpPBZ4FArtC)msl5I8h5NrQzDrmpiXidYMrzyNRKusWz0yjbNXAsUi)r(zKYAldZfPFk1v(mszbOesCbd0NXk8xKJmu1ah7mTrzyVKGZOpxu(mqJaYs626UMrmseVNX9SseVVR)aaIOQvfgudGGXBKJKVA6CttVdVhTmosE7bzaqwGFs3MX)0IM4(zmMevZi1SUiMhKyKbzZOmSZvskj4mASKGZyLKOAgPS2YWCr6NsDLpJuwakHexWa9zSc)f5idvnWXotBug2lj4m6Zfffd0iGSKUTURzeJeX7zmYpj8wqtNQ10PsnDUPPhHWwhYD2daAjJJGXtD4ico7bzGPGf00FcQwtNxSB8pTOjUFgbHmEqyyQPf3msnRlI5bjgzq2mkd7CLKscoJglj4mkdz8GWW00RjUzKYAldZfPFk1v(mszbOesCbd0NXk8xKJmu1ah7mTrzyVKGZOpxuKAGgbKL0T1DnJyKiEpJuvn9te5iy8m(Nw0e3pJXSDe4BWi1SUiMhKyKbzZOmSZvskj4mASKGZyLSDe4BWiL1wgMls)uQR8zKYcqjK4cgOpJv4VihzOQbo2zAJYWEjbNrFUOqLgOrazjDBDxZ4FArtC)mcqlzCemEQdhrWzgPM1fX8GeJmiBgLHDUssjbNrJLeCgFYwY4iy800XJi4mn9Nx5PmszTLH5I0pL6kFgPSaucjUGb6Zyf(lYrgQAGJDM2OmSxsWz0NlkuHbAeqws3w31mIrI49msgykybn9NrtxHk005MMEyNAAits4Xjgr6NAPVrn9Nqt)Z4FArtC)m2Y4i5nJuZ6IyEqIrgKnJYWoxjPKGZOXscoJvxghjVPP)8kpLrkRTmmxK(Pux5ZiLfGsiXfmqFgRWFroYqvdCSZ0gLH9scoJ(8zSKGZikaROPJsiQeQYw1st)LSAIBvd(zy(Sba]] )
+    storeDefault( [[SimC Survival: bitePhase]], 'actionLists', 20171128.180630, [[dqKEkaqiePCjvfLnHiPrbvCkOsRsvrELsuAwkrIBrkv1UqsddQ6yuyzKQEgPuMMQc6AKcTnsPkFtvLXHivNtjkSoLivZtjQ6EkrSpsPYbvvAHQQ6HkPMOQcCreXgvIkFujk6KKsMPQIQBsr7uvgQsK0srupf1uHsBLu0Ef)vfgmvDyPwms9yjMSsDzWMrOpdfJMu50K8AKy2Q0TL0Uj8BfdhblNONtPPd56QOTRe(oPGXJiX5vswVsKY8vvO9tLJrWg(daI95fL)HFDfcZQ6ANNpLlul67s35PviyPQRTqyYWfAlKNE8g)mm0t6un0Mg)qdJWCrQiGch(BbPgHnyZZiydtIOPVWo)dZfPIakCzM7E0GGADeyMXch0keqTORLyaRZVeNxBH)sRUk0QW1rGzglCqRqqyTeBvPrJmSyeqyZzRzlFDfch(1viS5iWmJfC()keeMmCH2c5PhVXpd8Hjd25uwaBWgu416GcfZzbubbk0HnN9RRq4GYtFWgMertFHD(hMlsfbuy6tIePwhbMzSWbXt5kQsO2kH151oNhhNhtz78FY5XX5lZC3JgeuRJaZmw4GwHaQfDTedyD(L15nCECDECd)LwDvOvHjEBbfLaZHfjvuGWAj2QsJgzyXiGWMZwZw(6keo8RRq4L72ckkbgNNrsffimz4cTfYtpEJFg4dtgSZPSa2GnOWR1bfkMZcOccuOdBo7xxHWbLN2c2WKiA6lSZ)WCrQiGc3fKAbCuhbMzSWbXt5QWFPvxfAv46iWmJfoOviiSwITQ0OrgwmciS5S1SLVUcHd)6ke2CeyMXco)FfcCECmWnmz4cTfYtpEJFg4dtgSZPSa2GnOWR1bfkMZcOccuOdBo7xxHWbL3hgSHjr00xyN)H5IurafghNN0C(fTu10xGADOGTVGabBN)JF05XX5PpjsKADOiAKU(EG6csvSuLqTvcRZRDopoopMY25)KZJJZt6o)N58AZ5X15X15X15X15jvNN0CE6tIeP2wcqbDmepq6GdOXCbQNec)LwDvOvHjEkxDmepq6GdOXCHWR1bfkMZcOccuOdBoBnB5RRq4WVUcHxUt5kNFi68iDGZtsJ5cH)kXydReiqkpjGou1kSvncwIXsrjqGuEsaDOiUKYm39Obb16iWmJfoOviGArxlXa2LOTp(rCqQcf7HeQTsS8lXGuPpjsKADOiAKU(EG6csvSuLqTvc7YJN6pCdtgUqBH80J34Nb(WKb7CklGnydkSwITQ0OrgwmciS5SFDfchuEAmydtIOPVWo)dZfPIak8EquVDbKncOkbIsWQRPVGZtQopoopXPCAPwoLsqGCETZ5XX5XX51iENFzDETPrNhxNx778448448LzU7rdcQeVTGIsG5WIKkkavjuBLW68FMZJPSDECD(p58448eNYPLQeWacN)topMY25X15X15X15Xn8xA1vHwf(2fq2iiSwITQ0OrgwmciS5S1SLVUcHd)6ke(Z7ciBeeMmCH2c5PhVXpd8Hjd25uwaBWgu416GcfZzbubbk0HnN9RRq4GYt7fSHjr00xyN)H5IurafM(KirQi9gh6jCaKcHXc7dI3wqH6jHWFPvxfAvyztanYdlsQOaH1sSvLgnYWIraHnNTMT81viC4xxHWKBcOr68msQOaHjdxOTqE6XB8ZaFyYGDoLfWgSbfEToOqXCwavqGcDyZz)6keoO8(fSHjr00xyN)H)sRUk0QWwckesjWCugAzhwlXwvA0idlgbe2C2A2YxxHWHFDfcZeuiKsGX5xp0Yomz4cTfYtpEJFg4dtgSZPSa2GnOWR1bfkMZcOccuOdBo7xxHWbLhPhSHjr00xyN)H)sRUk0QWBzJzewIkjCGrcIEdH1sSvLgnYWIraHnNTMT81viC4xxHWFGSXmclrLeC(LPee9gctgUqBH80J34Nb(WKb7CklGnydk8ADqHI5SaQGaf6WMZ(1viCq5Tmc2WKiA6lSZ)WFPvxfAvylcG7bs2ecRLyRknAKHfJacBoBnB5RRq4WVUcHzeaxNhRSjeMmCH2c5PhVXpd8Hjd25uwaBWgu416GcfZzbubbk0HnN9RRq4GYZaFWgMertFHD(h(lT6QqRc3h1t5gKhdXJIC0GnSwITQ0OrgwmciS5S1SLVUcHd)6ke(RZBEk3G05hIo)A5ObByYWfAlKNE8g)mWhMmyNtzbSbBqHxRdkumNfqfeOqh2C2VUcHdkpdJGnmjIM(c78pmxKkcOWKMZJufkkbMWFPvxfAv4sFrYHGnSwITQ0OrgwmciS5S1SLVUcHd)6keEDFrYHGnmz4cTfYtpEJFg4dtgSZPSa2GnOWR1bfkMZcOccuOdBo7xxHWbLNH(GnmjIM(c78p8xA1vHwfgifc3XQwahiztiSwITQ0OrgwmciS5S1SLVUcHd)6keMesHWDSQfGZJv2ectgUqBH80J34Nb(WKb7CklGnydk8ADqHI5SaQGaf6WMZ(1viCqbfMjafvFvlTgPgrE61Ogdkb]] )
 
-    storeDefault( [[SimC Survival: mokMaintain]], 'actionLists', 20170717.202456, [[ditkcaGEsfTlczBirMTkDtf6BsODQI9k2nr7NeJIqXWGWVHAWKYWLKdQu1Piv4yK05iuAHsLwQu1IH0Yr8qKWtblts9CLmrcvnviAYemDQUOsLlJ66kyRsGnRu2UuXPv10qIAEKQ6WuESugTe57KkDssvEnsDnjQZlbDBf9xK06iu5OgKb2jn0lle0aIN3SHRNUbGkU9291P5pwMtD5Yb65lBloNAeQfrqP6YIufB5Akxma0iFLhiW(M)y5kiZrnidStAOxwiDdanYx5bqh22enX0sZlzxQU18VTer4P9YLIM(kAegDyBJQUVuaRBG9O)99cdqSkhtOUCYtZb0tk8nZXKasSKdmIfkWihBYbcCSjhO3QCmrrdCYtZb65lBloNAeQfvreONx4bsJxbz8auuIB0J4o8KLEqdmIfo2KdepN6GmWoPHEzH0na0iFLhaDyBt0etlnVKDP6wZ)2s0YTgTIM(kA1b2J(33lmaXQCmH6YjpnhqpPW3mhtciXsoWiwOaJCSjhiWXMCGERYXefnWjpnROjgvDeONVST4CQrOwufrGEEHhinEfKXdqrjUrpI7Wtw6bnWiw4ytoq84bo2Kda)KcfnyG057yxXPOnX0J2lD7LXta]] )
-
-    storeDefault( [[SimC Survival: bitePhase]], 'actionLists', 20170717.202456, [[daePhaqiqjxcGkBIagLK0PKuwfrfVIOKSlcnmc6yazzuONjemnqHRbkABeLQVrQY4ikfNti06ikPMhrLUhOu7JuPdsu1cjkEOq0ejkrxKuvBeGYjbqZeGQUjOANKYqjkLwQKQNs1uLeBfa2l0FrXGv5WsTyqESGjJsxgzZu0NjYOb0Pj51a1Sv0Tvy3O63IgofSCjEoLMUsxxO2ob67KkoVqA9eLW8bi7xvJGWkORpVHMelcHUSKm745IYGUBGcQEQKf9QsoQzeMWe960KAlHAgfcspHYUrykckIW0im0dDpuugw0rx(WQsUfRGAGWkORpVHMelkd6EOOmSOx9py932tIVI60rzstMfiXmsW8Eb2trI3qtI9pabO)GInnfhjyEVa7jZ2HvfSIfA0kU9pD)R6Fsb2)KZFv)t28hG7Vi8xT)Q9xT)e4pOyttXrYLY0smMXLOI2TdG)t3)IWFc8xiZjBQdxCKCPmTedKAjXaWUir2)K7FG(tG)G1FqXMMIT1afwM0KzbsmulnjXydOlpKAQ2OOBgxIYKMmlqIHAPjHoa5SQqVzbDEYj0HNSaOlA9GqhDTEqOdyXLO)LM)TaP)0VLMe6YxKSOR4lvkXgwgLjSRU9K4ROoDuM0KzbsmJemVxG9uK4n0Kyfak20uCKG59cSNmBhwvWkwOrR4w5c7vfaZSQbvdqaQAiZjBQdxCKCPmTedKAjXaWUirwyhHAOxNMuBjuZOqq6bsi61jBgxcKfRGl6rcKcGHNcsdIVie6WtwTEqOJlQzeRGU(8gAsSOmO7HIYWIoS(JnxXzhOsVK4QcGvCP)e4plTmqjp2kUkQyuidmme(t3)e(Na)bfBAkosUuMwIXmUevKnU0Rk5)P7FHmNSPoCXrYLY0smqQLeda7Iez)to)jfyrxEi1uTrrF2bQ0lHoa5SQqVzbDEYj0HNSaOlA9GqhDTEqOd47av6LqVonP2sOMrHG0dKq0Rt2mUeilwbx0JeifadpfKgeFri0HNSA9Gqhxulcyf01N3qtIfLbDpuugw0da7Iez)txy)NX)e4VqMt2uhU4i5szAjgi1sIfA0kU9p5(NuG9p58Nr0LhsnvBu0hjxktlXaPwcDaYzvHEZc68KtOdpzbqx06bHo6A9GqhEYLY0s)jJAj0RttQTeQzuii9aje96KnJlbYIvWf9ibsbWWtbPbXxecD4jRwpi0Xf1GbwbD95n0Kyrzq3dfLHf9Q)v9pOyttXrYLY0smMXLOIfA0kU9pD)R6Fsb2)KZFv)lK5Kn1HlosUuMwIbsTKyayxKi7FYQ)m(xT)Q9xT)e4VqMt2uhU4i5szAjgi1sIbGDrIS)jxy)hO)Q9Na)v9py9NLwgOKhBfxfvafrgyyi8NU)j8pabO)Q(NLwgOKhBfxfvafrgyyi8NU)j8pb(dw)bfBAk2wduyzstMfiXqT0KeJn8xT)QHU8qQPAJIU5S5GvCjg7wuGj0biNvf6nlOZtoHo8KfaDrRhe6OR1dcDaB2CWkU0F(wuGj0RttQTeQzuii9aje96KnJlbYIvWf9ibsbWWtbPbXxecD4jRwpi0Xf1GjwbD95n0Kyrzq3dfLHf9oSkbjMrYLY0smMXLOOlpKAQ2OOpsUuMwIbsTe6aKZQc9Mf05jNqhEYcGUO1dcD016bHo8KlLPL(tg1s)vfun0RttQTeQzuii9aje96KnJlbYIvWf9ibsbWWtbPbXxecD4jRwpi0Xf1KDSc66ZBOjXIYGU8qQPAJIU5S5GvCjg7wuGj0biNvf6nlOZtoHo8KfaDrRhe6OR1dcDaB2CWkU0F(wuGP)QcQg61Pj1wc1mkeKEGeIEDYMXLazXk4IEKaPay4PG0G4lcHo8KvRhe64Il6A9Gq3vJi)ZJlcQeSNY6)GuljBb2wcxeb]] )
+    storeDefault( [[SimC Survival: biteTrigger]], 'actionLists', 20171128.180630, [[dqZicaGEHqBseSlrYRfI2NqvZKaz2qCtP42s1ovXEP2nQ2VGHjjJJqXGj1WjKdQsCmuSqvklLGwmKworpuLQNISmjSocutvsnzuA6Q6IQK(gbCzW1fPEmjBvO0HvA7IOZlKCAO(SuAEcv(TIVtO0OLOMMqQtkuSkcvUMi09iu1ZecEUO(RezZ4Atx5lkcWAutNTdMiC)EqtPLjXjxebh0O4hQL42wqAsiGaBg8POIragMcXKIXejcu4fbhX9Xd3NIet00f1JhE21(W4Atx5lkcW6BMiLel6njH(I55GoUGMj6GoHGodFj0HNoN6XGSOQu0IubD8bDvqNqqRMbHDelpvF4TZKHsO4hsjH(I55GoUGUvXg0IlOJGPlOye8hLjKvbY9btXWzXQ9hPj(WbtndBSR8SDWKPZ2btcAvGCFWKqab2m4trfJamvMec5jTubzx7309YGkYMjj0b(Butnd7z7Gj)(u4Atx5lkcW6BMiLel6nPkVYwih0Xl(GUW0fumc(JYuF4TZKHsO4hmfdNfR2FKM4dhm1mSXUYZ2btMoBhm1m82zYqqFd)GjHacSzWNIkgbyQmjeYtAPcYU2VP7LbvKntsOd83OMAg2Z2bt(9BIusSO3KFB]] )
 
 
-    storeDefault( [[Survival Primary]], 'displays', 20170625.195247, [[d8d5haWyKA9QsEjjP2fse2MQq9BOMjjvtJKOzRW5PIBQkYPr5BQcCmP0oP0Ef7MO9dj)esnmkmoKi5YQmusmyiA4iCqPQJIePoSKZrsWcLklfjSyQQLt4HsrpfSmkYZj1evfYur0KrftxPlQOUkjLEgsuDDv1gLcBfjI2mvz7q4Juu9Avr9zK03vKrssX6ijz0OQXRk1jrLUfjHUMQGUhsu62uP1IefhNIYPnKbOlILHLnWYfwNXfaTAjvNRDoaDrSmSSbwUa71fBRPaIss9AYF0pNUa(d2RxMpWtXpGdApp9TnlILHL6ync8gTNN(2MfXYWsDSgbiem3s4WLglb2RlwvAeWLj7NJ1uaZ(3)40SiwgwQtxah0EE6Bjlb1B1XAeGs)V)PdzSTHmWSS8hhN0fONEzyjkKQZ0BSQqaB5EbO4RlEvHcjH4OXU(1gGIBCL(I1Kr7dmAnmca0cgXgyzUhL1iBSMczGzz5pooPlqp9YWsuivNP3yPubSL7fGIVU4vfkKCoV6p2auCJR0xSMmAFGrRHr2Sb084jyIT089ZPlGMhp1)xC6cO5XtWeBP57)loDb2sq92EjnpweOdnjj6NOGR5QHmGtSQOPhBe4DSgb084jYsq9wD6c8SFVKMhlcqIwHcUMRgYa0yx)Avqmh)a0fXYWYEjnpweOdnjj6NcaehnRgSx1YWYyn9WhgqZJNaY0fWS)9VhXeh9YWYauW1C1qgq(D5sJL6yvzanXngngLMVjEGfHmqfBBarSTbOgBBa)yBZgqZJNAweldl1PlWB0EE6B7)IkwJa1xuKoexa)VNxa36D)FXXAeOge8v)yQC0kiMJTnqni4lGhpPGyo22a1GGVAID9RvbXCSTbE05v)XMUa1yQC0kiusxaemnZNnyRdPdXfWpaDrSmSSFWOkd0C2sotraomnXOCiDiUavarjPEKoexGYNnyRtG6lQNyYlDbm7ZOFMsY0W6mUavGN9BGLlWEDX2AkGTCVaWxGGHOgOqQiyULWjqni4lYsq9wfekX2gWbTNN(wUsom6AXcDSgbe3iqZzl5mfb0e3y0yuA(4hOge8fzjOERcI5yBdWKCy01If9sAESiafCnxnKbm7F)JdxjhgDTyHoDbCzY()IJ1iq9fvVKMhlc0HMKe9tQp3GmWwcQ32alxyDgxa0QLuDU25apvVzUFxuijzUxSuUragnwcefntsn2hgaOfmInqGAqWx9JPYrRGqj22a1xuCLEyshIlG)3ZlaHG5wcNgy5cSxxSTMcqioASRFT9kQhayUnrHe(ceme1qvOqsioASRFTb084P(VO4k9WXpGB9UFowJaK14KlkKMlWFIyncSLG6TkiMJFafbZTeoOq2SiwgwgqlQLHdO5XtQ(C8zsomjvD6cW58Q)y7vupaWCBIcj8fiyiQHQqHKZ5v)XgWbTNN(wv3PJvfBd8gTNN(wYsq9wDSgbE2VbwUW6mUaOvlP6CTZbCq75PVT)lQyncO5XtCLCy01If60fOge8fWJNuqOeBBGAmvoAfeZPlq9ffqCJb3hfRranpEsbXC6cqJD9RvbHs8d8SFdSCdOqIcjusnkK2siWtb084P(50fqZJNuqOKUaUmjqgRrGTeuVTbwUa71fBRPaVr75PVv1D6yncqxeldlBGLBafsuiHsQrH0wcbEkqni4RMyx)AvqOeBBGzz5pooPlGM5smUE0ZXAkG)G96L5d8u)ye)aEy5gy(nH406PYjWwcQ3QGqj(bm7F)RFWOkDp5gGoaf34k9fRjJ2hy84wtuctMAFSkvHakcMBjCqHSzrSmSefY(VOc8ewsfJ1hkKn(cNaM9V)XHlnwcSxxSQ0iGB9giJTnaJglPmySBSuUraZ(3)40alxG96IT1uGTeuVTbwUbuirHekPgfsBje4PaM9V)Xr1D60f4nApp9TCLCy01If6yncuFrPwjBdqmkNtKnba]] )
+    storeDefault( [[Survival Primary]], 'displays', 20171128.135411, [[d8t6haWyKA9QiVKcv7cjk2gfGFd1mPinnkOMTcNNkUPIkNgLVrb5ysPDsP9k2nj7hs(jKAyeACuG6YQAOemyiA4iCqPQJIeLoSKZrbYcLklfjSyQQLt0dLIEkyzuupNuturPMkIMmQy6kDrv4QuiEMIsCDvAJsHTQOK2mvz7q4JkkETIQ(ms67kYiPqzDuinAu14vrDsuPBrb01qICpKOQBtLwlsu54ueN2qgGUiwgw1aRwyDgFa0gH0uU2Ja0fXYWQgy1cStFSTMdilf1Vj)tpF6c4pyNonZapf)aoO980)2SiwgwPJvmWz0EE6FBweldR0XkgWK7FFoCPXkGD6J1WIbCzQ(JynhWK7FFonlILHv60fWbTNN(xYss9xDSIbOS3)(6qgBBidCOk)XZjDb6PxgwHcPPm9gRbfWwUFakU6I3OOqsiFASRFTbO4hFP)ynl2AiXwrXaaTKrSbwM7t5fZgR5qg4qv(JNt6c0tVmScfstz6nwdoGTC)auC1fVrrHKZ7v3XgGIF8L(J1SyRHeBffZMnGMhpbtSLMV)iDb084P(7Itxa36mqgBBGTKu)TxrZJLb6qtsIEok4oJXid4eRbA2aedCowXaAE8ezjP(RoDbM3VxrZJLbirlqb3zmgzaASRFTcioIFa6IyzyvVIMhld0HMKe9CbaINMvd2PAzyvSMPeLcO5Xtaz6cyY9V)SzYNEzyvak4oJXidOUUCPXkDSgoGM4hJgJsZ3epWYqgOITnGm22auJTnGFSTzdO5XtnlILHv60f4mApp9V9xzfRyG6klshIpG)1ZlGBDU)U4yfdudc(QFmvoAbehX2gOge8fWJNeqCeBBGAqWxnXU(1kG4i22aZ(9Q7ytxGAmvoAbecPlacMM5ZgS1H0H4d4hGUiwgw1pyuvbAEyjpOiahMMyuoKoeFGkGSuuFshIpq5ZgS1jqDL1Cm1NUaMCz0ZpRmnSoJpqfyE)gy1cStFSTMdyl3paCLiyiQbkKcsMBjDcudc(ISKu)vaHqSTbCq75P)LRIdJUwSuhRya5pc08WsEqranXpgngLMp(bQbbFrwsQ)kG4i22amfhgDTyzVIMhldqb3zmgzatU)95WvXHrxlwQtxaxMQ)U4yfduxz1RO5XYaDOjjrpNPhnidSLK6VnWQfwNXhaTrinLR9iWC1zM71ffssM7h7SigqZJNGj2sZ3FxC6ca0sgXgiqni4R(Xu5OfqieBBG6klUkpmPdXhW)65fGqYClPtdSAb2Pp2wZbiKpn21V2Ebtdam3MOqcxjcgIAyuuijKpn21V2aAE8u)vwCvE44hWTo3FeRyaYA8QffYzK4lrSIb2ss9xbehXpaf)4l9hRzXwdjAaMPeLP1GOKzdBOacsMBjDqHSzrSmSkGwwldhGZ7v3X2lyAaG52efs4krWqudJIcjN3RUJnGdApp9VgVthRb2g4mApp9VKLK6V6yfdmVFdSAH1z8bqBest5Apc4G2Zt)B)vwXkgqZJN4Q4WORfl1Plqni4lGhpjGqi22a1yQC0ciosxG6klG4hdUZowZITIgCBanpEsaXr6cqJD9RvaHq8dmVFdSAdiqIcjuknkK2skXtb084P(J0fqZJNeqiKUaUmfqgRyGTKu)TbwTa70hBR5aNr75P)14D6yfdqxeldRAGvBabsuiHsPrH0wsjEkqni4RMyx)AfqieBBGdv5pEoPlGM5sm(E0hXAoG)GD60md8u)ye)aEy1g44mH816PYjWwsQ)kGqi(bm5(3VFWOQCF1gGoGMhpz83XNP4Wuu1PlGGK5wshuiBweldRqHS)kRaZHvuXy9JczJR0jaHK5wshU0yfWo9XAyXamAScikAMIASukaJgROCySBSZIyatU)950aRwGD6JT1CGTKu)TbwTbeirHekLgfsBjL4PaMC)7ZX4D60f4mApp9VCvCy01IL6yfduxzzefBdqmkNxMnba]] )
 
-    storeDefault( [[Survival AOE]], 'displays', 20170625.195247, [[dee7haqiKuvBcjfDlIKAxiPWWKshtkwgQ0ZisyAKICnIuTnIK8nvqnoKuY5is06ifCpKuQdQGfQipKQQjQcYfvOnsv5JQaJKiLtseVKuOzsk5MQqTtk9tiAOKQJIKkwQkQNcMkIUkPO2ksQ0Arsv2RyWqYHLSyI6Xi1KrfxwvBMk(msmAu1Pr51QqMTuDBQYUj8BOgochNuQLtXZjz6kDDvA7q47kQXJKCEQ06vr2pK60eYa0fXYWcFyXcRB)dGuZKAjXogGUiwgw4dlwGD6JTHBatjO8(5F6JYua5o70Pd645ihWfPJJ6x)fXYWcvSTbOcPJJ6x)fXYWcvSTb0((3NJeASayN(y1uBafpEE4AkjchCKdO99Vph)fXYWcvMc4I0Xr9lzzO8Rk22auN7FFviJTjKbgfLC)5KPad0ldlqJslMAJvkdylVpW5RQ41aAueMNg7jxBGZF)l1hl32Md3202gaOnmInWY8EQDB2y5gYaJIsU)CYuGb6LHfOrPftTXsTcylVpW5RQ41aAuCEN623aN)(xQpwUTnhUTPTnB2akE8mmZwA(HXmfGkKooQFjldLFvX2gWROciJTnWwgk)oiO5XMatijjrE8zjhinYaUXk1CBKEahSydmsfH5vQ5YnGIhptwgk)QYuGJKhe08ytasK6NLCG0idqJ9KRvhXyKdqxeldlge08ytGjKKKipoaq80SQZovldlILR0LEafpEgiZuaTV)9peZ80ldlcCwYbsJmG46jHgluXQPakIV391lfVFChBczGk2MaMyBcqj2MaYX2KnGIhp7ViwgwOYuaQq64O(D4AQyBduxtr6s8bKVoob8kQgUlo22avNGVg6ZLRshXySnbQobFb84zDeJX2eO6e8LFSNCT6igJTjWHEN623mfO6ZLRshHEMcGGPyYSoBDjDj(aYbOlILHfdDgfra)JwYXZb4Wue9YL0L4dqhWuckpPlXhOKzD26gOUM6yM4ZuaTVm6JOUmfSU9pqf4izFyXcStFSnCdylVpaCniyiQoAudihdOByELXfnk)fXYWc0OgUMkWXybfmw9Or57ACd4Xed3fhl3aMVhW)OLC8CafX37(6LIpYbQobFrwgk)QJym2MaUiDCu)krWHrxl2OITnG23)(CKi4WORfBuzkGIhpdZSLMF4U4mfOUMAqqZJnbMqssI8yTg9rgyldLF9HflSU9pasntQLe7yGJlQyExp0OizEFSsrBagnwaefntqjwPhaOnmInGIjO0FQj1VUloq1j4RH(C5Q0rOhBtG6AkjchmPlXhq(64eGWW8kJRpSyb2Pp2gUbimpn2tU2bDTcamp)OrbxdcgIQRb0Oimpn2tU2akE88WDXroGxr1WySTbiR(lw0OoWGVeX2gyldLF1rmg5akE8SgFxzMGdtqrLPaN)(xQpwUTnhUvQA4sn4YTrQ0KugGZ7u3(oORvaG55hnk4AqWquDnGgfN3PU9nGlshh1VACsfRu3eyldLF9HfBaDs0OGsOqJYwgdEoWrY(WIfw3(haPMj1sIDmGlshh1VdxtfBBafpEwIGdJUwSrLPavNGVaE8Soc9yBcu95YvPJymtbQRPaIV3LCOyBdO4XZ6igZuaASNCT6i0JCGJK9HfBaDs0OGsOqJYwgdEoGIhppmg5akE8Soc9mfWJjaYy5gyldLF9HflWo9X2WnaviDCu)QXjvSnbOlILHf(WInGojAuqjuOrzlJbphO6e8LFSNCT6i0JTjWOOK7pNmfqX8i6)aYXy5gqUZoD6GoEEO3JCaTV)9h6mkcVxSbOdSLHYV6i0JCGQtWxKLHYV6i0JTjGUH5vgx0O8xeldlcOm1YWbimmVY4kHgla2Ppwn1gGj4WORfBge08ytGZsoqAKb8yIHXy5gGrJfupm2lwPOnG23)(C8HflWo9X2WnavX2gq77FFoACsLPauH0Xr9RebhgDTyJk22a11uAwW2ae9Y9nzta]] )
+    storeDefault( [[Survival AOE]], 'displays', 20171128.135411, [[dee7haqiIe1MubPBPcIDbjfdtkoMcwgQ0ZisY0if5Aqs2gKu5BKcghKu6Cej16is5Eej0bLslurEivvtufuxuH2ivLpQcmssHojr8ssrntsj3ufYoP0pHOHsQokKu1svr9uWurYvjs1wjsWAjsK9kgmK6Wswmr9yKAYOIlRQntfFgHgnQ60O8AvOMTuDBQYUj8BOgoIooPulNINtY0v66Q02HW3vuJhsCEQ06vr2pcodHkaDrUmSWhwSW62)aiLoLwsSJbOlYLHf(WIfyN(yh4gWucIVF(N(4mfqUZoD6GoEoYbCr64O(1FrUmSqfBtauq64O(1FrUmSqfBtaTV)95iHgla2Ppwn1eWJjAhJLBaTV)954VixgwOYuaxKooQFPkdXFvX2ea1F)7RcvSdHkWOOK7pNmfOLEzybb0AXuBSsDaB59boFvfV0iGM080yp5AdC(7FP(y52mOHMHMMaaTHrUbwM3lfBYgl3qfyuuY9NtMc0sVmSGaATyQnwuBaB59boFvfV0iGMZ7u3(g483)s9XYTzqdndnnzZgqXJNHz2sZ3oMPaOG0Xr9lvzi(Rk2MamASailAMGySOkWwgI)2kO5XMatiPOqE0zjhOrQaUXEiChqvauITjGIhptvgI)QYuGJLBf08ytakK6NLCGgPcqJ9KRvhXyKdqxKldlAf08ytGjKuuipkaq(0SQZovldlILlQqvafpEgOYuaTV)9pmZ80ldlcCwYbAKkG46jHgluXQPakYV391lfVFChBcvGk2HaMyhcqm2HaYXoKnGIhp7VixgwOYuauq64O(T9AQyBcuxtr5s(bKVoob8kuAVlo2MavNKVA7ZLRshXySdbQojFb84zDeJXoeO6K8LFSNCT6igJDiWHFN623mfO6ZLRshHEMcGGPyYSoBDPCj)aYbOlYLHfTDgrra)JwQXZb4WuK9YLYL8dqhWucIpLl5hOKzD26gOUM6iM4ZuaTVm6JLcmfSU9pqf4yzFyXcStFSdCdylVpaCniyiQob0TihdOByELXLaA)f5YWccOBVMkWrybrmw9eq77ACd4XeT3fhl3aMVhW)OLA8Caf537(6LIpYbQojFrvgI)QJym2HaUiDCu)krWHrxl2OITjG23)(CKi4WORfBuzkGIhpdZSLMV9U4mfOUMQvqZJnbMqsrH8iTg9rfyldXF9HflSU9pasPtPLe7yGJkuyExpcOPyEFSsvtaVcfGk2MaaTHrUbumbX(FOs56U4avNKVA7ZLRshHESdbQRPKiCWuUKFa5RJtasdZRmU(WIfyN(yh4gG080yp5AB11kaW88tanCniyiQU0iGM080yp5AdO4XZT3fh5aEfkTJX2eGQ6VyjG(ad(sgBtGTme)vhXyKdOByELXLaA)f5YWIaktTmCafpEwZVRmtWHjiQYuaoVtD7BRUwbaMNFcOHRbbdr1Lgb0CEN623aUiDCu)Q5jvShYqGTme)1hwSb0PiGgkHIaABzm45ahl7dlwyD7FaKsNslj2XaUiDCu)2EnvSnbu84zjcom6AXgvMcuDs(c4XZ6i0JDiq1NlxLoIXmfOUMci)ExYHJTjGIhpRJymtbOXEY1QJqpYbow2hwSb0PiGgkHIaABzm45akE8C7yKdO4XZ6i0ZuapMaOILBGTme)1hwSa70h7a3aOG0Xr9RMNuXoeGUixgw4dl2a6ueqdLqraTTmg8CGQtYx(XEY1QJqp2HaJIsU)CYuafZJS)TihJLBa5o70Pd6452EpYb0((3VTZik8EXgGoWwgI)QJqpYbQojFrvgI)QJqp2HaN)(xQpwUndAOb1XfvOMbPgvC1KgcqAyELXvcnwaStFSAQjatWHrxl20kO5XMaNLCGgPcO4XZTxtjr4GJCagnwiLWyVyLQMaAF)7ZXhwSa70h7a3aoyXgyefsZRuZLBaTV)95O5jvMcGcshh1VseCy01InQyBcuxtjDbBdq2l33Knb]] )
 
 
     ns.initializeClassModule = HunterInit

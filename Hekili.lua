@@ -6,30 +6,22 @@ Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSeria
 Hekili.Version = GetAddOnMetadata("Hekili", "Version");
 
 
-
 local format = string.format
 
 
-ns.PTR = GetBuildInfo() ~= "7.3.0"
+ns.PTR = GetBuildInfo() ~= "7.3.2"
+
+
+function Hekili:Test()
+    Hekili.Testing = not Hekili.Testing
+    Hekili:Print( "Test mode " .. ( Hekili.Testing and "ON" or "OFF" ) .. "; iterator backup mode " .. ( Hekili.Testing and "ON" or "OFF" ) .. "." )
+end
 
 
 ns.lib = {
     Format = {}
 }
 
---[[ ns.lib = {
-    AceConfig = LibStub( "AceConfig-3.0" ),
-    AceConfigDialog = LibStub( "AceConfigDialog-3.0" ),
-    ArtifactData = LibStub( "LibArtifactData-1.0h" ),
-    -- LegionArtifacts = LibStub:GetLibrary( "LegionArtifacts-1.1" ),
-	Format = {}, -- filled by Formatting.lua
-	LibDualSpec = LibStub( "LibDualSpec-1.0" ),
-	LibItemBuffs = LibStub( "LibItemBuffs-1.0" ),
-	RangeCheck = LibStub( "LibRangeCheck-2.0" ),
-	SpellFlash = SpellFlash or SpellFlashCore,
-	SpellRange = LibStub( "SpellRange-1.0" ),
-	SharedMedia = LibStub( "LibSharedMedia-3.0", true )
-} ]]
 
 -- 04072017:  Let's go ahead and cache aura information to reduce overhead.
 ns.auras = {

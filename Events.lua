@@ -63,7 +63,7 @@ function ns.StartEventHandler()
             lastRecount = now
         end
 
-        local updatePeriod = state.combat == 0 and 1 or 0.2
+        local updatePeriod = state.combat == 0 and 0.5 or 0.2
 
         local numDisplays = #Hekili.DB.profile.displays
 
@@ -71,7 +71,7 @@ function ns.StartEventHandler()
             local index = lastDisplay + i
             index = index > numDisplays and index - numDisplays or index
 
-            if ns.visible.display[ index ] and ( not displayUpdates[ index ] or ( not lastRefresh[ index ] or now - lastRefresh[ index ] >= updatePeriod ) ) then 
+            if ns.visible.display[ index ] and ( not displayUpdates[ index ] or ( not lastRefresh[ index ] or now - lastRefresh[ index ] >= updatePeriod ) ) then
                 Hekili:ProcessHooks( index )
                 lastRefresh[ index ] = now
                 lastDisplay = index
@@ -191,16 +191,17 @@ function ns.auditItemNames()
 
     for key, ability in pairs( class.abilities ) do
         if ability.recheck_name then
-            local _, name = GetItemInfo( ability.item )
+            local name, link = GetItemInfo( ability.item )
 
             if name then
                 ability.name = name
                 ability.texture = nil
+                ability.link = link
                 ability.elem.name = name
                 ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
 
                 class.abilities[ name ] = ability
-                class.searchAbilities[ ability.key ] = format( "|T%s:0|t %s", ( ability.texture or 'Interface\\ICONS\\Spell_Nature_BloodLust' ), name )
+                class.searchAbilities[ ability.key ] = format( "|T%s:0|t %s", ( ability.texture or 'Interface\\ICONS\\Spell_Nature_BloodLust' ), link )
                 ability.recheck_name = nil
             else
                 failure = true
@@ -497,6 +498,7 @@ local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
 
+
 local function forceUpdate( from, super )
 
     for i = 1, #Hekili.DB.profile.displays do
@@ -779,17 +781,21 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
             -- Aura Tracking
             if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                 ns.trackDebuff( spellID, destGUID, time, true )
+                forceUpdate( subtype )
                 ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
             elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
                 ns.trackDebuff( spellID, destGUID, time )
+                forceUpdate( subtype )
                 -- ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
             elseif subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_MISSED' then
                 ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+                forceUpdate( subtype )
 
             elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
                 ns.trackDebuff( spellID, destGUID )
+                forceUpdate( subtype )
 
             end
 
@@ -798,6 +804,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
 
                 if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
                     state.swings.last_foa_tick = time
+                    forceUpdate( subtype )
                 end
 
             end
@@ -805,20 +812,22 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
             local action = class.abilities[ spellID ]
             
             if subtype ~= 'SPELL_CAST_SUCCESS' and action and action.velocity then
-                ns.removeSpellFromFlight( class.abilities[ spellID ].key )
+                ns.removeSpellFromFlight( action.key )
             end
-
 
         elseif sourceGUID == state.GUID and aura and aura.friendly then -- friendly effects
 
             if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                 ns.trackDebuff( spellID, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
+                forceUpdate( subtype )
 
             elseif subtype == 'SPELL_PERIODIC_HEAL' or subtype == 'SPELL_PERIODIC_MISSED' then
                 ns.trackDebuff( spellID, destGUID, time )
+                forceUpdate( subtype )
 
             elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
                 ns.trackDebuff( spellID, destGUID )
+                forceUpdate( subtype )
 
             end
 
@@ -947,7 +956,7 @@ local function StoreKeybindInfo( page, key, aType, id )
         ability = sID and class.abilities[ sID ] and class.abilities[ sID ].key
     
     elseif aType == "item" then
-        ability = select( 2, GetItemInfo( id ) )
+        ability = GetItemInfo( id )
         ability = class.abilities[ ability ] and class.abilities[ ability ].key
 
     end

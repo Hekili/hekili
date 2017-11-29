@@ -35,7 +35,7 @@ function ns.getNumberTargets()
 
     npCount = 0
 
-    if showNPs and ( Hekili.DB.profile['Count Nameplate Targets'] and not state.ranged ) then
+    if showNPs and ( Hekili.DB.profile['Count Nameplate Targets'] ) then
         local RC = LibStub( "LibRangeCheck-2.0" )
 
         for i = 1, 80 do
@@ -65,7 +65,7 @@ function ns.getNumberTargets()
         end
     end
 
-    if Hekili.DB.profile['Count Targets by Damage'] or not Hekili.DB.profile['Count Nameplate Targets'] or not showNPs or state.ranged then
+    if Hekili.DB.profile['Count Targets by Damage'] or not Hekili.DB.profile['Count Nameplate Targets'] or not showNPs then
         for k,v in pairs( myTargets ) do
             if not nameplates[ k ] then
                 nameplates[ k ] = true
@@ -348,146 +348,3 @@ ns.Audit = function ()
   end
 
 end
-
-
-
--- More New Target Stuff.
--- UGH.
-
---[[
-
-local TargetDB = {
-    buffDB = {},
-    buff = {}
-}
-
-
-local mt_default_value = {
-    __index = function( t, k )
-        return t.default
-    end
-}
-
-
-local function setDefault( value )
-    return setmetatable( { default = value }, mt_default_value )
-end
-
-
-
-local mt_buff_q = {
-    __index = function( t, k )
-        -- Calculations.
-        local e, id = state.enemy, t.id
-    end
-}
-
-
-local mt_buff_attr = {
-    __index = function( t, k )
-        t[ k ] = t.db[ k ]
-        return t[ k ]
-    end
-}
-
-
-local function addQueryAttribute( spellID, attr )
-    return setmetatable( {
-        id = spellID,
-        attr = attr,
-        db = TargetDB.buffDB[ spellID ][ attr ]
-    }, mt_buff_attr )
-end
-
-
-local function newBuff( spellID, key )
-
-    -- Don't overwrite an existing DB.
-    if TargetDB.buffDB[ spellID ] then return end
-
-    local db = {
-        id = spellID,
-        key = key or ( class.auras[ spellID ] and class.auras[ spellID ].key ) or formatKey( GetSpellInfo( spellID ) ),
-
-        count = setDefault( 0 ),
-        duration = setDefault( 0 ),
-        expires = setDefault( 0 ),
-        caster = setDefault( 'nobody' ),
-        isStealable = setDefault( false ),
-        canApplyAura = setDefault( false ),
-        isBossDebuff = setDefault( false ),
-        timeMod = setDefault( 1 ),
-        v1 = setDefault( 0 ),
-        v2 = setDefault( 0 ),
-        v3 = setDefault( 0 )
-    }
-
-    TargetDB.buffDB[ spellID ] = db
-
-    -- Set up the buff query item.
-    local query = {
-        id = spellID,
-        key = key or ( class.auras[ spellID ] and class.auras[ spellID ].key )  or formatKey( GetSpellInfo( spellID ) ),
-
-        count           = addQueryAttribute( spellID, 'count' ),
-        duration        = addQueryAttribute( spellID, 'duration' ),
-        expires         = addQueryAttribute( spellID, 'expires' ),
-        caster          = addQueryAttribute( spellID, 'caster' ),
-        isStealable     = addQueryAttribute( spellID, 'isStealable' ),
-        canApplyAura    = addQueryAttribute( spellID, 'canApplyAura' ),
-        isBossDebuff    = addQueryAttribute( spellID, 'isBossDebuff' ),
-        timeMod         = addQueryAttribute( spellID, 'timeMod' ),
-        v1              = addQueryAttribute( spellID, 'v1' ),
-        v2              = addQueryAttribute( spellID, 'v2' ),
-        v3              = addQueryAttribute( spellID, 'v3' )
-    }
-
-    TargetDB.buffDB[ spellID ] = db
-    TargetDB.buff[ spellID ] = query
-
-end
-
-
-RegisterEvent( "UNIT_AURA", function( event, unit )
-    if unit == "player" then
-        local guid = UnitGUID( unit )
-
-        for _, aura in pairs( TargetDB.buffDB ) do
-            aura.count[ guid ] = nil
-            aura.duration[ guid ] = nil
-            aura.expires[ guid ] = nil
-            aura.isStealable[ guid ] = nil
-            aura.isBossDebuff[ guid ] = nil
-            aura.timeMod[ guid ] = nil
-            aura.v1[ guid ] = nil
-            aura.v2[ guid ] = nil
-            aura.v3[ guid ] = nil
-        end
-
-        local i = 1
-        while( true ) do
-            local name, _, _, count, _, duration, expires, caster, isStealable, _, sID, canApplyAura, isBossDebuff, _, _, timeMod, v1, v2, v3 = UnitBuff( 'player', i )
-
-            if not name then break end
-
-            if not TargetDB.buffDB[ sID ] then newBuff( sID ) end
-            local aura = TargetDB.buffDB[ sID ]
-
-            aura.count[ guid ] = count > 0 and count or 1
-            aura.duration[ guid ] = duration
-            aura.expires[ guid ] = expires
-            aura.caster[ guid ] = caster
-            aura.isStealable[ guid ] = isStealable
-            aura.canApplyAura[ guid ] = canApplyAura
-            aura.isBossDebuff[ guid ] = isBossDebuff
-            aura.timeMod[ guid ] = timeMod
-            aura.v1[ guid ] = v1
-            aura.v2[ guid ] = v2
-            aura.v3[ guid ] = v3
-
-            i = i + 1
-        end
-    end
-end )
-
-Hekili.TDB = TargetDB ]]

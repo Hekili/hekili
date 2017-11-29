@@ -36,9 +36,11 @@ function Hekili:GetDefaults()
             Enabled = true,
             Locked = true,
             MinimapIcon = false,
-            Artifact = true,
 
-            ['Use Old Engine'] = false,
+            Artifact = true,
+            CooldownArtifact = true,
+
+            moreCPU = false,
             
             ['Switch Type'] = 0,
             ['Mode Status'] = 3,
@@ -48,7 +50,7 @@ function Hekili:GetDefaults()
             ['Audit Targets'] = 6,
             ['Count Nameplate Targets'] = true,
             ['Nameplate Detection Range'] = 8,
-            ['Count Targets by Damage'] = true,
+            ['Count Targets by Damage'] = false,
             
             ['Notification Enabled'] = true,
             ['Notification Font'] = 'Arial Narrow',
@@ -66,12 +68,39 @@ function Hekili:GetDefaults()
             },
             
             
-            blacklist = {
+            toggles = {
             },
-            trinkets = {
+            blacklist = {
             },
             clashes = {
             },
+            feignCD = {
+                -- DEATHKNIGHT
+                apocalypse = true,
+                army_of_the_dead = true,
+                breath_of_sindragosa = true,
+                dark_arbiter = true,
+                pillar_of_frost = true,
+                summon_gargoyle = true,
+
+                -- DEMONHUNTER
+                nemesis = true,
+                chaos_blades = true,
+                metamorphosis = true,
+
+                -- DRUID
+                ashamanes_frenzy = true,
+                incarnation = true,
+
+                -- SHAMAN
+                ascendance = true,
+                feral_spirit = true,
+                fire_elemental = true,
+            },
+
+            trinkets = {
+            },
+
             
             iconStore = {
                 hide = false,
@@ -266,7 +295,6 @@ local oneTimeFixes = {
             end
         end
     end,
-
 }
 
 
@@ -3096,6 +3124,46 @@ ns.newActionOption = function( aList, index )
                 end,
                 width = "double",
             },
+
+            PoolForNext = {
+                type = 'toggle',
+                name = 'For Next Ability',
+                desc = "If checked, the addon will delay until the resources required by the next action have been generated. " ..
+                    "If unchecked, you can specify an amount of time to pool.",
+                order = 6,
+                hidden = function( info )
+                    local action = getActionEntry( info )
+                    return not action or action.Ability ~= 'pool_resource'
+                end,
+            },
+
+            PoolExtra = {
+                type = 'range',
+                name = 'Extra Resources',
+                desc = "If greater than zero, the addon will Pool Resources until this much additional resources have been generated.",
+                order = 7,
+                hidden = function( info )
+                    local action = getActionEntry( info )
+                    return not action or action.Ability ~= 'pool_resource' or not action.PoolForNext
+                end,
+                min = 0,
+                max = 1000,
+                step = 1,
+            },
+
+            PoolTime = {
+                type = 'input',
+                name = 'Pool Time',
+                desc = "Specify the amount of time to pool resources for.  This can be specified as a number or an expression that evaluates to a number. For instance, |cFFFFD100energy.time_to_max|r " ..
+                    "will tell the addon to wait until your Energy bar is full.  This is capped at 10 seconds.\n\n" ..
+                    "If left blank, the addon will pool for |cFFFFD1000.5|r seconds.",
+                order = 7,
+                hidden = function( info )
+                    local action = getActionEntry( info )
+                    return not action or action.Ability ~= 'pool_resource' or action.PoolForNext
+                end,
+            },
+
             ModName = {
                 type = 'select',
                 name = "Select a Value",
@@ -3139,6 +3207,7 @@ ns.newActionOption = function( aList, index )
                 end,
                 width = "double"
             },
+
             ModVarName = {
                 type = 'input',
                 name = "Variable Name",
@@ -3181,6 +3250,7 @@ ns.newActionOption = function( aList, index )
                     return action.Ability == 'variable' or action.Ability == 'call_action_list' or action.Ability == 'run_action_list'
                 end,
             },
+
             ReadyTime = {
                 type = 'input',
                 name = 'Time Script',
@@ -3547,9 +3617,10 @@ ns.ClassSettings = function ()
     
     local option = {
         type = 'group',
-        name = "Class Settings",
+        name = "Class/Specialization",
         order = 20,
         args = {},
+        childGroups = "select",
         hidden = function()
             return #class.toggles == 0 and #class.settings == 0
         end
@@ -3598,15 +3669,32 @@ ns.ClassSettings = function ()
         option.args.settings.args[ setting.name ] = setting.option
         option.args.settings.args[ setting.name ].order = i
     end
+
+    return option
+
+end
+
+
+local abilityToggles = {}
+
+ns.AbilitySettings = function ()
     
-    option.args.exclusions = {
+    local option = {
         type = 'group',
-        name = 'Exclusions and Clashes',
-        order = 30,
-        inline = true,
-        args = {},
+        name = "Abilities",
+        order = 21,
+        childGroups = 'select',
+        args = {
+            heading = {
+                type = 'description',
+                name = "These settings allow you to make minor changes to abilities that can impact how this addon makes its recommendations.  Read the " ..
+                    "tooltips carefully, as some options can result in odd or undesirable behavior if misused.\n",
+                order = 1,
+                width = "full",
+            }
+        }
     }
-    
+
     local abilities = {} 
     for _, v in pairs( class.abilities ) do
         if v.id > 0 and v.id ~= 61304 then
@@ -3614,29 +3702,62 @@ ns.ClassSettings = function ()
         end
     end
     
-    local i = 1
     for k, v in orderedPairs( abilities ) do
-        option.args.exclusions.args[ v ] = {
-            type = 'toggle',
-            name = 'Disable ' .. k,
-            desc = "If checked, this ability will be excluded from the addon's recommendations.",
-            width = 'single',
-            order = i
-        }
-        i = i + 1
+        option.args[ v ] = {
+            type = 'group',
+            name = k,
+            order = 2,
+            args = {
+                exclude = {
+                    type = 'toggle',
+                    name = 'Disable ' .. k,
+                    desc = "If checked, this ability will be excluded from the addon's recommendations.  This can cause issues if other abilities are recommended based on this ability.  Use cautiously.",
+                    width = 'full',
+                    order = 1
+                },
+                toggle = {
+                    type = 'select',
+                    name = 'Require Active Toggle',
+                    desc = "Specify a required toggle for this action to be used in the addon action list.  This is most frequently used by major cooldown abilities and by artifact abilities.  " ..
+                        "Toggles are set via the Toggles tab, the minimap icon, or can be keybound for your convenience.",
+                    width = 'full',
+                    order = 2,
+                    values = function ()
+                        table.wipe( abilityToggles )
 
-        option.args.exclusions.args[ 'clash_' ..v ] = {
-            type = 'range',
-            name = 'Clash: ' .. k,
-            desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.",
-            width = "double",
-            min = 0,
-            max = 1.5,
-            step = 0.05,
-            order = i
-        }
-        i = i + 1
+                        abilityToggles[ 'none' ] = 'None'
+                        abilityToggles[ 'default' ] = 'Default' .. ( class.abilities[ v ].toggle and ( ' |cFFFFD100(' .. class.abilities[ v ].toggle .. ')|r' ) or ' |cFFFFD100(none)|r' )
+                        abilityToggles[ 'cooldowns' ] = 'Cooldowns'
+                        abilityToggles[ 'artifact' ] = 'Artifact'
+                        abilityToggles[ 'interrupts' ] = 'Interrupts'
+                        abilityToggles[ 'potions' ] = 'Potions'
 
+                        return abilityToggles
+                    end,
+                },
+                feign = {
+                    type = 'toggle',
+                    name = 'Feign Cooldown when Toggled Off',
+                    desc = "If checked, when " .. k .. " is unavailable due to a toggle, the addon will pretend that the ability is on cooldown.  This *may* help with some imported action lists, " ..
+                        "if other actions' conditions are based on this ability's cooldown.  For instance, the SimulationCraft Retribution action list may avoid spending Holy Power if Crusade will " ..
+                        "come off cooldown soon.  When Crusade is toggled off (i.e., cooldowns are disabled), the addon would avoid spending Holy Power indefinitely, which would not be ideal.  Checking " ..
+                        "this option would pretend like Crusade is still on a long cooldown and avoid that conflict.",
+                    order = 3,
+                    width = "full"
+                },
+                clash = {
+                    type = 'range',
+                    name = 'Clash Value',
+                    desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
+                        "This can be helpful when an ability is very high priority and you want the addon to consider it a bit earlier than it would actually be ready.",
+                    width = "full",
+                    min = 0,
+                    max = 1.5,
+                    step = 0.05,
+                    order = 4
+                }
+            }
+        }        
     end
     
     return option
@@ -3648,16 +3769,16 @@ ns.TrinketSettings = function ()
     
     local option = {
         type = 'group',
-        name = "Trinket Settings",
-        order = 21,
+        name = "Trinkets/Gear",
+        order = 22,
         args = {
             heading = {
                 type = 'description',
-                name = "These settings apply to trinkets that are executed via the [Use Items] action in your action lists.  Instead of " ..
+                name = "These settings apply to trinkets/gear that are used via the [Use Items] action in your action lists.  Instead of " ..
                     "manually editing your action lists, you can enable/disable specific trinkets or require a minimum or maximum number of " ..
                     "enemies before allowing the trinket to be used.\n\n" ..
-                    "If your action list has a specific entry for a certain trinket with specific criteria, you will likely want to disable " ..
-                    "the trinket here.",
+                    "|cFFFFD100If your action list has a specific entry for a certain trinket with specific criteria, you will likely want to disable " ..
+                    "the trinket here.|r",
                 order = 1,
                 width = "full",
             }
@@ -3689,7 +3810,7 @@ end
 
 local importerOpts = {
     importToDisplay = false,
-    destinationType = 'new',
+    destinationType = 'skip',
     newDisplay = 'New Display',
     existingDisplay = 0,
     
@@ -3735,7 +3856,7 @@ ns.SimulationCraftImporter = function ()
             return Hekili.AllowSimCImports ~= true
         end,
         args = {
-            displayGroup = {
+            --[[ displayGroup = {
                 type = 'group',
                 name = 'Display Settings',
                 order = 10,
@@ -3792,7 +3913,7 @@ ns.SimulationCraftImporter = function ()
                         width = 'double',
                     }
                 }
-            },
+            },]]
             actionListGroup = {
                 type = 'group',
                 name = 'Action List Settings',
@@ -3971,6 +4092,9 @@ ns.SimulationCraftImporter = function ()
                                     action.MaximumTargets = entry.MaximumTargets
                                     action.CheckMovement = entry.CheckMovement or false
                                     action.Moving = entry.Moving
+                                    action.PoolForNext = entry.PoolForNext
+                                    action.PoolExtra = entry.PoolExtra
+                                    action.PoolTime = entry.PoolTime
 
                                     if action.Ability == 'variable' then
                                         action.ModVarName = entry.ModName or ''
@@ -3994,13 +4118,13 @@ ns.SimulationCraftImporter = function ()
 
                                     action.Script = entry.Script
                                     
-                                    if ability.toggle then
+                                    --[[ if ability.toggle then
                                         if action.Script and action.Script:len() > 0 then
                                             action.Script = 'toggle.' .. ability.toggle .. ' & ( ' .. action.Script .. ' )'
                                         else
                                             action.Script = 'toggle.' .. ability.toggle
                                         end
-                                    end
+                                    end ]]
 
                                     if entry.PctHealth then
                                         if action.Script and action.Script:len() > 0 then
@@ -4432,7 +4556,7 @@ function Hekili:GetOptions()
                         type = "group",
                         name = "Target Count",
                         inline = true,
-                        order = 5,
+                        order = 6,
                         args = {
                             ['Delay Description'] = {
                                 type = 'description',
@@ -4499,19 +4623,28 @@ function Hekili:GetOptions()
                             },
                         }
                     },
+                    ['Description'] = {
+                        type = 'description',
+                        name = "\n|cFFFF0000NEW!|r\nUpdated for Antorus!\n" ..
+                            "Added Feral Druid support.\n\n" ..
+                            "Please report issues at |cFF00FFFFhttps://wow.curseforge.com/projects/hekili/issues|r -- include the information from the Issue Reporting tab.\n",
+                        fontSize = "medium",
+                        order = 4
+                    },
                     ['Engine'] = {
                         type = "group",
                         name = "Engine Settings",
                         inline = true,
-                        order = 4,
+                        order = 5,
                         args = {
-                            ['Engine Description'] = {
-                                type = 'description',
-                                name = "|cFFFF0000NEW!|r\nAs of 7.2.5, the Hekili addon engine updates its recommendations four times per second as a baseline, with additional updates occuring as needed -- " ..
-                                    "you use an ability, your cooldowns update, your buffs or debuffs are refreshed, a proc occurs, your target changes, etc.  If you notice a decrease in performance after " ..
-                                    "7.2.5, please reach out to me on CurseForge at |cFF00FFFFhttps://wow.curseforge.com/projects/hekili/issues|r and submit a ticket.\n",
-                                fontSize = "medium",
-                                order = 0
+                            moreCPU = {
+                                type = "toggle",
+                                name = "Use More CPU",
+                                order = 0,
+                                desc = "If checked, the addon will use a secondary system to retest its recommendations when there are gaps or wait times " ..
+                                    "in your action priorities.  This may result in *slightly* better recommendations, but will definitely use more CPU.",
+                                width = full,
+
                             },
                             --[[ ['Use Old Engine'] = {
                                 type = 'toggle',
@@ -4937,7 +5070,7 @@ function Hekili:GetOptions()
                             HEKILI_TOGGLE_COOLDOWNS = {
                                 type = 'keybinding',
                                 name = 'Cooldowns',
-                                desc = 'Set a key for toggling cooldowns on and off. This option is used by testing the criterion |cFFFFD100toggle.cooldowns|r in your condition scripts.',
+                                desc = 'Set a key for toggling cooldowns on and off.  This option is used by testing the criterion |cFFFFD100toggle.cooldowns|r in your condition scripts.',
                                 order = 30
                             },
                             Cooldowns = {
@@ -5804,6 +5937,7 @@ ns.refreshOptions = function()
     Hekili.Options.args.class = nil
     Hekili.Options.args.class = ns.ClassSettings()
     Hekili.Options.args.trinkets = ns.TrinketSettings()
+    Hekili.Options.args.abilities = ns.AbilitySettings()
     
     -- Until I feel like making this better at managing memory.
     collectgarbage()
@@ -5824,12 +5958,18 @@ function Hekili:GetOption( info, input )
             
         elseif info[2] == 'settings' then
             return profile['Class Option: '..option]
-            
-        elseif info[2] == 'exclusions' then
-            if option:sub( 1, 6 ) == 'clash_' then return profile.clashes[ option:sub( 7 ) ] or 0 end
-            return profile.blacklist[ option ]
 
         end
+            
+    elseif category == 'abilities' then
+        local ability = info[2]
+
+        if option == 'exclude' then return profile.blacklist[ ability ]
+        elseif option == 'clash' then return profile.clashes[ ability ] or 0
+        elseif option == 'feign' then return profile.feignCD[ ability ] end
+
+        -- Toggle Override
+        return profile.toggles[ ability ] or 'default'
 
     elseif category == 'trinkets' then
         local subcategory = info[2]
@@ -6026,13 +6166,22 @@ function Hekili:SetOption( info, input, ... )
             
         elseif subcategory == 'settings' then
             profile[ 'Class Option: '..option] = input
-            
-        elseif subcategory == 'exclusions' then
-            if option:sub( 1, 6 ) == 'clash_' then profile.clashes[ option:sub(7) ] = tonumber( input ) or 0
-            else profile.blacklist[ option ] = input end
-            ns.forceUpdate()
 
         end
+            
+    elseif category == 'abilities' then
+        local ability = info[2]
+
+        if option == 'clash' then profile.clashes[ ability ] = tonumber( input ) or 0
+        elseif option == 'exclude' then profile.blacklist[ ability ] = input
+        elseif option == 'feign' then profile.feignCD[ ability ] = input
+        else
+            -- Toggle Override
+            profile.toggles[ ability ] = input
+
+        end
+
+        ns.forceUpdate()
         
         return
 
@@ -7499,6 +7648,18 @@ local function storeModifier( entry, key, value )
 
     elseif key == 'interval' then
         entry.Interval = value
+
+    elseif key == 'for_next' then
+        entry.PoolForNext = tonumber( value ) ~= 0
+
+    elseif key == 'wait' then
+        entry.PoolTime = tonumber( value ) or 0
+
+    elseif key == 'extra_amount' then
+        entry.PoolExtra = tonumber( value ) or 0
+
+    elseif key == 'sec' then
+        entry.WaitSeconds = value
         
     end
     
@@ -7654,21 +7815,26 @@ local warnOnce = false
 function Hekili:TogglePause( ... )
     
     if not self.Pause then
+        self.Pause = true
+
         Hekili.ActiveDebug = true
+
         for i = 1, #Hekili.DB.profile.displays do
             Hekili:ProcessHooks( i )
         end
+
         Hekili.ActiveDebug = false
         Hekili:UpdateDisplays()
         Hekili:SaveDebugSnapshot()
         Hekili:Print( "Snapshot saved." )
+
         if not warnOnce then
             Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
             warnOnce = true
         end
+    else
+        self.Pause = false
     end
-    
-    self.Pause = not self.Pause
     
     local MouseInteract = self.Pause or self.Config or ( not Hekili.DB.profile.Locked )
     

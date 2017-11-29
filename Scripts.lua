@@ -259,7 +259,10 @@ local specialModifiers = {
     MaximumTargets = true,
     CheckMovement = true,
     Movement = true,
-    ModName = false
+    ModName = false,
+    WaitSeconds = true,
+    PoolTime = true,
+    PoolForNext = true
 }
 
 

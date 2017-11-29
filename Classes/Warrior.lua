@@ -69,6 +69,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
                 interval = 'mainhand_speed',
                 value = 3,
             },
+
             mainhandfury = {
                 resource = 'rage',
                 spec = 'fury',
@@ -80,6 +81,19 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
                 end,
                 interval = 'mainhand_speed',
                 value = 3,
+            },
+
+            offhandfury = {
+                resource = 'rage',
+                spec = 'fury',
+                last = function ()
+                    local swing = state.swings.offhand
+                    local t = state.query_time
+
+                    return swing + ( floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed )
+                end,
+                interval = 'offhand_speed',
+                value = 3
             }
         } )
         
@@ -224,6 +238,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
          -- Traits Arms
         addTrait( "arms_of_the_valarjar", 241264 )
+        addTrait( "colossus_smash", 208086 )
         addTrait( "corrupted_blood_of_zakajz", 209566 )
         addTrait( "crushing_blows", 209472 )
         addTrait( "deathblow", 209481 )
@@ -246,54 +261,83 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addTrait( "warbreaker", 209577 )
         addTrait( "will_of_the_first_king", 209548 )
 
-        -- Auras
-        addAura( "avatar", 107574 )
-        addAura( "battle_cry", 1719 )
-        addAura( "berserker_rage", 18499 )
+        -- Shared/Fury Auras
+        addAura( "avatar", 107574, "duration", 20 )
+        addAura( "battle_cry", 1719, "duration", 5 )
+
+            modifyAura( "battle_cry", "duration", function( x )
+                return x + ( talent.reckless_abandon.enabled and 2 or 0 )
+            end )
+
+        addAura( "berserker_rage", 18499, "duration", 18499 )
         addAura( "bladestorm", 46924, "duration", 6, "incapacitate", true ) -- Fury.
-            modifyAbility( "bladestorm", "duration", function( x )
+
+            modifyAura( "bladestorm", "duration", function( x )
                 return x * haste
             end )
-            modifyAbility( "bladestorm", "id", function( x )
+            modifyAura( "bladestorm", "id", function( x )
                 return spec.arms and 227847 or 46924
             end )
             class.auras[ 227847 ] = class.auras[ 46924 ]
 
-        addAura( "bloodbath", 12292 )
-        addAura( "dragon_roar", 118000 )
-        addAura( "enrage_one", 184361 )
-        addAura( "enrage", 184362 )
-        addAura( "enraged_regeneration", 184364 )
-        addAura( "mastery_unshackled_fury", 76856 )
-        addAura( "titans_grip", 46917 )
-
-        -- Auras Arms
-        addAura( "defensive_stance", 197690 )
-        addAura( "die_by_the_sword", 118038 )
-        addAura( "focused_rage", 207982 )
+        addAura( "bloodbath", 12292, "duration", 10 )
+        addAura( "bounding_stride", 202164, "duration", 3 )
+        addAura( "cleave", 188923, "duration", 6, "max_stack", 5 )
+        addAura( "colossus_smash", 208086, "duration", 8 )
+        addAura( "commanding_shout", 97463, "duration", 10 )
+        addAura( "defensive_stance", 197690, "duration", 3600 )
+        addAura( "die_by_the_sword", 118038, "duration", 8 )
+        addAura( "dragon_roar", 118000, "duration", 8 )
+        addAura( "enrage", 184362, "duration", 4 )
+        addAura( "enraged_regeneration", 184364, "duration", 8 )
+        addAura( "focused_rage", 207982, "duration", 30, "max_stack", 3 )
+        addAura( "frenzy", 202539, "duration", 15, "max_stack", 3 )
+        addAura( "frothing_berserker", 215571, "duration", 6 )
+        addAura( "furious_charge", 202225, "duration", 5 )
+        addAura( "hamstring", 1715, "duration", 15 )
+        addAura( "intimidating_shout", 5246, "duration", 8 )
+        addAura( "massacre", 206316, "duration", 10 )
         addAura( "mastery_colossal_might", 76838 )
+        addAura( "mastery_unshackled_fury", 76856 )
+        addAura( "meat_cleaver", 85739, "duration", 20 )
+        addAura( "mortal_strike", 115804, "duration", 10 )
+        addAura( "odyns_fury", 205546, "duration", 4 )
+        addAura( "piercing_howl", 12323, "duration", 15 )
         addAura( "ravager", 152277 )
         addAura( "rend", 772, "duration", 8 )
+        addAura( "shockwave", 46968, "duration", 3 )
+        addAura( "storm_bolt", 107570, "duration", 4 )
         addAura( "tactician", 184783 )
-        addAura( "frothing_berserker", 215572)
+        addAura( "taste_for_blood", 206333, "duration", 8, "max_stack", 6 )
+        addAura( "titans_grip", 46917 )
+        addAura( "victory_rush", 32216, "duration", 20 )
+        addAura( "war_machine", 215557, "duration", 15 )
+        addAura( "wrecking_ball", 215570, "duration", 10 )
 
-        -- Abilities
-        -- Garrison Ability
-        --[[  ]]
 
-        addAbility( "garrison_ability", {
-            id = 161691,
-            spend = 0,
-            cast = 0,
-            gcdType = "spell",
-            cooldown = 0,
-            min_range = 0,
-            max_range = 0,
+        ns.addHook( "gain", function( amount, resource )
+            if state.spec.fury and state.talent.frothing_berserker.enabled then
+                if state.rage.current == 100 then state.applyBuff( "frothing_berserker" ) end
+            end
+        end )
+
+
+        addGearSet( "stromkar_the_warbreaker", 128910 )
+        setArtifact( "stromkar_the_warbreaker" )
+
+        addGearSet( "warswords_of_the_valarjar", 128908 )
+        setArtifact( "warswords_of_the_valarjar" )
+
+
+        addSetting( 'forecast_fury', true, {
+            name = "Forecast Fury Generation",
+            type = "toggle",
+            desc = "If |cFF00FF00true|r, the addon will anticipate Fury gains from your auto-attacks.",
+            width = "full"
         } )
 
-        addHandler( "garrison_ability", function ()
-            -- proto
-        end )
+
+        -- Abilities
 
         -- Odyns Fury
         --[[ Unleashes the fiery power Odyn bestowed the Warswords, dealing (270% + 270%) Fire damage and an additional (400% of Attack power) Fire damage over 4 sec to all enemies within 14 yards. ]]
@@ -302,32 +346,20 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             id = 205545,
             spend = 0,
             cast = 0,
-            gcdType = "on",
+            gcdType = "melee",
             cooldown = 45,
             min_range = 0,
             max_range = 0,
-            usable = function () return equipped.warswords_of_the_valarjar end,--and ( toggle.artifact_ability or ( toggle.artifact_cooldown and toggle.cooldowns ) ) end,
+            usable = function () return equipped.warswords_of_the_valarjar end,
             toggle = 'artifact'
-        } )        
-
-         -- Bladestorm
-        --[[ Become an unstoppable storm of destructive force, striking all targets within 8 yards with both weapons for 67,964 Physical damage over 5.6 sec.    You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks. ]]
-
-        addAbility( "bladestorm", {
-            id = 46924,
-            spend = 0,
-            cast = 0,
-            gcdType = "spell",
-            talent = "bladestorm",
-            cooldown = 90,
-            min_range = 0,
-            max_range = 0,
         } )
 
-        addHandler( "bladestorm", function ()
-            -- proto
+        addHandler( "odyns_fury", function ()
+            applyDebuff( "target", "odyns_fury" )
+            active_dot.odyns_fury = active_enemies
         end )
-        
+
+
         -- Avatar
         --[[ Transform into a colossus for 20 sec, causing you to deal 20% increased damage and removing all roots and snares. ]]
 
@@ -340,28 +372,35 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             cooldown = 90,
             min_range = 0,
             max_range = 0,
+            toggle = 'cooldowns'
         } )
 
         addHandler( "avatar", function ()
-            -- proto
+            applyBuff( "avatar" )
         end )        
+        
         
         -- Battle Cry
         --[[ Lets loose a battle cry, granting 100% increased critical strike chance for 5 sec. ]]
 
         addAbility( "battle_cry", {
             id = 1719,
-            spend = -100,
+            spend = 0,
+            spend_type = "rage",
             cast = 0,
             gcdType = "spell",
             cooldown = 60,
             min_range = 0,
             max_range = 0,
-            spend_type = "rage",
         } )
 
+        modifyAbility( "battle_cry", "spend", function( x )
+            if talent.reckless_abandon.enabled then return -100 end
+            return x
+        end )
+
         addHandler( "battle_cry", function ()
-            -- proto
+            applyBuff( "battle_cry" )
         end )
 
 
@@ -376,26 +415,50 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             cooldown = 60,
             min_range = 0,
             max_range = 0,
+            toggle = 'cooldowns'
         } )
 
-        addHandler( "berserker_rage", function ()
-            -- proto
+        modifyAbility( "berserker_rage", "cooldown", function( x )
+            return x - ( talent.outburst.enabled and 15 or 0 )
         end )
 
-      -- Bladestorm
-        --[[ Become an unstoppable storm of destructive force, striking all targets within 8 yards for 240,620 Physical damage over 5.4 sec.    You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks. ]]
+        addHandler( "berserker_rage", function ()
+            applyBuff( "berserker_rage" )
+            if talent.outburst.enabled then applyBuff( "enrage", 4 ) end
+        end )
+
+
+        -- Bladestorm
+        --[[ Become an unstoppable storm of destructive force, striking all targets within 8 yards with both weapons for 67,964 Physical damage over 5.6 sec.    You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks. ]]
 
         addAbility( "bladestorm", {
-            id = 227847,
+            id = 46924,
             spend = 0,
             cast = 0,
             gcdType = "spell",
             cooldown = 90,
             min_range = 0,
             max_range = 0,
-        } )
+            talent = nil,
+            notalent = "ravager",
+            toggle = 'cooldowns'
+        }, 227847 )
+
+        modifyAbility( "bladestorm", "id", function( x )
+            return spec.arms and 227847 or x
+        end )
+
+        modifyAbility( "bladestorm", "talent", function( x )
+            if spec.fury then return "bladestorm" end
+            return x
+        end )
+
+        modifyAbility( "bladestorm", "cast", function( x )
+            return x * haste
+        end )
 
         addHandler( "bladestorm", function ()
+            applyBuff( "bladestorm", 6 )
             setCooldown( "global_cooldown", 6 * haste )
         end )
 
@@ -415,7 +478,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "bloodbath", function ()
-            -- proto
+            applyBuff( "bloodbath" )
         end )
 
 
@@ -424,40 +487,34 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addAbility( "bloodthirst", {
             id = 23881,
-            spend = 0, -- see handler
+            spend = -10,
+            spend_type = "rage",
             cast = 0,
             gcdType = "spell",
             cooldown = 4.5,
             min_range = 0,
             max_range = 0,
-            spend_type = "rage",
         } )
 
+        modifyAbility( "bloodthirst", "cooldown", function( x )
+            return x * haste
+        end )
+
         addHandler( "bloodthirst", function ()
-            -- proto
-        end )
-        
-        addHandler( 'bloodthirst', function()
-            if(talent.frothing_berserker.enabled) then
-              if(rage.current + 10 >= 100) then        
-                applyBuff( 'frothing_berserker', 6)
-              end
+            if stat.crit + 15 * buff.taste_for_blood.stack >= 100 then
+                removeBuff( "taste_for_blood" )
             end
-            gain( 10, 'rage' )
+            removeBuff( "meat_cleaver" )
         end )
-        --addHandler( 'bloodthirst', function ()
-        --    if(talent.frothing_berserker.enabled) then
-       --       if(rage.current + 10 >= 100) then        
-       --         applyBuff( 'frothing_berserker', 6)
-       --       end
-       --     end
-        --end )
+
+        
         -- Charge
         --[[ Charge to an enemy, dealing 2,675 Physical damage, rooting it for 1 sec and then reducing its movement speed by 50% for 6 sec.    Generates 20 Rage. ]]
 
         addAbility( "charge", {
             id = 100,
-            spend = 0,
+            spend = -20,
+            spend_type = "rage",
             cast = 0,
             gcdType = "spell",
             cooldown = 20,
@@ -465,7 +522,6 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             recharge = 20,
             min_range = 8,
             max_range = 25,
-            spend_type = "rage",
             usable = function () return target[ 'within'..25 ] and target[ 'outside'..8 ] end
         } )
 
@@ -473,13 +529,13 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             return x + ( talent.double_time.enabled and 1 or 0 )
         end )
 
+        modifyAbility( 'charge', 'cooldown', function( x )
+            return x - ( talent.double_time.enabled and 3 or 0 )
+        end )
+
         addHandler( 'charge', function()
-            if talent.frothing_berserker.enabled then
-                if rage.current + 15 >= 100 then        
-                    applyBuff( 'frothing_berserker', 6 )
-                end
-            end
             gain( 20, 'rage' )
+            if talent.furious_charge.enabled then applyBuff( "furious_charge" ) end
             setDistance( 5 )
         end )
 
@@ -489,18 +545,19 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addAbility( "cleave", {
             id = 845,
             spend = 9,
-            min_cost = 9,
             spend_type = "rage",
             cast = 0,
             gcdType = "spell",
             cooldown = 6,
             min_range = 0,
             max_range = 0,
+            spec = "arms"
         } )
 
         addHandler( "cleave", function ()
-            -- proto
+            applyBuff( "cleave", 6, active_enemies )
         end )
+
         
         -- Colossus Smash
         --[[ Smashes the enemy's armor, dealing 42,079 Physical damage, and increasing damage you deal to them by 44% for 8 sec. ]]
@@ -516,7 +573,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "colossus_smash", function ()
-            -- proto
+            applyDebuff( "target", "colossus_smash", 8 )
         end )        
 
         -- Commanding Shout
@@ -533,8 +590,9 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "commanding_shout", function ()
-            -- proto
+            applyBuff( "commanding_shout" )
         end )
+
 
         -- Defensive Stance
         --[[ A defensive combat state that reduces all damage you take by 20%, and all damage you deal by 10%. Lasts until cancelled. ]]
@@ -543,15 +601,21 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             id = 197690,
             spend = 0,
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             talent = "defensive_stance",
-            cooldown = 10,
+            cooldown = 6,
             min_range = 0,
             max_range = 0,
-        } )
+        }, 212520 )
+
+        modifyAbility( "defensive_stance", "id", function( x )
+            if buff.defensive_stance.up then return 212520 end
+            return x
+        end )
 
         addHandler( "defensive_stance", function ()
-            -- proto
+            if buff.defensive_stance.up then removeBuff( "defensive_stance" )
+            else applyBuff( "defensive_stance" ) end
         end )
         
 
@@ -569,8 +633,9 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "die_by_the_sword", function ()
-            -- proto
+            applyBuff( "die_by_the_sword" )
         end )
+
         
         -- Dragon Roar
         --[[ Roar explosively, dealing 6,498 damage to all enemies within 8 yards and increasing all damage you deal by 16% for 6 sec. Dragon Roar ignores all armor and always critically strikes. ]]
@@ -587,7 +652,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "dragon_roar", function ()
-            -- proto
+            applyBuff( "dragon_roar" )
         end )
 
 
@@ -605,15 +670,13 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "enraged_regeneration", function ()
-            -- proto
+            applyBuff( "enraged_regeneration" )
         end )
 
 
         -- Execute
         --[[ Attempt to finish off a wounded foe, causing 30,922 Physical damage. Only usable on enemies that have less than 20% health. ]]
-
-        -- Execute
-        --[[ Arms Attempts to finish off a foe, causing 29,484 Physical damage, and consuming up to 30 additional Rage to deal up to 88,453 additional damage. Only usable on enemies that have less than 20% health.    If your foe survives, 30% of the Rage spent is refunded. ]]
+        --[[ Arms: Attempts to finish off a foe, causing 29,484 Physical damage, and consuming up to 30 additional Rage to deal up to 88,453 additional damage. Only usable on enemies that have less than 20% health.    If your foe survives, 30% of the Rage spent is refunded. ]]
 
         addAbility( "execute", {
             id = 163201,
@@ -625,6 +688,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             cooldown = 0,
             min_range = 0,
             max_range = 0,
+            usable = function () return target.health_pct < 20 end,
         }, 5308 )
 
         modifyAbility( "execute", "id", function( x )
@@ -632,8 +696,11 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             return x
         end )
 
-        modifyAbility( "execute", "spend", function( x )
+        modifyAbility( "execute", "spend", function( x )            
             if spec.fury then return 25 end
+
+            if talent.dauntless.enabled then x = x * 0.9 end
+            if talent.deadly_calm.enabled and buff.battle_cry.up then x = x * 0.25 end
             return x
         end )
         
@@ -643,8 +710,13 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         end  )
 
         addHandler( "execute", function ()
-            -- proto
+            if spec.arms then
+                local addl_cost = 10 * ( talent.dauntless.enabled and 0.9 or 1 ) * ( talent.deadly_calm.enabled and buff.battle_cry.up and 0.25 or 1 )
+                spend( min( addl_cost, rage.current ), "rage" ) 
+                gain( ( action.execute.cost + addl_cost ) * 0.3, "rage" )
+            end
         end )
+
 
         -- Focused Rage
         --[[ Focus your rage on your next Mortal Strike, increasing its damage by 30%, stacking up to 3 times. Unaffected by the global cooldown. ]]
@@ -655,7 +727,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             min_cost = 20,
             spend_type = "rage",
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             talent = "focused_rage",
             cooldown = 1.5,
             min_range = 0,
@@ -663,9 +735,10 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "focused_rage", function ()
-            -- proto
+            addStack( "focused_rage", 30, 1 )
         end )
         
+
         -- Furious Slash
         --[[ Aggressively strike with your off-hand weapon for 3,520 Physical damage. Increases your Bloodthirst critical strike chance by 15% until it next deals a critical strike, stacking up to 6 times. ]]
 
@@ -680,7 +753,8 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "furious_slash", function ()
-            -- proto
+            addStack( "taste_for_blood", 8, 1 )
+            addStack( "frenzy", 15, 1 )
         end )
 
 
@@ -689,8 +763,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addAbility( "hamstring", {
             id = 1715,
-            spend = 9,
-            min_cost = 9,
+            spend = 10,
             spend_type = "rage",
             cast = 0,
             gcdType = "spell",
@@ -699,9 +772,15 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             max_range = 0,
         } )
 
-        addHandler( "hamstring", function ()
-            -- proto
+        modifyAbility( "hamstring", "spend", function( x )
+            if talent.dauntless.enabled then return x * 0.9 end
+            return x
         end )
+
+        addHandler( "hamstring", function ()
+            applyDebuff( "target", "hamstring", 15 )
+        end )
+
 
         -- Heroic Leap
         --[[ Leap through the air toward a target location, slamming down with destructive force to deal 2,385 Physical damage to all enemies within 8 yards. ]]
@@ -718,8 +797,14 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             max_range = 40,
         } )
 
+        modifyAbility( "heroic_leap", "cooldown", function( x )
+            return x - ( talent.bounding_stride.enabled and 15 or 0 )
+        end )
+
         addHandler( "heroic_leap", function ()
-            -- proto
+            -- This *would* reset CD on Taunt for Prot.
+            setDistance( 5 )
+            applyBuff( "bounding_stride" )
         end )
 
 
@@ -737,7 +822,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "heroic_throw", function ()
-            -- proto
+            -- Generates high threat.
         end )
 
 
@@ -755,29 +840,35 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "intimidating_shout", function ()
-            -- proto
+            applyDebuff( "target", "intimidating_shout" )
+            active_dot.intimidating_shout = min( 6, active_enemies )
         end )
+
 
         -- Mortal Strike
         --[[ A vicious strike that deals 64,077 Physical damage and reduces the effectiveness of healing on the target for 10 sec. ]]
 
         addAbility( "mortal_strike", {
             id = 12294,
-            spend = 18,
-            min_cost = 18,
+            spend = 20,
             spend_type = "rage",
             cast = 0,
             gcdType = "spell",
-            cooldown = 5.423,
+            cooldown = 6,
             charges = 1,
-            recharge = 5.423,
+            recharge = 6,
             min_range = 0,
             max_range = 0,
         } )
 
-        addHandler( "mortal_strike", function ()
-            -- proto
+        modifyAbility( "mortal_strike", "spend", function( x )
+            return x * ( talent.dauntless.enabled and 0.9 or 1 ) 
         end )
+
+        addHandler( "mortal_strike", function ()
+            applyDebuff( "target", "mortal_strike" )
+        end )
+
 
        -- Overpower
         --[[ Overpowers the enemy, causing 54,736 Physical damage. Cannot be blocked, dodged or parried, and has a 60% increased chance to critically strike.    Your other melee abilities have a chance to activate Overpower. ]]
@@ -797,6 +888,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             -- proto
         end )
 
+
         -- Piercing Howl
         --[[ Snares all enemies within 15 yards, reducing their movement speed by 50% for 15 sec. ]]
 
@@ -813,7 +905,8 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "piercing_howl", function ()
-            -- proto
+            applyDebuff( "target", "piercing_howl" )
+            active_dot.piercing_howl = active_enemies
         end )
 
 
@@ -824,14 +917,14 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             id = 6552,
             spend = 0,
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 15,
             min_range = 0,
             max_range = 0,
         } )
 
         addHandler( "pummel", function ()
-            -- proto
+            interrupt()
         end )
 
 
@@ -841,26 +934,29 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addAbility( "raging_blow", {
             id = 85288,
             spend = -5,
+            spend_type = "rage",
             cast = 0,
             gcdType = "spell",
             cooldown = 0,
             min_range = 0,
             max_range = 0,
-            spend_type = "rage",
+            buff = nil,
         } )
+
+        modifyAbility( "raging_blow", "buff", function( x )
+            if not talent.inner_rage.enabled then return "enrage" end
+            return x
+        end )
+
+        modifyAbility( "raging_blow", "cooldown", function( x )
+            if talent.inner_rage.enabled then return 4.5 * haste end
+            return x
+        end )
 
         addHandler( "raging_blow", function ()
             -- proto
         end )
-        
-        addHandler('raging_blow', function()
-            if(talent.frothing_berserker.enabled) then
-              if(rage.current + 5 >= 100) then        
-                applyBuff( 'frothing_berserker', 6)
-              end
-            end
-            gain( 5, 'rage' )
-        end )
+
 
         -- Rampage
         --[[ Enrages you and unleashes a series of 5 brutal strikes over 2 sec for a total of 24,668 Physical damage. ]]
@@ -868,7 +964,6 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addAbility( "rampage", {
             id = 184367,
             spend = 85,
-            min_cost = 85,
             spend_type = "rage",
             cast = 0,
             gcdType = "spell",
@@ -877,14 +972,18 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             max_range = 0,
         } )
 
-        addHandler( "rampage", function ()
-            -- proto
+        modifyAbility( "rampage", "spend", function( x )
+            if buff.massacre.up then return 0 end            
+            return x - ( talent.carnage.enabled and 15 or 0 )
         end )
 
         addHandler( 'rampage', function ()
-            applyBuff( 'enrage', 4)
+            removeBuff( "massacre" )
+            applyBuff( 'enrage', 4 )
+            removeBuff( "meat_cleaver" )
         end )
         
+
         -- Ravager
         --[[ Throws a whirling weapon at the target location that inflicts 260,141 damage to all enemies within 8 yards over 6.3 sec.     Generates 7 Rage each time it deals damage. ]]
 
@@ -900,10 +999,11 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "ravager", function ()
-            -- proto
+            -- Should we predict some rage gain?
         end )
         
-         -- Rend
+
+        -- Rend
         --[[ Wounds the target, causing 21,894 Physical damage instantly and an additional 110,116 Bleed damage over 8 sec. ]]
 
         addAbility( "rend", {
@@ -920,7 +1020,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "rend", function ()
-            -- proto
+            applyDebuff( "target", "rend" )
         end )
         
 
@@ -938,8 +1038,14 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             max_range = 0,
         } )
 
+        modifyAbility( "shockwave", "cooldown", function( x )
+            if active_enemies > 2 then return x - 20 end
+            return x
+        end )
+
         addHandler( "shockwave", function ()
-            -- proto
+            applyDebuff( "target", "shockwave" )
+            active_dot.shockwave = active_enemies
         end )
 
 
@@ -948,8 +1054,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addAbility( "slam", {
             id = 1464,
-            spend = 18,
-            min_cost = 18,
+            spend = 20,
             spend_type = "rage",
             cast = 0,
             gcdType = "spell",
@@ -957,6 +1062,11 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             min_range = 0,
             max_range = 0,
         } )
+
+        modifyAbility( "slam", "spend", function( x )
+            if talent.dauntless.enabled then return x * 0.9 end
+            return x
+        end )
 
         addHandler( "slam", function ()
             -- proto
@@ -978,7 +1088,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "storm_bolt", function ()
-            -- proto
+            applyDebuff( "target", "storm_bolt" )
         end )
 
 
@@ -995,12 +1105,14 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             max_range = 30,
         } )
 
+        addAura( "taunt", 355, "duration", 3 )
+
         addHandler( "taunt", function ()
-            -- proto
+            applyDebuff( "target", "taunt" )
         end )
 
 
-      -- Victory Rush
+        -- Victory Rush
         --[[ Strikes the target, causing 22,022 damage and healing you for 30% of your maximum health.    Only usable within 20 sec after you kill an enemy that yields experience or honor. ]]
 
         addAbility( "victory_rush", {
@@ -1011,10 +1123,12 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             cooldown = 0,
             min_range = 0,
             max_range = 0,
+            nospec = "fury",
+            buff = "victory_rush"
         } )
 
         addHandler( "victory_rush", function ()
-            -- proto
+            removeBuff( "victory_rush" )
         end )
 
 
@@ -1029,20 +1143,20 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             cooldown = 60,
             min_range = 0,
             max_range = 100,
+            toggle = 'artifact',
+            equipped = 'stromkar_the_warbreaker',
+            trait = 'warbreaker'
         } )
 
         addHandler( "warbreaker", function ()
-            -- proto
+            applyDebuff( "target", "colossus_smash" )
+            active_dot.colossus_smash = active_enemies
         end )
 
 
-        -- Arms Whirlwind
-        --[[ Unleashes a whirlwind of steel, striking all enemies within 8 yards for 39,410 Physical damage. ]]
-
-        
-
         -- Whirlwind
         --[[ Unleashes a whirlwind of steel, striking all enemies within 8 yards for 8,348 Physical damage.    Causes your next Bloodthirst or Rampage to strike up to 4 additional targets for 50% damage. ]]
+        --[[ Arms: Unleashes a whirlwind of steel, striking all enemies within 8 yards for 39,410 Physical damage. ]]
 
         addAbility( "whirlwind", {
             id = 1680,
@@ -1067,7 +1181,8 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         end )
         
         addHandler( "whirlwind", function ()
-            -- proto
+            if spec.fury then applyBuff( "meat_cleaver" ) end
+            removeBuff( "wrecking_ball" )
         end )
 
    end
