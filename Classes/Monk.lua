@@ -1252,6 +1252,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             notalent = 'serenity',
             ready = function () return buff.storm_earth_and_fire.remains end,
             toggle = 'cooldowns',
+            texture = 136038,
         } )
 
         modifyAbility( 'storm_earth_and_fire', 'cooldown', function( x )

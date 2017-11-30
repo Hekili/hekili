@@ -1477,7 +1477,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             -- min_range = 0,
             max_range = 30,
             recheck = function () return dot.virulent_plague.remains - gcd, dot.virulent_plague.remains end,
-            -- aura = 'virulent_plague'
+            aura = 'virulent_plague',
         } )
 
         addHandler( "outbreak", function ()

@@ -1809,12 +1809,12 @@ local mt_default_cooldown = {
             end
             
             -- If the ability is toggled off in the profile, we may want to fake its CD.
-            if ns.isKnown( t.key, true ) and profile.feignCD[ t.key ] then
+            if profile.feignCD[ t.key ] then
                 local toggle = profile.toggles[ t.key ]
 
-                if toggle == 'default' then toggle = ability.toggle end
+                if not toggle or toggle == 'default' then toggle = ability.toggle end
 
-                if toggle and not state.toggle[ ability.toggle ] then
+                if toggle and not state.toggle[ toggle ] then
                     return ability.elem.cooldown
                 end
             end
@@ -3756,8 +3756,9 @@ ns.isKnown = function( sID, notoggle )
         return false
     end
 
-    local bl = Hekili.DB.profile.blacklist
-    if bl and bl[ ability.key ] then
+    local profile = Hekili.DB.profile
+
+    if profile.blacklist and profile.blacklist[ ability.key ] then
         return false
     end
 
@@ -3769,12 +3770,12 @@ ns.isKnown = function( sID, notoggle )
         return false
     end
 
-    if not notoggle then
+    --[[ if not notoggle then
         local pToggle = Hekili.DB.profile.toggles[ ability.key ]
 
         if ( not pToggle or pToggle == 'default' ) and ( ability.toggle and not state.toggle[ ability.toggle ]  ) then return false
         elseif ( pToggle and pToggle ~= 'none' ) and not state.toggle[ pToggle ] then return false end
-    end
+    end ]]
 
     if ability.talent and not state.talent[ ability.talent ].enabled then
         return false
@@ -3827,6 +3828,14 @@ ns.isUsable = function( spell )
     end
 
     if ability.buff and not state.buff[ ability.buff ].up then
+        return false
+    end
+
+    local toggle = Hekili.DB.profile.toggles[ ability.key ]
+
+    if not toggle or toggle == 'default' then toggle = ability.toggle end
+
+    if toggle and not state.toggle[ toggle ] then
         return false
     end
     
