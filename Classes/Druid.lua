@@ -982,6 +982,9 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             max_range = 0,
         }, 102558 )
 
+        class.abilities.incarnation_king_of_the_jungle = class.abilities.incarnation
+        class.abilities.incarnation_guardian_of_ursoc = class.abilities.incarnation
+
         modifyAbility( "incarnation", "id", function( x )
             if spec.guardian then return 102558 end
             return x

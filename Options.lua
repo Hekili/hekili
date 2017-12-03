@@ -289,13 +289,13 @@ local oneTimeFixes = {
         end
     end,
 
-    changeIncarnation_11052017 = function( profile )
+    --[[ changeIncarnation_11052017 = function( profile )
         for listID, list in ipairs( profile.actionLists ) do
             for entryID, entry in ipairs( list.Actions ) do
                 if entry.Ability == "incarnation" then entry.Ability = "incarnation_king_of_the_jungle" end
             end
         end
-    end,
+    end, ]]
 
     changeThrashCatToThrash_11062017 = function( profile )
         for listID, list in ipairs( profile.actionLists ) do
@@ -304,6 +304,14 @@ local oneTimeFixes = {
             end
         end
     end,
+
+    undoIncarnationNameChange_12042017 = function( profile )
+        for listID, list in ipairs( profile.actionLists ) do
+            for entryID, entry in ipairs( list.Actions ) do
+                if entry.Ability == "incarnation_king_of_the_jungle" then entry.Ability = "incarnation" end
+            end
+        end
+    end,        
 }
 
 

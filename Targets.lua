@@ -65,7 +65,7 @@ function ns.getNumberTargets()
         end
     end
 
-    if Hekili.DB.profile['Count Targets by Damage'] or not Hekili.DB.profile['Count Nameplate Targets'] or not showNPs then
+    if Hekili.DB.profile['Count Targets by Damage'] or state.ranged or not Hekili.DB.profile['Count Nameplate Targets'] or not showNPs then
         for k,v in pairs( myTargets ) do
             if not nameplates[ k ] then
                 nameplates[ k ] = true

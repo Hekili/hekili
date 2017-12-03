@@ -773,66 +773,63 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
         end
 
     -- Player/Minion Event
-    elseif not class.exclusions[ spellID ] then
+    elseif not class.exclusions[ spellID ] and ( sourceGUID == state.GUID or ns.isMinion( sourceGUID ) ) then
         local aura = class.auras and class.auras[ spellID ]
         
-        if aura and hostile and sourceGUID ~= destGUID and not aura.friendly then
+        if aura then 
+            if hostile and sourceGUID ~= destGUID and not aura.friendly then
 
-            -- Aura Tracking
-            if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
-                ns.trackDebuff( spellID, destGUID, time, true )
-                forceUpdate( subtype )
-                ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
-
-            elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
-                ns.trackDebuff( spellID, destGUID, time )
-                forceUpdate( subtype )
-                -- ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
-
-            elseif subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_MISSED' then
-                ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
-                forceUpdate( subtype )
-
-            elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
-                ns.trackDebuff( spellID, destGUID )
-                forceUpdate( subtype )
-
-            end
-
-            if subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
-                ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
-
-                if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
-                    state.swings.last_foa_tick = time
+                -- Aura Tracking
+                if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
+                    ns.trackDebuff( spellID, destGUID, time, true )
+                    ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
                     forceUpdate( subtype )
+
+                elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
+                    ns.trackDebuff( spellID, destGUID, time )
+                    forceUpdate( subtype )
+                    -- ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+
+                elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
+                    ns.trackDebuff( spellID, destGUID )
+                    forceUpdate( subtype )
+
                 end
 
-            end
+            elseif sourceGUID == state.GUID and aura and aura.friendly then -- friendly effects
 
-            local action = class.abilities[ spellID ]
-            
-            if subtype ~= 'SPELL_CAST_SUCCESS' and action and action.velocity then
-                ns.removeSpellFromFlight( action.key )
-            end
+                if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
+                    ns.trackDebuff( spellID, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
+                    forceUpdate( subtype )
 
-        elseif sourceGUID == state.GUID and aura and aura.friendly then -- friendly effects
+                elseif subtype == 'SPELL_PERIODIC_HEAL' or subtype == 'SPELL_PERIODIC_MISSED' then
+                    ns.trackDebuff( spellID, destGUID, time )
+                    forceUpdate( subtype )
 
-            if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
-                ns.trackDebuff( spellID, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
-                forceUpdate( subtype )
+                elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
+                    ns.trackDebuff( spellID, destGUID )
+                    forceUpdate( subtype )
 
-            elseif subtype == 'SPELL_PERIODIC_HEAL' or subtype == 'SPELL_PERIODIC_MISSED' then
-                ns.trackDebuff( spellID, destGUID, time )
-                forceUpdate( subtype )
-
-            elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
-                ns.trackDebuff( spellID, destGUID )
-                forceUpdate( subtype )
+                end
 
             end
 
         end
 
+        local action = class.abilities[ spellID ]
+        
+        if subtype ~= 'SPELL_CAST_SUCCESS' and action and action.velocity then
+            ns.removeSpellFromFlight( action.key )
+        end
+
+        if subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
+            ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+
+            if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
+                state.swings.last_foa_tick = time
+                forceUpdate( subtype )
+            end
+        end
     end
 
     -- This is dumb.  Just let modules used the event handler.
