@@ -74,38 +74,6 @@ function Hekili:GetDefaults()
             },
             clashes = {
             },
-            feignCD = {
-                -- DEATHKNIGHT
-                apocalypse = true,
-                army_of_the_dead = true,
-                breath_of_sindragosa = true,
-                dark_arbiter = true,
-                pillar_of_frost = true,
-                summon_gargoyle = true,
-
-                -- DEMONHUNTER
-                nemesis = true,
-                chaos_blades = true,
-                metamorphosis = true,
-
-                -- DRUID
-                ashamanes_frenzy = true,
-                incarnation = true,
-
-                -- MONK
-                serenity = true,
-                storm_earth_and_fire = true,
-                touch_of_death = true,
-
-                -- PALADIN
-                crusade = true,
-                avenging_wrath = true,
-
-                -- SHAMAN
-                ascendance = true,
-                feral_spirit = true,
-                fire_elemental = true,
-            },
 
             trinkets = {
             },
@@ -3698,7 +3666,7 @@ ns.AbilitySettings = function ()
     
     local option = {
         type = 'group',
-        name = "Abilities",
+        name = "Abilities and Items",
         order = 21,
         childGroups = 'select',
         args = {
@@ -3714,29 +3682,34 @@ ns.AbilitySettings = function ()
 
     local abilities = {} 
     for _, v in pairs( class.abilities ) do
-        if v.id > 0 and v.id ~= 61304 then
+        if ( v.id > 0 or v.id < -99 ) and v.id ~= 61304 then
             abilities[ v.name ] = v.key
         end
     end
     
     for k, v in orderedPairs( abilities ) do
-        option.args[ v ] = {
+
+        local ability = class.abilities[ v ]
+
+        local abOption = {
             type = 'group',
             name = k,
             order = 2,
+            -- childGroups = "inline",
             args = {
                 exclude = {
                     type = 'toggle',
-                    name = 'Disable ' .. k,
-                    desc = "If checked, this ability will be excluded from the addon's recommendations.  This can cause issues if other abilities are recommended based on this ability.  Use cautiously.",
+                    name = 'Disable ' .. ( ability.item and ability.link or k ),
+                    desc = "If checked, this ability will |cFFFF0000NEVER|r be recommended by the addon.  This can cause issues for some classes or " ..
+                        "specializations, if other abilities depend on you using " .. k .. ".",
                     width = 'full',
                     order = 1
                 },
                 toggle = {
                     type = 'select',
                     name = 'Require Active Toggle',
-                    desc = "Specify a required toggle for this action to be used in the addon action list.  This is most frequently used by major cooldown abilities and by artifact abilities.  " ..
-                        "Toggles are set via the Toggles tab, the minimap icon, or can be keybound for your convenience.",
+                    desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
+                        "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
                     width = 'full',
                     order = 2,
                     values = function ()
@@ -3752,16 +3725,6 @@ ns.AbilitySettings = function ()
                         return abilityToggles
                     end,
                 },
-                feign = {
-                    type = 'toggle',
-                    name = 'Feign Cooldown when Toggled Off',
-                    desc = "If checked, when " .. k .. " is unavailable due to a toggle, the addon will pretend that the ability is on cooldown.  This *may* help with some imported action lists, " ..
-                        "if other actions' conditions are based on this ability's cooldown.  For instance, the SimulationCraft Retribution action list may avoid spending Holy Power if Crusade will " ..
-                        "come off cooldown soon.  When Crusade is toggled off (i.e., cooldowns are disabled), the addon would avoid spending Holy Power indefinitely, which would not be ideal.  Checking " ..
-                        "this option would pretend like Crusade is still on a long cooldown and avoid that conflict.",
-                    order = 3,
-                    width = "full"
-                },
                 clash = {
                     type = 'range',
                     name = 'Clash Value',
@@ -3771,10 +3734,110 @@ ns.AbilitySettings = function ()
                     min = 0,
                     max = 1.5,
                     step = 0.05,
-                    order = 4
-                }
+                    order = 3
+                },
+                spacer02 = {
+                    type = "description",
+                    name = " ",
+                    width = "full",
+                    order = 49
+                },            }
+        }
+
+        local item = ability.item
+
+        if item ~= nil then
+
+            abOption.args.spacer01 = {
+                type = "description",
+                name = " ",
+                width = "full",
+                order = 19
             }
-        }        
+
+            abOption.args.itemHeader = {
+                type = "description",
+                name = "|cFFFFD100Usable Items|r",
+                order = 20,
+                fontSize = "medium",
+                width = "full"
+            }
+
+            abOption.args.itemDescription = {
+                type = "description",
+                name = "This ability requires that " .. ability.link .. " is equipped.  This item can be recommended via |cFF00CCFF[Use Items]|r in your " ..
+                    "action lists.  If you do not want the addon to recommend this ability via |cff00ccff[Use Items]|r, you can disable it here.  " ..
+                    "You can also specify a minimum or maximum number of targets for the item to be used.\n",                    
+                order = 21,
+                width = "full"
+            }
+
+            if class.itemSettings[ item ] then
+                for setting, config in pairs( class.itemSettings[ item ].options ) do
+                    abOption.args[ setting ] = config
+                end
+            end
+
+        end
+
+        abOption.hidden = function( info )
+            -- Hijack this function to build toggle list for action list entries.
+
+            abOption.args.listHeader = abOption.args.listHeader or {
+                type = "description",
+                name = "|cFFFFD100Action Lists|r",
+                order = 50,
+                fontSize = "medium",
+                width = "full",
+            }
+            abOption.args.listHeader.hidden = true
+
+            abOption.args.listDescription = abOption.args.listDescription or {
+                type = "description",
+                name = "This ability is listed in the action list(s) below.  You can disable any entries here, if desired.",
+                order = 51,
+                width = "full",
+            }
+            abOption.args.listDescription.hidden = true
+
+            for key, opt in pairs( abOption.args ) do
+                if key:match( "^(%d+):(%d+)" ) then
+                    opt.hidden = true
+                end
+            end
+
+            local entries = 51
+
+            for i, list in ipairs( Hekili.DB.profile.actionLists ) do
+                if list.Name ~= "Usable Items" then
+                    for a, action in ipairs( list.Actions ) do
+                        if action.Ability == v then
+                            entries = entries + 1
+
+                            local toggle = option.args[ v ].args[ i .. ':' .. a ] or {}
+
+                            toggle.type = "toggle"
+                            toggle.name = "Disable " .. ( ability.item and ability.link or k ) .. " (#|cFFFFD100" .. a .. "|r) in |cFFFFD100" .. ( list.Name or "Unnamed List" ) .. "|r"
+                            toggle.desc = "This ability is used in entry #" .. a .. " of the |cFFFFD100" .. list.Name .. "|r action list."
+                            toggle.order = entries
+                            toggle.width = "full"
+                            toggle.hidden = false
+
+                            abOption.args[ i .. ':' .. a ] = toggle
+                        end
+                    end
+                end
+            end
+
+            if entries > 51 then
+                abOption.args.listHeader.hidden = false
+                abOption.args.listDescription.hidden = false
+            end
+
+            return false
+        end
+
+        option.args[ v ] = abOption
     end
     
     return option
@@ -3800,6 +3863,7 @@ ns.TrinketSettings = function ()
                 width = "full",
             }
         },
+        childGroups = 'select'
     }
 
     local trinkets = Hekili.DB.profile.trinkets
@@ -3807,17 +3871,56 @@ ns.TrinketSettings = function ()
     for i, setting in pairs( class.itemSettings ) do
         option.args[ setting.key ] = {
             type = "group",
-            name = " ",
+            name = setting.name,
             order = 10 + i,
-            inline = true,
+            -- inline = true,
             args = setting.options
         }
+
+        option.args[ setting.key ].hidden = function( info )
+
+            -- Hide toggles in case they're outdated.
+            for k, v in pairs( setting.options ) do
+                if k:match( "^(%d+):(%d+)$") then
+                    v.hidden = true
+                end
+            end
+
+            for i, list in ipairs( Hekili.DB.profile.actionLists ) do
+                local entries = 100
+
+                if list.Name ~= 'Usable Items' then
+                    for a, action in ipairs( list.Actions ) do
+                        if action.Ability == setting.key then
+                            entries = entries + 1
+                            local toggle = option.args[ setting.key ].args[ i .. ':' .. a ] or {}
+
+                            local name = type( setting.name ) == 'function' and setting.name() or setting.name 
+
+                            toggle.type = "toggle"
+                            toggle.name = "Disable " .. name .. " in |cFFFFD100" .. ( list.Name or "(no list name)" ) .. " (#" .. a .. ")|r"
+                            toggle.desc = "This item is used in entry #" .. a .. " of the |cFFFFD100" .. list.Name .. "|r action list.\n\n" ..
+                                "This usually means that there is class- or spec-specific criteria for using this item.  If you do not want this item " ..
+                                "to be recommended via this action list, check this box."
+                            toggle.order = entries
+                            toggle.width = "full"
+                            toggle.hidden = false
+
+                            option.args[ setting.key ].args[ i .. ':' .. a ] = toggle
+                        end
+                    end
+                end
+            end
+
+            return false
+        end
 
         trinkets[ setting.key ] = trinkets[ setting.key ] or {
             disabled = false,
             minimum = 1,
             maximum = 0
         }
+
     end
     
     return option
@@ -4642,17 +4745,19 @@ function Hekili:GetOptions()
                     },
                     ['Description'] = {
                         type = 'description',
-                        name = "\n|cFFFF0000NEW!|r\nUpdated for Antorus!\n" ..
-                            "Added Feral Druid support.\n\n" ..
-                            "Please report issues at |cFF00FFFFhttps://wow.curseforge.com/projects/hekili/issues|r -- include the information from the Issue Reporting tab.\n",
+                        name = "\n|cFF00CCFFTHANK YOU TO ALL PATRONS SUPPORTING THIS ADDON'S DEVELOPMENT!|r\n" ..
+                            "Belatar, Borelia, Bsirk, ODB, Dane, ralask, Корнишон, belashar, Ingrathis, Issamonk, Jingy - Rekya, ninjask92, Theda99, Tic[à]sentence, and Wargus (Shagus).\n\n" ..
+                            "Please see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n",
                         fontSize = "medium",
+                        width = "full",
                         order = 4
                     },
+
                     ['Engine'] = {
                         type = "group",
                         name = "Engine Settings",
                         inline = true,
-                        order = 5,
+                        order = 6,
                         args = {
                             moreCPU = {
                                 type = "toggle",
@@ -5983,17 +6088,19 @@ function Hekili:GetOption( info, input )
 
         if option == 'exclude' then return profile.blacklist[ ability ]
         elseif option == 'clash' then return profile.clashes[ ability ] or 0
-        elseif option == 'feign' then return profile.feignCD[ ability ] end
+        elseif option == 'toggle' then return profile.toggles[ ability ] or 'default'
+        elseif option:match( "^(%d+):(%d+)$" ) then
+            local list, action = option:match( "^(%d+):(%d+)$" )
+            list = tonumber( list )
+            action = tonumber( action )
 
-        -- Toggle Override
-        return profile.toggles[ ability ] or 'default'
+            return not profile.actionLists[ list ].Actions[ action ].Enabled
+        end
 
-    elseif category == 'trinkets' then
-        local subcategory = info[2]
+        if profile.trinkets[ ability ] ~= nil then return profile.trinkets[ ability ][ option ] end
 
-        if profile.trinkets[ subcategory ] ~= nil then return profile.trinkets[ subcategory ][ option ] end
         return
-        
+
     elseif category == 'notifs' then
         if option == 'Notification X' or option == 'Notification Y' then
             return tostring( profile[ option ] )
@@ -6189,24 +6296,23 @@ function Hekili:SetOption( info, input, ... )
     elseif category == 'abilities' then
         local ability = info[2]
 
-        if option == 'clash' then profile.clashes[ ability ] = tonumber( input ) or 0
-        elseif option == 'exclude' then profile.blacklist[ ability ] = input
-        elseif option == 'feign' then profile.feignCD[ ability ] = input
-        else
-            -- Toggle Override
-            profile.toggles[ ability ] = input
+        if option == 'exclude' then profile.blacklist[ ability ] = input
+        elseif option == 'clash' then profile.clashes[ ability ] = tonumber( input ) or 0
+        elseif option == 'toggle' then profile.toggles[ ability ] = input or 'default'
+        elseif option:match( "^(%d+):(%d+)$" ) then
+            local list, action = option:match( "^(%d+):(%d+)$" )
 
+            list = tonumber( list )
+            action = tonumber( action )
+
+            profile.actionLists[ list ].Actions[ action ].Enabled = not input
+            ns.cacheCriteria()
+        elseif profile.trinkets[ ability ] ~= nil then
+            profile.trinkets[ ability ][ option ] = input
         end
 
         ns.forceUpdate()
-        
         return
-
-    elseif category == 'trinkets' then
-        subcategory = info[2]
-
-        profile.trinkets[ subcategory ] = profile.trinkets[ subcategory ] or {}
-        profile.trinkets[ subcategory ][ option ] = input
         
     elseif category == 'notifs' then
         profile[ option ] = input

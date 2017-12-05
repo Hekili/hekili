@@ -375,6 +375,8 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         addAura( "primal_fury", 159286 )
         addAura( "prowl", 5215, "duration", 3600 )
+            class.auras[ 102547 ] = class.auras.prowl
+            
         addAura( "pulverize", 138792, "duration", 20 )
         addAura( "rage_of_the_sleeper", 200851, "duration", 10 )
         
@@ -608,16 +610,12 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             width = "full"
         } )
 
-        --[[ addSetting( 'aoe_rip_threshold', 4, {
-            name = "Rip: Priority on Fewer Than...",
-            type = "range",
-            desc = "Set a |cFFFF0000maximum|r number of targets you want to engage before you prioritize your AOE attacks over keeping Rip up on your current target.\r\n" ..
-                "You can incorporate this into your custom APLs using the |cFFFFD100settings.aoe_rip_threshold|r syntax.",
-            min = 0,
-            max = 10,
-            step = 1,
-            width = 'full'
-        } ) ]]
+        addSetting( 'regrowth_instant_desc', nil, {
+            name = "When checked, |cFFFFD100Regrowth: Instant Only|r will only allow the addon to recommend Regrowth while in Cat Form " ..
+                "when it is instant cast and will not cause you to unshift.\n",
+            type = "description",
+            width = "full"
+        } )
 
         addSetting( 'brutal_charges', 2, {
             name = "Brutal Slash: Save Charges for AOE",
@@ -627,6 +625,15 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             min = 0,
             max = 3,
             step = 1,
+            width = "full"
+        } )
+
+        addSetting( "brutal_charges_desc", nil, {
+            name = "By telling the addon to save a number of Brutal Slash charges for AOE situations, you can prevent scenarios where you've spent all " ..
+                "your Brutal Slash charges immediately before a new wave of enemies appears.  The default is to save 2 charges, meaning your 3rd charge " ..
+                "can be spent when there is only 1 target.  If set to 0, no charges will be saved.  If set to 3, then Brutal Slash will not be recommended " ..
+                "unless there are multiple enemies detected.  You may want to adjust this setting for specific fights.\n",
+            type = "description",
             width = "full"
         } )
 
@@ -1789,22 +1796,21 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             min_range = 0,
             max_range = 8,
             form = "cat_form",
-            known = function() return buff.bear_form.up end,
         }, 213771, 106785 )
 
         class.abilities.swipe_cat  = class.abilities.swipe
         class.abilities.swipe_bear = class.abilities.swipe
 
-        modifyAbility( "swipe", "id", function( x )
+        --[[ modifyAbility( "swipe", "id", function( x )
             if buff.bear_form.up then return 213771
             elseif buff.cat_form.up then return 106785 end
             return x
-        end )
+        end ) ]]
 
         modifyAbility( "swipe", "spend", function( x )
             if buff.cat_form.up then
                 if buff.clearcasting.up then return 0 end
-                if buff.scent_of_blood.up then x = x + buff.scent_of_blood.v1 end
+                if buff.scent_of_blood.up then x = x - buff.scent_of_blood.v1 end
                 return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
             end
             return x

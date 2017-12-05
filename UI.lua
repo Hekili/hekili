@@ -196,7 +196,6 @@ function ns.StartConfiguration( external )
   -- HekiliNotification:SetMovable(true)
   if not external then
     local ACD = LibStub( "AceConfigDialog-3.0" )
-    ACD:SetDefaultSize( "Hekili", 805, 605 )
     ACD:Open("Hekili")
     ns.OnHideFrame = ns.OnHideFrame or CreateFrame("Frame", nil)
     ns.OnHideFrame:SetParent( ACD.OpenFrames["Hekili"].frame )

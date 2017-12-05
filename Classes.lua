@@ -235,7 +235,7 @@ function addItemSettings( key, itemID, options )
 
     options = options or {}
 
-    options.icon = {
+    --[[ options.icon = {
         type = "description",
         name = function () return select( 2, GetItemInfo( itemID ) ) or format( "[%d]", itemID )  end,
         order = 1,
@@ -249,31 +249,25 @@ function addItemSettings( key, itemID, options )
         imageCoords = { 0.1, 0.9, 0.1, 0.9 },
         width = "full",
         fontSize = "large"
-    }
+    } ]]
 
     options.disabled = {
         type = "toggle",
-        name = function () return format( "Disable %s", select( 2, GetItemInfo( itemID ) ) or ( "[" .. itemID .. "]" ) ) end,
+        name = function () return format( "Disable %s via |cff00ccff[Use Items]|r", select( 2, GetItemInfo( itemID ) ) or ( "[" .. itemID .. "]" ) ) end,
         desc = function( info )
-            local output = "If disabled, the addon will not recommend this trinket via the [Use Items] action.  You can still manually include the trinket in your action lists with your own tailored criteria."
-
-            for k, v in pairs( class.itemsInAPL ) do
-                if v[ key ] then
-                    output = output .. "\n\nThis item is auto-disabled for your |cFFFF0000" .. upper( k ) .. "|r specialization; see your Action Lists or Class Settings."
-                end
-            end
-
+            local output = "If disabled, the addon will not recommend this item via the |cff00ccff[Use Items]|r action.  " ..
+                "You can still manually include the item in your action lists with your own tailored criteria."
             return output
         end,
-        order = 2,
+        order = 25,
         width = "full"
     }
 
     options.minimum = {
         type = "range",
         name = "Minimum Targets",
-        desc = "The addon will only recommend this trinket (via [Use Items]) when there are at least this many targets available to hit.",
-        order = 3,
+        desc = "The addon will only recommend this trinket (via |cff00ccff[Use Items]|r) when there are at least this many targets available to hit.",
+        order = 26,
         width = "full",
         min = 1,
         max = 10,
@@ -283,20 +277,21 @@ function addItemSettings( key, itemID, options )
     options.maximum = {
         type = "range",
         name = "Maximum Targets",
-        desc = "The addon will only recommend this trinket (via [Use Items]) when there are no more than this many targets detected.\n\n" ..
+        desc = "The addon will only recommend this trinket (via |cff00ccff[Use Items]|r) when there are no more than this many targets detected.\n\n" ..
             "This setting is ignored if set to 0.",
-        order = 4,
+        order = 27,
         width = "full",
         min = 0,
         max = 10,
         step = 1
     }
 
-    table.insert( class.itemSettings, {
+    class.itemSettings[ itemID ] = {
         key = key,
+        name = function () return select( 2, GetItemInfo( itemID ) ) or ( "[" .. itemID .. "]" ) end,
         item = itemID,
         options = options,
-    } )  
+    }
 
 end
 
@@ -605,6 +600,7 @@ local function runHandler( key, no_start )
     if state.time == 0 and not no_start and not ability.passive then
         state.false_start = state.query_time - 0.01
 
+        --[[ Old System -- remove?
         -- Generate fake weapon swings.
         state.nextMH = state.query_time + 0.01
         state.nextOH = state.swings.oh_speed and state.query_time + ( state.swings.oh_speed / 2 ) or 0
@@ -612,7 +608,7 @@ local function runHandler( key, no_start )
         if state.swings.mh_actual < state.query_time then        
             state.swings.mh_pseudo = state.query_time + 0.01
             if state.swings.oh_speed then state.swings.oh_pseudo = state.query_time + ( state.swings.oh_speed / 2 ) end
-        end
+        end ]]
         
     end
 
@@ -861,7 +857,7 @@ addAbility( 'arcane_torrent', {
     cast = 0,
     gcdType = 'off',
     cooldown = 120,
-    toggle = 'interrupts'
+    toggle = 'cooldowns'
     }, 50613, 80483, 129597, 155145, 25046, 69179 )
 
 modifyAbility( 'arcane_torrent', 'id', function( x )
@@ -904,7 +900,7 @@ end )
 
 addAbility( 'call_action_list', {
     id = -1,
-    name = 'Call Action List',
+    name = '|cff00ccff[Call Action List]|r',
     cast = 0,
     gcdType = 'off',
     cooldown = 0,
@@ -914,7 +910,7 @@ addAbility( 'call_action_list', {
 
 addAbility( 'run_action_list', {
     id = -2,
-    name = 'Run Action List',
+    name = '|cff00ccff[Run Action List]|r',
     cast = 0,
     gcdType = 'off',
     cooldown = 0,
@@ -925,7 +921,7 @@ addAbility( 'run_action_list', {
 -- Special Instructions
 addAbility( 'wait', {
     id = -3,
-    name = 'Wait',
+    name = '|cff00ccff[Wait]|r',
     cast = 0,
     gcdType = 'off',
     cooldown = 0,
@@ -935,7 +931,7 @@ addAbility( 'wait', {
 
 addAbility( 'pool_resource', {
     id = -4,
-    name = 'Pool Resource',
+    name = '|cff00ccff[Pool Resource]|r',
     cast = 0,
     gcdType = 'off',
     cooldown = 0,
@@ -1025,7 +1021,7 @@ class.potions = {
 
 addAbility( 'potion', {
     id = -4,
-    name = 'Potion',
+    name = '|cff00ccff[Potion]|r',
     spend = 0,
     cast = 0,
     gcdType = 'off',
@@ -1062,7 +1058,7 @@ end )
 
 addAbility( "use_items", {
     id = -99,
-    name = "Use Items",
+    name = "|cff00ccff[Use Items]|r",
     spend = 0,
     cast = 0,
     cooldown = 120,
@@ -1296,7 +1292,7 @@ end
 
 addAbility( 'variable', {
     id = -5,
-    name = 'Store Value',
+    name = '|cff00ccff[Store Value]|r',
     spend = 0,
     cast = 0,
     gcdType = 'off',

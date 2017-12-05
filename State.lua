@@ -1681,7 +1681,7 @@ local mt_target = {
                 rawset( t, k, maxR )
                 return t[k]
             end
-            return 30
+            return 10
             
         end
         
@@ -1809,22 +1809,20 @@ local mt_default_cooldown = {
             end
             
             -- If the ability is toggled off in the profile, we may want to fake its CD.
-            if profile.feignCD[ t.key ] then
-                local toggle = profile.toggles[ t.key ]
+            if profile.blacklist[ t.key ] then
+                return abilit.elem.cooldown
+            end
 
-                if not toggle or toggle == 'default' then toggle = ability.toggle end
+            local toggle = profile.toggles[ t.key ]
 
-                if toggle and not state.toggle[ toggle ] then
-                    return ability.elem.cooldown
-                end
+            if not toggle or toggle == 'default' then toggle = ability.toggle end
+
+            if toggle and not state.toggle[ toggle ] then
+                return ability.elem.cooldown
             end
             
             local bonus_cdr = 0
             bonus_cdr = ns.callHook( "cooldown_recovery", bonus_cdr ) or bonus_cdr
-            
-            --[[ if not class.interrupts[ t.key ] then
-            return max( 0, t.expires - state.query_time - bonus_cdr )
-        end ]]
             
             return max( 0, t.expires - state.query_time - bonus_cdr )
             
