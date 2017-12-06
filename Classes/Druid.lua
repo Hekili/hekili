@@ -376,7 +376,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "primal_fury", 159286 )
         addAura( "prowl", 5215, "duration", 3600 )
             class.auras[ 102547 ] = class.auras.prowl
-            
+
         addAura( "pulverize", 138792, "duration", 20 )
         addAura( "rage_of_the_sleeper", 200851, "duration", 10 )
         
@@ -1796,6 +1796,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             min_range = 0,
             max_range = 8,
             form = "cat_form",
+            notalent = 'brutal_slash'
         }, 213771, 106785 )
 
         class.abilities.swipe_cat  = class.abilities.swipe

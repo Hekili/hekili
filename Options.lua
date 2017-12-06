@@ -3744,9 +3744,7 @@ ns.AbilitySettings = function ()
                 },            }
         }
 
-        local item = ability.item
-
-        if item ~= nil then
+        if ability.item ~= nil then
 
             abOption.args.spacer01 = {
                 type = "description",
@@ -3765,7 +3763,7 @@ ns.AbilitySettings = function ()
 
             abOption.args.itemDescription = {
                 type = "description",
-                name = "This ability requires that " .. ( ability.item and ability.link or ability.name ) .. " is equipped.  This item can be recommended via |cFF00CCFF[Use Items]|r in your " ..
+                name = "This ability requires that " .. ( ability.link or ability.name ) .. " is equipped.  This item can be recommended via |cFF00CCFF[Use Items]|r in your " ..
                     "action lists.  If you do not want the addon to recommend this ability via |cff00ccff[Use Items]|r, you can disable it here.  " ..
                     "You can also specify a minimum or maximum number of targets for the item to be used.\n",                    
                 order = 21,
