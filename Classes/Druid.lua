@@ -1810,8 +1810,9 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
         modifyAbility( "swipe", "spend", function( x )
             if buff.cat_form.up then
+                x = 40
                 if buff.clearcasting.up then return 0 end
-                if buff.scent_of_blood.up then x = x - buff.scent_of_blood.v1 end
+                if buff.scent_of_blood.up then x = x - ( buff.scent_of_blood.v1 or 0 ) end
                 return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.5 or 1 )
             end
             return x
