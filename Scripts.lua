@@ -485,11 +485,13 @@ ns.importModifiers = function( list, entry )
     state.args[ k ] = nil
   end
 
-  if not scripts['A'][list..':'..entry].Modifiers then return end
+  local script = scripts.A[ key ]
 
-  for k,v in pairs( scripts['A'][list..':'..entry].Modifiers ) do
-    local success, value = pcall(v)
-    if success then state.args[k] = value end
+  if not script or not script.Modifiers then return end
+
+  for k,v in pairs( script.Modifiers ) do
+    local success, value = pcall( v )
+    if success then state.args[ k ] = value end
   end
 
 end

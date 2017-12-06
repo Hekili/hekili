@@ -722,6 +722,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addGearSet( "acherus_drapes", 132376 )
         addGearSet( "aggramars_stride", 132443 )
         addGearSet( "cold_heart", 151796 ) -- chilled_heart stacks NYI
+            addAura( "cold_heart", 235599, "max_stack", 20 )
+
         addGearSet( "consorts_cold_core", 144293 )
         addGearSet( "death_march", 144280 )
         -- addGearSet( "death_screamers", 151797 )
@@ -784,6 +786,13 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
                 "target.  The default value is |cFFFFD100true|r.",
             width = "full"
         } )
+
+
+        ns.addSetting( 'unholy_use_rocf', true, {
+            name = 'Unholy: Use Ring of Collapsing Futures',
+            type = 'toggle',
+            desc = "If checked, the addon will consider Ring of "
+            })
 
         -- Abilities
 
