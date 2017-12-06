@@ -1810,7 +1810,7 @@ local mt_default_cooldown = {
             
             -- If the ability is toggled off in the profile, we may want to fake its CD.
             if profile.blacklist[ t.key ] then
-                return abilit.elem.cooldown
+                return ability.elem.cooldown
             end
 
             local toggle = profile.toggles[ t.key ]
