@@ -924,7 +924,8 @@ local bindingSubs = {
     ["PLUS"] = "+",
     ["MINUS"] = "-",
     ["MULTIPLY"] = "*",
-    ["DIVIDE"] = "/"
+    ["DIVIDE"] = "/",
+    ["BUTTON"] = "m"
 }
 
 local function improvedGetBindingText( binding )

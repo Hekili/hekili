@@ -675,7 +675,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "path_of_frost", 3714, "duration", 600 )
         addAura( "perseverance_of_the_ebon_martyr", 216059 )
         addAura( "pillar_of_frost", 51271, "duration", 20 )
-        addAura( "razorice", 50401, "duration", 15, "max_stack", 5 )
+        addAura( "razorice", 51714, "duration", 15, "max_stack", 5 )
         addAura( "remorseless_winter", 196770, "duration", 8, "friendly", true )
         addAura( "rime", 59052, "duration", 15 )
         addAura( "runic_corruption", 51462 )
@@ -941,7 +941,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addHandler( "chains_of_ice", function ()
             applyDebuff( "target", "chains_of_ice", 8 )
-            if equipped.cold_heart then removeBuff( "chilled_heart" ) end
+            if equipped.cold_heart then removeBuff( "cold_heart" ) end
         end )
 
 
