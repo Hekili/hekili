@@ -796,7 +796,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
 
                 end
 
-            elseif sourceGUID == state.GUID and aura and aura.friendly then -- friendly effects
+            elseif sourceGUID == state.GUID and aura.friendly then -- friendly effects
 
                 if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
@@ -822,7 +822,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
             ns.removeSpellFromFlight( action.key )
         end
 
-        if subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
+        if hostile and subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
             ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
             if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then

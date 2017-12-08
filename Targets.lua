@@ -96,6 +96,8 @@ end
 
 ns.updateTarget = function( id, time, mine )
 
+  if id == state.GUID then return end
+
   if time then
     if not targets[ id ] then
       targetCount = targetCount + 1
