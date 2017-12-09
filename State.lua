@@ -60,6 +60,7 @@ state.pet = {
     fake_pet = {
         name = "Mary-Kate Olsen",
         expires = 0,
+        permanent = false,
     }
 }
 state.player = {
@@ -674,10 +675,19 @@ local function summonPet( name, duration )
     state.pet[ name ] = rawget( state.pet, name ) or {}
     state.pet[ name ].name = name
     state.pet[ name ].expires = state.query_time + ( duration or 3600 )
-    -- state.pet.exists = true
     
 end
 state.summonPet = summonPet
+
+
+local function dismissPet( name )
+
+    state.pet[ name ] = rawget( state.pet, name ) or {}
+    state.pet[ name ].name = name
+    state.pet[ name ].expires = 0
+
+end
+state.dismissPet = dismissPet
 
 
 local function summonTotem( name, elem, duration )
@@ -1407,7 +1417,26 @@ ns.metatables.mt_stat = mt_stat
 -- Table of default handlers for specific pets/totems.
 local mt_default_pet = {
     __index = function(t, k)
-        if k == 'expires' then
+        --[[ if rawget( t, "permanent" ) then
+            if k == 'up' or k == 'exists' then
+                return UnitExists( 'pet' ) and ( not UnitIsDead( 'pet' ) )
+
+            elseif k == 'alive' then
+                return not UnitIsDead( 'pet' )
+
+            elseif k == 'dead' then
+                return UnitIsDead( 'pet' )
+
+            elseif k == 'remains' then
+                return 3600
+
+            elseif k == 'down' then
+                return not UnitExists( 'pet' ) or UnitIsDead( 'pet' )
+
+            end
+        end ]]
+
+        if k == 'expires' then            
             local present, name, start, duration
 
             for i = 1, 5 do
@@ -1425,7 +1454,7 @@ local mt_default_pet = {
         elseif k == 'remains' then
             return max( 0, t.expires - ( state.query_time ) )
             
-        elseif k == 'up' or k == 'active' then
+        elseif k == 'up' or k == 'active' or k == 'alive' then
             return ( t.expires >= ( state.query_time ) )
             
         elseif k == 'down' then
@@ -1444,17 +1473,20 @@ ns.metatables.mt_default_pet = mt_default_pet
 local mt_pets = {
     __index = function(t, k)
         -- Should probably add all totems, but holding off for now.
-        if k == 'up' or k == 'exists' then
-            for k, v in pairs( t ) do
-                if type( v ) == 'table' and v.up then return true end
+        for id, pet in pairs( t ) do
+            if type( pet ) == 'table' and pet[ k ] then
+                return pet[ k ]
             end
+        end
+
+        if k == 'up' or k == 'exists' then
             return UnitExists( 'pet' ) and ( not UnitIsDead( 'pet' ) )
             
         elseif k == 'alive' then
-            return not UnitIsDead( 'pet' )
+            return UnitExists( 'pet' ) and not UnitIsDead( 'pet' )
             
         elseif k == 'dead' then
-            return UnitIsDead( 'pet' )
+            return UnitExists( 'pet' ) and UnitIsDead( 'pet' )
             
         end
         

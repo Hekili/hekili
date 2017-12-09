@@ -325,13 +325,13 @@ local displayTemplate = {
     
     rel = "CENTER",
     x = 0,
-    y = 0,
+    y = -225,
     
     numIcons = 4,
     queueDirection = 'RIGHT',
     queueAlignment = 'c',
-    primaryIconSize = 40,
-    queuedIconSize = 40,
+    primaryIconSize = 50,
+    queuedIconSize = 50,
     iconSpacing = 5,
     iconZoom = 15,
     
@@ -3770,8 +3770,8 @@ ns.AbilitySettings = function ()
                 width = "full"
             }
 
-            if class.itemSettings[ item ] then
-                for setting, config in pairs( class.itemSettings[ item ].options ) do
+            if class.itemSettings[ ability.item ] then
+                for setting, config in pairs( class.itemSettings[ ability.item ].options ) do
                     abOption.args[ setting ] = config
                 end
             end
@@ -6056,7 +6056,7 @@ ns.refreshOptions = function()
     
     Hekili.Options.args.class = nil
     Hekili.Options.args.class = ns.ClassSettings()
-    Hekili.Options.args.trinkets = ns.TrinketSettings()
+    -- Hekili.Options.args.trinkets = ns.TrinketSettings()
     Hekili.Options.args.abilities = ns.AbilitySettings()
     
     -- Until I feel like making this better at managing memory.

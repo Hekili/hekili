@@ -458,7 +458,7 @@ end
 ns.addGlyph = addGlyph 
 
 
-local function addPet( key )
+local function addPet( key, permanent )
     state.pet[ key ] = rawget( state.pet, key ) or {}
     state.pet[ key ].name = key
     state.pet[ key ].expires = 0
@@ -1473,80 +1473,51 @@ ns.restoreDefaults = function( category, purge )
                         import.Default = true
                         
                         if index then
-                            local existing = profile.displays[index]
-                            import.Enabled = existing.Enabled
-                            import.spellFlash = existing.spellFlash
-                            import.spellFlashColor = existing.spellFlashColor
-                            
-                            -- import['PvE Visibility'] = existing['PvE Visibility']
-                            import.alwaysPvE = existing.alwaysPvE
-                            import.alphaAlwaysPvE = existing.alphaAlwaysPvE
-                            import.targetPvE = existing.targetPvE
-                            import.alphaTargetPvE = existing.alphaTargetPvE
-                            import.combatPvE = existing.combatPvE
-                            import.alphaCombatPvE = existing.alphaCombatPvE
-                            -- import['PvE Visibility'] = existing['PvE Visibility']
-                            import.alwaysPvP = existing.alwaysPvP
-                            import.alphaAlwaysPvP = existing.alphaAlwaysPvP
-                            import.targetPvP = existing.targetPvP
-                            import.alphaTargetPvP = existing.alphaTargetPvP
-                            import.combatPvP = existing.combatPvP
-                            import.alphaCombatPvP = existing.alphaCombatPvP
-                            --[[ Mode Overrides - cancel, go ahead and overwrite them
-                            import.minAuto = existing.minAuto
-                            import.maxAuto = existing.maxAuto
-                            import.minST = existing.minST
-                            import.maxST = existing.maxST
-                            import.minAE = existing.minAE
-                            import.maxAE = existing.maxAE ]]
-                            
-                            import.x = existing.x
-                            import.y = existing.y
-                            import.rel = existing.rel
-                            
-                            import.numIcons = existing.numIcons
-                            import.iconSpacing = existing.iconSpacing
-                            import.queueDirection = existing.queueDirection
-                            import.queueAlignment = existing.queueAlignment
-                            import.primaryIconSize = existing.primaryIconSize
-                            import.queuedIconSize = existing.queuedIconSize
-                            
-                            import.font = existing.font
-                            import.primaryFontSize = existing.primaryFontSize
-                            import.queuedFontSize = existing.queuedFontSize
-                            import.rangeType = existing.rangeType
-                            
-                            import.showCaptions = existing.showCaptions
+                            local existing = profile.displays[ index ]
+
+                            -- Overwrite only what wasn't customized.
+                            for setting, value in pairs( import ) do
+                                if existing[ setting ] == nil then existing[ setting ] = value end
+                            end
+
+                            -- Except APLs and release.
+                            existing.Release = default.version
+                            existing.Default = true
+                            existing.precombatAPL = import.precombatAPL
+                            existing.defaultAPL = import.defaultAPL
+                        
                         else
                             index = #profile.displays + 1
+                            profile.displays[ index ] = import
+
                         end
-                        
-                        if type( import.precombatAPL ) == 'string' then
+
+                        local updated = profile.displays[ index ]
+
+                        if type( updated.precombatAPL ) == 'string' then
                             for i, list in pairs( profile.actionLists ) do
-                                if list.Name == import.precombatAPL then
-                                    import.precombatAPL = i
+                                if list.Name == updated.precombatAPL then
+                                    updated.precombatAPL = i
                                 end
                             end
 
-                            if type( import.precombatAPL ) == 'string' then
-                                import.precombatAPL = 0
+                            if type( updated.precombatAPL ) == 'string' then
+                                updated.precombatAPL = 0
                             end
                         end
 
-                        if type( import.defaultAPL ) == 'string' then
+                        if type( updated.defaultAPL ) == 'string' then
                             for i, list in pairs( profile.actionLists ) do
-                                if list.Name == import.defaultAPL then
-                                    import.defaultAPL = i
+                                if list.Name == updated.defaultAPL then
+                                    updated.defaultAPL = i
                                 end
                             end
 
-                            if type( import.defaultAPL ) == 'string' then
-                                import.defaultAPL = 0
+                            if type( updated.defaultAPL ) == 'string' then
+                                updated.defaultAPL = 0
                             end
                         end
 
-                        profile.displays[ index ] = import
-                        
                     else
                         ns.Error( "restoreDefaults() - unable to import '" .. default.name .. "' display." )
                     end

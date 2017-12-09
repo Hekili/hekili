@@ -186,7 +186,6 @@ local itemAuditComplete = false
 
 function ns.auditItemNames()
 
-    local options = Hekili.Options.args.trinkets.args
     local failure = false
 
     for key, ability in pairs( class.abilities ) do
