@@ -751,6 +751,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             gcdType = 'off',
             cooldown = 60,
             talent = 'energizing_elixir',
+            recheck = function () return cooldown.rising_sun_kick.remains, cooldown.strike_of_the_windlord.remains end,
             usable = function () return energy.current + ( energy.regen * cooldown.global_cooldown.remains ) < ee_maximum end,
         } )
 
@@ -798,8 +799,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             channeled = true,
             gcdType = 'spell',
             cooldown = 24,
-            recharge = function ()
-                return buff.pressure_point.remains - 2, buff.serenity.remains - 1, cooldown.serenity.remains - 4
+            recharge = function ()                
+                return buff.pressure_point.remains - 2, buff.serenity.remains - 1, cooldown.serenity.remains - 15, cooldown.serenity.remains - 5, cooldown.serenity.remains - 4
             end,
         } )
 
