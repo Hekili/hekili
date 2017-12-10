@@ -539,7 +539,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
 
                     clash = clashOffset( state.this_action )                    
                     state.delay = wait_time
-                    
+
                     if wait_time >= chosen_wait then
                         if debug then self:Debug( "This action is not available in time for consideration ( %.2f vs. %.2f ). Skipping.", wait_time, chosen_wait ) end
                     else
@@ -1319,7 +1319,7 @@ local pvpZones = {
 }
 
 
-local function CheckDisplayCriteria( dispID )
+function Hekili:CheckDisplayCriteria( dispID )
     
     local display = Hekili.DB.profile.displays[ dispID ]
     local switch, mode = Hekili.DB.profile['Switch Type'], Hekili.DB.profile['Mode Status']
@@ -1386,254 +1386,238 @@ ns.CheckDisplayCriteria = CheckDisplayCriteria
 local tSlot = {}
 local iterationSteps = {}
 
+
+local processCount = {}
+local lastDump = 0
+
+
 function Hekili:ProcessHooks( dispID, solo )
 
-    if not self.DB.profile.Enabled then return end
+    local display = self.DB.profile.displays[ dispID ]
     
-    if not self.Pause or self.ActiveDebug then
-        local display = self.DB.profile.displays[ dispID ]
-        
-        ns.queue[ dispID ] = ns.queue[ dispID ] or {}
-        local Queue = ns.queue[ dispID ]
-        
-        if display and ns.visible.display[ dispID ] then
-            
-            state.reset( dispID )
-            
-            if Queue then
-                for k, v in pairs( Queue ) do
-                    for l, w in pairs( v ) do
-                        if type( Queue[ k ][ l ] ) ~= 'table' then
-                            Queue[k][l] = nil
-                        end
-                    end
+    ns.queue[ dispID ] = ns.queue[ dispID ] or {}
+    local Queue = ns.queue[ dispID ]
+                
+    if Queue then
+        for k, v in pairs( Queue ) do
+            for l, w in pairs( v ) do
+                if type( Queue[ k ][ l ] ) ~= 'table' then
+                    Queue[k][l] = nil
                 end
             end
-            
-            local dScriptPass = CheckDisplayCriteria( dispID ) or 0 -- checkScript( 'D', dispID )
-            
-            -- if debug then self:Debug( "Conditions %s: %s", dScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'D', dispID ) ) end
+        end
+    end
 
-            
-            if ( self.Config or dScriptPass > 0 ) then
-                
-                local debug = self.ActiveDebug
-                
-                local gcd_length = rawget( state, 'gcd' ) or max( 0.75, 1.5 * state.haste )
+    local debug = self.ActiveDebug
+    
+    local gcd_length = rawget( state, 'gcd' ) or max( 0.75, 1.5 * state.haste )
 
-                if debug then
-                    self:SetupDebug( display.Name )
-                    self:Debug( "*** START OF NEW DISPLAY ***\n" ..
-                                "Display %d (%s) is %s.", dispID, display.Name, ( self.Config or dScriptPass > 0 ) and "VISIBLE" or "NOT VISIBLE" ) 
+    if debug then
+        self:SetupDebug( display.Name )
+        self:Debug( "*** START OF NEW DISPLAY: [ %2d ] %s ***", dispID, display.Name ) 
 
+    end
+
+    for i = 1, ( display.numIcons or 4 ) do
+
+        table.wipe( listStack )
+        table.wipe( listIsBad )
+                   
+        local chosen_action
+        local chosen_depth = 0
+        
+        Queue[i] = Queue[i] or {}
+        
+        local slot = Queue[i]
+        
+        local attempts = 0
+        local iterated = false
+        
+        if debug then self:Debug( "\n[ ** ] Checking for recommendation #%d ( time offset: %.2f, remaining GCD: %.2f ).", i, state.offset, state.cooldown.global_cooldown.remains ) end
+        
+        for k in pairs( state.variable ) do
+            state.variable[ k ] = nil
+        end
+
+        if debug then
+            for k in pairs( class.resources ) do
+                self:Debug( "[ ** ] %s, %d / %d", k, state[ k ].current, state[ k ].max )
+            end
+        end
+
+        state.delay = 0
+
+        local predicted_action, predicted_wait, predicted_clash, predicted_depth = self:GetNextPrediction( dispID, slot )
+        if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs.\n", predicted_action or "NO ACTION", predicted_wait or 60 ) end
+
+        local gcd_remains = state.cooldown.global_cooldown.remains
+
+        if not self.DB.profile.moreCPU then
+            if debug then self:Debug( "The addon is conserving CPU and will not attempt additional testing to find a better recommendation." ) end
+            chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
+        
+        elseif ( predicted_action and predicted_wait <= ( gcd_remains + 0.25 ) ) then
+            if debug then self:Debug( "The prediction engine's recommendation [ %s @ %.2f ] is available soon enough ( within GCD + 0.25s ).  Using this recommendation.", predicted_action, predicted_wait ) end
+            chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
+        
+        else
+            table.wipe( iterationSteps )
+
+            state.delay = 0
+            local pred_time = state.now + state.offset + predicted_wait
+
+            iterationSteps[1] = state.now + state.offset + gcd_remains
+            iterationSteps[2] = iterationSteps[1] + state.gcd * 0.5
+            iterationSteps[3] = iterationSteps[2] + state.gcd * 0.5
+            iterationSteps[4] = iterationSteps[3] + state.gcd
+
+            --[[ if class.setupIterationSteps then
+                class.setupIterationSteps( iterationSteps )
+            end ]]
+
+            for step, nextFrame in ipairs( iterationSteps ) do
+
+                if debug then self:Debug( "%.2f vs. %.2f (%d)", pred_time, nextFrame, step ) end
+
+                if step > 4 then
+                    if debug then self:Debug( "Tried 4 times to beat the prediction engine; giving up." ) end
+                    break
                 end
 
-                for i = 1, ( display.numIcons or 4 ) do
+                if nextFrame >= pred_time then
+                    if debug then self:Debug( "The next iteration at %.2f is not within our time limit ( %.2f ), aborting.", nextFrame, pred_time ) end
+                    break
+                end
 
-                    table.wipe( listStack )
-                    table.wipe( listIsBad )
-                               
-                    local chosen_action
-                    local chosen_depth = 0
-                    
-                    Queue[i] = Queue[i] or {}
-                    
-                    local slot = Queue[i]
-                    
-                    local attempts = 0
-                    local iterated = false
-                    
-                    if debug then self:Debug( "\n[ ** ] Checking for recommendation #%d ( time offset: %.2f, remaining GCD: %.2f ).", i, state.offset, state.cooldown.global_cooldown.remains ) end
-                    
-                    for k in pairs( state.variable ) do
-                        state.variable[ k ] = nil
-                    end
+                local amount = nextFrame - state.now - state.offset
 
-                    if debug then
-                        for k in pairs( class.resources ) do
-                            self:Debug( "[ ** ] %s, %d / %d", k, state[ k ].current, state[ k ].max )
+                if step == 1 or amount > 0 then
+                    if amount > 0 then state.advance( amount ) end
+
+                    if debug then self:Debug( "\nIteration #%d at +%.2fs ( +%.2f )...\n( %.2f = %.2f ) < %.2f?", step, state.offset, amount, state.query_time, nextFrame, pred_time )
+                        for k, v in pairs( class.resources ) do
+                            self:Debug( " - %s: %.2f", k, state[ k ].current )
                         end
                     end
 
-                    state.delay = 0
-
-                    local predicted_action, predicted_wait, predicted_clash, predicted_depth = self:GetNextPrediction( dispID, slot )
-                    if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs.\n", predicted_action or "NO ACTION", predicted_wait or 60 ) end
-
-                    local gcd_remains = state.cooldown.global_cooldown.remains
-
-                    if not self.DB.profile.moreCPU then
-                        if debug then self:Debug( "The addon is conserving CPU and will not attempt additional testing to find a better recommendation." ) end
-                        chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
-                    
-                    elseif ( predicted_action and predicted_wait <= ( gcd_remains + 0.25 ) ) then
-                        if debug then self:Debug( "The prediction engine's recommendation [ %s @ %.2f ] is available soon enough ( within GCD + 0.25s ).  Using this recommendation.", predicted_action, predicted_wait ) end
-                        chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
-                    
-                    else
-                        table.wipe( iterationSteps )
-
-                        state.delay = 0
-                        local pred_time = state.now + state.offset + predicted_wait
-
-                        iterationSteps[1] = state.now + state.offset + gcd_remains
-                        iterationSteps[2] = iterationSteps[1] + state.gcd * 0.5
-                        iterationSteps[3] = iterationSteps[2] + state.gcd * 0.5
-                        iterationSteps[4] = iterationSteps[3] + state.gcd
-
-                        --[[ if class.setupIterationSteps then
-                            class.setupIterationSteps( iterationSteps )
-                        end ]]
-
-                        for step, nextFrame in ipairs( iterationSteps ) do
-
-                            if debug then self:Debug( "%.2f vs. %.2f (%d)", pred_time, nextFrame, step ) end
-
-                            if step > 4 then
-                                if debug then self:Debug( "Tried 4 times to beat the prediction engine; giving up." ) end
-                                break
-                            end
-
-                            if nextFrame >= pred_time then
-                                if debug then self:Debug( "The next iteration at %.2f is not within our time limit ( %.2f ), aborting.", nextFrame, pred_time ) end
-                                break
-                            end
-
-                            local amount = nextFrame - state.now - state.offset
-
-                            if step == 1 or amount > 0 then
-                                if amount > 0 then state.advance( amount ) end
-
-                                if debug then self:Debug( "\nIteration #%d at +%.2fs ( +%.2f )...\n( %.2f = %.2f ) < %.2f?", step, state.offset, amount, state.query_time, nextFrame, pred_time )
-                                    for k, v in pairs( class.resources ) do
-                                        self:Debug( " - %s: %.2f", k, state[ k ].current )
-                                    end
-                                end
-
-                                if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
-                                    -- We have a precombat display and combat hasn't started.
-                                    local listName = self.DB.profile.actionLists[ display.precombatAPL ].Name
-                                    
-                                    if debug then self:Debug("Processing precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
-                                    chosen_action, chosen_depth = self:ProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, pred_time )
-                                    if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
-                                end
-                                
-                                if display.defaultAPL and display.defaultAPL > 0 then
-                                    local listName = self.DB.profile.actionLists[ display.defaultAPL ].Name
-                                    
-                                    if debug then self:Debug("Processing default action list [ %d - %s ].", display.defaultAPL, listName ) end
-                                    chosen_action, chosen_depth = self:ProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, pred_time )
-                                    if debug then self:Debug( "Completed default action list [ %d - %s ].", display.defaultAPL, listName ) end
-                                end
-
-                                if chosen_action then
-                                    if debug then self:Debug( "Found recommendation for %s at %.2fs (iteration #%d).", chosen_action, state.offset, i ) end
-                                    break
-                                end
-                            end
-                        end
+                    if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
+                        -- We have a precombat display and combat hasn't started.
+                        local listName = self.DB.profile.actionLists[ display.precombatAPL ].Name
                         
-                        if self.Testing then self:Print( "Iterator Test for Slot #" .. i .. "." ) end
-                        if not chosen_action or chosen_action == predicted_action then -- nothing
-                        else 
-                            if self.Testing then 
-                                self:Print( "Prediction engine recommended " .. predicted_action .. " at " .. pred_time .. "." )
-                                self:Print( "Iterator found " .. chosen_action .. " at " .. state.query_time .. ", a difference of " .. pred_time - state.query_time .. "." )
-                                if not Hekili.Pause then Hekili:TogglePause() end
-                            end
-                        end
-
-
-                        if not chosen_action then
-                            -- We didn't find an action w/in 2 GCDs (up to 4 iterations); just use the delayed prediction.
-                            state.advance( pred_time - ( state.now + state.offset ) )
-                            chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, 0, predicted_clash, predicted_depth
-
-                            if debug then self:Debug( "No better recommendation found before the prediction engine's recommendation; using the prediction engine's recommendation.\n" ..
-                                "Selected action [ %s ] at +%.2fs.", chosen_action or "NO ACTION FOUND", state.offset ) end
-                        end
-
+                        if debug then self:Debug("Processing precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
+                        chosen_action, chosen_depth = self:ProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, pred_time )
+                        if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
                     end
                     
-                    if debug then self:Debug( "Recommendation #%d is %s at %.2f.", i, chosen_action or "NO ACTION", state.offset + state.delay ) end
-                    
+                    if display.defaultAPL and display.defaultAPL > 0 then
+                        local listName = self.DB.profile.actionLists[ display.defaultAPL ].Name
+                        
+                        if debug then self:Debug("Processing default action list [ %d - %s ].", display.defaultAPL, listName ) end
+                        chosen_action, chosen_depth = self:ProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, pred_time )
+                        if debug then self:Debug( "Completed default action list [ %d - %s ].", display.defaultAPL, listName ) end
+                    end
+
                     if chosen_action then
-                        if debug then ns.implantDebugData( slot ) end
-                        
-                        slot.time = state.offset + state.delay
-                        slot.exact_time = state.now + state.offset + state.delay
-                        slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
-                        slot.resources = slot.resources or {}
-                        slot.depth = chosen_depth
-                        
-                        slot.keybind = self:GetBindingForAction( chosen_action, not display.lowercaseKBs == true )
-                        slot.resource_type = ns.resourceType( chosen_action )
-
-                        for k,v in pairs( class.resources ) do
-                            slot.resources[ k ] = state[ k ].current 
-                        end                            
-                        
-                        if i < display.numIcons then
-                            
-                            -- Advance through the wait time.
-                            if state.delay > 0 then state.advance( state.delay ) end
-
-                            local action = class.abilities[ chosen_action ]
-                            
-                            -- Start the GCD.
-                            if action.gcdType ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
-                                state.setCooldown( 'global_cooldown', state.gcd )
-                            end
-                            
-                            -- Advance the clock by cast_time.
-                            if action.cast > 0 and not action.channeled and not class.resetCastExclusions[ chosen_action ] then
-                                state.advance( action.cast )
-                            end
-
-                            local cooldown = action.cooldown
-                            
-                            -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
-                            if class.abilities[ chosen_action ].charges and action.recharge > 0 then
-                                state.spendCharges( chosen_action, 1 )
-                            elseif chosen_action ~= 'global_cooldown' then
-                                state.setCooldown( chosen_action, cooldown )
-                            end
-                            
-                            state.cycle = slot.indicator == 'cycle'
-                            
-                            -- Spend resources.
-                            ns.spendResources( chosen_action )
-                            
-                            -- Perform the action.
-                            ns.runHandler( chosen_action )
-
-                            if action.item then
-                                state.putTrinketsOnCD( cooldown / 6 )
-                            end
-
-                            -- Complete the channel.
-                            if action.cast > 0 and action.channeled and not class.resetCastExclusions[ chosen_action ] then
-                                state.advance( action.cast )
-                            end
-                            
-                            -- Move the clock forward if the GCD hasn't expired.
-                            if state.cooldown.global_cooldown.remains > 0 and not class.NoGCD then
-                                state.advance( state.cooldown.global_cooldown.remains )
-                            end
-                        end
-                        
-                    else
-                        for n = i, display.numIcons do
-                            slot[n] = nil
-                        end
+                        if debug then self:Debug( "Found recommendation for %s at %.2fs (iteration #%d).", chosen_action, state.offset, i ) end
                         break
                     end
-                    
                 end
-                
             end
             
+            if self.Testing then self:Print( "Iterator Test for Slot #" .. i .. "." ) end
+            if not chosen_action or chosen_action == predicted_action then -- nothing
+            else 
+                if self.Testing then 
+                    self:Print( "Prediction engine recommended " .. predicted_action .. " at " .. pred_time .. "." )
+                    self:Print( "Iterator found " .. chosen_action .. " at " .. state.query_time .. ", a difference of " .. pred_time - state.query_time .. "." )
+                    if not Hekili.Pause then Hekili:TogglePause() end
+                end
+            end
+
+
+            if not chosen_action then
+                -- We didn't find an action w/in 2 GCDs (up to 4 iterations); just use the delayed prediction.
+                state.advance( pred_time - ( state.now + state.offset ) )
+                chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, 0, predicted_clash, predicted_depth
+
+                if debug then self:Debug( "No better recommendation found before the prediction engine's recommendation; using the prediction engine's recommendation.\n" ..
+                    "Selected action [ %s ] at +%.2fs.", chosen_action or "NO ACTION FOUND", state.offset ) end
+            end
+
+        end
+        
+        if debug then self:Debug( "Recommendation #%d is %s at %.2f.", i, chosen_action or "NO ACTION", state.offset + state.delay ) end
+        
+        if chosen_action then
+            if debug then ns.implantDebugData( slot ) end
+            
+            slot.time = state.offset + state.delay
+            slot.exact_time = state.now + state.offset + state.delay
+            slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
+            slot.resources = slot.resources or {}
+            slot.depth = chosen_depth
+            
+            slot.keybind = self:GetBindingForAction( chosen_action, not display.lowercaseKBs == true )
+            slot.resource_type = ns.resourceType( chosen_action )
+
+            for k,v in pairs( class.resources ) do
+                slot.resources[ k ] = state[ k ].current 
+            end                            
+            
+            if i < display.numIcons then
+                
+                -- Advance through the wait time.
+                if state.delay > 0 then state.advance( state.delay ) end
+
+                local action = class.abilities[ chosen_action ]
+                
+                -- Start the GCD.
+                if action.gcdType ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
+                    state.setCooldown( 'global_cooldown', state.gcd )
+                end
+                
+                -- Advance the clock by cast_time.
+                if action.cast > 0 and not action.channeled and not class.resetCastExclusions[ chosen_action ] then
+                    state.advance( action.cast )
+                end
+
+                local cooldown = action.cooldown
+                
+                -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
+                if class.abilities[ chosen_action ].charges and action.recharge > 0 then
+                    state.spendCharges( chosen_action, 1 )
+                elseif chosen_action ~= 'global_cooldown' then
+                    state.setCooldown( chosen_action, cooldown )
+                end
+                
+                state.cycle = slot.indicator == 'cycle'
+                
+                -- Spend resources.
+                ns.spendResources( chosen_action )
+                
+                -- Perform the action.
+                ns.runHandler( chosen_action )
+
+                if action.item then
+                    state.putTrinketsOnCD( cooldown / 6 )
+                end
+
+                -- Complete the channel.
+                if action.cast > 0 and action.channeled and not class.resetCastExclusions[ chosen_action ] then
+                    state.advance( action.cast )
+                end
+                
+                -- Move the clock forward if the GCD hasn't expired.
+                if state.cooldown.global_cooldown.remains > 0 and not class.NoGCD then
+                    state.advance( state.cooldown.global_cooldown.remains )
+                end
+            end
+            
+        else
+            for n = i, display.numIcons do
+                slot[n] = nil
+            end
+            break
         end
         
     end
@@ -1702,7 +1686,7 @@ function Hekili:UpdateDisplay( dispID )
 
     flashes[dispID] = flashes[dispID] or 0
     
-    local alpha = CheckDisplayCriteria( dispID ) or 0
+    local alpha = self:CheckDisplayCriteria( dispID ) or 0
 
     if alpha > 0 then
         local Queue = ns.queue[ dispID ]

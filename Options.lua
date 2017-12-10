@@ -3693,15 +3693,15 @@ ns.AbilitySettings = function ()
 
         local abOption = {
             type = 'group',
-            name = k,
+            name = function () return ability.name end,
             order = 2,
             -- childGroups = "inline",
             args = {
                 exclude = {
                     type = 'toggle',
-                    name = 'Disable ' .. ( ability.item and ability.link or k ),
-                    desc = "If checked, this ability will |cFFFF0000NEVER|r be recommended by the addon.  This can cause issues for some classes or " ..
-                        "specializations, if other abilities depend on you using " .. k .. ".",
+                    name = function () return 'Disable ' .. ( ability.item and ability.link or k ) end,
+                    desc = function () return "If checked, this ability will |cFFFF0000NEVER|r be recommended by the addon.  This can cause issues for some classes or " ..
+                        "specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
                     width = 'full',
                     order = 1
                 },

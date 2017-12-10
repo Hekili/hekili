@@ -751,7 +751,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             gcdType = 'off',
             cooldown = 60,
             talent = 'energizing_elixir',
-            usable = function () return energy.current < ee_maximum end,
+            usable = function () return energy.current + ( energy.regen * cooldown.global_cooldown.remains ) < ee_maximum end,
         } )
 
         addHandler( 'energizing_elixir', function ()

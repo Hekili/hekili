@@ -593,6 +593,7 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
             dismissPet( 'voidwalker' )
             dismissPet( 'felhunter' )
             dismissPet( 'succubus' )
+            applyBuff( "demonic_power" )
         end )
 
 
