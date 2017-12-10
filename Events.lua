@@ -76,10 +76,12 @@ function ns.StartEventHandler()
                     local dScriptPass = Hekili:CheckDisplayCriteria( index ) or 0 -- checkScript( 'D', dispID )
                     
                     if ( dScriptPass > 0 ) then
-                        state.reset( index )
+
                         Hekili:ProcessHooks( index )
+
                         lastRefresh[ index ] = now
                         lastDisplay = index
+
                         break
                     end
                 end
@@ -503,31 +505,7 @@ local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
 
-local updateInfo = {
-    time = 0,
-    events = {}
-}
-
 local function forceUpdate( from, super )
-
-    local t = GetTime()
-
-    --[[ from = from or "noInfo"
-
-    if updateInfo.time ~= t then
-        Hekili:Print( format( "FU at ( %.2f )\nFired %d Times", updateInfo.time, updateInfo.hits ) )
-        for k, v in pairs( updateInfo.events ) do
-            print( k, v )
-        end
-        updateInfo.time = t
-        table.wipe( updateInfo.events )
-        updateInfo.events[ from ] = 1
-    else
-        if not updateInfo.events[ from ] then updateInfo.events[ from ] = 1
-        else
-            updateInfo.events[ from ] = updateInfo.events[ from ] + 1
-        end
-    end ]]
 
     for i = 1, #Hekili.DB.profile.displays do
         displayUpdates[ i ] = nil

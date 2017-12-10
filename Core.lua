@@ -1408,6 +1408,8 @@ function Hekili:ProcessHooks( dispID, solo )
         end
     end
 
+    state.reset( dispID )
+
     local debug = self.ActiveDebug
     
     local gcd_length = rawget( state, 'gcd' ) or max( 0.75, 1.5 * state.haste )
