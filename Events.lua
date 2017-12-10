@@ -30,6 +30,8 @@ local displayUpdates = ns.displayUpdates
 local lastRecount = 0
 
 local forceRefresh = {}
+local superForce = {}
+
 local lastRefresh = {}
 local lastDisplay = 0
 
@@ -77,7 +79,8 @@ function ns.StartEventHandler()
 
                 if ns.visible.display[ index ] then
                     if ( not lastRefresh[ index ] or -- We've never refreshed this display.
-                       ( forceRefresh[ index ] and now - lastRefresh[ index ] >= forcedPeriod ) or -- We have a forced update pending, max of 20 updates/sec.
+                       ( superForce[ index ] ) or -- Something happened that requires an *immediate* refresh.
+                       ( forceRefresh[ index ] and now - lastRefresh[ index ] >= forcedPeriod ) or -- A less-urgent refresh was requested.
                        ( now - lastRefresh[ index ] >= updatePeriod ) ) then -- We've reached the default update period, 2x/sec ooc, 5x/sec ic.
                     
                         local dScriptPass = Hekili:CheckDisplayCriteria( index ) or 0
@@ -88,6 +91,7 @@ function ns.StartEventHandler()
 
                             lastRefresh[ index ] = now
                             forceRefresh[ index ] = false
+                            superForce[ index ] = false
                             lastDisplay = index
 
                             break
@@ -96,6 +100,7 @@ function ns.StartEventHandler()
                 else
                     -- Display isn't visible, cancel the forced update.
                     forceRefresh[ index ] = false
+                    superForce[ index ] = false
                 end
             end
         end
@@ -521,6 +526,7 @@ local function forceUpdate( from, super )
 
     for i = 1, #Hekili.DB.profile.displays do
         forceRefresh[ i ] = true
+        if super then superForce[ i ] = true end
     end
 
     return
@@ -764,7 +770,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
             state.player.queued_tt = nil
             state.player.queued_lands = nil
             state.player.queued_gcd = nil
-            state.player.queued_off = nil
+            state.player.queued_off = nil           
         end
         forceUpdate( subtype, true )
     end
