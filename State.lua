@@ -1841,16 +1841,18 @@ local mt_default_cooldown = {
             end
             
             -- If the ability is toggled off in the profile, we may want to fake its CD.
-            if profile.blacklist[ t.key ] then
-                return ability.elem.cooldown
-            end
+            if ns.isKnown( t.key ) then
+                if profile.blacklist[ t.key ] then
+                    return ability.elem.cooldown
+                end
 
-            local toggle = profile.toggles[ t.key ]
+                local toggle = profile.toggles[ t.key ]
 
-            if not toggle or toggle == 'default' then toggle = ability.toggle end
+                if not toggle or toggle == 'default' then toggle = ability.toggle end
 
-            if toggle and not state.toggle[ toggle ] then
-                return ability.elem.cooldown
+                if toggle and not state.toggle[ toggle ] then
+                    return ability.elem.cooldown
+                end
             end
             
             local bonus_cdr = 0
@@ -4058,9 +4060,10 @@ function ns.isReadyNow( action )
 end
 
 
+
 ns.clashOffset = function( action )
     
-    local clash = Hekili.DB.profile.clashes[ action ] or 0
+    local clash = Hekili.DB.profile.clashes[ action ] or Hekili.DB.profile.Clash
     return ns.callHook( "clash", clash, action )
     
 end

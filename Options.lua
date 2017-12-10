@@ -4750,12 +4750,36 @@ function Hekili:GetOptions()
                         width = "full",
                         order = 4
                     },
-
+                    --[[ ['Clash'] = {
+                        type = "group",
+                        name = "Cooldown Clash",
+                        inline = true,
+                        order = 6,
+                        args = {
+                            ['Clash Description'] = {
+                                type = 'description',
+                                name = "When recommending abilities, the addon prioritizes the action that is available soonest and with passing criteria. Sometimes, a lower priority action will be recommended " ..
+                                    "over a higher priority action because the lower priority action will be available slightly sooner.  By setting a Cooldown Clash value greater than 0, the addon will recommend a " ..
+                                    "lower priority action only if it is available at least this much sooner than a higher priority ability.  This setting applies to all abilities; individual abilities can be " ..
+                                    "configured on the |cFFFFD100Abilities and Items|r tab.",
+                                order = 0
+                            },
+                            ['Clash'] = {
+                                type = 'range',
+                                name = "Clash",
+                                min = 0,
+                                max = 0.5,
+                                step = 0.01,
+                                width = 'full',
+                                order = 1
+                            }
+                        }
+                    }, ]]
                     ['Engine'] = {
                         type = "group",
                         name = "Engine Settings",
                         inline = true,
-                        order = 6,
+                        order = 7,
                         args = {
                             moreCPU = {
                                 type = "toggle",
@@ -4776,28 +4800,6 @@ function Hekili:GetOptions()
                             }, ]]
                         }
                     },
-                    --[[ ['Clash'] = {
-                        type = "group",
-                        name = "Cooldown Clash",
-                        inline = true,
-                        order = 6,
-                        args = {
-                            ['Clash Description'] = {
-                                type = 'description',
-                                name = "When recommending abilities, the addon prioritizes the action that is available soonest and with passing criteria. Sometimes, a lower priority action will be recommended over a higher priority action because the lower priority action will be available slightly sooner. By setting a Cooldown Clash value greater than 0, the addon will recommend a lower priority action only if it is available at least this much sooner than a higher priority ability. Some classes may have specific clash settings for specific abilities, overriding this setting.",
-                                order = 0
-                            },
-                            ['Clash'] = {
-                                type = 'range',
-                                name = "Clash",
-                                min = 0,
-                                max = 0.5,
-                                step = 0.01,
-                                width = 'full',
-                                order = 1
-                            }
-                        }
-                    }, ]]
                 }
             },
             notifs = {

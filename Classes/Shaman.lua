@@ -647,11 +647,13 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             spend = 0,
             spend_type = 'mana',
             cast = 0,
+            ready = function () return buff.ascendance.remains end,
             gcdType = 'off',
             talent = 'ascendance',
             cooldown = 180,
             passive = true,
             toggle = 'cooldowns',
+            recheck = function () return buff.ascendance.remains end,
             usable = function () return buff.ascendance.down end,
         }, 114050 )
 
@@ -736,6 +738,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             cast = 0,
             gcdType = 'spell',
             cooldown = 6,
+            recheck = function () return buff.crash_lightning.remains end,
             usable = function ()
                 if set_bonus.tier20_4pc == 1 and toggle.hold_t20_stacks and buff.crashing_lightning.stack >= settings.t20_stack_threshold and active_enemies == 1 then return false end
                 return true
@@ -779,6 +782,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             cooldown = 60,
             known = function() return equipped.doomhammer end,
             passive = true,
+            recheck = function () return cooldown.stormstrike.remains, cooldown.ascendance.remains - 6 end,
             toggle = 'artifact'
         } )
 
@@ -951,7 +955,8 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             spend_type = 'mana',
             cast = 0,
             gcdType = 'spell',
-            cooldown = 12
+            cooldown = 12,
+            recheck = function () return buff.flametongue.remains, buff.flametongue.remains - 4.8, buff.flametongue.remains - ( 6 + gcd ), cooldown.doom_winds.remains - gcd * 2 end,
         } )
 
         modifyAbility( 'flametongue', 'cooldown', function( x )
@@ -997,6 +1002,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             cast = 0,
             gcdType = 'spell',
             cooldown = 0,
+            recheck = function () return buff.frostbrand.remains, buff.frostbrand.remains - 4.8, buff.frostbrand.remains - ( 6 + gcd ), cooldown.doom_winds.remains - gcd * 2 end,
         } )
 
         addHandler( 'frostbrand', function ()
@@ -1359,6 +1365,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             cooldown = 6,
             charges = 2,
             recharge = 6,
+            recheck = function () return ( 1.7 - charges_fractional ) * recharge, buff.landslide.remains end,
         } )
 
         modifyAbility( 'rockbiter', 'spend', function( x )

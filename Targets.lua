@@ -35,7 +35,7 @@ function ns.getNumberTargets()
 
     npCount = 0
 
-    if showNPs and ( Hekili.DB.profile['Count Nameplate Targets'] ) then
+    if showNPs and ( Hekili.DB.profile['Count Nameplate Targets'] ) and not state.ranged then
         local RC = LibStub( "LibRangeCheck-2.0" )
 
         for i = 1, 80 do
@@ -65,7 +65,7 @@ function ns.getNumberTargets()
         end
     end
 
-    if Hekili.DB.profile['Count Targets by Damage'] or state.ranged or not Hekili.DB.profile['Count Nameplate Targets'] or not showNPs then
+    if Hekili.DB.profile['Count Targets by Damage'] or not Hekili.DB.profile['Count Nameplate Targets'] or not showNPs or state.ranged then
         for k,v in pairs( myTargets ) do
             if not nameplates[ k ] then
                 nameplates[ k ] = true
@@ -96,39 +96,40 @@ end
 
 ns.updateTarget = function( id, time, mine )
 
-  if id == state.GUID then return end
+    if id == state.GUID then return end
 
-  if time then
-    if not targets[ id ] then
-      targetCount = targetCount + 1
-      targets[id] = time
-      ns.updatedTargetCount = true
+    if time then
+        if not targets[ id ] then
+            targetCount = targetCount + 1
+            targets[ id ] = time
+            ns.updatedTargetCount = true
+        else
+            targets[ id ] = time
+        end
+
+        if mine then
+            if not myTargets[ id ] then
+                myTargetCount = myTargetCount + 1
+                myTargets[ id ] = time
+                ns.updatedTargetCount = true
+            else
+                myTargets[ id ] = time
+            end
+        end
+
     else
-      targets[id] = time
-    end
+        if targets[ id ] then
+            targetCount = max(0, targetCount - 1)
+            targets[ id ] = nil
+        end
 
-    if mine then
-      if not myTargets[ id ] then
-        myTargetCount = myTargetCount + 1
-        myTargets[id] = time
-      ns.updatedTargetCount = true
-      else
-        myTargets[id] = time
-      end
-    end
+        if myTargets[ id ] then
+            myTargetCount = max(0, myTargetCount - 1)
+            myTargets[ id ] = nil
+        end
 
-  else
-    if targets[id] then
-      targetCount = max(0, targetCount - 1)
-      targets[id] = nil
+        ns.updatedTargetCount = true
     end
-
-    if myTargets[id] then
-      myTargetCount = max(0, myTargetCount - 1)
-      myTargets[id] = nil
-    end
-    ns.updatedTargetCount = true
-  end
 end
 
 
