@@ -26,11 +26,13 @@ local unitEvents = CreateFrame( "Frame" )
 local unitHandlers = {}
 
 ns.displayUpdates = {}
-
-local lastRefresh = {}
-local lastRecount = 0
 local displayUpdates = ns.displayUpdates
+local lastRecount = 0
+
+local forceRefresh = {}
+local lastRefresh = {}
 local lastDisplay = 0
+
 
 
 function ns.StartEventHandler()
@@ -64,6 +66,7 @@ function ns.StartEventHandler()
         end
 
         local updatePeriod = state.combat == 0 and 0.5 or 0.2
+        local forcedPeriod = 0.05
 
         local numDisplays = #Hekili.DB.profile.displays
 
@@ -72,18 +75,27 @@ function ns.StartEventHandler()
                 local index = lastDisplay + i
                 index = index > numDisplays and index - numDisplays or index
 
-                if ns.visible.display[ index ] and ( not displayUpdates[ index ] or ( not lastRefresh[ index ] or now - lastRefresh[ index ] >= updatePeriod ) ) then
-                    local dScriptPass = Hekili:CheckDisplayCriteria( index ) or 0 -- checkScript( 'D', dispID )
+                if ns.visible.display[ index ] then
+                    if ( not lastRefresh[ index ] or -- We've never refreshed this display.
+                       ( forceRefresh[ index ] and now - lastRefresh[ index ] >= forcedPeriod ) or -- We have a forced update pending, max of 20 updates/sec.
+                       ( now - lastRefresh[ index ] >= updatePeriod ) ) then -- We've reached the default update period, 2x/sec ooc, 5x/sec ic.
                     
-                    if ( dScriptPass > 0 ) then
+                        local dScriptPass = Hekili:CheckDisplayCriteria( index ) or 0
+                        
+                        if ( dScriptPass > 0 ) then
 
-                        Hekili:ProcessHooks( index )
+                            Hekili:ProcessHooks( index )
 
-                        lastRefresh[ index ] = now
-                        lastDisplay = index
+                            lastRefresh[ index ] = now
+                            forceRefresh[ index ] = false
+                            lastDisplay = index
 
-                        break
+                            break
+                        end
                     end
+                else
+                    -- Display isn't visible, cancel the forced update.
+                    forceRefresh[ index ] = false
                 end
             end
         end
@@ -508,7 +520,7 @@ local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 local function forceUpdate( from, super )
 
     for i = 1, #Hekili.DB.profile.displays do
-        displayUpdates[ i ] = nil
+        forceRefresh[ i ] = true
     end
 
     return
