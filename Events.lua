@@ -806,17 +806,22 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
 
     -- Player/Minion Event
     elseif not class.exclusions[ spellID ] and ( sourceGUID == state.GUID or ns.isMinion( sourceGUID ) ) then
+
+        if aura_events[ subtype ] then
+            if state.GUID == destGUID then 
+                state.player.updated = true
+                forceUpdate( subtype )
+            end
+   
+            if UnitGUID( 'target' ) == destGUID then
+                state.target.updated = true
+                forceUpdate( subtype )
+            end
+        end
+
         local aura = class.auras and class.auras[ spellID ]
         
         if aura then
-
-            if aura_events[ subtype ] then
-
-                if state.GUID == destGUID then state.player.updated = true end
-                if UnitGUID( 'target' ) == destGUID then state.target.updated = true end
-                forceUpdate( subtype )
-
-            end
 
             if hostile and sourceGUID ~= destGUID and not aura.friendly then
 
@@ -861,7 +866,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
 
             if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
                 state.swings.last_foa_tick = time
-                forceUpdate( subtype )
+                -- forceUpdate( subtype )
             end
         end
     end
