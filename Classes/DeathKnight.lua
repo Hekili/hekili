@@ -354,6 +354,12 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
                 if state.spec.frost and state.talent.gathering_storm.enabled and state.buff.remorseless_winter.up then
                     state.buff.remorseless_winter.expires = state.buff.remorseless_winter.expires + ( 0.5 * amount )
+                    if state.buff.gathering_storm.down then
+                        state.applyBuff( "gathering_storm", state.buff.remorseless_winter.remains, amount )
+                    else
+                        state.buff.gathering_storm.expires = state.buff.remorseless_winter.expires
+                        state.buff.gathering_storm.count = state.buff.gathering_storm.count + amount
+                    end
                 end
 
                 if state.spec.unholy and state.set_bonus.tier20_4pc == 1 then
@@ -661,6 +667,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "defile_buff", 218100, "duration", 5, "max_stack", 10 )
         addAura( "festering_wound", 194310, "duration", 24, "max_stack", 8 )
         addAura( "frost_fever", 55095, "duration", 24 )
+        addAura( "gathering_storm", 211805, "duration", 8, "max_stack", 20 )
         addAura( "hungering_rune_weapon", 207127, "duration", 12 )
         addAura( "icebound_fortitude", 48792, "duration", 8 )
         addAura( "icy_talons", 194879, "duration", 6, "max_stack", 3 )
@@ -1250,7 +1257,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
         addHandler( "frost_strike", function ()
             if talent.shattering_strikes.enabled and debuff.razorice.stack >= 5 then
-                applyDebuff( "target", "razorice", debuff.razorice.remains, debuff.razorice.stack - 5 )
+                applyDebuff( "target", "razorice", 20, 1 )
+
             elseif talent.icy_talons.enabled then
                 applyBuff( "icy_talons", 6, min( 3, buff.icy_talons.stack + 1 ) )
             end

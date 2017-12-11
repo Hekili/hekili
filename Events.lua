@@ -68,7 +68,7 @@ function ns.StartEventHandler()
         end
 
         local updatePeriod = state.combat == 0 and 0.5 or 0.2
-        local forcedPeriod = 0.05
+        local forcedPeriod = 0.1
 
         local numDisplays = #Hekili.DB.profile.displays
 
@@ -724,20 +724,29 @@ local autoAuraKey = setmetatable( {}, {
 } )
 
 
-RegisterUnitEvent( "UNIT_AURA", function( event, unit )
+--[[ RegisterUnitEvent( "UNIT_AURA", function( event, unit )
     if unit == 'player' then
         state.player.updated = true
-        -- forceUpdate( event, true )
     else
         state.target.updated = true
     end
-end )
+end ) ]]
 
 
 RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
     state.target.updated = true
     forceUpdate( event, true )
 end )
+
+
+local aura_events = {
+    SPELL_AURA_APPLIED      = true,
+    SPELL_AURA_REFRESH      = true,
+    SPELL_AURA_APPLIED_DOSE = true,
+    SPELL_AURA_REMOVED      = true,
+    SPELL_AURA_BROKEN       = true,
+    SPELL_AURA_BROKEN_SPELL = true
+}
 
 
 -- Use dots/debuffs to count active targets.
@@ -775,7 +784,6 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
         forceUpdate( subtype, true )
     end
 
-
     if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
         ns.updateTarget( sourceGUID, time, true )
 
@@ -800,23 +808,28 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
     elseif not class.exclusions[ spellID ] and ( sourceGUID == state.GUID or ns.isMinion( sourceGUID ) ) then
         local aura = class.auras and class.auras[ spellID ]
         
-        if aura then 
+        if aura then
+
+            if aura_events[ subtype ] then
+
+                if state.GUID == destGUID then state.player.updated = true end
+                if UnitGUID( 'target' ) == destGUID then state.target.updated = true end
+                forceUpdate( subtype )
+
+            end
+
             if hostile and sourceGUID ~= destGUID and not aura.friendly then
 
                 -- Aura Tracking
                 if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, true )
                     ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
-                    forceUpdate( subtype )
 
                 elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
                     ns.trackDebuff( spellID, destGUID, time )
-                    forceUpdate( subtype )
-                    -- ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
                 elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
                     ns.trackDebuff( spellID, destGUID )
-                    forceUpdate( subtype )
 
                 end
 
@@ -824,15 +837,12 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
 
                 if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
-                    forceUpdate( subtype )
 
                 elseif subtype == 'SPELL_PERIODIC_HEAL' or subtype == 'SPELL_PERIODIC_MISSED' then
                     ns.trackDebuff( spellID, destGUID, time )
-                    forceUpdate( subtype )
 
                 elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
                     ns.trackDebuff( spellID, destGUID )
-                    forceUpdate( subtype )
 
                 end
 
