@@ -723,6 +723,8 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                     if self:CheckAPLStack() then
                                                         aScriptPass = checkScript( 'A', scriptID )
                                                         if debug then self:Debug( "Recheck #%d ( +%.2f ) %s: %s", i, state.delay, aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
+                                                    else
+                                                        if debug then self:Debug( "Unable to recheck #%d at %.2f, as APL conditions would not pass.", i, state.delay ) end
                                                     end
 
                                                     if aScriptPass then break
@@ -821,6 +823,8 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                         end
                     end
                 end
+            else
+                if debug then self:Debug( "\nEntry #%d in list ( %s ) is not set or not enabled.  Skipping.", actID, list.Name ) end
             end
             
             actID = actID + 1
@@ -1225,8 +1229,10 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                         end
                     end
                 end
+            else
+                if debug then self:Debug( "\nEntry #%d in list ( %s ) is not set or not enabled.  Skipping.", actID, list.Name ) end
             end
-            
+                        
             actID = actID + 1
             
         end

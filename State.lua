@@ -3790,10 +3790,6 @@ ns.isKnown = function( sID, notoggle )
 
     local profile = Hekili.DB.profile
 
-    if profile.blacklist and profile.blacklist[ ability.key ] then
-        return false
-    end
-
     if ability.spec and not state.spec[ ability.spec ] then
         return false
     end
@@ -3847,6 +3843,8 @@ ns.isUsable = function( spell )
     local ability = class.abilities[ spell ]    
     if not ability then return true end
 
+    local profile = Hekili.DB.profile
+
     if ability.item and not state.equipped[ ability.item ] then
         return false
     end
@@ -3863,7 +3861,11 @@ ns.isUsable = function( spell )
         return false
     end
 
-    local toggle = Hekili.DB.profile.toggles[ ability.key ]
+    if profile.blacklist and profile.blacklist[ ability.key ] then
+        return false
+    end
+
+    local toggle = profile.toggles[ ability.key ]
 
     if not toggle or toggle == 'default' then toggle = ability.toggle end
 

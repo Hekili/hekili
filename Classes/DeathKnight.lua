@@ -437,7 +437,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
 
             state.runic_power.regen = 0
 
-            state.pet.valkyr_battlemaiden.expires = state.last_valkyr > 0 and state.last_valkyr + 23 or 0
+            state.pet.valkyr_battlemaiden.expires = state.last_valkyr > 0 and state.last_valkyr + 20 or 0
             state.pet.army_of_the_dead.expires = state.last_army > 0 and state.last_army + 40 or 0
 
             virtual_rp_spent_since_pof = rp_spent_since_pof
@@ -729,7 +729,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addGearSet( "acherus_drapes", 132376 )
         addGearSet( "aggramars_stride", 132443 )
         addGearSet( "cold_heart", 151796 ) -- chilled_heart stacks NYI
-            addAura( "cold_heart", 235599, "max_stack", 20 )
+            addAura( "cold_heart", 235599, "duration", 3600, "max_stack", 20 )
 
         addGearSet( "consorts_cold_core", 144293 )
         addGearSet( "death_march", 144280 )
@@ -1494,7 +1494,6 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             -- min_range = 0,
             max_range = 30,
             recheck = function () return dot.virulent_plague.remains - gcd, dot.virulent_plague.remains end,
-            aura = 'virulent_plague',
         } )
 
         addHandler( "outbreak", function ()
