@@ -400,6 +400,9 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             elseif spell == class.abilities[ 'crash_lightning' ].name then
                 state.last_crash_lightning = GetTime()
 
+            elseif spell == class.abilities.earthen_spike.name then
+                Hekili.DB.profile[ 'Toggle State: save_earthen_spike' ] = false
+
             elseif spell == class.abilities[ 'rainfall' ].name then
                 state.last_rainfall = GetTime()
 
@@ -482,6 +485,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             end
         } )
 
+
         state.twisting_nether = setmetatable( {}, {
             __index = function( t, k )
                 if k == 'count' then
@@ -494,19 +498,8 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
 
         addHook( 'reset_precast', function( x )
-            -- A decent start, but assumes our first ability is always aggressive. Not necessarily true...
             if state.spec.enhancement then
                 state.feral_spirit.cast_time = nil 
-
-                --[[ state.nextMH = ( state.combat ~= 0 and state.swings.mh_projected > state.now ) and state.swings.mh_projected or state.now + 0.01
-                state.nextOH = ( state.combat ~= 0 and state.swings.oh_projected > state.now ) and state.swings.oh_projected or state.now + ( state.swings.oh_speed / 2 )
-
-
-                local next_foa_tick = ( state.buff.fury_of_air.applied % 1 ) - ( state.now % 1 )
-                if next_foa_tick < 0 then next_foa_tick = next_foa_tick + 1 end                
-
-                state.nextFoA = state.buff.fury_of_air.up and ( state.now + next_foa_tick ) or 0
-                while state.nextFoA > 0 and state.nextFoA < state.now do state.nextFoA = state.nextFoA + 1 end ]]
             end
         end )
 
@@ -593,8 +586,14 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             width = "full",
         } )
 
-        ns.addToggle( 'hold_t20_stacks', false, 'Save Crash Lightning Stacks', "(Enhancement)  If checked, the addon will |cFFFF0000STOP|r recommending Crash Lightning when you have the specified number of Crashing Lightning stacks (or more).  " ..
+        ns.addToggle( 'hold_t20_stacks', false, 'Save Tier 20 Stacks', "(Enhancement)  If checked, the addon will |cFFFF0000STOP|r recommending Crash Lightning when you have the specified number of Crashing Lightning stacks (or more).  " ..
             "This only applies when you have the tier 20 four-piece set bonus.  This may help to save stacks for a big burst of AOE instead of refreshing the tier 20 two-piece bonus." )
+
+
+        ns.addToggle( 'save_earthen_spike', false, "Save Earthen Spike", "(Enhancement)  If checked, the addon will |cFFFF0000STOP|r recommending Earthen Spike until you cast the ability yourself.  " ..
+            "This may be useful if you know you are fighting short-lived adds and you will want to use Earthen Spike on another target soon." )
+
+
 
         ns.addSetting( 'forecast_fury', true, {
             name = 'Enhancement: Predict Fury of Air MP',
@@ -798,7 +797,8 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             cast = 0,
             gcdType = 'spell',
             cooldown = 20,
-            talent = 'earthen_spike'
+            talent = 'earthen_spike',
+            usable = function () return not toggle.save_earthen_spike end,
         } )
 
         addHandler( 'earthen_spike', function ()
