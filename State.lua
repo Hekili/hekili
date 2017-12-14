@@ -725,7 +725,7 @@ local function resourceModelSort( a, b )
 end
 
 
-local FORECAST_DURATION = 15
+local FORECAST_DURATION = 7.5
 
 local function forecastResources( resource )
 
@@ -740,7 +740,8 @@ local function forecastResources( resource )
     if resource then
         local r = state[ resource ]
 
-        remains[ resource ] = FORECAST_DURATION
+        -- We account for haste here so that we don't computer lots of extraneous future resource gains in Bloodlust/high haste situations.
+        remains[ resource ] = FORECAST_DURATION * state.haste
 
         table.wipe( r.times )
         table.wipe( r.values )
@@ -751,7 +752,7 @@ local function forecastResources( resource )
     else
         for k, v in pairs( class.resources ) do
             local r = state[ k ]
-            remains[ k ] = FORECAST_DURATION
+            remains[ k ] = FORECAST_DURATION * state.haste
 
             table.wipe( r.times )
             table.wipe( r.values )
@@ -796,7 +797,7 @@ local function forecastResources( resource )
 
     tSort( events, resourceModelSort )
 
-    local finish = now + FORECAST_DURATION
+    local finish = now + FORECAST_DURATION * state.haste
 
     local prev = now
     local iter = 0
