@@ -3825,6 +3825,14 @@ ns.isKnown = function( sID, notoggle )
         return false
     end
 
+    if ability.buff and not state.buff[ ability.buff ].up then
+        return false
+    end
+
+    if ability.nobuff and state.buff[ ability.nobuff ].up then
+        return false
+    end
+
     if ability.known ~= nil then
         if type( ability.known ) == 'number' then
             return IsPlayerSpell( ability.known )
@@ -3838,6 +3846,7 @@ end
 
 
 -- Filter out non-resource driven issues with abilities.
+-- Unusable abilities are treated as on CD unless overridden.
 ns.isUsable = function( spell )
 
     local ability = class.abilities[ spell ]    
@@ -3854,10 +3863,6 @@ ns.isUsable = function( spell )
     end
 
     if ability.form and not state.buff[ ability.form ].up then
-        return false
-    end
-
-    if ability.buff and not state.buff[ ability.buff ].up then
         return false
     end
 

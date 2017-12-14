@@ -280,6 +280,14 @@ local oneTimeFixes = {
             end
         end
     end,        
+
+    elementalSimpleAOEis3_12132017 = function( profile )
+        for dispID, display in ipairs( profile.displays ) do
+            if display.Name == "Elemental AOE" and display.simpleAOE == 2 then
+                display.simpleAOE = 3
+            end
+        end
+    end
 }
 
 
