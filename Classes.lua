@@ -368,6 +368,18 @@ end
 ns.addAbility = addAbility
 
 
+function Hekili:GetAbilityInfo( index )
+
+    local ability = class.abilities[ index ]
+
+    if not ability then return end
+
+    -- Decide if more details are needed later.
+    return ability.id, ability.name, ability.key, ability.item
+
+end
+
+
 class.interrupts = {}
 
 function ns.registerInterrupt( key )

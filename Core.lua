@@ -1325,6 +1325,16 @@ local pvpZones = {
 }
 
 
+
+function Hekili:GetDisplayByName( name )
+    for i, display in pairs( Hekili.DB.profile.displays ) do
+        if display.name == name then
+            return i
+        end
+    end
+end
+
+
 function Hekili:CheckDisplayCriteria( dispID )
     
     local display = Hekili.DB.profile.displays[ dispID ]
@@ -1637,6 +1647,8 @@ end
 
 
 function Hekili_GetRecommendedAbility( display, entry )
+
+    entry = entry or 1
     
     if type( display ) == 'string' then
         local found = false
@@ -1673,7 +1685,7 @@ local applied = {}
 
 
 function Hekili:UpdateDisplay( dispID )
-    
+
     if not self.DB.profile.Enabled then
         return
     end
@@ -1689,8 +1701,6 @@ function Hekili:UpdateDisplay( dispID )
     else
         ns.UI.Buttons[ dispID ][1].Overlay:Hide()
     end
-    
-
 
     flashes[dispID] = flashes[dispID] or 0
     

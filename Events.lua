@@ -36,6 +36,12 @@ local lastRefresh = {}
 local lastDisplay = 0
 
 
+local activeDisplays = {}
+
+function Hekili:GetActiveDisplays()
+    return activeDisplays
+end
+
 
 function ns.StartEventHandler()
 
@@ -78,6 +84,8 @@ function ns.StartEventHandler()
                 index = index > numDisplays and index - numDisplays or index
 
                 if ns.visible.display[ index ] then
+                    activeDisplays[ index ] = true
+
                     if ( not lastRefresh[ index ] or -- We've never refreshed this display.
                        ( superForce[ index ] ) or -- Something happened that requires an *immediate* refresh.
                        ( forceRefresh[ index ] and now - lastRefresh[ index ] >= forcedPeriod ) or -- A less-urgent refresh was requested.
@@ -99,6 +107,7 @@ function ns.StartEventHandler()
                     end
                 else
                     -- Display isn't visible, cancel the forced update.
+                    activeDisplays[ index ] = false
                     forceRefresh[ index ] = false
                     superForce[ index ] = false
                 end
@@ -520,9 +529,14 @@ ns.castsAll = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' 
 
 local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
-
+Hekili.Updates = {}
 
 local function forceUpdate( from, super )
+
+    if from then
+        if Hekili.Updates[ from ] then Hekili.Updates[ from ] = Hekili.Updates[ from ] + 1
+        else Hekili.Updates[ from ] = 1 end
+    end
 
     for i = 1, #Hekili.DB.profile.displays do
         forceRefresh[ i ] = true
@@ -687,7 +701,7 @@ end ) ]]
 
 
 -- RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
-RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
+-- RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
 
 
 local autoAuraKey = setmetatable( {}, {
