@@ -287,7 +287,13 @@ local oneTimeFixes = {
                 display.simpleAOE = 3
             end
         end
-    end
+    end,
+
+    reduceExtremeZoom_12182017 = function( profile )
+        for dispID, display in ipairs( profile.displays ) do
+            if display.iconZoom > 50 then display.iconZoom = 15 end
+        end
+    end,
 }
 
 

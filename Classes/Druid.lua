@@ -81,7 +81,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
                 value = 1
             },
 
-            energy = {
+            --[[ energy = {
                 resource = "energy",
 
                 spec = "feral",
@@ -96,7 +96,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
                 interval = 0.1,
                 value = 0,
-            },
+            }, ]]
 
             ashamanes_energy = {
                 resource = 'energy',
