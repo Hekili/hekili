@@ -611,9 +611,9 @@ end
 
 
 -- Need to make caching system.
---[[ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
-    if unit == 'player' then forceUpdate( event, spell ) end
-end ) ]]
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
+    if UnitIsUnit( unit, "player" ) then forceUpdate( event, true ) end
+end )
 
 -- RegisterUnitEvent( "UNIT_SPELLCAST_START", forceUpdate, 'player' )
 
@@ -738,13 +738,13 @@ local autoAuraKey = setmetatable( {}, {
 } )
 
 
---[[ RegisterUnitEvent( "UNIT_AURA", function( event, unit )
-    if unit == 'player' then
+RegisterUnitEvent( "UNIT_AURA", function( event, unit )
+    if UnitIsUnit( unit, 'player' ) then
         state.player.updated = true
-    else
+    elseif UnitIsUnit( "target", unit ) then
         state.target.updated = true
     end
-end ) ]]
+end )
 
 
 RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )

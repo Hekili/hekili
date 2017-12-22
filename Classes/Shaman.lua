@@ -357,7 +357,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         addAura( 'elemental_focus', 16164, 'duration', 30, 'max_stack', 2 )
         addAura( 'elemental_mastery', 16166, 'duration', 20 )
         addAura( 'emalons_charged_core', 208742, 'duration', 10 )
-        addAura( 'ember_totem', 210658 )
+        addAura( 'ember_totem', 210658, 'duration', 120 )
         addAura( 'fire_of_the_twisting_nether', 207995, 'duration', 8 )
         addAura( 'chill_of_the_twisting_nether', 207998, 'duration', 8 )
         addAura( 'shock_of_the_twisting_nether', 207999, 'duration', 8 )
@@ -367,12 +367,12 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         addAura( 'lava_surge', 77762, 'duration', 10 )
         addAura( 'lightning_rod', 197209, 'duration', 10 )
         addAura( 'power_of_the_maelstrom', 191877, 'duration', 20, 'max_stack', 3 )
-        addAura( 'resonance_totem', 202192 )
+        addAura( 'resonance_totem', 202192, 'duration', 120 )
         addAura( 'static_overload', 191634, 'duration', 15 )
         addAura( 'storm_tempests', 214265, 'duration', 15 )
-        addAura( 'storm_totem', 210652 )
+        addAura( 'storm_totem', 210652, 'duration', 120 )
         addAura( 'stormkeeper', 205495, 'duration', 15, 'max_stack', 3 )
-        addAura( 'tailwind_totem', 210659 )
+        addAura( 'tailwind_totem', 210659, 'duration', 120 )
         addAura( 'thunderstorm', 51490, 'duration', 5 )
 
 
@@ -501,6 +501,34 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             if state.spec.enhancement then
                 state.feral_spirit.cast_time = nil 
             end
+
+            if state.spec.elemental and state.talent.totem_mastery.enabled then
+                local totem_expires = 0
+
+                for i = 1, 5 do
+                    local _, totem_name, cast_time = GetTotemInfo( i )
+
+                    if totem_name == class.abilities.totem_mastery.name then
+                        totem_expires = cast_time + 120
+                    end
+                end
+
+                local in_range = UnitBuff( "player", class.auras.resonance_totem.name, nil, "PLAYER" )
+
+                if totem_expires > 0 and in_range then
+                    state.buff.totem_mastery.name = class.abilities.totem_mastery.name
+                    state.buff.totem_mastery.count = 4
+                    state.buff.totem_mastery.expires = totem_expires
+                    state.buff.totem_mastery.applied = totem_expires - 120
+                    state.buff.totem_mastery.caster = 'player'
+
+                    state.buff.resonance_totem.expires = totem_expires
+                    state.buff.storm_totem.expires = totem_expires
+                    state.buff.ember_totem.expires = totem_expires
+                    state.buff.tailwind_totem.expires = totem_expires
+                end
+            end
+
         end )
 
 
@@ -940,7 +968,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             gcdType = 'spell',
             cooldown = 300,
             known = function () return spec.elemental end,
-            notalent = 'fire_elemental',
+            notalent = 'storm_elemental',
             toggle = 'cooldowns',
             passive = true,
         } )
