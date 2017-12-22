@@ -435,18 +435,21 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             buff.alpha_wolf.caster = 'player'
         end )
 
+
         addAura( 'totem_mastery', -102, 'name', 'Totem Mastery', 'duration', 120, 'feign', function ()
             local totem_expires = 0
+            local totem_remains = 0
 
             for i = 1, 5 do
                 local _, totem_name, cast_time = GetTotemInfo( i )
 
                 if totem_name == class.abilities.totem_mastery.name then
                     totem_expires = cast_time + 120
+                    totem_remains = totem_expires - now
                 end
             end
 
-            local in_range = buff.resonance_totem.up
+            local in_range = buff.resonance_totem.up or totem_remains > 118
 
             if totem_expires > 0 and in_range then
                 buff.totem_mastery.name = class.abilities.totem_mastery.name
@@ -455,10 +458,10 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
                 buff.totem_mastery.applied = totem_expires - 120
                 buff.totem_mastery.caster = 'player'
 
-                buff.resonance_totem.expires = totem_expires
-                buff.storm_totem.expires = totem_expires
-                buff.ember_totem.expires = totem_expires
-                buff.tailwind_totem.expires = totem_expires
+                applyBuff( "resonance_totem", totem_remains )
+                applyBuff( "storm_totem", totem_remains )
+                applyBuff( "ember_totem", totem_remains )
+                applyBuff( "tailwind_totem", totem_remains )
                 return
             end
 
