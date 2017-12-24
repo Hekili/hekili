@@ -507,16 +507,18 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
             if state.spec.elemental and state.talent.totem_mastery.enabled then
                 local totem_expires = 0
+                local totem_remains = 0
 
                 for i = 1, 5 do
                     local _, totem_name, cast_time = GetTotemInfo( i )
 
                     if totem_name == class.abilities.totem_mastery.name then
                         totem_expires = cast_time + 120
+                        totem_remains = totem_expires - now
                     end
                 end
 
-                local in_range = UnitBuff( "player", class.auras.resonance_totem.name, nil, "PLAYER" )
+                local in_range = state.buff.resonance_totem.up or totem_remains > 118
 
                 if totem_expires > 0 and in_range then
                     state.buff.totem_mastery.name = class.abilities.totem_mastery.name
@@ -525,10 +527,17 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
                     state.buff.totem_mastery.applied = totem_expires - 120
                     state.buff.totem_mastery.caster = 'player'
 
-                    state.buff.resonance_totem.expires = totem_expires
-                    state.buff.storm_totem.expires = totem_expires
-                    state.buff.ember_totem.expires = totem_expires
-                    state.buff.tailwind_totem.expires = totem_expires
+                    state.applyBuff( "resonance_totem", totem_remains )
+                    state.applyBuff( "storm_totem", totem_remains )
+                    state.applyBuff( "ember_totem", totem_remains )
+                    state.applyBuff( "tailwind_totem", totem_remains )
+                    return
+                else
+                    state.buff.totem_mastery.name = class.abilities.totem_mastery.name
+                    state.buff.totem_mastery.count = 0
+                    state.buff.totem_mastery.expires = 0
+                    state.buff.totem_mastery.applied = 0
+                    state.buff.totem_mastery.caster = 'nobody'
                 end
             end
 

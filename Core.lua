@@ -1874,6 +1874,7 @@ function Hekili:UpdateDisplay( dispID )
                 --    start, duration = 0, 0
                 else
                     start, duration = GetSpellCooldown( ability.id )
+                    if duration < 0.01 then start, duration = 0, 0 end
                 end
                 local gcd_remains = gcd_start + gcd_duration - GetTime()
                 
@@ -1892,20 +1893,14 @@ function Hekili:UpdateDisplay( dispID )
                         flashes[dispID] = GetTime()
                     end
                     
-                    if ( class.file == 'HUNTER' or class.file == 'MONK' or class.file == 'DEATHKNIGHT' or class.file == 'DRUID' or class.file == 'WARRIOR' ) then
-                        local exact = Queue[i].exact_time or 0
-                        local end_gcd = gcd_start + gcd_duration
-                        local diff = abs( exact - end_gcd )
+                    local exact = Queue[i].exact_time or 0
+                    local end_gcd = gcd_start + gcd_duration
+                    local diff = abs( exact - end_gcd )
 
-                        if exact > now and diff >= 0.1 then
-                            local delay = exact - now
-                            button.Delay:SetText( format( delay > 1 and "%d" or "%.1f", delay ) )
-                        else
-                            button.Delay:SetText( nil )
-                        end
-
+                    if exact > now and diff >= 0.1 then
+                        local delay = exact - now
+                        button.Delay:SetText( format( delay > 1 and "%d" or "%.1f", delay ) )
                     else
-                        -- button.Texture:SetDesaturated( false )
                         button.Delay:SetText( nil )
                     end
                     

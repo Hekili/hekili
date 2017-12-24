@@ -143,6 +143,7 @@ local SimToLua = function( str, modifier )
   str = str:gsub("prev%.(%d+)", "prev[%1]")
   str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
   str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
+  str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
 
   return str
 

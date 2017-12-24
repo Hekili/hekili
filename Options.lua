@@ -3031,7 +3031,7 @@ ns.newActionOption = function( aList, index )
             local script = Hekili.Scripts.A[ aList .. ':' .. index ]
 
             if script and script.Error then
-                name = '|cFFFFD100' .. index .. '.|r |cFFFF0000' .. Hekili.DB.profile.actionLists[ aList ].Actions[ index ].Name .. '|r'
+                name = '|cFFFFD100' .. index .. ".|r |TInterface\\Addons\\Hekili\\Textures\\WARNING:0|t " .. Hekili.DB.profile.actionLists[ aList ].Actions[ index ].Name
             end
 
             Hekili.Options.args.actionLists.args[ 'L'..aList ].args[ 'A'..index ].name = name
@@ -7231,6 +7231,31 @@ local function sanitize( segment, i, line, warnings )
         end 
         
     end
+
+    for token in i:gmatch( "stealthed" ) do
+        
+        local times = 0
+        while (i:find(token)) do
+            
+            local strpos, strend = i:find(token)
+            
+            local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
+            local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
+            local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
+            local finish = strend < i:len() and i:sub( strend + 1 ) or ''
+            
+            if pre ~= '.' and pre ~= '_' and not pre:match('%a') and post ~= '.' and post ~= '_' and not post:match('%a') then
+                i = start .. '\a' .. finish
+            else
+                i = start .. '\v' .. finish
+            end
+            
+        end
+        
+        i = i:gsub( '\v', token )
+        i = i:gsub( '\a', token..'.rogue' )
+        
+    end 
 
     for token in i:gmatch( "equipped%.[0-9]+" ) do
         
