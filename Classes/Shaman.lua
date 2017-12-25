@@ -417,7 +417,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
                     if totem_name == class.abilities.totem_mastery.name then
                         totem_expires = cast_time + 120
-                        totem_remains = totem_expires - now
+                        totem_remains = totem_expires - state.now
                     end
                 end
 
