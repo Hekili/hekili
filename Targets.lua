@@ -303,6 +303,8 @@ ns.getTTD = function( unit )
 
   if not TTD[ GUID ] then return 15 end
 
+  if state.time < 5 then return 15 - state.time end
+
   return TTD[ GUID ].sec or 15
 
 end

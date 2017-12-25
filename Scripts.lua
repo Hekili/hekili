@@ -545,38 +545,43 @@ local loadScripts = ns.loadScripts
 
 
 function ns.implantDebugData( queue )
-  if queue.display and queue.hook then
-    if type( queue.hook ) == 'string' then
-      -- this was a nested action list.
-      local scrHook = scripts.A[ queue.hook ]
-      local list, action = queue.hook:match( "(%d+):(%d+)" )
-      queue.HookHeader = 'Called from ' .. Hekili.DB.profile.actionLists[ tonumber( list ) ].Name .. ' #' .. action
-      queue.HookScript = scrHook.SimC
-      queue.HookElements = queue.HookElements or {}
-      storeValues( queue.HookElements, scrHook )
-    else
-      local scrHook = scripts.P[ queue.display..':'..queue.hook ]
-      queue.HookScript = scrHook.SimC
-      queue.HookElements = queue.HookElements or {}
-      storeValues( queue.HookElements, scrHook )
+    local prev = state.this_action
+    state.this_action = queue.actionName
+
+    if queue.display and queue.hook then        
+        if type( queue.hook ) == 'string' then
+            -- this was a nested action list.
+            local scrHook = scripts.A[ queue.hook ]
+            local list, action = queue.hook:match( "(%d+):(%d+)" )
+            queue.HookHeader = 'Called from ' .. Hekili.DB.profile.actionLists[ tonumber( list ) ].Name .. ' #' .. action
+            queue.HookScript = scrHook.SimC
+            queue.HookElements = queue.HookElements or {}
+            storeValues( queue.HookElements, scrHook )
+        else
+            local scrHook = scripts.P[ queue.display..':'..queue.hook ]
+            queue.HookScript = scrHook.SimC
+            queue.HookElements = queue.HookElements or {}
+            storeValues( queue.HookElements, scrHook )
+        end
     end
-  end
 
-  if queue.list and queue.action then
-    local scrAction = scripts.A[ queue.list..':'..queue.action ]
-    queue.ActScript = scrAction.SimC
-    queue.ActElements = queue.ActElements or {}
-    storeValues( queue.ActElements, scrAction )
+    if queue.list and queue.action then
+        local scrAction = scripts.A[ queue.list..':'..queue.action ]
+        queue.ActScript = scrAction.SimC
+        queue.ActElements = queue.ActElements or {}
+        storeValues( queue.ActElements, scrAction )
 
-    local delay = ns.state.delay
-    ns.state.delay = 0
+        local delay = ns.state.delay
+        ns.state.delay = 0
 
-    queue.ReadyScript = scrAction.ReadyLua
-    queue.ReadyElements = queue.ReadyElements or {}
-    storeReadyValues( queue.ReadyElements, scrAction )
+        queue.ReadyScript = scrAction.ReadyLua
+        queue.ReadyElements = queue.ReadyElements or {}
+        storeReadyValues( queue.ReadyElements, scrAction )
 
-    ns.state.delay = delay
-  end
+        ns.state.delay = delay
+    end
+
+    state.this_action = prev
 end
 
 

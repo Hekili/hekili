@@ -716,6 +716,21 @@ end
 state.setDistance = setDistance
 
 
+-- Spell Targets, so I don't have to convert it in APLs any more.
+state.spell_targets = setmetatable( {}, {
+    __index = function( t, k )
+        local ability = class.abilities[ k ]
+
+        if ability and ability.max_targets then
+            return min( ability.max_targets, state.active_enemies )
+
+        end
+
+        return active_enemies
+    end 
+} )
+
+
 -- Resource Modeling!
 local events = {}
 local remains = {}
@@ -1115,7 +1130,7 @@ local mt_state = {
 
             return ( class.auras[ a ].duration )
             
-        elseif k == 'refreshable' then
+        elseif k == 'refreshable' then            
             local a = class.abilities[ t.this_action ].aura or t.this_action
 
             return t.dot[ a ].remains < 0.3 * class.auras[ a ].duration
@@ -1201,7 +1216,7 @@ local mt_state = {
         elseif k == 'recharge_time' then
             return t.cooldown[ t.this_action ].recharge_time
             
-        elseif k:sub(1, 16) == 'incoming_damage_' then
+        elseif type(k) == 'string' and k:sub(1, 16) == 'incoming_damage_' then
             local remains = k:sub(17)
             local time = remains:match("^(%d+)[m]?s")
             

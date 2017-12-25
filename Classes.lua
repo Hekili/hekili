@@ -520,11 +520,13 @@ end
 ns.addTalent = addTalent
 
 
+local primarySet = false
+
 local function addResource( resource, power_type )
 
     class.resources[ resource ] = power_type
 
-    if primary or #class.resources == 1 then class.primaryResource = resource end
+    if not primarySet then class.primaryResource = resource end
 
     state[ resource ] = rawget( state, resource ) or setmetatable( {
         resource = key,
@@ -551,6 +553,14 @@ local function removeResource( resource )
 
 end
 ns.removeResource = removeResource
+
+
+local function setPrimaryResource( resource )
+
+    class.primaryResource = resource
+
+end
+ns.setPrimaryResource = setPrimaryResource
 
 
 local function setRegenModel( db )

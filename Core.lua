@@ -545,7 +545,6 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                     else
                         -- APL checks.
                         if entry.Ability == 'variable' then
-                            -- local aScriptValue = checkScript( 'A', scriptID )
                             local varName = entry.ModVarName or state.args.name
                             
                             if debug then self:Debug( " - variable.%s will refer to this action's script.", varName or "MISSING" ) end
@@ -774,10 +773,65 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                     actID = 0
                                                 end
 
-                                            elseif entry.Ability == 'pool_resource' then                                                
-                                                if entry.PoolForNext or state.args.for_next == 1 then
-                                                    if debug then self:Debug( "Pool Resource is not used in the Predictive Engine; ignored." ) end
+                                            elseif entry.Ability == 'pool_resource' then
+                                                if entry.PoolForNext then
+                                                    -- Pooling for the next entry in the list.
+                                                    local next_entry  = list.Actions[ actID + 1 ]
+                                                    local next_action = next_entry and next_entry.Ability
+                                                    local next_id     = next_action and class.abilities[ next_action ] and class.abilities[ next_action ].id
+
+                                                    local extra_amt   = max( state.args.extra_amount or 0, entry.PoolExtra or 0 )
+
+                                                    local next_known  = next_action and isKnown( next_action )
+                                                    local next_usable = next_action and isUsable( next_action )
+                                                    local next_cost   = next_action and state.action[ next_action ].cost or 0
+                                                    local next_res    = next_action and ns.resourceType( next_action ) or class.primaryResource
+
+                                                    if not next_entry then
+                                                        if debug then self:Debug( "Attempted to Pool Resources for non-existent next entry in the APL.  Skipping." ) end
+                                                    elseif not next_action or not next_id or next_id < 0 then
+                                                        if debug then self:Debug( "Attempted to Pool Resources for invalid next entry in the APL.  Skipping." ) end
+                                                    elseif not next_known then
+                                                        if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not known.  Skipping.", next_action ) end
+                                                    elseif not next_usable then
+                                                        if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable.  Skipping.", next_action ) end                                               
+                                                    else
+                                                        local next_wait = max( timeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
+
+                                                        if next_wait <= 0 then
+                                                            if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
+                                                        elseif next_wait >= time_ceiling - state.now - state.offset then
+                                                            if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we would exceed our time ceiling in %.2fs.  Skipping.", next_action, next_wait ) end
+                                                        elseif next_wait >= 10 then
+                                                            if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we'd have to wait much too long ( %.2f ).  Skipping.", next_action, next_wait ) end
+                                                        else
+                                                            -- Pad the wait value slightly, to make sure the resource is actually generated.
+                                                            next_wait = next_wait + 0.01
+                                                            state.offset = state.offset + next_wait
+
+                                                            aScriptPass = not next_entry.Script or next_entry.Script == '' or checkScript( 'A', listID .. ':' .. ( actID + 1 ) )
+
+                                                            if not aScriptPass then
+                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but its conditions would not be met.  Skipping.", next_action ) end
+                                                                state.offset = state.offset - next_wait
+                                                            else
+                                                                if debug then self:Debug( "Pooling Resources for Next Entry ( %s ), delaying by %.2f ( extra %d ).", next_action, next_wait, extra_amt ) end
+                                                                -- print( "pooling for", next_action )
+                                                                state.offset = state.offset - next_wait
+                                                                state.advance( next_wait )
+                                                            end
+                                                        end
+                                                    end
+
+                                                else
+                                                    -- Pooling for a Wait Value.
+                                                    -- NYI.
+                                                    if debug then self:Debug( "Pooling for a specified period of time is not supported yet.  Skipping." ) end
                                                 end
+
+                                                --[[ if entry.PoolForNext or state.args.for_next == 1 then
+                                                    if debug then self:Debug( "Pool Resource is not used in the Predictive Engine; ignored." ) end
+                                                end ]]
 
                                             else
                                                 slot.scriptType = entry.ScriptType or 'simc'
@@ -804,7 +858,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                 chosen_clash = clash
 
                                                 if debug then
-                                                    self:Debug( "731 Action Chosen: %s at %f!", chosen_action, state.delay )
+                                                    self:Debug( "868 Action Chosen: %s at %f!", chosen_action, state.delay )
                                                 end
 
                                                 if entry.CycleTargets and state.active_enemies > 1 and ability and ability.cycle then
@@ -1074,7 +1128,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                                             end
                                         end
                                         
-                                    elseif entry.Ability == 'pool_resource' then                                                
+                                    elseif entry.Ability == 'pool_resource' then
                                         if entry.PoolForNext then
                                             -- Pooling for the next entry in the list.
                                             local next_entry  = list.Actions[ actID + 1 ]
@@ -1212,7 +1266,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                                         chosen_clash = clash
 
                                         if debug then
-                                            self:Debug( "1982 Action Chosen: %s at %f!", chosen_action, state.offset )
+                                            self:Debug( "1276 Action Chosen: %s at %f!", chosen_action, state.offset )
                                         end
 
                                         if entry.CycleTargets and state.active_enemies > 1 and ability and ability.cycle then
