@@ -526,7 +526,10 @@ local function addResource( resource, power_type )
 
     class.resources[ resource ] = power_type
 
-    if not primarySet then class.primaryResource = resource end
+    if not primarySet then
+        class.primaryResource = resource
+        primarySet = true
+    end
 
     state[ resource ] = rawget( state, resource ) or setmetatable( {
         resource = key,
@@ -537,6 +540,10 @@ local function addResource( resource, power_type )
         last_tick = 0
     }, mt_resource )
     state[ resource ].regenerates = not no_regen
+
+    state[ resource ].time_to = function( amount )
+        return ns.timeToResource( state[ resource ], amount )
+    end
 
     ns.commitKey( resource )
 
@@ -549,7 +556,10 @@ local function removeResource( resource )
     class.resources[ resource ] = nil
     -- class.regenModel = nil
 
-    if class.primaryResource == resource then class.primaryResource = nil end
+    if class.primaryResource == resource then
+        class.primaryResource = nil
+        primarySet = false
+    end
 
 end
 ns.removeResource = removeResource
@@ -558,6 +568,7 @@ ns.removeResource = removeResource
 local function setPrimaryResource( resource )
 
     class.primaryResource = resource
+    primarySet = true
 
 end
 ns.setPrimaryResource = setPrimaryResource

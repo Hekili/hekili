@@ -2210,11 +2210,66 @@ local mt_prev = {
 ns.metatables.mt_prev = mt_prev
 
 
-
 local resource_meta_functions = {}
 
 function ns.addResourceMetaFunction( name, f )
     resource_meta_functions[ name ] = f
+end
+
+
+function ns.timeToResource( t, amount )
+
+    if not amount or amount > t.max then return 3600
+    elseif t.current >= amount then return 0 end
+
+    if t.forecast and t.fcount > 0 then
+        local q = state.query_time
+        local index, slice
+
+        if t.times[ amount ] then return t.times[ amount ] - q end
+
+        if t.regen == 0 then
+            for i = 1, t.fcount do
+                local v = t.forecast[ i ]
+                if v.v >= amount then
+                    t.times[ amount ] = v.t
+                    return max( 0, t.times[ amount ] - q )
+                end
+            end
+            t.times[ amount ] = q + 3600
+            return max( 0, t.times[ amount ] - q )
+        end
+
+        for i = 1, t.fcount do
+            local slice = t.forecast[ i ]
+            local after = t.forecast[ i + 1 ]
+            
+            if slice.v >= amount then
+                t.times[ amount ] = slice.t
+                return max( 0, t.times[ amount ] - q )
+
+            elseif after and after.v >= amount then
+                -- Our next slice will have enough resources.  Check to see if we'd regen enough in-between.
+                local time_diff = after.t - slice.t
+                local deficit = amount - slice.v
+                local regen_time = deficit / t.regen
+
+                if regen_time < time_diff then
+                    t.times[ amount ] = ( slice.t + regen_time )
+                else
+                    t.times[ amount ] = after.t
+                end
+                return max( 0, t.times[ amount ] - q )
+            end
+        end
+        t.times[ amount ] = q + 3600
+        return max( 0, t.times[ amount ] - q )
+    end
+
+    -- This wasn't a modeled resource,, just look at regen time.
+    if t.regen <= 0 then return 3600 end
+    return max( 0, ( amount - t.current ) / t.regen )
+
 end
 
 
@@ -2274,63 +2329,15 @@ local mt_resource = {
             return t.max -- need to accommodate buffs that increase mana, etc.
             
         elseif k == 'time_to_max' then
-            return t[ 'time_to_' .. t.max ]
-
+            return ns.timeToResource( t, t.max )
             
         elseif k:sub(1, 8) == 'time_to_' then
             local amount = k:sub(9)
             amount = tonumber(amount)
 
-            if not amount or amount > t.max then return 3600
-            elseif t.current >= amount then return 0 end
+            if not amount then return 3600 end
 
-            if t.forecast and t.fcount > 0 then
-                local q = state.query_time
-                local index, slice
-
-                if t.times[ amount ] then return t.times[ amount ] - q end
-
-                if t.regen == 0 then
-                    for i = 1, t.fcount do
-                        local v = t.forecast[ i ]
-                        if v.v >= amount then
-                            t.times[ amount ] = v.t
-                            return max( 0, t.times[ amount ] - q )
-                        end
-                    end
-                    t.times[ amount ] = q + 3600
-                    return max( 0, t.times[ amount ] - q )
-                end
-
-                for i = 1, t.fcount do
-                    local slice = t.forecast[ i ]
-                    local after = t.forecast[ i + 1 ]
-                    
-                    if slice.v >= amount then
-                        t.times[ amount ] = slice.t
-                        return max( 0, t.times[ amount ] - q )
-
-                    elseif after and after.v >= amount then
-                        -- Our next slice will have enough resources.  Check to see if we'd regen enough in-between.
-                        local time_diff = after.t - slice.t
-                        local deficit = amount - slice.v
-                        local regen_time = deficit / t.regen
-
-                        if regen_time < time_diff then
-                            t.times[ amount ] = ( slice.t + regen_time )
-                        else
-                            t.times[ amount ] = after.t
-                        end
-                        return max( 0, t.times[ amount ] - q )
-                    end
-                end
-                t.times[ amount ] = q + 3600
-                return max( 0, t.times[ amount ] - q )
-            end
-
-            -- This wasn't a modeled resource,, just look at regen time.
-            if t.regen <= 0 then return 3600 end
-            return max( 0, ( amount - t.current ) / t.regen )
+            return ns.timeToResource( t, amount )
 
         elseif k == 'regen' then
             return t.active_regen

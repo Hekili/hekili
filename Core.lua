@@ -785,7 +785,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                     local next_known  = next_action and isKnown( next_action )
                                                     local next_usable = next_action and isUsable( next_action )
                                                     local next_cost   = next_action and state.action[ next_action ].cost or 0
-                                                    local next_res    = next_action and ns.resourceType( next_action ) or class.primaryResource
+                                                    local next_res    = next_action and ns.resourceType( next_action ) or class.primaryResource                                                    
 
                                                     if not next_entry then
                                                         if debug then self:Debug( "Attempted to Pool Resources for non-existent next entry in the APL.  Skipping." ) end
@@ -800,7 +800,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
 
                                                         if next_wait <= 0 then
                                                             if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
-                                                        elseif next_wait >= time_ceiling - state.now - state.offset then
+                                                        elseif time_ceiling and next_wait >= time_ceiling - state.now - state.offset then
                                                             if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we would exceed our time ceiling in %.2fs.  Skipping.", next_action, next_wait ) end
                                                         elseif next_wait >= 10 then
                                                             if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we'd have to wait much too long ( %.2f ).  Skipping.", next_action, next_wait ) end
@@ -1151,7 +1151,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
 
                                                 if next_wait <= 0 then
                                                     if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
-                                                elseif next_wait >= time_ceiling - state.now - state.offset then
+                                                elseif time_ceiling and next_wait >= time_ceiling - state.now - state.offset then
                                                     if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we would exceed our time ceiling in %.2fs.  Skipping.", next_action, next_wait ) end
                                                 elseif next_wait >= 10 then
                                                     if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we'd have to wait much too long ( %.2f ).  Skipping.", next_action, next_wait ) end
