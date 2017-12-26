@@ -316,7 +316,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         end )
 
         addMetaFunction( "state", "finality", function ()
-            return false
+            return debuff.nightblade.pmultiplier > 1
         end )
 
         addMetaFunction( 'state', 'gcd', function()
@@ -327,13 +327,15 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
         addHook( "reset_precast", function ()
             if state.buff.vanish.up then state.applyBuff( "stealth", 3600 ) end
-
             emu_stealth_change = 0
+
             if state.talent.master_of_subtlety.enabled and not state.stealthed.rogue then
                 if state.now - true_stealth_change < 5 then
                     applyBuff( "master_of_subtlety", state.now - true_stealth_change )
                 end
             end
+
+            state.debuff.nightblade.pmultiplier = nil
         end )
 
 
@@ -460,6 +462,24 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
         addGearSet( "fangs_of_the_devourer", 128476 )
         setArtifact( "fangs_of_the_devourer" )
+
+
+        local function calculate_multiplier( spellID )
+            if spellID == class.abilities.nightblade.id and UnitBuff( "player", class.auras.finality_nightblade.name, nil, "PLAYER" ) then return 2 end
+            return 1
+        end
+
+
+        RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
+            if sourceGUID == state.GUID then
+                if subtype == "SPELL_AURA_APPLIED" then
+                    if spellID == class.auras.nightblade.id and ( subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' ) then
+                        ns.saveDebuffModifier( spellID, UnitBuff( "player", class.auras.finality_nightblade.name, nil, "PLAYER" ) and 2 or 1 )
+                        ns.trackDebuff( spellID, destGUID, GetTime(), true )
+                    end
+                end
+            end
+        end )  
 
 
         addSetting( 'shadow_dance_energy', 90, {
@@ -864,12 +884,18 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
             gainChargeTime( "shadow_dance", cost * ( 1.5 + ( talent.enveloping_shadows.enabled and 1 or 0 ) ) )
 
+            applyDebuff( "target", "nightblade", 6 + ( cost * 2 ) )
+
             if artifact.finality.enabled then
-                if buff.finality_nightblade.up then removeBuff( "finality_nightblade" )
-                else applyBuff( "finality_nightblade" ) end
+                if buff.finality_nightblade.up then
+                    debuff.nightblade.pmultiplier = 2
+                    removeBuff( "finality_nightblade" )
+                else
+                    debuff.nightblade.pmultiplier = 1
+                    applyBuff( "finality_nightblade" )
+                end
             end
 
-            applyDebuff( "target", "nightblade", 6 + ( cost * 2 ) )
         end )
 
 
