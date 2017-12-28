@@ -588,7 +588,7 @@ local function addStack( aura, duration, stacks, value )
     
     local max_stack = ( class.auras[ aura ] and class.auras[ aura ].max_stack ) and class.auras[ aura ].max_stack or 1
     
-    if state.buff[ aura ].up then
+    if state.buff[ aura ].remains > 0 then
         applyBuff( aura, duration, min( max_stack, state.buff[ aura ].count + stacks ), value )
     else
         applyBuff( aura, duration, min( max_stack, stacks ), value )

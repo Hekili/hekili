@@ -183,7 +183,9 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         addAura( "crimson_vial", 185311, "duration", 6 )
         addAura( "death_from_above", 152150, "duration", 1 )
         addAura( "deepening_shadows", 185314 )
+        addAura( "embrace_of_darkness", 197603, "duration", 10 )
         addAura( "evasion", 5277, "duration", 10 )
+        addAura( "feeding_frenzy", 242705, "duration", 30, "max_stack", 3 )
         addAura( "feint", 1966, "duration", 5 )
         addAura( "finality_eviscerate", 197496, "duration", 30 )
         addAura( "finality_nightblade", 197498, "duration", 30 )
@@ -200,6 +202,10 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         addAura( "relentless_strikes", 58423 )
         addAura( "sap", 6770, "duration", 60 )
         addAura( "shadow_blades", 121471, "duration", 15 )
+            modifyAura( "shadow_blades", "duration", function( x )
+                return x + ( artifact.soul_shadows.rank * 3.334 )
+            end )
+
         addAura( "shadow_dance", 185422, "duration", 4 )
             modifyAura( "shadow_dance", "duration", function( x )
                 return x + ( talent.subterfuge.enabled and 1 or 0 )
@@ -263,9 +269,16 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
                 if subtype:sub( 1, 5 ) == 'SWING' and not multistrike then
                     if subtype == 'SWING_MISSED' then
                         offhand = spellName
-                    else
+                    end
+
+                    local now = GetTime()
+
+                    if now > last_shadow_techniques + 3 then
                         swings_since_sht = swings_since_sht + 1
                     end
+
+                    if offhand then last_mh = GetTime()
+                    else last_mh = GetTime() end
                 end
             end
         end )
@@ -282,27 +295,39 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
                 if n <= swings_since_sht then return 0 end
 
                 local mh_speed = state.swings.mainhand_speed
-                
-                local time_since_mh = state.query_time - last_mh
-                local mh_next = state.swings.mainhand + mh_speed
+                local mh_next = ( state.swings.mainhand > state.now - 3 ) and ( state.swings.mainhand + mh_speed ) or state.now + ( mh_speed * 0.5 )
 
-                local oh_speed = state.swings.offhand_speed
-                
-                local time_since_oh = state.query_time - last_oh
-                local oh_next = state.swings.offhand + oh_speed
+                local oh_speed = state.swings.offhand_speed               
+                local oh_next = ( state.swings.offhand > state.now - 3 ) and ( state.swings.offhand + oh_speed ) or state.now
 
                 table.wipe( sht )
 
                 sht[1] = mh_next + ( 1 * mh_speed )
                 sht[2] = mh_next + ( 2 * mh_speed )
                 sht[3] = mh_next + ( 3 * mh_speed )
-                sht[4] = oh_next + ( 1 * oh_speed )
-                sht[5] = oh_next + ( 2 * oh_speed )
-                sht[6] = oh_next + ( 3 * oh_speed )
+                sht[4] = mh_next + ( 4 * mh_speed )
+                sht[5] = oh_next + ( 1 * oh_speed )
+                sht[6] = oh_next + ( 2 * oh_speed )
+                sht[7] = oh_next + ( 3 * oh_speed )
+                sht[8] = oh_next + ( 4 * oh_speed )
 
-                table.sort( sht )
 
-                return max( 0, sht[ n - swings_since_sht ] - state.query_time )
+                local i = 1
+
+                while( sht[i] ) do
+                    if sht[i] < last_shadow_techniques + 3 then
+                        table.remove( sht, i )
+                    else
+                        i = i + 1
+                    end
+                end
+
+                if #sht > 0 and n - swings_since_sht < #sht then
+                    table.sort( sht )
+                    return max( 0, sht[ n - swings_since_sht ] - state.query_time )
+                else
+                    return 3600
+                end
             end
         } )
 
@@ -575,7 +600,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             id = 31224,
             spend = 0,
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 90,
             min_range = 0,
             max_range = 0,
@@ -596,7 +621,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             min_cost = 30,
             spend_type = "energy",
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 30,
             min_range = 0,
             max_range = 0,
@@ -632,9 +657,15 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             usable = function () return combo_points.current > 0 end,            
         } )
 
-        addHandler( "death_from_above", function ()
+        modifyAbility( "death_from_above", "spend", function( x )
+            if buff.feeding_frenzy.up then return 0 end
+            return x
+        end )
+
+        addHandler( "death_from_above", function ()            
             local cost = min( 5 + ( talent.deeper_stratagem.enabled and 1 or 0 ), combo_points.current )
             spend( cost, "combo_points" )
+            removeStack( "feeding_frenzy" )
             gainChargeTime( "shadow_dance", cost * ( 1.5 + ( talent.enveloping_shadows.enabled and 1 or 0 ) ) )
             applyBuff( "death_from_above" )
         end )
@@ -668,7 +699,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             id = 5277,
             spend = 0,
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 120,
             min_range = 0,
             max_range = 0,
@@ -697,6 +728,9 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         } )
 
         modifyAbility( "eviscerate", "spend", function( x )
+            if buff.feeding_frenzy.up then
+                return 0
+            end
             if talent.shadow_focus.enabled and stealth.rogue then
                 return x * 0.75
             end
@@ -711,6 +745,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
                 if buff.finality_eviscerate.up then removeBuff( "finality_eviscerate" )
                 else removeBuff( "finality_eviscerate" ) end
             end
+            removeStack( "feeding_frenzy" )
             removeBuff( "shuriken_combo" )
         end )
 
@@ -790,6 +825,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
         addHandler( "goremaws_bite", function ()
             applyBuff( "goremaws_bite" )
+            if artifact.feeding_frenzy.enabled then applyBuff( "feeding_frenzy", 30, 3 ) end
         end )
 
 
@@ -828,6 +864,11 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             usable = function () return stealthed.all and combo_points.current > 0 end,
         } )
 
+        modifyAbility( "kidney_shot", "spend", function( x )
+            if buff.feeding_frenzy.up then return 0 end
+            return x
+        end )        
+
         addHandler( "kidney_shot", function ()
             local cost = min( 5 + ( talent.deeper_stratagem.enabled and 1 or 0 ), combo_points.current )
             spend( cost, "combo_points" )
@@ -843,7 +884,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             spend = -5,
             spend_type = "combo_points",
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             talent = "marked_for_death",
             cooldown = 60,
             min_range = 0,
@@ -877,6 +918,11 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             aura = 'nightblade',
             usable = function () return combo_points.current > 0 end,
         } )
+
+        modifyAbility( "nightblade", "spend", function( x )
+            if buff.feeding_frenzy.up then return 0 end
+            return x
+        end )
 
         addHandler( "nightblade", function ()
             local cost = min( 5 + ( talent.deeper_stratagem.enabled and 1 or 0 ), combo_points.current )
@@ -965,7 +1011,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             id = 121471,
             spend = 0,
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 180,
             min_range = 0,
             max_range = 0,
@@ -1003,6 +1049,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
         addHandler( "shadow_dance", function ()
             applyBuff( "shadow_dance", 4 )
+            if artifact.embrace_of_darkness.enabled then applyBuff( "embrace_of_darkness" ) end
         end )
 
 
@@ -1121,10 +1168,15 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             spend = 0,
             cast = 0,
             gcdType = "spell",
-            cooldown = 120,
+            cooldown = 60,
             min_range = 0,
             max_range = 0,
         } )
+
+        modifyAbility( "sprint", "cooldown", function( x )
+            if artifact.flickering_shadows.enabled then return x - 10 end
+            return x
+        end )
 
         addHandler( "sprint", function ()
             applyBuff( "sprint", 8 )
@@ -1155,6 +1207,8 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         addHandler( "stealth", function ()
             applyBuff( "stealth" )
             emu_stealth_change = query_time
+
+            if artifact.embrace_of_darkness.enabled then applyBuff( "embrace_of_darkness" ) end
         end )
 
 
@@ -1166,7 +1220,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             spend = -40,
             spend_type = "energy",
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 30,
             charges = 1,
             recharge = 30,
@@ -1215,9 +1269,15 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             usable = function () return boss end,
         } )
 
+        modifyAbility( "vanish", "cooldown", function( x )
+            if artifact.flickering_shadows.enabled then return x - 30 end
+            return x
+        end )
+
         addHandler( "vanish", function ()
             applyBuff( "vanish" )
             applyBuff( "stealth" )
+            if artifact.embrace_of_darkness.enabled then applyBuff( "embrace_of_darkness" ) end
             emu_stealth_change = query_time
         end )
 

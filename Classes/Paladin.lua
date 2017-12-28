@@ -418,7 +418,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             addAura( 'sacred_judgment', 246973, 'duration', 8 )
 
         addGearSet( 'tier21', 152151, 152153, 152149, 152148, 152150, 152152 )
-            addAura( 't21_4pc_sacred_judgment', 253806, 'duration', 15 )
+            addAura( 'hidden_retribution_t21_4p', 253806, 'duration', 15 )
 
         addGearSet( 'class', 139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697 )
         
@@ -676,7 +676,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
         modifyAbility( 'blade_of_justice', 'spend', function( x )
-            return set_bonus.tier20_2pc == 1 and ( x - 1 ) or x
+            return set_bonus.tier20_4pc == 1 and ( x - 1 ) or x
         end )
 
         addHandler( 'blade_of_justice', function ()
@@ -1249,8 +1249,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             else
                 applyDebuff( 'target', 'judgment', 8 )
                 if talent.greater_judgment.enabled then active_dot.judgment = max( active_enemies, active_dot.judgment + 2 ) end
-                if set_bonus.tier20_4pc > 0 then applyBuff( 'sacred_judgment' ) end
-                if set_bonus.tier21_4pc > 0 then applyBuff( 't21_4pc_sacred_judgment', 15 ) end
+                if set_bonus.tier20_2pc > 0 then applyBuff( 'sacred_judgment' ) end
+                if set_bonus.tier21_4pc > 0 then applyBuff( 'hidden_retribution_t21_4p', 15 ) end
                 if talent.sacred_judgment.enabled then applyBuff( 'sacred_judgment' ) end
             end
         end )
