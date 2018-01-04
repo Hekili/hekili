@@ -161,7 +161,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addAura( 'healing_winds', 195380, 'duration', 6 )
         addAura( 'hidden_masters_forbidden_touch', 213112, 'duration', 3 )
         addAura( 'hit_combo', 196741, 'max_stack', 6, 'duration', 10 )
-        addAura( 'ironskin_brew', 115308, 'duration', 6 )
+        addAura( 'ironskin_brew', 215479, 'duration', 6 )
         addAura( 'keg_smash', 121253, 'duration', 15 )
         addAura( 'leg_sweep', 119381, 'duration', 5 )
         addAura( 'mark_of_the_crane', 228287, 'duration', 15 )

@@ -69,3 +69,6 @@ externals:
     Libs/LibCompress:
         url: svn://svn.wowace.com/wow/libcompress/mainline/trunk
         tag: latest
+    Libs/LibArtifactData-1.0:
+        url: https://github.com/Rainrider/LibArtifactData-1.0.git
+        tag: latest

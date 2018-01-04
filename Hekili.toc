@@ -2,9 +2,9 @@
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
-## Notes: Priority helper for Shamans, Paladins, Monks, and Hunters with support for in-game modifications.
+## Notes: Priority helper for many DPS and tanking specializations, based on SimulationCraft action lists.
 ## SavedVariables: HekiliDB
-## OptionalDeps: BrewmasterTools, Masque, SpellFlash, SpellFlashCore, WeakAuras
+## OptionalDeps: BrewmasterTools, Masque, SpellFlash, SpellFlashCore, WeakAuras, LibArtifactData-1.0
 
 embeds.xml
 

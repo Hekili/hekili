@@ -343,7 +343,7 @@ local artifactInitialized = false
 function ns.updateArtifact()
 
     local artifact = state.artifact
-    local AD = LibStub( "LibArtifactData-1.0h" )
+    local AD = LibStub( "LibArtifactData-1.0" )
 
     for k in pairs( artifact ) do
         artifact[ k ].rank = 0

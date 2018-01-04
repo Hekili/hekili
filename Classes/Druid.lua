@@ -357,9 +357,16 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         addAura( "jungle_stalker", 252071, "duration", 30 )
         addAura( "lightning_reflexes", 231065 )
         addAura( "mass_entanglement", 102359, "duration", 30 )
-        addAura( "moonkin_form", 197625 )
-        addAura( "moonfire", 155625, "duration", 16 )
-        addAura( "moonfire_cat", 164812, "duration", 16 )
+        addAura( "moonkin_form", 197625 )           
+
+        addAura( "moonfire_cat", 155625, "duration", 16 )
+        addAura( "moonfire", 164812, "duration", 16 )
+            modifyAura( "moonfire", "id", function( x )
+                if talent.lunar_inspiration.enabled and buff.cat_form.up then
+                    return 155625
+                end
+                return x
+            end )
         
         addAura( "omen_of_clarity", 16864, "duration", 15, 'max_stack', 1 )
             modifyAura( "omen_of_clarity", "max_stack", function( x )
@@ -1232,11 +1239,9 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             max_range = 40,
             aura = 'moonfire',
             cycle = 'moonfire',
-            usable = function () return ( talent.lunar_inspiration.enabled and buff.cat_form.up ) or ( buff.cat_form.down and buff.bear_form.down ) end,
-            recheck = function () return dot.moonfire_cat.remains - dot.moonfire_cat.duration * 0.3, dot.moonfire_cat.remains end,
-        } )
-
-        class.abilities.moonfire_cat = class.abilities.moonfire
+            usable = function () return ( talent.lunar_inspiration.enabled and buff.cat_form.up ) or ( talent.galactic_guardian.enabled and buff.bear_form.up ) or ( buff.cat_form.down and buff.bear_form.down ) end,
+            recheck = function () return dot.moonfire.remains - dot.moonfire.duration * 0.3, dot.moonfire.remains end,
+        }, 155625 )
 
         modifyAbility( 'moonfire', 'aura', function ( x )
             if talent.lunar_inspiration.enabled then return "moonfire_cat" end
