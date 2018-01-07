@@ -661,7 +661,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         addAura( "breath_of_sindragosa", 152279, "duration", 3600, "friendly", true )
         addAura( "chilled_heart", 235592, "duration", 3600, "max_stack", 20 )
         addAura( "dark_command", 56222, "duration", 3 )
-        addAura( "dark_succor", 178819 )
+        addAura( "dark_succor", 101568, "duration", 20 )
         addAura( "death_and_decay", 188290, "duration", 10 )
         addAura( "defile", 156004, "duration", 10 )
         addAura( "defile_buff", 218100, "duration", 5, "max_stack", 10 )

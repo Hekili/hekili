@@ -357,7 +357,7 @@ local function addAbility( key, values, ... )
 
     storeAbilityElements( key, values )
     
-    if not values.item or not values.recheck_name then
+    if not values.hidden and ( not values.item or not values.recheck_name ) then
         class.searchAbilities[ key ] = "|T" .. ( values.texture or GetSpellTexture( values.id ) or 'Interface\\ICONS\\Spell_Nature_BloodLust' ) .. ":0|t " .. name
         if values.suffix then class.searchAbilities[ key ] = class.searchAbilities[ key ] .. " " .. values.suffix end
     end
@@ -808,7 +808,8 @@ addAura( 'multistrike', -8, 'duration', 3600 )
 addAura( 'versatility', -9, 'duration', 3600 )
 
 
-addAura( 'casting', -10, 'feign', function()
+addAura( 'casting', -10 )
+--[[ , 'feign', function()
     if target.casting then
         debuff.casting.count = 1
         debuff.casting.expires = target.cast_end
@@ -821,10 +822,12 @@ addAura( 'casting', -10, 'feign', function()
     debuff.casting.expires = 0
     debuff.casting.applied = 0
     debuff.casting.caster = 'unknown'
-end )
+end ) ]]
 
 
-addAura( 'unknown_buff', -11 )
+addAura( "player_casting", -11, "duration", 3 )
+
+addAura( 'unknown_buff', -15 )
 
 
 

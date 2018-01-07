@@ -406,7 +406,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addMetaFunction( 'state', 'judgment_override', function()
             if settings.use_latency then
-                return spec.retribution and ( debuff.judgment.remains > latency * 2 or ( not settings.strict_finishers and cooldown.judgment.remains > gcd * 2 and holy_power.current >= 4 ) )
+                return spec.retribution and ( debuff.judgment.remains > latency or ( not settings.strict_finishers and cooldown.judgment.remains > gcd * 2 and holy_power.current >= 4 ) )
             end
             return spec.retribution and ( debuff.judgment.up or ( not settings.strict_finishers and cooldown.judgment.remains > gcd * 2 and holy_power.current >= 4 ) )
         end )

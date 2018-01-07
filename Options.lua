@@ -3745,7 +3745,7 @@ ns.AbilitySettings = function ()
                     desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
                         "This can be helpful when an ability is very high priority and you want the addon to consider it a bit earlier than it would actually be ready.",
                     width = "full",
-                    min = 0,
+                    min = -1.5,
                     max = 1.5,
                     step = 0.05,
                     order = 3
@@ -4757,9 +4757,22 @@ function Hekili:GetOptions()
                     },
                     ['Description'] = {
                         type = 'description',
-                        name = "\n|cFF00CCFFTHANK YOU TO ALL PATRONS SUPPORTING THIS ADDON'S DEVELOPMENT!|r\n" ..
-                            "Belatar, Borelia, Bsirk, ODB, Dane, ralask, Корнишон, belashar, Ingrathis, Issamonk, Jingy - Rekya, ninjask92, Theda99, Tic[à]sentence, and Wargus (Shagus).\n\n" ..
-                            "Please see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n",
+                        name = function ()
+                            local output = "\n|cFF00CCFFTHANK YOU TO ALL PATRONS SUPPORTING THIS ADDON'S DEVELOPMENT!|r\n\n"
+
+                            for i, name in ipairs( ns.Patrons ) do
+                                if i == 1 then
+                                    output = output .. name
+                                elseif i == #ns.Patrons then
+                                    output = output .. ", and " .. name .. "."
+                                else
+                                    output = output .. ", " .. name
+                                end
+                            end
+                            
+                            output = output .. "\n\nPlease see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n"
+                            return output
+                        end,
                         fontSize = "medium",
                         width = "full",
                         order = 4
@@ -7978,17 +7991,25 @@ function Hekili:TogglePause( ... )
     
     if not self.Pause then
         self.Pause = true
-
         Hekili.ActiveDebug = true
 
-        for i = 1, #Hekili.DB.profile.displays do
-            Hekili:ProcessHooks( i )
+        local numDisplays = #Hekili.DB.profile.displays
+
+        for i = 1, numDisplays do
+            if ns.visible.display[ i ] then
+                local dScriptPass = Hekili:CheckDisplayCriteria( i ) or 0
+                
+                if ( dScriptPass > 0 ) then
+                    Hekili:ProcessHooks( i )
+                end
+            end
         end
 
-        Hekili.ActiveDebug = false
-        Hekili:UpdateDisplays()
         Hekili:SaveDebugSnapshot()
         Hekili:Print( "Snapshot saved." )
+        Hekili.ActiveDebug = false
+
+        Hekili:UpdateDisplays()
 
         if not warnOnce then
             Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )

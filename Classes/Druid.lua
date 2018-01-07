@@ -935,7 +935,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             if buff.apex_predator.down then spend( min( 5, combo_points.current ), "combo_points" ) end
             removeBuff( 'apex_predator' )
             removeStack( "bloodtalons" )
-            if ( target.health_pct < 25 or talent.sabertooth.enabled ) and debuff.rip.up then debuff.rip.expires = min( debuff.rip.duration * 1.3, query_time + debuff.rip.duration ) end
+            if ( target.health_pct < 25 or talent.sabertooth.enabled ) and debuff.rip.up then debuff.rip.expires = query_time + min( debuff.rip.remains + debuff.rip.duration, debuff.rip.duration * 1.3 ) end
         end )
 
 

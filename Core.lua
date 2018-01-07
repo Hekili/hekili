@@ -465,6 +465,8 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
     local chosen_clash = clash or 0
     local chosen_wait = wait or 60
     local chosen_depth = depth or 0
+
+    local force_channel = false
     
     local stop = false
 
@@ -709,11 +711,13 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                 local base_delay = state.delay
 
                                                 for i, step in pairs( state.recheckTimes ) do
+                                                    local new_wait = base_delay + step
 
-                                                    if debug then self:Debug( "%d at %.2f", i, step ) end
-
-                                                    if chosenWaitValue <= base_delay + step then
-                                                        if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f < %.2f ).", i, chosenWaitValue, base_delay + step ) end
+                                                    if new_wait >= 7.5 then
+                                                        if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 7.5s ).", i, new_wait ) end
+                                                        break
+                                                    elseif chosenWaitValue <= base_delay + step then
+                                                        if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f < %.2f ).", i, chosenWaitValue, new_wait ) end
                                                         break
                                                     end
 
@@ -731,7 +735,46 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                 end
                                             end
                                         end
-                                        
+
+                                        force_channel = false
+
+                                        if aScriptPass and state.channel == entry.Ability and state.player.channelEnd > state.query_time then
+                                            if debug then self:Debug( "This entry is a channeled spell and it is currently being channeled." ) end
+
+                                            -- A higher priority ability is ready by the end of the channel.  Go back to that.
+
+                                            if chosenWaitValue <= state.delay then
+                                                if debug then self:Debug( "We have a valid recommendation (%s) before the end of the current channel ( %.2f <= %.2f ).  Use that instead.", chosen_action, chosenWaitValue, state.player.channelEnd - ( state.offset + state.now ) ) end
+                                                break
+                                            end
+
+                                            local step = state.player.channelEnd - state.query_time
+
+                                            if step <= 0 then
+                                                if debug then self:Debug( "This recommendation falls within the channel refresh period and will be used as-is." ) end
+                                            elseif state.delay + step >= chosenWaitValue then
+                                                if chosen_action then
+                                                    if debug then self:Debug( "Delaying by %.2f to the appropriate refresh-time ( %.2f ) would take too long ( > %.2f ).  Using last recommendation.", step, state.delay + step, chosenWaitValue ) end
+                                                    break
+                                                end
+                                            else
+                                                if debug then self:Debug( "Advancing +%.2f to reach the refresh channel window for %s.", step, entry.Ability ) end
+                                                state.delay = state.delay + step
+
+                                                if self:CheckAPLStack() then
+                                                    aScriptPass = checkScript( "A", scriptID )
+                                                    if debug then self:Debug( "Rechannel check at ( +%.2f ) %s: %s", state.delay, aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
+                                                    force_channel = aScriptPass
+                                                else
+                                                    if debug then self:Debug( "Unable to rechannel check at +%.2f as APL conditions would not pass.", state.delay ) end
+                                                end
+
+                                                if not aScriptPass then
+                                                    state.delay = state.delay - step
+                                                end
+                                            end
+                                        end
+
                                         if aScriptPass then
                                             if entry.Ability == 'potion' then
                                                 local potionName = state.args.ModName or state.args.name or class.potion
@@ -816,7 +859,6 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                                 state.offset = state.offset - next_wait
                                                             else
                                                                 if debug then self:Debug( "Pooling Resources for Next Entry ( %s ), delaying by %.2f ( extra %d ).", next_action, next_wait, extra_amt ) end
-                                                                -- print( "pooling for", next_action )
                                                                 state.offset = state.offset - next_wait
                                                                 state.advance( next_wait )
                                                             end
@@ -872,7 +914,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                 end
                             end
                             
-                            if chosen_wait == 0 then break end
+                            if chosen_wait == 0 or force_channel then break end
 
                         end
                     end
@@ -1637,7 +1679,7 @@ function Hekili:ProcessHooks( dispID, solo )
             end                            
             
             if i < display.numIcons then
-                
+
                 -- Advance through the wait time.
                 if state.delay > 0 then state.advance( state.delay ) end
 
@@ -1647,6 +1689,8 @@ function Hekili:ProcessHooks( dispID, solo )
                 if action.gcdType ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
                     state.setCooldown( 'global_cooldown', state.gcd )
                 end
+
+                state.stopChanneling()
                 
                 -- Advance the clock by cast_time.
                 if action.cast > 0 and not action.channeled and not class.resetCastExclusions[ chosen_action ] then
@@ -1675,7 +1719,7 @@ function Hekili:ProcessHooks( dispID, solo )
                 end
 
                 -- Complete the channel.
-                if action.cast > 0 and action.channeled and not class.resetCastExclusions[ chosen_action ] then
+                if action.cast > 0 and action.channeled and not action.breakable then -- class.resetCastExclusions[ chosen_action ] then
                     state.advance( action.cast )
                 end
                 
@@ -1947,12 +1991,13 @@ function Hekili:UpdateDisplay( dispID )
                         flashes[dispID] = GetTime()
                     end
                     
-                    local exact = Queue[i].exact_time or 0
+                    local exact = max( Queue[i].exact_time or 0, now )
                     local end_gcd = gcd_start + gcd_duration
                     local diff = abs( exact - end_gcd )
 
-                    if exact > now and diff >= 0.1 then
-                        local delay = exact - now
+
+                    if exact > now and diff >= 0.1 and exact > ( gcd_start + gcd_duration ) then
+                        local delay = max( 0, exact - now )
                         button.Delay:SetText( format( delay > 1 and "%d" or "%.1f", delay ) )
                     else
                         button.Delay:SetText( nil )

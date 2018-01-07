@@ -7,9 +7,42 @@ Hekili.Version = GetAddOnMetadata("Hekili", "Version");
 
 
 local format = string.format
+local upper  = string.upper
 
 
 ns.PTR = GetBuildInfo() ~= "7.3.2"
+
+
+ns.Patrons = {
+    "Bsirk",
+    "Dane",
+    "FatIrishMidget",
+    "Janko",
+    "Manni",
+    "Mojodisu",
+    "Rusah",
+    "djthomp",
+    "Nikô",
+    "Opie",
+    "Ovaldo",
+    "Wargus (Shagus)",
+    "Zeus",
+    "belashar",
+    "Belatar",
+    "Borelia",
+    "Grayscale",
+    "Ingrathis",
+    "Issamonk",
+    "Jingy - Rekya",
+    "kaernunnos",
+    "ninjask92",
+    "ODB",
+    "ralask",
+    "Theda99",
+    "Tic[à]sentence",
+    "Корнишон"
+}
+table.sort( ns.Patrons, function( a, b ) return upper( a ) < upper( b ) end  )
 
 
 function Hekili:Test()

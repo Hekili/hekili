@@ -47,7 +47,7 @@ state.active_dot = {}
 state.args = {}
 state.artifact = {}
 state.aura = {}
-state.buff = state.aura
+state.buff = {}
 state.auras = auras
 state.cooldown = {}
 state.item_cd = {}
@@ -68,7 +68,11 @@ state.player = {
     lastgcd = 'none',
     lastoffgcd = 'none',
     casttime = 0,
-    updated = true
+    updated = true,
+    channeling = false,
+    channel_start = 0,
+    channel_end = 0,
+    channel_spell = nil
 }
 state.prev = {
     meta = 'castsAll'
@@ -384,6 +388,7 @@ state.UnitBuff = UnitBuff
 state.UnitDebuff = UnitDebuff
 state.floor = math.floor
 state.abs = math.abs
+state.tinsert = table.insert
 
 state.boss = false
 state.combat = 0
@@ -646,10 +651,8 @@ end
 state.applyDebuff = applyDebuff
 
 
-local function removeDebuff( unit, aura )
-    
-    applyDebuff( unit, aura, 0 )
-    
+local function removeDebuff( unit, aura )    
+    applyDebuff( unit, aura, 0 )        
 end
 state.removeDebuff = removeDebuff
 
@@ -714,6 +717,39 @@ local function setDistance( minimum, maximum )
     state.target.maxR = maximum or minimum or 5
 end
 state.setDistance = setDistance
+
+
+-- For tracking if we are currently channeling.
+function state.channelSpell( name, start, duration )
+    if name then
+        local ability = class.abilities[ name ]
+
+        if ability then
+            state.player.channelSpell = name
+            state.player.channelStart = start or state.query_time
+            state.player.channelEnd   = state.player.channelStart + ( duration or ability.cast )
+        end
+    end
+end
+
+function state.stopChanneling( reset )
+
+    if not reset then
+        local spell = state.player.channelSpell
+        local ability = spell and class.abilities[ spell ]
+
+        if ability and ability.breakchannel then ability.breakchannel() end
+    end
+
+    state.player.channelSpell = nil
+    state.player.channelStart = 0
+    state.player.channelEnd   = 0
+end
+
+-- See mt_state for 'isChanneling'.
+
+
+
 
 
 -- Spell Targets, so I don't have to convert it in APLs any more.
@@ -784,7 +820,7 @@ local function forecastResources( resource )
                 ( not v.spec      or state.spec[ v.spec ] ) and
                 ( not v.equip     or state.equipped[ v.equip ] ) and 
                 ( not v.talent    or state.talent[ v.talent ].enabled ) and
-                ( not v.aura      or ( v.debuff and state.debuff[ v.aura ].up or state.buff[ v.aura ].up ) ) and
+                ( not v.aura      or state[ v.debuff and 'debuff' or 'buff' ][ v.aura ].remains > 0 ) and
                 ( not v.set_bonus or state.set_bonus[ v.set_bonus ] > 0 ) and
                 ( not v.setting   or state.settings[ v.setting ] ) then
 
@@ -795,13 +831,6 @@ local function forecastResources( resource )
 
                 v.next = l + i
                 v.name = k
-
-                --[[ if r.fcount == 0 then
-                    r.forecast[1] = r.forecast[1] or {}
-                    r.forecast[1].t = now
-                    r.forecast[1].v = r.actual
-                    r.fcount = 1
-                end ]]
 
                 if v.next >= 0 then
                     table.insert( events, v )
@@ -829,7 +858,7 @@ local function forecastResources( resource )
             now = e.next
             local bonus = r.regen * ( now - prev )
 
-            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state.buff[ e.aura ].expires < now ) then
+            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < now ) then
                 table.remove( events, 1 )
                
                 local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
@@ -891,6 +920,7 @@ local function forecastResources( resource )
         r.forecast[ idx ].v = min( r.max, val + ( v * r.regen ) )
         r.fcount = idx
     end
+
 end
 ns.forecastResources = forecastResources
 
@@ -1024,41 +1054,43 @@ ns.metatables.mt_false = mt_false
 -- Gives calculated values for some state options in order to emulate SimC syntax.
 local mt_state = {
     __index = function(t, k)
-        -- Handling these with metamethods allows us to emulate SimC syntax for the in-game editor.
-        -- It also means if we actually assign a value, the related metamethod gets nuked.
-        
+
         if metafunctions.state[ k ] then
             return metafunctions.state[ k ]()
             
+        -- First, any values that don't reference an ability or aura.
         elseif k == 'this_action' or k == 'current_action' then
-            -- We haven't tested an ability yet.
             return 'wait'
-            
+
         elseif k == 'delay' then
             return 0
+
+        elseif k == 'cycle' then
+            return false
+
+        elseif k == 'cast_start' then
+            return 0
+
+        elseif k == 'channeling' then
+            return t.player.channelSpell ~= nil and t.player.channelEnd > t.query_time
+
+        elseif k == 'channel' then
+            return t.channeling and t.player.channelSpell or nil
             
         elseif k == 'ranged' then
             return false
             
         elseif k == 'wait_for_gcd' then 
-            -- For specs that have to weave a lot off off GCD stuff.
+            -- For specs that have to weave a lot of off GCD stuff.
             -- i.e., Frost DK.
             return false
 
         elseif k == 'query_time' then
             return t.now + t.offset + t.delay
             
-        elseif k == 'time' then
-            -- Calculate time in combat.
-            if t.combat == 0 and t.false_start == 0 then
-                if t.this_action and class.abilities[ t.this_action ] and class.abilities[ t.this_action ].passive then return 0 end
-                return t.offset
-            end
-            return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) + ( ( t.combat > 0 or t.false_start ) and t.delay or 0 )
-            
         elseif k == 'time_to_die' then
             -- Harvest TTD calculation from Hekili.
-            return ns.getTTD( 'target' ) - ( t.offset + t.delay )
+            return max( 1, ns.getTTD( 'target' ) - ( t.offset + t.delay ) )
             
         elseif k == 'moving' then
             return ( GetUnitSpeed('player') > 0 )
@@ -1114,74 +1146,6 @@ local mt_state = {
         elseif k == 'mastery_value' then
             return ( GetMastery() / 100 )
             
-            -- These are all action-related keywords, use 'this_action' to reference the relevant action.
-        elseif k == 'execute_time' then
-            return max( t.gcd, class.abilities[ t.this_action ].cast )
-            
-        elseif k == 'gcd' then
-            local gcdType = t.this_action and class.abilities[ t.this_action ] and class.abilities[ t.this_action ].gcdType or "spell"
-            if gcdType == 'totem' then return 1.0 end
-            return max( 0.75, 1.5 * t.haste )
-            
-        elseif k == 'cast_time' then
-            return ( class.abilities[ t.this_action ].cast )
-            
-        elseif k == 'cooldown' then return 0
-            
-        elseif k == 'duration' then
-            local a = class.abilities[ t.this_action ].aura or t.this_action
-
-            return ( class.auras[ a ].duration )
-            
-        elseif k == 'refreshable' then            
-            local a = class.abilities[ t.this_action ].aura or t.this_action
-
-            return t.dot[ a ].remains < 0.3 * class.auras[ a ].duration
-            
-        elseif k == 'ticking' then
-            local a = class.abilities[ t.this_action ].aura or t.this_action
-
-            if class.auras[ a ] then return ( t.dot[ a ].ticking ) or t.buff[ a ].up end
-            return false
-            
-        elseif k == 'ticks' then return 0
-            
-        elseif k == 'ticks_remain' then
-            local aura =  class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
-            local dot = class.auras[ aura ]
-
-            if not t.dot[ aura ].up or not dot or not dot.tick_time then return 0 end
-
-            return floor( t.dot[ aura ].remains / dot.tick_time )
-
-        elseif k == 'tick_time_remains' then
-            local aura =  class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
-            local dot = class.auras[ aura ]
-
-            if not t.dot[ aura ].up or not dot or not dot.tick_time then return 0 end
-            return dot.tick_time
-            
-        elseif k == 'remains' then
-            local aura =  class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
-            local dot = class.auras[ aura ]
-
-            return dot and t.dot[ aura ].remains or 0
-            
-        elseif k == 'tick_time' then
-            local aura = class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
-            local dot = class.auras[ aura ]
-
-            return t.dot[ aura ].up and class.auras[ aura ].tick_time or 0
-
-        elseif k == 'duration' then
-            local aura = class.abilities[ t.this_action ] and class.abilities[ t.this_action ].aura or t.this_action
-            local dot = class.auras[ aura ]
-
-            return dot and dot.duration or 0
-            
-        elseif k == 'travel_time' then 
-            return 0
-        
         elseif k == 'miss_react' then
             return false
             
@@ -1200,24 +1164,6 @@ local mt_state = {
             
         elseif k == 'aoe' then
             return t.toggle.mode == 2
-            
-        elseif k == 'charges' then
-            if class.abilities[ t.this_action ].charges then
-                return floor( t.cooldown[ t.this_action ].charges_fractional )
-            end
-            return 0
-            
-        elseif k == 'charges_fractional' then
-            return t.cooldown[ t.this_action ].charges_fractional
-            
-        elseif k == 'max_charges' then
-            return class.abilities[ t.this_action ].charges or 0
-            
-        elseif k == 'recharge' then
-            return t.cooldown[ t.this_action ].recharge
-            
-        elseif k == 'recharge_time' then
-            return t.cooldown[ t.this_action ].recharge_time
             
         elseif type(k) == 'string' and k:sub(1, 16) == 'incoming_damage_' then
             local remains = k:sub(17)
@@ -1259,34 +1205,128 @@ local mt_state = {
             table.insert( t.purge, k )
             return t.k
             
-        elseif k == 'last_judgment_target' then
-            return 'unknown'
+        end
+
+
+        -- The next block are values that reference an ability.
+        local action = t.this_action
+        local ability = class.abilities[ action ]
+
+        if k == 'time' then
+            -- Calculate time in combat.
+            if t.combat == 0 and t.false_start == 0 then
+                if ability and ability.passive then return 0 end
+                return t.offset
+            end
+            return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) + ( ( t.combat > 0 or t.false_start ) and t.delay or 0 )
+            
+            -- These are all action-related keywords, use 'this_action' to reference the relevant action.
+        elseif k == 'cast_time' then
+            return ability and ability.cast or 0
+            
+        elseif k == 'execute_time' then
+            return max( t.gcd, ability and ability.cast or 0 )
+            
+        elseif k == 'gcd' then
+            local gcdType = ability and ability.gcdType or "spell"
+
+            if gcdType == 'totem' then return 1.0 end
+            return max( 0.75, 1.5 * t.haste )
+            
+        elseif k == 'travel_time' then 
+            local v = ability.velocity or 0
+            if v > 0 then
+                return t.target.maxR / v
+            end
+            return 0
+        
+        elseif k == 'charges' then
+            return t.cooldown[ action ].charges
+            
+        elseif k == 'charges_fractional' then
+            return t.cooldown[ action ].charges_fractional
+            
+        elseif k == 'max_charges' then
+            return ability and ability.charges or 1
+            
+        elseif k == 'recharge' then
+            -- TODO: Recheck what value SimC would use for recharge if an ability doesn't have charges.
+            return t.cooldown[ action ].recharge
+            
+        elseif k == 'recharge_time' then
+            -- TODO: Recheck what value SimC would use for recharge if an ability doesn't have charges.
+            return t.cooldown[ action ].recharge_time
             
         elseif k == 'cast_regen' then
-            return max( t.gcd, class.abilities[ t.this_action ].cast ) * state[ class.primaryResource ].regen
+            return max( t.gcd, ability.cast or 0 ) * state[ ability.spend_type or class.primaryResource ].regen
             
-        elseif k == 't18_class_trinket' then
-            return t.set_bonus[k]
-
         elseif k == 'prowling' then
             return t.buff.prowl.up or ( t.buff.cat_form.up and t.buff.shadowform.up )
-            
-        else
-            -- Check if this is a resource table pre-init.
-            for i, key in pairs( class.resources ) do
-                if k == key then
-                    return nil
-                end
-            end
 
-            if t.variable[k] ~= nil then return t.variable[k] end
-            if t.settings[k] ~= nil then return t.settings[k] end
-            if t.toggle[k] ~= nil then return t.toggle[k] end
         end
+            
+
+        -- Buffs, debuffs...
+        local aura_name = ability.aura or t.this_action
+        local aura = class.auras[ aura_name ]
         
-        return -- error("UNK: " .. k )
+        local app = t.buff[ aura_name ].up and t.buff[ aura_name ] or t.debuff[ aura_name ]
+
+        if k == 'duration' then            
+            return aura and aura.duration or 30
+            
+        elseif k == 'refreshable' then
+            if app then return app.remains < 0.3 * app.duration end
+            return false
+            
+        elseif k == 'ticking' then
+            if app then return app.up end
+            return false
+            
+        elseif k == 'ticks' then
+            if app then return ( app.duration or 30 ) / ( app.tick_time or ( 3 * t.haste ) ) end
+            return 10
+            
+        elseif k == 'ticks_remain' then
+            if app then return ( app.remains / ( app.tick_time or ( 3 * t.haste ) ) ) end
+            return 0
+
+        elseif k == 'tick_time_remains' then
+            if app then return ( app.remains % ( app.tick_time or ( 3 * t.haste ) ) ) end
+            return 0
+            
+        elseif k == 'remains' then
+            if app then return app.remains end
+            return 0
+            
+        elseif k == 'tick_time' then
+            if app then return ( app.up and ( aura.tick_time or ( 3 * t.haste ) ) or 0 ) end
+            return 0
+
+        elseif k == 'duration' then
+            if app then return app.duration or 30 end
+            if aura then return aura.duration or 30 end
+            return 0
+
+        end
+
+
+        -- Check if this is a resource table pre-init.
+        for i, key in pairs( class.resources ) do
+            if k == key then
+                return nil
+            end
+        end
+
+
+        if t.variable[k] ~= nil then return t.variable[k] end
+        if t.settings[k] ~= nil then return t.settings[k] end
+        if t.toggle[k] ~= nil then return t.toggle[k] end
         
-        end, __newindex = function(t, k, v)
+        return k
+        
+    end,
+    __newindex = function(t, k, v)
         rawset(t, k, v)
     end
 }
@@ -1626,7 +1666,7 @@ local mt_target = {
             return UnitGUID( 'target' ) or 'unknown'
             
         elseif k == 'time_to_die' then
-            return max( 0, ( ns.getTTD( 'target' ) - ( state.offset + state.delay ) ) )
+            return max( 1, ns.getTTD( 'target' ) - ( state.offset + state.delay ) )
             
         elseif k == 'health_current' then
             return ( UnitHealth('target') > 0 and UnitHealth('target') or 50000 )
@@ -2371,14 +2411,24 @@ local default_buff_values = {
     unit = 'player'
 }
 
+
+function ns.addBuffMetaFunction( aura, key, func )
+    if not class.auras[ aura ] then return end
+    if not rawget( state.buff[ aura ], 'meta' ) then state.buff[ aura ].meta = {} end
+    state.buff[ aura ].meta[ key ] = setfenv( func, state )
+end
+
+
 -- Table of default handlers for auras (buffs, debuffs).
 local mt_default_buff = {
     __index = function(t, k)
-        if k == 'name' or k == 'count' or k == 'duration' or k == 'expires' or k == 'applied' or k == 'caster' or k == 'id' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then
-            
+        if rawget( t, 'meta' ) and t.meta[ k ] then
+            return t.meta[ k ]()
+
+        elseif k == 'name' or k == 'count' or k == 'duration' or k == 'expires' or k == 'applied' or k == 'caster' or k == 'id' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if class.auras[ t.key ].elem.feign then
                 class.auras[ t.key ].feign()
-                return t[k]
+                return t[ k ]
             end
             
             local real = auras.player.buff[ t.key ] or auras.target.buff[ t.key ]
@@ -2436,12 +2486,26 @@ local mt_default_buff = {
             
         elseif k == 'stack_pct' then
             if t.up then return ( 100 * t.count / t.max_stack ) else return 0 end
-            
-            
+
+        elseif k == 'ticks_remain' then
+            if t.up then return math.ceil( t.remains / t.tick_time ) else return 0 end
+        
+        else
+            if class.auras[ t.key ] and class.auras[ t.key ][ k ] ~= nil then
+                return class.auras[ t.key ][ k ]
+            end
         end
         
         error("UNK: " .. k)
         
+    end,
+
+    newindex = function( t, k, v )
+        -- Prevent a fixed value from being entered if it is calculated by a meta function.
+        if t.meta and t.meta[ k ] then
+            return
+        end
+        t[ k ] = v
     end
 }
 ns.metatables.mt_default_buff = mt_default_buff
@@ -2832,10 +2896,18 @@ local mt_default_debuff = {
         elseif k == 'ticking' then
             return t.up
 
+        elseif k == 'ticks_remain' then
+            if not class_aura.tick_time then return t.remains end
+            return floor( t.remains / class_aura.tick_time )       
+
         elseif k == 'tick_time_remains' then
             if not class_aura.tick_time then return t.remains end
             return t.remains % class_aura.tick_time
-            
+        
+        else
+            if class_aura and class_aura[ k ] ~= nil then
+                return class_aura[ k ]
+            end
         end
         
         -- error ("UNK: " .. k)
@@ -2893,6 +2965,9 @@ ns.metatables.mt_debuffs = mt_debuffs
 -- Needs review.
 local mt_default_action = {
     __index = function(t, k)
+
+        local aura = class.abilities[ t.action ].aura or t.action
+
         if k == 'enabled' then
             return ns.isKnown( t.action )            
 
@@ -2935,16 +3010,19 @@ local mt_default_action = {
             return class.abilities[ t.action ].cooldown
             
         elseif k == 'ticking' then
-            return ( state.dot[ state.this_action ].ticking )
+            return ( state.dot[ aura ].ticking )
             
         elseif k == 'ticks' then
-            return ( state.dot[ t.action ].ticks )
+            return math.ceil( state.dot[ aura ].duration / ( class.auras[ aura ].tick_time or ( 3 * state.haste ) ) )
             
         elseif k == 'ticks_remain' then
-            return ( state.dot[ t.action ].ticks_remain )
+            return math.ceil( state.dot[ aura ].remains / ( class.auras[ aura ].tick_time or ( 3 * state.haste ) ) )
             
         elseif k == 'remains' then
-            return ( state.dot[ t.action ].remains )
+            return ( state.dot[ aura ].remains )
+
+        elseif k == 'tick_time' then
+            return class.auras[ aura ].tick_time or ( 3 * state.haste )
             
         --[[ elseif k == 'tick_time' then
             if IsWatchedDoT( t.action ) then
@@ -2960,6 +3038,9 @@ local mt_default_action = {
             
         elseif k == 'travel_time' then
             -- NYI: maybe capture the last travel time for the spell and use that?
+            local v = class.abilities[ t.action ].velocity
+
+            if v and v > 0 then return state.target.maxR / v end
             return 0
             
         elseif k == 'miss_react' then
@@ -3050,10 +3131,18 @@ local mt_swings = {
 }
 
 
+local mt_aura = {
+    __index = function( t, k )
+        return rawget( state.buff, k ) or rawget( state.debuff, k )
+    end
+}
+
+
 setmetatable( state, mt_state )
 setmetatable( state.action, mt_actions )
 setmetatable( state.active_dot, mt_active_dot )
 -- setmetatable( state.artifact, mt_talents )
+setmetatable( state.aura, mt_aura )
 setmetatable( state.buff, mt_buffs )
 setmetatable( state.cooldown, mt_cooldowns )
 setmetatable( state.debuff, mt_debuffs )
@@ -3590,24 +3679,30 @@ function state.reset( dispID )
     end
     
     local cast_time, casting = 0, nil
-    
+
     local spellcast, _, _, _, startCast, endCast = UnitCastingInfo('player')
     if endCast ~= nil then
         state.cast_start = startCast / 1000
         cast_time = ( endCast / 1000 ) - GetTime()
         casting = formatKey( spellcast )
     end
-    
+
+    state.stopChanneling( true )
+
     local spellcast, _, _, _, startCast, endCast = UnitChannelInfo('player')
     if endCast ~= nil then
         state.cast_start = startCast / 1000
-        cast_time = ( endCast / 1000) - GetTime()
+        cast_time = ( endCast / 1000 ) - GetTime()
         casting = formatKey( spellcast )
+
+        state.channelSpell( casting, startCast / 1000, ( endCast - startCast ) / 1000 )
+        applyBuff( "casting", cast_time )
     end
 
     ns.callHook( "reset_precast" )
     
     if cast_time and casting and not class.resetCastExclusions[ casting ] then
+
         local ability = class.abilities[ casting ]
         
         -- print( format( "Advancing %.2f to cast %s.", cast_time, casting ) )
@@ -4019,7 +4114,7 @@ function ns.timeToReady( action, pool )
             wait = ns.checkTimeScript( state.script.entry, wait, spend, resource ) or wait
         end
     end
-    
+
     -- cacheTTR[ action ] = wait
     return wait   
 end
