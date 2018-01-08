@@ -977,7 +977,6 @@ do
         -- print( ... )
 
         tInsert( times, 0.01 + state.gcd * 0.5 )
-        tInsert( times, 0.01 + state.gcd )
 
         for i = 1, args do
             local t = select( i, ... )
