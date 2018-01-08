@@ -1090,7 +1090,7 @@ local mt_state = {
             
         elseif k == 'time_to_die' then
             -- Harvest TTD calculation from Hekili.
-            return max( 1, ns.getTTD( 'target' ) - ( t.offset + t.delay ) )
+            return max( 5, ns.getTTD( 'target' ) - ( t.offset + t.delay ) )
             
         elseif k == 'moving' then
             return ( GetUnitSpeed('player') > 0 )
@@ -1666,7 +1666,7 @@ local mt_target = {
             return UnitGUID( 'target' ) or 'unknown'
             
         elseif k == 'time_to_die' then
-            return max( 1, ns.getTTD( 'target' ) - ( state.offset + state.delay ) )
+            return max( 5, ns.getTTD( 'target' ) - ( state.offset + state.delay ) )
             
         elseif k == 'health_current' then
             return ( UnitHealth('target') > 0 and UnitHealth('target') or 50000 )

@@ -70,7 +70,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         end )
 
         setRegenModel( {
-            ashamanes_energy = {
+            goremaws_bite = {
                 resource = 'energy',
 
                 spec = 'subtlety',
@@ -82,7 +82,21 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
                 interval = 1,
                 value = 5,
-            }
+            },
+
+            master_of_shadows = {
+                resource = 'energy',
+
+                spec = 'subtlety',
+                aura = 'master_of_shadows',
+
+                last = function ()
+                    return state.query_time - ( ( state.query_time - state.buff.master_of_shadows.applied ) % 0.5 )
+                end,
+
+                interval = 0.5,
+                value = 4
+            },
         } )
 
 
@@ -131,6 +145,12 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
         --[[ Shadow Focus: Abilities cost 25% less Energy while Stealth or Shadow Dance is active. ]]
         addTalent( "shadow_focus", 108209 ) -- 22333
+            local function shadow_focus( x )
+                if buff.stealth.up or buff.shadow_deance.up then
+                    return x * 0.75
+                end
+                return x
+            end
 
         --[[ Soothing Darkness: You heal 3% of your maximum life every 1 sec while Stealth or Shadow Dance is active. ]]
         addTalent( "soothing_darkness", 200759 ) -- 22128
@@ -192,6 +212,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         addAura( "fleet_footed", 31209 )
         addAura( "goremaws_bite", 220901, "duration", 6 )
         addAura( "marked_for_death", 137619, "duration", 60 )
+        addAura( "master_of_subtlety", 31665, "duration", 5 )
         addAura( "mastery_executioner", 76808 )
         addAura( "nightblade", 195452, "duration", 15 )
             class.auras[ 197395 ] = class.auras.nightblade
@@ -347,6 +368,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         addMetaFunction( 'state', 'gcd', function()
             return 1.0
         end )
+        
         -- We don't want to auto-advance to the next GCD because we have to use some off-GCD abilities while in DfA.
         class.NoGCD = true
 
@@ -356,7 +378,10 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
             if state.talent.master_of_subtlety.enabled and not state.stealthed.rogue then
                 if state.now - true_stealth_change < 5 then
-                    applyBuff( "master_of_subtlety", state.now - true_stealth_change )
+                    state.applyBuff( "master_of_subtlety", 1 )
+                    state.buff.master_of_subtlety.applied = true_stealth_change
+                    state.buff.master_of_subtlety.duration = 5
+                    state.buff.master_of_subtlety.expires = true_stealth_change + 5
                 end
             end
 
@@ -533,12 +558,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             notalent = "gloomblade",
         } )
 
-        modifyAbility( "backstab", "spend", function( x )
-            if talent.shadow_focus.enabled and stealth.rogue then
-                return x * 0.75
-            end
-            return x
-        end )
+        modifyAbility( "backstab", "spend", shadow_focus )
 
         addHandler( "backstab", function ()
             gain( 1 + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
@@ -581,12 +601,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             usable = function () return stealth.rogue end,
         } )
 
-        modifyAbility( "cheap_shot", "spend", function( x )
-            if talent.shadow_focus.enabled and stealth.rogue then
-                return x * 0.75
-            end
-            return x
-        end )
+        modifyAbility( "cheap_shot", "spend", shadow_focus )
 
         addHandler( "cheap_shot", function ()
             gain( 2 + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
@@ -628,12 +643,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             passive = true,
         } )
 
-        modifyAbility( "crimson_vial", "spend", function( x )
-            if talent.shadow_focus.enabled and stealth.rogue then
-                return x * 0.75
-            end
-            return x
-        end )
+        modifyAbility( "crimson_vial", "spend", shadow_focus )
 
         addHandler( "crimson_vial", function ()
             applyBuff( "crimson_vial", 6 )
@@ -657,9 +667,9 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             usable = function () return combo_points.current > 0 end,            
         } )
 
-        modifyAbility( "death_from_above", "spend", function( x )
+        modifyAbility( "death_from_above", "spend", function( x )            
             if buff.feeding_frenzy.up then return 0 end
-            return x
+            return shadow_focus( x )
         end )
 
         addHandler( "death_from_above", function ()            
@@ -686,6 +696,8 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             max_range = 30,
             passive = true,
         } )
+
+        modifyAbility( "distract", "spend", shadow_focus )
 
         addHandler( "distract", function ()
             -- proto
@@ -731,10 +743,8 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             if buff.feeding_frenzy.up then
                 return 0
             end
-            if talent.shadow_focus.enabled and stealth.rogue then
-                return x * 0.75
-            end
-            return x
+
+            return shadow_focus( x )
         end )
 
         addHandler( "eviscerate", function ()
@@ -766,12 +776,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             passive = true,
         } )
 
-        modifyAbility( "feint", "spend", function( x )
-            if talent.shadow_focus.enabled and stealth.rogue then
-                return x * 0.75
-            end
-            return x
-        end )
+        modifyAbility( "feint", "spend", shadow_focus )
 
         addHandler( "feint", function ()
             applyBuff( "feint" )
@@ -795,12 +800,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             max_range = 0,
         } )
 
-        modifyAbility( "gloomblade", "spend", function( x )
-            if talent.shadow_focus.enabled and stealth.rogue then
-                return x * 0.75
-            end
-            return x
-        end )
+        modifyAbility( "gloomblade", "spend", shadow_focus )
 
         addHandler( "gloomblade", function ()
             gain( 1 + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
@@ -866,7 +866,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
         modifyAbility( "kidney_shot", "spend", function( x )
             if buff.feeding_frenzy.up then return 0 end
-            return x
+            return shadow_focus( x )
         end )        
 
         addHandler( "kidney_shot", function ()
@@ -921,7 +921,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
         modifyAbility( "nightblade", "spend", function( x )
             if buff.feeding_frenzy.up then return 0 end
-            return x
+            return shadow_focus( x )
         end )
 
         addHandler( "nightblade", function ()
@@ -998,6 +998,8 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             max_range = 10,
             passive = true,
         } )
+
+        modifyAbility( "sap", "spend", shadow_focus )
 
         addHandler( "sap", function ()
             applyDebuff( "target", "sap" )
@@ -1090,6 +1092,8 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             usable = function () return stealthed.all or buff.shadow_dance.up end
         } )
 
+        modifyAbility( "shadowstrike", "spend", shadow_focus )
+
         addHandler( "shadowstrike", function ()
              gain( 2 + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
              if buff.the_first_of_the_dead.up then gain( 3, "combo_points" ) end
@@ -1132,6 +1136,8 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             max_range = 0,
         } )
 
+        modifyAbility( "shuriken_storm", "spend", shadow_focus )
+
         addHandler( "shuriken_storm", function ()
             gain( active_enemies, "combo_points" )
             if active_enemies > 1 then
@@ -1154,6 +1160,8 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             min_range = 0,
             max_range = 30,
         } )
+
+        modifyAbility( "shuriken_toss", "spend", shadow_focus )
 
         addHandler( "shuriken_toss", function ()
             gain( 1 + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
