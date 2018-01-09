@@ -207,6 +207,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addAura( 'sigil_of_flame', 204598, 'duration', 6 )
         addAura( 'soul_carver', 207407, 'duration', 3 )
         addAura( 'vengeful_retreat', 198813, 'duration', 3 )
+        addAura( 'betrayers_fury', 252165, 'duration', 8 )
 
 
         -- Fake Buffs.
