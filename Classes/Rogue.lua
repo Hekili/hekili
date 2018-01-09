@@ -97,6 +97,20 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
                 interval = 0.5,
                 value = 4
             },
+
+            tier20_4pc = {
+                resource = 'energy',
+
+                spec = 'subtlety',
+                aura = 'symbols_of_death',
+
+                last = function ()
+                    return state.buff.symbols_of_death.applied + floor( state.query_time - state.buff.symbols_of_death.applied )
+                end,
+
+                interval = 1,
+                value = function () return state.set_bonus.tier20_4pc > 0 and 2 or 0 end
+            }
         } )
 
 
@@ -232,6 +246,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
                 return x + ( talent.subterfuge.enabled and 1 or 0 )
             end )
 
+        addAura( "shadow_gestures", 257945, "duration", 15 )  -- t21 4pc
         addAura( "shadow_techniques", 196912 )
         addAura( "shadowstep", 36554, "duration", 2 )
         addAura( "shroud_of_concealment", 114018, "duration", 15 )
@@ -468,6 +483,12 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
                         if state.talent.alacrity.enabled and amt >= 5 then
                             state.addStack( "alacrity", 20, 1 )
                         end
+
+                        if amt > 0 and state.set_bonus.tier21_2pc > 0 then
+                            if state.cooldown.symbols_of_death.remains > 0 then
+                                state.cooldown.symbols_of_death.expires = state.cooldown.symbols_of_death.expires - ( 0.2 * amt )
+                            end
+                        end
                     end
                 end
             end
@@ -509,6 +530,12 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         setTalentLegendary( "soul_of_the_shadowblade", "assassination", "vigor" )
         setTalentLegendary( "soul_of_the_shadowblade", "outlaw", "vigor" )
         setTalentLegendary( "soul_of_the_shadowblade", "subtlety", "vigor" )
+
+        -- Tier Sets
+        addGearSet( "tier21", 152163, 152165, 152161, 152160, 152162, 152164 )
+        addGearSet( "tier20", 147172, 147174, 147170, 147169, 147171, 147173 )
+        addGearSet( "tier19", 138332, 138338, 138371, 138326, 138329, 138335 )
+
 
         addGearSet( "fangs_of_the_devourer", 128476 )
         setArtifact( "fangs_of_the_devourer" )
@@ -679,6 +706,12 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             removeStack( "feeding_frenzy" )
             gainChargeTime( "shadow_dance", cost * ( 1.5 + ( talent.enveloping_shadows.enabled and 1 or 0 ) ) )
             applyBuff( "death_from_above" )
+            if state.set_bonus.tier21_4pc > 0 then
+                if state.buff.shadow_gestures.up then
+                    state.removeBuff( "shadow_gestures" )
+                    state.gain( cost, "combo_points" )
+                end
+            end 
         end )
 
 
@@ -758,6 +791,12 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             end
             removeStack( "feeding_frenzy" )
             removeBuff( "shuriken_combo" )
+            if state.set_bonus.tier21_4pc > 0 then
+                if state.buff.shadow_gestures.up then
+                    state.removeBuff( "shadow_gestures" )
+                    state.gain( cost, "combo_points" )
+                end
+            end 
         end )
 
 
@@ -934,7 +973,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
 
             gainChargeTime( "shadow_dance", cost * ( 1.5 + ( talent.enveloping_shadows.enabled and 1 or 0 ) ) )
 
-            applyDebuff( "target", "nightblade", 6 + ( cost * 2 ) )
+            applyDebuff( "target", "nightblade", 6 + ( cost * ( set_bonus.tier19_2pc > 0 and 4 or 2 ) ) )
 
             if artifact.finality.enabled then
                 if buff.finality_nightblade.up then
@@ -946,6 +985,12 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
                 end
             end
 
+            if state.set_bonus.tier21_4pc > 0 then
+                if state.buff.shadow_gestures.up then
+                    state.removeBuff( "shadow_gestures" )
+                    state.gain( cost, "combo_points" )
+                end
+            end 
         end )
 
 
@@ -1243,6 +1288,10 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             passive = true,
             recheck = function () return cooldown.death_from_above.remains - 1 end,
         } )
+
+        modifyAbility( "symbols_of_death", function( x )
+            return set_bonus.tier20_4pc > 0 and ( x - 5 ) or x
+        end )
 
         addHandler( "symbols_of_death", function ()
             applyBuff( "symbols_of_death" )
