@@ -7705,6 +7705,46 @@ local function sanitize( segment, i, line, warnings )
     end 
 
    
+    for token, attr in i:gmatch( "(d?e?buff%.[%a%._]+%.)(up)" ) do
+        local times = 0
+        while (i:find(token..attr)) do
+            local strpos, strend = i:find(token..attr)
+            
+            local pre = i:sub( strpos - 1, strpos - 1 )
+            local j = 2
+            
+            while ( pre == '(' and strpos - j > 0 ) do
+                pre = i:sub( strpos - j, strpos - j )
+                j = j + 1
+            end
+            
+            local post = i:sub( strend + 1, strend + 1 )
+            j = 2
+            
+            while ( post == ')' and strend + j < i:len() ) do
+                post = i:sub( strend + j, strend + j )
+                j = j + 1
+            end
+            
+            local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
+            local finish = strend < i:len() and i:sub( strend + 1 ) or ''
+            
+            if maths[pre] or maths[post] then
+                i = start .. '\a' .. finish
+                times = times + 1
+            else
+                i = start .. '\v' .. finish
+            end
+        end
+        
+        if times > 0 then
+            table.insert( warnings, "Line " .. line .. ": Converted '" .. token .. attr .. "' to '" .. token .. "i_up' for mathematical comparison (" .. times .. "x)." )
+        end
+        i = i:gsub( '\a', token .. 'i_enabled' ) 
+        i = i:gsub( '\v', token .. attr )
+    end 
+
+
     if segment == 'c' then
         for token in i:gmatch( "target" ) do
             local times = 0

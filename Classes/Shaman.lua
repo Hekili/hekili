@@ -253,7 +253,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         addAura( 'windsong', 201898 )
 
         addAura( 'ancestral_guidance', 108281 )
-        addAura( 'echoes_of_the_great_sundering', 208722, 'duration', 10 )
+        addAura( 'echoes_of_the_great_sundering', 208723, 'duration', 10 )
         addAura( 'elemental_blast_critical_strike', 118522, 'duration', 10 )
         addAura( 'elemental_blast_haste', 118522, 'duration', 10 )
         addAura( 'elemental_blast_mastery', 173184, 'duration', 10 )

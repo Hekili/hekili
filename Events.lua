@@ -543,6 +543,8 @@ local function forceUpdate( from, super )
         if super then superForce[ i ] = true end
     end
 
+    -- if super then print( "SUPER", from or "nil", GetTime() ) end
+
     return
 
 end
@@ -614,20 +616,6 @@ end
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
     if UnitIsUnit( unit, "player" ) then forceUpdate( event, true ) end
 end )
-
--- RegisterUnitEvent( "UNIT_SPELLCAST_START", forceUpdate, 'player' )
-
-
---[[ WiP - Fire quicker on UNIT_SPELLCAST_SUCCEEDED, but be prepared to revise the cast queue.
-
-local queueTime = 0
-
-RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
-    local window = GetCVar( 'spellQueueWindow' ) / 1000
-    local latency = state.latency or 50
-
-    -- We need to test to see if our last cast queued something.
-... ]]
 
 
 function ns.removeSpellFromFlight( spell )
@@ -908,21 +896,15 @@ end )
 
 
 -- Time to die calculations.
-RegisterEvent( "UNIT_HEALTH", function( event, unit )
+--[[ RegisterEvent( "UNIT_HEALTH", function( event, unit )
 
-    if not unit then return end
+    if not unit or not UnitCanAttack( "player", unit ) then return end
+
+    print( event, unit, GetTime() )
 
     local GUID = UnitGUID( unit )
 
-    if not ns.isTarget( GUID ) then
-        return
-    end
-
-    if not TTD or not TTD[ GUID ] then ns.initTTD( unit ) end
-
-    if not TTD[ GUID ] and not UnitIsFriend( 'player', unit ) then
-        ns.initTTD( unit )
-    end
+    if ( not TTD or not TTD[ GUID ] ) then ns.initTTD( unit ) end
 
     if ( UnitHealth( unit ) == UnitHealthMax( unit ) ) then
         ns.initTTD( unit )
@@ -960,7 +942,7 @@ RegisterEvent( "UNIT_HEALTH", function( event, unit )
 
     ttd.sec = projectedTTD
 
-end )
+end ) ]]
 
 
 
