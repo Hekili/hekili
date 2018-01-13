@@ -106,13 +106,13 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addTalent( 'feed_the_demon', 218612 )
         addTalent( 'fracture', 209795 )
         addTalent( 'soul_rending', 217996 )
-        
+
         addTalent( 'concentrated_sigils', 207666 )
         addTalent( 'sigil_of_chains', 202138 )
         addTalent( 'quickened_sigils', 209281 )
 
         addTalent( 'fel_devastation', 212084 )
-        addTalent( 'blade_turning', 247254 )
+        addTalent( 'blade_turning', 247253 )
         addTalent( 'spirit_bomb', 247454 )
 
         addTalent( 'last_resort', 209258 )
@@ -175,7 +175,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         -- Auras.
         addAura( 'blade_dance', 188499, 'duration', 1 )
-        addAura( 'blade_turning', 247254, 'duration', 5 )
+        addAura( 'blade_turning', 247253, 'duration', 5 )
         addAura( 'blur', 198589, 'duration', 10 )
         addAura( 'chaos_nova', 179067, 'duration', 5 )
         addAura( 'chaos_blades', 247938, 'duration', 18 )
@@ -204,11 +204,12 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
         addAura( 'anguish', 202443, 'duration', 2, 'max_stacks', 10 )
         addAura( 'bloodlet', 207690, 'duration', 10 )
-        addAura( 'fiery_brand', 204022, 'duration', 8 )
-        addAura( 'frailty', 224509, 'duration', 20 )
+        addAura( 'fiery_brand', 212818, 'duration', 8 )
+        addAura( 'frailty', 247456, 'duration', 20 )
         addAura( 'sigil_of_flame', 204598, 'duration', 6 )
         addAura( 'soul_carver', 207407, 'duration', 3 )
         addAura( 'vengeful_retreat', 198813, 'duration', 3 )
+        addAura( 'betrayers_fury', 252165, 'duration', 8 )
 
 
         -- Fake Buffs.
@@ -218,7 +219,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
             if spell == class.abilities[ 'darkness' ].name then
                 state.last_darkness_real = GetTime()
-            
+
             elseif spell == class.abilities[ 'metamorphosis' ].name then
                 state.last_metamorphosis_real = GetTime()
 
@@ -358,7 +359,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
                 end,
 
                 interval = 1,
-                value = 7 
+                value = 7
             },
 
             immolation = {
@@ -381,14 +382,14 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         } )
 
 
-        -- Gear Sets       
+        -- Gear Sets
         addGearSet( 'tier19', 138375, 138376, 138377, 138378, 138379, 138380 )
         addGearSet( 'tier20', 147130, 147132, 147128, 147127, 147129, 147131 )
         addGearSet( 'tier21', 152121, 152123, 152119, 152118, 152120, 152122 )
         addGearSet( 'class', 139715, 139716, 139717, 139718, 139719, 139720, 139721, 139722 )
 
         addGearSet( 'convergence_of_fates', 140806 )
-        
+
         addGearSet( 'twinblades_of_the_deceiver', 127829 )
         addGearSet( 'aldrachi_warblades', 128832 )
 
@@ -604,7 +605,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         } )
 
         modifyAbility( 'blade_dance', 'spend', function( x )
-            return talent.first_blood.enabled and ( x - 20 ) or x 
+            return talent.first_blood.enabled and ( x - 20 ) or x
         end )
 
         addHandler( 'blade_dance', function ()
@@ -640,7 +641,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         } )
 
         modifyAbility( 'death_sweep', 'spend', function( x )
-            return talent.first_blood.enabled and ( x - 20 ) or x 
+            return talent.first_blood.enabled and ( x - 20 ) or x
         end )
 
         addHandler( 'death_sweep', function ()
@@ -1027,7 +1028,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         modifyAbility( 'fel_devastation', 'cast', function( x ) return x * haste end )
 
         addHandler( 'fel_devastation', function ()
-            health.actual = min( health.max, health.actual + ( stat.attack_power * 25 ) ) 
+            health.actual = min( health.max, health.actual + ( stat.attack_power * 25 ) )
         end )
 
 
@@ -1097,9 +1098,25 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             spend_type = 'pain',
             cast = 0,
             cooldown = 0,
+            known = function() return spec.vengeance and buff.metamorphosis.down end,
             gcdType = 'melee',
+            bind = 'sever',
+            texture = 1344648
         } )
 
+
+        addAbility( 'sever', {
+            id = 235964,
+            spend = -10,
+            spend_type = 'pain',
+            cast = 0,
+            cooldown = 0,
+            known = function() return spec.vengeance and buff.metamorphosis.up end,
+            gcdType = 'melee',
+            bind = 'shear',
+            texture = 1380369
+        } )
+        
 
         addAbility( 'sigil_of_flame', {
             id = 204596,
@@ -1214,4 +1231,3 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
 
 
 end
-
