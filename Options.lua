@@ -342,12 +342,24 @@ local displayTemplate = {
     y = -225,
     
     numIcons = 4,
+    queueAnchor = 'RIGHT',
     queueDirection = 'RIGHT',
+    queueStyle = "RIGHT",
     queueAlignment = 'c',
-    primaryIconSize = 50,
-    queuedIconSize = 50,
+    primaryIconWidth = 50,
+    primaryIconHeight = 50,
+    queuedIconWidth = 50,
+    queuedIconHeight = 50,
+    KeepAspectRatio = true,
+    queueAnchorOffset = 5,
     iconSpacing = 5,
     iconZoom = 15,
+
+    -- Stuff for the autoconverter.
+    xyConverted = true,
+    ZoomConverted = true,
+    LastConversion = 20180114.2,
+    -- End autoconverter.
     
     font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
     primaryFontSize = 12,
@@ -526,21 +538,57 @@ local displayKeyMap = {
 }
 
 
-function convertDisplay( id )
-    
-    local display = Hekili.DB.profile.displays[ id ]
-    
+local function convertDisplay( id )
+    local display = Hekili.DB.profile.displays[ id ]   
     if not display then return end
-    
-    display.runOnce = nil
-    
-    for key, newKey in pairs( displayKeyMap ) do
-        if display[ key ] ~= nil then
-            display[ newKey ] = display[ key ]
-            display[ key ] = nil
+
+    if not display.LastConversion or display.LastConversion < 20180114.3 then
+        for key, newKey in pairs( displayKeyMap ) do
+            if display[ key ] ~= nil then
+                display[ newKey ] = display[ key ]
+                display[ key ] = nil
+            end
         end
+
+        if not display.primaryIconHeight then display.primaryIconHeight = display.primaryIconSize end
+        if not display.primaryIconWidth  then display.primaryIconWidth  = display.primaryIconSize end
+        if not display.queuedIconHeight  then display.queuedIconHeight  = display.queuedIconSize end
+        if not display.queuedIconWidth   then display.queuedIconWidth   = display.queuedIconSize end
+        if not display.queueAnchor       then display.queueAnchor       = display.queueDirection end
+        if not display.queueAnchorOffset then display.queueAnchorOffset = display.iconSpacing end
+
+        display.LastConversion = 20180114.3
     end
-    
+
+    if not display.ZoomConverted then
+        display.iconZoom = display.iconZoom * 2
+        display.ZoomConverted = true
+    end
+
+    if not display.xyConverted then
+        local icons = display.numIcons - 1
+
+        -- The old X/Y was from the center of the display.  The new X/Y is from the center of the primary icon.
+        if display.queueDirection == "RIGHT" then
+            local xOffset = 0.5 * icons * ( display.iconSpacing + display.queuedIconWidth )
+            display.x = floor( display.x - xOffset )
+
+        elseif display.queueDirection == "LEFT" then
+            local xOffset = 0.5 * icons * ( display.iconSpacing + display.queuedIconWidth )
+            display.x = floor( display.x + xOffset )
+
+        elseif display.queueDirection == "TOP" then
+            local yOffset = 0.5 * icons * ( display.iconSpacing + display.queuedIconHeight )
+            display.y = floor( display.y - yOffset )
+
+        else
+            local yOffset = 0.5 * icons * ( display.iconSpacing + display.queuedIconHeight )
+            display.y = floor( display.y + yOffset )
+        end
+
+        display.xyConverted = true
+    end
+
     for k, v in pairs( displayTemplate ) do
         if display[ k ] == nil then display[ k ] = v end
     end
@@ -564,26 +612,100 @@ local displayOptionInfo = {
     templates = {
         a = {
             numIcons = 4,
-            primaryIconSize = 40,
-            queuedIconSize = 40,
-            queueAlignment = 'c',
+            primaryIconHeight = 50,
+            primaryIconWidth = 50,
+            queuedIconHeight = 50,
+            queuedIconWidth = 50,
+            queueAnchor = "RIGHT",
+            queueDirection = "RIGHT"
         },
         b = {
             numIcons = 5,
-            primaryIconSize = 40,
-            queuedIconSize = 30,
-            queueAlignment = 'c',
+            primaryIconHeight = 50,
+            primaryIconWidth = 50,
+            queuedIconHeight = 40,
+            queuedIconWidth = 40,
+            queueAnchor = "RIGHT",
+            queueDirection = "RIGHT"
         },
         c = {
             numIcons = 2,
-            primaryIconSize = 40,
-            queuedIconSize = 20,
-            queueAlignment = 'a',
+            primaryIconHeight = 50,
+            primaryIconWidth = 50,
+            queuedIconHeight = 25,
+            queuedIconWidth = 25,
+            queueAnchor = 'TOP',
+            queueDirection = "TOP"
         },
         d = {
             numIcons = 1,
-            primaryIconSize = 40,
-            queueAlignment = 'c',
+            primaryIconHeight = 50,
+            primaryIconWidth = 50,
+            queueAnchor = "RIGHT",
+            queueDirection = "RIGHT"
+        },
+        e = {
+            numIcons = 1,
+            primaryIconHeight = 50,
+            primaryIconWidth = 80,
+            KeepAspectRatio = true,
+            queueAnchor = "RIGHT",
+            queueDirection = "RIGHT"
+        },
+        f = {
+            numIcons = 3,
+            primaryIconHeight = 65,
+            primaryIconWidth = 95,
+            iconSpacing = 5,
+            queuedIconHeight = 30,
+            queuedIconWidth = 45,
+            KeepAspectRatio = true,
+            queueAnchor = "BOTTOMLEFT",
+            queueDirection = "RIGHT"
+        },
+        g = {
+            numIcons = 4,
+            primaryIconHeight = 100,
+            primaryIconWidth = 65,
+            iconSpacing = 5,
+            queuedIconHeight = 30,
+            queuedIconWidth = 35,
+            KeepAspectRatio = true,
+            queueAnchor = "RIGHTTOP",
+            queueDirection = "BOTTOM"
+        },
+        h = {
+            numIcons = 3,
+            primaryIconHeight = 60,
+            primaryIconWidth = 40,
+            iconSpacing = 5,
+            queuedIconHeight = 60,
+            queuedIconWidth = 30,
+            KeepAspectRatio = true,
+            queueAnchor = "RIGHT",
+            queueDirection = "RIGHT"
+        },
+        i = {
+            numIcons = 4,
+            primaryIconHeight = 60,
+            primaryIconWidth = 60,
+            iconSpacing = 5,
+            queuedIconHeight = 60,
+            queuedIconWidth = 30,
+            KeepAspectRatio = true,
+            queueAnchor = "RIGHT",
+            queueDirection = "RIGHT",            
+        },
+        j = {
+            numIcons = 3,
+            primaryIconHeight = 60,
+            primaryIconWidth = 60,
+            iconSpacing = 5,
+            queuedIconHeight = 25,
+            queuedIconWidth = 60,
+            KeepAspectRatio = true,
+            queueAnchor = "BOTTOM",
+            queueDirection = "BOTTOM"
         }
     },
     
@@ -1313,6 +1435,12 @@ ns.newDisplayOption = function( key )
                             b = 'Extended, 5-Icon Display with Smaller Queued Icons',
                             c = 'Short, 2-Icon Display with Smaller Queued Icon',
                             d = 'Single Icon',
+                            e = 'Single Rectangular Icon',
+                            f = 'Newspaper, 3-Icon Display',
+                            g = 'Agenda, 4-Icon Display',
+                            h = 'Deck, 3-Icon Display',
+                            i = 'Square, Tapered Right',
+                            j = 'Square, Tapered Down',
                             z = 'Select a Template',
                         },
                         get = 'GetDisplayOption',
@@ -1340,7 +1468,57 @@ ns.newDisplayOption = function( key )
                         width = 'full',
                         order = 2
                     },
+
+                    primaryIconWidth = {
+                        type = 'range',
+                        name = 'Primary Icon Width',
+                        desc = "Specify the width of the primary icon.",
+                        min = 10,
+                        max = 500,
+                        step = 0.1,
+                        bigStep = 1,
+                        order = 5,
+                        width = "full"
+                    },
+
+                    primaryIconHeight = {
+                        type = 'range',
+                        name = 'Primary Icon Height',
+                        desc = "Specify the height of the primary icon.",
+                        min = 10,
+                        max = 500,
+                        step = 0.1,
+                        bigStep = 1,
+                        order = 6,
+                        width = "full"
+                    },
+
+                    iconZoom = {
+                        type = 'range',
+                        name = 'Icon Zoom',
+                        desc = "Select the zoom percentage for the icon textures in this display. (Roughly 15% will trim off the default Blizzard borders.)",
+                        min = 0,
+                        max = 100,
+                        step = 1,
+                        order = 7,
+                        width = 'full'
+                    },
                     
+                    KeepAspectRatio = {
+                        type = 'toggle',
+                        name = "Keep Aspect Ratio",
+                        desc = "If checked, the icon textures will not be distorted when its width and height do not match.",
+                        order = 8,
+                        width = "full"
+                    },
+
+                    styleSpacer2 = {
+                        type = 'description',
+                        name = "\n",
+                        width = "full",
+                        order = 9,
+                    },
+
                     queueDirection = {
                         type = 'select',
                         name = 'Queue Direction',
@@ -1351,107 +1529,82 @@ ns.newDisplayOption = function( key )
                             RIGHT = 'Right'
                         },
                         width = "full",
-                        order = 6,
-                    },
-                    
-                    queueAlignment = {
-                        type = 'select',
-                        name = 'Queue Alignment',
-                        values = function( info )
-                            local dispIdx = tonumber( match( info[2], "^D(%d+)" ) )
-                            local display = dispIdx and Hekili.DB.profile.displays[ dispIdx ]
-                            
-                            if not display then return nil end
-                            
-                            if display.queueDirection == 'LEFT' or display.queueDirection == 'RIGHT' then
-                                return { a = 'Top', b = 'Bottom', c = 'Center' }
-                            end
-                            
-                            return { a = 'Left', b = 'Right', c = 'Center' }
-                        end,
-                        width = "full",
-                        order = 7,
-                    },
-                    
-                    styleSpacer2 = {
-                        type = 'description',
-                        name = "\n",
-                        width = "full",
-                        order = 9,
-                    },
-                    
-                    primaryIconSize = {
-                        type = 'range',
-                        name = 'Primary Icon Size',
-                        desc = "Select the size of the primary icon.",
-                        min = 10,
-                        max = 500,
-                        step = 0.1,
-                        bigStep = 1,
-                        width = 'full',
                         order = 10,
                     },
-                    
-                    queuedIconSize = {
+
+                    queueAnchor = {
+                        type = 'select',
+                        name = 'Queue Anchors To',
+                        values = {
+                            TOP = 'Top',
+                            TOPLEFT = 'Top Left',
+                            TOPRIGHT = 'Top Right',
+                            BOTTOM = 'Bottom',
+                            BOTTOMLEFT = 'Bottom Left',
+                            BOTTOMRIGHT = 'Bottom Right',
+                            LEFT = 'Left',
+                            LEFTTOP = 'Left Top',
+                            LEFTBOTTOM = 'Left Bottom',
+                            RIGHT = 'Right',
+                            RIGHTTOP = 'Right Top',
+                            RIGHTBOTTOM = 'Right Bottom',
+                        },
+                        width = "full",
+                        order = 11,
+                    },
+                  
+                    queueAnchorOffset = {
                         type = 'range',
-                        name = 'Queued Icon Size',
-                        desc = "Select the size of the queued icons.",
+                        name = 'Queue Anchor Offset',
+                        desc = 'Specify the offset (in pixels) for the queue, in relation to the primary icon for this display.',
+                        min = -100,
+                        max = 500,
+                        step = 1,
+                        width = "full",
+                        order = 12,
+                    },
+
+                    styleSpacer3 = {
+                        type = 'description',
+                        name = '\n',
+                        order = 13,
+                        width = "full"
+                    },
+
+                    queuedIconWidth = {
+                        type = 'range',
+                        name = 'Queued Icon Width',
+                        desc = "Select the width of the queued icons.",
                         min = 10,
                         max = 500,
                         step = 0.1,
                         bigStep = 1,
-                        order = 11,
-                        width = 'full'
+                        order = 14,
+                        width = "full"
                     },
-                    
+
+                    queuedIconHeight = {
+                        type = 'range',
+                        name = 'Queued Icon Height',
+                        desc = "Select the height of the queued icons.",
+                        min = 10,
+                        max = 500,
+                        step = 0.1,
+                        bigStep = 1,
+                        order = 15,
+                        width = "full"
+                    },
+                                      
                     iconSpacing = {
                         type = 'range',
-                        name = 'Icon Spacing',
-                        desc = "Select the number of pixels to skip between icons in this display.",
-                        min = -10,
+                        name = 'Queued Icon Spacing',
+                        desc = "Select the number of pixels to skip between icons in the queue.",
+                        min = -100,
                         max = 500,
                         step = 1,
-                        order = 12,
+                        order = 16,
                         width = 'full'
                     },
-                    
-                    iconZoom = {
-                        type = 'range',
-                        name = 'Icon Zoom',
-                        desc = "Select the zoom percentage for the icon textures in this display. (Roughly 15% will trim off the default Blizzard borders.)",
-                        min = 0,
-                        max = 100,
-                        step = 1,
-                        order = 13,
-                        width = 'full'
-                    },
-                    
-                    --[[ Font = {
-                        type = 'select',
-                        name = 'Font',
-                        desc = "Select the font to use on all icons in this display.",
-                        dialogControl = 'LSM30_Font',
-                        order = 31,
-                        values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
-                    },
-                    primaryFontSize = {
-                        type = 'range',
-                        name = 'Primary Font Size',
-                        desc = "Enter the size of the font for primary icon captions.",
-                        min = 6,
-                        max = 100,
-                        order = 32,
-                        step = 1,
-                    },
-                    queuedFontSize = {
-                        type = 'range',
-                        name = 'Queued Font Size',
-                        desc = "Enter the size of the font for queued icon captions.",
-                        min = 6,
-                        max = 100,
-                        order = 33,
-                        step = 1,
-                    }, ]]
                 },
             },
             
@@ -1471,7 +1624,7 @@ ns.newDisplayOption = function( key )
                             local display = id and Hekili.DB.profile.displays[ id ]
                             
                             if display then
-                                displayOptionInfo.iconOffset = display and max( display.primaryIconSize, display.queuedIconSize ) or 100
+                                displayOptionInfo.iconOffset = display and max( display.primaryIconHeight, display.queuedIconHeight ) or 100
                             end
                             
                             return false
@@ -5009,7 +5162,7 @@ function Hekili:GetOptions()
                                     
                                     if import then
                                         if exists[ default.name ] then
-                                            local settings_to_keep = { 'primaryIconSize', 'queuedIconSize', 'primaryFontSize', 'rel', 'x', 'y', 'numIcons', 'showCaptions', 'showAuraInfo', 'auraSpellID', 'visibilityType', 'showPvE', 'alphaShowPvE', 'showPvP', 'alphaShowPvP', 'alwaysPvP', 'alphaAlwaysPvP', 'targetPvP', 'alphaTargetPvP', 'combatPvP', 'alphaCombatPvP', 'alwaysPvE', 'alphaAlwaysPvE', 'targetPvE', 'alphaTargetPvE', 'combatPvE', 'alphaCombatPvP' }
+                                            local settings_to_keep = { 'primaryIconHeight', 'primaryIconWidth', 'queuedIconHeight', 'queuedIconWidth', 'KeepAspectRatio', 'queuedIconRatio', 'primaryFontSize', 'rel', 'x', 'y', 'numIcons', 'showCaptions', 'showAuraInfo', 'auraSpellID', 'visibilityType', 'showPvE', 'alphaShowPvE', 'showPvP', 'alphaShowPvP', 'alwaysPvP', 'alphaAlwaysPvP', 'targetPvP', 'alphaTargetPvP', 'combatPvP', 'alphaCombatPvP', 'alwaysPvE', 'alphaAlwaysPvE', 'targetPvE', 'alphaTargetPvE', 'combatPvE', 'alphaCombatPvP' }
                                             
                                             for _, k in pairs( settings_to_keep ) do
                                                 import[ k ] = Hekili.DB.profile.displays[ index ][ k ]
@@ -5180,6 +5333,18 @@ function Hekili:GetOptions()
                                 type = 'toggle',
                                 name = 'Pause',
                                 order = 11,
+                                width = "double"
+                            },
+                            HEKILI_SNAPSHOT = {
+                                type = 'keybinding',
+                                name = 'Snapshot',
+                                desc = "Set a key to make a snapshot (without pausing) that can be viewed on the Snapshots tab.  This can be useful information for testing and debugging.",
+                                order = 15,
+                            },
+                            ToggleSpacer = {
+                                type = 'description',
+                                name = "\n",
+                                order = 16,
                                 width = "double"
                             },
                             HEKILI_TOGGLE_MODE = {
@@ -6136,7 +6301,7 @@ function Hekili:GetOption( info, input )
         
     elseif category == 'bindings' then
         
-        if option:match( "TOGGLE" ) then
+        if option:match( "TOGGLE" ) or option == "HEKILI_SNAPSHOT" then
             return select( 1, GetBindingKey( option ) )
             
         elseif option == 'Pause' then
@@ -6355,7 +6520,7 @@ function Hekili:SetOption( info, input, ... )
         local revert = profile[ option ]
         profile[ option ] = input
         
-        if option:match( "TOGGLE" ) then
+        if option:match( "TOGGLE" ) or option == "HEKILI_SNAPSHOT" then
             if GetBindingKey( option ) then
                 SetBinding( GetBindingKey( option ) )
             end
@@ -6370,7 +6535,7 @@ function Hekili:SetOption( info, input, ... )
             profile[option] = revert
             self:TogglePause()
             return
-            
+
         elseif option == 'Cooldowns' then
             profile[option] = revert
             self:ToggleCooldowns()
@@ -8072,6 +8237,35 @@ function Hekili:TogglePause( ... )
     
     forceUpdate()
 end
+
+
+-- Key Bindings
+function Hekili:MakeSnapshot( ... )
+    
+    Hekili.ActiveDebug = true
+
+    local numDisplays = #Hekili.DB.profile.displays
+
+    for i = 1, numDisplays do
+        if ns.visible.display[ i ] then
+            local dScriptPass = Hekili:CheckDisplayCriteria( i ) or 0
+            
+            if ( dScriptPass > 0 ) then
+                Hekili:ProcessHooks( i )
+            end
+        end
+    end
+
+    Hekili:SaveDebugSnapshot()
+    Hekili:Print( "Snapshot saved." )
+    Hekili.ActiveDebug = false
+
+    Hekili:UpdateDisplays()
+
+    Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
+
+end
+
 
 
 function Hekili:Notify( str )

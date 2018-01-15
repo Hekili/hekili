@@ -24,6 +24,8 @@ local formatKey = ns.formatKey
 local FeignEvent = ns.FeignEvent
 local RegisterEvent = ns.RegisterEvent
 
+local tinsert, tremove = table.insert, table.remove
+
 
 -- New Nameplate Proximity System
 function ns.getNumberTargets()
@@ -353,3 +355,182 @@ ns.Audit = function ()
   end
 
 end
+
+
+
+
+
+-- New Target Detection
+-- January 2018
+
+-- 1. Nameplate Detection
+--    Overall, nameplate detection is really good.  Except when a target's nameplate goes off the screen.  So we need to count other potential targets.
+--
+-- 2. Damage Detection
+--    We need to fine tune this a bit so that we can implement spell_targets.  We will flag targets as being hit by melee damage, spell damage, or ticking
+--    damage.
+
+do
+
+    local NPR = LibStub( "LibNameplateRegistry-1.0" )
+    local RC  = LibStub( "LibRangeCheck-2.0" )
+
+    local targetCount = 0 
+       
+    local targetPool = {}
+    local recycleBin = {}
+
+    local function newTarget( guid, unit )
+        if not guid or targetPool[ guid ] then return end
+
+        local target = tremove( recycleBin ) or {}
+
+        target.guid = guid
+
+        target.lastMelee  = 0  -- last SWING_DAMAGE by you.
+        target.lastSpell  = 0  -- last SPELL_DAMAGE by you.
+        target.lastTick   = 0  -- last SPELL_PERIODIC_DAMAGE by you.
+        target.lastAttack = 0  -- last SWING_DAMAGE by target to a friendly.
+
+        tinsert( targetPool, target )
+        return target
+    end
+
+    local function expireTarget( guid )
+        if not guid then return end
+
+        local target = targetPool[ guid ]
+
+        if not target then return end
+
+        targetPool[ guid ] = nil
+        tinsert( recycleBin, target )
+    end
+
+    local function updateTarget( guid, unit, melee, spell, tick )
+        if not guid and not unit then return end
+        guid = guid or UnitGUID( unit )
+
+        local target = targetPool[ guid ] or newTarget( guid, unit ) 
+
+        if melee then target.lastMelee = GetTime() end
+        if spell then target.lastSpell = GetTime() end
+        if tick  then target.lastTick  = GetTime() end
+    end
+
+    local function expireTargets( limit )
+        local now = GetTime()
+
+        for guid, data in pairs( targetPool ) do
+            local latest = max( data.lastMelee, data.lastSpell, data.lastTick )
+            if now - latest > limit then
+                expireTarget( GUID )
+            end
+        end
+    end
+
+
+    local lastCount, lastRange, lastLimit, lastTime = 0, 0, 0, 0
+
+    local function getTargetsWithin( x, limit )
+        local now = GetTime()
+        limit = limit or 5        
+
+        if x == lastRange and limit == lastLimit and now == lastTime then
+            return lastCount
+        end
+
+        lastRange = x
+        lastLimit = limit
+        lastTime  = now
+        lastCount = 0
+
+        for guid, data in pairs( targetPool ) do
+            local unit = NPR:GetPlateByGUID( guid )
+
+            if unit then
+                local _, distance = RC:GetRange( unit )
+
+                if distance <= x then
+                    lastCount = lastCount + 1
+                end
+
+            elseif limit <= 8 then
+                -- If they're in melee, use the last hit.
+                if now - data.lastMelee < limit then
+                    lastCount = lastCount + 1
+                end
+            
+            else
+                -- Try the cached unit vs. GUIDs.
+                -- Consider that target changes may happen really quickly, may have to reconsider this.               
+            end
+        end
+
+        return lastCount
+    end
+
+   
+    local function GroupMembers( reversed, forceParty )
+        local unit = ( not forceParty and IsInRaid() ) and 'raid' or 'party'
+        local numGroupMembers = forceParty and GetNumSubgroupMembers() or GetNumGroupMembers()
+        local i = reversed and numGroupMembers or ( unit == 'party' and 0 or 1 )
+
+        return function()
+            local ret
+
+            if i == 0 and unit == 'party' then
+                ret = 'player'
+            elseif i <= numGroupMembers and i > 0 then
+                ret = unit .. i
+            end
+            
+            i = i + ( reversed and -1 or 1 )
+            return ret
+        end
+    end
+
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

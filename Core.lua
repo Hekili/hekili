@@ -1835,8 +1835,21 @@ function Hekili:UpdateDisplay( dispID )
                 button:Show()
                 button:SetAlpha(alpha)
                 button.Texture:SetTexture( Queue[i].texture or ability.texture or GetSpellTexture( ability.id ) )
-                local zoom = ( display.iconZoom or 0 ) / 200
-                button.Texture:SetTexCoord( zoom, 1 - zoom, zoom, 1 - zoom )
+                
+                button.Texture:SetTexture( Queue[i].texture or ability.texture or GetSpellTexture( ability.id ) )
+
+                local zoom = 1 - ( ( display.iconZoom or 0 ) / 200 )
+
+                if display.primaryKeepAspect then
+                    local biggest = max( display.primaryIconSize, display.primaryIconHeight )
+                    local width = 0.5 * zoom * display.primaryIconSize / biggest
+                    local height = 0.5 * zoom * display.primaryIconHeight / biggest
+
+                    --button.Texture:SetTexCoord( 0.5 - width, 0.5 + width, 0.5 - height, 0.5 + height )
+                else
+                    --button.Texture:SetTexCoord( 0, 1, 0, 1 )
+                end
+
                 button.Texture:Show()
                 
                 if display.showIndicators and indicator then

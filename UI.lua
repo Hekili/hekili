@@ -181,8 +181,11 @@ function ns.StartConfiguration( external )
       v:Show()
 
       v.Header = v.Header or v:CreateFontString( "HekiliDisplay"..i.."Header", "OVERLAY", "GameFontNormal" )
+      local path, size, flags = v.Header:GetFont()
+      v.Header:SetFont( path, size, "OUTLINE" )
       -- v.Header:SetSize( v:GetWidth() * 0.5, 20 )
-      v.Header:SetAllPoints( v )
+      v.Header:ClearAllPoints()
+      v.Header:SetPoint( "BOTTOM", v, "TOP", 0, 2 )
       v.Header:SetText( Hekili.DB.profile.displays[ i ].Name )
       v.Header:SetJustifyH( "CENTER" )
       -- v.Header:SetPoint( "BOTTOMLEFT", v, "TOPLEFT" )
@@ -448,6 +451,53 @@ end
 
 
 
+local function getDisplayDimensions( dispID )
+
+    local display = Hekili.DB.profile.displays[ dispID ]
+    if not display then return end
+
+    local scale = Hekili:GetScale()
+
+    local anchor = display.queueAnchor
+    local space  = display.iconSpacing
+
+    local qLen   = display.numIcons - 1
+    local qSpace = qLen == 0 and 0 or ( space * ( qLen - 1 ) )    
+    local aHoriz = ( anchor:sub( 1, 4 ) == "LEFT" or anchor:sub( 1, 5 ) == "RIGHT" )
+
+    -- Calculate Width.
+    local pWidth = display.primaryIconWidth
+    local qHoriz = display.queueDirection == "LEFT" or display.queueDirection == "RIGHT"
+    local qWidth = qHoriz and ( ( qLen * display.queuedIconWidth ) + qSpace ) or display.queuedIconWidth
+    
+    local width  = aHoriz and ( pWidth + space + qWidth ) or max( pWidth, qWidth )
+
+    
+    -- Calculate Height.
+    local pH = display.primaryIconHeight
+    local qH = qHoriz and display.queuedIconHeight or ( qSpace + ( qLen * display.queuedIconHeight ) )
+
+    local height = aHoriz and max( pH, qH ) or ( pH + space + qH )
+
+
+    -- Anchor Point for Icon #1.
+    local anchorPoint, offX, offY = nil, 0, 0
+
+    if aHoriz then
+        local aLeft = anchor:sub( 1, 4 ) == "LEFT"
+        anchorPoint = aLeft and "RIGHT" or "LEFT"
+        offX = aLeft and -2 or 2
+    else
+        local aTop = anchor:sub( 1, 3 ) == "TOP"
+        anchorPoint = aTop and "BOTTOM" or "TOP"
+        offY = aTop and 2 or -2
+    end
+
+    return width + 2, height + 2, anchorPoint, offX, offY
+
+end
+
+
 -- Builds and maintains the visible UI elements.
 -- Buttons (as frames) are never deleted, but should get reused effectively.
 function ns.buildUI()
@@ -505,13 +555,11 @@ function ns.buildUI()
 
     local f = ns.UI.Displays[dispID] or CreateFrame( "Frame", "HekiliDisplay"..dispID, UIParent )
 
-    local border = scaleFactor * 4
+    local border = 4
 
-    if display.queueDirection == 'TOP' or display.queueDirection == 'BOTTOM' then
-      f:SetSize( scaleFactor * max( Hekili.DB.profile.displays[dispID].primaryIconSize, Hekili.DB.profile.displays[dispID].queuedIconSize ), border + scaleFactor * ( Hekili.DB.profile.displays[dispID].primaryIconSize + ( Hekili.DB.profile.displays[dispID].queuedIconSize * ( Hekili.DB.profile.displays[dispID].numIcons - 1 ) ) + ( Hekili.DB.profile.displays[dispID].iconSpacing * ( Hekili.DB.profile.displays[dispID].numIcons - 1 ) ) ) )
-    else
-      f:SetSize( scaleFactor * ( Hekili.DB.profile.displays[dispID].primaryIconSize + ( Hekili.DB.profile.displays[dispID].queuedIconSize * ( Hekili.DB.profile.displays[dispID].numIcons - 1 ) ) + ( Hekili.DB.profile.displays[dispID].iconSpacing * ( Hekili.DB.profile.displays[dispID].numIcons - 1 ) ) ), border + scaleFactor * max( Hekili.DB.profile.displays[dispID].primaryIconSize, Hekili.DB.profile.displays[dispID].queuedIconSize ) )
-    end
+    local dw, dh, da = getDisplayDimensions( dispID )
+
+    f:SetSize( scaleFactor * ( border + display.primaryIconWidth ), scaleFactor * ( border + display.primaryIconHeight ) )
     f:SetPoint( "CENTER", Screen, "CENTER", Hekili.DB.profile.displays[ dispID ].x, Hekili.DB.profile.displays[ dispID ].y )
     f:SetFrameStrata( "MEDIUM" )
     f:SetClampedToScreen( true )
@@ -709,17 +757,28 @@ function Hekili:CreateButton( display, ID )
   local name = "Hekili_D" .. display .. "_B" .. ID
   local disp = self.DB.profile.displays[display]
 
-  local button = ns.UI.Buttons[ display ][ ID ] or CreateFrame( "Button", name, ns.UI.Displays[ display ] )
+  local button = ns.UI.Buttons[ display ][ ID ]
+  local newButton = false
 
-  local btnSize
+  if not button then
+    button = CreateFrame( "Button", name, ns.UI.Displays[ display ] )
+    newButton = true
+  end
+
+  local btnH, btnW
   if ID == 1 then
-    btnSize = disp.primaryIconSize
+    btnH = disp.primaryIconHeight or 50
+    btnW = disp.primaryIconWidth or 50
   else
-    btnSize = disp.queuedIconSize
+    btnH = disp.queuedIconHeight or 50
+    btnW = disp.queuedIconWidth or 50
   end
   local btnDirection = disp.queueDirection
   local btnAlignment = disp.queueAlignment or 'c'
   local btnSpacing = disp.iconSpacing
+
+  local queueAnchor = disp.queueAnchor
+  local qOffset = disp.queueAnchorOffset
 
   local scaleFactor = Hekili:GetScale()
 
@@ -727,7 +786,7 @@ function Hekili:CreateButton( display, ID )
   button:SetFrameLevel( display * 10 )
   button:SetClampedToScreen( true )
 
-  button:SetSize( scaleFactor * btnSize, scaleFactor * btnSize )
+  button:SetSize( scaleFactor * btnW, scaleFactor * btnH )
 
   if not button.Texture then
     button.Texture = button:CreateTexture(nil, "LOW")
@@ -735,6 +794,27 @@ function Hekili:CreateButton( display, ID )
     button.Texture:SetAlpha(1)
   end
   button.Texture:SetAllPoints(button)
+
+    local zoom = 1 - ( ( disp.iconZoom or 0 ) / 200 )
+
+    if disp.KeepAspectRatio then
+        local width, height
+        if ID == 1 then
+            local biggest = max( disp.primaryIconHeight, disp.primaryIconWidth )
+            width = 0.5 * zoom * disp.primaryIconWidth / biggest
+            height = 0.5 * zoom * disp.primaryIconHeight / biggest
+        else
+            local biggest = max( disp.queuedIconHeight, disp.queuedIconWidth )
+            width = 0.5 * zoom * disp.queuedIconWidth / biggest
+            height = 0.5 * zoom * disp.queuedIconHeight / biggest
+        end
+
+        button.Texture:SetTexCoord( 0.5 - width, 0.5 + width, 0.5 - height, 0.5 + height )
+    else
+        zoom = zoom / 2
+        button.Texture:SetTexCoord( 0.5 - zoom, 0.5 + zoom, 0.5 - zoom, 0.5 + zoom )
+    end
+
 
   local SharedMedia = LibStub( "LibSharedMedia-3.0", true )
 
@@ -769,6 +849,7 @@ function Hekili:CreateButton( display, ID )
       
       local tarAlign = tarAnchor:match( "RIGHT" ) and "RIGHT" or ( tarAnchor:match( "LEFT" ) and "LEFT" or "CENTER" )
       button.Targets:SetJustifyH( tarAlign )
+  
       local tarAlignV = tarAnchor:match( "TOP" ) and "TOP" or ( tarAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" )
       button.Targets:SetJustifyV( tarAlignV )
       
@@ -787,6 +868,7 @@ function Hekili:CreateButton( display, ID )
 
       local auraAlign = auraAnchor:match( "RIGHT" ) and "RIGHT" or ( auraAnchor:match( "LEFT" ) and "LEFT" or "CENTER" )
       button.Auras:SetJustifyH( auraAlign )
+  
       local auraAlignV = auraAnchor:match( "TOP" ) and "TOP" or ( auraAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" )
       button.Auras:SetJustifyV( auraAlignV )
       
@@ -824,52 +906,54 @@ function Hekili:CreateButton( display, ID )
   button:ClearAllPoints()
 
   if ID == 1 then
-    button.Overlay = button.Overlay or button:CreateTexture( nil, "OVERLAY" )
-    button.Overlay:SetAllPoints(button)
+    button.Overlay = button.Overlay or button:CreateTexture( nil, "OVERLAY" )    
+    button.Overlay:SetSize( min( btnW, btnH ), min( btnW, btnH ) )
+    button.Overlay:SetPoint( "CENTER", button, "CENTER" )
     button.Overlay:Hide()
 
     -- button.Caption:SetFont( SharedMedia:Fetch( "font", disp.Font ), disp.primaryFontSize, "OUTLINE" )
     button.Delay:SetFont( SharedMedia:Fetch( "font", kbFont ), disp.kbFontSize or 12, disp.kbFontStyle or "OUTLINE" )
     -- button.Delay:SetFont( SharedMedia:Fetch( "font", disp.Font ), disp.primaryFontSize * 0.67, "OUTLINE" )
 
-    button:SetPoint( getInverseDirection( btnDirection ), ns.UI.Displays[ display ], getInverseDirection( btnDirection ) )
+    button:SetPoint( "CENTER", ns.UI.Displays[ display ], "CENTER" )
+
+    -- button:SetPoint( getInverseDirection( btnDirection ), ns.UI.Displays[ display ], getInverseDirection( btnDirection ), xpad, ypad )
     -- button:SetPoint( "LEFT", ns.UI.Displays[ display ], "LEFT" ) -- self.DB.profile.displays[ display ].rel or "CENTER", self.DB.profile.displays[ display ].x, self.DB.profile.displays[ display ].y )
 
+  elseif ID == 2 then
+
+    if queueAnchor:sub( 1, 5 ) == 'RIGHT' then
+      local dir, align = 'RIGHT', queueAnchor:sub( 6 )
+      button:SetPoint( align .. getInverseDirection( dir ), 'Hekili_D' .. display .. '_B1', align .. dir, qOffset * scaleFactor, 0 )
+
+    elseif queueAnchor:sub( 1, 4 ) == 'LEFT' then
+      local dir, align = 'LEFT', queueAnchor:sub( 5 )
+      button:SetPoint( align .. getInverseDirection( dir ), 'Hekili_D' .. display.. "_B1",  align .. dir, -1 *  qOffset * scaleFactor, 0 )
+    
+    elseif queueAnchor:sub( 1, 3 ) == 'TOP' then
+      local dir, align = 'TOP', queueAnchor:sub( 4 )     
+      button:SetPoint( getInverseDirection( dir ) .. align, 'Hekili_D' .. display.. "_B1",  dir .. align, 0, qOffset * scaleFactor )
+    
+    else -- BOTTOM
+      local dir, align = 'BOTTOM', queueAnchor:sub( 7 )
+      button:SetPoint( getInverseDirection( dir ) .. align, 'Hekili_D' .. display.. "_B1",  dir .. align, 0, -1 * qOffset * scaleFactor )
+
+    end
+
   else
-    -- button.Caption:SetFont( SharedMedia:Fetch("font", disp.Font), disp.queuedFontSize, "OUTLINE" )
 
     if btnDirection == 'RIGHT' then
-      local align
-      
-      if btnAlignment == 'a' then align = 'TOP'
-      elseif btnAlignment == 'b' then align = 'BOTTOM'
-      else align = '' end
-    
-      button:SetPoint( align .. getInverseDirection( btnDirection ), 'Hekili_D' .. display.. "_B" .. ID - 1,  align .. btnDirection, btnSpacing * scaleFactor, 0 )
+      button:SetPoint( getInverseDirection( btnDirection ), 'Hekili_D' .. display.. "_B" .. ID - 1,  btnDirection, btnSpacing * scaleFactor, 0 )
+
     elseif btnDirection == 'LEFT' then
-      local align
-      
-      if btnAlignment == 'a' then align = 'TOP'
-      elseif btnAlignment == 'b' then align = 'BOTTOM'
-      else align = '' end
-    
-      button:SetPoint( align .. getInverseDirection( btnDirection ), 'Hekili_D' .. display.. "_B" .. ID - 1,  align .. btnDirection, -1 *  btnSpacing * scaleFactor, 0 )
+      button:SetPoint( getInverseDirection( btnDirection ), 'Hekili_D' .. display.. "_B" .. ID - 1,  btnDirection, -1 *  btnSpacing * scaleFactor, 0 )
+
     elseif btnDirection == 'TOP' then
-      local align
-      
-      if btnAlignment == 'a' then align = 'LEFT'
-      elseif btnAlignment == 'b' then align = 'RIGHT'
-      else align = '' end
-    
-      button:SetPoint( getInverseDirection( btnDirection ) .. align, 'Hekili_D' .. display.. "_B" .. ID - 1,  btnDirection .. align, 0, btnSpacing * scaleFactor )
+      button:SetPoint( getInverseDirection( btnDirection ), 'Hekili_D' .. display.. "_B" .. ID - 1,  btnDirection, 0, btnSpacing * scaleFactor )
+
     else -- BOTTOM
-      local align
-      
-      if btnAlignment == 'a' then align = 'LEFT'
-      elseif btnAlignment == 'b' then align = 'RIGHT'
-      else align = '' end
-    
-      button:SetPoint( getInverseDirection( btnDirection ) .. align, 'Hekili_D' .. display.. "_B" .. ID - 1,  btnDirection .. align, 0, -1 * btnSpacing * scaleFactor )
+      button:SetPoint( getInverseDirection( btnDirection ), 'Hekili_D' .. display.. "_B" .. ID - 1,  btnDirection, 0, -1 * btnSpacing * scaleFactor )
+
     end
 
   end
@@ -897,6 +981,13 @@ function Hekili:CreateButton( display, ID )
 
   button:EnableMouse( not Hekili.DB.profile.Locked )
   button:SetMovable( not Hekili.DB.profile.Locked )
+
+  -- Help Out AddOnSkins
+  if AddOnSkins and not button.Backdrop then
+    local AS = unpack( AddOnSkins )
+    AS:CreateBackdrop( button, 'Transparent' )
+    AS:SkinTexture( button.Texture )
+  end
 
   return button
 

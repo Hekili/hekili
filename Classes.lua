@@ -854,7 +854,8 @@ addAbility( 'berserking',
     cast = 0,
     gcdType = 'off',
     cooldown = 180,
-    toggle = "cooldowns"
+    toggle = "cooldowns",
+    usable = function () return race.troll end,
 } )
 
 addHandler( 'berserking', function ()
@@ -871,8 +872,9 @@ addAbility( 'blood_fury', {
     cast = 0,
     gcdType = 'off',
     cooldown = 120,
-    toggle = "cooldowns"
-    }, 33697, 33702 )
+    toggle = "cooldowns",
+    usable = function () return race.orc end,
+}, 33697, 33702 )
 
 modifyAbility( 'blood_fury', 'id', function( x )
     if class.file == 'MONK' or class.file == 'SHAMAN' then return 33697 end
@@ -893,7 +895,8 @@ addAbility( 'arcane_torrent', {
     cast = 0,
     gcdType = 'off',
     cooldown = 120,
-    toggle = 'cooldowns'
+    toggle = 'cooldowns',
+    usable = function () return race.blood_elf end,
     }, 50613, 80483, 129597, 155145, 25046, 69179 )
 
 modifyAbility( 'arcane_torrent', 'id', function( x )
@@ -925,8 +928,7 @@ addAbility( "shadowmeld", {
     gcdType = "off",
     cooldown = 120,
     passive = true,
-    known = function () return race.night_elf end,
-    usable = function () return boss end, -- Only use in boss combat, dropping aggro is for the birds.
+    usable = function () return race.night_elf and boss end, -- Only use in boss combat, dropping aggro is for the birds.
 } )
 
 addHandler( "shadowmeld", function ()
