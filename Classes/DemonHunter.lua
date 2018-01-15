@@ -512,7 +512,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             cast = 0,
             gcdType = 'off',
             cooldown = 15,
-            usable = function () return target.debuff.casting.up end,
+            usable = function () return target.casting end,
         } )
 
         addHandler( 'consume_magic', function ()
@@ -1116,7 +1116,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             bind = 'shear',
             texture = 1380369
         } )
-        
+
 
         addAbility( 'sigil_of_flame', {
             id = 204596,
