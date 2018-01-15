@@ -983,10 +983,15 @@ function Hekili:CreateButton( display, ID )
   button:SetMovable( not Hekili.DB.profile.Locked )
 
   -- Help Out AddOnSkins
-  if AddOnSkins and not button.Backdrop then
-    local AS = unpack( AddOnSkins )
-    AS:CreateBackdrop( button, 'Transparent' )
-    AS:SkinTexture( button.Texture )
+  if AddOnSkins then
+    if not button.Backdrop then
+        local AS = AddOnSkins[1]
+
+        if AS:CheckOption( "Hekili" ) then
+            AS:CreateBackdrop( button, 'Transparent' )
+            AS:SkinTexture( button.Texture )
+        end
+    end
   end
 
   return button
