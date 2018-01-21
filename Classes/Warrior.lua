@@ -97,7 +97,11 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
                     return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
                 end,
+
                 interval = 'mainhand_speed',
+
+                stop = function () return state.time == 0 end,
+                
                 value = function ()
                     return base_rage_gen * fury_rage_mult * state.swings.mainhand_speed
                 end,
@@ -114,7 +118,11 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
                     return swing + ( floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed )
                 end,
+
                 interval = 'offhand_speed',
+
+                stop = function () return state.time == 0 end,
+                
                 value = function ()
                     return base_rage_gen * fury_rage_mult * state.swings.mainhand_speed * offhand_mod * ( state.talent.endless_rage.enabled and 1.3 or 1 )
                 end,
@@ -540,13 +548,14 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             spend = -20,
             spend_type = "rage",
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 20,
             charges = 1,
             recharge = 20,
             min_range = 8,
             max_range = 25,
-            usable = function () return target[ 'within'..25 ] and target[ 'outside'..8 ] end
+            passive = true,
+            usable = function () return not ( prev_off_gcd.charge or prev_off_gcd.heroic_leap ) and target.maxR <= 25 and target.minR >= 7 end
         } )
 
         modifyAbility( "charge", "charges", function( x )
@@ -813,13 +822,14 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             id = 6544,
             spend = 0,
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 45,
             charges = 1,
             recharge = 45,
             min_range = 8,
             max_range = 40,
-            usable = function () return target.distance > 7 end
+            passive = true,
+            usable = function () return not ( target.minR < 7 or target.maxR > 40 ) and not ( prev_gcd.heroic_leap or prev_gcd.charge ) end
         } )
 
         modifyAbility( "heroic_leap", "cooldown", function( x )

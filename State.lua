@@ -715,6 +715,7 @@ state.summonTotem = summonTotem
 local function setDistance( minimum, maximum )
     state.target.minR = minimum or 5
     state.target.maxR = maximum or minimum or 5
+    state.target.distance = ( state.target.minR + state.target.maxR ) / 2
 end
 state.setDistance = setDistance
 
@@ -1088,7 +1089,7 @@ local mt_state = {
             return t.now + t.offset + t.delay
             
         elseif k == 'time_to_die' then
-            return max( 5, ns.getTTD( 'target' ) - ( t.offset + t.delay ) )
+            return max( 5, Hekili:GetTTD( 'target' ) - ( t.offset + t.delay ) )
             
         elseif k == 'moving' then
             return ( GetUnitSpeed('player') > 0 )
@@ -1664,7 +1665,7 @@ local mt_target = {
             return UnitGUID( 'target' ) or 'unknown'
             
         elseif k == 'time_to_die' then
-            return max( 5, ns.getTTD( 'target' ) - ( state.offset + state.delay ) )
+            return max( 5, Hekili:GetTTD( 'target' ) - ( state.offset + state.delay ) )
             
         elseif k == 'health_current' then
             return ( UnitHealth('target') > 0 and UnitHealth('target') or 50000 )
@@ -1685,7 +1686,8 @@ local mt_target = {
         elseif k == 'distance' then
             -- Need to identify a couple of spells to roughly get the distance to an enemy.
             -- We'd probably use IsSpellInRange() on an individual action instead, so maybe not.
-            return ( t.minR + t.maxR ) / 2
+            t.distance = UnitCanAttack( 'player', 'target'  ) and ( ( t.minR + t.maxR ) / 2 ) or 7.5
+            return t.distance
             
         elseif k == 'moving' then
             return GetUnitSpeed( 'target' ) > 0
@@ -1699,14 +1701,14 @@ local mt_target = {
                 
                 if endCast ~= nil and not notInterruptible then
                     t.cast_end = endCast / 1000
-                    return (endCast / 1000) > state.query_time
+                    return ( endCast / 1000 ) > state.query_time
                 end
                 
                 _, _, _, _, _, endCast, _, notInterruptible = UnitChannelInfo("target")
                 
                 if endCast ~= nil and not notInterruptible then
                     t.cast_end = endCast / 1000
-                    return (endCast / 1000) > state.query_time
+                    return ( endCast / 1000 ) > state.query_time
                 end
             end
             return false
@@ -1759,16 +1761,16 @@ local mt_target = {
         elseif k == 'minR' then
             local minR = LibStub( "LibRangeCheck-2.0" ):GetRange( 'target' )
             if minR then
-                rawset( t, k, minR )
-                return t[k]
+                t.minR = minR
+                return t.minR
             end
             return 5
             
         elseif k == 'maxR' then
             local maxR = select( 2, LibStub( "LibRangeCheck-2.0" ):GetRange( 'target' ) )
             if maxR then
-                rawset( t, k, maxR )
-                return t[k]
+                t.maxR = maxR
+                return t.maxR
             end
             return 10
             
@@ -1784,10 +1786,10 @@ ns.metatables.mt_target = mt_target
 local mt_target_health = {
     __index = function(t, k)
         if k == 'current' or k == 'actual' then
-            return UnitCanAttack('player', 'target') and UnitHealth('target') or 0
+            return UnitCanAttack('player', 'target') and not UnitIsDead( 'target' ) and UnitHealth('target') or 10000
             
         elseif k == 'max' then
-            return UnitCanAttack('player', 'target') and UnitHealthMax('target') or 0
+            return UnitCanAttack('player', 'target') and not UnitIsDead( 'target' ) and UnitHealthMax('target') or 10000
             
         elseif k == 'pct' or k == 'percent' then
             return t.max ~= 0 and ( 100 * t.current / t.max ) or 100
@@ -3587,14 +3589,12 @@ function state.reset( dispID )
     ns.callHook( "reset_precast" )
     
     if cast_time and casting and not class.resetCastExclusions[ casting ] then
-
         local ability = class.abilities[ casting ]
         
         -- print( format( "Advancing %.2f to cast %s.", cast_time, casting ) )
         state.advance( cast_time )
         
-        if ability then 
-            
+        if ability then            
             if not ability.channeled then
                 -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
                 if ability.charges and ability.recharge > 0 then
@@ -3604,8 +3604,7 @@ function state.reset( dispID )
                 end
                 
                 -- Perform the action.
-                ns.runHandler( casting )
-                
+                ns.runHandler( casting )                
                 ns.spendResources( casting )
                 
             elseif ability.postchannel then
@@ -3831,14 +3830,6 @@ ns.isKnown = function( sID, notoggle )
         return false
     end
 
-    if ability.buff and not state.buff[ ability.buff ].up then
-        return false
-    end
-
-    if ability.nobuff and state.buff[ ability.nobuff ].up then
-        return false
-    end
-
     if ability.known ~= nil then
         if type( ability.known ) == 'number' then
             return IsPlayerSpell( ability.known )
@@ -3869,6 +3860,14 @@ ns.isUsable = function( spell )
     end
 
     if ability.form and not state.buff[ ability.form ].up then
+        return false
+    end
+
+    if ability.buff and not state.buff[ ability.buff ].up then
+        return false
+    end
+
+    if ability.nobuff and state.buff[ ability.nobuff ].up then
         return false
     end
 

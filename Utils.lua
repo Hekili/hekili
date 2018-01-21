@@ -210,32 +210,22 @@ function ns.safeMax( ... )
 end
 
 
---[[
-function ns.safeMin( ... )
-    local values = {}
+-- Rivers' iterator for group members.
+function ns.GroupMembers( reversed, forceParty )
+    local unit = ( not forceParty and IsInRaid() ) and 'raid' or 'party'
+    local numGroupMembers = forceParty and GetNumSubgroupMembers() or GetNumGroupMembers()
+    local i = reversed and numGroupMembers or ( unit == 'party' and 0 or 1 )
 
-    for i = 1, select( "#", ... ) do
-        local val = select( i, ... )
+    return function()
+        local ret
 
-        if val ~= nil and type( val ) == 'number' then
-            values[ #values + 1 ] = val
+        if i == 0 and unit == 'party' then
+            ret = 'player'
+        elseif i <= numGroupMembers and i > 0 then
+            ret = unit .. i
         end
+        
+        i = i + ( reversed and -1 or 1 )
+        return ret
     end
-
-    return min( unpack( values ) ) or 0
 end
-
-
-function ns.safeMax( ... )
-    local values = {}
-
-    for i = 1, select( "#", ... ) do
-        local val = select( i, ... )
-
-        if val ~= nil and type( val ) == 'number' then
-            values[ #values + 1 ] = val
-        end
-    end
-
-    return max( unpack( values ) ) or 0
-end ]]

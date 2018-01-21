@@ -959,7 +959,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             max_range = 0,
             aura = 'nightblade',
             usable = function () return combo_points.current > 0 end,
-            recheck = function () return buff.shadow_dance.remains, remains - mantle_duration, remains - ( duration * 0.3 ), remains - ( tick_time * 2 ), buff.symbols_of_death.remains end,
+            recheck = function () return buff.shadow_dance.remains, buff.nightblade.remains - mantle_duration, buff.nightblade.remains - ( buff.nightblade.duration * 0.3 ), buff.nightblade.remains - ( buff.nightblade.tick_time * 2 ), buff.symbols_of_death.remains end,
         } )
 
         modifyAbility( "nightblade", "spend", function( x )

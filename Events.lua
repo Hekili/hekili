@@ -11,6 +11,8 @@ local TTD = ns.TTD
 local formatKey = ns.formatKey
 local getSpecializationInfo = ns.getSpecializationInfo
 local getSpecializationKey = ns.getSpecializationKey
+local GroupMembers = ns.GroupMembers
+
 
 local abs = math.abs
 local lower, match, upper = string.lower, string.match, string.upper
@@ -508,6 +510,8 @@ end )
 RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     ns.updateGear()
     state.combat = 0
+
+    Hekili:PurgeTTD()
 end )
 
 
@@ -893,57 +897,6 @@ RegisterUnitEvent( "UNIT_COMBAT", function( event, unit, action, descriptor, dam
     end
         
 end )
-
-
--- Time to die calculations.
---[[ RegisterEvent( "UNIT_HEALTH", function( event, unit )
-
-    if not unit or not UnitCanAttack( "player", unit ) then return end
-
-    print( event, unit, GetTime() )
-
-    local GUID = UnitGUID( unit )
-
-    if ( not TTD or not TTD[ GUID ] ) then ns.initTTD( unit ) end
-
-    if ( UnitHealth( unit ) == UnitHealthMax( unit ) ) then
-        ns.initTTD( unit )
-        return
-    end
-
-    local now = GetTime()
-
-    if ( not TTD[ GUID ].n ) then ns.initTTD( unit ) end
-
-    local ttd = TTD[ GUID ]
-
-    ttd.n = ttd.n + 1
-    ttd.timeSum = ttd.timeSum + now
-    ttd.healthSum = ttd.healthSum + UnitHealth( unit )
-    ttd.timeMean = ttd.timeMean + (now * now)
-    ttd.healthMean = ttd.healthMean + (now * UnitHealth( unit ))
-
-    local difference = ( ttd.healthSum * ttd.timeMean - ttd.healthMean * ttd.timeSum)
-    local projectedTTD = nil
-
-    if difference > 0 then
-        local divisor = ( ttd.healthSum * ttd.timeSum ) - ( ttd.healthMean * ttd.n )
-        projectedTTD = 0
-        if divisor > 0 then
-            projectedTTD = difference / divisor - now
-        end
-    end
-
-    if not projectedTTD or projectedTTD < 0 or ttd.n < 3 then
-        return
-    else
-        projectedTTD = ceil(projectedTTD)
-    end
-
-    ttd.sec = projectedTTD
-
-end ) ]]
-
 
 
 local keys = ns.hotkeys

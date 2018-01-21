@@ -230,8 +230,6 @@ ns.eliminateUnit = function( id, force )
   ns.updateMinion( id )
   ns.updateTarget( id )
 
-  ns.TTD[ id ] = nil
-
   if force then
       for k,v in pairs( debuffs ) do
         ns.trackDebuff( k, id )
@@ -275,40 +273,6 @@ function ns.healingInLast( t )
     end
 
     return heal
-end
-
-
-local TTD = ns.TTD
-
--- Borrowed TTD linear regression model from 'Nemo' by soulwhip (with permission).
-ns.initTTD = function( unit )
-
-    if not unit then return end
-
-    local GUID = UnitGUID( unit )
-
-    TTD[ GUID ] = TTD[ GUID ] or {}
-    TTD[ GUID ].n = 1
-    TTD[ GUID ].timeSum = GetTime()
-    TTD[ GUID ].healthSum = UnitHealth( unit ) or 0
-    TTD[ GUID ].timeMean = TTD[ GUID ].timeSum * TTD[ GUID ].timeSum
-    TTD[ GUID ].healthMean = TTD[ GUID ].timeSum * TTD[ GUID ].healthSum
-    TTD[ GUID ].name = UnitName( unit )
-    TTD[ GUID ].sec = state.boss and 300 or 15
-
-end
-
-
-ns.getTTD = function( unit )
-
-  local GUID = UnitGUID( unit ) or unit
-
-  if not TTD[ GUID ] then return 15 end
-
-  if state.time < 5 then return 15 - state.time end
-
-  return min( 300, TTD[ GUID ].sec or 15 )
-
 end
 
 
@@ -360,6 +324,143 @@ end
 
 
 
+do
+
+    local recycleBin = {}    
+    local TTD = ns.TTD
+
+
+    -- Borrowed TTD linear regression model from 'Nemo' by soulwhip (with permission).
+    local function InitTTD( unit )
+
+        if not unit then return end
+
+        local GUID = UnitGUID( unit )
+
+        TTD[ GUID ] = TTD[ GUID ] or tremove( recycleBin ) or {}
+        TTD[ GUID ].n = 1
+        TTD[ GUID ].timeSum = GetTime()
+        TTD[ GUID ].healthSum = UnitHealth( unit ) or 0
+        TTD[ GUID ].timeMean = TTD[ GUID ].timeSum * TTD[ GUID ].timeSum
+        TTD[ GUID ].healthMean = TTD[ GUID ].timeSum * TTD[ GUID ].healthSum
+        TTD[ GUID ].name = UnitName( unit )
+        TTD[ GUID ].sec = state.boss and 300 or 15
+
+    end
+
+
+    local function UpdateTTD( unit )
+
+        local guid = UnitGUID( unit )
+        local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+
+        local now = GetTime()
+
+
+        if not TTD[ guid ] or health == healthMax or not TTD[ guid ].n then
+            InitTTD( unit )
+        end
+
+        local ttd = TTD[ guid ]
+
+        ttd.n = ttd.n + 1
+
+        ttd.timeSum = ttd.timeSum + now
+        ttd.timeMean = ttd.timeMean + ( now * now )
+
+        ttd.healthSum = ttd.healthSum + health
+        ttd.healthMean = ttd.healthMean + ( now * health )
+
+        local projected
+        local difference = ( ttd.healthSum * ttd.timeMean - ttd.healthMean * ttd.timeSum )
+
+        if difference > 0 then
+            local divisor = ( ttd.healthSum * ttd.timeSum ) - ( ttd.healthMean * ttd.n )
+
+            projected = 0
+            if divisor > 0 then projected = difference / divisor - now end
+        end
+
+        if not projected or projected <= 0 or ttd.n < 3 then
+            return
+        else
+            projected = ceil( projected )
+        end
+
+        ttd.sec = projected
+
+    end
+
+
+    local seen  = {}
+    local units = { 'target', 'focus', 'focustarget', 'mouseover', 'boss1', 'boss2', 'boss3', 'boss4', 'boss5' }
+
+    local function PulseTTD()
+
+        table.wipe( seen )
+
+        -- Check all nameplates first.
+        for i = 1, 30 do
+            local np = 'nameplate' .. i
+            if UnitExists( np ) and UnitCanAttack( 'player', np ) then
+                local guid = UnitGUID( np )
+
+                if guid and not seen[ guid ] then
+                    seen[ guid ] = true
+                    UpdateTTD( np )
+                end
+            end
+        end
+
+        -- Check common units.
+        for _, unit in pairs( units ) do
+            if UnitExists( unit ) and UnitCanAttack( 'player', unit ) then
+                local guid = UnitGUID( unit )
+
+                if guid and not seen[ guid ] then
+                    seen[ guid ] = true
+                    UpdateTTD( unit )
+                end
+            end
+        end
+
+    end
+
+    Hekili.TTDTimer = C_Timer.NewTicker( 1, PulseTTD )
+
+
+    function Hekili:PurgeTTD()
+        for guid, unit in pairs( TTD ) do
+            tinsert( recycleBin, unit )
+            TTD[ guid ] = nil
+        end
+    end
+
+
+    function Hekili:DumpTTDs() 
+        for guid, death in pairs( TTD ) do
+            DevTools_Dump( death )
+        end
+    end
+
+
+    function Hekili:GetTTD( unit )
+        local GUID = UnitGUID( unit ) or unit
+
+        if not TTD[ GUID ] then return 15 end
+
+        if state.time < 5 then return max( TTD[ GUID ].sec, 15 - state.time ) end
+
+        return min( 300, TTD[ GUID ].sec or 15 )
+    end
+
+end
+
+
+
+
+
+
 -- New Target Detection
 -- January 2018
 
@@ -396,6 +497,7 @@ do
         return target
     end
 
+
     local function expireTarget( guid )
         if not guid then return end
 
@@ -407,6 +509,7 @@ do
         tinsert( recycleBin, target )
     end
 
+
     local function updateTarget( guid, unit, melee, spell, tick )
         if not guid and not unit then return end
         guid = guid or UnitGUID( unit )
@@ -417,6 +520,7 @@ do
         if spell then target.lastSpell = GetTime() end
         if tick  then target.lastTick  = GetTime() end
     end
+
 
     local function expireTargets( limit )
         local now = GetTime()
@@ -470,26 +574,16 @@ do
         return lastCount
     end
 
-   
-    local function GroupMembers( reversed, forceParty )
-        local unit = ( not forceParty and IsInRaid() ) and 'raid' or 'party'
-        local numGroupMembers = forceParty and GetNumSubgroupMembers() or GetNumGroupMembers()
-        local i = reversed and numGroupMembers or ( unit == 'party' and 0 or 1 )
 
-        return function()
-            local ret
+    --[[ local targetFrame = CreateFrame( "Frame" )
 
-            if i == 0 and unit == 'party' then
-                ret = 'player'
-            elseif i <= numGroupMembers and i > 0 then
-                ret = unit .. i
-            end
-            
-            i = i + ( reversed and -1 or 1 )
-            return ret
-        end
-    end
+    targetFrame:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
+    targetFrame:SetScript( "OnEvent", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, ... )
 
+        -- Targets 
+
+
+    end ) ]]
 
 end
 
