@@ -6099,11 +6099,11 @@ function Hekili:GetOptions()
                                 local item = GetInventoryItemID( 'player', i )
 
                                 if item then
-                                    local key = GetItemInfo( item )
-                                    key = formatKey( key )
+                                    local name = GetItemInfo( item )
+                                    key = formatKey( name )
 
-                                    if gear then gear = format( "%s\n    %s=%d", gear, key, s.set_bonus[key] )
-                                    else gear = format( "%s=%d", key, s.set_bonus[key] ) end
+                                    if gear then gear = format( "%s\n    %6d/%s/%s=%d", gear, item, key, name, s.set_bonus[key] )
+                                    else gear = format( "%6d/%s/%s=%d", item, key, name, s.set_bonus[key] ) end
                                 end
                             end
 
