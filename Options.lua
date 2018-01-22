@@ -292,6 +292,48 @@ local oneTimeFixes = {
     reduceExtremeZoom_12182017 = function( profile )
         for dispID, display in ipairs( profile.displays ) do
             if display.iconZoom > 50 then display.iconZoom = 15 end
+        end        
+    end,
+
+    changeGuardianAPLToSimC_2018012102 = function( profile )
+        if state.class.file == "DRUID" then
+            for dID, display in ipairs( profile.displays ) do
+                if display.Name == "Guardian Primary" then
+                    local precombatName = "SimC Guardian: precombat"
+                    local defaultName   = "SimC Guardian: default"
+
+                    local precombat, default = 0, 0
+                    
+                    for i, list in ipairs( Hekili.DB.profile.actionLists ) do
+                        if list.Name == precombatName then precombat = i end
+                        if list.Name == defaultName   then default   = i end
+                    end
+                    
+                    if precombat > 0 then display.precombatAPL = precombat end
+                    if default > 0   then display.defaultAPL   = default end
+                end
+            end
+        end
+    end,
+
+    changeBrewmasterAPLToSimC_20180121 = function( profile )
+        if state.class.file == "MONK" then
+            for dID, display in ipairs( profile.displays ) do
+                if display.Name == "Brewmaster Primary" or display.Name == "Brewmaster AOE" then
+                    local precombatName = "SimC Brewmaster: precombat"
+                    local defaultName   = "SimC Brewmaster: default"
+
+                    local precombat, default = 0, 0
+                    
+                    for i, list in ipairs( Hekili.DB.profile.actionLists ) do
+                        if list.Name == precombatName then precombat = i end
+                        if list.Name == defaultName   then default   = i end
+                    end
+                    
+                    if precombat > 0 then display.precombatAPL = precombat end
+                    if default > 0   then display.defaultAPL   = default end
+                end
+            end
         end
     end,
 }

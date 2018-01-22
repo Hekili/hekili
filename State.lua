@@ -1898,7 +1898,7 @@ local mt_default_cooldown = {
         elseif k == 'charges' then
             return floor( t.charges_fractional )
             
-        elseif k == 'charges_max' then
+        elseif k == 'charges_max' or k == 'max_charges' then
             return class.abilities[ t.key ].charges
             
         elseif k == 'recharge' then
@@ -2358,7 +2358,7 @@ local mt_default_buff = {
         elseif k == 'cooldown_remains' then
             return state.cooldown[ t.key ] and state.cooldown[ t.key ].remains or 0
             
-        elseif k == 'max_stack' then
+        elseif k == 'max_stack' or k == 'max_stacks' then
             return class.auras[ t.key ].max_stack or 1
             
         elseif k == 'mine' then
@@ -2767,6 +2767,9 @@ local mt_default_debuff = {
             
         elseif k == 'stack' or k == 'react' then
             if t.up then return ( t.count ) else return 0 end
+
+        elseif k == 'max_stack' or k == 'max_stacks' then
+            return class_aura and class_aura.max_stack or 1
             
         elseif k == 'stack_pct' then
             if t.up then
