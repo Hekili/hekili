@@ -1505,19 +1505,23 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         function class.abilities.draught_of_souls.elem.recheck()
             return buff.serenity.remains, buff.storm_earth_and_fire.remains
         end
+        setfenv( class.abilities.draught_of_souls.elem.recheck, state )
 
         function class.abilities.forgefiends_fabricator.elem.recheck()
             return buff.serenity.remains - 1
         end
+        setfenv( class.abilities.forgefiends_fabricator.elem.recheck, state )
 
         -- Implant this for the Unbridled Fury trinket.
         function class.abilities.unbridled_fury.elem.recheck()
             return cooldown.strike_of_the_windlord.remains - 14, cooldown.fists_of_fury.remains - 15, cooldown.rising_sun_kick.remains - 7, buff.serenity.remains
         end
+        setfenv( class.abilities.unbridled_fury.elem.recheck, state )
 
         function class.abilities.vial_of_ceaseless_toxins.elem.recheck()
             return cooldown.serenity.remains - 8, target.time_to_die - cooldown.serenity.remains
         end
+        setfenv( class.abilities.vial_of_ceaseless_toxins.elem.recheck, state )
 
     end
 
