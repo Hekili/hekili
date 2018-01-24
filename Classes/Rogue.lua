@@ -501,7 +501,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             addAura( "master_assassins_initiative", 235027, "duration", 3600 )
 
             addMetaFunction( "state", "mantle_duration", function( x )
-                if state.stealthed.mantle then return state.global_cooldown.remains + state.buff.master_assassins_initiative.duration
+                if state.stealthed.mantle then return state.cooldown.global_cooldown.remains + state.buff.master_assassins_initiative.duration
                 elseif state.buff.master_assassins_initiative.up then return state.buff.master_assassins_initiative.remains end
                 return 0
             end )
