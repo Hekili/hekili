@@ -236,7 +236,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         addAura( 'ascendance', 114051, 'duration', 15 )
         addAura( 'astral_shift', 108271, 'duration', 8 )
         addAura( 'boulderfist', 218825, 'duration', 10 )
-        addAura( 'crash_lightning', 187874, 'duration', 10 )
+        addAura( 'crash_lightning', 187878, 'duration', 10 )
         addAura( 'crashing_lightning', 242286, 'duration', 16, 'max_stack', 15 )
         addAura( 'doom_winds', 204945, 'duration', 6 )
         addAura( 'earthen_spike', 188089, 'duration', 10 )
