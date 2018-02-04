@@ -82,12 +82,12 @@ end
 
 function ns.recountTargets()
     lastNpCount = npCount
-
     npCount = ns.getNumberTargets()
+end
 
-    --[[ if lastNpCount ~= npCount then
-        ns.forceUpdate()
-    end ]]
+
+function ns.targetsChanged()
+    return ( lastNpCount < 2 and npCount > 1 ) or ( npCount < 2 and lastNpCount > 1 )
 end
 
 
@@ -96,7 +96,7 @@ function ns.dumpNameplateInfo()
 end
 
 
-ns.updateTarget = function( id, time, mine )
+function ns.updateTarget( id, time, mine )
 
     if id == state.GUID then return end
 

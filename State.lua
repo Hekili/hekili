@@ -6,20 +6,19 @@ local Hekili = _G[ addon ]
 
 local auras = ns.auras
 local class = ns.class
+
 local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
+
 local round, roundUp = ns.round, ns.roundUp
 local safeMin, safeMax = ns.safeMin, ns.safeMax
-local tCopy = ns.tableCopy
 
-
-local tInsert = table.insert
-local tSort = table.sort
-local tWipe = table.wipe
-
+local table_insert = table.insert
+local table_sort = table.sort
+local table_wipe = table.wipe
+local table_copy = ns.tableCopy
 
 local PTR = ns.PTR
-
 
 -- This will be our environment table for local functions.
 local state = ns.state
@@ -388,7 +387,7 @@ state.UnitBuff = UnitBuff
 state.UnitDebuff = UnitDebuff
 state.floor = math.floor
 state.abs = math.abs
-state.tinsert = table.insert
+state.table_insert = table.insert
 
 state.boss = false
 state.combat = 0
@@ -777,7 +776,7 @@ local function resourceModelSort( a, b )
 end
 
 
-local FORECAST_DURATION = 7.5
+local FORECAST_DURATION = 5
 
 local function forecastResources( resource )
 
@@ -840,7 +839,7 @@ local function forecastResources( resource )
         end
     end
 
-    tSort( events, resourceModelSort )
+    table_sort( events, resourceModelSort )
 
     local finish = now + FORECAST_DURATION * state.haste
 
@@ -908,7 +907,7 @@ local function forecastResources( resource )
             end
         end
 
-        if #events > 1 then tSort( events, resourceModelSort ) end
+        if #events > 1 then table_sort( events, resourceModelSort ) end
     end
 
     for k, v in pairs( remains ) do
@@ -969,7 +968,7 @@ do
         end
 
         local times = state.recheckTimes
-        tWipe( times )
+        table_wipe( times )
 
         lastRecheckAbility = ability
         lastRecheckTime = state.query_time
@@ -977,19 +976,19 @@ do
         -- Hekili:Print( "Recheck given " .. args .. " args for " .. ability .. "." )
         -- print( ... )
 
-        tInsert( times, 0.01 + state.gcd * 0.5 )
+        times[1] = 0.01 + ( state.gcd * 0.5 )
 
         for i = 1, args do
             local t = select( i, ... )
 
             if type( t ) == 'number' and t > 0 then
-                tInsert( times, 0.01 + t )
+                table_insert( times, 0.01 + t )
             else
                 -- Hekili:Print( "Arg " .. ( t and t or "(nil)" ) .. " was <= 0." )
             end
         end
 
-        tSort( times )
+        if args > 0 then table_sort( times ) end
     end
 
 end
@@ -1176,13 +1175,13 @@ local mt_state = {
             time = tonumber( time )
             
             if time > 100 then
-                t.k = ns.damageInLast( time / 1000 )
+                t[k] = ns.damageInLast( time / 1000 )
             else
-                t.k = ns.damageInLast( min( 15, time ) )
+                t[k] = ns.damageInLast( min( 15, time ) )
             end
             
             table.insert( t.purge, k )
-            return t.k
+            return t[k]
             
         elseif k:sub(1, 14) == 'incoming_heal_' then
             local remains = k:sub(15)
@@ -1228,9 +1227,13 @@ local mt_state = {
             
         elseif k == 'gcd' then
             local gcdType = ability and ability.gcdType or "spell"
+            if gcdType == 'totem' then return 1 end
 
-            if gcdType == 'totem' then return 1.0 end
-            return max( 0.75, 1.5 * t.haste )
+            if UnitPowerType( 'player' ) == SPELL_POWER_ENERGY then
+                return t.buff.adrenaline_rush.up and 0.8 or 1
+            end
+
+            return max( 1.5 * t.haste, t.buff.voidform.up and 0.67 or 0.75 )
             
         elseif k == 'travel_time' then 
             local v = ability.velocity or 0
@@ -1914,18 +1917,8 @@ local mt_default_cooldown = {
             end
             
             -- If the ability is toggled off in the profile, we may want to fake its CD.
-            if ns.isKnown( t.key ) then
-                if profile.blacklist[ t.key ] then
-                    return ability.elem.cooldown
-                end
-
-                local toggle = profile.toggles[ t.key ]
-
-                if not toggle or toggle == 'default' then toggle = ability.toggle end
-
-                if toggle and not state.toggle[ toggle ] then
-                    return ability.elem.cooldown
-                end
+            if ns.isDisabled( t.key ) then
+                return ability.elem.cooldown
             end
             
             local bonus_cdr = 0
@@ -3221,6 +3214,7 @@ local function scrapeUnitAuras( unit )
     end
     
 end
+ns.cpuProfile.scrapeUnitAuras = scrapeUnitAuras
 
 
 --[[ local function modelResources( time )
@@ -3259,7 +3253,7 @@ end
     end
 
     -- Sort the table in chronological order.
-    tSort( events, resourceModelSort )
+    table_sort( events, resourceModelSort )
 
     -- Start from time = 0; currently assuming modelResource() will be called after the clock is advanced.
 
@@ -3308,7 +3302,7 @@ end
             end
         end
 
-        if #events > 1 then tSort( events, resourceModelSort ) end
+        if #events > 1 then table_sort( events, resourceModelSort ) end
     end
 
     -- Regen any remaining resources.
@@ -3806,13 +3800,6 @@ ns.isKnown = function( sID, notoggle )
         return false
     end
 
-    --[[ if not notoggle then
-        local pToggle = Hekili.DB.profile.toggles[ ability.key ]
-
-        if ( not pToggle or pToggle == 'default' ) and ( ability.toggle and not state.toggle[ ability.toggle ]  ) then return false
-        elseif ( pToggle and pToggle ~= 'none' ) and not state.toggle[ pToggle ] then return false end
-    end ]]
-
     if ability.talent and not state.talent[ ability.talent ].enabled then
         return false
     end
@@ -3845,6 +3832,36 @@ ns.isKnown = function( sID, notoggle )
 end
 
 
+
+do
+    local LSR = LibStub( "SpellRange-1.0" )
+
+
+    -- If an ability has been manually disabled, don't consider it.    
+    function ns.isDisabled( spell )
+        local ability = class.abilities[ spell ]
+        if not ability then return false end
+
+        local profile = Hekili.DB.profile
+
+        if profile.blacklist and profile.blacklist[ ability.key ] then
+            return true
+        end
+
+        local toggle = profile.toggles[ ability.key ]
+        if not toggle or toggle == 'default' then toggle = ability.toggle end
+
+        if toggle and not state.toggle[ toggle ] then
+            return true
+        end
+
+        return false
+    end
+
+end
+
+
+
 -- Filter out non-resource driven issues with abilities.
 -- Unusable abilities are treated as on CD unless overridden.
 ns.isUsable = function( spell )
@@ -3854,11 +3871,11 @@ ns.isUsable = function( spell )
 
     local profile = Hekili.DB.profile
 
-    if ability.item and not state.equipped[ ability.item ] then
+    if state.rangefilter and UnitExists( 'target' ) and LSR.IsSpellInRange( ability.id, 'target' ) == 0 then
         return false
     end
 
-    if state.rangefilter and UnitExists( 'target' ) and LibStub( "SpellRange-1.0" ).IsSpellInRange( ability.id, 'target' ) == 0 then
+    if ability.item and not state.equipped[ ability.item ] then
         return false
     end
 
@@ -3874,18 +3891,6 @@ ns.isUsable = function( spell )
         return false
     end
 
-    if profile.blacklist and profile.blacklist[ ability.key ] then
-        return false
-    end
-
-    local toggle = profile.toggles[ ability.key ]
-
-    if not toggle or toggle == 'default' then toggle = ability.toggle end
-
-    if toggle and not state.toggle[ toggle ] then
-        return false
-    end
-    
     if ability.usable ~= nil then
         if type( ability.usable ) == 'number' then 
             return IsUsableSpell( ability.usable )

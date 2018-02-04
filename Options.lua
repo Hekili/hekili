@@ -291,7 +291,7 @@ local oneTimeFixes = {
 
     reduceExtremeZoom_12182017 = function( profile )
         for dispID, display in ipairs( profile.displays ) do
-            if display.iconZoom > 50 then display.iconZoom = 15 end
+            if display.iconZoom > 50 then display.iconZoom = 30 end
         end        
     end,
 
@@ -395,7 +395,7 @@ local displayTemplate = {
     KeepAspectRatio = true,
     queueAnchorOffset = 5,
     iconSpacing = 5,
-    iconZoom = 15,
+    iconZoom = 30,
 
     -- Stuff for the autoconverter.
     xyConverted = true,
@@ -453,6 +453,14 @@ local displayTemplate = {
     xOffsetAura = 0,
     yOffsetAura = 0,
     -- auraLayer = 0,
+
+    showDelay = "TEXT",
+    delayFont = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+    delayFontSize = 12,
+    delayFontStyle = 'OUTLINE',
+    delayAnchor = 'TOPLEFT',
+    xOffsetDelay = 0,
+    yOffsetDelay = 0,
     
     visibilityType = 'b',
     
@@ -1450,8 +1458,11 @@ ns.newDisplayOption = function( key )
                         end ]]
                             
                             -- Will need to be more elaborate later.
+                            ns.UI.Displays[ dispIdx ]:Deactivate()
+
                             table.remove( Hekili.DB.profile.displays, dispIdx )
                             table.remove( ns.queue, dispIdx )
+
                             ns.refreshOptions()
                             ns.loadScripts()
                             ns.buildUI()
@@ -1892,7 +1903,111 @@ ns.newDisplayOption = function( key )
                             return not display or not display.showKeybindings
                         end,
                     },
+
+
+                    showDelay = {
+                        type = 'select',
+                        name = "Show Delay Indicator",
+                        desc = "Specify whether to show a delay indicator when the addon recommends waiting before using the first recommended ability.\n\n" ..
+                            "If no delay indicator is shown, you may use abilities before it is optimal, refreshing a buff or debuff early or before you have certain resources.\n\n" ..
+                            "If an icon is selected, the icon will be green below 0.5s, yellow between 0.5s and 1s, and red above 1s.  When the icon disappears, the ability is ready.\n\n" ..
+                            "If a text countdown is selected, the timer will count down and disappear at 0.",
+                        order = 19.001,
+                        width = "full",
+                        values = {
+                            ["NONE"] = "No Delay Indicator",
+                            ["ICON"] = "Show Delay Icon (Color)",
+                            ["TEXT"] = "Show Delay Text (Countdown)"
+                        },                        
+                    },
+
+                    delaysGroup = {
+                        type = 'group',
+                        inline = true,
+                        name = "Delays",
+                        order = 19.002,
+                        hidden = function( info )
+                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                            local display = id and Hekili.DB.profile.displays[ id ]
+
+                            return not display or display.showDelays == "NONE"
+                        end,
+                        args = {
+                            delayFont = {
+                                type = 'select',
+                                name = 'Font',
+                                desc = "Select the font to use if a delay caption is shown.",
+                                dialogControl = 'LSM30_Font',
+                                order = 5,
+                                values = LibStub( "LibSharedMedia-3.0" ):HashTable( "font" ),
+                                width = "full",
+                            },
+                            delayFontStyle = {
+                                type = 'select',
+                                name = "Style",
+                                desc = "Select the font style to use if delay captions are shown.",
+                                values = {
+                                    ["MONOCHROME"] = "Monochrome",
+                                    ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
+                                    ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
+                                    ["NONE"] = "None",
+                                    ["OUTLINE"] = "Outline",
+                                    ["THICKOUTLINE"] = "Thick Outline"
+                                },
+                                width = 'full',
+                                order = 6,                                
+                            },
+                            delaySpacer1 = {
+                                type = 'description',
+                                name = '\n',
+                                order = 7,
+                                width = 'full',
+                            },
+                            
+                            delayAnchor = {
+                                type = 'select',
+                                name = 'Anchor Point',
+                                order = 8,
+                                width = 'full',
+                                values = {
+                                    TOPLEFT = 'Top Left',
+                                    TOP = 'Top',
+                                    TOPRIGHT = 'Top Right',
+                                    LEFT = 'Left',
+                                    CENTER = 'Center',
+                                    RIGHT = 'Right',
+                                    BOTTOMLEFT = 'Bottom Left',
+                                    BOTTOM = 'Bottom',
+                                    BOTTOMRIGHT = 'Bottom Right'
+                                }
+                            },
+                            
+                            xOffsetDelay = {
+                                type = 'range',
+                                name = 'X Offset',
+                                order = 10,
+                                width = 'full',
+                                
+                                min = -displayOptionInfo.iconOffset,
+                                max = displayOptionInfo.iconOffset,
+                                step = 0.1,
+                                bigStep = 1,
+                            },
+                            yOffsetDelay = {
+                                type = 'range',
+                                name = 'Y Offset',
+                                order = 11,
+                                width = 'full',
+                                
+                                min = -displayOptionInfo.iconOffset,
+                                max = displayOptionInfo.iconOffset,
+                                step = 0.1,
+                                bigStep = 1,
+                            }, 
+                        },
+                    },
                     
+
                     showCaptions = {
                         type = 'toggle',
                         name = 'Show Captions',
@@ -3034,7 +3149,7 @@ ns.newActionListOption = function( index )
                     local key, index = ns.newAction( listIdx, result )
                     if key then
                         Hekili.Options.args.actionLists.args[ listKey ].args[ key ] = ns.newActionOption( listIdx, index )
-                        ns.cacheCriteria()
+                        Hekili:UpdateVisibilityStates()
                         ns.loadScripts()
                     end
                 end
@@ -4551,7 +4666,7 @@ ns.SimulationCraftImporter = function ()
                     ns.refreshOptions()
                     ns.loadScripts()
                     ns.buildUI()
-                    ns.cacheCriteria()
+                    Hekili:UpdateVisibilityStates()
                     
                     -- ns.lib.AceConfigDialog:SelectGroup( "Hekili", "SimulationCraftImporter" )
                     
@@ -4997,7 +5112,7 @@ function Hekili:GetOptions()
                             }
                         }
                     }, ]]
-                    ['Engine'] = {
+                    --[[ ['Engine'] = {
                         type = "group",
                         name = "Engine Settings",
                         inline = true,
@@ -5012,16 +5127,9 @@ function Hekili:GetOptions()
                                 width = full,
 
                             },
-                            --[[ ['Use Old Engine'] = {
-                                type = 'toggle',
-                                name = "Use Old Prediction Engine",
-                                desc = "If checked, the addon will use the prediction engine from before patch 7.2.5 for making its recommendations.  If you experience odd recommendations after patch 7.2.5, " ..
-                                    "try enabling this checkbox and see if the behavior resolves itself.  Please report any issues at the CurseForge link shown above.",
-                                order = 1,
-                                width = "full"
-                            }, ]]
+
                         }
-                    },
+                    }, ]]
                 }
             },
             notifs = {
@@ -6540,12 +6648,12 @@ function Hekili:SetOption( info, input, ... )
             action = tonumber( action )
 
             profile.actionLists[ list ].Actions[ action ].Enabled = not input
-            ns.cacheCriteria()
+            Hekili:UpdateVisibilityStates()
         elseif profile.trinkets[ ability ] ~= nil then
             profile.trinkets[ ability ][ option ] = input
         end
 
-        ns.forceUpdate()
+        Hekili:ForceUpdate()
         return
         
     elseif category == 'notifs' then
@@ -6937,12 +7045,11 @@ function Hekili:SetOption( info, input, ... )
         ns.refreshOptions()
         ns.loadScripts()
         ns.buildUI()
-        ns.cacheCriteria()
     else
         if RebuildOptions then ns.refreshOptions() end
         if RebuildScripts then ns.loadScripts() end
+        if RebuildCache and not RebuildUI then Hekili:UpdateVisibilityStates() end
         if RebuildUI then ns.buildUI() end
-        if RebuildCache and not RebuildUI then ns.cacheCriteria() end
     end
     
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
@@ -8230,7 +8337,6 @@ end
 
 
 
-local forceUpdate = ns.forceUpdate
 local warnOnce = false
 
 -- Key Bindings
@@ -8238,25 +8344,17 @@ function Hekili:TogglePause( ... )
     
     if not self.Pause then
         self.Pause = true
-        Hekili.ActiveDebug = true
+        self.ActiveDebug = true
 
-        local numDisplays = #Hekili.DB.profile.displays
-
-        for i = 1, numDisplays do
-            if ns.visible.display[ i ] then
-                local dScriptPass = Hekili:CheckDisplayCriteria( i ) or 0
-                
-                if ( dScriptPass > 0 ) then
-                    Hekili:ProcessHooks( i )
-                end
+        for i, display in ipairs( ns.UI.Displays ) do
+            if self:IsDisplayActive( i ) and display.alpha > 0 then
+                self:ProcessHooks( i )
             end
         end
 
-        Hekili:SaveDebugSnapshot()
-        Hekili:Print( "Snapshot saved." )
-        Hekili.ActiveDebug = false
-
-        Hekili:UpdateDisplays()
+        self:SaveDebugSnapshot()
+        self:Print( "Snapshot saved." )
+        self.ActiveDebug = false
 
         if not warnOnce then
             Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
@@ -8274,37 +8372,28 @@ function Hekili:TogglePause( ... )
         end
     end
     
-    Hekili:Print( ( not self.Pause and "UN" or "" ) .. "PAUSED." )
-    Hekili:Notify( ( not self.Pause and "UN" or "" ) .. "PAUSED" )
-    
-    forceUpdate()
+    self:Print( ( not self.Pause and "UN" or "" ) .. "PAUSED." )
+    self:Notify( ( not self.Pause and "UN" or "" ) .. "PAUSED" )
+
 end
 
 
 -- Key Bindings
 function Hekili:MakeSnapshot( ... )
     
-    Hekili.ActiveDebug = true
+    self.ActiveDebug = true
 
-    local numDisplays = #Hekili.DB.profile.displays
-
-    for i = 1, numDisplays do
-        if ns.visible.display[ i ] then
-            local dScriptPass = Hekili:CheckDisplayCriteria( i ) or 0
-            
-            if ( dScriptPass > 0 ) then
-                Hekili:ProcessHooks( i )
-            end
+    for i, display in ipairs( ns.UI.Displays ) do
+        if self:IsDisplayActive( i ) and display.alpha > 0 then
+            self:ProcessHooks( i )
         end
     end
 
-    Hekili:SaveDebugSnapshot()
-    Hekili:Print( "Snapshot saved." )
-    Hekili.ActiveDebug = false
+    self:SaveDebugSnapshot()
+    self:Print( "Snapshot saved." )
+    self.ActiveDebug = false
 
-    Hekili:UpdateDisplays()
-
-    Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
+    self:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
 
 end
 
@@ -8350,11 +8439,14 @@ function Hekili:ToggleMode()
     
     Hekili:Print( modeMsgs[ Hekili.DB.profile['Mode Status'] ].p )
     Hekili:Notify( modeMsgs[ Hekili.DB.profile['Mode Status'] ].n )
-    
+
+    self:UpdateVisibilityStates()
+    self:UpdateDisplayVisibility()
+
     if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_MODE', Hekili.DB.profile['Mode Status'] ) end
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
     
-    forceUpdate( "HEKILI_TOGGLE_MODE", true )
+    self:ForceUpdate( "HEKILI_TOGGLE_MODE", true )
 end
 
 
@@ -8364,10 +8456,9 @@ function Hekili:ToggleInterrupts()
     Hekili:Notify( "Interrupts " .. ( Hekili.DB.profile.Interrupts and "ON" or "OFF" ) )
     
     if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_INTERRUPTS', Hekili.DB.profile.Interrupts ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end   
     
-    
-    forceUpdate( "HEKILI_TOGGLE_INTERRUPTS", true )
+    self:ForceUpdate( "HEKILI_TOGGLE_INTERRUPTS", true )
 end
 
 
@@ -8379,7 +8470,7 @@ function Hekili:ToggleCooldowns()
     if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_COOLDOWNS', Hekili.DB.profile.Cooldowns ) end
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
     
-    forceUpdate( "HEKILI_TOGGLE_COOLDOWNS", true )
+    self:ForceUpdate( "HEKILI_TOGGLE_COOLDOWNS", true )
 end
 
 
@@ -8391,7 +8482,7 @@ function Hekili:ToggleArtifact()
     if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_ARTIFACT', Hekili.DB.profile.Artifact ) end
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
 
-    forceUpdate( "HEKILI_TOGGLE_ARTIFACT", true )
+    self:ForceUpdate( "HEKILI_TOGGLE_ARTIFACT", true )
 end
 
 
@@ -8403,12 +8494,14 @@ function Hekili:TogglePotions()
     if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_POTIONS', Hekili.DB.profile.Potions ) end
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
     
-    forceUpdate( "HEKILI_TOGGLE_POTIONS", true )
+    self:ForceUpdate( "HEKILI_TOGGLE_POTIONS", true )
 end
 
 
 function Hekili:ToggleCustom( num )
     Hekili.DB.profile['Toggle_' .. num] = not Hekili.DB.profile['Toggle_' .. num]
+
+    self:UpdateDisplayVisibility()
     
     if Hekili.DB.profile['Toggle ' .. num .. ' Name'] then
         Hekili:Print( Hekili.DB.profile['Toggle_' .. num] and ( 'Toggle \'' .. Hekili.DB.profile['Toggle ' .. num .. ' Name'] .. "' |cFF00FF00ENABLED|r." ) or ( 'Toggle \'' .. Hekili.DB.profile['Toggle ' .. num .. ' Name'] .. "' |cFFFF0000DISABLED|r." ) )
@@ -8436,8 +8529,9 @@ function Hekili:ClassToggle( name )
     Hekili:Notify( Hekili.DB.profile[key] and ( toggle .. " ON" ) or ( toggle .. " OFF" ) )
     
     if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_CLASS_TOGGLE', name, Hekili.DB.profile[ key ] ) end
+    self:UpdateDisplayVisibility()
     
-    forceUpdate( "HEKILI_CLASS_TOGGLE", true )
+    self:ForceUpdate( "HEKILI_CLASS_TOGGLE", true )
 end
 
 
@@ -8445,7 +8539,6 @@ function Hekili:GetToggleState( name, class )
     if class then
         return Hekili.DB.profile[ 'Toggle State: ' .. name ]
     end
-    
     
     return Hekili.DB.profile[ name ]
 end

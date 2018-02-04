@@ -14,41 +14,41 @@ ns.PTR = GetBuildInfo() ~= "7.3.2"
 
 
 ns.Patrons = {
-    "Bsirk",
-    "Dane",
-    "FatIrishMidget",
-    "Janko",
-    "Manni",
-    "Mojodisu",
-    "Rusah",
-    "djthomp",
-    "Nikô",
-    "Opie",
-    "Ovaldo",
-    "Wargus (Shagus)",
-    "Zeus",
+    "ApexPlatypus",
     "belashar",
     "Belatar",
     "Borelia",
+    "Bsirk/Kris",
+    "Dane",
+    "Dez",
+    "djthomp",
+    "FatIrishMidget",
     "Grayscale",
+    "Harkun",
     "Ingrathis",
     "Issamonk",
     "Jingy - Rekya",
     "kaernunnos",
-    "ninjask92",
+    "Kretol",
+    "Manni",
+    "Mojodisu",
+    "Nikö",
     "ODB",
+    "Opie",
     "ralask",
+    "Rusah",
     "Theda99",
     "Tic[à]sentence",
-    "Корнишон"
+    "Wargus (Shagus)",
+    "Корнишон",
+    "Zeus"
 }
 table.sort( ns.Patrons, function( a, b ) return upper( a ) < upper( b ) end  )
 
 
-function Hekili:Test()
-    Hekili.Testing = not Hekili.Testing
-    Hekili:Print( "Test mode " .. ( Hekili.Testing and "ON" or "OFF" ) .. "; iterator backup mode " .. ( Hekili.Testing and "ON" or "OFF" ) .. "." )
-end
+
+
+ns.cpuProfile = {}
 
 
 ns.lib = {
@@ -112,14 +112,8 @@ ns.targets = {}
 ns.TTD = {}
 
 ns.UI = {
+    Displays = {},
     Buttons = {}
-}
-
-ns.visible = {
-    display = {},
-    hook = {},
-    list = {},
-    action = {}
 }
 
 ns.debug = {}

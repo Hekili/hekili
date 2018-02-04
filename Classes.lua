@@ -696,9 +696,9 @@ ns.specializationChanged = function()
     ns.updateTalents()
 
     ns.callHook( 'specializationChanged' )
-    ns.cacheCriteria()
+    Hekili:UpdateVisibilityStates()
 
-    ns.forceUpdate()
+    Hekili:ForceUpdate()
     --[[ for i, v in ipairs( ns.queue ) do
         for j = 1, #v do
             ns.queue[i][j] = nil

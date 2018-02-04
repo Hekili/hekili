@@ -1092,7 +1092,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             ready = function ()
                 return max( energy[ "time_to_" .. ( settings.shadow_dance_energy or 100 ) ], buff.shadow_dance.remains )
             end,
-            recheck = function () return buff.shadow_dance.remains, target.time_to_die - ( talent.subterfuge.enabled and 5 or 4 ) end,
+            recheck = function () return buff.death_from_above.remains - 0.5, buff.shadow_dance.remains, target.time_to_die - ( talent.subterfuge.enabled and 5 or 4 ) end,
 
         } )
 

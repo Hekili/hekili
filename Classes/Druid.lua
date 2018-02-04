@@ -463,7 +463,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
 
 
         addMetaFunction( 'state', 'gcd', function()
-            return 1.0
+            return buff.cat_form.up and 1.0 or max( 0.75, 1.5 * haste )
         end )
 
 
@@ -545,7 +545,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             if sourceGUID == state.GUID then
                 if subtype == "SPELL_AURA_REMOVED" then
                     -- Track Prowl and Shadowmeld dropping, give a 0.2s window for the Rake snapshot.
-                    if spellID == 58984 or spellID == 5215 then
+                    if spellID == 58984 or spellID == 5215 or spellID == 1102547 then
                         stealth_dropped = GetTime()
                     end
                 elseif subtype == "SPELL_AURA_APPLIED" then
@@ -716,7 +716,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             id = 106951,
             spend = 0,
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 180,
             min_range = 0,
             max_range = 0,
@@ -1302,6 +1302,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             min_range = 0,
             max_range = 0,
             passive = true,
+            recheck = function () return buff.incarnation.remains - 0.1 end,
             usable = function () return ( time == 0 or boss ) and not buff.prowl.up end,
         } )
 
@@ -2029,6 +2030,9 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             setDistance( 5 )
             applyDebuff( "target", "dazed", 3 )
         end )
+
+
+        class.abilities.shadowmeld.recheck = setfenv( function () return buff.incarnation.remains - 0.1 end, state )
 
 
     end

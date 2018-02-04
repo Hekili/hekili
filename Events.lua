@@ -16,6 +16,7 @@ local GroupMembers = ns.GroupMembers
 
 local abs = math.abs
 local lower, match, upper = string.lower, string.match, string.upper
+local string_format = string.format
 
 
 -- Abandoning AceEvent in favor of darkend's solution from:
@@ -27,15 +28,8 @@ local handlers = {}
 local unitEvents = CreateFrame( "Frame" )
 local unitHandlers = {}
 
-ns.displayUpdates = {}
-local displayUpdates = ns.displayUpdates
-local lastRecount = 0
-
-local forceRefresh = {}
-local superForce = {}
-
-local lastRefresh = {}
-local lastDisplay = 0
+local timerRecount = 0
+local forceRecount = false
 
 
 local activeDisplays = {}
@@ -68,55 +62,14 @@ function ns.StartEventHandler()
     end )
 
     events:SetScript( "OnUpdate", function( self, elapsed )
-        local now = GetTime()
+        timerRecount = timerRecount - elapsed
 
-        if now - lastRecount >= 0.05 then
+        if forceRecount or timerRecount < 0 then
             ns.recountTargets()
-            lastRecount = now
+            if ns.targetsChanged() then Hekili:ForceUpdate( "TARGET_COUNT_CHANGED" ) end
+            timerRecount = 0.1
         end
 
-        local updatePeriod = state.combat == 0 and 0.5 or 0.2
-        local forcedPeriod = 0.1
-
-        local numDisplays = #Hekili.DB.profile.displays
-
-        if Hekili.DB.profile.Enabled and not Hekili.Pause then
-            for i = 1, numDisplays do
-                local index = lastDisplay + i
-                index = index > numDisplays and index - numDisplays or index
-
-                if ns.visible.display[ index ] then
-                    activeDisplays[ index ] = true
-
-                    if ( not lastRefresh[ index ] or -- We've never refreshed this display.
-                       ( superForce[ index ] ) or -- Something happened that requires an *immediate* refresh.
-                       ( forceRefresh[ index ] and now - lastRefresh[ index ] >= forcedPeriod ) or -- A less-urgent refresh was requested.
-                       ( now - lastRefresh[ index ] >= updatePeriod ) ) then -- We've reached the default update period, 2x/sec ooc, 5x/sec ic.
-                    
-                        local dScriptPass = Hekili:CheckDisplayCriteria( index ) or 0
-                        
-                        if ( dScriptPass > 0 ) then
-
-                            Hekili:ProcessHooks( index )
-
-                            lastRefresh[ index ] = now
-                            forceRefresh[ index ] = false
-                            superForce[ index ] = false
-                            lastDisplay = index
-
-                            break
-                        end
-                    end
-                else
-                    -- Display isn't visible, cancel the forced update.
-                    activeDisplays[ index ] = false
-                    forceRefresh[ index ] = false
-                    superForce[ index ] = false
-                end
-            end
-        end
-
-        Hekili:UpdateDisplays()
     end )
 
 end
@@ -191,28 +144,67 @@ ns.FeignEvent = function( event, ... )
 end
 
 
--- FIND A BETTER HOME
-ns.cacheCriteria = function()
+do
+    local dispActive = {}
+    local listActive = {}
+    local actsActive = {}
 
-    for key, group in pairs( ns.visible ) do
-        for key in pairs( group ) do
-            group[ key ] = nil
+    function Hekili:UpdateVisibilityStates()
+        local profile = self.DB.profile
+        local displays = ns.UI.Displays
+
+        for i in ipairs( dispActive ) do dispActive[ i ] = nil end
+        for i in ipairs( listActive ) do listActive[ i ] = nil end
+        for a in  pairs( actsActive ) do actsActive[ a ] = nil end
+
+        if profile.Enabled then
+            for i, display in ipairs( profile.displays ) do            
+                if display.Enabled and ( display.Specialization == 0 or display.Specialization == state.spec.id ) then
+                    dispActive[ i ] = true                
+                    if displays[ i ] and not displays[ i ].Active then displays[ i ]:Activate() end
+                else
+                    if displays[ i ] and displays[ i ].Active then displays[ i ]:Deactivate() end
+                end
+            end
+
+            for i, list in ipairs( profile.actionLists ) do
+                if list.Specialization == 0 or list.Specialization == state.spec.id then
+                    listActive[ i ] = true
+                end
+
+
+                -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
+                for a, action in ipairs( list.Actions ) do
+                    if action.Enabled and action.Ability then
+                        actsActive[ i ..':' .. a ] = true
+                    end
+                end
+            end
         end
     end
 
-    for i, display in ipairs( Hekili.DB.profile.displays ) do
-        ns.visible.display[ i ] = display.Enabled and ( display.Specialization == 0 or display.Specialization == state.spec.id )
+
+    function Hekili:IsDisplayActive( display )
+        return dispActive[ display ] == true
     end
 
-    for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-        ns.visible.list[ i ] = ( list.Specialization == 0 or list.Specialization == state.spec.id )
 
-        for j, action in ipairs( list.Actions ) do
-            ns.visible.action[ i..':'..j ] = action.Enabled and action.Ability
-        end
+    function Hekili:IsListActive( list )
+        return listActive[ list ] == true
     end
 
+
+    function Hekili:IsActionActive( list, action )
+        return actsActive[ list .. ':' .. action ] == true
+    end
+
+
+    function Hekili:DumpActionActive()
+        DevTools_Dump( actsActive )
+    end
 end
+
+
 
 
 RegisterEvent( "UPDATE_BINDINGS", function () ns.refreshBindings() end )
@@ -287,7 +279,7 @@ RegisterEvent( "BARBER_SHOP_CLOSE", function ()
 end )
 
 
-ns.updateTalents = function ()
+function ns.updateTalents()
 
     for k, _ in pairs( state.talent ) do
         state.talent[k].enabled = false
@@ -335,7 +327,8 @@ end
 
 RegisterEvent( "PLAYER_TALENT_UPDATE", function ( event )
     ns.updateTalents()
-    ns.forceUpdate( event )
+
+    Hekili:ForceUpdate( event )
 end )
 
 
@@ -376,33 +369,8 @@ end
 RegisterEvent( "ARTIFACT_UPDATE", ns.updateArtifact )
 
 
---[[ ns.updateGlyphs = function ()
 
-    for k, _ in pairs( state.glyph ) do
-        state.glyph[k].enabled = false
-    end
-
-    for i=1, NUM_GLYPH_SLOTS do
-        local enabled, _, _, gID = GetGlyphSocketInfo(i)
-
-        for k,v in pairs( class.glyphs ) do
-            if gID == v.id then
-                if enabled and v.name then
-                    if rawget( state.glyph, k ) then state.glyph[ k ].enabled = true
-                    else state.glyph[ k ] = { enabled = true } end
-                    break
-                end
-            end
-        end
-    end
-
-end
-
-
-RegisterEvent( "GLYPH_ADDED", function () ns.updateGlyphs() end )
-RegisterEvent( "GLYPH_REMOVED", function () ns.updateGlyphs() end )
-RegisterEvent( "GLYPH_UPDATED", function () ns.updateGlyphs() end ) ]]
-
+-- TBD:  Consider making `boss' a check to see whether the current unit is a boss# unit instead.
 
 RegisterEvent( "ENCOUNTER_START", function () state.boss = true end )
 RegisterEvent( "ENCOUNTER_END", function () state.boss = false end )
@@ -410,7 +378,7 @@ RegisterEvent( "ENCOUNTER_END", function () state.boss = false end )
 
 local gearInitialized = false
 
-ns.updateGear = function ()
+function ns.updateGear()
 
     for thing in pairs( state.set_bonus ) do
         state.set_bonus[ thing ] = 0
@@ -498,7 +466,6 @@ end
 RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", function()
     ns.updateGear()
     ns.updateTalents()
-    -- ns.updateArtifact()
 end )
 
 
@@ -513,6 +480,7 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
 
     Hekili:PurgeTTD()
 end )
+
 
 
 local dynamic_keys = setmetatable( {}, {
@@ -533,27 +501,27 @@ ns.castsAll = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' 
 
 local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
-Hekili.Updates = {}
 
-local function forceUpdate( from, super )
+local lastForceTime = 0
+local lastForceEvent = 'NONE'
 
-    if from then
-        if Hekili.Updates[ from ] then Hekili.Updates[ from ] = Hekili.Updates[ from ] + 1
-        else Hekili.Updates[ from ] = 1 end
+local UNIT_POWER_ICD = true
+
+function Hekili:ForceUpdate( event )
+    --[[ local now = GetTime()
+
+    if now > lastForceTime then
+        print( "|cFF00FF00NEW UPDATE:|r", event, string_format( "%.2f", now ) )
+    else
+        print( "OLD UPDATE:", event, string_format( "%.2f", now ) )
     end
 
-    for i = 1, #Hekili.DB.profile.displays do
-        forceRefresh[ i ] = true
-        if super then superForce[ i ] = true end
+    lastForceTime = now ]]
+
+    for i, d in ipairs( ns.UI.Displays ) do
+        d.criticalUpdate = true
     end
-
-    -- if super then print( "SUPER", from or "nil", GetTime() ) end
-
-    return
-
 end
-
-ns.forceUpdate = forceUpdate
 
 
 local function spellcastEvents( event, unit, spell, _, _, spellID )
@@ -610,16 +578,16 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
     end
 
 end
+ns.cpuProfile.spellcastEvents = spellcastEvents
 
 
 
 
 
-
--- Need to make caching system.
+--[[ Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
-    if UnitIsUnit( unit, "player" ) then forceUpdate( event, true ) end
-end )
+    if UnitIsUnit( unit, "player" ) then Hekili:ForceUpdate( event ) end
+end ) ]]
 
 
 function ns.removeSpellFromFlight( spell )
@@ -648,7 +616,8 @@ local spell_names = setmetatable( {}, {
 } )
 
 
-RegisterUnitEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
+local function UNIT_POWER_FREQUENT( event, unit, power )
+
     if unit ~= 'player' then return end
 
     if power == "FOCUS" and state.focus then
@@ -676,24 +645,17 @@ RegisterUnitEvent( "UNIT_POWER_FREQUENT", function( event, unit, power )
 
     end
 
-    -- forceUpdate( event )
-end )
+    -- Hekili:ForceUpdate( event )
+end
+ns.cpuProfile.UNIT_POWER_FREQUENT = UNIT_POWER_FREQUENT
+
+RegisterUnitEvent( "UNIT_POWER_FREQUENT", UNIT_POWER_FREQUENT )
+
 
 RegisterUnitEvent( "UNIT_POWER", function( event, unit, power )
     if unit ~= 'player' then return end
-    forceUpdate( event )
+    Hekili:ForceUpdate( event )
 end )
-
---[[ RegisterEvent( "UNIT_POWER", function( event, unit, power )
-    if unit == 'player' then
-        forceUpdate( event )
-    end
-end ) ]]
-
-
-
--- RegisterEvent( "SPELL_UPDATE_USABLE", forceUpdate )
--- RegisterEvent( "SPELL_UPDATE_COOLDOWN", forceUpdate )
 
 
 local autoAuraKey = setmetatable( {}, {
@@ -741,7 +703,7 @@ end )
 
 RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
     state.target.updated = true
-    forceUpdate( event, true )
+    Hekili:ForceUpdate( event, true )
 end )
 
 
@@ -758,10 +720,11 @@ local aura_events = {
 -- Use dots/debuffs to count active targets.
 -- Track dot power (until 6.0) for snapshotting.
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
-RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
+local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
     if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' and ns.isTarget( destGUID ) then
         ns.eliminateUnit( destGUID, true )
+        forceRecount = true
         return
     end
 
@@ -787,7 +750,8 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
             state.player.queued_gcd = nil
             state.player.queued_off = nil           
         end
-        forceUpdate( subtype, true )
+
+        Hekili:ForceUpdate( subtype, true )
     end
 
     if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
@@ -816,12 +780,12 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
         if aura_events[ subtype ] then
             if state.GUID == destGUID then 
                 state.player.updated = true
-                forceUpdate( subtype )
+                if class.auras[ spellID ] then Hekili:ForceUpdate( subtype ) end
             end
    
             if UnitGUID( 'target' ) == destGUID then
                 state.target.updated = true
-                forceUpdate( subtype )
+                if class.auras[ spellID ] then Hekili:ForceUpdate( subtype ) end
             end
         end
 
@@ -872,7 +836,7 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
 
             if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
                 state.swings.last_foa_tick = time
-                -- forceUpdate( subtype )
+                -- Hekili:ForceUpdate( subtype )
             end
         end
     end
@@ -880,11 +844,14 @@ RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, so
     -- This is dumb.  Just let modules used the event handler.
     ns.callHook( "COMBAT_LOG_EVENT_UNFILTERED", event, nil, subtype, nil, sourceGUID, sourceName, nil, nil, destGUID, destName, destFlags, nil, spellID, spellName, nil, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
-end )
+end
+ns.cpuProfile.CLEU_HANDLER = CLEU_HANDLER
+
+RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", CLEU_HANDLER )
 
 
 
-RegisterUnitEvent( "UNIT_COMBAT", function( event, unit, action, descriptor, damage, damageType )
+local function UNIT_COMBAT( event, unit, action, descriptor, damage, damageType )
 
     if unit ~= 'player' then return end
 
@@ -896,7 +863,10 @@ RegisterUnitEvent( "UNIT_COMBAT", function( event, unit, action, descriptor, dam
         end
     end
         
-end )
+end
+ns.cpuProfile.UNIT_COMBAT = UNIT_COMBAT
+
+RegisterUnitEvent( "UNIT_COMBAT", UNIT_COMBAT )
 
 
 local keys = ns.hotkeys

@@ -31,11 +31,15 @@ local tableCopy = ns.tableCopy
 local timeToReady = ns.timeToReady
 local trim = string.trim
 
+local string_format = string.format
+
 local mt_resource = ns.metatables.mt_resource
 local ToggleDropDownMenu = L_ToggleDropDownMenu
 
-local updatedDisplays = {}
 
+local updatedDisplays = {}
+local recommendChecks = {}
+local recommendChange = {}
 
 
 -- checkImports()
@@ -256,6 +260,8 @@ function Hekili:OnInitialize()
     ns.updateGear()
     
     ns.primeTooltipColors()
+
+    self:UpdateVisibilityStates()
     
     callHook( "onInitialize" )
     
@@ -286,9 +292,9 @@ function Hekili:ReInitialize()
     
     ns.updateTalents()
     ns.updateGear()
-    
-    self.DB.profile.Release = self.DB.profile.Release or 20161003.1
-    
+
+    self:UpdateVisibilityStates()
+        
     callHook( "onInitialize" )
     
     if self.DB.profile.Enabled == false and self.DB.profile.AutoDisabled then 
@@ -313,16 +319,18 @@ end
 function Hekili:OnEnable()
     
     ns.specializationChanged()
+    self:UpdateVisibilityStates()
     ns.StartEventHandler()
     buildUI()
+    self:ForceUpdate()
     ns.overrideBinds()
     ns.ReadKeybindings()
     
-    Hekili.s = ns.state
+    self.s = ns.state
     
     -- May want to refresh configuration options, key bindings.
     if self.DB.profile.Enabled then
-        self:UpdateDisplays()
+        -- self:UpdateDisplays()
         ns.Audit()
     else
         self:Disable()
@@ -333,6 +341,8 @@ end
 
 function Hekili:OnDisable()
     self.DB.profile.Enabled = false
+    self:UpdateVisibilityStates()
+
     ns.StopEventHandler()
     buildUI()
 end
@@ -341,7 +351,8 @@ end
 function Hekili:Toggle()
     self.DB.profile.Enabled = not self.DB.profile.Enabled
     if self.DB.profile.Enabled then self:Enable()
-else self:Disable() end
+    else self:Disable() end
+    self:UpdateDisplayVisibility()
 end
 
 
@@ -440,6 +451,32 @@ function Hekili:CheckAPLStack()
 end
 
 
+do
+    local knownCache = {}
+
+    function Hekili:IsSpellKnown( spell )
+        knownCache[ spell ] = knownCache[ spell ] or ns.isKnown( spell )
+        return knownCache[ spell ]
+    end
+
+
+    local disabledCache = {}
+
+    function Hekili:IsSpellEnabled( spell )
+        disabledCache[ spell ] = disabledCache[ spell ] or ( not ns.isDisabled( spell ) )
+        return disabledCache[ spell ]
+    end
+
+
+    local table_wipe = table.wipe
+
+    function Hekili:ResetSpellCaches()
+        table_wipe( knownCache )
+        table_wipe( disabledCache )
+    end
+end
+
+
 function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, action, wait, clash )
     
     local display = self.DB.profile.displays[ dispID ]
@@ -472,7 +509,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
 
     table.wipe( itemTried )
     
-    if ns.visible.list[ listID ] then
+    if self:IsListActive( listID ) then
         local actID = 1
         
         while actID <= #list.Actions do
@@ -508,10 +545,11 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                 return chosen_action, chosen_wait, chosen_clash, chosen_depth
             end
             
-            if ns.visible.action[ listID..':'..actID ] then
+            if self:IsActionActive( listID, actID ) then
                 
                 -- Check for commands before checking actual actions.
                 local entry = list.Actions[ actID ]
+
                 state.this_action = entry.Ability
                 state.this_args = entry.Args
                 
@@ -520,17 +558,18 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                 
                 -- Need to expand on modifiers, gather from other settings as needed.
                 if debug then self:Debug( "\n[ %2d ] Testing entry %s:%d ( %s ) with modifiers ( %s ).", chosen_depth, list.Name, actID, entry.Ability, entry.Args or "NONE" ) end
-                
+
                 local ability = class.abilities[ entry.Ability ]
 
                 local wait_time = 60
                 local clash = 0
                 
-                local known = ability and isKnown( state.this_action )
+                local known = self:IsSpellKnown( state.this_action )
+                local enabled = self:IsSpellEnabled( state.this_action )
                 
-                if debug then self:Debug( "%s is %s.", ability and ability.name or entry.Ability, known and "KNOWN" or "NOT KNOWN" ) end
+                if debug then self:Debug( "%s is %s and %s.", ability and ability.name or entry.Ability, known and "KNOWN" or "NOT KNOWN", enabled and "ENABLED" or "DISABLED" ) end
                 
-                if known then
+                if known and enabled then
                     local scriptID = listID .. ':' .. actID
                     
                     -- Used to notify timeToReady() about an artificial delay for this ability.
@@ -975,21 +1014,15 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
         listStack[ listID ] = hookID or 0
     end
     
+
     local chosen_action = action
     local chosen_clash = clash or 0
     local chosen_depth = depth or 0
     
+
     local stop = false
 
-    if chosen_depth == 0 then
-        for k, v in pairs( criteria ) do
-            v.known = nil
-            v.ready = nil
-            v.usable = nil
-        end
-    end
-    
-    if ns.visible.list[ listID ] then
+    if self:IsListActive( listID ) then
         local actID = 1
 
         while actID <= #list.Actions and not chosen_action do
@@ -999,7 +1032,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
                 return chosen_action, chosen_clash, chosen_depth, stop
             end
             
-            if ns.visible.action[ listID..':'..actID ] then
+            if self:IsActionActive( listID, actID ) then
                 
                 -- Check for commands before checking actual actions.
                 local entry = list.Actions[ actID ]
@@ -1015,11 +1048,12 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
 
                 local clash = 0
                 
-                local known = isKnown( state.this_action )
+                local known = self:IsSpellKnown( state.this_action )
+                local enabled = self:IsSpellEnabled( state.this_action )
+
+                if debug then self:Debug( "%s is %s and %s.", ability and ability.name or entry.Ability, known and "KNOWN" or "NOT KNOWN", enabled and "ENABLED" or "DISABLED" ) end
                 
-                if debug then self:Debug( "%s is %s.", ability and ability.name or entry.Ability, known and "KNOWN" or "NOT KNOWN" ) end
-                
-                if known then
+                if known and enabled then
                     local scriptID = listID .. ':' .. actID
                     
                     importModifiers( listID, actID )
@@ -1356,8 +1390,12 @@ function Hekili:GetNextPrediction( dispID, slot )
     -- Any cache-wiping should happen here.
     table.wipe( listStack )
     table.wipe( listIsBad )
+
     for k, v in pairs( listCache ) do table.wipe( v ) end
     for k, v in pairs( listValue ) do table.wipe( v ) end
+
+    self:ResetSpellCaches()
+
 
     local display = self.DB.profile.displays[ dispID ]
 
@@ -1431,85 +1469,35 @@ function Hekili:GetDisplayByName( name )
 end
 
 
-function Hekili:CheckDisplayCriteria( dispID )
-    
-    local display = Hekili.DB.profile.displays[ dispID ]
-    local switch, mode = Hekili.DB.profile['Switch Type'], Hekili.DB.profile['Mode Status']
-    local _, zoneType = IsInInstance()
-    
-    -- if C_PetBattles.IsInBattle() or Hekili.Barber or UnitInVehicle( 'player' ) or not ns.visible.display[ dispID ] then
-    if C_PetBattles.IsInBattle() or UnitOnTaxi( 'player' ) or Hekili.Barber or HasVehicleActionBar() or not ns.visible.display[ dispID ] then
-        return 0
-        
-    elseif ( switch == 0 and not display.showSwitchAuto ) or ( switch == 1 and not display.showSwitchAE ) or ( mode == 0 and not display.showST ) or ( mode == 3 and not display.showAuto ) or ( mode == 2 and not display.showAE ) then
-        return 0
-        
-    elseif not pvpZones[ zoneType ] then
-        
-        if display.visibilityType == 'a' then
-            return display.alphaShowPvE
-            
-        else
-            if display.targetPvE and UnitExists( 'target' ) and not ( UnitIsDead( 'target' ) or not UnitCanAttack( 'player', 'target' ) ) then
-                return display.alphaTargetPvE
-                
-            elseif display.combatPvE and UnitAffectingCombat( 'player' ) then
-                return display.alphaCombatPvE
-                
-            elseif display.alwaysPvE then
-                return display.alphaAlwaysPvE
-                
-            end
-        end
-        
-        return 0
-        
-    elseif pvpZones[ zoneType ] then
-        
-        if display.visibilityType == 'a' then
-            return display.alphaShowPvP
-            
-        else
-            if display.targetPvP and UnitExists( 'target' ) and not ( UnitIsDead( 'target' ) or not UnitCanAttack( 'player', 'target' ) ) then
-                return display.alphaTargetPvP
-                
-            elseif display.combatPvP and UnitAffectingCombat( 'player' ) then
-                return display.alphaCombatPvP
-                
-            elseif display.alwaysPvP then
-                return display.alphaAlwaysPvP
-                
-            end
-        end
-        
-        return 0
-        
-    elseif not Hekili.Config and not ns.queue[ dispID ] then
-        return 0
-        
-    end
-
-    return 0
-    
-end
-ns.CheckDisplayCriteria = CheckDisplayCriteria
-
-
 local tSlot = {}
 local iterationSteps = {}
 
-
-local processCount = {}
-local lastDump = 0
-
+local lastHooks = {}
+local lastCount = {}
 
 function Hekili:ProcessHooks( dispID, solo )
 
     local display = self.DB.profile.displays[ dispID ]
+
+    local UI = ns.UI.Displays[ dispID ]
+    local Queue = UI.Recommendations
+
+    --[[
+    local now = GetTime()
+
+    lastHooks[ dispID ] = lastHooks[ dispID ] or 0
+
+    print( "Refresh Recs", dispID, string_format( "%.2f", now - lastHooks[ dispID ] ) )
+    lastHooks[ dispID ] = now
+
+
+
+    if GetTime() - lastHooks[ dispID ] > 10 then
+        print( "Refresh Count", dispID, lastCount[ dispID ] )
+        lastCount[ dispID ] = 0
+        lastHooks[ dispID ] = GetTime()
+    end]]
     
-    ns.queue[ dispID ] = ns.queue[ dispID ] or {}
-    local Queue = ns.queue[ dispID ]
-                
     if Queue then
         for k, v in pairs( Queue ) do
             for l, w in pairs( v ) do
@@ -1520,22 +1508,25 @@ function Hekili:ProcessHooks( dispID, solo )
         end
     end
 
+
+
+    local checkstr = nil
+
     state.reset( dispID )
 
     local debug = self.ActiveDebug
     
-    local gcd_length = rawget( state, 'gcd' ) or max( 0.75, 1.5 * state.haste )
+    local gcd_length = state.gcd
 
     if debug then
         self:SetupDebug( display.Name )
         self:Debug( "*** START OF NEW DISPLAY: [ %2d ] %s ***", dispID, display.Name ) 
-
     end
 
     for i = 1, ( display.numIcons or 4 ) do
 
-        table.wipe( listStack )
-        table.wipe( listIsBad )
+        -- table.wipe( listStack ) -- handled by GetNextPrediction
+        -- table.wipe( listIsBad ) -- same
                    
         local chosen_action
         local chosen_depth = 0
@@ -1566,15 +1557,16 @@ function Hekili:ProcessHooks( dispID, solo )
 
         local gcd_remains = state.cooldown.global_cooldown.remains
 
-        if not self.DB.profile.moreCPU then
-            if debug then self:Debug( "The addon is conserving CPU and will not attempt additional testing to find a better recommendation." ) end
-            chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
+        -- if not self.DB.profile.moreCPU then
+        -- if debug then self:Debug( "The addon is conserving CPU and will not attempt additional testing to find a better recommendation." ) end
+        chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
         
-        elseif ( predicted_action and predicted_wait <= ( gcd_remains + 0.25 ) ) then
-            if debug then self:Debug( "The prediction engine's recommendation [ %s @ %.2f ] is available soon enough ( within GCD + 0.25s ).  Using this recommendation.", predicted_action, predicted_wait ) end
-            chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
+        -- elseif ( predicted_action and predicted_wait <= ( gcd_remains + 0.25 ) ) then
+        --    if debug then self:Debug( "The prediction engine's recommendation [ %s @ %.2f ] is available soon enough ( within GCD + 0.25s ).  Using this recommendation.", predicted_action, predicted_wait ) end
+        --    chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
         
-        else
+        -- Effectively disabled.
+        if self.WasteExtraCPU then
             table.wipe( iterationSteps )
 
             state.delay = 0
@@ -1670,6 +1662,8 @@ function Hekili:ProcessHooks( dispID, solo )
             slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
             slot.resources = slot.resources or {}
             slot.depth = chosen_depth
+
+            checkstr = checkstr and ( checkstr .. ':' .. chosen_action ) or chosen_action
             
             slot.keybind = self:GetBindingForAction( chosen_action, not display.lowercaseKBs == true )
             slot.resource_type = ns.resourceType( chosen_action )
@@ -1731,17 +1725,24 @@ function Hekili:ProcessHooks( dispID, solo )
             
         else
             for n = i, display.numIcons do
+                chosen_action = chosen_action or ''
+                checkstr = checkstr and ( checkstr .. ':' .. chosen_action ) or chosen_action
                 slot[n] = nil
             end
             break
         end
         
     end
-    
-    ns.displayUpdates[ dispID ] = GetTime()
-    updatedDisplays[ dispID ] = 0
+
+
+    if UI.RecommendationsStr ~= checkstr then
+        UI.lastUpdate         = GetTime()
+        UI.NewRecommendations = true
+        UI.RecommendationsStr = checkstr
+    end
     
 end
+ns.cpuProfile.ProcessHooks = Hekili.ProcessHooks
 
 
 function Hekili_GetRecommendedAbility( display, entry )
@@ -1782,7 +1783,14 @@ local checksums = {}
 local applied = {}
 
 
-function Hekili:UpdateDisplay( dispID )
+
+-- Displays:
+-- 1. Need to be updated when recommendations change.
+-- 2. Need to be updated every 0.1s or so for range-checking.
+-- 3  Need to be updated when cooldowns on recommendations change.
+
+
+--[[ function Hekili:UpdateDisplay( dispID )
 
     if not self.DB.profile.Enabled then
         return
@@ -1791,7 +1799,7 @@ function Hekili:UpdateDisplay( dispID )
     -- for dispID, display in pairs(self.DB.profile.displays) do
     local display = self.DB.profile.displays[ dispID ]
     
-    if not ns.UI.Buttons or not ns.UI.Buttons[ dispID ] then return end
+    if not ns.UI.Buttons or not ns.UI.Buttons[ dispID ] then print('nobuttons'); return end
     
     if self.Pause and not self.ActiveDebug then
         ns.UI.Buttons[ dispID ][1].Overlay:SetTexture('Interface\\Addons\\Hekili\\Textures\\Pause.blp')
@@ -1804,14 +1812,14 @@ function Hekili:UpdateDisplay( dispID )
     
     local alpha = self:CheckDisplayCriteria( dispID ) or 0
 
-    if alpha > 0 then
+    if alpha > 0 and self:IsDisplayActive( dispID ) then
         local Queue = ns.queue[ dispID ]
-        
-        local gcd_start, gcd_duration = GetSpellCooldown( class.abilities.global_cooldown.id )
-        local now = GetTime()
         
         _G[ "HekiliDisplay" .. dispID ]:Show()
         
+        local gcd_start, gcd_duration = GetSpellCooldown( class.abilities.global_cooldown.id )
+        local now = GetTime()
+
         for i, button in ipairs( ns.UI.Buttons[ dispID ] ) do
             if not Queue or not Queue[i] and ( self.DB.profile.Enabled or self.Config ) then
                 for n = i, display.numIcons do
@@ -1833,23 +1841,8 @@ function Hekili:UpdateDisplay( dispID )
             
             if ability then
                 button:Show()
-                button:SetAlpha(alpha)
+                button:SetAlpha( alpha )
                 button.Texture:SetTexture( Queue[i].texture or ability.texture or GetSpellTexture( ability.id ) )
-                
-                button.Texture:SetTexture( Queue[i].texture or ability.texture or GetSpellTexture( ability.id ) )
-
-                local zoom = 1 - ( ( display.iconZoom or 0 ) / 200 )
-
-                if display.primaryKeepAspect then
-                    local biggest = max( display.primaryIconSize, display.primaryIconHeight )
-                    local width = 0.5 * zoom * display.primaryIconSize / biggest
-                    local height = 0.5 * zoom * display.primaryIconHeight / biggest
-
-                    --button.Texture:SetTexCoord( 0.5 - width, 0.5 + width, 0.5 - height, 0.5 + height )
-                else
-                    --button.Texture:SetTexCoord( 0, 1, 0, 1 )
-                end
-
                 button.Texture:Show()
                 
                 if display.showIndicators and indicator then
@@ -1906,7 +1899,7 @@ function Hekili:UpdateDisplay( dispID )
                                 
                             end
                         end
-                else button.Auras:SetText( nil ) end
+                    else button.Auras:SetText( nil ) end
                 end
                 
                 if i == 1 then
@@ -1995,7 +1988,7 @@ function Hekili:UpdateDisplay( dispID )
                 end
                 
                 if i == 1 then
-                    button.Cooldown:SetCooldown( start, duration )
+                    -- button.Cooldown:SetCooldown( start, duration )
 
                     local SF = SpellFlash or SpellFlashCore
                     
@@ -2003,27 +1996,14 @@ function Hekili:UpdateDisplay( dispID )
                         SF.FlashAction( ability.id, display.spellFlashColor )
                         flashes[dispID] = GetTime()
                     end
-                    
-                    local exact = max( Queue[i].exact_time or 0, now )
-                    local end_gcd = gcd_start + gcd_duration
-                    local diff = abs( exact - end_gcd )
-
-
-                    if exact > now and diff >= 0.1 and exact > ( gcd_start + gcd_duration ) then
-                        local delay = max( 0, exact - now )
-                        button.Delay:SetText( format( delay > 1 and "%d" or "%.1f", delay ) )
-                    else
-                        button.Delay:SetText( nil )
-                    end
-                    
                 else
                     if start + duration ~= gcd_start + gcd_duration then
-                        button.Cooldown:SetCooldown( start, duration )
+                        --button.Cooldown:SetCooldown( start, duration )
                     else
                         if ability.gcdType ~= 'off' then
-                            button.Cooldown:SetCooldown( gcd_start, gcd_duration )
+                            --button.Cooldown:SetCooldown( gcd_start, gcd_duration )
                         else
-                            button.Cooldown:SetCooldown( 0, 0 )
+                            --button.Cooldown:SetCooldown( 0, 0 )
                         end
                     end
                 end
@@ -2082,14 +2062,44 @@ function Hekili:UpdateDisplay( dispID )
         end
     end
 end
+ns.cpuProfile.UpdateDisplay = Hekili.UpdateDisplay
+
+
+local updateCount = 0
+local lastReport = 0
 
 function Hekili:UpdateDisplays()
     local now = GetTime()
     
     for display, update in pairs( updatedDisplays ) do
-        if now - update > 0.033 then
+        if ( recommendChange[ display ] or now - update >= 1 ) then
             Hekili:UpdateDisplay( display )
+            recommendChange[ display ] = nil
             updatedDisplays[ display ] = now
+            updateCount = updateCount + 1
+            if now - lastReport >= 10 then
+                updateCount = 0
+                lastReport = now
+            end
         end
     end
+end ]]
+
+
+function Hekili:DumpProfileInfo()
+    local output = ""
+
+    for k, v in pairs( ns.cpuProfile ) do
+        local usage, calls = GetFunctionCPUUsage( v, true )
+
+        if usage then
+            usage = usage / 1000
+            output = format(    "%s\n" ..
+                                " [ %5d ] %-20s %12.2f %12.2f", output, calls, k, usage, usage / ( calls == 0 and 1 or calls ) )
+        else
+            output = output(    "%s\nNo information for function `%s'.", output, k )
+        end
+    end
+
+    print( output )
 end
