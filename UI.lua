@@ -515,8 +515,6 @@ do
         UNIT_ENTERED_VEHICLE = 1,
         UNIT_EXITED_VEHICLE = 1,
         PLAYER_TARGET_CHANGED = 1,
-        PLAYER_CONTROL_LOST = 1,
-        PLAYER_CONTROL_GAINED = 1,
         ZONE_CHANGED = 1,
         ZONE_CHANGED_INDOORS = 1,
         ZONE_CHANGED_NEW_AREA = 1,
@@ -693,6 +691,8 @@ do
             self.refreshTimer = state.combat == 0 and oocRefresh or icRefresh
 
             self.refreshCount = ( self.refreshCount or 0 ) + 1
+
+            self:RefreshCooldowns()            
             self.NewRecommendations = false
         end
 

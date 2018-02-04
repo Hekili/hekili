@@ -229,3 +229,14 @@ function ns.GroupMembers( reversed, forceParty )
         return ret
     end
 end
+
+
+-- Use C_Timer.After but allow for function args.
+function Hekili:After( time, func, ... )
+    local args = { ... }
+    local function delayfunc()
+        func( unpack( args ) )
+    end
+
+    C_Timer.After( time, delayfunc )
+end

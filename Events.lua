@@ -269,13 +269,24 @@ RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event, unit )
     end
 end )
 
+
+-- Hide when going into the barbershop.
 RegisterEvent( "BARBER_SHOP_OPEN", function ()
     Hekili.Barber = true
 end )
 
-
 RegisterEvent( "BARBER_SHOP_CLOSE", function ()
     Hekili.Barber = false
+end )
+
+
+-- Update visibility when getting on/off a taxi.
+RegisterEvent( "PLAYER_CONTROL_LOST", function ()
+    Hekili:After( 0.1, UpdateDisplayVisibility, self )
+end )
+
+RegisterEvent( "PLAYER_CONTROL_GAINED", function ()
+    Hekili:After( 0.1, UpdateDisplayVisibility, self )
 end )
 
 
@@ -480,7 +491,6 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
 
     Hekili:PurgeTTD()
 end )
-
 
 
 local dynamic_keys = setmetatable( {}, {
