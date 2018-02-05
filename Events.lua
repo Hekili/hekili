@@ -282,11 +282,11 @@ end )
 
 -- Update visibility when getting on/off a taxi.
 RegisterEvent( "PLAYER_CONTROL_LOST", function ()
-    Hekili:After( 0.1, UpdateDisplayVisibility, self )
+    Hekili:After( 0.1, Hekili.UpdateDisplayVisibility, self )
 end )
 
 RegisterEvent( "PLAYER_CONTROL_GAINED", function ()
-    Hekili:After( 0.1, UpdateDisplayVisibility, self )
+    Hekili:After( 0.1, Hekili.UpdateDisplayVisibility, self )
 end )
 
 
