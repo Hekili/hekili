@@ -1403,17 +1403,25 @@ ns.newDisplayOption = function( key )
                                 Hekili:Print("Unable to import " .. class.defaults[ defaultID ].name .. ".")
                                 return
                             end
-                            
-                            local settings_to_keep = { "Primary Icon Size", "Queued Font Size", "Primary Font Size", "Primary Caption Aura", "rel", "Spacing", "Queue Direction", "Queued Icon Size", "Font", "x", "y", "Icons Shown", "Action Captions", "Primary Caption", "Primary Caption Aura" }
-                            
-                            for _, k in pairs( settings_to_keep ) do
-                                import[ k ] = display[ k ]
-                            end
-                            
+
                             Hekili.DB.profile.displays[ dispID ] = import
                             Hekili.DB.profile.displays[ dispID ].Name = class.defaults[ defaultID ].name
                             Hekili.DB.profile.displays[ dispID ].Release = class.defaults[ defaultID ].version
                             Hekili.DB.profile.displays[ dispID ].Default = true
+
+                            for k, v in pairs( displayTemplate ) do
+                                if import[ k ] == nil then
+                                    if type( v ) == 'table' then
+                                        import[ k ] = {}
+                                        for key, value in pairs( v ) do
+                                            import[ k ][ key ] = value
+                                        end
+                                    else
+                                        import[ k ] = v
+                                    end
+                                end
+                            end
+
                             ns.checkImports()
                             ns.refreshOptions()
                             ns.loadScripts()
@@ -1832,6 +1840,7 @@ ns.newDisplayOption = function( key )
                                 },
                                 width = 'full'
                             },
+
                             kbFontSize = {
                                 type = 'range',
                                 name = 'Size',
@@ -1842,6 +1851,7 @@ ns.newDisplayOption = function( key )
                                 step = 1,
                                 width = 'full'
                             },
+
                             kbSpacer1 = {
                                 type = 'description',
                                 name = '\n',
@@ -1957,6 +1967,18 @@ ns.newDisplayOption = function( key )
                                 width = 'full',
                                 order = 6,                                
                             },
+
+                            delayFontSize = {
+                                type = 'range',
+                                name = 'Size',
+                                desc = "Select the size of the font to use.",
+                                min = 6,
+                                max = 72,
+                                order = 6.5,
+                                step = 1,
+                                width = 'full'
+                            },
+
                             delaySpacer1 = {
                                 type = 'description',
                                 name = '\n',
@@ -6833,8 +6855,17 @@ function Hekili:SetOption( info, input, ... )
                         Hekili:Print("Unable to import from given input string.")
                         return
                     end
-                    
+
                     local name = display.Name
+
+                    local validSpecs = { [0] = 1 }
+                    
+                    for i = 1, GetNumSpecializations() do
+                        validSpecs[ GetSpecializationInfo( i ) ] = 1
+                    end
+
+                    if not validSpecs[ import.Specialization ] then import.Specialization = profile.displays[ dispID ].Specialization end
+
                     profile.displays[ dispID ] = import
                     profile.displays[ dispID ].Name = name
                     
