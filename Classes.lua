@@ -696,9 +696,9 @@ ns.specializationChanged = function()
     ns.updateTalents()
 
     ns.callHook( 'specializationChanged' )
-    Hekili:UpdateVisibilityStates()
 
-    Hekili:ForceUpdate()
+    Hekili:UpdateDisplayVisibility()
+    -- Hekili:ForceUpdate()
     --[[ for i, v in ipairs( ns.queue ) do
         for j = 1, #v do
             ns.queue[i][j] = nil
@@ -934,6 +934,17 @@ addAbility( "shadowmeld", {
 addHandler( "shadowmeld", function ()
     applyBuff( "shadowmeld" )
 end )
+
+
+addAbility( "lights_judgment", {
+    id = 255647,
+    cast = 0,
+    gcdType = "spell",
+    cooldown = 150,
+    toggle = 'cooldowns',
+    usable = function () return race.lightforged_draenei end
+} )
+
 
 
 addAbility( 'call_action_list', {

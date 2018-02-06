@@ -144,69 +144,6 @@ ns.FeignEvent = function( event, ... )
 end
 
 
-do
-    local dispActive = {}
-    local listActive = {}
-    local actsActive = {}
-
-    function Hekili:UpdateVisibilityStates()
-        local profile = self.DB.profile
-        local displays = ns.UI.Displays
-
-        for i in ipairs( dispActive ) do dispActive[ i ] = nil end
-        for i in ipairs( listActive ) do listActive[ i ] = nil end
-        for a in  pairs( actsActive ) do actsActive[ a ] = nil end
-
-        if profile.Enabled then
-            for i, display in ipairs( profile.displays ) do            
-                if display.Enabled and ( display.Specialization == 0 or display.Specialization == state.spec.id ) then
-                    dispActive[ i ] = true                
-                    if displays[ i ] and not displays[ i ].Active then displays[ i ]:Activate() end
-                else
-                    if displays[ i ] and displays[ i ].Active then displays[ i ]:Deactivate() end
-                end
-            end
-
-            for i, list in ipairs( profile.actionLists ) do
-                if list.Specialization == 0 or list.Specialization == state.spec.id then
-                    listActive[ i ] = true
-                end
-
-
-                -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
-                for a, action in ipairs( list.Actions ) do
-                    if action.Enabled and action.Ability then
-                        actsActive[ i ..':' .. a ] = true
-                    end
-                end
-            end
-        end
-    end
-
-
-    function Hekili:IsDisplayActive( display )
-        return dispActive[ display ] == true
-    end
-
-
-    function Hekili:IsListActive( list )
-        return listActive[ list ] == true
-    end
-
-
-    function Hekili:IsActionActive( list, action )
-        return actsActive[ list .. ':' .. action ] == true
-    end
-
-
-    function Hekili:DumpActionActive()
-        DevTools_Dump( actsActive )
-    end
-end
-
-
-
-
 RegisterEvent( "UPDATE_BINDINGS", function () ns.refreshBindings() end )
 RegisterEvent( "DISPLAY_SIZE_CHANGED", function () ns.buildUI() end )
 

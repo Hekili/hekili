@@ -515,6 +515,8 @@ do
         UNIT_ENTERED_VEHICLE = 1,
         UNIT_EXITED_VEHICLE = 1,
         PLAYER_TARGET_CHANGED = 1,
+        PLAYER_REGEN_ENABLED = 1,
+        PLAYER_REGEN_DISABLED = 1,
         ZONE_CHANGED = 1,
         ZONE_CHANGED_INDOORS = 1,
         ZONE_CHANGED_NEW_AREA = 1,
@@ -1078,13 +1080,6 @@ do
     end
 
 
-    function Hekili:UpdateDisplayVisibility()
-        for i, d in ipairs( ns.UI.Displays ) do
-            if d.Active then d:UpdateAlpha() end
-        end
-    end
-
-
     local function Display_Activate( self )
         self.Recommendations = self.Recommendations or ( ns.queue and ns.queue[ self.id ] )
 
@@ -1117,6 +1112,8 @@ do
         self:RegisterEvent( "PLAYER_TARGET_CHANGED" )
         self:RegisterEvent( "PLAYER_CONTROL_LOST" )
         self:RegisterEvent( "PLAYER_CONTROL_GAINED" )
+        self:RegisterEvent( "PLAYER_REGEN_DISABLED" )
+        self:RegisterEvent( "PLAYER_REGEN_ENABLED" )
         self:RegisterEvent( "ZONE_CHANGED" )
         self:RegisterEvent( "ZONE_CHANGED_INDOORS" )
         self:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
@@ -1167,8 +1164,6 @@ do
         ns.UI.Buttons[ id ] = ns.UI.Buttons[ id ] or {}
         d.Buttons = ns.UI.Buttons[ id ]
 
-        d:UpdateAlpha()
-
         for i = 1, max( #d.Buttons, conf.numIcons ) do
             d.Buttons[i] = self:CreateButton( id, i )
             d.Buttons[i]:Hide()
@@ -1181,6 +1176,104 @@ do
 
             if MasqueGroup then MasqueGroup:AddButton( d.Buttons[i], { Icon = d.Buttons[i].Texture, Cooldown = d.Buttons[i].Cooldown } ) end            
         end
+    end
+
+
+    local dispActive = {}
+    local listActive = {}
+    local actsActive = {}
+
+    --[[ function Hekili:UpdateVisibilityStates()
+        local profile = self.DB.profile
+        local displays = ns.UI.Displays
+
+        for i in ipairs( dispActive ) do dispActive[ i ] = nil end
+        for i in ipairs( listActive ) do listActive[ i ] = nil end
+        for a in  pairs( actsActive ) do actsActive[ a ] = nil end
+
+        if profile.Enabled then
+            for i, display in ipairs( profile.displays ) do            
+                if display.Enabled and ( display.Specialization == 0 or display.Specialization == state.spec.id ) then
+                    dispActive[ i ] = true                
+                    if displays[ i ] and not displays[ i ].Active then displays[ i ]:Activate() end
+                else
+                    if displays[ i ] and displays[ i ].Active then displays[ i ]:Deactivate() end
+                end
+            end
+
+            for i, list in ipairs( profile.actionLists ) do
+                if list.Specialization == 0 or list.Specialization == state.spec.id then
+                    listActive[ i ] = true
+                end
+
+
+                -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
+                for a, action in ipairs( list.Actions ) do
+                    if action.Enabled and action.Ability then
+                        actsActive[ i ..':' .. a ] = true
+                    end
+                end
+            end
+        end
+    end ]]
+
+
+    function Hekili:UpdateDisplayVisibility()
+        local profile = self.DB.profile
+        local displays = ns.UI.Displays
+
+        for i in ipairs( dispActive ) do dispActive[ i ] = nil end
+        for i in ipairs( listActive ) do listActive[ i ] = nil end
+        for a in  pairs( actsActive ) do actsActive[ a ] = nil end
+
+        if profile.Enabled then
+            for i, display in ipairs( profile.displays ) do            
+                if display.Enabled and ( display.Specialization == 0 or display.Specialization == state.spec.id ) then
+                    dispActive[ i ] = true                
+                    if displays[ i ] and not displays[ i ].Active then displays[ i ]:Activate() end
+                else
+                    if displays[ i ] and displays[ i ].Active then displays[ i ]:Deactivate() end
+                end
+            end
+
+            for i, list in ipairs( profile.actionLists ) do
+                if list.Specialization == 0 or list.Specialization == state.spec.id then
+                    listActive[ i ] = true
+                end
+
+
+                -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
+                for a, action in ipairs( list.Actions ) do
+                    if action.Enabled and action.Ability then
+                        actsActive[ i ..':' .. a ] = true
+                    end
+                end
+            end
+        end
+
+        for i, d in ipairs( ns.UI.Displays ) do
+            if d.Active then d:UpdateAlpha() end
+        end
+    end
+
+
+    function Hekili:IsDisplayActive( display )
+        return dispActive[ display ] == true
+    end
+
+
+    function Hekili:IsListActive( list )
+        return listActive[ list ] == true
+    end
+
+
+    function Hekili:IsActionActive( list, action )
+        return actsActive[ list .. ':' .. action ] == true
+    end
+
+
+    function Hekili:DumpActionActive()
+        DevTools_Dump( actsActive )
     end
 
 
@@ -1454,8 +1547,6 @@ function ns.buildUI()
     end
   end
 
-  Hekili:UpdateVisibilityStates()  
-
   ns.UI.Keyhandler = ns.UI.Keyhandler or CreateFrame( "Button", "Hekili_Keyhandler", UIParent )
   ns.UI.Keyhandler:RegisterForClicks("AnyDown")
   ns.UI.Keyhandler:SetScript("OnClick", function(self, button, down)
@@ -1494,6 +1585,8 @@ function ns.buildUI()
   for dispID, display in ipairs( Hekili.DB.profile.displays ) do
     Hekili:CreateDisplay( dispID )
   end
+
+  Hekili:UpdateDisplayVisibility()  
 
   --if Hekili.Config then ns.StartConfiguration() end
   if MasqueGroup then MasqueGroup:ReSkin() end

@@ -3858,51 +3858,49 @@ do
         return false
     end
 
-end
 
+    -- Filter out non-resource driven issues with abilities.
+    -- Unusable abilities are treated as on CD unless overridden.
+    ns.isUsable = function( spell )
 
+        local ability = class.abilities[ spell ]    
+        if not ability then return true end
 
--- Filter out non-resource driven issues with abilities.
--- Unusable abilities are treated as on CD unless overridden.
-ns.isUsable = function( spell )
+        local profile = Hekili.DB.profile
 
-    local ability = class.abilities[ spell ]    
-    if not ability then return true end
-
-    local profile = Hekili.DB.profile
-
-    if state.rangefilter and UnitExists( 'target' ) and LSR.IsSpellInRange( ability.id, 'target' ) == 0 then
-        return false
-    end
-
-    if ability.item and not state.equipped[ ability.item ] then
-        return false
-    end
-
-    if ability.form and not state.buff[ ability.form ].up then
-        return false
-    end
-
-    if ability.buff and not state.buff[ ability.buff ].up then
-        return false
-    end
-
-    if ability.nobuff and state.buff[ ability.nobuff ].up then
-        return false
-    end
-
-    if ability.usable ~= nil then
-        if type( ability.usable ) == 'number' then 
-            return IsUsableSpell( ability.usable )
-        elseif type( ability.usable ) == 'function' then
-            return ability.usable()
+        if state.rangefilter and UnitExists( 'target' ) and LSR.IsSpellInRange( ability.id, 'target' ) == 0 then
+            return false
         end
-    end
-    
-    return true
-    
-end
 
+        if ability.item and not state.equipped[ ability.item ] then
+            return false
+        end
+
+        if ability.form and not state.buff[ ability.form ].up then
+            return false
+        end
+
+        if ability.buff and not state.buff[ ability.buff ].up then
+            return false
+        end
+
+        if ability.nobuff and state.buff[ ability.nobuff ].up then
+            return false
+        end
+
+        if ability.usable ~= nil then
+            if type( ability.usable ) == 'number' then 
+                return IsUsableSpell( ability.usable )
+            elseif type( ability.usable ) == 'function' then
+                return ability.usable()
+            end
+        end
+        
+        return true
+        
+    end
+
+end
 
 ns.hasRequiredResources = function( ability )
     

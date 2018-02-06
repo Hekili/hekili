@@ -3149,7 +3149,7 @@ ns.newActionListOption = function( index )
                     local key, index = ns.newAction( listIdx, result )
                     if key then
                         Hekili.Options.args.actionLists.args[ listKey ].args[ key ] = ns.newActionOption( listIdx, index )
-                        Hekili:UpdateVisibilityStates()
+                        Hekili:UpdateDisplayVisibility()
                         ns.loadScripts()
                     end
                 end
@@ -4666,7 +4666,7 @@ ns.SimulationCraftImporter = function ()
                     ns.refreshOptions()
                     ns.loadScripts()
                     ns.buildUI()
-                    Hekili:UpdateVisibilityStates()
+                    Hekili:UpdateDisplayVisibility()
                     
                     -- ns.lib.AceConfigDialog:SelectGroup( "Hekili", "SimulationCraftImporter" )
                     
@@ -6648,7 +6648,7 @@ function Hekili:SetOption( info, input, ... )
             action = tonumber( action )
 
             profile.actionLists[ list ].Actions[ action ].Enabled = not input
-            Hekili:UpdateVisibilityStates()
+            Hekili:UpdateDisplayVisibility()
         elseif profile.trinkets[ ability ] ~= nil then
             profile.trinkets[ ability ][ option ] = input
         end
@@ -7048,7 +7048,7 @@ function Hekili:SetOption( info, input, ... )
     else
         if RebuildOptions then ns.refreshOptions() end
         if RebuildScripts then ns.loadScripts() end
-        if RebuildCache and not RebuildUI then Hekili:UpdateVisibilityStates() end
+        if RebuildCache and not RebuildUI then Hekili:UpdateDisplayVisibility() end
         if RebuildUI then ns.buildUI() end
     end
     
@@ -8440,7 +8440,6 @@ function Hekili:ToggleMode()
     Hekili:Print( modeMsgs[ Hekili.DB.profile['Mode Status'] ].p )
     Hekili:Notify( modeMsgs[ Hekili.DB.profile['Mode Status'] ].n )
 
-    self:UpdateVisibilityStates()
     self:UpdateDisplayVisibility()
 
     if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_MODE', Hekili.DB.profile['Mode Status'] ) end

@@ -261,7 +261,7 @@ function Hekili:OnInitialize()
     
     ns.primeTooltipColors()
 
-    self:UpdateVisibilityStates()
+    self:UpdateDisplayVisibility()
     
     callHook( "onInitialize" )
     
@@ -293,7 +293,7 @@ function Hekili:ReInitialize()
     ns.updateTalents()
     ns.updateGear()
 
-    self:UpdateVisibilityStates()
+    self:UpdateDisplayVisibility()
         
     callHook( "onInitialize" )
     
@@ -319,7 +319,7 @@ end
 function Hekili:OnEnable()
     
     ns.specializationChanged()
-    self:UpdateVisibilityStates()
+    self:UpdateDisplayVisibility()
     ns.StartEventHandler()
     buildUI()
     self:ForceUpdate()
@@ -341,7 +341,7 @@ end
 
 function Hekili:OnDisable()
     self.DB.profile.Enabled = false
-    self:UpdateVisibilityStates()
+    self:UpdateDisplayVisibility()
 
     ns.StopEventHandler()
     buildUI()
