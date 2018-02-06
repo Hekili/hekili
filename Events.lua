@@ -281,40 +281,32 @@ end )
 
 
 
-local artifactInitialized = false
+do
+    local artifactInitialized = false
 
-function ns.updateArtifact()
-
-    local artifact = state.artifact
     local AD = LibStub( "LibArtifactData-1.0" )
 
-    for k in pairs( artifact ) do
-        artifact[ k ].rank = 0
-    end
+    function ns.updateArtifact()
+        local artifact = state.artifact
 
-    local success, _, data = pcall( AD.GetArtifactInfo, AD )
-    
-    if success then    
-        if data.traits then
-            for key, trait in pairs( data.traits ) do
-                local id, rank = trait.spellID, trait.currentRank
-
-                local name = class.traits[ id ] or formatKey( trait.name )
-                
-                artifact[ name ] = rawget( artifact, name ) or {}
-                artifact[ name ].rank = rank
-            end
-            artifactInitialized = true
-        else
-            C_Timer.After( 3, ns.updateArtifact )
+        for k in pairs( artifact ) do
+            artifact[ k ].rank = 0
         end
-    else
-        C_Timer.After( 3, ns.updateArtifact )
+
+        for i, _, id, name, _, rank in AD:IterateTraits() do
+            name = class.traits[ id ] or formatKey( name )
+
+            artifact[ name ] = rawget( artifact, name ) or {}
+            artifact[ name ].rank = rank
+
+            if not artifactInitialized then artifactInitialized = true end
+        end
+
+        if not artifactInitialized then C_Timer.After( 3, ns.updateArtifact ) end
     end
 
+    RegisterEvent( "ARTIFACT_UPDATE", ns.updateArtifact )
 end
-
-RegisterEvent( "ARTIFACT_UPDATE", ns.updateArtifact )
 
 
 

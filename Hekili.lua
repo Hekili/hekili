@@ -137,8 +137,7 @@ BINDING_NAME_HEKILI_TOGGLE_3 = "Custom Toggle 3"
 BINDING_NAME_HEKILI_TOGGLE_4 = "Custom Toggle 4"
 BINDING_NAME_HEKILI_TOGGLE_5 = "Custom Toggle 5"
 
-ns.refreshBindings = function ()
-
+function ns.refreshBindings()
     local profile = Hekili.DB.profile
 
     profile[ 'HEKILI_TOGGLE_MODE' ] = GetBindingKey( "HEKILI_TOGGLE_MODE" )
@@ -150,7 +149,6 @@ ns.refreshBindings = function ()
     profile[ 'HEKILI_TOGGLE_3' ] = GetBindingKey( "HEKILI_TOGGLE_3" )
     profile[ 'HEKILI_TOGGLE_4' ] = GetBindingKey( "HEKILI_TOGGLE_4" )
     profile[ 'HEKILI_TOGGLE_5' ] = GetBindingKey( "HEKILI_TOGGLE_5" )
-
 end
 
 

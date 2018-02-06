@@ -580,6 +580,37 @@ do
     end
 
 
+    local kbEvents = {
+        ACTIONBAR_SLOT_CHANGED = 1,
+        ACTIONBAR_PAGE_CHANGED = 1,
+        ACTIONBAR_UPDATE_STATE = 1,
+        SPELLS_CHANGED = 1,
+        UPDATE_SHAPESHIFT_FORM = 1
+    }
+
+
+    local function Display_UpdateKeybindings( self )
+        local conf = Hekili.DB.profile.displays[ self.id ]
+
+        for i, b in ipairs( self.Buttons ) do
+            local r = self.Recommendations[ i ]
+
+            local a = r.actionName
+
+            if a then
+                r.keybind = Hekili:GetBindingForAction( r.actionName, not conf.lowercaseKBs == true )
+            end
+
+            if conf.showKeybindings and ( i == 1 or conf.queuedKBs ) then
+                b.Keybinding:SetText( r.keybind )
+            else
+                b.Keybinding:SetText( nil )
+            end
+        end
+    end
+
+
+
     local pulseAuras   = 0.1
     local pulseDelay   = 0.05
     local pulseGlow    = 0.25
@@ -1074,7 +1105,8 @@ do
                     end
                 end
             end
-        
+
+        elseif kbEvents[ event ] then self:UpdateKeybindings()        
         elseif alphaUpdateEvents[ event ] then self:UpdateAlpha() end
 
     end
@@ -1118,6 +1150,12 @@ do
         self:RegisterEvent( "ZONE_CHANGED_INDOORS" )
         self:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
 
+
+        -- Update keybindings.
+        for k in pairs( kbEvents ) do            
+            self:RegisterEvent( k )
+        end
+
         self.Active = true
     end
 
@@ -1153,10 +1191,11 @@ do
         d:EnableMouse( false )
         d:SetMovable( true )
 
-        d.Activate         = Display_Activate
-        d.Deactivate       = Display_Deactivate
-        d.RefreshCooldowns = Display_RefreshCooldowns
-        d.UpdateAlpha      = Display_UpdateAlpha
+        d.Activate          = Display_Activate
+        d.Deactivate        = Display_Deactivate
+        d.RefreshCooldowns  = Display_RefreshCooldowns
+        d.UpdateAlpha       = Display_UpdateAlpha
+        d.UpdateKeybindings = Display_UpdateKeybindings
 
         ns.queue[ id ] = ns.queue[ id ] or {}
         d.Recommendations = ns.queue[ id ]
