@@ -520,6 +520,8 @@ do
         ZONE_CHANGED = 1,
         ZONE_CHANGED_INDOORS = 1,
         ZONE_CHANGED_NEW_AREA = 1,
+        PLAYER_SPECIALIZATION_CHANGED = 1,
+        ACTIVE_TALENT_GROUP_CHANGED = 1
     }
 
 
@@ -1141,6 +1143,8 @@ do
         self:RegisterEvent( "BARBER_SHOP_CLOSE" )
         self:RegisterUnitEvent( "UNIT_ENTERED_VEHICLE", "player" )
         self:RegisterUnitEvent( "UNIT_EXITED_VEHICLE", "player" )
+        self:RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player" )
+        self:RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED" )
         self:RegisterEvent( "PLAYER_TARGET_CHANGED" )
         self:RegisterEvent( "PLAYER_CONTROL_LOST" )
         self:RegisterEvent( "PLAYER_CONTROL_GAINED" )

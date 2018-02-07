@@ -672,12 +672,22 @@ end
 state.interrupt = interrupt
 
 
-local function summonPet( name, duration )
+local function summonPet( name, duration, spec )
     
     state.pet[ name ] = rawget( state.pet, name ) or {}
     state.pet[ name ].name = name
     state.pet[ name ].expires = state.query_time + ( duration or 3600 )
-    
+
+    if spec then
+        state.pet[ name ].spec = spec
+
+        for k, v in pairs( state.pet ) do
+            if type(v) == 'boolean' then state.pet[k] = false end
+        end
+
+        state.pet[ spec ] = true
+    end
+
 end
 state.summonPet = summonPet
 
@@ -687,6 +697,7 @@ local function dismissPet( name )
     state.pet[ name ] = rawget( state.pet, name ) or {}
     state.pet[ name ].name = name
     state.pet[ name ].expires = 0
+
 
 end
 state.dismissPet = dismissPet
@@ -1541,6 +1552,11 @@ local mt_pets = {
         end
 
         if k == 'up' or k == 'exists' then
+            for k, v in pairs( t ) do
+                if type(v) == 'table' then
+                    if v.expires > state.query_time then return true end
+                end
+            end
             return UnitExists( 'pet' ) and ( not UnitIsDead( 'pet' ) )
             
         elseif k == 'alive' then

@@ -289,6 +289,8 @@ do
     function ns.updateArtifact()
         local artifact = state.artifact
 
+        -- AD:ForceUpdate()
+
         for k in pairs( artifact ) do
             artifact[ k ].rank = 0
         end

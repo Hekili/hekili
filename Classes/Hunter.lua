@@ -375,7 +375,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         } )
 
         addHandler( 'summon_pet', function ()
-            summonPet( 'made_up_pet' )
+            summonPet( 'made_up_pet', 3600, 'ferocity' )
         end )
 
 
