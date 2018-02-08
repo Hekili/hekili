@@ -520,8 +520,6 @@ do
         ZONE_CHANGED = 1,
         ZONE_CHANGED_INDOORS = 1,
         ZONE_CHANGED_NEW_AREA = 1,
-        PLAYER_SPECIALIZATION_CHANGED = 1,
-        ACTIVE_TALENT_GROUP_CHANGED = 1
     }
 
 
@@ -1115,6 +1113,9 @@ do
 
 
     local function Display_Activate( self )
+        
+        self.Active = true
+
         self.Recommendations = self.Recommendations or ( ns.queue and ns.queue[ self.id ] )
 
         self.auraTimer = 0
@@ -1126,53 +1127,57 @@ do
         self:SetScript( "OnUpdate", Display_OnUpdate )
         self:SetScript( "OnEvent",  Display_OnEvent )
 
-        -- Update Cooldown Wheels.
-        self:RegisterEvent( "ACTIONBAR_UPDATE_USABLE" )
-        self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )        
-        self:RegisterEvent( "SPELL_UPDATE_COOLDOWN" )
-        self:RegisterEvent( "SPELL_UPDATE_USABLE" )
+        if not self.Initialized then
+            -- Update Cooldown Wheels.
+            self:RegisterEvent( "ACTIONBAR_UPDATE_USABLE" )
+            self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )        
+            self:RegisterEvent( "SPELL_UPDATE_COOLDOWN" )
+            self:RegisterEvent( "SPELL_UPDATE_USABLE" )
 
-        -- Show/Hide Overlay Glows.
-        self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" )
-        self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" )
+            -- Show/Hide Overlay Glows.
+            self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" )
+            self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" )
 
-        -- Recalculate Alpha/Visibility.
-        self:RegisterEvent( "PET_BATTLE_OPENING_START" )
-        self:RegisterEvent( "PET_BATTLE_CLOSE" )
-        self:RegisterEvent( "BARBER_SHOP_OPEN" )
-        self:RegisterEvent( "BARBER_SHOP_CLOSE" )
-        self:RegisterUnitEvent( "UNIT_ENTERED_VEHICLE", "player" )
-        self:RegisterUnitEvent( "UNIT_EXITED_VEHICLE", "player" )
-        self:RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player" )
-        self:RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED" )
-        self:RegisterEvent( "PLAYER_TARGET_CHANGED" )
-        self:RegisterEvent( "PLAYER_CONTROL_LOST" )
-        self:RegisterEvent( "PLAYER_CONTROL_GAINED" )
-        self:RegisterEvent( "PLAYER_REGEN_DISABLED" )
-        self:RegisterEvent( "PLAYER_REGEN_ENABLED" )
-        self:RegisterEvent( "ZONE_CHANGED" )
-        self:RegisterEvent( "ZONE_CHANGED_INDOORS" )
-        self:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
+            -- Recalculate Alpha/Visibility.
+            self:RegisterEvent( "PET_BATTLE_OPENING_START" )
+            self:RegisterEvent( "PET_BATTLE_CLOSE" )
+            self:RegisterEvent( "BARBER_SHOP_OPEN" )
+            self:RegisterEvent( "BARBER_SHOP_CLOSE" )
+            self:RegisterUnitEvent( "UNIT_ENTERED_VEHICLE", "player" )
+            self:RegisterUnitEvent( "UNIT_EXITED_VEHICLE", "player" )
+            self:RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player" )
+            self:RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED" )
+            self:RegisterEvent( "PLAYER_TARGET_CHANGED" )
+            self:RegisterEvent( "PLAYER_CONTROL_LOST" )
+            self:RegisterEvent( "PLAYER_CONTROL_GAINED" )
+            self:RegisterEvent( "PLAYER_REGEN_DISABLED" )
+            self:RegisterEvent( "PLAYER_REGEN_ENABLED" )
+            self:RegisterEvent( "ZONE_CHANGED" )
+            self:RegisterEvent( "ZONE_CHANGED_INDOORS" )
+            self:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
 
+            -- Update keybindings.
+            for k in pairs( kbEvents ) do            
+                self:RegisterEvent( k )
+            end
 
-        -- Update keybindings.
-        for k in pairs( kbEvents ) do            
-            self:RegisterEvent( k )
+            self.Initialized = true
         end
 
-        self.Active = true
     end
 
 
     local function Display_Deactivate( self )
+
+        self.Active = false
+
         self:SetScript( "OnUpdate", nil )
         self:SetScript( "OnEvent",  nil )
 
         for i, b in ipairs( self.Buttons ) do
             b:Hide()
         end
-        
-        self.Active = false
+
     end
 
 
@@ -1295,7 +1300,7 @@ do
         end
 
         for i, d in ipairs( ns.UI.Displays ) do
-            if d.Active then d:UpdateAlpha() end
+            d:UpdateAlpha()
         end
     end
 
