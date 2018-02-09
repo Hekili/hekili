@@ -1014,24 +1014,27 @@ do
 
     local function Display_UpdateAlpha( self )
 
+        if not self.Active then
+            self:SetAlpha(0)
+            self:Hide()
+            self.alpha = 0
+            return
+        end
+
         local preAlpha = self.alpha or 0
         local newAlpha = CalculateAlpha( self.id )
 
-        if not self.Active then
-            self:Hide()
+        if preAlpha > 0 and newAlpha == 0 then
+            self:SetAlpha( 0 )
+            self:Deactivate()
+
         else
-            if preAlpha > 0 and newAlpha == 0 then
-                self:SetAlpha( 0 )
-                self:Deactivate()
-
-            else
-                if preAlpha == 0 and newAlpha > 0 then
-                    Hekili:ProcessHooks( self.id )
-                end
-                self:Show()
-                self:SetAlpha( newAlpha )
-
+            if preAlpha == 0 and newAlpha > 0 then
+                Hekili:ProcessHooks( self.id )
             end
+            self:SetAlpha( newAlpha )
+            self:Show()
+
         end
 
         self.alpha = newAlpha
@@ -1250,10 +1253,10 @@ do
         if profile.Enabled then
             for i, display in ipairs( profile.displays ) do            
                 if display.Enabled and ( display.Specialization == 0 or display.Specialization == state.spec.id ) then
-                    dispActive[ i ] = true                
-                    if displays[ i ] and not displays[ i ].Active then displays[ i ]:Activate() end
+                    dispActive[ i ] = true
+                    if displays[ i ] then displays[ i ]:Activate() end
                 else
-                    if displays[ i ] and displays[ i ].Active then displays[ i ]:Deactivate() end
+                    if displays[ i ] then displays[ i ]:Deactivate() end
                 end
             end
 

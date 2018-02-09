@@ -695,6 +695,8 @@ ns.specializationChanged = function()
     ns.updateGear()
     ns.updateTalents()
 
+    Hekili:UpdateDisplayVisibility()
+
     ns.callHook( 'specializationChanged' )
 
 end
