@@ -618,16 +618,17 @@ do
     local pulseGlow    = 0.25
     local pulseTargets = 0.1
     local pulseRange   = TOOLTIP_UPDATE_TIME
-    local pulseFlash   = 0.2
+    local pulseFlash   = 0.5
 
     local oocRefresh   = 0.5
     local icRefresh    = 0.25
-
+    
     local refreshPulse = 10
 
 
-    local LSR = LibStub( "SpellRange-1.0" )
     local LRC = LibStub( "LibRangeCheck-2.0" )
+    local LSF = SpellFlashCore
+    local LSR = LibStub( "SpellRange-1.0" )
 
 
     local function Display_OnUpdate( self, elapsed )
@@ -712,11 +713,8 @@ do
                 else
                     b:Hide()
 
-                end
-
+                end                
             end
-
-            self:RefreshCooldowns()
 
             -- Force glow, range, SpellFlash updates.
             self.glowTimer  = -1
@@ -820,6 +818,27 @@ do
             end
 
             self.rangeTimer = pulseRange
+        end
+
+
+        self.flashTimer = ( self.flashTimer or 0 ) - elapsed
+
+        if self.flashTimer < 0 then
+            if conf.spellFlash and LSF then
+                local a = self.Recommendations and self.Recommendations[ 1 ] and self.Recommendations[ 1 ].actionName
+                
+                if a then
+                    local ability = class.abilities[ a ]
+
+                    if ability.item then
+                        LSF.FlashItem( ability.name, conf.spellFlashColor )
+                    else
+                        LSF.FlashAction( ability.name, conf.spellFlashColor )
+                    end
+                end
+            end
+
+            self.flashTimer = pulseFlash
         end
 
 

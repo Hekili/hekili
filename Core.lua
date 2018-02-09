@@ -1482,22 +1482,6 @@ function Hekili:ProcessHooks( dispID, solo )
     local UI = ns.UI.Displays[ dispID ]
     local Queue = UI.Recommendations
 
-    --[[
-    local now = GetTime()
-
-    lastHooks[ dispID ] = lastHooks[ dispID ] or 0
-
-    print( "Refresh Recs", dispID, string_format( "%.2f", now - lastHooks[ dispID ] ) )
-    lastHooks[ dispID ] = now
-
-
-
-    if GetTime() - lastHooks[ dispID ] > 10 then
-        print( "Refresh Count", dispID, lastCount[ dispID ] )
-        lastCount[ dispID ] = 0
-        lastHooks[ dispID ] = GetTime()
-    end]]
-    
     if Queue then
         for k, v in pairs( Queue ) do
             for l, w in pairs( v ) do
@@ -1507,8 +1491,6 @@ function Hekili:ProcessHooks( dispID, solo )
             end
         end
     end
-
-
 
     local checkstr = nil
 

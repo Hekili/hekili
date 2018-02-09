@@ -1760,6 +1760,7 @@ ns.newDisplayOption = function( key )
                         end,
                         width = 'full'
                     },
+
                     spellFlashColor = {
                         type = 'color',
                         name = 'SpellFlash Color',
@@ -1769,10 +1770,11 @@ ns.newDisplayOption = function( key )
                             local id = tonumber( info[2]:match( "^D(%d+)" ) )
                             local display = id and Hekili.DB.profile.displays[ id ]
                             
-                            return ( SpellFlash or SpellFlashCore ) or not display or not display.spellFlash
+                            return not ( SpellFlash or SpellFlashCore ) or not display or not display.spellFlash
                         end,
                         width = 'full'
                     },
+
                     esSpacer3 = {
                         type = 'description',
                         name = '\n',
@@ -6497,7 +6499,7 @@ function Hekili:GetOption( info, input )
                 if option == 'x' or option == 'y' then
                     return tostring( display[ option ] )
                     
-                elseif option == 'SpellFlash Color' then
+                elseif option == 'spellFlashColor' then
                     if type( display[option] ) ~= 'table' then display[option] = { r = 1, g = 1, b = 1, a = 1 } end
                     return display[option].r, display[option].g, display[option].b, display[option].a
                     
@@ -6815,9 +6817,9 @@ function Hekili:SetOption( info, input, ... )
                 elseif option == 'Single - Minimum' or option == 'Single - Maximum' or option == 'AOE - Minimum' or option == 'AOE - Maximum' then
                     -- do nothing, it's already set.
                     
-                elseif option == 'Use SpellFlash' then
+                elseif option == 'spellFlash' then
                     
-                elseif option == 'SpellFlash Color' then
+                elseif option == 'spellFlashColor' then
                     if type( display[ option ] ~= 'table' ) then display[ option ] = {} end
                     display[ option ].r = input
                     display[ option ].g = select( 1, ... )
@@ -6835,12 +6837,6 @@ function Hekili:SetOption( info, input, ... )
                     profile.displays[ index ].Name = input
                     profile.displays[ index ].Default = false
                     
-                    if not Hekili[ 'ProcessDisplay'..index ] then
-                        Hekili[ 'ProcessDisplay'..index ] = function ()
-                            Hekili:ProcessHooks( index )
-                        end
-                        C_Timer.After( 0.25, self[ 'ProcessDisplay'..index ] )
-                    end
                     Rebuild = true
                     
                 elseif option == 'Import' then
