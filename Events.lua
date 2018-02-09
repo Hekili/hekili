@@ -412,6 +412,7 @@ end )
 
 
 RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
+    Hekili:UpdateDisplayVisibility()
     state.combat = GetTime()
 end )
 
@@ -419,6 +420,7 @@ end )
 RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     ns.updateGear()
     state.combat = 0
+    Hekili:UpdateDisplayVisibility()
 
     Hekili:PurgeTTD()
 end )

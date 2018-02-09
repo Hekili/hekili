@@ -1022,8 +1022,7 @@ do
         self.refreshTimer = self.refreshTimer - elapsed
 
         if self.criticalUpdate or self.refreshTimer < 0 then
-            Hekili:ProcessHooks( self.id )
-            
+            Hekili:ProcessHooks( self.id )            
             self.criticalUpdate = false
             self.refreshTimer = state.combat == 0 and oocRefresh or icRefresh
         end
@@ -1045,11 +1044,11 @@ do
 
         if preAlpha > 0 and newAlpha == 0 then
             self:SetAlpha( 0 )
-            self:Deactivate()
+            -- self:Deactivate()
 
         else
             if preAlpha == 0 and newAlpha > 0 then
-                Hekili:ProcessHooks( self.id )
+                Hekili:ForceUpdate()
             end
             self:SetAlpha( newAlpha )
             self:Show()
