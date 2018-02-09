@@ -1784,7 +1784,7 @@ ns.newDisplayOption = function( key )
                             local id = tonumber( info[2]:match( "^D(%d+)" ) )
                             local display = id and Hekili.DB.profile.displays[ id ]
                             
-                            return ( SpellFlash or SpellFlashCore ) or not display or not display.spellFlash
+                            return not ( SpellFlash or SpellFlashCore ) or not display or not display.spellFlash
                         end,
                     },
                     
@@ -6814,7 +6814,7 @@ function Hekili:SetOption( info, input, ... )
                     end
                     RebuildUI = true
                     
-                elseif option == 'Single - Minimum' or option == 'Single - Maximum' or option == 'AOE - Minimum' or option == 'AOE - Maximum' then
+                elseif option == 'minST' or option == 'maxST' or option == 'minAE' or option == 'maxAE' then
                     -- do nothing, it's already set.
                     
                 elseif option == 'spellFlash' then
