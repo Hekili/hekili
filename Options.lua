@@ -6225,15 +6225,10 @@ function Hekili:GetOptions()
                             end
 
                             local gear
-                            for i = 1, 19 do
-                                local item = GetInventoryItemID( 'player', i )
-
-                                if item then
-                                    local name = GetItemInfo( item )
-                                    key = formatKey( name )
-
-                                    if gear then gear = format( "%s\n    %6d/%s/%s=%d", gear, item, key, name, s.set_bonus[key] )
-                                    else gear = format( "%6d/%s/%s=%d", item, key, name, ( s.set_bonus[key] or 0 ) ) end
+                            for k, v in pairs( state.set_bonus ) do
+                                if type(k) == 'string' and v > 0 then
+                                    if gear then gear = format( "%s\n    %s=%d", gear, k, v )
+                                    else gear = format( "    %s=%d", k, v ) end
                                 end
                             end
 

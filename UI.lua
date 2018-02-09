@@ -517,9 +517,11 @@ do
         PLAYER_TARGET_CHANGED = 1,
         PLAYER_REGEN_ENABLED = 1,
         PLAYER_REGEN_DISABLED = 1,
+        PLAYER_SPECIALIZATION_CHANGED = 1,
+        ACTIVE_TALENT_GROUP_CHANGED = 1,
         ZONE_CHANGED = 1,
         ZONE_CHANGED_INDOORS = 1,
-        ZONE_CHANGED_NEW_AREA = 1,
+        ZONE_CHANGED_NEW_AREA = 1,        
     }
 
 
@@ -1002,6 +1004,7 @@ do
 
         if self.criticalUpdate or self.refreshTimer < 0 then
             Hekili:ProcessHooks( self.id )
+            
             self.criticalUpdate = false
             self.refreshTimer = state.combat == 0 and oocRefresh or icRefresh
         end
@@ -1010,22 +1013,25 @@ do
 
 
     local function Display_UpdateAlpha( self )
+
         local preAlpha = self.alpha or 0
         local newAlpha = CalculateAlpha( self.id )
 
-        if preAlpha > 0 and newAlpha == 0 then
-            self:SetAlpha( 0 )
+        if not self.Active then
             self:Hide()
-
-        elseif preAlpha == 0 and newAlpha > 0 then
-            -- Newly visible; we need recommendations.
-            Hekili:ProcessHooks( self.id )
-            self:Show()
-            self:SetAlpha( newAlpha )
-
         else
-            self:SetAlpha( newAlpha )
+            if preAlpha > 0 and newAlpha == 0 then
+                self:SetAlpha( 0 )
+                self:Deactivate()
 
+            else
+                if preAlpha == 0 and newAlpha > 0 then
+                    Hekili:ProcessHooks( self.id )
+                end
+                self:Show()
+                self:SetAlpha( newAlpha )
+
+            end
         end
 
         self.alpha = newAlpha
@@ -1212,7 +1218,7 @@ do
         ns.UI.Buttons[ id ] = ns.UI.Buttons[ id ] or {}
         d.Buttons = ns.UI.Buttons[ id ]
 
-        for i = 1, max( #d.Buttons, conf.numIcons ) do
+        for i = 1, 10 do
             d.Buttons[i] = self:CreateButton( id, i )
             d.Buttons[i]:Hide()
 
@@ -1224,46 +1230,13 @@ do
 
             if MasqueGroup then MasqueGroup:AddButton( d.Buttons[i], { Icon = d.Buttons[i].Texture, Cooldown = d.Buttons[i].Cooldown } ) end            
         end
+
     end
 
 
     local dispActive = {}
     local listActive = {}
     local actsActive = {}
-
-    --[[ function Hekili:UpdateVisibilityStates()
-        local profile = self.DB.profile
-        local displays = ns.UI.Displays
-
-        for i in ipairs( dispActive ) do dispActive[ i ] = nil end
-        for i in ipairs( listActive ) do listActive[ i ] = nil end
-        for a in  pairs( actsActive ) do actsActive[ a ] = nil end
-
-        if profile.Enabled then
-            for i, display in ipairs( profile.displays ) do            
-                if display.Enabled and ( display.Specialization == 0 or display.Specialization == state.spec.id ) then
-                    dispActive[ i ] = true                
-                    if displays[ i ] and not displays[ i ].Active then displays[ i ]:Activate() end
-                else
-                    if displays[ i ] and displays[ i ].Active then displays[ i ]:Deactivate() end
-                end
-            end
-
-            for i, list in ipairs( profile.actionLists ) do
-                if list.Specialization == 0 or list.Specialization == state.spec.id then
-                    listActive[ i ] = true
-                end
-
-
-                -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
-                for a, action in ipairs( list.Actions ) do
-                    if action.Enabled and action.Ability then
-                        actsActive[ i ..':' .. a ] = true
-                    end
-                end
-            end
-        end
-    end ]]
 
 
     function Hekili:UpdateDisplayVisibility()
@@ -1562,22 +1535,10 @@ do
         b:EnableMouse( not Hekili.DB.profile.Locked )
         b:SetMovable( not Hekili.DB.profile.Locked )
 
-        -- Help Out AddOnSkins
-        if AddOnSkins then
-            if not b.Backdrop then
-                local AS = AddOnSkins[1]
-
-                if AS:CheckOption( "Hekili" ) then
-                    AS:CreateBackdrop( b, 'Transparent' )
-                    AS:SkinTexture( b.Texture )
-                end
-            end
-        end
-
         return b
 
     end
-
+    
 end
 
 

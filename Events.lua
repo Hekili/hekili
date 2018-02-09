@@ -449,16 +449,6 @@ local lastForceEvent = 'NONE'
 local UNIT_POWER_ICD = true
 
 function Hekili:ForceUpdate( event )
-    --[[ local now = GetTime()
-
-    if now > lastForceTime then
-        print( "|cFF00FF00NEW UPDATE:|r", event, string_format( "%.2f", now ) )
-    else
-        print( "OLD UPDATE:", event, string_format( "%.2f", now ) )
-    end
-
-    lastForceTime = now ]]
-
     for i, d in ipairs( ns.UI.Displays ) do
         d.criticalUpdate = true
     end
@@ -988,7 +978,10 @@ RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
 RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
 RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
 
-RegisterEvent( "UPDATE_SHAPESHIFT_FORM", ReadKeybindings )
+RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
+    ReadKeybindings()
+    Hekili:ForceUpdate( event )
+end )
 RegisterUnitEvent( "PLAYER_TALENT_UPDATE", ReadKeybindings )
 RegisterUnitEvent( "PLAYER_EQUIPMENT_CHANGED", ReadKeybindings )
 
