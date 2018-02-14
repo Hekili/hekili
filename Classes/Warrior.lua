@@ -339,6 +339,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addAura( "rend", 772, "duration", 8 )
         addAura( "sense_death", 200979, "duration", 12 )
         addAura( "shockwave", 46968, "duration", 3 )
+        addAura( "stone_heart", 225947, "duration", 10 )
         addAura( "storm_bolt", 107570, "duration", 4 )
         addAura( "tactician", 184783 )
         addAura( "taste_for_blood", 206333, "duration", 8, "max_stack", 6 )

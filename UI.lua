@@ -672,6 +672,8 @@ do
                     b:Show()
 
                     b.Texture:SetTexture( rec.texture or ability.texture or GetSpellTexture( ability.id ) )
+                    b.Texture:SetTexCoord( unpack( b.texCoords ) )
+
                     b.Texture:Show()
 
                     if conf.showIndicators and indicator then
@@ -1141,54 +1143,58 @@ do
 
     local function Display_Activate( self )
         
-        self.Active = true
+        if not self.Active then
+            self.Active = true
 
-        self.Recommendations = self.Recommendations or ( ns.queue and ns.queue[ self.id ] )
+            self.Recommendations = self.Recommendations or ( ns.queue and ns.queue[ self.id ] )
 
-        self.auraTimer = 0
-        self.delayTimer = 0
-        self.glowTimer = 0
-        self.refreshTimer = 0
-        self.targetTimer = 0
+            self.auraTimer = 0
+            self.delayTimer = 0
+            self.glowTimer = 0
+            self.refreshTimer = 0
+            self.targetTimer = 0
 
-        self:SetScript( "OnUpdate", Display_OnUpdate )
-        self:SetScript( "OnEvent",  Display_OnEvent )
+            self:SetScript( "OnUpdate", Display_OnUpdate )
+            self:SetScript( "OnEvent",  Display_OnEvent )
 
-        if not self.Initialized then
-            -- Update Cooldown Wheels.
-            self:RegisterEvent( "ACTIONBAR_UPDATE_USABLE" )
-            self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )        
-            self:RegisterEvent( "SPELL_UPDATE_COOLDOWN" )
-            self:RegisterEvent( "SPELL_UPDATE_USABLE" )
+            if not self.Initialized then
+                -- Update Cooldown Wheels.
+                self:RegisterEvent( "ACTIONBAR_UPDATE_USABLE" )
+                self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )        
+                self:RegisterEvent( "SPELL_UPDATE_COOLDOWN" )
+                self:RegisterEvent( "SPELL_UPDATE_USABLE" )
 
-            -- Show/Hide Overlay Glows.
-            self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" )
-            self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" )
+                -- Show/Hide Overlay Glows.
+                self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" )
+                self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" )
 
-            -- Recalculate Alpha/Visibility.
-            self:RegisterEvent( "PET_BATTLE_OPENING_START" )
-            self:RegisterEvent( "PET_BATTLE_CLOSE" )
-            self:RegisterEvent( "BARBER_SHOP_OPEN" )
-            self:RegisterEvent( "BARBER_SHOP_CLOSE" )
-            self:RegisterUnitEvent( "UNIT_ENTERED_VEHICLE", "player" )
-            self:RegisterUnitEvent( "UNIT_EXITED_VEHICLE", "player" )
-            self:RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player" )
-            self:RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED" )
-            self:RegisterEvent( "PLAYER_TARGET_CHANGED" )
-            self:RegisterEvent( "PLAYER_CONTROL_LOST" )
-            self:RegisterEvent( "PLAYER_CONTROL_GAINED" )
-            self:RegisterEvent( "PLAYER_REGEN_DISABLED" )
-            self:RegisterEvent( "PLAYER_REGEN_ENABLED" )
-            self:RegisterEvent( "ZONE_CHANGED" )
-            self:RegisterEvent( "ZONE_CHANGED_INDOORS" )
-            self:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
+                -- Recalculate Alpha/Visibility.
+                self:RegisterEvent( "PET_BATTLE_OPENING_START" )
+                self:RegisterEvent( "PET_BATTLE_CLOSE" )
+                self:RegisterEvent( "BARBER_SHOP_OPEN" )
+                self:RegisterEvent( "BARBER_SHOP_CLOSE" )
+                self:RegisterUnitEvent( "UNIT_ENTERED_VEHICLE", "player" )
+                self:RegisterUnitEvent( "UNIT_EXITED_VEHICLE", "player" )
+                self:RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player" )
+                self:RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED" )
+                self:RegisterEvent( "PLAYER_TARGET_CHANGED" )
+                self:RegisterEvent( "PLAYER_CONTROL_LOST" )
+                self:RegisterEvent( "PLAYER_CONTROL_GAINED" )
+                self:RegisterEvent( "PLAYER_REGEN_DISABLED" )
+                self:RegisterEvent( "PLAYER_REGEN_ENABLED" )
+                self:RegisterEvent( "ZONE_CHANGED" )
+                self:RegisterEvent( "ZONE_CHANGED_INDOORS" )
+                self:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
 
-            -- Update keybindings.
-            for k in pairs( kbEvents ) do            
-                self:RegisterEvent( k )
+                -- Update keybindings.
+                for k in pairs( kbEvents ) do            
+                    self:RegisterEvent( k )
+                end
+
+                self.Initialized = true
             end
 
-            self.Initialized = true
+            Hekili:ProcessHooks( self.id )
         end
 
     end
@@ -1272,9 +1278,9 @@ do
             for i, display in ipairs( profile.displays ) do            
                 if display.Enabled and ( display.Specialization == 0 or display.Specialization == state.spec.id ) then
                     dispActive[ i ] = true
-                    if displays[ i ] then displays[ i ]:Activate() end
+                    if displays[ i ] and not displays[ i ].Active then displays[ i ]:Activate() end
                 else
-                    if displays[ i ] then displays[ i ]:Deactivate() end
+                    if displays[ i ] and displays[ i ].Active then displays[ i ]:Deactivate() end
                 end
             end
 
@@ -1349,16 +1355,29 @@ do
             b.Texture:SetAllPoints( b )
         end
 
+        b.texCoords = b.texCoords or {}
         local zoom = 1 - ( ( conf.iconZoom or 0 ) / 200 )
 
         if conf.KeepAspectRatio then
             local biggest = id == 1 and max( conf.primaryIconHeight, conf.primaryIconWidth ) or max( conf.queuedIconHeight, conf.queuedIconWidth )
             local height  = 0.5 * zoom * ( id == 1 and conf.primaryIconHeight or conf.queuedIconHeight ) / biggest
             local width   = 0.5 * zoom * ( id == 1 and conf.primaryIconWidth  or conf.queuedIconWidth  ) / biggest
-            b.Texture:SetTexCoord( 0.5 - width, 0.5 + width, 0.5 - height, 0.5 + height )
+
+            b.texCoords[1] = 0.5 - width
+            b.texCoords[2] = 0.5 + width
+            b.texCoords[3] = 0.5 - height
+            b.texCoords[4] = 0.5 + height
+
+            b.Texture:SetTexCoord( unpack( b.texCoords ) )
         else
             local zoom = zoom / 2
-            b.Texture:SetTexCoord( 0.5 - zoom, 0.5 + zoom, 0.5 - zoom, 0.5 + zoom )
+
+            b.texCoords[1] = 0.5 - zoom
+            b.texCoords[2] = 0.5 + zoom
+            b.texCoords[3] = 0.5 - zoom
+            b.texCoords[4] = 0.5 + zoom
+
+            b.Texture:SetTexCoord( unpack( b.texCoords ) )
         end
 
 
@@ -1479,7 +1498,7 @@ do
             b.Overlay = b.Overlay or b:CreateTexture( nil, "OVERLAY" )    
             b.Overlay:SetAllPoints( b )
             b.Overlay:SetTexture( 'Interface\\Addons\\Hekili\\Textures\\Pause.blp' )
-            b.Overlay:SetTexCoord( b.Texture:GetTexCoord() )
+            b.Overlay:SetTexCoord( unpack( b.texCoords ) )
             b.Overlay:Hide()
 
 

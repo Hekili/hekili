@@ -404,8 +404,8 @@ local displayTemplate = {
     -- End autoconverter.
     
     font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
-    primaryFontSize = 12,
-    queuedFontSize = 12,
+    primaryFontSize = 14,
+    queuedFontSize = 14,
     
     rangeCheck = true,
     rangeType = 'ability',
@@ -419,7 +419,7 @@ local displayTemplate = {
     showCaptions = false,
     queuedCaptions = true,
     captionFont = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
-    captionFontSize = 12,
+    captionFontSize = 14,
     captionFontStyle = 'OUTLINE',
     captionAlign = 'CENTER',
     captionAnchor = 'BOTTOM',
@@ -436,7 +436,7 @@ local displayTemplate = {
     
     showTargets = true,
     targetFont = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
-    targetFontSize = 12,
+    targetFontSize = 14,
     targetFontStyle = 'OUTLINE',
     targetAnchor = 'BOTTOMRIGHT',
     xOffsetTargets = 0,
@@ -456,7 +456,7 @@ local displayTemplate = {
 
     showDelay = "TEXT",
     delayFont = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
-    delayFontSize = 12,
+    delayFontSize = 14,
     delayFontStyle = 'OUTLINE',
     delayAnchor = 'TOPLEFT',
     xOffsetDelay = 0,
@@ -488,7 +488,7 @@ local displayTemplate = {
     queuedKBs = true,
     kbFont = ElvUI and "PT Sans Narrow" or "Arial",
     kbFontStyle = "OUTLINE",
-    kbFontSize = 12,
+    kbFontSize = 14,
     kbAnchor = "TOPRIGHT",
     xOffsetKBs = 1,
     yOffsetKBs = -1,
