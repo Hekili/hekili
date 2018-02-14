@@ -753,8 +753,8 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addHandler( "execute", function ()
             if spec.arms then
+                local addl_cost = 10 * ( talent.dauntless.enabled and 0.9 or 1 ) * ( talent.deadly_calm.enabled and buff.battle_cry.up and 0.25 or 1 )
                 if buff.stone_heart.down then                
-                    local addl_cost = 10 * ( talent.dauntless.enabled and 0.9 or 1 ) * ( talent.deadly_calm.enabled and buff.battle_cry.up and 0.25 or 1 )
                     spend( min( addl_cost, rage.current ), "rage" ) 
                 end
                 removeBuff( "stone_heart" )
