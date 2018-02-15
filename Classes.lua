@@ -890,24 +890,33 @@ addAbility( 'arcane_torrent', {
     cooldown = 120,
     toggle = 'cooldowns',
     usable = function () return race.blood_elf end,
-    }, 50613, 80483, 129597, 155145, 25046, 69179 )
+}, 50613, 80483, 129597, 155145, 25046, 69179, 202719, 232633 )
+
+local atIDs = {
+    PALADIN     = 155145,
+    MONK        = 129597,
+    DEATHKNIGHT = 50613,
+    WARRIOR     = 69179,
+    ROGUE       = 25046,
+    HUNTER      = 80483,
+    DEMONHUNTER = 202719,
+    PRIEST      = 232633
+}
 
 modifyAbility( 'arcane_torrent', 'id', function( x )
-    if class.file == 'PALADIN' then return 155145
-    elseif class.file == 'MONK' then return 129597 end
-    return x
+    return atIDs[ class.file ] or x
 end )
 
 addHandler( 'arcane_torrent', function ()
     interrupt()
     
-    if class.death_knight then gain( 20, "runic_power" )
-    elseif class.hunter then gain( 15, "focus" )
-    elseif class.monk then gain( 1, "chi" )
-    elseif class.paladin then gain( 1, "holy_power" )
-    elseif class.rogue then gain( 15, "energy" )
-    elseif class.warrior then gain( 15, "rage" )
-    elseif class.hunter then gain( 15, "focus" ) end
+    if class.file == "DEATHKNIGHT" then gain( 20, "runic_power" )
+    elseif class.file == "HUNTER" then gain( 15, "focus" )
+    elseif class.file == "MONK" then gain( 1, "chi" )
+    elseif class.file == "PALADIN" then gain( 1, "holy_power" )
+    elseif class.file == "ROGUE" then gain( 15, "energy" )
+    elseif class.file == "WARRIOR" then gain( 15, "rage" )
+    elseif class.file == "DEMONHUNTER" then gain( 15, "fury" ) end 
 end )
 
 ns.registerInterrupt( 'arcane_torrent' )
