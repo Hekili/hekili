@@ -396,6 +396,8 @@ local displayTemplate = {
     queueAnchorOffset = 5,
     iconSpacing = 5,
     iconZoom = 30,
+    iconBorder = true,
+    iconBorderColor = { r = 0, g = 0, b = 0, a = 1 },
 
     -- Stuff for the autoconverter.
     xyConverted = true,
@@ -1557,7 +1559,7 @@ ns.newDisplayOption = function( key )
                     iconZoom = {
                         type = 'range',
                         name = 'Icon Zoom',
-                        desc = "Select the zoom percentage for the icon textures in this display. (Roughly 15% will trim off the default Blizzard borders.)",
+                        desc = "Select the zoom percentage for the icon textures in this display. (Roughly 30% will trim off the default Blizzard borders.)",
                         min = 0,
                         max = 100,
                         step = 1,
@@ -1565,11 +1567,33 @@ ns.newDisplayOption = function( key )
                         width = 'full'
                     },
                     
+                    iconBorder = {
+                        type = 'toggle',
+                        name = "Show Icon Border",
+                        desc = "If checked, the icon will have a 1px border around its edge.",
+                        order = 8,
+                        width = "full"
+                    },
+
+                    iconBorderColor = {
+                        type = "color",
+                        name = "Icon Border Color",
+                        desc = "If Show Icon Border is checked, the border will show this color.",
+                        order = 8.1,
+                        width = "full",
+                        hidden = function( info )
+                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
+                            local display = id and Hekili.DB.profile.displays[ id ]
+
+                            return not ( display and display.iconBorder )
+                        end,
+                    },
+
                     KeepAspectRatio = {
                         type = 'toggle',
                         name = "Keep Aspect Ratio",
                         desc = "If checked, the icon textures will not be distorted when its width and height do not match.",
-                        order = 8,
+                        order = 8.99,
                         width = "full"
                     },
 
@@ -1577,7 +1601,7 @@ ns.newDisplayOption = function( key )
                         type = 'description',
                         name = "\n",
                         width = "full",
-                        order = 9,
+                        order = 9.99,
                     },
 
                     queueDirection = {
@@ -4808,193 +4832,7 @@ function Hekili:GetOptions()
         set = 'SetOption',
         childGroups = "tree",
         args = {
-            
-            
-            --[[ welcome = {
-                type = "group",
-                name = "Welcome",
-                order = 10,
-                args = {
-                    headerWarn = {
-                        type = 'description',
-                        name = "Welcome to Hekili v7.1.5 for |cFF00FF00Legion|r. This addon's default settings will give you similar behavior to the original version. " ..
-                        'Please report bugs to hekili.tcn@gmail.com / @Hekili808 on Twitter / Hekili on MMO-C.\n',
-                        order = 0,
-                    },
-                    gettingStarted = {
-                        type = 'description',
-                        name = "|cFFFFD100Getting Started|r\n\n" ..
-                        "By default, this addon has two displays. The primary display is a hybrid display that will display a single-target, cleave, or AOE priority list depending on the number of targets that have been detected. " ..
-                        "For greater control over the primary display, you may want to adjust the |cFFFFD100Mode Switch|r settings found in the |cFFFFD100Toggles|r section of the options. You can bind a key that will manually swap " ..
-                        "the primary display between fixed single-target mode, automatic mode, or fixed AOE mode.\n\n" ..
-                        "When the primary display is in fixed single-target mode, a second display may appear (if configured) that will show AOE recommendations.\n\n" ..
-                        "Additionally, by default, most major cooldowns are excluded from the action lists. To enable them, it is strongly recommend that you bind a key in the |cFFFFD100Toggles|r section for |cFFFFD100Show Cooldowns|r. " ..
-                        "This will enable you to tell the addon when you do (or do not) want to have your cooldowns recommended.\n\n" ..
-                        "There are additional |cFFFFD100Class Settings|r you can use to adjust preferences on for your class or specialization. Read the tooltips for more information.\n\n" ..
-                        "Finally, there are many options that can be changed on a per-display basis. Check the |cFFFFD100Displays|r section, click the display in question, and check the |cFFFFD100UI and Style|r section to explore the " ..
-                        "available options for customization.\n",
-                        order = 1,
-                    },
-                    whatsNew = {
-                        type = 'description',
-                        name = "|cFFFFD100What's New!|r\n\n" ..
-                        "|cFF00FF00Improved Debugging|r - When using the Debug and Pause features, Debug Snapshots can be taken which will breakdown the entire decision-making process of the addon. These can be viewed in the |cFFFFD100Debug Snapshots|r section.",
-                        order = 2
-                    },
-                    endCap = { -- just here to trigger scrolling if needed.
-                        type = 'description',
-                        name = ' ',
-                        order = 3
-                    }
-                    
-                }
-            }, ]]
-            
-            
-            --[[ core = {
-                type = 'group',
-                name = "Core Options",
-                order = 10,
-                get = 'NewGetOption',
-                set = 'NewSetOption',
-                args = {
-                    
-                    byline = {
-                        type = 'description',
-                        name = "Welcome to Hekili. This addon has some complex settings that you can modify to impact how information is presented and how decisions are made.\n\n" ..
-                        "Please report bugs to |cFFFFD100hekili.tcn@gmail.com|r / |cFFFFD100@Hekili808|r on Twitter / http://curse.com/addons/wow/hekili.",
-                        order = 0
-                    },
-                    
-                    updates = {
-                        type = "group",
-                        name = "Recommendations",
-                        order = 1,
-                        inline = true,
-                        args = {
-                            
-                            internalCooldown = {
-                                type = "range",
-                                name = "Internal Cooldown",
-                                desc = "The addon updates its recommendation abilities whenever combat circumstances change. This includes when you and your target gain buffs " ..
-                                "or debuffs, when you gain or lose resources, when you use an ability or change targets, and more. When set above zero, this setting will prevent the " ..
-                                "addon from rechecking its recommendations more frequently than specified, except in the cases of specific critical events. Increasing this Internal " ..
-                                "Cooldown may result in less CPU usage but may leave the addon feeling less responsive.",
-                                min = 0,
-                                max = 1,
-                                step = 0.01,
-                                order = 0,
-                                width = "full"
-                            },
-                            
-                            allowRechecks = {
-                                type = "toggle",
-                                name = "Recheck Recommendations",
-                                desc = "When making its recommendations, this addon will retest actions that are not ready yet, to see if they will be ready very soon. This " ..
-                                "allows the addon to more consistently recommend higher priority abilities, using slightly more CPU time. Unchecking this setting will reduce CPU " ..
-                                "usage, but may result in seeing last-second changes to recommendations or abilities seeming to 'pop' up late in the recommendation queue.",
-                                order = 1,
-                                width = "full",
-                                
-                            }
-                        }
-                    },
-                }
-            },
-            
-            quickSetup = {
-                type = 'group',
-                name = "Quick Setup",
-                get = 'NewGetOption',
-                set = 'NewSetOption',
-                order = 11,
-                args = {
-                    
-                    qsDisplay = {
-                        type = 'select',
-                        name = "Display to Configure",
-                        desc = "Select a display to configure using the Quick Setup tool. This will allow you to quickly apply a standard template to a display and update " ..
-                        "many of its settings at one time. If you want to adjust specific settings for a display, you should select it under Displays in the left-hand column instead.",
-                        values = function( info )
-                            local v = config.displays
-                            
-                            for i in pairs( v ) do
-                                v[i] = nil
-                            end
-                            
-                            for i, display in pairs( Hekili.DB.profile.displays ) do
-                                v[i] = display.Name or ( "ERROR: No Display Name #" .. i )
-                            end
-                            
-                            v[999] = " "
-                            
-                            return v
-                        end,
-                        order = 0,
-                        width = 'full'
-                        
-                    },
-                    
-                    qsShowTypeGroup = {
-                        type = 'toggle',
-                        name = 'Change Display Type',
-                        desc = "Click here to change the type of display. This allows you to quickly set up how the display responds to Mode Toggles, how many targets are used " ..
-                        "for AOE combat decisions, and so forth.",
-                        order = 10,
-                        width = 'full',
-                    },
-                    
-                    qsTypeGroup = {
-                        type = 'group',
-                        name = "Display Type",
-                        inline = true,
-                        order = 11,
-                        width = 'full',
-                        hidden = function()
-                            return not config.qsShowTypeGroup
-                        end,
-                        args = {
-                            qsDisplayType = {
-                                type = 'select',
-                                name = "Display Type",
-                                desc = "Select the type of functionality you want for this display. The display type determines whether a display responds to the addon's Mode Toggle " ..
-                                "system and how it affects the addon's recommendations.\n\n" ..
-                                "|cFFFFD100Primary|r - the display's recommendations are based on the addon's current Mode. When the Mode is set to Single-Target, the display will show single-target " ..
-                                "recommendations no matter how many targets are recommended. When Mode is set to Auto, the display will show recommendations based on the number of detected targets. " ..
-                                "When Mode is set to AOE, the display will assume there are multiple targets at all times.\n" ..
-                                "|cFFFFD100AOE|r - the display will always assume that there are multiple targets at all times, regardless of Mode.\n" ..
-                                "|cFFFFD100Automatic|r - the display will always make its recommendations based on the number of targets detected by the addon, regardless of Mode.\n",
-                                values = config.displayTypes,
-                                order = 0,
-                                width = 'full'
-                            },
-                            
-                            qsTargetsAOE = {
-                                type = 'range',
-                                name = "AOE Targets",
-                                desc = "Specify the minimum number of targets the addon will assume are present when a display is making AOE recommendations. If the display is set up to show " ..
-                                "the number of targets that were detected, the number will be shown in red when there are fewer than the actual number of targets specified.",
-                                min = 2,
-                                max = 10,
-                                step = 1,
-                                order = 1,
-                                width = 'full'
-                            },
-                            
-                            qsApplyTypeSettings = {
-                                type = 'execute',
-                                name = "Apply Type Settings",
-                                desc = "Click to update the display's settings. This will overwrite any existing settings.",
-                                disabled = function()
-                                    return config.qsDisplay == 99999 or config.qsDisplayType == 99999
-                                end,
-                                order = 2
-                            }
-                        },
-                    },
-                },
-            }, ]]
-            
+
             general = {
                 type = "group",
                 name = "General",
@@ -6499,7 +6337,7 @@ function Hekili:GetOption( info, input )
                 if option == 'x' or option == 'y' then
                     return tostring( display[ option ] )
                     
-                elseif option == 'spellFlashColor' then
+                elseif option == 'spellFlashColor' or option == 'iconBorderColor' then
                     if type( display[option] ) ~= 'table' then display[option] = { r = 1, g = 1, b = 1, a = 1 } end
                     return display[option].r, display[option].g, display[option].b, display[option].a
                     
@@ -6819,7 +6657,7 @@ function Hekili:SetOption( info, input, ... )
                     
                 elseif option == 'spellFlash' then
                     
-                elseif option == 'spellFlashColor' then
+                elseif option == 'spellFlashColor' or option == 'iconBorderColor' then
                     if type( display[ option ] ~= 'table' ) then display[ option ] = {} end
                     display[ option ].r = input
                     display[ option ].g = select( 1, ... )

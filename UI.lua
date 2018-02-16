@@ -129,6 +129,7 @@ function ns.StartConfiguration( external )
   Hekili.Config = true
 
   local scaleFactor = Hekili:GetScale()
+  local ccolor = RAID_CLASS_COLORS[ select( 2, UnitClass( "player" ) ) ]
 
   -- Notification Panel
   ns.UI.Notification:EnableMouse(true)
@@ -137,24 +138,23 @@ function ns.StartConfiguration( external )
   ns.UI.Notification.Mover:SetAllPoints(HekiliNotification)
   -- ns.UI.Notification.Mover:SetHeight(20)
   ns.UI.Notification.Mover:SetBackdrop( {
-    bgFile	 	= "Interface/Tooltips/UI-Tooltip-Background",
-    edgeFile 	= "Interface/Tooltips/UI-Tooltip-Border",
-    tile		  = false,
+    bgFile	 	= "Interface/Buttons/WHITE8X8",
+    edgeFile 	= "Interface/Buttons/WHITE8X8",
+    tile		= false,
     tileSize 	= 0,
-    edgeSize 	= 2,
+    edgeSize 	= 1,
     insets 		= { left = 0, right = 0, top = 0, bottom = 0 }
   } )
+
   ns.UI.Notification.Mover:SetBackdropColor(.1, .1, .1, .8)
-  ns.UI.Notification.Mover:SetBackdropBorderColor(.1, .1, .1, .5)
+  ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1)
   ns.UI.Notification.Mover:Show()
 
   f = ns.UI.Notification.Mover
   f.Header = f.Header or f:CreateFontString( "HekiliNotificationHeader", "OVERLAY", "GameFontNormal" )
-  -- f.Header:SetSize( Hekili.DB.profile['Notification Width'] * scaleFactor * 0.5, 20 )
   f.Header:SetAllPoints( HekiliNotificationMover )
   f.Header:SetText( "Notifications" )
   f.Header:SetJustifyH( "CENTER" )
-  -- f.Header:SetPoint( "BOTTOMLEFT", f, "TOPLEFT" )
   f.Header:Show()
 
   HekiliNotification:SetScript( "OnMouseDown", Mover_OnMouseDown )
@@ -171,15 +171,18 @@ function ns.StartConfiguration( external )
       -- v.Mover:SetMovable(true)
 
       v:SetBackdrop( {
-        bgFile	 	= "Interface/Tooltips/UI-Tooltip-Background",
-        edgeFile 	= "Interface/Tooltips/UI-Tooltip-Border",
+        bgFile	 	= "Interface/Buttons/WHITE8X8",
+        edgeFile 	= "Interface/Buttons/WHITE8X8",
         tile		= false,
         tileSize 	= 0,
-        edgeSize 	= 2,
+        edgeSize 	= 1,
         insets 		= { left = 0, right = 0, top = 0, bottom = 0 }
       } )
-      v:SetBackdropColor(.1, .1, .1, .8)
-      v:SetBackdropBorderColor(.1, .1, .1, .5)
+
+      local ccolor = select( 2, UnitClass( "player" ) )
+
+      v:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
+      v:SetBackdropColor( 0, 0, 0, .8 )
       v:SetScript( "OnMouseDown", Mover_OnMouseDown )
       v:SetScript( "OnMouseUp", Mover_OnMouseUp )
       v:Show()
@@ -1224,7 +1227,7 @@ do
         d.id = id       
 
         local scale = self:GetScale()
-        local border = 4
+        local border = 2
 
         d:SetSize( scale * ( border + conf.primaryIconWidth ), scale * ( border + conf.primaryIconHeight ) )
         d:SetPoint( "CENTER", Screen, "CENTER", conf.x, conf.y )
@@ -1427,6 +1430,23 @@ do
         b.Cooldown:SetFrameLevel( 50 )
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
+
+
+        -- Backdrop
+        if conf.iconBorder then
+            b:SetBackdrop( {
+                bgFile = "Interface\\Buttons\\WHITE8X8",
+                edgeFile = nil,
+                tile = false,
+                tileSize = 0,
+                edgeSize = 1,
+                insets = { left = -1, right = -1, top = -1, bottom = -1 } 
+            } )
+            b:SetBackdropColor( conf.iconBorderColor.r, conf.iconBorderColor.g, conf.iconBorderColor.b, conf.iconBorderColor.a )
+        else
+            b:SetBackdrop( nil )
+            b:SetBackdropColor( 0, 0, 0, 0 )
+        end
 
 
         -- Primary Icon Stuff
