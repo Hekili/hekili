@@ -1466,7 +1466,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             gcdType = 'spell',
             cooldown = 30,
             equipped = 'ashbringer',
-            usable = function () return artifact.ashes_to_ashes.enabled and holy_power.current <= settings.maximum_wake_power end,
+            usable = function () return artifact.wake_of_ashes.enabled and ( not artifact.ashes_to_ashes.enabled or holy_power.current <= settings.maximum_wake_power ) end,
             toggle = 'artifact'
         } )
 
