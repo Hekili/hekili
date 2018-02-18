@@ -35,6 +35,7 @@ local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
 local setRole = ns.setRole
+local setTalentLegendary = ns.setTalentLegendary
 
 
 local RegisterEvent = ns.RegisterEvent
@@ -339,7 +340,6 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addAura( "rend", 772, "duration", 8 )
         addAura( "sense_death", 200979, "duration", 12 )
         addAura( "shockwave", 46968, "duration", 3 )
-        addAura( "stone_heart", 225947, "duration", 10 )
         addAura( "storm_bolt", 107570, "duration", 4 )
         addAura( "tactician", 184783 )
         addAura( "taste_for_blood", 206333, "duration", 8, "max_stack", 6 )
@@ -362,9 +362,38 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addGearSet( "warswords_of_the_valarjar", 128908 )
         setArtifact( "warswords_of_the_valarjar" )
 
+        
         addGearSet( 'tier20', 147187, 147188, 147189, 147190, 147191, 147192 )
-        addGearSet( 'tier21', 152178, 152179, 152180, 152181, 152182, 152183 )
+            addAura( "raging_thirst", 242300, "duration", 8 ) -- fury 2pc.
+            addAura( "bloody_rage", 242952, "duration", 10, "max_stack", 10 ) -- fury 4pc.
+            -- arms 2pc: CDR to bladestorm/ravager from colossus smash.
+            -- arms 4pc: 2 auto-MS to nearby enemies when you ravager/bladestorm, not modeled.
 
+        addGearSet( 'tier21', 152178, 152179, 152180, 152181, 152182, 152183 )
+            addAura( "war_veteran", 253382, "duration", 8 ) -- arms 2pc.
+            addAura( "weighted_blade", 253383, "duration", 1, "max_stack", 3 ) -- arms 4pc.
+            addAura( "slaughter", 253384, "duration", 4 ) -- fury 2pc dot.
+            addAura( "outrage", 253385, "duration", 8 ) -- fury 4pc.
+
+        addGearSet( "ceannar_charger", 137088 )
+        addGearSet( "timeless_stratagem", 143728 )
+        addGearSet( "kazzalax_fujiedas_fury", 137053 )
+            addAura( "fujiedas_fury", 207776, "duration", 10, "max_stack", 4 )
+        addGearSet( "mannoroths_bloodletting_manacles", 137107 ) -- NYI.
+        addGearSet( "najentuss_vertebrae", 137087 )
+        addGearSet( "valarjar_berserkers", 151824 )
+        addGearSet( "ayalas_stone_heart", 137052 )
+            addAura( "stone_heart", 225947, "duration", 10 )
+        addGearSet( "the_great_storms_eye", 151823 )
+            addAura( "tornados_eye", 248142, "duration", 6, "max_stack", 6 )
+        addGearSet( "archavons_heavy_hand", 137060 )
+        addGearSet( "weight_of_the_earth", 137077 ) -- NYI.
+        
+        
+        addGearSet( "soul_of_the_battlelord", 151650 )
+        setTalentLegendary( 'soul_of_the_battlelord', 'arms', 'deadly_calm' )
+        setTalentLegendary( 'soul_of_the_battlelord', 'fury', 'massacre' )
+        
 
         addSetting( 'forecast_fury', true, {
             name = "Forecast Fury Generation",
@@ -438,6 +467,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addHandler( "battle_cry", function ()
             applyBuff( "battle_cry" )
+            if set_bonus.tier21 > 3 then applyBuff( "outrage" ) end
         end )
 
 
@@ -461,7 +491,10 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addHandler( "berserker_rage", function ()
             applyBuff( "berserker_rage" )
-            if talent.outburst.enabled then applyBuff( "enrage", 4 ) end
+            if talent.outburst.enabled then 
+                applyBuff( "enrage", 4 ) 
+                if equipped.ceannar_charger then gain( 8, "rage" ) end
+            end
         end )
 
 
@@ -497,6 +530,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addHandler( "bladestorm", function ()
             applyBuff( "bladestorm", 6 )
             setCooldown( "global_cooldown", 6 * haste )
+            if equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
         end )
 
 
@@ -542,6 +576,8 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
                 removeBuff( "taste_for_blood" )
             end
             removeBuff( "meat_cleaver" )
+            if equipped.kazzalax_fujiedas_fury then addStack( "fujiedas_fury", 10, 1 ) end
+            removeBuff( "bloody_rage" )
         end )
 
         
@@ -612,6 +648,11 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addHandler( "colossus_smash", function ()
             applyDebuff( "target", "colossus_smash", 8 )
+            if set_bonus.tier21 > 1 then applyBuff( "war_veteran" ) end
+            if set_bonus.tier20 > 1 then
+                if talent.ravager.enabled then setCooldown( "ravager", max( 0, cooldown.ravager.remains - 2 ) )
+                else setCooldown( "bladestorm", max( 0, cooldown.bladestorm.remains - 3 ) ) end
+            end
         end )        
 
         -- Commanding Shout
@@ -851,6 +892,10 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             return x - ( talent.bounding_stride.enabled and 15 or 0 )
         end )
 
+        modifyAbility( "heroic_leap", "charges", function( x )
+            return equipped.timeless_stratagem and 3 or x
+        end )
+
         addHandler( "heroic_leap", function ()
             -- This *would* reset CD on Taunt for Prot.
             setDistance( 5 )
@@ -912,11 +957,14 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         modifyAbility( "mortal_strike", "spend", function( x )
-            return x * ( talent.dauntless.enabled and 0.9 or 1 ) 
+            x = x * ( talent.dauntless.enabled and 0.9 or 1 ) 
+            if equipped.archavons_heavy_hand then x = x - 8 end
+            return x
         end )
 
         addHandler( "mortal_strike", function ()
             applyDebuff( "target", "mortal_strike" )
+            if set_bonus.tier21 > 3 then addStack( "weighted_blade", 12, 1 ) end
         end )
 
 
@@ -1004,7 +1052,8 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         end )
 
         addHandler( "raging_blow", function ()
-            -- proto
+            removeBuff( "raging_thirst" )
+            if set_bonus.tier21 > 3 then addStack( "bloody_rage", 10, 1 ) end
         end )
 
 
@@ -1031,6 +1080,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             removeBuff( "massacre" )
             applyBuff( 'enrage', 4 )
             removeBuff( "meat_cleaver" )
+            if set_bonus.tier21 > 1 then applyDebuff( "target", "slaughter" ) end
         end )
         
 
@@ -1049,7 +1099,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         } )
 
         addHandler( "ravager", function ()
-            -- Should we predict some rage gain?
+            if equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
         end )
         
 
@@ -1119,7 +1169,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         end )
 
         addHandler( "slam", function ()
-            -- proto
+            removeBuff( "weighted_blade" )
         end )
         
         
@@ -1233,6 +1283,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addHandler( "whirlwind", function ()
             if spec.fury then applyBuff( "meat_cleaver" ) end
             removeBuff( "wrecking_ball" )
+            removeBuff( "weighted_blade" )
         end )
 
     end
