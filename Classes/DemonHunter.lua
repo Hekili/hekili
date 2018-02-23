@@ -513,6 +513,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
             gcdType = 'off',
             cooldown = 15,
             usable = function () return target.casting end,
+            toggle = 'interrupts'
         } )
 
         addHandler( 'consume_magic', function ()

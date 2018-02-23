@@ -230,6 +230,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'greater_blessing_of_kings', 203538, 'duration', 3600 )
         addAura( 'greater_blessing_of_might', 203528, 'duration', 3600 )
         addAura( 'greater_blessing_of_wisdom', 203539, 'duration', 3600 )
+        addAura( 'guardian_of_ancient_kings', 86659, 'duration', 8 )
         addAura( 'hammer_of_justice', 853, 'duration', 6 )
         addAura( 'hand_of_hindrance', 183218, 'duration', 10 )
         addAura( 'hand_of_reckoning', 62124, 'duration', 3 )

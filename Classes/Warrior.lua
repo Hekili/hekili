@@ -72,15 +72,17 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
                 resource = 'rage',
                 spec = 'arms',
                 setting = 'forecast_fury',
-
+                
 
                 last = function ()
-                    local swing = state.swings.mainhand
+                    local swing = state.combat == 0 and state.now or state.swings.mainhand
                     local t = state.query_time
 
                     return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
                 end,
+
                 interval = 'mainhand_speed',
+
                 value = function ()
                     return base_rage_gen * arms_rage_mult * state.swings.mainhand_speed
                 end,
@@ -388,7 +390,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             addAura( "tornados_eye", 248142, "duration", 6, "max_stack", 6 )
         addGearSet( "archavons_heavy_hand", 137060 )
         addGearSet( "weight_of_the_earth", 137077 ) -- NYI.
-        
+
         
         addGearSet( "soul_of_the_battlelord", 151650 )
         setTalentLegendary( 'soul_of_the_battlelord', 'arms', 'deadly_calm' )
@@ -458,6 +460,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             cooldown = 60,
             min_range = 0,
             max_range = 0,
+            recheck = function () return cooldown.global_cooldown.remains - 0.4, cooldown.global_cooldown.remains end,
         } )
 
         modifyAbility( "battle_cry", "spend", function( x )
