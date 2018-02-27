@@ -618,13 +618,6 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             width = "full"
         } )
 
-        addSetting( 'regrowth_instant_desc', nil, {
-            name = "When checked, |cFFFFD100Regrowth: Instant Only|r will only allow the addon to recommend Regrowth while in Cat Form " ..
-                "when it is instant cast and will not cause you to unshift.\n",
-            type = "description",
-            width = "full"
-        } )
-
         addSetting( 'brutal_charges', 2, {
             name = "Brutal Slash: Save Charges for AOE",
             type = "range",
@@ -636,13 +629,47 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             width = "full"
         } )
 
-        addSetting( "brutal_charges_desc", nil, {
-            name = "By telling the addon to save a number of Brutal Slash charges for AOE situations, you can prevent scenarios where you've spent all " ..
-                "your Brutal Slash charges immediately before a new wave of enemies appears.  The default is to save 2 charges, meaning your 3rd charge " ..
-                "can be spent when there is only 1 target.  If set to 0, no charges will be saved.  If set to 3, then Brutal Slash will not be recommended " ..
-                "unless there are multiple enemies detected.  You may want to adjust this setting for specific fights.\n",
-            type = "description",
-            width = "full"
+        addSetting( 'tf_restrictions', 1, {
+            name = "Tiger's Fury: Restriction",
+            type = "select",
+            desc = "This setting allows you to set some restrictions on Tiger's Fury when using it would overwrite an existing Tiger's " ..
+                "Fury buff.  This only applies when the Predator talent is taken.",
+            width = "full",
+            values = {
+                "No Restrictions",
+                "Restrict Overlap Time",
+                "Restrict Energy Amount",
+                "Restrict Time and Energy"
+            }
+        }) 
+
+        addSetting( 'tf_overlap', 2, {
+            name = "Tiger's Fury: Restrict Overlap",
+            type = "range",
+            desc = "Specify how much overlap the addon should allow before refreshing Tiger's Fury.  For example, if set to 4, " ..
+                "the addon will not recommend using Tiger's Fury unless the remaining time on Tiger's Fury is at or below 4 seconds.",
+            min = 0,
+            max = 15,
+            step = 0.1,
+            width = "full",
+            hidden = function()
+                return not ( state.settings.tf_restrictions == 2 or state.settings.tf_restrictions == 4 )
+            end,
+        } )
+
+        addSetting( 'tf_energy', 60, {
+            name = "Tiger's Fury: Restrict Energy",
+            type = "range",
+            desc = "Specify how much Energy you must be missing before Tiger's Fury would be recommended, if the Tiger's Fury buff is " ..
+                "active.  For instance, if this value is set to 30, and your maximum energy is 130, then the addon would not recommend " ..
+                "overwriting an existing Tiger's Fury buff unless your energy was at or below 100.",
+            min = 0,
+            max = 250,
+            step = 1,
+            width = "full",
+            hidden = function ()
+                return not (state.settings.tf_restrictions == 3 or state.settings.tf_restrictions == 4 )
+            end,
         } )
 
 
@@ -1956,11 +1983,23 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             id = 5217,
             spend = -60,
             spend_type = "energy",
+            ready = function ()
+                if ( settings.tf_restrictions == 2 or settings.tf_restrictions == 4 ) and buff.tigers_fury.up then
+                    return max ( 0, buff.tigers_fury.remains - settings.tf_overlap )
+                end
+                return 0
+            end,
             cast = 0,
             gcdType = "off",
             cooldown = 30,
             min_range = 0,
             max_range = 0,
+            usable = function ()
+                if ( settings.tf_restrictions == 3 or settings.tf_restrictions == 4 ) and buff.tigers_fury.up then
+                    return energy.deficit >= settings.tf_energy
+                end
+                return true
+            end,
         } )
 
         addHandler( "tigers_fury", function ()

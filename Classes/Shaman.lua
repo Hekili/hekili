@@ -467,7 +467,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
         addGearSet( 'akainus_absolute_justice', 137084 )
         addGearSet( 'alakirs_acrimony', 137102 )
-        addGearSet( 'the_deceivers_blood_pact', 137035 )
+        addGearSet( 'the_deceivers_blood_pact', 137035 ) 
         addGearSet( 'echoes_of_the_great_sundering', 137074 )
         addGearSet( 'emalons_charged_core', 137616 )
         addGearSet( 'eye_of_the_twisting_nether', 137050 )
