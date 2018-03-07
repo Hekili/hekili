@@ -319,17 +319,20 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addAura( "bounding_stride", 202164, "duration", 3 )
         addAura( "cleave", 188923, "duration", 6, "max_stack", 5 )
         addAura( "colossus_smash", 208086, "duration", 8 )
+        addAura( "corrupted_blood_of_zakajz", 209567, "duration", 5 )
         addAura( "commanding_shout", 97463, "duration", 10 )
         addAura( "defensive_stance", 197690, "duration", 3600 )
         addAura( "die_by_the_sword", 118038, "duration", 8 )
         addAura( "dragon_roar", 118000, "duration", 8 )
         addAura( "enrage", 184362, "duration", 4 )
         addAura( "enraged_regeneration", 184364, "duration", 8 )
+        addAura( "executioners_precision", 242188, "duration", 30, "max_stack", 2 )
         addAura( "focused_rage", 207982, "duration", 30, "max_stack", 3 )
         addAura( "frenzy", 202539, "duration", 15, "max_stack", 3 )
         addAura( "frothing_berserker", 215571, "duration", 6 )
         addAura( "furious_charge", 202225, "duration", 5 )
         addAura( "hamstring", 1715, "duration", 15 )
+        addAura( "in_for_the_kill", 248622, "duration", 8 )
         addAura( "intimidating_shout", 5246, "duration", 8 )
         addAura( "massacre", 206316, "duration", 10 )
         addAura( "mastery_colossal_might", 76838 )
@@ -337,10 +340,12 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
         addAura( "meat_cleaver", 85739, "duration", 20 )
         addAura( "mortal_strike", 115804, "duration", 10 )
         addAura( "odyns_fury", 205546, "duration", 4 )
+        addAura( "overpower", 60503, "duration", 12 )
         addAura( "piercing_howl", 12323, "duration", 15 )
         addAura( "ravager", 152277 )
         addAura( "rend", 772, "duration", 8 )
         addAura( "sense_death", 200979, "duration", 12 )
+        addAura( "shattered_defenses", 209706, "duration", 10 )
         addAura( "shockwave", 46968, "duration", 3 )
         addAura( "storm_bolt", 107570, "duration", 4 )
         addAura( "tactician", 184783 )
@@ -470,6 +475,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addHandler( "battle_cry", function ()
             applyBuff( "battle_cry" )
+            if artifact.corrupted_blood_of_zakajz.enabled then applyBuff( "corrupted_blood_of_zakajz" ) end
             if set_bonus.tier21 > 3 then applyBuff( "outrage" ) end
         end )
 
@@ -651,6 +657,11 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addHandler( "colossus_smash", function ()
             applyDebuff( "target", "colossus_smash", 8 )
+            if artifact.shattered_defenses.enabled then applyBuff( "shattered_defenses" ) end
+            if talent.in_for_the_kill.enabled then
+                applyBuff( "in_for_the_kill" )
+                stat.haste = state.haste + 0.1
+            end
             if set_bonus.tier21 > 1 then applyBuff( "war_veteran" ) end
             if set_bonus.tier20 > 1 then
                 if talent.ravager.enabled then setCooldown( "ravager", max( 0, cooldown.ravager.remains - 2 ) )
@@ -802,6 +813,8 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
                     spend( min( addl_cost, rage.current ), "rage" ) 
                 end
                 removeBuff( "stone_heart" )
+                if artifact.executioners_precision.enabled then addStack( "executioners_precision", 30, 1 ) end
+                removeBuff( "shattered_defenses" )
                 gain( ( action.execute.cost + addl_cost ) * 0.3, "rage" )
             elseif spec.fury then
                 if buff.stone_heart.up then removeBuff( "stone_heart" )
@@ -967,6 +980,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
 
         addHandler( "mortal_strike", function ()
             applyDebuff( "target", "mortal_strike" )
+            removeBuff( "shattered_defenses" )
             if set_bonus.tier21 > 3 then addStack( "weighted_blade", 12, 1 ) end
         end )
 
@@ -980,13 +994,14 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             cast = 0,
             gcdType = "spell",
             talent = "overpower",
+            buff = "overpower",
             cooldown = 0,
             min_range = 0,
             max_range = 0,
         } )
 
         addHandler( "overpower", function ()
-            -- proto
+            removeBuff( "overpower" )
         end )
 
 
