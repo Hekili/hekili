@@ -1939,7 +1939,10 @@ if (select(2, UnitClass('player')) == 'DRUID') then
         end )
 
         modifyAbility( "thrash", "cooldown", function( x )
-            if buff.bear_form.up then return 6 * haste end
+            if buff.bear_form.up then
+                if buff.incarnation.up then return 0 end
+                return 6 * haste
+            end
             return x
         end )
 
@@ -1984,22 +1987,29 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             spend = -60,
             spend_type = "energy",
             ready = function ()
-                if ( settings.tf_restrictions == 2 or settings.tf_restrictions == 4 ) and buff.tigers_fury.up then
-                    return max ( 0, buff.tigers_fury.remains - settings.tf_overlap )
+                -- This uses the settings created for managing overlapping Tiger's Fury, with the assumption that maximizing
+                -- TF uptime is a good plan.  This is generally applicable when Predator is talented, but also applies in extreme
+                -- edge cases where the helm + tier 21 procs keep TF long enough to overlap itself.
+                if not buff.tigers_fury.up then return 0 end
+
+                local overlap = 0
+                local threshold = 0
+
+                if ( settings.tf_restrictions == 2 or settings.tf_restrictions == 4 ) then
+                    overlap = buff.tigers_fury.remains - settings.tf_overlap
                 end
-                return 0
+
+                if ( settings.tf_restrictions == 3 or settings.tf_restrictions == 4 ) then
+                    threshold = energy[ "time_to_" .. ( energy.max - settings.tf_energy ) ]
+                end
+                    
+                return max( 0, overlap, threshold )
             end,
             cast = 0,
             gcdType = "off",
             cooldown = 30,
             min_range = 0,
             max_range = 0,
-            usable = function ()
-                if ( settings.tf_restrictions == 3 or settings.tf_restrictions == 4 ) and buff.tigers_fury.up then
-                    return energy.deficit >= settings.tf_energy
-                end
-                return true
-            end,
         } )
 
         addHandler( "tigers_fury", function ()

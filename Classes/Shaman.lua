@@ -1390,7 +1390,8 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             cast = 0,
             gcdType = 'melee',
             cooldown = 15,
-            usable = function() return not buff.ascendance.up end
+            usable = function() return not buff.ascendance.up end,
+            texture = 132314,
         } )
 
         class.abilities.strike = class.abilities.stormstrike -- For SimC compatibility.
@@ -1528,7 +1529,8 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             gcdType = 'spell',
             cooldown = 3,
             known = 17364,
-            usable = function () return buff.ascendance.up end
+            usable = function () return buff.ascendance.up end,
+            texture = 1029585
         } )
 
         modifyAbility( 'windstrike', 'spend', function( x )

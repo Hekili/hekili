@@ -692,7 +692,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             min_range = 0,
             max_range = 15,
             usable = function () return combo_points.current > 0 end,
-            recheck = function () return buff.shadow_dance.remains, buff.the_first_of_the_dead.remains - 1 end,
+            recheck = function () return buff.shadow_dance.remains, buff.the_first_of_the_dead.remains - 1, buff.death_from_above.remains - 0.149 end,
         } )
 
         modifyAbility( "death_from_above", "spend", function( x )            
@@ -1082,7 +1082,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             id = 185313,
             spend = 0,
             cast = 0,
-            gcdType = "spell",
+            gcdType = "off",
             cooldown = 60,
             charges = 2,
             recharge = 60,
