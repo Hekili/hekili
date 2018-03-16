@@ -455,27 +455,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
 
-        -- Class/Spec Settings
-        --[[ addToggle( 'wake_of_ashes', true, 'Artifact Ability', 'Set a keybinding to toggle your artifact ability on/off in your priority lists.' )
-
-        addSetting( 'wake_of_ashes_cooldown', true, {
-            name = "Artifact Ability: Cooldown Override",
-            type = "toggle",
-            desc = "If |cFF00FF00true|r, when your Cooldown toggle is |cFF00FF00ON|r then the toggle for your artifact ability will be overriden and your artifact ability may be recommended.",
-            width = "full"
-        } )
-
-
-        -- Using these to abstract the 'Wake of Ashes' options so the same keybinds/toggles work in Protection spec.
-        addMetaFunction( 'toggle', 'artifact_ability', function()
-            return state.toggle.wake_of_ashes and not Hekili.DB.profile.blacklist.wake_of_ashes
-        end )
-
-        addMetaFunction( 'settings', 'artifact_cooldown', function()
-            return state.settings.wake_of_ashes_cooldown
-        end ) ]]
-
-
         addToggle( 'use_defensives', true, "Protection: Use Defensives",
             "Set a keybinding to toggle your defensive abilities on/off in your priority lists." )
 

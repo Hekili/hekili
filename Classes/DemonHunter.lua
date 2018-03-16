@@ -390,6 +390,8 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         addGearSet( 'tier19', 138375, 138376, 138377, 138378, 138379, 138380 )
         addGearSet( 'tier20', 147130, 147132, 147128, 147127, 147129, 147131 )
         addGearSet( 'tier21', 152121, 152123, 152119, 152118, 152120, 152122 )
+            addAura( 'havoc_t21_4pc', 252165, 'duration', 8 )
+
         addGearSet( 'class', 139715, 139716, 139717, 139718, 139719, 139720, 139721, 139722 )
 
         addGearSet( 'convergence_of_fates', 140806 )
@@ -724,6 +726,8 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
                     applyBuff( 'demonic_extended_metamorphosis', buff.metamorphosis.remains )                    
                 end
             end
+
+            if set_bonus.tier21_4pc == 1 then applyBuff( 'havoc_t21_4pc' ) end
 
             last_eye_beam = query_time
         end )
