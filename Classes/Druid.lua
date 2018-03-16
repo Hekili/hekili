@@ -947,7 +947,7 @@ if (select(2, UnitClass('player')) == 'DRUID') then
             min_range = 0,
             max_range = 0,
             form = "cat_form",
-            usable = function () return combo_points.current > 0 or buff.apex_predator.up end,
+            usable = function () return combo_points.current > 0 end,
         } )
 
         modifyAbility( "ferocious_bite", "spend", function( x )
