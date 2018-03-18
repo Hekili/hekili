@@ -176,8 +176,6 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addAura( 'survivalist', 164856, 'duration', 10 )
         addAura( 'tar_trap', 135299, 'duration', 60 )
         addAura( 'trailblazer', 231390, 'duration', 3600 )
-        addAura( "true_aim", 199803, "duration", 10, "max_stack", 10 )
-        addAura( "wyvern_sting", 19386, "duration", 30 ) -- Remove when hit.
 
 
         -- Auras: MM
@@ -187,6 +185,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addAura( "black_arrow", 194599, "duration", 8 )
         addAura( "bullseye", 204090, "duration", 6, "max_stack", 30 )
         addAura( "bursting_shot", 224729, "duration", 4 )
+        addAura( "careful_aim", 63648, "duration", 8 )
         addAura( "concussive_shot", 5116, "duration", 6 )
         -- addAura( "eagle_eye", 6197 )
         addAura( "hunters_mark", 185365, "duration", 12 )
@@ -203,7 +202,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addAura( "volley", 194386, "duration", 3600 )
         addAura( "vulnerable", 187131, "duration", 7 )
             class.auras.vulnerability = class.auras.vulnerable
-
+        addAura( "true_aim", 199803, "duration", 10, "max_stack", 10 )
+        addAura( "wyvern_sting", 19386, "duration", 30 ) -- Remove when hit.
+    
 
         -- Gear Sets
         addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
@@ -379,6 +380,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             if active_dot.vulnerable == 0 or ( active_dot.vulnerable == 1 and debuff.vulnerable.up ) then
                 applyBuff( "trick_shot" )
             end
+            if talent.true_aim.enabled then
+                applyDebuff( "target", "true_aim", 10, debuff.true_aim.stack + 1 )
+            end
         end )
 
 
@@ -404,6 +408,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             end
             if talent.steady_focus.enabled and ( prev_gcd[1].arcane_shot or prev_gcd[1].multishot ) then
                 applyBuff( "steady_focus" )
+            end
+            if talent.true_aim.enabled then
+                applyDebuff( "target", "true_aim", 10, debuff.true_aim.stack + 1 )
             end
         end )
 
@@ -738,6 +745,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cooldown = 20
         } )
 
+        addHandler( "disengage", function ()
+            if talent.posthaste.enabled then applyBuff( "posthaste" ) end 
+        end )
+
 
         addAbility( 'dragonsfire_grenade', {
             id = 194855,
@@ -1067,6 +1078,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cooldown = 30,
             min_range = 0,
             max_range = 47.171875,
+            recheck = function ()
+                return focus.time_to_86, focus.time_to_101, focus.time_to_106
+            end,
         } )
 
         addHandler( "piercing_shot", function ()
