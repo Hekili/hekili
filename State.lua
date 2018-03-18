@@ -538,7 +538,12 @@ function state.spendChargeTime( action, time )
 
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value )
-    
+
+    if not class.auras[ aura ] then
+        Hekili:Error( "Attempted to remove unknown aura '%s'.", aura ) 
+        return
+    end
+
     if state.cycle then
         if duration == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] - 1
         else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
@@ -618,13 +623,18 @@ state.removeStack = removeStack
 -- Add a debuff to the simulated game state.
 -- Needs to actually use 'unit' !
 local function applyDebuff( unit, aura, duration, stacks, value )
-    
+
+    if not class.auras[ aura ] then
+        Hekili:Error( "Attempted to remove unknown aura '%s'.", aura ) 
+        return
+    end
+
     if state.cycle then
         if duration == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] - 1
     else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
         return
     end
-
+    
     if not duration then duration = class.auras[ aura ].duration or 15 end
     
     if duration == 0 then
