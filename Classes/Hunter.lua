@@ -33,10 +33,12 @@ local removeResource = ns.removeResource
 local setArtifact = ns.setArtifact 
 local setClass = ns.setClass
 local setPotion = ns.setPotion
+local setRegenModel = ns.setRegenModel
 local setRole = ns.setRole
 local setTalentLegendary = ns.setTalentLegendary
 
 local RegisterEvent = ns.RegisterEvent
+local RegisterUnitEvent = ns.RegisterUnitEvent
 
 local retireDefaults = ns.retireDefaults
 local storeDefault = ns.storeDefault
@@ -51,6 +53,26 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         setClass( 'HUNTER' )
         addResource( 'focus', SPELL_POWER_FOCUS )
 
+        setRegenModel( {
+            volley = {
+                resource = 'focus',
+
+                spec = 'marksmanship',
+                buff = 'volley',
+
+                last = function ()
+                    local swing = state.swings.mainhand
+                    local t = state.query_time
+
+                    return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
+                end,
+
+                interval = 'mainhand_speed',
+
+                value = -3
+            }
+        } )
+        
         addTalent( 'a_murder_of_crows', 206505 ) -- MM, 131894
         addTalent( 'animal_instincts', 204315 )
         addTalent( 'aspect_of_the_beast', 191384 )
@@ -319,7 +341,26 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             return buff.mongoose_fury.remains > latency * 2
         end )
 
+        registerCustomVariable( 'last_sentinel', 0 )
+        RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, spellID )
+            if unit ~= 'player' then return end
 
+            if spellID == class.abilities.sentinel.id then
+                state.last_sentinel = GetTime()
+            end
+
+        end )
+
+        addAura( 'sentinel', -100, 'name', 'Sentinel', 'duration', 18, 'feign', function ()
+            local t = now + offset
+            local up = last_sentinel - t < 18
+
+            buff.sentinel.name = "Sentinel"
+            buff.sentinel.count = up and 1 or 0
+            buff.sentinel.expires = up and ( last_sentinel + 18 ) or 0
+            buff.sentinel.applied = up and last_sentinel or 0
+            buff.sentinel.caster = "player"
+        end )
 
         -- ignoreCastOnReset( "fury_of_the_eagle" )
 
@@ -1161,7 +1202,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         } )
 
         addHandler( "sentinel", function ()
-            -- Track when cast. 
+            applyBuff( "sentinel" )
         end )
 
 
