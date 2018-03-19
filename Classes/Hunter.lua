@@ -210,6 +210,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addAura( "careful_aim", 63648, "duration", 8 )
         addAura( "concussive_shot", 5116, "duration", 6 )
         -- addAura( "eagle_eye", 6197 )
+        addAura( "feet_of_wind", 240777, "duration", 12 )
         addAura( "hunters_mark", 185365, "duration", 12 )
         -- addAura( "hunting_party", 212658 )
         addAura( "lock_and_load", 194594, "duration", 15, "max_stack", 2 )
@@ -231,7 +232,18 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         -- Gear Sets
         addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
         addGearSet( 'tier20', 147142, 147144, 147140, 147139, 147141, 147143 )
+            addAura( "pre_t20_2p_critical_aimed_damage", -102, "duration", 3600, "feign", function ()
+                local up = set_bonus.tier20 > 1 and prev_gcd[1].aimed_shot
+
+                buff.sentinel.name = "Pre-T20 2p Critical Aimed Damage"
+                buff.sentinel.count = up and 1 or 0
+                buff.sentinel.expires = up and ( now + 3600 ) or 0
+                buff.sentinel.applied = up and ( now ) or 0
+                buff.sentinel.caster = "player"
+            end )                   
+            addAura( "t20_2p_critical_aimed_damage", 242243, "duration", 6 )
         addGearSet( 'tier21', 152133, 152135, 152131, 152130, 152132, 152134 )
+            
 
         addGearSet( 'talonclaw', 128808 )
         setArtifact( 'talonclaw' )
@@ -241,19 +253,26 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
         addGearSet( 'butchers_bone_apron', 144361 )
         addGearSet( 'call_of_the_wild', 137101 )
+        addGearSet( 'celerity_of_the_windrunners', 151803 )
+            addAura( "celerity_of_the_windrunners", 248088, "duration", 6 )
         addGearSet( 'frizzos_fingertrap', 137043 )
         addGearSet( 'helbrine_rope_of_the_mist_marauder', 137082 )
         addGearSet( 'kiljaedens_burning_wish', 144259 )
+        addGearSet( 'magnetized_blasting_cap_launcher', 141353 )
+        addGearSet( "mkii_gyroscopic_stabilizer", 144303 )
+            addAura( "gyroscopic_stabilization", 235712, "duration", 3600 )
         addGearSet( 'nesingwarys_trapping_threads', 137034 )
+        addGearSet( 'parsels_tongue', 151805 )
         addGearSet( 'prydaz_xavarics_magnum_opus', 132444 )
         addGearSet( 'roots_of_shaladrassil', 132466 )
         addGearSet( 'sephuzs_secret', 132452 )
-        addGearSet( 'the_shadow_hunters_voodoo_mask', 137064 )
-
         addGearSet( 'soul_of_the_huntmaster', 151641 )
-        addGearSet( 'celerity_of_the_windrunners', 151803 )
-        addGearSet( 'parsels_tongue', 151805 )
+        addGearSet( 'the_shadow_hunters_voodoo_mask', 137064 )
+        addGearSet( "ullrs_feather_snowshoes", 137033 )
         addGearSet( 'unseen_predators_cloak', 151807 )
+        addGearSet( "war_belt_of_the_sentinel_army", 137081 )
+            addAura( "sentinels_sight", 208913, "duration", 20, "max_stack", 20 )
+        addGearSet( "zevrims_hunger", 137055 )
 
         setTalentLegendary( 'soul_of_the_huntmaster', 'survival', 'serpent_sting' )
         setTalentLegendary( 'soul_of_the_huntmaster', 'marksmanship', 'lock_and_load' )
@@ -424,6 +443,20 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             if talent.true_aim.enabled then
                 applyDebuff( "target", "true_aim", 10, debuff.true_aim.stack + 1 )
             end
+            if set_bonus.tier20 > 1 then
+                if prev_gcd[1].aimed_shot then
+                    applyBuff( "t20_2p_critical_aimed_damage" )
+                    removeBuff( "pre_t20_2p_critical_aimed_damage" )
+                else
+                    applyBuff( "t20_2p_critical_aimed_damage" )
+                end
+            end
+            if equipped.mkii_gyroscopic_stabilizer then
+                if buff.gyroscopic_stabilization.up then removeBuff( "gyroscopic_stabilization" )
+                else applyBuff( "gyroscopic_stabilization" ) end
+            end
+            removeBuff( "sentinels_sight" )
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
 
 
@@ -442,6 +475,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             max_range = 47.171875,
         } )
 
+        modifyAbility( "arcane_shot", "spend", function( x )
+            if set_bonus.tier21 > 1 then return x * 1.25 end
+            return x
+        end )
+
         addHandler( "arcane_shot", function ()
             if buff.trueshot.up or buff.marking_targets.up then
                 applyDebuff( "target", "hunters_mark" )
@@ -453,6 +491,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             if talent.true_aim.enabled then
                 applyDebuff( "target", "true_aim", 10, debuff.true_aim.stack + 1 )
             end
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
 
 
@@ -488,6 +527,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addHandler( 'aspect_of_the_cheetah', function( x )
             applyBuff( 'aspect_of_the_cheetah_sprint', 3 )
             applyBuff( 'aspect_of_the_cheetah', 12 )
+            if artifact.feet_of_wind.enabled then applyBuff( "feet_of_wind" ) end
         end )
 
 
@@ -550,10 +590,15 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             max_range = 47.171875,
         } )
 
+        modifyAbility( "barrage", "spend", function ()
+            if set_bonus.tier19 > 3 then return x * 0.85 end
+            return x
+        end )
+
         modifyAbility( "barrage", "cast", genericHasteMod )
 
         addHandler( "barrage", function ()
-            -- proto
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end ) 
 
 
@@ -589,6 +634,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
         addHandler( "black_arrow", function ()
             applyDebuff( "target", "black_arrow" )
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
 
 
@@ -607,8 +653,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             max_range = 0,
         } )
 
+        modifyAbility( "bursting_shot", "cooldown", function( x )
+            return ( 1 - ( 0.05 * artifact.gust_of_wind.rank ) ) * x
+        end )
+        
         addHandler( "bursting_shot", function ()
             applyDebuff( "target", "bursting_shot", 4 )
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
                 
 
@@ -840,7 +891,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         } )
 
         addHandler( "explosive_shot", function ()
-            -- proto
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
 
 
@@ -1008,6 +1059,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             end
             active_dot.vulnerable = active_dot.hunters_mark
             active_dot.hunters_mark = 0
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
 
 
@@ -1072,6 +1124,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         } )
 
         modifyAbility( "multishot", "spend", function( x )
+            if set_bonus.tier21 > 1 then x = x * 1.25 end
             return x * active_enemies
         end )
 
@@ -1084,6 +1137,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             if talent.steady_focus.enabled and ( prev_gcd[1].arcane_shot or prev_gcd[1].multishot ) then
                 applyBuff( "steady_focus" )
             end
+            if equipped.war_belt_of_the_sentinel_army then
+                addStack( "sentinels_sight", active_enemies )
+            end
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
 
 
@@ -1126,6 +1183,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
         addHandler( "piercing_shot", function ()
             spend( min( focus.current, 80 ), "focus" )
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
 
 
@@ -1223,6 +1281,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             max_range = 47.171875,
         } )
 
+        modifyAbility( "sidewinders", "spend", function( x )
+            if set_bonus.tier21 > 1 then return x * 1.25 end
+            return x
+        end )
+
         modifyAbility( "sidewinders", "cooldown", genericHasteMod )
         modifyAbility( "sidewinders", "recharge", genericHasteMod )
 
@@ -1240,6 +1303,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             if talent.steady_focus.enabled then
                 applyBuff( "steady_focus" )
             end
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
         
 
@@ -1440,7 +1504,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         modifyAbility( "windburst", "cast", genericHasteMod )
 
         addHandler( "windburst", function ()
-            -- proto
+            if equipped.celerity_of_the_windrunners then applyBuff( "celerity_of_the_windrunners" ) end
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+            if artifact.mark_of_the_windrunner.enabled then applyDebuff( "target", "vulnerable" ) end
         end )
 
 
