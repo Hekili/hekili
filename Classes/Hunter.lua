@@ -361,6 +361,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
         registerCustomVariable( 'last_sentinel', 0 )
+
         RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, spellID )
             if unit ~= 'player' then return end
 
@@ -380,6 +381,32 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             buff.sentinel.applied = up and last_sentinel or 0
             buff.sentinel.caster = "player"
         end )
+
+        addMetaFunction( "state", "marks_next_gcd", function ()
+            if buff.sentinels_sight.up and cooldown.global_cooldown.remains > 0 then
+                local r = buff.sentinels_sight.remains
+                local t = 1 + floor( r / 6 )
+                local n = 1 + floor( ( r - global_cooldown.remains ) / 6 )
+
+                if n < t then return active_enemies end
+            end
+            return active_dot.hunters_mark
+        end )
+
+
+
+        -- This is not technically what we want, but we don't track aura duration on non-primary targets.
+        state.lowest_vuln_within = setmetatable( {}, {
+            __index = function( t, k, v )
+                return state.debuff.vulnerable.remains
+            end
+        } )
+
+        addMetaFunction( "state", "vuln_casts", function ()
+            return action.aimed_shot.vuln_casts
+        end )
+
+
 
         -- ignoreCastOnReset( "fury_of_the_eagle" )
 
@@ -404,6 +431,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cooldown = 0,
             min_range = 0,
             max_range = 47.171875,
+            velocity = 100,
             vuln_casts = function ()
                 local rem = debuff.vulnerable.remains
                 if talent.sidewinders.enabled then rem = min( cooldown.sidewinders.full_recharge_time, rem ) end
@@ -471,6 +499,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = "spell",
             cooldown = 0,
             notalent = "sidewinders",
+            velocity = 70,
             min_range = 0,
             max_range = 47.171875,
         } )
@@ -627,7 +656,8 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cast = 0, 
             gcdType = "spell",
             talent = "black_arrow",
-            cooldown = 15,            
+            cooldown = 15,
+            velocity = 60,
         } )
 
         modifyAbility( "black_arrow", "cooldown", genericHasteMod )
@@ -1048,8 +1078,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = "spell",
             cooldown = 0,
             min_range = 0,
-            max_range = 47.171875,
-            usable = function () return active_dot.hunters_mark > 0 end
+            max_range = 47.171875,            
+            usable = function () return active_dot.hunters_mark > 0 end,
+            velocity = 60
         } )
 
         addHandler( "marked_shot", function ()
@@ -1121,6 +1152,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             notalent = "sidewinders",
             min_range = 0,
             max_range = 47.171875,
+            velocity = 50,
         } )
 
         modifyAbility( "multishot", "spend", function( x )
@@ -1179,6 +1211,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             recheck = function ()
                 return focus.time_to_86, focus.time_to_101, focus.time_to_106
             end,
+            velocity = 100,
         } )
 
         addHandler( "piercing_shot", function ()
@@ -1279,6 +1312,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             recharge = 12,
             min_range = 0,
             max_range = 47.171875,
+            -- velocity = 18,
         } )
 
         modifyAbility( "sidewinders", "spend", function( x )
@@ -1499,6 +1533,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             max_range = 47.171875,
             toggle = "artifact",
             in_flight = function () return prev_gcd[1].windburst end,
+            velocity = 50,
         } )
 
         modifyAbility( "windburst", "cast", genericHasteMod )
