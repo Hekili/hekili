@@ -508,6 +508,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         modifyAbility( 'dire_beast', 'recharge', genericHasteMod )
         modifyAbility( 'dire_beast', 'cooldown', genericHasteMod )
         
+        addHandler( 'dire_beast', function()
+                cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+                if equipped.qapla_eredun_war_order then
+                    cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
+                end
+            end )
         
         addAbility( 'kill_command', {
                 id = 34026,
@@ -517,6 +523,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 gcdType = 'spell',
                 cooldown = 7.5,
             })
+        
+        addHandler( 'kill_command', function()
+                if set_bonus.tier21_4pc > 0 then
+                    cooldown.aspect_of_the_wild.expires = max( state.time, cooldown.aspect_of_the_wild.expires - 3 )
+                end
+            end )
                 
         addAbility( 'counter_shot', {
                 id = 147362,
