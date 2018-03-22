@@ -1301,7 +1301,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 applyBuff( "steady_focus" )
             end
             if equipped.war_belt_of_the_sentinel_army then
-                addStack( "sentinels_sight", active_enemies )
+                addStack( "sentinels_sight", 20, active_enemies )
             end
             if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
