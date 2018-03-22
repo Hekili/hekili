@@ -9,6 +9,7 @@ local class = ns.class
 
 local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
+local Error = ns.Error
 
 local round, roundUp = ns.round, ns.roundUp
 local safeMin, safeMax = ns.safeMin, ns.safeMax
@@ -300,7 +301,7 @@ local mt_trinket_cooldown = {
             
         end
         
-        -- return error( "UNK: " .. k )
+        -- return Error( "UNK: " .. k )
         
     end
 }
@@ -540,7 +541,7 @@ function state.spendChargeTime( action, time )
 local function applyBuff( aura, duration, stacks, value )
 
     if not class.auras[ aura ] then
-        Hekili:Error( "Attempted to remove unknown aura '%s'.", aura ) 
+        Error( "Attempted to remove unknown aura '%s'.", aura ) 
         return
     end
 
@@ -625,7 +626,7 @@ state.removeStack = removeStack
 local function applyDebuff( unit, aura, duration, stacks, value )
 
     if not class.auras[ aura ] then
-        Hekili:Error( "Attempted to remove unknown aura '%s'.", aura ) 
+        Error( "Attempted to remove unknown aura '%s'.", aura ) 
         return
     end
 
@@ -1057,7 +1058,7 @@ ns.addMetaFunction = function( t, k, func )
         return
     end
     
-    ns.Error( "addMetaFunction() - no such table '" .. t .. "' for key '" .. k .. "'." )
+    Error( "addMetaFunction() - no such table '" .. t .. "' for key '" .. k .. "'." )
     
 end
 
@@ -1190,7 +1191,7 @@ local mt_state = {
             
             if not time then
                 return 0
-                -- error("ERR: " .. remains)
+                -- Error("ERR: " .. remains)
             end
             
             time = tonumber( time )
@@ -1210,7 +1211,7 @@ local mt_state = {
             
             if not time then
                 return 0
-                -- error("ERR: " .. remains) 
+                -- Error("ERR: " .. remains) 
             end
             
             time = tonumber( time )
@@ -1436,20 +1437,20 @@ local mt_stat = {
             return GetCombatRating(CR_HASTE_MELEE)
             
         elseif k == 'weapon_dps' then
-            return -- error("NYI")
+            return -- Error("NYI")
             
         elseif k == 'weapon_speed' then
-            return -- error("NYI")
+            return -- Error("NYI")
             
         elseif k == 'weapon_offhand_dps' then
-            return -- error("NYI")
+            return -- Error("NYI")
             -- return OffhandHasWeapon()
             
         elseif k == 'weapon_offhand_speed' then
-            return -- error("NYI")
+            return -- Error("NYI")
             
         elseif k == 'armor' then
-            return -- error("NYI")
+            return -- Error("NYI")
             
         elseif k == 'bonus_armor' then
             return UnitArmor('player')
@@ -1544,7 +1545,7 @@ local mt_default_pet = {
             
         end
         
-        return -- error("UNK: " .. k)
+        return -- Error("UNK: " .. k)
         
     end
 }
@@ -1761,7 +1762,7 @@ local mt_target = {
             local maxR = k:match( "^within(%d+)$" )
             
             if not maxR then
-                -- error("UNK: " .. k)
+                -- Error("UNK: " .. k)
                 return false
             end
             
@@ -1771,7 +1772,7 @@ local mt_target = {
             local minR = k:match( "^outside(%d+)$" )
             
             if not minR then
-                -- error("UNK: " .. k)
+                -- Error("UNK: " .. k)
                 return false
             end
             
@@ -1782,7 +1783,7 @@ local mt_target = {
             
             if not minR or not maxR then
                 return false
-                -- error("UNK: " .. k)
+                -- Error("UNK: " .. k)
             end 
             
             return ( t.minR >= tonumber( minR ) and t.maxR <= tonumber( maxR ) )
@@ -1998,7 +1999,7 @@ local mt_cooldowns = {
     -- The action doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
     __index = function(t, k)
         if not class.abilities[ k ] then
-            -- error( "UNK: " .. k )
+            -- Error( "UNK: " .. k )
             return
         end
         
@@ -2006,7 +2007,7 @@ local mt_cooldowns = {
         
         local success, start, duration = pcall( GetSpellCooldown, ability )
         if not success then
-            error( "FAIL: " .. k )
+            Error( "FAIL: " .. k )
             return nil
         end
         
@@ -2398,7 +2399,7 @@ local mt_default_buff = {
             end
         end
         
-        error("UNK: " .. k)
+        Error("UNK: " .. k)
         
     end,
 
@@ -2607,7 +2608,7 @@ local mt_default_totem = {
             
         end
         
-        error("UNK: " .. k)
+        Error("UNK: " .. k)
     end
 }
 Hekili.mt_default_totem = mt_default_totem
@@ -2646,7 +2647,7 @@ local mt_totem = {
             return t[k]
         end
         
-        error( "UNK: " .. k )
+        Error( "UNK: " .. k )
         
         end, __newindex = function(t, k, v)
         rawset( t, k, setmetatable( v, mt_default_totem ) )
@@ -2819,7 +2820,7 @@ local mt_default_debuff = {
             end
         end
         
-        -- error ("UNK: " .. k)
+        -- Error ("UNK: " .. k)
     end
 }
 ns.metatables.mt_default_debuff = mt_default_debuff
@@ -3812,7 +3813,7 @@ ns.isKnown = function( sID, notoggle )
     local ability = class.abilities[ sID ]
     
     if not ability then
-        ns.Error( "isKnown() - " .. sID .. " not found in abilities table." )
+        Error( "isKnown() - " .. sID .. " not found in abilities table." )
         return false
     end
 
