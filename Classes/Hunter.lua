@@ -476,7 +476,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                     applyBuff( "t20_2p_critical_aimed_damage" )
                     removeBuff( "pre_t20_2p_critical_aimed_damage" )
                 else
-                    applyBuff( "t20_2p_critical_aimed_damage" )
+                    applyBuff( "pre_t20_2p_critical_aimed_damage" )
                 end
             end
             if equipped.mkii_gyroscopic_stabilizer then
