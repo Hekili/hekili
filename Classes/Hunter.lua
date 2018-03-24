@@ -235,11 +235,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             addAura( "pre_t20_2p_critical_aimed_damage", -102, "duration", 3600, "feign", function ()
                 local up = set_bonus.tier20 > 1 and prev_gcd[1].aimed_shot
 
-                buff.sentinel.name = "Pre-T20 2p Critical Aimed Damage"
-                buff.sentinel.count = up and 1 or 0
-                buff.sentinel.expires = up and ( now + 3600 ) or 0
-                buff.sentinel.applied = up and ( now ) or 0
-                buff.sentinel.caster = "player"
+                buff.pre_t20_2p_critical_aimed_damage.name = "Pre-T20 2p Critical Aimed Damage"
+                buff.pre_t20_2p_critical_aimed_damage.count = up and 1 or 0
+                buff.pre_t20_2p_critical_aimed_damage.expires = up and ( now + 3600 ) or 0
+                buff.pre_t20_2p_critical_aimed_damage.applied = up and ( now ) or 0
+                buff.pre_t20_2p_critical_aimed_damage.caster = "player"
             end )                   
             addAura( "t20_2p_critical_aimed_damage", 242243, "duration", 6 )
         addGearSet( 'tier21', 152133, 152135, 152131, 152130, 152132, 152134 )
@@ -449,7 +449,8 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 
                 local regen = focus.current + ( focus.regen * rem )
                 return min( casts, floor( regen / ( action.aimed_shot.cost > 0 and action.aimed_shot.cost or 50 ) ) )
-            end
+            end,
+            in_flight = function () return prev.aimed_shot end,
         } )
 
         modifyAbility( 'aimed_shot', 'cast', function( x )

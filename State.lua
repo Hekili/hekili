@@ -2971,6 +2971,10 @@ local mt_default_action = {
             return a
 
         elseif k == 'in_flight' then
+            if class.abilities[ t.action ].elem.in_flight then
+                return class.abilities[ t.action ].in_flight()
+            end
+
             for i, spell in pairs( ns.spells_in_flight ) do
                 if spell.key == t.action then
                     return true
