@@ -1750,7 +1750,7 @@ function Hekili_GetRecommendedAbility( display, entry )
         return nil, "No queue for that display."
     end
     
-    if not ns.queue[ display ][ entry ] then
+    if not ns.queue[ display ][ entry ] or not ns.queue[ display ][ entry ].actionName then
         return nil, "No entry #" .. entry .. " for that display."
     end
     
