@@ -77,21 +77,30 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addTalent( 'animal_instincts', 204315 )
         addTalent( 'aspect_of_the_beast', 191384 )
         addTalent( "barrage", 120360 ) -- 22002
+        addTalent( 'bestial_fury', 194306 )
+        addTalent( 'big_game_hunter', 204308 )
         addTalent( "binding_shot", 109248 ) -- 22284
         addTalent( "black_arrow", 194599 ) -- 22497
+        addTalent( 'blink_strikes', 130392 )
         addTalent( 'butchery', 212436 )
         addTalent( 'caltrops', 194277 )
         addTalent( 'camouflage', 199483 )
         addTalent( "careful_aim", 53238 ) -- 22289
+        addTalent( 'chimera_shot', 53209 )
+        addTalent( 'dire_frenzy', 217200 )
+        addTalent( 'dire_stable', 193532 )
         addTalent( 'disengage', 781 )
         addTalent( 'dragonsfire_grenade', 2194855 )
         addTalent( 'expert_trapper', 199543 )
         addTalent( "explosive_shot", 212431 ) -- 22267
         addTalent( "farstrider", 199523 ) -- 19348
         addTalent( 'guerrilla_tactics', 236698 )
+        addTalent( 'intimidation', 19577 )
+        addTalent( 'killer_cobra', 199532 )
         addTalent( "lock_and_load", 194595 ) -- 22495
         addTalent( "lone_wolf", 155228 ) -- 22279
         addTalent( 'mortal_wounds', 201075 )
+        addTalent( 'one_with_the_pack', 199528 )
         addTalent( "patient_sniper", 234588 ) -- 21998
         addTalent( "piercing_shot", 198670 ) -- 22308
         addTalent( 'posthaste', 109215 )
@@ -101,17 +110,19 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addTalent( "sidewinders", 214579 ) -- 22274
         addTalent( 'snake_hunter', 201078 )
         addTalent( 'spitting_cobra', 194407 )
+        addTalent( 'stampede', 201430 )
         addTalent( "steady_focus", 193533 ) -- 22501
         addTalent( 'steel_trap', 162488 )
         addTalent( 'sticky_bomb', 191241 )
+        addTalent( 'stomp', 199530 )
         addTalent( 'throwing_axes', 200163 )
         addTalent( 'trailblazer', 199921 )
         addTalent( "trick_shot", 199522 ) -- 22288
         addTalent( "true_aim", 199527 ) -- 22498
         addTalent( "volley", 194386 ) -- 22287
+        addTalent( 'way_of_the_cobra', 194397 )
         addTalent( 'way_of_the_moknathal', 201082 )
         addTalent( "wyvern_sting", 19386 ) -- 22276
-
 
         addTrait( "acuity_of_the_unseen_path", 241114 )
         addTrait( "aspect_of_the_skylord", 203755 )
@@ -148,6 +159,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addTrait( "rapid_killing", 191339 )
         addTrait( "raptors_cry", 203638 )
         addTrait( "sharpened_fang", 203566 )
+        addTrait( "slithering_serpents", 238051 ) -- BM trait
         addTrait( "survival_of_the_fittest", 190514 )
         addTrait( "talon_bond", 238089 )
         addTrait( "talon_strike", 203563 )
@@ -159,15 +171,15 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addTrait( "windflight_arrows", 214915 )
         addTrait( "windrunners_guidance", 190457 )
 
-
         -- Buffs/Debuffs
         addAura( 'a_murder_of_crows', 206505, 'duration', 15 )
             modifyAura( 'a_murder_of_crows', 'id', function( x )
-                if spec.marksmanship then return 131894 end
+                if not spec.survival  then return 131894 end -- Murder of Crows is the same for BM and MM
                 return x
             end )
             class.auras[ 131894 ] = class.auras[ 206505 ]
 
+        -- Auras: SV + Generic Hunter
         addAura( 'aspect_of_the_cheetah', 186258, 'duration', 12 )
         addAura( 'aspect_of_the_cheetah_sprint', 186257, 'duration', 3 )
         addAura( 'aspect_of_the_eagle', 186289, 'duration', 10 )
@@ -199,7 +211,6 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addAura( 'tar_trap', 135299, 'duration', 60 )
         addAura( 'trailblazer', 231390, 'duration', 3600 )
 
-
         -- Auras: MM
         addAura( "bombardment", 35110, "duration", 5 )
         addAura( "binding_shot", 117405, "duration", 10 )
@@ -228,6 +239,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addAura( "true_aim", 199803, "duration", 10, "max_stack", 10 )
         addAura( "wyvern_sting", 19386, "duration", 30 ) -- Remove when hit.
     
+        -- Auras: BM
+        addAura( 'bestial_wrath', 19574, 'duration', 15 )
+        addAura( 'aspect_of_the_wild', 193530, 'duration', 14 )
 
         -- Gear Sets
         addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
@@ -244,13 +258,18 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             addAura( "t20_2p_critical_aimed_damage", 242243, "duration", 6 )
         addGearSet( 'tier21', 152133, 152135, 152131, 152130, 152132, 152134 )
             
-
+        -- SV artifact
         addGearSet( 'talonclaw', 128808 )
         setArtifact( 'talonclaw' )
 
+        -- MM artifact
         addGearSet( 'thasdorah_legacy_of_the_windrunners', 128826 )
         setArtifact( 'thasdorah_legacy_of_the_windrunners' )
 
+        -- BM artifact
+        addGearSet( 'titanstrike', 128861 )
+        setArtifact( 'titanstrike' )
+    
         addGearSet( 'butchers_bone_apron', 144361 )
         addGearSet( 'call_of_the_wild', 137101 )
         addGearSet( 'celerity_of_the_windrunners', 151803 )
@@ -263,7 +282,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             addAura( "gyroscopic_stabilization", 235712, "duration", 3600 )
         addGearSet( 'nesingwarys_trapping_threads', 137034 )
         addGearSet( 'parsels_tongue', 151805 )
+            addAura( 'parsels_tongue', 248085, 'duration', 8, 'max_stack', 4 )
         addGearSet( 'prydaz_xavarics_magnum_opus', 132444 )
+        addGearSet( 'qapla_eredun_war_order', 137227 )
         addGearSet( 'roots_of_shaladrassil', 132466 )
         addGearSet( 'sephuzs_secret', 132452 )
         addGearSet( 'soul_of_the_huntmaster', 151641 )
@@ -273,9 +294,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addGearSet( "war_belt_of_the_sentinel_army", 137081 )
             addAura( "sentinels_sight", 208913, "duration", 20, "max_stack", 20 )
         addGearSet( "zevrims_hunger", 137055 )
-
+    
         setTalentLegendary( 'soul_of_the_huntmaster', 'survival', 'serpent_sting' )
         setTalentLegendary( 'soul_of_the_huntmaster', 'marksmanship', 'lock_and_load' )
+        setTalentLegendary( 'soul_of_the_huntmaster', 'beast_mastery', 'bestial_wrath' )
 
 
         addHook( 'specializationChanged', function ()
@@ -328,7 +350,30 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             rawset( state.pet, 'cunning', IsSpellKnown( 53490, true ) )
         end )
 
+        -- fake some stuff for Beast Cleave
+        registerCustomVariable( 'last_multishot', 0 )
+        
+        -- register when I cast multishot
+        RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, spellID )
 
+            if unit ~= 'player' then return end
+
+            if spell == class.abilities[ 'multishot' ].name then
+                state.last_multishot = GetTime()
+            end
+        
+        end )
+                
+        -- create a fake aura
+        addAura( 'beast_cleave', -100, 'name', 'Beast Cleave', 'duration', 4, 'feign', function ()
+                local up = last_multishot
+                buff.beast_cleave.name = 'Beast Cleave'
+                buff.beast_cleave.count = up and 1 or 0
+                buff.beast_cleave.expires = up and last_multishot + 4 or 0
+                buff.beast_cleave.applied = up and last_multishot or 0
+                buff.beast_cleave.caster = 'player'
+            end )
+    
         addSetting( 'moknathal_padding', true, {
             name = "Way of the Mok'Nathal Padding",
             type = "toggle",
@@ -393,8 +438,6 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             return active_dot.hunters_mark
         end )
 
-
-
         -- This is not technically what we want, but we don't track aura duration on non-primary targets.
         state.lowest_vuln_within = setmetatable( {}, {
             __index = function( t, k, v )
@@ -406,11 +449,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             return action.aimed_shot.vuln_casts
         end )
 
-
-
         -- ignoreCastOnReset( "fury_of_the_eagle" )
-
-
 
         local function genericHasteMod( x )
             return x * haste
@@ -418,7 +457,111 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
         setfenv( genericHasteMod, state )
 
-
+        -- Beast Mastery Stuff (keeping it separate for the moment)
+    
+        addAbility( 'aspect_of_the_wild', {
+                id = 193530,
+                spend = 0,
+                spend_type = 'focus',
+                cast = 0,
+                gcdType = 'off',
+                cooldown = 120,
+            })
+        
+        addAbility( 'bestial_wrath', {
+                id = 19574,
+                spend = 0,
+                spend_type = 'focus',
+                cast = 0,
+                gcdType = 'off',
+                cooldown = 90,
+            })
+        
+        addHandler( 'bestial_wrath', function ()
+                applyBuff( 'bestial_wrath', 15 )
+            end )
+        
+        addAbility( 'cobra_shot', {
+                id = 193455,
+                spend = 40,
+                spend_type = 'focus',
+                cast = 0,
+                gcd_type = 'spell',
+                cooldown = 0,
+            })
+        
+        modifyAbility( 'cobra_shot', 'spend', function( x )
+                return x - ( 2 * artifact.slithering_serpents.rank )
+            end )
+        
+        addAbility( 'dire_beast', {
+                id = 120679,
+                spend = 0,
+                spend_type = 'focus',
+                cast = 0,
+                charges = 2,
+                recharge = 12,
+                cooldown = 12,
+                gcdType = 'spell',
+            })
+        
+        modifyAbility( 'dire_beast', 'recharge', genericHasteMod )
+        modifyAbility( 'dire_beast', 'cooldown', genericHasteMod )
+        
+        addHandler( 'dire_beast', function()
+                cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+                if equipped.qapla_eredun_war_order then
+                    cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
+                end
+            end )
+        
+        addAbility( 'kill_command', {
+                id = 34026,
+                spend = 30,
+                spend_type = 'focus',
+                cast = 0,
+                gcdType = 'spell',
+                cooldown = 7.5,
+            })
+        
+        addHandler( 'kill_command', function()
+                if set_bonus.tier21_4pc > 0 then
+                    cooldown.aspect_of_the_wild.expires = max( state.time, cooldown.aspect_of_the_wild.expires - 3 )
+                end
+            end )
+                
+        addAbility( 'counter_shot', {
+                id = 147362,
+                spend = 0,
+                spend_type = 'focus',
+                cast = 0,
+                gcdType = 'off',
+                velocity = 60,
+                toggle = 'interrupts'
+            })
+        
+        addAbility( 'multishot', {
+                id = 2643,
+                spend = 40,
+                spend_type = 'focus',
+                cast = 0,
+                gcdType = 'spell',
+                cooldown = 0,
+            })
+        
+        addHandler( 'multishot', function ()
+                applyBuff( 'beast_cleave', 4 )
+            end )
+        
+        addAbility( 'titans_thunder', {
+                id = 207068,
+                spend = 0,
+                spend_type = 'focus',
+                cast = 0,
+                gcdType = 'spell',
+                cooldown = 60,
+            })
+    
         -- Abilities.
 
         addAbility( "aimed_shot", {
@@ -1171,7 +1314,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 applyBuff( "steady_focus" )
             end
             if equipped.war_belt_of_the_sentinel_army then
-                addStack( "sentinels_sight", active_enemies )
+                addStack( "sentinels_sight", 20, active_enemies )
             end
             if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
@@ -1580,7 +1723,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         }, 131894 )
 
         modifyAbility( 'a_murder_of_crows', 'id', function( x )
-            if spec.marksmanship then return 131894 end
+            if not spec.survival then return 131894 end
             return x
         end )
 
