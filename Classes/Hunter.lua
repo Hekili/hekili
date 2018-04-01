@@ -466,6 +466,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 cast = 0,
                 gcdType = 'off',
                 cooldown = 120,
+                toggle = 'cooldowns',
             })
         
         addAbility( 'bestial_wrath', {
@@ -475,6 +476,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 cast = 0,
                 gcdType = 'off',
                 cooldown = 90,
+                toggle = 'cooldowns',
             })
         
         addHandler( 'bestial_wrath', function ()
@@ -494,6 +496,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 return x - ( 2 * artifact.slithering_serpents.rank )
             end )
         
+        addHandler( 'cobra_shot', function()
+            if talent.killer_cobra.enabled and buff.bestial_wrath.up then
+                setCooldown('kill_command', 0 )
+            end
+        end)
+        
         addAbility( 'dire_beast', {
                 id = 120679,
                 spend = 0,
@@ -502,13 +510,46 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 charges = 2,
                 recharge = 12,
                 cooldown = 12,
+                notalent = 'dire_frenzy'
                 gcdType = 'spell',
             })
         
         modifyAbility( 'dire_beast', 'recharge', genericHasteMod )
         modifyAbility( 'dire_beast', 'cooldown', genericHasteMod )
+
+        addCooldownMetaFunction( "dire_beast", "full_recharge_time", function( x )
+            if talent.dire_frenzy.enabled then return 0 end
+            return ( cooldown.dire_beast.max_charges - cooldown.dire_beast.charges_fractional ) * cooldown.dire_beast.recharge
+        end)
         
         addHandler( 'dire_beast', function()
+                cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+                if equipped.qapla_eredun_war_order then
+                    cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
+                end
+            end )
+        
+    	addAbility( 'dire_frenzy', {
+            id = 217200,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            charges = 2,
+            recharge = 12,
+            cooldown = 12,
+            talent = 'dire_frenzy',
+            gcdType = 'spell',
+        })
+        
+        modifyAbility( 'dire_frenzy', 'recharge', genericHasteMod )
+        modifyAbility( 'dire_frenzy', 'cooldown', genericHasteMod )
+
+        addCooldownMetaFunction( "dire_frenzy", "full_recharge_time", function( x )
+            if not talent.dire_frenzy.enabled then return 0 end
+            return ( cooldown.dire_frenzy.max_charges - cooldown.dire_frenzy.charges_fractional ) * cooldown.dire_frenzy.recharge
+        end)
+        
+        addHandler( 'dire_frenzy', function()
                 cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
                 if equipped.qapla_eredun_war_order then
                     cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
@@ -560,6 +601,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 cast = 0,
                 gcdType = 'spell',
                 cooldown = 60,
+                toggle = 'cooldowns',
             })
     
         -- Abilities.
