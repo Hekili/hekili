@@ -252,34 +252,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         local judgment = GetSpellInfo( 197277 )
 
-        addAura( 'judgment', 197277, 'duration', 8 ) --[[, 'feign', function ()
-
-            local name, _, _, count, _, duration, expires, caster, _, _, id, _, _, _, _, timeMod = UnitDebuff( 'target', judgment, nil, 'PLAYER' )
-
-            if not name then
-                if player.lastcast == 'judgment' and state.now - player.casttime <= state.gcd then
-                    debuff.judgment.name = judgment
-                    debuff.judgment.count = 1
-                    debuff.judgment.expires = player.casttime + 9
-                    debuff.judgment.applied = player.casttime
-                    debuff.judgment.caster = 'player'
-                else
-                    debuff.judgment.name = judgment
-                    debuff.judgment.count = 0
-                    debuff.judgment.expires = 0
-                    debuff.judgment.applied = 0
-                    debuff.judgment.caster = 'none'
-                end
-                return
-
-            end
-
-            debuff.judgment.name = name
-            debuff.judgment.count = 1
-            debuff.judgment.expires = expires
-            debuff.judgment.applied = expires - duration
-            debuff.judgment.caster = caster
-        end ) ]]
+        addAura( 'judgment', 197277, 'duration', 8 )
 
 
         registerCustomVariable( 'last_consecration', 0 )
@@ -336,7 +309,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'consecration', 188370, 'name', consecration, 'duration', 9, 'feign', function ()
 
             if spec.protection then
-                local up = UnitBuff( 'player', consecration, nil, 'PLAYER' ) and now + offset < expire_consecration
+                local up = UnitBuff( 'player', consecration, nil, 'PLAYER' ) and query_time < expire_consecration
                 buff.consecration.count = up and 1 or 0
                 buff.consecration.expires = state.expire_consecration
                 buff.consecration.applied = state.last_consecration

@@ -320,7 +320,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         end )
 
         addAura( 'feral_spirit', -100, 'name', 'Feral Spirit', 'duration', 15, 'feign', function ()
-            local up = last_feral_spirit
+            local up = last_feral_spirit + duration > query_time
             buff.feral_spirit.name = 'Feral Spirit'
             buff.feral_spirit.count = up and 1 or 0
             buff.feral_spirit.expires = up and last_feral_spirit + 15 or 0

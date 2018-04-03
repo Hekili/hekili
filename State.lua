@@ -3611,7 +3611,7 @@ function state.reset( dispID )
         casting = formatKey( spellcast )
 
         state.channelSpell( casting, startCast / 1000, ( endCast - startCast ) / 1000 )
-        applyBuff( "casting", cast_time )
+        -- applyBuff( "casting", cast_time )
     end
 
     ns.callHook( "reset_precast" )

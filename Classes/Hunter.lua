@@ -70,9 +70,32 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 interval = 'mainhand_speed',
 
                 value = -3
-            }
+            },
+
+            spitting_cobra = {
+                resource = 'focus',
+
+                spec = 'survival',
+                talent = 'spitting_cobra',
+                aura = 'spitting_cobra',
+
+                last = function ()
+                    local app = state.buff.spitting_cobra.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                stop = function( x )
+                    return x < 3
+                end,
+
+                interval = 1,
+                value = 33,
+            },
         } )
-        
+
+
         addTalent( 'a_murder_of_crows', 206505 ) -- MM, 131894
         addTalent( 'animal_instincts', 204315 )
         addTalent( 'aspect_of_the_beast', 191384 )
@@ -174,7 +197,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         -- Buffs/Debuffs
         addAura( 'a_murder_of_crows', 206505, 'duration', 15 )
             modifyAura( 'a_murder_of_crows', 'id', function( x )
-                if not spec.survival  then return 131894 end -- Murder of Crows is the same for BM and MM
+                if not spec.survival then return 131894 end -- Murder of Crows is the same for BM and MM
                 return x
             end )
             class.auras[ 131894 ] = class.auras[ 206505 ]
@@ -301,10 +324,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
 
         addHook( 'specializationChanged', function ()
-            --[[ if spec.marksmanship then setSpecialization( "marksmanship" )
-            elseif spec.survival then setSpecialization( "survival" )
-            else setSpecialization( "beast_mastery" ) end ]]
-            if spec.survival then addTalent( 'a_murder_of_crows', 206505 )
+            if state.spec.survival then addTalent( 'a_murder_of_crows', 206505 )
             else addTalent( 'a_murder_of_crows', 131894 ) end
             setPotion( 'old_war' ) -- true for Sv, anyway.
             setRole( 'attack' )
@@ -312,43 +332,15 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
 
         addHook( 'reset_precast', function( x )
-            for k in pairs( state.active_dot ) do
-                state.active_dot[ k ] = nil
-            end
+            rawset( state.pet, 'ferocity', IsSpellKnown( 55709, true ) )
+            rawset( state.pet, 'tenacity', IsSpellKnown( 53478, true ) )
+            rawset( state.pet, 'cunning', IsSpellKnown( 53490, true ) )
         end )
 
 
         local floor = math.floor
 
-        addHook( 'advance', function( t )
-            if state.spec.survival then
-                if not state.talent.spitting_cobra.enabled then return t end
 
-                if state.buff.spitting_cobra.up then
-                    local ticks_before = floor( state.buff.spitting_cobra.remains )
-                    local ticks_after = floor( max( 0, state.buff.spitting_cobra.remains - t ) )
-                    local gain = 3 * ( ticks_before - ticks_after )
-
-                    state.gain( gain, 'focus' )
-                end
-            end
-
-            return t
-        end )
-
-
-        addHook( 'specializationChanged', function ()
-            setPotion( 'prolonged_power' )
-            setRole( 'attack' )
-            state.ranged = state.spec.marksmanship
-        end )
-
-
-        addHook( 'reset_precast', function()
-            rawset( state.pet, 'ferocity', IsSpellKnown( 55709, true ) )
-            rawset( state.pet, 'tenacity', IsSpellKnown( 53478, true ) )
-            rawset( state.pet, 'cunning', IsSpellKnown( 53490, true ) )
-        end )
 
         -- fake some stuff for Beast Cleave
         registerCustomVariable( 'last_multishot', 0 )
@@ -365,8 +357,8 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
                 
         -- create a fake aura
-        addAura( 'beast_cleave', -100, 'name', 'Beast Cleave', 'duration', 4, 'feign', function ()
-                local up = last_multishot
+        addAura( 'beast_cleave', -101, 'name', 'Beast Cleave', 'duration', 4, 'feign', function ()
+                local up = query_time < last_multishot + 4
                 buff.beast_cleave.name = 'Beast Cleave'
                 buff.beast_cleave.count = up and 1 or 0
                 buff.beast_cleave.expires = up and last_multishot + 4 or 0
@@ -417,8 +409,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
         addAura( 'sentinel', -100, 'name', 'Sentinel', 'duration', 18, 'feign', function ()
-            local t = now + offset
-            local up = last_sentinel - t < 18
+            local up = last_sentinel + duration < query_time
 
             buff.sentinel.name = "Sentinel"
             buff.sentinel.count = up and 1 or 0
@@ -510,7 +501,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 charges = 2,
                 recharge = 12,
                 cooldown = 12,
-                notalent = 'dire_frenzy'
+                notalent = 'dire_frenzy',
                 gcdType = 'spell',
             })
         
@@ -550,59 +541,36 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end)
         
         addHandler( 'dire_frenzy', function()
-                cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
-                if equipped.qapla_eredun_war_order then
-                    cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
-                end
-            end )
+            cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+            if equipped.qapla_eredun_war_order then
+                cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
+            end
+        end )
         
         addAbility( 'kill_command', {
-                id = 34026,
-                spend = 30,
-                spend_type = 'focus',
-                cast = 0,
-                gcdType = 'spell',
-                cooldown = 7.5,
-            })
+            id = 34026,
+            spend = 30,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 7.5,
+        })
         
         addHandler( 'kill_command', function()
-                if set_bonus.tier21_4pc > 0 then
-                    cooldown.aspect_of_the_wild.expires = max( state.time, cooldown.aspect_of_the_wild.expires - 3 )
-                end
-            end )
+            if set_bonus.tier21_4pc > 0 then
+                cooldown.aspect_of_the_wild.expires = max( state.time, cooldown.aspect_of_the_wild.expires - 3 )
+            end
+        end )
                 
-        addAbility( 'counter_shot', {
-                id = 147362,
-                spend = 0,
-                spend_type = 'focus',
-                cast = 0,
-                gcdType = 'off',
-                velocity = 60,
-                toggle = 'interrupts'
-            })
-        
-        addAbility( 'multishot', {
-                id = 2643,
-                spend = 40,
-                spend_type = 'focus',
-                cast = 0,
-                gcdType = 'spell',
-                cooldown = 0,
-            })
-        
-        addHandler( 'multishot', function ()
-                applyBuff( 'beast_cleave', 4 )
-            end )
-        
         addAbility( 'titans_thunder', {
-                id = 207068,
-                spend = 0,
-                spend_type = 'focus',
-                cast = 0,
-                gcdType = 'spell',
-                cooldown = 60,
-                toggle = 'cooldowns',
-            })
+            id = 207068,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 60,
+            toggle = 'cooldowns',
+        } )
     
         -- Abilities.
 
@@ -1342,11 +1310,16 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         } )
 
         modifyAbility( "multishot", "spend", function( x )
+            if spec.beast_mastery then return 40 end
             if set_bonus.tier21 > 1 then x = x * 1.25 end
             return x * active_enemies
         end )
 
         addHandler( "multishot", function ()
+            if spec.beast_mastery then
+                if active_enemies > 1 then applyBuff( "beast_cleave" ) end
+                return
+            end
             if buff.marking_targets.up or buff.trueshot.up then
                 applyDebuff( "target", "hunters_mark" )
                 removeBuff( "marking_targets" )
