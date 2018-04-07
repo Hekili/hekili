@@ -1665,6 +1665,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cooldown = 1.5,
             min_range = 0,
             max_range = 0,
+            nobuff = "volley"
         } )
 
         addHandler( "volley", function ()

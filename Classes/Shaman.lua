@@ -293,7 +293,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         registerCustomVariable( 'last_ascendance', 0 )
         registerCustomVariable( 'last_totem_mastery', 0 )
 
-        RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, spellID )
+        RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, _, spellID )
 
             if unit ~= 'player' then return end
 

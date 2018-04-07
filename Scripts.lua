@@ -139,6 +139,7 @@ local SimToLua = function( str, modifier )
 
   -- Address equipped.number => equipped[number]
   str = str:gsub("equipped%.(%d+)", "equipped[%1]")
+  str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
 
   str = str:gsub("prev%.(%d+)", "prev[%1]")
   str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")

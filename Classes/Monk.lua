@@ -238,6 +238,52 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         setTalentLegendary( 'soul_of_the_grandmaster', 'brewmaster', 'mystic_vitality' )
         setTalentLegendary( 'soul_of_the_grandmaster', 'windwalker', 'chi_orbit' )
 
+        
+        -- Be more thorough about what generates Hit Combo stacks and what doesn't.
+
+        local hc_gen = {}
+
+        hc_gen.blackout_kick = true
+        hc_gen.chi_burst = true
+        hc_gen.chi_wave = true
+        hc_gen.crackling_jade_lightning = true
+        hc_gen.fists_of_fury = true
+        hc_gen.flying_serpent_kick = true
+        hc_gen.rising_sun_kick = true
+        hc_gen.spinning_crane_kick = true
+        hc_gen.strike_of_the_windlord = true
+        hc_gen.tiger_palm = true
+        hc_gen.touch_of_death = true
+        hc_gen.whirling_dragon_punch = true
+
+        local actual_combo, virtual_combo = nil, nil
+
+        -- actual_combo is the last combo ability that you actually used.
+        -- virtual_combo is for abilities that we pretend to cast as a recommendation.
+
+        addMetaFunction( 'state', 'last_combo', function ()
+            return virtual_combo or actual_combo
+        end )
+
+
+        -- may need to revisit -- if you cast tiger palm and miss, it should probably not count against you...
+        RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, _, spellID )
+            if unit ~= 'player' then return end
+
+            local key = class.abilities[ spellID ] and class.abilities[ spellID ].key
+            if not key then return end
+
+            if hc_gen[ key ] then
+                actual_combo = key 
+            end
+        end )
+
+
+        addHook( 'runHandler', function( key, no_start )
+            if hc_gen[ key ] then
+                virtual_combo = key 
+            end
+        end )
 
 
         addHook( 'reset_precast', function ()
@@ -247,9 +293,12 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
                 state.prev_gcd.last = 'none'
             end
             rawset( state.healing_sphere, 'count', nil )
+
             state.stagger.amount = nil
+
             state.spinning_crane_kick.count = nil
-            state.healing_sphere.count = nil
+            
+            virtual_combo = nil
         end )
 
 
@@ -559,6 +608,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             gcdType = 'melee',
             cooldown = 0,
             cycle = 'mark_of_the_crane',
+            usable = function () return last_combo ~= 'blackout_kick' or not talent.hit_combo.enabled end,
             recheck = function ()
                 return buff.serenity.remains, cooldown.serenity.remains, cooldown.energizing_elixir.remains - cooldown.fists_of_fury.remains
             end
@@ -583,7 +633,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             end
 
             if talent.hit_combo.enabled then
-                if prev_gcd.blackout_kick then removeBuff( 'hit_combo' )
+                if last_combo == 'blackout_kick' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
 
@@ -645,7 +695,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 1,
             gcdType = 'spell',
             cooldown = 30,
-            talent = 'chi_burst'
+            talent = 'chi_burst',
+            usable = function () return last_combo ~= 'chi_burst' or not talent.hit_combo.enabled end,
         } )
 
         modifyAbility( 'chi_burst', 'cast', function( x )
@@ -654,7 +705,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         addHandler( 'chi_burst', function ()
             if talent.hit_combo.enabled then
-                if prev_gcd.chi_burst then removeBuff( 'hit_combo' )
+                if last_combo == 'chi_burst' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
         end )
@@ -669,12 +720,13 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 15,
-            talent = 'chi_wave'
+            talent = 'chi_wave',
+            usable = function () return last_combo ~= 'chi_wave' or not talent.hit_combo.enabled end,
         } )
 
         addHandler( 'chi_wave', function ()
             if talent.hit_combo.enabled then
-                if prev_gcd.chi_wave then removeBuff( 'hit_combo' )
+                if last_combo == 'chi_wave' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
         end )
@@ -694,12 +746,13 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             recheck = function ()
                 return cooldown.serenity.remains - 13
             end,
+            usable = function () return last_combo ~= 'crackling_jade_lightning' or not talent.hit_combo.enabled end,
         } )
 
         addHandler( 'crackling_jade_lightning', function ()
             removeBuff( 'the_emperors_capacitor' )
             if talent.hit_combo.enabled then
-                if prev_gcd.crackling_jade_lightning then removeBuff( 'hit_combo' )
+                if last_combo == 'crackling_jade_lightning' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
         end )
@@ -805,6 +858,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             recharge = function ()                
                 return buff.pressure_point.remains - 2, buff.serenity.remains - 1, cooldown.serenity.remains - 4, cooldown.serenity.remains - 4
             end,
+            usable = function () return last_combo ~= 'fists_of_fury' or not talent.hit_combo.enabled end,
         } )
 
         modifyAbility( 'fists_of_fury', 'cast', function( x )
@@ -832,7 +886,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
         addHandler( 'fists_of_fury', function ()
             -- applyBuff( 'fists_of_fury', 4 * haste ) -- now set as channeled, watch this.
             if talent.hit_combo.enabled then
-                if prev_gcd.fists_of_fury then removeBuff( 'hit_combo' )
+                if last_combo == 'fists_of_fury' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
             if equipped.the_emperors_capacitor then addStack( 'the_emperors_capacitor', 3600, 1 ) end
@@ -1083,7 +1137,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'melee',
             cooldown = 10,
-            cycle = 'mark_of_the_crane'
+            cycle = 'mark_of_the_crane',
+            usable = function () return last_combo ~= 'rising_sun_kick' or not talent.hit_combo.enabled end,
         } )
 
         modifyAbility( 'rising_sun_kick', 'cooldown', function( x )
@@ -1103,7 +1158,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             removeBuff( 'pressure_point' )
 
             if talent.hit_combo.enabled then
-                if prev_gcd.rising_sun_kick then removeBuff( 'hit_combo' )
+                if last_combo == 'rising_sun_kick' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
             if equipped.the_emperors_capacitor then addStack( 'the_emperors_capacitor', 3600, 1 ) end
@@ -1143,7 +1198,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             gcdType = 'spell',
             cooldown = 6,
             talent = 'rushing_jade_wind',
-            cycle = 'mark_of_the_crane'
+            cycle = 'mark_of_the_crane',
+            usable = function () return last_combo ~= 'rushing_jade_wind' or not talent.hit_combo.enabled end,
         } )
 
         modifyAbility( 'rushing_jade_wind', 'cooldown', function( x )
@@ -1168,7 +1224,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             end
 
             if talent.hit_combo.enabled then
-                if prev_gcd.rushing_jade_wind then removeBuff( 'hit_combo' )
+                if last_combo == 'rushing_jade_wind' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
 
@@ -1233,6 +1289,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             cast = 0,
             gcdType = 'melee',
             cooldown = 0,
+            usable = function () return last_combo ~= 'spinning_crane_kick' or not talent.hit_combo.enabled end,
         } )
 
         modifyAbility( 'spinning_crane_kick', 'spend', function( x )
@@ -1242,7 +1299,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         addHandler( 'spinning_crane_kick', function ()
             if talent.hit_combo.enabled then
-                if prev_gcd.spinning_crane_kick then removeBuff( 'hit_combo' )
+                if last_combo == 'spinning_crane_kick' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
             if equipped.the_emperors_capacitor then addStack( 'the_emperors_capacitor', 3600, 1 ) end
@@ -1295,7 +1352,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             gcdType = 'melee',
             cooldown = 40,
             equipped = 'fists_of_the_heavens',
-            toggle = 'artifact'
+            toggle = 'artifact',
+            usable = function () return last_combo ~= 'strike_of_the_windlord' or not talent.hit_combo.enabled end,
         } )
 
         modifyAbility( 'strike_of_the_windlord', 'cooldown', function( x )
@@ -1319,7 +1377,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
                 applyBuff( 'the_wind_blows', 3600 )
             end
             if talent.hit_combo.enabled then
-                if prev_gcd.strike_of_the_windlord then removeBuff( 'hit_combo' )
+                if last_combo == 'strike_of_the_windlord' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
             if equipped.the_emperors_capacitor then addStack( 'the_emperors_capacitor', 3600, 1 ) end
@@ -1353,6 +1411,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             recheck = function ()
                 return buff.serenity.remains, cooldown.fists_of_fury.remains, buff.hit_combo.remains, energy.time_to_max - 3
             end,
+            usable = function () return last_combo ~= 'tiger_palm' or not talent.hit_combo.enabled or ( chi.current == 0 and buff.hit_combo.down ) end,
         } )
 
         modifyAbility( 'tiger_palm', 'ready', function( x )
@@ -1375,7 +1434,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
                 applyDebuff( 'target', 'mark_of_the_crane', 15 )
 
                 if talent.hit_combo.enabled then
-                    if prev_gcd.tiger_palm then removeBuff( 'hit_combo' )
+                    if last_combo == 'tiger_palm' then removeBuff( 'hit_combo' )
                     else addStack( 'hit_combo', 10, 1 ) end
                 end
 
@@ -1419,6 +1478,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             recheck = function ()
                 return cooldown.serenity.remains - 1, cooldown.strike_of_the_windlord.remains - 8, cooldown.fists_of_fury.remains - 4, cooldown.rising_sun_kick.remains - 7
             end,
+            usable = function () return last_combo ~= 'touch_of_death' or not talent.hit_combo.enabled end,
         } )
 
         modifyAbility( 'touch_of_death', 'cooldown', function( x )
@@ -1434,7 +1494,7 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
                 applyBuff( 'hidden_masters_forbidden_touch', 5 )
             end
             if talent.hit_combo.enabled then
-                if prev_gcd.touch_of_death then removeBuff( 'hit_combo' )
+                if last_combo == 'touch_of_death' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
             applyDebuff( 'target', 'touch_of_death', 8 )
@@ -1464,12 +1524,13 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
             gcdType = 'melee',
             cooldown = 24,
             talent = 'whirling_dragon_punch',
-            usable = function () return cooldown.fists_of_fury.remains > 0 and cooldown.rising_sun_kick.remains > 0 end
+            usable = function () return last_combo ~= 'blackout_kick' or not talent.hit_combo.enabled end,
+            usable = function () return ( last_combo ~= 'whirling_dragon_punch' or not talent.hit_combo.enabled ) and cooldown.fists_of_fury.remains > 0 and cooldown.rising_sun_kick.remains > 0 end,
         } )
 
         addHandler( 'whirling_dragon_punch', function ()
             if talent.hit_combo.enabled then
-                if prev_gcd.whirling_dragon_punch then removeBuff( 'hit_combo' )
+                if last_combo == 'whirling_dragon_punch' then removeBuff( 'hit_combo' )
                 else addStack( 'hit_combo', 10, 1 ) end
             end
         end )
