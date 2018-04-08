@@ -1934,7 +1934,7 @@ local mt_default_cooldown = {
         elseif k == 'recharge' then
             return class.abilities[ t.key ].recharge
             
-        elseif k == 'time_to_max_charges' then
+        elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
             return ( class.abilities[ t.key ].charges - t.charges_fractional ) * class.abilities[ t.key ].recharge
             
         elseif k == 'remains' then
@@ -2900,11 +2900,11 @@ local mt_default_action = {
             
         elseif k == 'recharge_time' then
             return class.abilities[ t.action ].recharge and state.cooldown[ t.action ].recharge or 0
-            
+           
         elseif k == 'max_charges' then
             return class.abilities[ t.action ].charges or 0
 
-        elseif k == 'time_to_max_charges' then
+        elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
             return ( class.abilities[ t.action ].charges - state.cooldown[ t.action ].charges_fractional ) * class.abilities[ t.action ].recharge
             
         elseif k == 'ready_time' then

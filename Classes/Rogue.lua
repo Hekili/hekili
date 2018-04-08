@@ -62,7 +62,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         addResource( "energy", SPELL_POWER_ENERGY )
         addResource( "combo_points", SPELL_POWER_COMBO_POINTS, true )
 
-        setRole( state.spec.guardian and "tank" or "attack" )
+        setRole( "attack" )
 
         addHook( 'specializationChanged', function ()
             setPotion( 'prolonged_power' )

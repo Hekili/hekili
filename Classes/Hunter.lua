@@ -93,6 +93,14 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 interval = 1,
                 value = 33,
             },
+
+            --[[ dire_frenzy_1 = {
+                resource = 'focus',
+
+                spec = 'beast_mastery',
+                talent = 'dire_frenzy',
+                aura = 'dire_frenzy', 
+            } ]]
         } )
 
 
@@ -265,6 +273,16 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         -- Auras: BM
         addAura( 'bestial_wrath', 19574, 'duration', 15 )
         addAura( 'aspect_of_the_wild', 193530, 'duration', 14 )
+        addAura( 'dire_frenzy', 217200, 'duration', 8, 'max_stack', 8, 'feign', function ()
+            -- This is a real aura, but it is applied to our pet.
+            local up, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( "pet", class.abilities.dire_frenzy.name )
+
+            buff.dire_frenzy.name = up or class.abilities.dire_frenzy.name
+            buff.dire_frenzy.count = up and count or 0
+            buff.dire_frenzy.expires = up and expires or 0
+            buff.dire_frenzy.applied = up and ( expires - duration ) or 0
+            buff.dire_frenzy.caster = up and caster or "player"
+        end )
 
         -- Gear Sets
         addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
@@ -545,6 +563,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             if equipped.qapla_eredun_war_order then
                 cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
             end
+            addStack( 'dire_frenzy', 8, 1 )
         end )
         
         addAbility( 'kill_command', {
