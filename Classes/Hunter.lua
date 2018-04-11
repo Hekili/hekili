@@ -93,14 +93,130 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 interval = 1,
                 value = 33,
             },
+            
+            dire_regen_0 = {
+                resource = "focus",
 
-            --[[ dire_frenzy_1 = {
-                resource = 'focus',
+                spec = "beast_mastery",
+                aura = "dire_regen_0",
 
-                spec = 'beast_mastery',
-                talent = 'dire_frenzy',
-                aura = 'dire_frenzy', 
-            } ]]
+                last = function()
+                    local app = state.buff.dire_regen_0.applied
+                    local t = state.query_time
+
+                    return app + floor( t- app )
+                end,
+
+                interval = 2,
+                value = function()
+                    if state.talent.dire_frenzy.enabled then
+                        if state.talent.dire_stable.enabled then
+                            return 9
+                        else
+                            return 6
+                        end
+                    else
+                        if state.talent.dire_stable.enabled then
+                            return 6
+                        else
+                            return 3
+                        end
+                    end
+                end
+            },
+
+            dire_regen_1 = {
+                resource = "focus",
+
+                spec = "beast_mastery",
+                aura = "dire_regen_1",
+
+                last = function()
+                    local app = state.buff.dire_regen_1.applied
+                    local t = state.query_time
+
+                    return app + floor( t- app )
+                end,
+
+                interval = 2,
+                value = function()
+                    if state.talent.dire_frenzy.enabled then
+                        if state.talent.dire_stable.enabled then
+                            return 9
+                        else
+                            return 6
+                        end
+                    else
+                        if state.talent.dire_stable.enabled then
+                            return 6
+                        else
+                            return 3
+                        end
+                    end
+                end
+            },
+            
+            dire_regen_2 = {
+                resource = "focus",
+
+                spec = "beast_mastery",
+                aura = "dire_regen_2",
+
+                last = function()
+                    local app = state.buff.dire_regen_2.applied
+                    local t = state.query_time
+
+                    return app + floor( t- app )
+                end,
+
+                interval = 2,
+                value = function()
+                    if state.talent.dire_frenzy.enabled then
+                        if state.talent.dire_stable.enabled then
+                            return 9
+                        else
+                            return 6
+                        end
+                    else
+                        if state.talent.dire_stable.enabled then
+                            return 6
+                        else
+                            return 3
+                        end
+                    end
+                end
+            },
+
+            dire_regen_3 = {
+                resource = "focus",
+
+                spec = "beast_mastery",
+                aura = "dire_regen_3",
+
+                last = function()
+                    local app = state.buff.dire_regen_3.applied
+                    local t = state.query_time
+
+                    return app + floor( t- app )
+                end,
+
+                interval = 2,
+                value = function()
+                    if state.talent.dire_frenzy.enabled then
+                        if state.talent.dire_stable.enabled then
+                            return 9
+                        else
+                            return 6
+                        end
+                    else
+                        if state.talent.dire_stable.enabled then
+                            return 6
+                        else
+                            return 3
+                        end
+                    end
+                end
+            }
         } )
 
 
@@ -283,6 +399,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             buff.dire_frenzy.applied = up and ( expires - duration ) or 0
             buff.dire_frenzy.caster = up and caster or "player"
         end )
+        -- fake auras for regen assumption (should we track the real auras otherwise?)
+        -- 246152 dire_frenzy regen buff (player)
+        -- 120694 dire_beast regen buff (player)
+        addAura( 'dire_regen_0', -103, 'duration', 8 )
+        addAura( 'dire_regen_1', -104, 'duration', 8 )
+        addAura( 'dire_regen_2', -105, 'duration', 8 )
+        addAura( 'dire_regen_3', -106, 'duration', 8 )
 
         -- Gear Sets
         addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
@@ -532,11 +655,32 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end)
         
         addHandler( 'dire_beast', function()
-                cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
-                if equipped.qapla_eredun_war_order then
-                    cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
+            cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+            if equipped.qapla_eredun_war_order then
+                cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
+            end
+
+            applyBuff( 'dire_beast' )
+
+            if buff.dire_regen_0.up then
+                if buff.dire_regen_1.up then
+                    if buff.dire_regen_2.up then
+                        if buff.dire_regen_3.up then
+                            -- should not come to this much applications
+                        else
+                            applyBuff( 'dire_regen_3' )
+                        end
+                    else
+                        applyBuff( 'dire_regen_2' )
+                    end
+                else
+                    applyBuff( 'dire_regen_1' )
                 end
-            end )
+            else
+                applyBuff( 'dire_regen_0' )
+            end
+
+        end )
         
     	addAbility( 'dire_frenzy', {
             id = 217200,
@@ -564,6 +708,25 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
             end
             addStack( 'dire_frenzy', 8, 1 )
+
+            if buff.dire_regen_0.up then
+                if buff.dire_regen_1.up then
+                    if buff.dire_regen_2.up then
+                        if buff.dire_regen_3.up then
+                            -- should not come to this much applications
+                        else
+                            applyBuff( 'dire_regen_3' )
+                        end
+                    else
+                        applyBuff( 'dire_regen_2' )
+                    end
+                else
+                    applyBuff( 'dire_regen_1' )
+                end
+            else
+                applyBuff( 'dire_regen_0' )
+            end
+
         end )
         
         addAbility( 'kill_command', {
