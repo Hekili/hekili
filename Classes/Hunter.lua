@@ -94,13 +94,96 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 value = 33,
             },
 
-            --[[ dire_frenzy_1 = {
+            dire_frenzy_1 = {
                 resource = 'focus',
 
                 spec = 'beast_mastery',
                 talent = 'dire_frenzy',
-                aura = 'dire_frenzy', 
-            } ]]
+                aura = 'dire_frenzy_1', 
+
+                last = function ()
+                    local app = state.buff.dire_frenzy_1.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                interval = 2,
+                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+            },
+
+            dire_frenzy_2 = {
+                resource = 'focus',
+
+                spec = 'beast_mastery',
+                talent = 'dire_frenzy',
+                aura = 'dire_frenzy_2',
+
+                last = function ()
+                    local app = state.buff.dire_frenzy_2.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                interval = 2,
+                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+            },
+
+            dire_frenzy_3 = {
+                resource = 'focus',
+
+                spec = 'beast_mastery',
+                talent = 'dire_frenzy',
+                aura = 'dire_frenzy_3',
+
+                last = function ()
+                    local app = state.buff.dire_frenzy_3.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                interval = 2,
+                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+            },
+            
+            dire_frenzy_4 = {
+                resource = 'focus',
+
+                spec = 'beast_mastery',
+                talent = 'dire_frenzy',
+                aura = 'dire_frenzy_4',
+
+                last = function ()
+                    local app = state.buff.dire_frenzy_4.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                interval = 2,
+                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+            },
+            
+            dire_frenzy_5 = {
+                resource = 'focus',
+
+                spec = 'beast_mastery',
+                talent = 'dire_frenzy',
+                aura = 'dire_frenzy_5',
+
+                last = function ()
+                    local app = state.buff.dire_frenzy_5.applied
+                    local t = state.query_time
+
+                    return app + floor( t - app )
+                end,
+
+                interval = 2,
+                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+            },
+            
         } )
 
 
@@ -273,7 +356,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         -- Auras: BM
         addAura( 'bestial_wrath', 19574, 'duration', 15 )
         addAura( 'aspect_of_the_wild', 193530, 'duration', 14 )
-        addAura( 'dire_frenzy', 217200, 'duration', 8, 'max_stack', 8, 'feign', function ()
+        addAura( 'dire_frenzy_1', 246152, 'duration', 8 )
+        addAura( 'dire_frenzy_2', 246851, 'duration', 8 )
+        addAura( 'dire_frenzy_3', 246852, 'duration', 8 )
+        addAura( 'dire_frenzy_4', 246853, 'duration', 8 )
+        addAura( 'dire_frenzy_5', 246854, 'duration', 8 )
+
+        --[[ addAura( 'dire_frenzy', 217200, 'duration', 8, 'max_stack', 8, 'feign', function ()
             -- This is a real aura, but it is applied to our pet.
             local up, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( "pet", class.abilities.dire_frenzy.name )
 
@@ -283,6 +372,55 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             buff.dire_frenzy.applied = up and ( expires - duration ) or 0
             buff.dire_frenzy.caster = up and caster or "player"
         end )
+
+        addAura( 'titans_thunder', 207094, 'duration', 30, 'feign', function ()
+            -- This is a real aura, but it is applied to our pet.
+            local i, found = 1, false
+            local up, count, duration, expires, caster, spellID, timeMod, v1, v2, v3
+            while( true ) do
+                up, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( "pet", i )
+
+                if not up then break end
+
+                if spellID == 207094 then
+                    found = true
+                    break
+                end
+                
+                i = i + 1
+            end
+
+            buff.dire_frenzy.name = class.abilities.titans_thunder.name
+            buff.dire_frenzy.count = found and count or 0
+            buff.dire_frenzy.expires = found and expires or 0
+            buff.dire_frenzy.applied = found and ( expires - duration ) or 0
+            buff.dire_frenzy.caster = found and caster or "player"
+        end )
+        
+        addAura( 'titans_frenzy', 218638, 'duration', 10, 'name', "Titan's Frenzy", 'feign', function ()
+            -- This is a real aura, but it is applied to our pet.
+            local i, found = 1, false
+            local up, count, duration, expires, caster, spellID, timeMod, v1, v2, v3
+            while( true ) do
+                up, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( "pet", i )
+
+                if not up then break end
+
+                if spellID == 218638 then
+                    found = true
+                    break
+                end
+
+                i = i + 1
+            end
+
+            buff.dire_frenzy.name = "Titan's Frenzy"
+            buff.dire_frenzy.count = found and count or 0
+            buff.dire_frenzy.expires = found and expires or 0
+            buff.dire_frenzy.applied = found and ( expires - duration ) or 0
+            buff.dire_frenzy.caster = found and caster or "player"
+        end ) ]]
+
 
         -- Gear Sets
         addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
@@ -492,36 +630,38 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 applyBuff( 'bestial_wrath', 15 )
             end )
         
+        
         addAbility( 'cobra_shot', {
-                id = 193455,
-                spend = 40,
-                spend_type = 'focus',
-                cast = 0,
-                gcd_type = 'spell',
-                cooldown = 0,
-            })
+            id = 193455,
+            spend = 40,
+            spend_type = 'focus',
+            cast = 0,
+            gcd_type = 'spell',
+            cooldown = 0,
+        } )
         
         modifyAbility( 'cobra_shot', 'spend', function( x )
-                return x - ( 2 * artifact.slithering_serpents.rank )
-            end )
+            return x - ( 2 * artifact.slithering_serpents.rank )
+        end )
         
         addHandler( 'cobra_shot', function()
             if talent.killer_cobra.enabled and buff.bestial_wrath.up then
-                setCooldown('kill_command', 0 )
+                setCooldown( 'kill_command', 0 )
             end
         end)
+
         
         addAbility( 'dire_beast', {
-                id = 120679,
-                spend = 0,
-                spend_type = 'focus',
-                cast = 0,
-                charges = 2,
-                recharge = 12,
-                cooldown = 12,
-                notalent = 'dire_frenzy',
-                gcdType = 'spell',
-            })
+            id = 120679,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            charges = 2,
+            recharge = 12,
+            cooldown = 12,
+            notalent = 'dire_frenzy',
+            gcdType = 'spell',
+        })
         
         modifyAbility( 'dire_beast', 'recharge', genericHasteMod )
         modifyAbility( 'dire_beast', 'cooldown', genericHasteMod )
@@ -532,11 +672,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end)
         
         addHandler( 'dire_beast', function()
-                cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
-                if equipped.qapla_eredun_war_order then
-                    cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
-                end
-            end )
+            cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+
+            if equipped.qapla_eredun_war_order then
+                cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
+            end
+        end )
         
     	addAbility( 'dire_frenzy', {
             id = 217200,
@@ -553,18 +694,28 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         modifyAbility( 'dire_frenzy', 'recharge', genericHasteMod )
         modifyAbility( 'dire_frenzy', 'cooldown', genericHasteMod )
 
-        addCooldownMetaFunction( "dire_frenzy", "full_recharge_time", function( x )
+        --[[ addCooldownMetaFunction( "dire_frenzy", "full_recharge_time", function( x )
             if not talent.dire_frenzy.enabled then return 0 end
             return ( cooldown.dire_frenzy.max_charges - cooldown.dire_frenzy.charges_fractional ) * cooldown.dire_frenzy.recharge
-        end)
+        end) ]]
         
         addHandler( 'dire_frenzy', function()
             cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+
             if equipped.qapla_eredun_war_order then
                 cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
             end
             addStack( 'dire_frenzy', 8, 1 )
+
+            -- player focus regen auras.
+            for i = 1, 5 do
+                if buff[ 'dire_frenzy_' .. i ].down then
+                    applyBuff( 'dire_frenzy_' .. i )
+                    break
+                end
+            end
         end )
+
         
         addAbility( 'kill_command', {
             id = 34026,
@@ -573,13 +724,16 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 7.5,
-        })
+        } )
+
+        modifyAbility( 'kill_command', 'cooldown', genericHasteMod )
         
         addHandler( 'kill_command', function()
             if set_bonus.tier21_4pc > 0 then
                 cooldown.aspect_of_the_wild.expires = max( state.time, cooldown.aspect_of_the_wild.expires - 3 )
             end
         end )
+
                 
         addAbility( 'titans_thunder', {
             id = 207068,
@@ -588,8 +742,14 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             cast = 0,
             gcdType = 'spell',
             cooldown = 60,
-            toggle = 'cooldowns',
+            toggle = 'artifact',
         } )
+
+        addHandler( 'titans_thunder', function ()
+            applyBuff( 'titans_thunder' )
+            applyBuff( 'titans_frenzy' )
+        end )
+
     
         -- Abilities.
 
@@ -1339,6 +1499,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 if active_enemies > 1 then applyBuff( "beast_cleave" ) end
                 return
             end
+            -- Marksmanship.
             if buff.marking_targets.up or buff.trueshot.up then
                 applyDebuff( "target", "hunters_mark" )
                 removeBuff( "marking_targets" )
@@ -1809,6 +1970,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
     storeDefault( [[SimC Marksmanship: targetdie]], 'actionLists', 20180317.214619, [[dudHeaGEjG2KsjTlOOxtf2NeOzdPBIkFtrANcTxYUrz)qLHPK(nIHIQQmyOQHRioiv0XOsluszPkvlgILtPhQu8uWYqvEUGjkbyQkXKPy6sDrjvNgPlR66kQhRWwHcBgvLTlroSOVIQQAAsq(UsPgNsj(Re1OLKNjb1jHs9zjuxtc58qj3MQ2gQQyDOQslxTiOolrqVricGjFqtuAbMnLWuKxrfsqbC(Yz0w1eSF0NHRiVv3TSwy3Py6wur8C3IayyPtAbcCoAkHf0IIUArqDwIGEJQjagw6KwG5iZ8XhMLMrz3MiOhZ5jcCIqrPnwcMqVDqzfxourAbyZm0r2eRagHDbCedgPnM(lqqm9xa)rVDqzfJdpurAb7h9z4kYB1DQ7QG9hiZ2XdArTGnvF4GJu6(ZAHiGJyIP)cuRipTiOolrqVr1e4eHIsBSeSnLzqMTHwa2mdDKnXkGryxahXGrAJP)ceet)fW)uMbz2gAb7h9z4kYB1DQ7QG9hiZ2XdArTGnvF4GJu6(ZAHiGJyIP)cuRyH1IG6Seb9gvtamS0jTaZrM5JpmlnJYUnrqpM27tklGdFbXHFKHUCt9hh(TIdFN2IFJzt9VCtkBOhh(cId)idD5M6VaNiuuAJLGK6VPCOI0cWMzOJSjwbmc7c4igmsBm9xGGy6VaNu)n4WdvKwW(rFgUI8wDN6Uky)bYSD8Gwulyt1ho4iLU)Swic4iMy6Va1kwiTiOolrqVr1e4eHIsBSe4tRJBkhQiTaSzg6iBIvaJWUaoIbJ0gt)fiiM(lGlToUbhEOI0c2p6ZWvK3Q7u3vb7pqMTJh0IAbBQ(WbhP09N1crahXet)fOwXI0IG6Seb9gvtGtekkTXsqAhj7LdvKwa2mdDKnXkGryxahXGrAJP)ceet)f40os2XHhQiTG9J(mCf5T6o1DvW(dKz74bTOwWMQpCWrkD)zTqeWrmX0FbQvKF0IG6Seb9gvtGtekkTXsqGA(2uM52GaSzg6iBIvaJWUaoIbJ0gt)fiiM(laOMVnLzUniy)OpdxrERUtDxfS)az2oEqlQfSP6dhCKs3FwlebCetm9xGA1cIP)caQFdo8CP1rWNSqfDc)IdFN2IFBOxTea]] )
 
+    storeDefault( [[SimC Beast Mastery: default]], 'actionLists', 20180408.225232, [[dyKtxaqiucTjQO(ekrQrrQYPiv1Qqj4wqfr7Iuggu1XKOLrv5zOQktdLiUgvvPTrvv4BOQmouvvNdLOSouIK5HQk3dQG9rvLdIs1crP8qOsteLO6IubBeQqCsQiVeQiCtLYorLHsvvKLsL8uktLu5Quvf1wPc9vOcvVfQq5Uqfs7v1FrXGr6WsTyO8yHMSixgSzj8zusJwP60eETsQzlQBlPDt0VHmCuLJdvulNKNly6kUovz7kjFxjmEOI05vIwpvv18PsTFe)YR7MdYgldPJDJRRWntuXLqzd6WqOBDya1swkcnbfTxEU5cYqhGZ5dFj)JNLGN)1kVzrLG3C7g7XrGKHR7CLx3nhKnwgsNTBwuj4n3UXoMilML3Iip5akMWoAU5KmjI9Gu3KijCBdLCSvCDfUDJRRWnCrEYbueQTJMBUGm0b4C(WxYxj(BUGaYtfHW195gU7qC9gAfub5CSBBOexxHBFoNVR7MdYgldPZ2n2XezXS8Mxayedud3CsMeXEqQBsKeUTHso2kUUc3UX1v4M7yrbE8XyrboM)CaiuNgOgWrDRU5cYqhGZ5dFjFL4V5ccipvecx3NB4UdX1BOvqfKZXUTHsCDfU95C831DZbzJLH0z7MfvcEZTcu0lOLGcrumeQF4aHYF4VXoMilML3AvSLaZGukqo3CsMeXEqQBsKeUTHso2kUUc3UX1v4g7QylbcvhsPa5CZfKHoaNZh(s(kXFZfeqEQieUUp3WDhIR3qRGkiNJDBdL46kC7Z5yjx3nhKnwgsNTBwuj4n3W8kk0WGWi6mZcvp7AkO2czGq9Jq5JqDMq1Jqzrcnaddgs6f0gbO8HNXhViH6hHINqD7MqX8kk0WGWi6mZcvp7AkO2czGq5hHwwsO6FJDmrwmlVHbQaOwlKSEZjzse7bPUjrs42gk5yR46kC7gxxHBSbQaOwlKSEZfKHoaNZh(s(kXFZfeqEQieUUp3WDhIR3qRGkiNJDBdL46kC7Z583R7MdYgldPZ2nlQe8MByEffAyqyeDMzHQNDnfuBHmqO(rO8DJDmrwmlVHLrOetHNA5nNKjrShK6MejHBBOKJTIRRWTBCDfUXwgHsekoINA5nxqg6aCoF4l5Re)nxqa5PIq46(Cd3DiUEdTcQGCo2TnuIRRWTpNZFCD3Cq2yziD2UXoMilML3wHYzy5nNKjrShK6MejHBBOKJTIRRWTBCDfU5ikNHL3yxXA42GyL1mGdi5nxqg6aCoF4l5Re)nxqa5PIq46(Cd3DiUEdTcQGCo2TnuIRRWTpNJVR7MdYgldPZ2nlQe8MByEffAyqyeDMzHQNDnpEeQZekMxrHwh4bXHbvWm7aZcroP5X7g7yISywEJhAei5nNKjrShK6MejHBBOKJTIRRWTBCDfU5owuGhFmwuGJ5pHgbsIJ6wDZfKHoaNZh(s(kXFZfeqEQieUUp3WDhIR3qRGkiNJDBdL46kC7Z54)R7MdYgldPZ2nlQe8MBrekNqlKAyqyeDMzHQNDnfuBHmqO8Jq5pc1TBcDAfRWOnIkWmiMKaiu(rOL(JBSJjYIz5TMP6PsGIbvWevOfHBojtIypi1njsc32qjhBfxxHB346kCJDcDZtLafHIkiuCvOfHBUGm0b4C(WxYxj(BUGaYtfHW195gU7qC9gAfub5CSBBOexxHBFohl76U5GSXYq6SDZIkbV5glsOyEffAyqyeDMzHQNDnpE3yhtKfZYByqyeDMzHQN9BojtIypi1njsc32qjhBfxxHB346kCJnimIotO44QE2V5cYqhGZ5dFjFL4V5ccipvecx3NB4UdX1BOvqfKZXUTHsCDfU95CL4VUBoiBSmKoB3SOsWBUPhHc4SNGhpiPf7CMbvWm7aZcrorOotOao7j4XdsArKCfOyfKrGbvWu0deiuNj0PZGC0qsGzHy2zMDGHxhxRbYgldjcvFc1TBcfZROqddcJOZmlu9SRPGAlKbc1pcLpc1TBcDAfRWOnIkWmiMKaiu(rOL(UXoMilML36apiomOcMzhywiYPBojtIypi1njsc32qjhBfxxHB346kCJ9apioekQGqNDGqXXf50nxqg6aCoF4l5Re)nxqa5PIq46(Cd3DiUEdTcQGCo2TnuIRRWTpNRS86U5GSXYq6SDZIkbV5MEeklsOtNb5OLekGPqbs)VudKnwgseQB3eQEekMxrHwsOaMcfi9)snfuBHmqO(rOSgteklqOLA(iu3Uju9iuwKqX8kk0scfWuOaP)xQ5XJqDMqzrcD6mihnKeywiMDMzhy41X1AGSXYqIq1Nq1Nq1NqDMq1JqHWi6mtbOqrXSutb1wideQ(3yhtKfZYBRf5mtevRTmDZjzse7bPUjrs42gk5yR46kC7gxxHB4eICMqXfvRTmDJDfRHBtRyfggrboufswkmimIoZuakuuml1uqTfYWnxqg6aCoF4l5Re)nxqa5PIq46(Cd3DiUEdTcQGCo2TnuIRRWTpNR031DZbzJLH0z7MfvcEZTammyiPxqBeGYhEgF8IeQFekEc1zcTJJyfWasOkGaHIdeAjH6mHYIekGZEcE8GKgo38YndOGKNKzrRyqQeOiuNju9iumVIcnmimIoZSq1ZUMhpc1zcfZROqddcJOZmlu9SRPGAlKbcLFekRXeHYceQpcvFc1zcvpcLfj0PZGC0scfWuOaP)xQbYgldjc1TBcfZROqljuatHcK(FPMcQTqgiu)iuwJjcLfi0snFeQ(3yhtKfZYBreMQzc7O5MtYKi2dsDtIKWTnuYXwX1v42nUUc3WfHPAc12rZnxqg6aCoF4l5Re)nxqa5PIq46(Cd3DiUEdTcQGCo2TnuIRRWTpNRK)UUBoiBSmKoB3SOsWBUfrOCcTqQHbHr0zMfQE21uqTfYaH6hH6JqDMq1Jq1JqzrcfWzpbpEqsdNBE5MbuqYtYSOvmivcueQB3eAeHYj0cP2AroZer1AltAkO2czGq9dhi0scvFc1TBcTWlNzuqCVvScmJOcek)iuwJjc1TBcnIq5eAHuBetldmZUNmbknpEeQB3eAhhXkGbKqvabc1pcTKq1)g7yISywEljuadg0H5MtYKi2dsDtIKWTnuYXwX1v42nUUc3y5cfqOSbDyU5cYqhGZ5dFjFL4V5ccipvecx3NB4UdX1BOvqfKZXUTHsCDfU95CLSKR7MdYgldPZ2nlQe8MByEffAyqyeDMzHQNDnpE3yhtKfZYBJyAzGz29KjqDZjzse7bPUjrs42gk5yR46kC7gxxHB6etlzPdeQUDpzcu3CbzOdW58HVKVs83CbbKNkcHR7ZnC3H46n0kOcY5y32qjUUc3(CUs)96U5GSXYq6SDZIkbV5gMxrHwsOaMcfi9)snfuBHmqO8dhiuwJjcLfi0snFeQB3eQEe60zqoAijWSqm7mZoWWRJR1azJLHeH6mHQhHgrOCcTqQHbHr0zMfQE21uqTfYaH6hHYFeQZeACVvScbMcvhhbs2zc1pcTuZhHQpHQpH62nHw4LZmkiU3kwbMrubcLFekRXeH62nHoTIvy0grfygetsaek)iuw2n2XezXS8wsOaMcfi9)YBojtIypi1njsc32qjhBfxxHB346kCJLluaHIJOaP)xEZfKHoaNZh(s(kXFZfeqEQieUUp3WDhIR3qRGkiNJDBdL46kC7Z5k9hx3nhKnwgsNTBwuj4n364iwbmGeQciqO(rOL3yhtKfZYByTs1Sc3CsMeXEqQBsKeUTHso2kUUc3UX1v4gBTs1Sc3CbzOdW58HVKVs83CbbKNkcHR7ZnC3H46n0kOcY5y32qjUUc3(CUs(UUBoiBSmKoB3SOsWBU1XrScyajufqGq9JqzjeQZeQEekMxrHgg0HHjMHEfOPGAlKbcLFekRXeH62nHI5vuOHbDyyIzOxbAj0cjHQ)n2XezXS8w1lpIWoAU5KmjI9Gu3KijCBdLCSvCDfUDJRRWTnV8iWjTD0CZfKHoaNZh(s(kXFZfeqEQieUUp3WDhIR3qRGkiNJDBdL46kC7Z5k5)R7MdYgldPZ2n2XezXS82AroZer1Alt3CsMeXEqQBsKeUTHso2kUUc3UX1v4goHiNjuCr1AlteQEL6FZfKHoaNZh(s(kXFZfeqEQieUUp3WDhIR3qRGkiNJDBdL46kC7Z5kzzx3nhKnwgsNTBwuj4n364iwbmGeQciqO(rOLeQZeQEekMxrHgg0HHjMHEfOPGAlKbcLFekRXeH62nHI5vuOHbDyyIzOxbAj0cjHQ)n2XezXS8w1lpIWoAU5KmjI9Gu3KijCBdLCSvCDfUDJRRWTnV8iWjTD0qO6vQ)nxqg6aCoF4l5Re)nxqa5PIq46(Cd3DiUEdTcQGCo2TnuIRRWTpNZh(R7MdYgldPZ2nlQe8MBao7j4XdsAkuRyqfmZoWeGvGKjlqYaH6mH2XrScyajufqGqXbcTKqDMq1JqJiuoHwi1wlYzMiQwBzstb1wideQFeAbk6f0grfygetTXPeklqO414F)LqDMqJiuoHwi1WGWi6mZcvp7AkO2czGq9JqlqrVG2iQaZGyQnoLqzbcfVg)7VeQ(3yhtKfZYBreMQzc7O5MtYKi2dsDtIKWTnuYXwX1v42nUUc3WfHPAc12rdHQxP(3CbzOdW58HVKVs83CbbKNkcHR7ZnC3H46n0kOcY5y32qjUUc3(CoFLx3nhKnwgsNTBwuj4n30JqJiuoHwi1wlYzMiQwBzstb1wideQFeAbk6f0grfygetTXPeQZeAeHYj0cPggegrNzwO6zxtb1wideQFeAbk6f0grfygetTXPeQ(eQB3eQEekMxrHggegrNzwO6zxZJhH6mHQhH2XrScyajufqGqXbcTKqD7MqlqrVGMcyfKeklqOrekNqlKARf5mtevRTmPPGAlKbc1pcTJJaj1wlYzMiQwBzslIcdHQpHQpH62nHoTIvy0grfygetsaek)i0icLtOfsT1ICMjIQ1wM0uqTfYaH62nHQhHc4SNGhpiPXRvbihygKKvpGqDMqX8kk041QaKdmdsYQhOPGAlKbcLF4aHYAmrOSaH6Jq1)g7yISywElIWuntyhn3CsMeXEqQBsKeUTHso2kUUc3UX1v4gUimvtO2oAiu98P)nxqg6aCoF4l5Re)nxqa5PIq46(Cd3DiUEdTcQGCo2TnuIRRWTpNZNVR7MdYgldPZ2nlQe8MByEffAyqyeDMzHQNDnpE3yhtKfZYBjHcyWGom3CsMeXEqQBsKeUTHso2kUUc3UX1v4glxOacLnOddHQxP(3CbzOdW58HVKVs83CbbKNkcHR7ZnC3H46n0kOcY5y32qjUUc3(85MXdIIol8FpcK8C(8x(7Zpa]] )
+
+    storeDefault( [[SimC Beast Mastery: precombat]], 'actionLists', 20180408.225232, [[dedRbaGEKuTlkLEnkQzlP5JICtk5UiHUnv2PG9s2nQ2VsAyG8BGHIcgSIA4kYbPuDmewOqAPs0Ib1YvQhIsEQQhtvpxHPkHjJOPl1ffkxg66cvBffAZOuBhPyDibtdjLdlAzkXFrIA0iLonfNKsX4qQ6AijoVq8nKkVfjYZqsArOc9y8eUIKcwpKou)ghR15Oyo61zRC04ocfwNN2Oh4GZwVeRyoqfwGiOhIAq0BlH(9BZuRRB33gaFOcfiuHEmEcxrsfv3oSPA6i6J4ohGt5jS1THtA8zd26Cah1TaKmM7q6qD9q6qDwzTUoZa2RZe6LyfZbQWcebDeq6L4aeF7XHkuRZIw0ZSfGg0H8wW6waYq6qD1kSOc9y8eUIKkQUDyt10r0NaTbW1THtA8zd26Cah1TaKmM7q6qD9q6qDM8Szdb59SztjgaTbWPitB9sSI5avybIGoci9sCaIV94qfQ1zrl6z2cqd6qElyDlaziDOUA16Fc9MSAOE2gaxHfQqv1sa]] )
+
 
     storeDefault( [[Survival Primary]], 'displays', 20171128.135411, [[d8t6haWyKA9QiVKcv7cjk2gfGFd1mPinnkOMTcNNkUPIkNgLVrb5ysPDsP9k2nj7hs(jKAyeACuG6YQAOemyiA4iCqPQJIeLoSKZrbYcLklfjSyQQLt0dLIEkyzuupNuturPMkIMmQy6kDrv4QuiEMIsCDvAJsHTQOK2mvz7q4JkkETIQ(ms67kYiPqzDuinAu14vrDsuPBrb01qICpKOQBtLwlsu54ueN2qgGUiwgw1aRwyDgFa0gH0uU2Ja0fXYWQgy1cStFSTMdilf1Vj)tpF6c4pyNonZapf)aoO980)2SiwgwPJvmWz0EE6FBweldR0XkgWK7FFoCPXkGD6J1WIbCzQ(JynhWK7FFonlILHv60fWbTNN(xYss9xDSIbOS3)(6qgBBidCOk)XZjDb6PxgwHcPPm9gRbfWwUFakU6I3OOqsiFASRFTbO4hFP)ynl2AiXwrXaaTKrSbwM7t5fZgR5qg4qv(JNt6c0tVmScfstz6nwdoGTC)auC1fVrrHKZ7v3XgGIF8L(J1SyRHeBffZMnGMhpbtSLMV)iDb084P(7Itxa36mqgBBGTKu)TxrZJLb6qtsIEok4oJXid4eRbA2aedCowXaAE8ezjP(RoDbM3VxrZJLbirlqb3zmgzaASRFTcioIFa6IyzyvVIMhld0HMKe9CbaINMvd2PAzyvSMPeLcO5Xtaz6cyY9V)SzYNEzyvak4oJXidOUUCPXkDSgoGM4hJgJsZ3epWYqgOITnGm22auJTnGFSTzdO5XtnlILHv60f4mApp9V9xzfRyG6klshIpG)1ZlGBDU)U4yfdudc(QFmvoAbehX2gOge8fWJNeqCeBBGAqWxnXU(1kG4i22aZ(9Q7ytxGAmvoAbecPlacMM5ZgS1H0H4d4hGUiwgw1pyuvbAEyjpOiahMMyuoKoeFGkGSuuFshIpq5ZgS1jqDL1Cm1NUaMCz0ZpRmnSoJpqfyE)gy1cStFSTMdyl3paCLiyiQbkKcsMBjDcudc(ISKu)vaHqSTbCq75P)LRIdJUwSuhRya5pc08WsEqranXpgngLMp(bQbbFrwsQ)kG4i22amfhgDTyzVIMhldqb3zmgzatU)95WvXHrxlwQtxaxMQ)U4yfduxz1RO5XYaDOjjrpNPhnidSLK6VnWQfwNXhaTrinLR9iWC1zM71ffssM7h7SigqZJNGj2sZ3FxC6ca0sgXgiqni4R(Xu5OfqieBBG6klUkpmPdXhW)65fGqYClPtdSAb2Pp2wZbiKpn21V2Ebtdam3MOqcxjcgIAyuuijKpn21V2aAE8u)vwCvE44hWTo3FeRyaYA8QffYzK4lrSIb2ss9xbehXpaf)4l9hRzXwdjAaMPeLP1GOKzdBOacsMBjDqHSzrSmSkGwwldhGZ7v3X2lyAaG52efs4krWqudJIcjN3RUJnGdApp9VgVthRb2g4mApp9VKLK6V6yfdmVFdSAH1z8bqBest5Apc4G2Zt)B)vwXkgqZJN4Q4WORfl1Plqni4lGhpjGqi22a1yQC0ciosxG6klG4hdUZowZITIgCBanpEsaXr6cqJD9RvaHq8dmVFdSAdiqIcjuknkK2skXtb084P(J0fqZJNeqiKUaUmfqgRyGTKu)TbwTa70hBR5aNr75P)14D6yfdqxeldRAGvBabsuiHsPrH0wsjEkqni4RMyx)AfqieBBGdv5pEoPlGM5sm(E0hXAoG)GD60md8u)ye)aEy1g44mH816PYjWwsQ)kGqi(bm5(3VFWOQCF1gGoGMhpz83XNP4Wuu1PlGGK5wshuiBweldRqHS)kRaZHvuXy9JczJR0jaHK5wshU0yfWo9XAyXamAScikAMIASukaJgROCySBSZIyatU)950aRwGD6JT1CGTKu)TbwTbeirHekLgfsBjL4PaMC)7ZX4D60f4mApp9VCvCy01IL6yfduxzzefBdqmkNxMnba]] )
 
@@ -1818,6 +1983,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
     storeDefault( [[Marksmanship AOE]], 'displays', 20180317.224416, [[d4tuiaGEqXlvPQDHsP2gkL0HLmtcPBRcZwrxJkLBkvYJrQVjvkEoP2jL2Ry3OA)uL(PcnmP04KkvxwPHsfdwQy4O4GsXNrIJrvDCvkluQAPiPwmrTCsEivXtHwgkfRJkrnrvQmvqMSkz6Q6IQORIK0ZqsCDeTrc1wLkL2mr2ok5JuP6RujY0qP67kyKujnwukXOry8GsNeuDlQe60uCEcEnHyTuj43ah)afKUyEdGlgWF8fMBWrQcjkC7zWVuu23HLtKdQkoL1dXsls6dkpnWaJ7tWqKdkmkjP33tX8gaxhBBqyhLK077PyEdGRJTn4HH3CglvcEJCj3lpfZBaCD6dcRGhaN1Q(9k9bfgLK07dvkk7RJTnOMamGdMNMO5mYb1eGHgYhe5GAcWaoyEAIgYhK(GFPOSFdNMaOc2pcbn2f1WD3vOGWokjP3)(EDS(bLa8pOdK3oyX1E7ylLcmeuyussV)D7SeITniSJss69VBNLqSTb1eGbOsrzFD6dkICdNMaOccn6qnC3Dfk4nYLCVGtd4UK56jI1T2GmkZrPeGtd4UUgkeFSU1g0whBWUkLi6JIRjmmE70mEg0WVm01dunCAcGki1WD3vOGgAaVhOUwv6dsxmVbWB40eavW(riOXUcYOmhLsaonG7sMRNiw3AdImlTPMgyQ3a4XYg3ypOMamGqPp4nYLCVZOw63a4bPgU7UcfKtEaNgW1XYEWRvQiNFJJObrZHhVD6QuIOpkUMWW4YE7CTsf58dYYOnYMP5fGey2GYb1m7CkEwAcpGjqfOGvS(bLJ1piLy9dQI1pFqnbyWtX8gaxh5G3VltJMzPFQR3asFWIuvqcmBqzsjPGgAa3faGJyPsBqyJTn4rbBd5dITnO80admUpbdnZzKdwtgIcjadoSoJ1pynzikpGd56DyDgRFWddVH8bX2guyussV)996yDr)G1COe0oSCsFqrKfd4FqhiVDWIR92XwkfyiiDX8gaVzAOWd650cDsDWlJMzwcqcmBq6GhfSiuS(bvfNYcjWSblzZ08cblsv1LHVPp4nYLCB40eavqQH7URqbfrwmG)ObMnwF2dc7OKKEF48ldD9aLo22G1KHOGkfL9Dy5eRFWBKl5EbNgWDDnui(yDRnOANb9CAHoPoOMzNtXZste5G1KHOGkfL9DyDgRFWBKl52mnu4hl)dsh8g5sUxW5xg66bkD6dEJ0qls3A04lm3GYbV2zjigWF8fMBWrQcjkC7zWVuu2xmG)4lm3GJufsu42ZGx7SeA40eavqOrhrpfdf8g5sU4lm3Gud3DxHcETZsqmG)ObMnwF2dwtgIQzoucAhwoX6hSivfYSZj87ITniJYCukbXa(Jgy2y9zpiJAPbhY134iAq0C4XBNUkLi6JIRjmmUS3omQLgCixFqnbyWHLt6dEuW2CgBBqdnG3duxRYdycubkyfRFq5yBdsj22GQyBZh8lfL9DyDg5GuVZT0BSSP1V7TuXVByB247gBLkDpOMamC)kiB4xgofD6dETZsqmG)bDG82blU2BhBPuGHGAcWWD7SeccDYwGc(LIY(Ib8pOdK3oyX1E7ylLcmee2rjj9(qLIY(6yBdQjadnKQcoxce5GAcWaC(LHUEGsN(GcJss69HZVm01du6yBdwZHsq7W6m9b1eGHMZihutagCyDM(G0Gd56Dy5e5GfPQA40eavW(riOXUe9umuqyhLK073qQQyBdkmkjP3VHuvX2g8WWrOyBd(LIY(Ib8hnWSX6ZEWBKl52WPjaQrjj9(X6wq6I5naUya)d6a5TdwCT3o2sPadbRjdr5bCixVdlNy9dEYl55EL(GAZbZCBgpJLnbfT0VhaN1Q0gapw20639wFF2zBQeKUyEdGlgWF0aZgRp7bfrwmG)4lm3GJufsu42ZGgAahzkAdNsSUfSivfCUeasGzdktkjfKgCixVdRZihuiwx0VBAd6caWHhaN1Q(9k9bRjdrHeGbhwoX6h8g5sUxIb8hnWSX6ZEW7wPIC(Pp4nYLCVUVxN(G1KHOAMdLG2H1zS(blsvrvU5dYmlHvLpba]] )
 
+    storeDefault( [[Beast Mastery Primary]], 'displays', 20180408.225232, [[de0ZjaqlQQQ2fvvPHrkhJkwMsYZajmnfvDnfLABkk6BOizCkkCoQQIwNIsUhks1bvIfsvEiPQjII4IQQ2ivLpsvLrQOYjrHxsqmtuu3KGANu6Ni0qvWrrrklvj1tHMksUkbPTcsuFfKiJLQQWAPQQSxXGvvoSKfRipgPMSQ4YsTzQ0NjWOj0Pj61GKMTsDBfA3K8BGHJshhbTCu9CkMUkxhuBNu57Gy8GuNhrRhb2VQ0XjubPl2tcu(aQdpYDhKOqPyMH9piDXEsGYhqDOKGowNvb5LsqRxSPHA8coTLeqGFBaKmfKKORRPp9f7jbktSAbHMORRPp9f7jbktSAbz5YXItYGgOqjbDSZRfCuQw(JDvqcHB4(rFXEsGYeVGqtQhO018RFIxqsIUUM(OkUG(mXQfKPb3WTjuX6eQG)QAA3pXl4c9jbQ3pMLMlw)zqBn2bxdBkXz9(XYBAW4uDbx37UmDSR0CyknhnTGinxYEbp5yZ01Yf7Qqf8xvt7(jEbxOpjq9(XS0CXoJG2ASdUg2uIZ697PDl49fCDV7Y0XUsZHP0C00YLlOreabHipAXL)4feAIUUM(OkUG(mXQfusduiBrlvcID2bVIlOVffTiGh0JiffrHxZWV5Ocss0110hd1JKUoa3eRwqJiaYcmVyOCbzkizS()Q5DccDSAbjj66A6Jj9UiJvli0eDDn9XKExKXQf0icGqvCb9zIxqOoTOOfb8GuehwZWV5OcsiCd3pcXZeVGec3W9ddAGckjFoXyNxlybZRffTiGh0JiffrHz(3hvq9awY3pkqqVUm37NWL5Ao573axowCYGSC5yXjzqduZ1sbIxSZulOKgO8paym2zQf0icGGqKhT4c8bIxWNExK(aQl4a17hwkZ7NT4CaKG0GXP6g09NPGcPB2fdBtFRRtcIxq6I9Ka1IIweWd6rKIIOWblyErrY2bNGDDdISnTS2scQtcuXUA2qrqJiacsfVGec3WntK8M(KavW1m8BoQGk4rg0aLj25dsiCd3pmObkusqh78AbRnRyTSHuKMbD)X6e0W27TVDze1d2aEOcwX6eKhRtqbX6eCkwNCbnIai6l2tcuM4feAIUUM(wG5vSAbFA3cEFldmheLJ6F)86YCVFcxMR5KZ697PDl49fKjTBbVVmfKq4gUFyqduZ1sbIxSZul4yb9c8bIvli0eDDn9Xq9iPRdWnXQfS2SIfkcGmO7pwNG1MvS0dgNQBq3FSobT1yh0RlZ9(jCzUMt((nWLJfNmiVucAks2oynj3YJmyTHuKMbDdXlOoProj3YJKIKTdofKUypjqTSLcub1)BP(xhKqyjnuHYsdEK7oyf0icGWKExKbP(9hubF6DrUOOfb8Guehy(3hvWcMxclvD8csiCd3lkArap4Ag(nhvqOo5dOousqhRZQGfmVq2EVzWKyxP5OndNG1MvSOkUG(g0neRtWR4c6ZhqDbhOE)WszE)SfNdGeK37G6)Tu)RdAy7923UmIzkyTzflQIlOVbD)X6eKq4gUFyOEK01b4M4feQt(aQdpYDhKOqPyMH9p4axowCY3p9f7jbQ3VfyEfuyGsaay63pFWCYGqt0110Nq8mXQf8kUG(8buhEK7oirHsXmd7FqHlOLJWJVFuYXowOqliHWnCJh5UdUMHFZrfeP5s2lyWAZkwlBifPzq3qSobx37UmDSR0CykhNvZWFDGIzpVJtqwUCS4K(aQdLe0X6SkilVPbJt1TmWCquoQ)9ZRlZ9(jCzUMtoR3pwEtdgNQliuN8buxWbQ3pSuM3pBX5aibhlOx(JvlivTB19(5hhaZgRwWR4c6Bq3FMcAebqestojvpsLat8cAebqg0neVGxXf03GUHmf0icGmO7pEbhLQf4deRwWPTKac8BdGSS3zkyTzflueazq3qSobnIaimups66aCt8css01103cmVIvlyTHuKMbD)XlOlqDb)HML3gdKImOreaz5pEbPbJt1nOBitbh4YXIt((PVypjqf0WRtcckPbkpa)P56bBapubRyDcYJvlOGy1cofRwUGec3W9Ywkqn2QliDWrPcPIvl4vCb95dOousqhRZQGec3W9IIweWj66A6l2zhKUypjq5dOUGduVFyPmVF2IZbqcwBwXspyCQUbDdX6e8xvt7(jEbnYr2DVq8p2vbzUmNEGsxZnsGk2vAoZqZXzE)fkcAebqwGpq8cowqJuX6eSG5fdLlGIKTdob76g8rAy3fjfjBhScss0110Nq8mX6)obF6Dr6dOousqhRZ8b9payupqPR5x)eVGp9Ui9buhEK7oirHsXmd7FqcHB4(XhqDOKGowNvbLQhjDDa(IIweWdUMHFZrfKLlhlojdAGckjFoXyNPwqjnq5b4pnpEblyEjuL8cYUlYMNlba]] )
+
+    storeDefault( [[Beast Mastery AOE]], 'displays', 20180408.225232, [[dmeXjaqifk0Mqa1TqGSleqggL6yuPLPqEgcW0OeDnkbBtHI(gcuJtHkNJksADku19uOGdQuwOI8qkPjIc6IQInsf(ivuJuPsNej9sQiMjk0nvQyNu8tvLHQGJsfPSuLQEk0ur0vPeARurIVQqjJLks1AvOu7vmyq1HLSyQQhJutwv6YsTzQYNrrJgvDAcVgfy2k52kQDt0VbgokDCe0Yj55KA6QCDq2os8DvvJhHCEuz9iu7huoUHmiDXEcG0bqE4XT6GFwKKrQMNG0f7jasha5HcI7yChfuvsMTv(MMbzkO)sqmXoVa)Xpi3NNNUpRf7jasDm2bjeQH6xQ0a5UTGj)fJL2bjeQH6xQ0ajkiUJXs7GZc52tmJcsiud1Vwl2taK6mfKioRajLwD9BMcY955P7JSum7thJDqNgud16qgJBid(il)v)MPGB0NaiHbNrH(IXPg0uZDW9q6IF8WGZQAAWSFDb33RU0DmJSDjyBxB7GiTsWEbpXCpgSZfZOqg8rw(R(ntb3OpbqcdoJc9fZ4cAQ5o4EiDXpEyWFBVcADb33RU0DmJSDjyBxB7C5cQ5b)4V4O53EYuqI(8809rwkM9PJXoOMh8J)IJMFd6azk4vkM9TjP5bQGtFKKF7SNQZ7sgKqOgQzOq10NaidUNQZ7sgSGufvPhGKJTd6d55fKlgcAKRfcsume0yoUGCFEE6(yyVkUySds0NNNUpg2RIlg7GAEWpzPy2NotbzG)MKMhOcs(nSNQZ7sgKqOgQFDYKotbjeQH6xQ0a5yjEp(yS0oOhqEbFiIv1A9FXfCwi3GoqmJcYQeZLIJknqUBlyYFXyPDWcsvBsAEGk40hj53om(4Gminy2VUbkpXpOMTxlhRsZBfSaQqgSIXnOkg3GmJXnOFmU5ckKVc66aQnjnpqfCpvN3LmOt6MDtZ203(6eGmfKUypbqUjP5bQGtFKKF7eSGufjhBh0hYZlOvalhm4KGGtDPpyW3P0xR4GbF77jOMh8JKzk4BVkoha5fCGegCSKAyWnLsb(dkHMPsdK6ySmyTy5RT1FXPhO8eJBqtn3bN6sFWGVtPVwXbd(23tqUpppDFuLVc66akDm2b18GFRf7jasDMcs0NNNUVnivfJDW32RGw32aJbrXSvyWriffbLAnEyWFBVcADbj6ZZt3N1I9eaPog7GQsYSj5y7GLVyjoUGZfrBqhig7Ge955P7JQ8vqxhqPJXoyTy5lKh8pq5jg3G1ILVScM9RBGYtmUbzy7vqRl(b18G)nivrv6bIFWA9xC6bkdzkifHw4lwIJJKJTd6hKUypbqUTemLbT(yiF2hKqibndCkcnECRoyfuZd(zyVkUGKpoDYGV9Q42K08avqYVbgFCqgSGu1oczNPGec1q9MKMhOcUNQZ7sgKb(oaYdfe3X4okybPkKTxlQmmg7GdkXCP4Gb3AXEcGeg8nivfChGKjaOByWDaP4cELIzFoaYl4ajm4yj1WGBkLc8hu1RGwFmKp7dQz71YXQ08XpyTy5lYsXSVbkpX4gKqOgQFPkFf01bu6mfKb(oaYdpUvh8ZIKms18eKvjMlfhvAGefe3XyPDqI(88095KjDmUbVsXSpha5Hh3Qd(zrsgPAEcUtrKygAggCsXChdbyhKqOgQXJB1b3t15DjdI0kb7fulKmxnbEmwqhiyTy5RT1FXPhOmeJBWbLyUuCWGBTypbqguRQtacYQeZLIZbqEOG4og3rbzvnny2VUTbgdIIzRWGJqkkck1A8WGZQAAWSFDbzGVdG8coqcdowsnm4MsPa)bNlI2EIXoizTA5bdUZkaeBm2bVsXSVbkpXp4(E1LUJzKTlb76oACeixcWcw66guZd(hOmKPGxPy23aLH4huZd(hO8KPGZfrizm2b9xcIj25f4FBTIFWAXYxip4FGYqmUb18GFQYxbDDaLotb5(8809TbPQySdwR)Itpq5jtbjeQH6TLGPCULxq6GAEW)2t8dsdM9RBGYq8dQ5b)oP58fYxHKPotbf0a5eq92kRGfqfYGvmUbvXyhKzm2b9JXoxWAXYxKLIzFdugIXn4SqIKXmk4vkM95aipuqChJ7OGec1q9MKMhO(8809fJfcsxSNaiDaKxWbsyWXsQHb3ukf4pyTy5lRGz)6gOmeJBWhz5V63mfulMzx923tmJcYyPpRajLwPfazmJSDhNTRRLeiciOMh8VbDG4huqdKiBrlKmJXcbFfA2vXrYX2bPdkObYXgaMJzmTdY955P7Zjt6yii3GV9Q4CaKhkiUJX1YGJnamBfiP0QRFZuW3EvCoaYdpUvh8ZIKms18eKqOgQFDaKhkiUJXDuqKTPf1sqCDcGmMrwGacYQeZLIJknqowI3JpglTdkObYjG6TvzkybPklkfxq2vX1QCja]] )
 
     ns.initializeClassModule = HunterInit
 
