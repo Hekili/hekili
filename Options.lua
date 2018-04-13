@@ -26,66 +26,63 @@ local LDB = LibStub( "LibDataBroker-1.1", true )
 local LDBIcon = LibStub( "LibDBIcon-1.0", true )
 
 
--- Default Table
-function Hekili:GetDefaults()
-    local defaults = {
-        profile = {
-            Version = 7,
-            Release = 20170300,
-            Legion = true,
-            Enabled = true,
-            Locked = true,
-            MinimapIcon = false,
+-- Interrupts
+do
+    local db = {}
 
-            Artifact = true,
-            CooldownArtifact = true,
+    -- Generate encounter DB.
+    local function GenerateEncounterDB()
+        local active = EJ_GetCurrentTier()
+        table.wipe( db )
 
-            moreCPU = false,
+        for t = 1, EJ_GetNumTiers() do
+            EJ_SelectTier( t )
             
-            ['Switch Type'] = 0,
-            ['Mode Status'] = 3,
-            Interrupts = false,
-            
-            Clash = 0,
-            ['Audit Targets'] = 6,
-            ['Count Nameplate Targets'] = true,
-            ['Nameplate Detection Range'] = 8,
-            ['Count Targets by Damage'] = false,
-            
-            ['Notification Enabled'] = true,
-            ['Notification Font'] = 'Arial Narrow',
-            ['Notification X'] = 0,
-            ['Notification Y'] = 0,
-            ['Notification Width'] = 600,
-            ['Notification Height'] = 40,
-            ['Notification Font Size'] = 20,
-            
-            displays = {
-            },
-            actionLists = {
-            },
-            runOnce = {
-            },
-            
-            
-            toggles = {
-            },
-            blacklist = {
-            },
-            clashes = {
-            },
+            local i = 1
+            while EJ_GetInstanceByIndex( i, true ) do
+                local instanceID, name = EJ_GetInstanceByIndex( i, true )                
+                i = i + 1
 
-            trinkets = {
-            },
+                local j = 1
+                while EJ_GetEncounterInfoByIndex( j, instanceID ) do
+                    local name, _, encounterID = EJ_GetEncounterInfoByIndex( j, instanceID )
+                    db[ encounterID ] = name
+                    j = j + 1
+                end
+            end
+        end
+    end
 
-            
-            iconStore = {
-                hide = false,
-            },
-        },
-    }
-    
-    return defaults
+    GenerateEncounterDB()
+
+    --[[
+    function Hekili:GenerateInterruptOptions()
+        local o = {
+            name = "Interrupts",
+            type = "group",
+            childGroups = "tree",
+            order = 25,
+            args = {
+                whitelist = {
+                    type = "group",
+                    inline = true,
+                    order = 1,
+                    args = {
+                        info = {
+                            type = "description",
+                            name = "Here are the whitelisted abilities"
+                        }
+                    },
+                    plugins = {
+                        -- we'll autopopulate this.
+                    },
+                }
+            }
+        }
+
+        return o
+    end ]]
+
 end
 
 
@@ -500,6 +497,72 @@ local displayTemplate = {
     
 }
 
+
+-- Default Table
+function Hekili:GetDefaults()
+    local defaults = {
+        profile = {
+            Version = 7,
+            Release = 20170300,
+            Legion = true,
+            Enabled = true,
+            Locked = true,
+            MinimapIcon = false,
+
+            Artifact = true,
+            CooldownArtifact = true,
+
+            moreCPU = false,
+            
+            ['Switch Type'] = 0,
+            ['Mode Status'] = 3,
+            Interrupts = false,
+            
+            Clash = 0,
+            ['Audit Targets'] = 6,
+            ['Count Nameplate Targets'] = true,
+            ['Nameplate Detection Range'] = 8,
+            ['Count Targets by Damage'] = false,
+            
+            ['Notification Enabled'] = true,
+            ['Notification Font'] = 'Arial Narrow',
+            ['Notification X'] = 0,
+            ['Notification Y'] = 0,
+            ['Notification Width'] = 600,
+            ['Notification Height'] = 40,
+            ['Notification Font Size'] = 20,
+            
+            displays = {
+                ['**'] = displayTemplate,
+            },
+            actionLists = {
+            },
+            runOnce = {
+            },
+            
+            
+            toggles = {
+            },
+            blacklist = {
+            },
+            clashes = {
+            },
+            trinkets = {
+            },
+
+            interrupts = {
+                pvp = {},
+                encounters = {},
+            },
+            
+            iconStore = {
+                hide = false,
+            },
+        },
+    }
+    
+    return defaults
+end
 
 -- DISPLAYS
 -- Add a display to the profile (to be stored in SavedVariables).

@@ -1269,6 +1269,9 @@ local mt_state = {
             
         elseif k == 'charges_fractional' then
             return t.cooldown[ action ].charges_fractional
+
+        elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
+            return t.cooldown[ action ].full_recharge_time
             
         elseif k == 'max_charges' then
             return ability and ability.charges or 1
@@ -1935,10 +1938,9 @@ local mt_default_cooldown = {
             return class.abilities[ t.key ].recharge
             
         elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
-            return ( class.abilities[ t.key ].charges - t.charges_fractional ) * class.abilities[ t.key ].recharge
+            return ( t.max_charges - t.charges_fractional ) * class.abilities[ t.key ].recharge
             
-        elseif k == 'remains' then
-            
+        elseif k == 'remains' then            
             if t.key == 'global_cooldown' then
                 return max( 0, t.expires - state.query_time )
             end
