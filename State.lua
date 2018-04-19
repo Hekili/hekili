@@ -1350,8 +1350,7 @@ local mt_state = {
         if t.settings[k] ~= nil then return t.settings[k] end
         if t.toggle[k] ~= nil then return t.toggle[k] end
         
-        return k
-        
+        return k        
     end,
     __newindex = function(t, k, v)
         rawset(t, k, v)
@@ -3393,6 +3392,8 @@ function state.reset( dispID )
             break
         end
     end
+
+    if ns.recountRequired() then ns.recountTargets() end
     
     local display = dispID and Hekili.DB.profile.displays[ dispID ]
     

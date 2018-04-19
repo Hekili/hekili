@@ -13,7 +13,6 @@ local getSpecializationInfo = ns.getSpecializationInfo
 local getSpecializationKey = ns.getSpecializationKey
 local GroupMembers = ns.GroupMembers
 
-
 local abs = math.abs
 local lower, match, upper = string.lower, string.match, string.upper
 local string_format = string.format
@@ -29,7 +28,6 @@ local unitEvents = CreateFrame( "Frame" )
 local unitHandlers = {}
 
 local timerRecount = 0
-local forceRecount = false
 
 
 local activeDisplays = {}
@@ -64,7 +62,7 @@ function ns.StartEventHandler()
     events:SetScript( "OnUpdate", function( self, elapsed )
         timerRecount = timerRecount - elapsed
 
-        if forceRecount or timerRecount < 0 then
+        if timerRecount < 0 then
             ns.recountTargets()
             if ns.targetsChanged() then Hekili:ForceUpdate( "TARGET_COUNT_CHANGED" ) end
             timerRecount = 0.1
@@ -657,7 +655,8 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
     if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' and ns.isTarget( destGUID ) then
         ns.eliminateUnit( destGUID, true )
-        forceRecount = true
+        ns.forceRecount()
+        Hekili:ForceUpdate( subtype )
         return
     end
 

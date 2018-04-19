@@ -80,9 +80,22 @@ function ns.getNumberTargets()
 end
 
 
+local forceRecount = false
+
+function ns.forceRecount()
+    forceRecount = true
+end
+
+
+function ns.recountRequired()
+    return forceRecount
+end
+
+
 function ns.recountTargets()
     lastNpCount = npCount
     npCount = ns.getNumberTargets()
+    forceRecount = false
 end
 
 

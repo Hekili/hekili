@@ -548,6 +548,11 @@ function Hekili:GetDefaults()
             clashes = {
             },
             trinkets = {
+                ['**'] = {
+                    disabled = false,
+                    minimum = 0,
+                    maximum = 0,
+                }
             },
 
             interrupts = {
