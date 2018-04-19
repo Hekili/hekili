@@ -299,7 +299,7 @@ do
             artifact[ name ] = rawget( artifact, name ) or {}
             artifact[ name ].rank = rank
 
-            if not artifactInitialized then artifactInitialized = true end
+            if not artifactInitialized and rank > 0 then artifactInitialized = true end
         end
 
         if not artifactInitialized then C_Timer.After( 3, ns.updateArtifact ) end
