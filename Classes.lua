@@ -161,8 +161,8 @@ end
 class.traits = {}
 
 function ns.addTrait( key, id )
-    class.traits[ key ] = id
-    class.traits[ id ] = key
+    --[[ class.traits[ key ] = id
+    class.traits[ id ] = key ]]
 end
 
 
@@ -338,7 +338,7 @@ local function addAbility( key, values, ... )
 
     if not name and values.id > 0 then
         ns.Error( "addAbility( " .. key .. " ) - unable to get name of spell #" .. values.id .. "." )
-        return
+        name = key
     end
     
     class.abilities[ key ] = setmetatable( {
@@ -532,7 +532,8 @@ local function addResource( resource, power_type )
     end
 
     state[ resource ] = rawget( state, resource ) or setmetatable( {
-        resource = key,
+        resource = resource,
+        type = power_type,
         forecast = {},
         fcount = 0,
         times = {},
@@ -735,7 +736,7 @@ addAura( 'bloodlust', 2825, 'duration', 40, 'feign', function ()
         end
     end
     
-    local name, _, _, count, _, duration, expires = UnitBuff( 'player', class.auras.bloodlust.name )
+    local name, _, count, _, duration, expires = UnitBuff( 'player', class.auras.bloodlust.name )
     
     if name then
         buff.bloodlust.count = max( 1, count )

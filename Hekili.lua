@@ -10,7 +10,7 @@ local format = string.format
 local upper  = string.upper
 
 
-ns.PTR = GetBuildInfo() ~= "7.3.2"
+ns.PTR = GetBuildInfo() ~= "8.0.1"
 
 
 ns.Patrons = {

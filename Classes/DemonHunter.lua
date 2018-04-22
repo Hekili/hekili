@@ -59,8 +59,8 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         setClass( 'DEMONHUNTER' )
         -- Hekili.LowImpact = true
 
-        addResource( 'fury', SPELL_POWER_FURY, true )
-        addResource( 'pain', SPELL_POWER_PAIN, true )
+        addResource( 'fury', Enum.PowerType.Fury, true )
+        addResource( 'pain', Enum.PowerType.Pain, true )
 
         addTalent( 'fel_mastery', 192939 )
         addTalent( 'felblade', 232893 )

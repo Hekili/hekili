@@ -873,11 +873,12 @@ local function forecastResources( resource )
         local r = state[ e.resource ]
         iter = iter + 1
 
-        if e.next > finish or not r then
+        if e.next > finish or not r or not r.actual then
             table.remove( events, 1 )
 
         else
             now = e.next
+
             local bonus = r.regen * ( now - prev )
 
             if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < now ) then
@@ -1251,7 +1252,7 @@ local mt_state = {
             local gcdType = ability and ability.gcdType or "spell"
             if gcdType == 'totem' then return 1 end
 
-            if UnitPowerType( 'player' ) == SPELL_POWER_ENERGY then
+            if UnitPowerType( 'player' ) == Enum.PowerType.Energy then
                 return t.buff.adrenaline_rush.up and 0.8 or 1
             end
 
@@ -1729,14 +1730,14 @@ local mt_target = {
             
         elseif k == 'casting' then
             if UnitName("target") and UnitCanAttack("player", "target") and UnitHealth("target") > 0 then
-                local _, _, _, _, _, endCast, _, _, notInterruptible = UnitCastingInfo("target")
+                local _, _, _, _, endCast, _, _, notInterruptible = UnitCastingInfo("target")
                 
                 if endCast ~= nil and not notInterruptible then
                     t.cast_end = endCast / 1000
                     return ( endCast / 1000 ) > state.query_time
                 end
                 
-                _, _, _, _, _, endCast, _, notInterruptible = UnitChannelInfo("target")
+                _, _, _, _, endCast, _, notInterruptible = UnitChannelInfo("target")
                 
                 if endCast ~= nil and not notInterruptible then
                     t.cast_end = endCast / 1000
@@ -3173,7 +3174,7 @@ local function scrapeUnitAuras( unit )
     
     local i = 1
     while ( true ) do
-        local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i, "PLAYER" )
+        local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i, "PLAYER" )
         if not name then break end
         
         local key = class.auras[ spellID ] and class.auras[ spellID ].key
@@ -3210,7 +3211,7 @@ local function scrapeUnitAuras( unit )
     
     i = 1
     while ( true ) do
-        local name, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, "PLAYER" )
+        local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, "PLAYER" )
         if not name then break end
         
         local key = class.auras[ spellID ] and class.auras[ spellID ].key
@@ -3551,12 +3552,12 @@ function state.reset( dispID )
 
         local res = state[ k ]
         
-        res.actual = UnitPower( 'player', ns.getResourceID( k ) )
-        res.max = UnitPowerMax( 'player', ns.getResourceID( k ) )
+        res.actual = UnitPower( 'player', res.type )
+        res.max = UnitPowerMax( 'player', res.type )
         res.last_tick = rawget( res, 'last_tick' ) or 0
         res.tick_rate = rawget( res, 'tick_rate' ) or 0.1
 
-        if power == SPELL_POWER_MANA then 
+        if power == Enum.PowerType.Mana then 
             local inactive, active = GetManaRegen()
 
             res.active_regen = active or 0
@@ -3598,7 +3599,7 @@ function state.reset( dispID )
     
     local cast_time, casting = 0, nil
 
-    local spellcast, _, _, _, startCast, endCast = UnitCastingInfo('player')
+    local spellcast, _, _, startCast, endCast = UnitCastingInfo('player')
     if endCast ~= nil then
         state.cast_start = startCast / 1000
         cast_time = ( endCast / 1000 ) - GetTime()
@@ -3607,7 +3608,7 @@ function state.reset( dispID )
 
     state.stopChanneling( true )
 
-    local spellcast, _, _, _, startCast, endCast = UnitChannelInfo('player')
+    local spellcast, _, _, startCast, endCast = UnitChannelInfo('player')
     if endCast ~= nil then
         state.cast_start = startCast / 1000
         cast_time = ( endCast / 1000 ) - GetTime()

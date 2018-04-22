@@ -282,6 +282,8 @@ end )
 do
     local artifactInitialized = false
 
+    -- NYI:  Don't loop if level < 98...
+
     local AD = LibStub( "LibArtifactData-1.0" )
 
     function ns.updateArtifact()
@@ -583,7 +585,7 @@ ns.cpuProfile.UNIT_POWER_FREQUENT = UNIT_POWER_FREQUENT
 RegisterUnitEvent( "UNIT_POWER_FREQUENT", UNIT_POWER_FREQUENT )
 
 
-RegisterUnitEvent( "UNIT_POWER", function( event, unit, power )
+RegisterUnitEvent( "UNIT_POWER_UPDATE", function( event, unit, power )
     if unit ~= 'player' then return end
     Hekili:ForceUpdate( event )
 end )
@@ -779,7 +781,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 end
 ns.cpuProfile.CLEU_HANDLER = CLEU_HANDLER
 
-RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", CLEU_HANDLER )
+RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ( event ) CLEU_HANDLER( event, CombatLogGetCurrentEventInfo() ) end )
 
 
 
@@ -983,8 +985,8 @@ RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
     ReadKeybindings()
     Hekili:ForceUpdate( event )
 end )
-RegisterUnitEvent( "PLAYER_TALENT_UPDATE", ReadKeybindings )
-RegisterUnitEvent( "PLAYER_EQUIPMENT_CHANGED", ReadKeybindings )
+-- RegisterUnitEvent( "PLAYER_TALENT_UPDATE", ReadKeybindings )
+-- RegisterUnitEvent( "PLAYER_EQUIPMENT_CHANGED", ReadKeybindings )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then

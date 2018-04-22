@@ -56,8 +56,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         setClass( 'PALADIN' )
 
         -- addResource( SPELL_POWER_HEALTH )
-        addResource( 'mana', SPELL_POWER_MANA )
-        addResource( 'holy_power', SPELL_POWER_HOLY_POWER, true )
+        addResource( 'mana', Enum.PowerType.Mana )
+        addResource( 'holy_power', Enum.PowerType.HolyPower, true )
 
         setRegenModel( {
             liadrins_fury_crusade = {

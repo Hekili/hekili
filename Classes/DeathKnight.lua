@@ -62,8 +62,8 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
         setClass( "DEATHKNIGHT" )
 
         -- Resources
-        addResource( "runic_power", SPELL_POWER_RUNIC_POWER, true )
-        addResource( "runes", SPELL_POWER_RUNES, true )
+        addResource( "runic_power", Enum.PowerType.RunicPower, true )
+        addResource( "runes", Enum.PowerType.Runes, true )
 
         setRegenModel( {
             frost_mh = {

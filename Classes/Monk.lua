@@ -61,8 +61,8 @@ if select( 2, UnitClass( 'player' ) ) == 'MONK' then
 
         setClass( 'MONK' )
 
-        addResource( 'energy', SPELL_POWER_ENERGY )
-        addResource( 'chi', SPELL_POWER_CHI, true )
+        addResource( 'energy', Enum.PowerType.Energy )
+        addResource( 'chi', Enum.PowerType.Chi, true )
 
         addTalent( 'ascension', 115396 )
         addTalent( 'black_ox_brew', 115399 )

@@ -51,7 +51,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
     local function HunterInit()
         setClass( 'HUNTER' )
-        addResource( 'focus', SPELL_POWER_FOCUS )
+        addResource( 'focus', Enum.PowerType.Focus )
 
         setRegenModel( {
             volley = {

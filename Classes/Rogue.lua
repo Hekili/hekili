@@ -59,8 +59,8 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
         setPotion( "prolonged_power" )
 
         -- Resources
-        addResource( "energy", SPELL_POWER_ENERGY )
-        addResource( "combo_points", SPELL_POWER_COMBO_POINTS, true )
+        addResource( "energy", Enum.PowerType.Energy )
+        addResource( "combo_points", Enum.PowerType.ComboPoints, true )
 
         setRole( "attack" )
 

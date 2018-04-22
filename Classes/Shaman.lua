@@ -52,8 +52,8 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         setClass( 'SHAMAN' )
         -- Hekili.LowImpact = true
 
-        addResource( 'mana', SPELL_POWER_MANA )
-        addResource( 'maelstrom', SPELL_POWER_MAELSTROM, true )
+        addResource( 'mana', Enum.PowerType.Mana )
+        addResource( 'maelstrom', Enum.PowerType.Maelstrom, true )
 
         -- Hackish to just leave this here, but...
         Hekili.DB.profile.clashes.windstrike = Hekili.DB.profile.clashes.windstrike or 0.25
@@ -129,36 +129,37 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
         -- TODO:  Decide if modeling feral_spirit gain is worth it.
 
-        addTalent( 'windsong', 201898 )
+        addTalent( 'boulderfist', 246035 )
         addTalent( 'hot_hand', 201900 )
-        addTalent( 'landslide', 197992 )
+        addTalent( 'lightning_shield', 192106 )
 
-        addTalent( 'rainfall', 215864 )
+        addTalent( 'landslide', 197992 )
+        addTalent( 'forceful_winds', 262647 )
+        addTalent( 'totem_mastery', 262395 )
+
+        addTalent( 'spirit_wolf', 260878 )
+        addTalent( 'earth_shield', 974 )
+        addTalent( 'static_charge', 265046 )
+
+        addTalent( 'searing_assault', 192087 )
+        addTalent( 'hailstorm', 210853)
+        addTalent( 'overcharge', 210727 )
+
+        addTalent( 'natures_guardian', 30884 )
         addTalent( 'feral_lunge', 196884 )
         addTalent( 'wind_rush_totem', 192077 )
-
-        addTalent( 'lightning_surge_totem', 192058 )
-        addTalent( 'earthgrab_totem', 51485 )
-        addTalent( 'voodoo_totem', 196932 )
-
-        addTalent( 'lightning_shield', 192106 )
-        addTalent( 'ancestral_swiftness', 192087 )
-        addTalent( 'hailstorm', 210853 )
-
-        addTalent( 'tempest', 192234 )
-        addTalent( 'overcharge', 210727 )
-        addTalent( 'empowered_stormlash', 210731 )
 
         addTalent( 'crashing_storm', 192246 )
         addTalent( 'fury_of_air', 197211 )
         addTalent( 'sundering', 197214 )
 
-        addTalent( 'ascendance', 114051 )
-        addTalent( 'boulderfist', 246035 )
+        addTalent( 'elemental_spirits', 262624 )
         addTalent( 'earthen_spike', 188089 )
+        addTalent( 'ascendance', 114051 )
 
 
-        addTalent( 'path_of_flame', 201909 )
+
+        --[[ addTalent( 'path_of_flame', 201909 )
         addTalent( 'earthen_rage', 170374 )
         addTalent( 'totem_mastery', 210643 )
 
@@ -177,7 +178,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         addTalent( 'aftershock', 210707 )
 
         addTalent( 'lightning_rod', 210689 )
-        addTalent( 'liquid_magma_totem', 192222 )
+        addTalent( 'liquid_magma_totem', 192222 ) ]]
 
 
         -- Traits
@@ -247,7 +248,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         addAura( 'landslide', 202004, 'duration', 10 )
         addAura( 'lashing_flames', 240842, 'duration', 10, 'max_stack', 99 )
         addAura( 'lightning_crash', 242284, 'duration', 16 )
-        addAura( 'lightning_shield', 192109, 'duration', 3600 )
+        addAura( 'lightning_shield', 192106, 'duration', 3600 )
         addAura( 'rainfall', 215864 )
         addAura( 'stormbringer', 201846, 'max_stack', 1 )
         addAura( 'windsong', 201898 )
@@ -1385,11 +1386,11 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
         addAbility( 'stormstrike', {
             id = 17364,
-            spend = 40,
+            spend = 30,
             spend_type = 'maelstrom',
             cast = 0,
             gcdType = 'melee',
-            cooldown = 15,
+            cooldown = 9,
             usable = function() return not buff.ascendance.up end,
             texture = 132314,
         } )
@@ -1397,7 +1398,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         class.abilities.strike = class.abilities.stormstrike -- For SimC compatibility.
 
         modifyAbility( 'stormstrike', 'spend', function( x )
-            if buff.stormbringer.up then x = x / 2 end
+            if buff.stormbringer.up then return 0 end
             if buff.ascendance.up then x = x / 5 end
             return x
         end )
