@@ -282,6 +282,8 @@ end )
 do
     local artifactInitialized = false
 
+    -- NYI:  Don't loop if level < 98...
+
     local AD = LibStub( "LibArtifactData-1.0" )
 
     function ns.updateArtifact()

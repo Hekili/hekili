@@ -421,7 +421,7 @@ function Hekili:CheckAPLStack()
             listCache[ scriptID ] = cache
             listValue[ scriptID ] = value
 
-            if cache[ t ] then
+            if not cache[ t ] then
                 if self.ActiveDebug then self:Debug( "Action unavailable as we would not have reached this entry at +%.2f.", state.delay ) end
                 return false
             end
