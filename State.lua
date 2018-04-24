@@ -1160,7 +1160,7 @@ local mt_state = {
         elseif k == 'haste' or k == 'spell_haste' then
             return ( 1 / ( 1 + t.stat.spell_haste ) )
             
-        elseif k == 'melee_haste' then
+        elseif k == 'melee_haste' or k == 'attack_haste' then
             return ( 1 / ( 1 + t.stat.melee_haste ) )
             
         elseif k == 'mastery_value' then
