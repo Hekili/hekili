@@ -707,10 +707,6 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             if equipped.eye_of_the_twisting_nether then
                 applyBuff( 'shock_of_the_twisting_nether', 8 )
             end
-
-            if feral_spirit.active and artifact.alpha_wolf.enabled then
-                applyBuff( 'alpha_wolf', min( 8, buff.feral_spirit.remains ) )
-            end
         end )
 
         modifyAbility( 'crash_lightning', 'cooldown', function( x )
@@ -780,13 +776,12 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         } )
 
         modifyAbility( 'earth_shock', 'spend', function( x )
-            return max( 10, min( 100 + ( artifact.swelling_maelstrom.enabled and 25 or 0 ), maelstrom.current ) ) -- * ( talent.aftershock.enabled and 0.7 or 1 )
+            return max( 10, min( 100, maelstrom.current ) ) -- * ( talent.aftershock.enabled and 0.7 or 1 )
         end )
 
         addHandler( 'earth_shock', function ()
             removeStack( 'elemental_focus' )
             removeBuff( "earthen_strength" )
-            -- spend( min( maelstrom.current, 90 + ( artifact.swelling_maelstrom.enabled and 25 or 0 ) ), "maelstrom" )
             if equipped.eye_of_the_twisting_nether then
                 applyBuff( 'shock_of_the_twisting_nether', 8 )
             end
@@ -1147,13 +1142,6 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             removeBuff( 'lava_surge' )
             if set_bonus.tier21_2pc > 0 then applyBuff( "earthen_strength" ) end
             if talent.path_of_flame.enabled then active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 1 ) end
-            if artifact.elementalist.enabled then
-                if talent.storm_elemental.enabled then
-                    setCooldown( 'storm_elemental', max( 0, cooldown.storm_elemental.remains - 2 ) )
-                else
-                    setCooldown( 'fire_elemental', max( 0, cooldown.fire_elemental.remains - 2 ) )
-                end
-            end
             removeStack( 'elemental_focus' )
             if equipped.eye_of_the_twisting_nether then
                 applyBuff( 'fire_of_the_twisting_nether', 8 )
@@ -1316,10 +1304,6 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             recheck = function () return ( 1.7 - charges_fractional ) * recharge, buff.landslide.remains end,
         } )
 
-        modifyAbility( 'rockbiter', 'spend', function( x )
-            return x - ( artifact.gathering_of_the_maelstrom.rank )
-        end )
-
         modifyAbility( 'rockbiter', 'cooldown', function( x )
             if talent.boulderfist.enabled then x = x * 0.85 end
             return x
@@ -1379,8 +1363,6 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
         addHandler( 'stormkeeper', function ()
             applyBuff( 'stormkeeper', 15, 3 )
-            if artifact.static_overload.enabled then applyBuff( 'static_overload', 15 ) end
-            if artifact.fury_of_the_storms.enabled then summonPet( 'fury_of_the_storms', 8 ) end
         end )
 
 

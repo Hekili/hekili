@@ -43,8 +43,9 @@ local RegisterUnitEvent = ns.RegisterUnitEvent
 local retireDefaults = ns.retireDefaults
 local storeDefault = ns.storeDefault
 
-
 local PTR = ns.PTR
+
+local floor = math.floor
 
 
 if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
@@ -74,7 +75,6 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             spitting_cobra = {
                 resource = 'focus',
 
-                spec = 'survival',
                 talent = 'spitting_cobra',
                 aura = 'spitting_cobra',
 
@@ -85,12 +85,8 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                     return app + floor( t - app )
                 end,
 
-                stop = function( x )
-                    return x < 3
-                end,
-
                 interval = 1,
-                value = 33,
+                value = 2,
             },
 
 
@@ -118,6 +114,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 resource = 'focus',
 
                 spec = 'beast_mastery',
+                talent = 'dire_stable',
                 aura = 'dire_beast',
 
                 last = function ()
@@ -128,15 +125,14 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 end,
 
                 interval = 2,
-                value = 3,
+                value = 2,
             },
 
-            dire_frenzy_1 = {
+            dire_frenzy = {
                 resource = 'focus',
 
                 spec = 'beast_mastery',
-                talent = 'dire_frenzy',
-                aura = 'dire_frenzy_1', 
+                aura = 'dire_frenzy', 
 
                 last = function ()
                     local app = state.buff.dire_frenzy_1.applied
@@ -146,14 +142,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 end,
 
                 interval = 2,
-                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+                value = function () return state.talent.dire_stable.enabled and 7 or 5 end,
             },
 
             dire_frenzy_2 = {
                 resource = 'focus',
 
                 spec = 'beast_mastery',
-                talent = 'dire_frenzy',
                 aura = 'dire_frenzy_2',
 
                 last = function ()
@@ -164,14 +159,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 end,
 
                 interval = 2,
-                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+                value = function () return state.talent.dire_stable.enabled and 7 or 5 end,
             },
 
             dire_frenzy_3 = {
                 resource = 'focus',
 
                 spec = 'beast_mastery',
-                talent = 'dire_frenzy',
                 aura = 'dire_frenzy_3',
 
                 last = function ()
@@ -182,14 +176,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 end,
 
                 interval = 2,
-                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+                value = function () return state.talent.dire_stable.enabled and 7 or 5 end,
             },
             
             dire_frenzy_4 = {
                 resource = 'focus',
 
                 spec = 'beast_mastery',
-                talent = 'dire_frenzy',
                 aura = 'dire_frenzy_4',
 
                 last = function ()
@@ -200,14 +193,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 end,
 
                 interval = 2,
-                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+                value = function () return state.talent.dire_stable.enabled and 7 or 5 end,
             },
             
             dire_frenzy_5 = {
                 resource = 'focus',
 
                 spec = 'beast_mastery',
-                talent = 'dire_frenzy',
                 aura = 'dire_frenzy_5',
 
                 last = function ()
@@ -218,200 +210,227 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 end,
 
                 interval = 2,
-                value = function () return state.talent.dire_stable.enabled and 9 or 6 end,
+                value = function () return state.talent.dire_stable.enabled and 7 or 5 end,
             },
             
         } )
 
 
-        addTalent( 'a_murder_of_crows', 206505 ) -- MM, 131894
-        addTalent( 'animal_instincts', 204315 )
-        addTalent( 'aspect_of_the_beast', 191384 )
-        addTalent( "barrage", 120360 ) -- 22002
-        addTalent( 'bestial_fury', 194306 )
-        addTalent( 'big_game_hunter', 204308 )
-        addTalent( "binding_shot", 109248 ) -- 22284
-        addTalent( "black_arrow", 194599 ) -- 22497
-        addTalent( 'blink_strikes', 130392 )
-        addTalent( 'butchery', 212436 )
-        addTalent( 'caltrops', 194277 )
-        addTalent( 'camouflage', 199483 )
-        addTalent( "careful_aim", 53238 ) -- 22289
-        addTalent( 'chimaera_shot', 53209 )
-        addTalent( 'dire_frenzy', 217200 )
-        addTalent( 'dire_stable', 193532 )
-        addTalent( 'disengage', 781 )
-        addTalent( 'dragonsfire_grenade', 2194855 )
-        addTalent( 'expert_trapper', 199543 )
-        addTalent( "explosive_shot", 212431 ) -- 22267
-        addTalent( "farstrider", 199523 ) -- 19348
-        addTalent( 'guerrilla_tactics', 236698 )
-        addTalent( 'intimidation', 19577 )
-        addTalent( 'killer_cobra', 199532 )
-        addTalent( "lock_and_load", 194595 ) -- 22495
-        addTalent( "lone_wolf", 155228 ) -- 22279
-        addTalent( 'mortal_wounds', 201075 )
-        addTalent( 'one_with_the_pack', 199528 )
-        addTalent( "patient_sniper", 234588 ) -- 21998
-        addTalent( "piercing_shot", 198670 ) -- 22308
-        addTalent( 'posthaste', 109215 )
-        addTalent( 'rangers_net', 200108 )
-        addTalent( "sentinel", 206817 ) -- 22286
-        addTalent( 'serpent_sting', 87935 )
-        addTalent( "sidewinders", 214579 ) -- 22274
-        addTalent( 'snake_hunter', 201078 )
-        addTalent( 'spitting_cobra', 194407 )
-        addTalent( 'stampede', 201430 )
-        addTalent( "steady_focus", 193533 ) -- 22501
-        addTalent( 'steel_trap', 162488 )
-        addTalent( 'sticky_bomb', 191241 )
-        addTalent( 'stomp', 199530 )
-        addTalent( 'throwing_axes', 200163 )
-        addTalent( 'trailblazer', 199921 )
-        addTalent( "trick_shot", 199522 ) -- 22288
-        addTalent( "true_aim", 199527 ) -- 22498
-        addTalent( "volley", 194386 ) -- 22287
-        addTalent( 'way_of_the_cobra', 194397 )
-        addTalent( 'way_of_the_moknathal', 201082 )
-        addTalent( "wyvern_sting", 19386 ) -- 22276
+        ------------------------------------------------------------------------
+        -- Talents
+        ------------------------------------------------------------------------
 
+        -- Talents Beast Mastery
+        addTalent( 'a_murder_of_crows', 22269 )
+        addTalent( 'animal_companion_nyi', 22280 )
+        addTalent( 'aspect_of_the_beast', 22273 )
+        addTalent( 'barrage', 22002 )
+        addTalent( 'binding_shot', 22499 )
+        addTalent( 'born_to_be_wild', 22268 )
+        addTalent( 'camouflage', 23100 )
+        addTalent( 'chimaera_shot', 22290 )
+        addTalent( 'dire_beast', 22282 )
+        addTalent( 'dire_stable', 22500 )
+        addTalent( 'killer_cobra', 21986 )
+        addTalent( 'killer_instinct', 22291 )
+        addTalent( 'natural_mending', 19348 )
+        addTalent( 'one_with_the_pack', 22266 )
+        addTalent( 'posthaste', 22276 )
+        addTalent( 'spitting_cobra', 22295 )
+        addTalent( 'stampede', 23044 )
+        addTalent( 'stomp', 19357 )
+        addTalent( 'thrill_of_the_hunt', 22347 )
+        addTalent( 'trailblazer', 19347 )
+        addTalent( 'venomous_bite', 22441 )
+
+        --[[ Talents Marksmanship
+        -- 15
+        addTalent( "lone_wolf", 155228 ) -- 22279
+        addTalent( "steady_focus", 193533 ) -- 22501
+        addTalent( "careful_aim", 53238 ) -- 22289
+        -- 30
+        addTalent( "lock_and_load", 194595 ) -- 22495
+        addTalent( "black_arrow", 194599 ) -- 22497
+        addTalent( "true_aim", 199527 ) -- 22498
+        -- 45
+        -- addTalent( 'posthaste', 109215 )
+        -- addTalent( "farstrider", 199523 ) -- 19348
+        -- addTalent( 'trailblazer', 199921 )
+        -- 60
+        addTalent( "explosive_shot", 212431 ) -- 22267
+        addTalent( "sentinel", 206817 ) -- 22286
+        addTalent( "patient_sniper", 234588 ) -- 21998
+        -- 75
+        -- addTalent( "binding_shot", 109248 ) -- 22284
+        -- addTalent( "wyvern_sting", 19386 ) -- 22276
+        addTalent( 'camouflage', 199483 )
+        -- 90
+        -- addTalent( 'a_murder_of_crows', 206505 ) -- MM,BM 131894
+        -- addTalent( "barrage", 120360 ) -- 22002
+        -- addTalent( "volley", 194386 ) -- 22287
+        -- 100
+        addTalent( "sidewinders", 214579 ) -- 22274
+        addTalent( "piercing_shot", 198670 ) -- 22308
+        addTalent( "trick_shot", 199522 ) -- 22288
+
+        -- Talents Survival
+        -- 15
+        addTalent( 'animal_instincts', 204315 )
+        addTalent( 'throwing_axes', 200163 )
+        addTalent( 'way_of_the_moknathal', 201082 )
+        -- 30
+        addTalent( 'a_murder_of_crows', 206505 ) -- MM,BM 131894
+        addTalent( 'mortal_wounds', 201075 )
+        addTalent( 'snake_hunter', 201078 )
+        -- 45
+        -- addTalent( 'posthaste', 109215 )
+        addTalent( 'disengage', 781 )
+        -- addTalent( 'trailblazer', 199921 )
+        -- 60
+        addTalent( 'caltrops', 194277 )
+        addTalent( 'guerrilla_tactics', 236698 )
+        addTalent( 'steel_trap', 162488 )
+        -- 75
+        addTalent( 'sticky_bomb', 191241 )
+        addTalent( 'rangers_net', 200108 )
+        -- addTalent( 'camouflage', 199483 )
+        -- 90
+        addTalent( 'butchery', 212436 )
+        addTalent( 'dragonsfire_grenade', 2194855 )
+        addTalent( 'serpent_sting', 87935 )
+        -- 100
+        addTalent( 'spitting_cobra', 194407 )
+        addTalent( 'expert_trapper', 199543 )
+        -- addTalent( 'aspect_of_the_beast', 191384 ) ]]
+
+        ------------------------------------------------------------------------
+        -- Traits
+        ------------------------------------------------------------------------
+
+        --[[ Traits Generic
+        addTrait( "concordance_of_the_legionfall", 239042 )
+        addTrait( "artificial_stamina", 211309 )
+
+        -- Traits Beast Mastery
+        addTrait( "beast_master", 215779 )
+        addTrait( "bond_of_the_unseen_path", 241110 )
+        addTrait( "cobra_commander", 238123 )
+        addTrait( "focus_of_the_titans", 197139 )
+        addTrait( "furious_swipes", 197047 )
+        addTrait( "hatis_bond", 197344 )
+        addTrait( "hunters_advantage", 197178 )
+        addTrait( "jaws_of_thunder", 197162 )
+        addTrait( "master_of_beasts", 197248 )
+        addTrait( "mimirons_shell", 197160 )
+        addTrait( "natural_reflexes", 197138 )
+        addTrait( "pack_leader", 197080 )
+        addTrait( "pathfinder", 197343 )
+        addTrait( "slithering_serpents", 238051 )
+        addTrait( "spirit_bond", 197199 )
+        addTrait( "spiritbound", 214914 )
+        addTrait( "spitting_cobras", 197140 )
+        addTrait( "surge_of_the_stormgod", 197354 )
+        addTrait( "thunderslash", 238087 )
+        addTrait( "titans_thunder", 207068 )
+        addTrait( "unleash_the_beast", 206910 )
+        addTrait( "wilderness_expert", 197038 )
+
+        -- Traits Marksmanship
         addTrait( "acuity_of_the_unseen_path", 241114 )
-        addTrait( "aspect_of_the_skylord", 203755 )
-        addTrait( "bird_of_prey", 224764 )
         addTrait( "bullseye", 204089 )
         addTrait( "call_of_the_hunter", 191048 )
         addTrait( "called_shot", 190467 )
-        addTrait( "concordance_of_the_legionfall", 239042 )
         addTrait( "critical_focus", 191328 )
         addTrait( "cyclonic_burst", 238124 )
         addTrait( "deadly_aim", 190449 )
+        addTrait( "feet_of_wind", 238088 )
+        addTrait( "gust_of_wind", 190567 )
+        addTrait( "healing_shell", 190503 )
+        addTrait( "legacy_of_the_windrunners", 190852 )
+        addTrait( "mark_of_the_windrunner", 204219 )
+        addTrait( "marked_for_death", 190529 )
+        addTrait( "precision", 190520 )
+        addTrait( "quick_shot", 190462 )
+        addTrait( "rapid_killing", 191339 )
+        addTrait( "survival_of_the_fittest", 190514 )
+        addTrait( "unerring_arrows", 238052 )
+        addTrait( "wind_arrows", 214826 )
+        addTrait( "windburst", 204147 )
+        addTrait( "windflight_arrows", 214915 )
+        addTrait( "windrunners_guidance", 190457 )
+
+        -- Traits Survival
+        addTrait( "aspect_of_the_skylord", 203755 )
+        addTrait( "bird_of_prey", 224764 )
         addTrait( "eagles_bite", 203757 )
         addTrait( "echoes_of_ohnara", 238125 )
         addTrait( "embrace_of_the_aspects", 225092 )
         addTrait( "explosive_force", 203670 )
-        addTrait( "feet_of_wind", 238088 )
         addTrait( "ferocity_of_the_unseen_path", 241115 )
         addTrait( "fluffy_go", 203669 )
         addTrait( "fury_of_the_eagle", 203415 )
-        addTrait( "gust_of_wind", 190567 )
-        addTrait( "healing_shell", 190503 )
         addTrait( "hellcarver", 203673 )
         addTrait( "hunters_bounty", 203749 )
         addTrait( "hunters_guile", 203752 )
         addTrait( "iron_talons", 221773 )
         addTrait( "jaws_of_the_mongoose", 238053 )
         addTrait( "lacerating_talons", 203578 )
-        addTrait( "legacy_of_the_windrunners", 190852 )
-        addTrait( "mark_of_the_windrunner", 204219 )
-        addTrait( "marked_for_death", 190529 )
         addTrait( "my_beloved_monster", 203577 )
-        addTrait( "precision", 190520 )
-        addTrait( "quick_shot", 190462 )
-        addTrait( "rapid_killing", 191339 )
         addTrait( "raptors_cry", 203638 )
         addTrait( "sharpened_fang", 203566 )
-        addTrait( "slithering_serpents", 238051 ) -- BM trait
-        addTrait( "survival_of_the_fittest", 190514 )
         addTrait( "talon_bond", 238089 )
         addTrait( "talon_strike", 203563 )
         addTrait( "terms_of_engagement", 203754 )
-        addTrait( "unerring_arrows", 238052 )
-        addTrait( "voice_of_the_wild_gods", 214916 )
-        addTrait( "wind_arrows", 214826 )
-        addTrait( "windburst", 204147 )
-        addTrait( "windflight_arrows", 214915 )
-        addTrait( "windrunners_guidance", 190457 )
+        addTrait( "voice_of_the_wild_gods", 214916 ) ]]
 
+        ------------------------------------------------------------------------
         -- Buffs/Debuffs
+        ------------------------------------------------------------------------
+        
+        -- Buffs/Debuffs Generic
         addAura( 'a_murder_of_crows', 206505, 'duration', 15 )
             modifyAura( 'a_murder_of_crows', 'id', function( x )
                 if not spec.survival then return 131894 end -- Murder of Crows is the same for BM and MM
                 return x
             end )
             class.auras[ 131894 ] = class.auras[ 206505 ]
-
-        -- Auras: SV + Generic Hunter
         addAura( 'aspect_of_the_cheetah', 186258, 'duration', 12 )
         addAura( 'aspect_of_the_cheetah_sprint', 186257, 'duration', 3 )
-        addAura( 'aspect_of_the_eagle', 186289, 'duration', 10 )
         addAura( 'aspect_of_the_turtle', 186265, 'duration', 8 )
-        addAura( 'butchers_bone_apron', 236446, 'duration', 30, 'max_stack', 10 )
-        addAura( 'caltrops', 194279, 'duration', 6 )
-        addAura( 'camouflage', 199483, 'duration', 60 )
-        addAura( 'cyclonic_burst', 242712, 'duration', 5 )
-        addAura( 'dragonsfire_grenade', 194858, 'duration', 8 )
-        addAura( 'explosive_trap', 13812, 'duration', 10 )
-        addAura( "exposed_flank", 252094, "duration", 20 )
-            class.auras.t21_exposed_flank = class.auras.exposed_flank
+        addAura( 'camouflage', 199483, 'duration', 60 ) -- BM,MM
         addAura( 'feign_death', 5384, 'duration', 360 )
         addAura( 'freezing_trap', 3355, 'duration', 60 )
-        addAura( 'harpoon', 190927, 'duration', 3 )
-        addAura( 'helbrine_rope_of_the_mist_marauder', 213154, 'duration', 10 )
-        addAura( "in_for_the_kill", 252095, "duration", 15, "max_stack", 6 )
-        addAura( 'lacerate', 185855, 'duration', 12 )
-        addAura( 'moknathal_tactics', 201081, 'duration', 10, 'max_stack', 4 )
-        addAura( 'mongoose_fury', 190931, 'duration', 14, 'max_stack', 6 )
-        addAura( 'mongoose_power', 211362, 'duration', 10 )
-        addAura( 'on_the_trail', 204081, 'duration', 12 )
         addAura( 'posthaste', 118922, 'duration', 5 )
-        addAura( 'rangers_net', 206755, 'duration', 15 )
-        addAura( 'rangers_net_root', 200108, 'duration', 3 )
-        addAura( 'serpent_sting', 118253, 'duration', 15 )
-        addAura( 'spitting_cobra', 194407, 'duration', 30 )
-        addAura( 'survivalist', 164856, 'duration', 10 )
-        addAura( 'tar_trap', 135299, 'duration', 60 )
         addAura( 'trailblazer', 231390, 'duration', 3600 )
 
-        -- Auras: MM
-        addAura( "bombardment", 35110, "duration", 5 )
-        addAura( "binding_shot", 117405, "duration", 10 )
-        addAura( "binding_shot_stun", 117526, "duration", 5 )
-        addAura( "black_arrow", 194599, "duration", 8 )
-        addAura( "bullseye", 204090, "duration", 6, "max_stack", 30 )
-        addAura( "bursting_shot", 224729, "duration", 4 )
-        addAura( "careful_aim", 63648, "duration", 8 )
-        addAura( "concussive_shot", 5116, "duration", 6 )
-        -- addAura( "eagle_eye", 6197 )
-        addAura( "feet_of_wind", 240777, "duration", 12 )
-        addAura( "hunters_mark", 185365, "duration", 12 )
-        -- addAura( "hunting_party", 212658 )
-        addAura( "lock_and_load", 194594, "duration", 15, "max_stack", 2 )
-        addAura( "marking_targets", 223138, "duration", 15 )
-        -- addAura( "marksmans_focus", 231554 )
-        -- addAura( "mastery_sniper_training", 193468 )
-        addAura( "sentinels_sight", 208913, "duration", 20, "max_stack", 20 )
-        addAura( "steady_focus", 193534, "duration", 12 )
-        -- addAura( "t20_2p_critical_aimed_damage" ) -- need aura ID.
-        addAura( "trick_shot", 227272, "duration", 15 )
-        addAura( "trueshot", 193526, "duration", 15 )
-        addAura( "volley", 194386, "duration", 3600 )
-        addAura( "vulnerable", 187131, "duration", 7 )
-            class.auras.vulnerability = class.auras.vulnerable
-        addAura( "true_aim", 199803, "duration", 10, "max_stack", 10 )
-        addAura( "wyvern_sting", 19386, "duration", 30 ) -- Remove when hit.
-    
-        -- Auras: BM
-        addAura( 'aspect_of_the_wild', 193530, 'duration', 14 )
+        -- Buffs/Debuffs Beast Mastery
+        addAura( 'aspect_of_the_wild', 193530, 'duration', 20 )
         addAura( 'bestial_ferocity', 191413, 'duration', 6 )
             addMetaFunction( 'state', 'bestial_ferocity', function () return buff.bestial_ferocity end )
-
         addAura( 'bestial_wrath', 19574, 'duration', 15 )
         addAura( 'intimidation', 24394, 'duration', 5 )
-        addAura( 'dire_frenzy_1', 246152, 'duration', 8 )
+        addAura( 'dire_frenzy', 246152, 'duration', 8 )
         addAura( 'dire_frenzy_2', 246851, 'duration', 8 )
         addAura( 'dire_frenzy_3', 246852, 'duration', 8 )
         addAura( 'dire_frenzy_4', 246853, 'duration', 8 )
         addAura( 'dire_frenzy_5', 246854, 'duration', 8 )
+        
+        addAura( 'dire_frenzy_pet', 272790, 'duration', 8, 'max_stack', 8, 'feign', function ()
+            -- This is a real aura, but it is applied to our pet.            
+            local up, _, count, _, duration, expires, caster, _, _, spellID
+            
+            for i = 1, 40 do
+                up, _, count, _, duration, expires, caster, _, _, spellID = UnitBuff( "pet", i )
 
-        addAura( 'dire_frenzy', 217200, 'duration', 8, 'max_stack', 8, 'feign', function ()
-            -- This is a real aura, but it is applied to our pet.
-            local up, _, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( "pet", class.abilities.dire_frenzy.name )
+                if not up then break end
+                if spellID == 272790 then break end
+            end
 
-            buff.dire_frenzy.name = up or class.abilities.dire_frenzy.name
-            buff.dire_frenzy.count = up and count or 0
-            buff.dire_frenzy.expires = up and expires or 0
-            buff.dire_frenzy.applied = up and ( expires - duration ) or 0
-            buff.dire_frenzy.caster = up and caster or "player"
+            buff.dire_frenzy_pet.name = up
+            buff.dire_frenzy_pet.count = up and count or 0
+            buff.dire_frenzy_pet.expires = up and expires or 0
+            buff.dire_frenzy_pet.applied = up and ( expires - duration ) or 0
+            buff.dire_frenzy_pet.caster = up and caster or "player"
         end )
 
         addAura( 'titans_thunder', 207094, 'duration', 30, 'feign', function ()
@@ -431,13 +450,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 i = i + 1
             end
 
-            buff.titans_thunder.name = class.abilities.titans_thunder.name
+            buff.titans_thunder.name = up
             buff.titans_thunder.count = found and count or 0
             buff.titans_thunder.expires = found and expires or 0
             buff.titans_thunder.applied = found and ( expires - duration ) or 0
             buff.titans_thunder.caster = found and caster or "player"
         end )
-        
+
         addAura( 'titans_frenzy', 218638, 'duration', 10, 'name', "Titan's Frenzy", 'feign', function ()
             -- This is a real aura, but it is applied to our pet.
             local i, found = 1, false
@@ -462,8 +481,63 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             buff.titans_frenzy.caster = found and caster or "player"
         end )
 
+        -- Buffs/Debuffs Marksmanship
+        addAura( "bombardment", 35110, "duration", 5 )
+        addAura( "binding_shot", 117405, "duration", 10 )
+        addAura( "binding_shot_stun", 117526, "duration", 5 )
+        addAura( "black_arrow", 194599, "duration", 8 )
+        addAura( "bullseye", 204090, "duration", 6, "max_stack", 30 )
+        addAura( "bursting_shot", 224729, "duration", 4 )
+        addAura( "careful_aim", 63648, "duration", 8 )
+        addAura( "concussive_shot", 5116, "duration", 6 )
+        addAura( 'cyclonic_burst', 242712, 'duration', 5 )
+        -- addAura( "eagle_eye", 6197 )
+        addAura( "feet_of_wind", 240777, "duration", 12 )
+        addAura( "hunters_mark", 185365, "duration", 12 )
+        -- addAura( "hunting_party", 212658 )
+        addAura( "lock_and_load", 194594, "duration", 15, "max_stack", 2 )
+        addAura( "marking_targets", 223138, "duration", 15 )
+        -- addAura( "marksmans_focus", 231554 )
+        -- addAura( "mastery_sniper_training", 193468 )
+        addAura( "sentinels_sight", 208913, "duration", 20, "max_stack", 20 )
+        addAura( "steady_focus", 193534, "duration", 12 )
+        -- addAura( "t20_2p_critical_aimed_damage" ) -- need aura ID.
+        addAura( "trick_shot", 227272, "duration", 15 )
+        addAura( "trueshot", 193526, "duration", 15 )
+        addAura( "volley", 194386, "duration", 3600 )
+        addAura( "vulnerable", 187131, "duration", 7 )
+            class.auras.vulnerability = class.auras.vulnerable
+        addAura( "true_aim", 199803, "duration", 10, "max_stack", 10 )
+        addAura( "wyvern_sting", 19386, "duration", 30 ) -- Remove when hit.
 
-        -- Gear Sets
+        -- Buffs/Debuffs Survival
+        addAura( 'aspect_of_the_eagle', 186289, 'duration', 10 )
+        addAura( 'butchers_bone_apron', 236446, 'duration', 30, 'max_stack', 10 )
+        addAura( 'caltrops', 194279, 'duration', 6 )
+        addAura( 'dragonsfire_grenade', 194858, 'duration', 8 )
+        addAura( 'explosive_trap', 13812, 'duration', 10 )
+        addAura( "exposed_flank", 252094, "duration", 20 )
+            class.auras.t21_exposed_flank = class.auras.exposed_flank
+        addAura( 'harpoon', 190927, 'duration', 3 )
+        addAura( 'helbrine_rope_of_the_mist_marauder', 213154, 'duration', 10 )
+        addAura( "in_for_the_kill", 252095, "duration", 15, "max_stack", 6 )
+        addAura( 'lacerate', 185855, 'duration', 12 )
+        addAura( 'moknathal_tactics', 201081, 'duration', 10, 'max_stack', 4 )
+        addAura( 'mongoose_fury', 190931, 'duration', 14, 'max_stack', 6 )
+        addAura( 'mongoose_power', 211362, 'duration', 10 )
+        addAura( 'on_the_trail', 'duration', 12 )
+        addAura( 'rangers_net', 206755, 'duration', 15 )
+        addAura( 'rangers_net_root', 200108, 'duration', 3 )
+        addAura( 'serpent_sting', 118253, 'duration', 15 )
+        addAura( 'spitting_cobra', 194407, 'duration', 30 )
+        addAura( 'survivalist', 164856, 'duration', 10 )
+        addAura( 'tar_trap', 135299, 'duration', 60 )
+
+        ------------------------------------------------------------------------
+        -- Gear Sets, Artifact, Legendaries
+        ------------------------------------------------------------------------
+
+        -- Sets
         addGearSet( 'tier19', 138342, 138347, 138368, 138339, 138340, 138344 )
         addGearSet( 'tier20', 147142, 147144, 147140, 147139, 147141, 147143 )
             addAura( "pre_t20_2p_critical_aimed_damage", -102, "duration", 3600, "feign", function ()
@@ -490,40 +564,51 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addGearSet( 'titanstrike', 128861 )
         setArtifact( 'titanstrike' )
     
-        addGearSet( 'butchers_bone_apron', 144361 )
-        addGearSet( 'call_of_the_wild', 137101 )
-        addGearSet( 'celerity_of_the_windrunners', 151803 )
-            addAura( "celerity_of_the_windrunners", 248088, "duration", 6 )
-        addGearSet( 'frizzos_fingertrap', 137043 )
-        addGearSet( 'helbrine_rope_of_the_mist_marauder', 137082 )
-        addGearSet( 'kiljaedens_burning_wish', 144259 )
-        addGearSet( 'magnetized_blasting_cap_launcher', 141353 )
-        addGearSet( "mkii_gyroscopic_stabilizer", 144303 )
-            addAura( "gyroscopic_stabilization", 235712, "duration", 3600 )
-        addGearSet( 'nesingwarys_trapping_threads', 137034 )
-        addGearSet( 'parsels_tongue', 151805 )
-            addAura( 'parsels_tongue', 248085, 'duration', 8, 'max_stack', 4 )
+        -- Generic Legendaries
+        addGearSet( 'the_shadow_hunters_voodoo_mask', 137064 )
         addGearSet( 'prydaz_xavarics_magnum_opus', 132444 )
-        addGearSet( 'qapla_eredun_war_order', 137227 )
-        addGearSet( 'roar_of_the_seven_lions', 137080 )
+        addGearSet( 'call_of_the_wild', 137101 )
+        addGearSet( 'vigilance_perch', 146668 )
+        addGearSet( 'kiljaedens_burning_wish', 144259 )
         addGearSet( 'roots_of_shaladrassil', 132466 )
         addGearSet( 'sephuzs_secret', 132452 )
         addGearSet( 'soul_of_the_huntmaster', 151641 )
-        addGearSet( 'the_apex_predators_claw', 137382 )
+            setTalentLegendary( 'soul_of_the_huntmaster', 'survival', 'serpent_sting' )
+            setTalentLegendary( 'soul_of_the_huntmaster', 'marksmanship', 'lock_and_load' )
+            setTalentLegendary( 'soul_of_the_huntmaster', 'beast_mastery', 'bestial_wrath' )
+        addGearSet( 'insignia_of_the_grand_army', 152626 )
+
+        -- BM Legendaries
         addGearSet( 'the_mantle_of_command', 144326 )
             addAura( 'the_mantle_of_command', 247993, 'duration', 8 )
-        addGearSet( 'the_shadow_hunters_voodoo_mask', 137064 )
+        addGearSet( 'parsels_tongue', 151805 )
+            addAura( 'parsels_tongue', 248085, 'duration', 8, 'max_stack', 4 )
+        addGearSet( 'qapla_eredun_war_order', 137227 )
+        addGearSet( 'roar_of_the_seven_lions', 137080 )
+        addGearSet( 'the_apex_predators_claw', 137382 )
+
+        -- MM Legendaries
+        addGearSet( 'celerity_of_the_windrunners', 151803 )
+            addAura( "celerity_of_the_windrunners", 248088, "duration", 6 )
+        addGearSet( 'magnetized_blasting_cap_launcher', 141353 )
+        addGearSet( "mkii_gyroscopic_stabilizer", 144303 )
+            addAura( "gyroscopic_stabilization", 235712, "duration", 3600 )
         addGearSet( "ullrs_feather_snowshoes", 137033 )
-        addGearSet( 'unseen_predators_cloak', 151807 )
         addGearSet( "war_belt_of_the_sentinel_army", 137081 )
             addAura( "sentinels_sight", 208913, "duration", 20, "max_stack", 20 )
         addGearSet( "zevrims_hunger", 137055 )
-    
-        
-        setTalentLegendary( 'soul_of_the_huntmaster', 'survival', 'serpent_sting' )
-        setTalentLegendary( 'soul_of_the_huntmaster', 'marksmanship', 'lock_and_load' )
-        setTalentLegendary( 'soul_of_the_huntmaster', 'beast_mastery', 'bestial_wrath' )
 
+        -- SV Legendaries
+        addGearSet( 'unseen_predators_cloak', 151807 )
+        addGearSet( 'butchers_bone_apron', 144361 )
+        addGearSet( 'helbrine_rope_of_the_mist_marauder', 137082 )
+        addGearSet( 'nesingwarys_trapping_threads', 137034 )
+        addGearSet( 'frizzos_fingertrap', 137043 )
+
+        
+        ------------------------------------------------------------------------
+        -- Hooks
+        ------------------------------------------------------------------------
 
         addHook( 'specializationChanged', function ()
             if state.spec.survival then addTalent( 'a_murder_of_crows', 206505 )
@@ -539,13 +624,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             rawset( state.pet, 'cunning', IsSpellKnown( 53490, true ) )
         end )
 
-
-        local floor = math.floor
-
-
+        ------------------------------------------------------------------------
+        -- Settings + Meta + fake auras
+        ------------------------------------------------------------------------
 
         -- fake some stuff for Beast Cleave
         registerCustomVariable( 'last_multishot', 0 )
+        registerCustomVariable( 'last_dire_beast', 0 )
         
         -- register when I cast multishot
         RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( _, unit, spell, _, spellID )
@@ -554,6 +639,8 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
             if spell == class.abilities[ 'multishot' ].name then
                 state.last_multishot = GetTime()
+            elseif spellID == class.abilities.dire_beast.id then
+                state.last_dire_beast = GetTime()
             end
         
         end )
@@ -566,7 +653,16 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 buff.beast_cleave.expires = up and last_multishot + 4 or 0
                 buff.beast_cleave.applied = up and last_multishot or 0
                 buff.beast_cleave.caster = 'player'
-            end )
+        end )
+
+        addAura( 'dire_beast', -103, 'name', 'Dire Beast', 'duration', 8, 'feign', function ()
+            local up = query_time < last_dire_beast + 8
+            buff.dire_beast.name = class.abilities.dire_beast.name
+            buff.dire_beast.count = up and 1 or 0
+            buff.dire_beast.expires = up and last_dire_beast + 8 or 0
+            buff.dire_beast.applied = up and last_dire_beast or 0
+            buff.dire_beast.caster = 'player'
+        end )
     
         addSetting( 'moknathal_padding', true, {
             name = "Way of the Mok'Nathal Padding",
@@ -647,9 +743,456 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end
         setfenv( genericHasteMod, state )
 
-        
-        -- Beast Mastery Stuff (keeping it separate for the moment)
+        ------------------------------------------------------------------------
+        -- Abilities, modifiers and Handlers
+        ------------------------------------------------------------------------
     
+        ------------------------------------------------------------------------
+        -- Abilities generic
+
+
+        --[[
+            Summons a flock of crows to attack your target over the next 15
+            sec. If the target dies while under attack, A Murder of Crows'
+            cooldown is reset.
+        ]]
+        addAbility( 'a_murder_of_crows', {
+            id = 206505,
+            spend = 30,
+            spend_type = 'focus',
+            ready = 30,
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 60,
+            velocity = 60,
+            talent = 'a_murder_of_crows'
+        }, 131894 )
+
+        modifyAbility( 'a_murder_of_crows', 'id', function( x )
+            if not spec.survival then return 131894 end
+            return x
+        end )
+
+        modifyAbility( 'a_murder_of_crows', 'ready', function( x )
+            if spec.survival then
+                if not talent.way_of_the_moknathal.enabled or not settings.moknathal_padding then
+                    return x
+                end
+
+                local ticks = floor( ( buff.moknathal_tactics.remains - refresh_window ) / focus.tick_rate )
+                return x + max( 0, 25 - floor( focus.regen * ticks * focus.tick_rate ) ), "focus"
+            end
+        end )
+
+        addHandler( 'a_murder_of_crows', function ()
+            -- if settings.moknathal_padding and talent.way_of_the_moknathal.enabled then gain( max( 0, 25 - focus.regen * max( 0, buff.moknathal_tactics.remains - gcd ) ), 'focus', true ) end
+            applyDebuff( 'target', 'a_murder_of_crows', 15 )
+        end )
+
+
+        --[[
+            The Hunter takes on the aspect of a chameleon, becoming untrackable.
+        ]]
+        addAbility( "aspect_of_the_chameleon", {
+            id = 61648,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 180,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        modifyAbility( 'aspect_of_the_chameleon', 'cooldown', function( x )
+            if equipped.call_of_the_wild then return x * 0.65 end
+            return x
+        end )
+
+        addHandler( "aspect_of_the_chameleon", function ()
+            applyBuff( "aspect_of_the_chameleon" )
+        end )
+
+
+        --[[
+            Increases your movement speed by 90% for 3 sec, and then by 30% for
+                another 9 sec.
+        ]]
+        addAbility( 'aspect_of_the_cheetah', {
+            id = 186257,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'off',
+            cooldown = 180,
+        } )
+
+        modifyAbility( 'aspect_of_the_cheetah', 'cooldown', function ()
+            if equipped.call_of_the_wild then return x * 0.65 end
+            return x
+        end )
+
+        addHandler( 'aspect_of_the_cheetah', function( x )
+            applyBuff( 'aspect_of_the_cheetah_sprint', 3 )
+            applyBuff( 'aspect_of_the_cheetah', 12 )
+        end )
+
+
+        --[[
+            Deflects all attacks and reduces all damage you take by 30% for 8
+            sec, but you cannot attack.
+        ]]
+        addAbility( 'aspect_of_the_turtle', {
+            id = 186265,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'off',
+            cooldown = 180,
+        } )
+
+        modifyAbility( 'aspect_of_the_turtle', 'cooldown', function( x )
+            if equipped.call_of_the_wild then return x * 0.65 end
+            return x
+        end )
+
+        addHandler( 'aspect_of_the_turtle', function ()
+            applyBuff( 'aspect_of_the_turtle', 8 )
+            setCooldown( 'global_cooldown', 8 )
+        end )
+        
+        
+        --[[
+            Rapidly fires a spray of shots for 3 sec, dealing an average of 
+            80% * 10) Physical damage to all enemies in front of you. Usable
+            while moving.
+        ]]
+        addAbility( "barrage", {
+            id = 120360,
+            spend = 60,
+            spend_type = "focus",
+            min_cost = 60,
+            cast = 3,
+            channeled = true,
+            gcdType = "spell",
+            talent = "barrage",
+            cooldown = 20,
+            min_range = 0,
+            max_range = 47.171875,
+        } )
+
+        modifyAbility( "barrage", "spend", function ( x )
+            if spec.marksmanship and set_bonus.tier19 > 3 then
+                return x * 0.85
+            end
+            return x
+        end )
+
+        modifyAbility( "barrage", "cast", genericHasteMod )
+
+        addHandler( "barrage", function ()
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+        end )
+
+
+        --[[
+            Fires a magical projectile, tethering the enemy and any other 
+            enemies within 5 yards for 10 sec, stunning them for 5 sec if they
+            move more than 5 yards from the arrow. Player targets are stunned
+            for a shorter duration.
+        ]]
+        addAbility( "binding_shot", {
+            id = 109248,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = "spell",
+            talent = "binding_shot",
+            cooldown = 45,
+            min_range = 0,
+            max_range = 35.37890625,
+        } )
+        
+        
+        --[[
+            You and your pet blend into the surroundings and gain stealth for 1
+            min. While camouflaged, you will heal for 2% of maximum health
+            every 1 secs.
+        ]]
+        addAbility( 'camouflage', {
+            id = 199483,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'off',
+            passive = true,
+            talent = 'camouflage',
+        } )
+
+        addHandler( 'camouflage', function ()
+            applyBuff( 'camouflage', 60 )
+        end )
+        
+
+        --[[
+            Dazes the target, slowing movement speed by 50% for 6 sec.
+        ]]
+        addAbility( "concussive_shot", {
+            id = 5116,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 5,
+            min_range = 0,
+            max_range = 47.171875,
+        } )
+
+        addHandler( "concussive_shot", function ()
+            applyDebuff( "target", "concussive_shot", 6 )
+        end )
+
+
+        --[[
+            Interrupts spellcasting, preventing any spell in that school from
+            being cast for 3 sec.
+        ]]
+        addAbility( "counter_shot", {
+            id = 147362,
+            spend = 0,
+            cast = 0,
+            gcdType = "off",
+            cooldown = 24,
+            min_range = 0,
+            max_range = 47.171875,
+            toggle = "interrupts",
+            usable = function () return target.casting end,
+        } )
+
+        addHandler( "counter_shot", function ()
+            interrupt()
+        end )
+
+
+        --[[
+            Leap backwards
+            Posthaste: clearing movement impairing effects, and increasing your     movement speed by 60% for 5 sec
+            Narrow Escape: and activating a web trap which encases all targets      within 8 yards in sticky webs, preventing movement for 8 sec
+        ]]
+        addAbility( 'disengage', {
+            id = 781,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'off',
+            cooldown = 20
+        } )
+
+        addHandler( "disengage", function ()
+            if talent.posthaste.enabled then applyBuff( "posthaste" ) end 
+        end )
+
+
+        --[[
+            Heals you for 30% and your pet for 100% of maximum health.
+        ]]
+        addAbility( 'exhilaration', {
+            id = 109304,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'off',
+            cooldown = 120,
+            passive = true,
+        } )
+
+        addHandler( 'exhilaration', function ()
+            health.actual = min( health.max, health.actual + ( health.max * 0.3 ) )
+        end )
+
+
+        --[[
+            Feign death, tricking enemies into ignoring you. Lasts up to 6 min.
+        ]]
+        addAbility( 'feign_death', {
+            id = 5384,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'off',
+            cooldown = 30,
+            passive = true,
+        } )
+
+        addHandler( 'feign_death', function ()
+            applyBuff( 'feign_death', 360 )
+            if equipped.the_shadow_hunters_voodoo_mask then health.actual = min( health.max, health.actual + ( health.max * 0.2 ) ) end
+        end )
+
+
+        --[[
+            Fires several missiles, hitting your current target and all enemies
+            within 8 yards for 100% Physical damage
+            BM: and triggering Beast Cleave
+            MM: Generates 3 Focus per target hit.
+        ]]
+        addAbility( "multishot", {
+            id = 2643,
+            spend = -3,
+            min_cost = 0,
+            spend_type = "focus",
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 0,
+            notalent = "sidewinders",
+            min_range = 0,
+            max_range = 47.171875,
+            recheck = function () return buff.beast_cleave.remains - gcd, buff.beast_cleave.remains end,
+            velocity = 50,
+        } )
+
+        modifyAbility( "multishot", "spend", function( x )
+            if spec.beast_mastery then
+                x = 40
+                if equipped.roar_of_the_seven_lions and buff.bestial_wrath.up then x = x * 0.85 end
+                return x
+            end
+            if set_bonus.tier21 > 1 then x = x * 1.25 end
+            return x * active_enemies
+        end )
+
+        addHandler( "multishot", function ()
+            if spec.beast_mastery then
+                if active_enemies > 1 then applyBuff( "beast_cleave" ) end
+                return
+            end
+            -- Marksmanship.
+            if buff.marking_targets.up or buff.trueshot.up then
+                applyDebuff( "target", "hunters_mark" )
+                removeBuff( "marking_targets" )
+                active_dot.hunters_mark = active_enemies
+            end
+            if talent.steady_focus.enabled and ( prev_gcd[1].arcane_shot or prev_gcd[1].multishot ) then
+                applyBuff( "steady_focus" )
+            end
+            if equipped.war_belt_of_the_sentinel_army then
+                addStack( "sentinels_sight", 20, active_enemies )
+            end
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+        end )
+
+
+        --[[
+            Summons your first pet to you.
+        ]]        
+        addAbility( 'summon_pet', {
+            id = 883,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 0,
+            passive = true,
+            texture = 'Interface\\ICONS\\Ability_Hunter_BeastCall',
+            usable = function () return not talent.lone_wolf.enabled and not pet.exists end
+        } )
+
+        addHandler( 'summon_pet', function ()
+            summonPet( 'made_up_pet', 3600, 'ferocity' )
+        end )
+
+
+        --[[
+            Hurls a frost trap to the target location that incapacitates the
+            first enemy that approaches for 1 min. Damage will break the
+            effect. Limit 1. Trap will exist for 1 min.
+        ]]
+        addAbility( 'freezing_trap', {
+            id = 187650,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 30,
+            passive = true,
+            notalent = 'steel_trap',
+        } )
+
+
+        --[[
+            Hurls a tar trap to the target location that creates a 8 yd radius
+            pool of tar around itself for 30 sec when the first enemy
+            approaches. All enemies have 50% reduced movement speed while in
+            the area of effect. Trap will exist for 1 min.
+        ]]
+        addAbility( 'tar_trap', {
+            id = 187698,
+            spend = 0,
+            spend_type = 'focus',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 30,
+            passive = true,
+            notalent = 'caltrops'
+        } )
+
+
+        --[[
+            While active, your auto attacks spend 3 Focus to also launch a
+            volley of shots that hit the target and all other nearby enemies,
+            dealing (100% of Attack power) additional Physical damage.
+        ]]
+        addAbility( "volley", {
+            id = 194386,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            talent = "volley",
+            cooldown = 1.5,
+            min_range = 0,
+            max_range = 0,
+            nobuff = "volley"
+        } )
+
+        modifyAbility( 'volley', 'cooldown', genericHasteMod )
+
+        addHandler( "volley", function ()
+            if buff.volley.down then
+                applyBuff( "volley" )
+            elseif buff.volley.up then
+                removeBuff( "volley" )
+            end
+        end )
+
+
+        --[[
+            A stinging shot that puts the target to sleep, incapacitating them
+            for 30 sec. Damage will cancel the effect. Usable while moving.
+        ]]
+        addAbility( "wyvern_sting", {
+            id = 19386,
+            spend = 0,
+            cast = 1.5,
+            gcdType = "spell",
+            talent = "wyvern_sting",
+            cooldown = 45,
+            min_range = 0,
+            max_range = 47.171875,
+        } )
+
+        modifyAbility( "wyvern_sting", "cast", genericHasteMod )
+
+        addHandler( "wyvern_sting", function ()
+            applyDebuff( "target", "wyvern_sting" )
+        end )
+
+
+        ------------------------------------------------------------------------
+        -- Abilities Beast Mastery
+
+        
+        --[[
+            Grants you and your pet 10 Focus per 1 sec and 10% increased
+            critical strike chance on all attacks for 10 sec.
+        ]]
         addAbility( 'aspect_of_the_wild', {
             id = 193530,
             spend = 0,
@@ -668,8 +1211,14 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         addHandler( 'aspect_of_the_wild', function ()
             applyBuff( 'aspect_of_the_wild' )
         end )
-        
-        
+
+
+        --[[
+            Sends you and your pet into a rage, increasing all damage you both
+            deal by 25% for 15 sec.
+            Bestial Wrath's remaining cooldown is reduced by 12 sec each time
+            you use Dire Frenzy/Dire Beast
+        ]]
         addAbility( 'bestial_wrath', {
             id = 19574,
             spend = 0,
@@ -678,7 +1227,8 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'off',
             cooldown = 90,
             recheck = function () return buff.bestial_wrath.remains end,
-            toggle = 'cooldowns',
+            usable = function () return time > 0 end, -- Because it's on the GCD and our pet might not be attacking...
+            -- toggle = 'cooldowns',
         } )
         
 
@@ -686,7 +1236,13 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             applyBuff( 'bestial_wrath', 15 )
         end )
 
-        
+
+        --[[
+            A two-headed shot that hits your primary target and another nearby
+            target, dealing 720% Nature damage to one and 720% Frost damage to
+            the other.
+            Generates 10 Focus for each target hit.
+        ]]
         addAbility( 'chimaera_shot', {
             id = 53209,
             spend = 0,
@@ -699,13 +1255,16 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         modifyAbility( 'chimaera_shot', 'cooldown', genericHasteMod )
 
         addHandler( 'chimaera_shot', function ()
-            gain( min( 20, active_enemies * 10 ), 'focus' )
+            gain( active_enemies * 10, 'focus' )
         end )
 
-        
+
+        --[[
+            A quick shot causing 270% Physical damage.
+        ]]
         addAbility( 'cobra_shot', {
             id = 193455,
-            spend = 40,
+            spend = 35,
             spend_type = 'focus',
             cast = 0,
             gcd_type = 'spell',
@@ -715,41 +1274,41 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         
         modifyAbility( 'cobra_shot', 'spend', function( x )
             if equipped.roar_of_the_seven_lions and buff.bestial_wrath.up then x = x * 0.85 end
-            return x - ( 2 * artifact.slithering_serpents.rank )
+            return x
         end )
         
         addHandler( 'cobra_shot', function()
             if talent.killer_cobra.enabled and buff.bestial_wrath.up then
                 setCooldown( 'kill_command', 0 )
+            else
+                setCooldown( 'kill_command', max( 0, cooldown.kill_command.remains - 1 ) )
             end
+
+            if talent.venomous_bite.enabled then setCooldown( 'bestial_wrath', max( 0, cooldown.bestial_wrath.remains - 1 ) ) end
 
             if equipped.parsels_tongue then addStack( 'parsels_tongue', 8, 1 ) end
         end)
 
-        
+
+        --[[
+            Summons a powerful wild beast to attack your target for 8 sec.
+            Generates 12 Focus over 8 sec.
+        ]]
         addAbility( 'dire_beast', {
             id = 120679,
             spend = 0,
             spend_type = 'focus',
             cast = 0,
-            charges = 2,
-            recharge = 12,
-            cooldown = 12,
-            notalent = 'dire_frenzy',
-            recheck = function () return full_recharge_time - gcd end,
+            cooldown = 15,
+            talent = 'dire_beast',
             gcdType = 'spell',
         })
-        
-        modifyAbility( 'dire_beast', 'recharge', genericHasteMod )
-        modifyAbility( 'dire_beast', 'cooldown', genericHasteMod )
 
-        --[[ addCooldownMetaFunction( "dire_beast", "full_recharge_time", function( x )
-            if talent.dire_frenzy.enabled then return 0 end
-            return ( cooldown.dire_beast.max_charges - cooldown.dire_beast.charges_fractional ) * cooldown.dire_beast.recharge
-        end ) ]]
+        modifyAbility( 'dire_beast', 'cooldown', genericHasteMod )
         
         addHandler( 'dire_beast', function()
-            cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+            -- cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+            applyBuff( 'dire_beast' )
 
             if equipped.qapla_eredun_war_order then
                 cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
@@ -757,8 +1316,15 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
             if equipped.the_mantle_of_command then applyBuff( 'the_mantle_of_command' ) end
         end )
-        
-    	addAbility( 'dire_frenzy', {
+
+
+        --[[
+            Causes your pet to enter a frenzy, performing a flurry of 5 attacks
+            on the target, and gaining 30% increased attack speed for 8 sec,
+            stacking up to 3 times.
+            Generates 24 Focus over 8 sec.
+        ]]
+    	addAbility( 'barbed_shot', {
             id = 217200,
             spend = 0,
             spend_type = 'focus',
@@ -766,40 +1332,33 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             charges = 2,
             recharge = 12,
             cooldown = 12,
-            talent = 'dire_frenzy',
             recheck = function () return buff.dire_frenzy.remains - ( gcd * 1.2 ), full_recharge_time - gcd end,
             gcdType = 'spell',
         })
         
-        modifyAbility( 'dire_frenzy', 'recharge', genericHasteMod )
-        modifyAbility( 'dire_frenzy', 'cooldown', genericHasteMod )
+        modifyAbility( 'barbed_shot', 'recharge', genericHasteMod )
+        modifyAbility( 'barbed_shot', 'cooldown', genericHasteMod )
 
-        --[[ addCooldownMetaFunction( "dire_frenzy", "full_recharge_time", function( x )
-            if not talent.dire_frenzy.enabled then return 0 end
-            return ( cooldown.dire_frenzy.max_charges - cooldown.dire_frenzy.charges_fractional ) * cooldown.dire_frenzy.recharge
-        end) ]]
-        
-        addHandler( 'dire_frenzy', function()
-            cooldown.bestial_wrath.expires = max( state.time, cooldown.bestial_wrath.expires - 12 )
+        addHandler( 'barbed_shot', function()
+            cooldown.bestial_wrath.expires = max( 0, cooldown.bestial_wrath.expires - 12 )
 
-            if equipped.qapla_eredun_war_order then
-                cooldown.kill_command.expires = max( state.time, cooldown.kill_command.expires - 3 )
-            end
+            addStack( 'dire_frenzy_pet', 8, 1 )
 
-            if equipped.the_mantle_of_command then applyBuff( 'the_mantle_of_command' ) end
-
-            addStack( 'dire_frenzy', 8, 1 )
-
-            -- player focus regen auras.
-            for i = 1, 5 do
-                if buff[ 'dire_frenzy_' .. i ].down then
-                    applyBuff( 'dire_frenzy_' .. i )
-                    break
+            if buff.dire_frenzy.down then applyBuff( 'dire_frenzy' )
+            else
+                for i = 2, 5 do
+                    if buff[ 'dire_frenzy_' .. i ].down then
+                        applyBuff( 'dire_frenzy_' .. i )
+                        break
+                    end
                 end
             end
         end )
 
-        
+
+        --[[
+            Commands your pet to intimidate the target, stunning it for 5 sec.
+        ]]
         addAbility( 'intimidation', {
             id = 19577,
             spend = 0,
@@ -814,6 +1373,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
+        --[[
+            Give the command to kill, causing your pet to savagely deal [1.5 *
+            (0 + (Ranged attack power * 3.6)) * 1.18 * (0.5 + min(Level, 20) *
+            0.025) * (1 + Versatility)] Physical damage to its target. 40 yd
+            range.
+        ]]
         addAbility( 'kill_command', {
             id = 34026,
             spend = 30,
@@ -839,6 +1404,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
+        --[[
+            Summon a herd of stampeding animals from the wilds around you that
+            deal damage to your enemies for 12 sec.
+        ]]
         addAbility( 'stampede', {
             id = 201430,
             spend = 0,
@@ -846,6 +1415,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             gcdType = 'spell',
             cooldown = 180,
             toggle = 'cooldowns',
+            talent = 'stampede',
             recheck = function ()
                 return cooldown.bestial_wrath.remains - 2
             end,
@@ -854,7 +1424,17 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
 
         -- Will want to check APLs to see if there's a hidden buff or totem to track for uptime.
 
-                
+
+        --[[
+            Discharge a massive jolt of electricity from Titanstrike into all
+            your pets and Dire Beasts, causing them to deal up to (Ranged
+            attack power * 1.15 * 0.5 * 1) Nature damage to their target every
+            1 sec. for 8 sec.
+
+            Dire Frenzy
+            Also causes your next Dire Frenzy to deal (200% of Attack power)
+            additional Nature damage on each of the 5 Dire Frenzy attacks
+        ]]
         addAbility( 'titans_thunder', {
             id = 207068,
             spend = 0,
@@ -870,9 +1450,16 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             applyBuff( 'titans_frenzy' )
         end )
 
-    
-        -- Abilities.
 
+        ------------------------------------------------------------------------
+        -- Abilities Marksmanship
+
+
+        --[[
+            A powerful aimed shot that deals [425% * ((max(0, min(Level - 10, 
+            0)) * 8 + 130) / 210)] Physical damage.  Damage increased by 50%
+            against a target you have not yet damaged.
+        ]]
         addAbility( "aimed_shot", {
             id = 19434,
             spend = 50,
@@ -941,9 +1528,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
-        -- Arcane Shot
-        --[[ A quick shot that causes 98,146 Arcane damage.    Generates 8 Focus. ]]
-
+        --[[
+            A quick shot that causes [200% * ((max(0, min(Level - 10, 10)) * 5
+            + 80) / 130)] Arcane damage.
+            Generates 8 Focus.
+        ]]
         addAbility( "arcane_shot", {
             id = 185358,
             spend = -8,
@@ -977,47 +1566,274 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
-        addAbility( "aspect_of_the_chameleon", {
-            id = 61648,
+        --[[
+            Fires a Black Arrow at the target, dealing (520% of Attack power)
+            Shadow damage over 8 sec and summoning a Dark Minion to taunt it
+            for the duration.
+            When you kill an enemy, the remaining cooldown on Black Arrow will
+            reset.
+        ]]
+        addAbility( "black_arrow", {
+            id = 194599,
+            spend = 10,
+            cast = 0, 
+            gcdType = "spell",
+            talent = "black_arrow",
+            cooldown = 15,
+            velocity = 60,
+        } )
+
+        modifyAbility( "black_arrow", "cooldown", genericHasteMod )
+
+        addHandler( "black_arrow", function ()
+            applyDebuff( "target", "black_arrow" )
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+        end )
+
+
+        --[[
+            Fires an explosion of bolts at all enemies in front of you,
+            knocking them back, disorienting them for 4 sec, and dealing 40%
+            Physical damage.
+        ]]
+        addAbility( "bursting_shot", {
+            id = 186387,
+            spend = 10,
+            min_cost = 10,
+            spend_type = "focus",
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 30,
+            min_range = 0,
+            max_range = 0,
+        } )
+
+        addHandler( "bursting_shot", function ()
+            applyDebuff( "target", "bursting_shot", 4 )
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+        end )
+
+        
+        --[[
+            Fires a slow-moving munition directly forward. Activating this
+            ability a second time detonates the Shot, dealing up to (1000% of
+            Attack power) Fire damage to all enemies within 8 yds, damage based
+            on proximity.
+        ]]
+        addAbility( "explosive_shot", {
+            id = 212431,
+            spend = 20,
+            min_cost = 20,
+            spend_type = "focus",
+            cast = 0,
+            gcdType = "spell",
+            talent = "explosive_shot",
+            cooldown = 30,
+            min_range = 0,
+            max_range = 47.171875,
+        } )
+
+        addHandler( "explosive_shot", function ()
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+        end )
+
+
+        --[[
+            Rapidly fires shots at all targets with your Hunter's Mark, dealing
+            550% Physical damage and making them Vulnerable for 7 sec.
+
+            Vulnerable
+            Damage taken from Aimed Shot and Piercing Shot increased by 30% for
+            7 sec.
+        ]]
+        addAbility( "marked_shot", {
+            id = 185901,
+            spend = 25,
+            min_cost = 25,
+            spend_type = "focus",
+            cast = 0,
+            gcdType = "spell",
+            cooldown = 0,
+            min_range = 0,
+            max_range = 47.171875,            
+            usable = function () return active_dot.hunters_mark > 0 end,
+            velocity = 60
+        } )
+
+        addHandler( "marked_shot", function ()
+            if debuff.hunters_mark.up then
+                applyDebuff( "target", "vulnerable" )
+                removeDebuff( "target", "hunters_mark" )
+            end
+            active_dot.vulnerable = active_dot.hunters_mark
+            active_dot.hunters_mark = 0
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+        end )
+
+
+        --[[
+            A powerful shot which deals up to (2 * 775%) Physical damage to the
+            target and up to 775% Physical damage to all enemies between you
+            and the target. Damage increased against targets with Vulnerable.
+        ]]
+        addAbility( "piercing_shot", {
+            id = 198670,
+            spend = 20,
+            spend_type = "focus",
+            cast = 0,
+            gcdType = "spell",
+            talent = "piercing_shot",
+            cooldown = 30,
+            min_range = 0,
+            max_range = 47.171875,
+            recheck = function ()
+                return focus.time_to_86, focus.time_to_101, focus.time_to_106
+            end,
+            velocity = 100,
+        } )
+
+        addHandler( "piercing_shot", function ()
+            spend( min( focus.current, 80 ), "focus" )
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+        end )
+
+
+        --[[
+            Your Sentinel watches over the target area for 18 sec, applying
+            Hunter's Mark to all enemies every 6 sec.
+        ]]
+        addAbility( "sentinel", {
+            id = 206817,
+            spend = 0,
+            cast = 0,
+            gcdType = "spell",
+            talent = "sentinel",
+            cooldown = 60,
+            min_range = 0,
+            max_range = 47.171875,
+        } )
+
+        addHandler( "sentinel", function ()
+            applyBuff( "sentinel" )
+        end )
+
+
+        --[[
+            Launches Sidewinders that travel toward the target, weaving back
+            and forth and dealing (500% of Attack power) Nature damage to each
+            target they hit. Cannot hit the same target twice. Applies
+            Vulnerable to all targets hit.
+            Generates 35 Focus.
+            Also replaces Multi-Shot.
+        ]]
+        addAbility( "sidewinders", {
+            id = 214579,
+            spend = -40,
+            spend_type = "focus",
+            cast = 0,
+            gcdType = "spell",
+            talent = "sidewinders",
+            cooldown = 12,
+            charges = 2,
+            recharge = 12,
+            min_range = 0,
+            max_range = 47.171875,
+            -- velocity = 18,
+        } )
+
+        modifyAbility( "sidewinders", "spend", function( x )
+            if set_bonus.tier21 > 1 then return x * 1.25 end
+            return x
+        end )
+
+        modifyAbility( "sidewinders", "cooldown", genericHasteMod )
+        modifyAbility( "sidewinders", "recharge", genericHasteMod )
+
+        --[[ addCooldownMetaFunction( "sidewinders", "full_recharge_time", function( x )
+            if not talent.sidewinders.enabled then return 0 end
+            return ( cooldown.sidewinders.max_charges - cooldown.sidewinders.charges_fractional ) * cooldown.sidewinders.recharge
+        end ) ]]
+
+        addHandler( "sidewinders", function ()
+            if buff.marking_targets.up or buff.trueshot.up then
+                applyDebuff( "target", "hunters_mark" )
+                active_dot.hunters_mark = active_enemies
+                removeBuff( "marking_targets" )
+            end
+            if talent.steady_focus.enabled then
+                applyBuff( "steady_focus" )
+            end
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+        end )
+
+        
+        --[[
+            Increases haste by 40% and causes Arcane Shot and Multi-Shot to
+            always apply Hunter's Mark. Lasts 15 sec.
+        ]]
+        addAbility( "trueshot", {
+            id = 193526,
             spend = 0,
             cast = 0,
             gcdType = "spell",
             cooldown = 180,
             min_range = 0,
             max_range = 0,
+            toggle = "cooldowns"
         } )
 
-        modifyAbility( 'aspect_of_the_chameleon', 'cooldown', function( x )
-            if equipped.call_of_the_wild then return x * 0.65 end
-            return x
+        local ts_qs_ranks = { 10, 20, 30, 38, 45, 52, 58 }
+
+        addCooldownMetaFunction( 'trueshot', 'duration_guess', function ()
+            return cooldown.trueshot.duration * 0.7
         end )
 
-        addHandler( "aspect_of_the_chameleon", function ()
-            applyBuff( "aspect_of_the_chameleon" )
+        addCooldownMetaFunction( 'trueshot', 'remains_guess', function ()
+            return cooldown.trueshot.remains * 0.7
         end )
-        
 
-        addAbility( 'aspect_of_the_cheetah', {
-            id = 186257,
-            spend = 0,
-            spend_type = 'focus',
-            cast = 0,
-            gcdType = 'off',
-            cooldown = 180,
+        addHandler( "trueshot", function ()
+            applyBuff( "trueshot" )
+        end )
+
+
+        --[[
+            Focuses the power of Wind through Thas'dorah, dealing 800% Physical
+            damage to your target, and leaving behind a trail of wind for 5 sec
+            that increases the movement speed of allies by 50%.
+        ]]
+        addAbility( "windburst", {
+            id = 204147,
+            spend = 20,
+            min_cost = 20,
+            spend_type = "focus",
+            cast = 1.5,
+            gcdType = "spell",
+            cooldown = 20,
+            min_range = 0,
+            max_range = 47.171875,
+            toggle = "artifact",
+            in_flight = function () return prev_gcd[1].windburst end,
+            velocity = 50,
         } )
 
-        modifyAbility( 'aspect_of_the_cheetah', 'cooldown', function ()
-            if equipped.call_of_the_wild then return x * 0.65 end
-            return x
-        end )
+        modifyAbility( "windburst", "cast", genericHasteMod )
 
-        addHandler( 'aspect_of_the_cheetah', function( x )
-            applyBuff( 'aspect_of_the_cheetah_sprint', 3 )
-            applyBuff( 'aspect_of_the_cheetah', 12 )
-            if artifact.feet_of_wind.enabled then applyBuff( "feet_of_wind" ) end
+        addHandler( "windburst", function ()
+            if equipped.celerity_of_the_windrunners then applyBuff( "celerity_of_the_windrunners" ) end
+            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
         end )
 
 
+        ------------------------------------------------------------------------
+        -- Abilities Survival
+
+
+        --[[
+            Grants you and your pet 0% increased Critical Strike chance on all
+            abilities, and your pet's attacks have an additional 25% chance to
+            grant you a charge of Mongoose Bite. Lasts 10 sec.
+        ]]
         addAbility( 'aspect_of_the_eagle', {
             id = 186289,
             spend = 0,
@@ -1039,118 +1855,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             stat.mod_crit_pct = stat.mod_crit_pct + 20
         end )
 
-        
-        addAbility( 'aspect_of_the_turtle', {
-            id = 186265,
-            spend = 0,
-            spend_type = 'focus',
-            cast = 0,
-            gcdType = 'off',
-            cooldown = 180,
-        } )
 
-        modifyAbility( 'aspect_of_the_turtle', 'cooldown', function( x )
-            if equipped.call_of_the_wild then return x * 0.65 end
-            return x
-        end )
-
-        addHandler( 'aspect_of_the_turtle', function ()
-            applyBuff( 'aspect_of_the_turtle', 8 )
-            setCooldown( 'global_cooldown', 8 )
-        end )
-
-
-        -- Barrage
-        --[[ Rapidly fires a spray of shots for 2.6 sec, dealing an average of 674,082 Physical damage to all enemies in front of you. Usable while moving. ]]
-
-        addAbility( "barrage", {
-            id = 120360,
-            spend = 60,
-            min_cost = 60,
-            spend_type = "focus",
-            cast = 3,
-            channeled = true,
-            gcdType = "spell",
-            talent = "barrage",
-            cooldown = 20,
-            min_range = 0,
-            max_range = 47.171875,
-        } )
-
-        modifyAbility( "barrage", "spend", function ()
-            if spec.marksmanship and set_bonus.tier19 > 3 then return x * 0.85 end
-            return x
-        end )
-
-        modifyAbility( "barrage", "cast", genericHasteMod )
-
-        addHandler( "barrage", function ()
-            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
-        end ) 
-
-
-        -- Binding Shot
-        --[[ Fires a magical projectile, tethering the enemy and any other enemies within 5 yards for 10 sec, stunning them for 5 sec if they move more than 5 yards from the arrow. Player targets are stunned for a shorter duration. ]]
-
-        addAbility( "binding_shot", {
-            id = 109248,
-            spend = 0,
-            cast = 0,
-            gcdType = "spell",
-            talent = "binding_shot",
-            cooldown = 45,
-            min_range = 0,
-            max_range = 35.37890625,
-        } )
-
-        addHandler( "binding_shot", function ()
-            -- proto
-        end )
-
-
-        addAbility( "black_arrow", {
-            id = 194599,
-            spend = 10,
-            cast = 0, 
-            gcdType = "spell",
-            talent = "black_arrow",
-            cooldown = 15,
-            velocity = 60,
-        } )
-
-        modifyAbility( "black_arrow", "cooldown", genericHasteMod )
-
-        addHandler( "black_arrow", function ()
-            applyDebuff( "target", "black_arrow" )
-            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
-        end )
-
-
-        -- Bursting Shot
-        --[[ Fires an explosion of bolts at all enemies in front of you, knocking them back, disorienting them for 4 sec, and dealing 33,704 Physical damage. ]]
-
-        addAbility( "bursting_shot", {
-            id = 186387,
-            spend = 10,
-            min_cost = 10,
-            spend_type = "focus",
-            cast = 0,
-            gcdType = "spell",
-            cooldown = 30,
-            min_range = 0,
-            max_range = 0,
-        } )
-
-        modifyAbility( "bursting_shot", "cooldown", function( x )
-            return ( 1 - ( 0.05 * artifact.gust_of_wind.rank ) ) * x
-        end )
-        
-        addHandler( "bursting_shot", function ()
-            applyDebuff( "target", "bursting_shot", 4 )
-            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
-        end )
-                
-
+        --[[
+            Strike all nearby enemies in a flurry of strikes, inflicting 694%
+            Physical damage to each.
+        ]]
         addAbility( 'butchery', {
             id = 212436,
             spend = 40,
@@ -1190,23 +1899,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
         
-        addAbility( 'summon_pet', {
-            id = 883,
-            spend = 0,
-            spend_type = 'focus',
-            cast = 0,
-            gcdType = 'spell',
-            cooldown = 0,
-            passive = true,
-            texture = 'Interface\\ICONS\\Ability_Hunter_BeastCall',
-            usable = function () return not talent.lone_wolf.enabled and not pet.exists end
-        } )
-
-        addHandler( 'summon_pet', function ()
-            summonPet( 'made_up_pet', 3600, 'ferocity' )
-        end )
-
-
+        --[[
+            Scatters Caltrops in an area for 15 sec. Enemies who step on
+            Caltrops will take (45% of Attack power) Bleed damage every 1 sec,
+            and have 70% reduced movement speed for 6 sec.
+        ]]
         addAbility( 'caltrops', {
             id = 194277,
             spend = 0,
@@ -1223,21 +1920,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         -- addHandler() -- Maybe for the snare?
 
 
-        addAbility( 'camouflage', {
-            id = 199483,
-            spend = 0,
-            spend_type = 'focus',
-            cast = 0,
-            gcdType = 'off',
-            passive = true,
-            talent = 'camouflage',
-        } )
-
-        addHandler( 'camouflage', function ()
-            applyBuff( 'camouflage', 60 )
-        end )
-
-
+        --[[
+            A sweeping attack that strikes all enemies in front of you for 324%
+            Physical damage.
+        ]]
         addAbility( 'carve', {
             id = 187708,
             spend = 40,
@@ -1278,58 +1964,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
-        -- Concussive Shot
-        --[[ Dazes the target, slowing movement speed by 50% for 6 sec. ]]
-
-        addAbility( "concussive_shot", {
-            id = 5116,
-            spend = 0,
-            cast = 0,
-            gcdType = "spell",
-            cooldown = 5,
-            min_range = 0,
-            max_range = 47.171875,
-        } )
-
-        addHandler( "concussive_shot", function ()
-            applyDebuff( "target", "concussive_shot", 6 )
-        end )
-
-
-        -- Counter Shot
-        --[[ Interrupts spellcasting, preventing any spell in that school from being cast for 3 sec. ]]
-
-        addAbility( "counter_shot", {
-            id = 147362,
-            spend = 0,
-            cast = 0,
-            gcdType = "off",
-            cooldown = 24,
-            min_range = 0,
-            max_range = 47.171875,
-            toggle = "interrupts",
-            usable = function () return target.casting end,
-        } )
-
-        addHandler( "counter_shot", function ()
-            interrupt()
-        end )
-
-
-        addAbility( 'disengage', {
-            id = 781,
-            spend = 0,
-            spend_type = 'focus',
-            cast = 0,
-            gcdType = 'off',
-            cooldown = 20
-        } )
-
-        addHandler( "disengage", function ()
-            if talent.posthaste.enabled then applyBuff( "posthaste" ) end 
-        end )
-
-
+        --[[
+            Hurls a dragonsfire grenade at the target that explodes into flames,
+            inflicting [(1304% of Attack power) + (400% of Attack power)] Fire
+            damage over 8 sec and reducing movement speed by 20%. The volatile
+            flames on the target also scorch nearby enemies.
+        ]]
         addAbility( 'dragonsfire_grenade', {
             id = 194855,
             spend = 0,
@@ -1347,58 +1987,39 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
-        addAbility( 'exhilaration', {
-            id = 109304,
+        --[[
+            Hurls a fire trap to the target location  that explodes when an
+            enemy approaches, causing (420% of Attack power) Fire damage and
+            burning all enemies within 8 yards for (420% of Attack power)
+            additional Fire damage over 10 sec. Trap will exist for 1 min.
+        ]]
+        addAbility( 'explosive_trap', {
+            id = 191433,
             spend = 0,
             spend_type = 'focus',
             cast = 0,
-            gcdType = 'off',
-            cooldown = 120,
-            passive = true,
-        } )
-
-        addHandler( 'exhilaration', function ()
-            health.actual = min( health.max, health.actual + ( health.max * 0.3 ) )
-        end )
-
-
-        -- Explosive Shot
-        --[[ Fires a slow-moving munition directly forward. Activating this ability a second time detonates the Shot, dealing up to 683,411 Fire damage to all enemies within 8 yds, damage based on proximity. ]]
-
-        addAbility( "explosive_shot", {
-            id = 212431,
-            spend = 20,
-            min_cost = 20,
-            spend_type = "focus",
-            cast = 0,
-            gcdType = "spell",
-            talent = "explosive_shot",
+            gcdType = 'spell',
             cooldown = 30,
-            min_range = 0,
-            max_range = 47.171875,
+            velocity = 10,
+            passive = true
         } )
 
-        addHandler( "explosive_shot", function ()
-            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
+        addHandler( 'explosive_trap', function ()
+            gain( 25, 'focus' )
         end )
 
 
-        addAbility( 'feign_death', {
-            id = 5384,
-            spend = 0,
-            spend_type = 'focus',
-            cast = 0,
-            gcdType = 'off',
-            cooldown = 30,
-            passive = true,
-        } )
-
-        addHandler( 'feign_death', function ()
-            applyBuff( 'feign_death', 360 )
-            if equipped.the_shadow_hunters_voodoo_mask then health.actual = min( health.max, health.actual + ( health.max * 0.2 ) ) end
-        end )
-        
-
+        --[[
+            A coordinated attack on the target, where you deal [390% * ((max(0,
+            min(Level - 10, 10)) * 7 + 130) / 200)] Physical damage and your
+            pet deals [1.6 * ((Attack power * 4.2)) * (1 + Versatility) *
+            (min(Level, 20) * 0.05)] Physical damage.
+            If the target is attacking you, your pet's attack will deal 50%
+            increased damage and 400% increased threat. Otherwise, your attack
+            will deal 50% increased damage.
+            Flanking strike has double the normal chance to trigger Hunting
+            Companion
+        ]]
         addAbility( 'flanking_strike', {
             id = 202800,
             spend = 50,
@@ -1434,6 +2055,11 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
+        --[[
+            Furiously strikes all enemies in front of you, dealing ((125% of
+            Attack power) * 9) Physical damage over 4 sec. Damage increased by
+            Mongoose Fury.
+        ]]
         addAbility( 'fury_of_the_eagle', {
             id = 203415,
             spend = 0,
@@ -1455,8 +2081,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 buff.mongoose_fury.expires = buff.mongoose_fury.expires + ( 4 * haste )
             end
         end )
-        
 
+        
+        --[[
+            Hurls a harpoon at an enemy, rooting them in place for 3 sec and
+            pulling you to them.
+        ]]
         addAbility( 'harpoon', {
             id = 190925,
             spend = 0,
@@ -1481,6 +2111,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
+        --[[
+            Tosses a hatchet at an enemy, dealing (10% of Attack power)
+            Physical damage.
+        ]]
         addAbility( 'hatchet_toss', {
             id = 193265,
             spend = 0,
@@ -1492,6 +2126,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         } )
 
 
+        --[[
+            Tears a bleeding wound in the target, dealing [(964.8% of Attack
+            power) + (187.2% of Attack power)] Physical damage over 12 sec.
+        ]]
         addAbility( 'lacerate', {
             id = 185855,
             spend = 35,
@@ -1524,34 +2162,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
-        -- Marked Shot
-        --[[ Rapidly fires shots at all targets with your Hunter's Mark, dealing 509,789 Physical damage and making them Vulnerable for 7 sec.     Vulnerable  Damage taken from Aimed Shot increased by 30% for 7 sec. ]]
-
-        addAbility( "marked_shot", {
-            id = 185901,
-            spend = 25,
-            min_cost = 25,
-            spend_type = "focus",
-            cast = 0,
-            gcdType = "spell",
-            cooldown = 0,
-            min_range = 0,
-            max_range = 47.171875,            
-            usable = function () return active_dot.hunters_mark > 0 end,
-            velocity = 60
-        } )
-
-        addHandler( "marked_shot", function ()
-            if debuff.hunters_mark.up then
-                applyDebuff( "target", "vulnerable" )
-                removeDebuff( "target", "hunters_mark" )
-            end
-            active_dot.vulnerable = active_dot.hunters_mark
-            active_dot.hunters_mark = 0
-            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
-        end )
-
-
+        --[[
+            Attempts to sever the target's limbs with a brutal attack that
+            deals 300% Physical damage and grants you Mongoose Fury.
+            Mongoose Fury increases Mongoose Bite damage by 50% for 14 sec,
+            stacking up to 6 times. Successive attacks do not increase duration.
+        ]]
         addAbility( 'mongoose_bite', {
             id = 190928,
             spend = 0,
@@ -1594,57 +2210,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             applyBuff( 'mongoose_fury', buff.mongoose_fury.remains > 0 and buff.mongoose_fury.remains or 14, min( 6, buff.mongoose_fury.stack + 1 ) )
 
         end )
-        
-
-        -- Multi-Shot
-        --[[ Fires several missiles, hitting your current target and all enemies within 8 yards for 55,452 Physical damage.    Generates 3 Focus per target hit. ]]
-
-        addAbility( "multishot", {
-            id = 2643,
-            spend = -3,
-            min_cost = 0,
-            spend_type = "focus",
-            cast = 0,
-            gcdType = "spell",
-            cooldown = 0,
-            notalent = "sidewinders",
-            min_range = 0,
-            max_range = 47.171875,
-            recheck = function () return buff.beast_cleave.remains - gcd, buff.beast_cleave.remains end,
-            velocity = 50,
-        } )
-
-        modifyAbility( "multishot", "spend", function( x )
-            if spec.beast_mastery then
-                x = 40
-                if equipped.roar_of_the_seven_lions and buff.bestial_wrath.up then x = x * 0.85 end
-                return x
-            end
-            if set_bonus.tier21 > 1 then x = x * 1.25 end
-            return x * active_enemies
-        end )
-
-        addHandler( "multishot", function ()
-            if spec.beast_mastery then
-                if active_enemies > 1 then applyBuff( "beast_cleave" ) end
-                return
-            end
-            -- Marksmanship.
-            if buff.marking_targets.up or buff.trueshot.up then
-                applyDebuff( "target", "hunters_mark" )
-                removeBuff( "marking_targets" )
-                active_dot.hunters_mark = active_enemies
-            end
-            if talent.steady_focus.enabled and ( prev_gcd[1].arcane_shot or prev_gcd[1].multishot ) then
-                applyBuff( "steady_focus" )
-            end
-            if equipped.war_belt_of_the_sentinel_army then
-                addStack( "sentinels_sight", 20, active_enemies )
-            end
-            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
-        end )
 
 
+        --[[
+            Interrupts spellcasting, preventing any spell in that school from
+            being cast for 3 sec.
+        ]]
         addAbility( 'muzzle', {
             id = 187707,
             spend = 0,
@@ -1664,31 +2235,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         registerInterrupt( 'muzzle' )
 
 
-        -- Piercing Shot
-        --[[ A powerful shot which deals up to 1.3 million Physical damage to the target and up to 653,017 Physical damage to all enemies between you and the target. Damage increased against targets with Vulnerable. ]]
-
-        addAbility( "piercing_shot", {
-            id = 198670,
-            spend = 20,
-            spend_type = "focus",
-            cast = 0,
-            gcdType = "spell",
-            talent = "piercing_shot",
-            cooldown = 30,
-            min_range = 0,
-            max_range = 47.171875,
-            recheck = function ()
-                return focus.time_to_86, focus.time_to_101, focus.time_to_106
-            end,
-            velocity = 100,
-        } )
-
-        addHandler( "piercing_shot", function ()
-            spend( min( focus.current, 80 ), "focus" )
-            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
-        end )
-
-
+        --[[
+            Hurls a net at the enemy, rooting the target for 3 sec and reducing
+            movement speed by 50% for 15 sec. Damage may break the effect.
+        ]]
         addAbility( 'rangers_net', {
             id = 200108,
             spend = 30,
@@ -1716,6 +2266,9 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
+        --[[
+            A vicious slash dealing 257% Physical damage.
+        ]]
         addAbility( 'raptor_strike', {
             id = 186270,
             spend = 25,
@@ -1747,69 +2300,12 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
             removeBuff( "in_for_the_kill" )
         end )
 
-        -- Sentinel
-        --[[ Your Sentinel watches over the target area for 18 sec, applying Hunter's Mark to all enemies every 6 sec. ]]
 
-        addAbility( "sentinel", {
-            id = 206817,
-            spend = 0,
-            cast = 0,
-            gcdType = "spell",
-            talent = "sentinel",
-            cooldown = 60,
-            min_range = 0,
-            max_range = 47.171875,
-        } )
-
-        addHandler( "sentinel", function ()
-            applyBuff( "sentinel" )
-        end )
-
-
-        -- Sidewinders
-        --[[ Launches Sidewinders that travel toward the target, weaving back and forth and dealing 251,866 Nature damage to each target they hit. Cannot hit the same target twice. Applies Vulnerable to all targets hit.    Generates 35 Focus. ]]
-
-        addAbility( "sidewinders", {
-            id = 214579,
-            spend = -40,
-            spend_type = "focus",
-            cast = 0,
-            gcdType = "spell",
-            talent = "sidewinders",
-            cooldown = 12,
-            charges = 2,
-            recharge = 12,
-            min_range = 0,
-            max_range = 47.171875,
-            -- velocity = 18,
-        } )
-
-        modifyAbility( "sidewinders", "spend", function( x )
-            if set_bonus.tier21 > 1 then return x * 1.25 end
-            return x
-        end )
-
-        modifyAbility( "sidewinders", "cooldown", genericHasteMod )
-        modifyAbility( "sidewinders", "recharge", genericHasteMod )
-
-        --[[ addCooldownMetaFunction( "sidewinders", "full_recharge_time", function( x )
-            if not talent.sidewinders.enabled then return 0 end
-            return ( cooldown.sidewinders.max_charges - cooldown.sidewinders.charges_fractional ) * cooldown.sidewinders.recharge
-        end ) ]]
-
-        addHandler( "sidewinders", function ()
-            if buff.marking_targets.up or buff.trueshot.up then
-                applyDebuff( "target", "hunters_mark" )
-                active_dot.hunters_mark = active_enemies
-                removeBuff( "marking_targets" )
-            end
-            if talent.steady_focus.enabled then
-                applyBuff( "steady_focus" )
-            end
-            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
-        end )
-        
-
+        --[[
+            Summons a Spitting Cobra for 30 sec that attacks your target for
+            (100% of Attack power) Nature damage every 2 sec. While the Cobra
+            is active you gain an extra 3 Focus every 1 sec.
+        ]]
         addAbility( 'spitting_cobra', {
             id = 194407,
             spend = 0,
@@ -1822,12 +2318,15 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         } )
 
         addHandler( 'spitting_cobra', function ()
-            summonPet( 'spitting_cobra', 30 )
-            applyBuff( 'spitting_cobra', 30 )
+            summonPet( 'spitting_cobra', 20 )
+            applyBuff( 'spitting_cobra', 20 )
             -- focus.regen = focus.regen + 3
         end )
 
 
+        --[[
+            Instantly grants you 3 charges of Mongoose Bite.
+        ]]
         addAbility( 'snake_hunter', {
             id = 201078,
             spend = 0,
@@ -1844,46 +2343,14 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
-        addAbility( 'freezing_trap', {
-            id = 187650,
-            spend = 0,
-            spend_type = 'focus',
-            cast = 0,
-            gcdType = 'spell',
-            cooldown = 30,
-            passive = true,
-            notalent = 'steel_trap',
-        } )
-
-
-        addAbility( 'explosive_trap', {
-            id = 191433,
-            spend = 0,
-            spend_type = 'focus',
-            cast = 0,
-            gcdType = 'spell',
-            cooldown = 30,
-            velocity = 10,
-            passive = true
-        } )
-
-        addHandler( 'explosive_trap', function ()
-            gain( 25, 'focus' )
-        end )
-
-
-        addAbility( 'tar_trap', {
-            id = 187698,
-            spend = 0,
-            spend_type = 'focus',
-            cast = 0,
-            gcdType = 'spell',
-            cooldown = 30,
-            passive = true,
-            notalent = 'caltrops'
-        } )
-
-
+        --[[
+            Hurls a Steel Trap to the target location that immobilizes the
+            first enemy that approaches for 30 sec and deals (1500% of Attack
+            power) bleed damage over 30 sec. Other damage may break the
+            immobilization effect. Limit 1. Trap will exist for 1 min.
+            Waylay: Fully arms after 2 sec, dealing 500% increased damage if
+            triggered by an enemy that is not in combat.
+        ]]
         addAbility( 'steel_trap', {
             id = 162488,
             spend = 0,
@@ -1900,7 +2367,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         end )
 
 
-
+        --[[
+            Hurls a concussive grenade at your target which sticks to them and
+            explodes after 2 sec, knocking back all nearby enemies.
+        ]]
         addAbility( 'sticky_bomb', {
             id = 191241,
             spend = 0,
@@ -1913,6 +2383,10 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         } )
 
 
+        --[[
+            Tosses 3 axes at an enemy, each dealing (312.5% of Attack power)
+            Physical damage.
+        ]]
         addAbility( 'throwing_axes', {
             id = 200163,
             spend = 15,
@@ -1929,149 +2403,6 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
         modifyAbility( 'throwing_axes', 'cooldown', genericHasteMod )
         modifyAbility( 'throwing_axes', 'recharge', genericHasteMod )
 
-        
-        -- Trueshot
-        --[[ Increases haste by 40% and causes Arcane Shot and Multi-Shot to always apply Hunter's Mark. Lasts 15 sec. ]]
-
-        addAbility( "trueshot", {
-            id = 193526,
-            spend = 0,
-            cast = 0,
-            gcdType = "spell",
-            cooldown = 180,
-            min_range = 0,
-            max_range = 0,
-            toggle = "cooldowns"
-        } )
-
-        local ts_qs_ranks = { 10, 20, 30, 38, 45, 52, 58 }
-
-        modifyAbility( "trueshot", "cooldown", function( x )
-            return x - ( ts_qs_ranks[ artifact.quick_shot.rank ] or 0 )
-        end )
-
-        addCooldownMetaFunction( 'trueshot', 'duration_guess', function ()
-            return cooldown.trueshot.duration * 0.7
-        end )
-
-        addCooldownMetaFunction( 'trueshot', 'remains_guess', function ()
-            return cooldown.trueshot.remains * 0.7
-        end )
-
-        addHandler( "trueshot", function ()
-            applyBuff( "trueshot" )
-        end )
-
-
-        -- Volley
-        --[[ While active, your auto attacks spend 3 Focus to also launch a volley of shots that hit the target and all other nearby enemies, dealing 76,542 additional Physical damage. ]]
-
-        addAbility( "volley", {
-            id = 194386,
-            spend = 0,
-            cast = 0,
-            gcdType = "spell",
-            talent = "volley",
-            cooldown = 1.5,
-            min_range = 0,
-            max_range = 0,
-            nobuff = "volley"
-        } )
-
-        modifyAbility( 'volley', 'cooldown', genericHasteMod )
-
-        addHandler( "volley", function ()
-            if buff.volley.down then
-                applyBuff( "volley" )
-            elseif buff.volley.up then
-                removeBuff( "volley" )
-            end
-        end )
-
-
-        -- Windburst
-        --[[ Focuses the power of Wind through Thas'dorah, dealing 674,083 Physical damage to your target, and leaving behind a trail of wind for 5 sec that increases the movement speed of allies by 50%. ]]
-
-        addAbility( "windburst", {
-            id = 204147,
-            spend = 20,
-            min_cost = 20,
-            spend_type = "focus",
-            cast = 1.5,
-            gcdType = "spell",
-            cooldown = 20,
-            min_range = 0,
-            max_range = 47.171875,
-            toggle = "artifact",
-            in_flight = function () return prev_gcd[1].windburst end,
-            velocity = 50,
-        } )
-
-        modifyAbility( "windburst", "cast", genericHasteMod )
-
-        addHandler( "windburst", function ()
-            if equipped.celerity_of_the_windrunners then applyBuff( "celerity_of_the_windrunners" ) end
-            if equipped.ullrs_feather_snowshoes and cooldown.trueshot.expires > 0 then cooldown.trueshot.expires = cooldown.trueshot.expires - 0.8 end
-            if artifact.mark_of_the_windrunner.enabled then applyDebuff( "target", "vulnerable" ) end
-        end )
-
-
-        -- Wyvern Sting
-        --[[ A stinging shot that puts the target to sleep, incapacitating them for 30 sec. Damage will cancel the effect. Usable while moving. ]]
-
-        addAbility( "wyvern_sting", {
-            id = 19386,
-            spend = 0,
-            cast = 1.5,
-            gcdType = "spell",
-            talent = "wyvern_sting",
-            cooldown = 45,
-            min_range = 0,
-            max_range = 47.171875,
-        } )
-
-        modifyAbility( "wyvern_sting", "cast", genericHasteMod )
-
-        addHandler( "wyvern_sting", function ()
-            applyDebuff( "target", "wyvern_sting" )
-        end )
-
-
-        addAbility( 'a_murder_of_crows', {
-            id = 206505,
-            spend = 30,
-            spend_type = 'focus',
-            ready = 30,
-            cast = 0,
-            gcdType = 'spell',
-            cooldown = 60,
-            velocity = 60,
-            recheck = function ()
-                if spec.beast_mastery then return cooldown.bestial_wrath.remains - 3 end
-            end,
-            talent = 'a_murder_of_crows'
-        }, 131894 )
-
-        modifyAbility( 'a_murder_of_crows', 'id', function( x )
-            if not spec.survival then return 131894 end
-            return x
-        end )
-
-        modifyAbility( 'a_murder_of_crows', 'ready', function( x )
-            if spec.survival then
-                if not talent.way_of_the_moknathal.enabled or not settings.moknathal_padding then
-                    return x
-                end
-
-                local ticks = floor( ( buff.moknathal_tactics.remains - refresh_window ) / focus.tick_rate )
-                return x + max( 0, 25 - floor( focus.regen * ticks * focus.tick_rate ) ), "focus"
-            end
-        end )
-
-        addHandler( 'a_murder_of_crows', function ()
-            -- if settings.moknathal_padding and talent.way_of_the_moknathal.enabled then gain( max( 0, 25 - focus.regen * max( 0, buff.moknathal_tactics.remains - gcd ) ), 'focus', true ) end
-            applyDebuff( 'target', 'a_murder_of_crows', 15 )
-        end )
 
     end
 

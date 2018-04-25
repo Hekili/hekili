@@ -502,7 +502,7 @@ ns.addPerk = addPerk
 
 local function addTalent( key, id, ... )
 
-    local name = GetSpellInfo( id )
+    local _, name = GetTalentInfoByID( id )
 
     if not name then
         ns.Error( "addTalent() - unable to get talent name from id #" .. id .. "." )

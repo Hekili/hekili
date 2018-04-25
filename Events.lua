@@ -234,9 +234,10 @@ function ns.updateTalents()
 
     -- local specGroup = GetSpecialization()
 
-    for i = 1, MAX_TALENT_TIERS do
-        for j = 1, NUM_TALENT_COLUMNS do
-            local _, name, _, enabled = GetTalentInfo( i, j, 1 )
+    for i = 1, 7 do
+        for j = 1, 3 do
+            local _, name, _, enabled, _, sID, _, _, _, _, known = GetTalentInfo( i, j, 1 )
+            enabled = enabled or known
 
             for k, v in pairs( ns.class.talents ) do
                 if name == v.name then
@@ -254,7 +255,7 @@ function ns.updateTalents()
         end
     end
 
-    for item, specs in pairs( class.talentLegendary ) do
+    --[[ for item, specs in pairs( class.talentLegendary ) do
         local tal = specs[ state.spec.key ]
         if state.equipped[ item ] and tal then
             if rawget( state.talent, tal ) then
@@ -266,12 +267,12 @@ function ns.updateTalents()
                 }
             end
         end
-    end
+    end ]]
 
 end
 
 
-RegisterEvent( "PLAYER_TALENT_UPDATE", function ( event )
+RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event )
     ns.updateTalents()
 
     Hekili:ForceUpdate( event )
@@ -985,7 +986,7 @@ RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
     ReadKeybindings()
     Hekili:ForceUpdate( event )
 end )
--- RegisterUnitEvent( "PLAYER_TALENT_UPDATE", ReadKeybindings )
+-- RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", ReadKeybindings )
 -- RegisterUnitEvent( "PLAYER_EQUIPMENT_CHANGED", ReadKeybindings )
 
 

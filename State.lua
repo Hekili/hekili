@@ -3792,6 +3792,9 @@ ns.spendResources = function( ability )
             resource = action.spend_type or class.primaryResource
         elseif type( action.spend ) == 'function' then
             cost, resource = action.spend()
+        else
+            cost = cost or 0
+            resource = resource or 'health'
         end
         
         if cost > 0 and cost < 1 then
@@ -3886,7 +3889,7 @@ do
         local toggle = profile.toggles[ ability.key ]
         if not toggle or toggle == 'default' then toggle = ability.toggle end
 
-        if toggle and not state.toggle[ toggle ] then
+        if toggle and toggle ~= 'none' and not state.toggle[ toggle ] then
             return true
         end
 

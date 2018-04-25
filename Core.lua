@@ -492,7 +492,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
         if debug then self:Debug( "No list with ID #%d. Should never see.", listID ) end
     elseif listStack[ listID ] then
         if debug then self:Debug( "Action list loop detected. %s was already processed earlier. Aborting.", list.Name ) end
-        return 
+        return action, wait, clash, depth
     else
         if debug then self:Debug( "Adding %s to the list of processed action lists.", list.Name ) end
         listStack[ listID ] = hookID or 0
@@ -504,7 +504,6 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
     local chosen_depth = depth or 0
 
     local force_channel = false
-    
     local stop = false
 
     table.wipe( itemTried )
@@ -513,6 +512,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
         local actID = 1
         
         while actID <= #list.Actions do
+            if not chosen_wait then print( hookID, listID, slot, "no chosen_wait" ) end
             if chosen_wait <= state.cooldown.global_cooldown.remains then
                 if debug then self:Debug( "The last selected ability ( %s ) is available by the next GCD.  End loop.", chosen_action ) end
                 if debug then self:Debug( "Removing %s from list of processed action lists.", list.Name ) end
