@@ -97,108 +97,27 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             }
         } )         
 
-        addTalent( 'final_verdict', 198038 )
-        addTalent( 'execution_sentence', 213757 )
-        addTalent( 'consecration', 205228 )
-
-        addTalent( 'the_fires_of_justice', 203316 )
-        addTalent( 'zeal', 217020 )
-        addTalent( 'greater_judgment', 218178 )
-
-        addTalent( 'fist_of_justice', 198054 )
-        addTalent( 'repentance', 20066 )
-        addTalent( 'blinding_light', 115750 )
-
-        addTalent( 'virtues_blade', 202271 )
-        addTalent( 'blade_of_wrath', 231832 )
-        addTalent( 'divine_hammer', 198034 )
-
-        addTalent( 'justicars_vengeance', 215661 )
-        addTalent( 'eye_for_an_eye', 205191 )
-        addTalent( 'word_of_glory', 210191 )
-
-        addTalent( 'divine_intervention', 213313 )
-        addTalent( 'cavalier', 230332 )
-        addTalent( 'seal_of_light', 202273 )
-
-        addTalent( 'divine_purpose', 223817 )
-        addTalent( 'crusade', 224668 )
-        addTalent( 'holy_wrath', 210220 )
-
-        addTalent( 'holy_shield', 152261 )
-        addTalent( 'blessed_hammer', 204019 )
-        addTalent( 'consecrated_hammer', 203785 )
-
-        addTalent( 'first_avenger', 203776 )
-        addTalent( 'bastion_of_light', 204035 )
-        addTalent( 'crusaders_judgment', 204023 )
-
-        addTalent( 'blessing_of_spellwarding', 204018 )
-        addTalent( 'retribution_aura', 203797 )
-        
-        addTalent( 'hand_of_the_protector', 213652 )
-        addTalent( 'knight_templar', 204139 )
-        addTalent( 'final_stand', 204077 )
-
-        addTalent( 'aegis_of_light', 204150 )
-        addTalent( 'judgment_of_light', 183778 )
-        addTalent( 'consecrated_ground', 204054 )
-
-        addTalent( 'righteous_protector', 204074 )
-        addTalent( 'seraphim', 152262 )
-        addTalent( 'last_defender', 203791 )
-
-
-        -- Artifact Traits
-        -- Retribution
-        addTrait( "ashbringers_light", 207604 )
-        addTrait( "ashes_to_ashes", 179546 )
-        addTrait( "blade_of_light", 214081 )
-        addTrait( "blessing_of_the_ashbringer", 238098 )
-        addTrait( "concordance_of_the_legionfall", 239042 )
-        addTrait( "deflection", 184778 )
-        addTrait( "deliver_the_justice", 186927 )
-        addTrait( "divine_tempest", 186773 )
-        addTrait( "echo_of_the_highlord", 186788 )
-        addTrait( "embrace_the_light", 186934 )
-        addTrait( "endless_resolve", 185086 )
-        addTrait( "ferocity_of_the_silver_hand", 241147 )
-        addTrait( "healing_storm", 193058 )
-        addTrait( "highlords_judgment", 186941 )
-        addTrait( "judge_unworthy", 238134 )
-        addTrait( "might_of_the_templar", 185368 )
-        addTrait( "protector_of_the_ashen_blade", 186944 )
-        addTrait( "righteous_blade", 184843 )
-        addTrait( "righteous_verdict", 238062 )
-        addTrait( "sharpened_edge", 184759 )
-        addTrait( "unbreakable_will", 182234 )
-        addTrait( "wake_of_ashes", 205273 )
-        addTrait( "wrath_of_the_ashbringer", 186945 )
-
-        -- Protection
-        addTrait( "bastion_of_truth", 209216 )
-        addTrait( "blessed_stalwart", 238133 )
-        addTrait( "bulwark_of_order", 209389 )
-        addTrait( "bulwark_of_the_silver_hand", 241146 )
-        addTrait( "concordance_of_the_legionfall", 239042 )
-        addTrait( "consecration_in_flame", 209218 )
-        addTrait( "defender_of_truth", 238097 )
-        addTrait( "eye_of_tyr", 209202 )
-        addTrait( "faiths_armor", 209225 )
-        addTrait( "forbearant_faithful", 209376 )
-        addTrait( "hammer_time", 209229 )
-        addTrait( "holy_aegis", 238061 )
-        addTrait( "light_of_the_titans", 209539 )
-        addTrait( "painful_truths", 209341 )
-        addTrait( "resolve_of_truth", 209224 )
-        addTrait( "righteous_crusader", 209226 )
-        addTrait( "sacrifice_of_the_just", 209285 )
-        addTrait( "scatter_the_shadows", 209223 )
-        addTrait( "stern_judgment", 209217 )
-        addTrait( "truthguards_light", 221841 )
-        addTrait( "tyrs_enforcer", 209474 )
-        addTrait( "unflinching_defense", 209220 )
-        addTrait( "unrelenting_light", 214924 )
+        addTalent( 'blade_of_wrath', 22592 )
+        addTalent( 'blinding_light', 21811 )
+        addTalent( 'cavalier', 22595 )
+        addTalent( 'consecration', 22182 )
+        addTalent( 'crusade', 22215 )
+        addTalent( 'divine_judgment', 22375 )
+        addTalent( 'divine_purpose', 22591 )     --[[ (223817) Your Holy Power spending abilities have a 20% chance to make your next Holy Power spending ability free. ]]
+        addTalent( 'execution_sentence', 22175 )
+        addTalent( 'eye_for_an_eye', 22186 )
+        addTalent( 'fires_of_justice', 22319 )
+        addTalent( 'fist_of_justice', 22896 )
+        addTalent( 'hammer_of_wrath', 22593 )
+        addTalent( 'inquisition', 22634 )
+        addTalent( 'justicars_vengeance', 22483 )
+        addTalent( 'repentance', 22180 )
+        addTalent( 'righteous_verdict', 22557 )
+        addTalent( 'selfless_healer', 23167 )
+        addTalent( 'unbreakable_spirit', 22185 )
+        addTalent( 'wake_of_ashes', 22183 )
+        addTalent( 'word_of_glory', 23086 )
+        addTalent( 'zeal', 22590 )
 
 
         -- Player Buffs.
@@ -213,16 +132,18 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'blessing_of_protection', 1022, 'duration', 10 )
         addAura( 'blessing_of_sacrifice', 6940, 'duration', 12 )
         addAura( 'blessing_of_spellwarding', 204018, 'duration', 10 )
-        addAura( 'blessing_of_the_ashbringer', 242981, 'duration', 3600 )
+        -- addAura( 'blessing_of_the_ashbringer', 242981, 'duration', 3600 )
         addAura( 'blinding_light', 115750, 'duration', 6 )
         -- addAura( 'consecration', 188370, 'duration', 8 )
         addAura( 'crusade', 231895, 'max_stack', 15 )
         addAura( 'divine_hammer', 198137 )
+        addAura( 'divine_judgment', 271581, 'duration', 15, 'max_stack', 15 )
+        addAura( 'divine_protection', 498, 'duration', 8 )
         addAura( 'divine_purpose', 223819 )
         addAura( 'divine_shield', 642, 'duration', 8 )
         addAura( 'divine_steed', 221883, 'duration', 3 )
         addAura( 'defender_of_truth', 240059, 'duration', 10 )
-        addAura( 'execution_sentence', 213757, 'duration', 7 )
+        addAura( 'execution_sentence', 267799, 'duration', 7 )
         addAura( 'eye_for_an_eye', 205191, 'duration', 10 )
         addAura( 'eye_of_tyr', 209202, 'duration', 9 )
         addAura( 'forbearance', 25771, 'duration', 30 )
@@ -234,26 +155,26 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addAura( 'hammer_of_justice', 853, 'duration', 6 )
         addAura( 'hand_of_hindrance', 183218, 'duration', 10 )
         addAura( 'hand_of_reckoning', 62124, 'duration', 3 )
-        addAura( 'judgment_of_light', 183778, 'duration', 30, 'max_stack', 40 )
+        addAura( 'inquisition', 84963, 'duration', 45 )
         addAura( 'light_of_the_titans', 209539, 'duration', 15 )
         addAura( 'repentance', 62124, 'duration', 60 )
-        addAura( 'righteous_verdict', 238996, 'duration', 15 )
+        --[[ When any party or raid member within 40 yds dies, you gain 20% increased damage done and 30% reduced damage taken for 10 sec. ]]
+        addAura( 'retribution', 183435, 'duration', 10 )
+        addAura( 'righteous_verdict', 238996, 'duration', 6 )
         addAura( 'seal_of_light', 202273, 'duration', 20 )
         addAura( 'seraphim', 152262, 'duration', 30 )
         addAura( 'shield_of_the_righteous', 132403, 'duration', 4.5 )
         addAura( 'shield_of_vengeance', 184662, 'duration', 15 )
-        addAura( 'the_fires_of_justice', 209785 )
-        addAura( 'wake_of_ashes', 205273, 'duration', 6 )
-        addAura( 'zeal', 217020, 'max_stack', 3 )
+        addAura( 'fires_of_justice', 209785, 'duration', 15 )
+        addAura( 'wake_of_ashes', 205273, '255937', 6 )
+        addAura( 'zeal', 269571, 'duration', 20, 'max_stack', 3 )
 
 
 
         -- Fake Buffs.
 
         local judgment = GetSpellInfo( 197277 )
-
         addAura( 'judgment', 197277, 'duration', 8 )
-
 
         registerCustomVariable( 'last_consecration', 0 )
         registerCustomVariable( 'last_cons_internal', 0 )        
@@ -324,32 +245,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
 
-        -- Special handler for Liadrin's Fury Unleashed legendary ring.
-        -- This will cause the addon to predict HoPo gains during Crusader/AW uptime if you have the ring.
-        -- LegionFix:  Will want to enable Forbearant Faithful through advance, as well.
-        addHook( 'advance', function( t )
-            -- NYI: scarlet_inquisitors_expurgation
-        end )
-
-
-        --[[
-            if not state.equipped.liadrins_fury_unleashed then return t end
-
-            local buff_remaining = 0
-
-            if state.buff.crusade.up then buff_remaining = state.buff.crusade.remains
-            elseif state.buff.avenging_wrath.up then buff_remaining = state.buff.avenging_wrath.remains end
-
-            if buff_remaining < 4 then return t end
-
-            local ticks_before = math.floor( buff_remaining / 4 )
-            local ticks_after = math.floor( max( 0, ( buff_remaining - t ) / 4 ) )
-
-            state.gain( ticks_before - ticks_after, 'holy_power' )
-
-            return t
-        end ) ]]
-
         addHook( 'spend', function( amt, resource )
             if resource == 'holy_power' then
                 if state.buff.crusade.up then
@@ -359,8 +254,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
                     state.addStack( 'crusade', state.buff.crusade.remains, amt )
                 end
 
-                if amt > 0 and state.artifact.righteous_verdict.rank > 0 then
-                    state.applyBuff( 'righteous_verdict', 15 )
+                if state.spec.retribution and state.talent.fist_of_justice.enabled then
+                    state.setCooldown( 'hammer_of_justice', max( 0, state.cooldown.hammer_of_justice.remains - 2 ) )
                 end
             end
         end )
@@ -369,21 +264,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         ns.addResourceMetaFunction( 'current', function( t )
             if t.resource ~= 'holy_power' then return 'nofunc' end
         end ) ]]
-
-
-        addMetaFunction( 'state', 'divine_storm_targets', function()
-            if settings.ds_targets == 'a' then
-                return spec.retribution and ( ( artifact.divine_tempest.enabled or artifact.righteous_blade.rank >= 2 ) and 2 or 3 ) or 0
-            end
-            return state.settings.ds_targets == 'c' and 3 or 2
-        end )
-
-        addMetaFunction( 'state', 'judgment_override', function()
-            if settings.use_latency then
-                return spec.retribution and ( debuff.judgment.remains > latency * 2 or ( not settings.strict_finishers and cooldown.judgment.remains > gcd * 2 and holy_power.current >= 4 ) )
-            end
-            return spec.retribution and ( debuff.judgment.up or ( not settings.strict_finishers and cooldown.judgment.remains > gcd * 2 and holy_power.current >= 4 ) )
-        end )
 
 
         -- Gear Sets
@@ -396,9 +276,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addGearSet( 'class', 139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697 )
         
-        addGearSet( 'ashbringer', 120978 )
-        setArtifact( 'ashbringer' )
-
         addGearSet( 'truthguard', 128866 )
         setArtifact( 'truthguard' )
 
@@ -418,10 +295,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addGearSet( "scarlet_inquisitors_expurgation", 151813 )
             addAura( "scarlet_inquisitors_expurgation", 248289, "duration", 3600, "max_stack", 30 )
 
-        setTalentLegendary( 'soul_of_the_highlord', 'retribution',  'divine_purpose' )
-        setTalentLegendary( 'soul_of_the_highlord', 'protection', 'holy_shield' )
-        setTalentLegendary( 'soul_of_the_highlord', 'holy', 'divine_purpose' )
-
         addHook( 'specializationChanged', function ()
             setPotion( 'old_war' )
             setRole( state.spec.protection and 'tank' or 'attack' )
@@ -430,26 +303,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addToggle( 'use_defensives', true, "Protection: Use Defensives",
             "Set a keybinding to toggle your defensive abilities on/off in your priority lists." )
-
-        addSetting( 'use_latency', true, {
-            name = "Retribution: Account for Latency",
-            type = "toggle",
-            desc = "When checked, the |cFFFFD100judgment_override|r flag will consider your latency when making recommendations for Holy Power finishers.\r\n\r\n" ..
-                "If you have 50ms latency, the addon will verify that Judgment will be up for 100ms (latency x 2) before recommending that you spend a finisher.  " ..
-                "This may help you to avoid using a Holy Power finisher immediately after the Judgment debuff falls off your target.",
-            width = "full"
-        } )
-
-        addSetting( 'strict_finishers', false, {
-            name = "Retribution: Strict Finishers",
-            type = "toggle",
-            desc = "If |cFF00FF00true|r, the addon will not recommend Holy Power spenders unless the Judgment debuff is on your target.\r\n\r\n" ..
-                "This may have adverse effects in situations where you are target swapping.\r\n\r\n" ..
-                "You may incorporate this into your custom action lists with the |cFFFFD100settings.strict_finishers|r flag.  It is also " ..
-                "bundled into the |cFFFFD100judgment_override|r flag, which is |cFF00FF00true|r when all of the following is true:  Strict " ..
-                "Finishers is disabled, Judgment remains on cooldown for 2 GCDs, and your Holy Power is greater than or equal to 4.",
-            width = "full"
-        } )
 
         addSetting( 'maximum_wake_power', 1, {
             name = "Retribution: Maximum Wake of Ashes Power",
@@ -461,20 +314,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
                 "the addon will not recommend Ashes to Ashes when you have more than 1 Holy Power (if you have the Ashes to Ashes artifact trait), " ..
                 "because you would end up overcapping Holy Power by more than 1 point.\r\n\r\n",
             width = "full"
-        } )
-
-        addSetting( 'ds_targets', 'a', {
-            name = "Retribution:  Divine Storm Targets",
-            type = "select",
-            desc = "If set to |cFF00FF00auto|r, the addon will recommend Divine Storm (vs. Templar's Verdict) based on your artifact traits.\r\n\r\n" ..
-                "If set to 2 or 3, the artifact will recommend Divine Storm with the specified number of targets.  If using a manual setting, using " ..
-                "Divine Storm on 2 targets is recommended if you have the Righteous Blade and Divine Tempest artifact traits.",
-            values = {
-                a = 'Automatic',
-                b = '2',
-                c = '3'
-            },
-            width = 'full'
         } )
 
         addSetting( 'shield_damage', 20, {
@@ -540,6 +379,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         } )
 
 
+        --[[ Reduces all damage you take by 2,575% for 8 sec. While Ardent Defender is active, the next attack that would otherwise kill you will instead bring you to 12% of your maximum health. ]]
         addAbility( 'ardent_defender', {
             id = 31850,
             spend = 0,
@@ -549,15 +389,12 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 120
         } )
 
-        modifyAbility( 'ardent_defender', 'cooldown', function( x )
-            return x - ( 10 * artifact.unflinching_defense.rank )
-        end )
-
         addHandler( 'ardent_defender', function ()
             applyBuff( 'ardent_defender', 8 )
         end )
 
 
+        --[[ (231665) Avenger's Shield interrupts and silences the main target for 3 sec if it is not a player. ]]
         addAbility( 'avengers_shield', {
             id = 31935,
             spend = 0,
@@ -577,6 +414,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
 
+        --[[ Increases the damage, healing, and critical chance of your abilities by 20% for 20 sec.  ]]
         addAbility( 'avenging_wrath', {
             id = 31884,
             spend = 0,
@@ -592,8 +430,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         } )
 
         addHandler( 'avenging_wrath', function ()
-            applyBuff( 'avenging_wrath', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2.5 ) )
-            if equipped.chain_of_thrayn then applyBuff( 'chain_of_thrayn', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2 ) ) end
+            applyBuff( 'avenging_wrath', 20 )
+            if equipped.chain_of_thrayn then applyBuff( 'chain_of_thrayn', 20 ) end
             if equipped.liadrins_fury_unleashed then gain( 1, 'holy_power' ) end
         end )
 
@@ -633,8 +471,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
         addHandler( 'blade_of_justice', function ()
-            removeBuff( 'righteous_verdict' )
             removeBuff( 'sacred_judgment' )
+            if talent.divine_judgment.enabled then addStack( 'divine_judgment', 15, 1 ) end
         end )
 
         
@@ -689,13 +527,9 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             talent = 'blessing_of_spellwarding'
         } )
 
-        modifyAbility( 'blessing_of_protection', 'cooldown', function( x )
-            return x * ( 1 - ( artifact.protector_of_the_ashen_blade.rank * 0.1 ) )
-        end )
-
         addHandler( 'blessing_of_protection', function ()
             applyBuff( 'blessing_of_protection', 10 )
-            applyDebuff( 'player', 'forbearance', 30 - ( artifact.endless_resolve.rank * 10 ) )
+            applyDebuff( 'player', 'forbearance', 30 )
         end )
 
 
@@ -708,16 +542,9 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 150
         } )
 
-        modifyAbility( 'blessing_of_sacrifice', 'cooldown', function( x )
-            if spec.protection then
-                return x - ( artifact.sacrifice_of_the_just.enabled and 60 or 0 )
-            end
-            return x * ( 1 - ( artifact.protector_of_the_ashen_blade.rank * 0.1 ) )
-        end )
-
         addHandler( 'blessing_of_sacrifice', function ()
             applyBuff( 'blessing_of_sacrifice', 12 )
-            applyDebuff( 'player', 'forbearance', 30 - ( artifact.endless_resolve.rank * 10 ) )
+            applyDebuff( 'player', 'forbearance', 30 )
         end )
 
 
@@ -746,21 +573,26 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cooldown = 8,
         } )
 
-
+        --[[ Consecrates the land beneath you, causing 8,406 Holy damage over 7.7 sec to enemies who enter the area. ]]
         addAbility( 'consecration', {
             id = 26573,
             spend = 0,
             spend_type = 'mana',
             cast = 0,
             gcdType = 'spell',
-            cooldown = 12,
+            cooldown = 20,
             known = function () return spec.protection or talent.consecration.enabled end,
-        } )
+        }, 205228 )
 
         class.abilities[ 205228 ] = class.abilities.consecration
 
         modifyAbility( 'consecration', 'id', function( x )
             return spec.retribution and 205228 or x
+        end )
+
+        modifyAbility( 'consecration', 'spend', function( x )
+            if spec.retribution then return -1 end
+            return x
         end )
 
         modifyAbility( 'consecration', 'cooldown', function( x )
@@ -771,12 +603,13 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'consecration', function ()
             if spec.protection then
                 last_consecration = now + offset
-                expire_consecration = now + offset + ( artifact.consecration_in_flame.rank + ( 9 * haste ) )
-                applyBuff( 'consecration', artifact.consecration_in_flame.rank + ( 9 * haste ) )
+                expire_consecration = now + offset
+                applyBuff( 'consecration', 9 * haste )
             end
         end )
 
 
+        --[[ Increases your damage done and Haste by 3% for 25 sec.; ; Each Holy Power spent during Crusade increases damage done and Haste by an additional 3%.; ; Maximum 10 stacks. ]]
         addAbility( 'crusade', {
             id = 231895,
             spend = 0,
@@ -792,8 +625,8 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         } )
 
         addHandler( 'crusade', function ()
-            applyBuff( 'crusade', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2.5 ) )
-            if equipped.chain_of_thrayn then applyBuff( 'chain_of_thrayn', 20 + ( artifact.wrath_of_the_ashbringer.rank * 2.5 ) ) end
+            applyBuff( 'crusade' )
+            if equipped.chain_of_thrayn then applyBuff( 'chain_of_thrayn' ) end
             if equipped.liadrins_fury_unleashed then gain( 1, 'holy_power' ) end
         end )
 
@@ -805,18 +638,17 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'melee',
             cooldown = 4.5,
-            charges = 2,
+            charges = 2, -- Technically, 2nd charge comes at level 26 from 231667.
             recharge = 4.5,
-            notalent = 'zeal'
         } )
 
         modifyAbility( 'crusader_strike', 'cooldown', function( x )
-            if talent.the_fires_of_justice.enabled then x = x - 1 end
+            if talent.fires_of_justice.enabled then x = x - 1 end
             return x * haste
         end )
 
         modifyAbility( 'crusader_strike', 'recharge', function( x )
-            if talent.the_fires_of_justice.enabled then x = x - 1 end
+            if talent.fires_of_justice.enabled then x = x - 1 end
             return x * haste
         end )
 
@@ -835,10 +667,24 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'divine_hammer', function ()
             applyBuff( 'divine_hammer', 12 )
-            removeBuff( 'righteous_verdict' )
             removeBuff( 'sacred_judgment' )
         end )
 
+        
+        --[[ Reduces all damage you take by 20% for 8 sec. ]]
+        addAbility( 'divine_protection', { 
+            id = 498, 
+            spend = 0.035,
+            spend_type = 'mana',
+            cast = 0,
+            gcdType = 'off',
+            cooldown = 60,
+            nospec = 'retribution',
+        } )
+
+        addHandler( 'divine_protection', function ()
+            applyBuff( 'divine_protection' )
+        end )
 
         addAbility( 'divine_shield', {
             id = 642,
@@ -851,12 +697,13 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         } )
 
         modifyAbility( 'divine_shield', 'cooldown', function( x )
-            return x * ( talent.divine_intervention.enabled and 0.8 or 1 )
+            if talent.unbreakable_spirit.enabled then x = x * 0.7 end
+            return x
         end )
 
         addHandler( 'divine_shield', function ()
             applyBuff( 'divine_shield', 8 )
-            applyDebuff( 'player', 'forbearance', 30 - ( artifact.endless_resolve.rank * 10 ) )
+            applyDebuff( 'player', 'forbearance', 30 )
         end )
 
 
@@ -879,11 +726,13 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             return x * ( talent.knight_templar.enabled and 0.5 or 1 )
         end )
 
+        --[[ (230332) Divine Steed now has 2 charges. ]]
         modifyAbility( 'divine_steed', 'charges', function( x )
             return x + ( talent.cavalier.enabled and 1 or 0 )
         end )
 
 
+        --[[ Unleashes a whirl of divine energy, dealing 869 Holy damage to all nearby enemies. ]]
         addAbility( 'divine_storm', {
             id = 53385,
             spend = 3,
@@ -895,7 +744,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         modifyAbility( 'divine_storm', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
-            if buff.the_fires_of_justice.up then x = x - 1 end
+            if buff.fires_of_justice.up then x = x - 1 end
             if buff.hidden_retribution_t21_4p.up then x = x - 1 end
             return x
         end )
@@ -903,46 +752,42 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'divine_storm', function ()
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             else
-                removeBuff( 'the_fires_of_justice' )
+                removeBuff( 'fires_of_justice' )
                 removeBuff( 'hidden_retribution_t21_4p' )
             end
             if equipped.whisper_of_the_nathrezim then applyBuff( 'whisper_of_the_nathrezim', 4 ) end
-            if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
+            if talent.divine_judgment.enabled then addStack( 'divine_judgment', 15, active_enemies ) end
         end )
 
 
         addAbility( 'execution_sentence', {
-            id = 213757,
+            id = 267798,
             spend = 3,
             spend_type = 'holy_power',
             cast = 0,
             gcdType = 'spell',
-            cooldown = 20,
+            cooldown = 30,
             talent = 'execution_sentence'
         } )
 
 		modifyAbility( 'execution_sentence', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
-            if buff.the_fires_of_justice.up then x = x - 1 end
+            if buff.fires_of_justice.up then x = x - 1 end
             if buff.hidden_retribution_t21_4p.up then x = x - 1 end            
 			return x
 		end )
 
-        modifyAbility( 'execution_sentence', 'cooldown', function( x )
-            return x * haste
-        end )
-
         addHandler( 'execution_sentence', function ()
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             else
-                removeBuff( 'the_fires_of_justice' )
+                removeBuff( 'fires_of_justice' )
                 removeBuff( 'hidden_retribution_t21_4p' )
             end
             applyDebuff( 'target', 'execution_sentence', 7 * haste ) 
-            if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
         end )
 
 
+        --[[ Reduces Physical damage you take by 35%, and instantly counterattacks any enemy that strikes you in melee combat for 419 Physical damage. Lasts 10 sec. ]]
         addAbility( 'eye_for_an_eye', {
             id = 205191,
             spend = 0,
@@ -992,7 +837,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
         addHandler( 'flash_of_light', function ()
-            health.actual = min( health.max, health.actual + ( stat.spell_power * 4.5 * ( 1 + ( artifact.embrace_the_light.rank * 0.15 ) ) ) )
+            health.actual = min( health.max, health.actual + ( stat.spell_power * 4.5 ) )
         end )
 
 
@@ -1008,7 +853,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'greater_blessing_of_kings', function ()
             applyBuff( 'greater_blessing_of_kings', 3600 )
-            applyBuff( 'blessing_of_the_ashbringer', 3600 )
         end )
 
 
@@ -1024,7 +868,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'greater_blessing_of_wisdom', function ()
             applyBuff( 'greater_blessing_of_wisdom', 3600 )
-            applyBuff( 'blessing_of_the_ashbringer', 3600 )
         end )
 
 
@@ -1127,10 +970,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'hand_of_the_protector', function ()
             health.actual = health.actual * 1.33 * ( ( buff.consecration.up or talent.consecrated_hammer.enabled ) and 1.2 or 1 )
-
-            if artifact.light_of_the_titans.enabled then
-                applyBuff( 'light_of_the_titans', 15 )
-            end
         end )
 
 
@@ -1146,6 +985,25 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         } )
 
 
+        --[[ Consumes up to 3 Holy Power to increase your damage done and Haste by 8%.; ; Lasts 15 sec per Holy Power consumed. ]]
+        addAbility( 'inquisition', { 
+            id = 84963, 
+            spend = 0,
+            spend_type = 'holy_power',
+            cast = 0,
+            gcdType = 'spell',
+            cooldown = 0,
+            talent = 'inquisition',
+            usable = function () return holy_power.current > 0 end,
+        } )
+
+        addHandler( 'inquisition', function ()
+            local hopo = min( 3, holy_power.current )
+            spend( hopo, 'holy_power' )
+            applyBuff( 'inquisition', 15 * hopo )
+        end )
+
+        --[[ (20271) Judges the target, dealing 1,778 Holy damage, and causing them to take 25% increased damage taken from your next Holy Power spender.; ; Generates 1 Holy Power. ]]
         addAbility( 'judgment', {
             id = 20271,
             spend = 0,
@@ -1173,14 +1031,15 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             return x * haste
         end )
 
+        --[[ (20271) Judges the target, dealing 1,778 Holy damage, and causing them to take 25% increased damage taken from your next Holy Power spender.; ; Generates 1 Holy Power. ]]
+        --[[ (231657) Judgment reduces the remaining cooldown of Shield of the Righteous by 2 sec, or 4 sec on a critical strike. ]]
+        --[[ (269569) Judgment grants you Zeal, causing your next 3 auto attacks to attack 50% faster and deal an additional 158 Holy damage. ]]        
         addHandler( 'judgment', function ()
-            if talent.judgment_of_light.enabled then applyDebuff( 'target', 'judgment_of_light', 30, 40 ) end
             if spec.protection then
                 gainChargeTime( 'shield_of_the_righteous', 2 )
-                if talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
             else
                 applyDebuff( 'target', 'judgment', 8 )
-                if talent.greater_judgment.enabled then active_dot.judgment = max( active_enemies, active_dot.judgment + 2 ) end
+                if talent.zeal.enabled then applyBuff( 'zeal', 20, 3 ) end
                 if set_bonus.tier20_2pc > 0 then applyBuff( 'sacred_judgment' ) end
                 if set_bonus.tier21_4pc > 0 then applyBuff( 'hidden_retribution_t21_4p', 15 ) end
                 if talent.sacred_judgment.enabled then applyBuff( 'sacred_judgment' ) end
@@ -1188,6 +1047,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         end )
 
 
+        --[[ A weapon strike that deals 1,580 Holy damage and restores health equal to the damage done.; ; Deals 50% additional damage and healing when used against a stunned target. ]]
         addAbility( 'justicars_vengeance', {
             id = 215661,
             spend = 5,
@@ -1200,7 +1060,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         modifyAbility( 'justicars_vengeance', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
-			if buff.the_fires_of_justice.up then x = x - 1 end
+			if buff.fires_of_justice.up then x = x - 1 end
             if buff.hidden_retribution_t21_4p.up then x = x - 1 end            
             return x
         end )
@@ -1208,10 +1068,10 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         addHandler( 'justicars_vengeance', function ()
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             else
-                removeBuff( 'the_fires_of_justice' )
+                removeBuff( 'fires_of_justice' )
                 removeBuff( 'hidden_retribution_t21_4p' )
             end
-            if spec.retribution and talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
+            if talent.divine_judgment.enabled then addStack( 'divine_judgment', 15, 1 ) end
         end )
 
 
@@ -1227,10 +1087,11 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'lay_on_hands', function ()
             health.actual = health.max
-            applyDebuff( 'player', 'forbearance', 30 - ( artifact.endless_resolve.rank * 10 ) )
+            applyDebuff( 'player', 'forbearance', 30 )
         end )
 
 
+        --[[ Calls down the Light to heal you for 2,497, increased by up to 200% based on your missing health. ]]
         addAbility( 'light_of_the_protector', {
             id = 184092,
             spend = 0,
@@ -1248,10 +1109,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         addHandler( 'light_of_the_protector', function ()
             health.actual = health.actual * 1.33 * ( ( buff.consecration.up or talent.consecrated_hammer.enabled ) and 1.2 or 1 )
-
-            if artifact.light_of_the_titans.enabled then
-                applyBuff( 'light_of_the_titans', 15 )
-            end
         end )
 
 
@@ -1273,6 +1130,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
         registerInterrupt( 'rebuke' )
 
 
+        --[[ Forces an enemy target to meditate, incapacitating them for 1 min.; ; Usable against Humanoids, Demons, Undead, Dragonkin, and Giants. ]]
         addAbility( 'repentance', {
             id = 20066,
             spend = 0.10,
@@ -1375,10 +1233,6 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             usable = function () return settings.shield_damage == 0 or incoming_damage_3s > ( health.max * settings.shield_damage / 100 ) end,
         } )
 
-        modifyAbility( 'shield_of_vengeance', 'cooldown', function( x )
-            return x - ( 10 * artifact.deflection.rank )
-        end )
-
         addHandler( 'shield_of_vengeance', function ()
             applyBuff( 'shield_of_vengeance', 15 )
         end )
@@ -1395,38 +1249,32 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         modifyAbility( 'templars_verdict', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
-            if buff.the_fires_of_justice.up then x = x - 1 end
+            if buff.fires_of_justice.up then x = x - 1 end
             if buff.hidden_retribution_t21_4p.up then x = x - 1 end
             return x
         end )
 
         addHandler( 'templars_verdict', function ()
-            if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
+            if buff.divine_purpose.up then removeBuff( 'divine_purpose' )                
             else
-                removeBuff( 'the_fires_of_justice' )
+                removeBuff( 'fires_of_justice' )
                 removeBuff( 'hidden_retribution_t21_4p' )
             end
+            if talent.righteous_verdict.enabled then applyBuff( 'righteous_verdict' ) end
             if equipped.whisper_of_the_nathrezim then applyBuff( 'whisper_of_the_nathrezim', 4 ) end
-            if spec.retribution and talent.fist_of_justice.enabled then setCooldown( 'hammer_of_justice', max( 0, cooldown.hammer_of_justice.remains - 8 ) ) end
+            if talent.divine_judgment.enabled then addStack( 'divine_judgment', 15, 1 ) end
         end )
 
-
-        addAbility( 'wake_of_ashes', {
-            id = 205273,
-            spend = 0,
+        --[[ Lash out at your enemies, dealing 2,212 Radiant damage to all enemies within 12 yd in front of you and reducing their movement speed by 50% for 5 sec.; ; Demon and Undead enemies are also stunned for 5 sec.; ; Generates 5 Holy Power. ]]
+        addAbility( 'wake_of_ashes', { 
+            id = 255937,
+            spend = -5,
             spend_type = 'holy_power',
             cast = 0,
             gcdType = 'spell',
             cooldown = 30,
-            equipped = 'ashbringer',
-            usable = function () return artifact.wake_of_ashes.enabled and ( not artifact.ashes_to_ashes.enabled or holy_power.current <= settings.maximum_wake_power ) end,
-            toggle = 'artifact'
+            talent = 'wake_of_ashes',
         } )
-
-        modifyAbility( 'wake_of_ashes', 'spend', function( x ) 
-            if artifact.ashes_to_ashes.enabled then return -5 end
-            return x
-        end )
 
         addHandler( 'wake_of_ashes', function ()
             if target.is_undead or target.is_demon then applyDebuff( 'target', 'wake_of_ashes', 6 ) end
@@ -1434,9 +1282,11 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
                 applyDebuff( 'target', 'ashes_to_dust', 6 )
                 active_dot.ashes_to_dust = active_enemies
             end
+            if talent.divine_judgment.enabled then addStack( 'divine_judgment', 15, active_enemies ) end
         end )
 
 
+        --[[ Heals the 3 most injured friendly targets within 30 yards for 4,994. ]]
         addAbility( 'word_of_glory', {
             id = 210191,
             spend = 3,
@@ -1451,16 +1301,15 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
         modifyAbility( 'word_of_glory', 'spend', function( x )
             if buff.divine_purpose.up then return 0 end
-            if buff.the_fires_of_justice.up then x = x - 1 end
+            if buff.fires_of_justice.up then x = x - 1 end
             if buff.hidden_retribution_t21_4p.up then x = x - 1 end
             return x
         end )
 
-
         addHandler( 'word_of_glory', function ()
             if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
             else
-                removeBuff( 'the_fires_of_justice' )
+                removeBuff( 'fires_of_justice' )
                 removeBuff( 'hidden_retribution_t21_4p' )
             end
             health.actual = min( health.max, health.actual + ( 1.33 * stat.spell_power * 8 ) )
@@ -1491,6 +1340,23 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             addStack( 'zeal', 12, 1 )
         end )
 
+
+        addAbility( 'hammer_of_wrath', {
+            id = 24275,
+            spend = -1,
+            spend_type = 'holy_power',
+            cast = 0,
+            gcdType = 'melee',
+            cooldown = 6,
+            talent = 'hammer_of_wrath',
+            usable = function () return target.health_pct < 20 or buff.avenging_wrath.up or buff.crusade.up end,
+        } )
+
+        modifyAbility( 'hammer_of_wrath', 'cooldown', function( x )
+            return x * haste
+        end )
+
+
     end
 
 
@@ -1502,17 +1368,15 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
 
     storeDefault( [[Protection Default]], 'actionLists', 20170727.205954, [[d4cWcaGEPiTluKTPu0SH6Mer3wuTtPAVu7wX(vHHjk)wyOOWGvrdNiDqr0XqPfkfwkr1IvjlxjpukQNcwMk1ZjmrLQMQuAYqA6KUie5QsrCzKRlcBwKSDuutdIY3jcNwY3ikpgvNuK6zkfUgevNxP0FHWNvQCyvTzDRH(NtgyScL4AfZX5Ek1NaRgaPeVEC10xRyCFZnniNW0li3VZyLLj7(MjwKJm2nma8vjvnyijxRyeU1Dw3AaP5VWeQByO)5KbgRqjUwXCCUNsrJOyMega(QKQg0y3omXucbHaLsrJOyMegKty6fK73zSYyZmKEql(RXYWedzi5vHlDRb(JXiEUwXGaxc1GKbA)ZjdmwHsCTI54CpLIgrXmjS6(TBnG08xyc1nm0)CYaJvOexRyooBocmAiXima8vjvnOXUDyIjEey0qIryqoHPxqUFNXkJnZq6bT4VgldtmKHKxfU0Tg4pgJ45AfdcCjudsgO9pNmWyfkX1kMJZMJaJgsmcRUVHBnG08xyc1nma8vjvnyi9Gw8xJLHjgYqYRcx6wdjeeIsPCHb5KisS4KWTwniNW0li3VZyLXMzO)5KHMiOJZ0kLlS6oYCRbKM)ctOUHH(NtgyScL4AfZXj0Aa4RsQAWGCctVGC)oJvgBMH0dAXFnwgMyidjVkCPBnWFmgXZ1kge4sOgKmq7FozGXkuIRvmhNqRvRg2tP(ey1nSAd]] )
 
-    storeDefault( [[SimC Retribution: opener]], 'actionLists', 20171211.164324, [[dOdKfaGALQ06vG0UeL2MsL0(uGy2smFq4Mc13eWoL0EP2nI9lKNlYWuOFdCyPoeOOblOHJkoOO44kvLJrsNtPkwijAPG0IrYYj8qq0tHwgQ06uQituPQAQkLjtQPJYfbLonrxw11rvBuPcTvqLntcBxb9yL8vfOmnLkX3vaJuPcEMsf1Ork)vuDsqvFgu4Akq15fOvQuPEns1Tv0w1BgR98gr5eYOqONjKu8mjGStrHaoNCHX9FfnFHzLgH(Y70DL7OAavvU7jRAavv19yexcjhMrJzwmjGK8MRQEZiSKMQCTvAmdLSizbnsvaaDUcErqJWt0YvZacJea5gJbA4ArTN3OXApVrLfaqhfUJ8IGgH(Y70DL7OAa1rJqFcWlwp5nZmcjTVOhdg(5jmtzmgOR98gnZvUEZiSKMQCTvAmdLSizbnsDr6c6scmmcprlxndimsaKBmgOHRf1EEJgR98gvEr6c6scmmc9L3P7k3r1aQJgH(eGxSEYBMzesAFrpgm8ZtyMYymqx75nAMR7S3mclPPkxBLgXLqYHzeMrHPZYPae(uwM8cUJ5C5SIchKOWrJzOKfjlOXwSAYZzaH4eMr4jA5QzaHrcGCJXanCTO2ZB0yTN3ygXQjpkCdieNWmc9L3P7k3r1aQJgH(eGxSEYBMzesAFrpgm8ZtyMYymqx75nAMR7I3mclPPkxBLgZqjlswqJ7LxdJ5jmJWt0YvZacJea5gJbA4ArTN3OXApVXDZRHX8eMrOV8oDx5oQgqD0i0Na8I1tEZmJqs7l6XGHFEcZugJb6ApVrZCDW9Mryjnv5AR0iUesomJFF8soCUoBr2AHKKYvWlcMZtkVt0UokeciIcf96zPkaGo)ffrHqaruimJcxaqrdgGKDGM(ZbkY7eTNYYZXygkzrYcAKQ06NduKVx(etUUr4jA5QzaHrcGCJXanCTO2ZB0yTN3OYsRFuiqru4U5tm56gH(Y70DL7OAa1rJqFcWlwp5nZmcjTVOhdg(5jmtzmgOR98gnZ1D1BgHL0uLRTsJ4si5Wm(9Xl5W56SfzRfsskxbViyopP8or76OqiGiku0RNLQaa68xuefcberHWmkCbafnyas2bA6phOiVt0EklphJzOKfjlOrTCOK8CA9CEHr4jA5QzaHrcGCJXanCTO2ZB0yTN34(LdLKhfUd9CEHrOV8oDx5oQgqD0i0Na8I1tEZmJqs7l6XGHFEcZugJb6ApVrZCnG3mclPPkxBLgZqjlswqJd00FoqrENO9Kr4jA5QzaHrcGCJXanCTO2ZB0yTN34G10FuiqruyMeTNmc9L3P7k3r1aQJgH(eGxSEYBMzesAFrpgm8ZtyMYymqx75nAMzgroFj7ICqBMeqCnWOz2a]] )
+    storeDefault( [[SimC Retribution: opener]], 'actionLists', 20180425.191508, [[diJQcaGAfK1dvPDPO8AOQMTuDtHCBOStrTxYUrA)uYWeQFR0GPudxehuGoMGwOIyPqLfJslhXdvu9uWYqvwNcWufPjlLPl5Ikuphfxw11POttvBva2mufBhvY3uittb0Nvq9DurZdvyCciJgv1HHCsuP(lf6AksNNcwPc0JPYZeqTcvQGXueB)nXkiJWUaWJn3Yg3lIN1S8lDaw2BYPNia37hXCL5fhgO4bYB6SqbqYDEu3Jxu5xQYJIfe0v(LYOuLdvQGXueB)nnra4i(Ksa)TBWyYY5jZCMeYPLLnhw2tfeK139LbbiIdrVXAjKtlbCtBEhQwIa6sVGOTfaIKryxGGmc7ccsCi6TStxc50saU3pI5kZloCuySaCNznjUZOuvcMZ)o8JwUo2PLyfeTTmc7cuPmpLkymfX2FtteaoIpPeWF7gmMSCEYmNjHCAzzZHL9ubbz9DFzqaBh1UXfpghYKP8UlGBAZ7q1seqx6feTTaqKmc7ceKryxWKoQDl7fpw2dAYuE3fG79JyUY8Idhfgla3zwtI7mkvLG58Vd)OLRJDAjwbrBlJWUavkhyLkymfX2FtteaoIpPeWF7gmMSCEYmNjHCAzzZHL9ubbz9DFzqWqMTHXoTeWnT5DOAjcOl9cI2waisgHDbcYiSlyqZ2WyNwcW9(rmxzEXHJcJfG7mRjXDgLQsWC(3HF0Y1XoTeRGOTLryxGkvcahXNucujb]] )
 
-    storeDefault( [[SimC Retribution: default]], 'actionLists', 20171211.164324, [[dyJ4daGEcsTluI8AfXmjPA2eDta(MIYobAVIDdA)Q0OiOAye43knyvmCuQoiGofjOJrrNJGOfIsAPeAXOy5K6Hs4PipwH1jrMikrnvuPjJQMovxKe1TP0LHUofEUK2kjXMjb2ojLdRQZtc9zukFNGYPL6zsunAsKLHkojjP)QO6AeeUhkH5rqY0KOSifPJz4gc8TyiQTf3Ji66MXW7fw6E4rf8gspeXoo6x2c979cd4mbHerj(vmGCeyoZ0KJqYsCkVSYeIYdrdDZUhkeWH3lSgUb0mCdPm8zKiFyneqMw2UIH0iJXemKQq(E8(QdbxigcWYRYRbFlgke4BXqIiJXemKikXVIbKJaZzMccjI11qpWA4gpuHs4ycGvn0IqpmHaS8GVfdfpGCc3qkdFgjYhwdrdDZUhYBlEpc19WjeqMw2UIHgVuo)hEVW5YU6HufY3J3xDi4cXqawEvEn4BXqHaFlgQ4LY7b4W7fEpQ3vpeqnB1qW3ISyk12I7reDDZy49clDpl7ie1tdjIs8Rya5iWCMPGqIyDn0dSgUXdvOeoMayvdTi0dtialp4BXquBlUhr01nJH3lS09SSJquhpGLhUHug(msKpSgcitlBxXqJxkN)dVx4Czx9qQc57X7RoeCHyialVkVg8TyOqGVfdv8s59aC49cVh17QFpc3uHHaQzRgc(wKftP2wCpIORBgdVxyP7zSRKFfgSonKikXVIbKJaZzMccjI11qpWA4gpuHs4ycGvn0IqpmHaS8GVfdrTT4Eerx3mgEVWs3Zyxj)kmynEallCdPm8zKiFyneqMw2UIHgVuo)hEVW5YU6HufY3J3xDi4cXqawEvEn4BXqHaFlgQ4LY7b4W7fEpQ3v)EeohfgcOMTAi4BrwmLABX9iIUUzm8EHLUh2qiQFF11PHerj(vmGCeyoZuqirSUg6bwd34HkuchtaSQHwe6HjeGLh8TyiQTf3Ji66MXW7fw6EydHO(9vxJhpelJk4nKEynEc]] )
+    storeDefault( [[SimC Retribution: default]], 'actionLists', 20180425.191508, [[dGZbeaGEkHAxqr51kfZekYSPy(kLUPs1DPcDBQANGSxXUHSFv1OOe1WiXVvzWQYWHQCqO0POK4ysPNlvlKsPLsslgulNupKk9uKLrOwhv0PvmvczYemDjxeQyCuc8mkbDDP48uQARubBwj2oLIPrjPht0NHQ67uI8xLuhgy0uQ8nOsNKsQ5bfvxJsi3tjXBvs6YOweu40grHWbbGnSqGdbb8CiA8U)Nkx6bUPMd58)e4fqJPcPYgg05ajwP1cuSQylcZAdr4XYbyglguZHceUkHWkR5q9ikqTruiCqaydleBdHfEmtzFind3SHdznsyKG60HqhIdTFcoa0qaphkeeWZHuz4MnCiv2WGohiXkT42QesL7xJwY9ikvix7y5M9Zg2ZOkWH2pbiGNdLkqIJOq4GaWgwi2gIK6bVkunE()W8)tCiSWJzk7djbgZAGSMdT2m9kKRDSCZ(zd7zuf4q7NGdaneWZHcbb8COTYLfffPCzzvxGX8FyL1CO)dttVCCRoewn(9qiGNxbdA8U)Nkx6bUPMd58)o8yeRXiKkByqNdKyLwCBvcPY9Rrl5EeLkK1iHrcQthcDio0(jab8CiA8U)Nkx6bUPMd58)o8yeRtfilmIcHdcaByHyBiSWJzk7djbgZAGSMdT2m9kK1iHrcQthcDio0(j4aqdb8COqqaphARCzrrrkxww1fym)hwznh6)W00lh3Q)pl3ALqy143dHaEEfmOX7(FQCPh4MAoKZ)tENr4SeQJriv2WGohiXkT42QesL7xJwY9ikvix7y5M9Zg2ZOkWH2pbiGNdrJ39)u5spWn1CiN)N8oJWzjupvGSAefchea2WcX2qyHhZu2hscmM1aznhATz6viRrcJeuNoe6qCO9tWbGgc45qHGaEo0w5YIIIuUSSQlWy(pSYAo0)HPPxoUv)FwwSvcHvJFpec45vWGgV7)PYLEGBQ5qo)p8zeRb1P7yesLnmOZbsSslUTkHu5(1OLCpIsfY1owUz)SH9mQcCO9tac45q04D)pvU0dCtnhY5)HpJynOoDpvQqKup4vHsLa]] )
 
-    storeDefault( [[SimC Retribution: precombat]], 'actionLists', 20171211.164324, [[b4vmErLxt5uyTvMxtnvATnKFGjvz0jxAIvhDP9MB64hyWjxzJ9wBIfgDEnfrLzwy1XgDEjKxtjvzSvwyZvMxojdmXCtmXitoUeZnXetm541utnMCPbhDEnLxtf0y0L2BUnNxu5LtX4fvEnvrUfMySvgzEjKxtfKyPXwA0LNxtb3B0L2BU51uj5gzPnwy09MCEnLBV5wzEnvtVrMvHjNtH1wzEnLxt5uyTvMxtb1B0L2BU51ubj3zZ51uUfwBL1JiVXgzFDxyYjIxtjvzSvwyZvMxojdmXCtmW41usv2CVvNCJv2CErLx051udHwzJTwtVzxzTvMB05LyEnvtVrMtH1wzEn1BSr2x3fMCErNx051utbxzJLwySLMEHrxAV5MxoDdmErNxEb]] )
+    storeDefault( [[SimC Retribution: generators]], 'actionLists', 20180425.191508, [[dqKknaqiGuSikQAtKunkfItPqAvaiZcaf7IuggGogbTmkYZOOIPrIORrIsBdaL(gfLXbKQohaQADKuAEKuCpaAFaWbvOwOqYdfkxuuYijr6KIsTsGuAMuuPBsGDsQwkj5PunvHQTkK6RajVLef3LeH9c9xr1GbDyPwmHEmLMSKUmQnlWNffJwqNMOvtIQxdeZwKBRODJ0VvA4cXXbsLLRQNlX0v56uy7kOVtcNxbwpaQmFGA)igfIXrplAlM4kkIUEpz0D5mgbQIVxkACYLQwcmdt5VV9lORItCxyu3eqHGEGkPjLvti6Ee2k7KeGRp5srDZaI(y7jxAbJJ6cX4ONfTftCfJcD3(Yih6JqGGgc86etpTWEo5pFdYv89fQX0wmXvcemyc86pdFAHCNUqTi2JabaGeOjGeO6e4ieOOrqGwpKPzK0m5k((c1QRckbcgmbkAeeOzFJsxzT6QGsGJsGJI(yrzsEdqFy)YwmXOhlKTGiyhYtMEOi6c2A09R3tgDLUGcD9EYOd2geaeO1geOm(TptGr3jdwja)Op(ZuqN2tgqLUGcGzyNmyahb0CDIPNwypN8NVb5k((c1yAlM4kyWx)z4tlK70fQfXEaaqtavFerJGaTEitZiPzYv89fQvxfuWGfncc0SVrPRSwDvqhDu0vXjUlmQBcOqZeceDvCznElxW44HE20Q023(OtxkJUGTQ3tgD8qDtyC0ZI2IjUIrHUBFzKd9WnnipYQGFnRX)m9iqaaibQSeiyWe41jMEAskOZqwKNCPAmTftCLavNafncc0KuqNHSip5s1QRck6JfLj5naDBNs5T9Klnpjlh6Xczlic2H8KPhkIUGTgD)69KrhD9EYOd2geaeO1geOmX6uIahBp5sjqZvwoLa8J(4ptbDApzanVlNXiqv89srJtUu1sGbsQSeYFX8ORItCxyu3eqHMjei6Q4YA8wUGXXd9SPvPTV9rNUugDbBvVNm6UCgJavX3lfno5svlbgiPYsi)f8qDZbJJEw0wmXvmk0hlktYBa6H9CYF(gKR47le9SPvPTV9rNUugDbBn6(17jJo669KrxP9CYpbUbeiO((crxfN4UWOUjGcntiq0vXL14TCbJJh6Xczlic2H8KPhkIUGTQ3tgD8qDLeJJEw0wmXvmk0D7lJCOpcbgUPb5rwf8Rzn(NPhbQgajqGeiyWey4MgKhzvWVM14FMEeiGeOqcuDc0UBQUkOAIPUY5BqUYnkN0YAppBjTqGaGaZyRe4OOpwuMK3a0v0GW5BqExc5c6ztRsBF7JoDPm6c2A09R3tgD017jJoOAqycCdiWXLqUGUkoXDHrDtafAMqGORIlRXB5cghp0JfYwqeSd5jtpueDbBvVNm64H6klgh9SOTyIRyuO72xg5qpCtdYJSk4xZA8ptpcunasGMiqWGjWWnnipYQGFnRX)m9iqajqZHavNahHaT7MQRcQwypN8NVb5k((c1EE2sAHababMXwjqaIanrGGbtGd7x2IjwtPlOiWrrFSOmjVbOlM6kNVb5k3OCslJE20Q023(OtxkJUGTgD)69KrhD9EYOhvQRmbUbeiO1OCslJUkoXDHrDtafAMqGORIlRXB5cghp0JfYwqeSd5jtpueDbBvVNm64H6aSyC0ZI2IjUIrHUBFzKd9WnnipYQGFnRX)m9iq1aibAIabdMad30G8iRc(1Sg)Z0JavdGeOssGQtG2Dt1vbvtm1voFdYvUr5Kww75zlPfceaeygBLabic0ebQoboSFzlMynLUGc9XIYK8gGUYnQzMm9qpBAvA7BF0PlLrxWwJUF9EYOJUEpz0bTg1mtMEORItCxyu3eqHMjei6Q4YA8wUGXXd9yHSfeb7qEY0dfrxWw17jJoEOUzyC0ZI2IjUIrHUBFzKd9Rtm90c75K)8nixX3xOgtBXexjq1jWriWR)m8PfYD6c1IypcunasGMasGGbtGIgbbA9qMMrsZKR47luZicbcgmbkAeeOzFJsxznJie4OOpwuMK3a0TDkL32tU08KSCOhlKTGiyhYtMEOi6c2A09R3tgD017jJoyBqaqGwBqGYeRtjcCS9KlLanxz5ucWpboIWrrF8NPGoTNmGM3LZyeOk(EPOXjxQAjWajvwc5VyE0vXjUlmQBcOqZeceDvCznElxW44HE20Q023(OtxkJUGTQ3tgDxoJrGQ47LIgNCPQLadKuzjK)cEOoOhJJEw0wmXvmk0D7lJCOB3nvxfun7Bu6k)5L7LGWA2W(ZWL8GVTNCPDIabaGeOjcuDcCy)YwmXAkDbf6JfLj5naD7Bu6k)5L7LGWONnTkT9Tp60LYOlyRr3VEpz0rxVNm6XEJsx5Na97LGWORItCxyu3eqHMjei6Q4YA8wUGXXd9yHSfeb7qEY0dfrxWw17jJoEOoapgh9SOTyIRyuO72xg5qpCtdYJSk4xZA8ptpcunasGMiqWGjWWnnipYQGFnRX)m9iq1aibAoeO6eOD3uDvq1etDLZ3GCLBuoPL1EE2sAHababMXwjqaIanrGQtGd7x2IjwtPlOiqWGjWWnnipYQGFnRX)m9iqajqLKavNaT7MQRcQMyQRC(gKRCJYjTS2ZZwsleiaiWm2kbcqeOjcuDc0UBQUkOAk3OMzY0t75zlPfceaeygBLabic0ebQoboSFzlMynLUGc9XIYK8gGUDPf2(9jxk6ztRsBF7JoDPm6c2A09R3tgD017jJESLwy73NCPORItCxyu3eqHMjei6Q4YA8wUGXXd9yHSfeb7qEY0dfrxWw17jJoEOUqGyC0ZI2IjUIrH(yrzsEdq32PuEBp5sZtYYHE20Q023(OtxkJUGTgD)69KrhD9EYOd2geaeO1geOmX6uIahBp5sjqZvwoLa8tGJyAu0h)zkOt7jdO5D5mgbQIVxkACYLQwcmqsLLq(lMhDvCI7cJ6Mak0mHarxfxwJ3YfmoEOhlKTGiyhYtMEOi6c2QEpz0D5mgbQIVxkACYLQwcmqsLLq(l4H6cfIXrplAlM4kgf6JfLj5naD7Bu6k)5L7LGWONnTkT9Tp60LYOlyRr3VEpz0rxVNm6XEJsx5Na97LGWe4ichfDvCI7cJ6Mak0mHarxfxwJ3YfmoEOhlKTGiyhYtMEOi6c2QEpz0Xdp0D7lJCOJhI]] )
 
-    storeDefault( [[SimC Retribution: cooldowns]], 'actionLists', 20180320.203000, [[dG0vraqiqqTikvP2eLkFIsv0OKk6usfwfsO2LsnmKQJbOLjk9mqOMgiixJufBJsvPVrQQXbc05ivP06ivj18qc5Eib7dj6GKclKu0dPKmrqaUOOWgbHyKKQKCskPwjiKEjPkHzsQs0nrs7KOgkiGwkLYtfMkL4QKQuTvrrFLsvyVq)vQAWQCyjlgupwKjtvxg1MjYNfvJgKonvwnLQQxdIMTsUnq7gXVv1WrkhNsvXYj8CkMojxxkBNu67KkJNsvY5LkTEsvkMpa7xXiq0cgYfiJr4aTAoBSs4GBk3t0RNl9)Y)6igmGayPQTuOMyyJxCzyuolDGqq6qCw67S0ZcbXischnfgyOrs5EIbTGYarlyKbPGxSh1eJijC0uyW2NMJgn2Vldu20R(EFZOMZU58VARRGK7FP(YaLnBbdwoIzokAU8KFokEUSZbaWCDohCtsANent55DJ2C2nhCtsANent55TGblhXmhfnxEYphfpx25aayo4MK0U0YKChjVxNOuq3nAZz3CWnjPDPLj5osEVorPGUfmy5iM5OO5Yt(5O45YoxhyObSB5uDXq6f5SKJjEtVublCPs9cmSM4DPs9cmipHXG67ZSeYfiJbgYfiJbe5f5SKJjE7PzoisblCPs9cmSXlUmmkNLoq9bshdBS5BIeBqlOcdRGYjiP(AzqMOqymO(E5cKXavOCw0cgzqk4f7rnXischnfgDohCtsAxAzsUJK3RtukO7gT5aayo4MK0ojAMYZ7gT5SBo4MK0ojAMYZBJQsqohLuyoG6zoaaMl9)Y)6i7KOzkpVfmy5iM5MJY5YsFo7MdcphCtsANent55DJ2CDGHgWULt1fdVOA5qv9VuV5Bldgwt8UuPEbgKNWyq99zwc5cKXad5cKXacquTCOQ5EP5IVTmyyJxCzyuolDG6dKog2yZ3ej2GwqfgwbLtqs91YGmrHWyq99YfiJbQqzigTGrgKcEXEutmIKWrtHrNZb3KK2LwMK7i596eLc6UrBoaaMdUjjTtIMP88UrBo7MdUjjTtIMP882OQeKusbG6zoaaMl9)Y)6i7KOzkpVfmy5iM5OCo9mNDZbHNdUjjTtIMP88UrBUogikgAa7wovxmaD5qv9VupKI30myynX7sL6fyqEcJb13NzjKlqgdmKlqgdQUCOQ5EP50leVPzWWgV4YWOCw6a1hiDmSXMVjsSbTGkmSckNGK6RLbzIcHXG67LlqgduHYqi0cgzqk4f7rnXischnfgDohCtsANent55DJ2C2nhCtsANent55TrvjiNJskmhq9mhaaZL(F5FDKDs0mLN3cgSCeZCuoxEYphfpx256yoaaMRZ5GBss7sltYDK8EDIsbD3OnhaaZL(F5FDKDPLj5osEVorPGUfmy5iM5OCU8KFokEUSZ1XarXqdy3YP6IHHgNuSO)L6HzLO6wlmSM4DPs9cmipHXG67ZSeYfiJbgYfiJrqJtkwm3lnNMSsuDRfg24fxggLZshO(aPJHn28nrInOfuHHvq5eKuFTmituimguFVCbYyGkuwpOfmYGuWl2JAIrKeoAkmGBss7sltYDK8EDIsbD3OnhaaZb3KK2jrZuEE3OnNDZb3KK2jrZuEEBuvcY5OKcZbupZbaWCDox6)L)1r2LwMK7i596eLc6wWGLJyMJY5QKY9KDdewuREW)j5RYPLn70)l)RJmhaaZL(F5FDKDs0mLN3cgSCeZCuoxLuUNSBGWIA1d(pjFvoTSzN(F5FDK56adnGDlNQlgnqyrT6b)NKVkNw2GH1eVlvQxGb5jmguFFMLqUazmWqUazm07GWIAnh1)j5RYPLnyyJxCzyuolDG6dKog2yZ3ej2GwqfgwbLtqs91YGmrHWyq99YfiJbQqz7lAbJmif8I9OMyixGmgz6Q1CV0CwXLHxSXmNL3E5igmSM4DPs9cmipHXqdy3YP6IHwxT6FP(exgEXgtV6TxoIbdBS5BIeBqlOcdB8IldJYzPduFG0XischnfgDohCtsAxAzsUJK3RtukO7gT5aayo4MK0ojAMYZ7gT5SBo4MK0ojAMYZBJQsqohLuyoG6zUoMdaG56CU0)l)RJStIMP88wWGLJyMJY5Gy6Zz3Cq45GBss7KOzkpVB0MdaG5s)V8VoYU0YKChjVxNOuq3cgSCeZCuohetFUoqfkRpAbJmif8I9OMyObSB5uDXOz4ENIbnyynX7sL6fyqEcJb13NzjKlqgdmKlqgd9UHNZAfdAWWgV4YWOCw6a1hiDmSXMVjsSbTGkmSckNGK6RLbzIcHXG67LlqgduHYqq0cgzqk4f7rnXischnfgDohCtsAdV(3VAg1UrBoaaMdUjjTlTmj3rY71jkf0DJ2CaamhCtsANent55DJ2C2nhCtsANent55TGblhXmhfnxw9mhaaZPkroR2khi3R(EVJNJIOWCqi6Z1bgAa7wovxmO9k3tWWAI3Lk1lWG8egdQVpZsixGmgyixGmgqGVY9em0qKBWGuGmfS3)Y3RRe2BmSXlUmmkNLoq9bshdBS5BIeBqlOcdRGYjiP(AzqMOqymO(E5cKX4x(EDLavOSElAbJmif8I9OMyObSB5uDXaE9VVxQj6IH1eVlvQxGb5jmguFFMLqUazmWqUazm0C9VFoist0fdB8IldJYzPduFG0XWgB(MiXg0cQWWkOCcsQVwgKjkegdQVxUazmqfkdKoAbJmif8I9OMyObSB5uDXaMfgwaPJKJH1eVlvQxGb5jmguFFMLqUazmWqUazm0KfgwaPJKJHnEXLHr5S0bQpq6yyJnFtKydAbvyyfuobj1xldYefcJb13lxGmgOcLbceTGrgKcEXEutmIKWrtHrNZb3KK2jrZuEE3OnhaaZb3KK2LwMK7i596eLc6UrBUoMZU5G(RU90EDSyNAcbtuZrH5YoNDZ15CP)x(xhzdVkp3)s92FZOCjElyWYrmZr5C5j)Caamx6)L)1r2ENwhH7HwGGSylyWYrmZr5C5j)CDGHgWULt1fJsKkc3REHGjkmSM4DPs9cmipHXG67ZSeYfiJbgYfiJHgIur45S8cbtuyyJxCzyuolDG6dKog2yZ3ej2GwqfgwbLtqs91YGmrHWyq99YfiJbQqzGzrlyKbPGxSh1ed5cKXqV0LdvzpnZbrB(CqMOWWAI3Lk1lWG8egdnGDlNQlglxouLP3(B(CqMOWWgB(MiXg0cQWWgV4YWOCw6a1hiDmIKWrtHrLuoTCptyqhBMJskmx25aayU0)l)RJST)MphKjQTGblhXmhLZLN8Zz3CDox6)L)1r2ENwhH7HwGGSylyWYrmZr5C5j)Caamx6)L)1r2WRYZ9VuV93mkxI3cgSCeZCuoxEYpxhZz3CDohCtsAxAzsUJK3RtukO7gT5aayo4MK0ojAMYZBJQsqohLuyoG6zUoqfkdeIrlyKbPGxSh1ednGDlNQlgq)v3EDIsbfdRjExQuVadYtymO((mlHCbYyGHCbYyOx9RUZzpeLckg24fxggLZshO(aPJHn28nrInOfuHHvq5eKuFTmituimguFVCbYyGkugiecTGrgKcEXEutm0a2TCQUyyG64LV)L61YKCUijgdRjExQuVadYtymO((mlHCbYyGHCbYyeqD8Yp3lnxMmjNlsIXWgV4YWOCw6a1hiDmSXMVjsSbTGkmSckNGK6RLbzIcHXG67LlqgduHYa1dAbJmif8I9OMyObSB5uDXO0YKChjVxNOuqXWAI3Lk1lWG8egdQVpZsixGmgyixGmgAOLj5os(C2drPGIHnEXLHr5S0bQpq6yyJnFtKydAbvyyfuobj1xldYefcJb13lxGmgOcLbAFrlyKbPGxSh1eJijC0uya9xD7P96yXo1ecMOMJskmhephaaZ15CDohBFAoA0y)E5kVWrm9snr3(gzXLbk7NdaG5evI3WR)998sAUoMZU5G(RU90EDSyNAcbtuZrjfMl7CDGHgWULt1fJKOzkpJH1eVlvQxGb5jmguFFMLqUazmWqUazmSs0mLNXWgV4YWOCw6a1hiDmSXMVjsSbTGkmSckNGK6RLbzIcHXG67LlqgduHkmcACYvlNEtPCpbL1NoQqe]] )
+    storeDefault( [[SimC Retribution: finishers]], 'actionLists', 20180425.191508, [[diuCjaqiOeBIsPprsIrjs5uQQyvIinlHq1Ui0WiOJrGLjsEgusttekxteX2ecPVrjACIqADcHyEKK6EIuTpHKdsjSqrupuemrrO6IukoPqQvsssDtuyNKyPcvpLQPsPARqPERieDxriSxWFrrdgPdlzXO0JjAYcUSYMjP(mjXOvv1PHSAssYRfIMTOUTQSBP(nQgouCCHGLtQNtX0v56q12vv(oLuJxvLopLK1lekZxOSFedca7GBtxS5fawWvQ3a3rVei0470iw8dX7icHQg1iZ)PnGhF5vMbkPekirfMyPsIOaWDmtIQmkIvhI3GILcb3c5H4TbSdkca7GBtxS5fGKb3LAeMd8sEOVXC9EOzi0OsNqXk4wWIYOZkW)knQyZd8e(pzKm4F7T(awWzWdyxAL6nWdgMYYCfBEGRuVbEmPA1cfkLQvNi9JRhHIDLXxIiMgCl0QyaVR3spyyklZvS5fX)Qm(sVKh6BmxVhAMOshRGhF5vMbkPekWsbcbp(mCCTCgWoCGhDhqY64AWBEpWzWdk1BGdhOKcSdUnDXMxasgCxQryoWzXvRwe1rahzqhI3IbU1nHglgHYIRwTiQJaoYGoeVf17vO2qOQMqtcHAlH(NNTIjgU1tlkX161hHgv6ekwj0yXiuwC1QfrDeWrg0H4TOEVc1gcv1eAkHeQTeQKZZbU1Ty9TwfuRctR119xuVxHAdHQAcnjeQTe6FE2kMy4wpTOexRxFeAuPtOyfClyrz0zf4Ooc4id6q8g8O7aswhxdEZ7bodEa7sRuVbo4k1BGhDhbCKbDiEdE8LxzgOKsOalfie84ZWX1Yza7WbEc)Nmsg8V9wFal4m4bL6nWHduWkyhCB6InVaKm4UuJWCGxYd9nMR3dndHQ60juSsO2sOPrOyHqVkV(eLACtfM46InVaHglgHk58CGBDlk14Mkmr9EfQneAueQkYaHMucnfH(d4wWIYOZkW3VtIFiEZ0S(wlh4r3bKSoUg8M3dCg8a2LwPEdCWvQ3a3MFNe)q8Mq913A5ap(YRmdusjuGLcecE8z44A5mGD4apH)tgjd(3ERpGfCg8Gs9g4WbkjgyhCB6InVaKm4UuJWCG)vAuXMNyWWuwMRyZJqTLqzXvRwmG(q9yIbxJHBMiogWTGfLrNvGhqFOEmnhx)ap6oGK1X1G38EGZGhWU0k1BGdUs9g4jo6d1Jq9JRFGhF5vMbkPekWsbcbp(mCCTCgWoCGNW)jJKb)BV1hWcodEqPEdC4aLKa2b3MUyZlajdUl1imh4FLgvS5jgmmLL5k28iuBj00iuSqOxLxFIsnUPctCDXMxGqJfJqLCEoWTUfLACtfMOEVc1gcnkcvfzGqtkHMIq)bClyrz0zf4b0hQhtZX1pWJUdizDCn4nVh4m4bSlTs9g4GRuVbEIJ(q9iu)46hHMMGFap(YRmdusjuGLcecE8z44A5mGD4apH)tgjd(3ERpGfCg8Gs9g4WbkruWo420fBEbizWDPgH5aNfxTAXa6d1JjgCngUzI4yiuBjuSqOxLxFIAKk)VXXnm)MoGKN46InVa4wWIYOZkWvv4MdjlTH53Avw1YbE0DajRJRbV59aNbpGDPvQ3ahCL6nWv14MdjlTQyiuSxRYQwoWJV8kZaLucfyPaHGhFgoUwodyhoWt4)KrYG)T36dybNbpOuVboCGILGDWTPl28cqYG7sncZbolUA1Ib0hQhtm4AmCZeXXqO2sOPrOyHqVkV(e3VtIFiEZ0S(wlN46InVaHglgHk58CGBDlUFNe)q8MPz9Twor9EfQneAueQkYaH(d4wWIYOZkWV9WKlTH530bK8ap6oGK1X1G38EGZGhWU0k1BGdUs9g423dtU0QIHqXE6asEGhF5vMbkPekWsbcbp(mCCTCgWoCGNW)jJKb)BV1hWcodEqPEdC4aLefSdUnDXMxasgCxQryoWtJqXcHEvE9jk14MkmX1fBEbcnwmcvY55a36wuQXnvyI69kuBi0OiuvKbcnPeAkc9hc1wcnncfle6v51N4(Ds8dXBMM13A5exxS5fi0yXiuwC1QfLACtfMiogc1wcLfxTArPg3uHjAUsgjHQAcvGqcnwmcvY55a36wC)oj(H4ntZ6BTCI69kuBi0OiuvKbcnPeAkc9hWTGfLrNvGF7HjxAdZVPdi5bE0DajRJRbV59aNbpGDPvQ3ahCL6nWTVhMCPvfdHI90bK8i00e8d4XxELzGskHcSuGqWJpdhxlNbSdh4j8FYizW)2B9bSGZGhuQ3aho4a3LAeMdC4aaa]] )
 
-    storeDefault( [[SimC Retribution: finishers]], 'actionLists', 20171211.164324, [[d8JchaGAssRhrP2eK0UOQ2gIc2hjHNl4WGMneZNKQBIiFds52I6EkQu7Ke7v1Ub2pkJseAyuL(nQonu)vrgmsdxKoeIQoLiQJPqhxiLwiPklLQyXKYYj8qHKNszzcL1POsMOqftLuzYenDLUijLhtLllDDeEgII2kKQnROSDfCqsv9DfvnnfvmpHuSksI(SqmAiX4ru5KcvDoeLCnHuDErKvIOqFsOsVwe8hVUBQbGAivETBkWCVz4CumQNUcSgXI5G5IrNHb4akveUfNodsGSxVBEksHHELyEhrBCmgz5pI244izDZCcC6E7M(UfZbHR7kJx3n1aqnKkVE3mNaNU3GUfp0PcAg3aJgnZnJsMmkQmAImQJZrK85b(QsiJKly9fndXGaJgnmAeNKrvjJoh)yrNrvxDgvwnIzZ8vLqgjxW6lAgIbbgvfmAeNKrvjJoh)yrNrt(M(Aye8M0TsU6iwmhmfkylW1BXdKyhC5IBaoO3iXLOdfkWCVDtbM7n1ixDelMdyuRGTaxV5Pifg6vI5DeTrV380aNq4A46(ElkuQlbs8HMlyV2nsCPcm3BFVsSR7MAaOgsLxVBMtGt3BQsiJKlyN4dviWYYOOYOdqbgQHuFzyYbdludPmkQmQgXSz(s8ag0PucrkpuFI0B6RHrWBs3K4bmOtHLlY3IhiXo4Yf3aCqVrIlrhkuG5E7Mcm3BXbpGbLrTLlY38uKcd9kX8oI2O3BEAGtiCnCDFVffk1Laj(qZfSx7gjUubM7TVxHmVUBQbGAivE9UzoboDVPkHmsUGDIpuHallJIkJoafyOgs9LHjhmSqnKYOOYOjYOKNrxisbRVtqeGY6xaudPsgvD1zuhNJi5Zd8DcIauwFrZqmiWOQGrJ4KmQkz0ymAY30xdJG3KUjXdyqNclxKVfpqIDWLlUb4GEJexIouOaZ92nfyU3IdEadkJAlxKz0eht(MNIuyOxjM3r0g9EZtdCcHRHR77TOqPUeiXhAUG9A3iXLkWCV99kZ56UPgaQHu517M5e409MQeYi5c2j(qfcSSmkQmQgXSz(s8ag0PucrkpuFIugfvgL8mAJwcCAAL(ZJcoKwXeF20IsNaWffrjBC(M(Aye8M0nvjcl2bfHPHcIuiW1BXdKyhC5IBaoO3iXLOdfkWCVDtbM7nYiryXoOiUbgf9cIuiW1BEksHHELyEhrB07npnWjeUgUUV3IcL6sGeFO5c2RDJexQaZ923Re9R7MAaOgsLxVBMtGt3BQsiJKlyN4dviWYYOOYOAeZM5lXdyqNsjeP8q9jsVPVggbVjDBBofbkctdviXU9w8aj2bxU4gGd6nsCj6qHcm3B3uG5EtxZPiqrCdmk6viXU9MNIuyOxjM3r0g9EZtdCcHRHR77TOqPUeiXhAUG9A3iXLkWCV99kKHR7MAaOgsLxVBMtGt3BQsiJKlyN4dviWYYOOYOjYOKNrxisbRVtqeGY6xaudPsgvD1zuhNJi5Zd8DcIauwFrZqmiWOQGrJ4KmQkz0ymAYmkQmAImk5z0fIuW6xYvhXI5GPqbBbU6xaudPsgvD1zuhNJi5Zd8l5QJyXCWuOGTax9fndXGaJQcgnItYOjFtFnmcEt622CkcueMgQqID7T4bsSdUCXnah0BK4s0HcfyU3UPaZ9MUMtrGI4gyu0RqIDlJM4yY38uKcd9kX8oI2O3BEAGtiCnCDFVffk1Laj(qZfSx7gjUubM7TVFVzP1HHiyYgUyo4kO597p]] )
-
-    storeDefault( [[SimC Retribution: generators]], 'actionLists', 20171211.164324, [[du0FyaqifvSiuHAtkkJcKCkq0QevPzjQIyxGAyOkhtblJQ4zKQsttfPRPiABKQQ(MOW4qfW5evH1POsZtfX9ivzFGuhevLfkk6HGWejvvCrfHrsQQ0jvu1krfzMOc0nPq7KQAPuLEQutvrARIQ6RIQiTwrvu7L4VKYGLCyLwmf9yQmzrUm0MvOptQmAv40OSAur9ArLzRs3wv2ns)gXWrLooQGwojpNsth46QQTRI67IsJNuvCEuvTEuHmFky)cldYuPNGUMxmjMs7Vpu6M9GikViqXm)agHo3O0HuuTaIYkT(bh3)fizkTx8IRffFp8gYyyWtEapKXWWqEiD7umUaPLMphGrOwzQ4pitLEc6AEXKKP0TtX4cKEDa2zudP4JH2OGwVO8eLbdrfCcQOm)JJWw3QUiqJr5WpZYaeLvd1hUFLUfWiuylyD5IcA9IYtEe1SOcofvurffurbvuih(zC5Ij41EGwnarl9TGOMfvIaGZU5qnYO2ApqlmG5YXO6IAwubNIkQOIkQOIkkOIcWEyuqh1aVOmyiQebaNDZHAKrT1EGwyf(wg1g1jrPZLIcYOcofvurffKrzWqWPOIkQOGkQ5efYHFgxUycEThOvdq0sFliQzrfCkQOIkQOIkQOGkkZ)4i8EgP6yuDAzvl4a(ZnkdgIcQOm)JJWo13Uje(ZnQzrz(hhHDQVDtiSfSUCrbTErnmzuqgLbdrbvuoc5MizPWo13UjewHVLrTrbDudtg1SOMtuM)XryN6B3ec)5gfKrzWquoc5MizPW7zKQJr1PLvTGdyf(wg1gf0rnmzWPOIkQOIkQOIcYOcofvurffKrbzWjidofCsA(mzxgGFPpVk2AErPNNMyUfqustjuuAJKu(RYFFO0jRMBTG18Is7Vpu6gquyu5V3pknFkDwPP7d1lz1CRfSMxmp58E)OERdWoJAifFm0cTEEmyakZ)4iS1TQlc0yuo8ZSmarz1q9H7xPBbmcf2cwxoO1ZtEmdkKd)mUCXe8WPNQVtYbMbvIaGZU5qnYO2ApqlmG5YXO6Mbype6bEgmKia4SBouJmQT2d0cRW3YO2t05sqcPbdqz(hhHTUvDrGgJYHFMLbikRgQpC)kDlGrOWwW6YbTEEYJzqz(hhH3ZivhJQtlRAbhWFUgmy(hhHDQVDti8N7mZ)4iSt9TBcHTG1LdA9gM0GbhHCtKSuyN6B3ecRW3YOwOhMC2Cm)JJWo13Uje(ZfsdgCeYnrYsH3ZivhJQtlRAbhWk8TmQf6HjnyaQ5SoaJqHDQVDtimsxZlMMnN1byek8EgP6yuDAzvl4agPR5ftqc5S5GC4NXLlMGho9u9DsoaKs7fV4ArX3dVHmg4jTx0s(khALPcqAioqxoJKZ4dPaXuAJKK)(qPfG47rMk9e018IjjtPBNIXfinurz(hhHDQVDti8NBuZIY8poc7uF7MqylyD5I6KOgMmkdgIY8pocFzBsXOwTXVIFTp9IR9atWFUrbzugmefurTkaBCDa41EGwnarBThOfgPR5ftrnlkhHCtKSu4SBouJmQT2d0cRW3YO2OojkDUuu5nkprbP08zYUma)s727vBDagHQDzwG0Zttm3cikPPekkTrsk)v5VpuAP93hkne79gfFoaJqJIdYSaP5tPZknDFOECCZEqeLxeOyMFaJqNBuJmkZEGklhlTx8IRffFp8gYyGN0Erl5RCOvMkaPH4aD5msoJpKcetPnss(7dLUzpiIYlcumZpGrOZnQrgLzpqLvaIV(ktLEc6AEXKKP0TtX4cKgSxKcGr9bDFaJq1SifGuhcJ018IPOMffur5iKBIKLcZ5Fs3dPayf(wg1g1jrPZLIkVrDkSNjJYGHOsO5FCeMZ)KUhsbWk8TmQnkOJsNlfvEJ6uyptgfKrnlkhHCtKSuyuFq3hWiunlsbi1HWFUrzWquM)Xr4ShmlxuPrg1ahOgDbhkKJyp4p3OMfL5FCeo7bZYfvAKrnWbQrxWHc5i2dwHVLrTrDsu6CPOYBudWtknFMSldWV0U9E1whGrOAxMfi980eZTaIsAkHIsBKKYFv(7dLwA)9HsdXEVrXNdWi0O4GmlikOgGuA(u6Sst3hQhh3Sher5fbkM5hWi05g1iJYShOYYXs7fV4ArX3dVHmg4jTx0s(khALPcqAioqxoJKZ4dPaXuAJKK)(qPB2dIO8IafZ8dye6CJAKrz2duzfG4FQmv6jOR5ftsMs3ofJlq6ebaJ6d6(agHQzrkaPoegWC5yuDrnlQebaJ6d6(agHQzrkaPoewHVLrTrDsu6CPOYBuEIAwuj08pocZ5Fs3dPayf(wg1g1jrPZLIkVr5jkdgIYIantc9BHbmu5zq7uUUOGokEsZNj7Ya8lnN)jDpKcKEEAI5warjnLqrPnss5Vk)9HslT)(qP50pP7HuG0EXlUwu89WBiJbEs7fTKVYHwzQaKgId0LZi5m(qkqmL2ij5VpuAbi(tktLEc6AEXKKP0TtX4cK(GC5xJljlQGDFLcPGOorVO8e1SOGkklc0mj0VfgWqLhEAE46Ic6O4fLbdrzrGMjH(TWagQ8Wt7uUUOGokErbP08zYUma)sBE3eQrg1483cyou65PjMBbeL0ucfL2ijL)Q83hkT0(7dLoZ7MWOiJrXPVfWCO0EXlUwu89WBiJbEs7fTKVYHwzQaKgId0LZi5m(qkqmL2ij5VpuAbi(6Vmv6jOR5ftsMs3ofJlq6dYLFnUKSOc29vkKcI6e9IYtuZIcQOSiqZKq)wyadvE4P5HRlkOJIxugmeLfbAMe63cdyOYdpTt56Ic6O4ffKsZNj7Ya8lDIDMrrTJ99qL0Zttm3cikPPekkTrsk)v5VpuAP93hkT(HDMrXO0V77HkP9IxCTO47H3qgd8K2lAjFLdTYubinehOlNrYz8HuGykTrsYFFO0cq8ZqMk9e018IjjtPBNIXfinurDqU8RXLKfvWUVsHuquNOxu8IYGHOoix(14sYIky3xPqkik9IAiQzrbvuoc5MizPWM3nHAKrno)TaMdHv4BzuBuqhLoxkkdgIYri3ejlfoXoZOO2X(EOcwHVLrTrbDu6CPOGmkdgI6GC5xJljlQGDFLcPGO0lkprnlkOIcQOCeYnrYsH5iCVWUJvPdTAJQ1bye6EJ6e9IIhS(pzugmeLJqUjswkSt9TBcvAwGILdHDhRshA1gvRdWi09g1j6ffpy9FYOGmkiJcsP5ZKDza(Lo7Md1iJAR9aTsppnXClGOKMsOO0gjP8xL)(qPL2FFO05PBomkYyu8zpqR0EXlUwu89WBiJbEs7fTKVYHwzQaKgId0LZi5m(qkqmL2ij5VpuAbi(CazQ0tqxZlMKmLUDkgxG0hKl)ACjzrfS7Ruife1j6fL(g1SOMtuweOzsOFlmGHkp80oLRlkOJIN08zYUma)sBE3eQrg1483cyou65PjMBbeL0ucfL2ijL)Q83hkT0(7dLoZ7MWOiJrXPVfWCyuqnaP0EXlUwu89WBiJbEs7fTKVYHwzQaKgId0LZi5m(qkqmL2ij5VpuAbi(5Hmv6jOR5ftsMs3ofJlq6dYLFnUKSOc29vkKcI6e9IsFJAwuZjklc0mj0VfgWqLhEANY1ff0rXtA(mzxgGFPtSZmkQDSVhQKEEAI5warjnLqrPnss5Vk)9HslT)(qP1pSZmkgL(DFpuffudqkTx8IRffFp8gYyGN0Erl5RCOvMkaPH4aD5msoJpKcetPnss(7dLwaI)apzQ0tqxZlMKmLMpt2Lb4xAo)t6Eifi980eZTaIsAkHIsBKKYFv(7dLwA)9HsZPFs3dPGOGAasP9IxCTO47H3qgd8K2lAjFLdTYubinehOlNrYz8HuGykTrsYFFO0cq8hgKPspbDnVysYu62PyCbsB(hhHtSZmkQX9R4sSi8NR08zYUma)s727vBDagHQDzwG0Zttm3cikPPekkTrsk)v5VpuAP93hkne79gfFoaJqJIdYSGOGYdKsZNsNvA6(q944M9GikViqXm)agHo3OgzuM9avwowAV4fxlk(E4nKXapP9IwYx5qRmvasdXb6YzKCgFifiMsBKK83hkDZEqeLxeOyMFaJqNBuJmkZEGkRae)bpYuPNGUMxmjzkD7umUaPDeYnrYsH5iCVWUJvPdTAJQ1bye6EJcA9IAaw)NmQzrDqU8RXLKfvWUVsHuquNOxuNg1SOGkkhHCtKSuyZ7MqnYOgN)waZHWk8TmQnkOJsNlfvEJYtugmeLJqUjswkCIDMrrTJ99qfScFlJAJc6O05srL3O8efKrnlQeA(hhH58pP7HuaScFlJAJc6O05ssZNj7Ya8lnhH7v65PjMBbeL0ucfL2ijL)Q83hkT0(7dLopJ7vAV4fxlk(E4nKXapP9IwYx5qRmvasdXb6YzKCgFifiMsBKK83hkTae)b9vMk9e018IjjtPBNIXfiTJqUjswkSt9TBcvAwGILdHDhRshA1gvRdWi09gf06f1aS(pzuZI6GC5xJljlQGDFLcPGOorVOonQzrbvuoc5MizPWM3nHAKrno)TaMdHv4BzuBuqhLoxkQ8gLNOmyikhHCtKSu4e7mJIAh77Hkyf(wg1gf0rPZLIkVr5jkiJAwuj08pocZ5Fs3dPayf(wg1gf0rPZLIAwuqffyVifaRtHlavAC(N09qkagPR5ftrzWquZjklc0mj0VfgWqLhEANY1ff0rXlQzrb2lsbWGduBKPqRgzuJZFlG5qyKUMxmffKsZNj7Ya8lTt9TBcvAwGILdLEEAI5warjnLqrPnss5Vk)9HslT)(qPHq9TBcvr1aflhkTx8IRffFp8gYyGN0Erl5RCOvMkaPH4aD5msoJpKcetPnss(7dLwaI)WPYuPNGUMxmjzknFMSldWV0oc1Io1cyeQ0Zttm3cikPPekkTrsk)v5VpuAP93hkneeQfDQfWiuP9IxCTO47H3qgd8K2lAjFLdTYubinehOlNrYz8HuGykTrsYFFO0cq8hMuMk9e018IjjtPBNIXfinYHFgxUycMZFlG5qnDlhHrnlkWQ0Ha4dCVGdyUoquqRxuzmzuZI6GC5xJljlQGDFLcPGOorVOovA(mzxgGFPp23dvAKrno)TaMdLEEAI5warjnLqrPnss5Vk)9HslT)(qP1V77HQOiJrXPVfWCO0EXlUwu89WBiJbEs7fTKVYHwzQaKgId0LZi5m(qkqmL2ij5VpuAbi(d6Vmv6jOR5ftsMsZNj7Ya8lTBVxT1byeQ2LzbsppnXClGOKMsOO0gjP8xL)(qPL2FFO0qS3Bu85amcnkoiZcIck9fsP5tPZknDFOECCZEqeLxeOyMFaJqNBuJmkZEGklhlTx8IRffFp8gYyGN0Erl5RCOvMkaPH4aD5msoJpKcetPnss(7dLUzpiIYlcumZpGrOZnQrgLzpqLvaI)qgYuPNGUMxmjzknFMSldWV0CeUxPNNMyUfqustjuuAJKu(RYFFO0s7Vpu68mU3OGAasP9IxCTO47H3qgd8K2lAjFLdTYubinehOlNrYz8HuGykTrsYFFO0cq8h4aYuPNGUMxmjzknFMSldWV0o13UjuPzbkwou65PjMBbeL0ucfL2ijL)Q83hkT0(7dLgc13UjufvduSCyuqnaP0EXlUwu89WBiJbEs7fTKVYHwzQaKgId0LZi5m(qkqmL2ij5VpuAbiaPBUOJTxghTagHk(zWtaIa]] )
+    storeDefault( [[SimC Retribution: cooldowns]], 'actionLists', 20180425.191508, [[d4JhfaGEjvvBsQQSlk61uG9jvvDAs9yknBLmFuv3ekURKQ0TrXHHStOAVIDRy)u1OqjmmPY4KuH7jvLHkPsnyjgov6qsv4uOeDme54sv0cPqTuuLfJKLtYdHs9uILjPSojvXLbtfPAYsz6QCruspxPEMKQY1ryrsvQTIszZsY2PctJc6RsQKpJk9DOK5HOQ)IugnQy8svYjPqERKk6AiQCEeLVHs1bPI(TQoKc9iSoiQf0cveCeder0my7l8GtPPio9p1JVy)F1ESMDeEWcqBi416ivhDgwJCMKIiUGvJw66hD6Fco7DrCAp9p7qp4Kc9iSoiQf0IXreRs7EryHVqruvzsT(VTi2NjHRVWNVVqruvzICadx9WLgwk0XXKW1x4Z3xOiQQmTkInQbMeU(s)8fkIQktRIyJAGPcyq6z7lK3xQroFHpFF5qkUWzEAgG290AAWxiFF(IHD(clJ4KsV0hzrC)t)teS5awdW8oagyUqfbZ3ydPWrmqKi4igicFBvvxN1wvvN19F6FQx(QiovC3rged0xVDv)6hUqJM7JfO6DeEWcqBi416iXoPUi8G9tOSWo0ZfXOPPTO7vrMFGiy(goIbI4Q(1pCHgn3hlqLl41c9iSoiQf0IXreRs7Er48lYO5(ybktlHsbZ5lKVpFXqFPF(cl8LE4lhAbZzc9cSeN(hAByoySGjmiQf08f(89Lgqruvzc9cSeN(hAByoySGjHRVWYioP0l9rweKYIgG29kfmxeJMM2IUxfz(bIG5BSHu4igiseCedeXPYIgWxO)kfmxeEWcqBi416iXoPUi8G9tOSWo0ZfbBoG1amVdGbMlurW8nCedejxWRVqpcRdIAbTyCeNu6L(ilYMJgwnAFfnhWWfqJfIy000w09QiZpqemFJnKchXarIGJyGichnSA(Yx5lSbdxanwicpybOne8ADKyNuxeEW(juwyh65IGnhWAaM3bWaZfQiy(goIbIKl4gg6ryDqulOfJJiwL29IWcFHIOQYup9KqV1N(htcxFHpFFPh(YHwWCM6PNe6T(0)ycdIAbnFHLrCsPx6JSiihWWvpCPHLcDCIy000w09QiZpqemFJnKchXarIGJyGioDadx9W1xQlf64eHhSa0gcETosStQlcpy)eklSd9CrWMdynaZ7ayG5cvemFdhXarYfCYf6ryDqulOfJJiwL29IW5xKrZ9XcuMwcLcMZx6FF(IHrCsPx6JSiwfXg1GignnTfDVkY8debZ3ydPWrmqKi4igic2kInQbr4blaTHGxRJe7K6IWd2pHYc7qpxeS5awdW8oagyUqfbZ3WrmqKC5IiwL29IKlba]] )
 
     storeDefault( [[SimC Protection: max survival]], 'actionLists', 20180208.175100, [[dCt8caGAOeTErr2fuqBdkvZekWSL4MuY3eL2jvTxYUrSFkyyc63qgkuugmQy4iHoiQQLHuDmk14GsAHiLLkPwmuTCuEOOQNcESIEUctekutvGjlY0v6IIkFcksxw11LKncfXwrI2mukBhv6ZuORHemnOqEMOWHL62cnAuLXdLWjrsEnf1PPY5PiRuuuRdkQ(lsQLTceKJ04LNeUam(yRRkROjaMmhfxbcQF594Ytp0gRH0dPagAJvkKrgzfau8txxCzQxhIip2XUa(Z1HidfiVTceKJ04LNenb8XDf3AsaEbHsuJTkMjbursUzViMacICbwOeLnZ3XlqGVJxaTccLmWbtQyMeu)Y7XLNEODw7qb1FGQyZpuGwb559Pzle3hpzfUaluY3XlqR80vGGCKgV8KOjGpUR4wtcWpBCMzhXOaQij3SxetabrUaluIYM574fiW3XlG2zJZm7igfu)Y7XLNEODw7qb1FGQyZpuGwb559Pzle3hpzfUaluY3XlqR8zOab5inE5jrtaFCxXTMe0Szto1lIXozfqfj5M9IyciiYfyHsu2mFhVab(oEb8zZMCdCcqm2jRG6xEpU80dTZAhkO(dufB(Hc0kipVpnBH4(4jRWfyHs(oEbALhJuGGCKgV8KOjGpUR4wtckoJ82b1yzvYy8KvavKKB2lIjGGixGfkrzZ8D8ce474fGboJ8wmDyGtMRsgJNScQF594Ytp0oRDOG6pqvS5hkqRG88(0SfI7JNScxGfk574fOvRaFhVaWfZBGdMXq7NRdrWCdCInwyGZOIX1XTlALa]] )
 
@@ -1525,9 +1389,9 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
     storeDefault( [[SimC Protection: max dps]], 'actionLists', 20180208.175100, [[dCd7caGAOOA9IQ0UevvBdkvZuuvMTKUjL8nrXoPQ9s2nI9tbdtq)gYqHIyWOsdhj1brvTmKQJrPghuIfIuwQcwmuTCuEOOYtbpwrpxIjcf0ufyYcnDLUOO0NGI0LvDDfAJqHSvKWMHsz7ijFMcDnOKMguGNHk6WsDBrgnQY4HIYjrIEnf1PPY5PiRuufRdku)fvyzRabzjnE9rHladp26X6kAcGjZr9kqWWRVlxE6H2yjKEiwZVnwWkNCMraq9NUU6YBVoerESJDb8NRdrkkqEBfiilPXRpkAc4J7QU1Ka8kcf5aBJmtcOKeDZErmbee5cSqrkAMVtxGaFNUaAvekAGlgnYmjy413Llp9q7m2HcgEbnYMVOaTcYX7tZwiQE6Kv4cSqrFNUaTYtxbcYsA86JIMa(4UQBnja)SYzMDeJcOKeDZErmbee5cSqrkAMVtxGaFNUaANvoZSJyuWWRVlxE6H2zSdfm8cAKnFrbAfKJ3NMTqu90jRWfyHI(oDbALNtfiilPXRpkAc4J7QU1KGMnBY5yrm2jRakjr3SxetabrUaluKIM570fiW3PlGpB2KBGBaIXozfm867YLNEODg7qbdVGgzZxuGwb549PzlevpDYkCbwOOVtxGw5XafiilPXRpkAc4J7QU1KGQZiVTWbMpgnMozfqjj6M9IyciiYfyHIu0mFNUab(oDb5ZzK3IPfdCZZy0y6KvWWRVlxE6H2zSdfm8cAKnFrbAfKJ3NMTqu90jRWfyHI(oDbA1kW3PlaCPCg4Ijm0(56qem2a3uJzg4gPUOvc]] )
 
 
-    storeDefault( [[Retribution Primary]], 'displays', 20171211.164324, [[d4ZpiaGEvLEPQc7sQqTnusLdlzMusETsvnBLSmsYnrj58KQBtkNgQDsXEf7MW(vf)ergMu8BixwLHIQgSQ0WrQdkvDukb6yuvNdLuSqP0sLkTyuz5e9qs0tbpgfRJsutuPknvKmzuQPR4IQQUQubptPkUocBuPYwPeWMPkBNK6Jsf9ze10Oe03vkJKsOVrjYOPuJhL4KKWTKkKRPQO7HsQ65uzTOKshNsQJFOcWu0dgj2Hedm6RlaPoqzLcZFGPKKVHxnF4cilb5tP9XSFAdWTWF)25cTfUa6K88C3OSOhms4IPjalK88C3OSOhms4IPjG1ehXXwbdsa4VxmF2eWzJ26jKLcHhkCbSM4io2kl6bJeU0gqNKNN7gQss(gxmnbSGehX5cvm(HkWVO4wh70gONzWiXZRvy3eJQaMs7caynLpVDVrI5igmsy5NxA5XG04Qjq3BDL7IrvJVLA8BAcamsm9eyWAhRVjtmQcvGFrXTo2PnqpZGrINxRWUjg)aMs7caynLpVDVrI5igmsy5Nx2NxrSMaDV1vUlgvn(wQXVPjtMaoB0gSHhg7()0gGfsEEUBOkj5BCX0eaZGeaDXGfKJ5ZatjjFtVGXgjd0sIIIeR6QOtlsfqpMosLQpd4HetGEjUwpVMskrBbC2OnQss(gxAdSpxVGXgjdqrIVRIoTivagKgxn8Q)dxaMIEWirVGXgjd0sIIIeRcOerR)8sHcWlrZXmyK45LxI1kPEaNnAdOsBaRjoIBVy5XmyKiqxfDArQaccnfmiHlglmGJ(wRDRYzReTqYqfOIXpGmg)aKJXpaxm(zc4SrBkl6bJeU0gGfsEEUB6jKvmnbkczrPtFb4i88cS3ZRiwtAdOvS0tmOyAculA7QFTv6oE1)X4hOw02fyJ24v)hJFGArBxkrAC1WR(pg)aMs7c09gjMJyWiXZlVeRvs9awtGz23cGDWOVUavGATv6oE18PnGASdZHx4rNsN(cWfGPOhms0VWKfbu(BO(7gGn2rVkDkD6lqfaOpgCTWFRbJeXyPMaYsq(O0PVafhEHh9afHSyfwCPna3c)9BNl0w)AfUa7ZTdjga)9IXxvah9Tw7wLZoCb4LyTsQ)8QSOhms882tiRabkcz1lySrYaTKOOiXkR(3rfqERak)nu)DdmLK8n7qIjap1Zluc3ZRPKs0wGArBxuLK8n8Q)JXpWhNohwWgli)8cJ(6IrvaRjoIJTcbBmtniPlTbyFEfXA65TkaG1u(829gjMJyWiHLFEzFEfXAcWsmnbMss(MDiXaJ(6cqQduwPW8hGvflyncTNxkS2fZEAcynXrC9lmzH2jMambagjMEceOw02v)AR0D8Q5JXpGgw0)hZEcqlXALuFhsma(7fJVQa0YJbPXvtpVvbaSMYN3U3iXCedgjS8ZlT8yqAC1eGfsEEUB(O1fJFaTIL()yAcqvRtmpVDkre0X4hykj5B4v)hUaoB02hNohwWgli7sBaEjwRK6pVkl6bJebMss(gxaDsEEUB6jKvmnb0WIEIbfttaMIEWiXoKya83lgFvbkczb03APyVX0eOw02fyJ24vZhJFaNnAtHGnMPgK0L2aoB0gVA(0gOwBLUJx9FAd4SrB8Q)tBaNnAR)pTbyqAC1WRMpCb2NBhsmb4PEEHs4EEnLuI2cSp3oKyGrFDbi1bkRuy(dOtYZZDZhTUy6i)aAybqfttGPKKVzhsma(7fJVQa1I2UOkj5B4vZhJFaMIEWiXoKycWt98cLW98AkPeTfOw02LsKgxn8Q5JXpWVO4wh70gWH1OxxpP)yufalyJzQbj7fm2izGUk60Iub6ERRCxmQA8TudRt1NDSQM9WASqvbOLyTsQRGbja83lMpBcOvSauX4hOiKLcHhIsN(cWr45fWzJ26jguAd4SrBWgEyS7jguAdSqBNKPC3hTUWfaZGeSweslg)pdynXrCS3HedG)EX4RkGojpp3nkeSXm1GKUyAcynXrCS)O1L2aSqYZZDJcbBmtniPlMMafHS6GapbOxL(jZKa]] )
+    storeDefault( [[Retribution Primary]], 'displays', 20180425.191508, [[da00jaqlsq2ffv1WiPJrjlts5ziKMgffxJkX2ibvFtsLgNKkADauDpkQshuPSqQQhsrMijWfbXgPs9rQKgPKQojk5LaKzscDtkQSts9tqzOuLJcqPLcGNcnveDvkkTvkQIVkPcJLeuwlaf7vmyeCyflMkEmkMSs1LLAZuQpJsnAkCAKEncXSvYTLKDt0Vv1WrvhhKSCcpxIPRY1bA7KOVdOXJqDEuz9Gu7huDSczqMH)OV09lp84wDqyMLurwAibzg(J(s3V8qk0D0w1ckgj72KrZqK4h0zrHgAxxpW4eKdMTDPptd)rFzjA1GedZ2U0NPH)OVSeTAqOaBWENfZlrk0D0UOgKY8s)xS3I4hSIk3Genrdcfyd27Mg(J(Ys8dsmNPxQSfxVh)GfJhi5iy3xj(b5GzBx6JCeS7ReTAqalyd2LqgTvidcrooREp(b3yo6lHtqrA5IUwq9u1brALj4eaOpb1b8OVeWHtGx0mFLZCbbOx9u6ORPAvxvlv1GiJGYFbpAvBEvZfDTqgeICCw9E8dUXC0xcNGI0YfTvq9u1brALj4eaOpb1b8OVeWHtyVThW1feGE1tPJUMQvDvTuvZLlyX4bIaPhJXgK4hSy8a3aVp(bPmVe5hgQKD0UeCafdlP9tYX3bDaTTdcfyd27aYVe)GdOyi547GoG22b5IwHQvZLG2V8cUjOZcob9iepWGCWSTl9PGEnCrRgKyy22L(uqVgUOvdcOMZHk3Ps2WjGh3QJUwqI4SjzmErqsyEaWY16jdYbZ2U0hG8lrRqwbHcSb7DwmVSoO7Nr0UOgCw8gdA8a9u6fTvW1dSfmtPbKFjob5f0QrWXI5L13u2gx0UOgKyy22L(aKFjARGa0REkD01uTQRvnllZ3sHBgIwZmbn98CWjq(b9e)1mh9LWj4jOvJGlivUtzM7fBsgJxeeawUwpzqIJwHQtIgKz4p6l3KmgViOpmssyMliVGwncowmVePq3r7IAqKVzOZIc9C0xgDDvdwmEGiz8dcfyd2kGkAMJ(YGaWY16jdkbRyX8Ys0MjOsAH6qx0JJKJVd6eekWgS3wu2YQwEbzcw471Y9AkgM(1lczWjARGorBfKD0wbfrBLlyX4bAA4p6llXpiG6MFRW3mhaZr)4hCVThW1T5PyqKwzcoba6tqDap6lbC4e2B7bCDblgpWnqXWsA)XjONGwnco4emn8h9LWjSbkMGbRgI3aVpA1GedZ2U0hl5oLzUxuIwn4S4ng04b6Pes0wbNfVXy6RCMZtjKOTcQG2Eaxx8dolEJX0x5mNNsVOTcolGdxXtPx8dseh3V8c6rcNaoYcCc6riEGbzg(J(YTfLTmOjiAsiaeCNw4xdhjhFhCcY8voZ5PesCckgj7MKJVdoo0f94coGIXCuzh)Gqb2G9MKX4fbbGLR1tgKioUF5HuO7OTQf8gb7(C)YlOhjCc4ilWjOhH4bgCw8gd5iy3NNsVOTcYbZ2U0hl5oLzUxuIwnOOxbnbrtcbGGf(ETCVMIrCcolEJHCeS7ZtjKOTcU3RHZ9lp84wDqyMLurwAibjIJ7xE4XT6GWmlPIS0qccfyd27SK7uM5Erj(bVrWUppLEXj4nc295(LhECRoimZsQilnKGMBiMwbwbNajTQJMOQbHcSbB84wDqay5A9KbrgbL)cgCw8gZ2c4Wv8u6fTvWzXBmBlGdxXtjKOTcYlOvJGZ9lpKcDhTvTG8IM5RCMBZtXOvd6jOvJGdobtd)rFzWBeS7ReSAiEds0QbjNvlp4eCv8G8rBf8gb7(8ucjoblgpqpLqIFWIXdeqnNdvUtLSlXpiuGugIyEOf84wDWjyX4bQGEnCbjHOWidszEP)l2BHPF9IqgCI2kOt0QbzhTAqr0Q5cU3RHZ9lpKcDhTLzcwmEGEk9IFWIXdKLCNYm3lkXp4EVgo3V8cUjOZcob9iepWGZc4Wv8ucj(b5GzBx6BdumrRgSy8a3Ge)GmFLZCEk9ItqIHzBx6BdumrRgCVxd3MKX4fbjH5Pie3KbhqXSjzmErqFyKKWmNIqCtgSIkrYOvdEJGDFUF5HuO7OTQfekWgS3KmgVaMTDPVODjiZWF0x6(Lxqps4eWrwGtqpcXdm4akgKVxlwkiA1GqKJZQ3JFWcTIF1BWGeDTGkoLZ0lv2Ic9Lrxt1QovTSmJ5t0GedZ2U0h5iy3xjA1Gqb2G9olMxwFtzBCr7IAWIXdebspgJnW7JFWkQCd8(OvdwneJKrBf8gb7(2KmgViOpmssyMdawUwpzqaZ)vMEPYwC9E8dszEjG5)QOjQAqOaBWE39lpKcDhTvTG6PQdcqFcQd4rFjCcEcA1i4cYlOvJGJfZlRd6(zeTlQbDwuOH211dCBTItWbumMvsVG8RHRf5sa]] )
 
-    storeDefault( [[Retribution AOE]], 'displays', 20171211.164324, [[daeoiaqiuvP2eQkXTqvv2LQkAyQshJuwgk1ZqvX0qvvDnPcBdvv03uvHZHQkSoskUhQkPdkLwOQYdjHjkfQlkvTrPsFuQOrssPtsIEjkrZuk4MOe2jf)eidLsDuuvklvk6PqtffxvkKTIQkzTOQuTxXGvQoSKfJKhJktgv5YQSzQ4Za1OjvNgXRvvPzRKBtj7MWVbnCK64KuTCIEovnDfxhW2jjFxvmEusNNkTEvvTFLYrlmb5k6HafDHIbh31feuJyAqPPp4usW3yRYoubLLa8Pq)4(nFbPwK))7CbFcvqxqoo(Buu0dbk8X8gKvqoo(Buu0dbk8X8gKwsSkPRsoOaj)Vy64nOxh(0cilLchyOcQoWbC8uu0dbk85lOlihh)nmLe8n(yEdY3aoGZhMy0ctWErrToE5lyl3qGIT9gi(jg2bnL1fejwk22BEJKqbmeOqnB70YJdArvtWM36k)fd7xTo00(jB2AbrojHEcoeRJV(Mjg2HjyVOOwhV8fSLBiqX2Ede)eJwqtzDbrILIT9M3ijuadbkuZ2oVZPawtWM36k)fd7xTo00(jB2AzYe0RdFWhYWP32hQGScYXXFdtjbFJpM3GeoOaPloIaCmDeCkj4BAfC6qzWpqmmGyrtLDQwMGUXWFA)4nOdumbBLKATTBkPe(eKLNlfrWJiaVTJJ76IHDWFPAfC6qzqgq2nv2PAzcYbTOQXwvFOcYv0dbkAfC6qzWpqmmGyrqfqA3TDgyWM3ijuadbk22Bb1h0RdFqM8fuDGd4AmrECdbkc2uzNQLjOaWsjhu4JH)d6PV1Q7Q86kGlOmmbRy0csfJwqWXOfugJwMGED4JIIEiqHpFbzfKJJ)MwazfZBWcqwmU0xqkahNGwfRTadmM3G1IwVAxpLR3wvFmAbRfTEH6WhBv9XOfSw06LcOfvn2Q6JrlOPSUGnVrsOagcuST3cQpipINEvUmU0xqUG16PC92QSZxqvepHISiJlJl9fKkixrpeOODralcQO3W03mO6aeUF5xepoURlivqlIOfyGXWNGYsa(yCPVGffzrg3GfGSybrC5lisFCKAr(xdbkI5hVb)LQlumi5)fJg7GUGCC83OuWJWvdu6J5nOTKyvs3TDff9qGIT9wazfm4usW30fkMG2mB7yj8B7MskHpbL3kOIEdtFZGE6BT6UkVEOcwlA9IPKGVXwvFmAblaz1k40HYGFGyyaXIg67YeuDGd44PuWJWvdu6ZxqQf5))oxWN21kub5DofWAATBiisSuST38gjHcyiqHA225DofWAcoLe8nDHIbh31feuJyAqPPpilkwjwawB7meRlg(8g0IiA7JHpbrojHEc6jcWRJVWVlGbgSw06v76PC92QSJrlO6ahW1UiGfwNycYfKwsSkPBxOyqY)lgn2bPLhh0IQMw7gcIelfB7nVrsOagcuOMTDA5XbTOQjOxh(0cmWqf0QyTTpM3Gm16eZ2ENsiaDmVbNsc(gBv9HkOxh(WYZLIi4reG95lyZBDL)IH9R2pE5NS74NSF5d)G)zhKvqoo(By5NpgTGUGCC830ciRyEdYv0dbk6cfds(FXOXoO6ahWXtjhuGK)xmD8gSaKfsFRLYghZBqVo8rPGhHRgO0NVG1IwVqD4JTk7y0cwRNY1BRQpFb96WhBv25lOxh(yRQpFb5Gwu1yRYoub)LQlumbTz22Xs432nLucFc6cYXXFdl)8XWFAb)LQlum44UUGGAetdkn9bTicKjg(eCkj4B6cfds(FXOXoOxh(02hQGCf9qGIUqXe0MzBhlHFB3usj8jyTO1lfqlQASvzhJwWErrToE5lONyrVUwq9XWoirWJWvdu2k40HYGnv2PAzcwlA9IPKGVXwLDmAbTLeRs6UTROOhcueCkj4B8bTkwrMyEdwaYsPWbY4sFbPaCCc61Hp4dz40Bbgy(cYAmVb96WhMsc(gF(cs4Gc(oeAfJwhbvh4aoEDHIbj)Vy0yhKvqoo(Buk4r4Qbk9X8guDGd44XYpF(c24ZPawt(cwaYQrcYeKEvUNmtca]] )
+    storeDefault( [[Retribution AOE]], 'displays', 20180425.191508, [[diKSjaqiQQqBsPu1Tav0UukLHrfhJOwgL0ZOQQPrK4AeP2gLkvFduHXPuQSoQQO7rPsCqQYcvQEiLYebv5IQsBKQYhPu1ivk5KiQxcQQzIs6MejTts9tvLHkjhLsLYsvkEk0ur4QuQyRuvbFLQkzSuQKwlvvQ9kgmrCyflMIEmkMSQ4YsTzQ0NrKrtHtJ0RbvA2k52sQDt43adhvooOy5K8CjMUkxhKTtj(UQQXJsCEu16bL2pk1roebzgUJce(aIdp(vh8ZoeSsw)gKz4okq4dioKcBhTS1GQrqQTz0mWn7bnxuyH1(f4pMb5)CDl9zB4okquI2jilFUUL(SnChfikr7eKtrRhfpzgGaPW2rlTtWIb43dsnKfUGygegOgQFSnChfikzpil82aclT66NShKYae7a1tRYEq(px3sFeJIuFLODcA3GAOUeIOLdrWxXyU6NSh0J5OabBjSslx0wdQN6oisRTXwYM(uutOJce(jBjCQMbuBoxWn9QNshTvhzPLL3MvRYbrgfL7cE062U4KlARHi4Rymx9t2d6XCuGGTewPLlA5G6PUdI0ABSLSPpf1e6OaHFYwYt7oqRl4ME1tPJ2QJS0YYBZQv5C5cwma)4p9ym8EJzqw(CDl9rmks9vI2jiLbiqUHHkifT0bVrrQppbJbqfC)JG4tQBiB)webRPcpOdeT)bHbQH6h4VxYEq(OHtz4WjOlqCb9u0zXwIEukWFq(px3sFWRxdF0obz5Z1T0h861WhTtq438MuXdvqITe84xD0wdcxtpbJbqfK4RAdz73IiyXa8tmks9vYEqyGAO(Hmdq4x0NZiAPDccV2DGwx2doloJbna)vwQIwoiNIwpkEYmaXwnLKXfT0obHRPpG4cwrWwcoIcBj6rPa)b30REkD0wDKHdzRYYBt2Ulf)TkLG8FUUL(G)EjA4uoiv8qzMdO8emgavWnKTFlIGWa1q9dzgGaPW2rlTtqMH7OaHNGXaOcU)rq8j1Gp0c3A4j456GmbTb44zlHaeCtFkQj0rbc2s8(Edwma)ir2dcdud1WJQAMJceb3q2(TickGQjZaeLOLsWbsne8CDqtix3GS856w6d(7LOLdw461Y3Akg2alGkebNOLdAgTCqsrlhufTCUGfdWVTH7Oarj7bHF3CEfUM52mhfK9GpT7aToVkwJ2jimqnu7TOKe1T4cYeK)Z1T0hzXdLzoGQeTtW6HfpOdeTtqw(CDl9rw8qzMdOkr7eCwCgdAa(RS8gTCWzXzm2a1MZvz5nA5G6PUdUPpf1e6OabBjEFVbRu06rXZwITH7OabBjEqQjyWz9p8LklvzpOfAHAsx0JNGNRdAgKz4okq4TOKebT9QjE3eegikdC9d0cE8RoOzWzXzm2a1MZvzPkA5GQrqQj456GJjDrp(GdKAKkv0zpimqnu7jymaQGBiB)webHRPpG4qkSD0YwdoloJXB9p8LklVrlhCwCgdXOi1xLLQOLdoqQXtWyaub3)ii(KkRV(icQ6vqBVAI3nbVrrQpFaXfSIGTeCef2s0Jsb(doloJHyuK6RYYB0YbHRPpG4WJF1b)SdbRK1VbHbQH6hYIhkZCavj7bz5Z1T0NhKAI2jyXa8d)M3KkEOcsLSh8gfP(8behE8Ro4NDiyLS(nOuhwO1q1SLqqR7O93jimqnuJh)QdUHS9BreezuuUlyHkiT6T3poqhi4S4mgV1)WxQSufTCWcxVw(wtXiMb5u06rX7dioKcBhTS1GCQMbuBoNxfRr7eCGudzHlGGNRdAc56gSEyX7nANGeZQfhBj2RaqCr7e8gfP(QS8gZGp9A49behsHTJwwkbRu06rXZwITH7OarWBuK6ReSya(9EJzWBuK6RYsvmd(0RH3tWyaubj(Qy91hrqgqT5CvwEJzWNEn8(aIdp(vh8ZoeSsw)gSya(jlEOmZbuLShKYae7a1tRSbwavicorlh0mANGKI2jOkANCbN1)WxQS8M9GfdWFLLQShSya(RS8M9GmGAZ5QSufZGp9A49bexqpfDwSLOhLc8hSya(HxVg(GeV2vIG8FUUL(8Gut0obRPcKiA)dEJIuF(aIdPW2rlBnimqnu7jymaQpx3sFrlDqMH7OaHpG4cwrWwcoIcBj6rPa)bhi1GC9ArgEr7e8vmMR(j7bl0AUv799gT1GSoLZgqyPvfkqeTvh5TZrwwkBZ)GWa1q9dzgGyRMsY4IwANG1uH3B0(hSya(XF6Xy4bDGShSya(9GoqmdwpSGer7eKLOHZTZ)G(nauBdiS0QRFYEqkdq43aqD0(7eegOgQF8behsHTJw2AqZffwyTFb(9wRygKtrRhfpzgGWVOpNr0s7ee5Ag6SOWohfiIgoCcoqQXoc6fKBn8Tkxc]] )
 
     storeDefault( [[Protection Primary]], 'displays', 20180205.185337, [[da0bkaqlsuSlsunmk5yuvlJs1ZiLAAKixdqY2au(MuuyCsrLZjffToPO0bLkluL8qkLjcO6IazJsHpkfzKaItIu9sqfZeP0njL0oP4Ni0qjPJsIswkc8uOPIORskXwjrP(kGuglGuTwPOQ9kgmqDyflwQ6XGmzaUSKntv(mjmAs1Pr51GknBvCBP0Ur1Vv1Wj44GQworpNktxPRJKTtk(Uk14rkopHwpcA)GYXpKbHgHL98gpFXv8ubjQfsAPBafChPIAv1OM(GYHROSPxqWnxb7pmcjSPZFN(GIe98C1ABew2ZDXyfeEQIQaqh65aPyk03yuYki8ufvbGo0ZrgHvmkzf0P)3DuYHo37tFq4PkQcGTryzp3LRG0iA75Ak5waYvqrIEEUAjhPIADXyfuzrvuLlKX4hYGG4t)PaKRGDql75WatlZTXOuqZ0wbvL)wql75Wad8YR4oMMYfKG6uJRIXULpW8TS0w5(brijtydMng7Hmii(0Fka5kyh0YEomW0YCBmavqZ0wbvL)wql75WaB7)dG)M7csqDQXvXy3Yhy(wwARC)GiKKjSbZgJ2Hmii(0Fka5kyh0YEomW0YCBmAh0mTvqv5Vf0YEomWizqcQtnUkg7w(aZ3YsBL7heHKmHny2SbD6)nEZwi9oq5kOt)V7O2pxbBhAqYy8dUJurTDCi9xg8IijjrTsa9MaczqAi655QTJsoXyfKb9CuyGyCfXaubfJrzSRKvqVNVb7KS5adSzKY)oOirppxTaVoJymwbPHONNRwGxNrmgRGWPe7zCamUcyGXv8uXypiC774q6VmijrvcO3eqidcpvrvaGZLlxbHNQOka0HEoqJby1JrjRG0q0ZZvl5ivuRlgRGqFB)SQAaL(Gcsw7ifPd9CGumf6BmkzfKb98M))2y02k45Vlj04k4C5sFWHso05EpPOqfSNYZliJdGbn7l74q6Vmib0BciKbfKS2rksh65iJWkgLSccncl75DCi9xg8IijjrTgeqDgXgpFdQscdmoChmWMrk)7GOqbXMdJWzzppgGbSGo9)gjZvq4PkQc4mzbTSNhKa6nbeYGCQw6qp3fJsbT9cIWat(bvL)wql75WaRkzTJumOtOoNgNXPB7pVmKbNy8d2hJFqfX4hugJF2GIe98C1sNdGbn7lDXyf0P)32gHL9CxUccNQe6Ccf0sWSSpxbhk5qkkub7P88c60)BYrQOwxUccpvrvDhMcEBX3GqbBhA6O2pgRG9hgHe205V7oN0hCoc6dQ)3QAafJFW5iOp2(2(zv1akg)GaV8gQZMRGqJWYEEJNViJWkgF7bNZ9i6u1OMRGAyowp7WwrsrHkyFqOryzpV7WuWdAdKHeebbbWCcNrKuuOcobPHONNRw6CamOzFPlgRGaQZi2XH0FzqsIQ0cQbzWHsoALXRCfeEQIQ64q6Vmib0BciKbHBFJNViJWkgF7bNJG(y7B7NvvJAm(bvLS2rkcdSTryzphg4ok5em4osf1245BqvsyGXH7Gb2ms5Fh0P)3aVoJyqsqaDYGoH6CACgNE6dohb9HCKkQvvdOy8dcO8gQZ2PsBqK1Adgyv5Vf0YEEZcdmGYBOoBq4PkQcaDoag0SV0LRG0eJYaSMlOirppxTW5YfJY4hChPIAB88fxXtfKOwiPLUbuqTo0WAPAHbMK1wXOTvq4PkQcxXtfKa6nbeYGiKKjSbdohb9P7CpIovnQX4heU9nE(IR4PcsulK0s3akOGK1osXgpFrgHvm(2dkilOVTF2ovAdISwBWaRk)TGw2ZBwyGfKf032pBq42345BqvsyGXH7Gb2ms5FhSDOPdumwbjNtXxyGBs(ucXyfChPIAv1ak9bvLS2rkcdSTryzpp4osf16c60)B4uI9moagxHlxbfj655QTJsoXyf0P)3DGYvW5iOpKJurTQAuJXpOSobTbYqcIGGo9)wvJAUc60)B6CamOzFPlxbNJG(G6)TQg1y8doN7r0PQbuUc2Y4Du7hJvqN(FRQbuUcc9T9ZQQrn9bjOo14QySB53mSaMDGs52T0UzQK9G0q0ZZvlCUCX4hSLX7afJ2bBzCKmgRG7ivuBJNViJWkgF7bHNQOQooK(lj655QngGki0iSSN345BqvsyGXH7Gb2ms5FhCOKdkuNdDGhJvqq8P)uaYvqhRv4uDebfJ9G0oU12Z1ush75Xy3YV5S89vs5AhKgIEEUATncl75UySckhUIIuuOco9SdBfd60)B8MTq6Du7NRGWtXGGRYM5Wv8ubNGaQZi245lYiSIX3EqZ0wbvL)wql75WaRkzTJumyZ)FRTNRPKBbixbbuNrSXZxCfpvqIAHKw6gqbHNQOkanE(ImcRy8ThCoc6t35EeDQAafJFqbjRDKI0HEoqJby1JrjRGdLC64q6Vm4frssIALwqnidouYrlC2gu4mILmBc]] )
 

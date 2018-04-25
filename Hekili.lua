@@ -4,7 +4,7 @@
 local addon, ns = ...
 Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSerializer-3.0" )
 Hekili.Version = GetAddOnMetadata("Hekili", "Version");
-
+Hekili.AllowSimCImports = true
 
 local format = string.format
 local upper  = string.upper

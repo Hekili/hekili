@@ -909,8 +909,6 @@ modifyAbility( 'arcane_torrent', 'id', function( x )
 end )
 
 addHandler( 'arcane_torrent', function ()
-    interrupt()
-    
     if class.file == "DEATHKNIGHT" then gain( 20, "runic_power" )
     elseif class.file == "HUNTER" then gain( 15, "focus" )
     elseif class.file == "MONK" then gain( 1, "chi" )
