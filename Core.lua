@@ -1008,7 +1008,7 @@ function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, 
         if debug then self:Debug( "No list with ID #%d. Should never see.", listID ) end
     elseif listStack[ listID ] then
         if debug then self:Debug( "Action list loop detected. %s was already processed earlier. Aborting.", list.Name ) end
-        return 
+        return chosen_action, chosen_clash, chosen_depth
     else
         if debug then self:Debug( "Adding %s to the list of processed action lists.", list.Name ) end
         listStack[ listID ] = hookID or 0
