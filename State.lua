@@ -3885,7 +3885,7 @@ do
         local toggle = profile.toggles[ ability.key ]
         if not toggle or toggle == 'default' then toggle = ability.toggle end
 
-        if toggle and not state.toggle[ toggle ] then
+        if toggle and toggle ~= 'none' and not state.toggle[ toggle ] then
             return true
         end
 
