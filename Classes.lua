@@ -510,12 +510,11 @@ local function addTalent( key, id, ... )
     end
 
     class.talents[ key ] = {
-    id = id,
-    name = name
-}
+        id = id,
+        name = name
+    }
 
-ns.commitKey( key )
-
+    ns.commitKey( key )
 end
 ns.addTalent = addTalent
 

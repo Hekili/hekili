@@ -129,33 +129,33 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
         -- TODO:  Decide if modeling feral_spirit gain is worth it.
 
-        addTalent( 'boulderfist', 246035 )
-        addTalent( 'hot_hand', 201900 )
-        addTalent( 'lightning_shield', 192106 )
+        addTalent( 'boulderfist', 22354 )
+        addTalent( 'hot_hand', 22355 )
+        addTalent( 'lightning_shield', 22353 )
 
-        addTalent( 'landslide', 197992 )
-        addTalent( 'forceful_winds', 262647 )
-        addTalent( 'totem_mastery', 262395 )
+        addTalent( 'landslide', 22636 )
+        addTalent( 'forceful_winds', 22150 )
+        addTalent( 'totem_mastery', 23109 )
 
-        addTalent( 'spirit_wolf', 260878 )
-        addTalent( 'earth_shield', 974 )
-        addTalent( 'static_charge', 265046 )
+        addTalent( 'spirit_wolf', 23165 )
+        addTalent( 'earth_shield', 19260 )
+        addTalent( 'static_charge', 23166 )
 
-        addTalent( 'searing_assault', 192087 )
-        addTalent( 'hailstorm', 210853)
-        addTalent( 'overcharge', 210727 )
+        addTalent( 'searing_assault', 23089 )
+        addTalent( 'hailstorm', 23090 )
+        addTalent( 'overcharge', 22171 )
 
-        addTalent( 'natures_guardian', 30884 )
-        addTalent( 'feral_lunge', 196884 )
-        addTalent( 'wind_rush_totem', 192077 )
+        addTalent( 'natures_guardian', 22144 )
+        addTalent( 'feral_lunge', 22149 )
+        addTalent( 'wind_rush_totem', 21966 )
 
-        addTalent( 'crashing_storm', 192246 )
-        addTalent( 'fury_of_air', 197211 )
-        addTalent( 'sundering', 197214 )
+        addTalent( 'crashing_storm', 21973 )
+        addTalent( 'fury_of_air', 22352 )
+        addTalent( 'sundering', 22351 )
 
-        addTalent( 'elemental_spirits', 262624 )
-        addTalent( 'earthen_spike', 188089 )
-        addTalent( 'ascendance', 114051 )
+        addTalent( 'elemental_spirits', 21970 )
+        addTalent( 'earthen_spike', 22977 )
+        addTalent( 'ascendance', 21972 )
 
 
 
