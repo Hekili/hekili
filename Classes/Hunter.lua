@@ -90,7 +90,7 @@ if select( 2, UnitClass( 'player' ) ) == 'HUNTER' then
                 end,
 
                 interval = 1,
-                value = 33,
+                value = 3,
             },
 
 
