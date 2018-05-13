@@ -386,9 +386,14 @@ state.GetTotemInfo = GetTotemInfo
 state.IsUsableSpell = IsUsableSpell
 state.UnitBuff = UnitBuff
 state.UnitDebuff = UnitDebuff
+state.UnitCanAttack = UnitCanAttack
+state.UnitCastingInfo = UnitCastingInfo
+state.UnitChannelInfo = UnitChannelInfo
 state.floor = math.floor
 state.abs = math.abs
 state.table_insert = table.insert
+state.pairs = pairs
+state.ipairs = ipairs
 
 state.boss = false
 state.combat = 0
@@ -1729,7 +1734,7 @@ local mt_target = {
             return UnitExists( 'target' )
             
         elseif k == 'casting' then
-            if UnitName("target") and UnitCanAttack("player", "target") and UnitHealth("target") > 0 then
+            if UnitCanAttack("player", "target") and UnitHealth("target") > 0 then
                 local _, _, _, _, endCast, _, _, notInterruptible = UnitCastingInfo("target")
                 
                 if endCast ~= nil and not notInterruptible then
@@ -4130,3 +4135,397 @@ for k, v in pairs( state ) do
 end
 
 ns.attr = { "serenity", "active", "active_enemies", "my_enemies", "active_flame_shock", "adds", "agility", "air", "armor", "attack_power", "bonus_armor", "cast_delay", "cast_time", "casting", "cooldown_react", "cooldown_remains", "cooldown_up", "crit_rating", "deficit", "distance", "down", "duration", "earth", "enabled", "energy", "execute_time", "fire", "five", "focus", "four", "gcd", "hardcasts", "haste", "haste_rating", "health", "health_max", "health_pct", "intellect", "level", "mana", "mastery_rating", "mastery_value", "max_nonproc", "max_stack", "maximum_energy", "maximum_focus", "maximum_health", "maximum_mana", "maximum_rage", "maximum_runic", "melee_haste", "miss_react", "moving", "mp5", "multistrike_pct", "multistrike_rating", "one", "pct", "rage", "react", "regen", "remains", "remains", "resilience_rating", "runic", "seal", "spell_haste", "spell_power", "spirit", "stack", "stack_pct", "stacks", "stamina", "strength", "this_action", "three", "tick_damage", "tick_dmg", "tick_time", "ticking", "ticks", "ticks_remain", "time", "time_to_die", "time_to_max", "travel_time", "two", "up", "water", "weapon_dps", "weapon_offhand_dps", "weapon_offhand_speed", "weapon_speed", "single", "aoe", "cleave", "percent", "last_judgment_target", "unit", "ready" }
+
+
+
+
+-- BfA
+
+
+Hekili.ClassDB = {}
+
+local ClassDB = Hekili.ClassDB
+
+ClassDB.Auras = {}
+ClassDB.Abilities = {}
+ClassDB.Items = {}
+ClassDB.ItemSets = {}
+
+
+function ClassDB:AddItemSet( key, ... )
+    local items = self.Items
+    local sets = self.ItemSets
+
+    local n = select( "#", ... )
+
+    local set = sets[ key ] or {}
+
+    for i = 1, n do
+        local item = select( i, ... )
+
+        table.insert( set, item )
+
+        set[ item ] = true
+        items[ item ] = key
+    end
+
+    sets[ key ] = set
+end
+
+
+function ClassDB:GetSetForItem( item )
+    return self.Items[ item ]
+end
+
+
+ClassDB:AddItemSet( 'waycrest_legacy', 158362, 159631 )
+ClassDB:AddItemSet( 'electric_mail', 161031, 161034, 161032, 161033, 161035 )
+ClassDB:AddItemSet( 'fake_set_test', 155325, 155262, 159907 )
+
+local insert = table.insert
+local wipe   = table.wipe
+
+Hekili.LiveDB = {}
+
+local LiveDB = Hekili.LiveDB
+
+LiveDB.Auras = {}
+LiveDB.Buffs = {}
+LiveDB.Debuffs = {}
+
+LiveDB.Equipment = {
+    BySlot = {},
+    ByID = {},
+}
+LiveDB.ItemSets = {}
+LiveDB.Powers = {
+    ByPowerID = {},
+    BySpellID = {},
+}
+LiveDB.Talents = {
+    ByIndex = {},
+    ByTalentID = {},
+    BySpellID = {}
+}
+LiveDB.Units = {
+    ByID = {},
+    ByIndex = {},
+}
+
+
+do
+    local e = CreateFrame( "Frame" )
+    local handlers = {}
+
+    function LiveDB:StartEvents()
+        e:SetScript( "OnEvent", function( self, event, ... )
+            local h = handlers[ event ]
+            
+            if h then
+                for _, handler in ipairs( h ) do
+                    handler( event, ... )
+                end
+            end
+        end )
+    end
+
+    function LiveDB:StopEvents()
+        e:SetScript( "OnEvent", nil )
+    end
+
+    function LiveDB:RegisterEvent( event, handler )
+        e:RegisterEvent( event )
+
+        handlers[ event ] = handlers[ event ] or {}        
+        table.insert( handlers[ event ], handler )
+    end
+
+    function LiveDB:RegisterEvents( ... )
+        local n = select( "#", ... )
+        local handler = select( n, ... )
+
+        for i = 1, n - 1 do
+            local event = select( i, ... )
+            self:RegisterEvent( event, handler )
+        end
+    end
+   
+    LiveDB:StartEvents()
+    LiveDB.Events = e
+end
+
+
+-- TALENTS
+function LiveDB:UpdateTalents()
+    local t = self.Talents
+    wipe( t.ByTalentID )
+    wipe( t.BySpellID  )
+
+    local i = 0
+
+    for row = 1, 7 do
+        for col = 1, 3 do
+            i = i + 1
+            local entry = t.ByIndex[ i ] or {}
+
+            local id, name, texture, selected, available, spell, _, _, _, _, known = GetTalentInfo( row, col, 1 )
+            selected = selected or known -- account for class rings and similar effects.
+
+            entry.id        = id
+            entry.name      = name
+            entry.texture   = texture
+            entry.selected  = selected
+            entry.available = available
+            entry.spellID   = spell
+                
+            t.ByIndex[ i ]  = entry
+
+            if id then
+                t.ByTalentID[ id ]   = entry
+                t.BySpellID[ spell ] = entry
+            end
+        end
+    end
+end
+
+LiveDB:RegisterEvents( "PLAYER_TALENT_UPDATE", "PLAYER_ENTERING_WORLD", function ()
+    LiveDB:UpdateTalents()
+end)
+
+
+-- TRAITS
+do
+    local loc = ItemLocation.CreateEmpty()
+    
+    local GetAllTierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo
+    local GetPowerInfo = C_AzeriteEmpoweredItem.GetPowerInfo
+    local IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
+    
+    local MAX_INV_SLOTS = 19
+
+    function LiveDB:UpdatePowers()
+        local p = self.Powers
+        wipe( p.ByPowerID )
+        wipe( p.BySpellID )
+
+        for slot = 1, MAX_INV_SLOTS do
+            loc:SetEquipmentSlot( slot )
+            local id = GetInventoryItemID( "player", slot )
+
+            if id and IsAzeriteEmpoweredItemByID( id ) then
+                local tiers = GetAllTierInfo( loc )
+
+                for tier, tierInfo in ipairs( tiers ) do
+                    for _, power in ipairs( tierInfo.azeritePowerIDs ) do
+                        local pInfo = GetPowerInfo( loc, power )
+
+                        if pInfo.selected then
+                            local powerID = p.ByPowerID[ pInfo.azeritePowerID ] or {}
+                            local spellID = p.BySpellID[ pInfo.spellID ] or {}
+
+                            insert( powerID, id )
+                            insert( spellID, id )
+
+                            p.ByPowerID[ pInfo.azeritePowerID ] = powerID
+                            p.BySpellID[ pInfo.spellID ] = spellID
+                        end
+                    end
+                end
+            end
+        end
+
+        loc:Clear()
+    end
+end
+
+LiveDB:RegisterEvents( "PLAYER_ENTERING_WORLD", "PLAYER_EQUIPMENT_CHANGED", "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED", function ()
+    LiveDB:UpdatePowers()
+end )
+
+
+do
+    local loc = ItemLocation.CreateEmpty()
+
+    local MAX_INV_SLOTS = 19
+
+    function LiveDB:UpdateEquipment()
+        local eq = self.Equipment
+        local sets = self.ItemSets
+        
+        wipe( eq.ByID )
+
+        for _, set in pairs( self.ItemSets ) do
+            wipe( set )
+        end
+
+        for slot = 1, MAX_INV_SLOTS do
+            loc:SetEquipmentSlot( slot )
+            local id = GetInventoryItemID( "player", slot )
+
+            eq.BySlot[ slot ] = id
+
+            if id then
+                eq.ByID[ id ] = slot
+
+                local set = ClassDB:GetSetForItem( id )
+
+                if set then
+                    sets[ set ] = sets[ set ] or {}
+                    table.insert( sets[ set ], id )
+                end
+            end
+        end
+        
+        loc:Clear()
+    end
+end
+
+
+LiveDB:RegisterEvents( "PLAYER_ENTERING_WORLD", "PLAYER_EQUIPMENT_CHANGED", function ()
+    LiveDB:UpdateEquipment()
+end )
+
+
+do
+    local clean, dirty = {}, {}
+    local unitPool = {}
+
+    function LiveDB:NewUnit( globalID, detector )
+        local units = self.Units
+
+        local unit = table.remove( clean ) or {
+            id = globalID,
+            melee = false,
+            spell = false,
+            nameplate = false,
+
+            Auras = {},
+            Buffs = {},
+            Debuffs = {},
+            AuraRefresh = 0
+        }
+
+        if detector then unit[ detector ] = true end
+
+        if detector == 'nameplate' then
+            -- We can populate buffs and debuffs.
+            -- ...
+        end
+
+        units.ByID[ globalID ] = unit
+        table.insert( units.ByIndex, unit )
+
+        return unit
+    end
+
+
+    function LiveDB:GetUnit( globalID )
+        return self.Units[ globalID ]
+    end
+
+
+    function LiveDB:UpdateUnitAuras( unitID )
+        local globalID = UnitGUID( unitID )
+
+        local unit = LiveDB:GetUnit( globalID ) or LiveDB:NewUnit( globalID )
+
+        local now = GetTime()
+        if now <= unit.AuraRefresh then return end
+
+        local i = 1
+        while( true ) do
+            local name, _, count, aType, duration, expiration, caster, purge, _, spellID, _, _, _, _, _, v1, v2, v3 = UnitBuff( unitID, i, "PLAYER" )
+
+            print( name, count, aType )
+
+            if not name then break end
+
+            local aura = unit.Buffs[ spellID ] or {}
+
+            aura.name = name
+            aura.count = count
+            aura.aType = aType
+            aura.duration = duration
+            aura.expiration = expiration
+            aura.applied = expiration - duration
+            aura.caster = caster and UnitGUID( caster )
+            aura.purge = purge
+            aura.id = spellID
+            aura.v1 = v1 or 0
+            aura.v2 = v2 or 0
+            aura.v3 = v3 or 0
+
+            unit.Buffs[ spellID ] = aura
+            unit.Auras[ spellID ] = aura
+
+            local auraDB = self.Auras[ spellID ] or {
+                ByID = {},
+                ByIndex = {}
+            }
+
+            if not auraDB.ByID[ globalID ] then
+                auraDB.ByID[ globalID ] = aura
+                table.insert( auraDB.ByIndex, aura )
+                self.Auras[ spellID ] = auraDB
+            end
+
+            i = i + 1
+        end
+
+        
+        i = 1
+        while( true ) do
+            local name, _, count, aType, duration, expiration, caster, purge, _, spellID, _, _, _, _, _, v1, v2, v3 = UnitDebuff( unitID, i, "PLAYER" )
+
+            if not name then break end
+
+            local aura = unit.Buffs[ spellID ] or {}
+
+            aura.name = name
+            aura.count = count
+            aura.aType = aType
+            aura.duration = duration
+            aura.expiration = expiration
+            aura.applied = expiration - duration
+            aura.caster = caster and UnitGUID( caster )
+            aura.purge = purge
+            aura.id = spellID
+            aura.v1 = v1 or 0
+            aura.v2 = v2 or 0
+            aura.v3 = v3 or 0
+
+            unit.Debuffs[ spellID ] = aura
+            unit.Auras[ spellID ] = aura
+
+            local auraDB = self.Auras[ spellID ] or {
+                ByID = {},
+                ByIndex = {}
+            }
+
+            if not auraDB.ByID[ globalID ] then
+                auraDB.ByID[ globalID ] = aura
+                table.insert( auraDB.ByIndex, aura )
+                self.Auras[ spellID ] = auraDB
+            end
+
+            i = i + 1
+        end
+
+        unit.AuraRefresh = now
+    end
+end
+
+
+--[[ do
+    -- COMBAT LOG
+
+    f
+
+    function LiveDB:CLEU( _, subtype, ... )
+        if subtype == "UNIT_DIED" or subtype == "UNIT_DESTROYED" then
+
+    end
+
+    LiveDB:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ()
+        LiveDB:CLEU( CombatLogGetCurrentEventInfo() ) 
+    end ) ]]

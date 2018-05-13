@@ -506,7 +506,6 @@ function Hekili:GetDefaults()
             Release = 20170300,
             Legion = true,
             Enabled = true,
-            Locked = true,
             MinimapIcon = false,
 
             Artifact = true,
@@ -4912,12 +4911,6 @@ function Hekili:GetOptions()
                         desc = "Enables or disables the addon.",
                         order = 1
                     },
-                    Locked = {
-                        type = "toggle",
-                        name = "Locked",
-                        desc = "Locks or unlocks all displays for movement, except when the options window is open.",
-                        order = 2
-                    },
                     MinimapIcon = {
                         type = "toggle",
                         name = "Hide Minimap Icon",
@@ -6516,14 +6509,6 @@ function Hekili:SetOption( info, input, ... )
         else self:Disable() end
             
             return
-            
-        elseif option == 'Locked' then
-            if not self.Config and not self.Pause then
-                for i, v in ipairs( ns.UI.Buttons ) do
-                    ns.UI.Buttons[i][1]:EnableMouse( not input )
-                end
-                ns.UI.Notification:EnableMouse( not input )
-            end
             
         elseif option == 'MinimapIcon' then
             profile.iconStore.hide = input
@@ -8292,7 +8277,7 @@ function Hekili:TogglePause( ... )
         self.Pause = false
     end
     
-    local MouseInteract = self.Pause or self.Config or ( not Hekili.DB.profile.Locked )
+    local MouseInteract = self.Pause or self.Config
     
     for i = 1, #ns.UI.Buttons do
         for j = 1, #ns.UI.Buttons[i] do

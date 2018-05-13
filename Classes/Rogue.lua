@@ -882,7 +882,7 @@ if (select(2, UnitClass('player')) == 'ROGUE') then
             min_range = 0,
             max_range = 0,
             toggle = "interrupts",
-            usable = function () return target.casting end,
+            usable = function () return debuff.casting.up end,
         } )
 
         addHandler( "kick", function ()

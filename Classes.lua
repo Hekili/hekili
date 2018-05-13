@@ -21,6 +21,41 @@ ns.initializeClassModule = function()
 end
 
 
+function Hekili:NewSpecialization( specID )
+
+    local id, name, _, texture, role, pClass = GetSpecializationInfoByID( specID )
+
+    if not id then
+        Hekili:Error( "Unable to generate specialization DB for spec ID #" .. specID .. "." )
+        return nil
+    end
+
+    local spec = class.specs[ id ] or {
+        id = id,
+        name = name,
+        texture = texture,
+        role = role,
+        class = pClass,
+
+        abilities = {},
+        auras = {},
+        funcHooks = {},
+        gearSets = {},
+        incapacitates = {},
+        interrupts = {},
+        resources = {},
+        talents = {},
+
+        pref = {
+            defaults = {},
+        },
+    }
+    class.specs[ id ] = class.specs[ id ] or spec
+
+    return spec
+end
+
+
 ns.addToggle = function( name, default, optionName, optionDesc )
 
     table.insert( class.toggles, {
@@ -720,14 +755,18 @@ addAura( 'heroism', 32182, 'duration', 40 )
 addAura( 'time_warp', 80353, 'duration', 40 )
 addAura( 'netherwinds', 160452, 'duration', 40 )
 
+local bloodlusts = { 
+    [90355] = 'ancient_hysteria',
+    [32182] = 'heroism',
+    [80353] = 'time_warp',
+    [160452] = 'netherwinds',
+}
+
 -- bloodlust is the "umbrella" aura for all burst haste effects.
 addAura( 'bloodlust', 2825, 'duration', 40, 'feign', function ()
-    local bloodlusts = { 'ancient_hysteria', 'heroism', 'time_warp', 'netherwinds' }
-    
-    for i = 1, #bloodlusts do
-        local aura = bloodlusts[ i ]
-        if buff[ aura ].up then
-            buff.bloodlust.count = buff[ aura ].count
+    for id, key in pairs( bloodlusts ) do
+        if buff[ key ].up then
+            buff.bloodlust.count = buff[ key ].count
             buff.bloodlust.expires = buff[ aura ].expires
             buff.bloodlust.applied = buff[ aura ].applied
             buff.bloodlust.caster = buff[ aura ].caster
@@ -735,8 +774,14 @@ addAura( 'bloodlust', 2825, 'duration', 40, 'feign', function ()
         end
     end
     
-    local name, _, count, _, duration, expires = UnitBuff( 'player', class.auras.bloodlust.name )
-    
+    local name, count, duration, expires, spellID
+    for i = 1, 40 do
+        name, _, count, _, duration, expires, _, _, _, spellID = UnitBuff( 'player', i )
+
+        if not name then break end
+        if spellID == 2525 then break end
+    end
+        
     if name then
         buff.bloodlust.count = max( 1, count )
         buff.bloodlust.expires = expires
@@ -801,21 +846,40 @@ addAura( 'multistrike', -8, 'duration', 3600 )
 addAura( 'versatility', -9, 'duration', 3600 )
 
 
-addAura( 'casting', -10 )
---[[ , 'feign', function()
-    if target.casting then
-        debuff.casting.count = 1
-        debuff.casting.expires = target.cast_end
-        debuff.casting.applied = state.now
-        debuff.casting.caster = 'target'
-        return
+addAura( 'casting', -10, 'feign', function ()    
+    if UnitCanAttack( "player", "target" ) then
+        local _, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitCastingInfo( "target" )
+        
+        if notInterruptible == false then
+            debuff.casting.name = "Casting " .. spell
+            debuff.casting.count = 1
+            debuff.casting.expires = endCast / 1000
+            debuff.casting.applied = startCast / 1000
+            debuff.casting.v1 = spell
+            debuff.casting.caster = 'target'
+            return
+        end
+
+        _, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitChannelInfo( "target" )
+        
+        if notInterruptible == false then
+            debuff.casting.name = "Casting " .. spell
+            debuff.casting.count = 1
+            debuff.casting.expires = endCast / 1000
+            debuff.casting.applied = startCast / 1000
+            debuff.casting.v1 = spell
+            debuff.casting.caster = 'target'
+            return
+        end
     end
 
+    debuff.casting.name = "Casting"
     debuff.casting.count = 0
     debuff.casting.expires = 0
     debuff.casting.applied = 0
-    debuff.casting.caster = 'unknown'
-end ) ]]
+    debuff.casting.v1 = 0
+    debuff.casting.caster = 'target'
+end )
 
 
 addAura( "player_casting", -11, "duration", 3 )

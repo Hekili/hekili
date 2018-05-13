@@ -618,7 +618,7 @@ if (select(2, UnitClass('player')) == 'WARLOCK') then
 
         addHandler( "drain_soul", function ()
             applyDebuff( "target", "drain_soul", 6 * haste )
-            applyBuff( "casting", 6 * haste )
+            -- applyBuff( "casting", 6 * haste )
             channelSpell( "drain_soul" )
         end )
 

@@ -277,41 +277,7 @@ end )
 
 
 
-do
-    local artifactInitialized = false
-
-    -- NYI:  Don't loop if level < 98...
-
-    local AD = LibStub( "LibArtifactData-1.0" )
-
-    function ns.updateArtifact()
-        local artifact = state.artifact
-
-        -- AD:ForceUpdate()
-
-        for k in pairs( artifact ) do
-            artifact[ k ].rank = 0
-        end
-
-        for i, _, id, name, _, rank in AD:IterateTraits() do
-            name = class.traits[ id ] or formatKey( name )
-
-            artifact[ name ] = rawget( artifact, name ) or {}
-            artifact[ name ].rank = rank
-
-            if not artifactInitialized and rank > 0 then artifactInitialized = true end
-        end
-
-        if not artifactInitialized then C_Timer.After( 3, ns.updateArtifact ) end
-    end
-
-    RegisterEvent( "ARTIFACT_UPDATE", ns.updateArtifact )
-end
-
-
-
 -- TBD:  Consider making `boss' a check to see whether the current unit is a boss# unit instead.
-
 RegisterEvent( "ENCOUNTER_START", function () state.boss = true end )
 RegisterEvent( "ENCOUNTER_END", function () state.boss = false end )
 
@@ -374,29 +340,9 @@ function ns.updateGear()
         end
     end
 
-
-    for item, specs in pairs( class.talentLegendary ) do
-        if item and state.equipped[ item ] then
-            local tal = specs[ state.spec.key ]
-
-            if tal then
-                if rawget( state.talent, tal ) then
-                    state.talent[ tal ].enabled = true
-                    state.talent[ tal ].i_enabled = 1
-                else state.talent[ tal ] = {
-                        enabled = true,
-                        i_enabled = 1
-                    }
-                end
-            end
-        end
-    end
-
-
     if not gearInitialized then
         C_Timer.After( 3, ns.updateGear )
     else
-        ns.updateArtifact()
         ns.ReadKeybindings()
     end
 

@@ -71,22 +71,20 @@ local function Mover_OnMouseUp(self, btn)
         if self.Moving then
             stopScreenMovement(self)
         end
-        Hekili.DB.profile.Locked = true
-        local MouseInteract = Hekili.Pause or Hekili.Config or not Hekili.DB.profile.Locked
+        local MouseInteract = Hekili.Pause or Hekili.Config
         for i = 1, #ns.UI.Buttons do
             for j = 1, #ns.UI.Buttons[i] do
                 ns.UI.Buttons[i][j]:EnableMouse(MouseInteract)
             end
         end
-        ns.UI.Notification:EnableMouse(Hekili.Config or (not Hekili.DB.profile.Locked))
-        -- Hekili:SetOption( { "locked" }, true )
+        ns.UI.Notification:EnableMouse( Hekili.Config )
         GameTooltip:Hide()
     end
     Hekili:SaveCoordinates()
 end
 
 local function Mover_OnMouseDown(self, btn)
-    if (Hekili.Config or not Hekili.DB.profile.Locked) and btn == "LeftButton" and not self.Moving then
+    if Hekili.Config and btn == "LeftButton" and not self.Moving then
         startScreenMovement(self)
     end
 end
@@ -100,14 +98,13 @@ local function Button_OnMouseUp(self, btn)
         if mover.Moving then
             stopScreenMovement(mover)
         end
-        Hekili.DB.profile.Locked = true
-        local MouseInteract = (Hekili.Pause) or Hekili.Config or (not Hekili.DB.profile.Locked)
+        local MouseInteract = Hekili.Pause or Hekili.Config
         for i = 1, #ns.UI.Buttons do
             for j = 1, #ns.UI.Buttons[i] do
                 ns.UI.Buttons[i][j]:EnableMouse(MouseInteract)
             end
         end
-        ns.UI.Notification:EnableMouse(Hekili.Config or (not Hekili.DB.profile.Locked))
+        ns.UI.Notification:EnableMouse( Hekili.Config )
         -- Hekili:SetOption( { "locked" }, true )
         GameTooltip:Hide()
     end
@@ -117,7 +114,7 @@ end
 local function Button_OnMouseDown(self, btn)
     local display = self:GetName():match("Hekili_D(%d+)_B(%d+)")
     local mover = _G["HekiliDisplay" .. display]
-    if (Hekili.Config or not Hekili.DB.profile.Locked) and btn == "LeftButton" and not mover.Moving then
+    if Hekili.Config and btn == "LeftButton" and not mover.Moving then
         startScreenMovement(mover)
     end
 end
@@ -129,8 +126,8 @@ function ns.StartConfiguration(external)
     local ccolor = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
 
     -- Notification Panel
-    ns.UI.Notification:EnableMouse(true)
-    ns.UI.Notification:SetMovable(true)
+    ns.UI.Notification:EnableMouse( true )
+    ns.UI.Notification:SetMovable( true )
     ns.UI.Notification.Mover =
         ns.UI.Notification.Mover or CreateFrame("Frame", "HekiliNotificationMover", ns.UI.Notification)
     ns.UI.Notification.Mover:SetAllPoints(HekiliNotification)
@@ -249,12 +246,12 @@ function ns.StopConfiguration()
 
     local scaleFactor = Hekili:GetScale()
 
-    local MouseInteract = (Hekili.Pause) or (not Hekili.DB.profile.Locked)
+    local MouseInteract = Hekili.Pause
 
     for i, v in ipairs(ns.UI.Buttons) do
         for j, btn in ipairs(v) do
-            btn:EnableMouse(MouseInteract)
-            btn:SetMovable(not Hekili.DB.profile.Locked)
+            btn:EnableMouse( MouseInteract )
+            btn:SetMovable( false )
         end
     end
 
@@ -293,19 +290,6 @@ local menuInfo = {}
 
 local function menu_Enabled()
     Hekili:Toggle()
-end
-
-local function menu_Locked()
-    local p = Hekili.DB.profile
-
-    p.Locked = not p.Locked
-
-    local MouseInteract = Hekili.Pause or Hekili.Config or (not p.Locked)
-
-    for _, v in ipairs(ns.UI.Buttons) do
-        v[1]:EnableMouse(MouseInteract)
-    end
-    ns.UI.Notification:EnableMouse(MouseInteract)
 end
 
 local function menu_Paused()
@@ -380,11 +364,6 @@ Hekili_Menu.initialize = function(self, level)
         i.text = "Enable"
         i.func = menu_Enabled
         i.checked = p.Enabled
-        UIDropDownMenu_AddButton(i, level)
-
-        i.text = "Lock"
-        i.func = menu_Locked
-        i.checked = p.Locked
         UIDropDownMenu_AddButton(i, level)
 
         i.text = " "
@@ -1684,14 +1663,11 @@ do
         b:SetScript(
             "OnEnter",
             function(self)
-                if (not Hekili.Pause) or (Hekili.Config or not Hekili.DB.profile.Locked) then
+                if not Hekili.Pause and Hekili.Config then
                     ns.Tooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
                     ns.Tooltip:SetBackdropColor(0, 0, 0, 1)
                     ns.Tooltip:SetText(Hekili.DB.profile.displays[dispID].Name .. " (" .. dispID .. ")")
                     ns.Tooltip:AddLine("Left-click and hold to move.", 1, 1, 1)
-                    if not Hekili.Config or not Hekili.DB.profile.Locked then
-                        ns.Tooltip:AddLine("Right-click to lock all and close.", 1, 1, 1)
-                    end
                     ns.Tooltip:Show()
                     self:SetMovable(true)
                 elseif (Hekili.Pause and ns.queue[dispID] and ns.queue[dispID][id]) then
@@ -1707,8 +1683,8 @@ do
             end
         )
 
-        b:EnableMouse(not Hekili.DB.profile.Locked)
-        b:SetMovable(not Hekili.DB.profile.Locked)
+        b:EnableMouse( false )
+        b:SetMovable( false )
 
         return b
     end
@@ -1737,7 +1713,7 @@ function ns.buildUI()
 
     local scaleFactor = Hekili:GetScale()
 
-    local MouseInteract = (Hekili.Pause) or (not Hekili.DB.profile.Locked)
+    local MouseInteract = Hekili.Pause
 
     local f = ns.UI.Notification or CreateFrame("Frame", "HekiliNotification", UIParent)
     f:SetSize(

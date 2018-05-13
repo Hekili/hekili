@@ -82,6 +82,8 @@ ns.auras = {
 }
 
 ns.class = {
+    specs = {},
+
     file = "NONE",
     abilities = {},
     auras = {},

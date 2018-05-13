@@ -1056,7 +1056,7 @@ if (select(2, UnitClass('player')) == 'WARRIOR') then
             cooldown = 15,
             min_range = 0,
             max_range = 0,
-            usable = function() return target.casting end,
+            usable = function() return debuff.casting.up end,
             toggle = 'interrupts'
         } )
 

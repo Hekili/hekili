@@ -7,41 +7,38 @@ local Hekili = _G[ addon ]
 local class = ns.class
 local state = ns.state
 
-local addHook = ns.addHook
-
 local addAbility = ns.addAbility
-local modifyAbility = ns.modifyAbility
-local addHandler = ns.addHandler
-
 local addAura = ns.addAura
-local modifyAura = ns.modifyAura
-
 local addGearSet = ns.addGearSet
 local addGlyph = ns.addGlyph
+local addHandler = ns.addHandler
+local addHook = ns.addHook
 local addMetaFunction = ns.addMetaFunction
-local addTalent = ns.addTalent
-local addTrait = ns.addTrait
 local addResource = ns.addResource
-local addStance = ns.addStance
+local addTalent = ns.addTalent
+
+local modifyAbility = ns.modifyAbility
+local modifyAura = ns.modifyAura
 
 local registerCustomVariable = ns.registerCustomVariable
+local RegisterEvent = ns.RegisterEvent
 local registerInterrupt = ns.registerInterrupt
+local RegisterUnitEvent = ns.RegisterUnitEvent
 
 local removeResource = ns.removeResource
 
 local setArtifact = ns.setArtifact
 local setClass = ns.setClass
 local setPotion = ns.setPotion
-local setRole = ns.setRole
 local setRegenModel = ns.setRegenModel
-local setTalentLegendary = ns.setTalentLegendary
+local setRole = ns.setRole
 
-local RegisterEvent = ns.RegisterEvent
-local RegisterUnitEvent = ns.RegisterUnitEvent
 local storeDefault = ns.storeDefault
 
-
 local PTR = ns.PTR or false
+
+
+
 
 
 -- This table gets loaded only if there's a supported class/specialization.
@@ -179,58 +176,6 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
 
         addTalent( 'lightning_rod', 210689 )
         addTalent( 'liquid_magma_totem', 192222 ) ]]
-
-
-        -- Traits
-        -- Enhancement
-        addTrait( "alpha_wolf", 198434 )
-        addTrait( "concordance_of_the_legionfall", 239042 )
-        addTrait( "crashing_hammer", 238070 )
-        addTrait( "doom_vortex", 199107 )
-        addTrait( "doom_winds", 204945 )
-        addTrait( "doom_wolves", 198505 )
-        addTrait( "earthshattering_blows", 214932 )
-        addTrait( "elemental_healing", 198248 )
-        addTrait( "forged_in_lava", 198236 )
-        addTrait( "gathering_of_the_maelstrom", 198349 )
-        addTrait( "gathering_storms", 198299 )
-        addTrait( "hammer_of_storms", 198228 )
-        addTrait( "lashing_flames", 238142 )
-        addTrait( "might_of_the_earthen_ring", 241203 )
-        addTrait( "raging_storms", 198361 )
-        addTrait( "spirit_of_the_maelstrom", 198238 )
-        addTrait( "spiritual_healing", 198296 )
-        addTrait( "stormflurry", 198367 )
-        addTrait( "unleash_doom", 198736 )
-        addTrait( "weapons_of_the_elements", 215381 )
-        addTrait( "wind_strikes", 198292 )
-        addTrait( "wind_surge", 198247 )
-        addTrait( "winds_of_change", 238106 )
-
-        -- Elemental
-        addTrait( "call_the_thunder", 191493 )
-        addTrait( "concordance_of_the_legionfall", 239042 )
-        addTrait( "earthen_attunement", 191598 )
-        addTrait( "electric_discharge", 191577 )
-        addTrait( "elemental_destabilization", 238069 )
-        addTrait( "elementalist", 191512 )
-        addTrait( "firestorm", 191740 )
-        addTrait( "fury_of_the_storms", 191717 )
-        addTrait( "lava_imbued", 191504 )
-        addTrait( "master_of_the_elements", 191647 )
-        addTrait( "molten_blast", 191572 )
-        addTrait( "power_of_the_earthen_ring", 241202 )
-        addTrait( "power_of_the_maelstrom", 191861 )
-        addTrait( "protection_of_the_elements", 191569 )
-        addTrait( "seismic_storm", 238141 )
-        addTrait( "shamanistic_healing", 191582 )
-        addTrait( "static_overload", 191602 )
-        addTrait( "stormkeeper", 205495 )
-        addTrait( "stormkeepers_power", 214931 )
-        addTrait( "surge_of_power", 215414 )
-        addTrait( "swelling_maelstrom", 238105 )
-        addTrait( "the_ground_trembles", 191499 )
-        addTrait( "volcanic_inferno", 192630 )
 
 
         -- Player Buffs.
@@ -479,10 +424,6 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
         addGearSet( 'spiritual_journey', 138117 )
         addGearSet( 'storm_tempests', 137103 )
         addGearSet( 'uncertain_reminder', 143732 )
-
-        setTalentLegendary( 'soul_of_the_farseer', 'enhancement',   'tempest' )
-        setTalentLegendary( 'soul_of_the_farseer', 'elemental',     'echo_of_the_elements' )
-        setTalentLegendary( 'soul_of_the_farseer', 'restoration',   'echo_of_the_elements' )
 
 
         addHook( 'specializationChanged', function ()
@@ -1478,7 +1419,7 @@ if ( select(2, UnitClass('player')) == 'SHAMAN' ) then
             cast = 0,
             gcdType = 'off',
             cooldown = 12,
-            usable = function() return target.casting end,
+            usable = function() return debuff.casting.up end,
             toggle = 'interrupts'
         } )
 

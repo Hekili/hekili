@@ -1422,7 +1422,7 @@ if (select(2, UnitClass('player')) == 'DEATHKNIGHT') then
             -- min_range = 0,
             max_range = 15,
             toggle = "interrupts",
-            usable = function () return target.casting end,
+            usable = function () return debuff.casting.up end,
         } )
 
         addHandler( "mind_freeze", function ()

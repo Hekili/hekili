@@ -1119,7 +1119,7 @@ if (select(2, UnitClass('player')) == 'PALADIN') then
             cast = 0,
             gcdType = 'off',
             cooldown = 15,
-            usable = function () return target.casting end,
+            usable = function () return debuff.casting.up end,
             toggle = 'interrupts'
         } )
 

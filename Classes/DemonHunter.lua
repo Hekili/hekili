@@ -528,7 +528,7 @@ if (select(2, UnitClass('player')) == 'DEMONHUNTER') then
         end )
 
         addHandler( 'consume_magic', function ()
-            if target.casting then
+            if debuff.casting.up then
                 gain( 50, spec.vengeance and 'pain' or 'fury' )
             end
             interrupt()
