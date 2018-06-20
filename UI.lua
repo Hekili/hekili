@@ -4,20 +4,23 @@
 local addon, ns = ...
 local Hekili = _G[addon]
 
-local class = ns.class
-local state = ns.state
+local class = Hekili.Class
+local state = Hekili.State
+
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 
 local getInverseDirection = ns.getInverseDirection
 local multiUnpack = ns.multiUnpack
 local orderedPairs = ns.orderedPairs
 local round = ns.round
 
-local string_format = string.format
+local format = string.format
 
 local Masque, MasqueGroup
 local UIDropDownMenuTemplate = L_UIDropDownMenuTemplate
 local UIDropDownMenu_AddButton = L_UIDropDownMenu_AddButton
 local UIDropDownMenu_AddSeparator = L_UIDropDownMenu_AddSeparator
+
 
 function Hekili:GetScale()
     local monitorIndex = (tonumber(GetCVar("gxMonitor")) or 0) + 1
@@ -26,6 +29,7 @@ function Hekili:GetScale()
 
     return GetCVar("UseUIScale") == "1" and (GetScreenHeight() / resolution:match("%d+x(%d+)")) or 1
 end
+
 
 local movementData = {}
 
@@ -71,10 +75,10 @@ local function Mover_OnMouseUp(self, btn)
         if self.Moving then
             stopScreenMovement(self)
         end
-        local MouseInteract = Hekili.Pause or Hekili.Config
+        local mouseInteract = Hekili.Pause or Hekili.Config
         for i = 1, #ns.UI.Buttons do
             for j = 1, #ns.UI.Buttons[i] do
-                ns.UI.Buttons[i][j]:EnableMouse(MouseInteract)
+                ns.UI.Buttons[i][j]:EnableMouse(mouseInteract)
             end
         end
         ns.UI.Notification:EnableMouse( Hekili.Config )
@@ -83,43 +87,50 @@ local function Mover_OnMouseUp(self, btn)
     Hekili:SaveCoordinates()
 end
 
-local function Mover_OnMouseDown(self, btn)
+local function Mover_OnMouseDown( self, btn )
     if Hekili.Config and btn == "LeftButton" and not self.Moving then
         startScreenMovement(self)
     end
 end
 
-local function Button_OnMouseUp(self, btn)
-    local display = self:GetName():match("Hekili_D(%d+)_B(%d+)")
-    local mover = _G["HekiliDisplay" .. display]
+local function Button_OnMouseUp( self, btn )
+    local display = self.display
+    local mover = _G[ "HekiliDisplay" .. display ]
+
     if (btn == "LeftButton" and mover.Moving) then
         stopScreenMovement(mover)
+
     elseif (btn == "RightButton" and not Hekili.Config) then
         if mover.Moving then
             stopScreenMovement(mover)
         end
-        local MouseInteract = Hekili.Pause or Hekili.Config
+        local mouseInteract = Hekili.Pause or Hekili.Config
         for i = 1, #ns.UI.Buttons do
             for j = 1, #ns.UI.Buttons[i] do
-                ns.UI.Buttons[i][j]:EnableMouse(MouseInteract)
+                ns.UI.Buttons[i][j]:EnableMouse(mouseInteract)
             end
         end
         ns.UI.Notification:EnableMouse( Hekili.Config )
         -- Hekili:SetOption( { "locked" }, true )
         GameTooltip:Hide()
+
     end
+
     Hekili:SaveCoordinates()
 end
 
 local function Button_OnMouseDown(self, btn)
-    local display = self:GetName():match("Hekili_D(%d+)_B(%d+)")
-    local mover = _G["HekiliDisplay" .. display]
+    local display = self.display
+    local mover = _G[ "HekiliDisplay" .. display ]
+
     if Hekili.Config and btn == "LeftButton" and not mover.Moving then
         startScreenMovement(mover)
+
     end
 end
 
-function ns.StartConfiguration(external)
+
+function ns.StartConfiguration( external )
     Hekili.Config = true
 
     local scaleFactor = Hekili:GetScale()
@@ -128,50 +139,47 @@ function ns.StartConfiguration(external)
     -- Notification Panel
     ns.UI.Notification:EnableMouse( true )
     ns.UI.Notification:SetMovable( true )
-    ns.UI.Notification.Mover =
-        ns.UI.Notification.Mover or CreateFrame("Frame", "HekiliNotificationMover", ns.UI.Notification)
+    ns.UI.Notification.Mover = ns.UI.Notification.Mover or CreateFrame("Frame", "HekiliNotificationMover", ns.UI.Notification)
     ns.UI.Notification.Mover:SetAllPoints(HekiliNotification)
-    -- ns.UI.Notification.Mover:SetHeight(20)
-    ns.UI.Notification.Mover:SetBackdrop(
-        {
-            bgFile = "Interface/Buttons/WHITE8X8",
-            edgeFile = "Interface/Buttons/WHITE8X8",
-            tile = false,
-            tileSize = 0,
-            edgeSize = 1,
-            insets = {left = 0, right = 0, top = 0, bottom = 0}
-        }
-    )
+    ns.UI.Notification.Mover:SetBackdrop( {
+        bgFile = "Interface/Buttons/WHITE8X8",
+        edgeFile = "Interface/Buttons/WHITE8X8",
+        tile = false,
+        tileSize = 0,
+        edgeSize = 1,
+        insets = { left = 0, right = 0, top = 0, bottom = 0 }
+    } )
 
-    ns.UI.Notification.Mover:SetBackdropColor(.1, .1, .1, .8)
-    ns.UI.Notification.Mover:SetBackdropBorderColor(ccolor.r, ccolor.g, ccolor.b, 1)
+    ns.UI.Notification.Mover:SetBackdropColor( .1, .1, .1, .8 )
+    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
     ns.UI.Notification.Mover:Show()
 
     f = ns.UI.Notification.Mover
-    f.Header = f.Header or f:CreateFontString("HekiliNotificationHeader", "OVERLAY", "GameFontNormal")
-    f.Header:SetAllPoints(HekiliNotificationMover)
-    f.Header:SetText("Notifications")
-    f.Header:SetJustifyH("CENTER")
+    f.Header = f.Header or f:CreateFontString( "HekiliNotificationHeader", "OVERLAY", "GameFontNormal" )
+    f.Header:SetAllPoints( HekiliNotificationMover )
+    f.Header:SetText( "Notifications" )
+    f.Header:SetJustifyH( "CENTER" )
     f.Header:Show()
 
-    HekiliNotification:SetScript("OnMouseDown", Mover_OnMouseDown)
-    HekiliNotification:SetScript("OnMouseUp", Mover_OnMouseUp)
+    HekiliNotification:SetScript( "OnMouseDown", Mover_OnMouseDown )
+    HekiliNotification:SetScript( "OnMouseUp", Mover_OnMouseUp )
 
-    for i, v in ipairs(ns.UI.Displays) do
+    for i, v in pairs( ns.UI.Displays ) do
         if v.Mover then
             v.Mover:Hide()
         end
+
         if v.Header then
             v.Header:Hide()
         end
 
-        if ns.UI.Buttons[i][1] and Hekili:IsDisplayActive(i) and Hekili.DB.profile.displays[i] then
-            v:EnableMouse(true)
-            v:SetMovable(true)
-            -- v.Mover:EnableMouse(true)
-            -- v.Mover:SetMovable(true)
+        if ns.UI.Buttons[ i ][ 1 ] and Hekili.DB.profile.displays[ i ] then
+            -- if not Hekili:IsDisplayActive( i ) then v:Show() end
 
-            v.Backdrop = v.Backdrop or CreateFrame("Frame", v:GetName().. "_Backdrop", v)
+            v:EnableMouse( true )
+            v:SetMovable( true )
+
+            v.Backdrop = v.Backdrop or CreateFrame( "Frame", v:GetName().. "_Backdrop", v )
             v.Backdrop:ClearAllPoints()
             v.Backdrop:SetWidth( v:GetWidth() + 2 )
             v.Backdrop:SetHeight( v:GetHeight() + 2 )
@@ -187,35 +195,31 @@ function ns.StartConfiguration(external)
             v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
             v.Backdrop:Show()            
 
-            v.Backdrop:SetBackdrop(
-                {
-                    bgFile = nil,
-                    edgeFile = "Interface/Buttons/WHITE8X8",
-                    tile = false,
-                    tileSize = 0,
-                    edgeSize = 1,
-                    insets = {left = -1, right = -1, top = -1, bottom = -1}
-                }
-            )
+            v.Backdrop:SetBackdrop( {
+                bgFile = nil,
+                edgeFile = "Interface/Buttons/WHITE8X8",
+                tile = false,
+                tileSize = 0,
+                edgeSize = 1,
+                insets = { left = -1, right = -1, top = -1, bottom = -1 }
+            } )
 
             local ccolor = RAID_CLASS_COLORS[ select(2, UnitClass("player")) ]
 
-            v.Backdrop:SetBackdropBorderColor(ccolor.r, ccolor.g, ccolor.b, 1)
-            v.Backdrop:SetBackdropColor(0, 0, 0, 0.8)
+            v.Backdrop:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
+            v.Backdrop:SetBackdropColor( 0, 0, 0, 0.8 )
 
-            v:SetScript("OnMouseDown", Mover_OnMouseDown)
-            v:SetScript("OnMouseUp", Mover_OnMouseUp)
+            v:SetScript( "OnMouseDown", Mover_OnMouseDown )
+            v:SetScript( "OnMouseUp", Mover_OnMouseUp )
             v:Show()
 
-            v.Header = v.Header or v:CreateFontString("HekiliDisplay" .. i .. "Header", "OVERLAY", "GameFontNormal")
+            v.Header = v.Header or v:CreateFontString( "HekiliDisplay" .. i .. "Header", "OVERLAY", "GameFontNormal" )
             local path, size, flags = v.Header:GetFont()
-            v.Header:SetFont(path, size, "OUTLINE")
-            -- v.Header:SetSize( v:GetWidth() * 0.5, 20 )
+            v.Header:SetFont( path, size, "OUTLINE" )
             v.Header:ClearAllPoints()
-            v.Header:SetPoint("BOTTOM", v, "TOP", 0, 2)
-            v.Header:SetText(Hekili.DB.profile.displays[i].Name)
+            v.Header:SetPoint( "BOTTOM", v, "TOP", 0, 2 )
+            v.Header:SetText( i )
             v.Header:SetJustifyH("CENTER")
-            -- v.Header:SetPoint( "BOTTOMLEFT", v, "TOPLEFT" )
             v.Header:Show()
         else
             v:Hide()
@@ -225,19 +229,16 @@ function ns.StartConfiguration(external)
     -- HekiliNotification:EnableMouse(true)
     -- HekiliNotification:SetMovable(true)
     if not external then
-        local ACD = LibStub("AceConfigDialog-3.0")
-        ACD:SetDefaultSize("Hekili", min(900, GetScreenWidth() - 200), min(800, GetScreenHeight() - 100))
-        ACD:Open("Hekili")
-        ns.OnHideFrame = ns.OnHideFrame or CreateFrame("Frame", nil)
-        ns.OnHideFrame:SetParent(ACD.OpenFrames["Hekili"].frame)
-        ns.OnHideFrame:SetScript(
-            "OnHide",
-            function(self)
-                ns.StopConfiguration()
-                self:SetScript("OnHide", nil)
-                collectgarbage()
-            end
-        )
+        local ACD = LibStub( "AceConfigDialog-3.0" )
+        ACD:SetDefaultSize( "Hekili", 800, 600 )
+        ACD:Open( "Hekili" )
+        ns.OnHideFrame = ns.OnHideFrame or CreateFrame( "Frame", nil )
+        ns.OnHideFrame:SetParent( ACD.OpenFrames["Hekili"].frame )
+        ns.OnHideFrame:SetScript( "OnHide", function(self)
+            ns.StopConfiguration()
+            self:SetScript( "OnHide", nil )
+            collectgarbage()
+        end )
     end
 end
 
@@ -246,24 +247,24 @@ function ns.StopConfiguration()
 
     local scaleFactor = Hekili:GetScale()
 
-    local MouseInteract = Hekili.Pause
+    local mouseInteract = Hekili.Pause
 
-    for i, v in ipairs(ns.UI.Buttons) do
-        for j, btn in ipairs(v) do
-            btn:EnableMouse( MouseInteract )
+    for i, v in ipairs( ns.UI.Buttons ) do
+        for j, btn in ipairs( v ) do
+            btn:EnableMouse( mouseInteract )
             btn:SetMovable( false )
         end
     end
 
-    HekiliNotification:EnableMouse(false)
-    HekiliNotification:SetMovable(false)
+    HekiliNotification:EnableMouse( false )
+    HekiliNotification:SetMovable( false )
     HekiliNotification.Mover:Hide()
     -- HekiliNotification.Mover.Header:Hide()
 
-    for i, v in ipairs(ns.UI.Displays) do
-        v:EnableMouse(false)
-        v:SetMovable(true)
-        v:SetBackdrop(nil)
+    for i, v in pairs( ns.UI.Displays ) do
+        v:EnableMouse( false )
+        v:SetMovable( true )
+        v:SetBackdrop( nil )
         if v.Header then
             v.Header:Hide()
         end
@@ -275,17 +276,19 @@ function ns.StopConfiguration()
     Hekili.MakeDefaults = false
 end
 
-local function MasqueUpdate(Addon, Group, SkinID, Gloss, Backdrop, Colors, Disabled)
+local function MasqueUpdate( Addon, Group, SkinID, Gloss, Backdrop, Colors, Disabled )
     if Disabled then
-        for dispID, display in ipairs(ns.UI.Buttons) do
-            for btnID, button in ipairs(display) do
+        for dispID, display in ipairs( ns.UI.Buttons ) do
+            for btnID, button in ipairs( display ) do
                 button.__MSQ_NormalTexture:Hide()
-                button.Texture:SetAllPoints(button)
+                button.Texture:SetAllPoints( button )
             end
         end
     end
 end
 
+
+-- Dropdown Menu
 local menuInfo = {}
 
 local function menu_Enabled()
@@ -299,48 +302,43 @@ end
 local function menu_Auto()
     local p = Hekili.DB.profile
 
-    p["Mode Status"] = 3
-    p["Switch Type"] = 0
+    p.toggles.mode.value = 'automatic'
     ns.UI.Minimap:RefreshDataText()
 end
 
 local function menu_AOE()
     local p = Hekili.DB.profile
 
-    p["Mode Status"] = 2
-    p["Switch Type"] = 0
+    p.toggles.mode.value = 'dual'
     ns.UI.Minimap:RefreshDataText()
 end
 
-local function menu_Single()
-    local p = Hekili.DB.profile
-
-    p["Mode Status"] = 0
+--[[ local function menu_Single()
+    Hekili.DB.profile.mode = 0
     ns.UI.Minimap:RefreshDataText()
-end
+end ]]
 
 local function menu_Cooldowns()
-    local p = Hekili.DB.profile
-
-    p.Cooldowns = not p.Cooldowns
+    Hekili:FireToggle( "cooldowns" )
     ns.UI.Minimap:RefreshDataText()
 end
 
 local function menu_Interrupts()
-    local p = Hekili.DB.profile
+    Hekili:FireToggle( "interrupts" )
+    ns.UI.Minimap:RefreshDataText()
+end
 
-    p.Interrupts = not p.Interrupts
+local function menu_Defensives()
+    Hekili:FireToggle( "defensives" )
     ns.UI.Minimap:RefreshDataText()
 end
 
 local function menu_Potions()
-    local p = Hekili.DB.profile
-
-    p.Potions = not p.Potions
+    Hekili:FireToggle( "potions" )
     ns.UI.Minimap:RefreshDataText()
 end
 
-Hekili_Menu = CreateFrame("Frame", "HekiliMenu")
+Hekili_Menu = CreateFrame( "Frame", "HekiliMenu" )
 Hekili_Menu.displayMode = "MENU"
 Hekili_Menu.initialize = function(self, level)
     if not level then
@@ -376,7 +374,7 @@ Hekili_Menu.initialize = function(self, level)
         i.disabled = nil
 
         i.isTitle = 1
-        i.text = "Target Mode"
+        i.text = "Display Mode"
         i.notCheckable = 1
         UIDropDownMenu_AddButton(i, level)
 
@@ -384,20 +382,20 @@ Hekili_Menu.initialize = function(self, level)
         i.notCheckable = nil
         i.disabled = nil
 
-        i.text = "Single-Target"
-        i.func = menu_Single
-        i.checked = p["Mode Status"] == 0
+        i.text = "Single (Auto)"
+        i.func = menu_Auto
+        i.checked = p.toggles.mode.value == 'automatic'
         UIDropDownMenu_AddButton(i, level)
 
-        i.text = "AOE"
+        i.text = "Dual (Single + AOE)"
         i.func = menu_AOE
-        i.checked = p["Mode Status"] == 2
+        i.checked = p.toggles.mode.value == 'dual'
         UIDropDownMenu_AddButton(i, level)
 
-        i.text = "Automatic"
+        --[[ i.text = "Automatic"
         i.func = menu_Auto
         i.checked = p["Mode Status"] == 3
-        UIDropDownMenu_AddButton(i, level)
+        UIDropDownMenu_AddButton(i, level) ]]
 
         i.notCheckable = nil
         i.tooltipText = nil
@@ -424,17 +422,22 @@ Hekili_Menu.initialize = function(self, level)
 
         i.text = "Cooldowns"
         i.func = menu_Cooldowns
-        i.checked = p.Cooldowns
+        i.checked = p.toggles.cooldowns.value
         UIDropDownMenu_AddButton(i, level)
 
         i.text = "Interrupts"
         i.func = menu_Interrupts
-        i.checked = p.Interrupts
+        i.checked = p.toggles.interrupts.value
+        UIDropDownMenu_AddButton(i, level)
+
+        i.text = "Defensives"
+        i.func = menu_Defensives
+        i.checked = p.toggles.defensives.value
         UIDropDownMenu_AddButton(i, level)
 
         i.text = "Potions"
         i.func = menu_Potions
-        i.checked = p.Potions
+        i.checked = p.toggles.potions.value
         UIDropDownMenu_AddButton(i, level)
 
         i.notCheckable = nil
@@ -457,7 +460,9 @@ Hekili_Menu.initialize = function(self, level)
     end
 end
 
-local function getDisplayDimensions(dispID)
+
+-- Let's rebuild this to actually match a display's full dimensions.
+--[[ local function getDisplayDimensions(dispID)
     local display = Hekili.DB.profile.displays[dispID]
     if not display then
         return
@@ -499,11 +504,13 @@ local function getDisplayDimensions(dispID)
     end
 
     return width + 2, height + 2, anchorPoint, offX, offY
-end
+end ]]
+
 
 do
     ns.UI.Displays = ns.UI.Displays or {}
     local dPool = ns.UI.Displays
+    Hekili.DisplayPool = dPool
 
     local alphaUpdateEvents = {
         PET_BATTLE_OPENING_START = 1,
@@ -522,61 +529,43 @@ do
         ZONE_CHANGED_NEW_AREA = 1
     }
 
-    local function CalculateAlpha(id)
-        if
-            C_PetBattles.IsInBattle() or UnitOnTaxi("player") or Hekili.Barber or HasVehicleActionBar() or
-                not Hekili:IsDisplayActive(id)
-         then
+
+    local function CalculateAlpha( id )
+        if C_PetBattles.IsInBattle() or UnitOnTaxi("player") or Hekili.Barber or HasVehicleActionBar() or not Hekili:IsDisplayActive( id ) then
             return 0
         end
 
         local prof = Hekili.DB.profile
-        local conf, switch, mode = prof.displays[id], prof["Switch Type"], prof["Mode Status"]
+        local conf, mode = prof.displays[ id ], prof.toggles.mode.value
 
         local _, zoneType = IsInInstance()
+    
+        -- Switch Type:
+        --   0 = Auto - AOE
+        --   1 = ST - AOE
 
-        if
-            (not conf.Enabled) or (switch == 0 and not conf.showSwitchAuto) or (switch == 1 and not conf.showSwitchAE) or
-                (mode == 0 and not conf.showST) or
-                (mode == 3 and not conf.showAuto) or
-                (mode == 2 and not conf.showAE)
-         then
+        if ( not conf.enabled ) or ( not conf.visibility.mode[ mode ] ) then
             return 0
+
         elseif zoneType == "pvp" or zoneType == "arena" then
-            if conf.visibilityType == "a" then
-                return conf.alphaShowPvP
-            else
-                if
-                    conf.targetPvP and UnitExists("target") and
-                        not (UnitIsDead("target") or not UnitCanAttack("player", "target"))
-                 then
-                    return conf.alphaTargetPvP
-                elseif conf.combatPvP and UnitAffectingCombat("player") then
-                    return conf.alphaCombatPvP
-                elseif conf.alwaysPvP then
-                    return conf.alphaAlwaysPvP
-                end
-            end
+            if not conf.visibility.advanced then
+                return conf.visibility.pvp.alpha
+            
+            else                
+                if conf.visibility.pvp.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.target
+                elseif conf.visibility.pvp.combat > 0 and UnitAffectingCombat( "player" ) then return conf.visibility.pvp.combat
+                elseif conf.visibility.pvp.always > 0 then return conf.visibility.pvp.always end
 
-            return 0
-        else
-            if conf.visibilityType == "a" then
-                return conf.alphaShowPvE
-            else
-                if
-                    conf.targetPvE and UnitExists("target") and
-                        not (UnitIsDead("target") or not UnitCanAttack("player", "target"))
-                 then
-                    return conf.alphaTargetPvE
-                elseif conf.combatPvE and UnitAffectingCombat("player") then
-                    return conf.alphaCombatPvE
-                elseif conf.alwaysPvE then
-                    return conf.alphaAlwaysPvE
-                end
+                return 0
             end
-
-            return 0
+            
         end
+
+        if not conf.visibility.advanced then return conf.visibility.pve.alpha end
+        
+        if conf.visibility.pve.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.target
+        elseif conf.visibility.pve.combat > 0 and UnitAffectingCombat( "player" ) then return conf.visibility.pve.combat
+        elseif conf.visibility.pve.always > 0 then return conf.visibility.pve.always end
 
         return 0
     end
@@ -589,22 +578,22 @@ do
         UPDATE_SHAPESHIFT_FORM = 1
     }
 
-    local function Display_UpdateKeybindings(self)
-        local conf = Hekili.DB.profile.displays[self.id]
-
-        for i, b in ipairs(self.Buttons) do
+    local function Display_UpdateKeybindings( self )
+        local conf = Hekili.DB.profile.displays[ self.id ]
+        
+        for i, b in ipairs( self.Buttons ) do
             local r = self.Recommendations[i]
 
             local a = r.actionName
 
             if a then
-                r.keybind = Hekili:GetBindingForAction(r.actionName, not conf.lowercaseKBs == true)
+                r.keybind = Hekili:GetBindingForAction( r.actionName, not conf.keybindings.lowercase == true )
             end
 
-            if conf.showKeybindings and (i == 1 or conf.queuedKBs) then
-                b.Keybinding:SetText(r.keybind)
+            if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
+                b.Keybinding:SetText( r.keybind )
             else
-                b.Keybinding:SetText(nil)
+                b.Keybinding:SetText( nil )
             end
         end
     end
@@ -625,12 +614,12 @@ do
     local LSF = SpellFlashCore
     local LSR = LibStub("SpellRange-1.0")
 
-    local function Display_OnUpdate(self, elapsed)
+    local function Display_OnUpdate( self, elapsed )
         if not self.Recommendations then
             return
         end
         local profile = Hekili.DB.profile
-        local conf = profile.displays[self.id]
+        local conf = profile.displays[ self.id ]
 
         if self.alpha == 0 then
             return
@@ -638,40 +627,42 @@ do
 
         if Hekili.Pause then
             if not self.paused then
-                self.Buttons[1].Overlay:Show()
+                self.Buttons[ 1 ].Overlay:Show()
                 self.paused = true
             end
 
             return
         elseif self.paused then
-            self.Buttons[1].Overlay:Hide()
+            self.Buttons[ 1 ].Overlay:Hide()
             self.paused = false
         end
+
 
         local now = GetTime()
 
         if self.NewRecommendations then
+            print( "NewRec", self.id )
             local alpha = self.alpha
 
-            for i, b in ipairs(self.Buttons) do
-                local rec = self.Recommendations[i]
+            for i, b in ipairs( self.Buttons ) do
+                local rec = self.Recommendations[ i ]
 
                 local action = rec.actionName
                 local caption = rec.caption
                 local indicator = rec.indicator
                 local keybind = rec.keybind
 
-                local ability = class.abilities[action]
+                local ability = class.abilities[ action ]
 
                 if ability then
                     b:Show()
 
-                    b.Texture:SetTexture(rec.texture or ability.texture or GetSpellTexture(ability.id))
-                    b.Texture:SetTexCoord(unpack(b.texCoords))
+                    b.Texture:SetTexture( rec.texture or ability.texture or GetSpellTexture( ability.id ) )
+                    b.Texture:SetTexCoord( unpack( b.texCoords ) )
 
                     b.Texture:Show()
 
-                    if conf.showIndicators and indicator then
+                    if conf.indicators.enabled and indicator then
                         if indicator == "cycle" then
                             b.Icon:SetTexture("Interface\\Addons\\Hekili\\Textures\\Cycle")
                         end
@@ -683,25 +674,27 @@ do
                         b.Icon:Hide()
                     end
 
-                    if conf.showCaptions and (i == 1 or conf.queuedCaptions) then
-                        b.Caption:SetText(caption)
+                    if conf.captions.enabled and ( i == 1 or conf.captions.queued ) then
+                        b.Caption:SetText( caption )
                     else
                         b.Caption:SetText(nil)
                     end
 
-                    if conf.showKeybindings and (i == 1 or conf.queuedKBs) then
-                        b.Keybinding:SetText(keybind)
+                    if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
+                        b.Keybinding:SetText( keybind )
                     else
                         b.Keybinding:SetText(nil)
                     end
 
-                    if conf.blizzGlow and (i == 1 or conf.queuedBlizzGlow) and IsSpellOverlayed(ability.id) then
-                        ActionButton_ShowOverlayGlow(b)
+                    if conf.glow.enabled and ( i == 1 or conf.glow.queued ) and IsSpellOverlayed( ability.id ) then
+                        ActionButton_ShowOverlayGlow( b )
                         b.glowing = true
                     elseif b.glowing then
-                        ActionButton_HideOverlayGlow(b)
+                        ActionButton_HideOverlayGlow( b )
                         b.glowing = false
                     end
+
+                    self.NewRecommendations = false
                 else
                     b:Hide()
                 end
@@ -714,38 +707,39 @@ do
 
             self.refreshTimer = state.combat == 0 and oocRefresh or icRefresh
 
-            self.refreshCount = (self.refreshCount or 0) + 1
+            self.refreshCount = ( self.refreshCount or 0 ) + 1
 
             self:RefreshCooldowns()
-            self.NewRecommendations = false
+            -- self.NewRecommendations = false
         end
+
 
         self.glowTimer = self.glowTimer - elapsed
 
         if self.glowTimer < 0 then
-            if conf.blizzGlow then
-                for i, b in ipairs(self.Buttons) do
-                    local r = self.Recommendations[i]
+            if conf.glow.enabled then
+                for i, b in ipairs( self.Buttons ) do
+                    local r = self.Recommendations[ i ]
 
                     if not r.actionName then
                         break
                     end
 
-                    local a = class.abilities[r.actionName]
+                    local a = class.abilities[ r.actionName ]
 
-                    if i == 1 or conf.queuedBlizzGlow then
-                        local glowing = not a.item and IsSpellOverlayed(a.id)
+                    if i == 1 or conf.glow.queued then
+                        local glowing = not a.item and IsSpellOverlayed( a.id )
 
                         if glowing and not b.glowing then
-                            ActionButton_ShowOverlayGlow(b)
+                            ActionButton_ShowOverlayGlow( b )
                             b.glowing = true
                         elseif not glowing and b.glowing then
-                            ActionButton_HideOverlayGlow(b)
+                            ActionButton_HideOverlayGlow( b )
                             b.glowing = false
                         end
                     else
                         if b.glowing then
-                            ActionButton_HideOverlayGlow(b)
+                            ActionButton_HideOverlayGlow( b )
                             b.glowing = false
                         end
                     end
@@ -753,12 +747,12 @@ do
             end
         end
 
-        self.rangeTimer = (self.rangeTimer or 0) - elapsed
+        self.rangeTimer = ( self.rangeTimer or 0 ) - elapsed
 
         if self.rangeTimer < 0 then
-            for i, b in ipairs(self.Buttons) do
-                local r = self.Recommendations[i]
-                local a = class.abilities[r.actionName]
+            for i, b in ipairs( self.Buttons ) do
+                local r = self.Recommendations[ i ]
+                local a = class.abilities[ r.actionName ]
 
                 if not a then
                     break
@@ -766,16 +760,15 @@ do
 
                 local outOfRange
 
-                if conf.rangeType == "melee" then
-                    outOfRange = LRC:GetRange("target") > 7
-                elseif conf.rangeType == "ability" then
-                    if a.item then
-                        outOfRange =
-                            UnitExists("target") and UnitCanAttack("player", "target") and
-                            IsItemInRange(a.item, "target") == false
-                    else
-                        outOfRange =
-                            LSR.IsSpellInRange(a.range and class.abilities[a.range].name or a.name, "target") == 0
+                if conf.range.enabled then
+                    if conf.range.type == "melee" then
+                        outOfRange = LRC:GetRange( "target" ) > 7
+                    elseif conf.range.type == "ability" then
+                        if a.item then
+                            outOfRange = UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and IsItemInRange( a.item, "target" ) == false
+                        else
+                            outOfRange = LSR.IsSpellInRange( a.range and class.abilities[ a.range ].name or a.name, "target") == 0
+                        end
                     end
                 end
 
@@ -807,23 +800,23 @@ do
                     end
                 end
             end
-
+            
             self.rangeTimer = pulseRange
         end
 
-        self.flashTimer = (self.flashTimer or 0) - elapsed
+        self.flashTimer = ( self.flashTimer or 0 ) - elapsed
 
         if self.flashTimer < 0 then
-            if conf.spellFlash and LSF then
-                local a = self.Recommendations and self.Recommendations[1] and self.Recommendations[1].actionName
+            if conf.flash.enabled and LSF then
+                local a = self.Recommendations and self.Recommendations[ 1 ] and self.Recommendations[ 1 ].actionName
 
                 if a then
-                    local ability = class.abilities[a]
+                    local ability = class.abilities[ a ]
 
                     if ability.item then
-                        LSF.FlashItem(ability.name, conf.spellFlashColor)
+                        LSF.FlashItem(ability.name, conf.flash.color )
                     else
-                        LSF.FlashAction(ability.name, conf.spellFlashColor)
+                        LSF.FlashAction(ability.name, conf.flash.color )
                     end
                 end
             end
@@ -843,39 +836,17 @@ do
         self.targetTimer = self.targetTimer - elapsed
 
         if self.targetTimer < 0 then
-            local b = self.Buttons[1]
+            local b = self.Buttons[ 1] 
 
-            if conf.showTargets then
+            if conf.targets.enabled then
                 local tMin, tMax = 0, 0
-                local mode = profile["Mode Status"]
+                local mode = profile.toggles.mode.value
+                local spec = state.spec.id and profile.specs[ state.spec.id ]
 
-                -- Primary Display
-                if conf.displayType == "a" then
-                    -- Single Target
-                    if mode == 0 then
-                        tMin, tMax = 0, 1
-                    elseif mode == 2 then
-                        tMin, tMax = conf.simpleAOE or 2, 0
-                    end
-                elseif conf.displayType == "b" then
-                    -- AOE
-                    tMin, tMax = 0, 1
-                elseif conf.displayType == "c" then
-                    tMin, tMax = conf.simpleAOE or 2, 0
-                elseif conf.displayType == "z" then
-                    if mode == 0 then
-                        tMin = conf.minST > 0 and conf.minST or tMin
-                        tMax = conf.maxST > 0 and conf.maxST or tMax
-                    elseif mode == 2 then
-                        tMin = conf.minAE > 0 and conf.minAE or tMin
-                        tMax = conf.maxAE > 0 and conf.maxAE or tMax
-                    elseif mode == 3 then
-                        tMin = conf.minAuto > 0 and conf.minAuto or tMin
-                        tMax = conf.maxAuto > 0 and conf.maxAuto or tMax
-                    end
-                end
+                if self.id == 'Primary' and mode == 'dual' then tMax = 1
+                elseif self.id == 'AOE' then tMin = spec and spec.aoe or 3 end
 
-                local detected = max(1, ns.getNumberTargets())
+                local detected = max( 1, ns.getNumberTargets() )
                 local shown = detected
 
                 if tMin > 0 then
@@ -886,7 +857,7 @@ do
                 end
 
                 if shown > 1 then
-                    local color = detected < shown and "|cFFFF0000" or (shown > detected and "|cFF00C0FF" or "")
+                    local color = detected < shown and "|cFFFF0000" or ( shown > detected and "|cFF00C0FF" or "" )
                     b.Targets:SetText(color .. shown .. "|r")
                     b.targetShown = true
                 else
@@ -900,108 +871,33 @@ do
             self.targetTimer = pulseTargets
         end
 
-        self.auraTimer = self.auraTimer - elapsed
 
-        if self.auraTimer < 0 then
-            local b = self.Buttons[1]
-
-            if conf.showAuraInfo then
-                if type(conf.auraSpellID) == "string" or conf.auraSpellID > 0 then
-                    local aura = class.auras[conf.auraSpellID]
-
-                    if not aura then
-                        b.Auras:SetText(nil)
-                    else
-                        if conf.auraInfoType == "count" then
-                            local c = ns.numDebuffs(aura.name)
-                            b.Auras:SetText(c > 0 and c or nil)
-                        elseif conf.auraInfoType == "buff" then
-                            local name,
-                                _,
-                                _,
-                                count = UnitBuff(conf.auraUnit, aura.name, nil, conf.auraMine and "PLAYER" or "")
-                            if not name then
-                                b.Auras:SetText(nil)
-                            else
-                                b.Auras:SetText(max(1, count))
-                            end
-                        elseif conf.auraInfoType == "debuff" then
-                            local name,
-                                _,
-                                _,
-                                count = UnitDebuff(conf.auraUnit, aura.name, nil, conf.auraMine and "PLAYER" or "")
-                            if not name then
-                                b.Auras:SetText(nil)
-                            else
-                                b.Auras:SetText(max(1, count))
-                            end
-                        elseif conf.auraInfoType == "buffRem" then
-                            local name,
-                                _,
-                                _,
-                                _,
-                                _,
-                                _,
-                                expires = UnitBuff(conf.auraUnit, aura.name, nil, conf.auraMine and "PLAYER" or "")
-                            if not name then
-                                b.Auras:SetText(nil)
-                            else
-                                b.Auras:SetText(format("%.1f", expires - now))
-                            end
-                        elseif conf.auraInfoType == "debuffRem" then
-                            local name,
-                                _,
-                                _,
-                                _,
-                                _,
-                                _,
-                                expires = UnitDebuff(conf.auraUnit, aura.name, nil, conf.auraMine and "PLAYER" or "")
-                            if not name then
-                                b.Auras:SetText(nil)
-                            else
-                                b.Auras:SetText(format("%.1f", expires - now))
-                            end
-                        end
-                        b.auraShown = true
-                    end
-                else
-                    b.Auras:SetText(nil)
-                    b.auraShown = false
-                end
-            elseif b.auraShown then
-                b.Auras:SetText(nil)
-                b.auraShown = false
-            end
-
-            self.auraTimer = pulseAuras
-        end
-
-        local rec = self.Recommendations[1]
+        local rec = self.Recommendations[ 1 ]
 
         self.delayTimer = self.delayTimer - elapsed
 
         if rec.exact_time and self.delayTimer < 0 then
-            local b = self.Buttons[1]
+            local b = self.Buttons[ 1 ]
             local delay = rec.exact_time - now
 
-            local start, duration = GetSpellCooldown(61304)
+            local start, duration = GetSpellCooldown( 61304 )
             local gRemains = start > 0 and (start + duration - now) or 0
 
-            if conf.showDelay ~= "NONE" then
-                if conf.showDelay == "TEXT" then
+            if conf.delays.type ~= "NONE" then
+                if conf.delays.type == "TEXT" then
                     if self.delayIconShown then
                         b.DelayIcon:Hide()
                         self.delayIconShown = false
                     end
 
                     if delay > gRemains + 0.1 then
-                        b.DelayText:SetText(string_format("%.1f", delay))
+                        b.DelayText:SetText( format( "%.1f ", delay ) )
                         self.delayTextShown = true
                     else
-                        b.DelayText:SetText(nil)
+                        b.DelayText:SetText( nil )
                         self.delayTextShown = false
                     end
-                elseif conf.showDelay == "ICON" then
+                elseif conf.delays.type == "ICON" then
                     if self.delayTextShown then
                         b.DelayText:SetText(nil)
                         self.delayTextShown = false
@@ -1020,7 +916,7 @@ do
                 end
             else
                 if self.delayTextShown then
-                    b.DelayText:SetText(nil)
+                    b.DelayText:SetText( nil )
                     self.delayTextShown = false
                 end
                 if self.delayIconShown then
@@ -1035,13 +931,13 @@ do
         self.refreshTimer = self.refreshTimer - elapsed
 
         if self.criticalUpdate or self.refreshTimer < 0 then
-            Hekili:ProcessHooks(self.id)
+            Hekili:ProcessHooks( self.id )
             self.criticalUpdate = false
             self.refreshTimer = state.combat == 0 and oocRefresh or icRefresh
         end
     end
 
-    local function Display_UpdateAlpha(self)
+    local function Display_UpdateAlpha( self )
         if not self.Active then
             self:SetAlpha(0)
             self:Hide()
@@ -1050,50 +946,50 @@ do
         end
 
         local preAlpha = self.alpha or 0
-        local newAlpha = CalculateAlpha(self.id)
+        local newAlpha = CalculateAlpha( self.id )
 
         if preAlpha > 0 and newAlpha == 0 then
             -- self:Deactivate()
-            self:SetAlpha(0)
+            self:SetAlpha( 0 )
         else
             if preAlpha == 0 and newAlpha > 0 then
                 Hekili:ForceUpdate()
             end
-            self:SetAlpha(newAlpha)
+            self:SetAlpha( newAlpha )
             self:Show()
         end
 
         self.alpha = newAlpha
     end
 
-    local function Display_RefreshCooldowns(self)
-        local gStart, gDuration = GetSpellCooldown(61304)
+    local function Display_RefreshCooldowns( self )
+        local gStart, gDuration = GetSpellCooldown( 61304 )
         local gExpires = gStart + gDuration
 
-        for i, rec in ipairs(self.Recommendations) do
+        for i, rec in ipairs( self.Recommendations ) do
             if not rec.actionName then
                 break
             end
 
-            local ability = class.abilities[rec.actionName]
-            local cd = self.Buttons[i].Cooldown
+            local ability = class.abilities[ rec.actionName ]
+            local cd = self.Buttons[ i ].Cooldown
 
             if ability then
                 local start, duration = 0, 0
 
                 if ability.item then
-                    start, duration = GetItemCooldown(ability.item)
+                    start, duration = GetItemCooldown( ability.item )
                 else
-                    start, duration = GetSpellCooldown(ability.id)
+                    start, duration = GetSpellCooldown( ability.id )
                 end
 
                 local expires = start + duration
 
-                if ability.gcdType ~= "off" and (expires < gExpires) then
+                if ability.gcdType ~= "off" and ( expires < gExpires ) then
                     start, duration = gStart, gDuration
                 end
 
-                cd:SetCooldown(start, duration)
+                cd:SetCooldown( start, duration )
             end
         end
     end
@@ -1102,64 +998,65 @@ do
         if not self.Recommendations then
             return
         end
-        local conf = Hekili.DB.profile.displays[self.id]
+        local conf = Hekili.DB.profile.displays[ self.id ]
 
         -- Update the CDs.
-        if
-            event == "SPELL_UPDATE_USABLE" or event == "SPELL_UPDATE_COOLDOWN" or event == "ACTIONBAR_UPDATE_USABLE" or
-                event == "ACTIONBAR_UPDATE_COOLDOWN"
-         then
+        if event == "SPELL_UPDATE_USABLE" or event == "SPELL_UPDATE_COOLDOWN" or event == "ACTIONBAR_UPDATE_USABLE" or event == "ACTIONBAR_UPDATE_COOLDOWN" then
             self:RefreshCooldowns()
+
         elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" then
-            if conf.blizzGlow then
-                for i, r in ipairs(self.Recommendations) do
-                    if i > 1 and not conf.queuedBlizzGlow then
+            if conf.glow.enabled then
+                for i, r in ipairs( self.Recommendations ) do
+                    if i > 1 and not conf.glow.queued then
                         break
                     end
                     if not r.actionName then
                         break
                     end
 
-                    local b = self.Buttons[i]
-                    local a = class.abilities[r.actionName]
+                    local b = self.Buttons[ i ]
+                    local a = class.abilities[ r.actionName ]
 
-                    if not b.glowing and not a.item and IsSpellOverlayed(a.id) then
-                        ActionButton_ShowOverlayGlow(b)
+                    if not b.glowing and not a.item and IsSpellOverlayed( a.id ) then
+                        ActionButton_ShowOverlayGlow( b )
                         b.glowing = true
                     end
                 end
             end
         elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
-            if conf.blizzGlow then
+            if conf.glow.enabled then
                 for i, r in ipairs(self.Recommendations) do
-                    if i > 1 and not conf.queuedBlizzGlow then
+                    if i > 1 and not conf.glow.queued then
                         break
                     end
                     if not r.actionName then
                         break
                     end
 
-                    local b = self.Buttons[i]
-                    local a = class.abilities[r.actionName]
+                    local b = self.Buttons[ i ]
+                    local a = class.abilities[ r.actionName ]
 
-                    if b.glowing and (a.item or not IsSpellOverlayed(a.id)) then
-                        ActionButton_HideOverlayGlow(b)
+                    if b.glowing and ( a.item or not IsSpellOverlayed( a.id ) ) then
+                        ActionButton_HideOverlayGlow( b )
                         b.glowing = false
                     end
                 end
             end
-        elseif kbEvents[event] then
+        elseif kbEvents[ event ] then
             self:UpdateKeybindings()
-        elseif alphaUpdateEvents[event] then
+
+        elseif alphaUpdateEvents[ event ] then
             self:UpdateAlpha()
+
         end
     end
 
-    local function Display_Activate(self)
+    local function Display_Activate( self )
         if not self.Active then
             self.Active = true
 
-            self.Recommendations = self.Recommendations or (ns.queue and ns.queue[self.id])
+            self.Recommendations = self.Recommendations or ( ns.queue and ns.queue[ self.id ] )
+            self.NewRecommendations = true
 
             self.auraTimer = 0
             self.delayTimer = 0
@@ -1167,81 +1064,130 @@ do
             self.refreshTimer = 0
             self.targetTimer = 0
 
-            self:SetScript("OnUpdate", Display_OnUpdate)
-            self:SetScript("OnEvent", Display_OnEvent)
+            self:SetScript( "OnUpdate", Display_OnUpdate )
+            self:SetScript( "OnEvent", Display_OnEvent )
 
             if not self.Initialized then
                 -- Update Cooldown Wheels.
-                self:RegisterEvent("ACTIONBAR_UPDATE_USABLE")
-                self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
-                self:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-                self:RegisterEvent("SPELL_UPDATE_USABLE")
+                self:RegisterEvent( "ACTIONBAR_UPDATE_USABLE" )
+                self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )
+                self:RegisterEvent( "SPELL_UPDATE_COOLDOWN" )
+                self:RegisterEvent( "SPELL_UPDATE_USABLE" )
 
                 -- Show/Hide Overlay Glows.
-                self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
-                self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+                self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" )
+                self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" )
 
                 -- Recalculate Alpha/Visibility.
-                self:RegisterEvent("PET_BATTLE_OPENING_START")
-                self:RegisterEvent("PET_BATTLE_CLOSE")
-                self:RegisterEvent("BARBER_SHOP_OPEN")
-                self:RegisterEvent("BARBER_SHOP_CLOSE")
-                self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player")
-                self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player")
-                self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player")
-                self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-                self:RegisterEvent("PLAYER_TARGET_CHANGED")
-                self:RegisterEvent("PLAYER_CONTROL_LOST")
-                self:RegisterEvent("PLAYER_CONTROL_GAINED")
-                self:RegisterEvent("PLAYER_REGEN_DISABLED")
-                self:RegisterEvent("PLAYER_REGEN_ENABLED")
-                self:RegisterEvent("ZONE_CHANGED")
-                self:RegisterEvent("ZONE_CHANGED_INDOORS")
-                self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+                self:RegisterEvent( "PET_BATTLE_OPENING_START" )
+                self:RegisterEvent( "PET_BATTLE_CLOSE" )
+                self:RegisterEvent( "BARBER_SHOP_OPEN" )
+                self:RegisterEvent( "BARBER_SHOP_CLOSE" )
+                self:RegisterUnitEvent( "UNIT_ENTERED_VEHICLE", "player" )
+                self:RegisterUnitEvent( "UNIT_EXITED_VEHICLE", "player" )
+                self:RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player" )
+                self:RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED" )
+                self:RegisterEvent( "PLAYER_TARGET_CHANGED" )
+                self:RegisterEvent( "PLAYER_CONTROL_LOST" )
+                self:RegisterEvent( "PLAYER_CONTROL_GAINED" )
+                self:RegisterEvent( "PLAYER_REGEN_DISABLED" )
+                self:RegisterEvent( "PLAYER_REGEN_ENABLED" )
+                self:RegisterEvent( "ZONE_CHANGED" )
+                self:RegisterEvent( "ZONE_CHANGED_INDOORS" )
+                self:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
 
                 -- Update keybindings.
-                for k in pairs(kbEvents) do
-                    self:RegisterEvent(k)
+                for k in pairs( kbEvents ) do
+                    self:RegisterEvent( k )
                 end
 
                 self.Initialized = true
             end
 
-            Hekili:ProcessHooks(self.id)
+            Hekili:ProcessHooks( self.id )
         end
     end
 
-    local function Display_Deactivate(self)
+    local function Display_Deactivate( self )
         self.Active = false
 
-        self:SetScript("OnUpdate", nil)
-        self:SetScript("OnEvent", nil)
+        self:SetScript( "OnUpdate", nil )
+        self:SetScript( "OnEvent", nil )
 
-        for i, b in ipairs(self.Buttons) do
+        for i, b in ipairs( self.Buttons ) do
             b:Hide()
         end
     end
 
-    function Hekili:CreateDisplay(id)
-        local conf = self.DB.profile.displays[id]
-        if not conf then
-            return
-        end
 
-        dPool[id] = dPool[id] or CreateFrame("Frame", "HekiliDisplay" .. id, UIParent)
-        local d = dPool[id]
+    function Hekili:CreateDisplay( id )
+        local conf = rawget( self.DB.profile.displays, id )
+        if not conf then return end
+
+        dPool[ id ] = dPool[ id ] or CreateFrame( "Frame", "HekiliDisplay" .. id, UIParent )
+        local d = dPool[ id ]
+
+        d.id = id
+        d.alpha = 0
+
+        local scale = self:GetScale()
+        local border = 2
+
+        d:SetSize( scale * ( border + ( conf.primaryWidth or 50 ) ), scale * ( border + ( conf.primaryHeight or 50 ) ) )
+        d:SetPoint( "CENTER", Screen, "CENTER", conf.x or 0, conf.y or -225 )
+        d:SetFrameStrata( "MEDIUM" )
+        d:SetClampedToScreen( true )
+        d:EnableMouse( false )
+        d:SetMovable( true )
+
+        d.Activate = Display_Activate
+        d.Deactivate = Display_Deactivate
+        d.RefreshCooldowns = Display_RefreshCooldowns
+        d.UpdateAlpha = Display_UpdateAlpha
+        d.UpdateKeybindings = Display_UpdateKeybindings
+
+        
+        ns.queue[id] = ns.queue[id] or {}
+        d.Recommendations = ns.queue[id]
+
+        ns.UI.Buttons[id] = ns.UI.Buttons[id] or {}
+        d.Buttons = ns.UI.Buttons[id]
+
+        for i = 1, 10 do
+            d.Buttons[ i ] = self:CreateButton( id, i )
+            d.Buttons[ i ]:Hide()
+
+            if conf.enabled and self:IsDisplayActive( id ) and i <= conf.numIcons then
+                if d.Recommendations[ i ] and d.Recommendations[ i ].actionName then
+                    d.Buttons[ i ]:Show()
+                end
+            end
+
+            if MasqueGroup then
+                MasqueGroup:AddButton( d.Buttons[i], { Icon = d.Buttons[ i ].Texture, Cooldown = d.Buttons[ i ].Cooldown } )
+            end
+        end
+    end
+    
+    
+    function Hekili:CreateCustomDisplay( id )
+        local conf = rawget( self.DB.profile.displays, id )
+        if not conf then return end
+
+        dPool[ id ] = dPool[ id ] or CreateFrame( "Frame", "HekiliDisplay" .. id, UIParent )
+        local d = dPool[ id ]
 
         d.id = id
 
         local scale = self:GetScale()
         local border = 2
 
-        d:SetSize(scale * (border + conf.primaryIconWidth), scale * (border + conf.primaryIconHeight))
-        d:SetPoint("CENTER", Screen, "CENTER", conf.x, conf.y)
-        d:SetFrameStrata("MEDIUM")
-        d:SetClampedToScreen(true)
-        d:EnableMouse(false)
-        d:SetMovable(true)
+        d:SetSize( scale * ( border + conf.primaryWidth ), scale * (border + conf.primaryHeight ) )
+        d:SetPoint( "CENTER", Screen, "CENTER", conf.x, conf.y )
+        d:SetFrameStrata( "MEDIUM" )
+        d:SetClampedToScreen( true )
+        d:EnableMouse( false )
+        d:SetMovable( true )
 
         d.Activate = Display_Activate
         d.Deactivate = Display_Deactivate
@@ -1259,7 +1205,7 @@ do
             d.Buttons[i] = self:CreateButton(id, i)
             d.Buttons[i]:Hide()
 
-            if self.DB.profile.Enabled and self:IsDisplayActive(id) and i <= conf.numIcons then
+            if self.DB.profile.enabled and self:IsDisplayActive(id) and i <= conf.numIcons then
                 if d.Recommendations[i] and d.Recommendations[i].actionName then
                     d.Buttons[i]:Show()
                 end
@@ -1279,22 +1225,29 @@ do
         local profile = self.DB.profile
         local displays = ns.UI.Displays
 
-        for i in ipairs(dispActive) do
-            dispActive[i] = nil
-        end
-        for i in ipairs(listActive) do
-            listActive[i] = nil
-        end
-        for a in pairs(actsActive) do
-            actsActive[a] = nil
+        for key in pairs( dispActive ) do
+            dispActive[ key ] = nil
         end
 
-        if profile.Enabled then
-            for i, display in ipairs(profile.displays) do
-                if display.Enabled and (display.Specialization == 0 or display.Specialization == state.spec.id) then
-                    dispActive[i] = true
-                    if displays[i] and not displays[i].Active then
-                        displays[i]:Activate()
+        for list in pairs( listActive ) do
+            listActive[ list ] = nil
+        end
+
+        for a in pairs( actsActive ) do
+            actsActive[ a ] = nil
+        end
+
+        if profile.enabled then
+            for i, display in pairs( profile.displays ) do
+                if display.enabled then
+                    if i == 'AOE' then dispActive[i] = profile.toggles.mode.value ~= 'automatic'
+                    elseif i == 'Interrupts' then dispActive[i] = profile.toggles.interrupts.value and profile.toggles.interrupts.separate
+                    elseif i == 'Defensives' then dispActive[i] = state.role.tank and profile.toggles.defensives.value and profile.toggles.defensives.separate
+                    else dispActive[i] = true end
+                    
+                    if dispActive[i] and displays[i] then
+                        if not displays[i].Active then displays[i]:Activate() end
+                        displays[i].NewRecommendations = true
                     end
                 else
                     if displays[i] and displays[i].Active then
@@ -1303,89 +1256,123 @@ do
                 end
             end
 
-            for i, list in ipairs(profile.actionLists) do
-                if list.Specialization == 0 or list.Specialization == state.spec.id then
-                    listActive[i] = true
-                end
+            for packName, pack in pairs( profile.packs ) do
+                if pack.spec == 0 or pack.spec == state.spec.id then
+                    for listName, list in pairs( pack.lists ) do
+                        listActive[ packName .. ":" .. listName ] = true
 
-                -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
-                for a, action in ipairs(list.Actions) do
-                    if action.Enabled and action.Ability then
-                        actsActive[i .. ":" .. a] = true
+                        -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
+                        for a, entry in ipairs( list ) do
+                            if entry.enabled and entry.action then
+                                actsActive[ packName .. ":" .. listName .. ":" .. a ] = true
+                            end
+                        end
                     end
                 end
             end
         end
 
-        for i, d in ipairs(ns.UI.Displays) do
+        for i, d in pairs(ns.UI.Displays) do
             d:UpdateAlpha()
         end
     end
 
-    function Hekili:IsDisplayActive(display)
+    function Hekili:ReviewPacks()
+        local profile = self.DB.profile
+
+        for list in pairs( listActive ) do
+            listActive[ list ] = nil
+        end
+
+        for a in pairs( actsActive ) do
+            actsActive[ a ] = nil
+        end
+
+        for packName, pack in pairs( profile.packs ) do
+            if pack.spec == 0 or pack.spec == state.spec.id then
+                for listName, list in pairs( pack.lists ) do
+                    listActive[ packName .. ":" .. listName ] = true
+
+                    -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
+                    for a, entry in ipairs( list ) do
+                        if entry.enabled and entry.action and class.abilities[ entry.action ] then
+                            actsActive[ packName .. ":" .. listName .. ":" .. a ] = true
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    function Hekili:IsDisplayActive( display )
         return dispActive[display] == true
     end
 
-    function Hekili:IsListActive(list)
-        return listActive[list] == true
+    function Hekili:IsListActive( pack, list )
+        return listActive[ pack .. ":" .. list ] == true
     end
 
-    function Hekili:IsActionActive(list, action)
-        return actsActive[list .. ":" .. action] == true
+    function Hekili:IsActionActive( pack, list, action )
+        return actsActive[ pack .. ":" .. list .. ":" .. action ] == true
     end
 
     function Hekili:DumpActionActive()
-        DevTools_Dump(actsActive)
+        DevTools_Dump( actsActive )
     end
 
+    
     local LSM = LibStub("LibSharedMedia-3.0", true)
     local LRC = LibStub("LibRangeCheck-2.0")
     local LSR = LibStub("SpellRange-1.0")
 
-    function Hekili:CreateButton(dispID, id)
-        local d = dPool[dispID]
+    function Hekili:CreateButton( dispID, id )
+        local d = dPool[ dispID ]
         if not d then
             return
         end
 
-        local conf = self.DB.profile.displays[dispID]
-        if not conf then
-            return
-        end
+        local conf = rawget( self.DB.profile.displays, dispID )
+        if not conf then return end
+        
+        ns.queue[ dispID ][ id ] = ns.queue[ dispID ][ id ] or {}
 
-        ns.queue[dispID][id] = ns.queue[dispID][id] or {}
-
-        local bName = "Hekili_D" .. dispID .. "_B" .. id
-        local b = d.Buttons[id] or CreateFrame("Button", bName, d)
+        local bName = "Hekili_" .. dispID .. "_B" .. id
+        local b = d.Buttons[ id ] or CreateFrame( "Button", bName, d )
+        
+        b.display = dispID
+        b.index = id
 
         local scale = self:GetScale()
 
-        b:SetHeight(scale * (id == 1 and conf.primaryIconHeight or conf.queuedIconHeight or 50))
-        b:SetWidth(scale * (id == 1 and conf.primaryIconWidth or conf.queuedIconWidth or 50))
+        if id == 1 then
+            b:SetHeight( scale * ( conf.primaryHeight or 50 ) )
+            b:SetWidth( scale * ( conf.primaryWidth or 50 ) )
+        else
+            b:SetHeight( scale * ( conf.queue.height or 30 ) )
+            b:SetWidth( scale * ( conf.queue.width or 50 ) )
+        end
 
         -- Texture
         if not b.Texture then
-            b.Texture = b:CreateTexture(nil, "LOW")
-            b.Texture:SetTexture("Interface\\ICONS\\Spell_Nature_BloodLust")
-            b.Texture:SetAllPoints(b)
+            b.Texture = b:CreateTexture( nil, "LOW" )
+            b.Texture:SetTexture( "Interface\\ICONS\\Spell_Nature_BloodLust" )
+            b.Texture:SetAllPoints( b )
         end
 
         b.texCoords = b.texCoords or {}
-        local zoom = 1 - ((conf.iconZoom or 0) / 200)
+        local zoom = 1 - ( ( conf.zoom or 0) / 200 )
 
-        if conf.KeepAspectRatio then
-            local biggest =
-                id == 1 and max(conf.primaryIconHeight, conf.primaryIconWidth) or
-                max(conf.queuedIconHeight, conf.queuedIconWidth)
-            local height = 0.5 * zoom * (id == 1 and conf.primaryIconHeight or conf.queuedIconHeight) / biggest
-            local width = 0.5 * zoom * (id == 1 and conf.primaryIconWidth or conf.queuedIconWidth) / biggest
+        if conf.keepAspectRatio then
+            local biggest = id == 1 and max( conf.primaryHeight, conf.primaryWidth ) or max( conf.queue.height, conf.queue.width )
+            local height = 0.5 * zoom * ( id == 1 and conf.primaryHeight or conf.queue.height ) / biggest
+            local width = 0.5 * zoom * ( id == 1 and conf.primaryWidth or conf.queue.width ) / biggest
 
             b.texCoords[1] = 0.5 - width
             b.texCoords[2] = 0.5 + width
             b.texCoords[3] = 0.5 - height
             b.texCoords[4] = 0.5 + height
 
-            b.Texture:SetTexCoord(unpack(b.texCoords))
+            b.Texture:SetTexCoord( unpack( b.texCoords ) )
         else
             local zoom = zoom / 2
 
@@ -1394,59 +1381,60 @@ do
             b.texCoords[3] = 0.5 - zoom
             b.texCoords[4] = 0.5 + zoom
 
-            b.Texture:SetTexCoord(unpack(b.texCoords))
+            b.Texture:SetTexCoord( unpack( b.texCoords ) )
         end
 
+
         -- Indicator Icons.
-        b.Icon = b.Icon or b:CreateTexture(nil, "OVERLAY")
-        b.Icon:SetSize(max(10, b:GetWidth() / 3), max(10, b:GetHeight() / 3))
-        local iconAnchor = conf.indicatorAnchor or "RIGHT"
+        b.Icon = b.Icon or b:CreateTexture( nil, "OVERLAY" )
+        b.Icon: SetSize( max( 10, b:GetWidth() / 3 ), max( 10, b:GetHeight() / 3 ) )
+        
+        local iconAnchor = conf.indicators.anchor or "RIGHT"
+        
         b.Icon:ClearAllPoints()
-        b.Icon:SetPoint(iconAnchor, b, iconAnchor, conf.xOffsetIndicators or 0, conf.yOffsetIndicators or 0)
+        b.Icon:SetPoint( iconAnchor, b, iconAnchor, conf.indicators.x or 0, conf.indicators.y or 0 )
         b.Icon:Hide()
 
+
         -- Caption Text.
-        b.Caption = b.Caption or b:CreateFontString(bName .. "_Caption", "OVERLAY")
+        b.Caption = b.Caption or b:CreateFontString( bName .. "_Caption", "OVERLAY" )
 
-        local captionFont = conf.captionFont or (ElvUI and "PT Sans Narrow" or "Arial Narrow")
-        b.Caption:SetFont(
-            LSM:Fetch("font", captionFont),
-            conf.captionFontSize or 12,
-            conf.captionFontStyle or "OUTLINE"
-        )
-        b.Caption:SetSize(b:GetWidth(), max(12, b:GetHeight() / 2))
+        local captionFont = conf.captions.font or conf.font
+        b.Caption:SetFont( LSM:Fetch("font", captionFont), conf.captions.fontSize or 12, conf.captions.fontStyle or "OUTLINE" )
+        b.Caption:SetSize( b:GetWidth(), max( 12, b:GetHeight() / 2 ) )
 
-        local capAnchor = conf.captionAnchor or "BOTTOM"
+        local capAnchor = conf.captions.anchor or "BOTTOM"
         b.Caption:ClearAllPoints()
-        b.Caption:SetPoint(capAnchor, b, capAnchor, conf.xOffsetCaptions or 0, conf.yOffsetCaptions or 0)
-        b.Caption:SetJustifyV(capAnchor)
-        b.Caption:SetJustifyH(conf.captionAlign or "CENTER")
-        b.Caption:SetTextColor(1, 1, 1, 1)
+        b.Caption:SetPoint( capAnchor, b, capAnchor, conf.captions.x or 0, conf.captions.y or 0 )
+        b.Caption:SetJustifyV( capAnchor )
+        b.Caption:SetJustifyH( conf.captions.align or "CENTER" )
+        b.Caption:SetTextColor( 1, 1, 1, 1 )
+
 
         -- Keybinding Text
         b.Keybinding = b.Keybinding or b:CreateFontString(bName .. "_KB", "OVERLAY")
+        local kbFont = conf.keybindings.font or conf.font
+        b.Keybinding:SetFont( LSM:Fetch("font", kbFont), conf.keybindings.fontSize or 12, conf.keybindings.fontStyle or "OUTLINE" )
+        b.Keybinding:SetSize( b:GetWidth(), b:GetHeight() / 2 )
 
-        local kbFont = conf.kbFont or (ElvUI and "PT Sans Narrow" or "Arial Narrow")
-        b.Keybinding:SetFont(LSM:Fetch("font", kbFont), conf.kbFontSize or 12, conf.kbFontStyle or "OUTLINE")
-        b.Keybinding:SetSize(b:GetWidth(), b:GetHeight() / 2)
-
-        local kbAnchor = conf.kbAnchor or "TOPRIGHT"
+        local kbAnchor = conf.keybindings.anchor or "TOPRIGHT"
         b.Keybinding:ClearAllPoints()
-        b.Keybinding:SetPoint(kbAnchor, b, kbAnchor, conf.xOffsetKBs or 0, conf.yOffsetKBs or 0)
-        b.Keybinding:SetJustifyH(kbAnchor:match("RIGHT") and "RIGHT" or (kbAnchor:match("LEFT") and "LEFT" or "CENTER"))
-        b.Keybinding:SetJustifyV(kbAnchor:match("TOP") and "TOP" or (kbAnchor:match("BOTTOM") and "BOTTOM" or "MIDDLE"))
-        b.Keybinding:SetTextColor(1, 1, 1, 1)
+        b.Keybinding:SetPoint( kbAnchor, b, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
+        b.Keybinding:SetJustifyH( kbAnchor:match("RIGHT") and "RIGHT" or ( kbAnchor:match("LEFT") and "LEFT" or "CENTER" ) )
+        b.Keybinding:SetJustifyV( kbAnchor:match("TOP") and "TOP" or ( kbAnchor:match("BOTTOM") and "BOTTOM" or "MIDDLE" ) )
+        b.Keybinding:SetTextColor( 1, 1, 1, 1 )
 
         -- Cooldown Wheel
-        b.Cooldown = b.Cooldown or CreateFrame("Cooldown", bName .. "_Cooldown", b, "CooldownFrameTemplate")
+        b.Cooldown = b.Cooldown or CreateFrame( "Cooldown", bName .. "_Cooldown", b, "CooldownFrameTemplate" )
         b.Cooldown:ClearAllPoints()
-        b.Cooldown:SetAllPoints(b)
-        b.Cooldown:SetFrameStrata("MEDIUM")
-        b.Cooldown:SetFrameLevel(50)
-        b.Cooldown:SetDrawBling(false)
-        b.Cooldown:SetDrawEdge(false)
+        b.Cooldown:SetAllPoints( b )
+        b.Cooldown:SetFrameStrata( "MEDIUM" )
+        b.Cooldown:SetFrameLevel( 50 )
+        b.Cooldown:SetDrawBling( false )
+        b.Cooldown:SetDrawEdge( false )
 
-        -- Backdrop
+
+        -- Backdrop (for borders)
         b.Backdrop = b.Backdrop or CreateFrame("Frame", bName .. "_Backdrop", b)
         b.Backdrop:ClearAllPoints()
         b.Backdrop:SetWidth( b:GetWidth() + 2 )
@@ -1454,7 +1442,7 @@ do
 
         local framelevel = b:GetFrameLevel()
         if framelevel > 0 then
-            b.Backdrop:SetFrameStrata("MEDIUM")
+            b.Backdrop:SetFrameStrata( "MEDIUM" )
             b.Backdrop:SetFrameLevel( framelevel - 1 )
         else
             b.Backdrop:SetFrameStrata("LOW")
@@ -1463,57 +1451,50 @@ do
         b.Backdrop:SetPoint( "CENTER", b, "CENTER" )
         b.Backdrop:Hide()
 
-        if conf.iconBorder then
-            b.Backdrop:SetBackdrop(
-                {
-                    bgFile = nil,
-                    edgeFile = "Interface\\Buttons\\WHITE8X8",
-                    tile = false,
-                    tileSize = 0,
-                    edgeSize = 1,
-                    insets = {left = -1, right = -1, top = -1, bottom = -1}
-                }
-            )
-            b.Backdrop:SetBackdropBorderColor(
-                conf.iconBorderColor.r,
-                conf.iconBorderColor.g,
-                conf.iconBorderColor.b,
-                conf.iconBorderColor.a
-            )
+
+        if conf.border.enabled then
+            b.Backdrop:SetBackdrop( {
+                bgFile = nil,
+                edgeFile = "Interface\\Buttons\\WHITE8X8",
+                tile = false,
+                tileSize = 0,
+                edgeSize = 1,
+                insets = { left = -1, right = -1, top = -1, bottom = -1 }
+            } )
+            b.Backdrop:SetBackdropBorderColor( unpack( conf.border.color ) )
             b.Backdrop:Show()
         else
-            b.Backdrop:SetBackdrop(nil)
-            b.Backdrop:SetBackdropColor(0, 0, 0, 0)
+            b.Backdrop:SetBackdrop( nil )
+            b.Backdrop:SetBackdropColor( 0, 0, 0, 0 )
             b.Backdrop:Hide()
         end
+
 
         -- Primary Icon Stuff
         if id == 1 then
             -- Anchoring stuff for the queue.
             b:ClearAllPoints()
-            b:SetPoint("CENTER", d, "CENTER")
+            b:SetPoint( "CENTER", d, "CENTER" )
 
             -- Target Counter
-            b.Targets = b.Targets or b:CreateFontString(bName .. "_Targets", "OVERLAY")
+            b.Targets = b.Targets or b:CreateFontString( bName .. "_Targets", "OVERLAY" )
 
-            local tarFont = conf.targetFont or (ElvUI and "PT Sans Narrow" or "Arial Narrow")
-            b.Targets:SetFont(LSM:Fetch("font", tarFont), conf.targetFontSize or 12, conf.targetFontStyle or "OUTLINE")
-            b.Targets:SetSize(b:GetWidth(), b:GetHeight() / 2)
+            local tarFont = conf.targets.font or conf.font
+            b.Targets:SetFont( LSM:Fetch( "font", tarFont ), conf.targets.fontSize or 12, conf.targets.fontStyle or "OUTLINE" )
+            b.Targets:SetSize( b:GetWidth(), b:GetHeight() / 2 )
 
-            local tarAnchor = conf.targetAnchor or "BOTTOM"
+            local tarAnchor = conf.targets.anchor or "BOTTOM"
             b.Targets:ClearAllPoints()
-            b.Targets:SetPoint(tarAnchor, b, tarAnchor, conf.xOffsetTargets or 0, conf.yOffsetTargets or 0)
+            b.Targets:SetPoint( tarAnchor, b, tarAnchor, conf.targets.x or 0, conf.targets.y or 0 )
 
-            b.Targets:SetJustifyH(
-                tarAnchor:match("RIGHT") and "RIGHT" or (tarAnchor:match("LEFT") and "LEFT" or "CENTER")
-            )
-            b.Targets:SetJustifyV(
-                tarAnchor:match("TOP") and "TOP" or (tarAnchor:match("BOTTOM") and "BOTTOM" or "MIDDLE")
-            )
-            b.Targets:SetTextColor(1, 1, 1, 1)
+            b.Targets:SetJustifyH( tarAnchor:match("RIGHT") and "RIGHT" or ( tarAnchor:match( "LEFT" ) and "LEFT" or "CENTER" ) )
+            b.Targets:SetJustifyV( tarAnchor:match("TOP") and "TOP" or ( tarAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" ) )
+            b.Targets:SetTextColor( 1, 1, 1, 1 )
 
+            
             -- Aura Counter
-            b.Auras = b.Auras or b:CreateFontString(bName .. "_Auras", "OVERLAY")
+            -- Disabled for Now
+            --[[ b.Auras = b.Auras or b:CreateFontString(bName .. "_Auras", "OVERLAY")
 
             local auraFont = conf.auraFont or (ElvUI and "PT Sans Narrow" or "Arial Narrow")
             b.Auras:SetFont(LSM:Fetch("font", auraFont), conf.auraFontSize or 12, conf.auraFontStyle or "OUTLINE")
@@ -1529,130 +1510,77 @@ do
             b.Auras:SetJustifyV(
                 auraAnchor:match("TOP") and "TOP" or (auraAnchor:match("BOTTOM") and "BOTTOM" or "MIDDLE")
             )
-            b.Auras:SetTextColor(1, 1, 1, 1)
+            b.Auras:SetTextColor(1, 1, 1, 1) ]]
+
 
             -- Delay Counter
-            b.DelayText = b.DelayText or b:CreateFontString(bName .. "_DelayText", "OVERLAY")
+            b.DelayText = b.DelayText or b:CreateFontString( bName .. "_DelayText", "OVERLAY" )
 
-            local delayFont = conf.delayFont or (ElvUI and "PT Sans Narrow" or "Arial Narrow")
-            b.DelayText:SetFont(
-                LSM:Fetch("font", delayFont),
-                conf.delayFontSize or 12,
-                conf.delayFontStyle or "OUTLINE"
-            )
-            b.DelayText:SetSize(b:GetWidth(), b:GetHeight() / 2)
+            local delayFont = conf.delays.font or conf.font
+            b.DelayText:SetFont( LSM:Fetch("font", delayFont), conf.delays.fontSize or 12, conf.delays.fontStyle or "OUTLINE" )
+            b.DelayText:SetSize( b:GetWidth(), b:GetHeight() / 2 )
 
-            local delayAnchor = conf.delayAnchor or "TOPLEFT"
+            local delayAnchor = conf.delays.anchor or "TOPLEFT"
             b.DelayText:ClearAllPoints()
-            b.DelayText:SetPoint(delayAnchor, b, delayAnchor, conf.xOffsetDelay or 0, conf.yOffsetDelay or 0)
+            b.DelayText:SetPoint( delayAnchor, b, delayAnchor, conf.delays.x, conf.delays.y or 0 )
 
-            b.DelayText:SetJustifyH(
-                delayAnchor:match("RIGHT") and "RIGHT" or (delayAnchor:match("LEFT") and "LEFT" or "CENTER")
-            )
-            b.DelayText:SetJustifyV(
-                delayAnchor:match("TOP") and "TOP" or (delayAnchor:match("BOTTOM") and "BOTTOM" or "MIDDLE")
-            )
-            b.DelayText:SetTextColor(1, 1, 1, 1)
+            b.DelayText:SetJustifyH( delayAnchor:match( "RIGHT" ) and "RIGHT" or ( delayAnchor:match( "LEFT" ) and "LEFT" or "CENTER") )
+            b.DelayText:SetJustifyV( delayAnchor:match( "TOP" ) and "TOP" or ( delayAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE") )
+            b.DelayText:SetTextColor( 1, 1, 1, 1 )
 
             -- Delay Icon
-            b.DelayIcon = b.DelayIcon or b:CreateTexture(bName .. "_DelayIcon", "OVERLAY")
-            b.DelayIcon:SetSize(min(20, max(10, b:GetSize() / 3)), min(20, max(10, b:GetSize() / 3)))
-            b.DelayIcon:SetTexture("Interface\\FriendsFrame\\StatusIcon-Online")
-            b.DelayIcon:SetDesaturated(true)
-            b.DelayIcon:SetVertexColor(1, 0, 0, 1)
+            b.DelayIcon = b.DelayIcon or b:CreateTexture( bName .. "_DelayIcon", "OVERLAY" )
+            b.DelayIcon:SetSize( min( 20, max( 10, b:GetSize() / 3 ) ), min( 20, max( 10, b:GetSize() / 3 ) ) )
+            b.DelayIcon:SetTexture( "Interface\\FriendsFrame\\StatusIcon-Online" )
+            b.DelayIcon:SetDesaturated( true )
+            b.DelayIcon:SetVertexColor( 1, 0, 0, 1 )
 
             b.DelayIcon:ClearAllPoints()
-            b.DelayIcon:SetPoint(delayAnchor, b, delayAnchor, conf.xOffsetDelay or 0, conf.yOffsetDelay or 0)
+            b.DelayIcon:SetPoint( delayAnchor, b, delayAnchor, conf.delays.x or 0, conf.delays.y or 0 )
             b.DelayIcon:Hide()
 
+
             -- Overlay (for Pause)
-            b.Overlay = b.Overlay or b:CreateTexture(nil, "OVERLAY")
-            b.Overlay:SetAllPoints(b)
-            b.Overlay:SetTexture("Interface\\Addons\\Hekili\\Textures\\Pause.blp")
-            b.Overlay:SetTexCoord(unpack(b.texCoords))
+            b.Overlay = b.Overlay or b:CreateTexture( nil, "OVERLAY" )
+            b.Overlay:SetAllPoints( b )
+            b.Overlay:SetTexture( "Interface\\Addons\\Hekili\\Textures\\Pause.blp" )
+            b.Overlay:SetTexCoord( unpack( b.texCoords ) )
             b.Overlay:Hide()
+
         elseif id == 2 then
             -- Anchoring for the remainder.
-            local queueAnchor = conf.queueAnchor or "RIGHT"
-            local qOffset = conf.queueAnchorOffset
+            local queueAnchor = conf.queue.anchor or "RIGHT"
+            local qOffset = conf.queue.offset or 5
 
             b:ClearAllPoints()
 
-            if queueAnchor:sub(1, 5) == "RIGHT" then
+            if queueAnchor:sub( 1, 5 ) == "RIGHT" then
                 local dir, align = "RIGHT", queueAnchor:sub(6)
-                b:SetPoint(
-                    align .. getInverseDirection(dir),
-                    "Hekili_D" .. dispID .. "_B1",
-                    align .. dir,
-                    qOffset * scale,
-                    0
-                )
-            elseif queueAnchor:sub(1, 4) == "LEFT" then
+                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, qOffset * scale, 0 )
+            elseif queueAnchor:sub( 1, 4 ) == "LEFT" then
                 local dir, align = "LEFT", queueAnchor:sub(5)
-                b:SetPoint(
-                    align .. getInverseDirection(dir),
-                    "Hekili_D" .. dispID .. "_B1",
-                    align .. dir,
-                    -1 * qOffset * scale,
-                    0
-                )
-            elseif queueAnchor:sub(1, 3) == "TOP" then
+                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, -1 * qOffset * scale, 0 )
+            elseif queueAnchor:sub( 1, 3)  == "TOP" then
                 local dir, align = "TOP", queueAnchor:sub(4)
-                b:SetPoint(
-                    getInverseDirection(dir) .. align,
-                    "Hekili_D" .. dispID .. "_B1",
-                    dir .. align,
-                    0,
-                    qOffset * scale
-                )
+                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, qOffset * scale )
             else -- BOTTOM
                 local dir, align = "BOTTOM", queueAnchor:sub(7)
-                b:SetPoint(
-                    getInverseDirection(dir) .. align,
-                    "Hekili_D" .. dispID .. "_B1",
-                    dir .. align,
-                    0,
-                    -1 * qOffset * scale
-                )
+                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, -1 * qOffset * scale )
             end
         else
-            local queueDirection = conf.queueDirection or "RIGHT"
-            local btnSpacing = conf.iconSpacing or 5
+            local queueDirection = conf.queue.direction or "RIGHT"
+            local btnSpacing = conf.queue.spacing or 5
 
             b:ClearAllPoints()
 
             if queueDirection == "RIGHT" then
-                b:SetPoint(
-                    getInverseDirection(queueDirection),
-                    "Hekili_D" .. dispID .. "_B" .. id - 1,
-                    queueDirection,
-                    btnSpacing * scale,
-                    0
-                )
+                b:SetPoint( getInverseDirection(queueDirection), "Hekili_" .. dispID .. "_B" .. id - 1, queueDirection, btnSpacing * scale, 0 )
             elseif queueDirection == "LEFT" then
-                b:SetPoint(
-                    getInverseDirection(queueDirection),
-                    "Hekili_D" .. dispID .. "_B" .. id - 1,
-                    queueDirection,
-                    -1 * btnSpacing * scale,
-                    0
-                )
+                b:SetPoint( getInverseDirection(queueDirection), "Hekili_" .. dispID .. "_B" .. id - 1, queueDirection, -1 * btnSpacing * scale, 0 )
             elseif queueDirection == "TOP" then
-                b:SetPoint(
-                    getInverseDirection(queueDirection),
-                    "Hekili_D" .. dispID .. "_B" .. id - 1,
-                    queueDirection,
-                    0,
-                    btnSpacing * scale
-                )
+                b:SetPoint( getInverseDirection(queueDirection), "Hekili_" .. dispID .. "_B" .. id - 1, queueDirection, 0, btnSpacing * scale )
             else -- BOTTOM
-                b:SetPoint(
-                    getInverseDirection(queueDirection),
-                    "Hekili_D" .. dispID .. "_B" .. id - 1,
-                    queueDirection,
-                    0,
-                    -1 * btnSpacing * scale
-                )
+                b:SetPoint( getInverseDirection(queueDirection), "Hekili_" .. dispID .. "_B" .. id - 1, queueDirection, 0, -1 * btnSpacing * scale )
             end
         end
 
@@ -1660,28 +1588,27 @@ do
         b:SetScript("OnMouseDown", Button_OnMouseDown)
         b:SetScript("OnMouseUp", Button_OnMouseUp)
 
-        b:SetScript(
-            "OnEnter",
-            function(self)
-                if not Hekili.Pause and Hekili.Config then
-                    ns.Tooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
-                    ns.Tooltip:SetBackdropColor(0, 0, 0, 1)
-                    ns.Tooltip:SetText(Hekili.DB.profile.displays[dispID].Name .. " (" .. dispID .. ")")
-                    ns.Tooltip:AddLine("Left-click and hold to move.", 1, 1, 1)
-                    ns.Tooltip:Show()
-                    self:SetMovable(true)
-                elseif (Hekili.Pause and ns.queue[dispID] and ns.queue[dispID][id]) then
-                    Hekili:ShowDiagnosticTooltip(ns.queue[dispID][id])
-                end
-            end
-        )
+        b:SetScript( "OnEnter", function( self )
+            local H = Hekili
 
-        b:SetScript(
-            "OnLeave",
-            function(self)
-                ns.Tooltip:Hide()
+            if not H.Pause and H.Config then
+                ns.Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
+                ns.Tooltip:SetBackdropColor( 0, 0, 0, 1 )
+
+                ns.Tooltip:SetText( "Hekili: " .. dispID  )
+                ns.Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+                ns.Tooltip:Show()
+                self:SetMovable( true )
+
+            elseif ( H.Pause and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
+                H:ShowDiagnosticTooltip( ns.queue[ dispID ][ id ] )
+
             end
-        )
+        end )
+
+        b:SetScript( "OnLeave", function(self)
+            ns.Tooltip:Hide()
+        end )
 
         b:EnableMouse( false )
         b:SetMovable( false )
@@ -1692,68 +1619,65 @@ end
 
 -- Builds and maintains the visible UI elements.
 -- Buttons (as frames) are never deleted, but should get reused effectively.
-function ns.buildUI()
+
+local builtIns = {
+    "Primary", "AOE", "Interrupts", "Defensives"
+}
+
+function Hekili:BuildUI()
     if not Masque then
-        Masque = LibStub("Masque", true)
+        Masque = LibStub( "Masque", true )
 
         if Masque then
-            Masque:Register("Hekili", MasqueUpdate, Hekili)
-            MasqueGroup = Masque:Group(addon)
+            Masque:Register( addon, MasqueUpdate, self )
+            MasqueGroup = Masque:Group( addon )
         end
     end
 
-    ns.UI.Keyhandler = ns.UI.Keyhandler or CreateFrame("Button", "Hekili_Keyhandler", UIParent)
-    ns.UI.Keyhandler:RegisterForClicks("AnyDown")
-    ns.UI.Keyhandler:SetScript(
-        "OnClick",
-        function(self, button, down)
-            Hekili:ClassToggle(button)
-        end
-    )
+    local LSM = LibStub( "LibSharedMedia-3.0" )
 
-    local scaleFactor = Hekili:GetScale()
+    ns.UI.Keyhandler = ns.UI.Keyhandler or CreateFrame( "Button", "Hekili_Keyhandler", UIParent )
+    ns.UI.Keyhandler:RegisterForClicks( "AnyDown" )
+    ns.UI.Keyhandler:SetScript( "OnClick", function( self, button, down )
+        Hekili:FireToggle( button )
+    end )
 
-    local MouseInteract = Hekili.Pause
+    local scaleFactor = self:GetScale()
+    local mouseInteract = self.Pause
 
-    local f = ns.UI.Notification or CreateFrame("Frame", "HekiliNotification", UIParent)
-    f:SetSize(
-        Hekili.DB.profile["Notification Width"] * scaleFactor,
-        Hekili.DB.profile["Notification Height"] * scaleFactor
-    )
-    f:SetClampedToScreen(true)
+    -- Notification Panel
+    local notif = self.DB.profile.notifications
+
+    local f = ns.UI.Notification or CreateFrame( "Frame", "HekiliNotification", UIParent )
+
+    f:SetSize( notif.width * scaleFactor, notif.height * scaleFactor )
+    f:SetClampedToScreen( true )
     f:ClearAllPoints()
-    f:SetPoint("CENTER", Screen, "CENTER", Hekili.DB.profile["Notification X"], Hekili.DB.profile["Notification Y"])
+    f:SetPoint("CENTER", Screen, "CENTER", notif.x, notif.y )
 
-    f.Text = f.Text or f:CreateFontString("HekiliNotificationText", "OVERLAY")
-    f.Text:SetSize(
-        Hekili.DB.profile["Notification Width"] * scaleFactor,
-        Hekili.DB.profile["Notification Height"] * scaleFactor
-    )
-    f.Text:SetPoint("TOP", f, "TOP")
-    f.Text:SetFont(
-        LibStub("LibSharedMedia-3.0"):Fetch("font", Hekili.DB.profile["Notification Font"]),
-        Hekili.DB.profile["Notification Font Size"] * scaleFactor,
-        "OUTLINE"
-    )
+    f.Text = f.Text or f:CreateFontString( "HekiliNotificationText", "OVERLAY" )
+    f.Text:SetAllPoints( f )
+    f.Text:SetFont( LSM:Fetch( "font", notif.font ), notif.fontSize * scaleFactor, notif.fontStyle )
     f.Text:SetJustifyV("MIDDLE")
     f.Text:SetJustifyH("CENTER")
     f.Text:SetTextColor(1, 1, 1, 1)
 
+    if not notif.enabled then f:Hide()
+    else f.Text:SetText(nil); f:Show() end
+
     ns.UI.Notification = f
+    -- End Notification Panel
+
+    -- Dropdown Menu.
     ns.UI.Menu = ns.UI.Menu or CreateFrame("Frame", "Hekili_Menu", UIParent, "L_UIDropDownMenuTemplate")
 
-    if not Hekili.DB.profile["Notification Enabled"] then
-        ns.UI.Notification:Hide()
-    else
-        ns.UI.Notification.Text:SetText(nil)
-        ns.UI.Notification:Show()
+
+    -- Displays
+    for disp in pairs( self.DB.profile.displays ) do
+        self:CreateDisplay( disp )
     end
 
-    for dispID, display in ipairs(Hekili.DB.profile.displays) do
-        Hekili:CreateDisplay(dispID)
-    end
-
-    Hekili:UpdateDisplayVisibility()
+    self:UpdateDisplayVisibility()
 
     --if Hekili.Config then ns.StartConfiguration() end
     if MasqueGroup then
@@ -1785,13 +1709,11 @@ function ns.primeTooltipColors()
             SyntaxColors[select(Index, ...)] = Code
         end
     end
-    Color("|cffB266FF", T.KEYWORD) -- Reserved words
+    Color( "|cffB266FF", T.KEYWORD ) -- Reserved Words
 
-    Color("|cffffffff", T.LEFTCURLY, T.RIGHTCURLY, T.LEFTBRACKET, T.RIGHTBRACKET, T.LEFTPAREN, T.RIGHTPAREN)
+    Color( "|cffffffff", T.LEFTCURLY, T.RIGHTCURLY, T.LEFTBRACKET, T.RIGHTBRACKET, T.LEFTPAREN, T.RIGHTPAREN )
 
-    Color(
-        "|cffFF66FF",
-        T.UNKNOWN,
+    Color( "|cffFF66FF", T.UNKNOWN,
         T.ADD,
         T.SUBTRACT,
         T.MULTIPLY,
@@ -1811,16 +1733,14 @@ function ns.primeTooltipColors()
         T.LT,
         T.LTE,
         T.GT,
-        T.GTE
-    )
+        T.GTE )
 
-    Color("|cFFB2FF66", multiUnpack(ns.keys, ns.attr))
+    Color( "|cFFB2FF66", multiUnpack(ns.keys, ns.attr) )
 
-    Color("|cffFFFF00", T.NUMBER)
-    Color("|cff888888", T.STRING, T.STRING_LONG)
-    Color("|cff55cc55", T.COMMENT_SHORT, T.COMMENT_LONG)
-    Color(
-        "|cff55ddcc", -- Minimal standard Lua functions
+    Color( "|cffFFFF00", T.NUMBER )
+    Color( "|cff888888", T.STRING, T.STRING_LONG )
+    Color( "|cff55cc55", T.COMMENT_SHORT, T.COMMENT_LONG )
+    Color( "|cff55ddcc", -- Minimal standard Lua functions
         "assert",
         "error",
         "ipairs",
@@ -1840,8 +1760,7 @@ function ns.primeTooltipColors()
         "string",
         "table"
     )
-    Color(
-        "|cffddaaff", -- Some of WoW's aliases for standard Lua functions
+    Color( "|cffddaaff", -- Some of WoW's aliases for standard Lua functions
         -- math
         "abs",
         "ceil",
@@ -1869,13 +1788,14 @@ function ns.primeTooltipColors()
         "sort",
         "tinsert",
         "tremove",
-        "wipe"
-    )
+        "wipe" )
 end
+
 
 local SpaceLeft = {"(%()"}
 local SpaceRight = {"(%))"}
 local DoubleSpace = {"(!=)", "(~=)", "(>=*)", "(<=*)", "(&)", "(||)", "(+)", "(*)", "(-)", "(/)"}
+
 
 local function Format(Code)
     for Index = 1, #SpaceLeft do
@@ -1895,7 +1815,7 @@ local function Format(Code)
     return Code
 end
 
-function Hekili:ShowDiagnosticTooltip(q)
+function Hekili:ShowDiagnosticTooltip( q )
     local tt = ns.Tooltip
     local fmt = ns.lib.Format
 

@@ -4,16 +4,18 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local class = ns.class
-local scripts = ns.scripts
-local state = ns.state
+local class = Hekili.Class
+local scripts = Hekili.Scripts
+local state = Hekili.State
 
-local format = string.format
-local match = string.match
+local format, lower, match, upper = string.format, string.lower, string.match, string.upper
+local insert, wipe = table.insert, table.wipe
 
 local callHook = ns.callHook
-local restoreDefaults = ns.restoreDefaults
 local getSpecializationID = ns.getSpecializationID
+
+local GetResourceKey = ns.GetResourceKey
+local SpaceOut = ns.SpaceOut
 
 local escapeMagic = ns.escapeMagic
 local fsub = ns.fsub
@@ -33,7 +35,7 @@ do
     -- Generate encounter DB.
     local function GenerateEncounterDB()
         local active = EJ_GetCurrentTier()
-        table.wipe( db )
+        wipe( db )
 
         for t = 1, EJ_GetNumTiers() do
             EJ_SelectTier( t )
@@ -55,34 +57,9 @@ do
 
     GenerateEncounterDB()
 
-    --[[
-    function Hekili:GenerateInterruptOptions()
-        local o = {
-            name = "Interrupts",
-            type = "group",
-            childGroups = "tree",
-            order = 25,
-            args = {
-                whitelist = {
-                    type = "group",
-                    inline = true,
-                    order = 1,
-                    args = {
-                        info = {
-                            type = "description",
-                            name = "Here are the whitelisted abilities"
-                        }
-                    },
-                    plugins = {
-                        -- we'll autopopulate this.
-                    },
-                }
-            }
-        }
-
-        return o
-    end ]]
-
+    function Hekili:GetEncounterList()
+        return db
+    end
 end
 
 
@@ -112,232 +89,19 @@ local defaultAPLs = {
 
 -- One Time Fixes
 local oneTimeFixes = {
-    turnOffDebug_04162017 = function( profile )
-        profile.Debug = nil
-    end,
-    
-    attachDefaultAPLs_04022017 = function( profile )
-        for dID, display in ipairs( profile.displays ) do
-            local APLs = defaultAPLs[ display.Name ]
-            
-            if APLs then
-                local precombat, default = 0, 0
-                
-                for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                    if list.Name == APLs[1] then precombat = i end
-                    if list.Name == APLs[2] then default = i end
-                end
-                
-                if precombat > 0 and display.precombatAPL == 0 then display.precombatAPL = precombat end
-                if default > 0 and display.defaultAPL == 0 then display.defaultAPL = default end
-            end
-        end
-    end,
-    
-    setDisplayTypes_04022017 = function( profile )
-        for d, display in ipairs( profile.displays ) do
-            if display.Name:match( "Primary" ) then
-                display.displayType = 'a'
-                display.showST = true
-                display.showAE = true
-                display.showAuto = true
-            elseif display.Name:match( "AOE" ) then
-                display.displayType = 'c'
-                display.showST = true
-                display.showAE = false
-                display.showAuto = false
-            end
-        end
-    end,
-    
-    removeActionListEnabled_04102017 = function( profile )
-        for a, list in ipairs( profile.actionLists ) do
-            list.Enabled = nil
-        end
-    end,
-    
-    removeExtraQuotes_04142017_3 = function( profile )
-        for a, list in ipairs( profile.actionLists ) do
-            for _, entry in ipairs( list.Actions ) do
-                if entry.ModName then entry.ModName = entry.ModName:gsub( [["(.*)"]], [[%1]] ) end
-            end
-        end
-    end,
-    
-    spruceUpActionListNames_04162017 = function( profile )
-        for _, list in ipairs( profile.actionLists ) do
-            for _, entry in ipairs( list.Actions ) do
-                if entry.Args and entry.Args:match( "name=" ) then
-                    if entry.Ability == 'variable' and not entry.ModVarName then
-                        entry.ModVarName = entry.Args:match( [[name="(.-)"]] )
-                    else
-                        entry.ModName = entry.Args:match( [[name="(.-)"]] )
-                    end
-                end
-            end
-        end
-    end,
-
-    dontDisableGlobalCooldownYouFools_05232017 = function( profile )
-        profile.blacklist.global_cooldown = nil
-    end,
-
-    useNewAPLsForDemonHunters_06132017_1 = function( profile )
-        local APL
-
-        for idx, list in ipairs( profile.actionLists ) do
-            if list.Name == "Icy Veins: Default" then
-                APL = idx
+    refreshForBfA = function( p )
+        for k, v in pairs( p.displays ) do
+            if type( k ) == 'number' then
+                p.displays[ k ] = nil
             end
         end
 
-        if APL then
-            for _, display in ipairs( profile.displays ) do
-                if display.Name == "Havoc Primary" or display.Name == "Havoc AOE" then
-                    display.precombatAPL = APL
-                    display.defaultAPL = APL
-                end
-            end
-        end
-    end,
-
-    forceRetToRefreshAPLsFor730_09012017 = function( profile )
-        if state.class.file == "PALADIN" then
-            local exists = {}
-            
-            for i, list in ipairs( profile.actionLists ) do
-                exists[ list.Name ] = i
-            end
-            
-            for i, default in ipairs( class.defaults ) do
-                if default.type == 'actionLists' then
-                    local index = exists[ default.name ] or #profile.actionLists + 1
-                    
-                    local import = ns.deserializeActionList( default.import )
-                    
-                    if import and type( import ) ~= 'string' then
-                        profile.actionLists[ index ] = import
-                        profile.actionLists[ index ].Name = default.name
-                        profile.actionLists[ index ].Release = default.version
-                        profile.actionLists[ index ].Default = true
-                    end
-                end
-            end
-            
-            ns.loadScripts()
-        end
-    end,
-
-    disableTrinketsForMonks_10102017 = function( profile )
-        if state.class.file == "MONK" then
-            profile.trinkets = profile.trinkets or {}
-            profile.trinkets.vial_of_ceaseless_toxins = profile.trinkets.vial_of_ceaseless_toxins or {}
-            profile.trinkets.vial_of_ceaseless_toxins.disabled = true
-            profile.trinkets.umbral_moonglaives = profile.trinkets.umbral_moonglaives or {}
-            profile.trinkets.umbral_moonglaives.disabled = true
-        end
-    end,
-
-    disableSpecterForPaladins_10102017 = function( profile )
-        if state.class.file == "PALADIN" then
-            profile.trinkets = profile.trinkets or {}
-            profile.trinkets.specter_of_betrayal = profile.trinkets.specter_of_betrayal or {}
-            profile.trinkets.specter_of_betrayal.disabled = true
-        end
-    end,
-
-    changeSwipesToSwipe_11052017 = function( profile )
-        for listID, list in ipairs( profile.actionLists ) do
-            for entryID, entry in ipairs( list.Actions ) do
-                if entry.Ability == "swipe_bear" or entry.Ability == "swipe_cat" then entry.Ability = "swipe" end
-            end
-        end
-    end,
-
-    --[[ changeIncarnation_11052017 = function( profile )
-        for listID, list in ipairs( profile.actionLists ) do
-            for entryID, entry in ipairs( list.Actions ) do
-                if entry.Ability == "incarnation" then entry.Ability = "incarnation_king_of_the_jungle" end
-            end
-        end
-    end, ]]
-
-    changeThrashCatToThrash_11062017 = function( profile )
-        for listID, list in ipairs( profile.actionLists ) do
-            for entryID, entry in ipairs( list.Actions ) do
-                if entry.Ability == "thrash_cat" or entry.Ability == "thrash_bear" then entry.Ability = "thrash" end
-            end
-        end
-    end,
-
-    undoIncarnationNameChange_12042017 = function( profile )
-        for listID, list in ipairs( profile.actionLists ) do
-            for entryID, entry in ipairs( list.Actions ) do
-                if entry.Ability == "incarnation_king_of_the_jungle" then entry.Ability = "incarnation" end
-            end
-        end
-    end,        
-
-    elementalSimpleAOEis3_12132017 = function( profile )
-        for dispID, display in ipairs( profile.displays ) do
-            if display.Name == "Elemental AOE" and display.simpleAOE == 2 then
-                display.simpleAOE = 3
-            end
-        end
-    end,
-
-    reduceExtremeZoom_12182017 = function( profile )
-        for dispID, display in ipairs( profile.displays ) do
-            if display.iconZoom > 50 then display.iconZoom = 30 end
-        end        
-    end,
-
-    changeGuardianAPLToSimC_2018012102 = function( profile )
-        if state.class.file == "DRUID" then
-            for dID, display in ipairs( profile.displays ) do
-                if display.Name == "Guardian Primary" then
-                    local precombatName = "SimC Guardian: precombat"
-                    local defaultName   = "SimC Guardian: default"
-
-                    local precombat, default = 0, 0
-                    
-                    for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                        if list.Name == precombatName then precombat = i end
-                        if list.Name == defaultName   then default   = i end
-                    end
-                    
-                    if precombat > 0 then display.precombatAPL = precombat end
-                    if default > 0   then display.defaultAPL   = default end
-                end
-            end
-        end
-    end,
-
-    changeBrewmasterAPLToSimC_20180121 = function( profile )
-        if state.class.file == "MONK" then
-            for dID, display in ipairs( profile.displays ) do
-                if display.Name == "Brewmaster Primary" or display.Name == "Brewmaster AOE" then
-                    local precombatName = "SimC Brewmaster: precombat"
-                    local defaultName   = "SimC Brewmaster: default"
-
-                    local precombat, default = 0, 0
-                    
-                    for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                        if list.Name == precombatName then precombat = i end
-                        if list.Name == defaultName   then default   = i end
-                    end
-                    
-                    if precombat > 0 then display.precombatAPL = precombat end
-                    if default > 0   then display.defaultAPL   = default end
-                end
-            end
-        end
+        p.actionLists = nil
     end,
 }
 
 
-function ns.runOneTimeFixes()
-    
+function Hekili:RunOneTimeFixes()   
     local profile = Hekili.DB.profile
     if not profile then return end
     
@@ -353,195 +117,369 @@ function ns.runOneTimeFixes()
 end
 
 
+-- Display Controls
+--    Single Display -- single vs. auto in one display.
+--    Dual Display   -- single in one display, aoe in another.
+--    Hybrid Display -- automatic in one display, can toggle to single/AOE.
 
 local displayTemplate = {
-    Enabled = true,
-    Default = false,
-    
-    displayType = 'd', -- Automatic
-    simpleAOE = 2,
-    
-    quickVisStyle = 'a', -- Primary
-    showSwitchAuto = true,
-    showSwitchAE = true,
-    showST = true,
-    showAE = true,
-    showAuto = true,
-    
-    minST = 0,
-    minAE = 3,
-    minAuto = 0,
-    
-    maxST = 1,
-    maxAE = 0,
-    maxAuto = 0,
-    
-    rel = "CENTER",
-    x = 0,
-    y = -225,
-    
+    enabled = true,
+
     numIcons = 4,
-    queueAnchor = 'RIGHT',
-    queueDirection = 'RIGHT',
-    queueStyle = "RIGHT",
-    queueAlignment = 'c',
-    primaryIconWidth = 50,
-    primaryIconHeight = 50,
-    queuedIconWidth = 50,
-    queuedIconHeight = 50,
-    KeepAspectRatio = true,
-    queueAnchorOffset = 5,
-    iconSpacing = 5,
-    iconZoom = 30,
-    iconBorder = true,
-    iconBorderColor = { r = 0, g = 0, b = 0, a = 1 },
 
-    -- Stuff for the autoconverter.
-    xyConverted = true,
-    ZoomConverted = true,
-    LastConversion = 20180114.2,
-    -- End autoconverter.
-    
+    primaryWidth = 50,
+    primaryHeight = 50,
+
+    keepAspectRatio = true,
+    zoom = 30,
+
     font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
-    primaryFontSize = 14,
-    queuedFontSize = 14,
-    
-    rangeCheck = true,
-    rangeType = 'ability',
-    
-    blizzGlow = false,
-    blizzGlowAll = false,
-    
-    spellFlash = false,
-    spellFlashColor = { r = 1, g = 1, b = 1, a = 1 },
-    
-    showCaptions = false,
-    queuedCaptions = true,
-    captionFont = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
-    captionFontSize = 14,
-    captionFontStyle = 'OUTLINE',
-    captionAlign = 'CENTER',
-    captionAnchor = 'BOTTOM',
-    xOffsetCaptions = 0,
-    yOffsetCaptions = 0,
-    -- capLayer = 0,
-    
-    showIndicators = true,
-    queuedIndicators = true,
-    indicatorAnchor = 'RIGHT',
-    xOffsetIndicators = 0,
-    yOffsetIndicators = 0,
-    -- indLayer = 0,
-    
-    showTargets = true,
-    targetFont = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
-    targetFontSize = 14,
-    targetFontStyle = 'OUTLINE',
-    targetAnchor = 'BOTTOMRIGHT',
-    xOffsetTargets = 0,
-    yOffsetTargets = 0,
-    -- countLayer = 0,
-    
-    showAuraInfo = false,
-    auraInfoType = 'buff',
-    auraSpellID = 0,
-    auraUnit = 'player',
-    auraType = 'buff',
-    auraMine = true,
-    auraAnchor = 'BOTTOMLEFT',
-    xOffsetAura = 0,
-    yOffsetAura = 0,
-    -- auraLayer = 0,
+    fontSize = 12,
+    fontStyle = "OUTLINE",
 
-    showDelay = "TEXT",
-    delayFont = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
-    delayFontSize = 14,
-    delayFontStyle = 'OUTLINE',
-    delayAnchor = 'TOPLEFT',
-    xOffsetDelay = 0,
-    yOffsetDelay = 0,
+    queue = {
+        anchor = 'RIGHT',
+        direction = 'RIGHT',
+        style = 'RIGHT',
+        alignment = 'CENTER',
+        
+        width = 50,
+        height = 50,
+
+        anchorOffset = 5,
+        spacing = 5,
+        
+        font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+        fontSize = 12,
+        fontStyle = "OUTLINE"
+    },
+
+    visibility = {
+        advanced = false,
+
+        mode = { 
+            automatic = true,
+            dual = true,
+        },
+        
+        pve = {
+            alpha = 1,
+            always = 1,
+            target = 1,
+            combat = 1,
+        },
+
+        pvp = {
+            alpha = 1,
+            always = 1,
+            target = 1,
+            combat = 1,
+        },
+    },
+
+    border = {
+        enabled = true,
+        color = { 0, 0, 0, 1 },
+    },
+
+    range = {
+        enabled = true,
+        type = 'ability',
+    },
+
+    glow = {
+        enabled = false,
+        queued = false,
+    },
+
+    flash = {
+        enabled = false,
+        color = { 255/255, 215/255, 0, 1 }, -- gold.
+    },
+
+    captions = {
+        enabled = false,
+        queued = false,
+        
+        align = "CENTER",
+        anchor = "BOTTOM",
+        x = 0,
+        y = 0,
+
+        font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+        fontSize = 12,
+        fontStyle = "OUTLINE"
+    },
+
+    indicators = {
+        enabled = true,
+        queued = true,
+
+        anchor = "RIGHT",
+        x = 0,
+        y = 0,
+    },
+
+    targets = {
+        enabled = true,
+
+        font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+        fontSize = 12,
+        fontStyle = "OUTLINE",
+
+        anchor = "BOTTOMRIGHT",
+        x = 0,
+        y = 0,
+    },
+
+    delays = {
+        type = "TEXT",
+
+        font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+        fontSize = 12,
+        fontStyle = "OUTLINE",
+
+        anchor = "TOPLEFT",
+        x = 0,
+        y = 0,
+    },
+
+    keybindings = {
+        enabled = true,
+        queued = true,
+
+        font = ElvUI and "PT Sans Narrow" or "Arial Narrow",
+        fontSize = 12,
+        fontStyle = "OUTLINE",
+
+        lowercase = false,
+
+        anchor = "TOPRIGHT",
+        x = 1,
+        y = -1,
+    },
+
+}
+
+
+local actionTemplate = {
+    enabled = true,
+    action = "wait",
+    criteria = "",
+    caption = "",
+
+    -- Shared Modifiers
+    chain = 0,  -- NYI
+    early_chain_if = "",  -- NYI
+
+    cycle_targets = 0,
+    max_cycle_targets = 3,
+
+    interrupt = 0,  --NYI
+    interrupt_if = "",  --NYI
+    interrupt_immediate = 0,  -- NYI
+
+    travel_speed = nil,
+
+    line_cd = 0,
+    moving = 0,
+    sync = "",
+
+    wait_on_ready = 0, -- NYI
     
-    visibilityType = 'b',
+    -- Call/Run Action List
+    list_name = "default",
     
-    showPvE = true,
-    alphaShowPvE = 1,
+    -- Pool Resource
+    wait = "0.5",
+    for_next = 1,
+    extra_amount = "0",
     
-    showPvP = true,
-    alphaShowPvP = 1,
-    
-    alwaysPvE = true,
-    alphaAlwaysPvE = 1,
-    targetPvE = false,
-    alphaTargetPvE = 1,
-    combatPvE = false,
-    alphaCombatPvE = 1,
-    
-    alwaysPvP = true,
-    alphaAlwaysPvP = 1,
-    targetPvP = false,
-    alphaTargetPvP = 1,
-    combatPvP = false,
-    alphaCombatPvP = 1,
-    
-    showKeybindings = true,
-    queuedKBs = true,
-    kbFont = ElvUI and "PT Sans Narrow" or "Arial",
-    kbFontStyle = "OUTLINE",
-    kbFontSize = 14,
-    kbAnchor = "TOPRIGHT",
-    xOffsetKBs = 1,
-    yOffsetKBs = -1,
-    
-    precombatAPL = 0,
-    defaultAPL = 0
-    
+    -- Potion
+    potion = "default",
+
+    -- Variable
+    op = "set",
+    condition = "",
+    value = "",
+    value_else = "",
+    var_name = "unnamed",
+
+    -- Wait
+    sec = 1,
+}
+
+
+local packTemplate = {
+    spec = 0,
+    builtIn = false,
+
+    author = UnitName("player"),
+    desc = "This is a package of action lists for Hekili.",
+    source = "",
+    date = date("%Y-%m-%d %H:%M"),
+
+    lists = {
+        precombat = {
+        },
+        default = {
+        },
+    }
 }
 
 
 -- Default Table
 function Hekili:GetDefaults()
     local defaults = {
+        global = {
+            styles = {},
+        },
+
         profile = {
-            Version = 7,
-            Release = 20170300,
-            Legion = true,
-            Enabled = true,
-            MinimapIcon = false,
+            enabled = true,
+            minimapIcon = false,
 
-            Artifact = true,
-            CooldownArtifact = true,
+            toggles = {
+                pause = {
+                    key = "ALT-SHIFT-P",
+                },
 
-            moreCPU = false,
+                snapshot = {
+                    key = "ALT-SHIFT-[",                    
+                },
+
+                mode = {
+                    key = "ALT-SHIFT-N",
+                    value = "automatic",
+                },
+
+                cooldowns = {
+                    key = "ALT-SHIFT-R",
+                    value = false,
+                    override = false,
+                },
+
+                defensives = {
+                    key = "ALT-SHIFT-T",
+                    value = false,
+                    separate = false,
+                },
+
+                potions = {
+                    key = "",
+                    value = false,
+                },
+
+                interrupts = {
+                    key = "ALT-SHIFT-I",
+                    value = false,
+                    separate = false,
+                },
+            },
             
-            ['Switch Type'] = 0,
-            ['Mode Status'] = 3,
-            Interrupts = false,
+            specs = {
+                ['**'] = {},
+            },
+
+            packs = {
+                ['**'] = packTemplate
+            },                       
             
-            Clash = 0,
-            ['Audit Targets'] = 6,
-            ['Count Nameplate Targets'] = true,
-            ['Nameplate Detection Range'] = 8,
-            ['Count Targets by Damage'] = false,
-            
-            ['Notification Enabled'] = true,
-            ['Notification Font'] = 'Arial Narrow',
-            ['Notification X'] = 0,
-            ['Notification Y'] = 0,
-            ['Notification Width'] = 600,
-            ['Notification Height'] = 40,
-            ['Notification Font Size'] = 20,
-            
+            notifications = {
+                enabled = true,
+
+                x = 0,
+                y = 0,
+                
+                font = ElvUI and "Expressway" or "Arial Narrow",
+                fontSize = 20,
+                fontStyle = "OUTLINE",
+
+                width = 600,
+                height = 40,
+            },
+
             displays = {
-                ['**'] = displayTemplate,
+                Primary = {
+                    enabled = true,
+                    builtIn = true,
+
+                    name = "Primary",
+
+                    x = 0,
+                    y = -225,
+                
+                    numIcons = 4,
+                    order = 1,
+
+                    flash = {
+                        color = { 1, 0, 0, 1 },
+                    },                    
+                },
+
+                AOE = {
+                    enabled = true,
+                    builtIn = true,
+
+                    name = "AOE",
+                    
+                    x = 0,
+                    y = -170,
+
+                    numIcons = 4,
+                    order = 2,
+
+                    flash = { 
+                        color = { 0, 1, 0, 1 },
+                    },
+                },
+
+                Defensives = {
+                    enabled = true,
+                    builtIn = true,
+
+                    name = "Defensives",
+                    filter = 'defensives',
+
+                    x = -110,
+                    y = -225,
+
+                    numIcons = 1,
+                    order = 3,
+
+                    flash = {
+                        color = { 0, 0, 1, 1 },
+                    },
+                },
+
+                Interrupts = {
+                    enabled = true,
+                    builtIn = true,
+
+                    name = "Interrupts",
+                    filter = 'interrupts',
+
+                    x = -55,
+                    y = -225,
+
+                    numIcons = 1,
+                    order = 4,
+
+                    flash = {
+                        color = { 1, 1, 1, 1 },
+                    },
+                },
+                
+                ['**'] = displayTemplate
             },
-            actionLists = {
-            },
+
+            -- STILL NEED TO REVISE.
+            Clash = 0,
+            -- (above)
+                       
             runOnce = {
             },
             
-            
-            toggles = {
-            },
             blacklist = {
             },
             clashes = {
@@ -568,3472 +506,1675 @@ function Hekili:GetDefaults()
     return defaults
 end
 
--- DISPLAYS
--- Add a display to the profile (to be stored in SavedVariables).
-function ns.newDisplay( name )
-    
-    if not name then
-        return nil
+
+do
+    local shareDB = {
+        displays = {},
+        styleName = "",
+        export = "",
+        exportStage = 0,
+
+        import = "",
+        imported = {},
+        importStage = 0
+    }
+
+    function Hekili:GetDisplayShareOption( info )
+        local n = #info
+        local option = info[ n ]
+
+        if shareDB[ option ] then return shareDB[ option ] end
+        return shareDB.displays[ option ]
     end
-    
-    for i,v in ipairs( Hekili.DB.profile.displays ) do
-        if v.Name == name then
-            ns.Error( "newDisplay() - display '" .. name .. "' already exists." )
-            return nil
-        end
+
+
+    function Hekili:SetDisplayShareOption( info, val, v2, v3, v4 )
+        local n = #info
+        local option = info[ n ]
+
+        if type(val) == 'string' then val = val:trim() end
+        if shareDB[ option ] then shareDB[ option ] = val; return end
+
+        shareDB.displays[ option ] = val
+        shareDB.export = ""
     end
-    
-    local index = #Hekili.DB.profile.displays + 1
-    
-    -- FIX: REPLACE HEARTBEAT
-    if not Hekili[ 'ProcessDisplay'..index ] then
-        Hekili[ 'ProcessDisplay'..index ] = function()
-            Hekili:ProcessHooks( index )
-        end
-    end
-    
-    local display = {}
-    
-    display.Release = date("%Y%m%d.1")
-    display.Name = name
-    display.Specialization = getSpecializationID()
-    
-    for k,v in pairs( displayTemplate ) do
-        display[k] = v
-    end
-    
-    Hekili.DB.profile.displays[ index ] = display
-    
-    return ( 'D' .. index ), index
-    
-end
 
+    -- Display Config.
+    function Hekili:GetDisplayOption( info )
+        local n = #info
+        local display, category, option = info[ 2 ], info[ 3 ], info[ n ]
 
-local displayKeyMap = {
-    ['Icons Shown'] = 'numIcons',
-    ['Queue Direction'] = 'queueDirection',
-    ['Queue Alignment'] = 'queueAlignment',
-    
-    ['PvE - Default'] = 'alwaysPvE',
-    ['PvE - Default Alpha'] = 'alphaAlwaysPvE',
-    ['PvE - Target'] = 'targetPvE',
-    ['PvE - Target Alpha'] = 'alphaTargetPvE',
-    ['PvE - Combat'] = 'combatPvE',
-    ['PvE - Combat Alpha'] = 'alphaCombatPvE',
-    
-    ['PvP - Default'] = 'alwaysPvP',
-    ['PvP - Default Alpha'] = 'alphaAlwaysPvP',
-    ['PvP - Target'] = 'targetPvP',
-    ['PvP - Target Alpha'] = 'alphaTargetPvP',
-    ['PvP - Combat'] = 'combatPvP',
-    ['PvP - Combat Alpha'] = 'alphaCombatPvP',
-    
-    ['Auto - Minimum'] = 'minAuto',
-    ['Auto - Maximum'] = 'maxAuto',
-    ['Single - Minimum'] = 'minST',
-    ['Single - Maximum'] = 'maxST',
-    ['AOE - Minimum'] = 'minAE',
-    ['AOE - Maximum'] = 'maxAE',
-    
-    ['Use SpellFlash'] = 'spellFlash',
-    ['SpellFlash Color'] = 'spellFlashColor',
-    
-    ['Action Captions'] = 'showCaptions',
-    -- Primary Caption
-    -- Primary Caption Aura
-    
-    ['Font'] = 'font',
-    ['Primary Icon Size'] = 'primaryIconSize',
-    ['Primary Font Size'] = 'primaryFontSize',
-    ['Queued Icon Size'] = 'queuedIconSize',
-    ['Queued Font Size'] = 'queuedFontSize',
-    ['Spacing'] = 'iconSpacing',
-    ['Zoom'] = 'iconZoom',
-    ['Overlay'] = 'blizzGlow',
-    ['Show Keybindings'] = 'showKeybindings',
-    -- ['Keybinding Style'] -- upper vs. lowercase
-    
-    ['Range Checking'] = 'rangeType'
-}
-
-
-local function convertDisplay( id )
-    local display = Hekili.DB.profile.displays[ id ]   
-    if not display then return end
-
-    if not display.LastConversion or display.LastConversion < 20180114.3 then
-        for key, newKey in pairs( displayKeyMap ) do
-            if display[ key ] ~= nil then
-                display[ newKey ] = display[ key ]
-                display[ key ] = nil
-            end
+        if category == "shareDisplays" then
+            return self:GetDisplayShareOption( info )
         end
 
-        if not display.primaryIconHeight then display.primaryIconHeight = display.primaryIconSize end
-        if not display.primaryIconWidth  then display.primaryIconWidth  = display.primaryIconSize end
-        if not display.queuedIconHeight  then display.queuedIconHeight  = display.queuedIconSize end
-        if not display.queuedIconWidth   then display.queuedIconWidth   = display.queuedIconSize end
-        if not display.queueAnchor       then display.queueAnchor       = display.queueDirection end
-        if not display.queueAnchorOffset then display.queueAnchorOffset = display.iconSpacing end
-
-        display.LastConversion = 20180114.3
-    end
-
-    if not display.ZoomConverted then
-        display.iconZoom = display.iconZoom * 2
-        display.ZoomConverted = true
-    end
-
-    if not display.xyConverted then
-        local icons = display.numIcons - 1
-
-        -- The old X/Y was from the center of the display.  The new X/Y is from the center of the primary icon.
-        if display.queueDirection == "RIGHT" then
-            local xOffset = 0.5 * icons * ( display.iconSpacing + display.queuedIconWidth )
-            display.x = floor( display.x - xOffset )
-
-        elseif display.queueDirection == "LEFT" then
-            local xOffset = 0.5 * icons * ( display.iconSpacing + display.queuedIconWidth )
-            display.x = floor( display.x + xOffset )
-
-        elseif display.queueDirection == "TOP" then
-            local yOffset = 0.5 * icons * ( display.iconSpacing + display.queuedIconHeight )
-            display.y = floor( display.y - yOffset )
-
-        else
-            local yOffset = 0.5 * icons * ( display.iconSpacing + display.queuedIconHeight )
-            display.y = floor( display.y + yOffset )
+        local conf = self.DB.profile.displays[ display ]
+        if category ~= option and category ~= 'main' then
+            conf = conf[ category ]
         end
 
-        display.xyConverted = true
+        if option == 'color' then return unpack( conf.color ) end
+        if option == 'name' then return display end
+        return conf[ option ]
     end
 
-    for k, v in pairs( displayTemplate ) do
-        if display[ k ] == nil then display[ k ] = v end
+    function Hekili:SetDisplayOption( info, val, v2, v3, v4 )
+        local n = #info
+        local display, category, option = info[ 2 ], info[ 3 ], info[ n ]
+        local set = false
+
+        if category == "shareDisplays" then
+            self:SetDisplayShareOption( info, val, v2, v3, v4 )
+            return
+        end
+
+        local conf = self.DB.profile.displays[ display ]
+        if category ~= option and category ~= 'main' then conf = conf[ category ] end
+
+        if option == 'color' then
+            conf.color = { val, v2, v3, v4 }
+            set = true
+        end
+
+        if not set then 
+            val = type( val ) == 'string' and val:trim() or val
+            conf[ option ] = val 
+        end
+
+        self:BuildUI()
     end
-end
 
 
-function ns.convertDisplays()
-    for i in ipairs( Hekili.DB.profile.displays ) do
-        convertDisplay( i )
+    local function GetNotifOption( info )
+        local n = #info
+        local option = info[ n ]
+
+        local conf = Hekili.DB.profile.notifications
+
+        return conf[ option ]
     end
-end
 
+    local function SetNotifOption( info, val )
+        local n = #info
+        local option = info[ n ]
 
-local displayOptionInfo = {
-    displays = {},
-    lists = {},
-    
-    quickStyle = 'z',
-    quickVisStyle = 'z',
-    
-    templates = {
-        a = {
-            numIcons = 4,
-            primaryIconHeight = 50,
-            primaryIconWidth = 50,
-            queuedIconHeight = 50,
-            queuedIconWidth = 50,
-            queueAnchor = "RIGHT",
-            queueDirection = "RIGHT"
+        local conf = Hekili.DB.profile.notifications
+
+        conf[ option ] = val
+        Hekili:BuildUI()
+    end
+
+    local ACD = LibStub( "AceConfigDialog-3.0" )
+    local LSM = LibStub( "LibSharedMedia-3.0" )
+    local SF = SpellFlash or SpellFlashCore
+
+    local fontStyles = {
+        ["MONOCHROME"] = "Monochrome",
+        ["MONOCHROME,OUTLINE"] = "Monochrome, Outline",
+        ["MONOCHROME,THICKOUTLINE"] = "Monochrome, Thick Outline",
+        ["NONE"] = "None",
+        ["OUTLINE"] = "Outline",
+        ["THICKOUTLINE"] = "Thick Outline"
+    }
+
+    local fontElements = {
+        font = {
+            type = "select",
+            name = "Font",
+            order = 1,
+            width = "double",
+            dialogControl = 'LSM30_Font',
+            values = LSM:HashTable("font"),
         },
-        b = {
-            numIcons = 5,
-            primaryIconHeight = 50,
-            primaryIconWidth = 50,
-            queuedIconHeight = 40,
-            queuedIconWidth = 40,
-            queueAnchor = "RIGHT",
-            queueDirection = "RIGHT"
+
+        fontSize = {
+            type = "range",
+            name = "Size",
+            order = 2,
+            min = 8,
+            max = 64,
+            step = 1,
         },
-        c = {
-            numIcons = 2,
-            primaryIconHeight = 50,
-            primaryIconWidth = 50,
-            queuedIconHeight = 25,
-            queuedIconWidth = 25,
-            queueAnchor = 'TOP',
-            queueDirection = "TOP"
-        },
-        d = {
-            numIcons = 1,
-            primaryIconHeight = 50,
-            primaryIconWidth = 50,
-            queueAnchor = "RIGHT",
-            queueDirection = "RIGHT"
-        },
-        e = {
-            numIcons = 1,
-            primaryIconHeight = 50,
-            primaryIconWidth = 80,
-            KeepAspectRatio = true,
-            queueAnchor = "RIGHT",
-            queueDirection = "RIGHT"
-        },
-        f = {
-            numIcons = 3,
-            primaryIconHeight = 65,
-            primaryIconWidth = 95,
-            iconSpacing = 5,
-            queuedIconHeight = 30,
-            queuedIconWidth = 45,
-            KeepAspectRatio = true,
-            queueAnchor = "BOTTOMLEFT",
-            queueDirection = "RIGHT"
-        },
-        g = {
-            numIcons = 4,
-            primaryIconHeight = 100,
-            primaryIconWidth = 65,
-            iconSpacing = 5,
-            queuedIconHeight = 30,
-            queuedIconWidth = 35,
-            KeepAspectRatio = true,
-            queueAnchor = "RIGHTTOP",
-            queueDirection = "BOTTOM"
-        },
-        h = {
-            numIcons = 3,
-            primaryIconHeight = 60,
-            primaryIconWidth = 40,
-            iconSpacing = 5,
-            queuedIconHeight = 60,
-            queuedIconWidth = 30,
-            KeepAspectRatio = true,
-            queueAnchor = "RIGHT",
-            queueDirection = "RIGHT"
-        },
-        i = {
-            numIcons = 4,
-            primaryIconHeight = 60,
-            primaryIconWidth = 60,
-            iconSpacing = 5,
-            queuedIconHeight = 60,
-            queuedIconWidth = 30,
-            KeepAspectRatio = true,
-            queueAnchor = "RIGHT",
-            queueDirection = "RIGHT",            
-        },
-        j = {
-            numIcons = 3,
-            primaryIconHeight = 60,
-            primaryIconWidth = 60,
-            iconSpacing = 5,
-            queuedIconHeight = 25,
-            queuedIconWidth = 60,
-            KeepAspectRatio = true,
-            queueAnchor = "BOTTOM",
-            queueDirection = "BOTTOM"
+
+        fontStyle = {
+            type = "select",
+            name = "Style",
+            order = 3,
+            values = fontStyles,
         }
-    },
-    
-    visTemplates = {
-        a = {
-            showST = true,
-            showAE = true,
-            showAuto = true,
-            showSwitchAE = true,
-            showSwitchAuto = true
-        },
-        b = {
-            showST = true,
-            showAE = false,
-            showAuto = false,
-            showSwitchAE = false,
-            showSwitchAuto = true
-        },
-    },
-    
-    iconOffset = 40
-}
+    }
+
+    local anchorPositions = {
+        TOP = 'Top',
+        TOPLEFT = 'Top Left',
+        TOPRIGHT = 'Top Right',
+        BOTTOM = 'Bottom',
+        BOTTOMLEFT = 'Bottom Left',
+        BOTTOMRIGHT = 'Bottom Right',
+        LEFT = 'Left',
+        LEFTTOP = 'Left Top',
+        LEFTBOTTOM = 'Left Bottom',
+        RIGHT = 'Right',
+        RIGHTTOP = 'Right Top',
+        RIGHTBOTTOM = 'Right Bottom',
+    }
 
 
-function Hekili:GetDisplayOption( info )
-    
-    local n = #info
-    local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
-    local option = info[n]
-    
-    local display = dispID and self.DB.profile.displays[ dispID ]
-    
-    if not display then return end
-    
-    if option == 'auraSpellID' then
-        return tostring( display[ option ] )
-        
-    elseif option == 'quickStyle' then
-        return displayOptionInfo.quickStyle
-        
-    elseif option == 'quickVisStyle' then
-        return display.quickVisStyle
-        
-    end
-    
-    return display[ option ]
-    
-end
+    local function getOptionTable( info, notif )
+        local disp = info[2]
+        local tab = Hekili.Options.args.displays
 
-
-function Hekili:SetDisplayOption( info, val )
-    
-    local n = #info
-    local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
-    local option = info[n]
-    
-    local display = dispID and self.DB.profile.displays[ dispID ]
-    
-    if not display then return end
-    
-    if option == 'x' or option == 'y' then
-        display[ option ] = tonumber( val )
-        ns.buildUI()
-        return
-        
-    elseif option == 'auraSpellID' then
-        local nVal = tonumber( val:trim() )
-        local sVal = tostring( nVal )
-        
-        if val == sVal then
-            -- We were given a spell ID.
-            if GetSpellInfo( nVal ) then
-                display[ option ] = nVal
-            else
-                display[ option ] = 0
-            end
-            
+        if notif then
+            tab = tab.args.nPanel
         else
-            -- We were given a spell's name.
-            if GetSpellInfo( val ) then
-                display[ option ] = val
-            else
-                display[ option ] = 0
-            end
-            
+            tab = tab.plugins[ disp ][ disp ]
         end
-        return
-        
-    elseif option == 'quickStyle' then
-        if val ~= 'z' then
-            for k, v in pairs( displayOptionInfo.templates[ val ] ) do
-                display[k] = v
-            end
-            ns.buildUI()
-        end 
-        displayOptionInfo.quickStyle = val
-        return
-        
-    elseif option == 'quickVisStyle' then
-        if val ~= 'z' then
-            for k, v in pairs( displayOptionInfo.visTemplates[ val ] ) do
-                display[k] = v
-            end
-            ns.buildUI()
+
+        for i = 3, #info do
+            tab = tab.args[ info[i] ]
         end
-        display.quickVisStyle = val
-        return
+
+        return tab
+    end
+
+    local function rangeXY( info, notif )
+        local tab = getOptionTable( info, notif )
+
+        local monitor = ( tonumber( GetCVar( 'gxMonitor' ) ) or 0 ) + 1
+        local resolutions = { GetScreenResolutions() }
+        local resolution = resolutions[ GetCurrentResolution() ] or GetCVar( "gxWindowedResolution" )
+        local width, height = resolution:match( "(%d+)x(%d+)" )       
+
+        tab.args.x.min = -1 * width * 0.5
+        tab.args.x.max = width * 0.5
+
+        tab.args.y.min = -1 * height * 0.5
+        tab.args.y.max = height * 0.5
+    end
+
+
+    local function rangeIcon( info )
+        local tab = getOptionTable( info )
+
+        local display = info[2]
+        local data = display and Hekili.DB.profile.displays[ display ]
         
-    end
-    
-    display[ option ] = val
-    
-end
+        if data then
+            tab.args.x.min = -1 * max( data.primaryWidth, data.queue.width )
+            tab.args.x.max = max( data.primaryWidth, data.queue.width )
 
-
--- Add a display to the options UI.
-ns.newDisplayOption = function( key )
-    
-    if not key or not Hekili.DB.profile.displays[ key ] then
-        return nil
-    end
-    
-    local dispOption = {
-        type = "group",
-        name = function(info, val)
-            if Hekili.DB.profile.displays[key].Default then
-                return "|cFF00C0FF" .. Hekili.DB.profile.displays[key].Name .. "|r"
-            end
-            return Hekili.DB.profile.displays[key].Name
-        end,
-        order = key,
-        childGroups = 'tab',
-        args = {
-            displaySettings = {
-                type = 'group',
-                name = "Display",
-                order = 0,
-                args = {
-                    Enabled = {
-                        type = 'toggle',
-                        name = 'Enabled',
-                        desc = 'Enable this display (hides the display and ignores its hooked action list(s) if unchecked).',
-                        order = 1,
-                        width = 'full'
-                    },
-                    Default = {
-                        type = 'toggle',
-                        name = '|cFF00C0FFDefault|r',
-                        desc = function(info, val)
-                            local disp = tonumber( info[2]:match("^D(%d+)") )
-                            return "This display is a default, and is updated automatically updated when the addon is updated. " ..
-                            "Unchecking this setting will prevent the addon from automatically updating this display. " ..
-                            "This cannot be undone without reloading the display.\n\n" ..
-                            "Current Version: |cFF00C0FF" .. Hekili.DB.profile.displays[ disp ].Release .. "|r" 
-                        end,
-                        order = 2,
-                        hidden = function(info, val)
-                            return not Hekili.DB.profile.displays[key].Default
-                        end,
-                        width = 'full',
-                    },
-                    ['Name'] = {
-                        type = 'input',
-                        name = 'Name',
-                        desc = 'Rename this display.',
-                        order = 5,
-                        validate = function(info, val)
-                            local key = tonumber( info[2]:match("^D(%d+)") )
-                            for i, display in pairs( Hekili.DB.profile.displays ) do
-                                if i ~= key and display.Name == val then
-                                    return "That display name is already in use."
-                                end
-                            end
-                            return true
-                        end,
-                        width = 'full',
-                    },
-                    ['Specialization'] = {
-                        type = 'select',
-                        name = 'Specialization',
-                        desc = 'Choose the talent specialization(s) for this display.',
-                        order = 10,
-                        values = function(info)
-                            local class = select(2, UnitClass("player"))
-                            if not class then return nil end
-                            
-                            local num = GetNumSpecializations()
-                            local list = {}
-                            
-                            for i = 1, num do
-                                local specID, name = GetSpecializationInfoForClassID( ns.getClassID(class), i )
-                                list[specID] = '|T' .. select( 4, GetSpecializationInfoByID( specID ) ) .. ':0|t ' .. name
-                            end
-                            
-                            list[ 0 ] = '|TInterface\\Addons\\Hekili\\Textures\\' .. class .. '.blp:0|t Any'
-                            return list
-                        end,
-                        width = 'full',
-                    },
-                    
-                    displaySpacer1 = {
-                        type = 'description',
-                        name = "\n",
-                        width = "full",
-                        order = 11
-                    },
-                    
-                    displayPos = {
-                        type = 'group',
-                        name = 'Position',
-                        order = 12,
-                        inline = true,
-                        get = 'GetDisplayOption',
-                        set = 'SetDisplayOption',
-                        args = {
-                            setupPosition = {
-                                type = 'description',
-                                name = ' ',
-                                order = 0,
-                                hidden = function( info )
-                                    local option = Hekili.Options
-                                    local display = info[2]:match( "^D(%d+)" )
-                                    
-                                    for i = 1, #info - 1 do
-                                        option = option.args[ info[i] ]
-                                    end
-                                    
-                                    option = option.args
-                                    
-                                    local monitor = ( tonumber( GetCVar( 'gxMonitor' ) ) or 0 ) + 1
-                                    local resolutions = { GetScreenResolutions() }
-                                    local resolution = resolutions[ GetCurrentResolution() ] or GetCVar( "gxWindowedResolution" )
-                                    local width, height = resolution:match( "(%d+)x(%d+)" )
-                                    
-                                    option.x.min = -width/2 or -512
-                                    option.x.max = width/2 or 512
-                                    option.y.min = -height/2 or -384
-                                    option.y.max = height/2 or 384
-                                    
-                                    return true
-                                end, 
-                            },
-                            
-                            x = {
-                                type = 'range',
-                                name = "(X)",
-                                width = "full",
-                                min = -1024,
-                                max = 1024,
-                                step = 0.1,
-                                bigStep = 1,
-                                order = 1,
-                            },
-                            y = {
-                                type = 'range',
-                                name = "(Y)",
-                                width = "full",
-                                min = -768,
-                                max = 768,
-                                step = 0.1,
-                                bigStep = 1,
-                                order = 2,
-                            },
-                        },
-                    },
-                    
-                    displaySpacer2 = {
-                        type = 'description',
-                        name = "\n",
-                        width = "full",
-                        order = 13
-                    },
-                    
-                    precombatAPL = {
-                        type = 'select',
-                        name = "Out of Combat Action List",
-                        desc = "Select the action list to be processed when you are out of combat. " ..
-                        "This generally corresponds to actions.|cFFFFD100precombat|r action lists in " ..
-                        "SimulationCraft.",
-                        order = 20,
-                        width = 'double',
-                        values = function( info )
-                            local lists = displayOptionInfo.lists
-                            
-                            for k in pairs( lists ) do
-                                lists[k] = nil
-                            end
-                            
-                            for i, list in pairs( Hekili.DB.profile.actionLists ) do
-                                if list.Specialization > 0 then 
-                                    lists[i] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
-                                else
-                                    lists[i] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t ' .. list.Name
-                                end
-                            end
-                            
-                            lists[0] = '(none)'
-                            
-                            return lists
-                        end,
-                    },
-                    gotoPrecombat = {
-                        type = 'execute',
-                        name = "See Action List",
-                        order = 21,
-                        func = function( info )
-                            local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = dispID and Hekili.DB.profile.displays[ dispID ]
-                            
-                            local list = display and display.precombatAPL
-                            
-                            if list then
-                                LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", 'actionLists', 'L'..list )
-                            end
-                        end,
-                        disabled = function( info )
-                            local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = dispID and Hekili.DB.profile.displays[ dispID ]
-                            
-                            local list = display and display.precombatAPL
-                            
-                            if not list then return true end
-                            return false
-                        end,
-                    },
-                    
-                    defaultAPL = {
-                        type = 'select',
-                        name = "Default Action List",
-                        desc = "Select the action list to be processed when you are in combat. " ..
-                        "This generally corresponds to the |cFFFFD100actions|r list in " ..
-                        "SimulationCraft.",
-                        order = 22,
-                        width = 'double',
-                        values = function( info )
-                            local lists = displayOptionInfo.lists
-                            
-                            for k in pairs( lists ) do
-                                lists[k] = nil
-                            end
-                            
-                            for i, list in pairs( Hekili.DB.profile.actionLists ) do
-                                if list.Specialization > 0 then 
-                                    lists[i] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
-                                else
-                                    lists[i] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t ' .. list.Name
-                                end
-                            end
-                            
-                            lists[0] = '(none)'
-                            
-                            return lists
-                        end,
-                    },
-                    gotoDefault = {
-                        type = 'execute',
-                        name = "See Action List",
-                        order = 23,
-                        func = function( info )
-                            local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = dispID and Hekili.DB.profile.displays[ dispID ]
-                            
-                            local list = display and display.defaultAPL
-                            
-                            if list then
-                                LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", 'actionLists', 'L'..list )
-                            end
-                        end,
-                        disabled = function( info )
-                            local dispID = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = dispID and Hekili.DB.profile.displays[ dispID ]
-                            
-                            local list = display and display.defaultAPL
-                            
-                            if not list then return true end
-                            return false
-                        end,
-                    },
-                    
-                    
-                    displaySpacer3 = {
-                        type = 'description',
-                        name = "\n",
-                        width = "full",
-                        order = 25,
-                    },
-                    
-                    displayType = {
-                        type = "select",
-                        name = "Target Handling",
-                        desc = "Select the option that best reflects how this display should use or manipulate the addon's target detection feature.\n\n" ..
-                        "|cFFFFD100Primary|r means the display will interact with the 'Mode Toggle' feature. In Automatic Mode, this display's recommendations " ..
-                        "will be made based on the number of targets detected. In Single-Target and AOE Mode, the display will make recommendations based on only " ..
-                        "one target. It is expected that a second display would provide AOE information if needed.\n\n" ..
-                        "|cFFFFD100Single-Target|r means this display will always make recommendations assuming there is only one enemy, ignoring the 'Mode Toggle' " ..
-                        "feature.\n\n" ..
-                        "|cFFFFD100AOE|r means this display will always make recommendations assuming there are multiple enemies, regardless of the 'Mode Toggle' " ..
-                        "feature.\n\n" ..
-                        "|cFFFFD100Automatic|r means this display will always make recommendations based on the number of detected targets, regardless of the 'Mode Toggle' " ..
-                        "feature.\n\n" ..
-                        "|cFFFFD100Custom|r allows you to manually specify the minimum and maximum number of targets this display will use in making its recommendations, " ..
-                        "based on each available 'Mode Toggle' setting. This is an advanced feature.",
-                        order = 40,
-                        values = {
-                            a = "Primary",
-                            b = "Single-Target",
-                            c = "AOE",
-                            d = "Automatic",
-                            z = "Custom"
-                        },
-                        width = "full"
-                    },
-                    
-                    simpleAOE = {
-                        type = "range",
-                        name = "AOE Minimum Targets",
-                        desc = "When the 'Mode Toggle' feature is set to AOE, this display will assume there are at |cFFFF0000least|r this many enemies when making its " ..
-                        "recommendations.",
-                        order = 41,
-                        min = 2,
-                        max = 20,
-                        step = 1,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].displayType ~= 'c'
-                        end,
-                        width = 'full',
-                    },
-                    
-                    minST = {
-                        type = 'range',
-                        min = 0,
-                        max = 20,
-                        step = 1,
-                        name = 'Single-Target, Minimum',
-                        desc = "This display will always act as though there are at least this many targets when your mode is set to Single Target. If set to 0, this will be ignored.",
-                        order = 41,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
-                        end
-                    },
-                    maxST = {
-                        type = 'range',
-                        min = 0,
-                        max = 20,
-                        step = 1,
-                        name = 'Single-Target, Maximum',
-                        desc = "This display will always act as though there are no more than this many targets when your mode is set to Single Target. If set to 0, this will be ignored.",
-                        order = 42,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
-                        end
-                    },
-                    minAE = {
-                        type = 'range',
-                        min = 0,
-                        max = 20,
-                        step = 1,
-                        name = 'AOE, Minimum',
-                        desc = "This display will always act as though there are at least this many targets when your mode is set to AOE. If set to 0, this will be ignored.",
-                        order = 43,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
-                        end
-                    },
-                    maxAE = {
-                        type = 'range',
-                        min = 0,
-                        max = 20,
-                        step = 1,
-                        name = 'AOE, Maximum',
-                        desc = "This display will always act as though there are no more than this many targets when your mode is set to AOE. If set to 0, this will be ignored.",
-                        order = 44,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
-                        end
-                    },
-                    minAuto = {
-                        type = 'range',
-                        min = 0,
-                        max = 20,
-                        step = 3,
-                        name = 'Automatic, Minimum',
-                        desc = "This display will always act as though there are at least this many targets when your mode is set to Auto. If set to 0, this will be ignored.",
-                        order = 45,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
-                        end
-                    },
-                    maxAuto = {
-                        type = 'range',
-                        min = 0,
-                        max = 20,
-                        step = 1,
-                        name = 'Automatic, Maximum',
-                        desc = "This display will always act as though there are no more than this many targets when your mode is set to Auto. If set to 0, this will be ignored.",
-                        order = 46,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].displayType ~= 'z'
-                        end
-                    },
-                    
-                    quickVisStyle = {
-                        type = 'select',
-                        name = 'Mode Visibility',
-                        desc = "Select an option regarding this display's visibility based on your Mode Switch and Current Mode (See Toggles tab). Examples include:\n\n" ..
-                        "|cFFFFD100Standard Primary Display|r - The display is shown like a Primary display as created by the author of this addon. " ..
-                        "It will be displayed in all modes, regardless of the Switch Type or Current Mode.\n\n" ..
-                        "|cFFFFD100Standard AOE Display|r - This display is shown like an AOE display as created by the author of this addon. " ..
-                        "It will only be displayed when your addon is setup to switch between Single-Target and Automatic target " ..
-                        "detection, and is currently in Single-Target mode. (When paired with a Standard Primary Display, this provides you " ..
-                        "with two displays, one for Single-Target and one for AOE, based on your Current Mode.)",
-                        values = {
-                            a = 'Standard Primary Display',
-                            b = 'Standard AOE Display',
-                            z = 'Set Custom Visibility Options'
-                        },
-                        order = 30,
-                        get = 'GetDisplayOption',
-                        set = 'SetDisplayOption',
-                        width = 'full',
-                        
-                    },
-                    
-                    quickVisGroup = {
-                        type = 'group',
-                        name = "Custom Mode Visibility",
-                        inline = true,
-                        order = 31,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            if not display then return true end
-                            
-                            return display.quickVisStyle ~= 'z'
-                        end,
-                        args = {
-                            showSwitchAuto = {
-                                type = 'toggle',
-                                name = 'Show when using Mode Switch: Single-Target <-> Automatic',
-                                desc = "When checked, if your Mode Switch feature is set to switch between 'Single-Target' and 'Automatic', this " ..
-                                "display will be shown (assuming its other requirements are met).",
-                                order = 0,
-                                width = 'full',
-                            },
-                            showSwitchAE = {
-                                type = 'toggle',
-                                name = 'Show when using Mode Switch: Single-Target <-> AOE',
-                                desc = "When checked, if your Mode Switch feature is set to switch between 'Single-Target' and 'AOE', this " ..
-                                "display will be shown (assuming its other requirements are met).",
-                                order = 1,
-                                width = 'full'
-                            },
-                            
-                            showST = {
-                                type = 'toggle',
-                                name = 'Show in Single-Target',
-                                desc = "If checked, this display will be shown when the addon is in Single-Target mode.",
-                                order = 2,
-                                width = 'full'
-                            },
-                            showAE = {
-                                type = 'toggle',
-                                name = 'Show in AOE',
-                                desc = "If checked, this display will be shown when the addon is in AOE mode.",
-                                order = 3,
-                                width = 'full'
-                            },
-                            showAuto = {
-                                type = 'toggle',
-                                name = 'Show in Automatic',
-                                desc = "If checked, this display will be shown when the addon is in Automatic mode.",
-                                order = 4,
-                                width = 'full'
-                            },
-                        }
-                    },
-                    displaySpacer4 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 50,
-                        width = 'full',
-                    },
-                    
-                    Reload = {
-                        type = "execute",
-                        name = "Reload Display",
-                        desc = function( info, ... )
-                            local dispKey, dispID = info[2], tonumber( string.match( info[2], "^D(%d+)" ) )
-                            local display = Hekili.DB.profile.displays[ dispID ]
-                            
-                            local _, defaultID = ns.isDefault( display.Name, 'displays' )
-                            
-                            local output = "Reloads this display from the default options available. Style settings are left untouched, but hooks and criteria are reset."
-                            
-                            if class.defaults[ defaultID ].version > ( display.Release or 0 ) then
-                                output = output .. "\n|cFF00FF00The default display is newer (" .. class.defaults[ defaultID ].version .. ") than your existing display (" .. ( display.Release or "N/A" ) .. ").|r"
-                            end
-                            
-                            return output
-                        end,
-                        confirm = true,
-                        confirmText = "Reload the default settings for this default display?",
-                        order = 91,
-                        hidden = function( info, ... )
-                            local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
-                            local display = Hekili.DB.profile.displays[ dispID ]
-                            
-                            if ns.isDefault( display.Name, 'displays' ) then
-                                return false
-                            end
-                            
-                            return true
-                        end,
-                        func = function( info, ... )
-                            local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
-                            local display = Hekili.DB.profile.displays[ dispID ]
-                            
-                            local _, defaultID = ns.isDefault( display.Name, 'displays' )
-                            
-                            local import = ns.deserializeDisplay( class.defaults[ defaultID ].import )
-                            
-                            if not import then
-                                Hekili:Print("Unable to import " .. class.defaults[ defaultID ].name .. ".")
-                                return
-                            end
-
-                            Hekili.DB.profile.displays[ dispID ] = import
-                            Hekili.DB.profile.displays[ dispID ].Name = class.defaults[ defaultID ].name
-                            Hekili.DB.profile.displays[ dispID ].Release = class.defaults[ defaultID ].version
-                            Hekili.DB.profile.displays[ dispID ].Default = true
-
-                            for k, v in pairs( displayTemplate ) do
-                                if import[ k ] == nil then
-                                    if type( v ) == 'table' then
-                                        import[ k ] = {}
-                                        for key, value in pairs( v ) do
-                                            import[ k ][ key ] = value
-                                        end
-                                    else
-                                        import[ k ] = v
-                                    end
-                                end
-                            end
-
-                            ns.checkImports()
-                            ns.refreshOptions()
-                            ns.loadScripts()
-                            ns.buildUI()
-                        end,
-                    },
-                    BLANK2 = {
-                        type = "description",
-                        name = " ",
-                        order = 92,
-                        hidden = function( info, ... )
-                            local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
-                            local display = Hekili.DB.profile.displays[ dispID ]
-                            
-                            if ns.isDefault( display.Name, 'displays' ) then
-                                return true
-                            end
-                            
-                            return false
-                        end,
-                        width = "single",
-                    },
-                    Delete = {
-                        type = "execute",
-                        name = "Delete Display",
-                        desc = "Deletes this display and all associated action list hooks and criteria. The action lists will remain untouched.",
-                        confirm = true,
-                        confirmText = "Permanently delete this display and all associated action list hooks?",
-                        order = 93,
-                        func = function(info, ...)
-                            if not info[2] then return end
-                            
-                            -- Key to Current Display (string)
-                            local dispKey = info[2]
-                            local dispIdx = tonumber( match( info[2], "^D(%d+)" ) )
-                            
-                            --[[ for i, queue in ipairs( Hekili.DB.profile.displays[dispIdx].Queues ) do
-                            for k,v in pairs( queue ) do
-                                queue[k] = nil
-                            end
-                            table.remove( Hekili.DB.profile.displays[dispIdx].Queues, i)
-                        end ]]
-                            
-                            -- Will need to be more elaborate later.
-                            ns.UI.Displays[ dispIdx ]:Deactivate()
-
-                            table.remove( Hekili.DB.profile.displays, dispIdx )
-                            table.remove( ns.queue, dispIdx )
-
-                            ns.refreshOptions()
-                            ns.loadScripts()
-                            ns.buildUI()
-                            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", 'displays' )
-                        end
-                    },
-                },
-            },
+            tab.args.y.min = -1 * max( data.primaryHeight, data.queue.height )
+            tab.args.y.max = max( data.primaryHeight, data.queue.height )
             
-            styleSettings = {
-                type = 'group',
-                name = 'Style',
-                order = 2,
-                args = {
-                    
-                    quickStyle = {
-                        type = 'select',
-                        name = 'Quick Style',
-                        desc = 'Select a standard display template to automatically set most of your display settings.',
-                        order = 0,
-                        values = {
-                            a = 'Standard, 4-Icon Display',
-                            b = 'Extended, 5-Icon Display with Smaller Queued Icons',
-                            c = 'Short, 2-Icon Display with Smaller Queued Icon',
-                            d = 'Single Icon',
-                            e = 'Single Rectangular Icon',
-                            f = 'Newspaper, 3-Icon Display',
-                            g = 'Agenda, 4-Icon Display',
-                            h = 'Deck, 3-Icon Display',
-                            i = 'Square, Tapered Right',
-                            j = 'Square, Tapered Down',
-                            z = 'Select a Template',
-                        },
-                        get = 'GetDisplayOption',
-                        set = 'SetDisplayOption',
-                        width = 'full',
-                        hidden = function( info )
-                            displayOptionInfo.quickStyle = 'z'
-                            return false
-                        end
-                    },
-                    
-                    numIcons = {
-                        type = 'range',
-                        name = "Icons Shown",
-                        min = 1,
-                        max = 10,
-                        step = 1,
-                        width = "full",
-                        order = 1,
-                    },
-                    
-                    styleSpacer1 = {
-                        type = 'description',
-                        name = '\n',
-                        width = 'full',
-                        order = 2
-                    },
+            return
+        end
 
-                    primaryIconWidth = {
-                        type = 'range',
-                        name = 'Primary Icon Width',
-                        desc = "Specify the width of the primary icon.",
-                        min = 10,
-                        max = 500,
-                        step = 0.1,
-                        bigStep = 1,
-                        order = 5,
-                        width = "full"
-                    },
+        tab.args.x.min = -50
+        tab.args.x.max = 50
 
-                    primaryIconHeight = {
-                        type = 'range',
-                        name = 'Primary Icon Height',
-                        desc = "Specify the height of the primary icon.",
-                        min = 10,
-                        max = 500,
-                        step = 0.1,
-                        bigStep = 1,
-                        order = 6,
-                        width = "full"
-                    },
+        tab.args.y.min = -50
+        tab.args.y.max = 50
+    end
 
-                    iconZoom = {
-                        type = 'range',
-                        name = 'Icon Zoom',
-                        desc = "Select the zoom percentage for the icon textures in this display. (Roughly 30% will trim off the default Blizzard borders.)",
-                        min = 0,
-                        max = 100,
-                        step = 1,
-                        order = 7,
-                        width = 'full'
-                    },
-                    
-                    iconBorder = {
-                        type = 'toggle',
-                        name = "Show Icon Border",
-                        desc = "If checked, the icon will have a 1px border around its edge.",
-                        order = 8,
-                        width = "full"
-                    },
 
-                    iconBorderColor = {
-                        type = "color",
-                        name = "Icon Border Color",
-                        desc = "If Show Icon Border is checked, the border will show this color.",
-                        order = 8.1,
-                        width = "full",
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
+    local function newDisplayOption( db, name, data, pos )
+        name = tostring( name )
 
-                            return not ( display and display.iconBorder )
-                        end,
-                    },
-
-                    KeepAspectRatio = {
-                        type = 'toggle',
-                        name = "Keep Aspect Ratio",
-                        desc = "If checked, the icon textures will not be distorted when its width and height do not match.",
-                        order = 8.99,
-                        width = "full"
-                    },
-
-                    styleSpacer2 = {
-                        type = 'description',
-                        name = "\n",
-                        width = "full",
-                        order = 9.99,
-                    },
-
-                    queueDirection = {
-                        type = 'select',
-                        name = 'Queue Direction',
-                        values = {
-                            TOP = 'Up',
-                            BOTTOM = 'Down',
-                            LEFT = 'Left',
-                            RIGHT = 'Right'
-                        },
-                        width = "full",
-                        order = 10,
-                    },
-
-                    queueAnchor = {
-                        type = 'select',
-                        name = 'Queue Anchors To',
-                        values = {
-                            TOP = 'Top',
-                            TOPLEFT = 'Top Left',
-                            TOPRIGHT = 'Top Right',
-                            BOTTOM = 'Bottom',
-                            BOTTOMLEFT = 'Bottom Left',
-                            BOTTOMRIGHT = 'Bottom Right',
-                            LEFT = 'Left',
-                            LEFTTOP = 'Left Top',
-                            LEFTBOTTOM = 'Left Bottom',
-                            RIGHT = 'Right',
-                            RIGHTTOP = 'Right Top',
-                            RIGHTBOTTOM = 'Right Bottom',
-                        },
-                        width = "full",
-                        order = 11,
-                    },
-                  
-                    queueAnchorOffset = {
-                        type = 'range',
-                        name = 'Queue Anchor Offset',
-                        desc = 'Specify the offset (in pixels) for the queue, in relation to the primary icon for this display.',
-                        min = -100,
-                        max = 500,
-                        step = 1,
-                        width = "full",
-                        order = 12,
-                    },
-
-                    styleSpacer3 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 13,
-                        width = "full"
-                    },
-
-                    queuedIconWidth = {
-                        type = 'range',
-                        name = 'Queued Icon Width',
-                        desc = "Select the width of the queued icons.",
-                        min = 10,
-                        max = 500,
-                        step = 0.1,
-                        bigStep = 1,
-                        order = 14,
-                        width = "full"
-                    },
-
-                    queuedIconHeight = {
-                        type = 'range',
-                        name = 'Queued Icon Height',
-                        desc = "Select the height of the queued icons.",
-                        min = 10,
-                        max = 500,
-                        step = 0.1,
-                        bigStep = 1,
-                        order = 15,
-                        width = "full"
-                    },
-                                      
-                    iconSpacing = {
-                        type = 'range',
-                        name = 'Queued Icon Spacing',
-                        desc = "Select the number of pixels to skip between icons in the queue.",
-                        min = -100,
-                        max = 500,
-                        step = 1,
-                        order = 16,
-                        width = 'full'
-                    },
-                },
+        return {
+            ['btn'..name] = {
+                type = 'execute',
+                name = name,
+                desc = data.desc,
+                order = 10 + pos,
+                func = function () ACD:SelectGroup( "Hekili", "displays", name ) end,
             },
-            
-            extraSettings = {
+
+            [name] = {
                 type = 'group',
-                name = 'Extras',
-                order = 4,
+                name = function ()
+                    if data.builtIn then return '|cFF00B4FF' .. name .. '|r' end
+                    return name
+                end,
+                childGroups = "tab",
+                desc = data.desc,
+                order = 100 + pos,
                 args = {
-                    esDescription = {
-                        type = 'description',
-                        name = "These extra settings allow you to specify what additional information is shown on your display.",
-                        fontSize = 'medium',
-                        order = 0,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            if display then
-                                displayOptionInfo.iconOffset = display and max( display.primaryIconHeight, display.queuedIconHeight ) or 100
-                            end
-                            
-                            return false
-                        end
-                    },
-                    
-                    rangeType = {
-                        type = 'select',
-                        name = 'Range Checking',
-                        desc = "Select the kind of range checking and range coloring to be used by this display.\n\n" ..
-                        "|cFFFFD100Ability|r - Each ability is highlighted in red if that ability is out of range.\n\n" ..
-                        "|cFFFFD100Melee|r - All abilities are highlighted in red if you are out of melee range.\n\n" ..
-                        "|cFFFFD100No Coloring|r - Do not indicate that abilities are out of range.\n\n" ..
-                        "|cFFFFD100Unusable Out of Range|r - Do not recommend abilities if/when you are out of range.",
-                        values = {
-                            ability = "Ability",
-                            melee = "Melee",
-                            off = "No Coloring",
-                            xclude = "Unusable"
-                        },
+                    main = {
+                        type = 'group',
+                        name = "Main",
+                        desc = "Includes display position, icons, primary icon size/shape, etc.",
                         order = 1,
-                        width = 'full'
-                    },
-                    
-                    esSpacer1 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 2,
-                        width = 'full'
-                    },
-                    
-                    blizzGlow = {
-                        type = "toggle",
-                        name = "Enable Glow",
-                        desc = "If checked, the primary icon will glow if the ability has an active overlay (i.e., Stormbringer for Stormstrike or Hot Hand for Lava Lash).",
-                        order = 5,
-                        width = 'full',
-                    },
-                    queuedBlizzGlow = {
-                        type = "toggle",
-                        name = "Enable Glow on Queued Abilities",
-                        desc = "If checked, queued abilities will also glow if the ability has an active overlay.",
-                        order = 6,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.blizzGlow
-                        end
-                    },
-                    esSpacer2 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 9,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.blizzGlow
-                        end
-                    },
-                    
-                    spellFlash = {
-                        type = 'toggle',
-                        name = 'Use SpellFlash',
-                        desc = "If enabled and SpellFlash (or SpellFlashCore) is installed, the addon will cause the action buttons for recommended abilities to flash.",
-                        order = 11,
-                        hidden = function( info, val )
-                            return not ( SpellFlash or SpellFlashCore )
-                        end,
-                        width = 'full'
-                    },
-
-                    spellFlashColor = {
-                        type = 'color',
-                        name = 'SpellFlash Color',
-                        desc = "If SpellFlash is installed, actions recommended from this display will flash with the selected color.",
-                        order = 12,
-                        hidden = function( info, val )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not ( SpellFlash or SpellFlashCore ) or not display or not display.spellFlash
-                        end,
-                        width = 'full'
-                    },
-
-                    esSpacer3 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 13,
-                        width = 'full',
-                        hidden = function( info, val )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not ( SpellFlash or SpellFlashCore ) or not display or not display.spellFlash
-                        end,
-                    },
-                    
-                    showKeybindings = {
-                        type = 'toggle',
-                        name = 'Show Keybindings',
-                        order = 14,
-                        width = 'full'
-                    },
-                    keybindingGroup = {
-                        type = 'group',
-                        inline = true,
-                        name = "Keybindings",
-                        order = 15,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showKeybindings
-                        end,
+ 
                         args = {
-                            queuedKBs = {
-                                type = 'toggle',
-                                name = 'Show on Queued Abilities',
-                                order = 2,
-                                width = 'full'
-                            },
-                            lowercaseKBs = {
-                                type = 'toggle',
-                                name = 'Lowercase',
-                                order = 3,
-                                width = 'full'
-                            },
-                            
-                            kbFont = {
-                                type = 'select',
-                                name = 'Font',
-                                desc = "Select the font to use for keybindings.",
-                                dialogControl = 'LSM30_Font',
-                                order = 5,
-                                values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
-                                width = 'full',
-                            },
-                            kbFontStyle = {
-                                type = 'select',
-                                name = 'Style',
-                                order = 6,
-                                values = {
-                                    ["MONOCHROME"] = "Monochrome",
-                                    ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
-                                    ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
-                                    ["NONE"] = "None",
-                                    ["OUTLINE"] = "Outline",
-                                    ["THICKOUTLINE"] = "Thick Outline"
-                                },
-                                width = 'full'
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "If disabled, this display will not appear under any circumstances.",
+                                order = 0.5,
+                                hidden = function () return name == "Primary" or name == "AOE" end
                             },
 
-                            kbFontSize = {
+                            numIcons = {
                                 type = 'range',
-                                name = 'Size',
-                                desc = "Select the size of the font to use.",
-                                min = 6,
-                                max = 72,
-                                order = 6,
+                                name = "Icons Shown",
+                                desc = "Specify the number of recommendations to show.  Each icon shows an additional step forward in time.",
+                                min = 1,
+                                max = 10,
                                 step = 1,
-                                width = 'full'
-                            },
-
-                            kbSpacer1 = {
-                                type = 'description',
-                                name = '\n',
-                                order = 7,
-                                width = 'full',
-                            },
-                            
-                            kbAnchor = {
-                                type = 'select',
-                                name = 'Anchor Point',
-                                order = 8,
-                                width = 'full',
-                                values = {
-                                    TOPLEFT = 'Top Left',
-                                    TOP = 'Top',
-                                    TOPRIGHT = 'Top Right',
-                                    LEFT = 'Left',
-                                    CENTER = 'Center',
-                                    RIGHT = 'Right',
-                                    BOTTOMLEFT = 'Bottom Left',
-                                    BOTTOM = 'Bottom',
-                                    BOTTOMRIGHT = 'Bottom Right'
-                                }
-                            },
-                            xOffsetKBs = {
-                                type = 'range',
-                                name = 'X Offset',
-                                order = 9,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                            yOffsetKBs = {
-                                type = 'range',
-                                name = 'Y Offset',
-                                order = 10,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                        },
-                        
-                    },
-                    ezSpacer4 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 16,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showKeybindings
-                        end,
-                    },
-
-
-                    showDelay = {
-                        type = 'select',
-                        name = "Show Delay Indicator",
-                        desc = "Specify whether to show a delay indicator when the addon recommends waiting before using the first recommended ability.\n\n" ..
-                            "If no delay indicator is shown, you may use abilities before it is optimal, refreshing a buff or debuff early or before you have certain resources.\n\n" ..
-                            "If an icon is selected, the icon will be green below 0.5s, yellow between 0.5s and 1s, and red above 1s.  When the icon disappears, the ability is ready.\n\n" ..
-                            "If a text countdown is selected, the timer will count down and disappear at 0.",
-                        order = 19.001,
-                        width = "full",
-                        values = {
-                            ["NONE"] = "No Delay Indicator",
-                            ["ICON"] = "Show Delay Icon (Color)",
-                            ["TEXT"] = "Show Delay Text (Countdown)"
-                        },                        
-                    },
-
-                    delaysGroup = {
-                        type = 'group',
-                        inline = true,
-                        name = "Delays",
-                        order = 19.002,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-
-                            return not display or display.showDelays == "NONE"
-                        end,
-                        args = {
-                            delayFont = {
-                                type = 'select',
-                                name = 'Font',
-                                desc = "Select the font to use if a delay caption is shown.",
-                                dialogControl = 'LSM30_Font',
-                                order = 5,
-                                values = LibStub( "LibSharedMedia-3.0" ):HashTable( "font" ),
                                 width = "full",
-                            },
-                            delayFontStyle = {
-                                type = 'select',
-                                name = "Style",
-                                desc = "Select the font style to use if delay captions are shown.",
-                                values = {
-                                    ["MONOCHROME"] = "Monochrome",
-                                    ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
-                                    ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
-                                    ["NONE"] = "None",
-                                    ["OUTLINE"] = "Outline",
-                                    ["THICKOUTLINE"] = "Thick Outline"
-                                },
-                                width = 'full',
-                                order = 6,                                
-                            },
-
-                            delayFontSize = {
-                                type = 'range',
-                                name = 'Size',
-                                desc = "Select the size of the font to use.",
-                                min = 6,
-                                max = 72,
-                                order = 6.5,
-                                step = 1,
-                                width = 'full'
-                            },
-
-                            delaySpacer1 = {
-                                type = 'description',
-                                name = '\n',
-                                order = 7,
-                                width = 'full',
-                            },
-                            
-                            delayAnchor = {
-                                type = 'select',
-                                name = 'Anchor Point',
-                                order = 8,
-                                width = 'full',
-                                values = {
-                                    TOPLEFT = 'Top Left',
-                                    TOP = 'Top',
-                                    TOPRIGHT = 'Top Right',
-                                    LEFT = 'Left',
-                                    CENTER = 'Center',
-                                    RIGHT = 'Right',
-                                    BOTTOMLEFT = 'Bottom Left',
-                                    BOTTOM = 'Bottom',
-                                    BOTTOMRIGHT = 'Bottom Right'
-                                }
-                            },
-                            
-                            xOffsetDelay = {
-                                type = 'range',
-                                name = 'X Offset',
-                                order = 10,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                            yOffsetDelay = {
-                                type = 'range',
-                                name = 'Y Offset',
-                                order = 11,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            }, 
-                        },
-                    },
-                    
-
-                    showCaptions = {
-                        type = 'toggle',
-                        name = 'Show Captions',
-                        order = 20,
-                        width = 'full',
-                    },
-                    captionsGroup = {
-                        type = 'group',
-                        inline = true,
-                        name = "Captions",
-                        order = 21,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showCaptions
-                        end,
-                        args = {
-                            queuedCaptions = {
-                                type = 'toggle',
-                                name = 'Show on Queued Abilities',
-                                order = 2,
-                                width = 'full'
-                            },
-                            
-                            captionFont = {
-                                type = 'select',
-                                name = 'Font',
-                                desc = "Select the font to use for keybindings.",
-                                dialogControl = 'LSM30_Font',
-                                order = 5,
-                                values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
-                                width = 'full',
-                            },
-                            captionFontStyle = {
-                                type = 'select',
-                                name = 'Style',
-                                order = 6,
-                                values = {
-                                    ["MONOCHROME"] = "Monochrome",
-                                    ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
-                                    ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
-                                    ["NONE"] = "None",
-                                    ["OUTLINE"] = "Outline",
-                                    ["THICKOUTLINE"] = "Thick Outline"
-                                },
-                                width = 'full'
-                            },
-                            captionFontSize = {
-                                type = 'range',
-                                name = 'Size',
-                                desc = "Select the size of the font to use.",
-                                min = 6,
-                                max = 72,
-                                order = 6,
-                                step = 1,
-                                width = 'full'
-                            },
-                            captionSpacer1 = {
-                                type = 'description',
-                                name = '\n',
-                                order = 7,
-                                width = 'full',
-                            },
-                            
-                            captionAnchor = {
-                                type = 'select',
-                                name = 'Anchor Point',
-                                order = 8,
-                                width = 'full',
-                                values = {
-                                    TOP = 'Top',
-                                    BOTTOM = 'Bottom',
-                                }
-                            },
-                            captionAlign = {
-                                type = 'select',
-                                name = 'Alignment',
-                                order = 9,
-                                width = 'full',
-                                values = {
-                                    LEFT = "Left",
-                                    RIGHT = "Right",
-                                    CENTER = "Center"
-                                }
-                            },
-                            
-                            xOffsetCaptions = {
-                                type = 'range',
-                                name = 'X Offset',
-                                order = 10,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                            yOffsetCaptions = {
-                                type = 'range',
-                                name = 'Y Offset',
-                                order = 11,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                        },
-                        
-                    },
-                    ezSpacer5 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 22,
-                        width = 'full',
-                        hidden = function( info, val )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showCaptions
-                        end
-                    },
-                    
-                    showIndicators = {
-                        type = 'toggle',
-                        name = 'Show Indicators',
-                        order = 25,
-                        width = 'full'
-                    },
-                    indicatorGroup = {
-                        type = 'group',
-                        inline = true,
-                        name = "Indicators",
-                        order = 26,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showIndicators
-                        end,
-                        args = {
-                            queuedIndicators = {
-                                type = 'toggle',
-                                name = 'Show on Queued Abilities',
-                                order = 2,
-                                width = 'full'
-                            },
-                            
-                            indicatorAnchor = {
-                                type = 'select',
-                                name = 'Anchor Point',
-                                order = 8,
-                                width = 'full',
-                                values = {
-                                    TOPLEFT = 'Top Left',
-                                    TOP = 'Top',
-                                    TOPRIGHT = 'Top Right',
-                                    LEFT = 'Left',
-                                    CENTER = 'Center',
-                                    RIGHT = 'Right',
-                                    BOTTOMLEFT = 'Bottom Left',
-                                    BOTTOM = 'Bottom',
-                                    BOTTOMRIGHT = 'Bottom Right'
-                                }
-                            },
-                            xOffsetIndicators = {
-                                type = 'range',
-                                name = 'X Offset',
-                                order = 9,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                            yOffsetIndicators = {
-                                type = 'range',
-                                name = 'Y Offset',
-                                order = 10,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                        },
-                        
-                    },
-                    ezSpacer6 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 27,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showIndicators
-                        end,
-                    },
-                    
-                    showTargets = {
-                        type = 'toggle',
-                        name = 'Show Target Count',
-                        order = 30,
-                        width = 'full',
-                    },
-                    targetGroup = {
-                        type = 'group',
-                        inline = true,
-                        name = "Target Count",
-                        order = 31,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showTargets
-                        end,
-                        args = {
-                            targetFont = {
-                                type = 'select',
-                                name = 'Font',
-                                desc = "Select the font to use for the target count.",
-                                dialogControl = 'LSM30_Font',
                                 order = 1,
-                                values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
-                                width = 'full',
-                            },
-                            targetFontStyle = {
-                                type = 'select',
-                                name = 'Style',
-                                order = 2,
-                                values = {
-                                    ["MONOCHROME"] = "Monochrome",
-                                    ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
-                                    ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
-                                    ["NONE"] = "None",
-                                    ["OUTLINE"] = "Outline",
-                                    ["THICKOUTLINE"] = "Thick Outline"
-                                },
-                                width = 'full'
-                            },
-                            targetFontSize = {
-                                type = 'range',
-                                name = 'Size',
-                                desc = "Select the size of the font to use.",
-                                min = 6,
-                                max = 72,
-                                step = 1,
-                                order = 3,
-                                width = 'full'
-                            },
-                            targetSpacer1 = {
-                                type = 'description',
-                                name = '\n',
-                                order = 4,
-                                width = 'full',
-                            },
-                            
-                            targetAnchor = {
-                                type = 'select',
-                                name = 'Anchor Point',
-                                order = 5,
-                                width = 'full',
-                                values = {
-                                    TOPLEFT = 'Top Left',
-                                    TOP = 'Top',
-                                    TOPRIGHT = 'Top Right',
-                                    LEFT = 'Left',
-                                    CENTER = 'Center',
-                                    RIGHT = 'Right',
-                                    BOTTOMLEFT = 'Bottom Left',
-                                    BOTTOM = 'Bottom',
-                                    BOTTOMRIGHT = 'Bottom Right'
-                                }
-                            },
-                            xOffsetTargets = {
-                                type = 'range',
-                                name = 'X Offset',
-                                order = 6,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                            yOffsetTargets = {
-                                type = 'range',
-                                name = 'Y Offset',
-                                order = 7,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                        },
-                        
-                    },
-                    ezSpacer7 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 32,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showTargets
-                        end,
-                    },
-                    
-                    showAuraInfo = {
-                        type = 'toggle',
-                        name = 'Show Aura Info',
-                        order = 35,
-                        width = 'full',
-                    },
-                    auraInfoGroup = {
-                        type = 'group',
-                        inline = true,
-                        name = "Aura Info",
-                        order = 36,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showAuraInfo
-                        end,
-                        args = {
-                            auraInfoType = {
-                                type = 'select',
-                                name = 'Type',
-                                order = 1,
-                                width = 'full',
-                                values = {
-                                    buff = "Buff Stacks",
-                                    buffRem = "Buff Remaining Time",
-                                    debuff = "Debuff Stacks",
-                                    debuffRem = "Debuff Remaining Time",
-                                    count = "Debuff Count"
-                                }
-                            },
-                            auraSpellID = {
-                                type = 'input',
-                                name = 'Spell',
-                                order = 4,
-                                width = 'single',
-                                get = 'GetDisplayOption',
-                                set = 'SetDisplayOption'
-                            },
-                            auraSpellName = {
-                                type = 'description',
-                                name = 'Not Available',
-                                order = 5,
-                                hidden = function( info )
-                                    local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                                    local display = id and Hekili.DB.profile.displays[ id ]
-                                    local option = Hekili.Options
-                                    
-                                    for i = 1, #info do
-                                        option = option.args[ info[i] ]
+                                hidden = function( info, val )
+                                    local n = #info
+                                    local display = info[2]
+
+                                    if display == "Interrupts" or display == "Defensives" then
+                                        return true
                                     end
-                                    
-                                    local default = " Not Set"
-                                    
-                                    if display then
-                                        if display.auraSpellID then
-                                            local name, _, texture = GetSpellInfo( display.auraSpellID )
-                                            
-                                            if name and texture then
-                                                option.name = format( " |T%s:0|t %s", texture, name )
-                                            else
-                                                option.name = default
-                                            end
-                                        else
-                                            option.name = default
-                                        end
-                                    else
-                                        option.name = default
-                                    end
-                                    
+
                                     return false
                                 end,
-                                fontSize = 'medium',
-                                width = 'single'
                             },
-                            auraUnit = {
-                                type = 'select',
-                                name = 'Unit',
-                                order = 6,
-                                values = {
-                                    player = "Player",
-                                    pet = "Pet",
-                                    target = "Target"
-                                },
-                                hidden = function( info )
-                                    local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                                    local display = id and Hekili.DB.profile.displays[ id ]
-                                    
-                                    return not display or display.auraInfoType == 'count'
-                                end,
-                                width = 'full'
-                            },
-                            auraMine = {
-                                type = 'toggle',
-                                name = 'Mine Only',
-                                order = 7,
-                                width = 'full',
-                                hidden = function( info )
-                                    local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                                    local display = id and Hekili.DB.profile.displays[ id ]
-                                    
-                                    return not display or display.auraInfoType == 'count'
-                                end,
-                            },
-                            
-                            auraSpacer1 = {
-                                type = 'description',
-                                name = '\n',
-                                order = 8,
-                                width = 'full',
-                            },
-                            
-                            auraFont = {
-                                type = 'select',
-                                name = 'Font',
-                                desc = "Select the font to use for the aura information.",
-                                dialogControl = 'LSM30_Font',
-                                order = 9,
-                                values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
-                                width = 'full',
-                            },
-                            auraFontStyle = {
-                                type = 'select',
-                                name = 'Style',
+
+                            pos = {
+                                type = "group",
+                                inline = true,
+                                name = function( info ) rangeXY( info ); return "Position" end,
                                 order = 10,
-                                values = {
-                                    ["MONOCHROME"] = "Monochrome",
-                                    ["MONOCHROME,OUTLINE"] = "Monochrome Outline",
-                                    ["MONOCHROME,THICKOUTLINE"] = "Monochrome Thick Outline",
-                                    ["NONE"] = "None",
-                                    ["OUTLINE"] = "Outline",
-                                    ["THICKOUTLINE"] = "Thick Outline"
+
+                                args = {
+                                    x = {
+                                        type = "range",
+                                        name = "X",
+                                        desc = "Set the horizontal position for this display relative to the center of the screen.  Negative " ..
+                                            "values will move the display left; positive values will move it to the right.",
+                                        min = -512,
+                                        max = 512,
+                                        step = 1,
+
+                                        order = 1,
+                                        width = "full",
+                                    },
+
+                                    y = {
+                                        type = "range",
+                                        name = "Y",
+                                        desc = "Set the vertical position for this display relative to the center of the screen.  Negative " ..
+                                            "values will move the display down; positive values will move it up.",
+                                        min = -384,
+                                        max = 384,
+                                        step = 1,
+
+                                        order = 2,
+                                        width = "full",
+                                    },
                                 },
-                                width = 'full'
                             },
-                            auraFontSize = {
-                                type = 'range',
-                                name = 'Size',
-                                desc = "Select the size of the font to use.",
-                                min = 6,
-                                max = 72,
-                                step = 1,
-                                order = 11,
-                                width = 'full'
-                            },
-                            auraSpacer2 = {
-                                type = 'description',
-                                name = '\n',
-                                order = 12,
-                                width = 'full',
-                            },
-                            
-                            auraAnchor = {
-                                type = 'select',
-                                name = 'Anchor Point',
-                                order = 13,
-                                width = 'full',
-                                values = {
-                                    TOPLEFT = 'Top Left',
-                                    TOP = 'Top',
-                                    TOPRIGHT = 'Top Right',
-                                    LEFT = 'Left',
-                                    CENTER = 'Center',
-                                    RIGHT = 'Right',
-                                    BOTTOMLEFT = 'Bottom Left',
-                                    BOTTOM = 'Bottom',
-                                    BOTTOMRIGHT = 'Bottom Right'
-                                }
-                            },
-                            xOffsetAura = {
-                                type = 'range',
-                                name = 'X Offset',
-                                order = 14,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
-                            },
-                            yOffsetAura = {
-                                type = 'range',
-                                name = 'Y Offset',
+
+                            primaryIcon = {
+                                type = "group",                                
+                                name = "Primary Icon",
+                                inline = true,
                                 order = 15,
-                                width = 'full',
-                                
-                                min = -displayOptionInfo.iconOffset,
-                                max = displayOptionInfo.iconOffset,
-                                step = 0.1,
-                                bigStep = 1,
+                                args = {
+                                    primaryWidth = {
+                                        type = "range",
+                                        name = "Width",
+                                        desc = "Specify the width of the primary icon for your " .. name .. " Display.",
+                                        min = 10,
+                                        max = 500,
+                                        step = 1,
+                                        
+                                        width = "full",
+                                        order = 1,
+                                    },
+                                    
+                                    primaryHeight = {
+                                        type = "range",
+                                        name = "Height",
+                                        desc = "Specify the height of the primary icon for your " .. name .. " Display.",
+                                        min = 10,
+                                        max = 500,
+                                        step = 1,
+                                        
+                                        width = "full",
+                                        order = 2,                                            
+                                    },
+                                },
+                            },
+
+                            zoom = {
+                                type = "range",
+                                name = "Icon Zoom",
+                                desc = "Select the zoom percentage for the icon textures in this display. (Roughly 30% will trim off the default Blizzard borders.)",
+                                min = 0,
+                                max = 100,
+                                step = 1,
+
+                                width = "full",
+                                order = 20,
+                            },
+
+                            keepAspectRatio = {
+                                type = "toggle",
+                                name = "Keep Aspect Ratio",
+                                desc = "If your primary or queued icons are not square, checking this option will prevent the icon textures from being " ..
+                                    "stretched and distorted, trimming some of the texture instead.",
+                                disabled = function( info, val )
+                                    return not ( data.primaryHeight ~= data.primaryWidth or ( data.numIcons > 1 and data.queue.height ~= data.queue.width ) )
+                                end,
+                                width = "full",
+                                order = 25,
                             },
                         },
-                        
                     },
-                    ezSpacer8 = {
-                        type = 'description',
-                        name = '\n',
-                        order = 37,
-                        width = 'full',
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            local display = id and Hekili.DB.profile.displays[ id ]
-                            
-                            return not display or not display.showAuraInfo
+
+                    queue = {
+                        type = "group",
+                        name = "Queue",
+                        desc = "Includes anchoring, size, shape, and position settings when a display can show more than one icon.",
+                        order = 2,
+                        disabled = function ()
+                            return data.numIcons == 1
                         end,
-                    },
-                    
-                }
-            },
-            
-            
-            visibilitySettings = {
-                type = 'group',
-                name = 'Transparency',
-                order = 3,
-                args = {
-                    
-                    visibilityType = {
-                        type = 'select',
-                        name = "Transparency Options",
-                        width = "full",
-                        values = {
-                            a = "Simple",
-                            b = "Advanced"
-                        },
-                        order = 30,
-                    },
-                    
-                    simpleVisibilityGroup = {
-                        type = 'group',
-                        inline = true,
-                        name = " ",
-                        order = 31,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].visibilityType ~= 'a'
-                        end,
+
                         args = {
-                            showPvE = {
-                                type = 'toggle',
-                                name = "Show in PvE",
-                                desc = "Show this display in non-PvP settings.",
+                            anchor = {
+                                type = 'select',
+                                name = 'Anchor To',
+                                desc = "Select the point on the primary icon to which the queued icons will attach.",
+                                values = anchorPositions,
+                                width = "full",
                                 order = 1,
                             },
-                            alphaShowPvE = {
+
+                            offset = {
                                 type = 'range',
-                                name = "Alpha",
-                                desc = "Set the alpha transparency for when this display is visible in PvE settings.",
+                                name = 'Anchor Offset',
+                                desc = 'Specify the offset (in pixels) for the queue, in relation to the primary icon for this display.',
+                                min = -100,
+                                max = 500,
+                                step = 1,
+                                width = "full",
                                 order = 2,
-                                min = 0,
-                                max = 1,
-                                step = 0.01,
-                                width = "double",
                             },
-                            showPvP = {
-                                type = 'toggle',
-                                name = "Show in PvP",
-                                desc = "Show this display in PvP settings.",
-                                order = 3,
+        
+
+                            direction = {
+                                type = 'select',
+                                name = 'Direction',
+                                desc = "Select the direction for the icon queue.",
+                                values = {
+                                    TOP = 'Up',
+                                    BOTTOM = 'Down',
+                                    LEFT = 'Left',
+                                    RIGHT = 'Right'
+                                },
+                                width = "full",
+                                order = 5,
                             },
-                            alphaShowPvP = {
+        
+
+                            width = {
                                 type = 'range',
-                                name = "Alpha",
-                                desc = "Set the alpha transparency for when this display is visible in PvP settings.",
-                                order = 4,
-                                min = 0,
-                                max = 1,
-                                step = 0.01,
-                                width = "double",
-                            }
-                        }
+                                name = 'Width',
+                                desc = "Select the width of the queued icons.",
+                                min = 10,
+                                max = 500,
+                                step = 1,
+                                bigStep = 1,
+                                order = 10,
+                                width = "full"
+                            },
+        
+                            height = {
+                                type = 'range',
+                                name = 'Height',
+                                desc = "Select the height of the queued icons.",
+                                min = 10,
+                                max = 500,
+                                step = 1,
+                                bigStep = 1,
+                                order = 11,
+                                width = "full"
+                            },
+                                            
+                            spacing = {
+                                type = 'range',
+                                name = 'Spacing',
+                                desc = "Select the number of pixels between icons in the queue.",
+                                min = ( data.queue.direction == "LEFT" or data.queue.direction == "RIGHT" ) and -data.queue.width or -data.queue.height,
+                                max = 500,
+                                step = 1,
+                                order = 16,
+                                width = 'full'
+                            },
+                        },
                     },
-                    
-                    PvE = {
+
+                    visibility = {
                         type = 'group',
-                        inline = true,
-                        name = "PvE Transparency",
-                        order = 32,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].visibilityType ~= 'b'
-                        end,
+                        name = 'Visibility',
+                        desc = "Visibility and transparency settings in PvE / PvP.",
+                        order = 3,
+
                         args = {
-                            alwaysPvE = {
-                                type = 'toggle',
-                                name = 'Show Always',
-                                desc = 'Show this display at all times, regardless of combat state and whether you have a target.',
-                                order = 1
+                            
+                            advanced = {
+                                type = "toggle",
+                                name = "Advanced",
+                                desc = "If checked, options are provided to fine-tune display visibility and transparency.",
+                                width = "full",
+                                order = 1,
                             },
-                            alphaAlwaysPvE = {
-                                type = 'range',
-                                name = 'Alpha',
-                                desc = "When this display is shown due to 'Show Always', set the alpha transparency to this value.",
+
+                            simple = {
+                                type = 'group',
+                                inline = true,
+                                name = "",
+                                hidden = function() return data.visibility.advanced end,
+                                get = function( info )
+                                    local option = info[ #info ]
+
+                                    if option == 'pveAlpha' then return data.visibility.pve.alpha
+                                    elseif option == 'pvpAlpha' then return data.visibility.pvp.alpha end
+                                end,
+                                set = function( info, val )
+                                    local option = info[ #info ]
+
+                                    if option == 'pveAlpha' then data.visibility.pve.alpha = val
+                                    elseif option == 'pvpAlpha' then data.visibility.pvp.alpha = val end
+
+                                    Hekili:BuildUI()
+                                end,
                                 order = 2,
-                                min = 0,
-                                max = 1,
-                                step = 0.01,
-                                width = "double",
+                                args = {
+                                    pveAlpha = {
+                                        type = "range",
+                                        name = "PvE Alpha",
+                                        desc = "Set the transparency of the display when in PvE combat.  If set to 0, the display will not appear in PvE.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        order = 1,
+                                        width = "full",
+                                    },
+                                    pvpAlpha = {
+                                        type = "range",
+                                        name = "PvP Alpha",
+                                        desc = "Set the transparency of the display when in PvP combat.  If set to 0, the display will not appear in PvP.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        order = 1,
+                                        width = "full",
+                                    },
+                                }
                             },
-                            targetPvE = {
-                                type = 'toggle',
-                                name = 'Show with Target',
-                                desc = 'Show this display whenever you have a hostile enemy targeted, regardless of whether you are in combat.',
+
+                            pveComplex = {
+                                type = 'group',
+                                inline = true,
+                                name = "PvE",
+                                get = function( info )
+                                    local option = info[ #info ]
+
+                                    return data.visibility.pve[ option ]
+                                end,
+                                set = function( info, val )
+                                    local option = info[ #info ]
+
+                                    data.visibility.pve[ option ] = val
+                                    Hekili:BuildUI()
+                                end,
+                                hidden = function() return not data.visibility.advanced end,
+                                order = 2,
+                                args = {
+                                    always = {
+                                        type = "range",                                        
+                                        name = "Always",
+                                        desc = "If non-zero, this display is always shown in PvE areas, both in and out of combat.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        width = "full",
+                                        order = 1,
+                                    },
+
+                                    combat = {
+                                        type = "range",
+                                        name = "Combat",
+                                        desc = "If non-zero, this display is always shown in PvE combat.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        width = "full",
+                                    },
+
+                                    target = {
+                                        type = "range",
+                                        name = "Target",
+                                        desc = "If non-zero, this display is always shown when you have an attackable PvE target.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        width = "full",
+                                    },
+                                },
+                            },
+
+                            pvpComplex = {
+                                type = 'group',
+                                inline = true,
+                                name = "PvE",
+                                get = function( info )
+                                    local option = info[ #info ]
+
+                                    return data.visibility.pvp[ option ]
+                                end,
+                                set = function( info, val )
+                                    local option = info[ #info ]
+
+                                    data.visibility.pvp[ option ] = val
+                                    Hekili:BuildUI()
+                                    Hekili:UpdateDisplayVisibility()
+                                end,
+                                hidden = function() return not data.visibility.advanced end,
+                                order = 2,
+                                args = {
+                                    always = {
+                                        type = "range",                                        
+                                        name = "Always",
+                                        desc = "If non-zero, this display is always shown in PvP areas, both in and out of combat.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        width = "full",
+                                        order = 1,
+                                    },
+
+                                    combat = {
+                                        type = "range",
+                                        name = "Combat",
+                                        desc = "If non-zero, this display is always shown in PvP combat.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        width = "full",
+                                    },
+
+                                    target = {
+                                        type = "range",
+                                        name = "Target",
+                                        desc = "If non-zero, this display is always shown when you have an attackable PvP target.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        width = "full",
+                                    },
+                                },
+                            },
+                        },
+                    },
+
+                    keybindings = {
+                        type = "group",
+                        name = "Keybinds",
+                        desc = "Options for keybinding text on displayed icons.",
+                        order = 7,
+
+                        args = {
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                order = 1,
+                                width = 'full',                                
+                            },
+
+                            queued = {
+                                type = "toggle",
+                                name = "Enabled for Queued Icons",
+                                order = 2,
+                                width = "full",
+                                disabled = function () return data.keybindings.enabled == false end,
+                            },
+
+                            pos = {
+                                type = "group",
+                                inline = true,
+                                name = function( info ) rangeIcon( info ); return "Position" end,
                                 order = 3,
+                                args = {
+                                    anchor = {
+                                        type = "select",
+                                        name = 'Anchor Point',
+                                        order = 2,
+                                        width = 'full',
+                                        values = anchorPositions
+                                    },
+                                    
+                                    x = {
+                                        type = "range",
+                                        name = "X Offset",
+                                        order = 3,
+                                        width = "full",
+                                        min = -max( data.primaryWidth, data.queue.width ),
+                                        max = max( data.primaryWidth, data.queue.width ),
+                                        disabled = function( info )
+                                            return false
+                                        end,
+                                        step = 1,
+                                    },
+
+                                    y = {
+                                        type = "range",
+                                        name = "Y Offset",
+                                        order = 4,
+                                        width = "full",
+                                        min = -max( data.primaryHeight, data.queue.height ),
+                                        max = max( data.primaryHeight, data.queue.height ),
+                                        step = 1,
+                                    }                                    
+                                }
                             },
-                            alphaTargetPvE = {
-                                type = 'range',
-                                name = 'Alpha',
-                                desc = "When this display is shown due to 'Show with Target', set the alpha transparency to this value.",
+
+                            textStyle = {
+                                type = "group",
+                                inline = true,
+                                name = "Text",
                                 order = 4,
-                                min = 0,
-                                max = 1,
-                                step = 0.01,
-                                width = "double"
+                                args = fontElements,
+                            },                            
+                        }
+                    },
+
+                    border = {
+                        type = "group",
+                        name = "Border",
+                        desc = "Enable/disable or set the color for icon borders.\n\n" ..
+                            "You may want to disable this if you use Masque or other tools to skin your Hekili icons.",
+                        order = 4,
+                        
+                        args = {
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "If enabled, each icon in this display will have a thin border.",
+                                order = 1,
+                                width = "full",
                             },
-                            combatPvE = {
-                                type = 'toggle',
-                                name = 'Show in Combat',
-                                desc = "Show this display whenever you are in combat.",
-                                order = 5
-                            },
-                            alphaCombatPvE = {
-                                type = 'range',
-                                name = 'Alpha',
-                                desc = "When the display is shown because you are in combat, set the transparency to this value.",
-                                order = 6,
-                                min = 0,
-                                max = 1,
-                                step = 0.01,
-                                width = 'double'
-                                
+
+                            color = {
+                                type = "color",
+                                name = "Border Color",
+                                desc = "When borders are enabled, the border will use this color.",
+                                order = 2,
+                                width = "full",
+                                disabled = function () return data.border.enabled == false end,
                             }
                         }
                     },
-                    PvP = {
-                        type = 'group',
-                        inline = true,
-                        name = "PvP Transparency",
-                        order = 33,
-                        hidden = function( info )
-                            local id = tonumber( info[2]:match( "^D(%d+)" ) )
-                            
-                            return Hekili.DB.profile.displays[ id ].visibilityType ~= 'b'
-                        end,
+
+                    range = {
+                        type = "group",
+                        name = "Range",
+                        desc = "Preferences for range-check warnings, if desired.",
+                        order = 5,
                         args = {
-                            alwaysPvP = {
-                                type = 'toggle',
-                                name = 'Show Always',
-                                desc = 'Show this display at all times, regardless of combat state and whether you have a target.',
-                                order = 1
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "If enabled, the addon will provide a red warning highlight when you are not in range of your enemy.",
+                                width = "full",
+                                order = 1,
                             },
-                            alphaAlwaysPvP = {
-                                type = 'range',
-                                name = 'Alpha',
-                                desc = "When this display is shown due to 'Show Always', set the alpha transparency to this value.",
+
+                            type = {
+                                type = "select",
+                                name = 'Range Checking',
+                                desc = "Select the kind of range checking and range coloring to be used by this display.\n\n" ..
+                                    "|cFFFFD100Ability|r - Each ability is highlighted in red if that ability is out of range.\n\n" ..
+                                    "|cFFFFD100Melee|r - All abilities are highlighted in red if you are out of melee range.\n\n" ..
+                                    "|cFFFFD100Exclude|r - If an ability is not in-range, it will not be recommended.",
+                                values = {
+                                    ability = "Per Ability",
+                                    melee = "Melee Range",
+                                    xclude = "Exclude Out-of-Range"
+                                },
+                                width = "full",
                                 order = 2,
-                                min = 0,
-                                max = 1,
-                                step = 0.01,
-                                width = "double",
-                            },
-                            targetPvP = {
-                                type = 'toggle',
-                                name = 'Show with Target',
-                                desc = 'Show this display whenever you have a hostile enemy targeted, regardless of whether you are in combat.',
-                                order = 3,
-                            },
-                            alphaTargetPvP = {
-                                type = 'range',
-                                name = 'Alpha',
-                                desc = "When this display is shown due to 'Show with Target', set the alpha transparency to this value.",
-                                order = 4,
-                                min = 0,
-                                max = 1,
-                                step = 0.01,
-                                width = "double"
-                            },
-                            combatPvP = {
-                                type = 'toggle',
-                                name = 'Show in Combat',
-                                desc = "Show this display whenever you are in combat.",
-                                order = 5
-                            },
-                            alphaCombatPvP = {
-                                type = 'range',
-                                name = 'Alpha',
-                                desc = "When the display is shown because you are in combat, set the transparency to this value.",
-                                order = 6,
-                                min = 0,
-                                max = 1,
-                                step = 0.01,
-                                width = 'double'
-                                
+                                disabled = function () return data.range.enabled == false end,
                             }
                         }
-                    }, 
-                },
-            },
-            
-            
-            ['Import/Export'] = {
-                type = 'group',
-                name = 'Import/Export',
-                order = 10,
-                args = {
-                    ['Copy To'] = {
-                        type = 'input',
-                        name = 'Copy To',
-                        desc = 'Enter a name for the new display. All settings, including action list hooks, will be duplicated in the new display.',
+                    },
+                    
+                    glow = {
+                        type = "group",
+                        name = "Glows",
+                        desc = "Preferences for glows or overlays.",
+                        order = 6,
+                        args = {
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "If enabled, when the ability for the first icon has an active glow (or overlay), it will also glow in this display.",
+                                width = "full",
+                                order = 1,
+                            },
+
+                            queued = {
+                                type = "toggle",
+                                name = "Enabled for Queued Icons",
+                                desc = "If enabled, abilities that have active glows (or overlays) will also glow in your queue.\n\n" ..
+                                    "This may not be ideal, the glow may no longer be correct by that point in the future.",
+                                width = "full",
+                                order = 2,
+                                disabled = function() return data.glow.enabled == false end,
+                            },
+
+
+                        }
+                    },
+
+                    flash = {
+                        type = "group",
+                        name = "SpellFlash",
+                        desc = function ()
+                            if SF then
+                                return "If enabled, the addon can highlight abilities on your action bars when they are recommended for use."
+                            end
+                            return "This feature requires the SpellFlash addon or library to function properly."
+                        end,
+                        order = 8,
+                        args = {
+                            warning = {
+                                type = "description",
+                                name = "These settings are unavailable because the SpellFlash addon / library is not installed or is disabled.",
+                                order = 0,
+                                fontSize = "medium",
+                                width = "full",
+                                hidden = function () return SF ~= nil end,
+                            },
+
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "If enabled, the addon will place a colorful glow on the first recommended ability for this display.",
+                                
+                                width = "full",
+                                order = 1,
+                                hidden = function () return SF == nil end,
+                            },
+
+                            color = {
+                                type = "color",
+                                name = "Color",
+                                desc = "Specify a glow color for the SpellFlash highlight.",
+                                order = 2,
+
+                                width = "full",
+                                hidden = function () return SF == nil end,
+                            }
+                        },
+                    },
+
+                    captions = {
+                        type = "group",
+                        name = "Captions",
+                        desc = "Captions are brief descriptions sometimes (rarely) used in action lists to describe why the action is shown.",
+                        order = 9,
+                        args = {
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "If enabled, when the first ability shown has a descriptive caption, the caption will be shown.",
+                                order = 1,
+                                width = "full",
+                            },
+
+                            queued = {
+                                type = "toggle",
+                                name = "Enabled for Queued Icons",
+                                desc = "If enabled, descriptive captions will be shown for queued abilities, if appropriate.",
+                                order = 2,
+                                width = "full",                                
+                                disabled = function () return data.captions.enabled == false end,
+                            },
+
+                            position = {
+                                type = "group",
+                                inline = true,
+                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                order = 3,
+                                args = {
+                                    align = {
+                                        type = "select",                                        
+                                        name = "Alignment",
+                                        order = 1,
+                                        width = "full",
+                                        values = {
+                                            LEFT = "Left",
+                                            RIGHT = "Right",
+                                            CENTER = "Center"
+                                        },
+                                    },
+
+                                    anchor = {
+                                        type = "select",
+                                        name = 'Anchor Point',
+                                        order = 2,
+                                        width = 'full',
+                                        values = {
+                                            TOP = 'Top',
+                                            BOTTOM = 'Bottom',
+                                        }
+                                    },
+                                    
+                                    x = {
+                                        type = "range",
+                                        name = "X Offset",
+                                        order = 3,
+                                        width = "full",
+                                        step = 1,
+                                    },
+
+                                    y = {
+                                        type = "range",
+                                        name = "Y Offset",
+                                        order = 4,
+                                        width = "full",
+                                        step = 1,
+                                    }
+                                }
+                            },
+
+                            textStyle = {
+                                type = "group",
+                                inline = true,
+                                name = "Text",
+                                order = 4,
+                                args = fontElements,
+                            },
+                        }
+                    },
+
+                    targets = {
+                        type = "group",
+                        name = "Targets",
+                        desc = "A target count indicator can be shown on the display's first recommendation.",
+                        order = 10,
+                        args = {
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "If enabled, the addon will show the number of active (or virtual) targets for this display.",
+                                order = 1,
+                                width = "full",
+                            },
+
+                            pos = {
+                                type = "group",
+                                inline = true,
+                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                order = 2,
+                                args = {
+                                    anchor = {
+                                        type = "select",
+                                        name = "Anchor To",
+                                        values = anchorPositions,
+                                        order = 1,
+                                        width = "full",
+                                    },
+
+                                    x = {
+                                        type = "range",
+                                        name = "X Offset",
+                                        min = -max( data.primaryWidth, data.queue.width ),
+                                        max = max( data.primaryWidth, data.queue.width ),
+                                        step = 1,
+                                        order = 2,
+                                        width = "full",
+                                    },
+
+                                    y = {
+                                        type = "range",
+                                        name = "Y Offset",
+                                        min = -max( data.primaryHeight, data.queue.height ),
+                                        max = max( data.primaryHeight, data.queue.height ),
+                                        step = 1,
+                                        order = 2,
+                                        width = "full",
+                                    }
+                                }
+                            },
+
+                            textStyle = {
+                                type = "group",
+                                inline = true,
+                                name = "Text",
+                                order = 3,
+                                args = fontElements,
+                            },
+                        }
+                    },
+
+                    delays = {
+                        type = "group",
+                        name = "Delays",
+                        desc = "When an ability is recommended some time in the future, a colored indicator or countdown timer can " ..
+                            "communicate that there is a delay.",
                         order = 11,
-                        validate = function(info, val)
-                            if val == '' then return true end
-                            for k,v in ipairs(Hekili.DB.profile.displays) do
-                                if val == v.Name then
-                                    Hekili:Print("That name is already in use.")
-                                    return "That name is already in use."
-                                end
-                            end
-                            return true
-                        end,
-                        width = 'full',
+                        args = {
+                            type = {
+                                type = "select",
+                                name = "Indicator Type",
+                                desc = "Specify the type of indicator to use when you should wait before casting the ability.",                                
+                                values = {
+                                    __NA = "No Indicator",
+                                    ICON = "Show Icon (Color)",
+                                    TEXT = "Show Text (Countdown)"
+                                },                        
+                                width = "full",
+                                order = 1,
+                            },
+
+                            pos = {
+                                type = "group",
+                                inline = true,
+                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                order = 2,
+                                args = {
+                                    anchor = {
+                                        type = "select",
+                                        name = 'Anchor Point',
+                                        order = 2,
+                                        width = 'full',
+                                        values = anchorPositions
+                                    },
+                                    
+                                    x = {
+                                        type = "range",
+                                        name = "X Offset",
+                                        order = 3,
+                                        width = "full",
+                                        min = -max( data.primaryWidth, data.queue.width ),
+                                        max = max( data.primaryWidth, data.queue.width ),
+                                        step = 1,
+                                    },
+
+                                    y = {
+                                        type = "range",
+                                        name = "Y Offset",
+                                        order = 4,
+                                        width = "full",
+                                        min = -max( data.primaryHeight, data.queue.height ),
+                                        max = max( data.primaryHeight, data.queue.height ),
+                                        step = 1,
+                                    }                                    
+                                }
+                            },
+
+                            textStyle = {
+                                type = "group",
+                                inline = true,
+                                name = "Text",
+                                order = 3,
+                                args = fontElements,
+                                hidden = function () return data.delays.type ~= "TEXT" end,
+                            },
+                        }
                     },
-                    ['Import'] = {
-                        type = 'input',
-                        name = 'Import Display',
-                        desc = "Paste the export string from another display to copy its settings to this display. All settings will be copied, except for the display name.",
+
+                    indicators = {
+                        type = "group",
+                        name = "Indicators",
+                        desc = "Indicators are small icons that can indicate target-swapping or (rarely) cancelling auras.",
                         order = 11,
-                        width = 'full',
-                        multiline = 6,
+                        args = {
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "If enabled, small indicators for target-swapping, aura-cancellation, etc. may appear on your primary icon.",
+                                order = 1,
+                                width = "full",
+                            },
+
+                            queued = {
+                                type = "toggle",
+                                name = "Enabled for Queued Icons",
+                                desc = "If enabled, these indicators will appear on queued icons as well as the primary icon, when appropriate.",
+                                order = 2,
+                                width = "full",
+                                disabled = function () return data.indicators.enabled == false end,
+                            },
+
+                            pos = {
+                                type = "group",
+                                inline = true,
+                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                order = 2,
+                                args = {
+                                    anchor = {
+                                        type = "select",
+                                        name = "Anchor To",
+                                        values = anchorPositions,
+                                        order = 1,
+                                        width = "full",
+                                    },
+
+                                    x = {
+                                        type = "range",
+                                        name = "X Offset",
+                                        min = -max( data.primaryWidth, data.queue.width ),
+                                        max = max( data.primaryWidth, data.queue.width ),
+                                        step = 1,
+                                        order = 2,
+                                        width = "full",
+                                    },
+
+                                    y = {
+                                        type = "range",
+                                        name = "Y Offset",
+                                        min = -max( data.primaryHeight, data.queue.height ),
+                                        max = max( data.primaryHeight, data.queue.height ),
+                                        step = 1,
+                                        order = 2,
+                                        width = "full",
+                                    }
+                                }
+                            },                            
+                        }
                     },
-                    ['Export'] = {
-                        type = 'input',
-                        name = 'Export Display',
-                        desc = "Copy this export string and paste it into another display's Import field to copy all settings from this display to another existing display.",
-                        get = function(info)
-                            local dispKey = info[2]
-                            local dispIdx = tonumber( dispKey:match("^D(%d+)") )
-                            
-                            return ns.serializeDisplay( dispIdx )
-                        end,
-                        set = function(...)
-                            return
-                        end,
-                        order = 12,
-                        width = 'full',
-                        multiline = 6,
-                    },
-                }
-            },
-        }
-    }
-    
-    return dispOption
-    
-end
-
-
--- DISPLAYS > HOOKS
--- Add a hook to a display.
---[[ 032517 - Deprecated.
-ns.newHook = function( display, name )
-    
-    if not name then
-        return nil
-    end
-    
-    if type(display) == string then
-        display = tonumber( match( display, "^D(%d+)") )
-    end
-    
-    for i,v in ipairs( Hekili.DB.profile.displays[ display ].Queues ) do
-        if v.Name == name then
-            ns.Error('NewHook() - tried to use an existing hook name.')
-            return nil
-        end
-    end
-    
-    local index = #Hekili.DB.profile.displays[display].Queues + 1
-    
-    Hekili.DB.profile.displays[ display ].Queues[ index ] = {
-        Name = name,
-        Release = Hekili.DB.profile.Release,
-        Enabled = false,
-        ['Action List'] = 0,
-        Script = '',
-    }
-    
-    return ( 'P' .. index ), index
-    
-end
-
-
--- Add a hook to the options UI.
--- display (number) The index of the display to which this entry is attached.
--- key (number) The index for this particular hook.
-ns.newHookOption = function( display, key )
-    
-    if not key or not Hekili.DB.profile.displays[display].Queues[ key ] then
-        return nil
-    end
-    
-    local pqOption = {
-        type = "group",
-        name = '|cFFFFD100' .. key .. '.|r ' .. Hekili.DB.profile.displays[ display ].Queues[ key ].Name,
-        order = 50 + key,
-        -- childGroups = "tab",
-        -- This number must be index + number of options in "Display Queues" section.
-        -- order = index + 2,
-        args = {
-            
-            Enabled = {
-                type = 'toggle',
-                name = 'Enabled',
-                order = 00,
-                width = 'double',
-            },
-            ['Move'] = {
-                type = 'select',
-                name = 'Position',
-                order = 01,
-                values = function(info)
-                    local dispKey, hookKey = info[2], info[3]
-                    local dispIdx, hookID = tonumber( dispKey:match("^D(%d+)") ), tonumber( hookKey:match("^P(%d+)") )
-                    local list = {}
-                    for i = 1, #Hekili.DB.profile.displays[ dispIdx ].Queues do
-                        list[i] = i
-                    end
-                    return list
-                end
-            },
-            ['Name'] = {
-                type = 'input',
-                name = 'Name',
-                order = 03,
-                validate = function(info, val)
-                    local key = tonumber(info[2])
-                    for i, hook in pairs( Hekili.DB.profile.displays[display].Queues ) do
-                        if i ~= key and hook.Name == val then
-                            return "That hook name is already in use."
-                        end
-                    end
-                    return true
-                end,
-                width = 'double'
-            },
-            ['Action List'] = {
-                type = 'select',
-                name = 'Action List',
-                order = 04,
-                values = function(info)
-                    local lists = {}
-                    
-                    lists[0] = 'None'
-                    for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                        if list.Specialization > 0 then
-                            lists[i] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
-                        else
-                            lists[i] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t ' .. list.Name
-                        end
-                    end
-                    
-                    return lists
-                end,
-            },
-            Script = {
-                type = 'input',
-                name = 'Conditions',
-                dialogControl = "HekiliCustomEditor",
-                arg = function(info)
-                    local dispKey, hookKey = info[2], info[3]
-                    local dispIdx, hookID = tonumber( dispKey:match("^D(%d+)" ) ), tonumber( hookKey:match("^P(%d+)") )
-                    local prio = Hekili.DB.profile.displays[ dispIdx ].Queues[ hookID ]
-                    local results = {}
-                    
-                    ns.state.reset()
-                    ns.state.this_action = 'wait'
-                    ns.storeValues( results, ns.scripts.P[ dispIdx..':'..hookID ] )
-                    return results
-                end,
-                multiline = 6,
-                order = 12,
-                width = 'full'
-            },
-            Delete = {
-                type = "execute",
-                name = "Delete Hook",
-                confirm = true,
-                -- confirmText = '
-                order = 999,
-                func = function(info, ...)
-                    -- Key to Current Display (string)
-                    local dispKey = info[2]
-                    local dispIdx = tonumber( match( dispKey, "^D(%d+)" ) )
-                    local queueKey = info[3]
-                    local queueIdx = tonumber( match( queueKey, "^P(%d+)" ) )
-                    
-                    -- Will need to be more elaborate later.
-                    table.remove( Hekili.DB.profile.displays[dispIdx].Queues, queueIdx )
-                    ns.refreshOptions()
-                    ns.loadScripts()
-                end
-            },
-        }
-    }
-    
-    return pqOption
-    
-end ]]
-
-
--- ACTION LISTS
--- Add an action list to the profile (to be stored in SavedVariables).
-ns.newActionList = function( name )
-    
-    local index = #Hekili.DB.profile.actionLists + 1
-    
-    if not name then
-        name = "List #" .. index
-    end
-    
-    Hekili.DB.profile.actionLists[index] = {
-        Enabled = false,
-        Name = name,
-        Release = tonumber( date("%Y%m%d.1") ),
-        Specialization = ns.getSpecializationID() or 0,
-        Script = '',
-        Actions = {}
-    }
-    
-    return ( 'L' .. index ), index
-end
-
-
--- Add an action list to the options UI.
-ns.newActionListOption = function( index )
-    
-    if not index or Hekili.DB.profile.actionLists[ index ] == nil then
-        return nil
-    end
-    
-    local name = Hekili.DB.profile.actionLists[ index ].Name
-    
-    local listOption = {
-        type = "group",
-        name = function(info, val)
-            local name = name
-            local num = #Hekili.DB.profile.actionLists[ index ].Actions
-            local flag = false
-
-            for i = 1, num do
-                local script = Hekili.Scripts.A[ index .. ':' .. i ] 
-
-                if script and script.Error then
-                    flag = true
-                    break
-                end
-            end
-
-            if Hekili.DB.profile.actionLists[ index ].Default then
-                name = "|cFF00C0FF" .. name .. "|r"
-            end
-
-            if flag then
-                name = " |TInterface\\Addons\\Hekili\\Textures\\WARNING:0|t " .. name
-            end
-
-            return name
-        end,
-        icon = function(info)
-            local list = tonumber( match( info[#info], "^L(%d+)" ) )
-            if Hekili.DB.profile.actionLists[ list ].Specialization > 0 then
-                return select( 4, GetSpecializationInfoByID( Hekili.DB.profile.actionLists[ list ].Specialization ) )
-        else return 'Interface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp' end
-        end,
-        order = 10 + index,
-        args = {
-            Default = {
-                type = 'toggle',
-                name = 'Default',
-                desc = function(info, val)
-                    local list = tonumber( match( info[#info-1], "^L(%d+)" ) )
-                    return "This action list is a default, and will be automatically updated when the addon is updated. To prevent this behavior, uncheck this box. This cannot be undone without reloading the action list.\n|cFF00C0FF" .. Hekili.DB.profile.actionLists[ list ].Release .. "|r"
-                end,
-                order = 2,
-                hidden = function(info, val)
-                    return not Hekili.DB.profile.actionLists[ index ].Default
-                end
-            },
-            DefBlank = {
-                type = 'description',
-                name = " ",
-                order = 2,
-                hidden = function(info, val)
-                    return Hekili.DB.profile.actionLists[ index ].Default
-                end
-            },
-            Name = {
-                type = "input",
-                name = "Name",
-                desc = "Enter a unique name for this action list.",
-                validate = function(info, val)
-                    for i, list in pairs( Hekili.DB.profile.actionLists ) do
-                        if list.Name == val and index ~= i then
-                            return "That action list name is already in use."
-                        end
-                    end
-                    return true
-                end,
-                order = 3,
-                width = "full",
-            },
-            Specialization = {
-                type = 'select',
-                name = 'Specialization',
-                desc = "Select the class specialization for this action list. If you select 'Any', the list will work in all specializations, though abilities unavailable to your specialization will not be recommended.",
-                order = 4,
-                values = function(info)
-                    local class = select(2, UnitClass("player"))
-                    if not class then return nil end
-                    
-                    local num = GetNumSpecializations()
-                    local list = {}
-                    
-                    list[0] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t Any'
-                    for i = 1, num do
-                        local specID, name = GetSpecializationInfoForClassID( ns.getClassID(class), i )
-                        list[specID] = '|T' .. select( 4, GetSpecializationInfoByID( specID ) ) .. ':0|t ' .. name
-                    end
-                    return list
-                end,
-                width = 'full'
-            },
-            ['Import/Export'] = {
-                type = "group",
-                name = 'Import/Export',
-                order = 5,
-                args = {
-                    ['Copy To'] = {
-                        type = 'input',
-                        name = 'Copy To',
-                        desc = 'Enter a name for the new action list. All settings, except for the list name, will be duplicated into the new list.',
-                        order = 32,
-                        validate = function(info, val)
-                            if val == '' then return true end
-                            for k,v in ipairs(Hekili.DB.profile.actionLists) do
-                                if val == v.Name then
-                                    Hekili:Print("That name is already in use.")
-                                    return "That name is already in use."
-                                end
-                            end
-                            return true
-                        end,
-                        width = 'full',
-                    },
-                    ['Import Action List'] = {
-                        type = 'input',
-                        name = 'Import Action List',
-                        desc = "Paste the export string from another action list to copy it here. All settings, except for the list name, will be duplicated into this list.",
-                        order = 33,
-                        width = 'full',
-                        multiline = 6,
-                    },
-                    ['Export Action List'] = {
-                        type = 'input',
-                        name = 'Export Action List',
-                        desc = "Copy this export string and paste it into another action list to overwrite the other action list.",
-                        get = function(info)
-                            local listKey = info[2]
-                            local listIdx = tonumber( listKey:match("^L(%d+)") )
-                            
-                            return ns.serializeActionList( listIdx )
-                        end,
-                        set = function(...)
-                            return
-                        end,
-                        order = 34,
-                        width = 'full',
-                        multiline = 6,
-                    },
-                    ['SimulationCraft'] = {
-                        type = 'input',
-                        name = 'Import SimulationCraft List',
-                        desc = "Copy a SimulationCraft action list and paste it here to import. If any lines cannot be parsed, the action list will not be imported.",
-                        order = 35,
-                        multiline = 6,
-                        dialogControl = 'HekiliCustomEditor',
-                        -- validate = 'ImportSimulationCraftActionList',
-                        width = 'full',
-                        confirm = true,
-                    },
-                }
-            },
-            spcHeader = {
-                type = 'description',
-                name = "\n",
-                order = 900,
-                width = 'full'
-            },
-            ['Add Action'] = {
-                type = "execute",
-                name = "Add Action",
-                desc = "Adds a new action entry, where you can set the ability and conditions required for that ability to be shown.",
-                order = 901,
-                func = function( info )
-                    local listKey, listIdx = info[2], tonumber( info[2]:match("^L(%d+)") )
-                    
-                    local clear, suffix, name, result = 0, 1, "New Action", "New Action"
-                    while clear < #Hekili.DB.profile.actionLists[ listIdx ].Actions do
-                        for i, action in ipairs( Hekili.DB.profile.actionLists[ listIdx ].Actions ) do
-                            if action.Name == result then
-                                result = name .. ' (' .. suffix .. ')'
-                                suffix = suffix + 1
-                            else
-                                clear = clear + 1
-                            end
-                        end
-                    end
-                    
-                    local key, index = ns.newAction( listIdx, result )
-                    if key then
-                        Hekili.Options.args.actionLists.args[ listKey ].args[ key ] = ns.newActionOption( listIdx, index )
-                        Hekili:UpdateDisplayVisibility()
-                        ns.loadScripts()
-                    end
-                end
-            },
-            Reload = {
-                type = "execute",
-                name = "Reload Action List",
-                desc = function( info, ... )
-                    local listKey, listID = info[2], tonumber( string.match( info[2], "^L(%d+)" ) )
-                    local list = Hekili.DB.profile.actionLists[ listID ]
-                    
-                    local _, defaultID = ns.isDefault( list.Name, 'actionLists' )
-                    
-                    local output = "Reloads this action list from the default options available."
-                    
-                    if class.defaults[ defaultID ].version > ( list.Release or 0 ) then
-                        output = output .. "\n|cFF00FF00The default action list is newer (" .. class.defaults[ defaultID ].version .. ") than your existing action list (" .. ( list.Release or "7.00" ) .. ").|r"
-                    end
-                    
-                    return output
-                end,
-                confirm = true,
-                confirmText = "Reload the default settings for this default action list?",
-                order = 902,
-                hidden = function( info, ... )
-                    local listKey, listID = info[2], tonumber( match( info[2], "^L(%d+)" ) )
-                    local list = Hekili.DB.profile.actionLists[ listID ]
-                    
-                    if ns.isDefault( list.Name, 'actionLists' ) then
-                        return false
-                    end
-                    
-                    return true
-                end,
-                func = function( info, ... )
-                    local listKey, listID = info[2], tonumber( match( info[2], "^L(%d+)" ) )
-                    local list = Hekili.DB.profile.actionLists[ listID ]
-                    
-                    local _, defaultID = ns.isDefault( list.Name, 'actionLists' )
-                    
-                    local import = ns.deserializeActionList( class.defaults[ defaultID ].import )
-                    
-                    if not import or type( import ) == 'string' then
-                        Hekili:Print("Unable to import " .. class.defaults[ defaultID ].name .. ".")
-                        return
-                    end
-                    
-                    Hekili.DB.profile.actionLists[ listID ] = import
-                    Hekili.DB.profile.actionLists[ listID ].Name = class.defaults[ defaultID ].name
-                    Hekili.DB.profile.actionLists[ listID ].Release = class.defaults[ defaultID ].version
-                    Hekili.DB.profile.actionLists[ listID ].Default = true
-                    ns.refreshOptions()
-                    ns.loadScripts()
-                    -- ns.buildUI()
-                end,
-            },
-            BLANK2 = {
-                type = "description",
-                name = " ",
-                order = 902,
-                hidden = function( info, ... )
-                    local listKey, listID = info[2], tonumber( match( info[2], "^L(%d+)" ) )
-                    local list = Hekili.DB.profile.actionLists[ listID ]
-                    
-                    if ns.isDefault( list.Name, 'actionLists' ) then
-                        return true
-                    end
-                    
-                    return false
-                end,
-                width = "single",
-            },
-            Delete = {
-                type = "execute",
-                name = "Delete Action List",
-                desc = "Delete this action list, and all actions associated with this list.",
-                confirm = true,
-                order = 999,
-                func = function(info, ...)
-                    local actKey = info[2]
-                    local actIdx = tonumber( match( actKey, "^L(%d+)" ) )
-                    
-                    for d_key, display in ipairs( Hekili.DB.profile.displays ) do
-                        if display.precombatAPL == actIdx then display.precombatAPL = 0
-                            elseif display.precombatAPL > actIdx then display.precombatAPL = display.precombatAPL - 1 end
-                        if display.defaultAPL == actIdx then display.defaultAPL = 0
-                            elseif display.defaultAPL > actIdx then display.defaultAPL = display.defaultAPL - 1 end
-                    end
-                    
-                    table.remove( Hekili.DB.profile.actionLists, actIdx )
-                    ns.loadScripts()
-                    ns.refreshOptions()
-                    LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "actionLists" )
-                    
-                end
-            }
-        }
-    }
-    
-    return listOption
-    
-end
-
-
--- ACTION LISTS > ACTIONS
--- Add an action to the action list.
-ns.newAction = function( aList, name )
-    
-    if not name then
-        return nil
-    end
-    
-    if type(aList) == string then
-        aList = tonumber( match( aList, "^A(%d+)") )
-    end
-    
-    local clear, suffix, name_arg = 0, 1, name
-    while clear < #Hekili.DB.profile.actionLists[aList].Actions do
-        clear = 0
-        for i, action in ipairs( Hekili.DB.profile.actionLists[aList].Actions ) do
-            if name == action.Name then
-                name = name_arg .. ' (' .. suffix .. ')'
-                suffix = suffix + 1
-            else
-                clear = clear + 1
-            end
-        end
-    end
-    
-    local index = #Hekili.DB.profile.actionLists[ aList ].Actions + 1
-    
-    Hekili.DB.profile.actionLists[ aList ].Actions[ index ] = {
-        Name = name,
-        Release = Hekili.DB.profile.Version + ( Hekili.DB.profile.Release / 100 ),
-        Enabled = false,
-        Ability = nil,
-        Caption = nil,
-        Indicator = 'none',
-        Arguments = nil,
-        Resources = {},
-        Script = '',
-    }
-    
-    return ( 'A' .. index ), index
-    
-end
-
-
-local function getActionKeys( info )
-    return info[2], info[3]
-end
-
-
-local function getActionIndexes( info )
-    local k1, k2 = getActionKeys( info )
-    
-    return tonumber( k1:match("^L(%d+)") ), tonumber( k2:match( "^A(%d+)" ) )
-end
-
-
-local function getActionEntry( info )
-    local lID, aID = getActionIndexes( info )
-    
-    if lID and aID then return Hekili.DB.profile.actionLists[ lID ].Actions[ aID ] end
-    
-    return nil
-end
-
-
---- NewActionOption()
--- Add a new action to the action list options.
--- aList (number) index of the action list.
--- index (number) index of the action in the action list.
-ns.newActionOption = function( aList, index )
-    
-    if not index then return nil end
-    
-    local entry = Hekili.DB.profile.actionLists[ aList ].Actions[ index ]
-    
-    if not entry then return nil end
-    
-    local actOption = {
-        type = "group",
-        -- inline = true,
-        name = '|cFFFFD100' .. index .. '.|r ' .. Hekili.DB.profile.actionLists[ aList ].Actions[ index ].Name,
-        order = index * 10,
-        hidden = function( info )
-            local name = '|cFFFFD100' .. index .. '.|r ' .. Hekili.DB.profile.actionLists[ aList ].Actions[ index ].Name
-            local script = Hekili.Scripts.A[ aList .. ':' .. index ]
-
-            if script and script.Error then
-                name = '|cFFFFD100' .. index .. ".|r |TInterface\\Addons\\Hekili\\Textures\\WARNING:0|t " .. Hekili.DB.profile.actionLists[ aList ].Actions[ index ].Name
-            end
-
-            Hekili.Options.args.actionLists.args[ 'L'..aList ].args[ 'A'..index ].name = name
-            return false
-        end,
-        -- childGroups = "tab",
-        -- This number must be index + number of options in "Display Queues" section.
-        -- order = index + 2,
-        args = {
-            Enabled = {
-                type = 'toggle',
-                name = 'Enabled',
-                desc = "If disabled, this action will not be shown under any circumstances.",
-                order = 00,
-                width = 'double'
-            },
-            ['Move'] = {
-                type = 'select',
-                name = 'Position',
-                desc = "Select another position in the action list and move this item to that location.",
-                order = 01,
-                values = function(info)
-                    local listKey, actKey = info[2], info[3]
-                    local listIdx, actIdx = tonumber( listKey:match("^L(%d+)") ), tonumber( actKey:match("^A(%d+)") )
-                    local list = {}
-                    for i = 1, #Hekili.DB.profile.actionLists[ listIdx ].Actions do
-                        list[i] = i
-                    end
-                    return list
-                end
-            },
-            ['Name'] = {
-                type = 'input',
-                name = 'Name',
-                desc = "Enter a unique name for this action in the action list. This is typically the ability name accompanied by a short description.",
-                order = 03,
-                validate = function(info, val)
-                    local listIdx = tonumber( match( info[2], "^L(%d+)" ) )
-                    
-                    for i, action in pairs( Hekili.DB.profile.actionLists[ aList ].Actions ) do
-                        if action.Name == val and i ~= listIdx then
-                            return "That action name is already in use."
-                        end
-                    end
-                    return true
-                end,
-            },
-            Caption = {
-                type = 'input',
-                name = 'Caption',
-                desc = "Enter a caption to be displayed on this action's icon when the action is shown.",
-                order = 04,
-            },
-            
-            Indicator = {
-                type = 'select',
-                name = 'Indicator',
-                desc = "Select a special indicator for this ability. It will appear at the top of the action's icon when shown.",
-                order = 05,
-                values = {
-                    none = "None",
-                    cancel = "|TInterface\\Addons\\Hekili\\Textures\\Cancel:0|t Cancel",
-                    cycle = "|TInterface\\Addons\\Hekili\\Textures\\Cycle2:0|t Cycle Targets"
                 },
             },
-            
-            Ability = {
-                type = 'select',
-                name = 'Ability',
-                desc = "Select the ability for this action entry. Only abilities supported by the addon's prediction engine will be shown.",
-                order = 06,
-                values = class.searchAbilities,
-                width = 'single'
-            },
-            
-            
-            -- Special Settings Per Ability Here.
-            WaitSeconds = {
-                type = 'input',
-                name = 'Time to Wait',
-                desc = "Specify the number of seconds that addon should delay before checking its next recommendation. " ..
-                "This can be specified as a number or an expression that evaluates to a number. For instance, |cFFFFD100cooldown.judgment.remains|r " ..
-                "will tell the addon to wait until the remaining cooldown on Judgment has passed.\n\n" ..
-                "If left blank, the addon will wait |cFFFFD1001|r second.",
-                order = 07,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or action.Ability ~= 'wait'
-                end,
-                width = "double",
-            },
+        }
+    end
 
-            PoolForNext = {
-                type = 'toggle',
-                name = 'For Next Ability',
-                desc = "If checked, the addon will delay until the resources required by the next action have been generated. " ..
-                    "If unchecked, you can specify an amount of time to pool.",
-                order = 6,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or action.Ability ~= 'pool_resource'
-                end,
-            },
 
-            PoolExtra = {
-                type = 'range',
-                name = 'Extra Resources',
-                desc = "If greater than zero, the addon will Pool Resources until this much additional resources have been generated.",
-                order = 7,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or action.Ability ~= 'pool_resource' or not action.PoolForNext
-                end,
-                min = 0,
-                max = 1000,
-                step = 1,
-            },
+    function Hekili:EmbedDisplayOptions( db )
+        db = db or self.Options
+        if not db then return end
 
-            PoolTime = {
-                type = 'input',
-                name = 'Pool Time',
-                desc = "Specify the amount of time to pool resources for.  This can be specified as a number or an expression that evaluates to a number. For instance, |cFFFFD100energy.time_to_max|r " ..
-                    "will tell the addon to wait until your Energy bar is full.  This is capped at 10 seconds.\n\n" ..
-                    "If left blank, the addon will pool for |cFFFFD1000.5|r seconds.",
-                order = 7,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or action.Ability ~= 'pool_resource' or action.PoolForNext
-                end,
-            },
+        local section = db.args.displays or {
+            type = "group",
+            name = "Displays",
+            childGroups = "tree",
+            cmdHidden = true,
+            get = 'GetDisplayOption',
+            set = 'SetDisplayOption',
+            order = 20,
 
-            ModName = {
-                type = 'select',
-                name = "Select a Value",
-                desc = "Select the appropriate option for the chosen ability.",
-                order = 09,
-                values = function( info )
-                    local action = getActionEntry( info )
-                    local opts = {}
-                    
-                    if action.Ability == 'call_action_list' or action.Ability == 'run_action_list' then
-                        for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                            if list.Specialization > 0 then
-                                opts[ list.Name ] = '|T' .. select(4, GetSpecializationInfoByID( list.Specialization ) ) .. ':0|t ' .. list.Name
-                            else
-                                opts[ list.Name ] = '|TInterface\\Addons\\Hekili\\Textures\\' .. select(2, UnitClass('player')) .. '.blp:0|t ' .. list.Name
-                            end 
-                        end
-                    elseif action.Ability == 'potion' then
-                        for key, potion in pairs( class.potions ) do
-                            opts[ key ] = GetItemInfo( potion.item )
-                        end
-                    elseif action.Ability == 'use_item' then
-                        for key, item in pairs( class.usable_items ) do
-                            if type( key ) ~= 'number' then opts[ key ] = GetItemInfo( item.item ) end
-                        end
-
-                    end
-                    
-                    return opts
-                end,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    
-                    if not action then return true
-                    elseif action.Ability == 'potion' then return false
-                    elseif action.Ability == 'use_item' then return false
-                    elseif ( action.Ability == 'call_action_list' or action.Ability == 'run_action_list' ) then return false
-                    end
-                    
-                    return true
-                end,
-                width = "double"
-            },
-
-            ModVarName = {
-                type = 'input',
-                name = "Variable Name",
-                desc = "Enter a name for this stored value (the value will be referenced elsewhere in the action list by this name).",
-                order = 09,
-                width = "double",
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    
-                    if action.Ability == 'variable' then return false end
-                    
-                    return true
-                end,
-            },            
-            
-            whenReady = {
-                type = 'select',
-                name = 'Check When...',
-                order = 10,
-                width = 'full',
-                desc = "\n|cFFFFD100Automatic|r: This entry is checked when its assigned action is off-cooldown and the resources that are required are available. This is the default setting.\n" ..
-                "|cFFFFD100Script|r: The entry is checked based on the value of a script, similar to the |cFFFFD100Conditions|r that are tested to determine if the entry will be used.\n\n" ..
-                "Scripts have access to the simulated game state, and must return a number value in seconds (or else the addon will revert to the 'Automatic' value).",
-                values = {
-                    auto = 'Automatic',
-                    script = 'Script',
+            args = {
+                header = {
+                    type = "description",
+                    name = "Hekili has up to four built-in displays (identified in blue) that can display " ..
+                        "different kinds of recommendations.  The addons recommendations are based upon the " ..
+                        "Action Packs that are generally (but not exclusively) based on SimulationCraft profiles " ..
+                        "so that you can compare your performance to the results of your simulations.",
+                    fontSize = "medium",
+                    width = "full",
+                    order = 1,
                 },
-                get = function( info )
-                    local listKey, actKey = info[2], info[3]
-                    local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
-                    
-                    local value = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].whenReady
-                    if value == nil then value = 'auto' end
-                    
-                    return value
-                end,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    
-                    return action.Ability == 'variable' or action.Ability == 'call_action_list' or action.Ability == 'run_action_list'
-                end,
-            },
 
-            ReadyTime = {
-                type = 'input',
-                name = 'Time Script',
-                desc = 'This is an experimental feature that allows an action list author to provide additional information ' ..
-                'about |cFF00D1D1when|r the criteria will be met for this ability. While the |cFFFFD100Conditions|r above ' ..
-                'tell the addon that an action should or should not be shown, when properly scripted, the |cFFFFD100Time Script|r tells ' ..
-                'the addon when the entry will be ready.',
-                dialogControl = "HekiliCustomEditor",
-                multiline = 6,
-                order = 11,
-                arg = function(info)
-                    local listKey, actKey = info[2], info[3]
-                    local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
-                    
-                    local action = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability
-                    local args = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Args
-                    
-                    local results = {}
-                    
-                    ns.state.reset()
-                    
-                    ns.state.this_action = action
-                    ns.state.this_args = args
-                    
-                    results.delay = action and ns.state.action[ action ].ready_time or 0
-                    
-                    local ability = ns.state.class.abilities[ action ]
-                    
-                    if ability then
-                        if ability.spend then
-                            if type( ns.state.class.abilities[ action ].spend ) == 'function' then
-                                results.cost, results.resource = ability.spend()
-                            else
-                                results.cost, results.resource = ability.spend, ability.spend_type
-                            end
-                            results.resource = results.resource or ability.spend_type or class.primaryResource
-                        end
-                    end
-                    
-                    ns.storeReadyValues( results, ns.scripts.A[ listIdx..':'..actIdx ] )
-                    
-                    return results
-                end,
-                hidden = function (info)
-                    local action = getActionEntry( info )
-                    
-                    return action.whenReady ~= 'script' or action.Ability == 'variable' or action.Ability == 'call_action_list' or action.Ability == 'run_action_list'
-                end,
-                width = 'full',
-            },
+                displays = {
+                    type = "header",
+                    name = "Displays",
+                    order = 10,                    
+                },
 
-            Script = {
-                type = 'input',
-                name = 'Conditions',
-                dialogControl = "HekiliCustomEditor",
-                arg = function(info)
-                    local listKey, actKey = info[2], info[3]
-                    local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
-                    local results = {}
-                    
-                    ns.state.reset()
-                    ns.state.this_action = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability
-                    ns.state.this_args = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Args
-                    ns.importModifiers( listIdx, actIdx )
-                    ns.storeValues( results, ns.scripts.A[ listIdx..':'..actIdx ] )
-                    
-                    return results, true
-                end,
-                multiline = 15,
-                order = 20,
-                width = 'full',
-                --[[ hidden = function( info )
-                local action = getActionEntry( info )
+
+                nPanelHeader = {
+                    type = "header",
+                    name = "Notification Panel",
+                    order = 950,
+                },
+
+                nPanelBtn = {
+                    type = "execute",
+                    name = "Notification Panel",
+                    desc = "The Notification Panel provides brief updates when settings are changed or " ..
+                        "toggled while in combat.",
+                    func = function ()
+                        ACD:SelectGroup( "Hekili", "displays", "nPanel" )
+                    end,
+                    order = 951,
+                },
+
+                nPanel = {
+                    type = "group",
+                    name = "|cFF1EFF00Notification Panel|r",
+                    desc = "The Notification Panel provides brief updates when settings are changed or " ..
+                        "toggled while in combat.",
+                    order = 952,
+                    get = GetNotifOption,
+                    set = SetNotifOption,
+                    args = {
+                        enabled = {
+                            type = "toggle",
+                            name = "Enabled",
+                            order = 1,
+                            width = "full",
+                        },
+
+                        posRow = {
+                            type = "group",
+                            name = function( info ) rangeXY( info, true ); return "Position" end,
+                            inline = true,
+                            order = 2,
+                            args = {
+                                x = {
+                                    type = "range",
+                                    name = "X",
+                                    desc = "Enter the horizontal position of the notification panel, " ..
+                                        "relative to the center of the screen.  Negative values move the " ..
+                                        "display left; positive values move the display right.",
+                                    validate = function( info, val )
+                                        local x = tonumber( val )
+                                        if tostring( x ) ~= val then return "Please specify a numeric value." end
+                                        return true
+                                    end,
+                                    min = -512,
+                                    max = 512,
+                                    step = 1,
+
+                                    width = "full",
+                                    order = 1,
+                                },
+
+                                y = {
+                                    type = "range",
+                                    name = "Y",
+                                    desc = "Enter the vertical position of the notification panel, " ..
+                                        "relative to the center of the screen.  Negative values move the " ..
+                                        "display down; positive values move the display up.",
+                                    validate = function( info, val )
+                                        local x = tonumber( val )
+                                        if tostring( x ) ~= val then return "Please specify a numeric value." end
+                                        return true
+                                    end,
+                                    width = "full",
+                                    order = 2,
+                                },
+                            }
+                        },
+
+                        sizeRow = {
+                            type = "group",
+                            name = "Size",
+                            inline = true,
+                            order = 3,
+                            args = {
+                                width = {
+                                    type = "range",
+                                    name = "Width",
+                                    min = 50,
+                                    max = 1000,
+                                    step = 1,
+
+                                    width = "full",
+                                    order = 1,
+                                },
+
+                                height = {
+                                    type = "range",
+                                    name = "Height",
+                                    min = 20,
+                                    max = 600,
+                                    step = 1,
+
+                                    width = "full",
+                                    order = 2,
+                                },
+                            }
+                        },
+
+                        fontGroup = {
+                            type = "group",
+                            inline = true,
+                            name = "Text",
+                            
+                            order = 5,
+                            args = fontElements,
+                        },
+                    }                    
+                },
+
+
+                shareHeader = {
+                    type = "header",
+                    name = "Sharing",
+                    order = 996,
+                },
+
+                shareBtn = {
+                    type = "execute",
+                    name = "Share Styles",
+                    desc = "Your display styles can be shared with other addon users with these export strings.\n\n" ..
+                        "You can also import a shared export string here.",
+                    func = function ()
+                        ACD:SelectGroup( "Hekili", "displays", "shareDisplays" )
+                    end,
+                    order = 998,
+                },
+
+                shareDisplays = {
+                    type = "group",
+                    name = "|cFF1EFF00Share Styles|r",
+                    desc = "Your display options can be shared with other addon users with these export strings.\n\n" ..
+                        "You can also import a shared export string here.",
+                    childGroups = "tab",
+                    get = 'GetDisplayShareOption',
+                    set = 'SetDisplayShareOption',
+                    order = 999,
+                    args = {
+                        import = {
+                            type = "group",
+                            name = "Import",
+                            order = 1,
+                            args = {
+                                stage0 = {
+                                    type = "group",
+                                    name = "",
+                                    inline = true,
+                                    order = 1,
+                                    args = {
+                                        guide = {
+                                            type = "description",
+                                            name = "Select a saved Style or paste an import string in the box provided.",
+                                            order = 1,
+                                            width = "full",
+                                            fontSize = "medium",
+                                        },
+
+                                        separator = {
+                                            type = "header",
+                                            name = "Import String",
+                                            order = 1.5,                                             
+                                        },
+        
+                                        selectExisting = {
+                                            type = "select",
+                                            name = "Select a Saved Style",
+                                            order = 2,
+                                            width = "full",
+                                            get = function()
+                                                return "0000000000"
+                                            end,
+                                            set = function( info, val )
+                                                local style = self.DB.global.styles[ val ]
+        
+                                                if style then shareDB.import = style.payload end
+                                            end,
+                                            values = function ()
+                                                local db = self.DB.global.styles
+                                                local values = {
+                                                    ["0000000000"] = "Select a Saved Style"
+                                                }
+        
+                                                for k, v in pairs( db ) do
+                                                    values[ k ] = k .. " (|cFF00FF00" .. v.date .. "|r)"
+                                                end
+        
+                                                return values
+                                            end,
+                                        },
+        
+                                        importString = {
+                                            type = "input",
+                                            name = "Import String",
+                                            get = function () return shareDB.import end,
+                                            set = function( info, val )
+                                                val = val:trim()
+                                                shareDB.import = val
+                                            end,
+                                            order = 3,
+                                            multiline = 5,
+                                            width = "full",
+                                        },
+
+                                        btnSeparator = {
+                                            type = "header",
+                                            name = "Import",
+                                            order = 4,
+                                        },
+        
+                                        importBtn = {
+                                            type = "execute",
+                                            name = "Import Style",
+                                            order = 5,
+                                            func = function ()
+                                                shareDB.imported, shareDB.error = self:DeserializeStyle( shareDB.import )
+        
+                                                if shareDB.error then
+                                                    shareDB.import = "The Import String provided could not be decompressed.\n" .. shareDB.error
+                                                    shareDB.error = nil
+                                                    shareDB.imported = {}
+                                                else
+                                                    shareDB.importStage = 1
+                                                end
+                                            end,
+                                            disabled = function ()
+                                                return shareDB.import == ""
+                                            end,
+                                        },
+                                    },
+                                    hidden = function () return shareDB.importStage ~= 0 end,
+                                },
+
+                                stage1 = {
+                                    type = "group",
+                                    inline = true,
+                                    name = "",
+                                    order = 1,
+                                    args = {
+                                        guide = {
+                                            type = "description",
+                                            name = function ()
+                                                local creates, replaces = {}, {}
+                                                
+                                                for k, v in pairs( shareDB.imported ) do
+                                                    if rawget( self.DB.profile.displays, k ) then
+                                                        table.insert( replaces, k )
+                                                    else
+                                                        table.insert( creates, k )
+                                                    end
+                                                end
+
+                                                local o = ""
+
+                                                if #creates > 0 then
+                                                    o = o .. "The imported style will create the following display(s):  "
+                                                    for i, display in orderedPairs( creates ) do
+                                                        if i == 1 then o = o .. display
+                                                        else o = o .. ", " .. display end
+                                                    end
+                                                    o = o .. ".\n"
+                                                end
+
+                                                if #replaces > 0 then
+                                                    o = o .. "The imported style will overwrite the following display(s):  "
+                                                    for i, display in orderedPairs( replaces ) do
+                                                        if i == 1 then o = o .. display
+                                                        else o = o .. ", " .. display end
+                                                    end
+                                                    o = o .. "."
+                                                end
+
+                                                return o
+                                            end,
+                                            order = 1,
+                                            width = "full",
+                                            fontSize = "medium",
+                                        },
+
+                                        separator = {
+                                            type = "header",
+                                            name = "Apply Changes",
+                                            order = 2,
+                                        },
+
+                                        apply = {
+                                            type = "execute",
+                                            name = "Apply Changes",
+                                            order = 3,
+                                            confirm = true,
+                                            func = function ()
+                                                for k, v in pairs( shareDB.imported ) do
+                                                    if type( v ) == "table" then self.DB.profile.displays[ k ] = v end
+                                                end
+                                                
+                                                shareDB.import = ""
+                                                shareDB.imported = {}
+                                                shareDB.importStage = 2
+                                                
+                                                self:EmbedDisplayOptions()
+                                                self:BuildUI()
+                                            end,
+                                        },
+
+                                        reset = {
+                                            type = "execute",
+                                            name = "Reset",
+                                            order = 4,
+                                            func = function ()
+                                                shareDB.import = ""
+                                                shareDB.imported = {}
+                                                shareDB.importStage = 0
+                                            end,
+                                        },
+                                    },
+                                    hidden = function () return shareDB.importStage ~= 1 end,
+                                },
+
+                                stage2 = {
+                                    type = "group",
+                                    inline = true,
+                                    name = "",
+                                    order = 3,
+                                    args = {
+                                        note = {
+                                            type = "description",
+                                            name = "Imported settings were successfully applied!\n\nClick Reset to start over, if needed.",
+                                            order = 1,
+                                            fontSize = "medium",
+                                            width = "full",
+                                        },
+
+                                        reset = {
+                                            type = "execute",
+                                            name = "Reset",
+                                            order = 2,
+                                            func = function ()
+                                                shareDB.import = ""
+                                                shareDB.imported = {}
+                                                shareDB.importStage = 0
+                                            end,
+                                        }
+                                    },
+                                    hidden = function () return shareDB.importStage ~= 2 end,
+                                }
+                            },
+                            plugins = {                                
+                            }
+                        },
+
+                        export = {
+                            type = "group",
+                            name = "Export",
+                            order = 2,
+                            args = {
+                                stage0 = {
+                                    type = "group",
+                                    name = "",
+                                    inline = true,
+                                    order = 1,
+                                    args = {
+                                        guide = {
+                                            type = "description",
+                                            name = "Select the display style settings to export, then click Export Styles to generate an export string.",
+                                            order = 1,
+                                            fontSize = "medium",
+                                            width = "full",
+                                        },
+        
+                                        displays = {
+                                            type = "header",
+                                            name = "Displays",
+                                            order = 2,
+                                        },
+        
+                                        exportHeader = {
+                                            type = "header",
+                                            name = "Export",
+                                            order = 1000,
+                                        },
+        
+                                        exportBtn = {
+                                            type = "execute",
+                                            name = "Export Style",
+                                            order = 1001,
+                                            func = function ()
+                                                local disps = {}
+                                                for key, share in pairs( shareDB.displays ) do
+                                                    if share then table.insert( disps, key ) end
+                                                end
+        
+                                                shareDB.export = self:SerializeStyle( unpack( disps ) )
+                                                shareDB.exportStage = 1
+                                            end,
+                                            disabled = function ()
+                                                local hasDisplay = false
+        
+                                                for key, value in pairs( shareDB.displays ) do
+                                                    if value then hasDisplay = true; break end
+                                                end
+        
+                                                return not hasDisplay
+                                            end,
+                                        },                                        
+                                    },
+                                    plugins = {
+                                        displays = {}
+                                    },
+                                    hidden = function ()
+                                        local plugins = self.Options.args.displays.args.shareDisplays.args.export.args.stage0.plugins.displays
+                                        wipe( plugins )
+            
+                                        local i = 1
+                                        for dispName, display in pairs( self.DB.profile.displays ) do
+                                            local pos = 20 + ( display.builtIn and display.order or i )
+                                            plugins[ dispName ] = {
+                                                type = "toggle",
+                                                name = function ()
+                                                    if display.builtIn then return "|cFF00B4FF" .. dispName .. "|r" end
+                                                    return dispName
+                                                end,
+                                                order = pos,
+                                                width = "full"
+                                            }
+                                            i = i + 1
+                                        end
+        
+                                        return shareDB.exportStage ~= 0 
+                                    end,
+                                },
+
+                                stage1 = {
+                                    type = "group",
+                                    name = "",
+                                    inline = true,
+                                    order = 1,
+                                    args = {
+                                        exportString = {
+                                            type = "input",
+                                            name = "Style String",
+                                            order = 1,
+                                            multiline = 8,
+                                            get = function () return shareDB.export end,
+                                            set = function () end,
+                                            width = "full",
+                                            hidden = function () return shareDB.export == "" end,
+                                        },
+        
+                                        instructions = {
+                                            type = "description",
+                                            name = "You can copy the above string to share your selected display style settings, or " ..
+                                                "use the options below to store these settings (to be retrieved at a later date).",
+                                            order = 2,
+                                            width = "full",
+                                            fontSize = "medium"
+                                        },
+
+                                        store = {
+                                            type = "group",
+                                            inline = true,
+                                            name = "",
+                                            order = 3,
+                                            hidden = function () return shareDB.export == "" end,
+                                            args = {
+                                                separator = {
+                                                    type = "header",
+                                                    name = "Save Style",
+                                                    order = 1,
+                                                },
+
+                                                exportName = {
+                                                    type = "input",
+                                                    name = "Style Name",
+                                                    get = function () return shareDB.styleName end,
+                                                    set = function( info, val )
+                                                        val = val:trim()
+                                                        shareDB.styleName = val
+                                                    end,
+                                                    order = 2,
+                                                    width = "double",                                            
+                                                },
                 
-                return action.Ability == 'variable'
-            end, ]]
-            },
-            
-            ShowModifiers = {
-                type = 'toggle',
-                name = 'Show Modifiers',
-                desc = "Modifiers are additional action list criteria used by the addon (and often by SimulationCraft) to " ..
-                "make additional decisions about what abilities to recommend. For instance, the |cFFFFD100wait|r action " ..
-                "has a modifier called |cFFFFD100sec|r that specifies (or calculates) how many seconds to wait.\n\n" ..
-                "The |cFFFFD100potion|r action has a modifier of |cFFFFD100name|r to specify which potion to use.\n\n" ..
-                "For most actions, no modifiers are required.",
-                order = 30,
-                width = 'full'
-            },
+                                                storeStyle = {
+                                                    type = "execute",
+                                                    name = "Store Export String",
+                                                    desc = "By storing your export string, you can save these display settings and retrieve them later if you make changes to your settings.\n\n" ..
+                                                        "The stored style can be retrieved from any of your characters, even if you are using different profiles.",
+                                                    order = 3,
+                                                    confirm = function ()
+                                                        if shareDB.styleName and self.DB.global.styles[ shareDB.styleName ] ~= nil then
+                                                            return "There is already a style with the name '" .. shareDB.styleName .. "' -- overwrite it?"
+                                                        end
+                                                        return false
+                                                    end,
+                                                    func = function ()
+                                                        local db = self.DB.global.styles
+                                                        db[ shareDB.styleName ] = {
+                                                            date = tonumber( date("%Y%m%d.%H%M%S") ),
+                                                            payload = shareDB.export,
+                                                        }
+                                                        shareDB.styleName = ""
+                                                    end,
+                                                    disabled = function ()
+                                                        return shareDB.export == "" or shareDB.styleName == ""
+                                                    end,
+                                                }                
+                                            }
+                                        },
 
-            CheckMovement = {
-                type = 'toggle',
-                name = 'Check Movement',
-                desc = "If toggled, this action will also test whether your character is currently moving when deciding " ..
-                "whether to recommend this action. You can specify whether to the action is recommended when moving or " ..
-                "when stationary.",
-                order = 33,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or not action.ShowModifiers
-                end,
-                width = 'single',
-            },
-            Moving = {
-                type = 'select',
-                name = "Show Only If...",
-                desc = "When |cFFFFD100Check Movement|r is selected, this setting specifies whether the ability is recommended " ..
-                "when |cFFFFD100Moving|r or when |cFFFFD100Stationary|r.",
-                order = 34,
-                disabled = function( info )
-                    local action = getActionEntry( info )
-                    return not action or not action.CheckMovement
-                end,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or not action.ShowModifiers
-                end,
-                values = {
-                    [0] = 'Stationary',
-                    [1] = 'Moving'
-                },
-                get = function( info )
-                    local action = getActionEntry( info )
-                    
-                    if not action or not action.Moving then return 0 end
-                    
-                    return type( action.Moving ) == 'number' and action.Moving or tonumber( action.Moving )
-                end,
-                set = function( info, val )
-                    getActionEntry( info ).Moving = val
-                end,
-                width = 'double'
-            },
 
-            StrictCheck = {
-                type = 'toggle',
-                name = 'Strict Check',
-                desc = "If Strict Checking is enabled, the addon will not recheck this entry's criteria for any dependent actions.  This applies only to Call Action List or Run Action List entries.",
-                order = 35,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or not action.ShowModifiers
-                end,
-                width = "full",
-            },
-            
-            CycleTargets = {
-                type = 'toggle',
-                name = 'Cycle Targets',
-                desc = "If toggled, this action will show an indicator to swap to another target when your current target is " ..
-                "already afflicted by any debuffs applied by this ability. For instance, if the ability in question is " ..
-                "Tiger Palm for a Windwalker Monk, the addon will recommend hitting another target if your current target " ..
-                "is already afflicted by Mark of the Crane (and by Eye of the Tiger, if talented).\n\n" ..
-                "If a |cFFFFD100Maximum Targets|r value is specified, the addon will only recommend target swapping if/when " ..
-                "fewer than |cFFFFD100Maximum Targets|r are afflicted by this ability's debuffs.",
-                order = 38,
-                width = 'single',
-                get = function( info )
-                    local action = getActionEntry( info )
-                    return action.CycleTargets
-                end,
-                set = function( info, val )
-                    local action = getActionEntry( info )
-                    if not action then return end
-                    action.CycleTargets = val
-                end,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or not action.ShowModifiers
-                end,
-            },
-            MaximumTargets = {
-                type = 'input',
-                name = 'Maximum Targets',
-                desc = "When |cFFFFD100Cycle Targets|r is enabled, this setting specified the maximum number of targets " ..
-                "that the addon should attempt debuff using this ability. For instance, if the ability in question is " ..
-                "Tiger Palm for a Windwalker Monk, setting this value to |cFFFFD1003|r means the addon will make recommendations " ..
-                "to keep Mark of the Crane applied to a maximum of 3 targets.",
-                order = 39,
-                width = 'double',
-                -- dialogControl = "HekiliCustomEditor",
-                disabled = function( info )
-                    local action = getActionEntry( info )
-                    if not action or not action.CycleTargets or action.CycleTargets == 0 then return true end
-                    return false
-                end,
-                get = function( info )
-                    local action = getActionEntry( info )
-                    if not action or not action.MaximumTargets then return "" end
-                    return action.MaximumTargets
-                end,
-                set = function( info, val )
-                    local action = getActionEntry( info )
-                    if not action then return end
-                    
-                    action.MaximumTargets = val:trim()
-                end,
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or not action.ShowModifiers
-                end,
-            },
-            
-            Args = { -- should rename at some point.
-                type = 'input',
-                name = 'Custom Modifiers',
-                order = 40,
-                width = 'full',
-                hidden = function( info )
-                    local action = getActionEntry( info )
-                    return not action or not action.ShowModifiers
-                end,
-            },
-            
-            --[[ ConsumableArgs = { -- should rename at some point.
-                type = 'select',
-                name = 'Consumable',
-                order = 30,
-                width = 'full',
-                values = function ()
-                    local v = { none = 'None' }
-                    for key, potion in pairs( class.potions ) do
-                        v[ 'name='..key ] = GetItemInfo( potion.item )
-                    end
-                    return v
-                end,
-                hidden = function( info )
-                    local listKey, actKey = info[2], info[3]
-                    local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
-                    
-                    return Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].Ability ~= 'potion'
-                end
-            }, ]]
-            --[[ ScriptType = {
-                type = 'select',
-                name = 'Script Type',
-                values = {
-                    simc = 'SimC-like Conditions',
-                    time = 'Time Script'
+                                        restart = {
+                                            type = "execute",
+                                            name = "Restart",
+                                            order = 4,
+                                            func = function ()
+                                                shareDB.styleName = ""
+                                                shareDB.export = ""
+                                                wipe( shareDB.displays )
+                                                shareDB.exportStage = 0
+                                            end,
+                                        }
+                                    },
+                                    hidden = function () return shareDB.exportStage ~= 1 end
+                                }
+                            },
+                            plugins = {
+                                displays = {}
+                            },
+                        }
+                    }
                 },
-                get = function( info )
-                    local listKey, actKey = info[2], info[3]
-                    local listIdx, actIdx = tonumber( listKey:match("^L(%d+)" ) ), tonumber( actKey:match("^A(%d+)" ) )
-                    
-                    local value = Hekili.DB.profile.actionLists[ listIdx ].Actions[ actIdx ].ScriptType
-                    if value == nil then value = 'simc' end
-                    
-                    return value
-                end,
-                order = 12,
-                width = 'full',
-            }, ]]
-            deleteHeader = {
-                type = 'header',
-                name = 'Delete',
-                order = 998,
             },
-            Delete = {
-                type = "execute",
-                name = "Delete Action",
-                confirm = true,
-                -- confirmText = '
-                order = 999,
-                func = function(info, ...)
-                    -- Key to Current Display (string)
-                    local listKey = info[2]
-                    local listIdx = tonumber( match( listKey, "^L(%d+)" ) )
-                    local actKey = info[3]
-                    local actIdx = tonumber( match( actKey, "^A(%d+)" ) )
-                    
-                    -- Will need to be more elaborate later.
-                    LibStub( "AceConfigDialog-3.0" ):SelectGroup("Hekili", 'actionLists', listKey )
-                    table.remove( Hekili.DB.profile.actionLists[ listIdx ].Actions, actIdx )
-                    Hekili.Options.args.actionLists.args[ listKey ].args[ actKey ] = nil
-                    ns.loadScripts()
-                    ns.refreshOptions()
-                end
-            },
-        }, 
-        plugins = {}
-    }
-    
-    --[[ if not entry.attr then entry.attr = {} end
-    
-    local attributeOption = {}
-    local attributes = 0
-    
-    local supportedAttributes = {
-        target = {
-            eng = "Name",
-        dep = { potion = true, use_item = true } },
-        
-        cycle_targets = {
-        eng = "Cycle Targets" },
-        
-        max_cycle_targets = {
-        eng = "Max Cycle Targets" },
-        
-        sec = {
-            eng = "Seconds",
-        dep = { wait = true } },
-        
-        moving = {
-        eng = "Moving" },
-        
-        line_cd = {
-            eng = "Line Cooldown",
-        dep = { none = true } },
-        
-        sync = {
-        eng = "Synchronize with..." },
-        
-        interrupt = {
-        eng = "Interrupt" },
-        
-        interrupt_if = {
-        eng = "Interrupt if..." },
-        
-        interrupt_immediate = {
-        eng = "Interrupt Immediate" },
-        
-        chain = {
-        eng = "Chain Channel (last tick)" },
-        
-        early_chain_if = {
-        eng = "Chain Channel (early)" },
-        
-        travel_speed = {
-        eng = "Set Velocity" },
-        
-        wait_on_ready = {
-        eng = "Wait Until Ready" },
-        
-        choose = {
-            eng = "Choose Stance",
-        dep = { stance = true } },
-    }
-    
-    for k,v in pairs( entry.attr ) do
-        attributes = attributes + 1
-        
-        attributeOption[ k ] = {
-            type = 'input',
-            name = k,
-            order = 100 + attributes,
-            width = 'full',
-            get = function( info )
-                return entry.attr[ k ]
-            end,
-            set = function( info, val )
-                entry.attr[ k ] = val
-            end
+            plugins = {},
         }
+
+        wipe( section.plugins )
+
+        local i = 1
+
+        for name, data in pairs( self.DB.profile.displays ) do
+            local pos = data.builtIn and data.order or i
+            section.plugins[ name ] = newDisplayOption( db, name, data, pos )
+            if not data.builtIn then i = i + 1 end
+        end
+
+        db.args.displays = section
+
     end
-    
-    actOption.plugins.newAttributes = attributeOption ]]
-    
-    return actOption
-    
 end
 
 
@@ -4106,7 +2247,7 @@ ns.AbilitySettings = function ()
     local option = {
         type = 'group',
         name = "Abilities and Items",
-        order = 21,
+        order = 65,
         childGroups = 'select',
         args = {
             heading = {
@@ -4120,15 +2261,14 @@ ns.AbilitySettings = function ()
     }
 
     local abilities = {} 
-    for _, v in pairs( class.abilities ) do
-        if ( v.id > 0 or v.id < -99 ) and v.id ~= 61304 then
+    for k, v in pairs( class.abilities ) do
+        if not v.unlisted and v.name and not abilities[ v.name ] and ( v.id > 0 or v.id < -99 ) then
             abilities[ v.name ] = v.key
         end
     end
     
-    for k, v in orderedPairs( abilities ) do
-
-        local ability = class.abilities[ v ]
+    for k, v in orderedPairs( class.abilityList ) do
+        local ability = class.abilities[ k ]
 
         local abOption = {
             type = 'group',
@@ -4152,10 +2292,10 @@ ns.AbilitySettings = function ()
                     width = 'full',
                     order = 2,
                     values = function ()
-                        table.wipe( abilityToggles )
+                        wipe( abilityToggles )
 
                         abilityToggles[ 'none' ] = 'None'
-                        abilityToggles[ 'default' ] = 'Default' .. ( class.abilities[ v ].toggle and ( ' |cFFFFD100(' .. class.abilities[ v ].toggle .. ')|r' ) or ' |cFFFFD100(none)|r' )
+                        abilityToggles[ 'default' ] = 'Default' .. ( ability.toggle and ( ' |cFFFFD100(' .. ability.toggle .. ')|r' ) or ' |cFFFFD100(none)|r' )
                         abilityToggles[ 'cooldowns' ] = 'Cooldowns'
                         abilityToggles[ 'artifact' ] = 'Artifact'
                         abilityToggles[ 'interrupts' ] = 'Interrupts'
@@ -4175,46 +2315,49 @@ ns.AbilitySettings = function ()
                     step = 0.05,
                     order = 3
                 },
+                
+                spacer01 = {
+                    type = "description",
+                    name = " ",
+                    width = "full",
+                    order = 19,
+                    hidden = function() return ability.item == nil end,
+                },
+
+                itemHeader = {
+                    type = "description",
+                    name = "|cFFFFD100Usable Items|r",
+                    order = 20,
+                    fontSize = "medium",
+                    width = "full",
+                    hidden = function() return ability.item == nil end,
+                },
+    
+                itemDescription = {
+                    type = "description",
+                    name = function () return "This ability requires that " .. ( ability.link or ability.name ) .. " is equipped.  This item can be recommended via |cFF00CCFF[Use Items]|r in your " ..
+                        "action lists.  If you do not want the addon to recommend this ability via |cff00ccff[Use Items]|r, you can disable it here.  " ..
+                        "You can also specify a minimum or maximum number of targets for the item to be used.\n" end,
+                    order = 21,
+                    width = "full",
+                    hidden = function() return ability.item == nil end,
+                },
+    
                 spacer02 = {
                     type = "description",
                     name = " ",
                     width = "full",
                     order = 49
-                },            }
+                },
+            }
         }
 
-        if ability.item ~= nil then
-
-            abOption.args.spacer01 = {
-                type = "description",
-                name = " ",
-                width = "full",
-                order = 19
-            }
-
-            abOption.args.itemHeader = {
-                type = "description",
-                name = "|cFFFFD100Usable Items|r",
-                order = 20,
-                fontSize = "medium",
-                width = "full"
-            }
-
-            abOption.args.itemDescription = {
-                type = "description",
-                name = "This ability requires that " .. ( ability.link or ability.name ) .. " is equipped.  This item can be recommended via |cFF00CCFF[Use Items]|r in your " ..
-                    "action lists.  If you do not want the addon to recommend this ability via |cff00ccff[Use Items]|r, you can disable it here.  " ..
-                    "You can also specify a minimum or maximum number of targets for the item to be used.\n",                    
-                order = 21,
-                width = "full"
-            }
-
+        if ability and ability.item then
             if class.itemSettings[ ability.item ] then
                 for setting, config in pairs( class.itemSettings[ ability.item ].options ) do
                     abOption.args[ setting ] = config
                 end
             end
-
         end
 
         abOption.hidden = function( info )
@@ -4365,453 +2508,113 @@ ns.TrinketSettings = function ()
 end
 
 
-local importerOpts = {
-    importToDisplay = false,
-    destinationType = 'skip',
-    newDisplay = 'New Display',
-    existingDisplay = 0,
-    
-    overwrite = true,
-    prefix = 'Imported',
-    enemies = 'any',
-    
-    APL = "Paste your SimulationCraft action priority list here.",
-    
-    warnings = nil
-}
+do
+    local impControl = {
+        name = "",
+        source = UnitName( "player" ) .. " @ " .. GetRealmName(),
+        apl = "Paste your SimulationCraft action priority list or profile here.",
+
+        lists = {},        
+        warnings = ""
+    }
+
+    Hekili.ImporterData = impControl
 
 
-local function addWarning( s )
-    if importerOpts.warnings == nil then
-        importerOpts.warnings = s .. "\n"
-    else
-        importerOpts.warnings = importerOpts.warnings .. s .. "\n"
+    local function AddWarning( s )
+        if impControl.warnings then
+            impControl.warnings = impControl.warnings .. s .. "\n"
+            return
+        end
+
+        impControl.warnings = s .. "\n"
+    end
+
+
+    function Hekili:GetImporterOption( info )
+        return impControl[ info[ #info ] ]
+    end
+
+
+    function Hekili:SetImporterOption( info, value )
+        if type( value ) == 'string' then value = value:trim() end
+        impControl[ info[ #info ] ] = value
+        impControl.warnings = nil
+    end
+
+
+    function Hekili:ImportSimcAPL( name, source, apl, pack )
+
+        name = name or impControl.name
+        source = source or impControl.source
+        apl = apl or impControl.apl
+
+        local lists = {
+            precombat = "",
+            default = "",
+        }
+
+        local count = 0
+
+        -- Rename the default action list to 'default'
+        apl = "\n" .. apl
+        apl = apl:gsub( "actions(%+?)=", "actions.default%1=" )
+
+        for list, action in apl:gmatch( "\nactions%.(%S-)%+?=/?([^\n^$]*)" ) do
+            lists[ list ] = lists[ list ] or ""
+
+            --[[ if action:sub( 1, 6 ) == "potion" then
+                local potion = action:match( ",name=(.-),") or action:match( ",name=(.-)$" ) or class.potion or ""
+                action = action:gsub( potion, "\"" .. potion .. "\"" )
+            end ]]
+
+            if action:sub( 1, 16 ) == "call_action_list" or action:sub( 1, 15 ) == "run_action_list" then
+                local name = action:match( ",name=(.-)," ) or action:match( ",name=(.-)$" )
+                if name then action:gsub( ",name=" .. name, ",name=\"" .. name .. "\"" ) end
+            end
+
+            lists[ list ] = lists[ list ] .. "actions+=/" .. action .. "\n"
+        end
+            
+        local count = 0
+        local output = {}
+            
+        for name, list in pairs( lists ) do
+            local import, warnings = self:ParseActionList( list )
+
+            if warnings then
+                AddWarning( "WARNING:  The import for '" .. name .. "' required some automated changes." )
+
+                for i, warning in ipairs( warnings ) do
+                    AddWarning( warning )
+                end
+
+                AddWarning( "" )
+            end
+
+            if import then
+                output[ name ] = import
+
+                for i, entry in ipairs( import ) do
+                    entry.enabled = not ( entry.action == 'heroism' or entry.action == 'bloodlust' )
+                end
+
+                count = count + 1
+            end
+        end
+
+        if not output.default then output.default = {} end
+        if not output.precombat then output.precombat = {} end  
+
+        if count == 0 then
+            AddWarning( "No action lists were imported from this profile." )
+        else
+            AddWarning( "Imported " .. count .. " action lists." )
+        end
+            
+        return output, impControl.warnings
     end
 end
-
-
-function Hekili:sciGet( info, value )
-    return importerOpts[ info[#info] ]
-end
-
-
-function Hekili:sciSet( info, value )
-    importerOpts[ info[#info] ] = value
-    importerOpts.warnings = nil
-end
-
--- SimulationCraft Panel
-ns.SimulationCraftImporter = function ()
-    
-    local importer = {
-        type = "group",
-        name = 'SimulationCraft Importer',
-        get = 'sciGet',
-        set = 'sciSet',
-        order = 75,
-        hidden = function ()
-            return Hekili.AllowSimCImports ~= true
-        end,
-        args = {
-            --[[ displayGroup = {
-                type = 'group',
-                name = 'Display Settings',
-                order = 10,
-                inline = true,
-                args = {
-                    destinationType = {
-                        type = 'select',
-                        name = 'Destination Display',
-                        order = 10,
-                        values = {
-                            new = 'Create New Display',
-                            reuse = 'Use Existing Display',
-                            skip = 'Do Not Create/Modify Display'
-                        },
-                        validate = function (info, val)
-                            if #Hekili.DB.profile.displays == 0 and val == 'existing' then
-                                return "There are no existing displays to use."
-                            end
-                            return true
-                        end,
-                    },
-                    newDisplay = {
-                        type = 'input',
-                        name = 'New Display Name',
-                        order = 20,
-                        hidden = function ()
-                            return importerOpts.destinationType ~= 'new'
-                        end,
-                        validate = function (info, val)
-                            for i, disp in ipairs( Hekili.DB.profile.displays ) do
-                                if disp.Name == val then return 'A display with that name already exists.' end
-                            end
-                            return true
-                        end,
-                        width = 'double',
-                    },
-                    existingDisplay = {
-                        type = 'select',
-                        name = 'Existing Display',
-                        order = 20,
-                        hidden = function ()
-                            return importerOpts.destinationType ~= 'reuse'
-                        end,
-                        values = function()
-                            local displays = {}
-                            for i, disp in ipairs( Hekili.DB.profile.displays ) do
-                                displays[ i ] = disp.Name
-                            end
-                            if #displays == 0 then
-                                displays[ 0 ] = 'No Existing Displays'
-                            end
-                            return displays
-                        end,
-                        width = 'double',
-                    }
-                }
-            },]]
-            actionListGroup = {
-                type = 'group',
-                name = 'Action List Settings',
-                order = 15,
-                inline = true,
-                args = {
-                    overwrite = {
-                        type = 'toggle',
-                        name = 'Overwrite Existing',
-                        order = 5,
-                        desc = 'If this is checked, any existing displays with the same name will be wiped and overwritten. If unchecked, the addon will prompt you to choose a new prefix for imported action lists.'
-                    },
-                    prefix = {
-                        type = 'input',
-                        name = 'Action List Prefix',
-                        order = 10,
-                        desc = 'Your imported action list(s) will be given a name based on their identifier in the SimulationCraft APL. The format for a SimulationCraft action list actions.|cFFFFD100identifier|r will be converted to "|cFFFFD100prefix|r: |cFFFFD100identifier|r".\n',
-                        width = 'double',
-                    },
-                    enemies = {
-                        type = 'select',
-                        name = 'Target Counting',
-                        order = 15,
-                        desc = "By default, action lists will count any targets that you or your minions have targeted as enemies (|cFFFFD100active_enemies|r). If this is set to |cFFFFD100Only My Enemies|r, then the imported action lists will only count targets that you have directly injured yourself (|cFFFFD100my_enemies|r).\n\nThis is particularly useful for classes that have abilities with effects based on the number of enemies hit. For example, Spinning Crane Kick will generate Chi if you hit 3 or more targets.",
-                        values = { any = 'All Detected Enemies',
-                        strict = 'Only My Enemies' }
-                    },
-                }
-            },
-            APL = {
-                type = 'input',
-                name = 'SimulationCraft APL',
-                -- dialogControl = "HekiliCustomEditor",
-                multiline = 4,
-                order = 1,
-                width = 'full'
-            },
-            Import = {
-                type = 'execute',
-                name = 'Import Action Lists',
-                order = 25,
-                func = function ()
-                    local APL = '\n'..importerOpts.APL
-                    local lists = {}
-                    local hooks = { [1] = "precombat,if=time=0", [2] = "default" }
-                    local elems = 0
-                    
-                    importerOpts.warnings = nil
-                    
-                    if importerOpts.importToDisplay and importerOpts.destinationType == 'new' then
-                        for i, disp in ipairs( Hekili.DB.profile.displays ) do
-                            if disp.Name == importerOpts.newDisplay then
-                                addWarning( "If importing to a new display, you must specify an new (unused) display name." )
-                                -- Hekili:Print( "If importing to a new display, you must specify an new (unused) display name." )
-                                return
-                            end
-                        end
-                    end
-                    
-                    -- name the default action list.
-                    APL = APL:gsub( "actions(%+?)=", "actions.default%1=" )
-                    
-                    if importerOpts.enemies == 'strict' then
-                        APL = APL:gsub( "active_enemies", "my_enemies" )
-                    end
-                    
-                    APL = APL:gsub( "spell_targets%.[a-zA-Z0-9_]+", importerOpts.enemies == 'string' and "my_enemies" or "active_enemies" )
-                    
-                    -- gather other lists
-                    for list, action in APL:gmatch( "\nactions%.(%S-)%+?=/?([^\n^$]*)" ) do
-                        list = ns.titlefy( list )
-                        
-                        lists[ list ] = lists[ list ] or {
-                            status = 'active',
-                            current = 1,
-                            [1] = ""
-                        }
-                        
-                        if lists[ list ].status == 'calling' then
-                            --w we are returning to an action list after calling some hooks, we need a new list fragment.
-                            lists[ list ].status = 'active'
-                            lists[ list ][ lists[ list ].current ] = ""
-                            
-                            local previous_list
-                            if lists[ list ].current == 2 then
-                                previous_list = list
-                            else
-                                previous_list = list .. " (" .. lists[ list ].current - 1 .. ")"
-                            end
-                            
-                            -- find the last hook for our previous list and duplicate its hook.
-                            -- note, if the previous list isn't found, the new fragment won't get hooked...
-                            for i = #hooks, 1, -1 do
-                                if hooks[ i ]:match( previous_list ) then
-                                    local new_hook = hooks[ i ]:gsub( previous_list, list .. " (" .. lists[ list ].current .. ")" )
-                                    table.insert( hooks, new_hook )
-                                    break
-                                end
-                            end
-                        end
-                        
-                        if action:sub( 1, 6 ) == "potion" then
-                            local pot = action:match( "name=(.-),")
-                            pot = pot or action:match( "name=(.-)$" )
-                            pot = pot or class.potion or ""
-                            action = action:gsub( pot, "\""..pot.."\"" )
-                        end
-                        
-                        if action:sub( 1, 16 ) == "call_action_list" or action:sub( 1, 15 ) == "run_action_list" then
-                            local called = action:match( "name=[\"]?(.-)[\"]?," )
-                            if not called then called = action:match( "name=[\"]?(.-)[\"]?$" ) end
-                            if called then
-                                local updated = importerOpts.prefix .. ': ' .. ns.titlefy( called )
-                                action = action:gsub( "name=[\"]?"..called.."[\"]?", "name=\""..updated.."\"" )
-                            end
-                        end
-                        
-                        lists[ list ][ lists[ list ].current ] = lists[ list ][ lists[ list ].current ] .. 'actions+=/' .. action .. '\n'
-                    end
-                    --end
-                    
-                    if not lists.default then
-                        table.remove( hooks, 2 )
-                    end
-                    
-                    if not lists.precombat then
-                        table.remove( hooks, 1 )
-                    end
-                    
-                    local count = 0
-                    
-                    for k, v in pairs( lists ) do
-                        for i, sublist in ipairs( v ) do
-                            local new_list = k .. ( i > 1 and " (" .. i .. ")" or "" )
-                            
-                            local import, warning = Hekili:ImportSimulationCraftActionList( sublist, importerOpts.enemies == 'strict' and 'my_enemies' or 'active_enemies' )
-                            
-                            if warning then
-                                addWarning( "WARNING: The import for '" .. new_list .. "' required modifications:" )
-                                for i = 1, #warning do
-                                    addWarning( warning[i] )
-                                end
-                                addWarning( "" )
-                            end
-                            
-                            if not import then
-                                addWarning( "No actions from '" .. new_list .. "' were successfully imported." )
-                            end
-                            
-                            local target = 0
-                            for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                                if list.Name == importerOpts.prefix .. ': ' .. new_list then
-                                    table.wipe( list.Actions )
-                                    target = i
-                                end
-                            end
-                            
-                            if target == 0 then
-                                local success = ns.newActionList( #Hekili.DB.profile.actionLists + 1 )
-                                if success then target = #Hekili.DB.profile.actionLists end
-                            end
-                            
-                            local list = Hekili.DB.profile.actionLists[ target ]
-                            list.Name = importerOpts.prefix .. ': ' .. new_list
-                            
-                            if import then
-                                for i, entry in ipairs( import ) do
-                                    local ability = class.abilities[ entry.Ability ]
-                                    local key = ns.newAction( target, ability.name )
-                                    local action = list.Actions[ i ]
-                                    
-                                    action.Ability = entry.Ability
-                                    action.Args = entry.Args
-                                    
-                                    action.CycleTargets = entry.CycleTargets
-                                    action.MaximumTargets = entry.MaximumTargets
-                                    action.CheckMovement = entry.CheckMovement or false
-                                    action.Moving = entry.Moving
-                                    action.PoolForNext = entry.PoolForNext
-                                    action.PoolExtra = entry.PoolExtra
-                                    action.PoolTime = entry.PoolTime
-
-                                    if action.Ability == 'variable' then
-                                        action.ModVarName = entry.ModName or ''
-                                        action.ModName = ''
-                                    else
-                                        action.ModName = entry.ModName or ''
-                                        action.ModVarName = ''
-                                    end
-                                    
-                                    --[[ if entry.Args then
-                                    local cycle = entry.Args:match("cycle_targets=1")
-                                    local target = entry.Args:match("target=(%d+)")
-                                    if target then target = tonumber( target ) end
-                                    
-                                    if cycle or ( target and target > 1 ) then
-                                        action.Indicator = "cycle"
-                                    end
-                                else
-                                    action.Indicator = "none"
-                                end ]]
-
-                                    action.Script = entry.Script
-                                    
-                                    --[[ if ability.toggle then
-                                        if action.Script and action.Script:len() > 0 then
-                                            action.Script = 'toggle.' .. ability.toggle .. ' & ( ' .. action.Script .. ' )'
-                                        else
-                                            action.Script = 'toggle.' .. ability.toggle
-                                        end
-                                    end ]]
-
-                                    if entry.PctHealth then
-                                        if action.Script and action.Script:len() > 0 then
-                                            action.Script = 'health.pct < ' .. entry.PctHealth .. ' & ( ' .. action.Script .. ' )'
-                                        else
-                                            action.Script = 'health.pct < ' .. entry.PctHealth
-                                        end
-                                    end
-                                    
-                                    if entry.Ability == 'heroism' or entry.Ability == 'bloodlust' then
-                                        addWarning( "Found " .. entry.Ability .. " in " .. list.Name .. " (#" .. i .. "). This entry is disabled. You can manually enable it if so desired." )
-                                        action.Enabled = false
-                                    else
-                                        action.Enabled = true
-                                    end
-                                end
-                                count = count + 1
-                            end
-                        end
-                    end
-                    
-                    if count == 0 then
-                        addWarning("No action lists were imported from the above APL.")
-                    else
-                        addWarning( count .. " action lists imported.")
-                    end
-                    
-                    if importerOpts.destinationType ~= 'skip' then
-                        local display, dispIdx
-                        
-                        if importerOpts.destinationType == 'new' then
-                            if not importerOpts.newDisplay or importerOpts.newDisplay == '' then
-                                addWarning( "You must specify a new display name." )
-                                return
-                            end
-                            
-                            display, dispIdx = ns.newDisplay( importerOpts.newDisplay )
-                            
-                            if display then
-                                display = Hekili.DB.profile.displays[ dispIdx ]
-                                C_Timer.After( 0.25, Hekili[ 'ProcessDisplay'..dispIdx ] )
-                            else
-                                addWarning( "Failed to create a new display with name '" ..importerOpts.newDisplay .. "'." )
-                                return
-                            end
-                            
-                        elseif importerOpts.destinationType == 'reuse' then
-                            dispIdx = importerOpts.existingDisplay
-                            display = Hekili.DB.profile.displays[ dispIdx ]
-                            
-                            if not display then
-                                addWarning( "The existing display was not found." )
-                                return
-                            end
-                            
-                            -- wipe existing hooks.
-                            for i = #display.Queues, 1, -1 do
-                                table.remove( display.Queues, i )
-                            end
-                            
-                            display.defaultAPL = 0
-                            display.precombatAPL = 0
-                            
-                        end
-                        
-                        for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                            if list.Name == importerOpts.prefix .. ': default' then
-                                display.defaultAPL = i
-                            elseif list.Name == importerOpts.prefix .. ': precombat' then
-                                display.precombatAPL = i
-                            end
-                        end
-                        
-                        --[[ if #hooks > 0 then
-                        for i = 1, #hooks do
-                            local name, criteria = hooks[i]:match( "^(.*),if=(.-)$" )
-                            name = ns.titlefy( name or hooks[i] ) -- no criteria
-                            
-                            if list.Name 
-                            
-                            local _, hookIdx = ns.newHook( dispIdx, importerOpts.prefix .. ': ' .. name )
-                            display.Queues[ i ].Script = criteria
-                            
-                            
-                            
-                            for l, list in ipairs( Hekili.DB.profile.actionLists ) do
-                                if list.Name == importerOpts.prefix .. ': ' .. name then
-                                    display.Queues[ i ]['Action List'] = l
-                                    display.Queues[ i ].Enabled = true
-                                end
-                            end 
-                            
-                        end
-                    end ]]
-                    end
-                    
-                    ns.refreshOptions()
-                    ns.loadScripts()
-                    ns.buildUI()
-                    Hekili:UpdateDisplayVisibility()
-                    
-                    -- ns.lib.AceConfigDialog:SelectGroup( "Hekili", "SimulationCraftImporter" )
-                    
-                end
-            },
-            spacer = {
-                type = 'description',
-                name = ' ',
-                order = 26,
-                width = 'double',
-            },
-            warnings = {
-                type = 'input',
-                name = "Warnings",
-                multiline = 4,
-                width = 'full',
-                order = 30,
-                hidden = function ()
-                    return importerOpts.warnings == nil
-                end
-            },
-        }
-    }
-    
-    return importer
-    
-end
-
-
-
 
 
 local optionBuffer = {}
@@ -4822,7 +2625,7 @@ end
 
 local getBuffer = function()
     local output = table.concat( optionBuffer )
-    table.wipe( optionBuffer )
+    wipe( optionBuffer )
     return output
 end
 
@@ -4884,9 +2687,2144 @@ function Hekili:NewSetOption( info, value )
     local sValue = tostring( value )
     
     if option == 'qsShowTypeGroup' then config[option] = value
-else config[option] = nValue end
+    else config[option] = nValue end
     
     return
+end
+
+
+do
+    local packs = {}
+
+    local specs = {}
+    local specNameByID = {}
+    local specIDByName = {}
+
+    local ACD = LibStub( "AceConfigDialog-3.0" )
+
+
+    function Hekili:SetSpecOption( info, val )
+        local n = #info
+        local spec, option = info[2], info[n]
+
+        spec = specIDByName[ spec ]
+        if not spec then return end
+
+        if type( val ) == 'string' then val = val:trim() end
+
+        self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
+        self.DB.profile.specs[ spec ][ option ] = val
+    end
+
+
+    function Hekili:GetSpecOption( info )
+        local n = #info
+        local spec, option = info[2], info[n]
+
+        spec = specIDByName[ spec ]
+        if not spec then return end
+
+        self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
+        return self.DB.profile.specs[ spec ][ option ]
+    end
+
+
+    -- Options table constructors.
+    function Hekili:EmbedSpecOptions( db )
+        db = db or self.Options
+        if not db then return end
+
+        local i = 1
+        
+        db.args.specs = db.args.specs or {
+            type = "group",
+            name = "Specialization",
+            order = 30,
+            set = "SetSpecOption",
+            get = "GetSpecOption",
+            args = {
+                specList = {
+                    type = "header",
+                    name = "Specializations",
+                    order = 5,
+                }
+            },
+            plugins = {
+                spec = {},
+            }
+        }
+
+        while( true ) do
+            local id, name, description, texture, role = GetSpecializationInfo( i )
+
+            if not id then break end
+            
+            if role ~= "HEALER" and class.specs[ id ] then
+                local sName = lower( name )
+                specNameByID[ id ] = sName
+                specIDByName[ sName ] = id
+
+                specs[ id ] = '|T' .. texture .. ':0|t ' .. name
+
+                db.args.specs.plugins.spec[ 'btn'..sName ] = {
+                    type = 'execute',
+                    name = name,
+                    desc = description,
+                    order = 10 + i,
+                    func = function () ACD:SelectGroup( "Hekili", "specs", sName ) end,
+                }
+
+                db.args.specs.plugins.spec[ sName ] = {
+                    type = "group",
+                    name = specs[ id ],
+                    desc = description,
+                    order = 20 + i,
+                    args = {
+                        enabled = {
+                            type = "toggle",
+                            name = "Enabled",
+                            desc = "If checked, the addon will provide priority recommendations for " .. name .. ".",
+                            order = 5,
+                            width = "full",
+                        },
+        
+                        packInfo = {
+                            type = 'group',
+                            name = "",
+                            inline = true,
+                            order = 10,
+                            args = {
+                                package = {
+                                    type = "select",
+                                    name = "Action Package",
+                                    desc = "The addon will use the selected action package when making its priority recommendations.",
+                                    order = 1,
+                                    width = "full",
+                                    values = function( info, val )
+                                        wipe( packs )
+        
+                                        for key, pkg in pairs( self.DB.profile.packs ) do
+                                            local pname = pkg.builtIn and "|cFF00B4FF" .. key .. "|r" or key
+                                            if pkg.spec == id then
+                                                packs[ key ] = '|T' .. texture .. ':0|t ' .. pname
+                                            end
+                                        end
+        
+                                        packs[ '(none)' ] = '(none)'
+        
+                                        return packs
+                                    end,
+                                },
+                                
+                                openPackage = {
+                                    type = 'execute',
+                                    name = "Open Action Package",
+                                    desc = "Open and view this action package and its action lists.",
+                                    order = 2,
+                                    width = "single",
+                                    disabled = function( info, val )
+                                        local pack = self.DB.profile.specs[ id ].package
+                                        return rawget( self.DB.profile.packs, pack ) == nil
+                                    end,
+                                    func = function ()
+                                        ACD:SelectGroup( "Hekili", "packs", self.DB.profile.specs[ id ].package )
+                                    end,
+                                }
+                            }
+                        },
+        
+                        spacing3 = {
+                            type = "description",
+                            name = " ",
+                            order = 11,
+                            width = "full",
+                        },
+
+                        aoe = {
+                            type = "range",
+                            name = "AOE Target Count",
+                            desc = "When the AOE Display is shown, it will assume that there are at least this many active targets.",
+                            width = "full",
+                            min = 2,
+                            max = 5,
+                            step = 1,
+                            order = 12,
+                        },
+
+                        spacing4 = {
+                            type = "description",
+                            name = " ",
+                            order = 13,
+                            width = "full",
+                        },
+
+                        targetDetection = {
+                            type = "group",
+                            name = "Target Detection",
+                            inline = true,
+                            order = 15,
+                            args = {
+                                nameplates = {
+                                    type = "toggle",
+                                    name = "Use Nameplate Detection",
+                                    desc = "If checked, the addon will count any enemies with visible nameplates within a small radius of your character.  " ..
+                                        "This is typically desirable for melee character specializations.",
+                                    width = "full",
+                                    order = 2,
+                                },
+        
+                                nameplateRange = {
+                                    type = "range",
+                                    name = "Nameplate Detection Range",
+                                    desc = "When |cFFFFD100Use Nameplate Detection|r is checked, the addon will count any enemies with visible nameplates within this radius of your character.",
+                                    width = "full",
+                                    disabled = function( info, val )
+                                        return self.DB.profile.specs[ id ].nameplates == false
+                                    end,
+                                    order = 3,
+                                },
+        
+                                damage = {
+                                    type = "toggle",
+                                    name = "Detect Enemies by Damage",
+                                    desc = "If checked, the addon will count any enemies that you've hit (or hit you) within the past several seconds as active enemies.  " ..
+                                        "This is typically desirable for ranged character specializations.",
+                                    width = "full",
+                                    order = 4,                                    
+                                },
+        
+                                damageExpiration = {
+                                    type = "range",
+                                    name = "Damage Detection Timeout",
+                                    desc = "When |cFFFFD100Detect Enemies by Damage|r is checked, the addon will count enemies for up to this many seconds before forgetting about them.  " ..
+                                        "Enemies will also be forgotten if they die or despawn.  This is helpful when enemies spread out or move out of range.",
+                                    width = "full",
+                                    min = 5,
+                                    max = 10,
+                                    step = 0.1,
+                                    disabled = function( info, val )
+                                        return self.DB.profile.specs[ id ].damage == false
+                                    end,
+                                    order = 5,
+                                },
+                            }
+                        }
+                    }
+                }            
+            end
+
+            i = i + 1
+        end
+
+        db.args.specs.args.header = {
+            type = "description",
+            name = i > 1 and "Hekili supports the following specializations for your current class.  You can customize settings " ..
+                "for your specialization in the appropriate section below." or "No specializations for your current class are supported by Hekili.",
+            fontSize = 'medium',
+            order = 1,
+        }
+
+    end
+
+
+    local packControl = {
+        listName = "default",
+        actionID = "0001",
+        newListName = nil,
+
+        showModifiers = false,
+
+        newPackName = "",
+        newPackSpec = "",
+    }
+
+
+    local nameMap = {
+        call_action_list = "list_name",
+        run_action_list = "list_name",
+        potion = "potion",
+        variable = "var_name",
+    }
+
+
+    local defaultNames = {
+        list_name = "default",
+        potion = "prolonged_power",
+        var_name = "unnamed_var",
+    }
+
+
+    local toggleToNumber = {
+        for_next = true,
+        cycle_targets = true,        
+    }
+
+
+    local function GetListEntry( pack )
+        local entry = rawget( Hekili.DB.profile.packs, pack )
+
+        if entry then entry = entry.lists[ packControl.listName ] else return end
+
+        local listPos = tonumber( packControl.actionID )
+        if entry and listPos > 0 then entry = entry[ listPos ] else return end
+
+        return entry
+    end
+
+
+    function Hekili:GetActionOption( info )
+        local n = #info
+        local pack, option = info[ 2 ], info[ n ]
+
+        local actionID = tonumber( packControl.actionID )
+        local data = self.DB.profile.packs[ pack ].lists[ packControl.listName ]
+
+        if option == 'position' then return actionID
+        elseif option == 'newListName' then return packControl.newListName end
+
+        if not data then return end
+        data = data[ actionID ]
+
+        if option == "inputName" or option == "selectName" then
+            option = nameMap[ data.action ]
+            if not data[ option ] then data[ option ] = defaultNames[ option ] end
+        end
+        
+        if toggleToNumber[ option ] then return data[ option ] == 1 end
+        return data[ option ]
+    end
+
+
+    function Hekili:SetActionOption( info, val )
+        local n = #info
+        local pack, option = info[ 2 ], info[ n ]
+
+        local actionID = tonumber( packControl.actionID )
+        local data = self.DB.profile.packs[ pack ].lists[ packControl.listName ]
+
+        if option == 'position' then
+            local a = table.remove( data, actionID )
+            table.insert( data, val, a )
+            packControl.actionID = format( "%04d", val )
+            self:LoadScripts()
+            return
+        
+        elseif option == 'newListName' then
+            packControl.newListName = val:trim()
+            return
+
+        end
+
+        if not data then return end
+        data = data[ actionID ]
+
+        if option == "inputName" or option == "selectName" then option = nameMap[ data.action ] end
+        
+        if toggleToNumber[ option ] then val = val and 1 or 0 end
+        if type( val ) == 'string' then val = val:trim() end
+
+        data[ option ] = val
+        self:LoadScripts()
+    end
+
+
+    function Hekili:GetPackOption( info )
+        local n = #info
+        local category, subcat, option = info[ 2 ], info[ 3 ], info[ n ]
+
+        if packControl[ option ] ~= nil then return packControl[ option ] end        
+
+        if subcat == 'lists' then return self:GetActionOption( info ) end
+        -- if subcat == 'newActionGroup' or ( subcat == 'actionGroup' and subtype == 'entry' ) then return self:GetActionOption( info ) end
+
+        local data = rawget( self.DB.profile.packs, category )
+        if not data then return end
+
+        return data[ option ]
+    end
+
+
+    function Hekili:SetPackOption( info, val )
+        local n = #info
+        local category, subcat, option = info[ 2 ], info[ 3 ], info[ n ]
+
+        if packControl[ option ] ~= nil then
+            packControl[ option ] = val
+            if option == "listName" then packControl.actionID = "zzzzzzzzzz" end
+            return
+        end
+        if subcat == 'lists' then return self:SetActionOption( info, val   ) end
+        -- if subcat == 'newActionGroup' or ( subcat == 'actionGroup' and subtype == 'entry' ) then self:SetActionOption( info, val ); return end
+
+        local data = rawget( self.DB.profile.packs, category )
+        if not data then return end
+
+        if type( val ) == 'string' then val = val:trim() end
+
+        data[ option ] = val
+    end
+
+
+    function Hekili:EmbedPackOptions( db )
+        db = db or self.Options
+        if not db then return end
+
+        local packs = db.args.packs or {
+            type = "group",
+            name = "Action Packs",
+            desc = "Action Packs are bundles of action lists used to make decisions for each specialization.",
+            get = 'GetPackOption',
+            set = 'SetPackOption',
+            order = 40,
+            childGroups = 'tree',
+            args = {
+                packDesc = {
+                    type = "description",
+                    name = "Action Packs are shareable profiles for the addon, including action lists used to determine " ..
+                        "which abilities will be recommended.",
+                    order = 1,
+                    fontSize = "medium",
+                },
+
+                newPackHeader = {
+                    type = "header",
+                    name = "Create a New Pack",
+                    order = 100
+                },
+
+                newPackName = {
+                    type = "input",
+                    name = "Pack Name",
+                    order = 101,
+                    width = "full",
+                    validate = function( info, val )
+                        val = val:trim()
+                        if rawget( Hekili.DB.profile.packs, val ) then return "Please specify a unique pack name."
+                        elseif val == "(none)" then return "Don't get smart, missy." end
+                        return true
+                    end,
+                },
+
+                newPackSpec = {
+                    type = "select",
+                    name = "Specialization",
+                    order = 102,
+                    width = "full",
+                    values = specs,
+                },
+
+                createNewPack = {
+                    type = "execute",
+                    name = "Create New Pack",
+                    order = 103,
+                    disabled = function()
+                        return packControl.newPackName == "" or packControl.newPackSpec == ""
+                    end,
+                    func = function ()
+                        Hekili.DB.profile.packs[ packControl.newPackName ].spec = packControl.newPackSpec
+                        Hekili:EmbedPackOptions()
+                        ACD:SelectGroup( "Hekili", "packs", packControl.newPackName )
+                        packControl.newPackName = ""
+                        packControl.newPackSpec = ""
+                    end,
+                }
+
+            },
+            plugins = {
+                packages = {},
+                links = {},
+            }
+        }
+
+        wipe( packs.plugins.packages )
+        wipe( packs.plugins.links )
+
+        local count = 0
+
+        for pack, data in orderedPairs( self.DB.profile.packs ) do
+            packs.plugins.links.packButtons = packs.plugins.links.packButtons or {
+                type = "header",
+                name = "Installed Packs",
+                order = 10,
+            }
+
+            packs.plugins.links[ "btn" .. pack ] = {
+                type = "execute",
+                name = pack,
+                order = 11 + count,
+                func = function ()
+                    ACD:SelectGroup( "Hekili", "packs", pack )
+                end,
+            }
+
+            local opts = packs.plugins.packages[ pack ] or {
+                type = "group",
+                name = function ()
+                    if data.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
+                    return pack
+                end,
+                childGroups = "tab",
+                order = 100 + count,
+                args = {
+                    pack = {
+                        type = "group",
+                        name = function ()
+                            if data.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
+                            return pack
+                        end,
+                        order = count,
+                        args = {
+                            spec = {
+                                type = "select",
+                                name = "Specialization",
+                                order = 1,
+                                width = "full",
+                                values = specs,
+                            },
+        
+                            desc = {
+                                type = "input",
+                                name = "Description",
+                                multiline = 2,
+                                order = 2,
+                                width = "full",
+                            },
+
+                            delete = {
+                                type = "execute",
+                                name = "Delete Pack",
+                                order = 3,
+                                hidden = function ()
+                                    return data.builtIn
+                                end,
+                                func = function ()
+                                    Hekili.DB.profile.packs[ pack ] = nil
+                                    Hekili:EmbedPackOptions()
+                                    ACD:SelectGroup( "Hekili", "packs" )
+                                end,
+                            }
+                        }
+                    },
+
+                    profile = {
+                        type = "group",
+                        name = "Profile",
+                        desc = "If this Action Pack was generated with a SimulationCraft profile, the profile can be stored " ..
+                            "or retrieved here.  The profile can also be re-imported or overwritten with a newer profile.",
+                        order = 2,
+                        args = {
+                            signature = {
+                                type = "group",
+                                inline = true,
+                                name = "",
+                                order = 3,
+                                args = {
+                                    source = {
+                                        type = "input",
+                                        name = "Source",
+                                        desc = "If the Action Pack is based on a SimulationCraft profile or a popular guide, it is a " ..
+                                            "good idea to provide a link to the source (especially before sharing).",
+                                        order = 1,
+                                        width = "full",
+                                    },
+                
+                                    author = {
+                                        type = "input",
+                                        name = "Author",
+                                        desc = "The author field is automatically filled out when creating a new Action Pack.  " ..
+                                            "You can update it here.",
+                                        order = 2,
+                                        width = "double",
+                                    },
+                
+                                    date = {
+                                        type = "input",
+                                        name = "Last Updated",
+                                        desc = "This date is automatically updated when any changes are made to the action lists for this Action Pack.",
+                                        order = 3,
+                                        set = function () end,
+                                    },
+                                },
+                            },
+
+                            profile = {
+                                type = "input",
+                                name = "Profile",
+                                desc = "If this pack's action lists were imported from a SimulationCraft profile, the profile is included here.",
+                                order = 4,
+                                multiline = 8,
+                                width = "full",
+                            },
+
+                            warnings = {
+                                type = "input",
+                                name = "Import Log",
+                                desc = "If this pack's action lists were imported from a SimulationCraft profile, any details logged at import are included here.",
+                                order = 5,
+                                multiline = 3,
+                                width = "full",                                
+                                hidden = function () return not data.warnings or data.warnings == "" end,
+                            },
+        
+                            reimport = {
+                                type = "execute",
+                                name = "(Re)Import",
+                                desc = "Rebuild the action list(s) from the profile above.",
+                                order = 5,
+                                func = function ()
+                                    local result, warnings = Hekili:ImportSimcAPL( nil, nil, data.profile )
+
+                                    wipe( data.lists )
+
+                                    for k, v in pairs( result ) do
+                                        data.lists[ k ] = v
+                                    end
+
+                                    data.warnings = warnings
+
+                                    if not data.lists[ packControl.listName ] then packControl.listName = "default" end
+                                    
+                                    local id = tonumber( packControl.actionID )
+                                    if not data.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
+
+                                    Hekili:LoadScripts()
+                                end,
+                            },
+                        }
+                    },
+
+                    lists = {
+                        type = "group",
+                        childGroups = "select",
+                        name = "Action Lists",
+                        desc = "Action Lists are used to determine which abilities should be used at what time.",
+                        order = 3,
+                        args = {
+                            nav = {
+                                type = "group",
+                                inline = true,
+                                name = "",
+                                order = 1,
+                                args = {
+                                    listName = {
+                                        type = "select",
+                                        name = "Select an Action List",
+                                        desc = "Select the action list to view or modify.",
+                                        order = 1,
+                                        width = "full",
+                                        values = function ()
+                                            local v = {
+                                                ["zzzzzzzzzz"] = "|cFF00FF00Create a New Action List|r"
+                                            }
+        
+                                            for k in pairs( data.lists ) do
+                                                if k == 'precombat' or k == 'default' then
+                                                    v[ k ] = "|cFF00B4FF" .. k .. "|r"
+                                                else
+                                                    v[ k ] = k
+                                                end
+                                            end
+        
+                                            return v
+                                        end,
+                                    },
+
+                                    actionID = {
+                                        type = "select",
+                                        name = "Select an Entry",
+                                        desc = "Select the entry to modify in this action list.",
+                                        order = 2,
+                                        width = "full",
+                                        values = function ()
+                                            local v = {}
+
+                                            local list = rawget( Hekili.DB.profile.packs[ pack ].lists, packControl.listName )
+
+                                            if list then
+                                                local last = 0
+
+                                                for i, entry in ipairs( list ) do
+                                                    local key = format( "%04d", i )
+                                                    local action = entry.action
+                                                    local desc
+                                                    
+                                                    if not action then action = "Unassigned"
+                                                    else action = class.abilities[ action ] and class.abilities[ action ].name or action end
+
+                                                    if entry.caption and entry.caption:len() > 0 then desc = entry.caption
+                                                    elseif entry.criteria and entry.criteria:len() > 0 then
+                                                        desc = entry.criteria 
+                                                        desc = desc:gsub( "[\r\n]", "" )
+                                                    end
+
+                                                    if desc then
+                                                        v[ key ] = "|cFFFFD100" .. i .. ".|r " .. action .. " - " .. "|cFFFFD100" .. desc .. "|r"
+                                                    else
+                                                        v[ key ] = "|cFFFFD100" .. i .. ".|r " .. action
+                                                    end
+                                                    last = i + 1
+                                                end
+
+                                                v.zzzzzzzzzz = "|cFF00FF00Create a New Action Entry|r"
+
+                                            end
+
+                                            return v
+                                        end,
+                                        hidden = function ()
+                                            return packControl.listName == "zzzzzzzzzz"
+                                        end,
+                                    },
+                                }
+                            },
+
+                            actionGroup = {
+                                type = "group",
+                                inline = true,
+                                name = "",
+                                order = 2,
+                                hidden = function ()
+                                    if packControl.listName == "zzzzzzzzzz" or rawget( data.lists, packControl.listName ) == nil or packControl.actionID == "zzzzzzzzzz" then
+                                        return true
+                                    end
+                                    return false
+                                end,
+                                args = {                                    
+                                    entry = {
+                                        type = "group",
+                                        inline = true,
+                                        name = "",
+                                        order = 2,
+                                        -- get = 'GetActionOption',
+                                        -- set = 'SetActionOption',
+                                        hidden = function( info )
+                                            local id = tonumber( packControl.actionID )
+                                            return not packControl.actionID or packControl.actionID == "zzzzzzzzzz" or not data.lists[ packControl.listName ][ id ]
+                                        end,
+                                        args = {
+                                            enabled = {
+                                                type = "toggle",
+                                                name = "Enabled",
+                                                desc = "If disabled, this entry will not be shown even if its criteria are met.",
+                                                order = 1,
+                                                width = "full",
+                                            },
+
+                                            position = {
+                                                type = "select",
+                                                name = "Position",
+                                                desc = "Use this box to move this entry to another position in this Action List.",
+                                                order = 2,
+                                                values = function ()
+                                                    local v = {}
+                                                    
+                                                    for i = 1, #data.lists[ packControl.listName ] do
+                                                        v[ i ] = i
+                                                    end
+        
+                                                    return v
+                                                end,
+                                            },        
+
+                                            topRow = {
+                                                type = "group",
+                                                inline = true,
+                                                name = "",
+                                                order = 3,
+                                                args = {
+                                                    action = {
+                                                        type = "select",
+                                                        name = "Action",
+                                                        desc = "Select the action that will be recommended when this entry's criteria are met.",
+                                                        values = class.abilityList,
+                                                        order = 1,
+                                                        width = "double",
+                                                    },
+
+                                                    --[[ invalid = {
+                                                        type = "description",
+                                                        name = function () return GetListEntry( pack ).action end,
+                                                        desc = "This action is not supported.  Choose another at left.",
+                                                        order = 1.5,
+                                                    }, ]]
+
+                                                    caption = {
+                                                        type = "input",
+                                                        name = "Caption",
+                                                        desc = "Captions are short descriptions that can appear on the icon of a recommended ability.\n" ..
+                                                            "This can be useful for understanding why an ability was recommended at a particular time.",
+                                                        order = 2,
+                                                        width = "single",
+                                                        validate = function( info, val )
+                                                            if val:len() > 20 then return "Captions should be 10 characters or less." end
+                                                            return true
+                                                        end,
+                                                        hidden = function()
+                                                            local e = GetListEntry( pack )
+                                                            local ability = e.action and class.abilities[ e.action ]
+                                                            
+                                                            return not ability or ( ability.id < 0 and ability.id > -10 )
+                                                        end,
+                                                    },
+        
+                                                    list_name = {
+                                                        type = "select",
+                                                        name = "Action List",
+                                                        values = function ()
+                                                            local e = GetListEntry( pack )
+                                                            local v = {}
+                                                            
+                                                            for k in pairs( data.lists ) do
+                                                                if k ~= packControl.listName then
+                                                                    if k == 'precombat' or k == 'default' then
+                                                                        v[ k ] = "|cFF00B4FF" .. k .. "|r"
+                                                                    else
+                                                                        v[ k ] = k
+                                                                    end
+                                                                end
+                                                            end
+        
+                                                            return v
+                                                        end,
+                                                        order = 4,
+                                                        -- width = "full",
+                                                        hidden = function ()
+                                                            local e = GetListEntry( pack )
+                                                            return not ( e.action == "call_action_list" or e.action == "run_action_list" )
+                                                        end,                                                    
+                                                    },
+        
+                                                    potion = {
+                                                        type = "select",
+                                                        name = "Potion",
+                                                        order = 4,
+                                                        -- width = "full",
+                                                        values = class.potionList,
+                                                        hidden = function ()
+                                                            local e = GetListEntry( pack )
+                                                            return e.action ~= "potion"
+                                                        end,
+                                                    },
+
+                                                    sec = {
+                                                        type = "input",
+                                                        name = "Seconds",
+                                                        order = 4,
+                                                        hidden = function ()
+                                                            local e = GetListEntry( pack )
+                                                            return e.action ~= "wait"
+                                                        end,
+                                                    }
+                                                }
+                                            },
+
+                                            modVariable = {
+                                                type = "group",
+                                                inline = true,
+                                                name = "Variable",
+                                                order = 5,
+                                                args = {
+                                                    op = {
+                                                        type = "select",
+                                                        name = "Operation",
+                                                        values = {
+                                                            set = "Set Value",
+                                                            max = "Maximum Value",
+                                                            setif = "Set Value If...",
+                                                            add = "Add Value",
+                                                            sub = "Subtract Value",
+                                                            min = "Minimum Value"
+                                                        },
+                                                        order = 1,
+                                                        width = "single",
+                                                    },
+
+                                                    var_name = {
+                                                        type = "input",
+                                                        name = "Name",
+                                                        desc = "Specify a name for this variable.  Variables must be lowercase with no spaces or symbols aside from the underscore.",
+                                                        validate = function( info, val )
+                                                            if val:len() < 3 then return "Variables must be at least 3 characters in length." end
+
+                                                            local check = formatKey( val )
+                                                            if check ~= val then return "Invalid characters entered.  Try again." end
+
+                                                            return true
+                                                        end,
+                                                        order = 2,
+                                                        width = "double",
+                                                    },
+
+                                                    value = {
+                                                        type = "input",
+                                                        name = "Value",
+                                                        desc = "Provide the value to store (or calculate) when this variable is invoked.",
+                                                        order = 6,
+                                                        width = "full",
+                                                        multiline = 3,
+                                                        dialogControl = 'HekiliCustomEditor',
+                                                        hidden = function ()
+                                                            local e = GetListEntry( pack )
+                                                            return e.action ~= "variable"
+                                                        end,
+                                                    },
+                                                },
+                                                hidden = function ()
+                                                    local e = GetListEntry( pack )
+                                                    return e.action ~= "variable"
+                                                end,
+                                            },
+
+                                            modPooling = {
+                                                type = "group",
+                                                inline = true,
+                                                name = "Pooling",
+                                                order = 5,
+                                                args = {
+                                                    for_next = {
+                                                        type = "toggle",
+                                                        name = function ()
+                                                            local n = packControl.actionID; n = tonumber( n ) + 1
+                                                            local e = Hekili.DB.profile.packs[ pack ].lists[ packControl.listName ][ n ]
+
+                                                            local ability = e and e.action and class.abilities[ e.action ]
+                                                            ability = ability and ability.name or "Not Set"
+
+                                                            return "Pool for Next Entry (" .. ability ..")"
+                                                        end,
+                                                        desc = "If checked, the addon will pool resources until the next entry has enough resources to use.",
+                                                        order = 5,
+                                                        width = "full",
+                                                        hidden = function ()
+                                                            local e = GetListEntry( pack )
+                                                            return e.action ~= "pool_resource"
+                                                        end,
+                                                    },
+
+                                                    wait = {
+                                                        type = "input",
+                                                        name = "Pooling Time",
+                                                        desc = "Specify the time, in seconds, as a number or as an expression that evaluates to a number.\n" ..
+                                                            "Default is |cFFFFD1000.5|r.  An example expression would be |cFFFFD100energy.time_to_max|r.",
+                                                        order = 6,
+                                                        width = "full",
+                                                        multiline = 3,
+                                                        hidden = function ()
+                                                            local e = GetListEntry( pack )
+                                                            return e.action ~= "pool_resource" or e.for_next == 1
+                                                        end,
+                                                    },
+
+                                                    extra_amount = {
+                                                        type = "input",
+                                                        name = "Extra Pooling",
+                                                        desc = "Specify the amount of extra resources to pool in addition to what is needed for the next entry.",
+                                                        order = 6,
+                                                        width = "full",
+                                                        hidden = function ()
+                                                            local e = GetListEntry( pack )
+                                                            return e.action ~= "pool_resource" or e.for_next ~= 1
+                                                        end,
+                                                    },
+                                                },
+                                                hidden = function ()
+                                                    local e = GetListEntry( pack )
+                                                    return e.action ~= 'pool_resource'
+                                                end,
+                                            },
+
+                                            criteria = {
+                                                type = "input",
+                                                name = "Conditions",
+                                                order = 10,
+                                                width = "full",
+                                                multiline = 6,
+                                                dialogControl = "HekiliCustomEditor",
+                                                arg = function( info )
+                                                    local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
+
+                                                    local entry = rawget( self.DB.profile.packs, pack )
+                                                    entry = entry and entry.lists[ list ]
+                                                    entry = entry and entry[ action ]
+
+                                                    local results = {}
+
+                                                    state.reset()
+                                                    state.this_action = entry.action
+
+                                                    local scriptID = pack .. ":" .. list .. ":" .. action
+
+                                                    scripts:ImportModifiers( scriptID )
+                                                    scripts:StoreValues( results, scriptID )
+                                                    
+                                                    return results, list, action
+                                                end,
+                                                hidden = function ()
+                                                    local e = GetListEntry( pack )
+                                                    return e.action == "variable" or e.action == "use_items"
+                                                end,
+                                            },
+
+                                            showModifiers = {
+                                                type = "toggle",
+                                                name = "Show Modifiers",
+                                                desc = "If checked, some additional modifiers and conditions may be set.",
+                                                order = 20,
+                                                width = "full",
+                                                hidden = function ()
+                                                    local e = GetListEntry( pack )
+                                                    local ability = e.action and class.abilities[ e.action ]
+
+                                                    return not ability or ( ability.id < 0 and ability.id > -100 )
+                                                end,
+                                            },
+
+                                            modCycle = {
+                                                type = "group",
+                                                inline = true,
+                                                name = "",
+                                                order = 21,
+                                                args = {
+                                                    cycle_targets = {
+                                                        type = "toggle",
+                                                        name = "Cycle Targets",
+                                                        desc = "If checked, the addon will check each available target and show whether to switch targets.",
+                                                        order = 1,
+                                                        width = "single",
+                                                    },
+
+                                                    max_cycle_targets = {
+                                                        type = "input",
+                                                        name = "Max Cycle Targets",
+                                                        desc = "If cycle targets is checked, the addon will check up to the specified number of targets.",
+                                                        order = 2,
+                                                        width = "double",
+                                                        disabled = function( info )
+                                                            local e = GetListEntry( pack )
+                                                            return e.cycle_targets ~= 1
+                                                        end,
+                                                    }
+                                                },
+                                                hidden = function ()
+                                                    local e = GetListEntry( pack )
+                                                    local ability = e.action and class.abilities[ e.action ]
+
+                                                    return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
+                                                end,
+                                            },
+
+                                            modCooldown = {
+                                                type = "group",
+                                                inline = true,
+                                                name = "",
+                                                order = 22,
+                                                args = {
+                                                    enable_line_cd = {
+                                                        type = "toggle",
+                                                        name = "Line Cooldown",
+                                                        desc = "If enabled, this entry cannot be recommended unless the specified amount of time has passed since its last use.",
+                                                        order = 1,
+                                                    },
+
+                                                    line_cd = {
+                                                        type = "input",
+                                                        name = "Entry Cooldown",
+                                                        desc = "If set, this entry cannot be recommended unless this time has passed since the last time the ability was used.",
+                                                        order = 2,
+                                                        width = "double", 
+                                                        disabled = function( info )
+                                                            local e = GetListEntry( pack )
+                                                            return not e.enable_line_cd
+                                                        end,
+                                                    },
+                                                },
+                                                hidden = function ()
+                                                    local e = GetListEntry( pack )
+                                                    local ability = e.action and class.abilities[ e.action ]
+
+                                                    return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
+                                                end,
+                                            },
+
+                                            modMoving = {
+                                                type = "group",
+                                                inline = true,
+                                                name = "",
+                                                order = 23,
+                                                args = {
+                                                    enable_moving = {
+                                                        type = "toggle",
+                                                        name = "Check Movement",
+                                                        desc = "If checked, this entry can only be recommended when your character movement matches the setting.",
+                                                        order = 1,
+                                                    },
+
+                                                    moving = {
+                                                        type = "select",
+                                                        name = "Movement",
+                                                        desc = "If set, this entry can only be recommended when your movement matches the setting.",
+                                                        order = 2,
+                                                        width = "double",
+                                                        values = {
+                                                            [0]  = "Stationary",
+                                                            [1]  = "Moving"
+                                                        },
+                                                        disabled = function( info )
+                                                            local e = GetListEntry( pack )
+                                                            return not e.enable_moving
+                                                        end,
+                                                    }
+                                                },
+                                                hidden = function ()
+                                                    local e = GetListEntry( pack )
+                                                    local ability = e.action and class.abilities[ e.action ]
+
+                                                    return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
+                                                end,
+                                            },
+
+                                            deleteHeader = {
+                                                type = "header",
+                                                name = "Delete Action",
+                                                order = 100,
+                                            },
+
+                                            delete = {
+                                                type = "execute",
+                                                name = "Delete Entry",
+                                                order = 101,
+                                                confirm = true,
+                                                func = function ()
+                                                    local id = tonumber( packControl.actionID )
+                                                    table.remove( data.lists[ packControl.listName ], id )
+
+                                                    if not data.lists[ packControl.listName ][ id ] then id = id - 1; packControl.actionID = format( "%04d", id ) end
+                                                    if not data.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
+
+                                                    self:LoadScripts()
+                                                end
+                                            }
+                                        },
+                                    },                                    
+                                }
+                            },
+
+                            newListGroup = {
+                                type = "group",
+                                inline = true,
+                                name = "",
+                                order = 3,
+                                hidden = function ()
+                                    return packControl.listName ~= "zzzzzzzzzz"
+                                end,
+                                args = {
+                                    newListName = {
+                                        type = "input",
+                                        name = "List Name",
+                                        order = 1,
+                                        validate = function( info, val )
+                                            if val:len() < 2 then return "Action list names should be at least 2 characters in length."
+                                            elseif rawget( data.lists, val ) then return "There is already an action list by that name."
+                                            elseif val:find( "[^a-zA-Z0-9_]" ) then return "Only alphanumeric characters and underscores can be used in list names." end
+                                            return true
+                                        end,
+                                        width = "full",
+                                    },
+
+                                    createList = {
+                                        type = "execute",
+                                        name = "Create New List",
+                                        order = 2,
+                                        disabled = function() return packControl.newListName == nil end,
+                                        func = function ()
+                                            data.lists[ packControl.newListName ] = {}
+                                            packControl.listName = packControl.newListName
+                                            packControl.newListName = nil
+                                            
+                                        end,
+                                    }
+                                }
+                            },
+
+                            newActionGroup = {
+                                type = "group",
+                                inline = true,
+                                name = "",
+                                order = 3,
+                                hidden = function ()
+                                    return packControl.listName == "zzzzzzzzzz" or packControl.actionID ~= "zzzzzzzzzz"
+                                end,
+                                args = {
+                                    createEntry = {
+                                        type = "execute",
+                                        name = "Create New Entry",
+                                        order = 1,
+                                        func = function ()
+                                            table.insert( data.lists[ packControl.listName ], {} )
+                                            packControl.actionID = format( "%04d", #data.lists[ packControl.listName ] )
+                                        end,
+                                    }
+                                }
+                            }
+
+
+                        },
+                        plugins = {
+                        }
+                    },
+
+                    export = {
+                        type = "group",
+                        name = "Export",
+                        order = 4,
+                        args = {
+                            exportString = {
+                                type = "input",
+                                name = "Export String",
+                                multiline = 5,
+                                get = function( info )
+                                    return self:SerializeActionPack( pack )
+                                end,
+                                set = function () return end,
+                                order = 1,
+                                width = "full"
+                            }
+                        }
+                    }
+                },
+            }
+
+            --[[ wipe( opts.args.lists.plugins.lists )
+
+            local n = 10
+            for list in pairs( data.lists ) do
+                opts.args.lists.plugins.lists[ list ] = EmbedActionListOptions( n, pack, list )
+                n = n + 1
+            end ]]
+
+            packs.plugins.packages[ pack ] = opts
+            count = count + 1
+        end
+
+        db.args.packs = packs
+    end
+
+end
+
+
+do
+    do
+        local completed = false
+    
+        local function SetOverrideBinds()
+            if completed then
+                ClearOverrideBindings( Hekili_Keyhandler )
+                completed = false
+            end
+    
+            for name, toggle in pairs( Hekili.DB.profile.toggles ) do
+                if toggle.key and toggle.key ~= "" then
+                    SetOverrideBindingClick( Hekili_Keyhandler, true, toggle.key, "Hekili_Keyhandler", name )
+                    completed = true
+                end
+            end
+        end
+    
+        function Hekili:OverrideBinds()
+            if InCombatLockdown() then 
+                C_Timer.After( 5, SetOverrideBinds )
+                return
+            end
+    
+            SetOverrideBinds()
+        end
+    end
+
+
+    local ACD = LibStub( "AceConfigDialog-3.0" )
+
+    function Hekili:SetToggle( info, val )
+        local p = Hekili.DB.profile
+        local n = #info
+        local bind, option = info[2], info[ n ]
+
+        local toggle = p.toggles[ bind ]
+        if not toggle then return end
+
+        if option == 'value' then
+            if bind == 'pause' then self:TogglePause()
+            else self:FireToggle( bind ) end
+        
+        elseif option == 'type' then
+            toggle.type = val
+            if val == 'autoSingle' and toggle.value == 'aoe' then toggle.value = 'single'
+            elseif val == 'singleAOE' and toggle.value == 'auto' then toggle.value = 'single' end
+
+        elseif option == 'key' then
+            toggle.key = val
+            self:OverrideBinds()
+        
+        else
+            toggle[ option ] = val
+
+        end
+    end
+
+    function Hekili:GetToggle( info )
+        local p = Hekili.DB.profile
+        local n = #info
+        local bind, option = info[2], info[ n ]
+
+        local toggle = bind and p.toggles[ bind ]
+        if not toggle then return end
+
+        if bind == 'pause' and option == 'value' then return self.Pause end
+        return toggle[ option ]
+    end
+
+    -- Bindings.
+    function Hekili:EmbedToggleOptions( db )
+        db = db or self.Options
+        if not db then return end
+
+        db.args.toggles = db.args.toggles or {
+            type = 'group',
+            name = 'Toggles',
+            order = 10,
+            get = 'GetToggle',
+            set = 'SetToggle',
+            args = {
+                info = {
+                    type = "description",
+                    name = "Toggles are keybindings that you can use to direct the addon's recommendations and how they are presented.",
+                    order = 0.5,
+                    fontSize = "medium",
+                },
+
+                pause = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 1,
+                    args = {
+                        key = {
+                            type = 'keybinding',
+                            name = 'Pause',
+                            desc = "Set a key to pause processing of your action lists. Your current display(s) will freeze, and you can mouseover each icon to see information about the displayed action.",
+                            order = 1,
+                        },
+                        value = {
+                            type = 'toggle',
+                            name = 'Pause',
+                            order = 2,
+                        },
+                    }
+                },
+
+                snapshot = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 2,
+                    args = {
+                        key = {
+                            type = 'keybinding',
+                            name = 'Snapshot',
+                            desc = "Set a key to make a snapshot (without pausing) that can be viewed on the Snapshots tab.  This can be useful information for testing and debugging.",
+                            order = 1,
+                        },
+                    }
+                },
+
+                mode = {
+                    type = "group",
+                    inline = true,
+                    name = "",
+                    order = 3,
+                    args = {
+                        key = {
+                            type = 'keybinding',
+                            name = 'Display Mode',
+                            desc = "Pressing this key will force the addon to switch between one or two displays.  You can specify the modes available as well.\n" ..
+                            "|cFFFFD100Automatic|r:  In this mode, the addon will show one display that automatically adjusts to the number of enemies detected.\n" ..
+                            "|cFFFFD100Dual Display|r:  In this mode, the addon will show two displays; the Primary display will show single-target recommendations and the AOE display will show recommendations for more enemies.",
+                        order = 1,
+                        },
+
+                        --[[[ type = {
+                            type = "select",
+                            name = "Mode Options",
+                            desc = "Specify the Display Modes that can be cycled using your Display Mode key.\n" ..
+                                "|cFFFFD100Automatic / Single|r:  If selected, pressing this key will switch between one display that automatically adjusts based on how many enemies are detected, or two displays, " ..
+                                "one of which shows single-target recommendations and one that shows AOE.\n" ..
+                                "|cFFFFD100Single / AOE|r:  If selected, pressing this key will switch between one display that shows only single-target recommendations and one display that shows AOE.",
+                            values = {
+                                autoSingle = "Auto / Single",
+                                singleAOE  = "Single / AOE"
+                            },
+                            order = 2,
+                        },  ]]
+
+                        value = {
+                            type = "select",
+                            name = "Mode",
+                            desc = "Select your Display Mode.\n" ..
+                            "|cFFFFD100Automatic|r:  The addon will show one display that automatically adjusts to the number of enemies detected.\n" ..
+                            "|cFFFFD100Dual Display|r:  The addon will show two displays; the Primary display will show single-target recommendations and the AOE display will show recommendations for more enemies.",
+                            values = {
+                                automatic = "Automatic (Single Display)",
+                                dual = "Dual Display (Single + AOE)"
+                            },
+                            width = "double",
+                            order = 3,
+                        }
+                    },
+                },
+
+                cooldowns = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 4,
+                    args = {
+                        key = {
+                            type = "keybinding",
+                            name = "Cooldowns",
+                            desc = "Set a key to toggle cooldown recommendations on/off.",
+                            order = 1,
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Show Cooldowns",
+                            desc = "If checked, abilities marked as cooldowns can be recommended.",
+                            order = 2,                            
+                        },
+
+                        bloodlust = {
+                            type = "toggle",
+                            name = "Bloodlust Override",
+                            desc = "If checked, when Bloodlust (or similar haste effects) are active, the addon will recommend cooldown abilities even if Show Cooldowns is not checked.",
+                            order = 3,
+                        },
+                    }
+                },
+
+                defensives = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 5,
+                    args = {
+                        key = {
+                            type = "keybinding",
+                            name = "Defensives",
+                            desc = "Set a key to toggle defensive/mitigation recommendations on/off.\n" ..
+                                "This applies only to tanking specializations.",
+                            order = 1,
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Show Defensives",
+                            desc = "If checked, abilities marked as defensives can be recommended.\n" ..
+                                "This applies only to tanking specializations.",
+                            order = 2,                            
+                        },
+
+                        separate = {
+                            type = "toggle",
+                            name = "Show Separately",
+                            desc = "If checked, defensive/mitigation abilities will be shown separately in your Defensives Display.\n" ..
+                                "This applies only to tanking specializations.",
+                            order = 3,
+                        }
+                    }
+                },
+
+                interrupts = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 6,
+                    args = {
+                        key = {
+                            type = "keybinding",
+                            name = "Interrupts",
+                            desc = "Set a key to use for toggling interrupts on/off.",
+                            order = 1,                            
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Show Interrupts",
+                            desc = "If checked, abilities marked as interrupts can be recommended.",
+                            order = 2,
+                        },
+
+                        separate = {
+                            type = "toggle",
+                            name = "Show Separately",
+                            desc = "If checked, interrupt abilities will be shown separately in the Interrupts Display only (if enabled).",
+                            order = 3,
+                        }
+                    }
+                },
+
+                potions = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 7,
+                    args = {
+                        key = {
+                            type = "keybinding",
+                            name = "Potions",
+                            desc = "Set a key to toggle potion recommendations on/off.",
+                            order = 1,
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Show Potions",
+                            desc = "If checked, abilities marked as potions can be recommended.",
+                            order = 2,
+                        },
+                    }
+                },
+
+                specLinks = {
+                    type = "group",
+                    inline = true,
+                    name = "",
+                    order = 10,
+                    args = {
+                        header = {
+                            type = "header",
+                            name = "Specializations",
+                            order = 1,
+                        },
+
+                        specsInfo = {
+                            type = "description",
+                            name = "There may be additional toggles or settings for your specialization(s).  Use the buttons below to jump to that section.",
+                            order = 2,
+                            fontSize = "medium",
+                        },                        
+                    },
+                    hidden = function( info )
+                        local hide = true
+
+                        for i = 1, 4 do
+                            local id, name, desc = GetSpecializationInfo( i )
+                            if not id then break end
+
+                            local sName = lower( name )
+
+                            if db.args.specs.plugins.spec[ sName ] then
+                                db.args.toggles.args.specLinks.args[ sName ] = db.args.toggles.args.specLinks.args[ sName ] or {
+                                    type = "execute",
+                                    name = name,
+                                    desc = desc,
+                                    order = 5 + i,
+                                    func = function ()
+                                        ACD:SelectGroup( "Hekili", "specs", sName )
+                                    end,
+                                }
+                                hide = false
+                            end
+                        end
+
+                        return hide
+                    end,
+                }
+            }
+        }
+    end
+end
+
+
+do
+    -- Generate a spec skeleton.
+    local listener = CreateFrame( "Frame" )
+    
+    local indent = ""
+    local output = {}
+                        
+    local function key( s )
+        return ( lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s", "_" ) )
+    end
+
+    local function increaseIndent()
+        indent = indent .. "    "
+    end
+
+    local function decreaseIndent()
+        indent = indent:sub( 1, indent:len() - 4 )
+    end
+
+    local function append( s )
+        insert( output, indent .. s )
+    end
+
+    local function appendAttr( t, s )
+        if t[ s ] ~= nil then
+            if type( t[ s ] ) == 'string' then
+                insert( output, indent .. s .. ' = "' .. tostring( t[s] ) .. '",' )
+            else
+                insert( output, indent .. s .. ' = ' .. tostring( t[s] ) .. ',' )
+            end
+        end
+    end
+
+    local spec = ""
+    local specID = 0
+
+    local mastery_spell = 0
+
+    local resources = {}
+    local talents = {}
+    local auras = {}
+    local abilities = {}
+
+    listener:RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED" )
+    listener:RegisterEvent( "PLAYER_ENTERING_WORLD" )
+    listener:RegisterEvent( "UNIT_AURA" )
+    listener:RegisterEvent( "SPELLS_CHANGED" )
+    listener:RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED" )
+    listener:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
+
+    local applications = {}
+    local removals = {}
+
+    local lastAbility = nil
+    local lastTime = 0    
+
+    local function CLEU( event, _, subtype, _, _, sourceName, _, _, _, destName, destFlags, _, spellID, spellName )
+        if sourceName and UnitIsUnit( sourceName, "player" ) then
+            local now = GetTime()
+            local token = key( spellName )
+
+            if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REFRESH" or 
+               subtype == "SPELL_PERIODIC_AURA_APPLIED" or subtype == "SPELL_PERIODIC_AURA_APPLIED_DOSE" or subtype == "SPELL_PERIODIC_AURA_REFRESH" then
+                -- the last ability probably refreshed this aura.
+                if lastAbility and now - lastTime < 0.25 then
+                    -- Go ahead and attribute it to the last cast.
+                    local a = abilities[ lastAbility ]
+
+                    if a then
+                        a.applies = a.applies or {}
+                        a.applies[ token ] = spellID
+                    end
+                else
+                    insert( applications, { s = token, i = spellID, t = now } )
+                end
+            elseif subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REMOVED_DOSE" or subtype == "SPELL_AURA_REMOVED" or 
+                   subtype == "SPELL_PERIODIC_AURA_REMOVED" or subtype == "SPELL_PERIODIC_AURA_REMOVED_DOSE" or subtype == "SPELL_PERIODIC_AURA_BROKEN" then
+                if lastAbility and now - lastTime < 0.25 then
+                    -- Go ahead and attribute it to the last cast.
+                    local a = abilities[ lastAbility ]
+
+                    if a then
+                        a.applies = a.applies or {}
+                        a.applies[ token ] = spellID
+                    end
+                else
+                    insert( removals, { s = token, i = spellID, t = now } )
+                end
+            end
+        end
+    end
+
+    local function skeletonHandler( self, event, ... )
+        local unit = select( 1, ... )
+
+        if ( event == "PLAYER_SPECIALIZATION_CHANGED" and UnitIsUnit( unit, "player" ) ) or event == "PLAYER_ENTERING_WORLD" then
+            local sID, s = GetSpecializationInfo( GetSpecialization() )
+            if specID ~= sID then 
+                wipe( resources )
+                wipe( auras )
+                wipe( abilities )
+            end
+            specID = sID
+            spec = s
+
+            mastery_spell = GetSpecializationMasterySpells( GetSpecialization() )
+
+            for k, i in pairs( Enum.PowerType ) do
+                if k ~= "NumPowerTypes" and i >= 0 then
+                    if UnitPowerMax( "player", i ) > 0 then resources[ k ] = i end
+                end
+            end
+
+            wipe( talents )
+            for j = 1, 7 do
+                for k = 1, 3 do
+                    local tID, name, _, _, _, sID = GetTalentInfoBySpecialization( GetSpecialization(), j, k )
+                    name = key( name )
+                    insert( talents, { name = name, talent = tID, spell = sID } )
+                end
+            end
+
+
+            local haste = UnitSpellHaste( "player" )
+            haste = 1 + ( haste / 100 )
+
+            for i = 1, GetNumSpellTabs() do
+                local tab, _, offset, n = GetSpellTabInfo( i )
+
+                if tab == spec then
+                    for j = offset, offset + n do
+                        local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
+                        
+                        if name and spellID ~= mastery_spell then 
+                            local token = key( name )
+                            
+                            castTime = castTime / 1000
+
+                            local cost, min_cost, max_cost, cost_per_sec, cost_percent, resource
+                            
+                            local costs = GetSpellPowerCost( spellID )
+                            
+                            if costs then
+                                for k, v in pairs( costs ) do
+                                    if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
+                                        cost = v.costPercent > 0 and v.costPercent / 100 or v.cost
+                                        cost_per_sec = v.costPerSecond
+                                        resource = key( v.name )
+                                        break
+                                    end
+                                end
+                            end
+                            
+                            local passive = IsPassiveSpell( spellID )
+                            local harmful = IsHarmfulSpell( spellID )
+                            local helpful = IsHelpfulSpell( spellID )
+                            
+                            local _, charges, _, recharge = GetSpellCharges( spellID )
+                            local cooldown
+                            if recharge then cooldown = recharge
+                            else
+                                cooldown = GetSpellBaseCooldown( spellID )
+                                if cooldown then cooldown = cooldown / 1000 end
+                            end
+                            
+                            local selfbuff = SpellIsSelfBuff( spellID )
+                            local talent = IsTalentSpell( spellID )
+                            
+                            if selfbuff or passive then
+                                auras[ token ] = auras[ token ] or {}
+                                auras[ token ].id = spellID
+                            end
+                            
+                            if not passive then
+                                local a = abilities[ token ] or {}
+
+                                -- a.key = token
+                                a.desc = GetSpellDescription()
+                                if a.desc then a.desc = a.desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) end
+                                a.id = spellID
+                                a.spend = cost
+                                a.spendType = resource
+                                a.spendPerSec = cost_per_sec
+                                a.cast = castTime
+                                a.gcd = "spell"
+
+                                a.texture = texture
+
+                                if talent then a.talent = token end
+
+                                if talents[ sKey ] then
+                                    a.talent = sKey
+                                end
+
+                                a.startsCombat = not helpful
+                                
+                                a.cooldown = cooldown
+                                if a.charges and a.charges > 1 then 
+                                    a.charges = charges
+                                    a.recharge = recharge
+                                end
+
+                                abilities[ token ] = a
+                            end
+                        end
+                    end
+                end
+            end
+        elseif event == "SPELLS_CHANGED" then
+            local haste = UnitSpellHaste( "player" )
+            haste = 1 + ( haste / 100 )
+
+            for i = 1, GetNumSpellTabs() do
+                local tab, _, offset, n = GetSpellTabInfo( i )
+
+                if tab == spec then
+                    for j = offset, offset + n do
+                        local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
+                        
+                        if name and spellID ~= mastery_spell then 
+                            local token = key( name )
+                            
+                            if castTime % 10 > 0 then
+                                -- We can catch hasted cast times 90% of the time...
+                                castTime = castTime * haste
+                            end
+                            castTime = castTime / 1000
+
+                            local cost, min_cost, max_cost, spendPerSec, cost_percent, resource
+                            
+                            local costs = GetSpellPowerCost( spellID )
+                            
+                            if costs then
+                                for k, v in pairs( costs ) do
+                                    if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
+                                        cost = v.costPercent > 0 and v.costPercent / 100 or v.cost
+                                        cost_per_sec = v.costPerSecond
+                                        resource = key( v.name )
+                                        break
+                                    end
+                                end
+                            end
+                            
+                            local passive = IsPassiveSpell( spellID )
+                            local harmful = IsHarmfulSpell( spellID )
+                            local helpful = IsHelpfulSpell( spellID )
+                            
+                            local _, charges, _, recharge = GetSpellCharges( spellID )
+                            local cooldown
+                            if recharge then cooldown = recharge
+                            else
+                                cooldown = GetSpellBaseCooldown( spellID )
+                                if cooldown then cooldown = cooldown / 1000 end
+                            end
+                            
+                            local selfbuff = SpellIsSelfBuff( spellID )
+                            local talent = IsTalentSpell( spellID )
+                            
+                            if selfbuff or passive then
+                                auras[ token ] = auras[ token ] or {}
+                                auras[ token ].id = spellID
+                            end
+                            
+                            if not passive then
+                                local a = abilities[ token ] or {}
+
+                                -- a.key = token
+                                a.desc = GetSpellDescription()
+                                if a.desc then a.desc = a.desc:gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) end
+                                a.id = spellID
+                                a.spend = cost
+                                a.spendType = resource
+                                a.spendPerSec = cost_per_sec
+                                a.cast = castTime
+                                a.gcd = "spell"
+
+                                a.texture = texture
+
+                                if talent then a.talent = token end
+
+                                if talents[ sKey ] then
+                                    a.talent = sKey
+                                end
+
+                                a.startsCombat = not helpful
+                                
+                                a.cooldown = cooldown
+                                a.charges = charges
+                                a.recharge = recharge
+
+                                abilities[ token ] = a
+                            end
+                        end
+                    end
+                end
+            end
+        elseif event == "UNIT_AURA" then
+            if UnitIsUnit( unit, "player" ) or UnitCanAttack( "player", unit ) then
+                for i = 1, 40 do
+                    local name, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _, spellID, canApplyAura, _, castByPlayer = UnitBuff( unit, i, "PLAYER" )
+
+                    if not name then break end
+
+                    local token = key( name )
+
+                    local a = auras[ token ] or {}
+
+                    if duration == 0 then duration = 3600 end
+
+                    a.id = spellID
+                    a.duration = duration
+                    a.type = debuffType
+                    a.max_stack = max( a.max_stack or 1, count )
+
+                    auras[ token ] = a
+                end
+
+                for i = 1, 40 do
+                    local name, icon, count, debuffType, duration, expirationTime, caster, canStealOrPurge, _, spellID, canApplyAura, _, castByPlayer = UnitDebuff( unit, i, "PLAYER" )
+
+                    if not name then break end
+
+                    local token = key( name )
+
+                    local a = auras[ token ] or {}
+
+                    if duration == 0 then duration = 3600 end
+
+                    a.id = spellID
+                    a.duration = duration
+                    a.type = debuffType
+                    a.max_stack = max( a.max_stack or 1, count )
+
+                    auras[ token ] = a
+                end
+            end
+        
+        elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+            if UnitIsUnit( "player", unit ) then
+                local spellID = select( 3, ... )
+                local token = spellID and class.abilities[ spellID ] and class.abilities[ spellID ].key
+
+                local now = GetTime()
+
+                if not token then return end
+
+                lastAbility = token
+                lastTime = now
+
+                local a = abilities[ token ]
+
+                if not a then 
+                    return 
+                end
+
+                for k, v in pairs( applications ) do
+                    if now - v.t < 0.5 then
+                        a.applies = a.applies or {}
+                        a.applies[ v.s ] = v.i
+                    end
+                    applications[ k ] = nil
+                end
+
+                for k, v in pairs( removals ) do
+                    if now - v.t < 0.5 then
+                        a.removes = a.removes or {}
+                        a.removes[ v.s ] = v.i
+                    end
+                    removals[ k ] = nil
+                end
+            end
+        elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+            CLEU( event, CombatLogGetCurrentEventInfo() )
+        end
+    end
+
+    function Hekili:StartListeningForSkeleton()
+        listener:SetScript( "OnEvent", skeletonHandler )
+
+        skeletonHandler( listener, "PLAYER_SPECIALIZATION_CHANGED", "player" )
+        skeletonHandler( listener, "SPELLS_CHANGED" )
+    end
+
+    local SpecInfo = ""
+
+
+
+    function Hekili:EmbedSkeletonOptions( db )
+        db = db or self.Options
+        if not db then return end
+
+        db.args.skeleton = db.args.skeleton or {
+            type = "group",
+            name = "Skeleton",
+            order = 100,
+            args = {
+                spooky = {
+                    type = "input",
+                    name = "Skeleton",
+                    desc = "A rough skeleton of your current spec, for development purposes only.",
+                    order = 1,
+                    get = function( info )
+                        return skeleton or ""
+                    end,
+                    multiline = 25,
+                    width = "full"
+                },
+                regen = {
+                    type = "execute",
+                    name = "Generate Skeleton",
+                    order = 2,
+                    func = function()
+                        indent = ""
+                        wipe( output )
+                        
+                        append( "if UnitClassBase( 'player' ) == '" .. UnitClassBase( "player" ) .. "' then" )
+                        increaseIndent()
+
+                        append( "local spec = Hekili:NewSpecialization( " .. specID .. " )\n" )
+
+                        for k, i in pairs( resources ) do
+                            append( "spec:RegisterResource( Enum.PowerType." .. k .. " )" )
+                        end
+
+                        append( "" )
+                        append( "-- Talents" )
+                        append( "spec:RegisterTalents( {" )                        
+                        increaseIndent()
+
+                        for i, tal in ipairs( talents ) do
+                            append( tal.name .. " = " .. tal.talent .. ", -- " .. tal.spell .. ( ( i % 3 == 0 and i < #talents ) and "\n" or "" ) )
+                        end
+
+                        decreaseIndent()
+                        append( "} )\n" )
+
+                        append( "-- Auras" )
+                        append( "spec:RegisterAuras( {" )
+                        increaseIndent()
+
+                        for k, aura in orderedPairs( auras ) do
+                            append( k .. " = {" )
+                            increaseIndent()
+                            append( "id = " .. aura.id .. "," )
+
+                            for key, value in pairs( aura ) do
+                                if key ~= "id" then
+                                    if type(value) == 'string' then
+                                        append( key .. ' = "' .. value .. '",' )
+                                    else
+                                        append( key .. " = " .. value .. "," )
+                                    end
+                                end
+                            end
+
+                            decreaseIndent()
+                            append( "}," )
+                        end
+
+                        decreaseIndent()
+                        append( "} )\n" )
+
+
+                        append( "-- Abilities" )
+                        append( "spec:RegisterAbilities( {" )
+                        increaseIndent()
+
+                        count = 1
+                        for k, a in orderedPairs( abilities ) do
+                            if count > 1 then append( "\n" ) end
+                            count = count + 1
+                            append( k .. " = {" )
+                            increaseIndent()
+                            appendAttr( a, "id" )
+                            appendAttr( a, "cast" )
+                            appendAttr( a, "charges" )
+                            appendAttr( a, "cooldown" )
+                            appendAttr( a, "recharge" )
+                            appendAttr( a, "gcd" )
+                            append( "" )
+                            appendAttr( a, "spend" )
+                            appendAttr( a, "spendPerSec" )
+                            appendAttr( a, "spendType" )
+                            if a.spend ~= nil or a.spendPerSec ~= nil or a.spendType ~= nil then
+                                append( "" )
+                            end
+                            appendAttr( a, "talent" )
+                            if a.talent ~= nil then append( "" ) end
+                            appendAttr( a, "startsCombat" )
+                            appendAttr( a, "texture" )
+                            append( "" )
+                            append( "handler = function ()" )
+
+                            if a.applies or a.removes then
+                                increaseIndent()
+                                if a.applies then
+                                    for name, id in pairs( a.applies ) do
+                                        append( "-- applies " .. name .. " (" .. id .. ")" )
+                                    end
+                                end
+                                if a.removes then
+                                    for name, id in pairs( a.removes ) do
+                                        append( "-- removes " .. name .. " (" .. id .. ")" )
+                                    end
+                                end
+                                decreaseIndent()
+                            end
+                            append( "end," )
+                            decreaseIndent()
+                            append( "}," )
+                        end
+
+                        decreaseIndent()
+                        append( "} )\n" )
+
+                        skeleton = table.concat( output, "\n" )
+                    end,
+                }
+            },
+            hidden = function()
+                return not Hekili.Skeleton
+            end,
+        }
+    
+    end
+end
+
+
+function Hekili:GenerateProfile()
+    local s = state
+
+    local spec = s.spec.key
+
+    local talents
+    for k, v in orderedPairs( s.talent ) do
+        if v.enabled then
+            if talents then talents = format( "%s\n    %s", talents, k )
+            else talents = k end
+        end
+    end
+
+    local traits
+    for k, v in orderedPairs( s.artifact ) do
+        if v.rank > 0 then
+            if traits then traits = format( "%s\n    %s=%d", traits, k, v.rank )
+            else traits = format( "%s=%d", k, v.rank ) end
+        end
+    end
+
+    local sets
+    for k, v in orderedPairs( class.gear ) do
+        if s.set_bonus[ k ] > 0 then
+            if sets then sets = format( "%s\n    %s=%d", sets, k, s.set_bonus[k] )
+            else sets = format( "%s=%d", k, s.set_bonus[k] ) end
+        end
+    end
+
+    local gear
+    for k, v in pairs( state.set_bonus ) do
+        if type(k) == 'string' and v > 0 then
+            if gear then gear = format( "%s\n    %s=%d", gear, k, v )
+            else gear = format( "    %s=%d", k, v ) end
+        end
+    end
+
+    return format( "build: %s\n" ..
+        "level: %d\n" ..
+        "class: %s\n" ..
+        "spec: %s\n\n" ..
+        "talents: %s\n\n" ..
+        "traits: %s\n\n" ..
+        "sets/legendaries/artifacts: %s\n\n" ..
+        "gear: %s",
+        Hekili.Version or "no info",
+        UnitLevel( 'player' ) or 0,
+        class.file or "NONE",
+        spec or "none",
+        talents or "none",
+        traits or "none",
+        sets or "none",
+        gear or "none" )
 end
 
 
@@ -4899,852 +4837,137 @@ function Hekili:GetOptions()
         set = 'SetOption',
         childGroups = "tree",
         args = {
-
             general = {
                 type = "group",
                 name = "General",
-                order = 15,
+                order = 10,
+                childGroups = "tab",
                 args = {
-                    Enabled = {
-                        type = "toggle",
-                        name = "Enabled",
-                        desc = "Enables or disables the addon.",
-                        order = 1
-                    },
-                    MinimapIcon = {
-                        type = "toggle",
-                        name = "Hide Minimap Icon",
-                        desc = "If checked, the minimap icon will be hidden.",
-                        order = 3
-                    },
-                    ['Counter'] = {
+                    topRow = {
                         type = "group",
-                        name = "Target Count",
                         inline = true,
-                        order = 6,
+                        name = "",
+                        order = 1,
+                        width = "full",
                         args = {
-                            ['Delay Description'] = {
+                            enabled = {
+                                type = "toggle",
+                                name = "Enabled",
+                                desc = "Enables or disables the addon.",
+                                order = 1
+                            },
+                            
+                            minimapIcon = {
+                                type = "toggle",
+                                name = "Hide Minimap Icon",
+                                desc = "If checked, the minimap icon will be hidden.",
+                                order = 2,
+                            },
+                        },                      
+                    },
+
+                    welcome = {
+                        type = "group",
+                        name = "",
+                        inline = true,
+                        order = 5,
+                        args = {
+                            desc = {
                                 type = 'description',
-                                name = "In order to make accurate recommendations based on the number of enemies you are fighting, this addon uses two processes to count targets.  " ..
-                                    "The first method is to |cFFFFD100Count Nameplates|r and check whether those enemies are within your |cFFFFD100Nameplate Detection Range|r (typically 8 yards for melee).  " ..
-                                    "The second method is to |cFFFFD100Track Damage|r and count enemies you've damaged within the |cFFFFD100Grace Period|r.  Both methods have strengths and disadvantages.\n",
-                                order = 0,
-                                fontSize = "medium",
-                                width = 'full'
-                            },
-                            ['Count Nameplate Targets'] = {
-                                type = 'toggle',
-                                name = "Count Nameplates",
-                                desc = "If checked, the addon will check to see how many hostile nameplates are within the specified range and count them as enemies.\n\n" ..
-                                "If enemy nameplates are not enabled, the addon will fallback to damage-based detection regardless of these settings.\n\n" ..
-                                "This feature is not used by ranged specializations.",
-                                order = 1,
-                            },
-                            ['Nameplate Detection Range'] = {
-                                type = 'range',
-                                name = 'Nameplate Detection Range',
-                                desc = "When |cFFFFD100Count Nameplate Targets|r is checked, the addon will count enemy nameplates within this many yards as active enemies.\n\n" ..
-                                "This value will 'snap' to valid enemy ranges that can be used for target detection.",
-                                min = 5,
-                                max = 100,
-                                step = 1,
-                                set = function( info, val )
-                                    -- local values = { [5] = 5, [6] = 6, [8] = 8, [10] = 10, [15] = 15, [20] = 20, [25] = 25, [30] = 30, [35] = 35, [40] = 40, [45] = 45, [50] = 50, [60] = 60, [70] = 70, [80] = 80, [100] = 100 }
-                                    local values = { 5, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 100 }
-                                    
-                                    local closest, difference = 0, 100
-                                    
-                                    for _, value in ipairs( values ) do
-                                        local diff = abs( val - value )
-                                        if diff < difference then
-                                            closest = value
-                                            difference = diff
+                                name = function ()
+                                    local output = "\n|cFF00CCFFTHANK YOU TO ALL PATRONS SUPPORTING THIS ADDON'S DEVELOPMENT!|r\n\n"
+        
+                                    for i, name in ipairs( ns.Patrons ) do
+                                        if i == 1 then
+                                            output = output .. name
+                                        elseif i == #ns.Patrons then
+                                            output = output .. ", and " .. name .. "."
+                                        else
+                                            output = output .. ", " .. name
                                         end
-                                        
-                                        if closest > val then break end
                                     end
                                     
-                                    Hekili.DB.profile['Nameplate Detection Range'] = closest
+                                    output = output .. "\n\nPlease see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n"
+                                    return output
                                 end,
+                                image = "Interface\\Addons\\Hekili\\Textures\\LOGO-ORANGE",
+                                imageWidth = 150,
+                                imageHeight = 150,
+                                fontSize = "medium",
                                 order = 2,
-                                width = 'double',
+                                width = "full"
                             },
-                            ['Count Targets by Damage'] = {
-                                type = 'toggle',
-                                name = 'Track Damage',
-                                desc = "If checked, the addon will track which units you have recently attacked or have recently attacked you and count them as enemies.\n\n" ..
-                                "If nameplate target detection is turned off, this feature will be used regardless of this setting.\n\n" ..
-                                "For ranged specializations, this feature is always active.",
+        
+                            curse = {
+                                type = 'input',
+                                name = "Twitch / Curse",
                                 order = 3,
+                                get = function () return "https://www.curse.com/addons/wow/hekili/" end,
+                                set = function () end,
+                                width = "full",
                             },
-                            ['Audit Targets'] = {
-                                type = 'range',
-                                name = "Grace Period",
-                                min = 3,
-                                max = 20,
-                                step = 1,
-                                width = 'double',
+        
+                            github = {
+                                type = "input",
+                                name = "GitHub",
                                 order = 4,
+                                get = function () return "http://github.com/Hekili/hekili/" end,
+                                set = function () end,
+                                width = "full",
+                            },
+        
+                            patreon = {
+                                type = 'input',
+                                name = "Patreon",
+                                order = 4,
+                                get = function () return "https://www.patreon.com/hekili" end,
+                                set = function () end,
+                                width = "full",
                             },
                         }
                     },
-                    ['Description'] = {
-                        type = 'description',
-                        name = function ()
-                            local output = "\n|cFF00CCFFTHANK YOU TO ALL PATRONS SUPPORTING THIS ADDON'S DEVELOPMENT!|r\n\n"
+                }
+            },
 
-                            for i, name in ipairs( ns.Patrons ) do
-                                if i == 1 then
-                                    output = output .. name
-                                elseif i == #ns.Patrons then
-                                    output = output .. ", and " .. name .. "."
-                                else
-                                    output = output .. ", " .. name
-                                end
-                            end
-                            
-                            output = output .. "\n\nPlease see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n"
-                            return output
-                        end,
+            IssueReport = {
+                type = "group",
+                name = "Issue Reporting",
+                order = 85,
+                args = {
+                    header = {
+                        type = "description",
+                        name = "If you are having a technical issue with the addon, please submit an issue report via the link below.  When submitting your report, please include the information " ..
+                            "below (specialization, talents, traits, gear), which can be copied and pasted for your convenience.  If you have a concern about the addon's recommendations, it is preferred " ..
+                            "that you provide a Snapshot (which will include this information) instead.",
+                        order = 10,
                         fontSize = "medium",
                         width = "full",
-                        order = 4
                     },
-                    --[[ ['Clash'] = {
-                        type = "group",
-                        name = "Cooldown Clash",
-                        inline = true,
-                        order = 6,
-                        args = {
-                            ['Clash Description'] = {
-                                type = 'description',
-                                name = "When recommending abilities, the addon prioritizes the action that is available soonest and with passing criteria. Sometimes, a lower priority action will be recommended " ..
-                                    "over a higher priority action because the lower priority action will be available slightly sooner.  By setting a Cooldown Clash value greater than 0, the addon will recommend a " ..
-                                    "lower priority action only if it is available at least this much sooner than a higher priority ability.  This setting applies to all abilities; individual abilities can be " ..
-                                    "configured on the |cFFFFD100Abilities and Items|r tab.",
-                                order = 0
-                            },
-                            ['Clash'] = {
-                                type = 'range',
-                                name = "Clash",
-                                min = 0,
-                                max = 0.5,
-                                step = 0.01,
-                                width = 'full',
-                                order = 1
-                            }
-                        }
-                    }, ]]
-                    --[[ ['Engine'] = {
-                        type = "group",
-                        name = "Engine Settings",
-                        inline = true,
-                        order = 7,
-                        args = {
-                            moreCPU = {
-                                type = "toggle",
-                                name = "Use More CPU",
-                                order = 0,
-                                desc = "If checked, the addon will use a secondary system to retest its recommendations when there are gaps or wait times " ..
-                                    "in your action priorities.  This may result in *slightly* better recommendations, but will definitely use more CPU.",
-                                width = full,
-
-                            },
-
-                        }
-                    }, ]]
-                }
-            },
-            notifs = {
-                type = "group",
-                name = "Notifications",
-                childGroups = "tree",
-                cmdHidden = true,
-                order = 70,
-                args = {
-                    ['Notification Enabled'] = {
-                        type = 'toggle',
-                        name = "Show Notifications",
-                        desc = "Show a frame where some updates will be posted during combat (e.g., 'Cooldowns ON' when you press your Cooldown toggle key).",
-                        order = 1,
-                        width = 'full',
-                    },
-                    ['Notification X'] = {
-                        type = 'input',
-                        name = 'Position (X)',
-                        desc = "Enter the horizontal position of the notification panel relative to the center of your screen.",
-                        order = 2,
-                    },
-                    ['Notification Y'] = {
-                        type = 'input',
-                        name = 'Position (Y)',
-                        desc = "Enter the vertical position of the notification panel relative to the center of your screen.",
-                        order = 3,
-                    },
-                    blank1 = {
-                        type = 'description',
-                        name = ' ',
-                        order = 4,
-                    },
-                    ['Notification Width'] = {
-                        type = 'range',
-                        name = 'Panel Width',
-                        desc = "Select the width of the panel in pixels.",
-                        order = 4,
-                        min = 25,
-                        max = 2500,
-                        step = 1,
-                    },
-                    ['Notification Height'] = {
-                        type = 'range',
-                        name = 'Panel Height',
-                        desc = "Select the height of the panel in pixels.",
-                        order = 5,
-                        min = 10,
-                        max = 500,
-                        step = 1,
-                    },
-                    blank2 = {
-                        type = 'description',
-                        name = ' ',
-                        order = 6
-                    },
-                    ['Notification Font'] = {
-                        type = 'select',
-                        name = 'Font',
-                        desc = "Select the font to use in the Notification panel.",
-                        dialogControl = 'LSM30_Font',
-                        order = 7,
-                        values = LibStub( "LibSharedMedia-3.0" ):HashTable("font"), -- pull in your font list from LSM
-                    },
-                    ['Notification Font Size'] = {
-                        type = 'range',
-                        name = "Font Size",
-                        desc = "Select the height of the notification text.",
-                        order = 8,
-                        min = 8,
-                        max = 200,
-                        step = 1
-                    },
-                },
-            },
-            displays = {
-                type = "group",
-                name = "Displays",
-                childGroups = "tree",
-                cmdHidden = true,
-                order = 50,
-                args = {
-                    header = {
-                        type = "description",
-                        name = "A display is a group of 1 to 10 icons. Each display can multiple hooks for action lists, with customized criteria and actions for display.",
-                        order = 0
-                    },
-                    ['New Display'] = {
+                    profile = {
                         type = "input",
-                        name = "New Display",
-                        desc = 'Enter a new display name. Default options will be used.',
-                        width = 'full',
-                        validate = function(info, val)
-                            if val == '' then return true end
-                            for k,v in pairs(Hekili.DB.profile.displays) do
-                                if val == v.name then
-                                    Hekili:Print("That name is already in use.")
-                                    return "That name is already in use."
-                                end
-                            end
-                            return true
-                        end,
-                        order = 1
-                    },
-                    ['Import Display'] = {
-                        type = "input",
-                        name = "Import Display",
-                        desc = "Paste a display's export string to import it here.",
-                        width = 'full',
-                        order = 2,
-                        multiline = 6,
-                    },
-                    footer = {
-                        type = "description",
-                        name = " ",
-                        order = 3
-                    },
-                    Reload = {
-                        type = "execute",
-                        name = "Reload Missing",
-                        desc = "Reloads all missing default displays.",
-                        confirm = true,
-                        confirmText = "Restore any deleted default displays?",
-                        order = 4,
-                        func = function( info, ... )
-                            local exists = {}
-                            
-                            for i, display in ipairs( Hekili.DB.profile.displays ) do
-                                exists[ display.Name ] = true
-                            end
-                            
-                            for i, default in ipairs( class.defaults ) do
-                                if not exists[ default.name ] and default.type == 'displays' then
-                                    local import = ns.deserializeDisplay( default.import )
-                                    local index = #Hekili.DB.profile.displays + 1
-                                    
-                                    if import then
-                                        Hekili.DB.profile.displays[ index ] = import
-                                        Hekili.DB.profile.displays[ index ].Name = default.name
-                                        Hekili.DB.profile.displays[ index ].Release = default.version
-                                        Hekili.DB.profile.displays[ index ].Default = true
-                                        
-                                        if not Hekili[ 'ProcessDisplay' .. index ] then
-                                            Hekili[ 'ProcessDisplay' .. index ] = function()
-                                                Hekili:ProcessHooks( index )
-                                            end
-                                            C_Timer.After( 0.4, Hekili[ 'ProcessDisplay' .. index ] )
-                                        end
-                                    else
-                                        Hekili:Print("Unable to import " .. default.name .. ".")
-                                    end
-                                end
-                            end
-                            
-                            ns.checkImports()
-                            ns.convertDisplays()
-                            ns.refreshOptions()
-                            ns.loadScripts()
-                            ns.buildUI()
-                        end,
-                    },
-                    ReloadAll = {
-                        type = "execute",
-                        name = "Reload All",
-                        desc = "Reloads all default displays.",
-                        confirm = true,
-                        confirmText = "Restore all default displays?",
-                        order = 5,
-                        func = function( info, ... )
-                            local exists = {}
-                            
-                            for i, display in ipairs( Hekili.DB.profile.displays ) do
-                                exists[ display.Name ] = i
-                            end
-                            
-                            for i, default in ipairs( class.defaults ) do
-                                if default.type == 'displays' then
-                                    local import = ns.deserializeDisplay( default.import )
-                                    local index = exists[ default.name ] or #Hekili.DB.profile.displays + 1
-                                    
-                                    if import then
-                                        if exists[ default.name ] then
-                                            local settings_to_keep = { 'primaryIconHeight', 'primaryIconWidth', 'queuedIconHeight', 'queuedIconWidth', 'KeepAspectRatio', 'queuedIconRatio', 'primaryFontSize', 'rel', 'x', 'y', 'numIcons', 'showCaptions', 'showAuraInfo', 'auraSpellID', 'visibilityType', 'showPvE', 'alphaShowPvE', 'showPvP', 'alphaShowPvP', 'alwaysPvP', 'alphaAlwaysPvP', 'targetPvP', 'alphaTargetPvP', 'combatPvP', 'alphaCombatPvP', 'alwaysPvE', 'alphaAlwaysPvE', 'targetPvE', 'alphaTargetPvE', 'combatPvE', 'alphaCombatPvP' }
-                                            
-                                            for _, k in pairs( settings_to_keep ) do
-                                                import[ k ] = Hekili.DB.profile.displays[ index ][ k ]
-                                            end
-                                        end
-                                        
-                                        Hekili.DB.profile.displays[ index ] = import
-                                        Hekili.DB.profile.displays[ index ].Name = default.name
-                                        Hekili.DB.profile.displays[ index ].Release = default.version
-                                        Hekili.DB.profile.displays[ index ].Default = true
-                                        
-                                        if not Hekili[ 'ProcessDisplay' .. index ] then
-                                            Hekili[ 'ProcessDisplay' .. index ] = function()
-                                                Hekili:ProcessHooks( index )
-                                            end
-                                            C_Timer.After( 0.4, Hekili[ 'ProcessDisplay' .. index ] )
-                                        end
-                                    else
-                                        Hekili:Print("Unable to import " .. default.name .. ".")
-                                    end
-                                end
-                            end
-                            
-                            ns.checkImports()
-                            ns.convertDisplays()
-                            ns.refreshOptions()
-                            ns.loadScripts()
-                            ns.buildUI()
-                        end,
-                    },
-                }
-            },
-            actionLists = {
-                type = "group",
-                name = "Action Lists",
-                childGroups = "tree",
-                cmdHidden = true,
-                order = 60,
-                args = {
-                    header = {
-                        type = "description",
-                        name = "Each action list is a selection of several abilities and the conditions for using them.",
-                        order = 10
-                    },
-                    ['New Action List'] = {
-                        type = "input",
-                        name = "New Action List",
-                        desc = "Enter a name for this action list and press ENTER.",
+                        name = "Character Data",
+                        order = 20,
                         width = "full",
-                        validate = function(info, val)
-                            if val == '' then return true end
-                            for k,v in pairs(Hekili.DB.profile.actionLists) do
-                                if val == v.Name then
-                                    Hekili:Print("That name is already in use.")
-                                    return "That name is already in use."
-                                end
-                            end
-                            
-                            return true
-                        end,
-                        order = 20
+                        multiline = 10,
+                        get = 'GenerateProfile',
+                        set = function () end,
                     },
-                    ['Import Action List'] = {
+                    link = {
                         type = "input",
-                        name = "Import Action List",
-                        desc = "Paste an action list's export string to import it here.",
-                        width = 'full',
+                        name = "Link",
                         order = 30,
-                        multiline = 6,
-                    },
-                    footer = {
-                        type = "description",
-                        name = " ",
-                        order = 35
-                    },
-                    Reload = {
-                        type = "execute",
-                        name = "Reload Missing",
-                        desc = "Reloads all missing default action lists.",
-                        confirm = true,
-                        confirmText = "Restore any deleted default action lists?",
-                        order = 40,
-                        func = function( info, ... )
-                            local exists = {}
-                            
-                            for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                                exists[ list.Name ] = true
-                            end
-                            
-                            for i, default in ipairs( class.defaults ) do
-                                if not exists[ default.name ] and default.type == 'actionLists' then
-                                    local import = ns.deserializeActionList( default.import )
-                                    local index = #Hekili.DB.profile.actionLists + 1
-                                    
-                                    if import and type( import ) ~= 'string' then
-                                        Hekili.DB.profile.actionLists[ index ] = import
-                                        Hekili.DB.profile.actionLists[ index ].Name = default.name
-                                        Hekili.DB.profile.actionLists[ index ].Release = default.version
-                                        Hekili.DB.profile.actionLists[ index ].Default = true
-                                    else
-                                        Hekili:Print("Unable to import " .. default.name .. ".")
-                                        return
-                                    end
-                                end
-                            end
-                            
-                            ns.refreshOptions()
-                            ns.loadScripts()
-                        end,
-                    },
-                    ReloadAll = {
-                        type = "execute",
-                        name = "Reload All",
-                        desc = "Reloads all default action lists.",
-                        confirm = true,
-                        confirmText = "Restore all default action lists?",
-                        order = 41,
-                        func = function( info, ... )
-                            local exists = {}
-                            
-                            for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                                exists[ list.Name ] = i
-                            end
-                            
-                            for i, default in ipairs( class.defaults ) do
-                                if default.type == 'actionLists' then
-                                    local index = exists[ default.name ] or #Hekili.DB.profile.actionLists+1
-                                    
-                                    local import = ns.deserializeActionList( default.import )
-                                    
-                                    if import and type( import ) ~= 'string' then
-                                        Hekili.DB.profile.actionLists[ index ] = import
-                                        Hekili.DB.profile.actionLists[ index ].Name = default.name
-                                        Hekili.DB.profile.actionLists[ index ].Release = default.version
-                                        Hekili.DB.profile.actionLists[ index ].Default = true
-                                    else
-                                        Hekili:Print("Unable to import " .. default.name .. ".")
-                                        return
-                                    end
-                                end
-                            end
-                            
-                            ns.refreshOptions()
-                            ns.loadScripts()
-                        end,
-                    },
-                }
-            },
-            bindings = {
-                type = 'group',
-                name = 'Toggles',
-                desc = "Formerly 'Filters and Keybinds'",
-                order = 15,
-                childGroups = 'tab',
-                args = {
-                    default = {
-                        type = 'group',
-                        name = 'Default Filters',
-                        order = 0,
-                        args = {
-                            HEKILI_TOGGLE_PAUSE = {
-                                type = 'keybinding',
-                                name = 'Pause',
-                                desc = "Set a key to pause processing of your action lists. Your current display(s) will freeze, and you can mouseover each icon to see information about the displayed action.",
-                                order = 10,
-                            },
-                            Pause = {
-                                type = 'toggle',
-                                name = 'Pause',
-                                order = 11,
-                                width = "double"
-                            },
-                            HEKILI_SNAPSHOT = {
-                                type = 'keybinding',
-                                name = 'Snapshot',
-                                desc = "Set a key to make a snapshot (without pausing) that can be viewed on the Snapshots tab.  This can be useful information for testing and debugging.",
-                                order = 15,
-                            },
-                            ToggleSpacer = {
-                                type = 'description',
-                                name = "\n",
-                                order = 16,
-                                width = "double"
-                            },
-                            HEKILI_TOGGLE_MODE = {
-                                type = 'keybinding',
-                                name = 'Mode Switch',
-                                desc = "Pressing this key will tell the addon to change how it handles the priority lists in the primary display, if your displays and action lists are configured to take advantage of this feature.\n" ..
-                                "|cFFFFD100Auto:|r\nPressing this key will switch between single-target and automatic detection of single-target vs. cleave vs. AOE.\n" ..
-                                "|cFFFFD100Manual:|r\nPressing this key will switch between single-target and AOE. Cleave action lists will not be used.\n",
-                                order = 20,
-                            },
-                            ['Switch Type'] = {
-                                type = 'select',
-                                name = 'Switch Type',
-                                desc = "|cFFFFD100Auto / Single-Target:|r\nPressing the Mode Switch keybind will switch between strict single target (1 enemy) vs. using auto-detection to count active enemies.\n" ..
-                                "|cFFFFD100Single-Target / AOE:|r\nPressing this key will switch between single-target and AOE. AOE is defined as a minimum of 3 targets for default displays.\n",
-                                values = {
-                                    [0] = 'Single-Target <-> Auto',
-                                    [1] = 'Single-Target <-> AOE',
-                                },
-                                order = 21,
-                            },
-                            ['Mode Status'] = {
-                                type = 'select',
-                                name = 'Current Mode',
-                                desc = "Based upon the Switch Type, this setting can switch between single-target, AOE, or auto-detection of enemies.",
-                                values = function(info, val)
-                                    if Hekili.DB.profile['Switch Type'] == 2 then
-                                        return { [0] = 'Single-Target', [1] = 'Cleave', [2] = 'AOE' }
-                                    elseif Hekili.DB.profile['Switch Type'] == 1 then
-                                        return { [0] = 'Single-Target', [2] = 'AOE' }
-                                    elseif Hekili.DB.profile['Switch Type'] == 0 then
-                                        return { [0] = 'Single-Target', [3] = 'Auto-Detect' }
-                                    end
-                                end,
-                                order = 22
-                            },
-                            HEKILI_TOGGLE_COOLDOWNS = {
-                                type = 'keybinding',
-                                name = 'Cooldowns',
-                                desc = 'Set a key for toggling cooldowns on and off.  This option is used by testing the criterion |cFFFFD100toggle.cooldowns|r in your condition scripts.',
-                                order = 30
-                            },
-                            Cooldowns = {
-                                type = 'toggle',
-                                name = 'Show Cooldowns',
-                                order = 31,
-                                -- width = 'double'
-                            },
-                            BloodlustCooldowns = {
-                                type = 'toggle',
-                                name = 'Bloodlust Override',
-                                desc = "When checked, the addon will also show cooldowns when Bloodlust (Heroism, Time Warp, etc.) is active, even if Show Cooldowns is disabled.",
-                                order = 32,
-                            },
-                            HEKILI_TOGGLE_ARTIFACT = {
-                                type = 'keybinding',
-                                name = 'Artifact',
-                                desc = 'Set a key for toggling your artifact on and off. This option is used by testing the criterion |cFFFFD100toggle.artifact|r in your condition scripts.',
-                                order = 33,
-                            },
-                            Artifact = {
-                                type = 'toggle',
-                                name = 'Show Artifact Ability',
-                                order = 34,
-                            },
-                            CooldownArtifact = {
-                                type = 'toggle',
-                                name = 'Cooldown Override',
-                                desc = "When checked, the addon will also show your artifact ability when Show Cooldowns is enabled.",
-                                order = 34.1,
-                            },
-                            HEKILI_TOGGLE_POTIONS = {
-                                type = 'keybinding',
-                                name = 'Potions',
-                                desc = 'Set a key for toggling potions on and off. Potion handling is handled by the addon and does not need to be included in your condition scripts.',
-                                order = 35,
-                            },
-                            Potions = {
-                                type = 'toggle',
-                                name = 'Show Potions',
-                                order = 36,
-                                width = 'double',
-                            },
-                            HEKILI_TOGGLE_INTERRUPTS = {
-                                type = 'keybinding',
-                                name = 'Interrupts',
-                                desc = 'Set a key for toggling interrupts on and off. This option is used by testing the criterion |cFFFFD100toggle.interrupts|r in your condition scripts.',
-                                order = 50
-                            },
-                            Interrupts = {
-                                type = 'toggle',
-                                name = 'Show Interrupts',
-                                order = 51,
-                                width = 'double'
-                            },
-                        }
-                    },
-                    custom = {
-                        type = 'group',
-                        name = 'Custom Filters',
-                        order = 10,
-                        args = {
-                            HEKILI_TOGGLE_1 = {
-                                type = 'keybinding',
-                                name = 'Toggle 1',
-                                order = 10
-                            },
-                            ['Toggle 1 Name'] = {
-                                type = 'input',
-                                name = 'Alias',
-                                desc = 'Set a unique alias for this custom toggle. You can check to see if this toggle is active by testing the criterion |cFFFFD100toggle.one|r or |cFFFFD100toggle.<alias>|r. Aliases must be all lowercase, with no spaces.',
-                                order = 12,
-                                validate = function(info, val)
-                                    if val == '' then
-                                        return true
-                                    elseif val == 'cooldowns' or val == 'hardcasts' or val == 'mode' or val == 'interrupts' then
-                                        Hekili:Print("'" .. val .. "' is a reserved toggle name.")
-                                        return "'" .. val .. "' is a reserved toggle name."
-                                    end
-                                    
-                                    if match(val, "[^a-z]") then
-                                        Hekili:Print("Toggle names must be all lowercase alphabet characters.")
-                                        return "Toggle names must be all lowercase alphabet characters."
-                                        
-                                    else
-                                        local this = tonumber( info[#info]:match('Toggle (%d) Name') )
-                                        
-                                        for i = 1, 5 do
-                                            if i ~= this and val == Hekili.DB.profile['Toggle ' .. i .. ' Name'] then
-                                                Hekili:Print("That name is already in use.")
-                                                return "That name is already in use."
-                                            end
-                                        end
-                                        
-                                    end
-                                    
-                                    return true
-                                end,
-                            },
-                            Toggle_1 = {
-                                type = 'toggle',
-                                name = 'Enabled',
-                                desc = 'Toggle the current state of this custom toggle.',
-                                order = 12,
-                            },
-                            HEKILI_TOGGLE_2 = {
-                                type = 'keybinding',
-                                name = 'Toggle 2',
-                                order = 20
-                            },
-                            ['Toggle 2 Name'] = {
-                                type = 'input',
-                                name = 'Alias',
-                                desc = 'Set a unique alias for this custom toggle. You can check to see if this toggle is active by testing the criterion |cFFFFD100toggle.two|r or |cFFFFD100toggle.<alias>|r. Aliases must be all lowercase, with no spaces.',
-                                order = 21,
-                                validate = function(info, val)
-                                    if val == '' then
-                                        return true
-                                    elseif val == 'cooldowns' or val == 'hardcasts' or val == 'mode' or val == 'interrupts' then
-                                        Hekili:Print("'" .. val .. "' is a reserved toggle name.")
-                                        return "'" .. val .. "' is a reserved toggle name."
-                                    end
-                                    
-                                    if match(val, "[^a-z]") then
-                                        Hekili:Print("Toggle names must be all lowercase alphabet characters.")
-                                        return "Toggle names must be all lowercase alphabet characters."
-                                        
-                                    else
-                                        local this = tonumber( info[#info]:match('Toggle (%d) Name') )
-                                        
-                                        for i = 1, 5 do
-                                            if i ~= this and val == Hekili.DB.profile['Toggle ' .. i .. ' Name'] then
-                                                Hekili:Print("That name is already in use.")
-                                                return "That name is already in use."
-                                            end
-                                        end
-                                        
-                                    end
-                                    
-                                    return true
-                                end,
-                            },
-                            Toggle_2 = {
-                                type = 'toggle',
-                                name = 'Enabled',
-                                desc = 'Toggle the current state of this custom toggle.',
-                                order = 22,
-                            },
-                            HEKILI_TOGGLE_3 = {
-                                type = 'keybinding',
-                                name = 'Toggle 3',
-                                order = 30
-                            },
-                            ['Toggle 3 Name'] = {
-                                type = 'input',
-                                name = 'Alias',
-                                desc = 'Set a unique alias for this custom toggle. You can check to see if this toggle is active by testing the criterion |cFFFFD100toggle.three|r or |cFFFFD100toggle.<alias>|r. Aliases must be all lowercase, with no spaces.',
-                                order = 31,
-                                validate = function(info, val)
-                                    if val == '' then
-                                        return true
-                                    elseif val == 'cooldowns' or val == 'hardcasts' or val == 'mode' or val == 'interrupts' then
-                                        Hekili:Print("'" .. val .. "' is a reserved toggle name.")
-                                        return "'" .. val .. "' is a reserved toggle name."
-                                    end
-                                    
-                                    if match(val, "[^a-z]") then
-                                        Hekili:Print("Toggle names must be all lowercase alphabet characters.")
-                                        return "Toggle names must be all lowercase alphabet characters."
-                                        
-                                    else
-                                        local this = tonumber( info[#info]:match('Toggle (%d) Name') )
-                                        
-                                        for i = 1, 5 do
-                                            if i ~= this and val == Hekili.DB.profile['Toggle ' .. i .. ' Name'] then
-                                                Hekili:Print("That name is already in use.")
-                                                return "That name is already in use."
-                                            end
-                                        end
-                                        
-                                    end
-                                    
-                                    return true
-                                end,
-                            },
-                            Toggle_3 = {
-                                type = 'toggle',
-                                name = 'Enabled',
-                                desc = 'Toggle the current state of this custom toggle.',
-                                order = 32,
-                            },
-                            HEKILI_TOGGLE_4 = {
-                                type = 'keybinding',
-                                name = 'Toggle 4',
-                                order = 40
-                            },
-                            ['Toggle 4 Name'] = {
-                                type = 'input',
-                                name = 'Alias',
-                                desc = 'Set a unique alias for this custom toggle. You can check to see if this toggle is active by testing the criterion |cFFFFD100toggle.four|r or |cFFFFD100toggle.<alias>|r. Aliases must be all lowercase, with no spaces.',
-                                order = 41,
-                                validate = function(info, val)
-                                    if val == '' then
-                                        return true
-                                    elseif val == 'cooldowns' or val == 'hardcasts' or val == 'mode' or val == 'interrupts' then
-                                        Hekili:Print("'" .. val .. "' is a reserved toggle name.")
-                                        return "'" .. val .. "' is a reserved toggle name."
-                                    end
-                                    
-                                    if match(val, "[^a-z]") then
-                                        Hekili:Print("Toggle names must be all lowercase alphabet characters.")
-                                        return "Toggle names must be all lowercase alphabet characters."
-                                        
-                                    else
-                                        local this = tonumber( info[#info]:match('Toggle (%d) Name') )
-                                        
-                                        for i = 1, 5 do
-                                            if i ~= this and val == Hekili.DB.profile['Toggle ' .. i .. ' Name'] then
-                                                Hekili:Print("That name is already in use.")
-                                                return "That name is already in use."
-                                            end
-                                        end
-                                        
-                                    end
-                                    
-                                    return true
-                                end,
-                            },
-                            Toggle_4 = {
-                                type = 'toggle',
-                                name = 'Enabled',
-                                desc = 'Toggle the current state of this custom toggle.',
-                                order = 42,
-                            },
-                            HEKILI_TOGGLE_5 = {
-                                type = 'keybinding',
-                                name = 'Toggle 5',
-                                order = 50
-                            },
-                            ['Toggle 5 Name'] = {
-                                type = 'input',
-                                name = 'Alias',
-                                desc = 'Set a unique alias for this custom toggle. You can check to see if this toggle is active by testing the criterion |cFFFFD100toggle.five|r or |cFFFFD100toggle.<alias>|r. Aliases must be all lowercase, with no spaces.',
-                                order = 51,
-                                validate = function(info, val)
-                                    if val == '' then
-                                        return true
-                                    elseif val == 'cooldowns' or val == 'hardcasts' or val == 'mode' or val == 'interrupts' then
-                                        Hekili:Print("'" .. val .. "' is a reserved toggle name.")
-                                        return "'" .. val .. "' is a reserved toggle name."
-                                    end
-                                    
-                                    if match(val, "[^a-z]") then
-                                        Hekili:Print("Toggle names must be all lowercase alphabet characters.")
-                                        return "Toggle names must be all lowercase alphabet characters."
-                                        
-                                    else
-                                        local this = tonumber( info[#info]:match('Toggle (%d) Name') )
-                                        
-                                        for i = 1, 5 do
-                                            if i ~= this and val == Hekili.DB.profile['Toggle ' .. i .. ' Name'] then
-                                                Hekili:Print("That name is already in use.")
-                                                return "That name is already in use."
-                                            end
-                                        end
-                                        
-                                    end
-                                    
-                                    return true
-                                end,
-                            },
-                            Toggle_5 = {
-                                type = 'toggle',
-                                name = 'Enabled',
-                                desc = 'Toggle the current state of this custom toggle.',
-                                order = 52,
-                            },
-                        }
+                        width = "full",
+                        get = function() return "https://wow.curseforge.com/projects/hekili/issues" end,
+                        set = function() return end,
                     }
                 }
             },
+
             snapshots = {
                 type = "group",
                 name = "Snapshots",
-                order = 70,
-                args = {
-                    
+                order = 90,
+                args = {                    
                     Display = {
                         type = "select",
                         name = "Display",
@@ -5806,362 +5029,6 @@ function Hekili:GetOptions()
                     }
                 }
             },
-            DevSkeleton = {
-                type = "group",
-                name = "Skeleton",
-                order = 71,
-                args = {
-                    spooky = {
-                        type = "input",
-                        name = "Skeleton",
-                        desc = "A rough skeleton of your current spec, for development purposes only.",
-                        order = 1,
-                        get = function( info )
-                            return HekiliSpecInfo or ""
-                        end,
-                        multiline = 25,
-                        width = "full"
-                    },
-                    regen = {
-                        type = "execute",
-                        name = "Generate Skeleton",
-                        order = 2,
-                        func = function()
-                            local output = {}
-                            
-                            local function key( s )
-                                return ( string.lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s", "_" ) )
-                            end
-                            
-                            local specID, spec = GetSpecializationInfo( GetSpecialization() )
-                            
-                            table.insert( output, "        setClass( \"" .. select( 2, UnitClass( "player" ) ) .. "\" )" )
-                            table.insert( output, "        setSpecialization( \"" .. key( spec ) .. "\" )" )
-                            
-                            local pt, token = UnitPowerType( "player" )
-                            
-                            table.insert( output, "\n        -- Resources" )
-                            if UnitPowerMax( "player", SPELL_POWER_MANA ) > 0 then 
-                                table.insert( output, "        addResource( \"mana\" )" )
-                            end
-                            table.insert( output, "        addResource( \"" .. key( _G[ token ] ) .. "\" )" )
-                            
-                            local talents = {}
-                            
-                            for j = 1, 7 do
-                                for k = 1, 3 do
-                                    local tID, name, _, _, _, sID = GetTalentInfoBySpecialization( GetSpecialization(), j, k )
-                                    talents[ key( name ) ] = "        --[[ " .. name .. ": " .. ( GetSpellDescription( sID ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) ) .. " ]]\n" ..
-                                    "        addTalent( \"" .. key( name ) .. "\", " .. sID .. " ) -- " .. tID .. "\n"
-                                end
-                            end
-                            table.insert( output, "\n -- Talents" )
-                            for k, v in orderedPairs( talents ) do
-                                table.insert( output, v )
-                            end
-                            
-                            SocketInventoryItem(16)
-                            local powers = C_ArtifactUI.GetPowers()
-                            HideUIPanel(ArtifactFrame)                            
-                            
-                            if powers then
-                                local traits = {}
-                                
-                                for k,v in pairs( powers ) do
-                                    local info = C_ArtifactUI.GetPowerInfo(v)
-                                    traits[ key( GetSpellInfo( info.spellID ) ) ] = "        addTrait( \"" .. key( GetSpellInfo( info.spellID ) ).. "\", " .. info.spellID .. " )"
-                                end
-                                table.insert( output, "\n        -- Traits" )
-                                for k,v in orderedPairs( traits ) do
-                                    table.insert( output, v )
-                                end
-                            end
-                            
-                            -- Spells from Spellbook.
-                            local auras = {}
-                            local abilities = {}
-                            for i = 1, GetNumSpellTabs() do
-                                local tab, _, offset, n = GetSpellTabInfo(i)
-                                
-                                if tab == spec then
-                                    for j = offset, offset + n do
-                                        local name, _, _, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
-                                        
-                                        if name then 
-                                            local sKey = key( name )
-                                            
-                                            local cost, min_cost, max_cost, cost_per_sec, cost_percent, resource
-                                            
-                                            local costs = GetSpellPowerCost( spellID )
-                                            
-                                            if costs then
-                                                for k, v in pairs( costs ) do
-                                                    if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
-                                                        cost = v.costPercent > 0 and v.costPercent / 100 or v.cost
-                                                        min_cost = v.minCost
-                                                        max_cost = v.maxCost
-                                                        cost_per_sec = v.costPerSecond or 0
-                                                        resource = key( v.name )
-                                                        break
-                                                    end
-                                                end
-                                            end
-                                            
-                                            local passive = IsPassiveSpell( spellID )
-                                            local harmful = IsHarmfulSpell( spellID )
-                                            local helpful = IsHelpfulSpell( spellID )
-                                            
-                                            local _, charges, _, recharge = GetSpellCharges( spellID )
-                                            local cooldown = recharge or GetSpellBaseCooldown( spellID ) / 1000
-                                            
-                                            local level = GetSpellLevelLearned( spellID )
-                                            local class, spec = IsSpellClassOrSpec( spellID )
-                                            
-                                            local selfbuff = SpellIsSelfBuff( spellID )
-                                            local talent = IsTalentSpell( spellID )
-                                            
-                                            if selfbuff or passive then
-                                                auras[ sKey ] = spellID
-                                            end
-                                            
-                                            local ability = {}
-                                            
-                                            if not passive then
-                                                table.insert( ability, "        -- " .. name )
-                                                table.insert( ability, "        --[[ " .. ( GetSpellDescription( spellID ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( " ", " " ) ) .. " ]]\n" )
-                                                table.insert( ability, "        addAbility( \"" .. sKey .. "\", {" )
-                                                table.insert( ability, "            id = " .. spellID .. "," )
-                                                table.insert( ability, "            spend = " .. ( cost or 0 ) .. "," )
-                                                if cost_per_sec and cost_per_sec > 0 then
-                                                    table.insert( ability, "            spend_per_sec = " .. cost_per_sec .. "," )
-                                                end
-                                                if min_cost then
-                                                    table.insert( ability, "            min_cost = " .. min_cost .. "," )
-                                                end
-                                                if max_cost then
-                                                    table.insert( ability, "            max_cost = " .. max_cost .. "," )
-                                                end
-                                                if resource then
-                                                    table.insert( ability, "            spend_type = \"" .. key( resource ) .. "\"," )
-                                                end
-                                                table.insert( ability, "            cast = " .. castTime / 1000 .. "," )
-                                                table.insert( ability, "            gcdType = \"spell\"," )
-                                                if talents[ sKey ] then
-                                                    table.insert( ability, "            talent = \"" .. sKey .. "\"," )
-                                                end
-                                                if helpful then
-                                                    table.insert( ability, "            passive = true," )
-                                                end
-                                                table.insert( ability, "            cooldown = " .. cooldown .. "," )
-                                                if charges and charges > 0 then
-                                                    table.insert( ability, "            charges = " .. charges .. "," )
-                                                    table.insert( ability, "            recharge = " .. recharge .. "," )
-                                                end
-                                                if spend_per_sec and spend_per_sec > 0 and castTime == 0 then
-                                                    table.insert( ability, "            channeled = true," )
-                                                end
-                                                if minRange then
-                                                    table.insert( ability, "            min_range = " .. minRange .. "," )
-                                                end
-                                                if maxRange then
-                                                    table.insert( ability, "            max_range = " .. maxRange .. "," )
-                                                end
-                                                table.insert( ability, "        } )\n" )
-                                                table.insert( ability, "        addHandler( \"" .. sKey .. "\", function ()" )
-                                                table.insert( ability, "            -- proto" )
-                                                table.insert( ability, "        end )\n\n" )
-                                                
-                                                table.insert( abilities, table.concat( ability, "\n" ) )
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                            
-                            --[[ for k, v in pairs( class.auras ) do
-                                if type( k ) == 'number' then
-                                    auras[ v.key ] = k
-                                end
-                            end ]]
-                            
-                            table.insert( output, "\n        -- Auras" )
-                            for k, v in orderedPairs( auras ) do
-                                table.insert( output, "        addAura( \"" .. k .. "\", " .. v .. " )" )
-                            end
-                            
-                            
-                            table.insert( output, "\n        -- Abilities" )
-                            for k, v in orderedPairs( abilities ) do
-                                table.insert( output, v )
-                            end
-                            
-                            --[[
-                            
-                            
-                            -- Spells.
-                            local specSpells = { GetSpecializationSpells( GetSpecialization() ) }
-                            
-                            table.insert( output, " -- Spells" )
-                            
-                            for i = 1, #specSpells - 1, 2 do
-                                -- print( specSpells[i], specSpells[ i+1 ] )
-                                
-                                local name, _, _, castTime, minRange, maxRange, spellID = GetSpellInfo( specSpells[i] )
-                                local sKey = key( name )
-                                
-                                local cost, cost_per_sec, cost_percent, resource
-                                local costInfo = false
-                                
-                                for k,v in pairs( GetSpellPowerCost( specSpells[i] ) ) do
-                                    costInfo = true
-                                    if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
-                                        cost = v.costPercent > 0 and v.costPercent or v.minCost
-                                        cost_per_sec = v.costPerSecond or 0
-                                        resource = key( v.name )
-                                    end
-                                end
-                                
-                                local _, charges, _, recharge = GetSpellCharges( specSpells[i] )
-                                
-                                local baseCD = GetSpellBaseCooldown( spellID ) / 1000
-                                
-                                
-                                if not IsPassiveSpell( specSpells[i] ) then
-                                    local spell = format( " addAbility( \"%s\", {\n" ..
-                                    " id = %d,\n" ..
-                                    " spend = %d,\n" ..
-                                    " spend_per_sec = %d,\n" ..
-                                    " spend_type = \"%s\",\n" ..
-                                    " cast = %f,\n" ..
-                                    " gcdType = \"%s\",\n" ..
-                                    " talent = %s,\n" ..
-                                    " passive = false,\n" ..
-                                    " cooldown = %f,\n" ..
-                                    " charges = %s,\n" ..
-                                    " recharge = %s,\n" ..
-                                    " channeled = %s,\n" ..
-                                    " min_range = %f,\n" ..
-                                    " max_range = %f,\n" ..
-                                    " } )\n\n" ..
-                                    " addHandler( \"%s\", function()\n" ..
-                                    " -- prototype\n" ..
-                                    " end )\n\n",
-                                    sKey,
-                                    spellID,
-                                    cost or 0,
-                                    cost_per_sec or 0,
-                                    resource or "unknown",
-                                    castTime / 1000,
-                                    "spell",
-                                    tostring( IsTalentSpell( spellID ) or "false" ),
-                                    GetSpellBaseCooldown( spellID ) / 1000,
-                                    tostring( charges or "nil" ),
-                                    tostring( recharge or "nil" ),
-                                    tostring( cost_per_sec and cost_per_sec > 0 or false ),
-                                    minRange,
-                                    maxRange,
-                                    sKey )
-                                    
-                                    table.insert( output, spell )
-                                else
-                                    print( "exclude", sKey )
-                                end 
-                                
-                            end ]]
-                            
-                            _G.HekiliSpecInfo = table.concat( output, "\n" )
-                        end
-                    }
-                },
-                hidden = function()
-                    return not Hekili.Skeleton
-                end,
-            },
-            IssueReport = {
-                type = "group",
-                name = "Issue Reporting",
-                order = 81,
-                args = {
-                    header = {
-                        type = "description",
-                        name = "If you are having a technical issue with the addon, please submit an issue report via the link below.  When submitting your report, please include the information " ..
-                            "below (specialization, talents, traits, gear), which can be copied and pasted for your convenience.",
-                        order = 10,
-                        fontSize = "medium",
-                        width = "full",
-                    },
-                    profile = {
-                        type = "input",
-                        name = "Character Data",
-                        order = 20,
-                        width = "full",
-                        multiline = 10,
-                        get = function ()
-                            local s = state
-
-                            local spec = s.spec.key
-
-                            local talents
-                            for k, v in orderedPairs( s.talent ) do
-                                if v.enabled then
-                                    if talents then talents = format( "%s\n    %s", talents, k )
-                                    else talents = k end
-                                end
-                            end
-
-                            local traits
-                            for k, v in orderedPairs( s.artifact ) do
-                                if v.rank > 0 then
-                                    if traits then traits = format( "%s\n    %s=%d", traits, k, v.rank )
-                                    else traits = format( "%s=%d", k, v.rank ) end
-                                end
-                            end
-
-                            local sets
-                            for k, v in orderedPairs( class.gearsets ) do
-                                if s.set_bonus[ k ] > 0 then
-                                    if sets then sets = format( "%s\n    %s=%d", sets, k, s.set_bonus[k] )
-                                    else sets = format( "%s=%d", k, s.set_bonus[k] ) end
-                                end
-                            end
-
-                            local gear
-                            for k, v in pairs( state.set_bonus ) do
-                                if type(k) == 'string' and v > 0 then
-                                    if gear then gear = format( "%s\n    %s=%d", gear, k, v )
-                                    else gear = format( "    %s=%d", k, v ) end
-                                end
-                            end
-
-                            return format( "build: %s\n" ..
-                                "level: %d\n" ..
-                                "class: %s\n" ..
-                                "spec: %s\n\n" ..
-                                "talents: %s\n\n" ..
-                                "traits: %s\n\n" ..
-                                "sets/legendaries/artifacts: %s\n\n" ..
-                                "gear: %s",
-                                Hekili.Version or "no info",
-                                UnitLevel( 'player' ) or 0,
-                                class.file or "NONE",
-                                spec or "none",
-                                talents or "none",
-                                traits or "none",
-                                sets or "none",
-                                gear or "none" )
-                        end,
-                        set = function () return end
-                    },
-                    link = {
-                        type = "input",
-                        name = "Link",
-                        order = 30,
-                        width = "full",
-                        get = function() return "https://wow.curseforge.com/projects/hekili/issues" end,
-                        set = function() return end,
-                    }
-                }
-            },
             make_defaults = {
                 type = 'group',
                 name = 'Defaults',
@@ -6202,31 +5069,17 @@ function Hekili:GetOptions()
             }
         }
     }
+
     
-    for i, v in ipairs(Hekili.DB.profile.displays) do
-        local dispKey = 'D' .. i
-        Options.args.displays.args[ dispKey ] = ns.newDisplayOption( i )
-        
-        --[[ if v.Queues then
-        for key, value in ipairs( v.Queues ) do
-            Options.args.displays.args[ dispKey ].args[ 'P' .. key ] = ns.newHookOption( i, key )
-        end
-    end ]]
-        
-    end
-    
-    for i,v in ipairs(Hekili.DB.profile.actionLists) do
-        local listKey = 'L' .. i
-        Options.args.actionLists.args[ listKey ] = ns.newActionListOption( i )
-        
-        if v.Actions then
-            for key, value in ipairs( v.Actions ) do
-                -- Options.args.actionLists.args[ listKey ].args['Actions'].args[ 'A' .. key ] = ns.newActionOption( i, key )
-                Options.args.actionLists.args[ listKey ].args[ 'A' .. key ] = ns.newActionOption( i, key )
-            end
-        end
-        
-    end
+    self:EmbedToggleOptions( Options )
+
+    self:EmbedSpecOptions( Options )
+
+    self:EmbedDisplayOptions( Options )
+
+    self:EmbedPackOptions( Options )
+
+    self:EmbedSkeletonOptions( Options )
     
     return Options
 end
@@ -6234,18 +5087,19 @@ end
 
 function Hekili:TotalRefresh()
     
-    restoreDefaults()
+    self:SpecializationChanged()
+    self:RestoreDefaults()
     
-    for i, queue in ipairs( ns.queue ) do
+    for i, queue in pairs( ns.queue ) do
         for j, _ in pairs( queue ) do
-            ns.queue[i][j] = nil
+            ns.queue[ i ][ j ] = nil
         end
-        ns.queue[i] = nil
+        ns.queue[ i ] = nil
     end
     
     callHook( "onInitialize" )
     
-    for k, v in pairs( class.toggles ) do
+    --[[ for k, v in pairs( class.toggles ) do
         if Hekili.DB.profile['Toggle State: '..v.name] == nil then
             Hekili.DB.profile['Toggle State: '..v.name] = v.state
         end
@@ -6255,75 +5109,34 @@ function Hekili:TotalRefresh()
         if Hekili.DB.profile['Class Option: '..v.name] == nil then
             Hekili.DB.profile['Class Option: '..v.name] = v.state
         end
-    end
-    
-    ns.convertDisplays()
-    ns.runOneTimeFixes()
+    end ]]
+
+    self:RunOneTimeFixes()
     ns.checkImports()
-    ns.refreshOptions()
-    ns.buildUI()
-    ns.overrideBinds()
     
+    self:OverrideBinds()
+    self:LoadScripts()
+    self:RefreshOptions()
+    self:UpdateDisplayVisibility()
+    self:BuildUI()
+
     LibStub("LibDBIcon-1.0"):Refresh( "Hekili", self.DB.profile.iconStore )
     
 end
 
 
-ns.refreshOptions = function()
-    
-    if not Hekili.Options then return end
-    
-    -- Remove existing displays from Options and rebuild the options table.
-    for k,_ in pairs(Hekili.Options.args.displays.args) do
-        if match(k, "^D(%d+)") then
-            Hekili.Options.args.displays.args[k] = nil
-        end
-    end
-    
-    for i,v in ipairs(Hekili.DB.profile.displays) do
-        local dispKey = 'D' .. i
-        Hekili.Options.args.displays.args[ dispKey ] = ns.newDisplayOption( i )
-        
-        --[[ if v.Queues then
-        for p, value in ipairs( v.Queues ) do
-            local hookKey = 'P' .. p
-            Hekili.Options.args.displays.args[ dispKey ].args[ hookKey ] = ns.newHookOption( i, p )
-        end
-    end ]]
-    end
-    
-    for k,_ in pairs(Hekili.Options.args.actionLists.args) do
-        if match(k, "^L(%d+)") then
-            Hekili.Options.args.actionLists.args[k] = nil
-        end
-    end
-    
-    for i,v in ipairs(Hekili.DB.profile.actionLists) do
-        if not v.Hidden then
-            local listKey = 'L' .. i
-            Hekili.Options.args.actionLists.args[ listKey ] = ns.newActionListOption( i )
-            
-            if v.Actions then
-                for a,_ in ipairs( v.Actions ) do
-                    local actKey = 'A' .. a
-                    Hekili.Options.args.actionLists.args[ listKey ].args[ actKey ] = ns.newActionOption( i, a )
-                end
-            end
-        end
-    end
-    
-    if not Hekili.Options.args.SimulationCraftImporter then
-        Hekili.Options.args.SimulationCraftImporter = ns.SimulationCraftImporter()
-    end
-    
-    Hekili.Options.args.class = nil
-    Hekili.Options.args.class = ns.ClassSettings()
-    -- Hekili.Options.args.trinkets = ns.TrinketSettings()
-    Hekili.Options.args.abilities = ns.AbilitySettings()
+function Hekili:RefreshOptions()
+    if not self.Options then return end
+
+    self:EmbedSpecOptions()
+    -- db.args.abilities = ns.AbilitySettings()
+    self:EmbedDisplayOptions()
+    self:EmbedPackOptions()
+
+    self.Options.args.class = ns.ClassSettings()
     
     -- Until I feel like making this better at managing memory.
     collectgarbage()
-    
 end
 
 
@@ -6494,7 +5307,7 @@ function Hekili:SetOption( info, input, ... )
         -- We'll preset the option here; works for most options.
         profile[ option ] = input
         
-        if option == 'Enabled' then
+        if option == 'enabled' then
             for i, buttons in ipairs( ns.UI.Buttons ) do
                 for j, _ in ipairs( buttons ) do
                     if input == false then
@@ -6510,7 +5323,7 @@ function Hekili:SetOption( info, input, ... )
             
             return
             
-        elseif option == 'MinimapIcon' then
+        elseif option == 'minimapIcon' then
             profile.iconStore.hide = input
             
             if LDBIcon then
@@ -6537,7 +5350,7 @@ function Hekili:SetOption( info, input, ... )
                 Hekili:ClassToggle( option:match("State: (.-)$") )
             else
                 profile[ 'Toggle ' .. option ] = input
-                ns.overrideBinds()
+                Hekili:OverrideBinds()
             end
             
         elseif subcategory == 'settings' then
@@ -6653,14 +5466,13 @@ function Hekili:SetOption( info, input, ... )
         -- This is a generic display option/function.
         if depth == 2 then
             
-            if option == 'New Display' then
-                local key, index = ns.newDisplay( input )
+            if option == 'newDisplay' then
+                self.DB.profile.displays[ key ] = {}
+                self:EmbedDisplayOptions()
                 
-                if not key then return end
+                C_Timer.After( 0.25, self[ 'ProcessDisplay'..index ] )
                 
-                C_Timer.After( 0.25, Hekili[ 'ProcessDisplay'..index ] )
-                
-            elseif option == 'Import Display' then
+            elseif option == 'importDisplay' then
                 local import = ns.deserializeDisplay( input )
                 
                 if not import then
@@ -6694,7 +5506,7 @@ function Hekili:SetOption( info, input, ... )
                     Hekili.Options.args.displays.args[ dispKey ].name = input
                     if input ~= revert and display.Default then display.Default = false end
                     
-                elseif option == 'Enabled' then
+                elseif option == 'enabled' then
                     -- Might want to replace this with RebuildUI = true
                     for i, button in ipairs( ns.UI.Buttons[ dispID ] ) do
                         if not input then
@@ -6883,7 +5695,7 @@ function Hekili:SetOption( info, input, ... )
                         return
                     end
                     
-                    table.wipe( list.Actions )
+                    wipe( list.Actions )
                     
                     for i, entry in ipairs( import ) do
                         
@@ -6957,12 +5769,12 @@ function Hekili:SetOption( info, input, ... )
     if Rebuild then
         ns.refreshOptions()
         ns.loadScripts()
-        ns.buildUI()
+        Hekili:BuildUI()
     else
         if RebuildOptions then ns.refreshOptions() end
         if RebuildScripts then ns.loadScripts() end
         if RebuildCache and not RebuildUI then Hekili:UpdateDisplayVisibility() end
-        if RebuildUI then ns.buildUI() end
+        if RebuildUI then Hekili:BuildUI() end
     end
     
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
@@ -6972,133 +5784,6 @@ function Hekili:SetOption( info, input, ... )
     end
     
 end
-
-
-
-function Hekili:BuildPrototype()
-    
-    if not Hekili.Skeleton then
-        local p = CreateFrame( "Frame" )
-        
-        p.lastTalents = {}
-        p.newTalents = {}
-        
-        p.auras = {}
-        p.newAuras = {}
-        
-        p.spells = {}
-        p.newSpells = {}
-        
-        p:RegisterUnitEvent( "PLAYER_TALENT_UPDATE", "player" )
-        p:SetScript( "OnEvent", function ( self, event )
-            table.wipe( self.newSpells )
-            table.wipe( self.newAuras )
-            
-            local specID, spec = GetSpecializationInfo( GetSpecialization() )
-            
-            -- Read the Spellbook.
-            local auras = self.newAuras
-            local spells = self.newSpells
-            
-            for i = 1, GetNumSpellTabs() do
-                local tab, _, offset, n = GetSpellTabInfo(i)
-                
-                if tab == spec then
-                    for j = offset, offset + n do
-                        local name, _, _, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
-                        
-                        if name then 
-                            local sKey = key( name )
-                            
-                            spells[ sKey ] = spells[ sKey ] or {}
-                            
-                            local cost, cost_per_sec, cost_percent, resource
-                            
-                            local costs = GetSpellPowerCost( spellID )
-                            
-                            if costs then
-                                for k, v in pairs( costs ) do
-                                    if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
-                                        cost = v.costPercent > 0 and v.costPercent or v.minCost
-                                        cost_per_sec = v.costPerSecond or 0
-                                        resource = key( v.name )
-                                    end
-                                end
-                            end
-                            
-                            local passive = IsPassiveSpell( name )
-                            local harmful = IsHarmfulSpell( name )
-                            local helpful = IsHelpfulSpell( name )
-                            
-                            local _, charges, _, recharge = GetSpellCharges( spellID )
-                            local cooldown = recharge or GetSpellBaseCooldown( spellID ) / 1000
-                            
-                            local level = GetSpellLevelLearned( spellID )
-                            local class, spec = IsSpellClassOrSpec( spellID )
-                            
-                            local selfbuff = SpellIsSelfBuff( name )
-                            local talent = IsTalentSpell( name )
-                            
-                            if selfbuff or passive then
-                                auras[ sKey ] = spellID
-                            end
-                            
-                            
-                            
-                            if not passive then
-                                table.insert( ability, " -- " .. name )
-                                table.insert( ability, " --[[ " .. GetSpellDescription( spellID ):gsub( "\n", " " ) .. " ]]" )
-                                table.insert( ability, " addAbility( \"" .. sKey .. "\", {" )
-                                table.insert( ability, " id = " .. spellID .. "," )
-                                table.insert( ability, " spend = " .. ( cost or 0 ) .. "," )
-                                if cost_per_sec and cost_per_sec > 0 then
-                                    table.insert( ability, " spend_per_sec = " .. cost_per_sec .. "," )
-                                end
-                                if resource then
-                                    table.insert( ability, " spend_type = \"" .. key( resource ) .. "\"," )
-                                end
-                                table.insert( ability, " cast = " .. castTime / 1000 .. "," )
-                                table.insert( ability, " gcdType = \"spell\"," )
-                                if talents[ sKey ] then
-                                    table.insert( ability, " talent = \"" .. sKey .. "\"," )
-                                end
-                                if helpful then
-                                    table.insert( ability, " passive = true," )
-                                end
-                                table.insert( ability, " cooldown = " .. cooldown .. "," )
-                                if charges and charges > 0 then
-                                    table.insert( ability, " charges = " .. charges .. "," )
-                                    table.insert( ability, " recharge = " .. recharge .. "," )
-                                end
-                                if spend_per_sec and spend_per_sec > 0 and castTime == 0 then
-                                    table.insert( ability, " channeled = true," )
-                                end
-                                if minRange then
-                                    table.insert( ability, " min_range = " .. minRange .. "," )
-                                end
-                                if maxRange then
-                                    table.insert( ability, " max_range = " .. maxRange .. "," )
-                                end
-                                table.insert( ability, " } )\n" )
-                                table.insert( ability, " addHandler( \"" .. sKey .. "\", function ()" )
-                                table.insert( ability, " -- proto" )
-                                table.insert( ability, " end )\n\n" )
-                                
-                                table.insert( abilities, table.concat( ability, "\n" ) )
-                            end
-                        end
-                    end
-                end
-            end
-            
-            
-        end )
-    end
-    
-    
-    
-end
-
 
 
 function Hekili:CmdLine( input )
@@ -7114,11 +5799,14 @@ function Hekili:CmdLine( input )
             Hekili.AllowSimCImports = true
         end
         if input:trim() == 'skeleton' then
+            self:StartListeningForSkeleton()
+            self:Print( "Addon will now gather specialization information.  Select all talents and use all abilities for best results." )
+            self:Print( "See the Skeleton tab for more information. ")
             Hekili.Skeleton = true
         end
         ns.StartConfiguration()
         
-    elseif input:trim() == 'center' then
+    elseif input:trim() == 'center' then                
         for i, v in ipairs( Hekili.DB.profile.displays ) do
             ns.UI.Buttons[i][1]:ClearAllPoints()
             ns.UI.Buttons[i][1]:SetPoint("CENTER", 0, (i-1) * 50 )
@@ -7126,22 +5814,17 @@ function Hekili:CmdLine( input )
         self:SaveCoordinates()
         
     elseif input:trim() == 'recover' then
-        Hekili.DB.profile.displays = {}
-        Hekili.DB.profile.actionLists = {}
-        ns.restoreDefaults()
-        ns.convertDisplays()
-        ns.buildUI()
-        Hekili:Print("Default displays and action lists restored.")
+        self.DB.profile.displays = {}
+        self.DB.profile.actionLists = {}
+        self:RestoreDefaults()
+        -- ns.convertDisplays()
+        self:BuildUI()
+        self:Print("Default displays and action lists restored.")
         
     else
         LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
     end
 end
-
-
-
-
-
 
 
 -- Import/Export
@@ -7313,6 +5996,67 @@ end
 Hekili.DeserializeDisplay = ns.deserializeDisplay
 
 
+function Hekili:SerializeActionPack( name )
+    local pack = rawget( self.DB.profile.packs, name )
+    if not pack then return end
+
+    local serial = {
+        type = "package",
+        name = name,
+        date = tonumber( date("%Y%m%d.%H%M%S") ),
+        payload = tableCopy( pack )
+    }
+
+    return TableToString( serial, true )
+end
+
+
+function Hekili:DeserializeActionPack( str )
+    local serial = StringToTable( str, true )
+    
+    if not serial or type( serial ) == "string" or serial.type ~= "package" then
+        return serial or "Unable to restore action pack from the provided string."
+    end
+    
+    return serial.payload
+end
+
+
+function Hekili:SerializeStyle( ... )
+    local serial = {
+        type = "style",
+        date = tonumber( date("%Y%m%d.%H%M%S") ),
+        payload = {}
+    }
+
+    local hasPayload = false
+
+    for i = 1, select( "#", ... ) do
+        local dispName = select( i, ... )
+        local display = rawget( self.DB.profile.displays, dispName )
+
+        if not display then return "Attempted to serialize an invalid display (" .. dispName .. ")" end
+
+        serial.payload[ dispName ] = tableCopy( display )
+        hasPayload = true
+    end
+
+    if not hasPayload then return "No displays selected to export." end
+    return TableToString( serial, true )
+end
+
+
+function Hekili:DeserializeStyle( str )
+    local serial = StringToTable( str, true )
+
+    if not serial or type( serial ) == 'string' or not serial.type == "style" then
+        return nil, serial
+    end
+
+    return serial.payload
+end
+
+
 function ns.serializeActionList( num ) 
     if not Hekili.DB.profile.actionLists[ num ] then return nil end
     local serial = tableCopy( Hekili.DB.profile.actionLists[ num ] )
@@ -7328,9 +6072,9 @@ end
 
 local ignore_actions = {
     -- call_action_list = 1,
-    run_action_list = 1,
+    -- run_action_list = 1,
     snapshot_stats = 1,
-    auto_attack = 1,
+    -- auto_attack = 1,
     -- use_item = 1,
     flask = 1,
     food = 1,
@@ -7391,7 +6135,6 @@ ns.accomm = accommodate_targets
 
 
 local function accommodate_targets( targets, ability, i, line, warnings )
-    
     local insert_targets = targets
     local insert_ability = ability
     
@@ -7414,11 +6157,10 @@ local function accommodate_targets( targets, ability, i, line, warnings )
     swaps["down"] = "active_dot."..insert_ability.."<" ..insert_targets 
     
     return make_substitutions( i, swaps )
-    
 end
 
 
-local function sanitize( segment, i, line, warnings )
+local function Sanitize( segment, i, line, warnings )
     
     if i == nil then return i end
     
@@ -7442,35 +6184,6 @@ local function sanitize( segment, i, line, warnings )
     
     local times = 0
     
-    
-    for v in pairs( class.resources ) do
-        
-        for token in i:gmatch( v ) do
-            
-            local times = 0
-            while (i:find(token)) do
-                
-                local strpos, strend = i:find(token)
-                
-                local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
-                local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
-                local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
-                local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-                
-                if pre ~= '.' and pre ~= '_' and not pre:match('%a') and post ~= '.' and post ~= '_' and not post:match('%a') then
-                    i = start .. '\a' .. finish
-                else
-                    i = start .. '\v' .. finish
-                end
-                
-            end
-            
-            i = i:gsub( '\v', token )
-            i = i:gsub( '\a', token..'.current' )
-            
-        end 
-        
-    end
 
     for token in i:gmatch( "stealthed" ) do
         
@@ -7529,7 +6242,7 @@ local function sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Converted gcd.remains to cooldown.global_cooldown.remains (" .. times .. "x)." )
     end
     
-    i, times = i:gsub( "[!+-%*]?raid_event[.a-z0-9_><=~%-%+*]+", "" )
+    --[[ i, times = i:gsub( "[!+-%*]?raid_event[.a-z0-9_><=~%-%+*]+", "" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Removed 'raid_event' check(s) (" .. times .. "x)." )
         
@@ -7563,7 +6276,7 @@ local function sanitize( segment, i, line, warnings )
             
         end
         i = i:gsub( "|", "||" )
-    end
+    end ]]
     
     i, times = i:gsub( "debuff%.judgment%.up", "judgment_override" )
     if times > 0 then
@@ -7814,7 +6527,7 @@ local function sanitize( segment, i, line, warnings )
     end
     
     
-    for token, attr in i:gmatch( "(d?e?buff%.[%a_]+%.)(react)" ) do
+    --[[ for token, attr in i:gmatch( "(d?e?buff%.[%a_]+%.)(react)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
@@ -7850,7 +6563,7 @@ local function sanitize( segment, i, line, warnings )
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. attr .. "' to '" .. token .. "up' (" .. times .. "x)." )
         end
         i = i:gsub( '\v', token )
-    end
+    end ]]
     
     
     for token, attr in i:gmatch( "(trinket%.[%a%._]+%.)(react)" ) do
@@ -8054,7 +6767,7 @@ local function strsplit( str, delimiter )
 end
 
 
-local function storeModifier( entry, key, value )
+--[[ local function StoreModifier( entry, key, value )
     
     if key ~= 'if' and key ~= 'ability' then
         if not entry.Args then entry.Args = key .. '=' .. value
@@ -8075,7 +6788,7 @@ local function storeModifier( entry, key, value )
         entry.Moving = tonumber( value )
         
     elseif key == 'name' then
-        local v = value:match( [["(.*)"]] ) or value
+        local v = value:match( '"(.*)"'' ) or value
         entry.ModName = v
         entry.ModVarName = v
         
@@ -8105,147 +6818,171 @@ local function storeModifier( entry, key, value )
         
     end
     
-end
+end ]]
 
+do
+    local parseData = {
+        warnings = {},
+        missing = {},
+    }
 
+    local nameMap = {
+        call_action_list = "list_name",
+        run_action_list = "list_name",
+        potion = "potion",
+        variable = "var_name",
+    }
 
-function Hekili:ImportSimulationCraftActionList( str, enemies )
-    local import = str and str or Hekili.ImportString
-    local output, warnings = {}, {}
-    local line, times = 0, 0
-    
-    import = import:gsub("(|)([^|])", "%1|%2"):gsub("|||", "||")
-    enemies = enemies or "active_enemies"
-    
-    local auras_seen = {}
-    for i in import:gmatch( "buff%.([a-zA-Z0-9_]+)" ) do
-        auras_seen[ i ] = true
-    end
-    
-    for i in import:gmatch("action.-=/?([^\n^$]*)") do
-        line = line + 1
+    function Hekili:ParseActionList( list )
+
+        local line, times = 0, 0
+        local output, warnings, missing = {}, parseData.warnings, parseData.missing
+
+        wipe( warnings )
+        wipe( missing )
+
+        list = list:gsub( "(|)([^|])", "%1|%2" ):gsub( "|||", "||" )
+
+        local n = 0
+        for aura in list:gmatch( "buff%.([a-zA-Z0-9_]+)" ) do
+            if not class.auras[ aura ] then
+                missing[ aura ] = true
+                n = n + 1
+            end
+        end
+
+        for aura in list:gmatch( "active_dot%.([a-zA-Z0-9_]+)" ) do
+            if not class.auras[ aura ] then
+                missing[ aura ] = true
+                n = n + 1
+            end
+        end
+
+        for i in list:gmatch( "action.-=/?([^\n^$]*)") do
+            line = line + 1
+            
+            if i:sub(1, 3) == 'jab' then
+                for token in i:gmatch( 'cooldown%.expel_harm%.remains>=gcd' ) do
+                    
+                    local times = 0
+                    while (i:find(token)) do
+                        local strpos, strend = i:find(token)
+                        
+                        local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
+                        local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
+                        local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
+                        
+                        local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
+                        local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
+                        
+                        i = start .. repl .. finish
+                        times = times + 1
+                    end
+                    table.insert( warnings, "Line " .. line .. ": Removed unnecessary expel_harm cooldown check from action entry for jab (" .. times .. "x)." )
+                end
+            end
         
-        if i:sub(1, 3) == 'jab' then
-            for token in i:gmatch( 'cooldown%.expel_harm%.remains>=gcd' ) do
+            --[[ for token in i:gmatch( 'spell_targets[.%a_]-' ) do
                 
                 local times = 0
                 while (i:find(token)) do
                     local strpos, strend = i:find(token)
                     
-                    local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
-                    local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
-                    local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
+                    local start = strpos > 2 and i:sub( 1, strpos - 1 ) or ''
+                    local finish = strend < i:len() - 1 and i:sub( strend + 1 ) or ''
                     
-                    local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
-                    local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
-                    
-                    i = start .. repl .. finish
+                    i = start .. enemies .. finish
                     times = times + 1
                 end
-                table.insert( warnings, "Line " .. line .. ": Removed unnecessary expel_harm cooldown check from action entry for jab (" .. times .. "x)." )
-            end
-        end
-        
-        for token in i:gmatch( 'spell_targets[.%a_]-' ) do
-            
-            local times = 0
-            while (i:find(token)) do
-                local strpos, strend = i:find(token)
-                
-                local start = strpos > 2 and i:sub( 1, strpos - 1 ) or ''
-                local finish = strend < i:len() - 1 and i:sub( strend + 1 ) or ''
-                
-                i = start .. enemies .. finish
-                times = times + 1
-            end
-            table.insert( warnings, "Line " .. line .. ": Replaced unsupported '" .. token .. "' with '" .. enemies .. "' (" .. times .. "x)." )
-        end
+                table.insert( warnings, "Line " .. line .. ": Replaced unsupported '" .. token .. "' with '" .. enemies .. "' (" .. times .. "x)." )
+            end ]]
 
-
-        if i:sub(1, 13) == 'fists_of_fury' then
-            for token in i:gmatch( "energy.time_to_max>cast_time" ) do
-                local times = 0
-                while (i:find(token)) do
-                    local strpos, strend = i:find(token)
-                    
-                    local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
-                    local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
-                    local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
-                    
-                    local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
-                    local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
-                    
-                    i = start .. repl .. finish
-                    times = times + 1
-                end
-                table.insert( warnings, "Line " .. line .. ": Removed unnecessary energy cap check from action entry for fists_of_fury (" .. times .. "x)." )
-            end
-        end
-        
-        local components = strsplit( i, "," )
-        local result = {}
-        
-        for a, str in ipairs( components ) do
-            
-            -- First element is the action, if supported.
-            if a == 1 then
-                local ability = str:trim()
-                
-                if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then                   
-                    result.Ability = class.abilities[ ability ] and class.abilities[ ability ].key or ability
-                elseif not ignore_actions[ ability ] then
-                    table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
-                end
-                
-            else
-                local key, value = str:match( "^(.-)=(.-)$" )
-                
-                if key and value then
-                    storeModifier( result, key, value )
+            if i:sub(1, 13) == 'fists_of_fury' then
+                for token in i:gmatch( "energy.time_to_max>cast_time" ) do
+                    local times = 0
+                    while (i:find(token)) do
+                        local strpos, strend = i:find(token)
+                        
+                        local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
+                        local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
+                        local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
+                        
+                        local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
+                        local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
+                        
+                        i = start .. repl .. finish
+                        times = times + 1
+                    end
+                    table.insert( warnings, "Line " .. line .. ": Removed unnecessary energy cap check from action entry for fists_of_fury (" .. times .. "x)." )
                 end
             end
+        
+            local components = strsplit( i, "," )
+            local result = {}
             
-        end
-        
-        if result.TargetIf then
-            if result.Script and result.Script:len() > 0 then
-                -- We merge these and don't really use it for target swapping.
-                result.Script = format( "(%s)&(%s)", result.Script, result.TargetIf )
-            else
-                result.Script = result.TargetIf
-            end
-        end
+            for a, str in ipairs( components ) do                
+                -- First element is the action, if supported.
+                if a == 1 then
+                    local ability = str:trim()
+                    
+                    if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then                   
+                        result.action = class.abilities[ ability ] and class.abilities[ ability ].key or ability
+                    elseif not ignore_actions[ ability ] then
+                        table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
+                        result.action = ability
+                    end
+                    
+                else
+                    local key, value = str:match( "^(.-)=(.-)$" )
 
-        if result.Ability == 'use_item' then
-            result.Ability = result.ModName
-            result.ModName = nil
-            result.ModVarName = nil
-            if not class.abilities[ result.Ability ] then result.Ability = nil end
-        end
-        
-        if result.Script then
-            result.Script = sanitize( 'c', result.Script, line, warnings )
-            local SpaceOutSim = ns.SpaceOutSim
-            if SpaceOutSim then
-                result.Script = SpaceOutSim( result.Script )
-            end
-        end
+                    if key and value then
+                        if key == 'if' then key = 'criteria' end
 
+                        if key == 'criteria' or key == 'value' or key == 'value_else' or key == 'sec' or key == 'wait' then
+                            value = Sanitize( 'c', value, line, warnings )
+                            value = SpaceOut( value )
+                        end
+
+                        result[ key ] = value
+                        -- StoreModifier( result, key, value )
+                    end
+                end
+            end
+
+            if nameMap[ result.action ] then
+                result[ nameMap[ result.action ] ] = result.name
+                result.name = nil
+            end
         
-        if result.Ability then
+            if result.target_if then
+                if result.criteria and result.criteria:len() > 0 then   
+                    result.criteria = format( "( %s ) & ( %s )", result.criteria, result.target_if )
+                else
+                    result.criteria = result.target_if
+                end
+            end
+
+            if result.action == 'use_item' and result.name and class.abilities[ result.name ] then
+                result.action = result.name
+            end
+
+            --[[ if result.criteria then
+                result.criteria = Sanitize( 'c', result.criteria, line, warnings )
+                result.criteria = SpaceOut( result.criteria )
+            end ]]
+
             table.insert( output, result )
         end
+    
+        if n > 0 then
+            table.insert( warnings, "The following auras were used in the action list but were not found in the addon database:" )
+            for k in orderedPairs( missing ) do
+                table.insert( warnings, " - " .. k )
+            end
+        end
         
+        return #output > 0 and output or nil, #warnings > 0 and warnings or nil    
     end
-    
-    local auraOut = "The following auras are used by the processed action list(s):\n"
-    for k in pairs( auras_seen ) do
-        auraOut = auraOut .. " - " .. k .. "\n"
-    end
-    table.insert( warnings, auraOut )
-    
-    return #output > 0 and output or nil, #warnings > 0 and warnings or nil
-    
 end
 
 
@@ -8254,12 +6991,14 @@ local warnOnce = false
 
 -- Key Bindings
 function Hekili:TogglePause( ... )
+
+    Hekili.btns = ns.UI.Buttons
     
     if not self.Pause then
         self.Pause = true
         self.ActiveDebug = true
 
-        for i, display in ipairs( ns.UI.Displays ) do
+        for i, display in pairs( ns.UI.Displays ) do
             if self:IsDisplayActive( i ) and display.alpha > 0 then
                 self:ProcessHooks( i )
             end
@@ -8279,9 +7018,9 @@ function Hekili:TogglePause( ... )
     
     local MouseInteract = self.Pause or self.Config
     
-    for i = 1, #ns.UI.Buttons do
-        for j = 1, #ns.UI.Buttons[i] do
-            ns.UI.Buttons[i][j]:EnableMouse( MouseInteract )
+    for _, group in pairs( ns.UI.Buttons ) do
+        for _, button in pairs( group ) do
+            button:EnableMouse( MouseInteract )
         end
     end
     
@@ -8296,7 +7035,7 @@ function Hekili:MakeSnapshot( ... )
     
     self.ActiveDebug = true
 
-    for i, display in ipairs( ns.UI.Displays ) do
+    for i, display in pairs( ns.UI.Displays ) do
         if self:IsDisplayActive( i ) and display.alpha > 0 then
             self:ProcessHooks( i )
         end
@@ -8319,138 +7058,38 @@ function Hekili:Notify( str )
 end
 
 
-local nextMode = {
-    [0] = { [0] = 3, [3] = 0 },
-    [1] = { [0] = 2, [2] = 0 },
-    [2] = { [0] = 1, [1] = 2, [2] = 0 }
-}
+function Hekili:FireToggle( name )
+    local toggle = name and self.DB.profile.toggles[ name ]
 
-local modeMsgs = {
-    [0] = {
-        p = "Single-target mode activated.",
-        n = "Mode: Single"
-    },
-    [1] = {
-        p = "Cleave mode activated.",
-        n = "Mode: Cleave"
-    },
-    [2] = {
-        p = "AOE mode activated.",
-        n = "Mode: AOE"
-    },
-    [3] = {
-        p = "Automatic mode activated.",
-        n = "Mode: Auto"
-    }
-}
+    if not toggle then return end
 
+    if name == 'mode' then
+        toggle.value = toggle.value == 'automatic' and 'dual' or 'automatic'
 
-function Hekili:ToggleMode()
-    local switch = Hekili.DB.profile['Switch Type']
+        self:Notify( "Mode: " .. ( toggle.value == 'automatic' and "Automatic" or "Dual Display" ) )
+        self:Print( ( toggle.value == 'automatic' and "Automatic" or "Dual Display" ) .. " mode activated." )
     
-    Hekili.DB.profile['Mode Status'] = nextMode[ switch ][ Hekili.DB.profile['Mode Status'] ]
-    
-    Hekili:Print( modeMsgs[ Hekili.DB.profile['Mode Status'] ].p )
-    Hekili:Notify( modeMsgs[ Hekili.DB.profile['Mode Status'] ].n )
+    elseif name == 'pause' then
+        self:TogglePause()
+        return
 
-    self:UpdateDisplayVisibility()
-
-    if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_MODE', Hekili.DB.profile['Mode Status'] ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-    
-    self:ForceUpdate( "HEKILI_TOGGLE_MODE", true )
-end
-
-
-function Hekili:ToggleInterrupts()
-    Hekili.DB.profile.Interrupts = not Hekili.DB.profile.Interrupts
-    Hekili:Print( Hekili.DB.profile.Interrupts and "Interrupts |cFF00FF00ENABLED|r." or "Interrupts |cFFFF0000DISABLED|r." )
-    Hekili:Notify( "Interrupts " .. ( Hekili.DB.profile.Interrupts and "ON" or "OFF" ) )
-    
-    if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_INTERRUPTS', Hekili.DB.profile.Interrupts ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end   
-    
-    self:ForceUpdate( "HEKILI_TOGGLE_INTERRUPTS", true )
-end
-
-
-function Hekili:ToggleCooldowns()
-    Hekili.DB.profile.Cooldowns = not Hekili.DB.profile.Cooldowns
-    Hekili:Print( Hekili.DB.profile.Cooldowns and "Cooldowns |cFF00FF00ENABLED|r." or "Cooldowns |cFFFF0000DISABLED|r." )
-    Hekili:Notify( "Cooldowns " .. ( Hekili.DB.profile.Cooldowns and "ON" or "OFF" ) )
-    
-    if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_COOLDOWNS', Hekili.DB.profile.Cooldowns ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-    
-    self:ForceUpdate( "HEKILI_TOGGLE_COOLDOWNS", true )
-end
-
-
-function Hekili:ToggleArtifact()
-    Hekili.DB.profile.Artifact = not Hekili.DB.profile.Artifact
-    Hekili:Print( Hekili.DB.profile.Artifact and "Artifact |cFF00FF00ENABLED|r." or "Artifact |cFFFF0000DISABLED|r." )
-    Hekili:Notify( "Artifact " .. ( Hekili.DB.profile.Artifact and "ON" or "OFF" ) )
-
-    if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_ARTIFACT', Hekili.DB.profile.Artifact ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-
-    self:ForceUpdate( "HEKILI_TOGGLE_ARTIFACT", true )
-end
-
-
-function Hekili:TogglePotions()
-    Hekili.DB.profile.Potions = not Hekili.DB.profile.Potions
-    Hekili:Print( Hekili.DB.profile.Potions and "Potions |cFF00FF00ENABLED|r." or "Potions |cFFFF0000DISABLED|r." )
-    Hekili:Notify( "Potions " .. ( Hekili.DB.profile.Potions and "ON" or "OFF" ) )
-    
-    if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_TOGGLE_POTIONS', Hekili.DB.profile.Potions ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-    
-    self:ForceUpdate( "HEKILI_TOGGLE_POTIONS", true )
-end
-
-
-function Hekili:ToggleCustom( num )
-    Hekili.DB.profile['Toggle_' .. num] = not Hekili.DB.profile['Toggle_' .. num]
-
-    self:UpdateDisplayVisibility()
-    
-    if Hekili.DB.profile['Toggle ' .. num .. ' Name'] then
-        Hekili:Print( Hekili.DB.profile['Toggle_' .. num] and ( 'Toggle \'' .. Hekili.DB.profile['Toggle ' .. num .. ' Name'] .. "' |cFF00FF00ENABLED|r." ) or ( 'Toggle \'' .. Hekili.DB.profile['Toggle ' .. num .. ' Name'] .. "' |cFFFF0000DISABLED|r." ) )
-        Hekili:Notify( Hekili.DB.profile['Toggle_' .. num] and ( Hekili.DB.profile['Toggle ' .. num .. ' Name']:gsub("^%l", string.upper) .. " ON" ) or ( Hekili.DB.profile['Toggle ' .. num .. ' Name']:gsub("^%l", string.upper) .. " OFF" ) )
     else
-        Hekili:Print( Hekili.DB.profile['Toggle_' .. num] and ( "Custom Toggle #" .. num .. " |cFF00FF00ENABLED|r." ) or ( "Custom Toggle #" .. num .. " |cFFFF0000DISABLED|r." ) )
-        Hekili:Notify( Hekili.DB.profile['Toggle_' .. num] and ( "Toggle #" .. num .. " ON" ) or ( "Toggle #" .. num .. " OFF" ) )
-    end
-end
+        toggle.value = not toggle.value
 
-
-function Hekili:ClassToggle( name )
-    
-    local key = 'Toggle State: '..name
-    
-    Hekili.DB.profile[key] = not Hekili.DB.profile[key]
-    
-    local toggle = name
-    
-    for i = 1, #class.toggles do
-        if class.toggles[i].name == name then toggle = class.toggles[i].option; break end
+        self:Notify( name:gsub( "^(.)", strupper ) .. ": " .. ( toggle.value and "ON" or "OFF" ) )
+        self:Print( name:gsub( "^(.)", strupper ) .. ( toggle.value and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
     end
-    
-    Hekili:Print( Hekili.DB.profile[key] and ( 'Toggle \'' .. toggle .. "' |cFF00FF00ENABLED|r." ) or ( 'Toggle \'' .. toggle .. "' |cFFFF0000DISABLED|r." ) )
-    Hekili:Notify( Hekili.DB.profile[key] and ( toggle .. " ON" ) or ( toggle .. " OFF" ) )
-    
-    if WeakAuras then WeakAuras.ScanEvents( 'HEKILI_CLASS_TOGGLE', name, Hekili.DB.profile[ key ] ) end
+
+    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", name, toggle.value ) end
+    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
     self:UpdateDisplayVisibility()
-    
-    self:ForceUpdate( "HEKILI_CLASS_TOGGLE", true )
+
+    self:ForceUpdate( "HEKILI_TOGGLE", true )
 end
 
 
 function Hekili:GetToggleState( name, class )
-    if class then
-        return Hekili.DB.profile[ 'Toggle State: ' .. name ]
-    end
-    
-    return Hekili.DB.profile[ name ]
+    local t = name and self.DB.profile.toggles[ name ]
+
+    return t and t.value
 end

@@ -5,8 +5,8 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local class = ns.class
-local state = ns.state
+local class = Hekili.Class
+local state = Hekili.State
 
 local targetCount = 0
 local targets = {}
@@ -37,7 +37,10 @@ function ns.getNumberTargets()
 
     npCount = 0
 
-    if showNPs and ( Hekili.DB.profile['Count Nameplate Targets'] ) and not state.ranged then
+    local spec = state.spec.id
+    spec = spec and rawget( Hekili.DB.profile.specs, spec )
+
+    if spec and spec.nameplates and showNPs then
         local RC = LibStub( "LibRangeCheck-2.0" )
 
         for i = 1, 80 do
@@ -45,7 +48,7 @@ function ns.getNumberTargets()
 
             local _, maxRange = RC:GetRange( unit )
 
-            if maxRange and maxRange <= ( Hekili.DB.profile['Nameplate Detection Range'] or 5 ) and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and UnitInPhase( unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
+            if maxRange and maxRange <= spec.nameplateRange and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and UnitInPhase( unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
                 nameplates[ UnitGUID( unit ) ] = maxRange
                 npCount = npCount + 1
             end
@@ -59,7 +62,7 @@ function ns.getNumberTargets()
             if not nameplates[ guid ] then
                 local maxRange = RC:GetRange( unit )
 
-                if maxRange and maxRange <= ( Hekili.DB.profile['Nameplate Detection Range'] or 5 ) and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and UnitInPhase( unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
+                if maxRange and maxRange <= spec.nameplateRange and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and UnitInPhase( unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
                     nameplates[ UnitGUID( unit ) ] = maxRange
                     npCount = npCount + 1
                 end
@@ -67,7 +70,7 @@ function ns.getNumberTargets()
         end
     end
 
-    if Hekili.DB.profile['Count Targets by Damage'] or not Hekili.DB.profile['Count Nameplate Targets'] or not showNPs or state.ranged then
+    if not spec or ( spec.damage or not spec.nameplates ) or not showNPs then
         for k,v in pairs( myTargets ) do
             if not nameplates[ k ] then
                 nameplates[ k ] = true
@@ -291,46 +294,45 @@ end
 
 -- Auditor should clean things up for us.
 ns.Audit = function ()
+    local now = GetTime()
+    local spec = state.spec.id and Hekili.DB.profile.specs[ state.spec.id ]
+    local grace = spec and spec.damageExpiration or 6
 
-  local now = GetTime()
-  local grace = Hekili.DB.profile['Audit Targets']
-
-  for aura, targets in pairs( debuffs ) do
-    for unit, entry in pairs( targets ) do
-      -- NYI: Check for dot vs. debuff, since debuffs won't 'tick'
-      local window = class.auras[ aura ] and class.auras[ aura ].duration or grace
-      if now - entry.last_seen > window then
-        ns.trackDebuff( aura, unit )
-      end
+    for aura, targets in pairs( debuffs ) do
+        for unit, entry in pairs( targets ) do
+            -- NYI: Check for dot vs. debuff, since debuffs won't 'tick'
+            local window = class.auras[ aura ] and class.auras[ aura ].duration or grace
+            if now - entry.last_seen > window then
+                ns.trackDebuff( aura, unit )
+            end
+        end
     end
-  end
 
-  for whom, when in pairs( targets ) do
-    if now - when > grace then
-      ns.eliminateUnit( whom )
+    for whom, when in pairs( targets ) do
+        if now - when > grace then
+            ns.eliminateUnit( whom )
+        end
     end
-  end
 
-  for i = #incomingDamage, 1, -1 do
-    local instance = incomingDamage[ i ]
+    for i = #incomingDamage, 1, -1 do
+        local instance = incomingDamage[ i ]
 
-    if instance.t < ( now - 15 ) then
-      table.remove( incomingDamage, i )
+        if instance.t < ( now - 15 ) then
+            table.remove( incomingDamage, i )
+        end
     end
-  end
 
-  for i = #incomingHealing, 1, -1 do
-    local instance = incomingHealing[ i ]
+    for i = #incomingHealing, 1, -1 do
+        local instance = incomingHealing[ i ]
 
-    if instance.t < ( now - 15 ) then
-        table.remove( incomingHealing, i )
+        if instance.t < ( now - 15 ) then
+            table.remove( incomingHealing, i )
+        end
     end
-  end
 
-  if Hekili.DB.profile.Enabled then
-    C_Timer.After( 1, ns.Audit )
-  end
-
+    if Hekili.DB.profile.enabled then
+        C_Timer.After( 1, ns.Audit )
+    end
 end
 
 

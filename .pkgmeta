@@ -69,9 +69,6 @@ externals:
     Libs/LibCompress:
         url: svn://svn.wowace.com/wow/libcompress/mainline/trunk
         tag: latest
-    Libs/LibArtifactData-1.0:
-        url: https://github.com/Rainrider/LibArtifactData-1.0.git
-        tag: latest
     Libs/LibNameplateRegistry-1.0:
         url: git://git.wowace.com/wow/libnameplateregistry-1-0/mainline.git/LibNameplateRegistry-1.0
         tag: latest

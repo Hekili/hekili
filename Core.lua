@@ -4,28 +4,15 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local class = ns.class
-local state = ns.state
-local scriptDB = Hekili.Scripts
+local class = Hekili.Class
+local state = Hekili.State
+local scripts = Hekili.Scripts
 
-local buildUI = ns.buildUI
 local callHook = ns.callHook
-local checkScript = ns.checkScript
 local clashOffset = ns.clashOffset
 local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
 local getResourceName = ns.getResourceName
-local importModifiers = ns.importModifiers
-local initializeClassModule = ns.initializeClassModule
-local isKnown = ns.isKnown
-local isUsable = ns.isUsable
-local isTimeSensitive = ns.isTimeSensitive
-local loadScripts = ns.loadScripts
-local refreshBindings = ns.refreshBindings
-local refreshOptions = ns.refreshOptions
-local restoreDefaults = ns.restoreDefaults
-local runOneTimeFixes = ns.runOneTimeFixes
-local convertDisplays = ns.convertDisplays
 local runHandler = ns.runHandler
 local tableCopy = ns.tableCopy
 local timeToReady = ns.timeToReady
@@ -144,7 +131,7 @@ function ns.pruneDefaults()
         end 
     end
     
-    for i = #profile.actionLists, 1, -1 do
+    --[[ for i = #profile.actionLists, 1, -1 do
         local list = profile.actionLists[ i ]
         if type( list ) ~= 'table' or list.Name:match("^@") then
             for dispID, display in ipairs( profile.displays ) do
@@ -155,9 +142,7 @@ function ns.pruneDefaults()
         elseif not ns.isDefault( list.Name, "actionLists" ) then
             list.Default = false
         end
-        
-        
-    end 
+    end  ]]
     
 end
 
@@ -174,9 +159,9 @@ function Hekili:OnInitialize()
     self.Options.args.profiles = LibStub( "AceDBOptions-3.0" ):GetOptionsTable( self.DB )
     
     -- Add dual-spec support
-    local DualSpec = LibStub( "LibDualSpec-1.0" )
+    --[[ local DualSpec = LibStub( "LibDualSpec-1.0" )
     DualSpec:EnhanceDatabase( self.DB, "Hekili" )
-    DualSpec:EnhanceOptions( self.Options.args.profiles, self.DB )
+    DualSpec:EnhanceOptions( self.Options.args.profiles, self.DB ) ]]
     
     self.DB.RegisterCallback( self, "OnProfileChanged", "TotalRefresh" )
     self.DB.RegisterCallback( self, "OnProfileCopied", "TotalRefresh" )
@@ -241,20 +226,20 @@ function Hekili:OnInitialize()
     end
     
     
+    --[[ NEED TO PUT VERSION UPDATING STUFF HERE.
     if not self.DB.profile.Version or self.DB.profile.Version < 7 or not self.DB.profile.Release or self.DB.profile.Release < 20161000 then
         self.DB:ResetDB()
     end
     
-    self.DB.profile.Release = self.DB.profile.Release or 20170416.0
+    self.DB.profile.Release = self.DB.profile.Release or 20170416.0 ]]
     
-    initializeClassModule()
-    refreshBindings()
-    restoreDefaults()
-    runOneTimeFixes()
-    convertDisplays()
+    -- initializeClassModule()
+    self:RestoreDefaults()
+    self:RunOneTimeFixes()
     checkImports()
-    refreshOptions()
-    loadScripts()
+    
+    self:RefreshOptions()
+    scripts:LoadScripts()
     
     ns.updateTalents()
     ns.updateGear()
@@ -266,8 +251,8 @@ function Hekili:OnInitialize()
     callHook( "onInitialize" )
     
     if class.file == 'NONE' then
-        if self.DB.profile.Enabled then
-            self.DB.profile.Enabled = false
+        if self.DB.profile.enabled then
+            self.DB.profile.enabled = false
             self.DB.profile.AutoDisabled = true
         end
         for i, buttons in ipairs( ns.UI.Buttons ) do
@@ -281,14 +266,15 @@ end
 
 
 function Hekili:ReInitialize()
-    ns.initializeClassModule()
-    refreshBindings()
-    restoreDefaults()
-    convertDisplays()
+    -- ns.initializeClassModule()
+    self:OverrideBinds()
+    self:RestoreDefaults()
+    
     checkImports()
-    refreshOptions()
-    runOneTimeFixes()
-    loadScripts()
+    self:RunOneTimeFixes()
+
+    self:RefreshOptions()
+    self:LoadScripts()
     
     ns.updateTalents()
     ns.updateGear()
@@ -297,14 +283,14 @@ function Hekili:ReInitialize()
         
     callHook( "onInitialize" )
     
-    if self.DB.profile.Enabled == false and self.DB.profile.AutoDisabled then 
+    if self.DB.profile.enabled == false and self.DB.profile.AutoDisabled then 
         self.DB.profile.AutoDisabled = nil
-        self.DB.profile.Enabled = true
+        self.DB.profile.enabled = true
         self:Enable()
     end
     
     if class.file == 'NONE' then
-        self.DB.profile.Enabled = false
+        self.DB.profile.enabled = false
         self.DB.profile.AutoDisabled = true
         for i, buttons in ipairs( ns.UI.Buttons ) do
             for j, _ in ipairs( buttons ) do
@@ -317,19 +303,22 @@ end
 
 
 function Hekili:OnEnable()
-    
-    ns.specializationChanged()
-    self:UpdateDisplayVisibility()
+
+    self.DB.profile.enabled = true
+
     ns.StartEventHandler()
-    buildUI()
+    self:BuildUI()
+    self:SpecializationChanged()
+    self:UpdateDisplayVisibility()
     self:ForceUpdate()
-    ns.overrideBinds()
+
+    self:OverrideBinds()
     ns.ReadKeybindings()
-    
-    self.s = ns.state
-    
+
+    self:TotalRefresh()
+
     -- May want to refresh configuration options, key bindings.
-    if self.DB.profile.Enabled then
+    if self.DB.profile.enabled then
         -- self:UpdateDisplays()
         ns.Audit()
     else
@@ -340,17 +329,17 @@ end
 
 
 function Hekili:OnDisable()
-    self.DB.profile.Enabled = false
+    self.DB.profile.enabled = false
     self:UpdateDisplayVisibility()
 
     ns.StopEventHandler()
-    buildUI()
+    self:BuildUI()
 end
 
 
 function Hekili:Toggle()
-    self.DB.profile.Enabled = not self.DB.profile.Enabled
-    if self.DB.profile.Enabled then self:Enable()
+    self.DB.profile.enabled = not self.DB.profile.enabled
+    if self.DB.profile.enabled then self:Enable()
     else self:Disable() end
     self:UpdateDisplayVisibility()
 end
@@ -413,8 +402,8 @@ function Hekili:CheckAPLStack()
             local cache = listCache[ scriptID ] or {}
             local values = listValue[ scriptID ] or {}
 
-            cache[ t ] = cache[ t ] or checkScript( 'A', scriptID )
-            values[ t ] = values[ t ] or ns.getConditionsAndValues( 'A', scriptID )
+            cache[ t ] = cache[ t ] or scripts:CheckScript( scriptID )
+            values[ t ] = values[ t ] or scripts:GetConditionsAndValues( scriptID )
 
             if self.ActiveDebug then self:Debug( "The conditions for a previously-run action list ( %d - %s ) would %s at +%.2f.\n - %s", listID, list.Name, cache[ t ] and "PASS" or "FAIL", state.delay, values[ t ] ) end
 
@@ -429,16 +418,18 @@ function Hekili:CheckAPLStack()
     end
 
     for listID, caller in pairs( listStack ) do
-        local list = self.DB.profile.actionLists[ listID ]
+        local packID, listID = listID:match( "^(.-):(.-)$" )
+        local pack = self.DB.profile.packs[ packID ]
+        local list = pack.lists[ listID ]   
 
         if caller and caller ~= 0 and list then
             local cache = listCache[ caller ] or {}
             local values = listValue[ caller ] or {}
 
-            cache[ t ] = cache[ t ] or checkScript( 'A', caller )
-            values[ t ] = values[ t ] or ns.getConditionsAndValues( 'A', caller )
+            cache[ t ] = cache[ t ] or scripts:CheckScript( caller )
+            values[ t ] = values[ t ] or scripts:GetConditionsAndValues( caller )
 
-            if self.ActiveDebug then self:Debug( "The conditions for %s (%d), called from %s, would %s at +%.2f.\n - %s", list.Name or "NONAME", listID, caller, cache[ t ] and "PASS" or "FAIL", state.delay, values[ t ] ) end
+            if self.ActiveDebug then self:Debug( "The conditions for %s, called from %s, would %s at +%.2f.\n - %s", listID, caller, cache[ t ] and "PASS" or "FAIL", state.delay, values[ t ] ) end
 
             listCache[ caller ] = cache
             listValue[ caller ] = values
@@ -455,7 +446,7 @@ do
     local knownCache = {}
 
     function Hekili:IsSpellKnown( spell )
-        knownCache[ spell ] = knownCache[ spell ] or ns.isKnown( spell )
+        knownCache[ spell ] = knownCache[ spell ] or state:IsKnown( spell )
         return knownCache[ spell ]
     end
 
@@ -463,7 +454,7 @@ do
     local disabledCache = {}
 
     function Hekili:IsSpellEnabled( spell )
-        disabledCache[ spell ] = disabledCache[ spell ] or ( not ns.isDisabled( spell ) )
+        disabledCache[ spell ] = disabledCache[ spell ] or ( not state:IsDisabled( spell ) )
         return disabledCache[ spell ]
     end
 
@@ -477,244 +468,208 @@ do
 end
 
 
-function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, action, wait, clash )
+local waitBlock = {}
+
+function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action, wait, clash, depth, caller )
+
+    local display = self.DB.profile.displays[ dispName ]
     
-    local display = self.DB.profile.displays[ dispID ]
-    local list = self.DB.profile.actionLists[ listID ]
+    local specID = state.spec.id
+    local spec = rawget( self.DB.profile.specs, specID )
+
+    local packName = self.DB.profile.specs[ specID ].package
+    local pack = self.DB.profile.packs[ packName ]
+
+    local list = pack.lists[ listName ]
     
     local debug = self.ActiveDebug
     
-    -- if debug then self:Debug( "Testing action list [ %d - %s ].", listID, list and list.Name or "ERROR - Does Not Exist" ) end
-    if debug then self:Debug( "Previous Recommendation: %s at +%.2fs, clash is %.2f.", action or "NO ACTION", wait or 60, clash or 0 ) end
-    
-    -- the stack will prevent list loops, but we need to keep this from destroying existing data... later.
+    -- Stack prevents list loops, but we have to preserve data.
     if not list then
-        if debug then self:Debug( "No list with ID #%d. Should never see.", listID ) end
-    elseif listStack[ listID ] then
-        if debug then self:Debug( "Action list loop detected. %s was already processed earlier. Aborting.", list.Name ) end
+        if debug then self:Debug( "The requested action list (%s) was not found in pack (%s).", listName, packName ) end
         return action, wait, clash, depth
-    else
-        if debug then self:Debug( "Adding %s to the list of processed action lists.", list.Name ) end
-        listStack[ listID ] = hookID or 0
-    end
     
-    local chosen_action = action
-    local chosen_clash = clash or 0
-    local chosen_wait = wait or 60
-    local chosen_depth = depth or 0
+    elseif listStack[ packName .. ':' .. listName ] then
+        if debug then self:Debug( "The requested action list (%s-%s) would've already been called; canceling to prevent a loop.", packName, listName ) end
+        return action, wait, clash, depth
+    
+    end
+
+    if debug then self:Debug( "Current recommendation was %s at +%.2fs (clash: %.2f).", action or "NO ACTION", wait or 60, clash or 0 ) end
+    -- if debug then self:Debug( "ListCheck: Success(%s-%s)", packName, listName ) end
+
+    listStack[ packName .. ':' .. listName ] = caller or 0
+
+    local rAction = action
+    local rWait = wait or 60
+    local rClash = clash or 0
+    local rDepth = depth or 0
 
     local force_channel = false
     local stop = false
 
     table.wipe( itemTried )
     
-    if self:IsListActive( listID ) then
+    if self:IsListActive( packName, listName ) then
         local actID = 1
         
-        while actID <= #list.Actions do
-            if not chosen_wait then print( hookID, listID, slot, "no chosen_wait" ) end
-            if chosen_wait <= state.cooldown.global_cooldown.remains then
-                if debug then self:Debug( "The last selected ability ( %s ) is available by the next GCD.  End loop.", chosen_action ) end
-                if debug then self:Debug( "Removing %s from list of processed action lists.", list.Name ) end
+        while actID <= #list do
+            if rWait <= state.cooldown.global_cooldown.remains then
+                if debug then self:Debug( "The recommended action (%s) would be ready before the next GCD (%.2f < %.2f); exiting list (%s).", rAction, rWait, state.cooldown.global_cooldown.remains, listName ) end
+                break
 
-                local scriptID = listStack[ listID ]
-                listStack[ listID ] = nil
-                if listCache[ scriptID ] then table.wipe( listCache[ scriptID ] ) end
-                if listValue[ scriptID ] then table.wipe( listValue[ scriptID ] ) end
+                --[[ local scriptID = listStack[ listName ]
+                listStack[ listName ] = nil
 
-                return chosen_action, chosen_wait, chosen_clash, chosen_depth
-            elseif chosen_wait <= 0.2 then
-                if debug then self:Debug( "The last selected ability ( %s ) has a very low wait time. End loop.", chosen_action ) end
-                if debug then self:Debug( "Removing %s from list of processed action lists.", list.Name ) end
+                if listCache[ scriptID ] then wipe( listCache[ scriptID ] ) end
+                if listValue[ scriptID ] then wipe( listValue[ scriptID ] ) end
 
-                local scriptID = listStack[ listID ]
-                listStack[ listID ] = nil
-                if listCache[ scriptID ] then table.wipe( listCache[ scriptID ] ) end
-                if listValue[ scriptID ] then table.wipe( listValue[ scriptID ] ) end
+                return rAction, rWait, rClash, rDepth ]]
 
-                return chosen_action, chosen_wait, chosen_clash, chosen_depth
+            elseif rWait <= 0.2 then
+                if debug then self:Debug( "The recommended action (%s) is ready in less than 0.2s; exiting list (%s).", rAction, listName ) end
+                break
+
+                --[[ local scriptID = listStack[ listName ]
+                listStack[ listName ] = nil
+
+                if listCache[ scriptID ] then wipe( listCache[ scriptID ] ) end
+                if listValue[ scriptID ] then wipe( listValue[ scriptID ] ) end
+
+                return rAction, rWait, rClash, rDepth ]]
+
             elseif stop then
-                if debug then self:Debug( "Returning to parent list after completing Run_Action_List ( %d - %s ).", listID, list.Name ) end
-                if debug then self:Debug( "Removing %s from list of processed action lists.", list.Name ) end
+                if debug then self:Debug( "The action list reached a stopping point; exiting list (%s).", listName ) end
+                break
 
-                local scriptID = listStack[ listID ]
-                listStack[ listID ] = nil
-                if listCache[ scriptID ] then table.wipe( listCache[ scriptID ] ) end
-                if listValue[ scriptID ] then table.wipe( listValue[ scriptID ] ) end
+                --[[ local scriptID = listStack[ listName ]
+                listStack[ listName ] = nil
 
-                return chosen_action, chosen_wait, chosen_clash, chosen_depth
+                if listCache[ scriptID ] then wipe( listCache[ scriptID ] ) end
+                if listValue[ scriptID ] then wipe( listValue[ scriptID ] ) end
+
+                return rAction, rWait, rClash, rDepth ]]
             end
             
-            if self:IsActionActive( listID, actID ) then
-                
+            if self:IsActionActive( packName, listName, actID ) then
+
                 -- Check for commands before checking actual actions.
-                local entry = list.Actions[ actID ]
+                local entry = list[ actID ]
 
-                state.this_action = entry.Ability
-                state.this_args = entry.Args
-                
+                state.this_action = entry.action
+                state.this_args = nil
                 state.delay = nil
-                chosen_depth = chosen_depth + 1
-                
-                -- Need to expand on modifiers, gather from other settings as needed.
-                if debug then self:Debug( "\n[ %2d ] Testing entry %s:%d ( %s ) with modifiers ( %s ).", chosen_depth, list.Name, actID, entry.Ability, entry.Args or "NONE" ) end
 
-                local ability = class.abilities[ entry.Ability ]
+                rDepth = rDepth + 1
+                if debug then self:Debug( "\n[%3d]  Checking %s (%s - %s - %d )...", rDepth, entry.action, packName, listName, actID ) end
+                
+                local ability = class.abilities[ state.this_action ]
 
                 local wait_time = 60
                 local clash = 0
                 
                 local known = self:IsSpellKnown( state.this_action )
                 local enabled = self:IsSpellEnabled( state.this_action )
+
+                if debug then self:Debug( "%s is %sknown and %senabled.", entry.action, known and "" or "NOT ", enabled and "" or "NOT " ) end
                 
-                if debug then self:Debug( "%s is %s and %s.", ability and ability.name or entry.Ability, known and "KNOWN" or "NOT KNOWN", enabled and "ENABLED" or "DISABLED" ) end
-                
-                if known and enabled then
-                    local scriptID = listID .. ':' .. actID
+                if ability and known and enabled then
+                    local scriptID = packName .. ":" .. listName .. ":" .. actID
                     
                     -- Used to notify timeToReady() about an artificial delay for this ability.
-                    state.script.entry = entry.whenReady == 'script' and scriptID or nil                    
-                    importModifiers( listID, actID )
+                    -- state.script.entry = entry.whenReady == 'script' and scriptID or nil
+                    scripts:ImportModifiers( scriptID )
 
-                    wait_time = timeToReady( state.this_action )
+                    wait_time = state:TimeToReady()
+                    clash = state.ClashOffset()
 
-                    clash = clashOffset( state.this_action )                    
                     state.delay = wait_time
 
-                    if wait_time >= chosen_wait then
-                        if debug then self:Debug( "This action is not available in time for consideration ( %.2f vs. %.2f ). Skipping.", wait_time, chosen_wait ) end
+                    if wait_time >= rWait then
+                        if debug then self:Debug( "The action is not ready in time (%.2f > %.2f).", wait_time, rWait ) end
                     else
                         -- APL checks.
-                        if entry.Ability == 'variable' then
-                            local varName = entry.ModVarName or state.args.name
+                        if entry.action == 'variable' then
+                            local name = state.args.var_name
                             
-                            if debug then self:Debug( " - variable.%s will refer to this action's script.", varName or "MISSING" ) end
+                            if debug then self:Debug( " - variable.%s will reference this script entry (%s).", name or "MISSING", scriptID ) end
                             
-                            if varName ~= nil then -- and aScriptValue ~= nil then
-                                state.variable[ "_" .. varName ] = scriptID
+                            if name ~= nil then -- and aScriptValue ~= nil then
                                 -- We just store the scriptID so that the variable actually gets tested at time of comparison.
+                                state.variable[ "_" .. name ] = scriptID
                             end
 
-                        elseif entry.Ability == 'use_items' then
+                        elseif entry.action == 'use_items' then
                             local aScriptPass = true
-                            
-                            if not entry.Script or entry.Script == '' then
-                                if debug then self:Debug( "Use Items does not have any required conditions." ) end
-                                
-                            else
-                                --[[ if isTimeSensitive( 'A', scriptID ) then 
-                                    -- aScriptPass = self:CheckAPLStack() and checkScript( 'A', scriptID )
-                                    if debug then self:Debug( "Use Items's conditions will be tested along with each action in the item list." ) end
-                                else
-                                    aScriptPass = self:CheckAPLStack() and checkScript( 'A', scriptID )
-                                    if debug then self:Debug( "The conditions for this entry are not time sensitive and %s at ( %.2f + %.2f ).", aScriptPass and "PASS" or "DO NOT PASS", state.offset, state.delay ) end
-                                end ]]
-                                aScriptPass = self:CheckAPLStack() and checkScript( 'A', scriptID )
-                                if debug then self:Debug( "The conditions for this entry are %stime sensitive and %s at ( %.2f + %.2f ).", isTimeSensitive( 'A', scriptID ) and "" or "not ", aScriptPass and "PASS" or "DO NOT PASS", state.offset, state.delay ) end
-                            end
+                            -- if debug then self:Debug( "UseItems: NoCondition" ) end
 
                             if aScriptPass then
-                                aList = "Usable Items"
+                                local uiList = "usable_items"
+                                
+                                if pack.lists[ uiList ] then
+                                    if debug then self:Debug( "The usable_items action list was found; calling it." ) end
+                                    rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, packName, uiList, slot, rAction, rWait, rClash, rDepth, scriptID )
+                                    if debug then self:Debug( "Returned from usable_items action list, current recommendation is %s (+%.2f).", rAction or "none", rWait ) end
 
-                                if aList then
-                                    -- check to see if we have a real list name.
-                                    local called_list = 0
-                                    for i, list in ipairs( self.DB.profile.actionLists ) do
-                                        if list.Name == aList then
-                                            called_list = i
-                                            break
-                                        end
-                                    end
-                                    
-                                    if called_list > 0 then
-                                        if debug then self:Debug( "The action list for %s ( %s ) was found.", entry.Ability, aList ) end
-                                        chosen_action, chosen_wait, chosen_clash, chosen_depth = self:GetPredictionFromAPL( dispID, listID .. ':' .. actID, called_list, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
-
-                                        if debug then self:Debug( "The action list ( %s ) returned with recommendation %s after %.2f seconds.", aList, chosen_action or "none", chosen_wait ) end
-                                        calledList = true
-                                    else
-                                        if debug then self:Debug( "The action list for %s ( %s ) was not found - %s / %s.", entry.Ability, aList, entry.ModName or "nil", state.args.name or "nil" ) end
-                                    end
+                                else
+                                    if debug then self:Debug( "The usable_items action list was not found; skipping it." ) end
                                 end
 
                             end
 
-                        elseif entry.Ability == 'call_action_list' or entry.Ability == 'run_action_list' then
+                        elseif entry.action == 'call_action_list' or entry.action == 'run_action_list' then
                             -- We handle these here to avoid early forking between starkly different APLs.
                             local aScriptPass = true
-                            
-                            if not entry.Script or entry.Script == '' then
-                                if debug then self:Debug( "%s does not have any required conditions.", ability.name ) end
-                                
-                            else
-                                --[[ if isTimeSensitive( 'A', scriptID ) and not entry.StrictCheck then 
-                                    -- aScriptPass = self:CheckAPLStack() and checkScript( 'A', scriptID )
-                                    if debug then self:Debug( "The action list's conditions will be tested along with each action." ) end
-                                else
-                                    aScriptPass = self:CheckAPLStack() and checkScript( 'A', scriptID )
-                                    if debug then self:Debug( "Conditions %s: %s", aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
-                                    if debug then self:Debug( "The conditions for this action list are not time sensitive%s and %s at ( %.2f + %.2f ).", entry.StrictCheck and " (STRICT)" or "", aScriptPass and "PASS" or "DO NOT PASS", state.offset, state.delay ) end
-                                end ]]
-                                aScriptPass = self:CheckAPLStack() and checkScript( 'A', scriptID )
 
-                                if debug then self:Debug( "The conditions for this entry are %stime sensitive and %s at ( %.2f + %.2f ).", isTimeSensitive( 'A', scriptID ) and "" or "not ", aScriptPass and "PASS" or "DO NOT PASS", state.offset, state.delay ) end
-                                if debug then self:Debug( "Conditions %s: %s", aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
+                            if not entry.criteria or entry.criteria == "" then
+                                if debug then self:Debug( "There is no criteria for this action list." ) end
+                            else
+                                aScriptPass = self:CheckAPLStack() and scripts:CheckScript( scriptID )
+
+                                if debug then 
+                                    self:Debug( "%sCriteria %s at +%.2f - %s", scripts:IsTimeSensitive( scriptID ) and "Time-sensitive " or "", aScriptPass and "PASS" or "FAIL", state.offset, scripts:GetConditionsAndValues( scriptID ) )
+                                end
                             end
                             
                             if aScriptPass then
-                                local aList = entry.ModName or state.args.name
-                                
-                                if aList then
-                                    -- check to see if we have a real list name.
-                                    local called_list = 0
-                                    for i, list in ipairs( self.DB.profile.actionLists ) do
-                                        if list.Name == aList then
-                                            called_list = i
-                                            break
-                                        end
-                                    end
-                                    
-                                    if called_list > 0 then
-                                        if debug then self:Debug( "The action list for %s ( %s ) was found.", entry.Ability, aList ) end
+                                local name = state.args.list_name
 
-                                        local prev_action, prev_wait = chosen_action, chosen_wait
+                                if name and pack.lists[ name ] then
+                                    if debug then self:Debug( "Action list (%s) was found.", name ) end
 
-                                        chosen_action, chosen_wait, chosen_clash, chosen_depth = self:GetPredictionFromAPL( dispID, listID .. ':' .. actID, called_list, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
-                                        if debug then self:Debug( "The action list ( %s ) returned with recommendation %s after %.2f seconds.", aList, chosen_action or "none", chosen_wait ) end
+                                    local pAction, pWait = rAction, rWait
 
-                                        if entry.Ability == 'run_action_list' then
-                                            listIsBad[ scriptID ] = listID
-                                        end
-                                       
-                                        calledList = true
-                                    else
-                                        if debug then self:Debug( "The action list for %s ( %s ) was not found - %s / %s.", entry.Ability, aList, entry.ModName or "nil", state.args.name or "nil" ) end
-                                    end
+                                    rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rClash, rDepth, scriptID )
+                                    if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NoAction", rWait ) end
+
+                                    if entry.action == 'run_action_list' then listIsBad[ scriptID ] = name end
+                                    calledList = true
+                                else
+                                    if debug then self:Debug( "The action list (%s) was not found.", name ) end
                                 end
                                 
                             end
                             
                         else
-                            local usable = isUsable( state.this_action )
-
-                            if debug then self:Debug( "Testing at [ %.2f + %.2f ] - Ability ( %s ) is %s.", state.offset, state.delay, entry.Ability, usable and "USABLE" or "NOT USABLE" ) end
+                            local usable = state:IsUsable()
+                            if debug then self:Debug( "The action (%s) is %susable at (%.2f + %.2f).", entry.action, usable and "" or "NOT ", state.offset, state.delay ) end
                             
                             if ability.item then
-                                if list.Name == "Usable Items" then
-                                    if itemTried[ entry.Ability ] then
+                                if listName == "Usable Items" then                                    
+                                    if itemTried[ entry.action ] then
                                         usable = false
-                                        if debug then self:Debug( "This ability is item-based and was previously tried by the specialization's APLs; skipping." ) end
+                                        if debug then self:Debug( "The action (%s) was previously tested; skipping.", entry.action ) end
                                     end
                                 else
-                                    itemTried[ entry.Ability ] = true
+                                    itemTried[ entry.action ] = true
                                 end
                             end
                             
                             if usable then
-                                local chosenWaitValue = max( 0, chosen_wait - chosen_clash )
-                                local readyFirst = state.delay < chosenWaitValue
-                                
-                                if debug then self:Debug( " - this ability is %s at %.2f before the previous ability at %.2f.", readyFirst and "READY" or "NOT READY", state.delay, chosenWaitValue ) end
+                                local waitValue = max( 0, rWait - rClash )
+                                local readyFirst = state.delay < waitValue
+
+                                if debug then self:Debug( " - the action is %sready before the current recommendation (at +%.2f vs. +%.2f).", readyFirst and "" or "NOT ", state.delay, waitValue ) end
                                 
                                 if readyFirst then
                                     local hasResources = true
@@ -723,26 +678,26 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                         local aScriptPass = self:CheckAPLStack()
 
                                         if not aScriptPass then
-                                            if debug then self:Debug( "This action entry is not available as the called action list would not be processed at %.2f.", state.delay ) end
+                                            if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
 
                                         else
-                                            if not entry.Script or entry.Script == '' then 
-                                                if debug then self:Debug( ' - this ability has no required conditions.' ) end
+                                            if not entry.criteria or entry.criteria == '' then 
+                                                if debug then self:Debug( " - this entry has no criteria to test." ) end
                                             else 
-                                                aScriptPass = checkScript( 'A', scriptID )
-                                                if debug then self:Debug( "Conditions %s: %s", aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
+                                                aScriptPass = scripts:CheckScript( scriptID )
+                                                if debug then self:Debug( " - this entry's criteria %s: %s", aScriptPass and "PASSES" or "FAILS", scripts:GetConditionsAndValues( scriptID ) ) end
                                             end
                                         end
 
                                         -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.                                        
                                         if not aScriptPass then 
                                             if ability.recheck then
-                                                state.recheck( entry.Ability, ability.recheck() )
+                                                state.recheck( entry.action, ability.recheck() )
                                             else
-                                                state.recheck( entry.Ability )
+                                                state.recheck( entry.action )
                                             end
 
-                                            -- self:Print( entry.Ability .. " has " .. #state.recheckTimes .. " rechecks." )
+                                            -- self:Print( entry.action .. " has " .. #state.recheckTimes .. " rechecks." )
 
                                             if #state.recheckTimes == 0 then
                                                 if debug then self:Debug( "There were no recheck events to check." ) end
@@ -755,16 +710,16 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                     if new_wait >= 7.5 then
                                                         if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 7.5s ).", i, new_wait ) end
                                                         break
-                                                    elseif chosenWaitValue <= base_delay + step then
-                                                        if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f < %.2f ).", i, chosenWaitValue, new_wait ) end
+                                                    elseif waitValue <= base_delay + step then
+                                                        if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f < %.2f ).", i, waitValue, new_wait ) end
                                                         break
                                                     end
 
                                                     state.delay = base_delay + step
 
                                                     if self:CheckAPLStack() then
-                                                        aScriptPass = checkScript( 'A', scriptID )
-                                                        if debug then self:Debug( "Recheck #%d ( +%.2f ) %s: %s", i, state.delay, aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
+                                                        aScriptPass = scripts:CheckScript( packName, listName, actID )
+                                                        if debug then self:Debug( "Recheck #%d ( +%.2f ) %s: %s", i, state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( packName, listName, actID ) ) end
                                                     else
                                                         if debug then self:Debug( "Unable to recheck #%d at %.2f, as APL conditions would not pass.", i, state.delay ) end
                                                     end
@@ -777,13 +732,13 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
 
                                         force_channel = false
 
-                                        if aScriptPass and state.channel == entry.Ability and state.player.channelEnd > state.query_time then
+                                        if aScriptPass and state.channel == entry.action and state.player.channelEnd > state.query_time then
                                             if debug then self:Debug( "This entry is a channeled spell and it is currently being channeled." ) end
 
                                             -- A higher priority ability is ready by the end of the channel.  Go back to that.
 
-                                            if chosenWaitValue <= state.delay then
-                                                if debug then self:Debug( "We have a valid recommendation (%s) before the end of the current channel ( %.2f <= %.2f ).  Use that instead.", chosen_action, chosenWaitValue, state.player.channelEnd - ( state.offset + state.now ) ) end
+                                            if waitValue <= state.delay then
+                                                if debug then self:Debug( "We have a valid recommendation (%s) before the end of the current channel ( %.2f <= %.2f ).  Use that instead.", rAction, waitValue, state.player.channelEnd - ( state.offset + state.now ) ) end
                                                 break
                                             end
 
@@ -791,18 +746,18 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
 
                                             if step <= 0 then
                                                 if debug then self:Debug( "This recommendation falls within the channel refresh period and will be used as-is." ) end
-                                            elseif state.delay + step >= chosenWaitValue then
-                                                if chosen_action then
-                                                    if debug then self:Debug( "Delaying by %.2f to the appropriate refresh-time ( %.2f ) would take too long ( > %.2f ).  Using last recommendation.", step, state.delay + step, chosenWaitValue ) end
+                                            elseif state.delay + step >= waitValue then
+                                                if rAction then
+                                                    if debug then self:Debug( "Delaying by %.2f to the appropriate refresh-time ( %.2f ) would take too long ( > %.2f ).  Using last recommendation.", step, state.delay + step, waitValue ) end
                                                     break
                                                 end
                                             else
-                                                if debug then self:Debug( "Advancing +%.2f to reach the refresh channel window for %s.", step, entry.Ability ) end
+                                                if debug then self:Debug( "Advancing +%.2f to reach the refresh channel window for %s.", step, entry.action ) end
                                                 state.delay = state.delay + step
 
                                                 if self:CheckAPLStack() then
-                                                    aScriptPass = checkScript( "A", scriptID )
-                                                    if debug then self:Debug( "Rechannel check at ( +%.2f ) %s: %s", state.delay, aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
+                                                    aScriptPass = scripts:CheckScript( scriptID )
+                                                    if debug then self:Debug( "Rechannel check at ( +%.2f ) %s: %s", state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( packName, listName, actID ) ) end
                                                     force_channel = aScriptPass
                                                 else
                                                     if debug then self:Debug( "Unable to rechannel check at +%.2f as APL conditions would not pass.", state.delay ) end
@@ -815,59 +770,67 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                         end
 
                                         if aScriptPass then
-                                            if entry.Ability == 'potion' then
-                                                local potionName = state.args.ModName or state.args.name or class.potion
+                                            if entry.action == 'potion' then
+                                                local potionName = state.args.potion or class.potion
                                                 local potion = class.potions[ potionName ]
                                                 
                                                 if potion then
-                                                    slot.scriptType = entry.ScriptType or 'simc'
-                                                    slot.display = dispID
+                                                    slot.scriptType = 'simc'
+                                                    data.script = scriptID
+                                                    slot.hook = caller
+
+                                                    slot.display = dispName
+                                                    slot.pack = packName
+                                                    slot.list = listName
+                                                    slot.listName = listName
+                                                    slot.action = actID
+                                                    slot.actionName = state.this_action
+
                                                     slot.button = i
+                                                    slot.texture = select( 10, GetItemInfo( potion.item ) )
+                                                    slot.caption = entry.caption
                                                     slot.item = nil
                                                     
                                                     slot.wait = state.delay
+                                                    slot.resource = state.GetResourceType( rAction )
                                                     
-                                                    slot.hook = hookID
-                                                    slot.list = listID
-                                                    slot.action = actID
-                                                    
-                                                    slot.actionName = state.this_action
-                                                    slot.listName = list.Name
-                                                    
-                                                    slot.resource = ns.resourceType( chosen_action )
-                                                    
-                                                    slot.caption = entry.Caption
-                                                    slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
-                                                    slot.texture = select( 10, GetItemInfo( potion.item ) )
+                                                    -- slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
                                                         
-                                                    chosen_action = state.this_action
-                                                    chosen_wait = state.delay
-                                                    chosen_clash = clash
+                                                    rAction = state.this_action
+                                                    rWait = state.delay
+                                                    rClash = clash
                                                 end
 
-                                            elseif entry.Ability == 'wait' then
+                                            elseif entry.action == 'wait' then
+                                                -- local args = scripts:GetModifiers()
                                                 -- local args = ns.getModifiers( listID, actID )
-                                                local sec = state.args.WaitSeconds or state.args.sec or 1
+                                                local sec = state.args.sec or 0.5
+
                                                 if sec > 0 then
-                                                    if debug then self:Debug( "Criteria for Wait action were met, advancing by %.2f and restarting this list.", sec ) end
-                                                    -- NOTE, WE NEED TO TELL OUR INCREMENT FUNCTION ABOUT THIS...
-                                                    state.advance( sec )
-                                                    actID = 0
+                                                    if waitBlock[ scriptID ] then
+                                                        if debug then self:Debug( "Criteria for Wait action (" .. scriptID .. ") were met, but would be a loop.  Skipping." ) end
+                                                    else
+                                                        if debug then self:Debug( "Criteria for Wait action were met, advancing by %.2f and restarting this list.", sec ) end
+                                                        -- NOTE, WE NEED TO TELL OUR INCREMENT FUNCTION ABOUT THIS...
+                                                        waitBlock[ scriptID ] = true
+                                                        state.advance( sec )
+                                                        actID = 0
+                                                    end
                                                 end
 
-                                            elseif entry.Ability == 'pool_resource' then
-                                                if entry.PoolForNext then
+                                            elseif entry.action == 'pool_resource' then
+                                                if entry.for_next == 1 then
                                                     -- Pooling for the next entry in the list.
-                                                    local next_entry  = list.Actions[ actID + 1 ]
-                                                    local next_action = next_entry and next_entry.Ability
+                                                    local next_entry  = list[ actID + 1 ]
+                                                    local next_action = next_entry and next_entry.action
                                                     local next_id     = next_action and class.abilities[ next_action ] and class.abilities[ next_action ].id
 
-                                                    local extra_amt   = max( state.args.extra_amount or 0, entry.PoolExtra or 0 )
+                                                    local extra_amt   = entry.extra_amount or 0
 
-                                                    local next_known  = next_action and isKnown( next_action )
-                                                    local next_usable = next_action and isUsable( next_action )
+                                                    local next_known  = next_action and state.IsKnown( next_action )
+                                                    local next_usable = next_action and state.IsUsable( next_action )
                                                     local next_cost   = next_action and state.action[ next_action ].cost or 0
-                                                    local next_res    = next_action and ns.resourceType( next_action ) or class.primaryResource                                                    
+                                                    local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource                                                    
 
                                                     if not next_entry then
                                                         if debug then self:Debug( "Attempted to Pool Resources for non-existent next entry in the APL.  Skipping." ) end
@@ -878,7 +841,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                     elseif not next_usable then
                                                         if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable.  Skipping.", next_action ) end                                               
                                                     else
-                                                        local next_wait = max( timeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
+                                                        local next_wait = max( state.TimeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
 
                                                         if next_wait <= 0 then
                                                             if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
@@ -891,7 +854,7 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                             next_wait = next_wait + 0.01
                                                             state.offset = state.offset + next_wait
 
-                                                            aScriptPass = not next_entry.Script or next_entry.Script == '' or checkScript( 'A', listID .. ':' .. ( actID + 1 ) )
+                                                            aScriptPass = not next_entry.criteria or next_entry.criteria == '' or scripts:CheckScript( packName .. ':' .. listName .. ':' .. ( actID + 1 ) )
 
                                                             if not aScriptPass then
                                                                 if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but its conditions would not be met.  Skipping.", next_action ) end
@@ -915,35 +878,37 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                                 end ]]
 
                                             else
-                                                slot.scriptType = entry.ScriptType or 'simc'
-                                                slot.display = dispID
+                                                slot.scriptType = 'simc'
+                                                slot.script = scriptID
+                                                slot.hook = caller
+
+                                                slot.display = dispName
+                                                slot.pack = packName
+                                                slot.list = listName
+                                                slot.listName = listName
+                                                slot.action = actID
+                                                slot.actionName = state.this_action
+
                                                 slot.button = i
+                                                slot.caption = entry.caption
+                                                slot.texture = ability.texture
 
                                                 slot.wait = state.delay
 
-                                                slot.hook = hookID
-                                                slot.list = listID
-                                                slot.action = actID
-
-                                                slot.actionName = state.this_action
-                                                slot.listName = list.Name
-
-                                                slot.resource = ns.resourceType( chosen_action )
+                                                slot.resource = state.GetResourceType( rAction )
                                                 
-                                                slot.caption = entry.Caption
-                                                slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
-                                                slot.texture = ability.texture
+                                                -- slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
                                                 
-                                                chosen_action = state.this_action
-                                                chosen_wait = state.delay
-                                                chosen_clash = clash
+                                                rAction = state.this_action
+                                                rWait = state.delay
+                                                rClash = clash
 
                                                 if debug then
-                                                    self:Debug( "868 Action Chosen: %s at %f!", chosen_action, state.delay )
+                                                    self:Debug( "Action Chosen: %s at %f!", rAction, state.delay )
                                                 end
 
-                                                if entry.CycleTargets and state.active_enemies > 1 and ability and ability.cycle then
-                                                    if state.dot[ ability.cycle ].up and state.active_dot[ ability.cycle ] < ( state.args.MaxTargets or state.active_enemies ) then
+                                                if entry.cycle_targets == 1 and state.active_enemies > 1 and ability and ability.cycle then
+                                                    if state.dot[ ability.cycle ].up and state.active_dot[ ability.cycle ] < ( entry.max_cycle_targets or state.active_enemies ) then
                                                         slot.indicator = 'cycle'
                                                     end
                                                 end
@@ -953,475 +918,59 @@ function Hekili:GetPredictionFromAPL( dispID, hookID, listID, slot, depth, actio
                                 end
                             end
                             
-                            if chosen_wait == 0 or force_channel then break end
+                            if rWait == 0 or force_channel then break end
 
                         end
                     end
                 end
             else
-                if debug then self:Debug( "\nEntry #%d in list ( %s ) is not set or not enabled.  Skipping.", actID, list.Name ) end
+                if debug then self:Debug( "\nEntry #%d in list ( %s ) is not set or not enabled.  Skipping.", actID, listName ) end
             end
             
             actID = actID + 1
             
         end
         
-    end
-
-    local scriptID = listStack[ listID ]
-    listStack[ listID ] = nil
-    if listCache[ scriptID ] then table.wipe( listCache[ scriptID ] ) end
-    if listValue[ scriptID ] then table.wipe( listValue[ scriptID ] ) end
-
-    return chosen_action, chosen_wait, chosen_clash, chosen_depth
-
-end
-
-
--- Used to cache reusable criteria in an APL loop.
-local criteria = {}
-
-function Hekili:ProcessActionList( dispID, hookID, listID, slot, depth, action, time_ceiling )
-    
-    if not hookID or hookID == 0 then
-        -- This is the entry point for the iterative engine.
-        -- Any cache-wiping should happen here.
-        table.wipe( listStack )
-        table.wipe( listIsBad )
-        for k, v in pairs( listCache ) do table.wipe( v ) end
-        for k, v in pairs( listValue ) do table.wipe( v ) end
-
-        table.wipe( itemTried )
-    end
-
-    local display = self.DB.profile.displays[ dispID ]
-    local list = self.DB.profile.actionLists[ listID ]
-    
-    local debug = self.ActiveDebug
-    
-    -- if debug then self:Debug( "Testing action list [ %d - %s ].", listID, list and list.Name or "ERROR - Does Not Exist" ) end
-    if debug then self:Debug( "WARNING:  We are using our timeline engine instead of our predictive engine. [hekili notice this]" ) end
-    -- if debug then self:Debug( "Previous Recommendation: %s at +%.2fs, clash is %.2f.", action or "NO ACTION", wait or 60, clash or 0 ) end
-    
-    -- the stack will prevent list loops, but we need to keep this from destroying existing data... later.
-    if not list then
-        if debug then self:Debug( "No list with ID #%d. Should never see.", listID ) end
-    elseif listStack[ listID ] then
-        if debug then self:Debug( "Action list loop detected. %s was already processed earlier. Aborting.", list.Name ) end
-        return chosen_action, chosen_clash, chosen_depth
     else
-        if debug then self:Debug( "Adding %s to the list of processed action lists.", list.Name ) end
-        listStack[ listID ] = hookID or 0
-    end
-    
-
-    local chosen_action = action
-    local chosen_clash = clash or 0
-    local chosen_depth = depth or 0
-    
-
-    local stop = false
-
-    if self:IsListActive( listID ) then
-        local actID = 1
-
-        while actID <= #list.Actions and not chosen_action do
-            if stop then
-                if debug then self:Debug( "Returning to parent list after completing Run_Action_List ( %d - %s ).", listID, list.Name ) end
-                if debug then self:Debug( "Removing %s from list of processed action lists.", list.Name ) end
-                return chosen_action, chosen_clash, chosen_depth, stop
-            end
-            
-            if self:IsActionActive( listID, actID ) then
-                
-                -- Check for commands before checking actual actions.
-                local entry = list.Actions[ actID ]
-                state.this_action = entry.Ability
-                state.this_args = entry.Args
-                
-                chosen_depth = chosen_depth + 1
-                
-                -- Need to expand on modifiers, gather from other settings as needed.
-                if debug then self:Debug( "\n[ %2d ] Testing entry %s:%d ( %s ) with modifiers ( %s ).", chosen_depth, list.Name, actID, entry.Ability, entry.Args or "NONE" ) end
-                
-                local ability = class.abilities[ entry.Ability ]
-
-                local clash = 0
-                
-                local known = self:IsSpellKnown( state.this_action )
-                local enabled = self:IsSpellEnabled( state.this_action )
-
-                if debug then self:Debug( "%s is %s and %s.", ability and ability.name or entry.Ability, known and "KNOWN" or "NOT KNOWN", enabled and "ENABLED" or "DISABLED" ) end
-                
-                if known and enabled then
-                    local scriptID = listID .. ':' .. actID
-                    
-                    importModifiers( listID, actID )
-
-                    local ready = ns.isReadyNow( state.this_action )
-
-                    if not ready then
-                        if debug then self:Debug( "This action is not ready at +%.2f (+%.2f). Skipping.", state.offset, state.delay ) end
-                    else
-                        clash = clashOffset( state.this_action )
-
-                        -- APL checks.
-                        if entry.Ability == 'variable' then
-                            -- local aScriptValue = checkScript( 'A', scriptID )
-                            local varName = entry.ModVarName or state.args.name
-                            
-                            if debug then self:Debug( " - variable.%s will refer to this action's script.", varName or "MISSING" ) end
-                            
-                            if varName ~= nil then -- and aScriptValue ~= nil then
-                                state.variable[ "_" .. varName ] = scriptID
-                                -- We just store the scriptID so that the variable actually gets tested at time of comparison.
-                            end
-                            
-                        elseif entry.Ability == 'use_items' then
-                            -- We handle these here to avoid early forking between starkly different APLs.
-                            local aScriptPass = true
-                            
-                            if not entry.Script or entry.Script == '' then
-                                if debug then self:Debug( "%s does not have any required conditions.", ability.name ) end
-                                
-                            else
-                                aScriptPass = checkScript( 'A', scriptID )
-                                if debug then self:Debug( "Conditions %s: %s", aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
-                            end
-                            
-                            if aScriptPass then
-                                
-                                local aList = "Usable Items"
-                                
-                                if aList then
-                                    -- check to see if we have a real list name.
-                                    local called_list = 0
-                                    for i, list in ipairs( self.DB.profile.actionLists ) do
-                                        if list.Name == aList then
-                                            called_list = i
-                                            break
-                                        end
-                                    end
-                                    
-                                    if called_list > 0 then
-                                        if debug then self:Debug( "The action list for %s ( %s ) was found.", entry.Ability, aList ) end
-                                        chosen_action, chosen_clash, chosen_depth = self:ProcessActionList( dispID, listID .. ':' .. actID , called_list, slot, chosen_depth, chosen_action, chosen_clash )
-                                        calledList = true
-                                    else
-                                        if debug then self:Debug( "The action list for %s ( %s ) was not found - %s / %s.", entry.Ability, aList, entry.ModName or "nil", state.args.name or "nil" ) end
-                                    end
-                                end
-                                
-                            end
-
-                        elseif entry.Ability == 'call_action_list' or entry.Ability == 'run_action_list' then
-                            -- We handle these here to avoid early forking between starkly different APLs.
-                            local aScriptPass = true
-                            
-                            if not entry.Script or entry.Script == '' then
-                                if debug then self:Debug( "%s does not have any required conditions.", ability.name ) end
-                                
-                            else
-                                aScriptPass = checkScript( 'A', scriptID )
-                                if debug then self:Debug( "Conditions %s: %s", aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
-                            end
-
-                            if aScriptPass then
-                                local aList = entry.ModName or state.args.name
-                                
-                                if aList then
-                                    -- check to see if we have a real list name.
-                                    local called_list = 0
-                                    for i, list in ipairs( self.DB.profile.actionLists ) do
-                                        if list.Name == aList then
-                                            called_list = i
-                                            break
-                                        end
-                                    end
-                                    
-                                    if called_list > 0 then
-                                        if debug then self:Debug( "The action list for %s ( %s ) was found.", entry.Ability, aList ) end
-                                        chosen_action, chosen_clash, chosen_depth = self:ProcessActionList( dispID, listID .. ':' .. actID , called_list, slot, chosen_depth, chosen_action, chosen_clash )
-
-                                        if entry.Ability == 'run_action_list' then
-                                            listIsBad[ scriptID ] = listID
-                                        end
-                                        
-                                        stop = entry.Ability == 'run_action_list'
-                                        calledList = true
-                                    else
-                                        if debug then self:Debug( "The action list for %s ( %s ) was not found - %s / %s.", entry.Ability, aList, entry.ModName or "nil", state.args.name or "nil" ) end
-                                    end
-                                end
-                                
-                            end
-                            
-                        else
-                            usable = isUsable( state.this_action )
-                            
-                            if debug then self:Debug( "Ability ( %s ) is %s.", entry.Ability, usable and "USABLE" or "NOT USABLE" ) end
-
-                            if ability.item then
-                                if list.Name == "Usable Items" then
-                                    if itemTried[ entry.Ability ] then
-                                        if debug then self:Debug( "This ability is item-based and was tested by the specialization's APLs; skipping." ) end
-                                        usable = false
-                                    end
-                                else
-                                    itemTried[ entry.Ability ] = true
-                                end
-                            end
-                            
-                            if usable then
-                                if debug then
-                                    self:Debug( "   REQUIRES: %d %s.", ability.spend or 0, ability.spend_type or "NONE" )
-                                    local resource = ability.spend_type and state[ ability.spend_type ]
-                                    if resource then self:Debug( "   PRESENT:  %d %s.", resource.current, ability.spend_type ) end
-                                end
-                                
-                                local aScriptPass = true
-                                
-                                if not entry.Script or entry.Script == '' then 
-                                    if debug then self:Debug( ' - this ability has no required conditions.' ) end
-                                else 
-                                    aScriptPass = checkScript( 'A', scriptID )
-                                    if debug then self:Debug( "Conditions %s: %s", aScriptPass and "MET" or "NOT MET", ns.getConditionsAndValues( 'A', scriptID ) ) end
-                                end
-                                
-                                if aScriptPass then
-
-                                    if entry.Ability == 'wait' then
-                                        -- local args = ns.getModifiers( listID, actID )
-                                        local sec = state.args.WaitSeconds or state.args.sec or 1
-                                        if sec > 0 then
-                                            if time_ceiling and state.query_time + sec > time_ceiling then
-                                                if debug then self:Debug( "Attemped to wait %.2f seconds, but this would advance past our time ceiling of %.2f.  Skipping.", sec, time_ceiling ) end
-                                            else
-                                                if debug then self:Debug( "Criteria for Wait action were met, advancing by %.2f.", sec ) end
-                                                -- NOTE, WE NEED TO TELL OUR INCREMENT FUNCTION ABOUT THIS...
-                                                state.advance( sec )
-                                                actID = 0
-                                            end
-                                        end
-                                        
-                                    elseif entry.Ability == 'pool_resource' then
-                                        if entry.PoolForNext then
-                                            -- Pooling for the next entry in the list.
-                                            local next_entry  = list.Actions[ actID + 1 ]
-                                            local next_action = next_entry and next_entry.Ability
-                                            local next_id     = next_action and class.abilities[ next_action ] and class.abilities[ next_action ].id
-
-                                            local next_known  = next_action and isKnown( next_action )
-                                            local next_usable = next_action and isUsable( next_action )
-
-                                            if not next_entry then
-                                                if debug then self:Debug( "Attempted to Pool Resources for non-existent next entry in the APL.  Skipping." ) end
-                                            elseif not next_action or not next_id or next_id < 0 then
-                                                if debug then self:Debug( "Attempted to Pool Resources for invalid next entry in the APL.  Skipping." ) end
-                                            elseif not next_known then
-                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not known.  Skipping.", next_action ) end
-                                            elseif not next_usable then
-                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable.  Skipping.", next_action ) end                                               
-                                            else
-                                                local next_wait = timeToReady( next_action, true )
-
-                                                if next_wait <= 0 then
-                                                    if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
-                                                elseif time_ceiling and next_wait >= time_ceiling - state.now - state.offset then
-                                                    if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we would exceed our time ceiling in %.2fs.  Skipping.", next_action, next_wait ) end
-                                                elseif next_wait >= 10 then
-                                                    if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we'd have to wait much too long ( %.2f ).  Skipping.", next_action, next_wait ) end
-                                                else
-                                                    -- Pad the wait value slightly, to make sure the resource is actually generated.
-                                                    next_wait = next_wait + 0.01
-                                                    state.offset = state.offset + next_wait
-
-                                                    aScriptPass = not next_entry.Script or next_entry.Script == '' or checkScript( 'A', listID .. ':' .. ( actID + 1 ) )
-
-                                                    if not aScriptPass then
-                                                        if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but its conditions would not be met.  Skipping.", next_action ) end
-                                                        state.offset = state.offset - next_wait
-                                                    else
-                                                        if debug then self:Debug( "Pooling Resources for Next Entry ( %s ), delaying by %.2f.", next_action, next_wait ) end
-                                                        state.offset = state.offset - next_wait
-                                                        state.advance( next_wait )
-                                                    end
-                                                end
-                                            end
-
-                                        else
-                                            -- Pooling for a Wait Value.
-                                            -- NYI.
-                                            if debug then self:Debug( "Pooling for a specified period of time is not supported yet.  Skipping." ) end
-                                        end
-
-                                    elseif entry.Ability == 'potion' then
-                                        local potionName = state.args.ModName or state.args.name or class.potion
-                                        local potion = class.potions[ potionName ]
-                                        
-                                        if potion then
-                                            -- do potion things
-                                            slot.scriptType = entry.ScriptType or 'simc'
-                                            slot.display = dispID
-                                            slot.button = i
-                                            slot.item = nil
-                                            
-                                            slot.wait = state.delay
-                                            
-                                            slot.hook = hookID
-                                            slot.list = listID
-                                            slot.action = actID
-                                            
-                                            slot.actionName = state.this_action
-                                            slot.listName = list.Name
-                                            
-                                            slot.resource = ns.resourceType( chosen_action )
-                                            
-                                            slot.caption = entry.Caption
-                                            slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
-                                            slot.texture = select( 10, GetItemInfo( potion.item ) )
-                                            
-                                            chosen_action = state.this_action
-                                            chosen_clash = clash
-                                            break
-                                        end
-                                        
-                                    elseif entry.Ability == 'use_item' then
-                                        local itemName = state.args.ModName or state.args.name
-                                        local item = class.usable_items[ itemName ]
-                                        
-                                        if item then
-                                            -- do item things
-                                            slot.scriptType = entry.ScriptType or 'simc'
-                                            slot.display = dispID
-                                            slot.button = i
-                                            slot.item = itemName
-                                            
-                                            slot.wait = state.delay
-                                            
-                                            slot.hook = hookID
-                                            slot.list = listID
-                                            slot.action = actID
-                                            
-                                            slot.actionName = state.this_action
-                                            slot.listName = list.Name
-                                            
-                                            slot.resource = ns.resourceType( chosen_action )
-                                            
-                                            slot.caption = entry.Caption
-                                            slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
-                                            slot.texture = select( 10, GetItemInfo( item.item ) )
-                                            
-                                            chosen_action = state.this_action
-                                            chosen_clash = clash
-                                            break
-                                        end
-                                        
-                                    else
-                                        slot.scriptType = entry.ScriptType or 'simc'
-                                        slot.display = dispID
-                                        slot.button = i
-                                        slot.item = nil
-                                        
-                                        slot.wait = state.delay
-                                        
-                                        slot.hook = hookID
-                                        slot.list = listID
-                                        slot.action = actID
-                                        
-                                        slot.actionName = state.this_action
-                                        slot.listName = list.Name
-                                        
-                                        slot.resource = ns.resourceType( chosen_action )
-                                        
-                                        slot.caption = entry.Caption
-                                        slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
-                                        slot.texture = ability.texture
-                                        
-                                        chosen_action = state.this_action
-                                        chosen_clash = clash
-
-                                        if debug then
-                                            self:Debug( "1276 Action Chosen: %s at %f!", chosen_action, state.offset )
-                                        end
-
-                                        if entry.CycleTargets and state.active_enemies > 1 and ability and ability.cycle then
-                                            if state.dot[ ability.cycle ].up and state.active_dot[ ability.cycle ] < ( state.args.MaxTargets or state.active_enemies ) then
-                                                slot.indicator = 'cycle'
-                                            end
-                                        end
-                                        
-                                        break
-                                    end
-                                    
-                                end
-                            end
-                        end
-                    end
-                end
-            else
-                if debug then self:Debug( "\nEntry #%d in list ( %s ) is not set or not enabled.  Skipping.", actID, list.Name ) end
-            end
-                        
-            actID = actID + 1
-            
-        end
-        
+        if debug then self:Debug( "ListActive: N (%s-%s)", packName, listName ) end
     end
 
+    local scriptID = listStack[ packName .. ':' .. listName ]
+    listStack[ packName .. ':' .. listName ] = nil
+    if listCache[ scriptID ] then wipe( listCache[ scriptID ] ) end
+    if listValue[ scriptID ] then wipe( listValue[ scriptID ] ) end
 
-    local scriptID = listStack[ listID ]
-
-    listStack[ listID ] = nil
-    if listCache[ scriptID ] then table.wipe( listCache[ scriptID ] ) end
-    if listValue[ scriptID ] then table.wipe( listValue[ scriptID ] ) end
-
-    return chosen_action, chosen_clash, chosen_depth
-
+    return rAction, rWait, rClash, rDepth
 end
 
 
-
-function Hekili:GetNextPrediction( dispID, slot )
+function Hekili:GetNextPrediction( dispName, packName, slot )
     
     local debug = self.ActiveDebug
     
     -- This is the entry point for the prediction engine.
     -- Any cache-wiping should happen here.
-    table.wipe( listStack )
-    table.wipe( listIsBad )
+    wipe( listStack )
+    wipe( listIsBad )
+    wipe( waitBlock )
 
-    for k, v in pairs( listCache ) do table.wipe( v ) end
-    for k, v in pairs( listValue ) do table.wipe( v ) end
+    for k, v in pairs( listCache ) do wipe( v ) end
+    for k, v in pairs( listValue ) do wipe( v ) end
 
     self:ResetSpellCaches()
 
+    local display = rawget( self.DB.profile.displays, dispName )
+    local pack = rawget( self.DB.profile.packs, packName )
 
-    local display = self.DB.profile.displays[ dispID ]
-
-    local dScriptPass = true
-    
-    local chosen_action
-    local chosen_wait, chosen_clash, chosen_depth = 60, self.DB.profile.Clash or 0, 0
-
+    local action, wait, clash, depth = nil, 60, self.DB.profile.Clash or 0, 0
     state.this_action = nil
 
-    for k in pairs( state.variable ) do
-        state.variable[ k ] = nil
-    end
-    
-    if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
-        -- We have a precombat display and combat hasn't started.
-        local list = self.DB.profile.actionLists[ display.precombatAPL ]
-        local listName = list and list.Name or "NO LIST FOUND"
-
-        if not list then
-            if debug then self:Debug( "Unable to find a precombat APL with index %d.  Skipping.", display.precombatAPL ) end
-        else
-            if debug then self:Debug("Processing precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
-            chosen_action, chosen_wait, chosen_clash, chosen_depth = self:GetPredictionFromAPL( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
-            if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
-        end
+    if pack.lists.precombat and state.time == 0 then
+        local list = pack.lists.precombat
+        local listName = "precombat"
+        if debug then self:Debug( "\nProcessing precombat action list [ %s - %s ].", packName, listName ) end
+        action, wait, clash, depth = self:GetPredictionFromAPL( dispName, packName, "precombat", slot, action, wait, clash, depth, caller )
+        if debug then self:Debug( "Completed precombat action list [ %s - %s ].", packName, listName ) end
     else
         if debug then
             if state.time > 0 then
@@ -1429,26 +978,22 @@ function Hekili:GetNextPrediction( dispID, slot )
             end
         end
     end
-    
-    if display.defaultAPL and display.defaultAPL > 0 and chosen_wait > 0 then
-        local list = self.DB.profile.actionLists[ display.defaultAPL ]
-        local listName = list and list.Name or "NO LIST FOUND"
 
-        if not list then
-            if debug then self:Debug( "Unable to find a default APL with index %d.  Skipping.", display.defaultAPL ) end
-        else
-            if debug then self:Debug("Processing default action list [ %d - %s ].", display.defaultAPL, listName ) end
-            chosen_action, chosen_wait, chosen_clash, chosen_depth = self:GetPredictionFromAPL( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, chosen_wait, chosen_clash )
-            if debug then self:Debug( "Completed default action list [ %d - %s ].", display.defaultAPL, listName ) end
-        end 
+    if pack.lists.default and wait > 0 then
+        local list = pack.lists.default
+        local listName = "default"
+
+        if debug then self:Debug("\nProcessing default action list [ %s - %s ].", packName, listName ) end
+        action, wait, clash, depth = self:GetPredictionFromAPL( dispName, packName, "default", slot, action, wait, clash, depth, caller )
+        if debug then self:Debug( "Completed default action list [ %s - %s ].", packName, listName ) end
     end
     
-    if debug then self:Debug( "Recommendation is %s at %.2f + %.2f.", chosen_action or "NO ACTION", state.offset, chosen_wait ) end
+    if debug then self:Debug( "Recommendation is %s at %.2f + %.2f.", action or "NO ACTION", state.offset, wait ) end
     
     -- Wipe out the delay, as we're advancing to the cast time.
     state.delay = 0
 
-    return chosen_action, chosen_wait, chosen_clash, chosen_depth
+    return action, wait, clash, depth
 
 end
 
@@ -1459,13 +1004,8 @@ local pvpZones = {
 }
 
 
-
 function Hekili:GetDisplayByName( name )
-    for i, display in pairs( Hekili.DB.profile.displays ) do
-        if display.name == name then
-            return i
-        end
-    end
+    return rawget( self.DB.profile.displays, name ) and name or nil
 end
 
 
@@ -1475,18 +1015,24 @@ local iterationSteps = {}
 local lastHooks = {}
 local lastCount = {}
 
-function Hekili:ProcessHooks( dispID, solo )
+function Hekili:ProcessHooks( dispName, packName )
 
-    local display = self.DB.profile.displays[ dispID ]
+    dispName = dispName or "Primary"
+    local display = rawget( self.DB.profile.displays, dispName )
 
-    local UI = ns.UI.Displays[ dispID ]
+    local specID = state.spec.id
+    local spec = rawget( self.DB.profile.specs, specID )
+
+    if not spec then return end
+
+    local UI = ns.UI.Displays[ dispName ]
     local Queue = UI.Recommendations
 
     if Queue then
         for k, v in pairs( Queue ) do
             for l, w in pairs( v ) do
                 if type( Queue[ k ][ l ] ) ~= 'table' then
-                    Queue[k][l] = nil
+                    Queue[ k ][ l ] = nil
                 end
             end
         end
@@ -1494,15 +1040,24 @@ function Hekili:ProcessHooks( dispID, solo )
 
     local checkstr = nil
 
-    state.reset( dispID )
+    local packName = packName or spec.package
+    local pack = rawget( self.DB.profile.packs, packName )
+
+    if not pack then
+        UI.RecommendationsStr = nil
+        UI.NewRecommendations = true 
+        return 
+    end
+
+    state.reset( dispName )
 
     local debug = self.ActiveDebug
     
     local gcd_length = state.gcd
 
     if debug then
-        self:SetupDebug( display.Name )
-        self:Debug( "*** START OF NEW DISPLAY: [ %2d ] %s ***", dispID, display.Name ) 
+        self:SetupDebug( dispName )
+        self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
     end
 
     for i = 1, ( display.numIcons or 4 ) do
@@ -1513,18 +1068,17 @@ function Hekili:ProcessHooks( dispID, solo )
         local chosen_action
         local chosen_depth = 0
         
-        Queue[i] = Queue[i] or {}
-        
-        local slot = Queue[i]
+        Queue[ i ] = Queue[ i ] or {}        
+        local slot = Queue[ i ]
         
         local attempts = 0
         local iterated = false
         
         if debug then self:Debug( "\n[ ** ] Checking for recommendation #%d ( time offset: %.2f, remaining GCD: %.2f ).", i, state.offset, state.cooldown.global_cooldown.remains ) end
         
-        for k in pairs( state.variable ) do
-            state.variable[ k ] = nil
-        end
+        -- for k in pairs( state.variable ) do
+        --     state.variable[ k ] = nil
+        -- end
 
         if debug then
             for k in pairs( class.resources ) do
@@ -1534,110 +1088,15 @@ function Hekili:ProcessHooks( dispID, solo )
 
         state.delay = 0
 
-        local predicted_action, predicted_wait, predicted_clash, predicted_depth = self:GetNextPrediction( dispID, slot )
-        if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs.\n", predicted_action or "NO ACTION", predicted_wait or 60 ) end
+        local action, wait, clash, depth = self:GetNextPrediction( dispName, packName, slot )
+        if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs.\n", action or "NO ACTION", wait or 60 ) end
 
         local gcd_remains = state.cooldown.global_cooldown.remains
 
-        -- if not self.DB.profile.moreCPU then
-        -- if debug then self:Debug( "The addon is conserving CPU and will not attempt additional testing to find a better recommendation." ) end
-        chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
+        if debug then self:Debug( "Recommendation #%d is %s at %.2f.", i, action or "NO ACTION", state.offset + state.delay ) end
         
-        -- elseif ( predicted_action and predicted_wait <= ( gcd_remains + 0.25 ) ) then
-        --    if debug then self:Debug( "The prediction engine's recommendation [ %s @ %.2f ] is available soon enough ( within GCD + 0.25s ).  Using this recommendation.", predicted_action, predicted_wait ) end
-        --    chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, predicted_wait, predicted_clash, predicted_depth
-        
-        -- Effectively disabled.
-        if self.WasteExtraCPU then
-            table.wipe( iterationSteps )
-
-            state.delay = 0
-            local pred_time = state.now + state.offset + predicted_wait
-
-            iterationSteps[1] = state.now + state.offset + gcd_remains
-            iterationSteps[2] = iterationSteps[1] + state.gcd * 0.5
-            iterationSteps[3] = iterationSteps[2] + state.gcd * 0.5
-            iterationSteps[4] = iterationSteps[3] + state.gcd
-
-            --[[ if class.setupIterationSteps then
-                class.setupIterationSteps( iterationSteps )
-            end ]]
-
-            for step, nextFrame in ipairs( iterationSteps ) do
-
-                if debug then self:Debug( "%.2f vs. %.2f (%d)", pred_time, nextFrame, step ) end
-
-                if step > 4 then
-                    if debug then self:Debug( "Tried 4 times to beat the prediction engine; giving up." ) end
-                    break
-                end
-
-                if nextFrame >= pred_time then
-                    if debug then self:Debug( "The next iteration at %.2f is not within our time limit ( %.2f ), aborting.", nextFrame, pred_time ) end
-                    break
-                end
-
-                local amount = nextFrame - state.now - state.offset
-
-                if step == 1 or amount > 0 then
-                    if amount > 0 then state.advance( amount ) end
-
-                    if debug then self:Debug( "\nIteration #%d at +%.2fs ( +%.2f )...\n( %.2f = %.2f ) < %.2f?", step, state.offset, amount, state.query_time, nextFrame, pred_time )
-                        for k, v in pairs( class.resources ) do
-                            self:Debug( " - %s: %.2f", k, state[ k ].current )
-                        end
-                    end
-
-                    if display.precombatAPL and display.precombatAPL > 0 and state.time == 0 then
-                        -- We have a precombat display and combat hasn't started.
-                        local listName = self.DB.profile.actionLists[ display.precombatAPL ].Name
-                        
-                        if debug then self:Debug("Processing precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
-                        chosen_action, chosen_depth = self:ProcessActionList( dispID, hookID, display.precombatAPL, slot, chosen_depth, chosen_action, pred_time )
-                        if debug then self:Debug( "Completed precombat action list [ %d - %s ].", display.precombatAPL, listName ) end
-                    end
-                    
-                    if display.defaultAPL and display.defaultAPL > 0 then
-                        local listName = self.DB.profile.actionLists[ display.defaultAPL ].Name
-                        
-                        if debug then self:Debug("Processing default action list [ %d - %s ].", display.defaultAPL, listName ) end
-                        chosen_action, chosen_depth = self:ProcessActionList( dispID, hookID, display.defaultAPL, slot, chosen_depth, chosen_action, pred_time )
-                        if debug then self:Debug( "Completed default action list [ %d - %s ].", display.defaultAPL, listName ) end
-                    end
-
-                    if chosen_action then
-                        if debug then self:Debug( "Found recommendation for %s at %.2fs (iteration #%d).", chosen_action, state.offset, i ) end
-                        break
-                    end
-                end
-            end
-            
-            if self.Testing then self:Print( "Iterator Test for Slot #" .. i .. "." ) end
-            if not chosen_action or chosen_action == predicted_action then -- nothing
-            else 
-                if self.Testing then 
-                    self:Print( "Prediction engine recommended " .. predicted_action .. " at " .. pred_time .. "." )
-                    self:Print( "Iterator found " .. chosen_action .. " at " .. state.query_time .. ", a difference of " .. pred_time - state.query_time .. "." )
-                    if not Hekili.Pause then Hekili:TogglePause() end
-                end
-            end
-
-
-            if not chosen_action then
-                -- We didn't find an action w/in 2 GCDs (up to 4 iterations); just use the delayed prediction.
-                state.advance( pred_time - ( state.now + state.offset ) )
-                chosen_action, state.delay, chosen_clash, chosen_depth = predicted_action, 0, predicted_clash, predicted_depth
-
-                if debug then self:Debug( "No better recommendation found before the prediction engine's recommendation; using the prediction engine's recommendation.\n" ..
-                    "Selected action [ %s ] at +%.2fs.", chosen_action or "NO ACTION FOUND", state.offset ) end
-            end
-
-        end
-        
-        if debug then self:Debug( "Recommendation #%d is %s at %.2f.", i, chosen_action or "NO ACTION", state.offset + state.delay ) end
-        
-        if chosen_action then
-            if debug then ns.implantDebugData( slot ) end
+        if action then
+            if debug then scripts:ImplantDebugData( slot ) end
             
             slot.time = state.offset + state.delay
             slot.exact_time = state.now + state.offset + state.delay
@@ -1645,10 +1104,10 @@ function Hekili:ProcessHooks( dispID, solo )
             slot.resources = slot.resources or {}
             slot.depth = chosen_depth
 
-            checkstr = checkstr and ( checkstr .. ':' .. chosen_action ) or chosen_action
+            checkstr = checkstr and ( checkstr .. ':' .. action ) or action
             
-            slot.keybind = self:GetBindingForAction( chosen_action, not display.lowercaseKBs == true )
-            slot.resource_type = ns.resourceType( chosen_action )
+            slot.keybind = self:GetBindingForAction( action, not display.keybindings.lowercase == true )
+            slot.resource_type = state.GetResourceType( action )
 
             for k,v in pairs( class.resources ) do
                 slot.resources[ k ] = state[ k ].current 
@@ -1659,56 +1118,56 @@ function Hekili:ProcessHooks( dispID, solo )
                 -- Advance through the wait time.
                 if state.delay > 0 then state.advance( state.delay ) end
 
-                local action = class.abilities[ chosen_action ]
+                local ability = class.abilities[ action ]
                 
                 -- Start the GCD.
-                if action.gcdType ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
+                if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
                     state.setCooldown( 'global_cooldown', state.gcd )
                 end
 
                 state.stopChanneling()
                 
                 -- Advance the clock by cast_time.
-                if action.cast > 0 and not action.channeled and not class.resetCastExclusions[ chosen_action ] then
-                    state.advance( action.cast )
+                if ability.cast > 0 and not ability.channeled then
+                    state.advance( ability.cast )
                 end
 
-                local cooldown = action.cooldown
+                local cooldown = ability.cooldown
                 
                 -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
-                if class.abilities[ chosen_action ].charges and action.recharge > 0 then
-                    state.spendCharges( chosen_action, 1 )
-                elseif chosen_action ~= 'global_cooldown' then
-                    state.setCooldown( chosen_action, cooldown )
+                if ability.charges and ability.charges > 1 and ability.recharge > 0 then
+                    state.spendCharges( action, 1 )
+                elseif action ~= 'global_cooldown' then
+                    state.setCooldown( action, cooldown )
                 end
                 
                 state.cycle = slot.indicator == 'cycle'
                 
                 -- Spend resources.
-                ns.spendResources( chosen_action )
+                ns.spendResources( action )
                 
                 -- Perform the action.
-                ns.runHandler( chosen_action )
+                ns.runHandler( action )
 
-                if action.item then
+                if ability.item then
                     state.putTrinketsOnCD( cooldown / 6 )
                 end
 
                 -- Complete the channel.
-                if action.cast > 0 and action.channeled and not action.breakable then -- class.resetCastExclusions[ chosen_action ] then
-                    state.advance( action.cast )
+                if ability.cast > 0 and ability.channeled and not ability.breakable then -- class.resetCastExclusions[ ability ] then
+                    state.advance( ability.cast )
                 end
                 
                 -- Move the clock forward if the GCD hasn't expired.
-                if state.cooldown.global_cooldown.remains > 0 and not class.NoGCD then
+                if state.cooldown.global_cooldown.remains > 0 then
                     state.advance( state.cooldown.global_cooldown.remains )
                 end
             end
             
         else
             for n = i, display.numIcons do
-                chosen_action = chosen_action or ''
-                checkstr = checkstr and ( checkstr .. ':' .. chosen_action ) or chosen_action
+                action = action or ''
+                checkstr = checkstr and ( checkstr .. ':' .. action ) or action
                 slot[n] = nil
             end
             break
@@ -1717,7 +1176,7 @@ function Hekili:ProcessHooks( dispID, solo )
     end
 
 
-    if UI.RecommendationsStr ~= checkstr then
+    if UI.RecommendationsStr == nil or UI.RecommendationsStr ~= checkstr then
         UI.lastUpdate         = GetTime()
         UI.NewRecommendations = true
         UI.RecommendationsStr = checkstr
@@ -1731,18 +1190,7 @@ function Hekili_GetRecommendedAbility( display, entry )
 
     entry = entry or 1
     
-    if type( display ) == 'string' then
-        local found = false
-        for dispID, disp in pairs(Hekili.DB.profile.displays) do
-            if not found and disp.Name == display then
-                display = dispID
-                found = true
-            end
-        end
-        if not found then return nil, "Display name not found." end
-    end
-    
-    if not Hekili.DB.profile.displays[ display ] then
+    if not rawget( Hekili.DB.profile.displays, display ) then
         return nil, "Display not found."
     end
     
@@ -1757,315 +1205,6 @@ function Hekili_GetRecommendedAbility( display, entry )
     return class.abilities[ ns.queue[ display ][ entry ].actionName ].id
     
 end
-
-
-
-local flashes = {}
-local checksums = {}
-local applied = {}
-
-
-
--- Displays:
--- 1. Need to be updated when recommendations change.
--- 2. Need to be updated every 0.1s or so for range-checking.
--- 3  Need to be updated when cooldowns on recommendations change.
-
-
---[[ function Hekili:UpdateDisplay( dispID )
-
-    if not self.DB.profile.Enabled then
-        return
-    end
-    
-    -- for dispID, display in pairs(self.DB.profile.displays) do
-    local display = self.DB.profile.displays[ dispID ]
-    
-    if not ns.UI.Buttons or not ns.UI.Buttons[ dispID ] then print('nobuttons'); return end
-    
-    if self.Pause and not self.ActiveDebug then
-        ns.UI.Buttons[ dispID ][1].Overlay:SetTexture('Interface\\Addons\\Hekili\\Textures\\Pause.blp')
-        ns.UI.Buttons[ dispID ][1].Overlay:Show()
-    else
-        ns.UI.Buttons[ dispID ][1].Overlay:Hide()
-    end
-
-    flashes[dispID] = flashes[dispID] or 0
-    
-    local alpha = self:CheckDisplayCriteria( dispID ) or 0
-
-    if alpha > 0 and self:IsDisplayActive( dispID ) then
-        local Queue = ns.queue[ dispID ]
-        
-        _G[ "HekiliDisplay" .. dispID ]:Show()
-        
-        local gcd_start, gcd_duration = GetSpellCooldown( class.abilities.global_cooldown.id )
-        local now = GetTime()
-
-        for i, button in ipairs( ns.UI.Buttons[ dispID ] ) do
-            if not Queue or not Queue[i] and ( self.DB.profile.Enabled or self.Config ) then
-                for n = i, display.numIcons do
-                    ns.UI.Buttons[dispID][n].Texture:SetTexture( 'Interface\\ICONS\\Spell_Nature_BloodLust' )
-                    ns.UI.Buttons[dispID][n].Texture:SetVertexColor(1, 1, 1)
-                    ns.UI.Buttons[dispID][n].Caption:SetText(nil)
-                    if not self.Config then
-                        ns.UI.Buttons[dispID][n]:Hide()
-                    else
-                        ns.UI.Buttons[dispID][n]:Show()
-                        ns.UI.Buttons[dispID][n]:SetAlpha(alpha)
-                    end
-                end
-                break
-            end
-            
-            local aKey, caption, indicator, binding = Queue[i].actionName, Queue[i].caption, Queue[i].indicator, Queue[i].keybind
-            local ability = aKey and class.abilities[ aKey ]
-            
-            if ability then
-                button:Show()
-                button:SetAlpha( alpha )
-                button.Texture:SetTexture( Queue[i].texture or ability.texture or GetSpellTexture( ability.id ) )
-                button.Texture:Show()
-                
-                if display.showIndicators and indicator then
-                    if indicator == 'cycle' then button.Icon:SetTexture( "Interface\\Addons\\Hekili\\Textures\\Cycle" ) end
-                    if indicator == 'cancel' then button.Icon:SetTexture( "Interface\\Addons\\Hekili\\Textures\\Cancel" ) end
-                    button.Icon:Show()
-                else
-                    button.Icon:Hide()
-                end
-                
-                if display.showCaptions and ( i == 1 or display.queuedCaptions ) then
-                    button.Caption:SetText( caption )
-                else
-                    button.Caption:SetText( nil )
-                end
-                
-                if display.showKeybindings and ( display.queuedKBs or i == 1 ) then
-                    button.Keybinding:SetText( binding )
-                else
-                    button.Keybinding:SetText( nil )
-                end
-                
-                if display.showAuraInfo and i == 1 then
-                    if type( display.auraSpellID ) == 'string' or display.auraSpellID > 0 then
-                        local aura = class.auras[ display.auraSpellID ]
-                        
-                        if not aura then 
-                            button.Auras:SetText(nil)
-                        else
-                            if display.auraInfoType == 'count' then
-                                local c = ns.numDebuffs( aura.name )
-                                button.Auras:SetText( c > 0 and c or "" )
-                                
-                            elseif display.auraInfoType == 'buff' then
-                                local name, _, _, count = UnitBuff( display.auraUnit, aura.name, nil, display.auraMine and "PLAYER" or "" )
-                                if not name then button.Auras:SetText( nil )
-                            else button.Auras:SetText( max( 1, count ) ) end
-                                
-                            elseif display.auraInfoType == 'debuff' then
-                                local name, _, _, count = UnitDebuff( display.auraUnit, aura.name, nil, display.auraMine and "PLAYER" or "" )
-                                
-                                if not name then button.Auras:SetText( nil )
-                            else button.Auras:SetText( max( 1, count ) ) end
-                                
-                            elseif display.auraInfoType == 'buffRem' then
-                                local name, _, _, _, _, _, expires = UnitBuff( display.auraUnit, aura.name, nil, display.auraMine and "PLAYER" or "" )
-                                if not name then button.Auras:SetText( nil )
-                            else button.Auras:SetText( format( "%.1f", expires - now ) ) end
-                                
-                            elseif display.auraInfoType == 'debuffRem' then
-                                local name, _, _, _, _, _, expires = UnitDebuff( display.auraUnit, aura.name, nil, display.auraMine and "PLAYER" or "" )
-                                if not name then button.Auras:SetText( nil )
-                            else button.Auras:SetText( format( "%.1f", expires - now ) ) end
-                                
-                            end
-                        end
-                    else button.Auras:SetText( nil ) end
-                end
-                
-                if i == 1 then
-                    if display.showTargets then
-                        -- 0 = single
-                        -- 2 = cleave
-                        -- 2 = aoe
-                        -- 3 = auto
-                        local min_targets, max_targets = 0, 0
-                        local mode = Hekili.DB.profile['Mode Status']
-                        
-                        if display.displayType == 'a' then -- Primary
-                            if mode == 0 then
-                                min_targets = 0
-                                max_targets = 1
-                            elseif mode == 2 then
-                                min_targets = display.simpleAOE or 2
-                                max_targets = 0
-                            end
-                            
-                        elseif display.displayType == 'b' then -- Single-Target
-                            min_targets = 0
-                            max_targets = 1
-                            
-                        elseif display.displayType == 'c' then -- AOE
-                            min_targets = display.simpleAOE or 2
-                            max_targets = 0
-                            
-                        elseif display.displayType == 'd' then -- Auto
-                            -- do nothing
-                            
-                        elseif display.displayType == 'z' then -- Custom, old style.
-                            if mode == 0 then
-                                if display.minST > 0 then min_targets = display.minST end
-                                if display.maxST > 0 then max_targets = display.maxST end
-                            elseif mode == 2 then
-                                if display.minAE > 0 then min_targets = display.minAE end
-                                if display.maxAE > 0 then max_targets = display.maxAE end
-                            elseif mode == 3 then
-                                if display.minAuto > 0 then min_targets = display.minAuto end
-                                if display.maxAuto > 0 then max_targets = display.maxAuto end
-                            end
-                        end
-                        
-                        -- local detected = ns.getNameplateTargets()
-                        -- if detected == -1 then detected = ns.numTargets() end
-                        
-                        local detected = max( 1, ns.getNumberTargets() )
-                        local targets = detected
-                        
-                        if min_targets > 0 then targets = max( min_targets, targets ) end
-                        if max_targets > 0 then targets = min( max_targets, targets ) end
-                        
-                        local targColor = ''
-                        
-                        if detected < targets then targColor = '|cFFFF0000'
-                            elseif detected > targets then targColor = '|cFF00C0FF' end
-                        
-                        if targets > 1 then button.Targets:SetText( targColor .. targets .. '|r' )
-                    else button.Targets:SetText( nil ) end
-                    else
-                        button.Targets:SetText( nil )
-                    end
-                end
-                
-                if display.blizzGlow and ( i == 1 or display.queuedBlizzGlow ) and IsSpellOverlayed( ability.id ) then
-                    ActionButton_ShowOverlayGlow( button )
-                else
-                    ActionButton_HideOverlayGlow( button )
-                end
-                
-                local start, duration
-                if ability.item then
-                    start, duration = GetItemCooldown( ability.item )
-                -- elseif not ability.cooldown or ability.cooldown == 0 then
-                --    start, duration = 0, 0
-                else
-                    start, duration = GetSpellCooldown( ability.id )
-                    if duration < 0.01 then start, duration = 0, 0 end
-                end
-                local gcd_remains = gcd_start + gcd_duration - GetTime()
-                
-                if ability.gcdType ~= 'off' and ( not start or start == 0 or ( start + duration ) < ( gcd_start + gcd_duration ) ) then
-                    start = gcd_start
-                    duration = gcd_duration
-                end
-                
-                if i == 1 then
-                    -- button.Cooldown:SetCooldown( start, duration )
-
-                    local SF = SpellFlash or SpellFlashCore
-                    
-                    if SF and display.spellFlash and GetTime() >= flashes[dispID] + 0.2 then
-                        SF.FlashAction( ability.id, display.spellFlashColor )
-                        flashes[dispID] = GetTime()
-                    end
-                else
-                    if start + duration ~= gcd_start + gcd_duration then
-                        --button.Cooldown:SetCooldown( start, duration )
-                    else
-                        if ability.gcdType ~= 'off' then
-                            --button.Cooldown:SetCooldown( gcd_start, gcd_duration )
-                        else
-                            --button.Cooldown:SetCooldown( 0, 0 )
-                        end
-                    end
-                end
-                
-                if display.rangeType == 'melee' then
-                    local RangeCheck = LibStub( "LibRangeCheck-2.0" )
-                    local minR = RangeCheck:GetRange( 'target' )
-                    
-                    if minR and minR >= 5 then 
-                        ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 0, 0)
-                    elseif i == 1 and select(2, IsUsableSpell( ability.id ) ) then
-                        ns.UI.Buttons[dispID][i].Texture:SetVertexColor(0.4, 0.4, 0.4)
-                    else
-                        ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 1, 1)
-                    end
-                elseif display.rangeType == 'ability' then
-                    local rangeSpell = ability.range and GetSpellInfo( ability.range ) or ability.name
-
-                    if ability.item then
-                        if UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and IsItemInRange( ability.item, "target" ) == false then
-                            ns.UI.Buttons[ dispID ][ i ].Texture:SetVertexColor( 1, 0, 0 )
-                        else
-                            ns.UI.Buttons[ dispID ][ i ].Texture:SetVertexColor( 1, 1, 1 )
-                        end
-
-                    else
-                        local SpellRange = LibStub( "SpellRange-1.0" )
-                        if SpellRange.IsSpellInRange( rangeSpell, 'target' ) == 0 then
-                            ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 0, 0)
-                        elseif i == 1 and select(2, IsUsableSpell( ability.id )) then
-                            ns.UI.Buttons[dispID][i].Texture:SetVertexColor(0.4, 0.4, 0.4)
-                        else
-                            ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 1, 1)
-                        end
-                    end
-
-                elseif display.rangeType == 'off' then
-                    ns.UI.Buttons[dispID][i].Texture:SetVertexColor(1, 1, 1)
-                end
-                
-            else
-                
-                ns.UI.Buttons[dispID][i].Texture:SetTexture( nil )
-                ns.UI.Buttons[dispID][i].Cooldown:SetCooldown( 0, 0 )
-                ns.UI.Buttons[dispID][i]:Hide()
-                
-            end
-            
-        end
-        
-    else
-        
-        for i, button in ipairs(ns.UI.Buttons[dispID]) do
-            button:Hide()
-            
-        end
-    end
-end
-ns.cpuProfile.UpdateDisplay = Hekili.UpdateDisplay
-
-
-local updateCount = 0
-local lastReport = 0
-
-function Hekili:UpdateDisplays()
-    local now = GetTime()
-    
-    for display, update in pairs( updatedDisplays ) do
-        if ( recommendChange[ display ] or now - update >= 1 ) then
-            Hekili:UpdateDisplay( display )
-            recommendChange[ display ] = nil
-            updatedDisplays[ display ] = now
-            updateCount = updateCount + 1
-            if now - lastReport >= 10 then
-                updateCount = 0
-                lastReport = now
-            end
-        end
-    end
-end ]]
 
 
 function Hekili:DumpProfileInfo()

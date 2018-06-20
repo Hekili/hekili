@@ -44,32 +44,51 @@ ns.getClassID = function( class )
 end
 
 
-local Resources = {
-    health = -2,
-    mana = SPELL_POWER_MANA,
-    rage = SPELL_POWER_RAGE,
-    focus = SPELL_POWER_FOCUS,
-    energy = SPELL_POWER_ENERGY,
-    combo_points = SPELL_POWER_COMBO_POINTS,
-    runes = SPELL_POWER_RUNES,
-    runic_power = SPELL_POWER_RUNIC_POWER,
-    soul_shards = SPELL_POWER_SOUL_SHARDS,
-    lunar_power = SPELL_POWER_LUNAR_POWER,
-    holy_power = SPELL_POWER_HOLY_POWER,
-    alternate_power = SPELL_POWER_ALTERNATE_POWER,
-    maelstrom = SPELL_POWER_MAELSTROM,
-    chi = SPELL_POWER_CHI,
-    insanity = SPELL_POWER_INSANITY,
-    arcane_charges = SPELL_POWER_ARCANE_CHARGES,
-    fury = SPELL_POWER_FURY,
-    pain = SPELL_POWER_PAIN,
+local ResourceInfo = {
+    health          = Enum.PowerType.HealthCost,
+    none            = Enum.PowerType.None,
+    mana            = Enum.PowerType.Mana,
+    rage            = Enum.PowerType.Rage,
+    focus           = Enum.PowerType.Focus,
+    energy          = Enum.PowerType.Energy,
+    combo_points    = Enum.PowerType.ComboPoints,
+    runes           = Enum.PowerType.Runes,
+    runic_power     = Enum.PowerType.RunicPower,
+    soul_shards     = Enum.PowerType.SoulShards,
+    lunar_power     = Enum.PowerType.LunarPower,
+    holy_power      = Enum.PowerType.HolyPower,
+    alternate       = Enum.PowerType.Alternate,
+    maelstrom       = Enum.PowerType.Maelstrom,
+    chi             = Enum.PowerType.Chi,
+    insanity        = Enum.PowerType.Insanity,
+    obsolete        = Enum.PowerType.Obsolete,
+    obsolete2       = Enum.PowerType.Obsolete2,
+    arcane_charges  = Enum.PowerType.ArcaneCharges,
+    fury            = Enum.PowerType.Fury,
+    pain            = Enum.PowerType.Pain
 }
 
-ns.getResourceID = function ( key )
+local ResourceByID = {}
 
-  return Resources[ key ]
-
+for k, powerType in pairs( ResourceInfo ) do
+    ResourceByID[ powerType ] = k
 end
+
+
+function ns.GetResourceInfo()
+    return ResourceInfo
+end
+
+
+function ns.GetResourceID( key )
+    return ResourceInfo[ key ]
+end
+
+
+function ns.GetResourceKey( id )
+    return ResourceByID[ id ]
+end
+
 
 
 local Specializations = {

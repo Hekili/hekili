@@ -4,7 +4,7 @@
 ## Author: Hekili
 ## Notes: Priority helper for many DPS and tanking specializations, based on SimulationCraft action lists.
 ## SavedVariables: HekiliDB
-## OptionalDeps: BrewmasterTools, Masque, SpellFlash, SpellFlashCore, WeakAuras, LibArtifactData-1.0, LibNameplateRegistry-1.0, AddOnSkins
+## OptionalDeps: BrewmasterTools, Masque, SpellFlash, SpellFlashCore, WeakAuras, LibNameplateRegistry-1.0, AddOnSkins
 
 embeds.xml
 
@@ -16,16 +16,12 @@ Constants.lua
 State.lua
 Events.lua
 Classes.lua
-Classes\DeathKnight.lua
-Classes\DemonHunter.lua
-Classes\Druid.lua
-Classes\Hunter.lua
-Classes\Monk.lua
-Classes\Paladin.lua
-Classes\Rogue.lua
-Classes\Shaman.lua
-Classes\Warlock.lua
-Classes\Warrior.lua
+Classes\HunterBeastMastery.lua
+Classes\HunterMarksmanship.lua
+Classes\HunterSurvival.lua
+Classes\PaladinRetribution.lua
+Classes\ShamanElemental.lua
+Classes\ShamanEnhancement.lua
 Targets.lua
 Options.lua
 UI.lua

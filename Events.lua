@@ -4,8 +4,8 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local class = ns.class
-local state = ns.state
+local class = Hekili.Class
+local state = Hekili.State
 local TTD = ns.TTD
 
 local formatKey = ns.formatKey
@@ -26,6 +26,7 @@ local events = CreateFrame( "Frame" )
 local handlers = {}
 local unitEvents = CreateFrame( "Frame" )
 local unitHandlers = {}
+local itemCallbacks = {}
 
 local timerRecount = 0
 
@@ -38,7 +39,6 @@ end
 
 
 function ns.StartEventHandler()
-
     events:SetScript( "OnEvent", function( self, event, ... )
         local eventHandlers = handlers[ event ]
 
@@ -67,9 +67,9 @@ function ns.StartEventHandler()
             if ns.targetsChanged() then Hekili:ForceUpdate( "TARGET_COUNT_CHANGED" ) end
             timerRecount = 0.1
         end
-
     end )
 
+    Hekili:RunItemCallbacks()
 end
 
 
@@ -142,8 +142,45 @@ ns.FeignEvent = function( event, ... )
 end
 
 
+RegisterEvent( "GET_ITEM_INFO_RECEIVED", function( event, itemID, success )
+    local callbacks = itemCallbacks[ itemID ]
+
+    if callbacks then
+        if success then
+            for i, func in ipairs( callbacks ) do
+                func()
+                callbacks[ i ] = nil
+            end                
+        end
+
+        itemCallbacks[ itemID ] = nil
+    end
+end )
+
+function Hekili:ContinueOnItemLoad( itemID, func )
+    local callbacks = itemCallbacks[ itemID ] or {}
+    table.insert( callbacks, func )
+    itemCallbacks[ itemID ] = callbacks
+
+    C_Item.RequestLoadItemDataByID( itemID )        
+end
+
+function Hekili:RunItemCallbacks()
+    for item, callbacks in pairs( itemCallbacks ) do
+        for i = #callbacks, 1, -1 do
+            if callbacks[ i ]() then table.remove( callbacks, i ) end
+        end
+
+        if #callbacks == 0 then
+            itemCallbacks[ item ] = nil
+        end
+    end
+end
+
+
+
 RegisterEvent( "UPDATE_BINDINGS", function () ns.refreshBindings() end )
-RegisterEvent( "DISPLAY_SIZE_CHANGED", function () ns.buildUI() end )
+RegisterEvent( "DISPLAY_SIZE_CHANGED", function () Hekili:BuildUI() end )
 
 
 local itemAuditComplete = false
@@ -164,7 +201,6 @@ function ns.auditItemNames()
                 ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
 
                 class.abilities[ name ] = ability
-                class.searchAbilities[ ability.key ] = format( "|T%s:0|t %s", ( ability.texture or 'Interface\\ICONS\\Spell_Nature_BloodLust' ), link )
                 ability.recheck_name = nil
             else
                 failure = true
@@ -182,14 +218,13 @@ end
 
 
 RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
-    ns.specializationChanged()
+    Hekili:SpecializationChanged()
+
     ns.checkImports()
     ns.updateGear()
     ns.restoreDefaults( nil, true )
-    ns.convertDisplays()
-    ns.buildUI()
 
-    ns.auditItemNames()
+    Hekili:BuildUI()
 end )
 
 RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
@@ -228,19 +263,21 @@ end )
 function ns.updateTalents()
 
     for k, _ in pairs( state.talent ) do
-        state.talent[k].enabled = false
-        state.talent[k].i_enabled = 0
+        state.talent[ k ].enabled = false
+        state.talent[ k ].i_enabled = 0
     end
 
     -- local specGroup = GetSpecialization()
 
-    for k, v in pairs( ns.class.talents ) do
-        local _, name, _, enabled, _, sID, _, _, _, known = GetTalentInfoByID( v.id, 1 )
+    for k, v in pairs( Hekili.Class.talents ) do
+        local _, name, _, enabled, _, sID, _, _, _, known = GetTalentInfoByID( v, 1 )
 
         if not name then
             -- We probably used a spellID.
-            enabled = IsPlayerSpell(v.id)
+            enabled = IsPlayerSpell( v )
         end
+
+        enabled = enabled or known
 
         if rawget( state.talent, k ) then
             state.talent[ k ].enabled = enabled
@@ -251,20 +288,6 @@ function ns.updateTalents()
             }
         end
     end
-
-    --[[ for item, specs in pairs( class.talentLegendary ) do
-        local tal = specs[ state.spec.key ]
-        if state.equipped[ item ] and tal then
-            if rawget( state.talent, tal ) then
-                state.talent[ tal ].enabled = true
-                state.talent[ tal ].i_enabled = 1
-            else state.talent[ tal ] = {
-                    enabled = true,
-                    i_enabled = 1
-                }
-            end
-        end
-    end ]]
 
 end
 
@@ -290,7 +313,7 @@ function ns.updateGear()
         state.set_bonus[ thing ] = 0
     end
 
-    for set, items in pairs( class.gearsets ) do
+    for set, items in pairs( class.gear ) do
         state.set_bonus[ set ] = 0
         for item, _ in pairs( items ) do
             if IsEquippedItem( GetItemInfo( item ) ) then
@@ -395,7 +418,7 @@ local lastForceEvent = 'NONE'
 local UNIT_POWER_ICD = true
 
 function Hekili:ForceUpdate( event )
-    for i, d in ipairs( ns.UI.Displays ) do
+    for i, d in pairs( ns.UI.Displays ) do
         d.criticalUpdate = true
     end
 end
@@ -405,30 +428,30 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
 
     local now = GetTime()
 
-    if not class.castExclusions[ spellID ] then
-        state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
-        state.player.casttime = now
+    state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
+    state.player.casttime = now
 
-        local ability = class.abilities[ spellID ]
+    local ability = class.abilities[ spellID ]
 
-        if ability then
-            table.insert( castsAll, 1, ability.key )
-            castsAll[ 6 ] = nil
+    if ability then
+        table.insert( castsAll, 1, ability.key )
+        castsAll[ 6 ] = nil
 
-            if ability.gcdType ~= 'off' then
-                table.insert( castsOn, 1, ability.key )
-                castsOn[ 6 ] = nil
+        if ability.gcd ~= 'off' then
+            table.insert( castsOn, 1, ability.key )
+            castsOn[ 6 ] = nil
 
-                state.player.lastgcd = ability.key
-                state.player.lastgcdtime = now
-            else
-                table.insert( castsOff, 1, ability.key )
-                castsOff[ 6 ] = nil
+            state.player.lastgcd = ability.key
+            state.player.lastgcdtime = now
+        else
+            table.insert( castsOff, 1, ability.key )
+            castsOff[ 6 ] = nil
 
-                state.player.lastoffgcd = ability.key
-                state.player.lastoffgcdtime = now
-            end
+            state.player.lastoffgcd = ability.key
+            state.player.lastoffgcdtime = now
         end
+
+        ability.lastCast = now            
     end
 
     -- This is an ability with a travel time.
@@ -653,7 +676,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
 
     -- Player/Minion Event
-    elseif not class.exclusions[ spellID ] and ( sourceGUID == state.GUID or ns.isMinion( sourceGUID ) ) then
+    elseif sourceGUID == state.GUID or ns.isMinion( sourceGUID ) then
 
         if aura_events[ subtype ] then
             if state.GUID == destGUID then 

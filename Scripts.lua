@@ -4,9 +4,12 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local class = ns.class
-local scripts = ns.scripts
-local state = ns.state
+local class   = Hekili.Class
+local scripts = Hekili.Scripts
+local state   = Hekili.State
+
+local GetResourceInfo, GetResourceID = ns.GetResourceInfo, ns.GetResourceID
+local SpaceOut = ns.SpaceOut
 
 local ceil = math.ceil
 local orderedPairs = ns.orderedPairs
@@ -14,8 +17,6 @@ local roundUp = ns.roundUp
 local safeMax = ns.safeMax
 
 local trim = string.trim
-
-Hekili.Scripts = scripts
 
 
 -- Forgive the name, but this should properly replace ! characters with not, accounting for appropriate bracketing.
@@ -98,11 +99,15 @@ local function forgetMeNots( str )
 end
 
 
+local invalid = "([^a-zA-Z0-9_.])"
+
 -- Convert SimC syntax to Lua conditionals.
-local SimToLua = function( str, modifier )
+local function SimToLua( str, modifier )
 
   -- If no conditions were provided, function should return true.
   if not str or str == '' then return nil end
+
+  if type( str ) == 'number' then print( 'got a number', str ); return str end
 
   -- Strip comments.
   str = str:gsub("^%-%-.-\n", "")
@@ -110,6 +115,13 @@ local SimToLua = function( str, modifier )
   -- Replace '!' with ' not '.
   str = forgetMeNots( str )
 
+  for k in pairs( GetResourceInfo() ) do
+    str = str:gsub( "^" .. k .. invalid, k .. ".current%1" )
+    str = str:gsub( invalid .. k .. "$", "%1" .. k .. ".current" )
+    str = str:gsub( "^" .. k .. "$", k .. ".current" )
+    str = str:gsub( invalid .. k .. invalid, "%1" .. k .. ".current%2" )
+  end
+  
   -- Replace '%' for division with actual division operator '/'.
   str = str:gsub("%%", "/")
 
@@ -151,67 +163,7 @@ local SimToLua = function( str, modifier )
 end
 
 
-local SpaceOutSim = function( str )
-    str = str:gsub( "([!<>=|&()*%-%+%%])", " %1 " ):gsub("%s+", " ")
-
-    str = str:gsub( "([<>~!|]) ([|=])", "%1%2" )
-
-    str = str:trim()
-
-    return str
-end
-ns.SpaceOutSim = SpaceOutSim
-
-
-local storeValues = function( tbl, node )
-
-  for k in pairs( tbl ) do
-    tbl[k] = nil
-  end
-
-  if not node.Elements then
-    return
-  end
-
-  for k, v in pairs( node.Elements ) do
-    local success, result = pcall( v )
-
-    if success then tbl[k] = result
-    elseif type( result ) == 'string' then
-      tbl[k] = result:match( "lua:%d+: (.*)" ) or result
-    end
-    if tbl[k] == nil then tbl[k] = 'nil' end
-  end
-end
-ns.storeValues = storeValues
-
-
-local function storeReadyValues( tbl, node )
-
-    for k in pairs( tbl ) do
-        tbl[k] = nil
-    end
-
-    if not node.ReadyElements then
-        return
-    end
-
-    if node.ReadyElements then
-        for k, v in pairs( node.ReadyElements ) do
-            local success, result = pcall( v )
-
-            if success then tbl[k] = result
-            elseif type( result ) == 'string' then
-                tbl[k] = result:match( "lua:%d+: (.*)" ) or result
-            else tbl[k] = 'nil' end
-        end
-    end
-
-end
-ns.storeReadyValues = storeReadyValues
-
-
-local stripScript = function( str, thorough )
+local function stripScript( str, thorough )
   if not str then return 'true' end
 
   -- Remove the 'return ' that was added during conversion.
@@ -237,22 +189,41 @@ local stripScript = function( str, thorough )
 end
 
 
-local getScriptElements = function( script )
-  local Elements, Check = {}, stripScript( script, true )
+function scripts:StoreValues( tbl, node )
+    wipe( tbl )
 
-  for i in Check:gmatch( "[^ ,]+" ) do
-    if not Elements[i] and not tonumber(i) then
-      local eFunction = loadstring( 'return '.. (i or true) )
+    if type( node ) == 'string' then node = self.DB[ node ] end
+    if not node or not node.Elements then return end
 
-      if eFunction then setfenv( eFunction, state ) end
+    for k, v in pairs( node.Elements ) do
+        local s, r = pcall( v )
 
-      local success, value = pcall( eFunction )
-
-      Elements[i] = eFunction
+        if s then tbl[ k ] = r
+        elseif type( r ) == 'string' then tbl[ k ] = r:match( "lua:%d+: (.*)" ) or r end
+        if tbl[ k ] == nil then tbl[ k ] = 'nil' end
     end
-  end
+end
 
-  return Elements
+
+function scripts:StoreReadyValues( tbl, node )
+    self:StoreValues( tbl, node, "ready" )
+end
+
+
+local function GetScriptElements( script )
+    local e, c = {}, stripScript( script, true )
+
+    for s in c:gmatch( "[^ ,]+" ) do
+        if not e[ s ] and not tonumber( s ) then
+            local ef = loadstring( 'return '.. ( s or true ) )
+            if ef then setfenv( ef, state ) end
+      
+            local success, v = pcall( ef )
+            e[ s ] = ef
+        end
+    end
+
+    return e
 end
 
 
@@ -268,77 +239,101 @@ local specialModifiers = {
 }
 
 
-local convertScript = function( node, hasModifiers )
-  local Translated = SimToLua( node.Script )
-  local sFunction, Error
+local newModifiers = {
+    cycle_targets = true,
+    for_next = true,
+    max_cycle_targets = true,
+    moving = true,
+    sec = true,
+    set = true,
+    setif = true,
+    sync = true,
+    target_if = true,
+    value = true,
+    value_else = true,
+    wait = true,
+}
 
-  if Translated then
-    sFunction, Error = loadstring( 'return ' .. Translated )
-  end
 
-  if sFunction then
-    setfenv( sFunction, state )
-  end
+local nameMap = {
+    call_action_list = "list_name",
+    run_action_list = "list_name",
+    variable = "var_name",
+    potion = "potion",
+}
 
-  if Error then
-    Error = Error:match( ":%d+: (.*)" )
-  end
 
-  local sElements = Translated and getScriptElements( Translated )
+-- Need to convert all the appropriate scripts and store them safely...
 
-  local Output = {
-    Conditions = sFunction,
-    Error = Error,
-    Elements = sElements,
-    Modifiers = {},
-    SpecialMods = "",
+local function ConvertScript( node, hasModifiers )
+    local t = SimToLua( node.criteria )
+    local sf, e
 
-    Lua = Translated and trim( Translated ) or nil,
-    SimC = node.Script and trim( node.Script ) or nil
-  }
-
-  if hasModifiers then -- and ( node.Args and node.Args ~= '' ) then
+    if t then sf, e = loadstring( "return " .. t ) end
+    if sf then setfenv( sf, state ) end
+    if e then e = e:match( ":%d+: (.*)" ) end
     
-    if node.Args and node.Args ~= '' then
-        local tModifiers = SimToLua( node.Args, true )
+    local se = t and GetScriptElements( t )
 
-        for m in tModifiers:gmatch("[^,|^$]+") do
-          local Key, Value = m:match("^(.-)=(.-)$")
+    local output = {
+        Conditions = sf,
+        Error = e,
+        Elements = se,
+        Modifiers = {},
+        SpecialMods = "",
 
-          if Key and Value then
-            local sFunction, Error = loadstring( 'return ' .. Value )
+        Lua = t and t:trim() or nil,
+        SimC = node.criteria and node.criteria:trim() or nil
+    }
 
-            if sFunction then
-              setfenv( sFunction, state )
-              Output.Modifiers[ Key ] = sFunction
-            else
-              Output.Modifiers[ Key ] = Error
+    if hasModifiers then
+        for m, value in pairs( newModifiers ) do
+            if node[ m ] then
+                local o = SimToLua( node[ m ] )
+                output.SpecialMods = output.SpecialMods .. " - " .. m .. " : " .. o
+
+                local sf, e
+                if value then
+                    sf, e = loadstring( "return " .. o )
+                else
+                    sf, e = loadstring( "return '" .. o .. "'" )
+                end
+
+                if sf then
+                    setfenv( sf, state )
+                    output.Modifiers[ m ] = sf
+                else
+                    output.Modifiers[ m ] = e
+                end
             end
-          end
         end
-    end
 
-    for m, value in pairs( specialModifiers ) do
-        if node[ m ] then
-            local o = tostring( node[m] )
-            Output.SpecialMods = Output.SpecialMods .. " - " .. m .. " : " .. o
-            local sFunction, Error
+        local name = nameMap[ node.action ]
+        if name and node[ name ] then
+            local o = tostring( node[ name ] )
+            output.SpecialMods = output.SpecialMods .. " - " .. name .. " : " .. o
+
+            local sf, e
             if value then
-                sFunction, Error = loadstring( 'return ' .. o )
+                sf, e = loadstring( "return " .. o )
             else
-                sFunction, Error = loadstring( 'return "' .. o .. '"' )
+                sf, e = loadstring( "return '" .. o .. "'" )
             end
-            if sFunction then
-                setfenv( sFunction, state )
-                Output.Modifiers[ m ] = sFunction
+
+            if sf then
+                setfenv( sf, state )
+                output.Modifiers[ name ] = sf
             else
-                Output.Modifiers[ m ] = Error
+                output.Modifiers[ name ] = e
             end
         end
     end
-  end
 
-  if node.ReadyTime and node.ReadyTime ~= '' then
+    return output
+end
+
+--[[ ReadyTime is replaced by rechecks...
+if node.ReadyTime and node.ReadyTime ~= '' then
     local tReady = SimToLua( node.ReadyTime )
     local rFunction, rError
 
@@ -369,217 +364,188 @@ local convertScript = function( node, hasModifiers )
   end
 
   return Output
-end
+end ]]
 
 
-ns.checkScript = function( cat, key, action, recheck )
-
+function scripts:CheckScript( scriptID, action )
     local prev_action = state.this_action
     if action then state.this_action = action end
 
-    local tblScript = scripts[ cat ][ key ]
+    local script = self.DB[ scriptID ]
 
-    if not tblScript then
+    if not script then
         state.this_action = prev_action
-        return false
+        return false, "no script"
+    
+    elseif script.Error then
+        state.this_action = prev_action
+        return false, script.Error
 
-    elseif tblScript.Error then
+    elseif script.Conditions == nil then
         state.this_action = prev_action
-        return false, tblScript.Error
-
-    elseif tblScript.Conditions == nil then
-        state.this_action = prev_action
-        return true
+        return true, "no conditions"
 
     else
-        local success, value = pcall( tblScript.Conditions )
+        local success, value = pcall( script.Conditions )
 
         if success then
-
             state.this_action = prev_action
             return value
-
-            -- This is presently too CPU expensive to use.
-
-            --[[ if not recheck then recheck = Hekili.DB.profile[ 'Recommendation Window' ] end
-            
-            if not recheck or recheck == 0 then return value end
-
-            local checks = ceil( recheck * Hekili.DB.profile[ 'Updates Per Second' ] )
-            local orig = state.delay
-
-            for i = 1, checks do
-                state.delay = orig + ( recheck * i / checks )
-
-                local resuccess, revalue = pcall( tblScript.Conditions )
-
-                if not resuccess or not revalue then
-                    state.delay = orig
-                    return false
-                end
-            end
-
-            state.delay = orig
-            return true ]]
-
         end
-
     end
 
     state.this_action = prev_action
     return false
-
 end
-local checkScript = ns.checkScript
 
 
-function ns.isTimeSensitive( cat, key, action )
-    local Script = scripts[ cat ][ key ]
+function scripts:CheckVariable( scriptID )
+    local script = self.DB[ scriptID ]
 
-    if not Script then
-        return false
+    if not script then
+        return false, "no script"
+
+    elseif script.Error then
+        return false, script.Error
+
     end
 
-    return Script.TimeSensitive
+    local mods = script.Modifiers
+    local op = mods.op and mods.op() or 'set'
+
+    if op == 'set' then
+        local s, val = pcall( mods.value )
+        if s then return val end
+    end
+
+    return false, "no op or error"
+end
+    
+
+
+-- Attaches modifiers for the current entry to the state.args table.
+function scripts:ImportModifiers( scriptID )
+    for k in pairs( state.args ) do
+        state.args[ k ] = nil
+    end
+
+    local script = self.DB[ scriptID ]
+    if not script or not script.Modifiers then return end
+
+    for k, v in pairs( script.Modifiers ) do
+        local s, val = pcall( v )
+        if s then state.args[ k ] = val end
+    end
 end
 
 
-function ns.checkTimeScript( entry, wait, spend, spend_type )
+function scripts:IsTimeSensitive( scriptID )
+    local s = self.DB[ scriptID ]
+
+    return s and s.TimeSensitive
+end
+
+
+--[[ function ns.checkTimeScript( entry, wait, spend, spendType )
 
     local script = scripts.A[ entry ]
 
     if not entry or not script or not script.Ready then return delay end
 
-    local out = script.Ready( wait, spend, spend_type )
+    local out = script.Ready( wait, spend, spendType )
 
     out = out or 0
 
     out = out > 0 and roundUp( out, 2 ) or out
 
     return out
-
-end
-
-
-ns.getModifiers = function( list, entry )
-
-  local mods = {}
-
-  if not scripts['A'][list..':'..entry].Modifiers then return mods end
-
-  for k,v in pairs( scripts['A'][list..':'..entry].Modifiers ) do
-    local success, value = pcall(v)
-    if success then mods[k] = value end
-  end
-
-  return mods
-
-end
-local getModifiers = ns.getModifiers
-state.getModifiers = getModifiers
+end ]]
 
 
-ns.importModifiers = function( list, entry )
+function scripts:GetModifiers( scriptID, out )
+    out = out or {}
 
-  local key = list..':'..entry
+    local script = self.DB[ scriptID ]
 
-  for k in pairs( state.args ) do
-    state.args[ k ] = nil
-  end
+    if not script then return out end
 
-  local script = scripts.A[ key ]
-
-  if not script or not script.Modifiers then return end
-
-  for k,v in pairs( script.Modifiers ) do
-    local success, value = pcall( v )
-    if success then state.args[ k ] = value end
-  end
-
-end
-
-
-ns.loadScripts = function()
-
-  local Displays, Hooks, Actions = scripts.D, scripts.P, scripts.A
-  local Profile = Hekili.DB.profile
-
-  for i, _ in ipairs( Displays ) do
-    Displays[i] = nil
-  end
-
-  for k, _ in pairs( Hooks ) do
-    Hooks[k] = nil
-  end
-
-  for k, _ in pairs( Actions ) do
-    Actions[k] = nil
-  end
-
-  for i, display in ipairs( Hekili.DB.profile.displays ) do
-    Displays[ i ] = convertScript( display )
-
-    --[[ for j, priority in ipairs( display.Queues ) do
-      local pKey = i..':'..j
-      Hooks[ pKey ] = convertScript( priority )
-    end ]]
-  end
-
-  for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-    for a, action in ipairs( list.Actions ) do
-      local aKey = i..':'..a
-      Actions[ aKey ] = convertScript( action, true )
-      if action.Ability == 'call_action_list' or action.Ability == 'run_action_list' then
-        -- check for time sensitive conditions.
-        local lua = Actions[ aKey ].Lua
-        if lua and ( lua:match( "active_mongoose_fury" ) or lua:match( "judgment_override" ) or lua:match( "time" ) or lua:match( "cooldown" ) or lua:match( "charge" ) or lua:match( "buff" ) or lua:match( "focus" ) or lua:match( "energy" ) ) then
-            Actions[ aKey ].TimeSensitive = true
-        else
-            Actions[ aKey ].TimeSensitive = false
-        end
-      end
+    for k, v in pairs( script.Modifiers ) do
+        local success, value = pcall(v)
+        if success then out[k] = value end
     end
-  end
 
+    return out
 end
-local loadScripts = ns.loadScripts
 
 
-function ns.implantDebugData( queue )
+-- Attaches modifiers for the current entry to the state.args table.
+function scripts:ImportModifiers( scriptID )
+    for k in pairs( state.args ) do
+        state.args[ k ] = nil
+    end
+
+    local script = self.DB[ scriptID ]
+    if not script or not script.Modifiers then return end
+
+    for k, v in pairs( script.Modifiers ) do
+        local s, val = pcall( v )
+        if s then state.args[ k ] = val end
+    end
+end
+
+
+function scripts:LoadScripts()
+    local profile = Hekili.DB.profile
+
+    wipe( self.DB )
+
+    for pack, pData in pairs( profile.packs ) do
+        for list, lData in pairs( pData.lists ) do
+            for action, data in ipairs( lData ) do
+                local scriptID = pack .. ":" .. list .. ":" .. action
+                local script = ConvertScript( data, true )
+
+                if data.action == "call_action_list" or data.action == "run_action_list" then
+                    -- Check for Time Sensitive conditions.
+                    script.TimeSensitive = false
+                    
+                    local lua = script.Lua
+                    if lua and ( lua:match( "active_mongoose_fury" ) or lua:match( "judgment_override" ) or lua:match( "time" ) or lua:match( "cooldown" ) or lua:match( "charge" ) or lua:match( "buff" ) or lua:match( "focus" ) or lua:match( "energy" ) ) then
+                        script.TimeSensitive = true
+                    end
+                end
+                self.DB[ scriptID ] = script
+            end
+        end
+    end
+end
+
+function Hekili:LoadScripts()
+    self.Scripts:LoadScripts()
+    self:UpdateDisplayVisibility()
+end
+
+
+function scripts:ImplantDebugData( data )
     local prev = state.this_action
-    state.this_action = queue.actionName
+    state.this_action = data.actionName
 
-    if queue.display and queue.hook then        
-        if type( queue.hook ) == 'string' then
-            -- this was a nested action list.
-            local scrHook = scripts.A[ queue.hook ]
-            local list, action = queue.hook:match( "(%d+):(%d+)" )
-            queue.HookHeader = 'Called from ' .. Hekili.DB.profile.actionLists[ tonumber( list ) ].Name .. ' #' .. action
-            queue.HookScript = scrHook.SimC
-            queue.HookElements = queue.HookElements or {}
-            storeValues( queue.HookElements, scrHook )
-        else
-            local scrHook = scripts.P[ queue.display..':'..queue.hook ]
-            queue.HookScript = scrHook.SimC
-            queue.HookElements = queue.HookElements or {}
-            storeValues( queue.HookElements, scrHook )
-        end
+    if data.hook then
+        local s = self.DB[ data.hook ]
+        local pack, list, entry = data.hook:match( "^(.-):(.-):(.-)$" )
+
+        data.HookHeader = "Called from " .. pack .. ", " .. list .. ", " .. "#" .. entry .. "."
+        data.HookScript = s.SimC
+        data.HookElements = data.HookElements or {}
+
+        self:StoreValues( data.HookElements, s )
     end
 
-    if queue.list and queue.action then
-        local scrAction = scripts.A[ queue.list..':'..queue.action ]
-        queue.ActScript = scrAction.SimC
-        queue.ActElements = queue.ActElements or {}
-        storeValues( queue.ActElements, scrAction )
-
-        local delay = ns.state.delay
-        ns.state.delay = 0
-
-        queue.ReadyScript = scrAction.ReadyLua
-        queue.ReadyElements = queue.ReadyElements or {}
-        storeReadyValues( queue.ReadyElements, scrAction )
-
-        ns.state.delay = delay
+    if data.script then        
+        local s = self.DB[ data.script ]
+        data.ActScript = s.SimC
+        data.ActElements = data.ActElements or {}
+        self:StoreValues( data.ActElements, s )
     end
 
     state.this_action = prev
@@ -596,16 +562,19 @@ local key_cache = setmetatable( {}, {
 
 local checked = {}
 
-function ns.getConditionsAndValues( sType, sID )
+function scripts:GetConditionsAndValues( scriptID, listName, actID )
+    if listName and actID then
+        scriptID = scriptID .. ":" .. listName .. ":" .. actID
+    end
 
-    local script = scripts[ sType ]
-    script = script and script[ sID ]
+    local script = self.DB[ scriptID ]
 
     if script and script.SimC and script.SimC ~= "" then
         local output = script.SimC
 
         if script.Elements then
-            table.wipe( checked )
+            wipe( checked )
+
             for k, v in pairs( script.Elements ) do
                 if not checked[ k ] then
                     local key = key_cache[ k ]
@@ -613,13 +582,14 @@ function ns.getConditionsAndValues( sType, sID )
 
                     -- if emsg then value = emsg end
 
-                    if type(value) == 'number' then
+                    if type( value ) == 'number' then
                         output = output:gsub( "([^.]"..key..")", format( "%%1[%.2f]", value ) )
                         output = output:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
                     else
                         output = output:gsub( "([^.]"..key..")", format( "%%1[%s]", tostring( value ) ) )
                         output = output:gsub( "^("..key..")", format( "%%1[%s]", tostring( value ) ) )
                     end
+
                     checked[ k ] = true
                 end
             end
@@ -629,7 +599,6 @@ function ns.getConditionsAndValues( sType, sID )
     end
 
     return "NONE"
-
 end
 
 Hekili.dumpKeyCache = key_cache

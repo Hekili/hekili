@@ -3,58 +3,74 @@
 
 local addon, ns = ...
 Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSerializer-3.0" )
-Hekili.Version = GetAddOnMetadata("Hekili", "Version");
+Hekili.Version = GetAddOnMetadata("Hekili", "Version")
+if Hekili.Version == "@project-version@" then Hekili.Version = "Working Copy" end
+
 Hekili.AllowSimCImports = true
 
 local format = string.format
 local upper  = string.upper
 
-
 ns.PTR = GetBuildInfo() ~= "8.0.1"
 
-
 ns.Patrons = {
+    "Aern",
+    "Ajukraizy",
     "Alarius",
-    "Alvi",    
+    "Alvi",
+    "Analgesic",
     "ApexPlatypus",
+    "Ash",
+    "Barry",
     "belashar",
-    "Belatar",
+    "Belatar",    
     "Borelia",
-    "Bsirk/Kris",
+    "Bsirk",
+    "Capt Smite (Tyaz)",
+    "Cauldary",
+    "Cyranis",
     "Dane",
+    "Daz",
     "Dez",
     "djthomp",
     "Drift",
-    "FatIrishMidget",
+    "Form",
+    "Goobkill",
     "Grayscale",
     "Harkun",
     "Ingrathis",
-    "Issamonk",
-    "jamie_cortez",
-    "Jingy - Rekya",
+    "Jingeroo",
     "kaernunnos",
     "Kingreboot",
     "Kretol",
+    "Leasfaif",
     "Leorus",
+    "Mada",
     "Manni",
     "Mojolari中国",
-    "Nikö",
+    "MooNinja",
+    "nomiss",
+    "Onlyne",
     "Opie",
     "Ovaldo",
-    "ralask",
+    "Ravensword",
     "Rusah",
     "Saijtas",
-    "Shakeydev",
-    "Spaten",    
+    "sarrge",
+    "Shakeykev",
+    "Snowy",
+    "Spaten",
+    "Spy",
+    "Tevka",
     "Theda99",
-    "Tianzhun",
     "Tic[à]sentence",
     "Tilt",
     "Vagelis (Bougatsas)",
     "Wargus (Shagus)",
-    "zenpox",
-    "Z[EU]S",
+    "Yeitzo",
+    "zenpox",    
     "Корнишон",
+    "ZE[US]"
 }
 table.sort( ns.Patrons, function( a, b ) return upper( a ) < upper( b ) end  )
 
@@ -81,46 +97,47 @@ ns.auras = {
     }
 }
 
-ns.class = {
+Hekili.Class = {
     specs = {},
-
+ 
     file = "NONE",
-    abilities = {},
-    auras = {},
-    castExclusions = {},
-    resetCastExclusions = {},
-    defaults = {},
-	exclusions = {}, -- exclude from target detection
-	gearsets = {},
-	glyphs = {},
-	hooks = {},
-    incapacitates = {},
-    items = {},
-	perks = {},
-    range = 8,
+ 
 	resources = {},
-    resourceModels = {},
-	searchAbilities = {},
+	talents = {},
+    auras = {},
+    gear = {},
+    
+    stateFuncs = {},
+    stateTables = {},
+    
+    abilities = {},
+    abilityList = {},
+    itemList = {},
+
+    potions = {},
+    potionList = {},
+    
+    packs = {},
+
+	hooks = {},
+    items = {},
+    range = 8,
 	settings = {},
 	stances = {},
-    talentLegendary = {},
-	talents = {},
 	toggles = {}
 }
+
+Hekili.Scripts = {
+    DB = {}
+}
+
+Hekili.State = {}
 
 ns.hotkeys = {}
 
 ns.keys = {}
 
 ns.queue = {}
-
-ns.scripts = {
-    D = {},
-    P = {},
-    A = {}
-}
-
-ns.state = {}
 
 ns.targets = {}
 
@@ -134,37 +151,6 @@ ns.UI = {
 ns.debug = {}
 
 ns.snapshots = {}
-
-
--- Default Keybinding UI
-BINDING_HEADER_HEKILI_HEADER = "Hekili"
-BINDING_NAME_HEKILI_TOGGLE_PAUSE = "Pause"
-BINDING_NAME_HEKILI_SNAPSHOT = "Snapshot"
-
-BINDING_NAME_HEKILI_TOGGLE_COOLDOWNS = "Toggle Cooldowns"
-BINDING_NAME_HEKILI_TOGGLE_POTIONS = "Toggle Potions"
-BINDING_NAME_HEKILI_TOGGLE_INTERRUPTS = "Toggle Interrupts"
-BINDING_NAME_HEKILI_TOGGLE_MODE = "Toggle Mode"
-
-BINDING_NAME_HEKILI_TOGGLE_1 = "Custom Toggle 1"
-BINDING_NAME_HEKILI_TOGGLE_2 = "Custom Toggle 2"
-BINDING_NAME_HEKILI_TOGGLE_3 = "Custom Toggle 3"
-BINDING_NAME_HEKILI_TOGGLE_4 = "Custom Toggle 4"
-BINDING_NAME_HEKILI_TOGGLE_5 = "Custom Toggle 5"
-
-function ns.refreshBindings()
-    local profile = Hekili.DB.profile
-
-    profile[ 'HEKILI_TOGGLE_MODE' ] = GetBindingKey( "HEKILI_TOGGLE_MODE" )
-    profile[ 'HEKILI_TOGGLE_PAUSE' ] = GetBindingKey( "HEKILI_TOGGLE_PAUSE" )
-    profile[ 'HEKILI_TOGGLE_COOLDOWNS' ] = GetBindingKey( "HEKILI_TOGGLE_COOLDOWNS" )
-    profile[ 'HEKILI_TOGGLE_POTIONS' ] = GetBindingKey( "HEKILI_TOGGLE_POTIONS" )
-    profile[ 'HEKILI_TOGGLE_1' ] = GetBindingKey( "HEKILI_TOGGLE_1" )
-    profile[ 'HEKILI_TOGGLE_2' ] = GetBindingKey( "HEKILI_TOGGLE_2" )
-    profile[ 'HEKILI_TOGGLE_3' ] = GetBindingKey( "HEKILI_TOGGLE_3" )
-    profile[ 'HEKILI_TOGGLE_4' ] = GetBindingKey( "HEKILI_TOGGLE_4" )
-    profile[ 'HEKILI_TOGGLE_5' ] = GetBindingKey( "HEKILI_TOGGLE_5" )
-end
 
 
 function Hekili:Query( ... )
@@ -214,7 +200,7 @@ function Hekili:SetupDebug( display )
     active_debug = debug[ current_display ]
     active_debug.index = 1
 
-    self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ).", display, date( "%H:%M:%S"), GetTime() )
+    self:Debug( "\nNew Recommendations for [ %s ] requested at %s ( %.2f ).", display, date( "%H:%M:%S"), GetTime() )
 
 end
 
@@ -243,6 +229,7 @@ function Hekili:SaveDebugSnapshot()
             v.log[ i ] = nil
         end
 
+        table.insert( v.log, 1, self:GenerateProfile() )
         table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
 
     end

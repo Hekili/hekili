@@ -21,6 +21,10 @@ local multiUnpack = ns.multiUnpack
 local formatValue = ns.lib.formatValue
 local orderedPairs = ns.orderedPairs
 
+local class   = Hekili.Class
+local scripts = Hekili.Scripts
+local state   = Hekili.State
+
 -- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
 -- List them here for Mikk's FindGlobals script
 -- GLOBALS: ACCEPT, ChatFontNormal
@@ -218,104 +222,70 @@ local function GetOptionsMemberValue(membername, option, options, path, appName,
 end
 
 
-local function GenerateDiagnosticTooltip(widget, event)
-  --show a tooltip/set the status bar to the desc text
-  local user = widget:GetUserDataTable()
-  local opt = user.option
-  local options = user.options
-  local path = user.path
-  local appName = user.appName
+local function GenerateDiagnosticTooltip( widget, event )
+    --show a tooltip/set the status bar to the desc text
+    local user = widget:GetUserDataTable()
+    local opt = user.option
+    local options = user.options
+    local path = user.path
+    local appName = user.appName
+    
+    local name    = GetOptionsMemberValue( "name",  opt, options, path, appName )
+    local arg, listName, actID = GetOptionsMemberValue( "arg",   opt, options, path, appName )
+    local desc    = GetOptionsMemberValue( "desc",  opt, options, path, appName )
+    local usage   = GetOptionsMemberValue( "usage", opt, options, path, appName )
+    local descStyle = opt.descStyle
+    
+    if descStyle and descStyle ~= "tooltip" then return end
+    
+    GameTooltip:SetOwner( widget.frame, "ANCHOR_TOPRIGHT" )
+    GameTooltip:SetText(name, 1, .82, 0, 1)
+    
+    if type( arg ) == "string" then
+        GameTooltip:AddLine(arg, 1, 1, 1, 1)
+    end
+    
+    local tested = false
+    
+    local packName, script = path[ 2 ], path[ 6 ]
+    -- print( unpack( path ) )
 
-  local name = GetOptionsMemberValue("name", opt, options, path, appName)
-  local arg = GetOptionsMemberValue("arg", opt, options, path, appName)
-  local desc = GetOptionsMemberValue("desc", opt, options, path, appName)
-  local usage = GetOptionsMemberValue("usage", opt, options, path, appName)
-  local descStyle = opt.descStyle
+    local pack = rawget( Hekili.DB.profile.packs, packName )
+    local list = pack and pack.lists[ listName ]
+    local entry = list and list[ actID ]
 
-  if descStyle and descStyle ~= "tooltip" then return end
+    if pack and list and entry then
+        local scriptID = packName .. ":" .. listName .. ":" .. actID
+        local action = entry.action
 
-  GameTooltip:SetOwner( widget.frame, "ANCHOR_TOPRIGHT" )
-  GameTooltip:SetText(name, 1, .82, 0, 1)
+        if script == 'criteria' then
+            local result, warning = scripts:CheckScript( scriptID, action )
 
-  if type(arg) == "string" then
-    GameTooltip:AddLine(arg, 1, 1, 1, 1)
-  end
+            GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
 
-  local tested = false
-
-  if path[1] == 'actionLists' then
-    local listID, actID = tonumber( path[2]:match("^L(%d+)") ), tonumber( path[3]:match("^A(%d+)") )
-    local action
-
-    if actID then
-      action = Hekili.DB.profile.actionLists[ listID ].Actions[ actID ].Ability
-
-      if path[4] ~= 'ReadyTime' then
-          local result, warning = ns.checkScript( 'A', listID..':'..actID, action )
-
-          GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
-
-          if warning then
-            GameTooltip:AddLine( warning, 1, 0, 0 )
-          end
-
-      else
-        local script = ns.scripts.A[ listID .. ':' .. actID ]
-
-        if script.ReadyError then
-            GameTooltip:AddLine( '|cFFFF0000ERROR:|r ' .. ns.formatValue( script.ReadyError ), 1, 1, 1 )
+            if warning then GameTooltip:AddLine( warning, 1, 0, 0 ) end
+        else
+            -- handle other types.
         end
 
-        GameTooltip:AddDoubleLine( "Result", ns.formatValue( script.Ready and script.Ready( arg.delay, arg.spend, arg.spend_type ) or "n/a" ), 1, 1, 1, 1, 1, 1 )
-      end
-
-      tested = true
+        tested = true
     end
-
-  elseif path[1] == 'displays' and path[4] == 'Script' then
-    local dispID = tonumber( path[2]:match( "^D(%d+)" ) )
-
-    if path[3] == 'Criteria' then
-      local result, warning = ns.checkScript( 'D', dispID )
-
-      GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
-
-      if warning then
-        GameTooltip:AddLine( warning, 1, 1, 1 )
-      end
-    else
-      local prioID = tonumber( path[3]:match( "^P(%d+)" ) )
-
-      local result, warning	 = ns.checkScript( 'P', dispID..':'..prioID )
-
-      GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
-
-      if warning then
-        GameTooltip:AddLine( warning, 1, 1, 1 )
-      end
-
+        
+    if arg then -- and #arg > 0 then        
+        if tested then GameTooltip:AddLine(" ") end
+        
+        GameTooltip:AddLine( "Values" )
+        for k, v in orderedPairs( arg ) do
+            GameTooltip:AddDoubleLine( k, ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
+        end
     end
-    tested = true
-
-  end
-
-
-  if arg then -- and #arg > 0 then
-
-    if tested then GameTooltip:AddLine(" ") end
-
-    GameTooltip:AddLine( "Values" )
-    for k, v in orderedPairs( arg ) do
-      GameTooltip:AddDoubleLine( k, ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
+    
+    if type( usage ) == "string" then
+        GameTooltip:AddLine( "Usage: "..usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
     end
-  end
-
-  if type(usage) == "string" then
-    GameTooltip:AddLine("Usage: "..usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-  end
-
-  GameTooltip:Show()
-
+    
+    GameTooltip:Show()
+    
 end
 
 

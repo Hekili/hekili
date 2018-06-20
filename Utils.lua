@@ -39,6 +39,14 @@ function Hekili:GetErrors()
 end
 
 
+function ns.SpaceOut( str )
+    str = str:gsub( "([!<>=|&()*%-%+%%])", " %1 " ):gsub("%s+", " ")
+    str = str:gsub( "([<>~!|]) ([|=])", "%1%2" )
+    str = str:trim()
+    return str
+end
+
+
 -- Converts `s' to a SimC-like key: strip non alphanumeric characters, replace spaces with _, convert to lower case.
 function ns.formatKey( s )
     return ( lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s", "_" ) )
@@ -239,4 +247,33 @@ function Hekili:After( time, func, ... )
     end
 
     C_Timer.After( time, delayfunc )
+end
+
+
+
+-- Duplicate spell info lookup.
+function ns.FindUnitBuffByID( unit, id, filter )
+    local i = 1
+    local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitBuff( unit, i, filter )
+
+    while( name ) do
+        if spellID == id then break end
+        i = i + 1
+        name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitBuff( unit, i, filter )
+    end
+
+    return name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3
+end
+
+function ns.FindUnitDebuffByID( unit, id, filter )
+    local i = 1
+    local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitDebuff( unit, i, filter )
+
+    while( name ) do
+        if spellID == id then break end
+        i = i + 1
+        name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitDebuff( unit, i, filter )
+    end
+
+    return name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3
 end
