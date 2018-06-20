@@ -178,8 +178,6 @@ function Hekili:RunItemCallbacks()
 end
 
 
-
-RegisterEvent( "UPDATE_BINDINGS", function () ns.refreshBindings() end )
 RegisterEvent( "DISPLAY_SIZE_CHANGED", function () Hekili:BuildUI() end )
 
 

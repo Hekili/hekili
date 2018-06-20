@@ -3961,6 +3961,10 @@ do
             elseif val == 'singleAOE' and toggle.value == 'auto' then toggle.value = 'single' end
 
         elseif option == 'key' then
+            for t, data in pairs( p.toggles ) do
+                if data.key == val then data.key = "" end
+            end
+            
             toggle.key = val
             self:OverrideBinds()
         
