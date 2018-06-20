@@ -641,7 +641,6 @@ do
         local now = GetTime()
 
         if self.NewRecommendations then
-            print( "NewRec", self.id )
             local alpha = self.alpha
 
             for i, b in ipairs( self.Buttons ) do
