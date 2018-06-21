@@ -1065,7 +1065,7 @@ do
                             pvpComplex = {
                                 type = 'group',
                                 inline = true,
-                                name = "PvE",
+                                name = "PvP",
                                 get = function( info )
                                     local option = info[ #info ]
 
