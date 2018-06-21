@@ -620,12 +620,18 @@ local aura_events = {
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
 local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
-    if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' and ns.isTarget( destGUID ) then
-        ns.eliminateUnit( destGUID, true )
-        ns.forceRecount()
-        Hekili:ForceUpdate( subtype )
+    if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' or subtype == "UNIT_DISIPPATES" then
+        if ns.isTarget( destGUID ) then
+            ns.eliminateUnit( destGUID, true )
+            ns.forceRecount()
+            Hekili:ForceUpdate( subtype )
+        elseif ns.isMinion( destGUID ) then
+            ns.updateMinion( destGUID )
+        end
         return
     end
+
+    local time = GetTime()
 
     if subtype == 'SPELL_SUMMON' and sourceGUID == state.GUID then
         ns.updateMinion( destGUID, time )
@@ -633,7 +639,6 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     end
 
     local hostile = ( bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 )
-    local time = GetTime()
 
     if sourceGUID ~= state.GUID and not ( state.role.tank and destGUID == state.GUID ) and not ns.isMinion( sourceGUID ) then
         return
@@ -747,7 +752,6 @@ end
 ns.cpuProfile.CLEU_HANDLER = CLEU_HANDLER
 
 RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ( event ) CLEU_HANDLER( event, CombatLogGetCurrentEventInfo() ) end )
-
 
 
 local function UNIT_COMBAT( event, unit, action, descriptor, damage, damageType )

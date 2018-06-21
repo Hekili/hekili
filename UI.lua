@@ -361,7 +361,7 @@ Hekili_Menu.initialize = function(self, level)
 
         i.text = "Enable"
         i.func = menu_Enabled
-        i.checked = p.Enabled
+        i.checked = p.enabled
         UIDropDownMenu_AddButton(i, level)
 
         i.text = " "

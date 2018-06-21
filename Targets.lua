@@ -21,6 +21,7 @@ local npCount = 0
 local lastNpCount = 0
 
 local formatKey = ns.formatKey
+local orderedPairs = ns.orderedPairs
 local FeignEvent = ns.FeignEvent
 local RegisterEvent = ns.RegisterEvent
 
@@ -168,11 +169,21 @@ ns.isMyTarget = function( id ) return myTargets[ id ] ~= nil end
 local minions = {}
 
 ns.updateMinion = function( id, time )
-  minions[ id ] = time
+    minions[ id ] = time
 end
 
 ns.isMinion = function( id ) return minions[ id ] ~= nil end
 
+function Hekili:DumpMinions()
+    local o = ""
+
+    for k, v in orderedPairs( minions ) do
+        o = o .. k .. " " .. tostring( v ) .. "\n"
+    end
+
+    return o
+end
+        
 
 local debuffs = {}
 local debuffCount = {}
