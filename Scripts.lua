@@ -375,7 +375,7 @@ function scripts:CheckScript( scriptID, action )
 
     if not script then
         state.this_action = prev_action
-        return false, "no script"
+        return false
     
     elseif script.Error then
         state.this_action = prev_action
@@ -383,7 +383,7 @@ function scripts:CheckScript( scriptID, action )
 
     elseif script.Conditions == nil then
         state.this_action = prev_action
-        return true, "no conditions"
+        return true
 
     else
         local success, value = pcall( script.Conditions )

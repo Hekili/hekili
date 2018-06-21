@@ -3040,6 +3040,7 @@ do
         local data = rawget( self.DB.profile.packs, category )
         if not data then return end
 
+        if option == 'date' then return tostring( data.date ) end
         return data[ option ]
     end
 
@@ -3281,6 +3282,8 @@ do
                                     end
 
                                     data.warnings = warnings
+                                    data.date = tonumber( date("%Y%m%d.%H%M%S") )
+
 
                                     if not data.lists[ packControl.listName ] then packControl.listName = "default" end
                                     

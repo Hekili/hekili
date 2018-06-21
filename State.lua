@@ -1558,7 +1558,7 @@ local mt_default_pet = {
         elseif k == 'remains' then
             return max( 0, t.expires - ( state.query_time ) )
             
-        elseif k == 'up' or k == 'active' or k == 'alive' then
+        elseif k == 'up' or k == 'active' or k == 'alive' or k == 'exists' then
             return ( t.expires >= ( state.query_time ) )
             
         elseif k == 'down' then

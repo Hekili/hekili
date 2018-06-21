@@ -158,11 +158,7 @@ function Hekili:OnInitialize()
     self.Options = self:GetOptions()
     self.Options.args.profiles = LibStub( "AceDBOptions-3.0" ):GetOptionsTable( self.DB )
     
-    -- Add dual-spec support
-    --[[ local DualSpec = LibStub( "LibDualSpec-1.0" )
-    DualSpec:EnhanceDatabase( self.DB, "Hekili" )
-    DualSpec:EnhanceOptions( self.Options.args.profiles, self.DB ) ]]
-    
+
     self.DB.RegisterCallback( self, "OnProfileChanged", "TotalRefresh" )
     self.DB.RegisterCallback( self, "OnProfileCopied", "TotalRefresh" )
     self.DB.RegisterCallback( self, "OnProfileReset", "TotalRefresh" )
