@@ -200,18 +200,13 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     spec:RegisterStateFunction( "consume_demons", function( name, count )
         local db = nether_portal_v
     
-        print( name, count )
-
         if name == 'dreadstalkers' then db = dreadstalkers_v
         elseif name == 'vilefiend' then db = vilefiend_v
         elseif name == 'wild_imps' then db = wild_imps_v
         elseif name == 'demonic_tyrant' then db = demonic_tyrant_v end
 
-        print( #db )
-
         if type( count ) == 'string' and count == 'all' then
             table.wipe( db )
-            print( #db )
             return
         end
         
@@ -219,8 +214,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         for i = 1, count do
             table.remove( db, 1 )
         end
-        print( #db )
-
     end )
 
 
@@ -905,7 +898,12 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
             texture = 236290,
             
+            usable = function () return buff.wild_imps.stack > 0 end,
             handler = function ()
+                local num = min( 2, buff.wild_imps.stack )
+                consume_demons( "wild_imps", num )
+
+                addStack( "demonic_core", 20, num )
             end,
         },
         
