@@ -208,10 +208,10 @@ function Hekili:OnInitialize()
             
             self.text = format( "|c%s%s|r %sCD|r %sInt|r %sPot|r",
             color,
-            p['Mode Status'] == 0 and "Single" or ( p['Mode Status'] == 2 and "AOE" or ( p['Mode Status'] == 3 and "Auto" or "X" ) ),
-            p.Cooldowns and "|cFF00FF00" or "|cFFFF0000",
-            p.Interrupts and "|cFF00FF00" or "|cFFFF0000",
-            p.Potions and "|cFF00FF00" or "|cFFFF0000" )
+            p.toggles.mode.value == 'automatic' and "Auto" or "Dual",
+            p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+            p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
+            p.toggles.potions.value  and "|cFF00FF00" or "|cFFFF0000" )
         end
         
         ns.UI.Minimap:RefreshDataText()

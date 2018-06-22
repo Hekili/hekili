@@ -46,6 +46,187 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     } )
 
 
+    -- Demon Handling
+    local dreadstalkers = {}
+    local dreadstalkers_v = {}
+
+    local vilefiend = {}
+    local vilefiend_v = {}
+
+    local wild_imps = {}
+    local wild_imps_v = {}
+
+    local demonic_tyrant = {}
+    local demonic_tyrant_v = {}
+
+    local nether_portal = {}
+    local nether_portal_v = {}
+
+
+    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
+        local _, subtype, _, source, _, _, _, _, _, _, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+        
+        if source == state.GUID then
+            if subtype == "SPELL_SUMMON" then
+                local now = GetTime()
+
+                -- Dreadstalkers: 104316, 12 seconds uptime.
+                if spellID == 193332 or spellID == 193331 then table.insert( dreadstalkers, now + 12 )
+                
+                -- Vilefiend: 264119, 15 seconds uptime.
+                elseif spellID == 264119 then table.insert( vilefiend, now + 15 )
+
+                -- Wild Imp: 104317, 25 seconds uptime.
+                elseif spellID == 104317 or spellID == 279910 then table.insert( wild_imps, now + 25 )
+
+                -- Demonic Tyrant: 265187, 15 seconds uptime.
+                elseif spellID == 265187 then table.insert( demonic_tyrant, now + 15 )
+
+                -- Nether Portals, 15 seconds uptime.
+                -- 267986 - Prince Malchezaar
+                -- 267987 - Illidari Satyr
+                -- 267988 - Vicious Hellhound
+                -- 267989 - Eyes of Gul'dan
+                -- 267991 - Void Terror
+                -- 267992 - Bilescourge
+                -- 267994 - Shivarra
+                -- 267995 - Wrathguard
+                -- 267996 - Darkhound
+                elseif spellID >= 267986 and spellID <= 267996 then table.insert( nether_portal, now + 15 ) end
+
+                print( spellName, spellID )
+            
+            elseif subtype == "SPELL_CAST_SUCCESS" then
+                if spellID == 196277 then
+                    table.wipe( wild_imps )
+                
+                elseif spellID == 264130 then
+                    if wild_imps[1] then table.remove( wild_imps, 1 ) end
+                    if wild_imps[1] then table.remove( wild_imps, 1 ) end
+                
+                end
+            
+            end
+        end
+    end )
+
+
+
+    local wipe = table.wipe
+
+    spec:RegisterHook( "reset_precast", function()
+        local i = 1
+        while dreadstalkers[ i ] do
+            if dreadstalkers[ i ] < state.now then
+                table.remove( dreadstalkers, i )
+            else
+                i = i + 1
+            end
+        end
+        
+        wipe( dreadstalkers_v )
+        for n, t in ipairs( dreadstalkers ) do dreadstalkers_v[ n ] = t end
+
+
+        i = 1
+        while( vilefiend[ i ] ) do
+            if vilefiend[ i ] < state.now then
+                table.remove( vilefiend, i )
+            else
+                i = i + 1
+            end
+        end
+        
+        wipe( vilefiend_v )
+        for n, t in ipairs( vilefiend ) do vilefiend_v[ n ] = t end
+
+
+        i = 1
+        while( wild_imps[ i ] ) do
+            if wild_imps[ i ] < state.now then
+                table.remove( wild_imps, i )
+            else
+                i = i + 1
+            end
+        end
+
+        wipe( wild_imps_v )
+        for n, t in ipairs( wild_imps ) do wild_imps_v[ n ] = t end
+
+
+        i = 1
+        while( demonic_tyrant[ i ] ) do
+            if demonic_tyrant[ i ] < state.now then
+                table.remove( demonic_tyrant, i )
+            else
+                i = i + 1
+            end
+        end
+
+        wipe( demonic_tyrant_v )
+        for n, t in ipairs( demonic_tyrant ) do demonic_tyrant_v[ n ] = t end
+
+
+        i = 1
+        while( nether_portal[ i ] ) do
+            if nether_portal[ i ] < state.now then
+                table.remove( nether_portal, i )
+            else
+                i = i + 1
+            end
+        end
+
+        wipe( nether_portal_v )
+        for n, t in ipairs( nether_portal ) do nether_portal_v[ n ] = t end
+
+        print( #wild_imps, #wild_imps_v )
+    end )
+
+
+    spec:RegisterStateFunction( "summon_demon", function( name, duration, count )
+        local db = nether_portal_v
+
+        if name == 'dreadstalkers' then db = dreadstalkers_v
+        elseif name == 'vilefiend' then db = vilefiend_v
+        elseif name == 'wild_imps' then db = wild_imps_v
+        elseif name == 'demonic_tyrant' then db = demonic_tyrant_v end
+
+        count = count or 1
+        local expires = query_time + duration
+
+        for i = 1, count do
+            table.insert( db, expires )
+        end
+    end )
+
+
+    spec:RegisterStateFunction( "consume_demons", function( name, count )
+        local db = nether_portal_v
+    
+        print( name, count )
+
+        if name == 'dreadstalkers' then db = dreadstalkers_v
+        elseif name == 'vilefiend' then db = vilefiend_v
+        elseif name == 'wild_imps' then db = wild_imps_v
+        elseif name == 'demonic_tyrant' then db = demonic_tyrant_v end
+
+        print( #db )
+
+        if type( count ) == 'string' and count == 'all' then
+            table.wipe( db )
+            print( #db )
+            return
+        end
+        
+        count = count or 0
+        for i = 1, count do
+            table.remove( db, 1 )
+        end
+        print( #db )
+
+    end )
+
+
     -- Auras
     spec:RegisterAuras( {
         axe_toss = {
@@ -97,6 +278,16 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             id = 265273,
             duration = 15,
             max_stack = 1,
+        },
+
+        demonic_strength = {
+            id = 267171,
+            duration = 20,
+        },
+
+        doom = {
+            id = 265412,
+            duration = 30,            
         },
 
         drain_life = {
@@ -162,7 +353,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             id = 108415,
         },
 
-        soul_shards = {
+        soul_shard = {
             id = 246985,
         },
 
@@ -178,7 +369,80 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             max_stack = 1,
         },
 
+        dreadstalkers = {
+            duration = 12,
+            
+            meta = {
+                up = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and exp >= query_time or false end,
+                down = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and exp < query_time or true end,
+                applied = function () local exp = dreadstalkers_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
+                remains = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                count = function () 
+                    local c = 0
+                    for i, exp in ipairs( dreadstalkers_v ) do
+                        if exp > query_time then c = c + 1 end
+                    end
+                    return c
+                end,
+            }
+        },
+
+        wild_imps = {
+            duration = 25,
+            
+            meta = {
+                up = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and exp >= query_time or false end,
+                down = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and exp < query_time or true end,
+                applied = function () local exp = wild_imps_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
+                remains = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                count = function () 
+                    local c = 0
+                    for i, exp in ipairs( wild_imps_v ) do
+                        if exp > query_time then c = c + 1 end
+                    end
+                    return c
+                end,
+            }
+        },
+
+        vilefiend = {
+            duration = 12,
+            
+            meta = {
+                up = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp >= query_time or false end,
+                down = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp < query_time or true end,
+                applied = function () local exp = vilefiend_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
+                remains = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                count = function () 
+                    local c = 0
+                    for i, exp in ipairs( vilefiend_v ) do
+                        if exp > query_time then c = c + 1 end
+                    end
+                    return c
+                end,
+            }
+        },
+
+        nether_portal = {
+            duration = 12,
+            
+            meta = {
+                up = function () local exp = nether_portal_v[ #nether_portal_v ]; return exp and exp >= query_time or false end,
+                down = function () local exp = nether_portal_v[ #nether_portal_v ]; return exp and exp < query_time or true end,
+                applied = function () local exp = nether_portal_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
+                remains = function () local exp = nether_portal_v[ #nether_portal_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                count = function () 
+                    local c = 0
+                    for i, exp in ipairs( nether_portal_v ) do
+                        if exp > query_time then c = c + 1 end
+                    end
+                    return c
+                end,
+            }
+        },
+
     } )
+
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -192,6 +456,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 236316,
             
             handler = function ()
+                applyDebuff( 'target', 'axe_toss', 4 )
             end,
         },
         
@@ -209,6 +474,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 136135,
             
             handler = function ()
+                applyDebuff( 'target', 'banish', 30 )
             end,
         },
         
@@ -220,7 +486,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             spend = 2,
-            spendType = "soul_shards",
+            spendType = "soul_shard",
+
+            talent = 'bilescourge_bombers',
             
             startsCombat = true,
             texture = 132182,
@@ -239,24 +507,33 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
             texture = 538043,
             
+            talent = 'burning_rush',
+
             handler = function ()
+                if buff.burning_rush.up then removeBuff( 'burning_rush' )
+                else applyBuff( 'burning_rush', 3600 ) end
             end,
         },
         
 
+        -- PvP:master_summoner.
         call_dreadstalkers = {
             id = 104316,
-            cast = 2,
+            cast = function () return buff.demonic_calling.up and 0 or ( 2 * haste ) end,
             cooldown = 20,
             gcd = "spell",
             
-            spend = 2,
-            spendType = "soul_shards",
+            spend = function () return 2 - ( buff.demonic_calling.up and 1 or 0 ) end,
+            spendType = "soul_shard",
             
             startsCombat = true,
             texture = 1378282,
             
             handler = function ()
+                summon_demon( "dreadstalkers", 12, 2 )
+                removeStack( 'demonic_calling' )
+
+                if talent.from_the_shadows.enabled then applyDebuff( 'target', 'from_the_shadows' ) end
             end,
         },
         
@@ -271,13 +548,18 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 236292,
             
             handler = function ()
+                if pet.felguard.up then runHandler( 'axe_toss' )
+                elseif pet.felhunter.up then runHandler( 'spell_lock' )
+                elseif pet.voidwalker.up then runHandler( 'shadow_bulwark' )
+                elseif pet.succubus.up then runHandler( 'seduction' )
+                elseif pet.imp.up then runHandler( 'singe_magic' ) end
             end,
         },
         
 
         create_healthstone = {
             id = 6201,
-            cast = 3,
+            cast = function () return 3 * haste end,
             cooldown = 0,
             gcd = "spell",
             
@@ -294,7 +576,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         create_soulwell = {
             id = 29893,
-            cast = 3,
+            cast = function () return 3 * haste end,
             cooldown = 120,
             gcd = "spell",
             
@@ -317,8 +599,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             startsCombat = true,
             texture = 538538,
+
+            talent = 'dark_pact',
             
             handler = function ()
+                applyBuff( 'dark_pact', 20 )
             end,
         },
         
@@ -337,7 +622,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             handler = function ()
                 removeStack( 'demonic_core' )
-                gain( 2, 'soul_shards' )
+                gain( 2, 'soul_shard' )
             end,
         },
         
@@ -353,6 +638,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             startsCombat = true,
             texture = 237559,
+
+            talent = 'demonic_circle',
             
             handler = function ()
             end,
@@ -370,6 +657,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             startsCombat = true,
             texture = 237560,
+
+            talent = 'demonic_circle',
             
             handler = function ()
             end,
@@ -378,7 +667,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         demonic_gateway = {
             id = 111771,
-            cast = 2,
+            cast = function () return 2 * haste end,
             cooldown = 10,
             gcd = "spell",
             
@@ -399,10 +688,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 60,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 236292,
             
             handler = function ()
+                applyBuff( 'demonic_strength' )
             end,
         },
         
@@ -418,16 +708,20 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             startsCombat = true,
             texture = 136122,
+
+            talent = 'doom',
             
             handler = function ()
+                applyDebuff( 'target', 'doom' )
             end,
         },
         
 
         drain_life = {
             id = 234153,
-            cast = 0,
+            cast = function () return 5 * haste end,
             cooldown = 0,
+            channeled = true,
             gcd = "spell",
             
             spend = 0,
@@ -437,13 +731,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 136169,
             
             handler = function ()
+                applyDebuff( 'drain_life' )
             end,
         },
         
 
         enslave_demon = {
             id = 1098,
-            cast = 3,
+            cast = function () return 3 * haste end,
             cooldown = 0,
             gcd = "spell",
             
@@ -460,7 +755,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         eye_of_kilrogg = {
             id = 126,
-            cast = 2,
+            cast = function () return 2 * haste end,
             cooldown = 0,
             gcd = "spell",
             
@@ -477,7 +772,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         fear = {
             id = 5782,
-            cast = 1.7,
+            cast = function () return 1.7 * haste end,
             cooldown = 0,
             gcd = "spell",
             
@@ -488,6 +783,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 136183,
             
             handler = function ()
+                applyDebuff( 'target', 'fear' )
             end,
         },
         
@@ -499,43 +795,51 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             spend = 1,
-            spendType = "soul_shards",
+            spendType = "soul_shard",
             
+            toggle = 'cooldowns',
+
             startsCombat = true,
             texture = 136216,
             
             handler = function ()
+                summonPet( 'grimoire_felguard', 15 )
             end,
         },
         
 
         hand_of_guldan = {
             id = 105174,
-            cast = 1.5,
+            cast = function () return 1.5 * haste end,
             cooldown = 0,
             gcd = "spell",
             
-            spend = 3,
-            spendType = "soul_shards",
+            spend = 1,
+            spendType = "soul_shard",
             
             startsCombat = true,
             texture = 535592,
             
             handler = function ()
+                local extra_shards = min( 2, soul_shard.current )
+                spend( extra_shards, "soul_shard" )
+                summon_demon( "wild_imps", 25, 1 + extra_shards )
             end,
         },
         
 
         health_funnel = {
             id = 755,
-            cast = 0,
+            cast = function () return 5 * haste end,
             cooldown = 0,
             gcd = "spell",
             
-            startsCombat = true,
+            channeled = true,            
+            startsCombat = false,
             texture = 136168,
             
             handler = function ()
+                applyBuff( 'health_funnel' )
             end,
         },
         
@@ -553,6 +857,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 2065588,
             
             handler = function ()
+                consume_demons( "wild_imps", "all" )
             end,
         },
         
@@ -570,19 +875,22 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 607853,
             
             handler = function ()
+                applyDebuff( 'target', 'mortal_coil' )
             end,
         },
         
 
         nether_portal = {
             id = 267217,
-            cast = 2.5,
+            cast = function () return 2.5 * haste end,
             cooldown = 180,
             gcd = "spell",
             
             spend = 3,
-            spendType = "soul_shards",
+            spendType = "soul_shard",
             
+            toggle = "cooldowns", 
+
             startsCombat = true,
             texture = 2065615,
             
@@ -624,7 +932,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         shadow_bolt = {
             id = 686,
-            cast = 2,
+            cast = function () return 2 * haste end,
             cooldown = 0,
             gcd = "spell",
             
@@ -635,7 +943,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 136197,
             
             handler = function ()
-                gain( 1, 'soul_shards' )
+                gain( 1, 'soul_shard' )
             end,
         },
         
@@ -684,17 +992,21 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         summon_demonic_tyrant = {
             id = 265187,
-            cast = 2,
+            cast = function () return 2 * haste end,
             cooldown = 90,
             gcd = "spell",
             
             spend = 0.02,
             spendType = "mana",
+
+            toggle = "cooldowns",
             
             startsCombat = true,
             texture = 2065628,
             
             handler = function ()
+                summon_demon( "demonic_tyrant", 15 )
+                applyBuff( "demonic_power", 15 )
             end,
         },
 
@@ -706,7 +1018,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
 
             spend = 1,
-            spendType = "soul_shards",
+            spendType = "soul_shard",
 
             startsCombat = false,
             texture = 136216,
@@ -720,17 +1032,20 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         summon_vilefiend = {
             id = 264119,
-            cast = 2,
+            cast = function () return 2 * haste end,
             cooldown = 45,
             gcd = "spell",
             
             spend = 1,
-            spendType = "soul_shards",
+            spendType = "soul_shard",
+
+            toggle = "cooldowns",
             
             startsCombat = true,
             texture = 1616211,
             
             handler = function ()
+                summon_demon( "vilefiend", 15 )
             end,
         },
         
@@ -760,6 +1075,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             spend = 0.02,
             spendType = "mana",
+
+            toggle = "defensives",
             
             startsCombat = true,
             texture = 136150,

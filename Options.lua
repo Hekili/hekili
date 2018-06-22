@@ -3143,770 +3143,781 @@ do
         local count = 0
 
         for pack, data in orderedPairs( self.DB.profile.packs ) do
-            packs.plugins.links.packButtons = packs.plugins.links.packButtons or {
-                type = "header",
-                name = "Installed Packs",
-                order = 10,
-            }
+            if data.spec and class.specs[ data.spec ] then
+                packs.plugins.links.packButtons = packs.plugins.links.packButtons or {
+                    type = "header",
+                    name = "Installed Packs",
+                    order = 10,
+                }
 
-            packs.plugins.links[ "btn" .. pack ] = {
-                type = "execute",
-                name = pack,
-                order = 11 + count,
-                func = function ()
-                    ACD:SelectGroup( "Hekili", "packs", pack )
-                end,
-            }
+                packs.plugins.links[ "btn" .. pack ] = {
+                    type = "execute",
+                    name = pack,
+                    order = 11 + count,
+                    func = function ()
+                        ACD:SelectGroup( "Hekili", "packs", pack )
+                    end,
+                }
 
-            local opts = packs.plugins.packages[ pack ] or {
-                type = "group",
-                name = function ()
-                    if data.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
-                    return pack
-                end,
-                childGroups = "tab",
-                order = 100 + count,
-                args = {
-                    pack = {
-                        type = "group",
-                        name = function ()
-                            if data.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
-                            return pack
-                        end,
-                        order = count,
-                        args = {
-                            spec = {
-                                type = "select",
-                                name = "Specialization",
-                                order = 1,
-                                width = "full",
-                                values = specs,
-                            },
-        
-                            desc = {
-                                type = "input",
-                                name = "Description",
-                                multiline = 2,
-                                order = 2,
-                                width = "full",
-                            },
+                local opts = packs.plugins.packages[ pack ] or {
+                    type = "group",
+                    name = function ()
+                        if data.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
+                        return pack
+                    end,
+                    childGroups = "tab",
+                    order = 100 + count,
+                    args = {
+                        pack = {
+                            type = "group",
+                            name = function ()
+                                if data.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
+                                return pack
+                            end,
+                            order = count,
+                            args = {
+                                spec = {
+                                    type = "select",
+                                    name = "Specialization",
+                                    order = 1,
+                                    width = "full",
+                                    values = specs,
+                                },
+            
+                                desc = {
+                                    type = "input",
+                                    name = "Description",
+                                    multiline = 2,
+                                    order = 2,
+                                    width = "full",
+                                },
 
-                            delete = {
-                                type = "execute",
-                                name = "Delete Pack",
-                                order = 3,
-                                hidden = function ()
-                                    return data.builtIn
-                                end,
-                                func = function ()
-                                    Hekili.DB.profile.packs[ pack ] = nil
-                                    Hekili:EmbedPackOptions()
-                                    ACD:SelectGroup( "Hekili", "packs" )
-                                end,
+                                delete = {
+                                    type = "execute",
+                                    name = "Delete Pack",
+                                    order = 3,
+                                    hidden = function ()
+                                        return data.builtIn
+                                    end,
+                                    func = function ()
+                                        Hekili.DB.profile.packs[ pack ] = nil
+                                        Hekili:EmbedPackOptions()
+                                        ACD:SelectGroup( "Hekili", "packs" )
+                                    end,
+                                }
                             }
-                        }
-                    },
+                        },
 
-                    profile = {
-                        type = "group",
-                        name = "Profile",
-                        desc = "If this Action Pack was generated with a SimulationCraft profile, the profile can be stored " ..
-                            "or retrieved here.  The profile can also be re-imported or overwritten with a newer profile.",
-                        order = 2,
-                        args = {
-                            signature = {
-                                type = "group",
-                                inline = true,
-                                name = "",
-                                order = 3,
-                                args = {
-                                    source = {
-                                        type = "input",
-                                        name = "Source",
-                                        desc = "If the Action Pack is based on a SimulationCraft profile or a popular guide, it is a " ..
-                                            "good idea to provide a link to the source (especially before sharing).",
-                                        order = 1,
-                                        width = "full",
-                                    },
-                
-                                    author = {
-                                        type = "input",
-                                        name = "Author",
-                                        desc = "The author field is automatically filled out when creating a new Action Pack.  " ..
-                                            "You can update it here.",
-                                        order = 2,
-                                        width = "double",
-                                    },
-                
-                                    date = {
-                                        type = "input",
-                                        name = "Last Updated",
-                                        desc = "This date is automatically updated when any changes are made to the action lists for this Action Pack.",
-                                        order = 3,
-                                        set = function () end,
+                        profile = {
+                            type = "group",
+                            name = "Profile",
+                            desc = "If this Action Pack was generated with a SimulationCraft profile, the profile can be stored " ..
+                                "or retrieved here.  The profile can also be re-imported or overwritten with a newer profile.",
+                            order = 2,
+                            args = {
+                                signature = {
+                                    type = "group",
+                                    inline = true,
+                                    name = "",
+                                    order = 3,
+                                    args = {
+                                        source = {
+                                            type = "input",
+                                            name = "Source",
+                                            desc = "If the Action Pack is based on a SimulationCraft profile or a popular guide, it is a " ..
+                                                "good idea to provide a link to the source (especially before sharing).",
+                                            order = 1,
+                                            width = "full",
+                                        },
+                    
+                                        author = {
+                                            type = "input",
+                                            name = "Author",
+                                            desc = "The author field is automatically filled out when creating a new Action Pack.  " ..
+                                                "You can update it here.",
+                                            order = 2,
+                                            width = "double",
+                                        },
+                    
+                                        date = {
+                                            type = "input",
+                                            name = "Last Updated",
+                                            desc = "This date is automatically updated when any changes are made to the action lists for this Action Pack.",
+                                            order = 3,
+                                            set = function () end,
+                                        },
                                     },
                                 },
-                            },
 
-                            profile = {
-                                type = "input",
-                                name = "Profile",
-                                desc = "If this pack's action lists were imported from a SimulationCraft profile, the profile is included here.",
-                                order = 4,
-                                multiline = 8,
-                                width = "full",
-                            },
+                                profile = {
+                                    type = "input",
+                                    name = "Profile",
+                                    desc = "If this pack's action lists were imported from a SimulationCraft profile, the profile is included here.",
+                                    order = 4,
+                                    multiline = 8,
+                                    width = "full",
+                                },
 
-                            warnings = {
-                                type = "input",
-                                name = "Import Log",
-                                desc = "If this pack's action lists were imported from a SimulationCraft profile, any details logged at import are included here.",
-                                order = 5,
-                                multiline = 3,
-                                width = "full",                                
-                                hidden = function () return not data.warnings or data.warnings == "" end,
-                            },
-        
-                            reimport = {
-                                type = "execute",
-                                name = "(Re)Import",
-                                desc = "Rebuild the action list(s) from the profile above.",
-                                order = 5,
-                                func = function ()
-                                    local result, warnings = Hekili:ImportSimcAPL( nil, nil, data.profile )
+                                warnings = {
+                                    type = "input",
+                                    name = "Import Log",
+                                    desc = "If this pack's action lists were imported from a SimulationCraft profile, any details logged at import are included here.",
+                                    order = 5,
+                                    multiline = 3,
+                                    width = "full",                                
+                                    hidden = function () return not data.warnings or data.warnings == "" end,
+                                },
+            
+                                reimport = {
+                                    type = "execute",
+                                    name = "(Re)Import",
+                                    desc = "Rebuild the action list(s) from the profile above.",
+                                    order = 5,
+                                    func = function ()
+                                        local result, warnings = Hekili:ImportSimcAPL( nil, nil, data.profile )
 
-                                    wipe( data.lists )
+                                        wipe( data.lists )
 
-                                    for k, v in pairs( result ) do
-                                        data.lists[ k ] = v
-                                    end
+                                        for k, v in pairs( result ) do
+                                            data.lists[ k ] = v
+                                        end
 
-                                    data.warnings = warnings
-                                    data.date = tonumber( date("%Y%m%d.%H%M%S") )
+                                        data.warnings = warnings
+                                        data.date = tonumber( date("%Y%m%d.%H%M%S") )
 
 
-                                    if not data.lists[ packControl.listName ] then packControl.listName = "default" end
-                                    
-                                    local id = tonumber( packControl.actionID )
-                                    if not data.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
+                                        if not data.lists[ packControl.listName ] then packControl.listName = "default" end
+                                        
+                                        local id = tonumber( packControl.actionID )
+                                        if not data.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
 
-                                    Hekili:LoadScripts()
-                                end,
-                            },
-                        }
-                    },
+                                        Hekili:LoadScripts()
+                                    end,
+                                },
+                            }
+                        },
 
-                    lists = {
-                        type = "group",
-                        childGroups = "select",
-                        name = "Action Lists",
-                        desc = "Action Lists are used to determine which abilities should be used at what time.",
-                        order = 3,
-                        args = {
-                            nav = {
-                                type = "group",
-                                inline = true,
-                                name = "",
-                                order = 1,
-                                args = {
-                                    listName = {
-                                        type = "select",
-                                        name = "Select an Action List",
-                                        desc = "Select the action list to view or modify.",
-                                        order = 1,
-                                        width = "full",
-                                        values = function ()
-                                            local v = {
-                                                ["zzzzzzzzzz"] = "|cFF00FF00Create a New Action List|r"
-                                            }
-        
-                                            for k in pairs( data.lists ) do
-                                                if k == 'precombat' or k == 'default' then
-                                                    v[ k ] = "|cFF00B4FF" .. k .. "|r"
-                                                else
-                                                    v[ k ] = k
-                                                end
-                                            end
-        
-                                            return v
-                                        end,
-                                    },
-
-                                    actionID = {
-                                        type = "select",
-                                        name = "Select an Entry",
-                                        desc = "Select the entry to modify in this action list.",
-                                        order = 2,
-                                        width = "full",
-                                        values = function ()
-                                            local v = {}
-
-                                            local list = rawget( Hekili.DB.profile.packs[ pack ].lists, packControl.listName )
-
-                                            if list then
-                                                local last = 0
-
-                                                for i, entry in ipairs( list ) do
-                                                    local key = format( "%04d", i )
-                                                    local action = entry.action
-                                                    local desc
-                                                    
-                                                    if not action then action = "Unassigned"
-                                                    else action = class.abilities[ action ] and class.abilities[ action ].name or action end
-
-                                                    if entry.caption and entry.caption:len() > 0 then desc = entry.caption
-                                                    elseif entry.criteria and entry.criteria:len() > 0 then
-                                                        desc = entry.criteria 
-                                                        desc = desc:gsub( "[\r\n]", "" )
-                                                    end
-
-                                                    if desc then
-                                                        v[ key ] = "|cFFFFD100" .. i .. ".|r " .. action .. " - " .. "|cFFFFD100" .. desc .. "|r"
+                        lists = {
+                            type = "group",
+                            childGroups = "select",
+                            name = "Action Lists",
+                            desc = "Action Lists are used to determine which abilities should be used at what time.",
+                            order = 3,
+                            args = {
+                                nav = {
+                                    type = "group",
+                                    inline = true,
+                                    name = "",
+                                    order = 1,
+                                    args = {
+                                        listName = {
+                                            type = "select",
+                                            name = "Select an Action List",
+                                            desc = "Select the action list to view or modify.",
+                                            order = 1,
+                                            width = "full",
+                                            values = function ()
+                                                local v = {
+                                                    ["zzzzzzzzzz"] = "|cFF00FF00Create a New Action List|r"
+                                                }
+            
+                                                for k in pairs( data.lists ) do
+                                                    if k == 'precombat' or k == 'default' then
+                                                        v[ k ] = "|cFF00B4FF" .. k .. "|r"
                                                     else
-                                                        v[ key ] = "|cFFFFD100" .. i .. ".|r " .. action
+                                                        v[ k ] = k
                                                     end
-                                                    last = i + 1
+                                                end
+            
+                                                return v
+                                            end,
+                                        },
+
+                                        actionID = {
+                                            type = "select",
+                                            name = "Select an Entry",
+                                            desc = "Select the entry to modify in this action list.",
+                                            order = 2,
+                                            width = "full",
+                                            values = function ()
+                                                local v = {}
+
+                                                local list = rawget( Hekili.DB.profile.packs[ pack ].lists, packControl.listName )
+
+                                                if list then
+                                                    local last = 0
+
+                                                    for i, entry in ipairs( list ) do
+                                                        local key = format( "%04d", i )
+                                                        local action = entry.action
+                                                        local desc
+                                                        
+                                                        if not action then action = "Unassigned"
+                                                        else action = class.abilities[ action ] and class.abilities[ action ].name or action end
+
+                                                        local warning = false
+
+                                                        local scriptID = pack .. ":" .. packControl.listName .. ":" .. i
+                                                        local script = Hekili.Scripts.DB[ scriptID ]
+
+                                                        if script and script.Error then warning = true end
+
+                                                        if entry.caption and entry.caption:len() > 0 then desc = entry.caption
+                                                        elseif entry.criteria and entry.criteria:len() > 0 then
+                                                            desc = entry.criteria 
+                                                            desc = desc:gsub( "[\r\n]", "" )
+                                                        end
+
+                                                        local color = warning and "|cFFFF0000" or "|cFFFFD100"
+
+                                                        if desc then
+                                                            v[ key ] = color .. i .. ". " .. action .. "|r - " .. "|cFFFFD100" .. desc .. "|r"
+                                                        else
+                                                            v[ key ] = color .. i .. ". " .. action .. "|r"
+                                                        end
+                                                        last = i + 1
+                                                    end
+
+                                                    v.zzzzzzzzzz = "|cFF00FF00Create a New Action Entry|r"
+
                                                 end
 
-                                                v.zzzzzzzzzz = "|cFF00FF00Create a New Action Entry|r"
+                                                return v
+                                            end,
+                                            hidden = function ()
+                                                return packControl.listName == "zzzzzzzzzz"
+                                            end,
+                                        },
+                                    }
+                                },
 
-                                            end
+                                actionGroup = {
+                                    type = "group",
+                                    inline = true,
+                                    name = "",
+                                    order = 2,
+                                    hidden = function ()
+                                        if packControl.listName == "zzzzzzzzzz" or rawget( data.lists, packControl.listName ) == nil or packControl.actionID == "zzzzzzzzzz" then
+                                            return true
+                                        end
+                                        return false
+                                    end,
+                                    args = {                                    
+                                        entry = {
+                                            type = "group",
+                                            inline = true,
+                                            name = "",
+                                            order = 2,
+                                            -- get = 'GetActionOption',
+                                            -- set = 'SetActionOption',
+                                            hidden = function( info )
+                                                local id = tonumber( packControl.actionID )
+                                                return not packControl.actionID or packControl.actionID == "zzzzzzzzzz" or not data.lists[ packControl.listName ][ id ]
+                                            end,
+                                            args = {
+                                                enabled = {
+                                                    type = "toggle",
+                                                    name = "Enabled",
+                                                    desc = "If disabled, this entry will not be shown even if its criteria are met.",
+                                                    order = 1,
+                                                    width = "full",
+                                                },
 
-                                            return v
-                                        end,
-                                        hidden = function ()
-                                            return packControl.listName == "zzzzzzzzzz"
-                                        end,
-                                    },
-                                }
-                            },
+                                                position = {
+                                                    type = "select",
+                                                    name = "Position",
+                                                    desc = "Use this box to move this entry to another position in this Action List.",
+                                                    order = 2,
+                                                    values = function ()
+                                                        local v = {}
+                                                        
+                                                        for i = 1, #data.lists[ packControl.listName ] do
+                                                            v[ i ] = i
+                                                        end
+            
+                                                        return v
+                                                    end,
+                                                },        
 
-                            actionGroup = {
-                                type = "group",
-                                inline = true,
-                                name = "",
-                                order = 2,
-                                hidden = function ()
-                                    if packControl.listName == "zzzzzzzzzz" or rawget( data.lists, packControl.listName ) == nil or packControl.actionID == "zzzzzzzzzz" then
-                                        return true
-                                    end
-                                    return false
-                                end,
-                                args = {                                    
-                                    entry = {
-                                        type = "group",
-                                        inline = true,
-                                        name = "",
-                                        order = 2,
-                                        -- get = 'GetActionOption',
-                                        -- set = 'SetActionOption',
-                                        hidden = function( info )
-                                            local id = tonumber( packControl.actionID )
-                                            return not packControl.actionID or packControl.actionID == "zzzzzzzzzz" or not data.lists[ packControl.listName ][ id ]
-                                        end,
-                                        args = {
-                                            enabled = {
-                                                type = "toggle",
-                                                name = "Enabled",
-                                                desc = "If disabled, this entry will not be shown even if its criteria are met.",
-                                                order = 1,
-                                                width = "full",
-                                            },
+                                                topRow = {
+                                                    type = "group",
+                                                    inline = true,
+                                                    name = "",
+                                                    order = 3,
+                                                    args = {
+                                                        action = {
+                                                            type = "select",
+                                                            name = "Action",
+                                                            desc = "Select the action that will be recommended when this entry's criteria are met.",
+                                                            values = class.abilityList,
+                                                            order = 1,
+                                                            width = "double",
+                                                        },
 
-                                            position = {
-                                                type = "select",
-                                                name = "Position",
-                                                desc = "Use this box to move this entry to another position in this Action List.",
-                                                order = 2,
-                                                values = function ()
-                                                    local v = {}
-                                                    
-                                                    for i = 1, #data.lists[ packControl.listName ] do
-                                                        v[ i ] = i
-                                                    end
-        
-                                                    return v
-                                                end,
-                                            },        
+                                                        --[[ invalid = {
+                                                            type = "description",
+                                                            name = function () return GetListEntry( pack ).action end,
+                                                            desc = "This action is not supported.  Choose another at left.",
+                                                            order = 1.5,
+                                                        }, ]]
 
-                                            topRow = {
-                                                type = "group",
-                                                inline = true,
-                                                name = "",
-                                                order = 3,
-                                                args = {
-                                                    action = {
-                                                        type = "select",
-                                                        name = "Action",
-                                                        desc = "Select the action that will be recommended when this entry's criteria are met.",
-                                                        values = class.abilityList,
-                                                        order = 1,
-                                                        width = "double",
-                                                    },
-
-                                                    --[[ invalid = {
-                                                        type = "description",
-                                                        name = function () return GetListEntry( pack ).action end,
-                                                        desc = "This action is not supported.  Choose another at left.",
-                                                        order = 1.5,
-                                                    }, ]]
-
-                                                    caption = {
-                                                        type = "input",
-                                                        name = "Caption",
-                                                        desc = "Captions are short descriptions that can appear on the icon of a recommended ability.\n" ..
-                                                            "This can be useful for understanding why an ability was recommended at a particular time.",
-                                                        order = 2,
-                                                        width = "single",
-                                                        validate = function( info, val )
-                                                            if val:len() > 20 then return "Captions should be 10 characters or less." end
-                                                            return true
-                                                        end,
-                                                        hidden = function()
-                                                            local e = GetListEntry( pack )
-                                                            local ability = e.action and class.abilities[ e.action ]
-                                                            
-                                                            return not ability or ( ability.id < 0 and ability.id > -10 )
-                                                        end,
-                                                    },
-        
-                                                    list_name = {
-                                                        type = "select",
-                                                        name = "Action List",
-                                                        values = function ()
-                                                            local e = GetListEntry( pack )
-                                                            local v = {}
-                                                            
-                                                            for k in pairs( data.lists ) do
-                                                                if k ~= packControl.listName then
-                                                                    if k == 'precombat' or k == 'default' then
-                                                                        v[ k ] = "|cFF00B4FF" .. k .. "|r"
-                                                                    else
-                                                                        v[ k ] = k
+                                                        caption = {
+                                                            type = "input",
+                                                            name = "Caption",
+                                                            desc = "Captions are short descriptions that can appear on the icon of a recommended ability.\n" ..
+                                                                "This can be useful for understanding why an ability was recommended at a particular time.",
+                                                            order = 2,
+                                                            width = "single",
+                                                            validate = function( info, val )
+                                                                if val:len() > 20 then return "Captions should be 10 characters or less." end
+                                                                return true
+                                                            end,
+                                                            hidden = function()
+                                                                local e = GetListEntry( pack )
+                                                                local ability = e.action and class.abilities[ e.action ]
+                                                                
+                                                                return not ability or ( ability.id < 0 and ability.id > -10 )
+                                                            end,
+                                                        },
+            
+                                                        list_name = {
+                                                            type = "select",
+                                                            name = "Action List",
+                                                            values = function ()
+                                                                local e = GetListEntry( pack )
+                                                                local v = {}
+                                                                
+                                                                for k in pairs( data.lists ) do
+                                                                    if k ~= packControl.listName then
+                                                                        if k == 'precombat' or k == 'default' then
+                                                                            v[ k ] = "|cFF00B4FF" .. k .. "|r"
+                                                                        else
+                                                                            v[ k ] = k
+                                                                        end
                                                                     end
                                                                 end
-                                                            end
-        
-                                                            return v
-                                                        end,
-                                                        order = 4,
-                                                        -- width = "full",
-                                                        hidden = function ()
-                                                            local e = GetListEntry( pack )
-                                                            return not ( e.action == "call_action_list" or e.action == "run_action_list" )
-                                                        end,                                                    
-                                                    },
-        
-                                                    potion = {
-                                                        type = "select",
-                                                        name = "Potion",
-                                                        order = 4,
-                                                        -- width = "full",
-                                                        values = class.potionList,
-                                                        hidden = function ()
-                                                            local e = GetListEntry( pack )
-                                                            return e.action ~= "potion"
-                                                        end,
-                                                    },
+            
+                                                                return v
+                                                            end,
+                                                            order = 4,
+                                                            -- width = "full",
+                                                            hidden = function ()
+                                                                local e = GetListEntry( pack )
+                                                                return not ( e.action == "call_action_list" or e.action == "run_action_list" )
+                                                            end,                                                    
+                                                        },
+            
+                                                        potion = {
+                                                            type = "select",
+                                                            name = "Potion",
+                                                            order = 4,
+                                                            -- width = "full",
+                                                            values = class.potionList,
+                                                            hidden = function ()
+                                                                local e = GetListEntry( pack )
+                                                                return e.action ~= "potion"
+                                                            end,
+                                                        },
 
-                                                    sec = {
-                                                        type = "input",
-                                                        name = "Seconds",
-                                                        order = 4,
-                                                        hidden = function ()
-                                                            local e = GetListEntry( pack )
-                                                            return e.action ~= "wait"
-                                                        end,
+                                                        sec = {
+                                                            type = "input",
+                                                            name = "Seconds",
+                                                            order = 4,
+                                                            hidden = function ()
+                                                                local e = GetListEntry( pack )
+                                                                return e.action ~= "wait"
+                                                            end,
+                                                        }
                                                     }
+                                                },
+
+                                                modVariable = {
+                                                    type = "group",
+                                                    inline = true,
+                                                    name = "Variable",
+                                                    order = 5,
+                                                    args = {
+                                                        op = {
+                                                            type = "select",
+                                                            name = "Operation",
+                                                            values = {
+                                                                set = "Set Value",
+                                                                max = "Maximum Value",
+                                                                setif = "Set Value If...",
+                                                                add = "Add Value",
+                                                                sub = "Subtract Value",
+                                                                min = "Minimum Value"
+                                                            },
+                                                            order = 1,
+                                                            width = "single",
+                                                        },
+
+                                                        var_name = {
+                                                            type = "input",
+                                                            name = "Name",
+                                                            desc = "Specify a name for this variable.  Variables must be lowercase with no spaces or symbols aside from the underscore.",
+                                                            validate = function( info, val )
+                                                                if val:len() < 3 then return "Variables must be at least 3 characters in length." end
+
+                                                                local check = formatKey( val )
+                                                                if check ~= val then return "Invalid characters entered.  Try again." end
+
+                                                                return true
+                                                            end,
+                                                            order = 2,
+                                                            width = "double",
+                                                        },
+
+                                                        value = {
+                                                            type = "input",
+                                                            name = "Value",
+                                                            desc = "Provide the value to store (or calculate) when this variable is invoked.",
+                                                            order = 6,
+                                                            width = "full",
+                                                            multiline = 3,
+                                                            dialogControl = 'HekiliCustomEditor',
+                                                            hidden = function ()
+                                                                local e = GetListEntry( pack )
+                                                                return e.action ~= "variable"
+                                                            end,
+                                                        },
+                                                    },
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        return e.action ~= "variable"
+                                                    end,
+                                                },
+
+                                                modPooling = {
+                                                    type = "group",
+                                                    inline = true,
+                                                    name = "Pooling",
+                                                    order = 5,
+                                                    args = {
+                                                        for_next = {
+                                                            type = "toggle",
+                                                            name = function ()
+                                                                local n = packControl.actionID; n = tonumber( n ) + 1
+                                                                local e = Hekili.DB.profile.packs[ pack ].lists[ packControl.listName ][ n ]
+
+                                                                local ability = e and e.action and class.abilities[ e.action ]
+                                                                ability = ability and ability.name or "Not Set"
+
+                                                                return "Pool for Next Entry (" .. ability ..")"
+                                                            end,
+                                                            desc = "If checked, the addon will pool resources until the next entry has enough resources to use.",
+                                                            order = 5,
+                                                            width = "full",
+                                                            hidden = function ()
+                                                                local e = GetListEntry( pack )
+                                                                return e.action ~= "pool_resource"
+                                                            end,
+                                                        },
+
+                                                        wait = {
+                                                            type = "input",
+                                                            name = "Pooling Time",
+                                                            desc = "Specify the time, in seconds, as a number or as an expression that evaluates to a number.\n" ..
+                                                                "Default is |cFFFFD1000.5|r.  An example expression would be |cFFFFD100energy.time_to_max|r.",
+                                                            order = 6,
+                                                            width = "full",
+                                                            multiline = 3,
+                                                            hidden = function ()
+                                                                local e = GetListEntry( pack )
+                                                                return e.action ~= "pool_resource" or e.for_next == 1
+                                                            end,
+                                                        },
+
+                                                        extra_amount = {
+                                                            type = "input",
+                                                            name = "Extra Pooling",
+                                                            desc = "Specify the amount of extra resources to pool in addition to what is needed for the next entry.",
+                                                            order = 6,
+                                                            width = "full",
+                                                            hidden = function ()
+                                                                local e = GetListEntry( pack )
+                                                                return e.action ~= "pool_resource" or e.for_next ~= 1
+                                                            end,
+                                                        },
+                                                    },
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        return e.action ~= 'pool_resource'
+                                                    end,
+                                                },
+
+                                                criteria = {
+                                                    type = "input",
+                                                    name = "Conditions",
+                                                    order = 10,
+                                                    width = "full",
+                                                    multiline = 6,
+                                                    dialogControl = "HekiliCustomEditor",
+                                                    arg = function( info )
+                                                        local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
+
+                                                        local entry = rawget( self.DB.profile.packs, pack )
+                                                        entry = entry and entry.lists[ list ]
+                                                        entry = entry and entry[ action ]
+
+                                                        local results = {}
+
+                                                        state.reset()
+                                                        state.this_action = entry.action
+
+                                                        local scriptID = pack .. ":" .. list .. ":" .. action
+
+                                                        scripts:ImportModifiers( scriptID )
+                                                        scripts:StoreValues( results, scriptID )
+                                                        
+                                                        return results, list, action
+                                                    end,
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        return e.action == "variable" or e.action == "use_items"
+                                                    end,
+                                                },
+
+                                                showModifiers = {
+                                                    type = "toggle",
+                                                    name = "Show Modifiers",
+                                                    desc = "If checked, some additional modifiers and conditions may be set.",
+                                                    order = 20,
+                                                    width = "full",
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        local ability = e.action and class.abilities[ e.action ]
+
+                                                        return not ability or ( ability.id < 0 and ability.id > -100 )
+                                                    end,
+                                                },
+
+                                                modCycle = {
+                                                    type = "group",
+                                                    inline = true,
+                                                    name = "",
+                                                    order = 21,
+                                                    args = {
+                                                        cycle_targets = {
+                                                            type = "toggle",
+                                                            name = "Cycle Targets",
+                                                            desc = "If checked, the addon will check each available target and show whether to switch targets.",
+                                                            order = 1,
+                                                            width = "single",
+                                                        },
+
+                                                        max_cycle_targets = {
+                                                            type = "input",
+                                                            name = "Max Cycle Targets",
+                                                            desc = "If cycle targets is checked, the addon will check up to the specified number of targets.",
+                                                            order = 2,
+                                                            width = "double",
+                                                            disabled = function( info )
+                                                                local e = GetListEntry( pack )
+                                                                return e.cycle_targets ~= 1
+                                                            end,
+                                                        }
+                                                    },
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        local ability = e.action and class.abilities[ e.action ]
+
+                                                        return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
+                                                    end,
+                                                },
+
+                                                modCooldown = {
+                                                    type = "group",
+                                                    inline = true,
+                                                    name = "",
+                                                    order = 22,
+                                                    args = {
+                                                        enable_line_cd = {
+                                                            type = "toggle",
+                                                            name = "Line Cooldown",
+                                                            desc = "If enabled, this entry cannot be recommended unless the specified amount of time has passed since its last use.",
+                                                            order = 1,
+                                                        },
+
+                                                        line_cd = {
+                                                            type = "input",
+                                                            name = "Entry Cooldown",
+                                                            desc = "If set, this entry cannot be recommended unless this time has passed since the last time the ability was used.",
+                                                            order = 2,
+                                                            width = "double", 
+                                                            disabled = function( info )
+                                                                local e = GetListEntry( pack )
+                                                                return not e.enable_line_cd
+                                                            end,
+                                                        },
+                                                    },
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        local ability = e.action and class.abilities[ e.action ]
+
+                                                        return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
+                                                    end,
+                                                },
+
+                                                modMoving = {
+                                                    type = "group",
+                                                    inline = true,
+                                                    name = "",
+                                                    order = 23,
+                                                    args = {
+                                                        enable_moving = {
+                                                            type = "toggle",
+                                                            name = "Check Movement",
+                                                            desc = "If checked, this entry can only be recommended when your character movement matches the setting.",
+                                                            order = 1,
+                                                        },
+
+                                                        moving = {
+                                                            type = "select",
+                                                            name = "Movement",
+                                                            desc = "If set, this entry can only be recommended when your movement matches the setting.",
+                                                            order = 2,
+                                                            width = "double",
+                                                            values = {
+                                                                [0]  = "Stationary",
+                                                                [1]  = "Moving"
+                                                            },
+                                                            disabled = function( info )
+                                                                local e = GetListEntry( pack )
+                                                                return not e.enable_moving
+                                                            end,
+                                                        }
+                                                    },
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        local ability = e.action and class.abilities[ e.action ]
+
+                                                        return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
+                                                    end,
+                                                },
+
+                                                deleteHeader = {
+                                                    type = "header",
+                                                    name = "Delete Action",
+                                                    order = 100,
+                                                },
+
+                                                delete = {
+                                                    type = "execute",
+                                                    name = "Delete Entry",
+                                                    order = 101,
+                                                    confirm = true,
+                                                    func = function ()
+                                                        local id = tonumber( packControl.actionID )
+                                                        table.remove( data.lists[ packControl.listName ], id )
+
+                                                        if not data.lists[ packControl.listName ][ id ] then id = id - 1; packControl.actionID = format( "%04d", id ) end
+                                                        if not data.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
+
+                                                        self:LoadScripts()
+                                                    end
                                                 }
                                             },
+                                        },                                    
+                                    }
+                                },
 
-                                            modVariable = {
-                                                type = "group",
-                                                inline = true,
-                                                name = "Variable",
-                                                order = 5,
-                                                args = {
-                                                    op = {
-                                                        type = "select",
-                                                        name = "Operation",
-                                                        values = {
-                                                            set = "Set Value",
-                                                            max = "Maximum Value",
-                                                            setif = "Set Value If...",
-                                                            add = "Add Value",
-                                                            sub = "Subtract Value",
-                                                            min = "Minimum Value"
-                                                        },
-                                                        order = 1,
-                                                        width = "single",
-                                                    },
-
-                                                    var_name = {
-                                                        type = "input",
-                                                        name = "Name",
-                                                        desc = "Specify a name for this variable.  Variables must be lowercase with no spaces or symbols aside from the underscore.",
-                                                        validate = function( info, val )
-                                                            if val:len() < 3 then return "Variables must be at least 3 characters in length." end
-
-                                                            local check = formatKey( val )
-                                                            if check ~= val then return "Invalid characters entered.  Try again." end
-
-                                                            return true
-                                                        end,
-                                                        order = 2,
-                                                        width = "double",
-                                                    },
-
-                                                    value = {
-                                                        type = "input",
-                                                        name = "Value",
-                                                        desc = "Provide the value to store (or calculate) when this variable is invoked.",
-                                                        order = 6,
-                                                        width = "full",
-                                                        multiline = 3,
-                                                        dialogControl = 'HekiliCustomEditor',
-                                                        hidden = function ()
-                                                            local e = GetListEntry( pack )
-                                                            return e.action ~= "variable"
-                                                        end,
-                                                    },
-                                                },
-                                                hidden = function ()
-                                                    local e = GetListEntry( pack )
-                                                    return e.action ~= "variable"
-                                                end,
-                                            },
-
-                                            modPooling = {
-                                                type = "group",
-                                                inline = true,
-                                                name = "Pooling",
-                                                order = 5,
-                                                args = {
-                                                    for_next = {
-                                                        type = "toggle",
-                                                        name = function ()
-                                                            local n = packControl.actionID; n = tonumber( n ) + 1
-                                                            local e = Hekili.DB.profile.packs[ pack ].lists[ packControl.listName ][ n ]
-
-                                                            local ability = e and e.action and class.abilities[ e.action ]
-                                                            ability = ability and ability.name or "Not Set"
-
-                                                            return "Pool for Next Entry (" .. ability ..")"
-                                                        end,
-                                                        desc = "If checked, the addon will pool resources until the next entry has enough resources to use.",
-                                                        order = 5,
-                                                        width = "full",
-                                                        hidden = function ()
-                                                            local e = GetListEntry( pack )
-                                                            return e.action ~= "pool_resource"
-                                                        end,
-                                                    },
-
-                                                    wait = {
-                                                        type = "input",
-                                                        name = "Pooling Time",
-                                                        desc = "Specify the time, in seconds, as a number or as an expression that evaluates to a number.\n" ..
-                                                            "Default is |cFFFFD1000.5|r.  An example expression would be |cFFFFD100energy.time_to_max|r.",
-                                                        order = 6,
-                                                        width = "full",
-                                                        multiline = 3,
-                                                        hidden = function ()
-                                                            local e = GetListEntry( pack )
-                                                            return e.action ~= "pool_resource" or e.for_next == 1
-                                                        end,
-                                                    },
-
-                                                    extra_amount = {
-                                                        type = "input",
-                                                        name = "Extra Pooling",
-                                                        desc = "Specify the amount of extra resources to pool in addition to what is needed for the next entry.",
-                                                        order = 6,
-                                                        width = "full",
-                                                        hidden = function ()
-                                                            local e = GetListEntry( pack )
-                                                            return e.action ~= "pool_resource" or e.for_next ~= 1
-                                                        end,
-                                                    },
-                                                },
-                                                hidden = function ()
-                                                    local e = GetListEntry( pack )
-                                                    return e.action ~= 'pool_resource'
-                                                end,
-                                            },
-
-                                            criteria = {
-                                                type = "input",
-                                                name = "Conditions",
-                                                order = 10,
-                                                width = "full",
-                                                multiline = 6,
-                                                dialogControl = "HekiliCustomEditor",
-                                                arg = function( info )
-                                                    local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
-
-                                                    local entry = rawget( self.DB.profile.packs, pack )
-                                                    entry = entry and entry.lists[ list ]
-                                                    entry = entry and entry[ action ]
-
-                                                    local results = {}
-
-                                                    state.reset()
-                                                    state.this_action = entry.action
-
-                                                    local scriptID = pack .. ":" .. list .. ":" .. action
-
-                                                    scripts:ImportModifiers( scriptID )
-                                                    scripts:StoreValues( results, scriptID )
-                                                    
-                                                    return results, list, action
-                                                end,
-                                                hidden = function ()
-                                                    local e = GetListEntry( pack )
-                                                    return e.action == "variable" or e.action == "use_items"
-                                                end,
-                                            },
-
-                                            showModifiers = {
-                                                type = "toggle",
-                                                name = "Show Modifiers",
-                                                desc = "If checked, some additional modifiers and conditions may be set.",
-                                                order = 20,
-                                                width = "full",
-                                                hidden = function ()
-                                                    local e = GetListEntry( pack )
-                                                    local ability = e.action and class.abilities[ e.action ]
-
-                                                    return not ability or ( ability.id < 0 and ability.id > -100 )
-                                                end,
-                                            },
-
-                                            modCycle = {
-                                                type = "group",
-                                                inline = true,
-                                                name = "",
-                                                order = 21,
-                                                args = {
-                                                    cycle_targets = {
-                                                        type = "toggle",
-                                                        name = "Cycle Targets",
-                                                        desc = "If checked, the addon will check each available target and show whether to switch targets.",
-                                                        order = 1,
-                                                        width = "single",
-                                                    },
-
-                                                    max_cycle_targets = {
-                                                        type = "input",
-                                                        name = "Max Cycle Targets",
-                                                        desc = "If cycle targets is checked, the addon will check up to the specified number of targets.",
-                                                        order = 2,
-                                                        width = "double",
-                                                        disabled = function( info )
-                                                            local e = GetListEntry( pack )
-                                                            return e.cycle_targets ~= 1
-                                                        end,
-                                                    }
-                                                },
-                                                hidden = function ()
-                                                    local e = GetListEntry( pack )
-                                                    local ability = e.action and class.abilities[ e.action ]
-
-                                                    return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
-                                                end,
-                                            },
-
-                                            modCooldown = {
-                                                type = "group",
-                                                inline = true,
-                                                name = "",
-                                                order = 22,
-                                                args = {
-                                                    enable_line_cd = {
-                                                        type = "toggle",
-                                                        name = "Line Cooldown",
-                                                        desc = "If enabled, this entry cannot be recommended unless the specified amount of time has passed since its last use.",
-                                                        order = 1,
-                                                    },
-
-                                                    line_cd = {
-                                                        type = "input",
-                                                        name = "Entry Cooldown",
-                                                        desc = "If set, this entry cannot be recommended unless this time has passed since the last time the ability was used.",
-                                                        order = 2,
-                                                        width = "double", 
-                                                        disabled = function( info )
-                                                            local e = GetListEntry( pack )
-                                                            return not e.enable_line_cd
-                                                        end,
-                                                    },
-                                                },
-                                                hidden = function ()
-                                                    local e = GetListEntry( pack )
-                                                    local ability = e.action and class.abilities[ e.action ]
-
-                                                    return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
-                                                end,
-                                            },
-
-                                            modMoving = {
-                                                type = "group",
-                                                inline = true,
-                                                name = "",
-                                                order = 23,
-                                                args = {
-                                                    enable_moving = {
-                                                        type = "toggle",
-                                                        name = "Check Movement",
-                                                        desc = "If checked, this entry can only be recommended when your character movement matches the setting.",
-                                                        order = 1,
-                                                    },
-
-                                                    moving = {
-                                                        type = "select",
-                                                        name = "Movement",
-                                                        desc = "If set, this entry can only be recommended when your movement matches the setting.",
-                                                        order = 2,
-                                                        width = "double",
-                                                        values = {
-                                                            [0]  = "Stationary",
-                                                            [1]  = "Moving"
-                                                        },
-                                                        disabled = function( info )
-                                                            local e = GetListEntry( pack )
-                                                            return not e.enable_moving
-                                                        end,
-                                                    }
-                                                },
-                                                hidden = function ()
-                                                    local e = GetListEntry( pack )
-                                                    local ability = e.action and class.abilities[ e.action ]
-
-                                                    return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
-                                                end,
-                                            },
-
-                                            deleteHeader = {
-                                                type = "header",
-                                                name = "Delete Action",
-                                                order = 100,
-                                            },
-
-                                            delete = {
-                                                type = "execute",
-                                                name = "Delete Entry",
-                                                order = 101,
-                                                confirm = true,
-                                                func = function ()
-                                                    local id = tonumber( packControl.actionID )
-                                                    table.remove( data.lists[ packControl.listName ], id )
-
-                                                    if not data.lists[ packControl.listName ][ id ] then id = id - 1; packControl.actionID = format( "%04d", id ) end
-                                                    if not data.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
-
-                                                    self:LoadScripts()
-                                                end
-                                            }
+                                newListGroup = {
+                                    type = "group",
+                                    inline = true,
+                                    name = "",
+                                    order = 3,
+                                    hidden = function ()
+                                        return packControl.listName ~= "zzzzzzzzzz"
+                                    end,
+                                    args = {
+                                        newListName = {
+                                            type = "input",
+                                            name = "List Name",
+                                            order = 1,
+                                            validate = function( info, val )
+                                                if val:len() < 2 then return "Action list names should be at least 2 characters in length."
+                                                elseif rawget( data.lists, val ) then return "There is already an action list by that name."
+                                                elseif val:find( "[^a-zA-Z0-9_]" ) then return "Only alphanumeric characters and underscores can be used in list names." end
+                                                return true
+                                            end,
+                                            width = "full",
                                         },
-                                    },                                    
-                                }
-                            },
 
-                            newListGroup = {
-                                type = "group",
-                                inline = true,
-                                name = "",
-                                order = 3,
-                                hidden = function ()
-                                    return packControl.listName ~= "zzzzzzzzzz"
-                                end,
-                                args = {
-                                    newListName = {
-                                        type = "input",
-                                        name = "List Name",
-                                        order = 1,
-                                        validate = function( info, val )
-                                            if val:len() < 2 then return "Action list names should be at least 2 characters in length."
-                                            elseif rawget( data.lists, val ) then return "There is already an action list by that name."
-                                            elseif val:find( "[^a-zA-Z0-9_]" ) then return "Only alphanumeric characters and underscores can be used in list names." end
-                                            return true
-                                        end,
-                                        width = "full",
-                                    },
+                                        createList = {
+                                            type = "execute",
+                                            name = "Create New List",
+                                            order = 2,
+                                            disabled = function() return packControl.newListName == nil end,
+                                            func = function ()
+                                                data.lists[ packControl.newListName ] = {}
+                                                packControl.listName = packControl.newListName
+                                                packControl.newListName = nil
+                                                
+                                            end,
+                                        }
+                                    }
+                                },
 
-                                    createList = {
-                                        type = "execute",
-                                        name = "Create New List",
-                                        order = 2,
-                                        disabled = function() return packControl.newListName == nil end,
-                                        func = function ()
-                                            data.lists[ packControl.newListName ] = {}
-                                            packControl.listName = packControl.newListName
-                                            packControl.newListName = nil
-                                            
-                                        end,
+                                newActionGroup = {
+                                    type = "group",
+                                    inline = true,
+                                    name = "",
+                                    order = 3,
+                                    hidden = function ()
+                                        return packControl.listName == "zzzzzzzzzz" or packControl.actionID ~= "zzzzzzzzzz"
+                                    end,
+                                    args = {
+                                        createEntry = {
+                                            type = "execute",
+                                            name = "Create New Entry",
+                                            order = 1,
+                                            func = function ()
+                                                table.insert( data.lists[ packControl.listName ], {} )
+                                                packControl.actionID = format( "%04d", #data.lists[ packControl.listName ] )
+                                            end,
+                                        }
                                     }
                                 }
-                            },
 
-                            newActionGroup = {
-                                type = "group",
-                                inline = true,
-                                name = "",
-                                order = 3,
-                                hidden = function ()
-                                    return packControl.listName == "zzzzzzzzzz" or packControl.actionID ~= "zzzzzzzzzz"
-                                end,
-                                args = {
-                                    createEntry = {
-                                        type = "execute",
-                                        name = "Create New Entry",
-                                        order = 1,
-                                        func = function ()
-                                            table.insert( data.lists[ packControl.listName ], {} )
-                                            packControl.actionID = format( "%04d", #data.lists[ packControl.listName ] )
-                                        end,
-                                    }
+
+                            },
+                            plugins = {
+                            }
+                        },
+
+                        export = {
+                            type = "group",
+                            name = "Export",
+                            order = 4,
+                            args = {
+                                exportString = {
+                                    type = "input",
+                                    name = "Export String",
+                                    multiline = 5,
+                                    get = function( info )
+                                        return self:SerializeActionPack( pack )
+                                    end,
+                                    set = function () return end,
+                                    order = 1,
+                                    width = "full"
                                 }
                             }
-
-
-                        },
-                        plugins = {
                         }
                     },
+                }
 
-                    export = {
-                        type = "group",
-                        name = "Export",
-                        order = 4,
-                        args = {
-                            exportString = {
-                                type = "input",
-                                name = "Export String",
-                                multiline = 5,
-                                get = function( info )
-                                    return self:SerializeActionPack( pack )
-                                end,
-                                set = function () return end,
-                                order = 1,
-                                width = "full"
-                            }
-                        }
-                    }
-                },
-            }
+                --[[ wipe( opts.args.lists.plugins.lists )
 
-            --[[ wipe( opts.args.lists.plugins.lists )
+                local n = 10
+                for list in pairs( data.lists ) do
+                    opts.args.lists.plugins.lists[ list ] = EmbedActionListOptions( n, pack, list )
+                    n = n + 1
+                end ]]
 
-            local n = 10
-            for list in pairs( data.lists ) do
-                opts.args.lists.plugins.lists[ list ] = EmbedActionListOptions( n, pack, list )
-                n = n + 1
-            end ]]
-
-            packs.plugins.packages[ pack ] = opts
-            count = count + 1
+                packs.plugins.packages[ pack ] = opts
+                count = count + 1
+            end
         end
 
         db.args.packs = packs

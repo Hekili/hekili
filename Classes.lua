@@ -11,7 +11,7 @@ local state = Hekili.State
 local CommitKey = ns.commitKey
 
 local GetResourceInfo, GetResourceID, GetResourceKey = ns.GetResourceInfo, ns.GetResourceID, ns.GetResourceKey
-
+local RegisterEvent = ns.RegisterEvent
 
 local getSpecializationKey = ns.getSpecializationKey
 local tableCopy = ns.tableCopy
@@ -46,8 +46,10 @@ local HekiliSpecMixin = {
             fcount = 0,
             times = {},
             values = {},
-
+            
             regenModel = regen,
+            active_regen = 0,
+            inactive_regen = 0,
             last_tick = 0
         }, mt_resource )
 
@@ -113,6 +115,12 @@ local HekiliSpecMixin = {
                 end ) end
             end
             self.auras[ a.id ] = a
+        end
+
+        if data.meta then
+            for k, v in pairs( data.meta ) do
+                if type( v ) == 'function' then data.meta[ k ] = setfenv( v, state ) end
+            end
         end
 
         if type( data.copy ) == 'string' then
@@ -204,7 +212,7 @@ local HekiliSpecMixin = {
     RegisterHook = function( self, event, func )
         self.hooks[ event ] = self.hooks[ event ] or {}
         
-        func = setfenv( func, state )
+        -- func = setfenv( func, state )
         table.insert( self.hooks[ event ], func )
     end,
 
@@ -325,6 +333,17 @@ local HekiliSpecMixin = {
 
     RegisterOptions = function( self, options )
         self.options = options
+    end,
+
+    RegisterEvent = function( self, event, func )
+        RegisterEvent( event, function( ... )
+            if state.spec.id == self.id then func( ... ) end
+        end )
+    end,
+
+    RegisterHook = function( self, hook, func )
+        self.hooks[ hook ] = self.hooks[ hook ] or {}
+        self.hooks[ hook ] = setfenv( func, state )
     end,
 }
 
@@ -2210,6 +2229,7 @@ function Hekili:SpecializationChanged()
     wipe( class.talents )
     wipe( class.gear )
     wipe( class.packs )
+    wipe( class.hooks )
 
     local specs = { 0 }
     local currentSpec = GetSpecialization()
@@ -2286,6 +2306,10 @@ function Hekili:SpecializationChanged()
                     class.stateTables[ name ] = t
                     rawset( state, name, t )
                 end
+
+                for name, func in pairs( spec.hooks ) do
+                    class.hooks[ name ] = func
+                end 
 
                 class.potion = spec.potion or class.potion
                 class.potionList.default = "|cFFFFD100Default|r"

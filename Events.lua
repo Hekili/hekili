@@ -520,7 +520,7 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
 
     if power == "FOCUS" and state.focus then
         local now = GetTime()
-        local elapsed = now - state.focus.last_tick
+        local elapsed = now - ( state.focus.last_tick or 0 )
 
         elapsed = elapsed > power_tick_data.focus_avg * 1.5 and power_tick_data.focus_avg or elapsed
 
@@ -532,7 +532,8 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
 
     elseif power == "ENERGY" and state.energy then
         local now = GetTime()
-        local elapsed = min( 0.12, now - state.energy.last_tick )
+        local elapsed = min( 0.12, now - ( state.energy.last_tick or 0 ) )
+
         elapsed = elapsed > power_tick_data.energy_avg * 1.5 and power_tick_data.energy_avg or elapsed
 
         if elapsed > 0.075 then

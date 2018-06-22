@@ -152,6 +152,7 @@ local function SimToLua( str, modifier )
   -- Address equipped.number => equipped[number]
   str = str:gsub("equipped%.(%d+)", "equipped[%1]")
   str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
+  str = str:gsub(".in([^a-zA-Z0-9_])", "['in']%1" )
 
   str = str:gsub("prev%.(%d+)", "prev[%1]")
   str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
@@ -266,12 +267,19 @@ local nameMap = {
 -- Need to convert all the appropriate scripts and store them safely...
 
 local function ConvertScript( node, hasModifiers )
+    state.reset()
+
     local t = SimToLua( node.criteria )
     local sf, e
 
     if t then sf, e = loadstring( "return " .. t ) end
     if sf then setfenv( sf, state ) end
-    if e then e = e:match( ":%d+: (.*)" ) end
+
+    if sf and not e then
+        local pass, val = pcall( sf )
+        if not pass then e = val end
+    end
+    if e then e = e:match( ":(%d+: .*)" ) end
     
     local se = t and GetScriptElements( t )
 
@@ -500,21 +508,23 @@ function scripts:LoadScripts()
     wipe( self.DB )
 
     for pack, pData in pairs( profile.packs ) do
-        for list, lData in pairs( pData.lists ) do
-            for action, data in ipairs( lData ) do
-                local scriptID = pack .. ":" .. list .. ":" .. action
-                local script = ConvertScript( data, true )
+        if pData.spec and class.specs[ pData.spec ] then
+            for list, lData in pairs( pData.lists ) do
+                for action, data in ipairs( lData ) do
+                    local scriptID = pack .. ":" .. list .. ":" .. action
+                    local script = ConvertScript( data, true )
 
-                if data.action == "call_action_list" or data.action == "run_action_list" then
-                    -- Check for Time Sensitive conditions.
-                    script.TimeSensitive = false
-                    
-                    local lua = script.Lua
-                    if lua and ( lua:match( "active_mongoose_fury" ) or lua:match( "judgment_override" ) or lua:match( "time" ) or lua:match( "cooldown" ) or lua:match( "charge" ) or lua:match( "buff" ) or lua:match( "focus" ) or lua:match( "energy" ) ) then
-                        script.TimeSensitive = true
+                    if data.action == "call_action_list" or data.action == "run_action_list" then
+                        -- Check for Time Sensitive conditions.
+                        script.TimeSensitive = false
+                        
+                        local lua = script.Lua
+                        if lua and ( lua:match( "active_mongoose_fury" ) or lua:match( "judgment_override" ) or lua:match( "time" ) or lua:match( "cooldown" ) or lua:match( "charge" ) or lua:match( "buff" ) or lua:match( "focus" ) or lua:match( "energy" ) ) then
+                            script.TimeSensitive = true
+                        end
                     end
+                    self.DB[ scriptID ] = script
                 end
-                self.DB[ scriptID ] = script
             end
         end
     end

@@ -32,6 +32,7 @@ state.PTR = PTR
 state.now = 0
 state.offset = 0
 state.delay = 0
+state.false_start = 0
 state.latency = 0
 
 state.arena = false
@@ -103,6 +104,7 @@ state.swings = {
     oh_speed = select( 2, UnitAttackSpeed( 'player' ) ) or 2.6,
     oh_projected = GetTime() + 3.9
 }
+state.table = table
 state.talent = {}
 state.target = {
     debuff = state.debuff,
@@ -393,8 +395,9 @@ state.UnitChannelInfo = UnitChannelInfo
 state.floor = math.floor
 state.abs = math.abs
 state.table_insert = table.insert
-state.pairs = pairs
 state.ipairs = ipairs
+state.pairs = pairs
+state.type = type
 state.rawget = rawget
 state.rawset = rawset
 
@@ -797,9 +800,9 @@ local raid_event_filter = {
     to_pct = 0
 }
 
-state.raid_events = setmetatable( {}, {
+state.raid_event = setmetatable( {}, {
     __index = function( t, k )
-        return raid_event_filter[ k ] or 0
+        return raid_event_filter[ k ] or raid_event_filter
     end
 } )
 
@@ -2260,7 +2263,7 @@ local mt_resource = {
             return state:TimeToResource( t, amount )
 
         elseif k == 'regen' then
-            return t.active_regen
+            return ( state.time > 0 and t.active_regen or t.inactive_regen ) or 0
 
         elseif k == 'model' then
             return
@@ -2290,9 +2293,11 @@ local default_buff_values = {
 
 
 function state:AddBuffMetaFunction( aura, key, func )
-    if not class.auras[ aura ] then return end
-    if not rawget( self.buff[ aura ], 'meta' ) then self.buff[ aura ].meta = {} end
-    self.buff[ aura ].meta[ key ] = setfenv( func, self )
+    local a = class.auras[ aura ]
+    if not a then return end
+
+    if a.meta then a.meta = {} end
+    a.meta[ key ] = setfenv( func, self )
 end
 
 
@@ -2301,8 +2306,8 @@ local mt_default_buff = {
     __index = function(t, k)
         local aura = class.auras[ t.key ]
 
-        if rawget( t, 'meta' ) and t.meta[ k ] then
-            return t.meta[ k ]()
+        if aura and aura.meta and aura.meta[ k ] then
+            return aura.meta[ k ]()
 
         elseif k == 'name' or k == 'count' or k == 'duration' or k == 'expires' or k == 'applied' or k == 'caster' or k == 'id' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if aura and aura.generate then
@@ -3507,8 +3512,7 @@ function state.reset( dispName )
 
     
     -- Delay to end of GCD.
-    local delay = state.cooldown.global_cooldown.remains
-    
+    local delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
     delay = ns.callHook( "reset_postcast", delay )
     
     --[[ if delay > 0 then
