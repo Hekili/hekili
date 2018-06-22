@@ -94,8 +94,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 -- 267996 - Darkhound
                 elseif spellID >= 267986 and spellID <= 267996 then table.insert( nether_portal, now + 15 ) end
 
-                print( spellName, spellID )
-            
             elseif subtype == "SPELL_CAST_SUCCESS" then
                 if spellID == 196277 then
                     table.wipe( wild_imps )
@@ -179,7 +177,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         wipe( nether_portal_v )
         for n, t in ipairs( nether_portal ) do nether_portal_v[ n ] = t end
 
-        print( #wild_imps, #wild_imps_v )
     end )
 
 
