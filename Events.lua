@@ -267,7 +267,7 @@ function ns.updateTalents()
 
     -- local specGroup = GetSpecialization()
 
-    for k, v in pairs( Hekili.Class.talents ) do
+    for k, v in pairs( class.talents ) do
         local _, name, _, enabled, _, sID, _, _, _, known = GetTalentInfoByID( v, 1 )
 
         if not name then
@@ -283,6 +283,28 @@ function ns.updateTalents()
         else state.talent[ k ] = {
                 enabled = enabled,
                 i_enabled = enabled and 1 or 0
+            }
+        end
+    end
+
+    for k, _ in pairs( state.pvptalent ) do
+        state.pvptalent[ k ]._enabled = false
+    end
+
+    for k, v in pairs( class.pvptalents ) do
+        local _, name, _, enabled, _, sID, _, _, _, known = GetPvpTalentInfoByID( v, 1 )
+
+        if not name then
+            enabled = IsPlayerSpell( v )
+        end
+
+        enabled = enabled or known
+
+        if rawget( state.pvptalent, k ) then
+            state.pvptalent[ k ]._enabled = enabled
+        else
+            state.pvptalent[ k ] = {
+                _enabled = enabled
             }
         end
     end
@@ -544,7 +566,7 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
 
     end
 
-    -- Hekili:ForceUpdate( event )
+    Hekili:ForceUpdate( event )
 end
 ns.cpuProfile.UNIT_POWER_FREQUENT = UNIT_POWER_FREQUENT
 

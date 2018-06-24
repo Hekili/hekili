@@ -89,6 +89,7 @@ state.predictions = {}
 state.predictionsOff = {}
 state.predictionsOn = {}
 state.purge = {}
+state.pvptalent = {}
 state.race = {}
 state.script = {}
 state.set_bonus = {}
@@ -1256,11 +1257,15 @@ local mt_state = {
 
         if k == 'time' then
             -- Calculate time in combat.
-            if t.combat == 0 and t.false_start == 0 then
-                if ability and ability.passive then return 0 end
+            if t.combat == 0 and t.false_start == 0 then return 0 end
+
+            local start = t.combat > 0 and t.combat or ( t.false_start > 0 and t.false_start or t.query_time )
+            return t.query_time - start
+
+            --[[ if ability and ability.passive then return 0 end
                 return t.offset
             end
-            return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) + ( ( t.combat > 0 or t.false_start ) and t.delay or 0 )
+            return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) + ( ( t.combat > 0 or t.false_start ) and t.delay or 0 ) ]]
             
             -- These are all action-related keywords, use 'this_action' to reference the relevant action.
         elseif k == 'cast_time' then
@@ -2519,6 +2524,34 @@ local mt_talents = {
 ns.metatables.mt_talents = mt_talents
 
 
+local mt_default_pvptalent = {
+    __index = function( t, k )
+        local enlisted = state.buff.enlisted.up
+
+        if k == 'enabled' then return enlisted and t._enabled or false
+        elseif k == 'i_enabled' then return ( enlisted and t._enabled ) and 1 or 0 end
+
+        return k
+    end,
+}
+
+
+local null_pvptalent = setmetatable( {
+    _enabled = false
+}, mt_default_pvptalent )
+
+
+local mt_pvptalents = {
+    __index = function( t, k )
+        return null_pvptalent
+    end,
+    
+    __newindex = function( t, k, v )
+        rawset( t, k, setmetatable( v, mt_default_pvptalent ) )
+    end,
+}
+
+
 local mt_default_trait = {
     __index = function( t, k )
         if k == 'enabled' then
@@ -3059,6 +3092,7 @@ setmetatable( state.pet.fake_pet, mt_default_pet )
 setmetatable( state.prev, mt_prev )
 setmetatable( state.prev_gcd, mt_prev )
 setmetatable( state.prev_off_gcd, mt_prev )
+setmetatable( state.pvptalent, mt_pvptalents )
 setmetatable( state.race, mt_false )
 setmetatable( state.set_bonus, mt_set_bonuses )
 setmetatable( state.settings, mt_settings )
@@ -4001,7 +4035,7 @@ for k, v in pairs( state ) do
     ns.commitKey( k )
 end
 
-ns.attr = { "serenity", "active", "active_enemies", "my_enemies", "active_flame_shock", "adds", "agility", "air", "armor", "attack_power", "bonus_armor", "cast_delay", "cast_time", "casting", "cooldown_react", "cooldown_remains", "cooldown_up", "crit_rating", "deficit", "distance", "down", "duration", "earth", "enabled", "energy", "execute_time", "fire", "five", "focus", "four", "gcd", "hardcasts", "haste", "haste_rating", "health", "health_max", "health_pct", "intellect", "level", "mana", "mastery_rating", "mastery_value", "max_nonproc", "max_stack", "maximum_energy", "maximum_focus", "maximum_health", "maximum_mana", "maximum_rage", "maximum_runic", "melee_haste", "miss_react", "moving", "mp5", "multistrike_pct", "multistrike_rating", "one", "pct", "rage", "react", "regen", "remains", "remains", "resilience_rating", "runic", "seal", "spell_haste", "spell_power", "spirit", "stack", "stack_pct", "stacks", "stamina", "strength", "this_action", "three", "tick_damage", "tick_dmg", "tick_time", "ticking", "ticks", "ticks_remain", "time", "time_to_die", "time_to_max", "travel_time", "two", "up", "water", "weapon_dps", "weapon_offhand_dps", "weapon_offhand_speed", "weapon_speed", "single", "aoe", "cleave", "percent", "last_judgment_target", "unit", "ready", "refreshable" }
+ns.attr = { "serenity", "active", "active_enemies", "my_enemies", "active_flame_shock", "adds", "agility", "air", "armor", "attack_power", "bonus_armor", "cast_delay", "cast_time", "casting", "cooldown_react", "cooldown_remains", "cooldown_up", "crit_rating", "deficit", "distance", "down", "duration", "earth", "enabled", "energy", "execute_time", "fire", "five", "focus", "four", "gcd", "hardcasts", "haste", "haste_rating", "health", "health_max", "health_pct", "intellect", "level", "mana", "mastery_rating", "mastery_value", "max_nonproc", "max_stack", "maximum_energy", "maximum_focus", "maximum_health", "maximum_mana", "maximum_rage", "maximum_runic", "melee_haste", "miss_react", "moving", "mp5", "multistrike_pct", "multistrike_rating", "one", "pct", "rage", "react", "regen", "remains", "remains", "resilience_rating", "runic", "seal", "spell_haste", "spell_power", "spirit", "stack", "stack_pct", "stacks", "stamina", "strength", "this_action", "three", "tick_damage", "tick_dmg", "tick_time", "ticking", "ticks", "ticks_remain", "time", "time_to_die", "time_to_max", "travel_time", "two", "up", "water", "weapon_dps", "weapon_offhand_dps", "weapon_offhand_speed", "weapon_speed", "single", "aoe", "cleave", "percent", "last_judgment_target", "unit", "ready", "refreshable", "pvptalent" }
 
 
 

@@ -65,6 +65,13 @@ local HekiliSpecMixin = {
         end
     end,
 
+    RegisterPvpTalents = function( self, pvp )
+        for talent, spell in pairs( pvp ) do
+            self.pvptalents[ talent ] = spell
+            CommitKey( talent )
+        end
+    end,
+
     RegisterAura = function( self, aura, data )
         CommitKey( aura )
 
@@ -577,7 +584,9 @@ function Hekili:NewSpecialization( specID, name, texture )
         class = pClass,
 
         resources = {},
+        
         talents = {},
+        pvptalents = {},
         
         auras = {},
         pseudoAuras = 0,
@@ -2227,6 +2236,7 @@ function Hekili:SpecializationChanged()
     wipe( class.auras )
     wipe( class.abilities )
     wipe( class.talents )
+    wipe( class.pvptalents )
     wipe( class.gear )
     wipe( class.packs )
     wipe( class.hooks )
@@ -2295,6 +2305,10 @@ function Hekili:SpecializationChanged()
 
                 for talent, id in pairs( spec.talents ) do
                     class.talents[ talent ] = id
+                end
+
+                for talent, id in pairs( spec.pvptalents ) do
+                    class.pvptalents[ talent ] = id
                 end
 
                 for name, func in pairs( spec.stateFuncs ) do

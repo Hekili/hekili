@@ -3187,7 +3187,7 @@ do
                                 desc = {
                                     type = "input",
                                     name = "Description",
-                                    multiline = 2,
+                                    multiline = 15,
                                     order = 2,
                                     width = "full",
                                 },
@@ -3371,9 +3371,9 @@ do
                                                         local color = warning and "|cFFFF0000" or "|cFFFFD100"
 
                                                         if desc then
-                                                            v[ key ] = color .. i .. ". " .. action .. "|r - " .. "|cFFFFD100" .. desc .. "|r"
+                                                            v[ key ] = color .. i .. ".|r " .. action .. " - " .. "|cFFFFD100" .. desc .. "|r"
                                                         else
-                                                            v[ key ] = color .. i .. ". " .. action .. "|r"
+                                                            v[ key ] = color .. i .. ".|r " .. action
                                                         end
                                                         last = i + 1
                                                     end
@@ -4302,6 +4302,7 @@ do
 
     local resources = {}
     local talents = {}
+    local pvptalents = {}
     local auras = {}
     local abilities = {}
 
@@ -4384,6 +4385,16 @@ do
                 end
             end
 
+            wipe( pvptalents )
+            for i = 1, 2 do
+                local row = C_SpecializationInfo.GetPvpTalentSlotInfo( i )
+
+                for i, tID in ipairs( row.availableTalentIDs ) do
+                    local _, name, _, _, _, sID = GetPvpTalentInfoByID( tID )
+                    name = key( name )
+                    insert( pvptalents, { name = name, talent = tID, spell = sID } )
+                end
+            end
 
             local haste = UnitSpellHaste( "player" )
             haste = 1 + ( haste / 100 )
@@ -4695,6 +4706,16 @@ do
                             append( tal.name .. " = " .. tal.talent .. ", -- " .. tal.spell .. ( ( i % 3 == 0 and i < #talents ) and "\n" or "" ) )
                         end
 
+                        decreaseIndent()
+                        append( "} )\n" )
+
+                        append( "-- PvP Talents" )
+                        append( "spec:RegisterPvpTalents( { " )
+                        increaseIndent()
+
+                        for i, tal in ipairs( pvptalents ) do
+                            append( tal.name .. " = " .. tal.talent .. ", -- " .. tal.spell )
+                        end
                         decreaseIndent()
                         append( "} )\n" )
 

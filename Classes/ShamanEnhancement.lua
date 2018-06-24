@@ -112,6 +112,27 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     } )
 
 
+    -- PvP Talents
+    spec:RegisterPvpTalents( { 
+        relentless = 3553, -- 196029
+        adaptation = 3552, -- 214027
+        gladiators_medallion = 3551, -- 208683
+
+        forked_lightning = 719, -- 204349
+        static_cling = 720, -- 211062
+        thundercharge = 725, -- 204366
+        shamanism = 722, -- 193876
+        spectral_recovery = 3519, -- 204261
+        ride_the_lightning = 721, -- 204357
+        grounding_totem = 3622, -- 204336
+        swelling_waves = 3623, -- 204264
+        ethereal_form = 1944, -- 210918
+        skyfury_totem = 3487, -- 204330
+        counterstrike_totem = 3489, -- 204331
+        purifying_waters = 3492, -- 204247
+    } )
+
+
     spec:RegisterAuras( {
         ascendance = {
             id = 114051,

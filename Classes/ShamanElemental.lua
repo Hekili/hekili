@@ -45,6 +45,25 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         ascendance = 21675, -- 114050
     } )
 
+    -- PvP Talents
+    spec:RegisterPvpTalents( { 
+        relentless = 3596, -- 196029
+        adaptation = 3597, -- 214027
+        gladiators_medallion = 3598, -- 208683
+        
+        spectral_recovery = 3062, -- 204261
+        control_of_lava = 728, -- 204393
+        earthfury = 729, -- 204398
+        traveling_storms = 730, -- 204403
+        lightning_lasso = 731, -- 204437
+        elemental_attunement = 727, -- 204385
+        skyfury_totem = 3488, -- 204330
+        grounding_totem = 3620, -- 204336
+        counterstrike_totem = 3490, -- 204331
+        purifying_waters = 3491, -- 204247
+        swelling_waves = 3621, -- 204264
+    } )
+   
     -- Auras
     spec:RegisterAuras( {
         ancestral_guidance = {
@@ -92,9 +111,9 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             generate = function ()
                 local eb = buff.elemental_blast
 
-                local count = buff.elemental_blast_critical_strike.up and 1 or 0 +
-                                buff.elemental_blast_haste.up and 1 or 0 +
-                                buff.elemental_blast_mastery.up and 1 or 0
+                local count = ( buff.elemental_blast_critical_strike.up and 1 or 0 ) +
+                              ( buff.elemental_blast_haste.up and 1 or 0 ) +
+                              ( buff.elemental_blast_mastery.up and 1 or 0 )
                 local applied = max( buff.elemental_blast_critical_strike.applied,
                                 buff.elemental_blast_haste.applied,
                                 buff.elemental_blast_mastery.applied )
@@ -868,6 +887,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             
             startsCombat = true,
             texture = 136018,
+
+            toggle = 'interrupts',
             
             usable = function () return debuff.casting.up end,
             handler = function ()
