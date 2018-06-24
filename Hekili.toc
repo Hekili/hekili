@@ -20,6 +20,7 @@ Classes\HunterBeastMastery.lua
 Classes\HunterMarksmanship.lua
 Classes\HunterSurvival.lua
 Classes\PaladinRetribution.lua
+Classes\RogueOutlaw.lua
 Classes\ShamanElemental.lua
 Classes\ShamanEnhancement.lua
 Classes\WarlockDemonology.lua

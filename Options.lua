@@ -6719,7 +6719,7 @@ local function Sanitize( segment, i, line, warnings )
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted '" .. token .. attr .. "' to '" .. token .. "i_up' for mathematical comparison (" .. times .. "x)." )
         end
-        i = i:gsub( '\a', token .. 'i_enabled' ) 
+        i = i:gsub( '\a', token .. 'i_up' ) 
         i = i:gsub( '\v', token .. attr )
     end 
 
