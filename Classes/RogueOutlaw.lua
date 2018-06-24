@@ -184,6 +184,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             startsCombat = false,
             texture = 136206,
+
+            toggle = 'cooldowns',
             
             handler = function ()
                 applyBuff( 'adrenaline_rush', 20 )
@@ -441,11 +443,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             startsCombat = true,
             texture = 132094,
-            
 
             handler = function ()
                 applyDebuff( 'target', 'ghostly_strike', 10 )
-                gain(1, "combo_points" )
+                gain( 1, "combo_points" )
             end,
         },
         
@@ -456,13 +457,16 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 15,
             gcd = "spell",
             
-            spend = function () return 25 - ( talent.dirty_tricks.enabled and 25 or 0 ) end,
+            spend = function () return talent.dirty_tricks.enabled and 0 or 0 end,
             spendType = "energy",
             
             startsCombat = true,
             texture = 132155,
             
+            -- Disable Gouge because we can't tell if we're in front of the target to use it.
+            usable = function () return false end,
             handler = function ()
+                gain( 1, "combo_points" )
                 applyDebuff( 'target', 'gouge', 4 )
             end,
         },
@@ -509,6 +513,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             startsCombat = true,
             texture = 236277,
+
+            toggle = 'cooldowns',
             
             handler = function ()
                 applyBuff( 'killing_spree', 2 )
@@ -577,8 +583,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 gain( 1, 'combo_points' )
                 if talent.quick_draw.enabled and buff.opportunity.up then
                     gain( 1, 'combo_points' )
-                    return
                 end
+                removeBuff( 'opportunity' )
             end,
         },
         

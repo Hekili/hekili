@@ -583,17 +583,18 @@ do
         
         for i, b in ipairs( self.Buttons ) do
             local r = self.Recommendations[i]
+            if r then
+                local a = r.actionName
 
-            local a = r.actionName
+                if a then
+                    r.keybind = Hekili:GetBindingForAction( r.actionName, not conf.keybindings.lowercase == true )
+                end
 
-            if a then
-                r.keybind = Hekili:GetBindingForAction( r.actionName, not conf.keybindings.lowercase == true )
-            end
-
-            if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
-                b.Keybinding:SetText( r.keybind )
-            else
-                b.Keybinding:SetText( nil )
+                if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
+                    b.Keybinding:SetText( r.keybind )
+                else
+                    b.Keybinding:SetText( nil )
+                end
             end
         end
     end

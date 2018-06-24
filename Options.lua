@@ -89,13 +89,14 @@ local defaultAPLs = {
 
 -- One Time Fixes
 local oneTimeFixes = {
-    refreshForBfA = function( p )
+    refreshForBfA_II = function( p )
         for k, v in pairs( p.displays ) do
             if type( k ) == 'number' then
                 p.displays[ k ] = nil
             end
         end
 
+        p.runOnce.refreshForBfA_II = nil
         p.actionLists = nil
     end,
 }
