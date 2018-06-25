@@ -13,20 +13,24 @@ local errors = {}
 local eIndex = {}
 
 ns.Error = function( ... )
-
-local output = format( ... )
+    local output = format( ... )
+    
     if not errors[ output ] then
         errors[ output ] = {
             n = 1,
             last = date( "%X", time() )
         }
         eIndex[ #eIndex + 1 ] = output
-
-        if Hekili.DB.profile.Verbose then Hekili:Print( output ) end
+        -- if Hekili.DB.profile.Verbose then Hekili:Print( output ) end
     else
         errors[ output ].n = errors[ output ].n + 1
         errors[ output ].last = date( "%X", time() )
     end
+end
+
+
+function Hekili:Error( ... )
+    ns.Error( ... )
 end
 
 

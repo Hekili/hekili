@@ -134,6 +134,27 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         spitting_cobra = 22295, -- 194407
     } )
 
+    -- PvP Talents
+    spec:RegisterPvpTalents( { 
+        gladiators_medallion = 3562, -- 208683
+        relentless = 3561, -- 196029
+        adaptation = 3560, -- 214027
+
+        survival_tactics = 3599, -- 202746
+        dragonscale_armor = 3600, -- 202589
+        viper_sting = 3602, -- 202797
+        spider_sting = 3603, -- 202914
+        scorpid_sting = 3604, -- 202900
+        hiexplosive_trap = 3605, -- 236776
+        the_beast_within = 693, -- 212668
+        interlope = 1214, -- 248518
+        hunting_pack = 3730, -- 203235
+        wild_protector = 821, -- 204190
+        dire_beast_hawk = 824, -- 208652
+        dire_beast_basilisk = 825, -- 205691
+        roar_of_sacrifice = 3612, -- 53480
+    } )
+
     -- Auras
     spec:RegisterAuras( {
         a_murder_of_crows = {

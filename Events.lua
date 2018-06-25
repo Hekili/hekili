@@ -638,6 +638,13 @@ local aura_events = {
 }
 
 
+local dmg_events = {
+    SPELL_DAMAGE            = true,
+    SPELL_PERIODIC_DAMAGE   = true,
+    SPELL_PERIODIC_MISSED   = true,
+    SWING_DAMAGE            = true
+}
+
 -- Use dots/debuffs to count active targets.
 -- Track dot power (until 6.0) for snapshotting.
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
@@ -719,9 +726,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         local aura = class.auras and class.auras[ spellID ]
         
         if aura then
-
             if hostile and sourceGUID ~= destGUID and not aura.friendly then
-
                 -- Aura Tracking
                 if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, true )
@@ -758,7 +763,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             ns.removeSpellFromFlight( action.key )
         end
 
-        if hostile and subtype == 'SPELL_DAMAGE' or subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
+        if hostile and dmg_events[ subtype ] then
             ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
             if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then

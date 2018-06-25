@@ -4790,6 +4790,7 @@ do
                                 append( "" )
                             end
                             appendAttr( a, "talent" )
+                            if a.cooldown >= 60 then append( "toggle = \"cooldowns\",\n" ) end
                             if a.talent ~= nil then append( "" ) end
                             appendAttr( a, "startsCombat" )
                             appendAttr( a, "texture" )

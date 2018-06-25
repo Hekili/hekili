@@ -543,8 +543,14 @@ function state.spendChargeTime( action, time )
 local function applyBuff( aura, duration, stacks, value )
 
     if not class.auras[ aura ] then
-        Error( "Attempted to remove unknown aura '%s'.", aura ) 
-        return
+        Error( "Attempted to apply/remove unknown aura '%s'.", aura ) 
+        local spec = class.specs[ state.spec.id ]
+        if spec then
+            spec:RegisterAura( aura, { duration = duration } )
+            Hekili:SpecializationChanged()
+        end
+
+        if not class.auras[ aura ] then return end
     end
 
     if state.cycle then
@@ -628,8 +634,14 @@ state.removeStack = removeStack
 local function applyDebuff( unit, aura, duration, stacks, value )
 
     if not class.auras[ aura ] then
-        Error( "Attempted to remove unknown aura '%s'.", aura ) 
-        return
+        Error( "Attempted to apply unknown aura '%s'.", aura ) 
+        local spec = class.specs[ state.spec.id ]
+        if spec then
+            spec:RegisterAura( aura, { duration = duration } )
+            Hekili:SpecializationChanged()
+        end
+
+        if not class.auras[ aura ] then return end
     end
 
     if state.cycle then
@@ -1154,7 +1166,6 @@ local mt_state = {
             return false
             
         elseif k == 'active_enemies' then
-            -- The above is not needed as the nameplate target system will add missing enemies.
             t[k] = ns.getNumberTargets()
             
             if t.min_targets > 0 then t[k] = max( t.min_targets, t[k] ) end

@@ -86,9 +86,9 @@ local HekiliSpecMixin = {
 
         a.key = aura
 
-        if not data.id and data.generate then
+        if not data.id then
             self.pseudoAuras = self.pseudoAuras + 1
-            data.id = -1000 * self.id - self.pseudoAuras
+            data.id = ( -1000 * self.id ) - self.pseudoAuras
         end
 
         -- default values.

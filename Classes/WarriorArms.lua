@@ -1,4 +1,4 @@
--- HunterSurvival.lua
+-- WarriorArms.lua
 -- June 2018
 
 local addon, ns = ...
@@ -8,124 +8,99 @@ local class = Hekili.Class
 local state = Hekili.State
 
 
-if UnitClassBase( 'player' ) == 'HUNTER' then
-    local spec = Hekili:NewSpecialization( 255 )
+if UnitClassBase( 'player' ) == 'WARRIOR' then
+    local spec = Hekili:NewSpecialization( 71 )
 
-    spec:RegisterResource( Enum.PowerType.Focus )
+    spec:RegisterResource( Enum.PowerType.Rage )
     
     -- Talents
     spec:RegisterTalents( {
-        vipers_venom = 22275, -- 268501
-        terms_of_engagement = 22283, -- 265895
-        alpha_predator = 22296, -- 269737
+        war_machine = 22624, -- 262231
+        sudden_death = 22360, -- 29725
+        skullsplitter = 22371, -- 260643
 
-        guerrilla_tactics = 21997, -- 264332
-        hydras_bite = 22769, -- 260241
-        butchery = 22297, -- 212436
+        double_time = 19676, -- 103827
+        impending_victory = 22372, -- 202168
+        storm_bolt = 22789, -- 107570
 
-        trailblazer = 19347, -- 199921
-        natural_mending = 19348, -- 270581
-        camouflage = 23100, -- 199483
+        massacre = 22380, -- 281001
+        fervor_of_battle = 22489, -- 202316
+        rend = 19138, -- 772
 
-        bloodseeker = 22277, -- 260248
-        steel_trap = 19361, -- 162488
-        a_murder_of_crows = 22299, -- 131894
+        second_wind = 15757, -- 29838
+        bounding_stride = 22627, -- 202163
+        defensive_stance = 22628, -- 197690
 
-        born_to_be_wild = 22268, -- 266921
-        posthaste = 22276, -- 109215
-        binding_shot = 22499, -- 109248
+        collateral_damage = 22392, -- 268243
+        warbreaker = 22391, -- 262161
+        cleave = 22362, -- 845
 
-        tip_of_the_spear = 22300, -- 260285
-        mongoose_bite = 22278, -- 259387
-        flanking_strike = 22271, -- 269751
+        in_for_the_kill = 22394, -- 248621
+        avatar = 22397, -- 107574
+        deadly_calm = 22399, -- 262228
 
-        birds_of_prey = 22272, -- 260331
-        wildfire_infusion = 22301, -- 271014
-        chakrams = 23105, -- 259391
+        anger_management = 21204, -- 152278
+        dreadnaught = 22407, -- 262150
+        ravager = 21667, -- 152277
     } )
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        gladiators_medallion = 3568, -- 208683
-        relentless = 3567, -- 196029
-        adaptation = 3566, -- 214027
-        trackers_net = 665, -- 212638
-        roar_of_sacrifice = 663, -- 53480
-        mending_bandage = 662, -- 212640
-        hunting_pack = 661, -- 203235
-        viper_sting = 3615, -- 202797
-        sticky_tar = 664, -- 203264
-        dragonscale_armor = 3610, -- 202589
-        scorpid_sting = 3609, -- 202900
-        spider_sting = 3608, -- 202914
-        diamond_ice = 686, -- 203340
-        hiexplosive_trap = 3606, -- 236776
-        survival_tactics = 3607, -- 202746
+        gladiators_medallion = 3589, -- 208683
+        relentless = 3588, -- 196029
+        adaptation = 3587, -- 214027
+        duel = 34, -- 236273
+        disarm = 3534, -- 236077
+        sharpen_blade = 33, -- 198817
+        war_banner = 32, -- 236320
+        spell_reflection = 3521, -- 216890
+        death_sentence = 3522, -- 198500
+        master_and_commander = 28, -- 235941
+        shadow_of_the_colossus = 29, -- 198807
+        storm_of_destruction = 31, -- 236308
     } )
 
     -- Auras
     spec:RegisterAuras( {
-        aspect_of_the_cheetah = {
-            id = 186257,
+        avatar = {
+            id = 107574,
         },
-        aspect_of_the_eagle = {
-            id = 186289,
+        berserker_rage = {
+            id = 18499,
         },
-        aspect_of_the_turtle = {
-            id = 186265,
+        bladestorm = {
+            id = 227847,
         },
-        eagle_eye = {
-            id = 6197,
+        deadly_calm = {
+            id = 262228,
         },
-        feign_death = {
-            id = 5384,
+        defensive_stance = {
+            id = 197690,
         },
-        steady_focus = {
-            id = 193534,
-            duration = 12,
-            max_stack = 1,
+        die_by_the_sword = {
+            id = 118038,
+        },
+        overpower = {
+            id = 7384,
+        },
+        ravager = {
+            id = 152277,
+        },
+        seasoned_soldier = {
+            id = 279423,
+        },
+        sweeping_strikes = {
+            id = 260708,
+        },
+        tactician = {
+            id = 184783,
         },
     } )
 
     -- Abilities
     spec:RegisterAbilities( {
-        a_murder_of_crows = {
-            id = 131894,
-            cast = 0,
-            cooldown = 60,
-            gcd = "spell",
-            
-            spend = 30,
-            spendType = "focus",
-            
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 645217,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        aspect_of_the_cheetah = {
-            id = 186257,
-            cast = 0,
-            cooldown = 180,
-            gcd = "spell",
-            
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 132242,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        aspect_of_the_eagle = {
-            id = 186289,
+        avatar = {
+            id = 107574,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
@@ -133,15 +108,138 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 612363,
+            texture = 613534,
             
             handler = function ()
             end,
         },
         
 
-        aspect_of_the_turtle = {
-            id = 186265,
+        battle_shout = {
+            id = 6673,
+            cast = 0,
+            cooldown = 15,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 132333,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        berserker_rage = {
+            id = 18499,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 136009,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        bladestorm = {
+            id = 227847,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 236303,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        charge = {
+            id = 100,
+            cast = 0,
+            charges = 2,
+            cooldown = 17,
+            recharge = 17,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 132337,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        cleave = {
+            id = 845,
+            cast = 0,
+            cooldown = 6,
+            gcd = "spell",
+            
+            spend = 20,
+            spendType = "rage",
+            
+            startsCombat = true,
+            texture = 132338,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        colossus_smash = {
+            id = 167105,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 464973,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        deadly_calm = {
+            id = 262228,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 298660,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        defensive_stance = {
+            id = 197690,
+            cast = 0,
+            cooldown = 6,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 132341,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        die_by_the_sword = {
+            id = 118038,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
@@ -149,393 +247,301 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 132199,
+            texture = 132336,
             
             handler = function ()
             end,
         },
         
 
-        binding_shot = {
-            id = 109248,
+        execute = {
+            id = 281000,
             cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 40,
+            spendType = "rage",
+            
+            startsCombat = true,
+            texture = 135358,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        hamstring = {
+            id = 1715,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 10,
+            spendType = "rage",
+            
+            startsCombat = true,
+            texture = 132316,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        heroic_leap = {
+            id = 6544,
+            cast = 0,
+            charges = 1,
             cooldown = 45,
+            recharge = 45,
             gcd = "spell",
             
             startsCombat = true,
-            texture = 462650,
+            texture = 236171,
             
             handler = function ()
             end,
         },
         
 
-        butchery = {
-            id = 212436,
-            cast = 0,
-            charges = 3,
-            cooldown = 9,
-            recharge = 9,
-            gcd = "spell",
-            
-            spend = 20,
-            spendType = "focus",
-            
-            startsCombat = true,
-            texture = 999948,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        camouflage = {
-            id = 199483,
-            cast = 0,
-            cooldown = 60,
-            gcd = "spell",
-            
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 461113,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        carve = {
-            id = 187708,
+        heroic_throw = {
+            id = 57755,
             cast = 0,
             cooldown = 6,
             gcd = "spell",
             
-            spend = 35,
-            spendType = "focus",
-            
             startsCombat = true,
-            texture = 1376039,
+            texture = 132453,
             
             handler = function ()
             end,
         },
         
 
-        chakrams = {
-            id = 259391,
-            cast = 0,
-            cooldown = 20,
-            gcd = "spell",
-            
-            spend = 30,
-            spendType = "focus",
-            
-            startsCombat = true,
-            texture = 648707,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        command_pet = {
-            id = 272651,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 457329,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        coordinated_assault = {
-            id = 266779,
-            cast = 0,
-            cooldown = 120,
-            gcd = "spell",
-            
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 2065565,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        disengage = {
-            id = 781,
-            cast = 0,
-            charges = 1,
-            cooldown = 20,
-            recharge = 20,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 132294,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        eagle_eye = {
-            id = 6197,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 132172,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        exhilaration = {
-            id = 109304,
-            cast = 0,
-            cooldown = 120,
-            gcd = "spell",
-            
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 461117,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        feign_death = {
-            id = 5384,
+        impending_victory = {
+            id = 202168,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
             
+            spend = 10,
+            spendType = "rage",
+            
             startsCombat = true,
-            texture = 132293,
+            texture = 589768,
             
             handler = function ()
             end,
         },
         
 
-        flanking_strike = {
-            id = 269751,
+        intimidating_shout = {
+            id = 5246,
             cast = 0,
-            cooldown = 40,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 236184,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        flare = {
-            id = 1543,
-            cast = 0,
-            cooldown = 20,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 135815,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        freezing_trap = {
-            id = 187650,
-            cast = 0,
-            cooldown = 30,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 135834,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        harpoon = {
-            id = 190925,
-            cast = 0,
-            charges = 1,
-            cooldown = 20,
-            recharge = 20,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 1376040,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        intimidation = {
-            id = 19577,
-            cast = 0,
-            cooldown = 60,
+            cooldown = 90,
             gcd = "spell",
             
             toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 132111,
+            texture = 132154,
             
             handler = function ()
             end,
         },
         
 
-        kill_command = {
-            id = 259489,
+        mortal_strike = {
+            id = 12294,
             cast = 0,
-            charges = 2,
             cooldown = 6,
-            recharge = 6,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 132176,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        misdirection = {
-            id = 34477,
-            cast = 0,
-            cooldown = 30,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 132180,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        mongoose_bite = {
-            id = 259387,
-            cast = 0,
-            cooldown = 0,
             gcd = "spell",
             
             spend = 30,
-            spendType = "focus",
+            spendType = "rage",
             
             startsCombat = true,
-            texture = 1376044,
+            texture = 132355,
             
             handler = function ()
             end,
         },
         
 
-        muzzle = {
-            id = 187707,
+        overpower = {
+            id = 7384,
+            cast = 0,
+            charges = 1,
+            cooldown = 12,
+            recharge = 12,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 132223,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        pummel = {
+            id = 6552,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
             
             startsCombat = true,
-            texture = 1376045,
+            texture = 132938,
             
             handler = function ()
             end,
         },
         
 
-        raptor_strike = {
-            id = 186270,
+        rallying_cry = {
+            id = 97462,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 132351,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        ravager = {
+            id = 152277,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 970854,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        rend = {
+            id = 772,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
             
             spend = 30,
-            spendType = "focus",
+            spendType = "rage",
             
             startsCombat = true,
-            texture = 1376046,
+            texture = 132155,
             
             handler = function ()
             end,
         },
         
 
-        serpent_sting = {
-            id = 259491,
+        skullsplitter = {
+            id = 260643,
+            cast = 0,
+            cooldown = 21,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 2065621,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        slam = {
+            id = 1464,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
             
             spend = 20,
-            spendType = "focus",
+            spendType = "rage",
             
             startsCombat = true,
-            texture = 1033905,
+            texture = 132340,
             
             handler = function ()
             end,
         },
         
 
-        shrapnel_bomb = {
-            id = 270335,
-            cast = 0,
-            charges = 1,
-            cooldown = 18,
-            recharge = 18,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 2065637,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        steel_trap = {
-            id = 162488,
+        storm_bolt = {
+            id = 107570,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
             
             startsCombat = true,
-            texture = 1467588,
+            texture = 613535,
             
             handler = function ()
             end,
         },
         
 
-        tar_trap = {
-            id = 187698,
+        sweeping_strikes = {
+            id = 260708,
             cast = 0,
-            cooldown = 30,
+            cooldown = 25,
             gcd = "spell",
             
             startsCombat = true,
-            texture = 576309,
+            texture = 132306,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        taunt = {
+            id = 355,
+            cast = 0,
+            cooldown = 8,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 136080,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        victory_rush = {
+            id = 34428,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 132342,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        warbreaker = {
+            id = 262161,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 2065633,
             
             handler = function ()
             end,
@@ -556,40 +562,24 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         
 
-        wildfire_bomb = {
-            id = 259495,
-            cast = 0,
-            charges = 1,
-            cooldown = 18,
-            recharge = 18,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 2065634,
-            
-            handler = function ()
-            end,
-        },
-        
-
-        wing_clip = {
-            id = 195645,
+        whirlwind = {
+            id = 1680,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
             
             spend = 30,
-            spendType = "focus",
+            spendType = "rage",
             
             startsCombat = true,
-            texture = 132309,
+            texture = 132369,
             
             handler = function ()
             end,
         },
     } )
 
-    
+
     spec:RegisterOptions( {
         enabled = false,
 
@@ -601,7 +591,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         damage = true,
         damageExpiration = 8,
     
-        package = nil
+        package = nil,
     } )
-
 end

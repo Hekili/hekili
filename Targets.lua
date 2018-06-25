@@ -72,7 +72,9 @@ function ns.getNumberTargets()
     end
 
     if not spec or ( spec.damage or not spec.nameplates ) or not showNPs then
-        for k,v in pairs( myTargets ) do
+        local db = spec and ( spec.myTargetsOnly and myTargets or targets ) or targets
+        
+        for k,v in pairs( db ) do
             if not nameplates[ k ] then
                 nameplates[ k ] = true
                 npCount = npCount + 1
@@ -172,7 +174,9 @@ ns.updateMinion = function( id, time )
     minions[ id ] = time
 end
 
-ns.isMinion = function( id ) return minions[ id ] ~= nil end
+ns.isMinion = function( id )
+    return minions[ id ] ~= nil or UnitGUID( "pet" ) == id
+end
 
 function Hekili:DumpMinions()
     local o = ""
