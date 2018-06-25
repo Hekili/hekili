@@ -108,6 +108,7 @@ Hekili.Class = {
     auras = {},
     gear = {},
     
+    stateExprs = {},
     stateFuncs = {},
     stateTables = {},
     

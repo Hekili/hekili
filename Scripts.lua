@@ -190,13 +190,17 @@ local function stripScript( str, thorough )
 end
 
 
-function scripts:StoreValues( tbl, node )
+function scripts:StoreValues( tbl, node, mod )
     wipe( tbl )
 
     if type( node ) == 'string' then node = self.DB[ node ] end
-    if not node or not node.Elements then return end
+    if not node then return end
 
-    for k, v in pairs( node.Elements ) do
+    local elems = mod and node.ModElements[ mod ] or node.Elements
+
+    if not elems then return end
+
+    for k, v in pairs( elems ) do
         local s, r = pcall( v )
 
         if s then tbl[ k ] = r
@@ -288,6 +292,7 @@ local function ConvertScript( node, hasModifiers )
         Error = e,
         Elements = se,
         Modifiers = {},
+        ModElements = {},
         SpecialMods = "",
 
         Lua = t and t:trim() or nil,
@@ -310,6 +315,7 @@ local function ConvertScript( node, hasModifiers )
                 if sf then
                     setfenv( sf, state )
                     output.Modifiers[ m ] = sf
+                    output.ModElements[ m ] = GetScriptElements( o )
                 else
                     output.Modifiers[ m ] = e
                 end
@@ -331,6 +337,7 @@ local function ConvertScript( node, hasModifiers )
             if sf then
                 setfenv( sf, state )
                 output.Modifiers[ name ] = sf
+                output.ModElements[ name ] = GetScriptElements( o )
             else
                 output.Modifiers[ name ] = e
             end
@@ -375,7 +382,7 @@ if node.ReadyTime and node.ReadyTime ~= '' then
 end ]]
 
 
-function scripts:CheckScript( scriptID, action )
+function scripts:CheckScript( scriptID, action, elem )
     local prev_action = state.this_action
     if action then state.this_action = action end
 
@@ -384,21 +391,38 @@ function scripts:CheckScript( scriptID, action )
     if not script then
         state.this_action = prev_action
         return false
-    
-    elseif script.Error then
-        state.this_action = prev_action
-        return false, script.Error
+    end
 
-    elseif script.Conditions == nil then
-        state.this_action = prev_action
-        return true
-
-    else
-        local success, value = pcall( script.Conditions )
-
-        if success then
+    if not elem then
+        if script.Error then
             state.this_action = prev_action
-            return value
+            return false, script.Error
+
+        elseif not script.Conditions then
+            state.this_action = prev_action
+            return true
+
+        else
+            local success, value = pcall( script.Conditions )
+
+            if success then
+                state.this_action = prev_action
+                return value
+            end
+        end
+    
+    else
+        if not script.Modifiers[ elem ] then
+            state.this_action = prev_action
+            return nil, "No such modifier: " .. elem
+
+        else
+            local success, value = pcall( script.Modifiers[ elem ] )
+
+            if success then
+                state.this_action = prev_action
+                return value
+            end
         end
     end
 

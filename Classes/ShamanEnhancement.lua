@@ -345,14 +345,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
     spec:SetPotion( 'prolonged_power' )
 
-    spec:RegisterHook( 'spend', function( amt, resource )
-        -- n/a, this was actually an ele thing.
-    end )
-
-    spec:RegisterStateFunction( 'gambling', function ()
-        -- n/a, this was actually an ele thing.
-    end )
-
     spec:RegisterAbilities( {
         ascendance = {
             id = 114051,

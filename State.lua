@@ -984,13 +984,13 @@ end
 state.gain = gain
 
 
-local function spend( amount, resource )
+local function spend( amount, resource, noHook )
     
     -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     state[ resource ].actual = max( 0, state[ resource ].actual - amount )
     if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
     
-    ns.callHook( 'spend', amount, resource )
+    if not noHook then ns.callHook( 'spend', amount, resource ) end
 
 end
 state.spend = spend
@@ -1101,6 +1101,9 @@ local mt_state = {
 
         if metafunctions.state[ k ] then
             return metafunctions.state[ k ]()
+
+        elseif class.stateExprs[ k ] then
+            return class.stateExprs[ k ]()
             
         -- First, any values that don't reference an ability or aura.
         elseif k == 'this_action' or k == 'current_action' then
@@ -1377,6 +1380,7 @@ local mt_state = {
         if t.settings[k] ~= nil then return t.settings[k] end
         if t.toggle[k] ~= nil then return t.toggle[k] end
         
+        Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable." )
         return k        
     end,
     __newindex = function(t, k, v)
@@ -2306,6 +2310,41 @@ function state:AddBuffMetaFunction( aura, key, func )
 end
 
 
+-- Aliases let a single buff name refer to any of multiple buffs.
+-- Developed mainly for RtB; it will also report 'stack' or 'count' as the sum of stacks of multiple buffs.
+local mt_alias_buff = {
+    __index = function( t, k )
+        local aura = class.auras[ t.key ]
+
+        if k == 'count' or k == 'stack' or k == 'stacks' then
+            local n = 0
+
+            for i, child in ipairs( aura.alias ) do
+                if state.buff[ child ].up then n = n + max( 1, state.buff[ child ].stack ) end
+            end
+
+            return n
+
+        end
+
+        local alias
+        local mode = aura.aliasMode or "first"
+
+        for i, v in ipairs( aura.alias ) do
+            local child = state.buff[ v ]
+            if not alias and mode == "first" and child.up then return child[ k ] end
+
+            if child.up then
+                if mode == "shortest" and ( not alias or child.remains < alias.remains ) then alias = child
+                elseif mode == "longest" and ( not alias or child.remains > alias.remains ) then alias = child end
+            end
+        end
+
+        return alias and alias[ k ] or state.buff[ aura.alias[1] ][ k ]
+    end 
+}
+
+
 -- Table of default handlers for auras (buffs, debuffs).
 local mt_default_buff = {
     __index = function(t, k)
@@ -2491,6 +2530,13 @@ local mt_buffs = {
     end,
     
     __newindex = function(t, k, v)
+        local aura = class.auras[ k ]
+
+        if aura and aura.alias then
+            rawset( t, k, setmetatable( v, mt_alias_buff ) )
+            return
+        end
+
         rawset( t, k, setmetatable( v, mt_default_buff ) )
     end
 }

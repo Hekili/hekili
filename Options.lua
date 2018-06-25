@@ -3576,7 +3576,26 @@ do
                                                             order = 6,
                                                             width = "full",
                                                             multiline = 3,
-                                                            dialogControl = 'HekiliCustomEditor',
+                                                            dialogControl = "HekiliCustomEditor",
+                                                            arg = function( info )
+                                                                local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
+        
+                                                                local entry = rawget( self.DB.profile.packs, pack )
+                                                                entry = entry and entry.lists[ list ]
+                                                                entry = entry and entry[ action ]
+        
+                                                                local results = {}
+        
+                                                                state.reset()
+                                                                state.this_action = entry.action
+        
+                                                                local scriptID = pack .. ":" .. list .. ":" .. action
+        
+                                                                scripts:ImportModifiers( scriptID )
+                                                                scripts:StoreValues( results, scriptID, "value" )
+                                                                
+                                                                return results, list, action
+                                                            end,
                                                             hidden = function ()
                                                                 local e = GetListEntry( pack )
                                                                 return e.action ~= "variable"

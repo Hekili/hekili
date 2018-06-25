@@ -247,7 +247,7 @@ local function GenerateDiagnosticTooltip( widget, event )
     
     local tested = false
     
-    local packName, script = path[ 2 ], path[ 6 ]
+    local packName, script = path[ 2 ], path[ #path ]
     -- print( unpack( path ) )
 
     local pack = rawget( Hekili.DB.profile.packs, packName )
@@ -264,7 +264,13 @@ local function GenerateDiagnosticTooltip( widget, event )
             GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
 
             if warning then GameTooltip:AddLine( warning, 1, 0, 0 ) end
+        
         else
+            local result, warning = scripts:CheckScript( scriptID, action, script )
+
+            GameTooltip:AddLine( ns.formatValue( result ), 1, 1, 1, 1 )
+
+            if warning then GameTooltip:AddLine( warning, 1, 0, 0 ) end
             -- handle other types.
         end
 

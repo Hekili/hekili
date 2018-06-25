@@ -145,6 +145,16 @@ local HekiliSpecMixin = {
         end
     end,
 
+    RegisterStateExpr = function( self, key, func )
+        if rawget( state, key ) then
+            Hekili:Error( "Cannot overwrite an existing value/table with RegisterStateExpr (" .. key .. ")." )
+            return
+        end
+
+        setfenv( func, state )
+        self.stateExprs[ key ] = func
+    end,
+
     RegisterStateFunction = function( self, key, func )
         if rawget( state, key ) then
             Hekili:Error( "Cannot overwrite an existing value/table with RegisterStateFunction." )
@@ -597,8 +607,9 @@ function Hekili:NewSpecialization( specID, name, texture )
 
         potions = {},
 
-        stateFuncs = {},
-        stateTables = {},
+        stateExprs = {}, -- expressions are returned as values and take no args.
+        stateFuncs = {}, -- functions can take arguments and can be used as helper functions in handlers.
+        stateTables = {}, -- tables are... tables.
 
         gear = {},
         hooks = {},
@@ -2293,6 +2304,9 @@ function Hekili:SpecializationChanged()
         class.stateFuncs[ k ] = nil
     end
 
+    wipe( class.stateExprs )
+
+
     for i, specID in ipairs( specs ) do
         local spec = class.specs[ specID ]
 
@@ -2309,6 +2323,10 @@ function Hekili:SpecializationChanged()
 
                 for talent, id in pairs( spec.pvptalents ) do
                     class.pvptalents[ talent ] = id
+                end
+
+                for name, func in pairs( spec.stateExprs ) do
+                    class.stateExprs[ name ] = func
                 end
 
                 for name, func in pairs( spec.stateFuncs ) do
