@@ -309,7 +309,8 @@ local function ConvertScript( node, hasModifiers )
                 if value then
                     sf, e = loadstring( "return " .. o )
                 else
-                    sf, e = loadstring( "return '" .. o .. "'" )
+                    o = "'" .. o .. "'"
+                    sf, e = loadstring( "return " .. o )
                 end
 
                 if sf then
@@ -325,14 +326,11 @@ local function ConvertScript( node, hasModifiers )
         local name = nameMap[ node.action ]
         if name and node[ name ] then
             local o = tostring( node[ name ] )
+            o = "'" .. o .. "'"
             output.SpecialMods = output.SpecialMods .. " - " .. name .. " : " .. o
 
             local sf, e
-            if value then
-                sf, e = loadstring( "return " .. o )
-            else
-                sf, e = loadstring( "return '" .. o .. "'" )
-            end
+            sf, e = loadstring( "return " .. o )
 
             if sf then
                 setfenv( sf, state )

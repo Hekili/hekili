@@ -3508,7 +3508,6 @@ function state.reset( dispName )
     state.target.cast_end = nil
     
     for k, power in pairs( class.resources ) do
-
         local res = state[ k ]
         
         res.actual = UnitPower( 'player', power.type )

@@ -2306,7 +2306,6 @@ function Hekili:SpecializationChanged()
 
     wipe( class.stateExprs )
 
-
     for i, specID in ipairs( specs ) do
         local spec = class.specs[ specID ]
 
@@ -2384,6 +2383,7 @@ function Hekili:SpecializationChanged()
     ns.updateGear()
     ns.updateTalents()
 
+    self:LoadScripts()
     self:UpdateDisplayVisibility()
 
     ns.callHook( 'specializationChanged' )

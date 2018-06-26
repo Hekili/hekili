@@ -1739,7 +1739,6 @@ do
                     }                    
                 },
 
-
                 shareHeader = {
                     type = "header",
                     name = "Sharing",
@@ -2704,6 +2703,40 @@ do
     local ACD = LibStub( "AceConfigDialog-3.0" )
 
 
+    local shareDB = {
+        actionPack = "",
+        packName = "",
+        export = "",
+
+        import = "",
+        imported = {},
+        importStage = 0
+    }
+
+    function Hekili:GetPackShareOption( info )
+        local n = #info
+        local option = info[ n ]
+
+        return shareDB[ option ]
+    end
+
+
+    function Hekili:SetPackShareOption( info, val, v2, v3, v4 )
+        local n = #info
+        local option = info[ n ]
+
+        if type(val) == 'string' then val = val:trim() end
+        
+        shareDB[ option ] = val
+
+        if option == "actionPack" and rawget( self.DB.profile.packs, shareDB.actionPack ) then
+            shareDB.export = self:SerializeActionPack( shareDB.actionPack )
+        else
+            shareDB.export = ""
+        end
+    end
+
+
     function Hekili:SetSpecOption( info, val )
         local n = #info
         local spec, option = info[2], info[n]
@@ -3091,13 +3124,13 @@ do
                 newPackHeader = {
                     type = "header",
                     name = "Create a New Pack",
-                    order = 100
+                    order = 200
                 },
 
                 newPackName = {
                     type = "input",
                     name = "Pack Name",
-                    order = 101,
+                    order = 201,
                     width = "full",
                     validate = function( info, val )
                         val = val:trim()
@@ -3110,7 +3143,7 @@ do
                 newPackSpec = {
                     type = "select",
                     name = "Specialization",
-                    order = 102,
+                    order = 202,
                     width = "full",
                     values = specs,
                 },
@@ -3118,7 +3151,7 @@ do
                 createNewPack = {
                     type = "execute",
                     name = "Create New Pack",
-                    order = 103,
+                    order = 203,
                     disabled = function()
                         return packControl.newPackName == "" or packControl.newPackSpec == ""
                     end,
@@ -3129,8 +3162,285 @@ do
                         packControl.newPackName = ""
                         packControl.newPackSpec = ""
                     end,
-                }
+                },
 
+
+                shareHeader = {
+                    type = "header",
+                    name = "Sharing",
+                    order = 100,
+                },
+
+                shareBtn = {
+                    type = "execute",
+                    name = "Share Packs",
+                    desc = "Your action packs can be shared with other addon users with these export strings.\n\n" ..
+                        "You can also import a shared export string here.",
+                    func = function ()
+                        ACD:SelectGroup( "Hekili", "packs", "sharePacks" )
+                    end,
+                    order = 101,
+                },
+
+                sharePacks = {
+                    type = "group",
+                    name = "|cFF1EFF00Share Packs|r",
+                    desc = "Your Action Packs can be shared with other addon users with these export strings.\n\n" ..
+                        "You can also import a shared export string here.",
+                    childGroups = "tab",
+                    get = 'GetPackShareOption',
+                    set = 'SetPackShareOption',
+                    order = 102,
+                    args = {
+                        import = {
+                            type = "group",
+                            name = "Import",
+                            order = 1,
+                            args = {
+                                stage0 = {
+                                    type = "group",
+                                    name = "",
+                                    inline = true,
+                                    order = 1,
+                                    args = {
+                                        guide = {
+                                            type = "description",
+                                            name = "Paste an Action Pack import string here to begin.",
+                                            order = 1,
+                                            width = "full",
+                                            fontSize = "medium",
+                                        },
+
+                                        separator = {
+                                            type = "header",
+                                            name = "Import String",
+                                            order = 1.5,                                             
+                                        },
+        
+                                        importString = {
+                                            type = "input",
+                                            name = "Import String",
+                                            get = function () return shareDB.import end,
+                                            set = function( info, val )
+                                                val = val:trim()
+                                                shareDB.import = val
+                                            end,
+                                            order = 3,
+                                            multiline = 5,
+                                            width = "full",
+                                        },
+
+                                        btnSeparator = {
+                                            type = "header",
+                                            name = "Import",
+                                            order = 4,
+                                        },
+        
+                                        importBtn = {
+                                            type = "execute",
+                                            name = "Import Action Pack",
+                                            order = 5,
+                                            func = function ()
+                                                shareDB.imported, shareDB.error = self:DeserializeActionPack( shareDB.import )
+        
+                                                if shareDB.error then
+                                                    shareDB.import = "The Import String provided could not be decompressed.\n" .. shareDB.error
+                                                    shareDB.error = nil
+                                                    shareDB.imported = {}
+                                                else
+                                                    shareDB.importStage = 1
+                                                end
+                                            end,
+                                            disabled = function ()
+                                                return shareDB.import == ""
+                                            end,
+                                        },
+                                    },
+                                    hidden = function () return shareDB.importStage ~= 0 end,
+                                },
+
+                                stage1 = {
+                                    type = "group",
+                                    inline = true,
+                                    name = "",
+                                    order = 1,
+                                    args = {
+                                        packName = {
+                                            type = "input",
+                                            order = 1,
+                                            name = "Pack Name",
+                                            get = function () return shareDB.imported.name end,
+                                            set = function ( info, val ) shareDB.imported.name = val:trim() end,
+                                            width = "full",
+                                        },
+
+                                        packDate = {
+                                            type = "input",
+                                            order = 2,
+                                            name = "Pack Date",
+                                            get = function () return tostring( shareDB.imported.date ) end,
+                                            set = function () end,
+                                            width = "full",
+                                            disabled = true,
+                                        },
+
+                                        packSpec = {
+                                            type = "input",
+                                            order = 3,
+                                            name = "Pack Specialization",
+                                            get = function () return select( 2, GetSpecializationInfoByID( shareDB.imported.payload.spec or 0 ) ) or "No Specialization Set" end,
+                                            set = function () end,
+                                            width = "full",
+                                            disabled = true,
+                                        },
+
+                                        guide = {
+                                            type = "description",
+                                            name = function ()
+                                                local listNames = {}
+
+                                                for k, v in pairs( shareDB.imported.payload.lists ) do
+                                                    table.insert( listNames, k )
+                                                end
+
+                                                table.sort( listNames )
+
+                                                local o = "The imported Action Pack has the following lists included:  "
+
+                                                for i, name in ipairs( listNames ) do
+                                                    o = o .. name .. ", "
+                                                end
+
+                                                return o
+                                            end,
+                                            order = 4,
+                                            width = "full",
+                                            fontSize = "medium",
+                                        },
+
+                                        separator = {
+                                            type = "header",
+                                            name = "Apply Changes",
+                                            order = 10,
+                                        },
+
+                                        apply = {
+                                            type = "execute",
+                                            name = "Apply Changes",
+                                            order = 11,
+                                            confirm = function ()
+                                                if rawget( self.DB.profile.packs, shareDB.imported.name ) then
+                                                    return "You already have a \"" .. shareDB.imported.name .. "\" action pack.\nOverwrite it?"
+                                                end
+                                                return "Create a new Action Pack named \"" .. shareDB.imported.name .. "\" from the imported data?"
+                                            end,
+                                            func = function ()
+                                                self.DB.profile.packs[ shareDB.imported.name ] = shareDB.imported.payload
+                                                
+                                                shareDB.import = ""
+                                                shareDB.imported = {}
+                                                shareDB.importStage = 2
+                                                
+                                                self:EmbedPackOptions()
+                                            end,
+                                        },
+
+                                        reset = {
+                                            type = "execute",
+                                            name = "Reset",
+                                            order = 12,
+                                            func = function ()
+                                                shareDB.import = ""
+                                                shareDB.imported = {}
+                                                shareDB.importStage = 0
+                                            end,
+                                        },
+                                    },
+                                    hidden = function () return shareDB.importStage ~= 1 end,
+                                },
+
+                                stage2 = {
+                                    type = "group",
+                                    inline = true,
+                                    name = "",
+                                    order = 3,
+                                    args = {
+                                        note = {
+                                            type = "description",
+                                            name = "Imported settings were successfully applied!\n\nClick Reset to start over, if needed.",
+                                            order = 1,
+                                            fontSize = "medium",
+                                            width = "full",
+                                        },
+
+                                        reset = {
+                                            type = "execute",
+                                            name = "Reset",
+                                            order = 2,
+                                            func = function ()
+                                                shareDB.import = ""
+                                                shareDB.imported = {}
+                                                shareDB.importStage = 0
+                                            end,
+                                        }
+                                    },
+                                    hidden = function () return shareDB.importStage ~= 2 end,
+                                }
+                            },
+                            plugins = {                                
+                            }
+                        },
+
+                        export = {
+                            type = "group",
+                            name = "Export",
+                            order = 2,
+                            args = {
+                                guide = {
+                                    type = "description",
+                                    name = "Select the Action Pack to export, then click Export Action Pack to generate an export string.",
+                                    order = 1,
+                                    fontSize = "medium",
+                                    width = "full",
+                                },
+
+                                actionPack = {
+                                    type = "select",
+                                    name = "Action Packs",
+                                    order = 2,
+                                    values = function ()
+                                        local v = {}
+
+                                        for k in pairs( Hekili.DB.profile.packs ) do
+                                            v[ k ] = k
+                                        end
+
+                                        return v
+                                    end,
+                                    width = "full"
+                                },
+
+                                exportString = {
+                                    type = "input",
+                                    name = "Action Pack Export String",
+                                    order = 3,
+                                    multiline = 8,
+                                    get = function ()
+                                        if rawget( Hekili.DB.profile.packs, shareDB.actionPack ) then
+                                            shareDB.export = self:SerializeActionPack( shareDB.actionPack )
+                                        else
+                                            shareDB.export = ""
+                                        end
+                                        return shareDB.export 
+                                    end,
+                                    set = function () end,
+                                    width = "full",
+                                    hidden = function () return shareDB.export == "" end,
+                                },
+                            },
+                        }
+                    }
+                },                
             },
             plugins = {
                 packages = {},
@@ -3197,6 +3507,7 @@ do
                                     type = "execute",
                                     name = "Delete Pack",
                                     order = 3,
+                                    confirm = true,
                                     hidden = function ()
                                         return data.builtIn
                                     end,
@@ -3363,11 +3674,22 @@ do
 
                                                         if script and script.Error then warning = true end
 
-                                                        if entry.caption and entry.caption:len() > 0 then desc = entry.caption
+                                                        if entry.caption and entry.caption:len() > 0 then
+                                                            desc = entry.caption
+
+                                                        elseif entry.action == "variable" then
+                                                            desc = format( "|cff00ccff%s|r = |cffffd100%s|r", entry.var_name or "unassigned", entry.value or "nothing" )
+
+                                                        elseif entry.action == "call_action_list" or entry.action == "run_action_list" then
+                                                            desc = "|cff00ccff" .. ( entry.list_name or "unassigned" ) .. "|r"
+                                                            if entry.criteria and entry.criteria:len() > 0 then desc = desc .. ", if |cffffd100" .. entry.criteria .. "|r" end
+
                                                         elseif entry.criteria and entry.criteria:len() > 0 then
                                                             desc = entry.criteria 
-                                                            desc = desc:gsub( "[\r\n]", "" )
+                                                        
                                                         end
+
+                                                        if desc then desc = desc:gsub( "[\r\n]", "" ) end
 
                                                         local color = warning and "|cFFFF0000" or "|cFFFFD100"
 
@@ -6067,6 +6389,8 @@ function Hekili:SerializeActionPack( name )
         payload = tableCopy( pack )
     }
 
+    serial.payload.builtIn = false
+
     return TableToString( serial, true )
 end
 
@@ -6077,8 +6401,10 @@ function Hekili:DeserializeActionPack( str )
     if not serial or type( serial ) == "string" or serial.type ~= "package" then
         return serial or "Unable to restore action pack from the provided string."
     end
+
+    serial.payload.builtIn = false
     
-    return serial.payload
+    return serial
 end
 
 

@@ -272,6 +272,36 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     } ) )
 
 
+    -- Legendary from Legion, shows up in APL still.
+    spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
+    spec:RegisterAura( "master_assassins_initiative", {
+        id = 235027,
+        duration = 3600
+    } )
+
+    spec:RegisterStateExpr( "mantle_duration", function ()
+        if level > 115 then return 0 end
+
+        if stealthed.mantle then return cooldown.global_cooldown.remains + 5
+        elseif buff.master_assassins_initiative.up then return buff.master_assassins_initiative.remains end
+        return 0
+    end )
+
+    -- We need to break stealth when we start combat from an ability.
+    spec:RegisterHook( "runHandler", function( ability )
+        local a = class.abilities[ ability ]
+
+        if a and a.startsCombat then
+            state.removeBuff( "stealth" )
+            state.removeBuff( "shadowmeld" )
+            state.setCooldown( "stealth", 2 )
+
+            if level < 116 and state.equipped.mantle_of_the_master_assassin then
+                state.applyBuff( "master_assassins_initiative", 5 )
+            end
+        end
+    end )
+
 
     -- Abilities
     spec:RegisterAbilities( {

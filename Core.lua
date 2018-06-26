@@ -235,7 +235,7 @@ function Hekili:OnInitialize()
     checkImports()
     
     self:RefreshOptions()
-    scripts:LoadScripts()
+    -- self:LoadScripts()
     
     ns.updateTalents()
     ns.updateGear()
@@ -312,6 +312,7 @@ function Hekili:OnEnable()
     ns.ReadKeybindings()
 
     self:TotalRefresh()
+    -- self:LoadScripts()
 
     -- May want to refresh configuration options, key bindings.
     if self.DB.profile.enabled then
@@ -1017,8 +1018,9 @@ function Hekili:ProcessHooks( dispName, packName )
     local display = rawget( self.DB.profile.displays, dispName )
 
     local specID = state.spec.id
-    local spec = rawget( self.DB.profile.specs, specID )
+    if not specID then return end
 
+    local spec = rawget( self.DB.profile.specs, specID )
     if not spec then return end
 
     local UI = ns.UI.Displays[ dispName ]
