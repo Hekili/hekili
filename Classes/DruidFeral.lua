@@ -1375,7 +1375,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 30,
             gcd = "off",
 
-            spend = -50,
+            spend = -30,
             spendType = "energy",
             
             startsCombat = false,
