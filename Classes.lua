@@ -291,6 +291,15 @@ local HekiliSpecMixin = {
         if not data.recharge then data.recharge = data.cooldown end
         if not data.charges  then data.charges = 1 end
 
+        if data.hasteCD then
+            if type( data.cooldown ) == "number" and data.cooldown > 0 then data.cooldown = loadstring( "return " .. data.cooldown .. " * haste" ) end
+            if type( data.recharge ) == "number" and data.recharge > 0 then data.recharge = loadstring( "return " .. data.recharge .. " * haste" ) end
+        end
+
+        if not data.fixedCast and type( data.cast ) == "number" then
+            data.cast = loadstring( "return " .. data.cast .. " * haste" )
+        end
+
         for key, value in pairs( data ) do
             if type( value ) == 'function' then
                 setfenv( value, state )
@@ -309,6 +318,8 @@ local HekiliSpecMixin = {
                 spell:ContinueOnSpellLoad( function () 
                     a.name = spell:GetSpellName()
                     a.desc = spell:GetSpellDescription()
+
+                    if a.suffix then a.name = a.name .. " " .. a.suffix end
 
                     local texture = a.texture or GetSpellTexture( a.id )
 
@@ -381,9 +392,9 @@ function Hekili:RestoreDefaults()
             local data = self:DeserializeActionPack( v.import )
 
             if data and type( data ) == 'table' then
-                p.packs[ k ] = data
-                data.version = v.version
-                data.builtIn = true
+                p.packs[ k ] = data.payload
+                data.payload.version = v.version
+                data.payload.builtIn = true
             end
         
         end

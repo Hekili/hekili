@@ -8,6 +8,8 @@ local auras = ns.auras
 
 local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
+local ResourceRegenerates = ns.ResourceRegenerates
+
 local Error = ns.Error
 
 local round, roundUp = ns.round, ns.roundUp
@@ -604,7 +606,12 @@ state.removeBuff = removeBuff
 -- Wraps around Buff() to check for an existing buff.
 local function addStack( aura, duration, stacks, value )
     
-    local max_stack = ( class.auras[ aura ] and class.auras[ aura ].max_stack ) and class.auras[ aura ].max_stack or 1
+    local a = class.auras[ aura ]
+
+    duration = duration or ( a and a.duration or 15 )
+    stacks = stacks or 1
+
+    local max_stack = a and a.max_stack or 1
     
     if state.buff[ aura ].remains > 0 then
         applyBuff( aura, duration, min( max_stack, state.buff[ aura ].count + stacks ), value )
@@ -2540,7 +2547,7 @@ local mt_buffs = {
         
     end,
     
-    __newindex = function(t, k, v)
+    __newindex = function( t, k, v )
         local aura = class.auras[ k ]
 
         if aura and aura.alias then
@@ -2790,6 +2797,44 @@ local mt_equipped = {
 ns.metatables.mt_equipped = mt_equipped
 
 
+-- Aliases let a single buff name refer to any of multiple buffs.
+-- Developed mainly for RtB; it will also report 'stack' or 'count' as the sum of stacks of multiple buffs.
+local mt_alias_debuff = {
+    __index = function( t, k )
+        print( "in mt_a_d", t.key, k )
+        local aura = class.auras[ t.key ]
+
+        if k == 'count' or k == 'stack' or k == 'stacks' then
+            local n = 0
+
+            for i, child in ipairs( aura.alias ) do
+                if state.debuff[ child ].up then n = n + max( 1, state.debuff[ child ].stack ) end
+            end
+
+            return n
+
+        end
+
+        local alias
+        local mode = aura.aliasMode or "first"
+
+        for i, v in ipairs( aura.alias ) do
+            local child = state.debuff[ v ]
+            if not alias and mode == "first" and child.up then
+                print( "selected", k )
+                return child[ k ] end
+
+            if child.up then
+                if mode == "shortest" and ( not alias or child.remains < alias.remains ) then alias = child
+                elseif mode == "longest" and ( not alias or child.remains > alias.remains ) then alias = child end
+            end
+        end
+
+        return alias and alias[ k ] or state.debuff[ aura.alias[1] ][ k ]
+    end 
+}
+
+
 local default_debuff_values = {
     count = 0,
     expires = 0,
@@ -2802,7 +2847,6 @@ local default_debuff_values = {
     v3 = 0,
     unit = 'target'
 }
-
 
 -- Table of default handlers for debuffs.
 -- Needs review.
@@ -2941,6 +2985,11 @@ local mt_debuffs = {
     end, 
     
     __newindex = function(t, k, v)
+        if aura and aura.alias then
+            rawset( t, k, setmetatable( v, mt_alias_debuff ) )
+            return
+        end
+
         rawset( t, k, setmetatable( v, mt_default_debuff ) )
     end
 }
@@ -3522,16 +3571,18 @@ function state.reset( dispName )
             res.inactive_regen = inactive or 0
 
         else
-            local inactive, active = GetPowerRegenForPowerType( power.type )
-
-            res.active_regen = active or 0
-            res.inactive_regen = inactive or 0
-
+            if ResourceRegenerates( k ) then
+                local inactive, active = GetPowerRegenForPowerType( power.type )
+                res.active_regen = active or 0
+                res.inactive_regen = inactive or 0
+                res.regen = nil
+            else
+                res.regen = 0
+            end
         end
 
         if res.reset then res.reset() end
         forecastResources( k )
-
     end
    
     state.health = rawget( state, 'health' ) or setmetatable( { resource = 'health' }, mt_resource )
@@ -3713,7 +3764,7 @@ function state.GetResourceType( ability )
             return action.spendType or class.primaryResource
             
         elseif type( action.spend ) == 'function' then
-            return select( 2, action.spend() )
+            return select( 2, action.spend() ) or action.spendType or class.primaryResource
             
         end
     end
@@ -3738,6 +3789,7 @@ ns.spendResources = function( ability )
             resource = action.spendType or class.primaryResource
         elseif type( action.spend ) == 'function' then
             cost, resource = action.spend()
+            resource = resource or action.spendType or class.primaryResource
         else
             cost = cost or 0
             resource = resource or 'health'
@@ -3878,6 +3930,10 @@ do
         end
 
         if ability.form and not state.buff[ ability.form ].up then
+            return false
+        end
+
+        if ability.noform and state.buff[ ability.noform ].up then
             return false
         end
 
