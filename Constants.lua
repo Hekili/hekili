@@ -54,8 +54,8 @@ local ResourceInfo = {
     combo_points    = Enum.PowerType.ComboPoints,
     runes           = Enum.PowerType.Runes,
     runic_power     = Enum.PowerType.RunicPower,
-    soul_shard     = Enum.PowerType.SoulShards,
-    lunar_power     = Enum.PowerType.LunarPower,
+    soul_shard      = Enum.PowerType.SoulShards,
+    astral_power    = Enum.PowerType.LunarPower,
     holy_power      = Enum.PowerType.HolyPower,
     alternate       = Enum.PowerType.Alternate,
     maelstrom       = Enum.PowerType.Maelstrom,
@@ -89,6 +89,18 @@ function ns.GetResourceKey( id )
     return ResourceByID[ id ]
 end
 
+
+local passive_regen = {
+    mana = 1,
+    focus = 1,
+    energy = 1
+}
+
+function ns.ResourceRegenerates( key )
+    -- Does this resource have a passive gain from waiting?
+    if passive_regen[ key ] then return true end
+    return false
+end
 
 
 local Specializations = {

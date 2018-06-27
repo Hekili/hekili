@@ -103,69 +103,72 @@ local invalid = "([^a-zA-Z0-9_.])"
 
 -- Convert SimC syntax to Lua conditionals.
 local function SimToLua( str, modifier )
-
-  -- If no conditions were provided, function should return true.
-  if not str or str == '' then return nil end
-
-  if type( str ) == 'number' then print( 'got a number', str ); return str end
-
-  -- Strip comments.
-  str = str:gsub("^%-%-.-\n", "")
-
-  -- Replace '!' with ' not '.
-  str = forgetMeNots( str )
-
-  for k in pairs( GetResourceInfo() ) do
-    str = str:gsub( "^" .. k .. invalid, k .. ".current%1" )
-    str = str:gsub( invalid .. k .. "$", "%1" .. k .. ".current" )
-    str = str:gsub( "^" .. k .. "$", k .. ".current" )
-    str = str:gsub( invalid .. k .. invalid, "%1" .. k .. ".current%2" )
-  end
-  
-  -- Replace '%' for division with actual division operator '/'.
-  str = str:gsub("%%", "/")
-
-  -- Replace '&' with ' and '.
-  str = str:gsub("&", " and ")
-
-  -- Replace '|' with ' or '.
-  str = str:gsub("||", " or "):gsub("|", " or ")
-
-  if not modifier then
-    -- Replace assignment '=' with comparison '=='
-    str = str:gsub("([^=])=([^=])", "%1==%2" )
-
-    -- Fix any conditional '==' that got impacted by previous.
-    str = str:gsub("==+", "==")
-    str = str:gsub(">=+", ">=")
-    str = str:gsub("<=+", "<=")
-    str = str:gsub("!=+", "~=")
-    str = str:gsub("~=+", "~=")
-  end
-
-  -- Condense whitespace.
-  str = str:gsub("%s%s", " ")
-
-  -- Condense parenthetical spaces.
-  str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")")
-
-  -- Address equipped.number => equipped[number]
-  str = str:gsub("equipped%.(%d+)", "equipped[%1]")
-  str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
-  str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
-
-  str = str:gsub("prev%.(%d+)", "prev[%1]")
-  str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
-  str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
-  str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
-
-  return str
-
+    -- If no conditions were provided, function should return true.
+    if not str or str == '' then return nil end
+    if type( str ) == 'number' then return str end
+    
+    str = str:trim()
+    
+    -- Strip comments.
+    str = str:gsub("^%-%-.-\n", "")
+    
+    -- Replace '!' with ' not '.
+    str = forgetMeNots( str )
+    
+    for k in pairs( GetResourceInfo() ) do
+        if str:find( k ) then
+            str = str:gsub( "^" .. k .. invalid, k .. ".current%1" )
+            str = str:gsub( invalid .. k .. "$", "%1" .. k .. ".current" )
+            str = str:gsub( "^" .. k .. "$", k .. ".current" )
+            str = str:gsub( invalid .. k .. invalid, "%1" .. k .. ".current%2" )
+        end
+    end
+    
+    -- Replace '%' for division with actual division operator '/'.
+    str = str:gsub("%%", "/")
+    
+    -- Replace '&' with ' and '.
+    str = str:gsub("&", " and ")
+    
+    -- Replace '|' with ' or '.
+    str = str:gsub("||", " or "):gsub("|", " or ")
+    
+    if not modifier then
+        -- Replace assignment '=' with comparison '=='
+        str = str:gsub("([^=])=([^=])", "%1==%2" )
+        
+        -- Fix any conditional '==' that got impacted by previous.
+        str = str:gsub("==+", "==")
+        str = str:gsub(">=+", ">=")
+        str = str:gsub("<=+", "<=")
+        str = str:gsub("!=+", "~=")
+        str = str:gsub("~=+", "~=")
+    end
+    
+    -- Condense whitespace.
+    str = str:gsub("%s%s", " ")
+    
+    -- Condense parenthetical spaces.
+    str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")")
+    
+    -- Address equipped.number => equipped[number]
+    str = str:gsub("equipped%.(%d+)", "equipped[%1]")
+    str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
+    str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
+    
+    str = str:gsub("prev%.(%d+)", "prev[%1]")
+    str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
+    str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
+    str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
+    
+    return str
+    
 end
 
 
 local function stripScript( str, thorough )
   if not str then return 'true' end
+  if type( str ) == 'number' then return str end
 
   -- Remove the 'return ' that was added during conversion.
   str = str:gsub("^return ", "")
@@ -216,6 +219,8 @@ end
 
 
 local function GetScriptElements( script )
+    if type( script ) == 'number' then return end
+
     local e, c = {}, stripScript( script, true )
 
     for s in c:gmatch( "[^ ,]+" ) do
@@ -279,10 +284,10 @@ local function ConvertScript( node, hasModifiers )
     if t then sf, e = loadstring( "return " .. t ) end
     if sf then setfenv( sf, state ) end
 
-    if sf and not e then
+    --[[ if sf and not e then
         local pass, val = pcall( sf )
         if not pass then e = val end
-    end
+    end ]]
     if e then e = e:match( ":(%d+: .*)" ) end
     
     local se = t and GetScriptElements( t )

@@ -393,7 +393,9 @@ function Hekili:CheckAPLStack()
     local t = state.query_time
 
     for scriptID, listID in pairs( listIsBad ) do
-        local list = self.DB.profile.actionLists[ listID ]
+        local packID = scriptID:match( "^(.-):" )
+        local pack = rawget( self.DB.profile.packs, packID )
+        local list = pack.lists[ listID ]
 
         if listID and list then
             local cache = listCache[ scriptID ] or {}
@@ -402,12 +404,12 @@ function Hekili:CheckAPLStack()
             cache[ t ] = cache[ t ] or scripts:CheckScript( scriptID )
             values[ t ] = values[ t ] or scripts:GetConditionsAndValues( scriptID )
 
-            if self.ActiveDebug then self:Debug( "The conditions for a previously-run action list ( %d - %s ) would %s at +%.2f.\n - %s", listID, list.Name, cache[ t ] and "PASS" or "FAIL", state.delay, values[ t ] ) end
+            if self.ActiveDebug then self:Debug( "The conditions for a previously-run action list ( %s ) would %s at +%.2f.\n - %s", listID, cache[ t ] and "PASS" or "FAIL", state.delay, values[ t ] ) end
 
             listCache[ scriptID ] = cache
             listValue[ scriptID ] = value
 
-            if not cache[ t ] then
+            if cache[ t ] then
                 if self.ActiveDebug then self:Debug( "Action unavailable as we would not have reached this entry at +%.2f.", state.delay ) end
                 return false
             end
@@ -589,11 +591,17 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         if entry.action == 'variable' then
                             local name = state.args.var_name
                             
-                            if debug then self:Debug( " - variable.%s will reference this script entry (%s).", name or "MISSING", scriptID ) end
-                            
                             if name ~= nil then -- and aScriptValue ~= nil then
-                                -- We just store the scriptID so that the variable actually gets tested at time of comparison.
-                                state.variable[ "_" .. name ] = scriptID
+                                local aScriptPass = scripts:CheckScript( scriptID )
+
+                                if aScriptPass then
+                                    if debug then self:Debug( " - variable.%s will reference this script entry (%s).", name or "MISSING", scriptID ) end
+                                    
+                                    -- We just store the scriptID so that the variable actually gets tested at time of comparison.
+                                    state.variable[ "_" .. name ] = scriptID
+                                else
+                                    if debug then self:Debug( " - conditions were NOT MET, ignoring (%s).", name ) end
+                                end
                             end
 
                         elseif entry.action == 'use_items' then
@@ -816,7 +824,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                 end
 
                                             elseif entry.action == 'pool_resource' then
-                                                if entry.for_next == 1 then
+                                                if state.args.for_next == 1 then
                                                     -- Pooling for the next entry in the list.
                                                     local next_entry  = list[ actID + 1 ]
                                                     local next_action = next_entry and next_entry.action
@@ -824,8 +832,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                     local extra_amt   = entry.extra_amount or 0
 
-                                                    local next_known  = next_action and state.IsKnown( next_action )
-                                                    local next_usable = next_action and state.IsUsable( next_action )
+                                                    local next_known  = next_action and state:IsKnown( next_action )
+                                                    local next_usable = next_action and state:IsUsable( next_action )
                                                     local next_cost   = next_action and state.action[ next_action ].cost or 0
                                                     local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource                                                    
 
@@ -838,7 +846,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     elseif not next_usable then
                                                         if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable.  Skipping.", next_action ) end                                               
                                                     else
-                                                        local next_wait = max( state.TimeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
+                                                        local next_wait = max( state:TimeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
 
                                                         if next_wait <= 0 then
                                                             if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end

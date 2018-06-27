@@ -439,6 +439,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 136096,
             
             handler = function ()
+                applyDebuff( "target", "moonfire" )
+                gain( 3, "astral_power" )
             end,
         },
         
@@ -692,7 +694,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             gcd = "spell",
             
             spend = 40,
-            spendType = "lunar_power",
+            spendType = "astral_power",
             
             startsCombat = true,
             texture = 236168,
@@ -709,7 +711,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             gcd = "spell",
             
             spend = 40,
-            spendType = "lunar_power",
+            spendType = "astral_power",
             
             startsCombat = true,
             texture = 135730,
@@ -800,8 +802,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         
 
-        thrash = {
+        thrash_bear = {
             id = 106832,
+            suffix = "(Bear)",
             cast = 0,
             cooldown = 0,
             gcd = "spell",
@@ -919,7 +922,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     spec:RegisterOptions( {
         enabled = false,
 
-        aoe = 3,
+        aoe = 2,
     
         nameplates = false,
         nameplateRange = 8,
@@ -929,4 +932,5 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     
         package = nil,
     } )
+
 end

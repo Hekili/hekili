@@ -3086,9 +3086,19 @@ do
         if packControl[ option ] ~= nil then
             packControl[ option ] = val
             if option == "listName" then packControl.actionID = "zzzzzzzzzz" end
+            if option == "actionID" and val == "zzzzzzzzzz" then
+                local data = rawget( self.DB.profile.packs, category )
+                if data then
+                    table.insert( data.lists[ packControl.listName ], { {} } )
+                    packControl.actionID = format( "%04d", #data.lists[ packControl.listName ] )
+                else
+                    packControl.actionID = "0001"
+                end
+            end
             return
         end
-        if subcat == 'lists' then return self:SetActionOption( info, val   ) end
+
+        if subcat == 'lists' then return self:SetActionOption( info, val ) end
         -- if subcat == 'newActionGroup' or ( subcat == 'actionGroup' and subtype == 'entry' ) then self:SetActionOption( info, val ); return end
 
         local data = rawget( self.DB.profile.packs, category )
@@ -3680,6 +3690,10 @@ do
                                                         elseif entry.action == "variable" then
                                                             desc = format( "|cff00ccff%s|r = |cffffd100%s|r", entry.var_name or "unassigned", entry.value or "nothing" )
 
+                                                            if entry.criteria and entry.criteria:len() > 0 then
+                                                                desc = format( "%s, if |cffffd100%s|r", desc, entry.criteria )
+                                                            end
+
                                                         elseif entry.action == "call_action_list" or entry.action == "run_action_list" then
                                                             desc = "|cff00ccff" .. ( entry.list_name or "unassigned" ) .. "|r"
                                                             if entry.criteria and entry.criteria:len() > 0 then desc = desc .. ", if |cffffd100" .. entry.criteria .. "|r" end
@@ -4016,7 +4030,7 @@ do
                                                     end,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
-                                                        return e.action == "variable" or e.action == "use_items"
+                                                        return e.action == "use_items"
                                                     end,
                                                 },
 
@@ -4142,6 +4156,7 @@ do
                                                     type = "header",
                                                     name = "Delete Action",
                                                     order = 100,
+                                                    hidden = function () return #data.lists[ packControl.listName ] < 2 end
                                                 },
 
                                                 delete = {
@@ -4157,7 +4172,8 @@ do
                                                         if not data.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
 
                                                         self:LoadScripts()
-                                                    end
+                                                    end,
+                                                    hidden = function () return #data.lists[ packControl.listName ] < 2 end
                                                 }
                                             },
                                         },                                    
@@ -4192,15 +4208,15 @@ do
                                             order = 2,
                                             disabled = function() return packControl.newListName == nil end,
                                             func = function ()
-                                                data.lists[ packControl.newListName ] = {}
+                                                data.lists[ packControl.newListName ] = { {} }                                                
                                                 packControl.listName = packControl.newListName
+                                                packControl.actionID = "0001"
                                                 packControl.newListName = nil
-                                                
                                             end,
                                         }
                                     }
                                 },
-
+                                
                                 newActionGroup = {
                                     type = "group",
                                     inline = true,
@@ -4221,8 +4237,6 @@ do
                                         }
                                     }
                                 }
-
-
                             },
                             plugins = {
                             }

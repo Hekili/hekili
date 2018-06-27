@@ -784,8 +784,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         
 
-        thrash = {
+        thrash_bear = {
             id = 106832,
+            suffix = "(Bear)",
             cast = 0,
             cooldown = 0,
             gcd = "spell",
