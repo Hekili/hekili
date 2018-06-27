@@ -1373,7 +1373,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 5217,
             cast = 0,
             cooldown = 30,
-            gcd = "spell",
+            gcd = "off",
 
             spend = -50,
             spendType = "energy",
