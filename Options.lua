@@ -191,6 +191,7 @@ local displayTemplate = {
     glow = {
         enabled = false,
         queued = false,
+        shine = false,
     },
 
     flash = {
@@ -1271,6 +1272,15 @@ do
                                 order = 2,
                                 disabled = function() return data.glow.enabled == false end,
                             },
+
+                            shine = {
+                                type = "toggle",
+                                name = "Use Shine Effect",
+                                desc = "If enabled, the addon will use the 'shine' effect for a less visually intrusive glow.",
+                                width = "full",
+                                order = 3,
+                                disabled = function () return data.glow.enabled == false end,
+                            }
 
 
                         }
@@ -3421,8 +3431,10 @@ do
                                     values = function ()
                                         local v = {}
 
-                                        for k in pairs( Hekili.DB.profile.packs ) do
-                                            v[ k ] = k
+                                        for k, pack in pairs( Hekili.DB.profile.packs ) do
+                                            if pack.spec and class.specs[ pack.spec ] then
+                                                v[ k ] = k
+                                            end
                                         end
 
                                         return v
@@ -3483,7 +3495,8 @@ do
                 local opts = packs.plugins.packages[ pack ] or {
                     type = "group",
                     name = function ()
-                        if data.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
+                        local p = rawget( Hekili.DB.profile.packs, pack )
+                        if p.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
                         return pack
                     end,
                     childGroups = "tab",
@@ -3492,7 +3505,8 @@ do
                         pack = {
                             type = "group",
                             name = function ()
-                                if data.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
+                                local p = rawget( Hekili.DB.profile.packs, pack )
+                                if p.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
                                 return pack
                             end,
                             order = count,
@@ -3519,7 +3533,8 @@ do
                                     order = 3,
                                     confirm = true,
                                     hidden = function ()
-                                        return data.builtIn
+                                        local p = rawget( Hekili.DB.profile.packs, pack )
+                                        return p.builtIn
                                     end,
                                     func = function ()
                                         Hekili.DB.profile.packs[ pack ] = nil
@@ -3587,7 +3602,10 @@ do
                                     order = 5,
                                     multiline = 3,
                                     width = "full",                                
-                                    hidden = function () return not data.warnings or data.warnings == "" end,
+                                    hidden = function ()
+                                        local p = rawget( Hekili.DB.profile.packs, pack )
+                                        return not p.warnings or p.warnings == ""
+                                    end,
                                 },
             
                                 reimport = {
@@ -3597,23 +3615,23 @@ do
                                     order = 5,
                                     func = function ()
                                         local result, warnings = Hekili:ImportSimcAPL( nil, nil, data.profile )
+                                        local p = rawget( Hekili.DB.profile.packs, pack )
 
-                                        wipe( data.lists )
+                                        wipe( p.lists )
 
                                         for k, v in pairs( result ) do
-                                            data.lists[ k ] = v
+                                            p.lists[ k ] = v
                                         end
 
-                                        data.warnings = warnings
-                                        data.date = tonumber( date("%Y%m%d.%H%M%S") )
+                                        p.warnings = warnings
+                                        p.date = tonumber( date("%Y%m%d.%H%M%S") )
 
-
-                                        if not data.lists[ packControl.listName ] then packControl.listName = "default" end
+                                        if not p.lists[ packControl.listName ] then packControl.listName = "default" end
                                         
                                         local id = tonumber( packControl.actionID )
-                                        if not data.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
+                                        if not p.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
 
-                                        Hekili:LoadScripts()
+                                        self:LoadScripts()
                                     end,
                                 },
                             }
@@ -3642,8 +3660,10 @@ do
                                                 local v = {
                                                     ["zzzzzzzzzz"] = "|cFF00FF00Create a New Action List|r"
                                                 }
-            
-                                                for k in pairs( data.lists ) do
+
+                                                local p = rawget( Hekili.DB.profile.packs, pack )
+
+                                                for k in pairs( p.lists ) do
                                                     if k == 'precombat' or k == 'default' then
                                                         v[ k ] = "|cFF00B4FF" .. k .. "|r"
                                                     else
@@ -3734,7 +3754,9 @@ do
                                     name = "",
                                     order = 2,
                                     hidden = function ()
-                                        if packControl.listName == "zzzzzzzzzz" or rawget( data.lists, packControl.listName ) == nil or packControl.actionID == "zzzzzzzzzz" then
+                                        local p = rawget( Hekili.DB.profile.packs, pack )
+
+                                        if packControl.listName == "zzzzzzzzzz" or rawget( p.lists, packControl.listName ) == nil or packControl.actionID == "zzzzzzzzzz" then
                                             return true
                                         end
                                         return false
@@ -3749,7 +3771,8 @@ do
                                             -- set = 'SetActionOption',
                                             hidden = function( info )
                                                 local id = tonumber( packControl.actionID )
-                                                return not packControl.actionID or packControl.actionID == "zzzzzzzzzz" or not data.lists[ packControl.listName ][ id ]
+                                                local p = rawget( Hekili.DB.profile.packs, pack )
+                                                return not packControl.actionID or packControl.actionID == "zzzzzzzzzz" or not p.lists[ packControl.listName ][ id ]
                                             end,
                                             args = {
                                                 enabled = {
@@ -3768,7 +3791,9 @@ do
                                                     values = function ()
                                                         local v = {}
                                                         
-                                                        for i = 1, #data.lists[ packControl.listName ] do
+                                                        local p = rawget( Hekili.DB.profile.packs, pack )
+
+                                                        for i = 1, #p.lists[ packControl.listName ] do
                                                             v[ i ] = i
                                                         end
             
@@ -3823,8 +3848,10 @@ do
                                                             values = function ()
                                                                 local e = GetListEntry( pack )
                                                                 local v = {}
-                                                                
-                                                                for k in pairs( data.lists ) do
+
+                                                                local p = rawget( Hekili.DB.profile.packs, pack )
+
+                                                                for k in pairs( p.lists ) do
                                                                     if k ~= packControl.listName then
                                                                         if k == 'precombat' or k == 'default' then
                                                                             v[ k ] = "|cFF00B4FF" .. k .. "|r"
@@ -4156,7 +4183,9 @@ do
                                                     type = "header",
                                                     name = "Delete Action",
                                                     order = 100,
-                                                    hidden = function () return #data.lists[ packControl.listName ] < 2 end
+                                                    hidden = function ()
+                                                        local p = rawget( Hekili.DB.profile.packs, pack )
+                                                        return #p.lists[ packControl.listName ] < 2 end
                                                 },
 
                                                 delete = {
@@ -4166,14 +4195,19 @@ do
                                                     confirm = true,
                                                     func = function ()
                                                         local id = tonumber( packControl.actionID )
-                                                        table.remove( data.lists[ packControl.listName ], id )
+                                                        local p = rawget( Hekili.DB.profile.packs, pack )
 
-                                                        if not data.lists[ packControl.listName ][ id ] then id = id - 1; packControl.actionID = format( "%04d", id ) end
-                                                        if not data.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
+                                                        table.remove( p.lists[ packControl.listName ], id )
+
+                                                        if not p.lists[ packControl.listName ][ id ] then id = id - 1; packControl.actionID = format( "%04d", id ) end
+                                                        if not p.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
 
                                                         self:LoadScripts()
                                                     end,
-                                                    hidden = function () return #data.lists[ packControl.listName ] < 2 end
+                                                    hidden = function ()
+                                                        local p = rawget( Hekili.DB.profile.packs, pack )
+                                                        return #p.lists[ packControl.listName ] < 2 
+                                                    end
                                                 }
                                             },
                                         },                                    
@@ -4194,8 +4228,10 @@ do
                                             name = "List Name",
                                             order = 1,
                                             validate = function( info, val )
+                                                local p = rawget( Hekili.DB.profile.packs, pack )
+
                                                 if val:len() < 2 then return "Action list names should be at least 2 characters in length."
-                                                elseif rawget( data.lists, val ) then return "There is already an action list by that name."
+                                                elseif rawget( p.lists, val ) then return "There is already an action list by that name."
                                                 elseif val:find( "[^a-zA-Z0-9_]" ) then return "Only alphanumeric characters and underscores can be used in list names." end
                                                 return true
                                             end,
@@ -4208,7 +4244,8 @@ do
                                             order = 2,
                                             disabled = function() return packControl.newListName == nil end,
                                             func = function ()
-                                                data.lists[ packControl.newListName ] = { {} }                                                
+                                                local p = rawget( Hekili.DB.profile.packs, pack )
+                                                p.lists[ packControl.newListName ] = { {} }                                                
                                                 packControl.listName = packControl.newListName
                                                 packControl.actionID = "0001"
                                                 packControl.newListName = nil
@@ -4231,8 +4268,9 @@ do
                                             name = "Create New Entry",
                                             order = 1,
                                             func = function ()
-                                                table.insert( data.lists[ packControl.listName ], {} )
-                                                packControl.actionID = format( "%04d", #data.lists[ packControl.listName ] )
+                                                local p = rawget( Hekili.DB.profile.packs, pack )
+                                                table.insert( p.lists[ packControl.listName ], {} )
+                                                packControl.actionID = format( "%04d", #p.lists[ packControl.listName ] )
                                             end,
                                         }
                                     }
@@ -4322,7 +4360,7 @@ do
         if not toggle then return end
 
         if option == 'value' then
-            if bind == 'pause' then self:TogglePause()
+            if bind == 'pause' then self:TogglePause()            
             else self:FireToggle( bind ) end
         
         elseif option == 'type' then
@@ -6183,11 +6221,11 @@ end
 
 
 function Hekili:CmdLine( input )
-    if not input or input:trim() == "" or input:trim() == "makedefaults" or input:trim() == 'force' or input:trim() == 'import' or input:trim() == 'skeleton' then
-        if InCombatLockdown() and input:trim() ~= 'force' then
+    if not input or input:trim() == "" or input:trim() == "makedefaults" or input:trim() == 'import' or input:trim() == 'skeleton' then
+        --[[ if InCombatLockdown() and input:trim() ~= 'force' then
             Hekili:Print( "This addon cannot be configured while in combat." )
             return
-        end
+        end ]]
         if input:trim() == 'makedefaults' then
             Hekili.MakeDefaults = true
         end
@@ -7354,12 +7392,17 @@ do
                 result.name = nil
             end
         
-            if result.target_if then
+            --[[ if result.target_if then
                 if result.criteria and result.criteria:len() > 0 then   
                     result.criteria = format( "( %s ) & ( %s )", result.criteria, result.target_if )
                 else
                     result.criteria = result.target_if
                 end
+            end ]]
+
+            if result.target_if and not result.criteria then
+                result.criteria = result.target_if
+                result.target_if = nil
             end
 
             if result.action == 'use_item' and result.name and class.abilities[ result.name ] then
@@ -7471,6 +7514,10 @@ function Hekili:FireToggle( name )
     
     elseif name == 'pause' then
         self:TogglePause()
+        return
+
+    elseif name == 'snapshot' then
+        self:MakeSnapshot()
         return
 
     else

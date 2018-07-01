@@ -695,6 +695,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 237582,
             
             handler = function ()
+                removeBuff( "lava_surge" )
             end,
         },
         

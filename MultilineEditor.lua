@@ -222,6 +222,14 @@ local function GetOptionsMemberValue(membername, option, options, path, appName,
 end
 
 
+local key_cache = setmetatable( {}, {
+    __index = function( t, k )
+        t[k] = k:gsub( "(%S+)%[(%d+)%]", "%1.%2" )
+        return t[k]
+    end
+} )
+
+
 local function GenerateDiagnosticTooltip( widget, event )
     --show a tooltip/set the status bar to the desc text
     local user = widget:GetUserDataTable()
@@ -282,7 +290,7 @@ local function GenerateDiagnosticTooltip( widget, event )
         
         GameTooltip:AddLine( "Values" )
         for k, v in orderedPairs( arg ) do
-            GameTooltip:AddDoubleLine( k, ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
+            GameTooltip:AddDoubleLine( key_cache[ k ], ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
         end
     end
     

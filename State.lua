@@ -836,7 +836,7 @@ local function resourceModelSort( a, b )
 end
 
 
-local FORECAST_DURATION = 5
+local FORECAST_DURATION = 10.01
 
 local function forecastResources( resource )
 
@@ -994,10 +994,8 @@ local function gain( amount, resource, overcap )
     -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     if overcap then state[ resource ].actual = state[ resource ].current + amount
     else state[ resource ].actual = min( state[ resource ].max, state[ resource ].current + amount ) end
-
-    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
-
     ns.callHook( 'gain', amount, resource, overcap )
+    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
 
 end
 state.gain = gain
@@ -1007,10 +1005,8 @@ local function spend( amount, resource, noHook )
     
     -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     state[ resource ].actual = max( 0, state[ resource ].actual - amount )
-    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
-    
     if not noHook then ns.callHook( 'spend', amount, resource ) end
-
+    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end    
 end
 state.spend = spend
 
@@ -1353,6 +1349,10 @@ local mt_state = {
         elseif k == 'refreshable' then
             if app then return app.remains < 0.3 * app.duration end
             return false
+
+        elseif k == 'time_to_refresh' then
+            if app then return max( 0, app.remains - 0.3 * app.duration ) end
+            return 0
             
         elseif k == 'ticking' then
             if app then return app.up end
@@ -2094,10 +2094,11 @@ ns.metatables.mt_dot = mt_dot
 local mt_prev_lookup = {
     __index = function( t, k )
         local idx = t.index
-        
+
         if t.meta == 'castsAll' then
             -- Check predictions first.
             if state.predictions[ idx ] then return state.predictions[ idx ] == k end
+
             -- There isn't a prediction for that entry yet, go back to actual collected data.
             if state.player.queued_ability then
                 if idx == #state.predictions + 1 then
@@ -2105,6 +2106,11 @@ local mt_prev_lookup = {
                 end
                 return ns.castsAll[ idx - #state.predictions + 1 ]
             end
+
+            if idx == 1 and state.prev.override then
+                return state.prev.override == k
+            end
+
             return ns.castsAll[ idx - #state.predictions ] == k
             
         elseif t.meta == 'castsOn' then
@@ -2117,18 +2123,29 @@ local mt_prev_lookup = {
                 end
                 return ns.castsOn[ idx - #state.predictionsOn + 1 ]
             end
+
+            if idx == 1 and state.prev_gcd.override then
+                return state.prev_gcd.override == k
+            end
+
             return ns.castsOn[ idx - #state.predictionsOn ] == k
             
         end
         
         -- castsOff
         if state.predictionsOff[ idx ] then return state.predictionsOff[ idx ] == k end
+
         if state.player.queued_ability and state.player.queued_off then
             if idx == np + 1 then
                 return state.player.queued_ability
             end
             return ns.castsOff[ idx - #state.predictionsOff + 1 ]
         end
+
+        if idx == 1 and state.prev_off_gcd.override then
+            return state.prev_off_gcd.override == k
+        end
+
         return ns.castsOff[ idx - #state.predictionsOff ] == k
         
     end
@@ -3397,6 +3414,8 @@ function state.reset( dispName )
     state.delay = 0
     state.cast_start = 0
     state.false_start = 0
+
+    state.selection = false
     
     local _, zone = GetInstanceInfo()
     
@@ -3543,8 +3562,13 @@ function state.reset( dispName )
     state.target.distance = nil
     
     state.prev.last = state.player.lastcast
+    state.prev.override = nil
+
     state.prev_gcd.last = state.player.lastgcd
+    state.prev_gcd.override = nil
+
     state.prev_off_gcd.last = state.player.lastoffgcd
+    state.prev_off_gcd.override = nil
     
     for i = 1, 5 do
         state.predictions[i] = nil
@@ -3945,6 +3969,9 @@ do
             return false
         end
 
+        local hook = ns.callHook( "IsUsable", spell )
+        if hook == false then return false end
+
         if ability.usable ~= nil then
             if type( ability.usable ) == 'number' then 
                 return IsUsableSpell( ability.usable )
@@ -4029,6 +4056,7 @@ function state:TimeToReady( action, pool )
             resource = ability.spendType or class.primaryResource
         elseif type( ability.spend ) == 'function' then
             spend, resource = ability.spend()
+            resource = resource or ability.spendType or class.primaryResource
         end
         
         spend = ns.callHook( 'TimeToReady_spend', spend )

@@ -461,52 +461,6 @@ Hekili_Menu.initialize = function(self, level)
 end
 
 
--- Let's rebuild this to actually match a display's full dimensions.
---[[ local function getDisplayDimensions(dispID)
-    local display = Hekili.DB.profile.displays[dispID]
-    if not display then
-        return
-    end
-
-    local scale = Hekili:GetScale()
-
-    local anchor = display.queueAnchor
-    local space = display.iconSpacing
-
-    local qLen = display.numIcons - 1
-    local qSpace = qLen == 0 and 0 or (space * (qLen - 1))
-    local aHoriz = (anchor:sub(1, 4) == "LEFT" or anchor:sub(1, 5) == "RIGHT")
-
-    -- Calculate Width.
-    local pWidth = display.primaryIconWidth
-    local qHoriz = display.queueDirection == "LEFT" or display.queueDirection == "RIGHT"
-    local qWidth = qHoriz and ((qLen * display.queuedIconWidth) + qSpace) or display.queuedIconWidth
-
-    local width = aHoriz and (pWidth + space + qWidth) or max(pWidth, qWidth)
-
-    -- Calculate Height.
-    local pH = display.primaryIconHeight
-    local qH = qHoriz and display.queuedIconHeight or (qSpace + (qLen * display.queuedIconHeight))
-
-    local height = aHoriz and max(pH, qH) or (pH + space + qH)
-
-    -- Anchor Point for Icon #1.
-    local anchorPoint, offX, offY = nil, 0, 0
-
-    if aHoriz then
-        local aLeft = anchor:sub(1, 4) == "LEFT"
-        anchorPoint = aLeft and "RIGHT" or "LEFT"
-        offX = aLeft and -2 or 2
-    else
-        local aTop = anchor:sub(1, 3) == "TOP"
-        anchorPoint = aTop and "BOTTOM" or "TOP"
-        offY = aTop and 2 or -2
-    end
-
-    return width + 2, height + 2, anchorPoint, offX, offY
-end ]]
-
-
 do
     ns.UI.Displays = ns.UI.Displays or {}
     local dPool = ns.UI.Displays
@@ -687,10 +641,12 @@ do
                     end
 
                     if conf.glow.enabled and ( i == 1 or conf.glow.queued ) and IsSpellOverlayed( ability.id ) then
-                        ActionButton_ShowOverlayGlow( b )
+                        if conf.glow.shine then AutoCastShine_AutoCastStart( b.Shine )
+                        else ActionButton_ShowOverlayGlow( b ) end
                         b.glowing = true
                     elseif b.glowing then
-                        ActionButton_HideOverlayGlow( b )
+                        if conf.glow.shine then AutoCastShine_AutoCastStop( b.Shine )
+                        else ActionButton_HideOverlayGlow( b ) end
                         b.glowing = false
                     end
 
@@ -731,14 +687,17 @@ do
                         local glowing = not a.item and IsSpellOverlayed( a.id )
 
                         if glowing and not b.glowing then
-                            ActionButton_ShowOverlayGlow( b )
+                            if conf.glow.shine then AutoCastShine_AutoCastStart( b.Shine )
+                            else ActionButton_ShowOverlayGlow( b ) end
                             b.glowing = true
                         elseif not glowing and b.glowing then
-                            ActionButton_HideOverlayGlow( b )
+                            if conf.glow.shine then AutoCastShine_AutoCastStop( b.Shine )
+                            else ActionButton_HideOverlayGlow( b ) end
                             b.glowing = false
                         end
                     else
                         if b.glowing then
+                            AutoCastShine_AutoCastStop( b.Shine )
                             ActionButton_HideOverlayGlow( b )
                             b.glowing = false
                         end
@@ -891,7 +850,7 @@ do
                     end
 
                     if delay > gRemains + 0.1 then
-                        b.DelayText:SetText( format( "%.1f ", delay ) )
+                        b.DelayText:SetText( format( "%.1f", delay ) )
                         self.delayTextShown = true
                     else
                         b.DelayText:SetText( nil )
@@ -903,15 +862,21 @@ do
                         self.delayTextShown = false
                     end
 
-                    b.DelayIcon:Show()
-                    self.delayIconShown = true
+                    if delay > gRemains + 0.05 then
+                        b.DelayIcon:Show()
+                        self.delayIconShown = true
 
-                    if delay < 0.5 then
-                        b.DelayIcon:SetVertexColor(0.0, 1.0, 0.0, 1.0)
-                    elseif delay < 1.5 then
-                        b.DelayIcon:SetVertexColor(1.0, 1.0, 0.0, 1.0)
+                        if delay < 0.5 then
+                            b.DelayIcon:SetVertexColor( 0.0, 1.0, 0.0, 1.0 )
+                        elseif delay < 1.5 then
+                            b.DelayIcon:SetVertexColor( 1.0, 1.0, 0.0, 1.0 )
+                        else
+                            b.DelayIcon:SetVertexColor( 1.0, 0.0, 0.0, 1.0)
+                        end                       
                     else
-                        b.DelayIcon:SetVertexColor(1.0, 0.0, 0.0, 1.0)
+                        b.DelayIcon:Hide()
+                        b.delayIconShown = false
+
                     end
                 end
             else
@@ -1018,7 +983,8 @@ do
                     local a = class.abilities[ r.actionName ]
 
                     if not b.glowing and not a.item and IsSpellOverlayed( a.id ) then
-                        ActionButton_ShowOverlayGlow( b )
+                        if conf.glow.shine then AutoCastShine_AutoCastStart( b.Shine )
+                        else ActionButton_ShowOverlayGlow( b ) end
                         b.glowing = true
                     end
                 end
@@ -1037,7 +1003,8 @@ do
                     local a = class.abilities[ r.actionName ]
 
                     if b.glowing and ( a.item or not IsSpellOverlayed( a.id ) ) then
-                        ActionButton_HideOverlayGlow( b )
+                        if conf.glow.shine then AutoCastShine_AutoCastStop( b.Shine )
+                        else ActionButton_HideOverlayGlow( b ) end
                         b.glowing = false
                     end
                 end
@@ -1385,19 +1352,25 @@ do
         end
 
 
+        -- Shine
+        b.Shine = b.Shine or CreateFrame( "Frame", bName .. "_Shine", b, "AutoCastShineTemplate" )
+        b.Shine:Show()
+        b.Shine:SetAllPoints()
+
+
         -- Indicator Icons.
-        b.Icon = b.Icon or b:CreateTexture( nil, "OVERLAY" )
+        b.Icon = b.Icon or b.Shine:CreateTexture( nil, "OVERLAY" )
         b.Icon: SetSize( max( 10, b:GetWidth() / 3 ), max( 10, b:GetHeight() / 3 ) )
         
         local iconAnchor = conf.indicators.anchor or "RIGHT"
         
         b.Icon:ClearAllPoints()
-        b.Icon:SetPoint( iconAnchor, b, iconAnchor, conf.indicators.x or 0, conf.indicators.y or 0 )
+        b.Icon:SetPoint( iconAnchor, b.Shine, iconAnchor, conf.indicators.x or 0, conf.indicators.y or 0 )
         b.Icon:Hide()
 
 
         -- Caption Text.
-        b.Caption = b.Caption or b:CreateFontString( bName .. "_Caption", "OVERLAY" )
+        b.Caption = b.Caption or b.Shine:CreateFontString( bName .. "_Caption", "OVERLAY" )
 
         local captionFont = conf.captions.font or conf.font
         b.Caption:SetFont( LSM:Fetch("font", captionFont), conf.captions.fontSize or 12, conf.captions.fontStyle or "OUTLINE" )
@@ -1405,37 +1378,38 @@ do
 
         local capAnchor = conf.captions.anchor or "BOTTOM"
         b.Caption:ClearAllPoints()
-        b.Caption:SetPoint( capAnchor, b, capAnchor, conf.captions.x or 0, conf.captions.y or 0 )
+        b.Caption:SetPoint( capAnchor, b.Shine, capAnchor, conf.captions.x or 0, conf.captions.y or 0 )
         b.Caption:SetJustifyV( capAnchor )
         b.Caption:SetJustifyH( conf.captions.align or "CENTER" )
         b.Caption:SetTextColor( 1, 1, 1, 1 )
 
 
         -- Keybinding Text
-        b.Keybinding = b.Keybinding or b:CreateFontString(bName .. "_KB", "OVERLAY")
+        b.Keybinding = b.Keybinding or b.Shine:CreateFontString(bName .. "_KB", "OVERLAY")
         local kbFont = conf.keybindings.font or conf.font
         b.Keybinding:SetFont( LSM:Fetch("font", kbFont), conf.keybindings.fontSize or 12, conf.keybindings.fontStyle or "OUTLINE" )
         b.Keybinding:SetSize( b:GetWidth(), b:GetHeight() / 2 )
 
         local kbAnchor = conf.keybindings.anchor or "TOPRIGHT"
         b.Keybinding:ClearAllPoints()
-        b.Keybinding:SetPoint( kbAnchor, b, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
+        b.Keybinding:SetPoint( kbAnchor, b.Shine, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
         b.Keybinding:SetJustifyH( kbAnchor:match("RIGHT") and "RIGHT" or ( kbAnchor:match("LEFT") and "LEFT" or "CENTER" ) )
         b.Keybinding:SetJustifyV( kbAnchor:match("TOP") and "TOP" or ( kbAnchor:match("BOTTOM") and "BOTTOM" or "MIDDLE" ) )
         b.Keybinding:SetTextColor( 1, 1, 1, 1 )
+
 
         -- Cooldown Wheel
         b.Cooldown = b.Cooldown or CreateFrame( "Cooldown", bName .. "_Cooldown", b, "CooldownFrameTemplate" )
         b.Cooldown:ClearAllPoints()
         b.Cooldown:SetAllPoints( b )
-        b.Cooldown:SetFrameStrata( "MEDIUM" )
-        b.Cooldown:SetFrameLevel( 50 )
+        -- b.Cooldown:SetFrameStrata( "MEDIUM" )
+        -- b.Cooldown:SetFrameLevel( 50 )
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
 
 
         -- Backdrop (for borders)
-        b.Backdrop = b.Backdrop or CreateFrame("Frame", bName .. "_Backdrop", b)
+        b.Backdrop = b.Backdrop or CreateFrame("Frame", bName .. "_Backdrop", b )
         b.Backdrop:ClearAllPoints()
         b.Backdrop:SetWidth( b:GetWidth() + 2 )
         b.Backdrop:SetHeight( b:GetHeight() + 2 )
@@ -1450,7 +1424,6 @@ do
 
         b.Backdrop:SetPoint( "CENTER", b, "CENTER" )
         b.Backdrop:Hide()
-
 
         if conf.border.enabled then
             b.Backdrop:SetBackdrop( {
@@ -1477,7 +1450,7 @@ do
             b:SetPoint( "CENTER", d, "CENTER" )
 
             -- Target Counter
-            b.Targets = b.Targets or b:CreateFontString( bName .. "_Targets", "OVERLAY" )
+            b.Targets = b.Targets or b.Shine:CreateFontString( bName .. "_Targets", "OVERLAY" )
 
             local tarFont = conf.targets.font or conf.font
             b.Targets:SetFont( LSM:Fetch( "font", tarFont ), conf.targets.fontSize or 12, conf.targets.fontStyle or "OUTLINE" )
@@ -1485,12 +1458,11 @@ do
 
             local tarAnchor = conf.targets.anchor or "BOTTOM"
             b.Targets:ClearAllPoints()
-            b.Targets:SetPoint( tarAnchor, b, tarAnchor, conf.targets.x or 0, conf.targets.y or 0 )
+            b.Targets:SetPoint( tarAnchor, b.Shine, tarAnchor, conf.targets.x or 0, conf.targets.y or 0 )
 
             b.Targets:SetJustifyH( tarAnchor:match("RIGHT") and "RIGHT" or ( tarAnchor:match( "LEFT" ) and "LEFT" or "CENTER" ) )
             b.Targets:SetJustifyV( tarAnchor:match("TOP") and "TOP" or ( tarAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" ) )
             b.Targets:SetTextColor( 1, 1, 1, 1 )
-
             
             -- Aura Counter
             -- Disabled for Now
@@ -1514,7 +1486,7 @@ do
 
 
             -- Delay Counter
-            b.DelayText = b.DelayText or b:CreateFontString( bName .. "_DelayText", "OVERLAY" )
+            b.DelayText = b.DelayText or b.Shine:CreateFontString( bName .. "_DelayText", "OVERLAY" )
 
             local delayFont = conf.delays.font or conf.font
             b.DelayText:SetFont( LSM:Fetch("font", delayFont), conf.delays.fontSize or 12, conf.delays.fontStyle or "OUTLINE" )
@@ -1522,26 +1494,25 @@ do
 
             local delayAnchor = conf.delays.anchor or "TOPLEFT"
             b.DelayText:ClearAllPoints()
-            b.DelayText:SetPoint( delayAnchor, b, delayAnchor, conf.delays.x, conf.delays.y or 0 )
+            b.DelayText:SetPoint( delayAnchor, b.Shine, delayAnchor, conf.delays.x, conf.delays.y or 0 )
 
             b.DelayText:SetJustifyH( delayAnchor:match( "RIGHT" ) and "RIGHT" or ( delayAnchor:match( "LEFT" ) and "LEFT" or "CENTER") )
             b.DelayText:SetJustifyV( delayAnchor:match( "TOP" ) and "TOP" or ( delayAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE") )
             b.DelayText:SetTextColor( 1, 1, 1, 1 )
 
             -- Delay Icon
-            b.DelayIcon = b.DelayIcon or b:CreateTexture( bName .. "_DelayIcon", "OVERLAY" )
+            b.DelayIcon = b.DelayIcon or b.Shine:CreateTexture( bName .. "_DelayIcon", "OVERLAY" )
             b.DelayIcon:SetSize( min( 20, max( 10, b:GetSize() / 3 ) ), min( 20, max( 10, b:GetSize() / 3 ) ) )
             b.DelayIcon:SetTexture( "Interface\\FriendsFrame\\StatusIcon-Online" )
             b.DelayIcon:SetDesaturated( true )
             b.DelayIcon:SetVertexColor( 1, 0, 0, 1 )
 
             b.DelayIcon:ClearAllPoints()
-            b.DelayIcon:SetPoint( delayAnchor, b, delayAnchor, conf.delays.x or 0, conf.delays.y or 0 )
+            b.DelayIcon:SetPoint( delayAnchor, b.Shine, delayAnchor, conf.delays.x or 0, conf.delays.y or 0 )
             b.DelayIcon:Hide()
 
-
             -- Overlay (for Pause)
-            b.Overlay = b.Overlay or b:CreateTexture( nil, "OVERLAY" )
+            b.Overlay = b.Overlay or b.Shine:CreateTexture( nil, "OVERLAY" )
             b.Overlay:SetAllPoints( b )
             b.Overlay:SetTexture( "Interface\\Addons\\Hekili\\Textures\\Pause.blp" )
             b.Overlay:SetTexCoord( unpack( b.texCoords ) )
@@ -1815,6 +1786,15 @@ local function Format(Code)
     return Code
 end
 
+
+local key_cache = setmetatable( {}, {
+    __index = function( t, k )
+        t[k] = k:gsub( "(%S+)%[(%d+)]", "%1.%2" )
+        return t[k]
+    end
+})
+
+
 function Hekili:ShowDiagnosticTooltip( q )
     local tt = ns.Tooltip
     local fmt = ns.lib.Format
@@ -1853,7 +1833,7 @@ function Hekili:ShowDiagnosticTooltip( q )
                     tt:AddLine("Values")
                     applied = true
                 end
-                tt:AddDoubleLine(k, ns.formatValue(v), 1, 1, 1, 1, 1, 1)
+                tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
             end
         end
     end
@@ -1867,7 +1847,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         if q.ReadyElements then
             tt:AddLine("Values")
             for k, v in orderedPairs(q.ReadyElements) do
-                tt:AddDoubleLine(k, ns.formatValue(v), 1, 1, 1, 1, 1, 1)
+                tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
             end
         end
     end
@@ -1881,7 +1861,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         if q.ActElements then
             tt:AddLine("Values")
             for k, v in orderedPairs(q.ActElements) do
-                tt:AddDoubleLine(k, ns.formatValue(v), 1, 1, 1, 1, 1, 1)
+                tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
             end
         end
     end

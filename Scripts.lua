@@ -166,6 +166,71 @@ local function SimToLua( str, modifier )
 end
 
 
+-- Convert SimC syntax to Lua conditionals.
+local function SimCToSnapshot( str, modifier )
+    -- If no conditions were provided, function should return true.
+    if not str or str == '' then return nil end
+    if type( str ) == 'number' then return str end
+    
+    str = str:trim()
+    
+    -- Strip comments.
+    str = str:gsub("^%-%-.-\n", "")
+    
+    -- Replace '!' with ' not '.
+    -- str = forgetMeNots( str )
+    
+    for k in pairs( GetResourceInfo() ) do
+        if str:find( k ) then
+            str = str:gsub( "^" .. k .. invalid, k .. ".current%1" )
+            str = str:gsub( invalid .. k .. "$", "%1" .. k .. ".current" )
+            str = str:gsub( "^" .. k .. "$", k .. ".current" )
+            str = str:gsub( invalid .. k .. invalid, "%1" .. k .. ".current%2" )
+        end
+    end
+    
+    -- Replace '%' for division with actual division operator '/'.
+    -- str = str:gsub("%%", "/")
+    
+    -- Replace '&' with ' and '.
+    -- str = str:gsub("&", " and ")
+    
+    -- Replace '|' with ' or '.
+    -- str = str:gsub("||", " or "):gsub("|", " or ")
+    
+    --[[ if not modifier then
+        -- Replace assignment '=' with comparison '=='
+        str = str:gsub("([^=])=([^=])", "%1==%2" )
+        
+        -- Fix any conditional '==' that got impacted by previous.
+        str = str:gsub("==+", "==")
+        str = str:gsub(">=+", ">=")
+        str = str:gsub("<=+", "<=")
+        str = str:gsub("!=+", "~=")
+        str = str:gsub("~=+", "~=")
+    end 
+    
+    -- Condense whitespace.
+    str = str:gsub("%s%s", " ")
+    
+    -- Condense parenthetical spaces.
+    str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")") ]]
+    
+    -- Address equipped.number => equipped[number]
+    str = str:gsub("equipped%.(%d+)", "equipped[%1]")
+    str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
+    str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
+    
+    str = str:gsub("prev%.(%d+)", "prev[%1]")
+    str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
+    str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
+    str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
+    
+    return str
+    
+end
+
+
 local function stripScript( str, thorough )
   if not str then return 'true' end
   if type( str ) == 'number' then return str end
@@ -274,10 +339,7 @@ local nameMap = {
 
 
 -- Need to convert all the appropriate scripts and store them safely...
-
 local function ConvertScript( node, hasModifiers )
-    state.reset()
-
     local t = SimToLua( node.criteria )
     local sf, e
 
@@ -303,7 +365,7 @@ local function ConvertScript( node, hasModifiers )
         Lua = t and t:trim() or nil,
         SimC = node.criteria and node.criteria:trim() or nil
     }
-
+    
     if hasModifiers then
         for m, value in pairs( newModifiers ) do
             if node[ m ] then
@@ -546,8 +608,19 @@ function scripts:LoadScripts()
                         script.TimeSensitive = false
                         
                         local lua = script.Lua
-                        if lua and ( lua:match( "active_mongoose_fury" ) or lua:match( "judgment_override" ) or lua:match( "time" ) or lua:match( "cooldown" ) or lua:match( "charge" ) or lua:match( "buff" ) or lua:match( "focus" ) or lua:match( "energy" ) ) then
-                            script.TimeSensitive = true
+
+                        if lua then 
+                            -- If resources are checked, it's time-sensitive.
+                            for k in pairs( GetResourceInfo() ) do
+                                if lua:find( k ) then script.TimeSensitive = true; break end
+                            end
+
+                            if not script.TimeSensitive then
+                                -- Check for other time-sensitive variables.
+                                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) then
+                                    script.TimeSensitive = true
+                                end
+                            end
                         end
                     end
                     self.DB[ scriptID ] = script
@@ -606,7 +679,7 @@ function scripts:GetConditionsAndValues( scriptID, listName, actID )
 
     local script = self.DB[ scriptID ]
 
-    if script and script.SimC and script.SimC ~= "" then
+    if script and script.SimC and script.SimC ~= "" then        
         local output = script.SimC
 
         if script.Elements then
@@ -620,11 +693,16 @@ function scripts:GetConditionsAndValues( scriptID, listName, actID )
                     -- if emsg then value = emsg end
 
                     if type( value ) == 'number' then
-                        output = output:gsub( "([^.]"..key..")", format( "%%1[%.2f]", value ) )
-                        output = output:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
+                        output = output:gsub( "([^a-z0-9_.[])("..key..")([^a-z0-9_.[])", format( "%%1%%2[%.2f]%%3", value ) )
+                        output = output:gsub( "^("..key..")([^a-z0-9_.[])", format( "%%1[%.2f]%%2", value ) )
+                        output = output:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%.2f]", value ) )
+                        -- output = output:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
                     else
-                        output = output:gsub( "([^.]"..key..")", format( "%%1[%s]", tostring( value ) ) )
-                        output = output:gsub( "^("..key..")", format( "%%1[%s]", tostring( value ) ) )
+                        output = output:gsub( "([^a-z0-9_.[])("..key..")([^a-z0-9_.[])", format( "%%1%%2[%s]%%3", tostring( value ) ) )
+                        output = output:gsub( "^("..key..")([^a-z0-9_.[])", format( "%%1[%s]%%2", tostring( value ) ) )
+                        output = output:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%s]", tostring( value ) ) )
+                        -- output = output:gsub( "([^.]"..key..")", format( "%%1[%s]", tostring( value ) ) )
+                        -- output = output:gsub( "^("..key..")", format( "%%1[%s]", tostring( value ) ) )
                     end
 
                     checked[ k ] = true

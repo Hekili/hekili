@@ -26,7 +26,7 @@ local wipe = table.wipe
 
 
 local HekiliSpecMixin = {
-    RegisterResource = function( self, resourceID, regen )
+    RegisterResource = function( self, resourceID, regen, model )
         local resource = GetResourceKey( resourceID )
 
         if not resource then
@@ -38,7 +38,7 @@ local HekiliSpecMixin = {
 
         r.resource = resource
         r.type = resourceID
-        r.state = setmetatable( {
+        r.state = model or setmetatable( {
             resource = resource,
             type = power_type,
 
@@ -47,11 +47,11 @@ local HekiliSpecMixin = {
             times = {},
             values = {},
             
-            regenModel = regen,
             active_regen = 0,
             inactive_regen = 0,
             last_tick = 0
         }, mt_resource )
+        r.state.regenModel = regen
 
         self.resources[ resource ] = r
 
@@ -1219,6 +1219,27 @@ all:RegisterAura( "grease_the_gears", {
     id = 238534,
     duration = 20
 } )
+
+
+all:RegisterAbility( "ring_of_collapsing_futures", {
+    item = 142173,
+    spend = 0,
+    cast = 0, 
+    cooldown = 15,
+    gcd = 'off',
+    ready = function () return debuff.temptation.remains end,
+
+    handler = function ()
+        applyDebuff( "player", "temptation", 30, debuff.temptation.stack + 1 )
+    end
+} )
+
+all:RegisterAura( "temptation", {
+    id = 234143,
+    duration = 30,
+    max_stack = 20
+} )
+
 
 --[[
     
@@ -2394,10 +2415,11 @@ function Hekili:SpecializationChanged()
     ns.updateGear()
     ns.updateTalents()
 
-    self:LoadScripts()
-    self:UpdateDisplayVisibility()
-
     ns.callHook( 'specializationChanged' )
+
+    self:UpdateDisplayVisibility()
+    self:LoadScripts()
+
 end
 
 

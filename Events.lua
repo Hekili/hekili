@@ -682,7 +682,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             state.player.queued_tt = nil
             state.player.queued_lands = nil
             state.player.queued_gcd = nil
-            state.player.queued_off = nil           
+            state.player.queued_off = nil
         end
 
         Hekili:ForceUpdate( subtype, true )

@@ -1087,7 +1087,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 236946,
 
             toggle = "interrupts",
-            form = "cat_form",
             
             usable = function () return target.casting end,
             handler = function ()

@@ -540,7 +540,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 197211,
             cast = 0,
             cooldown = 0,
-            gcd = function( x ) if buff.fury_of_air.up then return 'off' end end,
+            gcd = function( x )
+                if buff.fury_of_air.up then return 'off' end
+                return "spell"
+            end,
 
             spend = 3,
             spendType = "maelstrom",
