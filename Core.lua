@@ -492,9 +492,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
         if debug then self:Debug( "The requested action list (%s-%s) would've already been called; canceling to prevent a loop.", packName, listName ) end
         return action, wait, clash, depth
     
-    elseif listBurnt[ listName ] then
-        if debug then self:Debug( "The requested action list ( %s ) has already been tried.  Backing out.", listName ) end
-        return action, wait, clash, depth
+    -- elseif listBurnt[ listName ] then
+    --    if debug then self:Debug( "The requested action list ( %s ) has already been tried.  Backing out.", listName ) end
+    --    return action, wait, clash, depth
     
     end
 
