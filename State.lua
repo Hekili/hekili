@@ -36,6 +36,7 @@ state.offset = 0
 state.delay = 0
 state.false_start = 0
 state.latency = 0
+state.filter = "none"
 
 state.arena = false
 state.bg = false
@@ -54,6 +55,12 @@ state.aura = {}
 state.buff = {}
 state.auras = auras
 state.cooldown = {}
+--[[ state.health = {
+    resource = "health",
+    actual = 10000,
+    max = 10000,
+    regen = 0
+} ]]
 state.item_cd = {}
 state.debuff = {}
 state.dot = {}
@@ -3208,6 +3215,7 @@ setmetatable( state.cooldown, mt_cooldowns )
 setmetatable( state.debuff, mt_debuffs )
 setmetatable( state.dot, mt_dot )
 setmetatable( state.equipped, mt_equipped )
+-- setmetatable( state.health, mt_resource )
 setmetatable( state.glyph, mt_glyphs )
 setmetatable( state.perk, mt_perks )
 setmetatable( state.pet, mt_pets )
@@ -3581,37 +3589,39 @@ function state.reset( dispName )
     state.target.cast_end = nil
     
     for k, power in pairs( class.resources ) do
-        local res = state[ k ]
-        
-        res.actual = UnitPower( 'player', power.type )
-        res.max = UnitPowerMax( 'player', power.type )
-        res.last_tick = rawget( res, 'last_tick' ) or 0
-        res.tick_rate = rawget( res, 'tick_rate' ) or 0.1
+        local res = rawget( state, k )
 
-        if power.type == Enum.PowerType.Mana then 
-            local inactive, active = GetManaRegen()
+        if res then
+            res.actual = UnitPower( 'player', power.type )
+            res.max = UnitPowerMax( 'player', power.type )
+            res.last_tick = rawget( res, 'last_tick' ) or 0
+            res.tick_rate = rawget( res, 'tick_rate' ) or 0.1
 
-            res.active_regen = active or 0
-            res.inactive_regen = inactive or 0
+            if power.type == Enum.PowerType.Mana then 
+                local inactive, active = GetManaRegen()
 
-        else
-            if ResourceRegenerates( k ) then
-                local inactive, active = GetPowerRegenForPowerType( power.type )
                 res.active_regen = active or 0
                 res.inactive_regen = inactive or 0
-                res.regen = nil
-            else
-                res.regen = 0
-            end
-        end
 
-        if res.reset then res.reset() end
-        forecastResources( k )
+            else
+                if ResourceRegenerates( k ) then
+                    local inactive, active = GetPowerRegenForPowerType( power.type )
+                    res.active_regen = active or 0
+                    res.inactive_regen = inactive or 0
+                    res.regen = nil
+                else
+                    res.regen = 0
+                end
+            end
+
+            if res.reset then res.reset() end
+            forecastResources( k )
+        end
     end
    
-    state.health = rawget( state, 'health' ) or setmetatable( { resource = 'health' }, mt_resource )
-    state.health.actual = UnitHealth( 'player' )
-    state.health.max = UnitHealthMax( 'player' )
+    state.health = rawget( state, "health" ) or setmetatable( { resource = "health" }, mt_resource )
+    state.health.actual = UnitHealth( 'player' ) or 10000
+    state.health.max = UnitHealthMax( 'player' ) or 10000
     state.health.regen = 0
 
     state.mainhand_speed = state.swings.mh_speed

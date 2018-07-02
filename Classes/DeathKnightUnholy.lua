@@ -420,6 +420,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         { __index = function( t, k )
             if k == 'ticking' then
                 return buff.death_and_decay.up
+            
+            elseif k == 'remains' then
+                return buff.death_and_decay.remains
+            
             end
 
             return false
@@ -430,10 +434,22 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         { __index = function( t, k )
             if k == 'ticking' then
                 return buff.death_and_decay.up
+
+            elseif k == 'remains' then
+                return buff.death_and_decay.remains
+            
             end
 
             return false
         end } ) )
+
+    spec:RegisterStateExpr( "dnd_ticking", function ()
+        return death_and_decay.ticking
+    end )
+
+    spec:RegisterStateExpr( "dnd_remains", function ()
+        return death_and_decay.remains
+    end )
 
     spec:RegisterStateExpr( "rune", function ()
         return runes.current

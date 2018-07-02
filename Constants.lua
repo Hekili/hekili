@@ -45,7 +45,7 @@ end
 
 
 local ResourceInfo = {
-    health          = Enum.PowerType.HealthCost,
+    -- health          = Enum.PowerType.HealthCost,
     none            = Enum.PowerType.None,
     mana            = Enum.PowerType.Mana,
     rage            = Enum.PowerType.Rage,

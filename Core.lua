@@ -1161,11 +1161,6 @@ function Hekili:ProcessHooks( dispName, packName )
             end
             
         else
-            --[[ if not debug then
-                self.ActiveDebug = true
-                self:MakeSnapshot()
-                self.ActiveDebug = true
-            end ]]
             for n = i, display.numIcons do
                 action = action or ''
                 checkstr = checkstr and ( checkstr .. ':' .. action ) or action

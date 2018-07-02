@@ -649,7 +649,6 @@ local all = Hekili:NewSpecialization( 0, "All", "Interface\\Addons\\Hekili\\Text
 -- SHARED SPELLS/BUFFS/ETC. --
 ------------------------------
 
-
 all:RegisterAuras( {
 
     enlisted = {
