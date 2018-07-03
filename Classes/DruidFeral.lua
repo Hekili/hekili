@@ -1,6 +1,3 @@
--- DruidFeral.lua
--- June 2018
-
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
@@ -50,26 +47,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         moment_of_clarity = 21646, -- 236068
         bloodtalons = 21649, -- 155672
         feral_frenzy = 21653, -- 274837
-    } )
-
-    -- PvP Talents
-    spec:RegisterPvpTalents( { 
-        adaptation = 3432, -- 214027
-        relentless = 3433, -- 196029
-        gladiators_medallion = 3431, -- 208683
-        
-        protector_of_the_grove = 847, -- 209730
-        thorns = 201, -- 236696
-        earthen_grasp = 202, -- 236023
-        freedom_of_the_herd = 203, -- 213200
-        malornes_swiftness = 601, -- 236012
-        king_of_the_jungle = 602, -- 203052
-        enraged_maim = 604, -- 236026
-        savage_momentum = 820, -- 205673
-        ferocious_wound = 611, -- 236020
-        fresh_wound = 612, -- 203224
-        rip_and_tear = 620, -- 203242
-        tooth_and_claw = 3053, -- 236019
     } )
 
     -- Auras
@@ -153,6 +130,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 30,
         },
         moonfire_cat = {
+            id = 155625, 
+            duration = 16
+        },
+        jungle_stalker = {
+            id = 252071, 
+            duration = 30,
+        },
+        moonfire = {
             id = 155625, 
             duration = 16
         },
@@ -430,7 +415,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 180,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 236149,
             
             form = "cat_form",
@@ -464,6 +449,18 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
             end,
             spendType = "energy",
+            ready = function ()
+                --Removing settings options until implemented.
+                --if active_enemies == 1 and settings.brutal_charges == 3 then return 3600 end
+                --if active_enemies > 1 or settings.brutal_charges == 0 then return 0 end
+
+                if active_enemies == 1 then return 3600 end
+                if active_enemies > 1 then return 0 end
+
+                -- We need time to generate 1 charge more than our settings.brutal_charges value.
+                -- return ( 1 + settings.brutal_charges - cooldown.brutal_slash.charges_fractional ) * recharge
+                return ( 4 - cooldown.brutal_slash.charges_fractional ) * recharge
+            end,
             
             startsCombat = true,
             texture = 132141,
@@ -485,6 +482,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = false,
             texture = 132115,
+            usable = function()
+                return not buff.cat_form.up
+            end,
             
             noform = "cat_form",
             handler = function ()
@@ -501,6 +501,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = false,
             texture = 132120,
+            usable = function ()
+                return not buff.cat_form.up
+            end,
             
             notalent = "tiger_dash",
 
@@ -523,8 +526,12 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.1,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 136100,
+            usable = function ()
+                --add logic to use roots when current debuff is less than or equal to the cast time
+                return (dot.entangling.expires <= abilities.entangling_roots.cast)
+            end,
             
             handler = function ()
                 applyDebuff( "target", "entangling_roots" )
@@ -543,6 +550,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 25,
             spendType = "energy",
             
+            unsupported = true,
             startsCombat = true,
             texture = 132140,
             
@@ -570,7 +578,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = true,
             texture = 132127,
-            
+            usable = function()
+                return combo_points.current > 0
+            end,
+
             handler = function ()
                 gain( 25, "energy" )
                 spend( min( 5, combo_points.current ), "combo_points" )
@@ -636,7 +647,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = false,
             texture = 136090,
-            
+            unsupported = true,
+
             handler = function ()
                 applyDebuff( "target", "hibernate" )
             end,
@@ -670,7 +682,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 45,
             spendType = "rage",
             
-            startsCombat = true,
+            unsupported = true,
+            startsCombat = false,
             texture = 1378702,
             
             form = "bear_form",
@@ -691,6 +704,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.03,
             spendType = "mana",
             
+            unsupported = true,
             startsCombat = true,
             texture = 135753,
             
@@ -752,7 +766,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 30,
             gcd = "spell",
             
-            startsCombat = true,
+            unsupported = true,
+            startsCombat = false,
             texture = 538515,
 
             talent = "mass_entanglement",
@@ -769,6 +784,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cast = 0,
             cooldown = 50,
             gcd = "spell",
+            min_range = 0,
+            max_range = 0,
             
             startsCombat = true,
             texture = 132114,
@@ -867,6 +884,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = true,
             texture = 132122,
+            usable = function () 
+                return buff.cat_form.up 
+            end,
             
             form = "cat_form",
 
@@ -888,8 +908,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             gcd = "spell",
             
             spend = 0,
-            spendType = "rage",
-            
+            spendType = "mana",
+
+            unsupported = true,
             startsCombat = true,
             texture = 136080,
             
@@ -912,6 +933,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = true,
             texture = 136085,
+            usable = function()
+                if not talent.bloodtalons.enabled then return false end
+                if buff.bloodtalons.up then return false end
+                if buff.cat_form.up then
+                    return buff.predatory_swiftness.up or time == 0
+                end
+            end,
             
             usable = function ()
                 if not talent.bloodtalons.enabled then return false end
@@ -938,6 +966,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.1,
             spendType = "mana",
             
+            unsupported = true,
             startsCombat = true,
             texture = 136081,
 
@@ -948,7 +977,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
         },
         
-
+        --Add support to remove corruption effects if not removed fast enough by healer.
         remove_corruption = {
             id = 2782,
             cast = 0,
@@ -958,6 +987,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.06,
             spendType = "mana",
             
+            unsupported = true,
             startsCombat = true,
             texture = 135952,
             
@@ -992,6 +1022,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.04,
             spendType = "mana",
             
+            unsupported = true,
             startsCombat = true,
             texture = 132132,
             
@@ -999,7 +1030,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
         },
         
-
+        -- Spend Points in handler, check for points in usable function of rotation.
         rip = {
             id = 1079,
             cast = 0,
@@ -1027,7 +1058,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
         },
         
-
+        -- Spend Points in handler, check for points in usable function of rotation.
         savage_roar = {
             id = 52610,
             cast = 0,
@@ -1039,6 +1070,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = false,
             texture = 236167,
+            usable = function()
+                return talent.savage_roar.enabled
+            end,
             
             talent = "savage_roar",
 
@@ -1081,8 +1115,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 106839,
             cast = 0,
             cooldown = 15,
+            min_range = 0,
+            max_range = 13,
             gcd = "spell",
-            
+            toggle = "interrupts",
+
             startsCombat = true,
             texture = 236946,
 
@@ -1104,6 +1141,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.02,
             spendType = "mana",
             
+            unsupported = true,
             startsCombat = true,
             texture = 535045,
 
@@ -1125,7 +1163,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.06,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 132163,
             
             handler = function ()
@@ -1159,6 +1197,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.03,
             spendType = "mana",
             
+            unsupported = true,
             startsCombat = true,
             texture = 135730,
 
@@ -1180,6 +1219,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.12,
             spendType = "mana",
             
+            unsupported = true,
             startsCombat = true,
             texture = 236216,
 
@@ -1200,7 +1240,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             recharge = 120,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 236169,
 
             handler = function ()
@@ -1268,7 +1308,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 4,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 135758,
             
             handler = function ()
@@ -1315,7 +1355,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 45,
             gcd = "spell",
             
-            startsCombat = true,
+            unsupported = true,
+            startsCombat = false,
             texture = 1817485,
 
             talent = "tiger_dash",
@@ -1331,9 +1372,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 5217,
             cast = 0,
             cooldown = 30,
-            gcd = "spell",
+            gcd = "off",
 
-            spend = -50,
+            spend = -30,
             spendType = "energy",
             
             startsCombat = false,
@@ -1368,6 +1409,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 30,
             gcd = "spell",
             
+            unsupported = true,
             startsCombat = true,
             texture = 236170,
 
@@ -1384,7 +1426,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
             
-            startsCombat = true,
+            unsupported = true,
+            startsCombat = false,
             texture = 1518639,
             
             handler = function ()
@@ -1400,6 +1443,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = true,
             texture = 538771,
+            usable = function () if buff.cat_form.up and target.outside8 and target.within25 then return target.exists end
+                return false
+            end,
             
             handler = function ()
                 setDistance( 5 )
@@ -1417,6 +1463,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.3,
             spendType = "mana",
             
+            unsupported = true,
             startsCombat = true,
             texture = 236153,
 
