@@ -61,7 +61,7 @@ externals:
         url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
         tag: latest
     Libs/LibSpellRange-1.0:
-        url: svn://svn.curseforge.net/wow/libspellrange-1-0/mainline/trunk
+        url: https://github.com/ascott18/LibSpellRange-1.0.git
         tag: latest
     Libs/LibRangeCheck-2.0:
         url: svn://svn.wowace.com/wow/librangecheck-2-0/mainline/trunk
