@@ -101,8 +101,12 @@ local oneTimeFixes = {
     end,
 
     reviseDisplayModes_20180709 = function( p )
-        if p.toggles.mode.value ~= "AutoDual" and p.toggles.mode.value ~= "AutoSingle" and p.toggles.mode.value ~= "SingleAOE" then
-            p.toggles.mode.value = "AutoDual"
+        if p.toggles.mode.type ~= "AutoDual" and p.toggles.mode.type ~= "AutoSingle" and p.toggles.mode.type ~= "SingleAOE" then
+            p.toggles.mode.type = "AutoDual"
+        end
+
+        if p.toggles.mode.value ~= "automatic" and p.toggles.mode.value ~= "single" and p.toggles.mode.value ~= "aoe" and p.toggles.mode.value ~= "dual" then
+            p.toggles.mode.value = "automatic"
         end
     end,
 }
