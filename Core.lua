@@ -512,6 +512,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local rClash = clash or 0
     local rDepth = depth or 0
 
+    local strict = spec.strict or false
     local force_channel = false
     local stop = false
 
@@ -610,12 +611,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             elseif entry.action == 'call_action_list' or entry.action == 'run_action_list' then
                                 -- We handle these here to avoid early forking between starkly different APLs.
                                 local aScriptPass = true
-                                local ts = scripts:IsTimeSensitive( scriptID )
+                                local ts = not strict and scripts:IsTimeSensitive( scriptID )
 
                                 if not entry.criteria or entry.criteria == "" then
                                     if debug then self:Debug( "There is no criteria for this action list." ) end
+                                    aScriptPass = self:CheckAPLStack()
                                 else
-                                    aScriptPass = self:CheckAPLStack() and scripts:CheckScript( scriptID )
+                                    aScriptPass = scripts:CheckScript( scriptID ) and self:CheckAPLStack()
 
                                     if debug then 
                                         self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", aScriptPass and "PASS" or "FAIL", state.offset, scripts:GetConditionsAndValues( scriptID ) )
@@ -796,7 +798,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         rWait = state.delay
                                                         rClash = clash
 
-                                                        state.selection = true
+                                                        state.selectionTime = state.delay
                                                     end
 
                                                 elseif entry.action == 'wait' then
@@ -901,7 +903,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     rWait = state.delay
                                                     rClash = clash
 
-                                                    state.selection = true
+                                                    state.selectionTime = state.delay
 
                                                     if debug then
                                                         self:Debug( "Action Chosen: %s at %f!", rAction, state.delay )
@@ -967,7 +969,8 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     local action, wait, clash, depth = nil, 60, self.DB.profile.Clash or 0, 0
     state.this_action = nil
-    state.selection = false
+
+    state.selectionTime = 60
 
     if pack.lists.precombat then
         local list = pack.lists.precombat
@@ -993,7 +996,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         if debug then self:Debug( "Completed default action list [ %s - %s ].", packName, listName ) end
     end
     
-    if debug then self:Debug( "Recommendation is %s at %.2f + %.2f (%.2f).", action or "NO ACTION", state.offset, state.delay, wait ) end
+    if debug then self:Debug( "Recommendation is %s at %.2f + %.2f.", action or "NO ACTION", state.offset, wait ) end
     
     return action, wait, clash, depth
 end

@@ -311,10 +311,14 @@ if UnitClassBase( 'player' ) == 'MONK' then
         virtual_combo = nil
     end )
     
+
+    local chiSpent = 0
+
     spec:RegisterHook( "spend", function( amt, resource )
         if state.talent.spiritual_focus.enabled then
-            if state.buff.storm_earth_and_fire.up then state.buff.storm_earth_and_fire.expires = state.buff.storm_earth_and_fire.expires + 1 end
-            if state.buff.serenity.up then state.buff.serenity.expires = state.buff.serenity.expires + 1 end
+            chiSpent = chiSpent + amt           
+            state.cooldown.storm_earth_and_fire.expires = max( 0, state.cooldown.storm_earth_and_fire.expires - floor( chiSpent / 2 ) )
+            chiSpent = chiSpent % 2
         end
 
         if state.level < 116 then
@@ -325,7 +329,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     end )
 
     spec:RegisterHook( "IsUsable", function( spell )
-        if state.talent.hit_combo.enabled then
+        if state.talent.hit_combo.enabled and state.buff.hit_combo.up then
             if spell == 'tiger_palm' then
                 local lc = class.abilities[ spell ].lastCast or 0                
                 if ( state.combat == 0 or lc >= state.combat ) and last_combo == spell then return false end
@@ -951,7 +955,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 651728,
 
-            usable = false,
+            usable = function ()
+                return incoming_damage_3s >= health.max * 0.2
+            end,
             handler = function ()
                 applyBuff( "touch_of_karma" )
                 applyDebuff( "target", "touch_of_karma_debuff" )

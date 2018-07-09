@@ -312,6 +312,8 @@ local HekiliSpecMixin = {
             end
         end
 
+        a.lastCast = 0
+
         if a.id and a.id > 0 then
             local spell = Spell:CreateFromSpellID( a.id )
             if not spell:IsSpellEmpty() then 
@@ -2223,6 +2225,7 @@ local function runHandler( key, no_start )
 
     table.insert( state.predictions, 1, key )
     table.insert( state[ ability.gcd == 'off' and 'predictionsOff' or 'predictionsOn' ], 1, key )
+    
     state.predictions[6] = nil
     state.predictionsOn[6] = nil
     state.predictionsOff[6] = nil

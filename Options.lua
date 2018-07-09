@@ -99,6 +99,12 @@ local oneTimeFixes = {
         p.runOnce.refreshForBfA_II = nil
         p.actionLists = nil
     end,
+
+    reviseDisplayModes_20180709 = function( p )
+        if p.toggles.mode.value ~= "AutoDual" and p.toggles.mode.value ~= "AutoSingle" and p.toggles.mode.value ~= "SingleAOE" then
+            p.toggles.mode.value = "AutoDual"
+        end
+    end,
 }
 
 
@@ -352,6 +358,7 @@ function Hekili:GetDefaults()
 
                 mode = {
                     key = "ALT-SHIFT-N",
+                    type = "AutoDual",
                     value = "automatic",
                 },
 
@@ -2952,6 +2959,23 @@ do
                                     order = 5,
                                 },
                             }
+                        },
+
+                        performance = {
+                            type = "group",
+                            name = "Performance",
+                            inline = true,
+                            order = 20,
+                            args = {
+                                strict = {
+                                    type = "toggle",
+                                    name = "Use Strict APL Testing",
+                                    desc = "When |cFFFFD100Use Strict APL Testing|r is enabled, the addon will perform fewer checks when deciding whether to branch off to another Action Priority List.  " ..
+                                        "In many cases, this will be more efficient with CPU usage, but may result in choppy recommendations depending on how your action lists have been written.",
+                                    width = "full",
+                                    order = 1,
+                                }
+                            }
                         }
                     }
                 }            
@@ -4323,8 +4347,14 @@ end
 do
     do
         local completed = false
-    
-        local function SetOverrideBinds()
+        local SetOverrideBinds
+
+        SetOverrideBinds = function ()
+            if InCombatLockdown() then
+                C_Timer.After( 5, SetOverrideBinds )
+                return
+            end
+
             if completed then
                 ClearOverrideBindings( Hekili_Keyhandler )
                 completed = false
@@ -4337,19 +4367,21 @@ do
                 end
             end
         end
-    
+
         function Hekili:OverrideBinds()
-            if InCombatLockdown() then 
-                C_Timer.After( 5, SetOverrideBinds )
-                return
-            end
-    
             SetOverrideBinds()
         end
     end
 
 
     local ACD = LibStub( "AceConfigDialog-3.0" )
+
+    local modeTypes = {
+        oneAuto = 1,
+        oneSingle = 2,
+        oneAOE = 3,
+        twoDisplays = 4
+    }
 
     function Hekili:SetToggle( info, val )
         local p = Hekili.DB.profile
@@ -4365,8 +4397,10 @@ do
         
         elseif option == 'type' then
             toggle.type = val
-            if val == 'autoSingle' and toggle.value == 'aoe' then toggle.value = 'single'
-            elseif val == 'singleAOE' and toggle.value == 'auto' then toggle.value = 'single' end
+
+            if val == "AutoSingle" and not ( toggle.value == "automatic" or toggle.value == "single" ) then toggle.value = "automatic" end
+            if val == "AutoDual" and not ( toggle.value == "automatic" or toggle.value == "dual" ) then toggle.value = "automatic" end
+            if val == "SingleAOE" and not ( toggle.value == "single" or toggle.value == "aoe" ) then toggle.value = "single" end
 
         elseif option == 'key' then
             for t, data in pairs( p.toggles ) do
@@ -4463,31 +4497,71 @@ do
                         order = 1,
                         },
 
-                        --[[[ type = {
+                        type = {
                             type = "select",
-                            name = "Mode Options",
-                            desc = "Specify the Display Modes that can be cycled using your Display Mode key.\n" ..
-                                "|cFFFFD100Automatic / Single|r:  If selected, pressing this key will switch between one display that automatically adjusts based on how many enemies are detected, or two displays, " ..
-                                "one of which shows single-target recommendations and one that shows AOE.\n" ..
-                                "|cFFFFD100Single / AOE|r:  If selected, pressing this key will switch between one display that shows only single-target recommendations and one display that shows AOE.",
+                            name = "Modes",
+                            desc = "Select the Display Modes that can be cycled using your Display Mode key.\n\n" ..
+                                "|cFFFFD100Auto vs. Single|r - Using only the Primary display, toggle between automatic target counting and single-target recommendations.\n\n" .. 
+                                "|cFFFFD100Single vs. AOE|r - Using only the Primary display, toggle between single-target recommendations and AOE (multi-target) recommendations.\n\n" ..
+                                "|cFFFFD100Auto vs. Dual|r - Toggle between one display using automatic target counting and two displays, with one showing single-target recommendations and the other showing AOE recommendations.",
                             values = {
-                                autoSingle = "Auto / Single",
-                                singleAOE  = "Single / AOE"
+                                AutoSingle = "Auto vs. Single",
+                                SingleAOE = "Single vs. AOE",
+                                AutoDual = "Auto vs. Dual"
                             },
                             order = 2,
-                        },  ]]
+                        },
 
                         value = {
                             type = "select",
                             name = "Mode",
-                            desc = "Select your Display Mode.\n" ..
-                            "|cFFFFD100Automatic|r:  The addon will show one display that automatically adjusts to the number of enemies detected.\n" ..
-                            "|cFFFFD100Dual Display|r:  The addon will show two displays; the Primary display will show single-target recommendations and the AOE display will show recommendations for more enemies.",
-                            values = {
-                                automatic = "Automatic (Single Display)",
-                                dual = "Dual Display (Single + AOE)"
-                            },
-                            width = "double",
+                            desc = function( info, val )
+                                local mType = self.DB.profile.toggles.mode.type
+                                
+                                local output = "Select your Display Mode."
+
+                                if mType == "AutoSingle" or mType == "AutoDual" then
+                                    output = output .. "\n\n|cffffd100Automatic|r - Recommendations are based on the number of detected enemies."
+                                end
+
+                                if mType == "AutoSingle" or mType == "SingleAOE" then
+                                    output = output .. "\n\n|cffffd100Single|r - Recommendations are generated assuming a single target is active."
+                                end
+
+                                if mType == "SingleAOE" then
+                                    output = output .. "\n\n|cffffd100AOE|r - Recommendations are generated assuming multiple enemies are active."
+                                end
+
+                                if mType == "AutoDual" then
+                                    output = output .. "\n\n|cffffd100Dual|r - The Primary display shows single-target recommendations and the AOE display shows multi-target recommendations."
+                                end
+
+                                return output
+                            end,
+                            values = function( info, val )
+                                local mType = self.DB.profile.toggles.mode.type
+
+                                local v = {
+                                    automatic = "Automatic",
+                                    single = "Single",
+                                    aoe = "AOE",
+                                    dual = "Dual"
+                                }
+
+                                if mType == "AutoSingle" then
+                                    v.aoe = nil
+                                    v.dual = nil
+                                elseif mType == "SingleAOE" then
+                                    v.automatic = nil
+                                    v.dual = nil
+                                elseif mType == "AutoDual" then
+                                    v.single = nil
+                                    v.aoe = nil
+                                end
+
+                                return v
+                            end,
+                            width = "single",
                             order = 3,
                         }
                     },
@@ -7507,10 +7581,22 @@ function Hekili:FireToggle( name )
     if not toggle then return end
 
     if name == 'mode' then
-        toggle.value = toggle.value == 'automatic' and 'dual' or 'automatic'
+        if toggle.type == "AutoSingle" then
+            if toggle.value == "automatic" then toggle.value = "single" else toggle.value = "automatic" end
+        elseif toggle.type == "SingleAOE" then
+            if toggle.value == "single" then toggle.value = "aoe" else toggle.value = "single" end
+        else
+            if toggle.value == "automatic" then toggle.value = "dual" else toggle.value = "automatic" end
+        end
 
-        self:Notify( "Mode: " .. ( toggle.value == 'automatic' and "Automatic" or "Dual Display" ) )
-        self:Print( ( toggle.value == 'automatic' and "Automatic" or "Dual Display" ) .. " mode activated." )
+        local mode = "Unknown"
+        if toggle.value == "automatic" then mode = "Automatic"
+        elseif toggle.value == "single" then mode = "Single-Target"
+        elseif toggle.value == "aoe" then mode = "AOE"
+        elseif toggle.value == "dual" then mode = "Dual Display" end
+
+        self:Notify( "Mode: " .. mode )
+        self:Print( mode .. " mode activated." )
     
     elseif name == 'pause' then
         self:TogglePause()

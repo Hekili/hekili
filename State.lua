@@ -1134,6 +1134,12 @@ local mt_state = {
         elseif k == 'delay' then
             return 0
 
+        elseif k == 'selection' then
+            return t.selectionTime < 60
+
+        elseif k == 'selectionTime' then
+            return 60
+
         elseif k == 'cycle' then
             return false
 
@@ -1939,6 +1945,10 @@ local mt_default_cooldown = {
             return t[k]
             
         elseif k == 'charges' then
+            if state:IsDisabled( t.key ) then
+                return 0
+            end
+
             return floor( t.charges_fractional )
             
         elseif k == 'charges_max' or k == 'max_charges' then
@@ -1973,8 +1983,13 @@ local mt_default_cooldown = {
             return max( class.abilities[ t.key ].gcd ~= 'off' and state.cooldown.global_cooldown.remains or 0, remains ) ]]
             
         elseif k == 'charges_fractional' then
-            if not state:IsKnown( t.key ) then return 1
-            elseif class.abilities[ t.key ].charges then 
+            if not state:IsKnown( t.key ) then return 1 end
+
+            if state:IsDisabled( t.key ) then
+                return 0
+            end
+            
+            if class.abilities[ t.key ].charges then 
                 if t.charge < class.abilities[ t.key ].charges then
                     return min( class.abilities[ t.key ].charges, t.charge + ( max( 0, state.query_time - t.recharge_began ) / t.recharge ) )
                     -- return t.charges + ( 1 - ( class.abilities[ t.key ].recharge - t.recharge_time ) / class.abilities[ t.key ].recharge )
@@ -2100,6 +2115,8 @@ ns.metatables.mt_dot = mt_dot
 
 local mt_prev_lookup = {
     __index = function( t, k )
+        if state.time == 0 then return false end
+
         local idx = t.index
 
         if t.meta == 'castsAll' then
@@ -3423,7 +3440,7 @@ function state.reset( dispName )
     state.cast_start = 0
     state.false_start = 0
 
-    state.selection = false
+    state.selectionTime = 60
     
     local _, zone = GetInstanceInfo()
     
@@ -3458,15 +3475,14 @@ function state.reset( dispName )
     local spec = state.spec.id and p.specs[ state.spec.id ]
     local mode = p.toggles.mode.value
 
-    state.min_targets = 0
-    state.max_targets = 0
-
     state.display = dispName
     state.filter = 'none'
     
     if display then
-        if dispName == 'Primary' and mode == 'dual' then state.max_targets = 1
-        elseif dispName == 'AOE' and mode == 'dual' then state.min_targets = spec and spec.aoe or 3
+        if dispName == 'Primary' then
+            if mode == "single" or mode == "dual" then state.max_targets = 1
+            elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
+        elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
         elseif dispName == 'Interrupts' then state.filter = 'interrupts'
         elseif dispName == 'Defensives' then state.filter = 'defensives'
         end

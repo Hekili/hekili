@@ -303,20 +303,38 @@ local function menu_Auto()
     local p = Hekili.DB.profile
 
     p.toggles.mode.value = 'automatic'
+
+    if p.toggles.mode.type:sub(4) ~= "Auto" then p.toggles.mode.type = "AutoDual" end
+    ns.UI.Minimap:RefreshDataText()
+end
+
+
+local function menu_Single()
+    local p = Hekili.DB.profile
+
+    p.toggles.mode.value = 'single'
+
+    if not p.toggles.mode.type:find("Single") then p.toggles.mode.type = "AutoSingle" end
     ns.UI.Minimap:RefreshDataText()
 end
 
 local function menu_AOE()
     local p = Hekili.DB.profile
 
-    p.toggles.mode.value = 'dual'
+    p.toggles.mode.value = "aoe"
+    p.toggles.mode.type = "SingleAOE"
+
     ns.UI.Minimap:RefreshDataText()
 end
 
---[[ local function menu_Single()
-    Hekili.DB.profile.mode = 0
+local function menu_Dual()
+    local p = Hekili.DB.profile
+
+    p.toggles.mode.value = "dual"
+    p.toggles.mode.type = "AutoDual"
+
     ns.UI.Minimap:RefreshDataText()
-end ]]
+end
 
 local function menu_Cooldowns()
     Hekili:FireToggle( "cooldowns" )
@@ -382,13 +400,23 @@ Hekili_Menu.initialize = function(self, level)
         i.notCheckable = nil
         i.disabled = nil
 
-        i.text = "Single (Auto)"
+        i.text = "Auto"
         i.func = menu_Auto
         i.checked = p.toggles.mode.value == 'automatic'
         UIDropDownMenu_AddButton(i, level)
 
-        i.text = "Dual (Single + AOE)"
+        i.text = "Single"
+        i.func = menu_Single
+        i.checked = p.toggles.mode.value == 'single'
+        UIDropDownMenu_AddButton(i, level)
+
+        i.text = "AOE"
         i.func = menu_AOE
+        i.checked = p.toggles.mode.value == 'aoe'
+        UIDropDownMenu_AddButton(i, level)
+
+        i.text = "Dual"
+        i.func = menu_Dual
         i.checked = p.toggles.mode.value == 'dual'
         UIDropDownMenu_AddButton(i, level)
 
@@ -1207,10 +1235,15 @@ do
         if profile.enabled then
             for i, display in pairs( profile.displays ) do
                 if display.enabled then
-                    if i == 'AOE' then dispActive[i] = profile.toggles.mode.value ~= 'automatic'
-                    elseif i == 'Interrupts' then dispActive[i] = profile.toggles.interrupts.value and profile.toggles.interrupts.separate
-                    elseif i == 'Defensives' then dispActive[i] = state.role.tank and profile.toggles.defensives.value and profile.toggles.defensives.separate
-                    else dispActive[i] = true end
+                    if i == 'AOE' then
+                        dispActive[i] = profile.toggles.mode.value == 'dual'
+                    elseif i == 'Interrupts' then
+                        dispActive[i] = profile.toggles.interrupts.value and profile.toggles.interrupts.separate
+                    elseif i == 'Defensives' then
+                        dispActive[i] = state.role.tank and profile.toggles.defensives.value and profile.toggles.defensives.separate
+                    else
+                        dispActive[i] = true 
+                    end
                     
                     if dispActive[i] and displays[i] then
                         if not displays[i].Active then displays[i]:Activate() end
