@@ -49,6 +49,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         gladiators_medallion = 3589, -- 208683
         relentless = 3588, -- 196029
         adaptation = 3587, -- 214027
+
         duel = 34, -- 236273
         disarm = 3534, -- 236077
         sharpen_blade = 33, -- 198817
@@ -64,36 +65,113 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     spec:RegisterAuras( {
         avatar = {
             id = 107574,
+            duration = 20,
+            max_stack = 1,
+        },
+        battle_shout = {
+            id = 6673,
+            duration = 3600,
+            max_stack = 1,
         },
         berserker_rage = {
             id = 18499,
+            duration = 6,
+            type = "",
+            max_stack = 1,
         },
         bladestorm = {
             id = 227847,
+            duration = 6,
+            max_stack = 1,
+        },
+        bounding_stride = {
+            id = 202164,
+            duration = 3,
+            max_stack = 1,
+        },
+        colossus_smash = {
+            id = 208086,
+            duration = 10,
+            max_stack = 1,
         },
         deadly_calm = {
             id = 262228,
+            duration = 6,
+            max_stack = 1,
+        },
+        deep_wounds = {
+            id = 262115,
+            duration = 6,
+            max_stack = 1,
         },
         defensive_stance = {
             id = 197690,
+            duration = 3600,
+            max_stack = 1,
         },
         die_by_the_sword = {
             id = 118038,
+            duration = 8,
+            max_stack = 1,
+        },
+        in_for_the_kill = {
+            id = 248622,
+            duration = 10,
+            max_stack = 1,
+        },
+        intimidating_shout = {
+            id = 5246,
+            duration = 8,
+            max_stack = 1,
+        },
+        mortal_wounds = {
+            id = 115804,
+            duration = 10,
+            max_stack = 1,
         },
         overpower = {
             id = 7384,
+            duration = 15,
+            max_stack = 2,
         },
-        ravager = {
+        rallying_cry = {
+            id = 97463,
+            duration = 10,
+            max_stack = 1,
+        },
+        --[[ ravager = {
             id = 152277,
+        }, ]]
+        rend = {
+            id = 772,
+            duration = 12,
+            max_stack = 1,
         },
-        seasoned_soldier = {
+        --[[ seasoned_soldier = {
             id = 279423,
+        }, ]]
+        sign_of_the_emissary = {
+            id = 225788,
+            duration = 3600,
+            max_stack = 1,
+        },
+        sudden_death = {
+            id = 52437,
+            duration = 10,
+            max_stack = 1,
         },
         sweeping_strikes = {
             id = 260708,
+            duration = 12,
+            max_stack = 1,
         },
-        tactician = {
+        --[[ tactician = {
             id = 184783,
+        }, ]]
+        taunt = {
+            id = 355,
+            duration = 3,
+            max_stack = 1,
         },
     } )
 
@@ -104,13 +182,19 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cast = 0,
             cooldown = 90,
             gcd = "spell",
+
+            spend = -20,
+            spendType = "rage",
             
             toggle = "cooldowns",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 613534,
+
+            talent = "avatar",
             
             handler = function ()
+                applyBuff( "avatar" )
             end,
         },
         
@@ -121,10 +205,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 15,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 132333,
             
             handler = function ()
+                applyBuff( "battle_shout" )
             end,
         },
         
@@ -141,6 +226,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 136009,
             
             handler = function ()
+                applyBuff( "berserker_rage" )
             end,
         },
         
@@ -155,8 +241,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             startsCombat = true,
             texture = 236303,
+
+            notalent = "ravager",
             
             handler = function ()
+                -- applies bladestorm (227847)
+                -- applies deep_wounds (262115)
             end,
         },
         
@@ -164,15 +254,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         charge = {
             id = 100,
             cast = 0,
-            charges = 2,
-            cooldown = 17,
-            recharge = 17,
+            charges = function () return talent.double_time.enabled and 2 or 1 end,
+            cooldown = function () return talent.double_time.enabled and 17 or 20 end,
+            recharge = function () return talent.double_time.enabled and 17 or 20 end,
             gcd = "spell",
             
             startsCombat = true,
             texture = 132337,
             
+            usable = function () return target.distance > 10 end,
             handler = function ()
+                setDistance( 5 )
             end,
         },
         
@@ -183,13 +275,19 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 6,
             gcd = "spell",
             
-            spend = 20,
+            spend = function ()
+                if buff.deadly_calm.up then return 0 end
+                return 20
+            end,
             spendType = "rage",
             
             startsCombat = true,
             texture = 132338,
+
+            talent = "cleave",
             
             handler = function ()
+                if active_enemies >= 3 then applyDebuff( "target", "deep_wounds" ) end
             end,
         },
         
@@ -202,8 +300,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 464973,
+
+            notalent = "warbreaker",
             
             handler = function ()
+                applyDebuff( "target", "colossus_smash" )
+                if talent.in_for_the_kill.enabled then
+                    applyBuff( "in_for_the_kill" )
+                    stat.haste = state.haste + ( target.health.pct < 20 and 0.2 or 0.1 )
+                end
             end,
         },
         
@@ -216,24 +321,30 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             toggle = "cooldowns",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 298660,
             
             handler = function ()
+                applyBuff( "deadly_calm" )
             end,
         },
         
 
         defensive_stance = {
-            id = 197690,
+            id = 212520,
             cast = 0,
             cooldown = 6,
             gcd = "spell",
             
-            startsCombat = true,
-            texture = 132341,
+            startsCombat = false,
+            texture = 132349,
+
+            talent = "defensive_stance",
+            toggle = "defensives",
             
             handler = function ()
+                if buff.defensive_stance.up then removeBuff( "defensive_stance" )
+                else applyBuff( "defensive_stance" ) end
             end,
         },
         
@@ -246,27 +357,37 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             toggle = "cooldowns",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 132336,
+
+            toggle = "defensives",
             
             handler = function ()
+                applyBuff( "die_by_the_sword" )
             end,
         },
         
 
         execute = {
-            id = 281000,
+            id = 163201,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
             
-            spend = 40,
+            spend = function ()
+                if buff.deadly_calm.up then return 0 end
+                return 20
+            end,
             spendType = "rage",
             
             startsCombat = true,
             texture = 135358,
             
+            usable = function () return target.health.pct < ( talent.massacre.enabled and 35 or 20 ) end,
             handler = function ()
+                local overflow = min( rage.current, 20 )
+                spend( overflow, "rage" )
+                gain( 0.3 * ( 20 + overflow ), "rage" )
             end,
         },
         
@@ -277,13 +398,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 10,
+            spend = function ()
+                if buff.deadly_calm.up then return 0 end
+                return 10
+            end,
             spendType = "rage",
             
             startsCombat = true,
             texture = 132316,
             
             handler = function ()
+                applyDebuff( "target", "hamstring" )
             end,
         },
         
@@ -292,14 +417,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 6544,
             cast = 0,
             charges = 1,
-            cooldown = 45,
-            recharge = 45,
+            cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
+            recharge = function () return talent.bounding_stride.enabled and 30 or 45 end,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 236171,
-            
+
+            usable = function () return target.distance > 10 end,            
             handler = function ()
+                setDistance( 5 )
+                if talent.bounding_stride.enabled then applyBuff( "bounding_stride" ) end
             end,
         },
         
@@ -313,6 +441,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132453,
             
+            usable = function () return target.distance > 10 end,
             handler = function ()
             end,
         },
@@ -324,13 +453,19 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 30,
             gcd = "spell",
             
-            spend = 10,
+            spend = function ()
+                if buff.deadly_calm.up then return 0 end
+                return 10
+            end,
             spendType = "rage",
             
             startsCombat = true,
             texture = 589768,
+
+            talent = "impending_victory",
             
             handler = function ()
+                removeBuff( "victorious" )
             end,
         },
         
@@ -341,12 +476,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 90,
             gcd = "spell",
             
-            toggle = "cooldowns",
-
             startsCombat = true,
             texture = 132154,
             
             handler = function ()
+                applyBuff( "intimidating_shout" )
             end,
         },
         
@@ -357,13 +491,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 6,
             gcd = "spell",
             
-            spend = 30,
+            spend = function ()
+                if buff.deadly_calm.up then return 0 end
+                return 30
+            end,
             spendType = "rage",
             
             startsCombat = true,
             texture = 132355,
             
             handler = function ()
+                applyDebuff( "target", "mortal_wounds" )
+                applyDebuff( "target", "deep_wounds" )
             end,
         },
         
@@ -371,7 +510,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         overpower = {
             id = 7384,
             cast = 0,
-            charges = 1,
+            charges = function () return talent.dreadnaught.enabled and 2 or 1 end,
             cooldown = 12,
             recharge = 12,
             gcd = "spell",
@@ -380,6 +519,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132223,
             
             handler = function ()
+                if talent.dreadnaught.enabled then
+                    addStack( "overpower", 15, 1 )
+                else
+                    applyBuff( "overpower" )
+                end
             end,
         },
         
@@ -393,7 +537,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132938,
             
+            usable = function () return target.casting end,
             handler = function ()
+                interrupt()
             end,
         },
         
@@ -404,12 +550,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 180,
             gcd = "spell",
             
-            toggle = "cooldowns",
-
-            startsCombat = true,
+            startsCombat = false,
             texture = 132351,
+
+            toggle = "defensives",
             
             handler = function ()
+                applyBuff( "rallying_cry" )
             end,
         },
         
@@ -419,13 +566,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
-            toggle = "cooldowns",
 
+            spend = 7,
+            spendType = "rage",
+            
             startsCombat = true,
             texture = 970854,
+
+            talents = "ravager",
+            toggle = "cooldowns",
             
             handler = function ()
+                -- need to plan out rage gen.
             end,
         },
         
@@ -436,13 +588,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 30,
+            spend = function ()
+                if buff.deadly_calm.up then return 0 end
+                return 30
+            end,
             spendType = "rage",
             
             startsCombat = true,
             texture = 132155,
             
             handler = function ()
+                applyDebuff( "target", "rend" )
             end,
         },
         
@@ -450,11 +606,16 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         skullsplitter = {
             id = 260643,
             cast = 0,
-            cooldown = 21,
+            cooldown = function () return 21 * haste end,
             gcd = "spell",
+
+            spend = -20,
+            spendType = "rage",
             
             startsCombat = true,
             texture = 2065621,
+
+            talent = "skullsplitter",
             
             handler = function ()
             end,
@@ -467,7 +628,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 20,
+            spend = function ()
+                if buff.deadly_calm.up then return 0 end
+                return 20
+            end,
             spendType = "rage",
             
             startsCombat = true,
@@ -486,8 +650,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 613535,
+
+            talent = "storm_bolt",
             
             handler = function ()
+                applyDebuff( "target", "storm_bolt" )
             end,
         },
         
@@ -502,6 +669,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132306,
             
             handler = function ()
+                -- applies sweeping_strikes (260708)
             end,
         },
         
@@ -516,6 +684,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 136080,
             
             handler = function ()
+                applyDebuff( "target", "taunt" )
             end,
         },
         
@@ -528,8 +697,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 132342,
+
+            notalent = "impending_victory",
             
             handler = function ()
+                removeBuff( "victorious" )
             end,
         },
         
@@ -542,22 +714,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 2065633,
-            
-            handler = function ()
-            end,
-        },
-        
 
-        wartime_ability = {
-            id = 264739,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 1518639,
+            talent = "warbreaker",
             
             handler = function ()
+                if talent.in_for_the_kill.enabled then
+                    if buff.in_for_the_kill.down then
+                        stat.haste = stat.haste + ( target.health.pct < 0.2 and 0.2 or 0.1 )
+                    end
+                    applyBuff( "in_for_the_kill" )
+                end
+                applyDebuff( "target", "colossus_smash" )
             end,
         },
         
@@ -568,7 +735,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 30,
+            spend = function ()
+                if buff.deadly_calm.up then return 0 end
+                return 30
+            end,
             spendType = "rage",
             
             startsCombat = true,
