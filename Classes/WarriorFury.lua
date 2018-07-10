@@ -30,7 +30,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             stop = function () return state.time == 0 end,
 
             value = function ()
-                return base_rage_gen * fury_rage_mult * state.swings.mainhand_speed
+                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * ( base_rage_gen * fury_rage_mult * state.swings.mainhand_speed )
             end
         },
 
@@ -49,8 +49,23 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             stop = function () return state.time == 0 end,
             
             value = function ()
-                return base_rage_gen * fury_rage_mult * state.swings.mainhand_speed * offhand_mod * ( state.talent.endless_rage.enabled and 1.3 or 1 )
+                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.mainhand_speed * offhand_mod
             end,
+        },
+
+        bladestorm = {
+            aura = "bladestorm",
+
+            last = function ()
+                local app = state.buff.bladestorm.applied
+                local t = state.query_time
+
+                return app + ( floor( ( t - app ) / ( 1 * state.haste ) ) * ( 1 * state.haste ) )
+            end,
+
+            interval = function () return 1 * state.haste end,
+
+            value = 5,
         }
     } )
     
@@ -90,6 +105,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         gladiators_medallion = 3592, -- 208683
         relentless = 3591, -- 196029
         adaptation = 3590, -- 214027
+
         death_wish = 179, -- 199261
         enduring_rage = 177, -- 198877
         thirst_for_battle = 172, -- 199202
@@ -101,6 +117,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         disarm = 3533, -- 236077
         master_and_commander = 3528, -- 235941
     } )
+
+
+    local rageSpent = 0
+
+    spec:RegisterHook( "spend", function( amt, resource )
+        if state.talent.recklessness.enabled and resource == "rage" then
+            rageSpent = rageSpent + amt
+            state.cooldown.recklessness.expires = state.cooldown.recklessness.expires - floor( rageSpent / 20 )
+            rageSpent = rageSpent % 20
+        end
+    end )
+
+    spec:RegisterHook( "reset_precast", function ()
+        rageSpent = 0
+    end )
+
 
     -- Auras
     spec:RegisterAuras( {
@@ -117,7 +149,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         bladestorm = {
             id = 46924,
-            duration = 4,
+            duration = function () return 4 * haste end,
             max_stack = 1,
         },
         bounding_stride = {
@@ -178,7 +210,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         recklessness = {
             id = 1719,
-            duration = 10,
+            duration = function () return talent.reckless_abandon.enabled and 14 or 10 end,
             max_stack = 1,
         },
         siegebreaker = {
@@ -206,8 +238,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 3,
             max_stack = 1,
         },
-        titans_grip = {
-            id = 46917,
+        victorious = {
+            id = 32216,
+            duration = 20,
         },
         whirlwind = {
             id = 85739,
@@ -224,11 +257,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 15,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 132333,
             
             handler = function ()
-                -- applies battle_shout (6673)
+                applyBuff( "battle_shout" )
             end,
         },
         
@@ -241,11 +274,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             toggle = "cooldowns",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 136009,
             
             handler = function ()
-                -- applies berserker_rage (18499)
+                applyBuff( "berserker_rage" )
             end,
         },
         
@@ -262,7 +295,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 236303,
             
             handler = function ()
-                -- applies bladestorm (46924)
+                applyBuff( "bladestorm" )
+                gain( 5, "rage" )
+                setCooldown( "global_cooldown", 4 * haste )
             end,
         },
         
@@ -271,17 +306,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 23881,
             cast = 0,
             cooldown = 4.5,
+            hasteCD = true,
             gcd = "spell",
+
+            spend = -8,
+            spendType = "rage",
             
             startsCombat = true,
             texture = 136012,
             
             handler = function ()
-                -- applies enrage (184362)
-                -- applies furious_charge (202225)
-                -- applies sudden_death (280776)
-                -- applies berserker_rage (18499)
-                -- removes bladestorm (46924)
+                gain( health.max * ( buff.enraged_regeneration.up and 0.25 or 0.05 ) * ( talent.fresh_meat.enabled and 1.2 or 1 ), "health" )
             end,
         },
         
@@ -289,17 +324,19 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         charge = {
             id = 100,
             cast = 0,
-            charges = 2,
-            cooldown = 17,
-            recharge = 17,
+            charges = function () return talent.double_time.enabled and 2 or 1 end,
+            cooldown = function () return talent.double_time.enabled and 17 or 20 end,
+            recharge = function () return talent.double_time.enabled and 17 or 20 end,
             gcd = "spell",
             
             startsCombat = true,
             texture = 132337,
             
+            usable = function () return target.distance > 10 end,
             handler = function ()
-                -- applies furious_charge (202225)
-                -- applies charge (105771)
+                applyDebuff( "target", "charge" )
+                if talent.furious_charge.enabled then applyBuff( "furious_charge" ) end
+                setDistance( 5 )
             end,
         },
         
@@ -309,13 +346,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cast = 0,
             cooldown = 35,
             gcd = "spell",
+
+            spend = -10,
+            spendType = "rage",
             
             startsCombat = true,
             texture = 642418,
+
+            talent = "dragon_roar",
             
             handler = function ()
-                -- applies dragon_roar (118000)
-                -- removes whirlwind (85739)
+                applyDebuff( "target", "dragon_roar" )                
             end,
         },
         
@@ -326,13 +367,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 120,
             gcd = "spell",
             
-            toggle = "cooldowns",
+            toggle = "defensives",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 132345,
             
             handler = function ()
-                -- applies enraged_regeneration (184364)
+                applyBuff( "enraged_regeneration" )
             end,
         },
         
@@ -340,14 +381,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         execute = {
             id = 280735,
             cast = 0,
-            cooldown = 6,
+            cooldown = function () return 6 * haste end,
             gcd = "spell",
+            
+            spend = -20,
+            spendType = "rage",
             
             startsCombat = true,
             texture = 135358,
             
+            usable = function () return buff.sudden_death.up or ( target.health.pct < ( talent.massacre.enabled and 0.35 or 0.2 ) ) end,
             handler = function ()
-                -- applies sudden_death (280776)
+                removeBuff( "sudden_death" )
             end,
         },
         
@@ -357,13 +402,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
+            spend = -4,
+            spendType = "rage",
+
             startsCombat = true,
             texture = 132367,
+
+            talent = "furious_slash",
             
             handler = function ()
-                -- applies furious_slash (202539)
-                -- removes charge (109128)
+                if buff.furious_slash.stack < 3 then stat.haste = stat.haste + 0.02 end
+                addStack( "furious_slash", 15, 1 )
             end,
         },
         
@@ -372,14 +422,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 6544,
             cast = 0,
             charges = 1,
-            cooldown = 45,
-            recharge = 45,
+            cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
+            recharge = function () return talent.bounding_stride.enabled and 30 or 45 end,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 236171,
-            
+
+            usable = function () return target.distance > 10 end,            
             handler = function ()
+                setDistance( 5 )
+                if talent.bounding_stride.enabled then applyBuff( "bounding_stride" ) end
             end,
         },
         
@@ -409,8 +462,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 589768,
+
+            talent = "impending_victory",
             
             handler = function ()
+                gain( health.max * 0.2, "health" )
             end,
         },
         
@@ -427,7 +483,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132154,
             
             handler = function ()
-                -- applies intimidating_shout (5246)
+                applyDebuff( "target", "intimidating_shout" )
             end,
         },
         
@@ -445,8 +501,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 136147,
             
             handler = function ()
-                -- applies piercing_howl (12323)
-                -- removes furious_slash (202539)
+                applyDebuff( "target", "piercing_howl" )
             end,
         },
         
@@ -459,8 +514,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 132938,
+
+            toggle = "interrupts",
             
+            usable = function () return target.casting end,
             handler = function ()
+                interrupt()
             end,
         },
         
@@ -469,15 +528,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 85288,
             cast = 0,
             charges = 2,
-            cooldown = 7,
-            recharge = 7,
+            cooldown = function () return ( talent.inner_rage.enabled and 7 or 8 ) * haste end,
+            recharge = function () return ( talent.inner_rage.enabled and 7 or 8 ) * haste end,
             gcd = "spell",
+
+            spend = -12,
+            spendType = "rage",
             
             startsCombat = true,
             texture = 589119,
             
             handler = function ()
-                -- applies enrage (184362)
             end,
         },
         
@@ -488,13 +549,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 180,
             gcd = "spell",
             
-            toggle = "cooldowns",
+            toggle = "defensives",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 132351,
             
             handler = function ()
-                -- applies rallying_cry (97463)
+                applyBuff( "rallying_cry" )
             end,
         },
         
@@ -505,15 +566,26 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 85,
+            spend = function ()
+                if talent.carnage.enabled then return 75 end
+                if talent.frothing_berserker.enabled then return 95 end
+                return 85
+            end,
             spendType = "rage",
             
             startsCombat = true,
             texture = 132352,
             
             handler = function ()
-                -- applies enrage (184362)
-                -- applies frothing_berserker (215572)
+                if not buff.enrage.up then
+                    stat.haste = stat.haste + 0.25
+                end
+                applyBuff( "enrage" )
+
+                if talent.frothing_berserker.enabled then
+                    if buff.frothing_berserker.down then stat.haste = stat.haste + 0.05 end
+                    applyBuff( "frothing_berserker" )
+                end
             end,
         },
         
@@ -523,14 +595,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 458972,
             
             handler = function ()
-                -- applies recklessness (1719)
+                applyBuff( "recklessness" )
+                if talent.reckless_abandon.enabled then gain( 100, "rage" ) end
             end,
         },
         
@@ -540,12 +613,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
+
+            spend = -10,
+            spendType = "rage",
             
             startsCombat = true,
             texture = 294382,
+
+            talent = "siegebreaker",
             
             handler = function ()
-                -- applies siegebreaker (280773)
+                applyDebuff( "target", "siegebreaker" )
             end,
         },
         
@@ -559,8 +637,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 613535,
             
+            talent = "storm_bolt",
+            
             handler = function ()
-                -- applies storm_bolt (132169)
+                applyDebuff( "target", "storm_bolt" )
             end,
         },
         
@@ -573,9 +653,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 136080,
-            
+
             handler = function ()
-                -- applies taunt (355)
+                applyDebuff( "target", "taunt" )
             end,
         },
         
@@ -589,21 +669,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132342,
             
-            handler = function ()
-            end,
-        },
-        
+            notalent = "impending_victory",
 
-        wartime_ability = {
-            id = 264739,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 1518639,
-            
+            buff = "victorious",
             handler = function ()
+                removeBuff( "victorious" )
             end,
         },
         
@@ -618,16 +688,20 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132369,
             
             handler = function ()
-                -- applies enrage (184362)
-                -- applies whirlwind (85739)
-                -- applies storm_bolt (132169)
+                applyBuff( "whirlwind" )
+
+                if talent.meat_cleaver.enabled then
+                    gain( min( 11, 3 + min( 3, active_enemies ) + active_enemies ), "rage" )
+                else
+                    gain( min( 8, 3 + active_enemies ), "rage" )
+                end
             end,
         },
     } )
 
 
     spec:RegisterOptions( {
-        enabled = false,
+        enabled = true,
 
         aoe = 2,
     
