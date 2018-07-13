@@ -11,7 +11,25 @@ local state = Hekili.State
 if UnitClassBase( 'player' ) == 'WARRIOR' then
     local spec = Hekili:NewSpecialization( 71 )
 
-    spec:RegisterResource( Enum.PowerType.Rage )
+    local base_rage_gen, arms_rage_mult = 1.75, 4.286
+    local offhand_mod = 0.80
+
+    spec:RegisterResource( Enum.PowerType.Rage, {
+        mainhand_arms = {
+            last = function ()
+                local swing = state.combat == 0 and state.now or state.swings.mainhand
+                local t = state.query_time
+
+                return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
+            end,
+
+            interval = 'mainhand_speed',
+
+            value = function ()
+                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * state.swings.mainhand_speed
+            end,
+        }
+    } )
     
     -- Talents
     spec:RegisterTalents( {
@@ -175,6 +193,28 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
     } )
 
+
+    local rageSpent = 0
+
+    spec:RegisterHook( "spend", function( amt, resource )
+        if state.talent.anger_management.enabled and resource == "rage" then
+            rageSpent = rageSpent + amt
+            local reduction = floor( rageSpent / 20 )
+            rageSpent = rageSpent % 20
+
+            if reduction > 0 then
+                state.cooldown.colossus_smash.expires = state.cooldown.colossus_smash.expires - reduction
+                state.cooldown.bladestorm.expires = state.cooldown.bladestorm.expires - reduction
+                state.cooldown.warbreaker.expires = state.cooldown.warbreaker.expires - reduction
+            end
+        end
+    end )
+
+    spec:RegisterHook( "reset_precast", function ()
+        rageSpent = 0
+    end )
+
+
     -- Abilities
     spec:RegisterAbilities( {
         avatar = {
@@ -288,6 +328,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 if active_enemies >= 3 then applyDebuff( "target", "deep_wounds" ) end
+                if talent.collateral_damage.enabled then gain( 4, "rage" ) end
             end,
         },
         
@@ -388,6 +429,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 local overflow = min( rage.current, 20 )
                 spend( overflow, "rage" )
                 gain( 0.3 * ( 20 + overflow ), "rage" )
+
+                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
             end,
         },
         
@@ -409,6 +452,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 applyDebuff( "target", "hamstring" )
+                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 2, "rage" ) end
             end,
         },
         
@@ -466,6 +510,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 removeBuff( "victorious" )
+                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 2, "rage" ) end
             end,
         },
         
@@ -503,6 +548,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 applyDebuff( "target", "mortal_wounds" )
                 applyDebuff( "target", "deep_wounds" )
+                removeBuff( "overpower" )
+                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 6, "rage" ) end
             end,
         },
         
@@ -567,7 +614,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 60,
             gcd = "spell",
 
-            spend = 7,
+            spend = -7,
             spendType = "rage",
             
             startsCombat = true,
@@ -599,6 +646,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 applyDebuff( "target", "rend" )
+                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 6, "rage" ) end
             end,
         },
         
@@ -638,6 +686,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132340,
             
             handler = function ()
+                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
             end,
         },
         
@@ -745,6 +794,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132369,
             
             handler = function ()
+                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 6, "rage" ) end
             end,
         },
     } )

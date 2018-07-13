@@ -381,13 +381,100 @@ local z_PVP = {
 local activePack = nil
 
 local listIsBad = {}    -- listIsBad uses scriptIDs for keys; all entries after these lists should be excluded if the script returned TRUE.
-local listBurnt = {}    -- If an entire list was already processed, we don't want to process it again.
+local listBlock = {}    -- Run Action List entries go in here.  If criteria passes for the RAL, entries that follow cannot be used.
 
 local listStack = {}    -- listStack for a given index returns the scriptID of its caller (or 0 if called by a display).
 local listCache = {}    -- listCache is a table of return values for a given scriptID at various times.
 local listValue = {}    -- listValue shows the cached values from the listCache.
 
 local itemTried = {}    -- Items that are tested in a specialization APL aren't reused here.
+
+
+
+local Stack = {}
+local Block = {}
+local InUse = {}
+
+local function AddToStack( script, list, parent, run )
+    if Hekili.ActiveDebug then Hekili:Debug( "Adding " .. list .. " to stack, parent is " .. ( parent or "(none)" ) .. " (RAL = " .. tostring( run ) .. ".") end
+    table.insert( Stack, {
+        script = script,
+        list   = list,
+        parent = parent,
+        run    = run
+    } )
+    
+    InUse[ list ] = true
+end
+
+
+local function PopStack()
+    local x = table.remove( Stack, #Stack )
+
+    if Hekili.ActiveDebug then Hekili:Debug( "Removed " .. x.list .. " from stack." ) end
+
+    for i = #Block, 1, -1 do
+        if Block[i].parent == x.script then
+            if Hekili.ActiveDebug then Hekili:Debug( "Removed " .. Block[i].list .. " from blocklist as " .. x.list .. " was its parent." ) end
+            table.remove( Block, i )
+        end
+    end
+
+    if x.run then
+        -- This was called via Run Action List; we have to make sure it DOESN'T PASS until we exit this list.
+        if Hekili.ActiveDebug then Hekili:Debug( "Added " .. x.list .. " to blocklist as it was called via RAL." ) end
+        table.insert( Block, x )
+    end
+
+    InUse[ x.list ] = nil
+end
+
+
+local function CheckStack()
+    local t = state.query_time
+    local p = activePack
+
+    for i, b in ipairs( Block ) do
+        local cache = listCache[ b.script ] or {}
+
+        cache[ t ] = cache[ t ] or scripts:CheckScript( b.script )
+
+        if Hekili.ActiveDebug then
+            local values = listValue[ b.script ] or {}
+            values[ t ] = values[ t ] or scripts:GetConditionsAndValues( b.script )
+            Hekili:Debug( "Blocking list ( %s ) called from ( %s ) would %s at %.2f.\n - %s", b.list, b.script, cache[ t ] and "BLOCK" or "NOT BLOCK", state.delay, values[ t ] )
+            listValue[ b.script ] = values
+        end
+
+        if cache[ t ] then
+            return false
+        end
+    end
+
+
+    for i, s in ipairs( Stack ) do        
+        local cache = listCache[ s.script ] or {}
+
+        cache[ t ] = cache[ t ] or scripts:CheckScript( s.script )
+
+        if Hekili.ActiveDebug then
+            local values = listValue[ s.script ] or {}
+            values[ t ] = values[ t ] or scripts:GetConditionsAndValues( s.script )
+            Hekili:Debug( "List ( %s ) called from ( %s ) would %s at %.2f.\n - %s", s.list, s.script, cache[ t ] and "PASS" or "FAIL", state.delay, values[ t ] )
+            listValue[ s.script ] = values
+        end
+
+        listCache[ s.script ] = cache
+
+        if not cache[ t ] then return false end
+    end
+
+    return true
+end
+
+
+
+    
 
 
 function Hekili:CheckAPLStack()
@@ -468,6 +555,7 @@ end
 
 
 local waitBlock = {}
+local listDepth = 0
 
 function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action, wait, clash, depth, caller )
 
@@ -483,29 +571,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     
     local debug = self.ActiveDebug
     
-    -- Stack prevents list loops, but we have to preserve data.
-    if not list then
-        if debug then self:Debug( "The requested action list (%s) was not found in pack (%s).", listName, packName ) end
-        return action, wait, clash, depth
-    
-    elseif listStack[ packName .. ':' .. listName ] then
-        if debug then self:Debug( "The requested action list (%s-%s) would've already been called; canceling to prevent a loop.", packName, listName ) end
-        return action, wait, clash, depth
-    
-    -- elseif listBurnt[ listName ] then
-    --    if debug then self:Debug( "The requested action list ( %s ) has already been tried.  Backing out.", listName ) end
-    --    return action, wait, clash, depth
-    
-    end
-
     if debug then self:Debug( "Current recommendation was %s at +%.2fs (clash: %.2f).", action or "NO ACTION", wait or 60, clash or 0 ) end
     -- if debug then self:Debug( "ListCheck: Success(%s-%s)", packName, listName ) end
 
-    listStack[ listName ] = caller or 0
-    listBurnt[ listName ] = true
-
     local precombatFilter = listName == "precombat" and state.time > 0
-
 
     local rAction = action
     local rWait = wait or 60
@@ -615,34 +684,38 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                 if not entry.criteria or entry.criteria == "" then
                                     if debug then self:Debug( "There is no criteria for this action list." ) end
-                                    aScriptPass = self:CheckAPLStack()
+                                    aScriptPass = ts or CheckStack()
                                 else
-                                    aScriptPass = scripts:CheckScript( scriptID ) and self:CheckAPLStack()
+                                    aScriptPass = ts or scripts:CheckScript( scriptID ) -- and CheckStack() -- we'll check the stack with the list's entries.
 
                                     if debug then 
                                         self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", aScriptPass and "PASS" or "FAIL", state.offset, scripts:GetConditionsAndValues( scriptID ) )
                                     end
 
-                                    aScriptPass = ts or aScriptPass
+                                    -- aScriptPass = ts or aScriptPass
                                 end
                                 
                                 if aScriptPass then
                                     local name = state.args.list_name
 
-                                    if name and pack.lists[ name ] then
+                                    if InUse[ name ] then
+                                        if debug then self:Debug( "Action list (%s) was found, but would cause a loop." ) end
+
+                                    elseif name and pack.lists[ name ] then
                                         if debug then self:Debug( "Action list (%s) was found.", name ) end
+
+                                        AddToStack( scriptID, name, caller, entry.action == "run_action_list" )
 
                                         local pAction, pWait = rAction, rWait
 
                                         rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rClash, rDepth, scriptID )
                                         if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NoAction", rWait ) end
 
-                                        if entry.action == 'run_action_list' then
-                                            listIsBad[ scriptID ] = name
+                                        PopStack()
 
-                                            if not ts then
-                                                if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ); break end
-                                            end
+                                        if entry.action == 'run_action_list' and not ts then
+                                            if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
+                                            break
                                         end
                                     end
                                     
@@ -673,7 +746,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         local hasResources = true
                                         
                                         if hasResources then
-                                            local aScriptPass = self:CheckAPLStack()
+                                            local aScriptPass = CheckStack()
 
                                             if not aScriptPass then
                                                 if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
@@ -753,7 +826,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     if debug then self:Debug( "Advancing +%.2f to reach the refresh channel window for %s.", step, entry.action ) end
                                                     state.delay = state.delay + step
 
-                                                    if self:CheckAPLStack() then
+                                                    if CheckStack() then
                                                         aScriptPass = scripts:CheckScript( scriptID )
                                                         if debug then self:Debug( "Rechannel check at ( +%.2f ) %s: %s", state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( packName, listName, actID ) ) end
                                                         force_channel = aScriptPass
@@ -953,9 +1026,10 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     
     -- This is the entry point for the prediction engine.
     -- Any cache-wiping should happen here.
-    wipe( listStack )
+    wipe( Stack )
+    wipe( Block )
+    wipe( listStack )    
     wipe( listIsBad )
-    wipe( listBurnt )
     
     wipe( waitBlock )
 
@@ -977,7 +1051,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         local listName = "precombat"
         
         if debug then self:Debug( "\nProcessing precombat action list [ %s - %s ].", packName, listName ) end        
-        action, wait, clash, depth = self:GetPredictionFromAPL( dispName, packName, "precombat", slot, action, wait, clash, depth, caller )
+        action, wait, clash, depth = self:GetPredictionFromAPL( dispName, packName, "precombat", slot, action, wait, clash, depth )
         if debug then self:Debug( "Completed precombat action list [ %s - %s ].", packName, listName ) end
     else
         if debug then
@@ -992,7 +1066,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         local listName = "default"
 
         if debug then self:Debug("\nProcessing default action list [ %s - %s ].", packName, listName ) end
-        action, wait, clash, depth = self:GetPredictionFromAPL( dispName, packName, "default", slot, action, wait, clash, depth, caller )
+        action, wait, clash, depth = self:GetPredictionFromAPL( dispName, packName, "default", slot, action, wait, clash, depth )
         if debug then self:Debug( "Completed default action list [ %s - %s ].", packName, listName ) end
     end
     

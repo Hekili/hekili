@@ -3642,8 +3642,8 @@ do
                                     desc = "Rebuild the action list(s) from the profile above.",
                                     order = 5,
                                     func = function ()
-                                        local result, warnings = Hekili:ImportSimcAPL( nil, nil, data.profile )
                                         local p = rawget( Hekili.DB.profile.packs, pack )
+                                        local result, warnings = Hekili:ImportSimcAPL( nil, nil, p.profile )
 
                                         wipe( p.lists )
 
@@ -4791,7 +4791,7 @@ do
     local lastAbility = nil
     local lastTime = 0    
 
-    local function CLEU( event, _, subtype, _, _, sourceName, _, _, _, destName, destFlags, _, spellID, spellName )
+    local function CLEU( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceName and UnitIsUnit( sourceName, "player" ) then
             local now = GetTime()
             local token = key( spellName )
@@ -6844,10 +6844,10 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Replaced 'rune.X' with 'runes.X' (" .. times .. "x)." )
     end
 
-    i, times = i:gsub( "cooldown%.strike%.", "cooldown.stormstrike." )
+    --[[ i, times = i:gsub( "cooldown%.strike%.", "cooldown.stormstrike." )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'cooldown.strike' with 'cooldown.stormstrike' (" .. times .. "x)." )
-    end
+    end ]]
 
     --[[ i, times = i:gsub( "spell_targets%.[a-zA-Z0-9_]+", "active_enemies" )
     if times > 0 then
@@ -7477,6 +7477,11 @@ do
                     result.criteria = result.target_if
                 end
             end ]]
+
+            if result.target_if then result.target_if = result.target_if:gsub( "min:", "" ):gsub( "max:", "" ) end
+
+            if result.for_next then result.for_next = tonumber( result.for_next ) end
+            if result.cycle_targets then result.cycle_targets = tonumber( result.cycle_targets ) end
 
             if result.target_if and not result.criteria then
                 result.criteria = result.target_if

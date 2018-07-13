@@ -198,7 +198,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             r.spend( amt )
 
-            gain( amt * 10, "runic_power" )
+            state.gain( amt * 10, "runic_power" )
 
             if state.set_bonus.tier20_4pc == 1 then
                 state.cooldown.army_of_the_dead.expires = max( 0, state.cooldown.army_of_the_dead.expires - 1 )
@@ -209,6 +209,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     spec:RegisterHook( "spend", spendHook )
 
+    
     local gainHook = function( amt, resource )
         if resource == 'runes' then
             local r = state.runes

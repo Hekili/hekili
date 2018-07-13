@@ -1175,7 +1175,6 @@ all:RegisterAbility( "draught_of_souls", {
     end,
 } )
 
-
 all:RegisterAura( "fel_crazed_rage", {
     id = 225141,
     duration = 3, 
@@ -1242,206 +1241,187 @@ all:RegisterAura( "temptation", {
 } )
 
 
---[[
-    
-    addAbility( "forgefiends_fabricator", {
-        id = -104,
-        item = 151963,
-        spend = 0,
-        cast = 0,
-        cooldown = 30,
-        gcd = 'off',
-    } )
-    
-    
-    addUsableItem( "horn_of_valor", 133642 )
-    
-    addAbility( "horn_of_valor", {
-        id = -105,
-        item = 133642,
-        spend = 0,
-        cast = 0,
-        cooldown = 120,
-        gcd = 'off',
-        toggle = 'cooldowns',
-    } )
-    
-    addAura( "valarjars_path", 215956, "duration", 30 )
-    
-    addHandler( "horn_of_valor", function ()
-        applyBuff( "valarjars_path" )
-    end )
-    
-    
-    addUsableItem( "kiljaedens_burning_wish", 144259 )
-    
-    addAbility( "kiljaedens_burning_wish", {
-        id = -106,
-        item = 144259,
-        spend = 0,
-        cast = 0,
-        cooldown = 75,
-        texture = 1357805,
-        gcd = 'off',
-        toggle = 'cooldowns',
-    } )
-    
-    
-    addAbility( "might_of_krosus", {
-        id = -107,
-        item = 140799,
-        spend = 0,
-        cast = 0,
-        cooldown = 30,
-        gcd = 'off',
-    } )
-    
-    addHandler( "might_of_krosus", function ()
-        if active_enemies > 3 then setCooldown( "might_of_krosus", 15 ) end
-    end )
-    
-    
-    addUsableItem( "ring_of_collapsing_futures", 142173 )
-    
-    addAbility( "ring_of_collapsing_futures", {
-        id = -108,
-        item = 142173,
-        spend = 0,
-        cast = 0,
-        cooldown = 15,
-        gcd = 'off',
-        ready = function () return debuff.temptation.remains end,
-    } )
-    
-    addAura( 'temptation', 234143, 'duration', 30, 'max_stack', 20 )
-    
-    addHandler( "ring_of_collapsing_futures", function ()
-        applyDebuff( "player", "temptation", 30, debuff.temptation.stack + 1 )
-    end )
-    
-    
-    addUsableItem( "specter_of_betrayal", 151190 )
-    
-    addAbility( "specter_of_betrayal", {
-        id = -109,
-        item = 151190,
-        spend = 0,
-        cast = 0,
-        cooldown = 45,
-        gcd = 'off',
-    } )
-    
-    
-    addUsableItem( "tiny_oozeling_in_a_jar", 137439 )
-    
-    addAbility( "tiny_oozeling_in_a_jar", {
-        id = -110,
-        item = 137439,
-        spend = 0,
-        cast = 0,
-        cooldown = 20,
-        gcd = "off",
-        usable = function () return buff.congealing_goo.stack == 6 end,
-    } )
-    
-    addAura( "congealing_goo", 215126, "duration", 60, "max_stack", 6 )
-    
-    addHandler( "tiny_oozeling_in_a_jar", function ()
-        removeBuff( "congealing_goo" )
-    end )
-    
-    
-    addUsableItem( "umbral_moonglaives", 147012 )
-    
-    addAbility( "umbral_moonglaives", {
-        id = -111,
-        item = 147012,
-        spend = 0,
-        cast = 0,
-        cooldown = 90,
-        gcd = 'off',
-        toggle = 'cooldowns',
-    } )
-    
-    
-    addUsableItem( "unbridled_fury", 139327 )
-    
-    addAbility( "unbridled_fury", {
-        id = -112,
-        item = 139327,
-        spend = 0,
-        cast = 0,
-        cooldown = 120,
-        gcd = 'off',
-        toggle = 'cooldowns',
-    } )
-    
-    addAura( "wild_gods_fury", 221695, "duration", 30 )
-    
-    addHandler( "unbridled_fury", function ()
-        applyBuff( "unbridled_fury" )
-    end )
-    
-    
-    addUsableItem( "vial_of_ceaseless_toxins", 147011 )
-    
-    addAbility( "vial_of_ceaseless_toxins", {
-        id = -113,
-        item = 147011,
-        spend = 0,
-        cast = 0,
-        cooldown = 60,
-        gcd = 'off',
-        toggle = 'cooldowns',
-    } )
-    
-    addAura( "ceaseless_toxin", 242497, "duration", 20 )
-    
-    addHandler( "vial_of_ceaseless_toxins", function ()
-        applyDebuff( "target", "ceaseless_toxin", 20 )
-    end )
-    
-    
-    addUsableItem( "tome_of_unraveling_sanity", 147019 )
-    
-    addAbility( "tome_of_unraveling_sanity", {
-        id = -114,
-        item = 147019,
-        spend = 0,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-        toggle = "cooldowns",
-    } )
-    
-    addAura( "insidious_corruption", 243941, "duration", 12 )
-    addAura( "extracted_sanity", 243942, "duration", 24 )
-    
-    addHandler( "tome_of_unraveling_sanity", function ()
-        applyDebuff( "target", "insidious_corruption", 12 )
-    end )    
+all:RegisterAbility( "forgefiends_fabricator", {
+    item = 151963,
+    spend = 0,
+    cast = 0,
+    cooldown = 30,
+    gcd = 'off',
+} )
 
-addGearSet( 'aggramars_stride', 132443 )
-    addAura( 'aggramars_stride', 207438, 'duration', 3600 )
 
-addGearSet( 'sephuzs_secret', 132452 )
-    addAura( 'sephuzs_secret', 208051, 'duration', 10 )
+all:RegisterAbility( "horn_of_valor", {
+    item = 133642,
+    spend = 0,
+    cast = 0,
+    cooldown = 120,
+    gcd = 'off',
+    toggle = 'cooldowns',
+    handler = function () applyBuff( "valarjars_path" ) end
+} )
 
-addGearSet( 'amanthuls_vision', 154172 )
-    addAura( 'glimpse_of_enlightenment', 256818, 'duration', 12 )
-    addAura( 'amanthuls_grandeur', 256832, 'duration', 15 )
+all:RegisterAura( "valarjars_path", {
+    id = 215956,
+    duration = 30 
+} )
 
-addGearSet( 'insignia_of_the_grand_army', 152626 )
 
-addGearSet( 'eonars_compassion', 154172 )
-    addAura( 'mark_of_eonar', 256824, 'duration', 12 )
-    addAura( 'eonars_verdant_embrace', 257475, 'duration', 20 )
-        class.auras[ 257470 ] = class.auras[ 257475 ]
-        class.auras[ 257471 ] = class.auras[ 257475 ]
-        class.auras[ 257472 ] = class.auras[ 257475 ]
-        class.auras[ 257473 ] = class.auras[ 257475 ]
-        class.auras[ 257474 ] = class.auras[ 257475 ]
-    modifyAura( 'eonars_verdant_embrace', 'id', function( x )
+all:RegisterAbility( "kiljaedens_burning_wish", {
+    item = 144259,
+    spend = 0,
+    cast = 0,
+    cooldown = 75,
+    texture = 1357805,
+    gcd = 'off',
+    toggle = 'cooldowns',
+} )
+
+
+all:RegisterAbility( "might_of_krosus", {
+    item = 140799,
+    spend = 0,
+    cast = 0,
+    cooldown = 30,
+    gcd = 'off',
+    handler = function () if active_enemies > 3 then setCooldown( "might_of_krosus", 15 ) end end
+} )
+
+
+all:RegisterAbility( "ring_of_collapsing_futures", {
+    item = 142173,
+    spend = 0,
+    cast = 0,
+    cooldown = 15,
+    gcd = 'off',
+    ready = function () return debuff.temptation.remains end,
+    handler = function () applyDebuff( "player", "temptation", 30, debuff.temptation.stack + 1 ) end
+} )
+
+all:RegisterAura( 'temptation', { 
+    id = 234143,
+    duration = 30,
+    max_stack = 20 
+} )
+
+
+all:RegisterAbility( "specter_of_betrayal", {
+    item = 151190,
+    spend = 0,
+    cast = 0,
+    cooldown = 45,
+    gcd = 'off',
+} )
+
+
+all:RegisterAbility( "tiny_oozeling_in_a_jar", {
+    item = 137439,
+    spend = 0,
+    cast = 0,
+    cooldown = 20,
+    gcd = "off",
+    usable = function () return buff.congealing_goo.stack == 6 end,
+    handler = function () removeBuff( "congealing_goo" ) end
+} )
+
+all:RegisterAura( "congealing_goo", {
+    id = 215126,
+    duration = 60,
+    max_stack = 6 
+} )
+
+
+all:RegisterAbility( "umbral_moonglaives", {
+    item = 147012,
+    spend = 0,
+    cast = 0,
+    cooldown = 90,
+    gcd = 'off',
+    toggle = 'cooldowns',
+} )
+
+
+all:RegisterAbility( "unbridled_fury", {
+    item = 139327,
+    spend = 0,
+    cast = 0,
+    cooldown = 120,
+    gcd = 'off',
+    toggle = 'cooldowns',
+    handler = function () applyBuff( "wild_gods_fury" ) end
+} )
+
+all:RegisterAura( "wild_gods_fury", { 
+    id = 221695,
+    duration = 30 
+} )
+
+
+all:RegisterAbility( "vial_of_ceaseless_toxins", {
+    item = 147011,
+    spend = 0,
+    cast = 0,
+    cooldown = 60,
+    gcd = 'off',
+    toggle = 'cooldowns',
+    handler = function () applyDebuff( "target", "ceaseless_toxin", 20 ) end
+} )
+
+all:RegisterAura( "ceaseless_toxin", {
+    id = 242497,
+    duration = 20 
+} )
+
+
+all:RegisterAbility( "tome_of_unraveling_sanity", {
+    item = 147019,
+    spend = 0,
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+    toggle = "cooldowns",
+    handler = function () applyDebuff( "target", "insidious_corruption", 12 ) end
+} )
+
+all:RegisterAura( "insidious_corruption", {
+    id = 243941,
+    duration = 12
+} )
+all:RegisterAura( "extracted_sanity", {
+    id = 243942, 
+    duration =  24
+} )
+
+all:RegisterGear( 'aggramars_stride', 132443 )
+all:RegisterAura( 'aggramars_stride', {
+    id = 207438,
+    duration = 3600 
+} )
+
+all:RegisterGear( 'sephuzs_secret', 132452 )
+all:RegisterAura( 'sephuzs_secret', {
+    id = 208051, 
+    duration = 10
+} )
+
+all:RegisterGear( 'amanthuls_vision', 154172 )
+all:RegisterAura( 'glimpse_of_enlightenment', {
+    id = 256818, 
+    duration = 12 
+} )
+all:RegisterAura( 'amanthuls_grandeur', {
+    id = 256832,
+    duration = 15 
+} )
+
+all:RegisterGear( 'insignia_of_the_grand_army', 152626 )
+
+all:RegisterGear( 'eonars_compassion', 154172 )
+all:RegisterAura( 'mark_of_eonar', {
+    id = 256824,
+    duration = 12
+ } )
+all:RegisterAura( 'eonars_verdant_embrace', {
+    id = function ()
         if class.file == "SHAMAN" then return x end
         if class.file == "DRUID" then return 257470 end
         if class.file == "MONK" then return 257471 end
@@ -1450,29 +1430,227 @@ addGearSet( 'eonars_compassion', 154172 )
             if spec.discipline then return 257473 end
             if spec.holy then return 257474 end
         end
-        return x
-    end )
-    addAura( 'verdant_embrace', 257444, 'duration', 30 )
+        return 257475
+    end,
+    duration = 20,
+    copy = { 257470, 257471, 257472, 257473, 257474, 257475 }
+} )
+all:RegisterAura( 'verdant_embrace', {
+    id = 257444,
+    duration = 30 
+} )
 
 
-addGearSet( 'aggramars_conviction', 154173 )
-    addAura( 'celestial_bulwark', 256816, 'duration', 14 )
-    addAura( 'aggramars_fortitude', 256831, 'duration', 15 )
+all:RegisterGear( 'aggramars_conviction', 154173 )
+all:RegisterAura( 'celestial_bulwark', {
+    id = 256816,
+    duration = 14
+} )
+all:RegisterAura( 'aggramars_fortitude', {
+    id = 256831,
+    duration = 15
+ } )
 
-addGearSet( 'golganneths_vitality', 154174 )
-    addAura( 'golganneths_thunderous_wrath', 256833, 'duration', 15 )
+all:RegisterGear( 'golganneths_vitality', 154174 )
+all:RegisterAura( 'golganneths_thunderous_wrath', {
+    id = 256833,
+    duration = 15 
+} )
 
-addGearSet( 'khazgoroths_courage', 154176 )
-    addAura( 'worldforgers_flame', 256826, 'duration', 12 )
-    addAura( 'khazgoroths_shaping', 256835, 'duration', 15 )
+all:RegisterGear( 'khazgoroths_courage', 154176 )
+all:RegisterAura( 'worldforgers_flame', {
+    id = 256826,
+    duration = 12
+} )
+all:RegisterAura( 'khazgoroths_shaping', {
+    id = 256835,
+    duration = 15
+} )
 
-addGearSet( 'norgannons_prowess', 154177 )
-    addAura( 'rush_of_knowledge', 256828, 'duration', 12 )
-    addAura( 'norgannons_command', 256836, 'duration', 15, 'max_stack', 6 )
+all:RegisterGear( 'norgannons_prowess', 154177 )
+all:RegisterAura( 'rush_of_knowledge', {
+    id = 256828,
+    duration = 12
+} )
+all:RegisterAura( 'norgannons_command', {
+    id = 256836,
+    duration = 15,
+    max_stack = 6 
+} )
 
 
-addAbility( 'potion', {
-    id = -4,
+--[[ all:RegisterAbility( "draught_of_souls", {
+    item = 140808,
+    spend = 0,
+    cast = 0,
+    cooldown = 80,
+    gcd = 'off',
+    toggle = 'cooldowns',
+    handler = function () applyBuff( "fel_crazed_rage", 3 ); setCooldown( "global_cooldown", 3 ) end
+} )
+
+all:RegisterAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )
+
+
+all:RegisterAbility( "faulty_countermeasure", {
+    item = 137539,
+    spend = 0,
+    cast = 0,
+    cooldown = 120,
+    gcd = 'off',
+    toggle = 'cooldowns',
+    handler = function () applyBuff( "sheathed_in_frost", 30 ) end
+} )
+
+all:RegisterAura( "sheathed_in_frost", 214962, "duration", 30 )
+
+
+all:RegisterAbility( "feloiled_infernal_machine", {
+    item = 144482,
+    spend = 0,
+    cast = 0,
+    cooldown = 80,
+    gcd = 'off',
+    toggle = 'cooldowns',
+    handler = function () applyBuff( "grease_the_gears" ) end
+} )
+
+all:RegisterAura( "grease_the_gears", 238534, "duration", 20 )
+
+
+all:RegisterAbility( "forgefiends_fabricator", {
+    item = 151963,
+    spend = 0,
+    cast = 0,
+    cooldown = 30,
+    gcd = 'off',
+} )
+
+
+all:RegisterAbility( "horn_of_valor", {
+    item = 133642,
+    spend = 0,
+    cast = 0,
+    cooldown = 120,
+    gcd = 'off',
+    toggle = 'cooldowns',
+    handler = function () applyBuff( "valarjars_path" ) end
+} )
+
+all:RegisterAura( "valarjars_path", 215956, "duration", 30 )
+
+
+all:RegisterAbility( "kiljaedens_burning_wish", {
+    item = 144259,
+    spend = 0,
+    cast = 0,
+    cooldown = 75,
+    texture = 1357805,
+    gcd = 'off',
+    toggle = 'cooldowns',
+} )
+
+
+all:RegisterAbility( "might_of_krosus", {
+    item = 140799,
+    spend = 0,
+    cast = 0,
+    cooldown = 30,
+    gcd = 'off',
+    handler = function () if active_enemies > 3 then setCooldown( "might_of_krosus", 15 ) end end
+} )
+
+
+all:RegisterAbility( "ring_of_collapsing_futures", {
+    item = 142173,
+    spend = 0,
+    cast = 0,
+    cooldown = 15,
+    gcd = 'off',
+    ready = function () return debuff.temptation.remains end,
+	handler = function () applyDebuff( "player", "temptation", 30, debuff.temptation.stack + 1 ) end
+} )
+
+all:RegisterAura( 'temptation', 234143, 'duration', 30, 'max_stack', 20 )
+
+
+all:RegisterAbility( "specter_of_betrayal", {
+    item = 151190,
+    spend = 0,
+    cast = 0,
+    cooldown = 45,
+    gcd = 'off',
+} )
+
+
+all:RegisterAbility( "tiny_oozeling_in_a_jar", {
+    item = 137439,
+    spend = 0,
+    cast = 0,
+    cooldown = 20,
+    gcd = "off",
+    usable = function () return buff.congealing_goo.stack == 6 end,
+	handler = function () removeBuff( "congealing_goo" ) end
+} )
+
+all:RegisterAura( "congealing_goo", 215126, "duration", 60, "max_stack", 6 )
+
+
+all:RegisterAbility( "umbral_moonglaives", {
+    item = 147012,
+    spend = 0,
+    cast = 0,
+    cooldown = 90,
+    gcd = 'off',
+    toggle = 'cooldowns',
+} )
+
+
+all:RegisterAbility( "unbridled_fury", {
+    item = 139327,
+    spend = 0,
+    cast = 0,
+    cooldown = 120,
+    gcd = 'off',
+    toggle = 'cooldowns',
+	handler = function () applyBuff( "unbridled_fury" ) end
+} )
+
+all:RegisterAura( "wild_gods_fury", 221695, "duration", 30 )
+
+
+all:RegisterAbility( "vial_of_ceaseless_toxins", {
+    item = 147011,
+    spend = 0,
+    cast = 0,
+    cooldown = 60,
+    gcd = 'off',
+    toggle = 'cooldowns',
+	handler = function () applyDebuff( "target", "ceaseless_toxin", 20 ) end
+} )
+
+all:RegisterAura( "ceaseless_toxin", 242497, "duration", 20 )
+
+
+all:RegisterAbility( "tome_of_unraveling_sanity", {
+    item = 147019,
+    spend = 0,
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+    toggle = "cooldowns",
+    handler = function () applyDebuff( "target", "insidious_corruption", 12 ) end
+} )
+
+all:RegisterAura( "insidious_corruption", 243941, "duration", 12 )
+all:RegisterAura( "extracted_sanity", 243942, "duration", 24 ) ]]
+
+
+
+
+--[[
+    
+all:RegisterAbility( 'potion', {
     name = '|cff00ccff[Potion]|r',
     spend = 0,
     cast = 0,
@@ -1497,7 +1675,7 @@ modifyAbility( 'potion', 'cooldown', function ( x )
     return x
 end )
 
-addHandler( 'potion', function ()
+	handler = function ()
     local potion = args.ModName or args.name or class.potion
     local potion = class.potions[ potion ]
     
@@ -1508,8 +1686,7 @@ addHandler( 'potion', function ()
 end )
 
 
-addAbility( "use_items", {
-    id = -99,
+all:RegisterAbility( "use_items", {
     name = "|cff00ccff[Use Items]|r",
     spend = 0,
     cast = 0,
@@ -1517,238 +1694,6 @@ addAbility( "use_items", {
     gcd = 'off',
     toggle = 'cooldowns',
 } )
-
-
-addAbility( "draught_of_souls", {
-    id = -101,
-    item = 140808,
-    spend = 0,
-    cast = 0,
-    cooldown = 80,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )
-
-addHandler( "draught_of_souls", function ()
-    applyBuff( "fel_crazed_rage", 3 )
-    setCooldown( "global_cooldown", 3 )
-end )
-
-
-addAbility( "faulty_countermeasure", {
-    id = -102,
-    item = 137539,
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "sheathed_in_frost", 214962, "duration", 30 )
-
-addHandler( "faulty_countermeasure", function ()
-    applyBuff( "sheathed_in_frost", 30 )
-end )
-
-
-addUsableItem( "feloiled_infernal_machine", 144482 )
-
-addAbility( "feloiled_infernal_machine", {
-    id = -103,
-    item = 144482,
-    spend = 0,
-    cast = 0,
-    cooldown = 80,
-    gcd = 'off',
-    toggle = 'cooldowns'
-} )
-
-addAura( "grease_the_gears", 238534, "duration", 20 )
-
-addHandler( "feloiled_infernal_machine", function ()
-    applyBuff( "grease_the_gears" )
-end )
-
-
-addAbility( "forgefiends_fabricator", {
-    id = -104,
-    item = 151963,
-    spend = 0,
-    cast = 0,
-    cooldown = 30,
-    gcd = 'off',
-} )
-
-
-addUsableItem( "horn_of_valor", 133642 )
-
-addAbility( "horn_of_valor", {
-    id = -105,
-    item = 133642,
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "valarjars_path", 215956, "duration", 30 )
-
-addHandler( "horn_of_valor", function ()
-    applyBuff( "valarjars_path" )
-end )
-
-
-addUsableItem( "kiljaedens_burning_wish", 144259 )
-
-addAbility( "kiljaedens_burning_wish", {
-    id = -106,
-    item = 144259,
-    spend = 0,
-    cast = 0,
-    cooldown = 75,
-    texture = 1357805,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-
-addAbility( "might_of_krosus", {
-    id = -107,
-    item = 140799,
-    spend = 0,
-    cast = 0,
-    cooldown = 30,
-    gcd = 'off',
-} )
-
-addHandler( "might_of_krosus", function ()
-    if active_enemies > 3 then setCooldown( "might_of_krosus", 15 ) end
-end )
-
-
-addUsableItem( "ring_of_collapsing_futures", 142173 )
-
-addAbility( "ring_of_collapsing_futures", {
-    id = -108,
-    item = 142173,
-    spend = 0,
-    cast = 0,
-    cooldown = 15,
-    gcd = 'off',
-    ready = function () return debuff.temptation.remains end,
-} )
-
-addAura( 'temptation', 234143, 'duration', 30, 'max_stack', 20 )
-
-addHandler( "ring_of_collapsing_futures", function ()
-    applyDebuff( "player", "temptation", 30, debuff.temptation.stack + 1 )
-end )
-
-
-addUsableItem( "specter_of_betrayal", 151190 )
-
-addAbility( "specter_of_betrayal", {
-    id = -109,
-    item = 151190,
-    spend = 0,
-    cast = 0,
-    cooldown = 45,
-    gcd = 'off',
-} )
-
-
-addUsableItem( "tiny_oozeling_in_a_jar", 137439 )
-
-addAbility( "tiny_oozeling_in_a_jar", {
-    id = -110,
-    item = 137439,
-    spend = 0,
-    cast = 0,
-    cooldown = 20,
-    gcd = "off",
-    usable = function () return buff.congealing_goo.stack == 6 end,
-} )
-
-addAura( "congealing_goo", 215126, "duration", 60, "max_stack", 6 )
-
-addHandler( "tiny_oozeling_in_a_jar", function ()
-    removeBuff( "congealing_goo" )
-end )
-
-
-addUsableItem( "umbral_moonglaives", 147012 )
-
-addAbility( "umbral_moonglaives", {
-    id = -111,
-    item = 147012,
-    spend = 0,
-    cast = 0,
-    cooldown = 90,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-
-addUsableItem( "unbridled_fury", 139327 )
-
-addAbility( "unbridled_fury", {
-    id = -112,
-    item = 139327,
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "wild_gods_fury", 221695, "duration", 30 )
-
-addHandler( "unbridled_fury", function ()
-    applyBuff( "unbridled_fury" )
-end )
-
-
-addUsableItem( "vial_of_ceaseless_toxins", 147011 )
-
-addAbility( "vial_of_ceaseless_toxins", {
-    id = -113,
-    item = 147011,
-    spend = 0,
-    cast = 0,
-    cooldown = 60,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "ceaseless_toxin", 242497, "duration", 20 )
-
-addHandler( "vial_of_ceaseless_toxins", function ()
-    applyDebuff( "target", "ceaseless_toxin", 20 )
-end )
-
-
-addUsableItem( "tome_of_unraveling_sanity", 147019 )
-
-addAbility( "tome_of_unraveling_sanity", {
-    id = -114,
-    item = 147019,
-    spend = 0,
-    cast = 0,
-    cooldown = 60,
-    gcd = "off",
-    toggle = "cooldowns",
-} )
-
-addAura( "insidious_corruption", 243941, "duration", 12 )
-addAura( "extracted_sanity", 243942, "duration", 24 )
-
-addHandler( "tome_of_unraveling_sanity", function ()
-    applyDebuff( "target", "insidious_corruption", 12 )
-end )
 
 
 class.itemsInAPL = {}
@@ -1880,21 +1825,6 @@ end
 ns.modifyElement = modifyElement
 
 
-local function addGearSet( name, ... )
-
-    class.gear[ name ] = class.gear[ name ] or {}
-
-    for i = 1, select( '#', ... ) do
-        local id = select( i, ... )
-        local key = ns.formatKey( GetItemInfo( select( i, ... ) ) or "nothing" )
-        class.gear[ name ][ id ] = key
-    end
-
-    ns.commitKey( name )
-
-end
-ns.addGearSet = addGearSet
-
 
 local function setUsableItemCooldown( cd )
     state.setCooldown( "usable_items", cd or 10 )
@@ -1993,89 +1923,6 @@ end
 
 class.interrupts = {}
 
-function ns.registerInterrupt( key )
-    if class.abilities[ key ] and class.abilities[ key ].toggle and class.abilities[ key ].toggle == 'interrupts' then
-        class.interrupts[ key ] = true
-    end
-end
-
-
-local storeAuraElements = function( key, ... )
-
-    local aura = class.auras[ key ]
-
-    if not aura then
-        ns.Error( "storeAuraElements() - no aura '" .. key .. "' in auras table." )
-        return
-    end
-
-    for i = 1, select( "#", ... ), 2 do
-        local k, v = select( i, ... ), select( i+1, ... )
-
-        if k and v then
-            if k == 'id' or k == 'name' then aura[k] = v
-            elseif type(v) == 'function' then aura.elem[k] = setfenv( v, state )
-            else aura.elem[k] = v end
-        end
-    end
-
-end
-ns.storeAuraElements = storeAuraElements
-
-
-local function modifyAura( key, elem, func )
-    modifyElement( 'auras', key, elem, func )
-end
-ns.modifyAura = modifyAura
-
-
-local function addAura( key, id, ... )
-
-    local name = GetSpellInfo( id )
-
-    if not class.auras[ key ] then
-
-        class.auras[ key ] = setmetatable( {
-            id = id,
-            key = key,
-            elem = {},
-            mods = {}
-        }, mt_modifiers )
-
-        ns.commitKey( key )
-
-        -- Add the elements, front-loading defaults and just overriding them if something else is specified.
-        storeAuraElements( key, 'name', name, 'duration', 30, 'max_stack', 1, ... )
-
-    end
-    
-    -- Allow reference by ID and name as well.
-    class.auras[ id ] = class.auras[ key ]
-    if name then class.auras[ name ] = class.auras[ key ] end
-    
-end
-ns.addAura = addAura
-
-
-local function addGlyph( key, id )
-
-    local name = GetSpellInfo( id )
-    
-    if not name then
-        ns.Error( "addGlyph() - unable to get glyph name from id#" .. id .. "." )
-        return
-    end
-        
-        class.glyphs[ key ] = {
-        id = id,
-        name = name
-    }
-
-    ns.commitKey( key )
-
-end
-ns.addGlyph = addGlyph 
-
 
 local function addPet( key, permanent )
     state.pet[ key ] = rawget( state.pet, key ) or {}
@@ -2085,128 +1932,6 @@ local function addPet( key, permanent )
     ns.commitKey( key )
 end
 ns.addPet = addPet
-
-
-local function addTalent( key, id, ... )
-
-    local _, name = GetTalentInfoByID( id )
-
-    if not name then
-        ns.Error( "addTalent() - unable to get talent name from id #" .. id .. "." )
-        return
-    end
-
-    class.talents[ key ] = {
-        id = id,
-        name = name
-    }
-
-    ns.commitKey( key )
-end
-ns.addTalent = addTalent
-
-
-local primarySet = false
-
-local function addResource( resource, power_type )
-
-    class.resources[ resource ] = power_type
-
-    if not primarySet then
-        class.primaryResource = resource
-        primarySet = true
-    end
-
-    state[ resource ] = rawget( state, resource ) or setmetatable( {
-        resource = resource,
-        type = power_type,
-        forecast = {},
-        fcount = 0,
-        times = {},
-        values = {},
-        last_tick = 0
-    }, mt_resource )
-    state[ resource ].regenerates = not no_regen
-
-    state[ resource ].time_to = function( amount )
-        return state:TimeToResource( state[ resource ], amount )
-    end
-
-    ns.commitKey( resource )
-
-end
-ns.addResource = addResource
-
-
-local function removeResource( resource )
-
-    class.resources[ resource ] = nil
-    -- class.regenModel = nil
-
-    if class.primaryResource == resource then
-        class.primaryResource = nil
-        primarySet = false
-    end
-
-end
-ns.removeResource = removeResource
-
-
-local function setPrimaryResource( resource )
-
-    class.primaryResource = resource
-    primarySet = true
-
-end
-ns.setPrimaryResource = setPrimaryResource
-
-
-local function setRegenModel( db )
-    class.regenModel = db
-end
-ns.setRegenModel = setRegenModel
-
-
-{
-    old_war = {
-        item = 127844,
-        buff = 'old_war'
-    },
-    deadly_grace = {
-        item = 127843,
-        buff = 'deadly_grace'
-    },
-    prolonged_power = {
-        item = 142117,
-        buff = 'prolonged_power'
-    },
-}
-
-
-local function setPotion( potion )
-    class.potion = potion
-    class.auras.potion = class.auras[ class.potions[ potion ].buff ]
-end
-ns.setPotion = setPotion
-
-
-local function addHandler( key, func, tt )
-
-    local ability = class.abilities[ key ]
-
-    if not ability then
-        ns.Error( "addHandler() attempting to store handler for non-existant ability '" .. key .. "'." )
-        return
-    end
-
-    if tt then
-        ability.elem[ 'onHit' ] = setfenv( func, state )
-    else
-        ability.elem[ 'handler' ] = setfenv( func, state )
-    end
-
-end
-ns.addHandler = addHandler
 
 
 local function runHandler( key, no_start )
@@ -2427,728 +2152,8 @@ end
 
 ns.specializationChanged = function()
     Hekili:SpecializationChanged()
-    --[[ 
-    for k, _ in pairs( state.spec ) do
-        state.spec[ k ] = nil
-    end
-
-    if GetSpecialization() then
-        state.spec.id, state.spec.name = GetSpecializationInfo( GetSpecialization() )
-        state.spec.key = getSpecializationKey( state.spec.id )
-        state.spec[ state.spec.key ] = true
-    end
-
-    state.GUID = UnitGUID( 'player' )
-    state.player.unit = UnitGUID( 'player' )
-
-    ns.updateGear()
-    ns.updateTalents()
-
-    Hekili:UpdateDisplayVisibility()
-
-    ns.callHook( 'specializationChanged' ) ]]
 end
 
-
-
---[[
-
-local function setTalentLegendary( item, spec, talent )
-
-    class.talentLegendary[ item ] = class.talentLegendary[ item ] or {}
-    class.talentLegendary[ item ][ spec ] = talent
-
-end
-ns.setTalentLegendary = setTalentLegendary
-
-------------------------------
--- SHARED SPELLS/BUFFS/ETC. --
-------------------------------
-
--- Bloodlust.
-addAura( 'ancient_hysteria', 90355, 'duration', 40 )
-addAura( 'heroism', 32182, 'duration', 40 )
-addAura( 'time_warp', 80353, 'duration', 40 )
-addAura( 'netherwinds', 160452, 'duration', 40 )
-
-local bloodlusts = { 
-    [90355] = 'ancient_hysteria',
-    [32182] = 'heroism',
-    [80353] = 'time_warp',
-    [160452] = 'netherwinds',
-}
-
--- bloodlust is the "umbrella" aura for all burst haste effects.
-addAura( 'bloodlust', 2825, 'duration', 40, 'feign', function ()
-    for id, key in pairs( bloodlusts ) do
-        if buff[ key ].up then
-            buff.bloodlust.count = buff[ key ].count
-            buff.bloodlust.expires = buff[ aura ].expires
-            buff.bloodlust.applied = buff[ aura ].applied
-            buff.bloodlust.caster = buff[ aura ].caster
-            return
-        end
-    end
-    
-    local name, count, duration, expires, spellID
-    for i = 1, 40 do
-        name, _, count, _, duration, expires, _, _, _, spellID = UnitBuff( 'player', i )
-
-        if not name then break end
-        if spellID == 2525 then break end
-    end
-        
-    if name then
-        buff.bloodlust.count = max( 1, count )
-        buff.bloodlust.expires = expires
-        buff.bloodlust.applied = expires - duration
-        buff.bloodlust.caster = 'unknown'
-        return
-    end
-    
-    buff.bloodlust.count = 0
-    buff.bloodlust.expires = 0
-    buff.bloodlust.applied = 0
-    buff.bloodlust.caster = 'unknown'
-
-end )
-
--- Sated.
-addAura( 'exhaustion', 57723, 'duration', 600 )
-addAura( 'insanity', 95809, 'duration', 600 )
-addAura( 'sated', 57724, 'duration', 600 )
-addAura( 'temporal_displacement', 80354, 'duration', 600 )
-addAura( 'fatigued', 160455, 'duration', 600 )
-
--- Enchants.
-addAura( 'dancing_steel', 104434, 'duration', 12, 'max_stack', 2 )
-
--- Potions.
-addAura( 'jade_serpent_potion', 105702, 'duration', 25 )
-addAura( 'mogu_power_potion', 105706, 'duration', 25 )
-addAura( 'virmens_bite_potion', 105697, 'duration', 25 )
-addAura( 'draenic_agility_potion', 156423, 'duration', 25 )
-addAura( 'draenic_armor_potion', 156430, 'duration', 25 )
-addAura( 'draenic_intellect_potion', 156425, 'duration', 25 )
-addAura( 'draenic_strength_potion', 156428, 'duration', 25 )
-addAura( 'old_war', 188028, 'duration', 25 )
-addAura( 'deadly_grace', 188027, 'duration', 25 )
-addAura( 'prolonged_power', 229206, 'duration', 60 )
-
--- Trinkets.
-addAura( 'dextrous', 146308, 'duration', 20 )
-addAura( 'vicious', 148903, 'duration', 10 )
-
--- Legendary
-addAura( 'archmages_incandescence_agi', 177161, 'duration', 10 )
-addAura( 'archmages_incandescence_int', 177159, 'duration', 10 )
-addAura( 'archmages_incandescence_str', 177160, 'duration', 10 )
-addAura( 'archmages_greater_incandescence_agi', 177172, 'duration', 10 )
-addAura( 'archmages_greater_incandescence_int', 177176, 'duration', 10 )
-addAura( 'archmages_greater_incandescence_str', 177175, 'duration', 10 )
-
-addAura( 'maalus', 187620, 'duration', 15 )
-addAura( 'thorasus', 187619, 'duration', 15 )
-
--- Raid Buffs
-addAura( 'str_agi_int', -1, 'duration', 3600 )
-addAura( 'stamina', -2, 'duration', 3600 )
-addAura( 'attack_power_multiplier', -3, 'duration', 3600 )
-addAura( 'haste', -4, 'duration', 3600 )
-addAura( 'spell_power_multiplier', -5, 'duration', 3600 )
-addAura( 'critical_strike', -6, 'duration', 3600 )
-addAura( 'mastery', -7, 'duration', 3600 )
-addAura( 'multistrike', -8, 'duration', 3600 )
-addAura( 'versatility', -9, 'duration', 3600 )
-
-
-addAura( 'casting', -10, 'feign', function ()    
-    if UnitCanAttack( "player", "target" ) then
-        local _, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitCastingInfo( "target" )
-        
-        if notInterruptible == false then
-            debuff.casting.name = "Casting " .. spell
-            debuff.casting.count = 1
-            debuff.casting.expires = endCast / 1000
-            debuff.casting.applied = startCast / 1000
-            debuff.casting.v1 = spell
-            debuff.casting.caster = 'target'
-            return
-        end
-
-        _, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitChannelInfo( "target" )
-        
-        if notInterruptible == false then
-            debuff.casting.name = "Casting " .. spell
-            debuff.casting.count = 1
-            debuff.casting.expires = endCast / 1000
-            debuff.casting.applied = startCast / 1000
-            debuff.casting.v1 = spell
-            debuff.casting.caster = 'target'
-            return
-        end
-    end
-
-    debuff.casting.name = "Casting"
-    debuff.casting.count = 0
-    debuff.casting.expires = 0
-    debuff.casting.applied = 0
-    debuff.casting.v1 = 0
-    debuff.casting.caster = 'target'
-end )
-
-
-addAura( "player_casting", -11, "duration", 3 )
-
-addAura( 'unknown_buff', -15 )
-
-
-
-addAbility( 'global_cooldown',
-{
-    id = 61304,
-    spend = 0,
-    cast = 0,
-    gcd = 'spell',
-    cooldown = 0,
-    known = function () return true end,
-} )
-
-
-class.gcd = 'global_cooldown'
-
-
--- Racials.
--- AddSpell( 26297, "berserking", 10 )
-addAbility( 'berserking',
-{
-    id = 26297,
-    spend = 0,
-    cast = 0,
-    gcd = 'off',
-    cooldown = 180,
-    toggle = "cooldowns",
-    usable = function () return race.troll end,
-} )
-
-addHandler( 'berserking', function ()
-    applyBuff( 'berserking' )
-    end )
-
-addAura( 'berserking', 26297, 'duration', 10 )
-
-
--- AddSpell( 20572, "blood_fury", 15 )
-addAbility( 'blood_fury', {
-    id = 20572,
-    spend = 0,
-    cast = 0,
-    gcd = 'off',
-    cooldown = 120,
-    toggle = "cooldowns",
-    usable = function () return race.orc end,
-}, 33697, 33702 )
-
-modifyAbility( 'blood_fury', 'id', function( x )
-    if class.file == 'MONK' or class.file == 'SHAMAN' then return 33697 end
-    return x
-    end )
-
-addHandler( 'blood_fury', function ()
-    applyBuff( 'blood_fury', 15 )
-    end )
-
-
-addAura( 'blood_fury', 20572, 'duration', 15 )
-
-
-addAbility( 'arcane_torrent', {
-    id = 28730,
-    spend = 0,
-    cast = 0,
-    gcd = 'off',
-    cooldown = 120,
-    toggle = 'cooldowns',
-    usable = function () return race.blood_elf end,
-}, 50613, 80483, 129597, 155145, 25046, 69179, 202719, 232633 )
-
-local atIDs = {
-    PALADIN     = 155145,
-    MONK        = 129597,
-    DEATHKNIGHT = 50613,
-    WARRIOR     = 69179,
-    ROGUE       = 25046,
-    HUNTER      = 80483,
-    DEMONHUNTER = 202719,
-    PRIEST      = 232633
-}
-
-modifyAbility( 'arcane_torrent', 'id', function( x )
-    return atIDs[ class.file ] or x
-end )
-
-addHandler( 'arcane_torrent', function ()
-    if class.file == "DEATHKNIGHT" then gain( 20, "runic_power" )
-    elseif class.file == "HUNTER" then gain( 15, "focus" )
-    elseif class.file == "MONK" then gain( 1, "chi" )
-    elseif class.file == "PALADIN" then gain( 1, "holy_power" )
-    elseif class.file == "ROGUE" then gain( 15, "energy" )
-    elseif class.file == "WARRIOR" then gain( 15, "rage" )
-    elseif class.file == "DEMONHUNTER" then gain( 15, "fury" ) end 
-end )
-
-ns.registerInterrupt( 'arcane_torrent' )
-
-
-addAura( "shadowmeld", 58984, "duration", 3600 )
-
-addAbility( "shadowmeld", {
-    id = 58984,
-    cast = 0,
-    gcd = "off",
-    cooldown = 120,
-    passive = true,
-    usable = function () return race.night_elf and boss end, -- Only use in boss combat, dropping aggro is for the birds.
-} )
-
-addHandler( "shadowmeld", function ()
-    applyBuff( "shadowmeld" )
-end )
-
-
-addAbility( "lights_judgment", {
-    id = 255647,
-    cast = 0,
-    gcd = "spell",
-    cooldown = 150,
-    toggle = 'cooldowns',
-    usable = function () return race.lightforged_draenei end
-} )
-
-
-
-addAbility( 'call_action_list', {
-    id = -1,
-    name = '|cff00ccff[Call Action List]|r',
-    cast = 0,
-    gcd = 'off',
-    cooldown = 0,
-    passive = true
-} )
-
-
-addAbility( 'run_action_list', {
-    id = -2,
-    name = '|cff00ccff[Run Action List]|r',
-    cast = 0,
-    gcd = 'off',
-    cooldown = 0,
-    passive = true
-} )
-
-
--- Special Instructions
-addAbility( 'wait', {
-    id = -3,
-    name = '|cff00ccff[Wait]|r',
-    cast = 0,
-    gcd = 'off',
-    cooldown = 0,
-    passive = true,
-} )
-
-
-addAbility( 'pool_resource', {
-    id = -4,
-    name = '|cff00ccff[Pool Resource]|r',
-    cast = 0,
-    gcd = 'off',
-    cooldown = 0,
-    passive = true
-} )
-
-
-
--- Universal Gear Stuff
-addGearSet( 'rethus_incessant_courage', 146667 )
-    addAura( 'rethus_incessant_courage', 241330 )
-
-addGearSet( 'vigilance_perch', 146668 )
-    addAura( 'vigilance_perch', 241332, 'duration', 60, 'max_stack', 5 )
-
-addGearSet( 'the_sentinels_eternal_refuge', 146669 )
-    addAura( 'the_sentinels_eternal_refuge', 241331, 'duration', 60, 'max_stack', 5 )
-
-addGearSet( 'prydaz_xavarics_magnum_opus', 132444 )
-    addAura( 'xavarics_magnum_opus', 207428, 'duration', 30 )
-
-addGearSet( 'aggramars_stride', 132443 )
-    addAura( 'aggramars_stride', 207438, 'duration', 3600 )
-
-addGearSet( 'sephuzs_secret', 132452 )
-    addAura( 'sephuzs_secret', 208051, 'duration', 10 )
-
-addGearSet( 'amanthuls_vision', 154172 )
-    addAura( 'glimpse_of_enlightenment', 256818, 'duration', 12 )
-    addAura( 'amanthuls_grandeur', 256832, 'duration', 15 )
-
-addGearSet( 'insignia_of_the_grand_army', 152626 )
-
-addGearSet( 'eonars_compassion', 154172 )
-    addAura( 'mark_of_eonar', 256824, 'duration', 12 )
-    addAura( 'eonars_verdant_embrace', 257475, 'duration', 20 )
-        class.auras[ 257470 ] = class.auras[ 257475 ]
-        class.auras[ 257471 ] = class.auras[ 257475 ]
-        class.auras[ 257472 ] = class.auras[ 257475 ]
-        class.auras[ 257473 ] = class.auras[ 257475 ]
-        class.auras[ 257474 ] = class.auras[ 257475 ]
-    modifyAura( 'eonars_verdant_embrace', 'id', function( x )
-        if class.file == "SHAMAN" then return x end
-        if class.file == "DRUID" then return 257470 end
-        if class.file == "MONK" then return 257471 end
-        if class.file == "PALADIN" then return 257472 end
-        if class.file == "PRIEST" then
-            if spec.discipline then return 257473 end
-            if spec.holy then return 257474 end
-        end
-        return x
-    end )
-    addAura( 'verdant_embrace', 257444, 'duration', 30 )
-
-
-addGearSet( 'aggramars_conviction', 154173 )
-    addAura( 'celestial_bulwark', 256816, 'duration', 14 )
-    addAura( 'aggramars_fortitude', 256831, 'duration', 15 )
-
-addGearSet( 'golganneths_vitality', 154174 )
-    addAura( 'golganneths_thunderous_wrath', 256833, 'duration', 15 )
-
-addGearSet( 'khazgoroths_courage', 154176 )
-    addAura( 'worldforgers_flame', 256826, 'duration', 12 )
-    addAura( 'khazgoroths_shaping', 256835, 'duration', 15 )
-
-addGearSet( 'norgannons_prowess', 154177 )
-    addAura( 'rush_of_knowledge', 256828, 'duration', 12 )
-    addAura( 'norgannons_command', 256836, 'duration', 15, 'max_stack', 6 )
-
-
-class.potions = {
-    old_war = {
-        item = 127844,
-        buff = 'old_war'
-    },
-    deadly_grace = {
-        item = 127843,
-        buff = 'deadly_grace'
-    },
-    prolonged_power = {
-        item = 142117,
-        buff = 'prolonged_power'
-    },
-}
-
-
-addAbility( 'potion', {
-    id = -4,
-    name = '|cff00ccff[Potion]|r',
-    spend = 0,
-    cast = 0,
-    gcd = 'off',
-    cooldown = 60,
-    passive = true,
-    toggle = 'potions',
-    usable = function ()
-        if not toggle.potions then return false end
-
-        local pName = args.ModName or args.name or class.potion
-
-        local potion = class.potions[ pName ]
-
-        if not potion or GetItemCount( potion.item ) == 0 then return false end
-        return true
-    end
-} )
-
-modifyAbility( 'potion', 'cooldown', function ( x )
-    if time > 0 then return 3600 end
-    return x
-end )
-
-addHandler( 'potion', function ()
-    local potion = args.ModName or args.name or class.potion
-    local potion = class.potions[ potion ]
-    
-    if potion then
-        applyBuff( potion.buff, potion.duration or 25 )
-    end
-    
-end )
-
-
-addAbility( "use_items", {
-    id = -99,
-    name = "|cff00ccff[Use Items]|r",
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-
-addAbility( "draught_of_souls", {
-    id = -101,
-    item = 140808,
-    spend = 0,
-    cast = 0,
-    cooldown = 80,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )
-
-addHandler( "draught_of_souls", function ()
-    applyBuff( "fel_crazed_rage", 3 )
-    setCooldown( "global_cooldown", 3 )
-end )
-
-
-addAbility( "faulty_countermeasure", {
-    id = -102,
-    item = 137539,
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "sheathed_in_frost", 214962, "duration", 30 )
-
-addHandler( "faulty_countermeasure", function ()
-    applyBuff( "sheathed_in_frost", 30 )
-end )
-
-
-addUsableItem( "feloiled_infernal_machine", 144482 )
-
-addAbility( "feloiled_infernal_machine", {
-    id = -103,
-    item = 144482,
-    spend = 0,
-    cast = 0,
-    cooldown = 80,
-    gcd = 'off',
-    toggle = 'cooldowns'
-} )
-
-addAura( "grease_the_gears", 238534, "duration", 20 )
-
-addHandler( "feloiled_infernal_machine", function ()
-    applyBuff( "grease_the_gears" )
-end )
-
-
-addAbility( "forgefiends_fabricator", {
-    id = -104,
-    item = 151963,
-    spend = 0,
-    cast = 0,
-    cooldown = 30,
-    gcd = 'off',
-} )
-
-
-addUsableItem( "horn_of_valor", 133642 )
-
-addAbility( "horn_of_valor", {
-    id = -105,
-    item = 133642,
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "valarjars_path", 215956, "duration", 30 )
-
-addHandler( "horn_of_valor", function ()
-    applyBuff( "valarjars_path" )
-end )
-
-
-addUsableItem( "kiljaedens_burning_wish", 144259 )
-
-addAbility( "kiljaedens_burning_wish", {
-    id = -106,
-    item = 144259,
-    spend = 0,
-    cast = 0,
-    cooldown = 75,
-    texture = 1357805,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-
-addAbility( "might_of_krosus", {
-    id = -107,
-    item = 140799,
-    spend = 0,
-    cast = 0,
-    cooldown = 30,
-    gcd = 'off',
-} )
-
-addHandler( "might_of_krosus", function ()
-    if active_enemies > 3 then setCooldown( "might_of_krosus", 15 ) end
-end )
-
-
-addUsableItem( "ring_of_collapsing_futures", 142173 )
-
-addAbility( "ring_of_collapsing_futures", {
-    id = -108,
-    item = 142173,
-    spend = 0,
-    cast = 0,
-    cooldown = 15,
-    gcd = 'off',
-    ready = function () return debuff.temptation.remains end,
-} )
-
-addAura( 'temptation', 234143, 'duration', 30, 'max_stack', 20 )
-
-addHandler( "ring_of_collapsing_futures", function ()
-    applyDebuff( "player", "temptation", 30, debuff.temptation.stack + 1 )
-end )
-
-
-addUsableItem( "specter_of_betrayal", 151190 )
-
-addAbility( "specter_of_betrayal", {
-    id = -109,
-    item = 151190,
-    spend = 0,
-    cast = 0,
-    cooldown = 45,
-    gcd = 'off',
-} )
-
-
-addUsableItem( "tiny_oozeling_in_a_jar", 137439 )
-
-addAbility( "tiny_oozeling_in_a_jar", {
-    id = -110,
-    item = 137439,
-    spend = 0,
-    cast = 0,
-    cooldown = 20,
-    gcd = "off",
-    usable = function () return buff.congealing_goo.stack == 6 end,
-} )
-
-addAura( "congealing_goo", 215126, "duration", 60, "max_stack", 6 )
-
-addHandler( "tiny_oozeling_in_a_jar", function ()
-    removeBuff( "congealing_goo" )
-end )
-
-
-addUsableItem( "umbral_moonglaives", 147012 )
-
-addAbility( "umbral_moonglaives", {
-    id = -111,
-    item = 147012,
-    spend = 0,
-    cast = 0,
-    cooldown = 90,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-
-addUsableItem( "unbridled_fury", 139327 )
-
-addAbility( "unbridled_fury", {
-    id = -112,
-    item = 139327,
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "wild_gods_fury", 221695, "duration", 30 )
-
-addHandler( "unbridled_fury", function ()
-    applyBuff( "unbridled_fury" )
-end )
-
-
-addUsableItem( "vial_of_ceaseless_toxins", 147011 )
-
-addAbility( "vial_of_ceaseless_toxins", {
-    id = -113,
-    item = 147011,
-    spend = 0,
-    cast = 0,
-    cooldown = 60,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-addAura( "ceaseless_toxin", 242497, "duration", 20 )
-
-addHandler( "vial_of_ceaseless_toxins", function ()
-    applyDebuff( "target", "ceaseless_toxin", 20 )
-end )
-
-
-addUsableItem( "tome_of_unraveling_sanity", 147019 )
-
-addAbility( "tome_of_unraveling_sanity", {
-    id = -114,
-    item = 147019,
-    spend = 0,
-    cast = 0,
-    cooldown = 60,
-    gcd = "off",
-    toggle = "cooldowns",
-} )
-
-addAura( "insidious_corruption", 243941, "duration", 12 )
-addAura( "extracted_sanity", 243942, "duration", 24 )
-
-addHandler( "tome_of_unraveling_sanity", function ()
-    applyDebuff( "target", "insidious_corruption", 12 )
-end )
-
-
-class.itemsInAPL = {}
-
--- If an item is handled by a spec's APL, drop it from Use Items.
-function ns.registerItem( key, spec )
-    if not key or not spec then return end
-
-    class.itemsInAPL[ spec ] = class.itemsInAPL[ spec ] or {}
-
-    class.itemsInAPL[ spec ][ key ] = not class.itemsInAPL[ spec ][ key ]
-end
-
-
-addAbility( 'variable', {
-    id = -5,
-    name = '|cff00ccff[Store Value]|r',
-    spend = 0,
-    cast = 0,
-    gcd = 'off',
-    cooldown = 0,
-} ) ]]
-    
     
 class.trinkets = {
     [0] = { -- for when nothing is equipped.
@@ -3175,14 +2180,22 @@ do
                 for i, buff in ipairs( buffs ) do
                     buff = GetSpellInfo( buff )
                     if buff then
-                        addAura( ns.formatKey( buff ), i, 'stat', v.stat, v.duration and "duration", v.duration )
+                        all:RegisterAura( ns.formatKey( buff ), {
+                            id = i,
+                            stat = v.stat, 
+                            duration = v.duration
+                        } )
                         class.trinkets[ k ].buff = ns.formatKey( buff )
                     end
                 end
             elseif type( buffs ) == 'number' then
                 local buff = GetSpellInfo( buffs )
                 if buff then
-                    addAura( ns.formatKey( buff ), buffs, 'stat', v.stat, v.duration and "duration", v.duration )
+                    all:RegisterAura( ns.formatKey( buff ), {
+                        id = i,
+                        stat = v.stat, 
+                        duration = v.duration
+                    } )
                     class.trinkets[ k ].buff = ns.formatKey( buff )
                 end
             end

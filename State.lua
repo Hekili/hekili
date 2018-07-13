@@ -3255,6 +3255,9 @@ setmetatable( state.toggle, mt_toggle )
 setmetatable( state.totem, mt_totem )
 
 
+
+local all = class.specs[ 0 ]
+
 -- 04072017: Let's go ahead and cache aura information to reduce overhead.
 local autoAuraKey = setmetatable( {}, {
     __index = function( t, k )
@@ -3298,10 +3301,14 @@ local autoAuraKey = setmetatable( {}, {
         end
 
         -- Store the aura and save the key if we can.
-        if ns.addAura then
-            ns.addAura( key, k, 'name', name )
-            t[k] = key
+        if not all then all = class.specs[ 0 ] end
+        if all then
+            all:RegisterAura( key, {
+                id = k,
+                name = name
+            } )
         end
+        t[k] = key
         
         return t[k]
     end
