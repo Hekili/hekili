@@ -291,6 +291,12 @@ local HekiliSpecMixin = {
             end )
         end
 
+        if data.meta then
+            for k, v in pairs( data.meta ) do
+                if type( v ) == 'function' then data.meta[ k ] = setfenv( v, state ) end
+            end
+        end
+
         -- default values.
         -- none.
         if not data.cooldown then data.cooldown = 0 end

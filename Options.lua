@@ -6814,14 +6814,14 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Removed max:X check (not available in emulation) -- (" .. times .. "x)." )
     end
     
-    i, times = i:gsub( "buff.out_of_range.up", "target.in_range" )
+    i, times = i:gsub( "buff.out_of_range.up", "!target.in_range" )
     if times > 0 then
-        table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.up' with 'target.in_range' (" .. times .. "x)." )
+        table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.up' with '!target.in_range' (" .. times .. "x)." )
     end
     
-    i, times = i:gsub( "buff.out_of_range.down", "!target.in_range" )
+    i, times = i:gsub( "buff.out_of_range.down", "target.in_range" )
     if times > 0 then
-        table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.down' with '!target.in_range' (" .. times .. "x)." )
+        table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.down' with 'target.in_range' (" .. times .. "x)." )
     end
     
     i, times = i:gsub( "movement.distance", "target.distance" )
@@ -6829,10 +6829,10 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Replaced 'movement.distance' with 'target.distance' (" .. times .. "x)." )
     end
     
-    i, times = i:gsub( "buff.metamorphosis.extended_by_demonic", "buff.demonic_extended_metamorphosis.up" )
+    --[[ i, times = i:gsub( "buff.metamorphosis.extended_by_demonic", "buff.demonic_extended_metamorphosis.up" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.metamorphosis.extended_by_demonic' with 'buff.demonic_extended_metamorphosis.up' (" .. times .. "x)." )
-    end
+    end ]]
 
     i, times = i:gsub( "buff.active_uas", "unstable_afflictions" )
     if times > 0 then

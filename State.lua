@@ -1861,16 +1861,16 @@ end
 -- Table of default handlers for specific ability cooldowns.
 local mt_default_cooldown = {
     __index = function( t, k )
+        local ability = t.key and class.abilities[ t.key ]
 
-        if rawget( t, 'meta' ) and t.meta[ k ] then
-            return t.meta[ k ]()
+        if rawget( ability, 'meta' ) and ability.meta[ k ] then
+            return ability.meta[ k ]()
         end
 
-        local ability = t.key and class.abilities[ t.key ]
         local GetSpellCooldown = _G.GetSpellCooldown
         local profile = Hekili.DB.profile
         local id = ability.id
-
+       
         if ability and ability.item then
             GetSpellCooldown = _G.GetItemCooldown
             id = ability.item
