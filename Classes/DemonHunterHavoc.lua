@@ -49,7 +49,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         gladiators_medallion = 3426, -- 208683
         relentless = 3427, -- 196029
         adaptation = 3428, -- 214027
-
+        
         mana_break = 813, -- 203704
         detainment = 812, -- 205596
         rain_from_above = 811, -- 206803
@@ -67,12 +67,37 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     spec:RegisterAuras( {
         blade_dance = {
             id = 188499,
+            duration = 1,
+            max_stack = 1,
+        },
+        blur = {
+            id = 212800,
+            duration = 10,
+            max_stack = 1,
         },
         chaos_brand = {
-            id = 255260,
+            id = 1490,
+            duration = 60,
+            max_stack = 1,
+        },
+        chaos_nova = {
+            id = 179057,
+            duration = 2,
+            type = "Magic",
+            max_stack = 1,
+        },
+        dark_slash = {
+            id = 258860,
+            duration = 8,
+            max_stack = 1,
         },
         darkness = {
             id = 196718,
+            duration = 7.917,
+            max_stack = 1,
+        },
+        death_sweep = {
+            id = 210152,
         },
         demon_blades = {
             id = 203555,
@@ -89,28 +114,95 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         fel_barrage = {
             id = 258925,
         },
+        fel_eruption = {
+            id = 211881,
+            duration = 4,
+            max_stack = 1,
+        },
         glide = {
             id = 131347,
+            duration = 3600,
+            max_stack = 1,
         },
         immolation_aura = {
             id = 258920,
+            duration = 10,
+            max_stack = 1,
+        },
+        master_of_the_glaive = {
+            id = 213405,
+            duration = 6,
+            max_stack = 1,
+        },
+        metamorphosis = {
+            id = 162264,
+            duration = 30,
+            max_stack = 1,
+        },
+        momentum = {
+            id = 208628,
+            duration = 6,
+            max_stack = 1,
+        },
+        nemesis = {
+            id = 206491,
+            duration = 60,
+            max_stack = 1,
         },
         netherwalk = {
             id = 196555,
+            duration = 5,
+            max_stack = 1,
+        },
+        prepared = {
+            id = 203650,
+            duration = 10,
+            max_stack = 1,
         },
         shattered_souls = {
             id = 178940,
         },
         spectral_sight = {
             id = 188501,
+            duration = 10,
+            max_stack = 1,
+        },
+        torment = {
+            id = 281854,
+            duration = 3,
+            max_stack = 1,
+        },
+        trail_of_ruin = {
+            id = 258883,
+            duration = 4,
+            max_stack = 1,
         },
         vengeful_retreat = {
             id = 198793,
+            duration = 3,
+            max_stack = 1,
         },
     } )
 
     -- Abilities
     spec:RegisterAbilities( {
+        annihilation = {
+            id = 201427,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 40,
+            spendType = "fury",
+            
+            startsCombat = true,
+            texture = 1303275,
+            
+            handler = function ()
+            end,
+        },
+        
+
         blade_dance = {
             id = 188499,
             cast = 0,
@@ -124,6 +216,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1305149,
             
             handler = function ()
+                -- applies blade_dance (188499)
             end,
         },
         
@@ -140,6 +233,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1305150,
             
             handler = function ()
+                -- applies blur (212800)
+                -- applies chaos_brand (1490)
             end,
         },
         
@@ -150,7 +245,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 60,
             gcd = "spell",
             
-            spend = 0,
+            spend = 30,
             spendType = "fury",
             
             toggle = "cooldowns",
@@ -159,6 +254,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 135795,
             
             handler = function ()
+                -- applies chaos_nova (179057)
             end,
         },
         
@@ -176,6 +272,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1305152,
             
             handler = function ()
+                -- applies chaos_brand (1490)
+                -- removes eye_beam (198013)
             end,
         },
         
@@ -204,6 +302,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 136189,
             
             handler = function ()
+                -- applies dark_slash (258860)
             end,
         },
         
@@ -224,6 +323,23 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         
 
+        death_sweep = {
+            id = 210152,
+            cast = 0,
+            cooldown = 9,
+            gcd = "spell",
+            
+            spend = 35,
+            spendType = "fury",
+            
+            startsCombat = true,
+            texture = 1309099,
+            
+            handler = function ()
+            end,
+        },
+        
+
         demons_bite = {
             id = 162243,
             cast = 0,
@@ -234,6 +350,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 135561,
             
             handler = function ()
+                -- applies blur (212800)
             end,
         },
         
@@ -265,6 +382,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1305156,
             
             handler = function ()
+                -- applies eye_beam (198013)
+                -- applies metamorphosis (162264)
             end,
         },
         
@@ -281,6 +400,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 2065580,
             
             handler = function ()
+                -- applies fel_barrage (258925)
+                -- applies chaos_brand (1490)
             end,
         },
         
@@ -298,6 +419,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1118739,
             
             handler = function ()
+                -- applies fel_eruption (211881)
             end,
         },
         
@@ -314,6 +436,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1247261,
             
             handler = function ()
+                -- applies momentum (208628)
             end,
         },
         
@@ -356,6 +479,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1344649,
             
             handler = function ()
+                -- applies immolation_aura (258920)
             end,
         },
         
@@ -386,6 +510,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1247262,
             
             handler = function ()
+                -- applies metamorphosis (162264)
             end,
         },
         
@@ -402,6 +527,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 236299,
             
             handler = function ()
+                -- applies nemesis (206491)
             end,
         },
         
@@ -418,6 +544,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 463284,
             
             handler = function ()
+                -- applies netherwalk (196555)
             end,
         },
         
@@ -432,6 +559,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1247266,
             
             handler = function ()
+                -- applies spectral_sight (188501)
             end,
         },
         
@@ -448,12 +576,15 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1305159,
             
             handler = function ()
+                -- applies master_of_the_glaive (213405)
+                -- removes spectral_sight (188501)
+                -- removes metamorphosis (200166)
             end,
         },
         
 
         torment = {
-            id = 185245,
+            id = 281854,
             cast = 0,
             cooldown = 8,
             gcd = "spell",
@@ -476,20 +607,9 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1348401,
             
             handler = function ()
-            end,
-        },
-        
-
-        wartime_ability = {
-            id = 264739,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 1518639,
-            
-            handler = function ()
+                -- applies vengeful_retreat (198813)
+                -- applies prepared (203650)
+                -- removes torment (281854)
             end,
         },
     } )

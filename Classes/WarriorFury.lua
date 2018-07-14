@@ -434,8 +434,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
         execute = {
             id = 280735,
+            known = 5308,
             cast = 0,
-            cooldown = function () return 6 * haste end,
+            cooldown = 6,
+            hasteCD = true,
             gcd = "spell",
             
             spend = -20,
@@ -444,9 +446,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 135358,
             
-            usable = function () return buff.sudden_death.up or ( target.health.pct < ( talent.massacre.enabled and 0.35 or 0.2 ) ) end,
+            usable = function () return buff.sudden_death.up or buff.stone_heart.up or target.health.pct < ( talent.massacre.enabled and 35 or 20 ) end,
             handler = function ()
-                removeBuff( "sudden_death" )
+                if buff.stone_heart.up then removeBuff( "stone_heart" )
+                else removeBuff( "sudden_death" ) end
             end,
         },
         
@@ -638,6 +641,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 end
 
                 applyBuff( "enrage" )
+                if talent.endless_rage.enabled then gain( 6, "rage" ) end
 
                 if level < 116 and set_bonus.tier21_2pc == 1 then applyDebuff( "target", "slaughter" ) end
 

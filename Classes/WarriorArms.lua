@@ -491,7 +491,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 135358,
             
-            usable = function () return buff.sudden_death.up or target.health.pct < ( talent.massacre.enabled and 35 or 20 ) end,
+            usable = function () return buff.sudden_death.up or buff.stone_heart.up or target.health.pct < ( talent.massacre.enabled and 35 or 20 ) end,
             handler = function ()
                 if not buff.sudden_death.up and not buff.stone_heart.up then
                     local overflow = min( rage.current, 20 )
