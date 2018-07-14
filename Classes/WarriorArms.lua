@@ -228,8 +228,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 10,
             max_stack = 10
          } ) -- fury 4pc.
-        -- arms 2pc: CDR to bladestorm/ravager from colossus smash.
-        -- arms 4pc: 2 auto-MS to nearby enemies when you ravager/bladestorm, not modeled.
 
     spec:RegisterGear( 'tier21', 152178, 152179, 152180, 152181, 152182, 152183 )
         spec:RegisterAura( "war_veteran", {
@@ -237,18 +235,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 8
          } ) -- arms 2pc.
         spec:RegisterAura( "weighted_blade", { 
-            id = 253383, 
+            id = 253383,  
             duration = 1,
             max_stack = 3
         } ) -- arms 4pc.
-        spec:RegisterAura( "slaughter", {
-            id = 253384,
-            duration = 4
-        } ) -- fury 2pc dot.
-        spec:RegisterAura( "outrage", {
-            id = 253385,
-            duration = 8
-         } ) -- fury 4pc.
 
     spec:RegisterGear( "ceannar_charger", 137088 )
     spec:RegisterGear( "timeless_stratagem", 143728 )
@@ -852,13 +842,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             talent = "warbreaker",
             
-            handler = function ()
+            handler = function ()                
                 if talent.in_for_the_kill.enabled then
                     if buff.in_for_the_kill.down then
                         stat.haste = stat.haste + ( target.health.pct < 0.2 and 0.2 or 0.1 )
                     end
                     applyBuff( "in_for_the_kill" )
                 end
+
+                if level < 116 then
+                    if set_bonus.tier21_2pc == 1 then applyBuff( "war_veteran" ) end
+                    if set_bonus.tier20_2pc == 1 then
+                        if talent.ravager.enabled then setCooldown( "ravager", max( 0, cooldown.ravager.remains - 2 ) )
+                        else setCooldown( "bladestorm", max( 0, cooldown.bladestorm.remains - 3 ) ) end
+                    end
+                end
+
                 applyDebuff( "target", "colossus_smash" )
             end,
         },
