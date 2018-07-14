@@ -386,7 +386,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132337,
             
-            usable = function () return target.distance > 10 end,
+            usable = function () return target.distance > 10 and ( query_time - max( action.charge.lastCast, action.heroic_leap.lastCast ) > gcd ) end,
             handler = function ()
                 applyDebuff( "target", "charge" )
                 if talent.furious_charge.enabled then applyBuff( "furious_charge" ) end
@@ -483,7 +483,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = false,
             texture = 236171,
 
-            usable = function () return target.distance > 10 end,            
+            usable = function () return target.distance > 10 and ( query_time - max( action.charge.lastCast, action.heroic_leap.lastCast ) > gcd ) end,
             handler = function ()
                 setDistance( 5 )
                 if talent.bounding_stride.enabled then applyBuff( "bounding_stride" ) end
