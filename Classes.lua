@@ -1425,10 +1425,10 @@ all:RegisterGear( 'eonars_compassion', 154172 )
 all:RegisterAura( 'mark_of_eonar', {
     id = 256824,
     duration = 12
- } )
+} )
 all:RegisterAura( 'eonars_verdant_embrace', {
     id = function ()
-        if class.file == "SHAMAN" then return x end
+        if class.file == "SHAMAN" then return 257475 end
         if class.file == "DRUID" then return 257470 end
         if class.file == "MONK" then return 257471 end
         if class.file == "PALADIN" then return 257472 end
