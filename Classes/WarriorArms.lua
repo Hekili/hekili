@@ -12,10 +12,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local spec = Hekili:NewSpecialization( 71 )
 
     local base_rage_gen, arms_rage_mult = 1.75, 4.286
-    local offhand_mod = 0.80
 
     spec:RegisterResource( Enum.PowerType.Rage, {
-        mainhand_arms = {
+        mainhand = {
             last = function ()
                 local swing = state.combat == 0 and state.now or state.swings.mainhand
                 local t = state.query_time
@@ -173,6 +172,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 3600,
             max_stack = 1,
         },
+        stone_heart = {
+            id = 225947,
+            duration = 10,
+        },
         sudden_death = {
             id = 52437,
             duration = 10,
@@ -215,6 +218,67 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     end )
 
 
+    spec:RegisterGear( 'tier20', 147187, 147188, 147189, 147190, 147191, 147192 )
+        spec:RegisterAura( "raging_thirst", {
+            id = 242300, 
+            duration = 8
+         } ) -- fury 2pc.
+        spec:RegisterAura( "bloody_rage", {
+            id = 242952,
+            duration = 10,
+            max_stack = 10
+         } ) -- fury 4pc.
+        -- arms 2pc: CDR to bladestorm/ravager from colossus smash.
+        -- arms 4pc: 2 auto-MS to nearby enemies when you ravager/bladestorm, not modeled.
+
+    spec:RegisterGear( 'tier21', 152178, 152179, 152180, 152181, 152182, 152183 )
+        spec:RegisterAura( "war_veteran", {
+            id = 253382,
+            duration = 8
+         } ) -- arms 2pc.
+        spec:RegisterAura( "weighted_blade", { 
+            id = 253383, 
+            duration = 1,
+            max_stack = 3
+        } ) -- arms 4pc.
+        spec:RegisterAura( "slaughter", {
+            id = 253384,
+            duration = 4
+        } ) -- fury 2pc dot.
+        spec:RegisterAura( "outrage", {
+            id = 253385,
+            duration = 8
+         } ) -- fury 4pc.
+
+    spec:RegisterGear( "ceannar_charger", 137088 )
+    spec:RegisterGear( "timeless_stratagem", 143728 )
+    spec:RegisterGear( "kazzalax_fujiedas_fury", 137053 )
+        spec:RegisterAura( "fujiedas_fury", {
+            id = 207776,
+            duration = 10,
+            max_stack = 4 
+        } )
+    spec:RegisterGear( "mannoroths_bloodletting_manacles", 137107 ) -- NYI.
+    spec:RegisterGear( "najentuss_vertebrae", 137087 )
+    spec:RegisterGear( "valarjar_berserkers", 151824 )
+    spec:RegisterGear( "ayalas_stone_heart", 137052 )
+        spec:RegisterAura( "stone_heart", { id = 225947,
+            duration = 10
+        } )
+    spec:RegisterGear( "the_great_storms_eye", 151823 )
+        spec:RegisterAura( "tornados_eye", {
+            id = 248142, 
+            duration = 6, 
+            max_stack = 6
+        } )
+    spec:RegisterGear( "archavons_heavy_hand", 137060 )
+    spec:RegisterGear( "weight_of_the_earth", 137077 ) -- NYI.
+
+
+    spec:RegisterGear( "soul_of_the_battlelord", 151650 )
+
+
+
     -- Abilities
     spec:RegisterAbilities( {
         avatar = {
@@ -248,6 +312,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = false,
             texture = 132333,
             
+            usable = function () return buff.battle_shout.remains < 10 end,
             handler = function ()
                 applyBuff( "battle_shout" )
             end,
@@ -267,6 +332,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 applyBuff( "berserker_rage" )
+                if level < 116 and equipped.ceannar_charger then gain( 8, "rage" ) end
             end,
         },
         
@@ -285,8 +351,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             notalent = "ravager",
             
             handler = function ()
-                -- applies bladestorm (227847)
-                -- applies deep_wounds (262115)
+                applyBuff( "bladestorm" )
+                if level < 116 and equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
             end,
         },
         
@@ -346,6 +412,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 applyDebuff( "target", "colossus_smash" )
+
+                if level < 116 then
+                    if set_bonus.tier21_2pc == 1 then applyBuff( "war_veteran" ) end
+                    if set_bonus.tier20_2pc == 1 then
+                        if talent.ravager.enabled then setCooldown( "ravager", max( 0, cooldown.ravager.remains - 2 ) )
+                        else setCooldown( "bladestorm", max( 0, cooldown.bladestorm.remains - 3 ) ) end
+                    end
+                end
+
                 if talent.in_for_the_kill.enabled then
                     applyBuff( "in_for_the_kill" )
                     stat.haste = state.haste + ( target.health.pct < 20 and 0.2 or 0.1 )
@@ -416,6 +491,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             gcd = "spell",
             
             spend = function ()
+                if buff.sudden_death.up then return 0 end
+                if buff.stone_heart.up then return 0 end
                 if buff.deadly_calm.up then return 0 end
                 return 20
             end,
@@ -424,11 +501,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 135358,
             
-            usable = function () return target.health.pct < ( talent.massacre.enabled and 35 or 20 ) end,
+            usable = function () return buff.sudden_death.up or target.health.pct < ( talent.massacre.enabled and 35 or 20 ) end,
             handler = function ()
-                local overflow = min( rage.current, 20 )
-                spend( overflow, "rage" )
-                gain( 0.3 * ( 20 + overflow ), "rage" )
+                if not buff.sudden_death.up and not buff.stone_heart.up then
+                    local overflow = min( rage.current, 20 )
+                    spend( overflow, "rage" )
+                    gain( 0.3 * ( 20 + overflow ), "rage" )
+                end
+                if buff.stone_heart.up then removeBuff( "stone_heart" )
+                else removeBuff( "sudden_death" ) end
 
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
             end,
@@ -460,7 +541,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         heroic_leap = {
             id = 6544,
             cast = 0,
-            charges = 1,
+            charges = function () return ( level < 116 and equipped.timeless_strategem ) and 3 or 1 end,
             cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
             recharge = function () return talent.bounding_stride.enabled and 30 or 45 end,
             gcd = "spell",
@@ -538,7 +619,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             spend = function ()
                 if buff.deadly_calm.up then return 0 end
-                return 30
+                return 30 - ( ( level < 116 and equipiped.archavons_heavy_hand ) and 8 or 0 )
             end,
             spendType = "rage",
             
@@ -550,6 +631,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyDebuff( "target", "deep_wounds" )
                 removeBuff( "overpower" )
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 6, "rage" ) end
+                if level < 116 and set_bonus.tier21_4pc == 1 then addStack( "weighted_blade", 12, 1 ) end
             end,
         },
         
@@ -624,6 +706,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             toggle = "cooldowns",
             
             handler = function ()
+                if ( level < 116 and equipped.the_great_storms_eye ) then addStack( "tornados_eye", 6, 1 ) end
                 -- need to plan out rage gen.
             end,
         },
@@ -643,6 +726,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 132155,
+
+            talent = "rend",
             
             handler = function ()
                 applyDebuff( "target", "rend" )
@@ -685,6 +770,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132340,
             
+            recheck = function () return rage.time_to_30 end,
             handler = function ()
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
             end,
@@ -801,7 +887,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
     spec:RegisterOptions( {
-        enabled = false,
+        enabled = true,
 
         aoe = 2,
     
@@ -811,6 +897,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         damage = true,
         damageExpiration = 8,
     
-        package = nil,
+        package = "Arms",
     } )
+
+    spec:RegisterPack( "Arms", 20180714.1045, [[dm0JJaqivkEKkL0MePgfLItrP0QuPeEfPKzrkClvkr7IKFrkAyIOoMiYYev5ziQmnrfDnkv12uPuFtuvnorv5CIkuVJsvkMNOs3dr2hLkhKsvYcjL6HIkOUiLQuzJuQsvJuub5KIkKvQuzNiklvub8uvmvvQ2lO)QWGjCyQwmL8yIMmfxg1Mr4ZkLrtQonKvlQa9ArsZgQBRKDRQFlz4IYXPuflhPNlmDPUUI2UiX3vjJhrvNxPQ1tPkLMViSFGHjbVdpgVziz5LCs5l58NuovjLCoTFoZXWtVpJHNmxMQVXWZ7lgESx0vapz(EC5g4D4jQjvYWJ9Ik1rRgrRaESMiCNJEOf8y8MHKLxYjLVKZFs5uLuY50(KlFWJpB9Icp2lQuhTAeTc4XWHeEURJcGafaHdezUmvFJbIIaiCzJQhiWOOdGGOOaroeNkcJuGDGD31rbqC5bqKrRuqg2aew7bc7fvQJwnIwbq4Vbiqbq4aXvrt9wI(BzgT2OCekWoWU76mqupEpqi19FJdGO19giYraHn5qCQimYwGq3tHbILByGWPmq0fqKnBG4K6eJJmmQBMceorZuGihUWveZaiolp0bc0dezuurr9EnaIOacudew8ZeOoaccATaIwNbIC4dqyyRjbHcSdSZEFrbIwNbc7fDfarKXsKJr2B9gvVgarociUqymqyXaXvrtf9Bar9abALrRuq)gqKd4BmqSkdJr)gqqqRfqCXEw9arCH(Tqbearo6bIwNbIf7FJwSgaX(AcelFpqusPhO6DmEpqemdehSVaISkdiMzaXLo)abLDPo630mZJa9Bab5sgiYb8n2Edq06Oai09Sm(dG4sNFGWbIl2ZQhiIl0VbexEaem5ZyzZgGWIjkkdeTode8VHEgiwUHbcklR1IFJ3O6dnacRzdexEaegg77zdqquuGiQfdeu2J6vWdgfDaVdpb63W8OD6g3W7qYscEhE43TWSbQn8iPOMPihEO8YrFae5scimtQ3O6bIBbqKSICarAGWWwtccLSWveZyelp0vM66Hhx2O6Hhk)gydjlp4D4HF3cZgO2WJKIAMIC4rwf2uxVYc7go6IUuuE5Opac7aIBdePbcBaczvytD9kzHRiMXiwEORO8YrFae5ce5bejsae2aeS9mrzzSrDXOn9EueJwNhStBDGinqiRcBQRxPZ0cjhy2ZuuE5OpaICbI8acBbcBHhx2O6Hhd7g8(H0XlydjJCW7Wd)UfMnqTHhjf1mf5WJ1KGqjlCfXmgXYdDLPUE4XLnQE4rw4kIzmILh6WgswoH3Hh(DlmBGAdpskQzkYHhQVXarUar(tgisde2aeYQWM66vg2n49dPJxkkVC0haHDab5aIejaIBaI2X83kd7g8(H0Xlf)UfMnaHTWJlBu9WtK6eJJmmQBMcBiz2hEhE43TWSbQn8iPOMPihEy7zIYYyJ6IrB69OigTopyN26arAGWWwtccLSWveZyelp0vM66bI0aHSkSPUELSWveZyelp0vuE5Opac7aI8bePbIBaImkNYytAujPKfUIygJy5Ho84Ygvp8OZ0cjhy2ZGnKSBdVdp87wy2a1gEKuuZuKdpwtccvmng(hg2BDfLDzdejsaewtccv01ZdD2PTIYUSHhx2O6HhM8SC2mSHKLF4D4HF3cZgO2WJKIAMIC4XWwtccLSWveZyelp0vuE5Opac7aICQSpqKgiYOCkJnPrLKAv02XJOPOuzGinqydqCdqynjiug2n49dPJxQzgqKibqCdq0oM)wzy3G3pKoEP43TWSbiSfECzJQhESWUHJUOlydjlFW7Wd)UfMnqTHhjf1mf5WJHTMeekzHRiMXiwEORMzarAGWgGqwf2uxVYWUbVFiD8sr5LJ(aiSdiUnqKibqCdq0oM)wzy3G3pKoEP43TWSbiSfECzJQhEOEk(gtHnKSCm8o84Ygvp8SkA74r0uuQm8WVBHzduBydjlPKH3Hhx2O6HNkfMMvxmfE43TWSbQnSHKLusW7Wd)UfMnqTHhjf1mf5Wt7y(BfbttPOJIyy5DJzf)UfMnarAGWgGG6BmqyhjGGCjdejsaeg2AsqOKfUIygJy5HUAMbePbczvytD9aHTWJlBu9WZLoIIVqVb2qYskp4D4HF3cZgO2WJKIAMIC45gGODm)TIGPPu0rrmS8UXSIF3cZgGinqydqq9ngiSJeqqUKbIejacdBnjiuYcxrmJrS8qxr5LJ(aiSdiKvHn11RwfTD8iAkkvwr5LJ(aisdeYQWM66vRI2oEenfLkRO8YrFae2be5PSpqyl84Ygvp8eyFbBydpm5z5Sz4DizjbVdp87wy2a1gEKuuZuKdpuE5OpaICjbeMj1Bu9aXTaiswroGinqyyRjbHsw4kIzmILh6ktD9WJlBu9WdLFdSHKLh8o8WVBHzduB4rsrntro8iRcBQRxzHDdhDrxkkVC0haHDaXTbI0aHnaHSkSPUELSWveZyelp0vuE5OpaICbI8aIejacBac2EMOSm2OUy0MEpkIrRZd2PToqKgiKvHn11R0zAHKdm7zkkVC0harUarEaHTaHTWJlBu9WJHDdE)q64fSHKro4D4HF3cZgO2WJKIAMIC4XAsqOKfUIygJy5HUYuxp84Ygvp8ilCfXmgXYdDydjlNW7Wd)UfMnqTHhjf1mf5Wd13yGixGi)jdePbcBacBaczvytD9kd7g8(H0XlfLxo6dGWoGGCarAG4gGWAsqOmSBW7hshVuZmGWwGircG4gGODm)TYWUbVFiD8sXVBHzdqyl84Ygvp8ePoX4idJ6MPWgsM9H3Hh(DlmBGAdpskQzkYHh2EMOSm2OUy0MEpkIrRZd2PToqKgimS1KGqjlCfXmgXYdDLPUEGinqiRcBQRxjlCfXmgXYdDfLxo6dGWoGiFarAG4gGiJYPm2KgvskzHRiMXiwEOdpUSr1dp6mTqYbM9mydj72W7Wd)UfMnqTHhjf1mf5WJHTMeekzHRiMXiwEORO8YrFae2be5uzFGinqq9ngiYfiYFYarAGWgG4gGWAsqOmSBW7hshVuZmGircG4gGODm)TYWUbVFiD8sXVBHzdqyl84Ygvp8yHDdhDrxWgsw(H3Hh(DlmBGAdpskQzkYHhdBnjiuYcxrmJrS8qxnZaI0aHnaHSkSPUELHDdE)q64LIYlh9bqyhqCBGircG4gGODm)TYWUbVFiD8sXVBHzdqyl84Ygvp8q9u8nMcBiz5dEhE43TWSbQn8iPOMPihESMeeQkfMMvxmvfTltfiibe5bePbcBaI2X83kdLDZ7Zn9wXVBHzdqKibqW2ZeLLXgLtL6Ek1hdD2tz)q3Fdqyl84Ygvp8SkA74r0uuQmSHKLJH3Hhx2O6HNkfMMvxmfE43TWSbQnSHKLuYW7Wd)UfMnqTHhjf1mf5Wd13yGWosarotgisKaimS1KGqjlCfXmgXYdD1mdisKaiSMeeQyAm8pmS36kk7YgisKaiSMeeQORNh6StBfLDzdpUSr1dpm5z5SzydB4XWe(e3W7qYscEhECzJQhE8zxdVBxMk8WVBHzduBydjlp4D4XLnQE4rQ70ngE43TWSbQnSHKro4D4HF3cZgO2WJlBu9Wdf9BJIyilm2Zc0VniM9KYb8iPOMPihEUbiSMeeQMxzT3O6vZm459fdpu0VnkIHSWyplq)2Gy2tkhWgswoH3Hh(DlmBGAdpskQzkYHhdBnjiuYcxrmJrS8qxzQRhECzJQhEWOn9og5GtZ2I)g2qYSp8o84Ygvp8mdEGAEfWd)UfMnqTHnKSBdVdp87wy2a1gEKuuZuKdpg2AsqOKfUIygJy5HUAMbpUSr1dpw4QmdIjDpSHKLF4D4HF3cZgO2WJKIAMIC4XWwtccLSWveZyelp0vZm4XLnQE4XIPbttf9BWgsw(G3Hh(DlmBGAdpskQzkYHhdBnjiuYcxrmJrS8qxzQRhisdeYQWM66vRI2oEenfLkRO8YrFae2bejPSpqKgiO(gde5ceKlz4XLnQE4XPs)5rxuk)nSHKLJH3Hh(DlmBGAdpskQzkYHNiJX4r70nUd1LoIIVqVbiSdiscisde2aeYQWM66vYcxrmJrS8qxr5LJ(aiYfiYdisKaiSbiKvHn11R0zAHKdm7zkkVC0harUarEarAGqwf2uxVsw4kIzmILh6kkVC0haHDar(aI0aHHTMeekzHRiMXiwEORm11de2ce2cpUSr1dpXfZzOFBenfLkhWgswsjdVdp87wy2a1gEKuuZuKdp2aeTJ5Vvlpcxszf)UfMnarAGOD6g3kD2XTUkt2arUab5SpqylqKibq0oDJBLo74wxLjBGixGiVKHhx2O6Hh68hUSr1pWOOHhmk6X7lgEyYZYzZWgswsjbVdp87wy2a1gECzJQhEOZF4Ygv)aJIgEWOOhVVy4jq)gMhTt34g2WgEYOSSwwEdVdjlj4D4HF3cZgO2WtVpJHhzn)gZrmC6cXbSHKLh8o8WVBHzduB4P3NXWd2tbf6Jys9LtheShnSHKro4D4HF3cZgO2WtVpJHhdtGWSb2qYYj8o84Ygvp8y5DJ5rOxZgE43TWSbQnSHKzF4D4HF3cZgO2Wgs2TH3Hh(DlmBGAdpzvJQhEkSzC5u4XLnQE4jRAu9Wg2WgEsHPbQEiz5LCs5l58NuovjLCs2hEUC6J(TaEGNmArGWm84YgvFOYOSSwwEtIa7rQA07ZysYA(nMJy40fIdWox2O6dvgLL1YYBTiPjrvgn69zmjSNck0hXK6lNoiypAWox2O6dvgLL1YYBTiPPp3w83EJQxJEFgtYWeimBa7CzJQpuzuwwllV1IKMwE3yEe61Sb7UvG48EwOxnqqDKbiSMeeSbiI27aiSyIIYaHSwwEdew8g6dGWFdqKr5Bzw1n63acuaeM6zfyNlBu9HkJYYAz5TwK0mEpl0REeT3byNlBu9HkJYYAz5TwK0mRAu9A8(IjvyZ4YPGDGD3kqyVJ8SC2Sbi4uy6EGOrlgiADgiCzxuGafaHNIJWUfMvGDUSr1hK8zxdVBxMkyNlBu9HwK0uQ70ngS7wbI76OaiqbqSQOX7bIUaImkNc)nqiRcBQRpaccATaclg9BaHlLid)TJX7bIzWgGWmPOFdiwvk8I)wb2DRUSr1hArsZSQr1RX7lMuHnJlNQbIGK1KGqrzzQyoINJqnZa7CzJQp0IKMZGhOMxA8(Ijrr)2OigYcJ9Sa9BdIzpPCObIG0nwtccvZRS2Bu9QzgyhyNlBu9HwK0eJ207yKdonBl(BnqeKmS1KGqjlCfXmgXYdDLPUEWox2O6dTiP5m4bQ5va25YgvFOfjnTWvzget6EnqeKmS1KGqjlCfXmgXYdD1mdSZLnQ(qlsAAX0GPPI(nnqeKmS1KGqjlCfXmgXYdD1mdSZLnQ(qlsA6uP)8OlkL)wdebjdBnjiuYcxrmJrS8qxzQRpTSkSPUE1QOTJhrtrPYkkVC0h2LKY(PP(gNl5sgSZLnQ(qlsAgxmNH(Tr0uuQCObIGuKXy8OD6g3H6shrXxO3yxsPTrwf2uxVsw4kIzmILh6kkVC0h5MxIe2iRcBQRxPZ0cjhy2ZuuE5OpYnV0YQWM66vYcxrmJrS8qxr5LJ(WU8L2WwtccLSWveZyelp0vM66T1wWox2O6dTiPjD(dx2O6hyu0A8(IjXKNLZM1arqYM2X83QLhHlPSIF3cZM0Tt34wPZoU1vzYoxYzFBtKOD6g3kD2XTUkt25MxYGDUSr1hArst68hUSr1pWOO149ftkq)gMhTt34gSdSZLnQ(qXKNLZM1IKMu(nAGiir5LJ(ixsMj1Bu93IKvKlTHTMeekzHRiMXiwEORm11d2DRUSr1hkM8SC2SwK0KYVrdebjkVC0h5MuYPTrwf2uxVsw4kIzmILh6kkVC0h5MxIe2iRcBQRxPZ0cjhy2ZuuE5OpYnV0YQWM66vYcxrmJrS8qxr5LJ(WU8L2WwtccLSWveZyelp0vM66T1wWox2O6dftEwoBwlsAAy3G3pKoEPbIGKSkSPUELf2nC0fDPO8YrFy3TtBJSkSPUELSWveZyelp0vuE5OpYnVejSHTNjklJnQlgTP3JIy068GDARNwwf2uxVsNPfsoWSNPO8YrFKBE2AlyNlBu9HIjplNnRfjnLfUIygJy5HUgicswtccLSWveZyelp0vM66b7CzJQpum5z5SzTiPzK6eJJmmQBMQbIGe134CZFYPTXgzvytD9kd7g8(H0XlfLxo6d7ix6BSMeekd7g8(H0Xl1mZ2ejUPDm)TYWUbVFiD8sXVBHzJTGDUSr1hkM8SC2SwK0uNPfsoWSNPbIGeBptuwgBuxmAtVhfXO15b70wpTHTMeekzHRiMXiwEORm11Nwwf2uxVsw4kIzmILh6kkVC0h2LV03Kr5ugBsJkjLSWveZyelp0b7CzJQpum5z5SzTiPPf2nC0fDPbIGKHTMeekzHRiMXiwEORO8YrFyxov2pn134CZFYPT5gRjbHYWUbVFiD8snZsK4M2X83kd7g8(H0Xlf)UfMn2c25YgvFOyYZYzZArstQNIVXunqeKmS1KGqjlCfXmgXYdD1mlTnYQWM66vg2n49dPJxkkVC0h2D7ejUPDm)TYWUbVFiD8sXVBHzJTGDUSr1hkM8SC2SwK0Cv02XJOPOuznqeKSMeeQkfMMvxmvfTltLuEPTPDm)TYqz38(CtVv87wy2KibBptuwgBuovQ7PuFm0zpL9dD)n2c25YgvFOyYZYzZArsZkfMMvxmfSZLnQ(qXKNLZM1IKMm5z5SznqeKO(gBhPCMCIeg2AsqOKfUIygJy5HUAMLiH1KGqftJH)HH9wxrzx2jsynjiurxpp0zN2kk7YgSdSZLnQ(qfOFdZJ2PBCRfjnP8B0arqIYlh9rUKmtQ3O6VfjRixAdBnjiuYcxrmJrS8qxzQRhSZLnQ(qfOFdZJ2PBCRfjnnSBW7hshV0arqswf2uxVYc7go6IUuuE5OpS72PTrwf2uxVsw4kIzmILh6kkVC0h5MxIe2W2ZeLLXg1fJ207rrmADEWoT1tlRcBQRxPZ0cjhy2ZuuE5OpYnpBTfSZLnQ(qfOFdZJ2PBCRfjnLfUIygJy5HUgicswtccLSWveZyelp0vM66b7CzJQpub63W8OD6g3ArsZi1jghzyu3mvdebjQVX5M)KtBJSkSPUELHDdE)q64LIYlh9HDKlrIBAhZFRmSBW7hshVu87wy2ylyNlBu9Hkq)gMhTt34wlsAQZ0cjhy2Z0arqITNjklJnQlgTP3JIy068GDARN2WwtccLSWveZyelp0vM66tlRcBQRxjlCfXmgXYdDfLxo6d7Yx6BYOCkJnPrLKsw4kIzmILh6GDUSr1hQa9ByE0oDJBTiPjtEwoBwdebjRjbHkMgd)dd7TUIYUStKWAsqOIUEEOZoTvu2LnyNlBu9Hkq)gMhTt34wlsAAHDdhDrxAGiizyRjbHsw4kIzmILh6kkVC0h2LtL9tNr5ugBsJkj1QOTJhrtrPYPT5gRjbHYWUbVFiD8snZsK4M2X83kd7g8(H0Xlf)UfMn2c25YgvFOc0VH5r70nU1IKMupfFJPAGiizyRjbHsw4kIzmILh6QzwABKvHn11RmSBW7hshVuuE5OpS72jsCt7y(BLHDdE)q64LIF3cZgBb7CzJQpub63W8OD6g3ArsZvrBhpIMIsLb7CzJQpub63W8OD6g3ArsZkfMMvxmfSZLnQ(qfOFdZJ2PBCRfjnV0ru8f6nAGii1oM)wrW0uk6OigwE3ywXVBHztABO(gBhjYLCIeg2AsqOKfUIygJy5HUAMLwwf2uxVTGDUSr1hQa9ByE0oDJBTiPzG9Lgics30oM)wrW0uk6OigwE3ywXVBHztABO(gBhjYLCIeg2AsqOKfUIygJy5HUIYlh9HDYQWM66vRI2oEenfLkRO8YrFKwwf2uxVAv02XJOPOuzfLxo6d7YtzFBHNiJLqYYFsWg2qia]] )
 end

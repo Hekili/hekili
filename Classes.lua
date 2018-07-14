@@ -53,6 +53,12 @@ local HekiliSpecMixin = {
         }, mt_resource )
         r.state.regenModel = regen
 
+        if r.state.regenModel then
+            for k, v in pairs( r.state.regenModel ) do
+                v.resource = v.resoure or resource
+            end
+        end
+
         self.resources[ resource ] = r
 
         CommitKey( resource )

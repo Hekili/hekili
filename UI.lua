@@ -238,8 +238,11 @@ function ns.StartConfiguration( external )
             ns.StopConfiguration()
             self:SetScript( "OnHide", nil )
             collectgarbage()
+            Hekili:UpdateDisplayVisibility()
         end )
     end
+
+    Hekili:UpdateDisplayVisibility()
 end
 
 function ns.StopConfiguration()
@@ -1235,14 +1238,18 @@ do
         if profile.enabled then
             for i, display in pairs( profile.displays ) do
                 if display.enabled then
-                    if i == 'AOE' then
-                        dispActive[i] = profile.toggles.mode.value == 'dual'
-                    elseif i == 'Interrupts' then
-                        dispActive[i] = profile.toggles.interrupts.value and profile.toggles.interrupts.separate
-                    elseif i == 'Defensives' then
-                        dispActive[i] = state.role.tank and profile.toggles.defensives.value and profile.toggles.defensives.separate
+                    if self.Config then
+                        dispActive[i] = true
                     else
-                        dispActive[i] = true 
+                        if i == 'AOE' then
+                            dispActive[i] = profile.toggles.mode.value == 'dual'
+                        elseif i == 'Interrupts' then
+                            dispActive[i] = profile.toggles.interrupts.value and profile.toggles.interrupts.separate
+                        elseif i == 'Defensives' then
+                            dispActive[i] = state.role.tank and profile.toggles.defensives.value and profile.toggles.defensives.separate
+                        else
+                            dispActive[i] = true 
+                        end
                     end
                     
                     if dispActive[i] and displays[i] then

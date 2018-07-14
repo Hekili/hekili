@@ -858,7 +858,7 @@ local function forecastResources( resource )
     if resource then
         local r = state[ resource ]
 
-        -- We account for haste here so that we don't computer lots of extraneous future resource gains in Bloodlust/high haste situations.
+        -- We account for haste here so that we don't compute lots of extraneous future resource gains in Bloodlust/high haste situations.
         remains[ resource ] = FORECAST_DURATION * state.haste
 
         table.wipe( r.times )
@@ -886,7 +886,7 @@ local function forecastResources( resource )
 
     if models then
         for k, v in pairs( models ) do
-            if  ( not resource    or v.resource == resource ) and
+            if  ( not v.resource  or v.resource == resource ) and
                 ( not v.spec      or state.spec[ v.spec ] ) and
                 ( not v.equip     or state.equipped[ v.equip ] ) and 
                 ( not v.talent    or state.talent[ v.talent ].enabled ) and

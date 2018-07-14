@@ -1162,11 +1162,12 @@ function Hekili:ProcessHooks( dispName, packName )
         state.delay = 0
 
         local action, wait, clash, depth = self:GetNextPrediction( dispName, packName, slot )
-        if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs (%.2fs).\n", action or "NO ACTION", wait or 60, state.delay ) end
 
         local gcd_remains = state.cooldown.global_cooldown.remains
+        state.delay = wait
 
-        if debug then self:Debug( "Recommendation #%d is %s at %.2f.", i, action or "NO ACTION", state.offset + state.delay ) end
+        -- if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs (%.2fs).\n", action or "NO ACTION", wait or 60, state.offset + state.delay ) end
+        if debug then self:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay ) end
         
         if action then
             if debug then scripts:ImplantDebugData( slot ) end
