@@ -684,7 +684,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                 if not entry.criteria or entry.criteria == "" then
                                     if debug then self:Debug( "There is no criteria for this action list." ) end
-                                    aScriptPass = ts or CheckStack()
+                                    -- aScriptPass = ts or CheckStack()
                                 else
                                     aScriptPass = ts or scripts:CheckScript( scriptID ) -- and CheckStack() -- we'll check the stack with the list's entries.
 

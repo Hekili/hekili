@@ -240,6 +240,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     } )
 
 
+    local virtual_rp_spent_since_pof = 0
+
     local spendHook = function( amt, resource )
         if amt > 0 and resource == "runes" then
             local r = state.runes
@@ -251,6 +253,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             if state.talent.gathering_storm.enabled and state.buff.remorseless_winter.up then
                 state.buff.remorseless_winter.expires = state.buff.remorseless_winter.expires + ( 0.5 * amt )
+            end
+        
+        elseif amt > 0 and resource == "runic_power" then
+            if state.set_bonus.tier20_2pc == 1 and state.buff.pillar_of_frost.up then
+                virtual_rp_spent_since_pof = virtual_rp_spent_since_pof + amt
+
+                state.applyBuff( "pillar_of_frost", state.buff.pillar_of_frost.remains + floor( virtual_rp_spent_since_pof / 60 ) )
+                virtual_rp_spent_since_pof = virtual_rp_spent_since_pof % 60
             end
         end
     end
@@ -506,6 +516,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             startsCombat = true,
             texture = 538558,
+
+            talent = "asphyxiate",
             
             handler = function ()
                 applyDebuff( "target", "asphyxiate" )
@@ -526,6 +538,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyDebuff( "target", "blinding_sleet" )
+                active_dot.blinding_sleet = max( active_dot.blinding_sleet, active_enemies )
             end,
         },
         
@@ -537,6 +550,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             gcd = "spell",
             
             spend = 15,
+            -- ready = 50,
             spendType = "runic_power",
             
             toggle = "cooldowns",
@@ -587,7 +601,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 237273,
             
+            usable = function () return target.is_undead and target.level <= level + 1 end,
             handler = function ()
+                summonPet( "controlled_undead", 300 )
             end,
         },
         
@@ -607,7 +623,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         
 
-        death_gate = {
+        --[[ death_gate = {
             id = 50977,
             cast = 4,
             hasteCD = true,
@@ -622,7 +638,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
             end,
-        },
+        }, ]]
         
 
         death_grip = {
@@ -637,6 +653,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 237532,
             
             handler = function ()
+                applyDebuff( "target", "death_grip" )
+                setDistance( 5 )
             end,
         },
         
@@ -729,9 +747,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 237520,
             
+            recheck = function () return buff.icy_talons.remains - gcd, buff.icy_talons.remains end,
             handler = function ()
                 applyDebuff( "target", "razorice", 20, 2 )                
                 if talent.icy_talons.enabled then addStack( "icy_talons", 6, 1 ) end
+                if talent.obliteration.enabled and buff.pillar_of_frost.up then applyBuff( "killing_machine" ) end
             end,
         },
         
@@ -819,7 +839,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 1,
+            spend = function () return buff.rime.up and 0 or 1 end,
             spendType = "runes",
             
             startsCombat = true,
@@ -827,6 +847,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyDebuff( "target", "frost_fever" )
+                active_dot.frost_fever = max( active_dot.frost_fever, active_enemies )
+
+                if talent.obliteration.enabled and buff.pillar_of_frost.up then applyBuff( "killing_machine" ) end
+
                 removeBuff( "rime" )
             end,
         },
@@ -895,7 +919,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             spend = 1,
             spendType = "runes",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 237528,
             
             handler = function ()
@@ -915,6 +939,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyBuff( "pillar_of_frost" )
+                virtual_rp_spent_since_pof = 0
             end,
         },
         
@@ -950,6 +975,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = false,
             texture = 538770,
             
+            recheck = function ()
+                return buff.remorseless_winter.remains - gcd, buff.remorseless_winter.remains
+            end,
             handler = function ()
                 applyBuff( "remorseless_winter" )
             end,

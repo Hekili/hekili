@@ -278,7 +278,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterAuras( {
         antimagic_shell = {
             id = 48707,
-            duration = 10,
+            duration = function () return 5 + ( talent.spell_eater.enabled and 5 or 0 ) + ( ( level < 116 and equipped.acherus_drapes ) and 5 or 0 ) end,
             max_stack = 1,
         },
         army_of_the_dead = {
@@ -329,7 +329,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 1,
         },
         defile = {
-            id = 152280,
+            id = 156004,
+            duration = 10,
         },
         festering_wound = {
             id = 194310,
@@ -383,8 +384,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         unholy_blight = {
             id = 115989,
-            duration = 18.2,
-            type = "Disease",
+            duration = 6,
             max_stack = 1,
         },
         unholy_blight_dot = {
@@ -469,7 +469,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 136120,
             
             handler = function ()
-                applyBuff( "antimagic_shell", talent.spell_eater.enabled and 10 or 5 )
+                applyBuff( "antimagic_shell" )
             end,
         },
         
@@ -526,6 +526,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             startsCombat = true,
             texture = 538558,
+
+            talent = "asphyxiate",
             
             handler = function ()
                 applyDebuff( "target", "asphyxiate" )
@@ -545,8 +547,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 135834,
             
+            recheck = function ()
+                return buff.unholy_strength.remains - gcd, buff.unholy_strength.remains
+            end,
             handler = function ()
                 applyDebuff( "target", "chains_of_ice" )
+                removeBuff( "cold_heart_item" )
             end,
         },
         
@@ -585,9 +591,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 237273,
             
-            usable = function () return not pet.exists end,
+            usable = function () return target.is_undead and target.level <= level + 1 end,
             handler = function ()
-                summonPet( "fake_pet" )
+                summonPet( "controlled_undead", 300 )
             end,
         },
         
@@ -596,7 +602,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 56222,
             cast = 0,
             cooldown = 8,
-            gcd = "spell",
+            gcd = "off",
             
             startsCombat = true,
             texture = 136088,
@@ -616,6 +622,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = false,
             texture = 342913,
             
+            usable = function () return pet.alive end,
             handler = function ()
                 applyBuff( "dark_transformation" )
             end,
@@ -657,11 +664,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 removeStack( "sudden_doom" )
+                if cooldown.dark_transformation.remains > 0 then setCooldown( 'dark_transformation', cooldown.dark_transformation.remains - 1 ) end
             end,
         },
         
 
-        death_gate = {
+        --[[ death_gate = {
             id = 50977,
             cast = 4,
             cooldown = 60,
@@ -675,7 +683,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
             end,
-        },
+        }, ]]
         
 
         death_grip = {
@@ -704,8 +712,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             startsCombat = false,
             texture = 136146,
+
+            talent = "death_pact",
             
             handler = function ()
+                gain( health.max * 0.5, "health" )
                 applyBuff( "death_pact" )
             end,
         },
@@ -725,6 +736,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 removeBuff( "dark_succor" )
+                if level < 116 and equipped.death_march then
+                    local cd = cooldown[ talent.defile.enabled and "defile" or "death_and_decay" ]
+                    cd.expires = max( 0, cd.expires - 2 )
+                end
             end,
         },
         
@@ -735,7 +750,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 45,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 237561,
             
             handler = function ()
@@ -750,8 +765,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 20,
             gcd = "spell",
             
-            spend = -10,
-            spendType = "runic_power",
+            spend = 1,
+            spendType = "runes",
             
             talent = "defile",
 
@@ -809,6 +824,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 180,
             gcd = "spell",
             
+            toggle = "defensives",
+
             startsCombat = false,
             texture = 237525,
             
@@ -876,7 +893,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         
 
-        raise_ally = {
+        --[[ raise_ally = {
             id = 61999,
             cast = 0,
             cooldown = 600,
@@ -890,7 +907,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
             end,
-        },
+        }, ]]
         
 
         raise_dead = {
@@ -910,7 +927,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         
 
-        runeforging = {
+        --[[ runeforging = {
             id = 53428,
             cast = 0,
             cooldown = 0,
@@ -922,7 +939,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             usable = false,
             handler = function ()
             end,
-        },
+        }, ]]
         
 
         scourge_strike = {
@@ -941,7 +958,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             usable = function () return debuff.festering_wound.up end,
             handler = function ()
-                if debuff.festering_wound.stack > 1 then applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
+                gain( 3, "runic_power" )
+                if debuff.festering_wound.stack > 1 then
+                    applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
                 else removeDebuff( "target", "festering_wound" ) end
             end,
         },
@@ -989,14 +1008,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 45,
             gcd = "spell",
             
-            spend = -10,
-            spendType = "runic_power",
+            spend = 1,
+            spendType = "runes",
             
             startsCombat = true,
             texture = 136132,
+
+            talent = "unholy_blight",
             
             handler = function ()
                 applyBuff( "unholy_blight" )
+                applyDebuff( "unholy_blight_dot" )
             end,
         },
         
@@ -1011,6 +1033,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             startsCombat = true,
             texture = 136224,
+
+            talent = "unholy_frenzy",
             
             handler = function ()
                 applyBuff( "unholy_frenzy" )
@@ -1028,6 +1052,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             startsCombat = false,
             texture = 1100041,
+
+            talent = "wraith_walk",
             
             handler = function ()
                 applyBuff( "wraith_walk" )
