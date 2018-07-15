@@ -434,7 +434,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         
 
         execute = {
-            id = 280735,
+            id = function () return talent.massacre.enabled and 280735 or 5308 end,
             known = 5308,
             cast = 0,
             cooldown = 6,
@@ -450,9 +450,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             usable = function () return buff.sudden_death.up or buff.stone_heart.up or target.health.pct < ( talent.massacre.enabled and 35 or 20 ) end,
             handler = function ()
                 if buff.stone_heart.up then removeBuff( "stone_heart" )
-                else removeBuff( "sudden_death" ) end
+                elseif buff.sudden_death.up then removeBuff( "sudden_death" ) end
                 removeStack( "whirlwind" )
             end,
+
+            copy = { 280735, 5308 }
         },
         
 
