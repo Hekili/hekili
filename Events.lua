@@ -842,7 +842,7 @@ local function StoreKeybindInfo( page, key, aType, id )
         ability = class.abilities[ id ] and class.abilities[ id ].key
 
     elseif aType == "macro" then
-        local _, _, sID = GetMacroSpell( id )
+        local sID = GetMacroSpell( id )
 
         ability = sID and class.abilities[ sID ] and class.abilities[ sID ].key
     
