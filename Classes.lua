@@ -909,7 +909,7 @@ all:RegisterAuras( {
     player_casting = {
         name = "Casting",
         generate = function ()
-            local aura = buff.casting
+            local aura = buff.player_casting
 
             local name, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitCastingInfo( "player" )
         

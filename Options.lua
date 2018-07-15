@@ -6834,7 +6834,7 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.metamorphosis.extended_by_demonic' with 'buff.demonic_extended_metamorphosis.up' (" .. times .. "x)." )
     end ]]
 
-    i, times = i:gsub( "buff.active_uas", "unstable_afflictions" )
+    --[[ i, times = i:gsub( "buff.active_uas", "unstable_afflictions" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.active_uas' with 'unstable_afflictions' (" .. times .. "x)." )
     end
@@ -6842,7 +6842,7 @@ local function Sanitize( segment, i, line, warnings )
     i, times = i:gsub( "rune%.([a-z0-9_]+)", "runes.%1")
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'rune.X' with 'runes.X' (" .. times .. "x)." )
-    end
+    end ]]
 
     --[[ i, times = i:gsub( "cooldown%.strike%.", "cooldown.stormstrike." )
     if times > 0 then

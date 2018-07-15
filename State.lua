@@ -646,6 +646,7 @@ state.removeStack = removeStack
 -- Add a debuff to the simulated game state.
 -- Needs to actually use 'unit' !
 local function applyDebuff( unit, aura, duration, stacks, value )
+    if not aura then aura = unit; unit = "target" end
 
     if not class.auras[ aura ] then
         Error( "Attempted to apply unknown aura '%s'.", aura ) 
@@ -2374,12 +2375,13 @@ end
 local mt_alias_buff = {
     __index = function( t, k )
         local aura = class.auras[ t.key ]
+        local type = aura.aliasType or "buff"
 
         if k == 'count' or k == 'stack' or k == 'stacks' then
             local n = 0
 
             for i, child in ipairs( aura.alias ) do
-                if state.buff[ child ].up then n = n + max( 1, state.buff[ child ].stack ) end
+                if state[ type ][ child ].up then n = n + max( 1, state[ type ][ child ].stack ) end
             end
 
             return n
@@ -2390,7 +2392,7 @@ local mt_alias_buff = {
         local mode = aura.aliasMode or "first"
 
         for i, v in ipairs( aura.alias ) do
-            local child = state.buff[ v ]
+            local child = state[ type ][ v ]
             if not alias and mode == "first" and child.up then return child[ k ] end
 
             if child.up then
@@ -2399,7 +2401,7 @@ local mt_alias_buff = {
             end
         end
 
-        return alias and alias[ k ] or state.buff[ aura.alias[1] ][ k ]
+        return alias and alias[ k ] or state[ type ][ aura.alias[1] ][ k ]
     end 
 }
 
@@ -2409,7 +2411,7 @@ local mt_default_buff = {
     __index = function(t, k)
         local aura = class.auras[ t.key ]
 
-        if aura and aura.meta and aura.meta[ k ] then
+        if aura and rawget( aura, "meta" ) and aura.meta[ k ] then
             return aura.meta[ k ]()
 
         elseif k == 'name' or k == 'count' or k == 'duration' or k == 'expires' or k == 'applied' or k == 'caster' or k == 'id' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
@@ -2522,8 +2524,8 @@ local unknown_buff = setmetatable( {
 
 -- Fullscan definitely needs revamping, but it works for now.
 local mt_buffs = {
-    -- The action doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
-    __index = function(t, k)
+    -- The aura doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
+    __index = function( t, k )
         
         if k == '__scanned' then
             return false
@@ -2535,21 +2537,21 @@ local mt_buffs = {
             return unknown_buff
         end
         
-        if aura.generate then
+        if k ~= aura.key and rawget( t, aura.key ) then
+            t[ k ] = t[ aura.key ]
+        else
             t[k] = {
-                key = k,
+                key = aura.key,
                 name = aura.name
             }
+        end
+
+        if aura.generate then
             aura.generate()
-            return t[k]
+            return t[ k ]
         end
         
         local real = auras.player.buff[ k ] or auras.target.buff[ k ]
-        
-        t[ k ] = {
-            key = k,
-            name = aura.name
-        }
         
         local buff = t[k]
         
@@ -2584,7 +2586,7 @@ local mt_buffs = {
             buff.unit = aura.unit or 'player'
         end
         
-        return t[k]
+        return t[ k ]
         
     end,
     
@@ -2842,27 +2844,25 @@ ns.metatables.mt_equipped = mt_equipped
 -- Developed mainly for RtB; it will also report 'stack' or 'count' as the sum of stacks of multiple buffs.
 local mt_alias_debuff = {
     __index = function( t, k )
-        print( "in mt_a_d", t.key, k )
         local aura = class.auras[ t.key ]
+        local type = aura.aliasType or "debuff"
 
         if k == 'count' or k == 'stack' or k == 'stacks' then
             local n = 0
 
             for i, child in ipairs( aura.alias ) do
-                if state.debuff[ child ].up then n = n + max( 1, state.debuff[ child ].stack ) end
+                if state[ type ][ child ].up then n = n + max( 1, state[ type ][ child ].stack ) end
             end
 
             return n
-
         end
 
         local alias
         local mode = aura.aliasMode or "first"
 
         for i, v in ipairs( aura.alias ) do
-            local child = state.debuff[ v ]
+            local child = state[ type ][ v ]
             if not alias and mode == "first" and child.up then
-                print( "selected", k )
                 return child[ k ] end
 
             if child.up then
@@ -2871,7 +2871,7 @@ local mt_alias_debuff = {
             end
         end
 
-        return alias and alias[ k ] or state.debuff[ aura.alias[1] ][ k ]
+        return alias and alias[ k ] or state[ type ][ aura.alias[1] ][ k ]
     end 
 }
 
@@ -2895,8 +2895,7 @@ local mt_default_debuff = {
     __index = function(t, k)
         local class_aura = class.auras[ t.key ]
         
-        if k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then
-            
+        if k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if class_aura and class_aura.generate then
                 class_aura.generate()
                 return t[ k ]
@@ -3001,31 +3000,45 @@ local unknown_debuff = setmetatable( {
 -- Needs review.
 local mt_debuffs = {
     -- The debuff/ doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
-    __index = function(t, k)
+    __index = function( t, k )
         
-        local class_aura = class.auras[ k ]
+        local aura = class.auras[ k ]
+
+        if aura then       
+            if k ~= aura.key and rawget( t, aura.key ) then
+                t[ k ] = t[ aura.key ]
+            else
+                t[ k ] = {
+                    key = aura.key,
+                    name = aura.name
+                }
+            end
+            
+            if aura.generate then
+                aura.generate()
+                return t[ k ]
+            end
         
-        t[k] = {
-            key = k,
-            name = class_aura and class_aura.name or k
-        }
+        else
+            error(k)
+            t[ k ] = {
+                key = k,
+                name = k
+            }
         
-        if class_aura and class_aura.generate then
-            class_aura.generate()
-            return t[k]
         end
         
         local real = auras.target.debuff[ k ] or auras.player.debuff[ k ]
-        local debuff = t[k]
+        local debuff = t[ k ]
         
         for key, value in pairs( real or default_debuff_values ) do
             debuff[ key ] = value
         end
         
-        return t[k]
+        return t[ k ]
     end, 
     
-    __newindex = function(t, k, v)
+    __newindex = function( t, k, v )
         if aura and aura.alias then
             rawset( t, k, setmetatable( v, mt_alias_debuff ) )
             return
@@ -3048,7 +3061,7 @@ local mt_default_action = {
             return state:IsKnown( t.action )            
 
         elseif k == 'gcd' then
-            if t.gcd == 'offGCD' then return 0
+            if t.gcd == 'off' then return 0
             elseif t.gcd == 'spell' then return max( 0.75, 1.5 * state.haste )
                 -- This needs a class/spec check to confirm GCD is reduced by haste.
             elseif t.gcd == 'melee' then return max( 0.75, 1.5 * state.haste )
@@ -3676,13 +3689,15 @@ function state.reset( dispName )
         casting = formatKey( spellcast )
 
         state.channelSpell( casting, startCast / 1000, ( endCast - startCast ) / 1000 )
-        -- applyBuff( "casting", cast_time )
+        applyBuff( "player_casting", cast_time )
     end
 
     ns.callHook( "reset_precast" )
+
     
-    if cast_time and casting then
-        local ability = class.abilities[ casting ]
+    local ability = casting and class.abilities[ casting ]
+
+    if cast_time and casting and ( not ability or not ability.breakable ) then
         
         -- print( format( "Advancing %.2f to cast %s.", cast_time, casting ) )
         state.advance( cast_time )
@@ -4106,8 +4121,7 @@ function state:TimeToReady( action, pool )
     end
 
     -- Okay, so we don't have enough of the resource.
-    -- print( action, resource, spend )
-    if resource and spend > self[ resource ].current then
+    if spend and resource and spend > self[ resource ].current then
         wait = max( wait, self[ resource ][ 'time_to_' .. spend ] or 0 )
         wait = ceil( wait * 100 ) / 100 -- round to the hundredth.
     end

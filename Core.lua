@@ -1202,7 +1202,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 state.stopChanneling()
                 
                 -- Advance the clock by cast_time.
-                if ability.cast > 0 and not ability.channeled then
+                if ability.cast > 0 and not ability.channeled and not action.breakable then
                     state.advance( ability.cast )
                 end
 
@@ -1228,7 +1228,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 end
 
                 -- Complete the channel.
-                if ability.cast > 0 and ability.channeled and not ability.breakable then -- class.resetCastExclusions[ ability ] then
+                if ability.cast > 0 and ability.channeled then -- class.resetCastExclusions[ ability ] then
                     state.advance( ability.cast )
                 end
                 
