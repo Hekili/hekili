@@ -1431,7 +1431,19 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     } )
 
 
-    class.specs[ 0 ].abilities.shadowmeld.recheck = setfenv( function () return buff.incarnation.remains - 0.1 end, state )
+    -- Override this for rechecking.
+    shadowmeld = {
+        id = 58984,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        usable = function () return boss and race.night_elf end,
+        recheck = function () return buff.incarnation.remains - 0.1, buff.incarnation.remains end,
+        handler = function ()
+            applyBuff( "shadowmeld" )
+        end,
+    },
 
 
     spec:RegisterOptions( {

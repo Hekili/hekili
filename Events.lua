@@ -504,10 +504,10 @@ ns.cpuProfile.spellcastEvents = spellcastEvents
 
 
 
---[[ Need to make caching system.
+-- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
     if UnitIsUnit( unit, "player" ) then Hekili:ForceUpdate( event ) end
-end ) ]]
+end )
 
 
 function ns.removeSpellFromFlight( spell )
@@ -538,7 +538,9 @@ local spell_names = setmetatable( {}, {
 
 local function UNIT_POWER_FREQUENT( event, unit, power )
 
-    if unit ~= 'player' then return end
+    if not UnitIsUnit( unit, "player" ) then return end
+
+    -- print( "UPF", GetTime(), power )
 
     if power == "FOCUS" and state.focus then
         local now = GetTime()
@@ -573,10 +575,12 @@ ns.cpuProfile.UNIT_POWER_FREQUENT = UNIT_POWER_FREQUENT
 RegisterUnitEvent( "UNIT_POWER_FREQUENT", UNIT_POWER_FREQUENT )
 
 
-RegisterUnitEvent( "UNIT_POWER_UPDATE", function( event, unit, power )
-    if unit ~= 'player' then return end
+--[[ RegisterUnitEvent( "UNIT_POWER_UPDATE", function( event, unit, power )
+    if not UnitIsUnit( unit, "player" ) then return end
+
+    print( "UPU", GetTime(), power )
     Hekili:ForceUpdate( event )
-end )
+end ) ]]
 
 
 local autoAuraKey = setmetatable( {}, {
