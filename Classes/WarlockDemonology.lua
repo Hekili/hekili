@@ -222,7 +222,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if resource == "soul_shard" and buff.nether_portal.up then
+        if resource == "soul_shards" and buff.nether_portal.up then
             summon_demon( "other", 15, amt )
         end
     end )
@@ -263,6 +263,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             table.remove( db, 1 )
         end
     end )
+
+
+    spec:RegisterStateExpr( "soul_shard", function () return soul_shards.current end )
 
 
     -- Auras
@@ -551,7 +554,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             spend = 2,
-            spendType = "soul_shard",
+            spendType = "soul_shards",
 
             talent = 'bilescourge_bombers',
             
@@ -591,7 +594,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             spend = function () return 2 - ( buff.demonic_calling.up and 1 or 0 ) end,
-            spendType = "soul_shard",
+            spendType = "soul_shards",
             
             startsCombat = true,
             texture = 1378282,
@@ -689,7 +692,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             handler = function ()
                 removeStack( 'demonic_core' )
-                gain( 2, 'soul_shard' )
+                gain( 2, "soul_shards" )
             end,
         },
         
@@ -862,7 +865,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             spend = 1,
-            spendType = "soul_shard",
+            spendType = "soul_shards",
             
             toggle = 'cooldowns',
 
@@ -882,15 +885,15 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             spend = 1,
-            spendType = "soul_shard",
+            spendType = "soul_shards",
             
             startsCombat = true,
             texture = 535592,
             
-            -- usable = function () return soul_shard.current >= 3 end,
+            -- usable = function () return soul_shards.current >= 3 end,
             handler = function ()
-                local extra_shards = min( 2, soul_shard.current )
-                spend( extra_shards, "soul_shard" )
+                local extra_shards = min( 2, soul_shards.current )
+                spend( extra_shards, "soul_shards" )
                 summon_demon( "wild_imps", 25, 1 + extra_shards )
             end,
         },
@@ -955,7 +958,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             spend = 3,
-            spendType = "soul_shard",
+            spendType = "soul_shards",
             
             toggle = "cooldowns", 
 
@@ -1017,7 +1020,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 136197,
             
             handler = function ()
-                gain( 1, 'soul_shard' )
+                gain( 1, "soul_shards" )
             end,
         },
         
@@ -1047,7 +1050,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             usable = function () return pet.exists end,
             handler = function ()
-                gain( 1, "soul_shard" )
+                gain( 1, "soul_shards" )
             end,
         },
         
@@ -1095,7 +1098,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
 
             spend = 1,
-            spendType = "soul_shard",
+            spendType = "soul_shards",
 
             startsCombat = false,
             texture = 136216,
@@ -1114,7 +1117,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             spend = 1,
-            spendType = "soul_shard",
+            spendType = "soul_shards",
 
             toggle = "cooldowns",
             
