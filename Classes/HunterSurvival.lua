@@ -110,6 +110,28 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 3600,
             max_stack = 1,
         },
+        bloodseeker = {
+            duration = 8,
+            name = "Bloodseeker",
+            generate = function ()
+                local cast = rawget( class.abilities.kill_command, "lastCast" ) or 0
+                local up = cast + 15 > query_time
+
+                local bs = debuff.bloodseeker
+
+                if up then
+                    bs.count = 1
+                    bs.expires = cast + 15
+                    bs.applied = cast
+                    bs.caster = "player"
+                    return
+                end
+                bs.count = 0
+                bs.expires = 0
+                bs.applied = 0
+                bs.caster = "nobody"
+            end,
+        },
         camouflage = {
             id = 199483,
             duration = 60,
@@ -284,6 +306,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             current_wildfire_bomb = "wildfire_bomb"
         end
     end )
+
+
+    spec:RegisterStateExpr( "bloodseeker", function () return debuff.bloodseeker end )
 
 
     -- Abilities
@@ -675,7 +700,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             
             usable = function () return pet.alive end,
             handler = function ()
-                if talent.bloodseeker.enabled then applyBuff( "predator", 8 ) end
+                if talent.bloodseeker.enabled then
+                    applyBuff( "predator", 8 )
+                    applyDebuff( "target", "bloodseeker", 8 )
+                end
                 if talent.tip_of_the_spear.enabled then addStack( "tip_of_the_spear", 20, 1 ) end
 
                 if debuff.pheromone_bomb.up then gainCharges( "kill_command", 1 ) end
@@ -776,9 +804,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 2065635,
 
             bind = "wildfire_bomb",
+            talent = "wildfire_infusion",
 
-            talent = "wildfire_infusion",        
+            usable = function () return current_wildfire_bomb == "pheromone_bomb" end,
             handler = function ()
+                applyDebuff( "target", "pheromone_bomb" )
+                current_wildfire_bomb = "wildfire_bomb"
             end,
         },
         
@@ -841,6 +872,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             charges = function () return talent.guerrilla_tactics.enabled and 2 or 1 end,
             cooldown = 18,
             recharge = 18,
+            hasteCD = true,
             gcd = "spell",
             
             startsCombat = true,
@@ -848,8 +880,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             bind = "wildfire_bomb",
             
+            usable = function () return current_wildfire_bomb == "shrapnel_bomb" end,
             handler = function ()
                 applyDebuff( "target", "shrapnel_bomb" )
+                current_wildfire_bomb = "wildfire_bomb"
             end,
         },
         
@@ -892,6 +926,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             charges = 2,
             cooldown = 18,
             recharge = 18,
+            hasteCD = true,
             gcd = "spell",
             
             startsCombat = true,
@@ -899,8 +934,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             bind = "wildfire_bomb",
             
+            usable = function () return current_wildfire_bomb == "volatile_bomb" end,
             handler = function ()
                 if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting" ) end
+                current_wildfire_bomb = "wildfire_bomb"
             end,
         },
         
