@@ -277,7 +277,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     spec:RegisterHook( "TimeToReady", function( wait, action )
         local ability = action and class.abilities[ action ]
     
-        if ability and ability.spend and ability.spendType == "soul_shards" and ability.spend > state.soul_shard then
+        if ability and ability.spend and ability.spendType == "soul_shards" and ability.spend > soul_shard then
             wait = 3600
         end
 
@@ -339,15 +339,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     end )
 
     spec:RegisterHook( "reset_precast", function ()
-        state.soul_shards.actual = nil
+        soul_shards.actual = nil
     
-        local now = state.now
         local icd = 25
 
         if now - last_sindorei_spite < icd then
-            state.cooldown.sindorei_spite_icd.applied = last_sindorei_spite
-            state.cooldown.sindorei_spite_icd.expires = last_sindorei_spite + icd
-            state.cooldown.sindorei_spite_icd.duration = icd
+            cooldown.sindorei_spite_icd.applied = last_sindorei_spite
+            cooldown.sindorei_spite_icd.expires = last_sindorei_spite + icd
+            cooldown.sindorei_spite_icd.duration = icd
         end
     end)
     
@@ -517,7 +516,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             toggle = "cooldowns",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 463286,
 
             talent = "dark_soul_misery",

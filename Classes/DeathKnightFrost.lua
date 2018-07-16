@@ -244,22 +244,22 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     local spendHook = function( amt, resource )
         if amt > 0 and resource == "runes" then
-            local r = state.runes
+            local r = runes
             r.actual = nil
 
             r.spend( amt )
 
-           state.gain( amt * 10, "runic_power" )
+            gain( amt * 10, "runic_power" )
 
-            if state.talent.gathering_storm.enabled and state.buff.remorseless_winter.up then
-                state.buff.remorseless_winter.expires = state.buff.remorseless_winter.expires + ( 0.5 * amt )
+            if talent.gathering_storm.enabled and buff.remorseless_winter.up then
+                buff.remorseless_winter.expires = buff.remorseless_winter.expires + ( 0.5 * amt )
             end
         
         elseif amt > 0 and resource == "runic_power" then
-            if state.set_bonus.tier20_2pc == 1 and state.buff.pillar_of_frost.up then
+            if set_bonus.tier20_2pc == 1 and buff.pillar_of_frost.up then
                 virtual_rp_spent_since_pof = virtual_rp_spent_since_pof + amt
 
-                state.applyBuff( "pillar_of_frost", state.buff.pillar_of_frost.remains + floor( virtual_rp_spent_since_pof / 60 ) )
+                applyBuff( "pillar_of_frost", buff.pillar_of_frost.remains + floor( virtual_rp_spent_since_pof / 60 ) )
                 virtual_rp_spent_since_pof = virtual_rp_spent_since_pof % 60
             end
         end
@@ -269,7 +269,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     local gainHook = function( amt, resource )
         if resource == 'runes' then
-            local r = state.runes
+            local r = runes
             r.actual = nil
 
             r.gain( amt )

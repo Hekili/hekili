@@ -159,7 +159,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     spec:RegisterHook( "reset_precast", function()
         local i = 1
         while dreadstalkers[ i ] do
-            if dreadstalkers[ i ] < state.now then
+            if dreadstalkers[ i ] < now then
                 table.remove( dreadstalkers, i )
             else
                 i = i + 1
@@ -172,7 +172,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         i = 1
         while( vilefiend[ i ] ) do
-            if vilefiend[ i ] < state.now then
+            if vilefiend[ i ] < now then
                 table.remove( vilefiend, i )
             else
                 i = i + 1
@@ -183,19 +183,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         for n, t in ipairs( vilefiend ) do vilefiend_v[ n ] = t end
 
 
-        --[[ i = 1
-        while( wild_imps[ i ] ) do
-            if wild_imps[ i ] < state.now then
-                table.remove( wild_imps, i )
-            else
-                i = i + 1
-            end
-        end
-
-        for n, t in ipairs( wild_imps ) do wild_imps_v[ n ] = t end ]]
-
         for id, imp in pairs( imps ) do
-            if imp.expires < state.now then
+            if imp.expires < now then
                 imps[ id ] = nil
             end
         end
@@ -207,7 +196,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         i = 1
         while( demonic_tyrant[ i ] ) do
-            if demonic_tyrant[ i ] < state.now then
+            if demonic_tyrant[ i ] < now then
                 table.remove( demonic_tyrant, i )
             else
                 i = i + 1
@@ -220,7 +209,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         i = 1
         while( other_demon[ i ] ) do
-            if other_demon[ i ] < state.now then
+            if other_demon[ i ] < now then
                 table.remove( other_demon, i )
             else
                 i = i + 1
@@ -233,8 +222,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if resource == "soul_shard" and state.buff.nether_portal.up then
-            state.summon_demon( "other", 15, amt )
+        if resource == "soul_shard" and buff.nether_portal.up then
+            summon_demon( "other", 15, amt )
         end
     end )
 

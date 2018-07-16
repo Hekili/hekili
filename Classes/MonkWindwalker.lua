@@ -295,8 +295,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     spec:RegisterHook( "runHandler", function( key, noStart )
         if combos[ key ] then
-            if last_combo == key then state.removeBuff( "hit_combo" )
-            else state.addStack( "hit_combo", 10, 1 ) end
+            if last_combo == key then removeBuff( "hit_combo" )
+            else addStack( "hit_combo", 10, 1 ) end
 
             virtual_combo = key
         end
@@ -306,35 +306,35 @@ if UnitClassBase( 'player' ) == 'MONK' then
     local chiSpent = 0
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if state.talent.spiritual_focus.enabled then
+        if talent.spiritual_focus.enabled then
             chiSpent = chiSpent + amt           
-            state.cooldown.storm_earth_and_fire.expires = max( 0, state.cooldown.storm_earth_and_fire.expires - floor( chiSpent / 2 ) )
+            cooldown.storm_earth_and_fire.expires = max( 0, cooldown.storm_earth_and_fire.expires - floor( chiSpent / 2 ) )
             chiSpent = chiSpent % 2
         end
 
-        if state.level < 116 then
-            if state.equipped.the_emperors_capacitor and resource == 'chi' then
-                state.addStack( "the_emperors_capacitor", 30, 1 )
+        if level < 116 then
+            if equipped.the_emperors_capacitor and resource == 'chi' then
+                addStack( "the_emperors_capacitor", 30, 1 )
             end
         end
     end )
 
     spec:RegisterHook( "reset_precast", function ()
         chiSpent = 0
-        if state.prev_gcd[1].tiger_palm and ( class.abilities.tiger_palm.lastCast == 0 or state.combat == 0 or class.abilities.tiger_palm.lastCast < state.combat ) then
-            state.prev_gcd.override = "none"
-            state.prev.override = "none"
+        if prev_gcd[1].tiger_palm and ( class.abilities.tiger_palm.lastCast == 0 or combat == 0 or class.abilities.tiger_palm.lastCast < combat ) then
+            prev_gcd.override = "none"
+            prev.override = "none"
         end
-        state.spinning_crane_kick.count = nil
+        spinning_crane_kick.count = nil
         virtual_combo = nil
     end )
     
 
     spec:RegisterHook( "IsUsable", function( spell )
-        if state.talent.hit_combo.enabled and state.buff.hit_combo.up then
+        if talent.hit_combo.enabled and buff.hit_combo.up then
             if spell == 'tiger_palm' then
                 local lc = class.abilities[ spell ].lastCast or 0                
-                if ( state.combat == 0 or lc >= state.combat ) and last_combo == spell then return false end
+                if ( combat == 0 or lc >= combat ) and last_combo == spell then return false end
             elseif last_combo == spell then return false end
         end
     end )
@@ -343,7 +343,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterStateTable( "spinning_crane_kick", setmetatable( { onReset = function( self ) self.count = nil end },
         { __index = function( t, k )
                 if k == 'count' then
-                    t[ k ] = max( GetSpellCount( state.action.spinning_crane_kick.id ), state.active_dot.mark_of_the_crane )
+                    t[ k ] = max( GetSpellCount( action.spinning_crane_kick.id ), active_dot.mark_of_the_crane )
                     return t[ k ]
                 end
         end } ) )

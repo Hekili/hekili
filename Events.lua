@@ -843,7 +843,6 @@ local function StoreKeybindInfo( page, key, aType, id )
 
     elseif aType == "macro" then
         local sID = GetMacroSpell( id )
-
         ability = sID and class.abilities[ sID ] and class.abilities[ sID ].key
     
     elseif aType == "item" then

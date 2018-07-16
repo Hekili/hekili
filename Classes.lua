@@ -59,6 +59,7 @@ local HekiliSpecMixin = {
             end
         end
 
+        self.primaryResource = self.primaryResource or resource
         self.resources[ resource ] = r
 
         CommitKey( resource )
@@ -232,13 +233,11 @@ local HekiliSpecMixin = {
         self.potion = potion
     end,
 
-    RegisterHook = function( self, event, func )
-        self.hooks[ event ] = self.hooks[ event ] or {}
-        
-        -- func = setfenv( func, state )
-        table.insert( self.hooks[ event ], func )
+    RegisterHook = function( self, hook, func )
+        self.hooks[ hook ] = self.hooks[ hook ] or {}
+        self.hooks[ hook ] = setfenv( func, state )
     end,
-
+    
     RegisterAbility = function( self, ability, data )
         CommitKey( ability )
 
@@ -381,11 +380,6 @@ local HekiliSpecMixin = {
         RegisterEvent( event, function( ... )
             if state.spec.id == self.id then func( ... ) end
         end )
-    end,
-
-    RegisterHook = function( self, hook, func )
-        self.hooks[ hook ] = self.hooks[ hook ] or {}
-        self.hooks[ hook ] = setfenv( func, state )
     end,
 }
 
@@ -619,6 +613,7 @@ function Hekili:NewSpecialization( specID, name, texture )
         class = pClass,
 
         resources = {},
+        primaryResource = nil,
         
         talents = {},
         pvptalents = {},
@@ -961,7 +956,38 @@ all:RegisterAuras( {
         id = 58984,
         duration = 3600,
     },
- 
+
+    ferocity_of_the_frostwolf = {
+        id = 274741,
+        duration = 15,
+    },
+
+    might_of_the_blackrock = {
+        id = 274742,
+        duration = 15,
+    },
+
+    zeal_of_the_burning_blade = {
+        id = 274740,
+        duration = 15,
+    },
+
+    rictus_of_the_laughing_skull = {
+        id = 274739,
+        duration = 15,
+    },
+
+    ancestral_call = {
+        duration = 15,
+        alias = { "ferocity_of_the_frostwolf", "might_of_the_blackrock", "zeal_of_the_burning_blade", "rictus_of_the_laughing_skull" },
+        aliasMode = "first",
+        duration = 15,
+    },
+
+    fireblood = {
+        id = 273104,
+        duration = 8,
+    }
 } )
 
 
@@ -992,7 +1018,17 @@ all:RegisterAbilities( {
         known = function () return true end,
     },
 
-    -- setGCD?
+    ancestral_call = {
+        id = 274738,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        usable = function () return race.maghar_orc end,
+        handler = function ()
+            applyBuff( "ancestral_call" )
+        end,
+    },
 
     berserking = {
         id = 26297,
@@ -1080,6 +1116,19 @@ all:RegisterAbilities( {
         usable = function () return race.lightforged_draenei end,
 
         toggle = 'cooldowns',
+    },
+
+
+    fireblood = {
+        id = 265221,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        toggle = "cooldowns",
+
+        usable = function () return race.dark_iron_dwarf end,
+        handler = function () applyBuff( "fireblood" ) end,            
     },
 
 
@@ -2086,6 +2135,8 @@ function Hekili:SpecializationChanged()
                     class.resources[ res ] = model
                     state[ res ] = model.state
                 end
+
+                class.primaryResource = spec.primaryResource
 
                 for talent, id in pairs( spec.talents ) do
                     class.talents[ talent ] = id

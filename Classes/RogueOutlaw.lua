@@ -15,7 +15,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterResource( Enum.PowerType.ComboPoints )
     spec:RegisterResource( Enum.PowerType.Energy, {
         blade_rush = {
-            resource = 'energy',
             aura = 'blade_rush',
 
             last = function ()
@@ -236,7 +235,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
         roll_the_bones = {
             alias = rtb_buff_list,
-            aliasMode = 'first', -- use duration info from the first buff that's up, as they should all be equal.
+            aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
+            aliasType = "buff",
             duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
         },
     } )
@@ -292,12 +292,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         local a = class.abilities[ ability ]
 
         if a and a.startsCombat then
-            state.removeBuff( "stealth" )
-            state.removeBuff( "shadowmeld" )
-            state.setCooldown( "stealth", 2 )
+            removeBuff( "stealth" )
+            removeBuff( "shadowmeld" )
+            setCooldown( "stealth", 2 )
 
-            if level < 116 and state.equipped.mantle_of_the_master_assassin then
-                state.applyBuff( "master_assassins_initiative", 5 )
+            if level < 116 and equipped.mantle_of_the_master_assassin then
+                applyBuff( "master_assassins_initiative", 5 )
             end
         end
     end )

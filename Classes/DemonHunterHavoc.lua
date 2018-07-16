@@ -263,21 +263,20 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         last_metamorphosis = 0
         last_eye_beam = 0
 
-
         local rps = 0
 
-        if state.equipped.convergence_of_fates then
+        if equipped.convergence_of_fates then
             rps = rps + ( 3 / ( 60 / 4.35 ) )
         end
 
-        if state.equipped.delusions_of_grandeur then
+        if equipped.delusions_of_grandeur then
             -- From SimC model, 1/13/2018.
-            local fps = 10.2 + ( state.talent.demonic.enabled and 1.2 or 0 ) + ( ( level < 116 and state.equipped.anger_of_the_halfgiants ) and 1.8 or 0 )
+            local fps = 10.2 + ( talent.demonic.enabled and 1.2 or 0 ) + ( ( level < 116 and equipped.anger_of_the_halfgiants ) and 1.8 or 0 )
 
-            if level < 116 and state.set_bonus.tier19_2pc > 0 then fps = fps * 1.1 end
+            if level < 116 and set_bonus.tier19_2pc > 0 then fps = fps * 1.1 end
 
             -- SimC uses base haste, we'll use current since we recalc each time.
-            fps = fps / state.haste
+            fps = fps / haste
 
             -- Chaos Strike accounts for most Fury expenditure.
             fps = fps + ( ( fps * 0.9 ) * 0.5 * ( 40 / 100 ) )
@@ -285,14 +284,14 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             rps = rps + ( fps / 30 ) * ( 1 )
         end
 
-        state.meta_cd_multiplier = 1 / ( 1 + rps )
+        meta_cd_multiplier = 1 / ( 1 + rps )
     end )
 
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if level < 116 and state.equipped.delusions_of_grandeur and resource == 'fury' then
+        if level < 116 and equipped.delusions_of_grandeur and resource == 'fury' then
             -- revisit this if really needed... 
-            state.cooldown.metamorphosis.expires = state.cooldown.metamorphosis.expires - ( amt / 30 )
+            cooldown.metamorphosis.expires = cooldown.metamorphosis.expires - ( amt / 30 )
         end
     end )
 

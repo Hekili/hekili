@@ -193,15 +193,15 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     local spendHook = function( amt, resource )
         if amt > 0 and resource == "runes" then
-            local r = state.runes
+            local r = runes
             r.actual = nil
 
             r.spend( amt )
 
-            state.gain( amt * 10, "runic_power" )
+            gain( amt * 10, "runic_power" )
 
-            if state.set_bonus.tier20_4pc == 1 then
-                state.cooldown.army_of_the_dead.expires = max( 0, state.cooldown.army_of_the_dead.expires - 1 )
+            if set_bonus.tier20_4pc == 1 then
+                cooldown.army_of_the_dead.expires = max( 0, cooldown.army_of_the_dead.expires - 1 )
             end
         
         end
@@ -212,7 +212,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     
     local gainHook = function( amt, resource )
         if resource == 'runes' then
-            local r = state.runes
+            local r = runes
             r.actual = nil
 
             r.gain( amt )

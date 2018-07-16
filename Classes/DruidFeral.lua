@@ -377,13 +377,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     end )
 
     local function comboSpender( a, r )
-        if r == "combo_points" and a > 0 and state.talent.soul_of_the_forest.enabled then
-            state.gain( a * 5, "energy" )
+        if r == "combo_points" and a > 0 and talent.soul_of_the_forest.enabled then
+            gain( a * 5, "energy" )
         end
     end
 
     spec:RegisterHook( "spend", comboSpender )
-    spec:RegisterHook( "spendResources", comboSpender )
+    -- spec:RegisterHook( "spendResources", comboSpender )
 
 
     -- Legendaries.  Ugh.

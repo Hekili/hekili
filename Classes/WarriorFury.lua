@@ -122,9 +122,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local rageSpent = 0
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if state.talent.recklessness.enabled and resource == "rage" then
+        if talent.recklessness.enabled and resource == "rage" then
             rageSpent = rageSpent + amt
-            state.cooldown.recklessness.expires = state.cooldown.recklessness.expires - floor( rageSpent / 20 )
+            cooldown.recklessness.expires = cooldown.recklessness.expires - floor( rageSpent / 20 )
             rageSpent = rageSpent % 20
         end
     end )

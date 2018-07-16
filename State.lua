@@ -397,6 +397,7 @@ state.print = print
 state.GetItemCount = GetItemCount
 state.GetTotemInfo = GetTotemInfo
 state.IsUsableSpell = IsUsableSpell
+state.IsPlayerSpell = IsPlayerSpell
 state.UnitBuff = UnitBuff
 state.UnitDebuff = UnitDebuff
 state.UnitCanAttack = UnitCanAttack
@@ -1120,7 +1121,7 @@ ns.metatables.mt_false = mt_false
 
 -- Gives calculated values for some state options in order to emulate SimC syntax.
 local mt_state = {
-    __index = function(t, k)
+    __index = function( t, k )
 
         if metafunctions.state[ k ] then
             return metafunctions.state[ k ]()
@@ -1230,15 +1231,6 @@ local mt_state = {
 
         elseif k == 'in_flight' then return t.action[ t.this_action ].in_flight
             
-        --[[ elseif k == 'single' then
-            return t.toggle.mode == 0 or ( t.toggle.mode == 3 and active_enemies == 1 )
-            
-        elseif k == 'cleave' or k == 'auto' then
-            return t.toggle.mode == 3
-            
-        elseif k == 'aoe' then
-            return t.toggle.mode == 2 ]]
-            
         elseif type(k) == 'string' and k:sub(1, 16) == 'incoming_damage_' then
             local remains = k:sub(17)
             local time = remains:match("^(%d+)[m]?s")
@@ -1257,7 +1249,7 @@ local mt_state = {
             end
             
             table.insert( t.purge, k )
-            return t[k]
+            return t[ k ]
             
         elseif k:sub(1, 14) == 'incoming_heal_' then
             local remains = k:sub(15)
@@ -1271,16 +1263,15 @@ local mt_state = {
             time = tonumber( time )
             
             if time > 100 then
-                t.k = ns.healingInLast( time / 1000 )
+                t[ k ] = ns.healingInLast( time / 1000 )
             else
-                t.k = ns.healingInLast( min( 15, time ) )
+                t[ k ] = ns.healingInLast( min( 15, time ) )
             end
             
             table.insert( t.purge, k )
-            return t.k
+            return t[ k ]
             
         end
-
 
         -- The next block are values that reference an ability.
         local action = t.this_action
@@ -1343,7 +1334,7 @@ local mt_state = {
             return t.cooldown[ action ].recharge_time
             
         elseif k == 'cast_regen' then
-            return max( t.gcd, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen
+            return max( ability.gcd ~= "off" and t.gcd or 0, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen
             
         elseif k == 'prowling' then
             return t.buff.prowl.up or ( t.buff.cat_form.up and t.buff.shadowform.up )
@@ -1872,11 +1863,11 @@ local mt_default_cooldown = {
         local profile = Hekili.DB.profile
         local id = ability.id
        
-        if ability and ability.item then
+        if ability and rawget( ability, "item" ) then
             GetSpellCooldown = _G.GetItemCooldown
             id = ability.item
         end
-        
+
         if k == 'duration' or k == 'expires' or k == 'next_charge' or k == 'charge' or k == 'recharge_began' then
             -- Refresh the ID in case we changed specs and ability is spec dependent.
             t.id = ability.id
@@ -1959,7 +1950,7 @@ local mt_default_cooldown = {
             return class.abilities[ t.key ].recharge
             
         elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
-            return ( t.max_charges - t.charges_fractional ) * class.abilities[ t.key ].recharge
+            return ( ability.charges - t.charges_fractional ) * ability.recharge
             
         elseif k == 'remains' then            
             if t.key == 'global_cooldown' then
@@ -1985,18 +1976,16 @@ local mt_default_cooldown = {
             
         elseif k == 'charges_fractional' then
             if not state:IsKnown( t.key ) then return 1 end
-
-            if state:IsDisabled( t.key ) then
-                return 0
-            end
+            if state:IsDisabled( t.key ) then return 0 end
             
-            if class.abilities[ t.key ].charges then 
-                if t.charge < class.abilities[ t.key ].charges then
-                    return min( class.abilities[ t.key ].charges, t.charge + ( max( 0, state.query_time - t.recharge_began ) / t.recharge ) )
+            if ability.charges then 
+                if t.charge < ability.charges then
+                    return min( ability.charges, t.charge + ( max( 0, state.query_time - t.recharge_began ) / t.recharge ) )
                     -- return t.charges + ( 1 - ( class.abilities[ t.key ].recharge - t.recharge_time ) / class.abilities[ t.key ].recharge )
                 end
                 return t.charge
             end
+
             return t.remains > 0 and 0 or 1
             
         elseif k == 'recharge_time' then
@@ -2106,9 +2095,9 @@ ns.metatables.mt_cooldowns = mt_cooldowns
 local mt_dot = {
     __index = function(t, k)
         if class.auras[k] and class.auras[k].friendly then
-            return state.buff[k]
+            return state.buff[ k ]
         end
-        return state.debuff[k]
+        return state.debuff[ k ]
     end,
 }
 ns.metatables.mt_dot = mt_dot
@@ -2401,7 +2390,8 @@ local mt_alias_buff = {
             end
         end
 
-        return alias and alias[ k ] or state[ type ][ aura.alias[1] ][ k ]
+        if alias then return alias[ k ]
+        else return state[ type ][ aura.alias[1] ][ k ] end
     end 
 }
 
@@ -2862,8 +2852,7 @@ local mt_alias_debuff = {
 
         for i, v in ipairs( aura.alias ) do
             local child = state[ type ][ v ]
-            if not alias and mode == "first" and child.up then
-                return child[ k ] end
+            if not alias and mode == "first" and child.up then return child[ k ] end
 
             if child.up then
                 if mode == "shortest" and ( not alias or child.remains < alias.remains ) then alias = child
@@ -2871,7 +2860,8 @@ local mt_alias_debuff = {
             end
         end
 
-        return alias and alias[ k ] or state[ type ][ aura.alias[1] ][ k ]
+        if alias then return alias[ k ]
+        else return state[ type ][ aura.alias[1] ][ k ] end
     end 
 }
 
@@ -2892,7 +2882,7 @@ local default_debuff_values = {
 -- Table of default handlers for debuffs.
 -- Needs review.
 local mt_default_debuff = {
-    __index = function(t, k)
+    __index = function( t, k )
         local class_aura = class.auras[ t.key ]
         
         if k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
@@ -3000,8 +2990,7 @@ local unknown_debuff = setmetatable( {
 -- Needs review.
 local mt_debuffs = {
     -- The debuff/ doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
-    __index = function( t, k )
-        
+    __index = function( t, k )        
         local aura = class.auras[ k ]
 
         if aura then       
@@ -3020,7 +3009,6 @@ local mt_debuffs = {
             end
         
         else
-            error(k)
             t[ k ] = {
                 key = k,
                 name = k
@@ -3039,6 +3027,8 @@ local mt_debuffs = {
     end, 
     
     __newindex = function( t, k, v )
+        local aura = class.auras[ k ]
+
         if aura and aura.alias then
             rawset( t, k, setmetatable( v, mt_alias_debuff ) )
             return
@@ -3056,6 +3046,7 @@ local mt_default_action = {
     __index = function(t, k)
 
         local aura = class.abilities[ t.action ].aura or t.action
+        local ability = class.abilities[ t.action ]
 
         if k == 'enabled' then
             return state:IsKnown( t.action )            

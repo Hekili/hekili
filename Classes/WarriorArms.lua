@@ -200,15 +200,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local rageSpent = 0
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if state.talent.anger_management.enabled and resource == "rage" then
+        if talent.anger_management.enabled and resource == "rage" then
             rageSpent = rageSpent + amt
             local reduction = floor( rageSpent / 20 )
             rageSpent = rageSpent % 20
 
             if reduction > 0 then
-                state.cooldown.colossus_smash.expires = state.cooldown.colossus_smash.expires - reduction
-                state.cooldown.bladestorm.expires = state.cooldown.bladestorm.expires - reduction
-                state.cooldown.warbreaker.expires = state.cooldown.warbreaker.expires - reduction
+                cooldown.colossus_smash.expires = cooldown.colossus_smash.expires - reduction
+                cooldown.bladestorm.expires = cooldown.bladestorm.expires - reduction
+                cooldown.warbreaker.expires = cooldown.warbreaker.expires - reduction
             end
         end
     end )
