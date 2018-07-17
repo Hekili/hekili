@@ -25,13 +25,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
             end,
 
-            stop = function ()
-                local swing = state.swings.mainhand
-                local t = state.query_time
-
-                return t - swing > state.swings.mainhand_speed * 1.5
-            end,
-
             interval = 'mainhand_speed',
             value = 5
         },
@@ -45,13 +38,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 local t = state.query_time
 
                 return swing + ( floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed )
-            end,
-
-            stop = function ()
-                local swing = state.swings.offhand
-                local t = state.query_time
-
-                return t - swing > state.swings.offhand_speed * 1.5
             end,
 
             interval = 'offhand_speed',
@@ -77,6 +63,20 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             interval = 1,
             value = -3,
         },
+
+        ls_overcharge = {
+            aura = "lightning_shield_overcharge",
+
+            last = function ()
+                local app = state.buff.lightning_shield_overcharge.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 1,
+            value = 10
+        }
     } )
 
 
@@ -243,6 +243,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         lightning_shield = {
             id = 192106,
             duration = 3600,
+            max_stack = 20,
+        },
+
+        lightning_shield_overcharge = {
+            id = 273323,
+            duration = 10,
+            max_stack = 1,
         },
 
         molten_weapon = {
@@ -677,6 +684,15 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             usable = function() return buff.ascendance.down end,
             handler = function ()
                 removeBuff( 'stormbringer' )
+
+                if buff.lightning_shield.up then
+                    addStack( "lightning_shield", 3600, 2 )
+                    if buff.lightning_shield.stack >= 20 then
+                        applyBuff( "lightning_shield" )
+                        applyBuff( "lightning_shield_overcharge" )
+                    end
+                end
+
                 setCooldown( 'windstrike', action.stormstrike.cooldown )
                 setCooldown( 'strike', action.stormstrike.cooldown )
     
