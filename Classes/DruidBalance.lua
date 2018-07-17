@@ -87,6 +87,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         celestial_alignment = {
             id = 194223,
+            duration = 15,
+            max_stacks = 1,
         },
         dash = {
             id = 1850,
@@ -108,20 +110,59 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         fury_of_elune = {
             id = 202770,
+            duration = 8,
+            max_stacks = 1,
         },
         incarnation_chosen_of_elune = {
             id = 102560,
+            duration = 30,
+            max_stacks = 1,
         },
         ironfur = {
             id = 192081,
         },
+        lunar_empowerment = {
+            id = 164547,
+            duration = 40,
+            max_stacks = 3,
+        },
+        moonfire = {
+            id = 164812,
+            duration = 22,
+            max_stack = 1,
+        },
         moonkin_form = {
             id = 24858,
-            duration = 3600,
-            max_stack = 1,
+        },
+        owlkin_frenzy = {
+            id = 157228,
+            duration = 10,
+            max_stacks = 1,
+        },
+        solar_empowerment = {
+            id = 164545,
+            duration = 40,
+            max_stacks = 3,
         },
         starfall = {
             id = 191034,
+            duration = 8,
+            max_stacks = 1,
+        },
+        starlord = {
+            id = 279709,
+            duration = 20,
+            max_stacks = 3,
+        },
+        stellar_flare = {
+            id = 202347,
+            duration = 24,
+            max_stacks = 1,
+        },
+        sunfire = {
+            id = 164815,
+            duration = 18,
+            max_stack = 1,
         },
         thick_hide = {
             id = 16931,
@@ -134,12 +175,29 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         warrior_of_elune = {
             id = 202425,
+            max_stack = 3,
         },
         wild_charge = {
             id = 102401,
         },
         yseras_gift = {
             id = 145108,
+        },
+        --[[
+            Legion Legendaries and gear
+        ]]
+        oneths_overconfidence = {
+            id = 209407,
+            max_stacks = 1,
+        },
+        oneths_intuition = {
+            id = 209406,
+            max_stacks = 1,
+        },
+        solar_solstice = {
+            id = 252767,
+            duration = 6,
+            max_stacks = 1,
         },
     } )
 
@@ -193,10 +251,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 180,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 136060,
+                
+            toggle = 'cooldowns',
+            notalent = 'incarnation',
             
             handler = function ()
+                applyBuff( 'celestial_alignment' )
             end,
         },
         
@@ -254,6 +316,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
+                
+            spend = -20,
+            spendType = 'astral_power',
             
             startsCombat = true,
             texture = 132129,
@@ -292,6 +357,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 132123,
             
             handler = function ()
+                applyDebuff( 'target', 'fury_of_elune' )
             end,
         },
         
@@ -333,10 +399,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 180,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 571586,
+                
+            toggle = 'cooldowns',
+            talent = 'incarnation',
             
             handler = function ()
+                applyBuff( 'incarnation' )
             end,
         },
         
@@ -374,14 +444,20 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         lunar_strike = {
             id = 194153,
-            cast = 2.25,
+            cast = function()
+                return ( 2.25 * haste )
+            end,
             cooldown = 0,
             gcd = "spell",
+                
+            spend = -12,
+            spendType = 'astral_power',
             
             startsCombat = true,
             texture = 135753,
             
             handler = function ()
+                removeStack( 'lunar_empowerment' )
             end,
         },
         
@@ -434,15 +510,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 0.06,
-            spendType = "mana",
+            spend = -3,
+            spendType = 'astral_power',
             
             startsCombat = true,
             texture = 136096,
             
             handler = function ()
                 applyDebuff( "target", "moonfire" )
-                gain( 3, "astral_power" )
+                --gain( 3, "astral_power" ) -- not convinced about this
             end,
         },
         
@@ -453,10 +529,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 136036,
             
             handler = function ()
+                applyBuff( "moonkin_form" )
             end,
         },
         
@@ -660,14 +737,20 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         solar_wrath = {
             id = 190984,
-            cast = 1.5,
+            cast = function()
+                return ( 1.5 * haste )
+            end,
             cooldown = 0,
             gcd = "spell",
+                
+            spend = -8,
+            spendType = 'astral_power',
             
             startsCombat = true,
             texture = 535045,
             
             handler = function ()
+                removeStack( 'solar_empowerment' )
             end,
         },
         
@@ -695,13 +778,20 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 40,
+            spend = function()
+                if talent.stellar_drift.enabled then
+                    return 40
+                else
+                    return 50
+                end
+            end,
             spendType = "astral_power",
             
             startsCombat = true,
             texture = 236168,
             
             handler = function ()
+                applyBuff( 'starfall', 8 )
             end,
         },
         
@@ -719,20 +809,28 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 135730,
             
             handler = function ()
+                addStack( 'solar_empowerment', 40, 1 )
+                addStack( 'lunar_empowerment', 40, 1 )
             end,
         },
         
 
         stellar_flare = {
             id = 202347,
-            cast = 1.5,
+            cast = function()
+                return 1.5 * haste
+            end,
             cooldown = 0,
             gcd = "spell",
+                
+            spend = -8,
+            spendType = 'astral_power',
             
             startsCombat = true,
             texture = 1052602,
             
             handler = function ()
+                applyDebuff( 'target', 'stellar_flare' )
             end,
         },
         
@@ -743,13 +841,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 0.12,
-            spendType = "mana",
+            spend = -3,
+            spendType = 'astral_power',
             
             startsCombat = true,
             texture = 236216,
             
             handler = function ()
+                applyDebuff( 'target', 'sunfire' )
             end,
         },
         
@@ -867,10 +966,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 45,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 135900,
             
             handler = function ()
+                applyBuff( 'warrior_of_elune' )
             end,
         },
         
@@ -922,9 +1022,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
 
     spec:RegisterOptions( {
-        enabled = false,
+        enabled = true,
 
-        aoe = 2,
+        aoe = 3,
     
         nameplates = false,
         nameplateRange = 8,
