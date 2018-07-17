@@ -65,7 +65,6 @@ state.item_cd = {}
 state.debuff = {}
 state.dot = {}
 state.equipped = {}
-state.glyph = {}
 state.perk = {}
 state.pet = {
     fake_pet = {
@@ -409,6 +408,7 @@ state.table_insert = table.insert
 state.ipairs = ipairs
 state.pairs = pairs
 state.type = type
+state.tonumber = tonumber
 state.rawget = rawget
 state.rawset = rawset
 
@@ -999,13 +999,11 @@ ns.forecastResources = forecastResources
 
 
 local function gain( amount, resource, overcap )
-
     -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     if overcap then state[ resource ].actual = state[ resource ].current + amount
     else state[ resource ].actual = min( state[ resource ].max, state[ resource ].current + amount ) end
     ns.callHook( 'gain', amount, resource, overcap )
     if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
-
 end
 state.gain = gain
 
@@ -1078,10 +1076,8 @@ local metafunctions = {
     default_aura = {},
     default_cooldown = {},
     default_debuff = {},
-    default_glyph = {},
     default_pet = {},
     default_totem = {},
-    glyph = {},
     perk = {},
     pet = {},
     resource = {},
@@ -2440,7 +2436,7 @@ local mt_default_buff = {
         elseif k == 'up' or k == 'ticking' or k == 'react' then
             return t.count > 0 and t.expires >= state.query_time
 
-        elseif k == 'i_up' then
+        elseif k == 'i_up' or k == 'rank' then
             return ( t.count > 0 and t.expires >= state.query_time ) and 1 or 0
             
         elseif k == 'down' then
@@ -2594,29 +2590,33 @@ local mt_buffs = {
 ns.metatables.mt_buffs = mt_buffs
 
 
--- The empty glyph table.
-local null_glyph = {
-    enabled = false
+local mt_default_talent = {
+    __index = function( t, k )
+        if k == 'i_enabled' or k == 'rank' then return t.enabled and 1 or 0 end
+        return k
+    end,
 }
-ns.metatables.null_glyph = null_glyph
+ns.metatables.mt_default_talent = mt_default_talent
 
 
--- Table for checking if a glyph is active.
--- If the value wasn't specifically added by the addon, then it returns an empty glyph.
-local mt_glyphs = {
-    __index = function(t, k)
-        return ( null_glyph )
-    end
-}
-ns.metatables.mt_glyphs = mt_glyphs
+local null_talent = setmetatable( {
+    enabled = false,
+}, mt_default_talent )
+ns.metatables.null_talent = null_talent
 
 
--- Table for checking if a talent is active. Conveniently reuses the glyph metatable.
--- If the value wasn't specifically added by the addon, then it returns an empty glyph.
 local mt_talents = {
-    __index = function(t, k)
-        return ( null_glyph )
-    end
+    __index = function( t, k )
+        return ( null_talent )
+    end,
+
+    __newindex = function( t, k, v )
+        if type( v ) == 'table' then
+            rawset( t, k, setmetatable( v, mt_default_talent ) )
+            return
+        end
+        rawset( t, k, v )
+    end,
 }
 ns.metatables.mt_talents = mt_talents
 
@@ -2626,7 +2626,7 @@ local mt_default_pvptalent = {
         local enlisted = state.buff.enlisted.up
 
         if k == 'enabled' then return enlisted and t._enabled or false
-        elseif k == 'i_enabled' then return ( enlisted and t._enabled ) and 1 or 0 end
+        elseif k == 'i_enabled' or k == 'rank' then return ( enlisted and t._enabled ) and 1 or 0 end
 
         return k
     end,
@@ -2678,7 +2678,7 @@ state.artifact.no_trait = { rank = 0 }
 
 local mt_perks = {
     __index = function(t, k)
-        return ( null_glyph )
+        return ( null_talent )
     end
 }
 ns.metatables.mt_perks = mt_perks
@@ -2919,7 +2919,7 @@ local mt_default_debuff = {
             return ( t.count > 0 and t.expires >= state.query_time )
 
 
-        elseif k == 'i_up' then
+        elseif k == 'i_up' or k == 'rank' then
             return ( t.count > 0 and t.expires >= state.query_time ) and 1 or 0
 
         elseif k == 'down' then
@@ -3237,7 +3237,6 @@ setmetatable( state.debuff, mt_debuffs )
 setmetatable( state.dot, mt_dot )
 setmetatable( state.equipped, mt_equipped )
 -- setmetatable( state.health, mt_resource )
-setmetatable( state.glyph, mt_glyphs )
 setmetatable( state.perk, mt_perks )
 setmetatable( state.pet, mt_pets )
 setmetatable( state.pet.fake_pet, mt_default_pet )
@@ -3572,7 +3571,7 @@ function state.reset( dispName )
     end
 
     for k in pairs( class.stateTables ) do
-        if state[ k ].onReset then state[ k ].onReset( state[ k ] ) end
+        if rawget( state[ k ], "onReset" ) then state[ k ].onReset( state[ k ] ) end
     end
     
     for k in pairs( state.totem ) do
