@@ -262,7 +262,6 @@ function ns.updateTalents()
 
     for k, _ in pairs( state.talent ) do
         state.talent[ k ].enabled = false
-        state.talent[ k ].i_enabled = 0
     end
 
     -- local specGroup = GetSpecialization()
@@ -279,10 +278,8 @@ function ns.updateTalents()
 
         if rawget( state.talent, k ) then
             state.talent[ k ].enabled = enabled
-            state.talent[ k ].i_enabled = enabled and 1 or 0
         else state.talent[ k ] = {
                 enabled = enabled,
-                i_enabled = enabled and 1 or 0
             }
         end
     end
@@ -505,9 +502,9 @@ ns.cpuProfile.spellcastEvents = spellcastEvents
 
 
 -- Need to make caching system.
-RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
+--[[ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
     if UnitIsUnit( unit, "player" ) then Hekili:ForceUpdate( event ) end
-end )
+end ) ]]
 
 
 function ns.removeSpellFromFlight( spell )
