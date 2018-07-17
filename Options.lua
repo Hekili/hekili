@@ -2769,6 +2769,8 @@ do
 
         self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
         self.DB.profile.specs[ spec ][ option ] = val
+
+        if option == "package" then self:ForceUpdate() end
     end
 
 
@@ -2887,7 +2889,7 @@ do
                                 }
                             }
                         },
-        
+
                         spacing3 = {
                             type = "description",
                             name = " ",
@@ -2971,13 +2973,38 @@ do
                             inline = true,
                             order = 20,
                             args = {
+                                throttleRefresh = {
+                                    type = "toggle",
+                                    name = "Throttle Updates",
+                                    desc = "By default, the addon will update its recommendations after any relevant combat events.  However, some combat events can occur in rapid succession, " ..
+                                        "leading to higher CPU usage and reduced game performance.  If you choose to |cffffd100Throttle Updates|r, you can specify the |cffffd100Maximum Update Frequency|r" ..
+                                        "for this specialization.",
+                                    order = 1,
+                                    width = "full",
+                                },
+
+                                maxRefresh = {
+                                    type = "range",
+                                    name = "Maximum Update Frequency",
+                                    desc = "Specify the maximum number of times per second that the addon should update its recommendations.\n\n" ..
+                                        "If set to |cffffd1004|r, the addon will not update its recommendations more frequently than every |cffffd1000.25|r seconds.\n\n" ..
+                                        "If set to |cffffd10020|r, the addon will not update its recommendations more frequently than every |cffffd1000.05|r seconds.\n\n" ..
+                                        "The addon aims for updates every 0.1 seconds (10 updates per second) by default.",
+                                    order = 2,
+                                    width = "full",
+                                    min = 4,
+                                    max = 20,
+                                    step = 1,
+                                    disabled = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
+                                },
+
                                 strict = {
                                     type = "toggle",
                                     name = "Use Strict APL Testing",
                                     desc = "When |cFFFFD100Use Strict APL Testing|r is enabled, the addon will perform fewer checks when deciding whether to branch off to another Action Priority List.  " ..
                                         "In many cases, this will be more efficient with CPU usage, but may result in choppy recommendations depending on how your action lists have been written.",
                                     width = "full",
-                                    order = 1,
+                                    order = 5,
                                 }
                             }
                         }
@@ -3083,6 +3110,7 @@ do
         
         elseif option == 'newListName' then
             packControl.newListName = val:trim()
+            self:LoadScripts()
             return
 
         end
@@ -3537,7 +3565,7 @@ do
                                 if p.builtIn then return '|cFF00B4FF' .. pack .. '|r' end
                                 return pack
                             end,
-                            order = count,
+                            order = 1,
                             args = {
                                 spec = {
                                     type = "select",
@@ -7154,9 +7182,9 @@ local function Sanitize( segment, i, line, warnings )
         end
         
         if times > 0 then
-            table.insert( warnings, "Line " .. line .. ": Converted '" .. token .. attr .. "' to '" .. token .. "i_enabled' for mathematical comparison (" .. times .. "x)." )
+            table.insert( warnings, "Line " .. line .. ": Converted '" .. token .. attr .. "' to '" .. token .. "rank' for mathematical comparison (" .. times .. "x)." )
         end
-        i = i:gsub( '\a', token .. 'i_enabled' ) 
+        i = i:gsub( '\a', token .. 'rank' ) 
         i = i:gsub( '\v', token .. attr )
     end 
 
@@ -7194,9 +7222,9 @@ local function Sanitize( segment, i, line, warnings )
         end
         
         if times > 0 then
-            table.insert( warnings, "Line " .. line .. ": Converted '" .. token .. attr .. "' to '" .. token .. "i_up' for mathematical comparison (" .. times .. "x)." )
+            table.insert( warnings, "Line " .. line .. ": Converted '" .. token .. attr .. "' to '" .. token .. "rank' for mathematical comparison (" .. times .. "x)." )
         end
-        i = i:gsub( '\a', token .. 'i_up' ) 
+        i = i:gsub( '\a', token .. 'rank' ) 
         i = i:gsub( '\v', token .. attr )
     end 
 
