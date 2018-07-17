@@ -1432,7 +1432,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
 
     -- Override this for rechecking.
-    shadowmeld = {
+    spec:RegisterAbility( "shadowmeld", {
         id = 58984,
         cast = 0,
         cooldown = 120,
@@ -1443,7 +1443,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         handler = function ()
             applyBuff( "shadowmeld" )
         end,
-    },
+    } )
 
 
     spec:RegisterOptions( {
