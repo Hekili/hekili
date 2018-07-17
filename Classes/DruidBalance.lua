@@ -11,11 +11,13 @@ local state = Hekili.State
 if UnitClassBase( 'player' ) == 'DRUID' then
     local spec = Hekili:NewSpecialization( 102 )
 
-    spec:RegisterResource( Enum.PowerType.Rage )
     spec:RegisterResource( Enum.PowerType.LunarPower )
     spec:RegisterResource( Enum.PowerType.Mana )
-    spec:RegisterResource( Enum.PowerType.ComboPoints )
+
+    spec:RegisterResource( Enum.PowerType.Rage )
+
     spec:RegisterResource( Enum.PowerType.Energy )
+    spec:RegisterResource( Enum.PowerType.ComboPoints )
     
     -- Talents
     spec:RegisterTalents( {
