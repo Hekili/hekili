@@ -23,6 +23,20 @@ local wipe = table.wipe
 
 
 
+local specTemplate = {
+    enabled = false,
+
+    aoe = 2,
+
+    nameplates = true,
+    nameplateRange = 8,
+    
+    damage = true,
+    damageExpiration = 8,
+
+    throttleRefresh = false,
+    maxRefresh = 10,
+}
 
 
 local HekiliSpecMixin = {
@@ -374,6 +388,9 @@ local HekiliSpecMixin = {
 
     RegisterOptions = function( self, options )
         self.options = options
+        for k,v in pairs( specTemplate) do
+            if options[ k ] == nil then options[ k ] = v end
+        end
     end,
 
     RegisterEvent = function( self, event, func )
@@ -1024,6 +1041,8 @@ all:RegisterAbilities( {
         cooldown = 120,
         gcd = "off",
 
+        toggle = "cooldowns",
+
         usable = function () return race.maghar_orc end,
         handler = function ()
             applyBuff( "ancestral_call" )
@@ -1036,12 +1055,12 @@ all:RegisterAbilities( {
         cooldown = 180,
         gcd = "off",
 
+        toggle = "cooldowns",
+
         usable = function () return race.troll end,
         handler = function ()
             applyBuff( 'berserking' )
         end,
-
-        toggle = "cooldowns",
     },
 
     blood_fury = {
@@ -1053,13 +1072,13 @@ all:RegisterAbilities( {
         cast = 0,
         cooldown = 120,
         gcd = "off",
+    
+        toggle = "cooldowns",
 
         usable = function () return race.orc end,
         handler = function ()
             applyBuff( "blood_fury", 15 )
         end,
-    
-        toggle = "cooldowns",
     },
 
     arcane_torrent = {
