@@ -1869,6 +1869,15 @@ local mt_default_cooldown = {
             t.id = ability.id
             
             local start, duration = GetSpellCooldown( id )
+
+            --[[ if t.key ~= "global_cooldown" and start and duration then
+                local gcd_start, gcd_duration = GetSpellCooldown( 61304 )
+                if gcd_start + gcd_duration == start + duration then
+                    start = 0
+                    duration = 0
+                end
+            end ]]
+
             local true_duration = duration
             
             --[[ if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
