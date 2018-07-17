@@ -2581,6 +2581,8 @@ do
         source = source or impControl.source
         apl = apl or impControl.apl
 
+        impControl.warnings = ""
+
         local lists = {
             precombat = "",
             default = "",

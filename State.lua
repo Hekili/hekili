@@ -402,6 +402,7 @@ state.UnitDebuff = UnitDebuff
 state.UnitCanAttack = UnitCanAttack
 state.UnitCastingInfo = UnitCastingInfo
 state.UnitChannelInfo = UnitChannelInfo
+state.UnitIsUnit = UnitIsUnit
 state.floor = math.floor
 state.abs = math.abs
 state.table_insert = table.insert

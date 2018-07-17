@@ -1001,6 +1001,11 @@ all:RegisterAuras( {
         duration = 15,
     },
 
+    arcane_pulse = {
+        id = 260369,
+        duration = 12,        
+    },
+
     fireblood = {
         id = 273104,
         duration = 8,
@@ -1046,6 +1051,20 @@ all:RegisterAbilities( {
         usable = function () return race.maghar_orc end,
         handler = function ()
             applyBuff( "ancestral_call" )
+        end,
+    },
+
+    arcane_pulse = {
+        id = 260364,
+        cast = 0,
+        cooldown = 180,
+        gcd = "spell",
+
+        toggle = "cooldowns",
+
+        usable = function () return race.nightborne end,
+        handler = function ()
+            applyDebuff( "target", "arcane_pulse" )
         end,
     },
 
