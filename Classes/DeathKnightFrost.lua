@@ -141,55 +141,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 amount = amount and tonumber( amount )
 
                 if amount then return state:TimeToResource( t, amount ) end
-                    --[[ if amount > 6 then return 3600
-                    elseif amount <= t.current then return 0 end
-
-                    if t.forecast and t.fcount > 0 then
-                        local q = state.query_time
-                        local index, slice
-
-                        if t.times[ amount ] then return max( 0, t.times[ amount ] - q ) end
-
-                        if t.regen == 0 then
-                            for i = 1, t.fcount do
-                                local v = t.forecast[ i ]
-                                if v.v >= amount then
-                                    t.times[ amount ] = v.t
-                                    return max( 0, t.times[ amount ] - q )
-                                end
-                            end
-                            t.times[ amount ] = q + 3600
-                            return max( 0, t.times[ amount ] - q )
-                        end
-
-                        for i = 1, t.fcount do
-                            local slice = t.forecast[ i ]
-                            local after = t.forecast[ i + 1 ]
-                            
-                            if slice.v >= amount then
-                                t.times[ amount ] = slice.t
-                                return max( 0, t.times[ amount ] - q )
-
-                            elseif after and after.v >= amount then
-                                -- Our next slice will have enough resources.  Check to see if we'd regen enough in-between.
-                                local time_diff = after.t - slice.t
-                                local deficit = amount - slice.v
-                                local regen_time = t.regen > 0 and ( deficit / t.regen ) or -1
-
-                                if regen_time > 0 and regen_time < time_diff then
-                                    t.times[ amount ] = ( slice.t + regen_time )
-                                else
-                                    t.times[ amount ] = after.t
-                                end                        
-                                return max( 0, t.times[ amount ] - q )
-                            end
-                        end
-                        t.times[ amount ] = q + 3600
-                        return max( 0, t.times[ amount ] - q )
-                    end
-
-                    return max( 0, t.expiry[ amount ] - state.query_time )
-                end ]]
             end
         end
     } ) )

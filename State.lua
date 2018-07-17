@@ -1742,13 +1742,15 @@ local mt_target = {
             return false
             
         elseif k == 'in_range' then
-            local ability = state.this_action and class.abilities[ state.this_action ]
+            return t.distance <= 8
+            
+            --[[ local ability = state.this_action and class.abilities[ state.this_action ]
             
             if ability then
-                return ( not state.target.exists or LibStub( "SpellRange-1.0" ).IsSpellInRange( ability.id, 'target' ) )
+                return ( not state.target.exists or ( LibStub( "SpellRange-1.0" ).IsSpellInRange( ability.id, 'target' ) == true ) )
             end
             
-            return true
+            return true ]]
             
         elseif k == 'is_demon' then
             return UnitCreatureType( 'target' ) == PET_TYPE_DEMON
