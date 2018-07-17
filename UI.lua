@@ -926,10 +926,15 @@ do
 
         self.refreshTimer = self.refreshTimer - elapsed
 
-        if self.criticalUpdate or self.refreshTimer < 0 then
+        local spec = Hekili.DB.profile.specs[ state.spec.id ]
+        local throttle = spec.throttleUpdates and ( 1 / spec.maxRefresh ) or 0
+        local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh )
+
+        if ( self.criticalUpdate and now - self.lastUpdate > throttle ) or self.refreshTimer < 0 then
             Hekili:ProcessHooks( self.id )
             self.criticalUpdate = false
-            self.refreshTimer = state.combat == 0 and oocRefresh or icRefresh
+            self.lastUpdate = now
+            self.refreshTimer = refreshRate
         end
     end
 
@@ -1061,6 +1066,8 @@ do
             self.glowTimer = 0
             self.refreshTimer = 0
             self.targetTimer = 0
+
+            self.lastUpdate = 0
 
             self:SetScript( "OnUpdate", Display_OnUpdate )
             self:SetScript( "OnEvent", Display_OnEvent )
