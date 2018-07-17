@@ -699,7 +699,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     local name = state.args.list_name
 
                                     if InUse[ name ] then
-                                        if debug then self:Debug( "Action list (%s) was found, but would cause a loop." ) end
+                                        if debug then self:Debug( "Action list (%s) was found, but would cause a loop.", name ) end
 
                                     elseif name and pack.lists[ name ] then
                                         if debug then self:Debug( "Action list (%s) was found.", name ) end
@@ -713,10 +713,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                         PopStack()
 
-                                        if entry.action == 'run_action_list' and not ts then
+                                        -- REVISIT THIS:  IF A RUN_ACTION_LIST CALLER IS NOT TIME SENSITIVE, DON'T BOTHER LOOPING THROUGH IT IF ITS CONDITIONS DON'T PASS.
+                                        --[[ if entry.action == 'run_action_list' and not ts then
                                             if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
                                             break
-                                        end
+                                        end ]]
                                     end
                                     
                                 end
@@ -788,9 +789,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                         state.delay = base_delay + step
 
-                                                        if self:CheckAPLStack() then
-                                                            aScriptPass = scripts:CheckScript( packName, listName, actID )
-                                                            if debug then self:Debug( "Recheck #%d ( +%.2f ) %s: %s", i, state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( packName, listName, actID ) ) end
+                                                        if CheckStack() then
+                                                            aScriptPass = scripts:CheckScript( scriptID )
+                                                            if debug then self:Debug( "Recheck #%d ( +%.2f ) %s: %s", i, state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( scriptID ) ) end
                                                         else
                                                             if debug then self:Debug( "Unable to recheck #%d at %.2f, as APL conditions would not pass.", i, state.delay ) end
                                                         end
@@ -828,7 +829,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                     if CheckStack() then
                                                         aScriptPass = scripts:CheckScript( scriptID )
-                                                        if debug then self:Debug( "Rechannel check at ( +%.2f ) %s: %s", state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( packName, listName, actID ) ) end
+                                                        if debug then self:Debug( "Rechannel check at ( +%.2f ) %s: %s", state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( scriptID ) ) end
                                                         force_channel = aScriptPass
                                                     else
                                                         if debug then self:Debug( "Unable to rechannel check at +%.2f as APL conditions would not pass.", state.delay ) end
@@ -898,7 +899,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         local next_action = next_entry and next_entry.action
                                                         local next_id     = next_action and class.abilities[ next_action ] and class.abilities[ next_action ].id
 
-                                                        local extra_amt   = entry.extra_amount or 0
+                                                        local extra_amt   = state.args.extra_amount or 0
 
                                                         local next_known  = next_action and state:IsKnown( next_action )
                                                         local next_usable = next_action and state:IsUsable( next_action )
