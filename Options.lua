@@ -7669,7 +7669,6 @@ function Hekili:TogglePause( ... )
     Hekili.btns = ns.UI.Buttons
     
     if not self.Pause then
-        self.Pause = true
         self.ActiveDebug = true
 
         for i, display in pairs( ns.UI.Displays ) do
@@ -7678,6 +7677,7 @@ function Hekili:TogglePause( ... )
             end
         end
 
+        self.Pause = true
         self:SaveDebugSnapshot()
         self:Print( "Snapshot saved." )
         self.ActiveDebug = false

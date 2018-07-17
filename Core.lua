@@ -780,8 +780,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     for i, step in pairs( state.recheckTimes ) do
                                                         local new_wait = base_delay + step
 
-                                                        if new_wait >= 7.5 then
-                                                            if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 7.5s ).", i, new_wait ) end
+                                                        if new_wait >= 10 then
+                                                            if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 10s ).", i, new_wait ) end
                                                             break
                                                         elseif waitValue <= base_delay + step then
                                                             if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f < %.2f ).", i, waitValue, new_wait ) end
@@ -1030,9 +1030,10 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     -- Any cache-wiping should happen here.
     wipe( Stack )
     wipe( Block )
+    wipe( InUse )
+
     wipe( listStack )    
-    wipe( listIsBad )
-    
+    wipe( listIsBad )    
     wipe( waitBlock )
 
     for k, v in pairs( listCache ) do wipe( v ) end
@@ -1096,6 +1097,8 @@ local lastHooks = {}
 local lastCount = {}
 
 function Hekili:ProcessHooks( dispName, packName )
+
+    if self.Pause then return end
 
     dispName = dispName or "Primary"
     local display = rawget( self.DB.profile.displays, dispName )
@@ -1246,17 +1249,14 @@ function Hekili:ProcessHooks( dispName, packName )
                 checkstr = checkstr and ( checkstr .. ':' .. action ) or action
                 slot[n] = nil
             end
+            -- if i == 1 and not self.ActiveDebug then self:TogglePause() end -- use for disappearing display debugging.
             break
         end
         
     end
 
-
-    if UI.RecommendationsStr == nil or UI.RecommendationsStr ~= checkstr then
-        UI.lastUpdate         = GetTime()
-        UI.NewRecommendations = true
-        UI.RecommendationsStr = checkstr
-    end
+    UI.NewRecommendations = true
+    UI.RecommendationsStr = checkstr
     
 end
 ns.cpuProfile.ProcessHooks = Hekili.ProcessHooks

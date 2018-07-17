@@ -123,7 +123,14 @@ local function SimToLua( str, modifier )
             str = str:gsub( invalid .. k .. invalid, "%1" .. k .. ".current%2" )
         end
     end
-    
+
+    if str:find( "rune" ) then
+        str = str:gsub( "^rune" .. invalid, "rune.current%1" )
+        str = str:gsub( invalid .. "rune$", "%1" .. "rune.current" )
+        str = str:gsub( "^rune" .. "$", "rune.current" )
+        str = str:gsub( invalid .. "rune" .. invalid, "%1" .. "rune.current%2" )
+    end
+
     -- Replace '%' for division with actual division operator '/'.
     str = str:gsub("%%", "/")
     
@@ -161,8 +168,28 @@ local function SimToLua( str, modifier )
     str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
     str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
     
+    return str 
+end
+
+
+local function SimcWithResources( str )
+    for k in pairs( GetResourceInfo() ) do
+        if str:find( k ) then
+            str = str:gsub( "^" .. k .. invalid, k .. ".current%1" )
+            str = str:gsub( invalid .. k .. "$", "%1" .. k .. ".current" )
+            str = str:gsub( "^" .. k .. "$", k .. ".current" )
+            str = str:gsub( invalid .. k .. invalid, "%1" .. k .. ".current%2" )
+        end
+    end
+
+    if str:find( "rune" ) then
+        str = str:gsub( "^rune" .. invalid, "rune.current%1" )
+        str = str:gsub( invalid .. "rune$", "%1" .. "rune.current" )
+        str = str:gsub( "^rune" .. "$", "rune.current" )
+        str = str:gsub( invalid .. "rune" .. invalid, "%1" .. "rune.current%2" )
+    end
+
     return str
-    
 end
 
 
@@ -363,7 +390,7 @@ local function ConvertScript( node, hasModifiers )
         SpecialMods = "",
 
         Lua = t and t:trim() or nil,
-        SimC = node.criteria and node.criteria:trim() or nil
+        SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil
     }
     
     if hasModifiers then

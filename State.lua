@@ -849,43 +849,31 @@ end
 local FORECAST_DURATION = 10.01
 
 local function forecastResources( resource )
-
-    -- Forecasts the next 10s of resources.
-    local models
+    if not resource then return end
 
     table.wipe( events )
     table.wipe( remains )
 
     local now = state.now + state.offset
 
-    if resource then
-        local r = state[ resource ]
+    local timeout = FORECAST_DURATION * state.haste
+    if state.class.file == "DEATHKNIGHT" and state.runes then
+        timeout = max( timeout, state.runes.expiry[6] - state.query_time )
+    end       
 
-        -- We account for haste here so that we don't compute lots of extraneous future resource gains in Bloodlust/high haste situations.
-        remains[ resource ] = FORECAST_DURATION * state.haste
+    local r = state[ resource ]
 
-        table.wipe( r.times )
-        table.wipe( r.values )
-        r.forecast[1] = r.forecast[1] or {}
-        r.forecast[1].t = now
-        r.forecast[1].v = r.actual
-        r.fcount = 1
+    -- We account for haste here so that we don't compute lots of extraneous future resource gains in Bloodlust/high haste situations.
+    remains[ resource ] = timeout
 
-        models = r.regenModel
-    end 
-    --[[ else
-        for k, v in pairs( class.resources ) do
-            local r = state[ k ]
-            remains[ k ] = FORECAST_DURATION * state.haste
+    table.wipe( r.times )
+    table.wipe( r.values )
+    r.forecast[1] = r.forecast[1] or {}
+    r.forecast[1].t = now
+    r.forecast[1].v = r.actual
+    r.fcount = 1
 
-            table.wipe( r.times )
-            table.wipe( r.values )
-            r.forecast[1] = r.forecast[1] or {}
-            r.forecast[1].t = now
-            r.forecast[1].v = r.actual
-            state[ k ].fcount = 1
-        end
-    end ]]
+    local models = r.regenModel
 
     if models then
         for k, v in pairs( models ) do
@@ -914,7 +902,7 @@ local function forecastResources( resource )
 
     table_sort( events, resourceModelSort )
 
-    local finish = now + FORECAST_DURATION * state.haste
+    local finish = now + timeout
 
     local prev = now
     local iter = 0
@@ -970,7 +958,7 @@ local function forecastResources( resource )
                 r.fcount = idx
 
                 -- interval() takes the last tick and the current value to remember the next step.
-                local step = type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, val ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) )
+                local step = type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, v ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) )
 
                 remains[ e.resource ] = finish - e.next
                 e.next = e.next + step
@@ -984,15 +972,17 @@ local function forecastResources( resource )
         if #events > 1 then table_sort( events, resourceModelSort ) end
     end
 
-    for k, v in pairs( remains ) do
-        local r = state[ k ]
-        local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
-        local idx = r.fcount + 1
+    if r.regen > 0 and r.forecast[ r.fcount ].v < r.max then
+        for k, v in pairs( remains ) do
+            local r = state[ k ]
+            local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
+            local idx = r.fcount + 1
 
-        r.forecast[ idx ] = r.forecast[ idx ] or {}
-        r.forecast[ idx ].t = finish
-        r.forecast[ idx ].v = min( r.max, val + ( v * r.regen ) )
-        r.fcount = idx
+            r.forecast[ idx ] = r.forecast[ idx ] or {}
+            r.forecast[ idx ].t = finish
+            r.forecast[ idx ].v = min( r.max, val + ( v * r.regen ) )
+            r.fcount = idx
+        end
     end
 
 end
@@ -2205,7 +2195,6 @@ end
 
 
 function state:TimeToResource( t, amount )
-
     if not amount or amount > t.max then return 3600
     elseif t.current >= amount then return 0 end
 
@@ -3651,7 +3640,7 @@ function state.reset( dispName )
             end
 
             if res.reset then res.reset() end
-            forecastResources( k )
+            forecastResources( k )            
         end
     end
    
@@ -3790,8 +3779,6 @@ function state.advance( time )
             end
         end
     end
-
-    -- forecastResources()
 
     state.offset = state.offset + time
 
@@ -4124,7 +4111,7 @@ function state:TimeToReady( action, pool )
 
     -- Okay, so we don't have enough of the resource.
     if spend and resource and spend > self[ resource ].current then
-        wait = max( wait, self[ resource ][ 'time_to_' .. spend ] or 0 )
+        wait = max( wait, self[ resource ][ 'time_to_' .. spend ] or 0 )        
         wait = ceil( wait * 100 ) / 100 -- round to the hundredth.
     end
     

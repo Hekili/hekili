@@ -419,6 +419,7 @@ function Hekili:RestoreDefaults()
             if data and type( data ) == 'table' then
                 p.packs[ k ] = data.payload
                 data.payload.version = v.version
+                data.payload.date = v.version
                 data.payload.builtIn = true
             end
         
@@ -2149,6 +2150,7 @@ function Hekili:SpecializationChanged()
         state[ key ] = nil
         class[ key ] = nil
     end
+    if rawget( state, "rune" ) then state.rune = nil; class.rune = nil; end
     class.primaryResource = nil
 
 
@@ -2173,6 +2175,7 @@ function Hekili:SpecializationChanged()
                     class.resources[ res ] = model
                     state[ res ] = model.state
                 end
+                if rawget( state, "runes" ) then state.rune = state.runes end
 
                 class.primaryResource = spec.primaryResource
 

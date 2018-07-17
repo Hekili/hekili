@@ -616,9 +616,7 @@ do
                 self.Buttons[ 1 ].Overlay:Show()
                 self.paused = true
             end
-
-            return
-        elseif self.paused then
+        elseif self.paused then            
             self.Buttons[ 1 ].Overlay:Hide()
             self.paused = false
         end
