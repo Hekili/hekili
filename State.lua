@@ -3942,13 +3942,15 @@ do
         local ability = class.abilities[ spell ]
         if not ability then return false end
 
+        spell = ability.key
+
         local profile = Hekili.DB.profile
+        local spec = profile.specs[ state.spec.id ]
+        local option = spec.abilities[ spell ]
 
-        if profile.blacklist and profile.blacklist[ ability.key ] then
-            return true
-        end
+        if option.disabled then return true end
 
-        local toggle = profile.toggles[ ability.key ]
+        local toggle = option.toggle
         if not toggle or toggle == 'default' then toggle = ability.toggle end
 
         if ability.id < -100 or ability.id > 0  then
@@ -4164,7 +4166,11 @@ function state:IsReadyNow( action )
 
     if not a then return false end
 
-    local clash = Hekili.DB.profile.clashes[ action ] or 0
+    action = a.key
+    local profile = Hekili.DB.profile
+    local spec = profile.specs[ state.spec.id ]
+    local option = spec.abilities[ action ]    
+    local clash = option.clash or 0
 
     if self.cooldown[ action ].remains - clash > 0 then return false end
     local wait = ns.callHook( "TimeToReady", 0, action )
@@ -4203,8 +4209,15 @@ end
 
 
 function state:ClashOffset( action )
-    local clash = Hekili.DB.profile.clashes[ action ] or Hekili.DB.profile.Clash
-    return ns.callHook( "clash", clash, action )
+    local a = class.abilities[ action ]
+    if not a then return 0 end
+    action = a.key
+
+    local profile = Hekili.DB.profile
+    local spec = profile.specs[ state.spec.id ]
+    local option = spec.abilities[ action ]
+
+    return ns.callHook( "clash", option.clash, action )
 end
 
 

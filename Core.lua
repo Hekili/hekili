@@ -738,6 +738,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 end
                                 
                                 if usable then
+                                    rClash = state:ClashOffset( entry.action ) or rClash
                                     local waitValue = max( 0, rWait - rClash )
                                     local readyFirst = state.delay < waitValue
 
@@ -1042,7 +1043,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     local display = rawget( self.DB.profile.displays, dispName )
     local pack = rawget( self.DB.profile.packs, packName )
 
-    local action, wait, clash, depth = nil, 60, self.DB.profile.Clash or 0, 0
+    local action, wait, clash, depth = nil, 60, 0, 0
     state.this_action = nil
 
     state.selectionTime = 60
