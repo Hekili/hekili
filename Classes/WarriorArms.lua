@@ -368,7 +368,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         cleave = {
             id = 845,
             cast = 0,
-            cooldown = 6,
+            cooldown = 9,
             gcd = "spell",
             
             spend = function ()
@@ -788,14 +788,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         sweeping_strikes = {
             id = 260708,
             cast = 0,
-            cooldown = 25,
+            cooldown = 30,
             gcd = "spell",
             
             startsCombat = true,
             texture = 132306,
             
             handler = function ()
-                -- applies sweeping_strikes (260708)
+                applyBuff( "sweeping_strikes" )
             end,
         },
         
