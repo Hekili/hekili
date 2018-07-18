@@ -157,7 +157,7 @@ local displayTemplate = {
         width = 50,
         height = 50,
 
-        anchorOffset = 5,
+        offset = 5,
         spacing = 5,
         
         font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
