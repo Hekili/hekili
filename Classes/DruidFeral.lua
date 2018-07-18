@@ -165,7 +165,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             max_stack = function () return talent.moment_of_clarity.enabled and 2 or 1 end,
         },
         predatory_swiftness = {
-            id = 16974,
+            id = 69369,
             duration = 12,
             max_stack = 1,
         },
