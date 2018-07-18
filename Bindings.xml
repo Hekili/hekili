@@ -1,5 +1,5 @@
 <Bindings>
-    <Binding name="HEKILI_TOGGLE_PAUSE" header="HEKILI_HEADER">Hekili:TogglePause();</Binding>
+    <!-- <Binding name="HEKILI_TOGGLE_PAUSE" header="HEKILI_HEADER">Hekili:TogglePause();</Binding>
     <Binding name="HEKILI_SNAPSHOT">Hekili:MakeSnapshot();</Binding>
     <Binding name="HEKILI_TOGGLE_COOLDOWNS">Hekili:ToggleCooldowns();</Binding>
     <Binding name="HEKILI_TOGGLE_ARTIFACT">Hekili:ToggleArtifact();</Binding>
@@ -10,5 +10,5 @@
     <Binding name="HEKILI_TOGGLE_2">Hekili:ToggleCustom(2);</Binding>
     <Binding name="HEKILI_TOGGLE_3">Hekili:ToggleCustom(3);</Binding>
     <Binding name="HEKILI_TOGGLE_4">Hekili:ToggleCustom(4);</Binding>
-    <Binding name="HEKILI_TOGGLE_5">Hekili:ToggleCustom(5);</Binding>    
+    <Binding name="HEKILI_TOGGLE_5">Hekili:ToggleCustom(5);</Binding> -->
 </Bindings>
