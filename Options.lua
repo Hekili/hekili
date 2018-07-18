@@ -7604,7 +7604,7 @@ do
                     if key and value then
                         if key == 'if' then key = 'criteria' end
 
-                        if key == 'criteria' or key == 'value' or key == 'value_else' or key == 'sec' or key == 'wait' then
+                        if key == 'criteria' or key == 'target_if' or key == 'value' or key == 'value_else' or key == 'sec' or key == 'wait' then
                             value = Sanitize( 'c', value, line, warnings )
                             value = SpaceOut( value )
                         end
