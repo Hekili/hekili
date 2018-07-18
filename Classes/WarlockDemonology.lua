@@ -870,7 +870,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         grimoire_felguard = {
             id = 111898,
             cast = 0,
-            cooldown = 90,
+            cooldown = 120,
             gcd = "spell",
             
             spend = 1,
