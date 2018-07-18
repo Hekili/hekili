@@ -158,7 +158,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         shadow_dance = {
             id = 185422,
-            duration = 5,
+            duration = function () return talent.subterfuge.enabled and 6 or 5 end,
             max_stack = 1,
         },
         shadow_gestures = {
@@ -407,6 +407,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             if level < 116 and stealthed.mantle and equipped.mantle_of_the_master_assassin then
                 applyBuff( "master_assassins_initiative", 5 )
+                -- revisit for subterfuge?
             end
 
             removeBuff( "stealth" )
@@ -478,7 +479,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 35 - ( talent.shadow_focus.enabled and ( ( buff.shadow_dance.up or buff.stealth.up ) and ( 0.35 * 25 ) ) or 0 ) end,
+            spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = true,
@@ -515,7 +516,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 40 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (40/100*25)) or 0 ) end,
+            spend = function () 
+                if buff.shot_in_the_dark.up then return 0 end
+                return 40 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = true,
@@ -531,7 +534,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if talent.subterfuge.enabled then
                 	applyBuff( 'subterfuge' )
                 end
+
                 applyDebuff( 'target', 'cheap_shot' )
+                removeBuff( "shot_in_the_dark" )
 
                 gain( 2 + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
             end,
@@ -563,7 +568,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             toggle = "cooldowns",
 
-            spend = function () return 30 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (30/100*25)) or 0 ) end,
+            spend = function () return 30 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = false,
@@ -581,7 +586,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 30,
             gcd = "spell",
             
-            spend = function () return 30 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (30/100*25)) or 0 ) end,
+            spend = function () return 30 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = false,
@@ -615,7 +620,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 35 - ( talent.shadow_focus.enabled and ( ( buff.shadow_dance.up or buff.stealth.up ) and ( 0.35 * 25 ) ) or 0 ) end,
+            spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = true,
@@ -638,7 +643,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 15,
             gcd = "spell",
             
-            spend = function () return 35 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (35/100*25)) or 0 ) end,
+            spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = false,
@@ -656,7 +661,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 35 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (35/100*25)) or 0 ) end,
+            spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             talent = 'gloomblade',
@@ -698,7 +703,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 20,
             gcd = "spell",
             
-            spend = function () return 25 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (25/100*25)) or 0 ) end,
+            spend = function () return 25 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             toggle = "cooldowns",
@@ -745,7 +750,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 25 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (25/100*25)) or 0 ) end,
+            spend = function () return 25 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = true,
@@ -799,7 +804,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 35 - ( talent.shadow_focus.enabled and ( ( buff.shadow_dance.up or buff.stealth.up ) and ( 0.35 * 25 ) ) or 0 ) end,
+            spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = false,
@@ -817,7 +822,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = function () return 45 - min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ) end,
             gcd = "spell",
             
-            spend = function () return 30 - ( talent.shadow_focus.enabled and ( ( buff.shadow_dance.up or buff.stealth.up ) and ( 0.3 * 25 ) ) or 0 ) end,
+            spend = function () return 30 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = true,
@@ -867,7 +872,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             recheck = function () return apl_stealth_cds( ( 1.75 - charges_fractional ) * recharge, target.time_to_die - cooldown.symbols_of_death.remains ) end,
             handler = function ()
-            	applyBuff( "shadow_dance" )
+                applyBuff( "shadow_dance" )
+                if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
             	if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows", 3 ) end
             end,
         },
@@ -896,7 +902,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 40 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (40/100*25)) or 0 ) end,
+            spend = function () return 40 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = true,
@@ -936,7 +942,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 35 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (35/100*25)) or 0 ) end,
+            spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             startsCombat = true,
@@ -956,7 +962,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 60,
             gcd = "spell",
             
-            spend = function () return 60 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (60/100*25)) or 0 ) end,
+            spend = function () return 60 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
             toggle = "cooldowns",
@@ -978,7 +984,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 40 - ( talent.shadow_focus.enabled and ((buff.shadow_dance.up or buff.stealth.up) and (40/100*25)) or 0 ) end,
+            spend = function () return 40 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
 
             startsCombat = true,
@@ -1017,6 +1023,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return not buff.stealth.up end,            
             handler = function ()
                 applyBuff( 'stealth' )
+                if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
+
                 emu_stealth_change = query_time
             end,
         },
