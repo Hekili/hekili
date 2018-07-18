@@ -101,6 +101,20 @@ end
 
 local invalid = "([^a-zA-Z0-9_.])"
 
+
+local function extendExpression( str, expr, suffix )
+    if str:find( expr ) then
+        str = str:gsub( "^" .. expr .. invalid, expr .. "." .. suffix .. "%1" )
+        str = str:gsub( invalid .. expr .. "$", "%1" .. expr .. "." .. suffix )
+        str = str:gsub( "^" .. expr .. "$", expr .. "." .. suffix )
+        str = str:gsub( invalid .. expr .. invalid, "%1" .. expr .. "." .. suffix .. "%2" )
+    end
+
+    return str
+end
+
+
+
 -- Convert SimC syntax to Lua conditionals.
 local function SimToLua( str, modifier )
     -- If no conditions were provided, function should return true.
@@ -117,18 +131,16 @@ local function SimToLua( str, modifier )
     
     for k in pairs( GetResourceInfo() ) do
         if str:find( k ) then
-            str = str:gsub( "^" .. k .. invalid, k .. ".current%1" )
-            str = str:gsub( invalid .. k .. "$", "%1" .. k .. ".current" )
-            str = str:gsub( "^" .. k .. "$", k .. ".current" )
-            str = str:gsub( invalid .. k .. invalid, "%1" .. k .. ".current%2" )
+            str = extendExpression( str, k, "current" )
         end
     end
 
     if str:find( "rune" ) then
-        str = str:gsub( "^rune" .. invalid, "rune.current%1" )
-        str = str:gsub( invalid .. "rune$", "%1" .. "rune.current" )
-        str = str:gsub( "^rune" .. "$", "rune.current" )
-        str = str:gsub( invalid .. "rune" .. invalid, "%1" .. "rune.current%2" )
+        str = extendExpression( str, "rune", "current" )
+    end
+
+    if str:find( "spell_targets" ) then
+        str = extendExpression( str, "spell_targets", "any" )
     end
 
     -- Replace '%' for division with actual division operator '/'.
@@ -175,18 +187,16 @@ end
 local function SimcWithResources( str )
     for k in pairs( GetResourceInfo() ) do
         if str:find( k ) then
-            str = str:gsub( "^" .. k .. invalid, k .. ".current%1" )
-            str = str:gsub( invalid .. k .. "$", "%1" .. k .. ".current" )
-            str = str:gsub( "^" .. k .. "$", k .. ".current" )
-            str = str:gsub( invalid .. k .. invalid, "%1" .. k .. ".current%2" )
+            str = extendExpression( str, k, "current" )
         end
     end
 
     if str:find( "rune" ) then
-        str = str:gsub( "^rune" .. invalid, "rune.current%1" )
-        str = str:gsub( invalid .. "rune$", "%1" .. "rune.current" )
-        str = str:gsub( "^rune" .. "$", "rune.current" )
-        str = str:gsub( invalid .. "rune" .. invalid, "%1" .. "rune.current%2" )
+        str = extendExpression( str, "rune", "current" )
+    end
+
+    if str:find( "spell_targets" ) then
+        str = extendExpression( str, "spell_targets", "any" )
     end
 
     return str
@@ -209,13 +219,18 @@ local function SimCToSnapshot( str, modifier )
     
     for k in pairs( GetResourceInfo() ) do
         if str:find( k ) then
-            str = str:gsub( "^" .. k .. invalid, k .. ".current%1" )
-            str = str:gsub( invalid .. k .. "$", "%1" .. k .. ".current" )
-            str = str:gsub( "^" .. k .. "$", k .. ".current" )
-            str = str:gsub( invalid .. k .. invalid, "%1" .. k .. ".current%2" )
+            str = extendExpression( str, k, "current" )
         end
     end
-    
+
+    if str:find( "rune" ) then
+        str = extendExpression( str, "rune", "current" )
+    end
+
+    if str:find( "spell_targets" ) then
+        str = extendExpression( str, "spell_targets", "any" )
+    end
+
     -- Replace '%' for division with actual division operator '/'.
     -- str = str:gsub("%%", "/")
     
