@@ -398,7 +398,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return -3 * ( min( 5, active_enemies ) ) end,
+            spend = function () return -4 * ( min( 5, active_enemies ) ) end,
             spendType = 'maelstrom',
 
             nobuff = 'ascendance',
@@ -503,7 +503,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 75,
+            spend = 60,
             spendType = "maelstrom",
             
             startsCombat = true,
@@ -665,7 +665,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return -3 * ( min( 5, active_enemies ) ) end,
+            spend = function () return -4 * ( min( 5, active_enemies ) ) end,
             spendType = 'maelstrom',
 
             buff = 'ascendance',
@@ -696,6 +696,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             
             handler = function ()
                 removeBuff( "lava_surge" )
+                gain( 10, "maelstrom" )
             end,
         },
         
@@ -706,7 +707,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = -6,
+            spend = -8,
             spendType = "maelstrom",
             
             startsCombat = true,
