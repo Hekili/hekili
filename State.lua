@@ -3493,7 +3493,7 @@ function state.reset( dispName )
         if dispName == 'Primary' then
             if mode == "single" or mode == "dual" then state.max_targets = 1
             elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
-        elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
+            elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
         elseif dispName == 'Interrupts' then state.filter = 'interrupts'
         elseif dispName == 'Defensives' then state.filter = 'defensives'
         end

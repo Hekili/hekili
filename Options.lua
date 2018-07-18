@@ -169,8 +169,10 @@ local displayTemplate = {
         advanced = false,
 
         mode = { 
+            aoe = true,
             automatic = true,
             dual = true,
+            single = true,
         },
         
         pve = {
@@ -440,7 +442,7 @@ function Hekili:GetDefaults()
                     glow = {
                         enabled = true,
                         shine = true
-                    }
+                    },
                 },
 
                 AOE = {

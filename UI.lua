@@ -308,7 +308,12 @@ local function menu_Auto()
     p.toggles.mode.value = 'automatic'
 
     if p.toggles.mode.type:sub(4) ~= "Auto" then p.toggles.mode.type = "AutoDual" end
-    ns.UI.Minimap:RefreshDataText()
+    
+    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
+    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+    Hekili:UpdateDisplayVisibility()
+
+    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
 end
 
 
@@ -318,7 +323,12 @@ local function menu_Single()
     p.toggles.mode.value = 'single'
 
     if not p.toggles.mode.type:find("Single") then p.toggles.mode.type = "AutoSingle" end
-    ns.UI.Minimap:RefreshDataText()
+    
+    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
+    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+    Hekili:UpdateDisplayVisibility()
+
+    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
 end
 
 local function menu_AOE()
@@ -327,7 +337,10 @@ local function menu_AOE()
     p.toggles.mode.value = "aoe"
     p.toggles.mode.type = "SingleAOE"
 
-    ns.UI.Minimap:RefreshDataText()
+    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
+    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+    Hekili:UpdateDisplayVisibility()
+    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
 end
 
 local function menu_Dual()
@@ -335,8 +348,12 @@ local function menu_Dual()
 
     p.toggles.mode.value = "dual"
     p.toggles.mode.type = "AutoDual"
+    
+    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
+    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+    Hekili:UpdateDisplayVisibility()
 
-    ns.UI.Minimap:RefreshDataText()
+    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
 end
 
 local function menu_Cooldowns()
@@ -831,7 +848,9 @@ do
                 local mode = profile.toggles.mode.value
                 local spec = state.spec.id and profile.specs[ state.spec.id ]
 
-                if self.id == 'Primary' and mode == 'dual' then tMax = 1
+                if self.id == 'Primary' then
+                    if ( mode == 'dual' or mode == 'single' ) then tMax = 1
+                    elseif mode == 'aoe' then tMin = spec and spec.aoe or 3 end
                 elseif self.id == 'AOE' then tMin = spec and spec.aoe or 3 end
 
                 local detected = max( 1, ns.getNumberTargets() )
@@ -844,9 +863,9 @@ do
                     shown = min(tMax, shown)
                 end
 
-                if shown > 1 then
-                    local color = detected < shown and "|cFFFF0000" or ( shown > detected and "|cFF00C0FF" or "" )
-                    b.Targets:SetText(color .. shown .. "|r")
+                if tMax == 1 or shown > 1 then
+                    local color = detected < shown and "|cFFFF0000" or ( shown < detected and "|cFF00C0FF" or "" )
+                    b.Targets:SetText( color .. shown .. "|r")
                     b.targetShown = true
                 else
                     b.Targets:SetText(nil)
