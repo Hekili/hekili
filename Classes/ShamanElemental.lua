@@ -273,6 +273,31 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         },
     } )
 
+
+    spec:RegisterGear( "the_deceivers_blood_pact", 137035 ) -- 20% chance; not modeled.
+    spec:RegisterGear( "alakirs_acrimony", 137102 ) -- passive dmg increase.
+    spec:RegisterGear( "echoes_of_the_great_sundering", 137074 )
+        spec:RegisterAura( "echoes_of_the_great_sundering", 208723, "duration", 10 )
+
+    spec:RegisterGear( "pristine_protoscale_girdle", 137083 ) -- not modeled.
+    spec:RegisterGear( "eye_of_the_twisting_nether", 137050 )
+        spec:RegisterAura( "fire_of_the_twisting_nether", 207995, "duration", 8 )
+        spec:RegisterAura( "chill_of_the_twisting_nether", 207998, "duration", 8 )
+        spec:RegisterAura( "shock_of_the_twisting_nether", 207999, "duration", 8 )
+
+        spec:RegisterStateTable( "twisting_nether", setmetatable( {}, {
+            __index = function( t, k )
+                if k == 'count' then
+                    return ( state.buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( state.buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( state.buff.shock_of_the_twisting_nether.up and 1 or 0 )
+                end
+
+                return 0
+            end
+        } ) )
+    
+    spec:RegisterGear( "uncertain_reminder", 143732 )
+    
+
     -- Abilities
     spec:RegisterAbilities( {
         ancestral_guidance = {
@@ -410,6 +435,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
                 removeBuff( 'master_of_the_elements' )
                 removeBuff( 'stormkeeper' )
+
+                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
         },
         
@@ -479,6 +506,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             
             handler = function ()
                 if talent.exposed_elements.enabled then applyBuff( 'exposed_elements' ) end
+                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
         },
         
@@ -503,13 +531,15 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 60,
+            spend = function () return buff.echoes_of_the_great_sundering.up and 0 or 60 end,
             spendType = "maelstrom",
             
             startsCombat = true,
             texture = 451165,
             
             handler = function ()
+                removeBuff( "echoes_of_the_great_sundering" )
+                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
         },
         
@@ -525,6 +555,12 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             
             handler = function ()
                 applyBuff( 'elemental_blast' )
+
+                if level < 116 and equipped.eye_of_the_twisting_nether then
+                    applyBuff( "fire_of_the_twisting_nether" )
+                    applyBuff( "chill_of_the_twisting_nether" )
+                    applyBuff( "shock_of_the_twisting_nether" )
+                end
             end,
         },
         
@@ -572,6 +608,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             
             handler = function ()
                 applyDebuff( 'target', 'flame_shock' )
+                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
             end,
         },
         
@@ -588,6 +625,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
                 removeBuff( 'master_of_the_elements' )
                 applyDebuff( 'target', 'frost_shock' )
+                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "chill_of_the_twisting_nether" ) end
             end,
         },
         
@@ -676,6 +714,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             
             handler = function ()
                 removeStack( 'stormkeeper' )
+                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
             end,
         },
         
@@ -697,6 +736,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
                 removeBuff( "lava_surge" )
                 gain( 10, "maelstrom" )
+                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
             end,
         },
         
@@ -715,6 +755,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             
             handler = function ()
                 removeStack( 'stormkeeper' )
+                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
         },
         
