@@ -3954,7 +3954,7 @@ do
 
         if ability.id < -100 or ability.id > 0  then
             if state.filter ~= 'none' then
-                if state.filter == toggle and ( ability.id < 100 or ability.id > 0 ) then return true end
+                if state.filter ~= toggle and ( ability.id < 100 or ability.id > 0 ) then return true end
             else
                 if toggle and toggle ~= 'none' then
                     if not self.toggle[ toggle ] or profile.toggles[ toggle ].separate then return true end
