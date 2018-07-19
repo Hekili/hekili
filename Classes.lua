@@ -290,12 +290,14 @@ local HekiliSpecMixin = {
                     a.name = link
                     a.link = link
                     a.texture = texture
-
-                    class.abilities[ name ] = class.abilities[ name ] or a
-                    class.abilities[ link ] = class.abilities[ link ] or a
+                    
+                    self.abilities[ name ] = self.abilities[ name ] or a
+                    self.abilities[ link ] = self.abilities[ link ] or a
 
                     if not a.unlisted then class.abilityList[ ability ] = "|T" .. texture .. ":0|t " .. link end
                     if not a.unlisted then class.itemList[ ability ] = "|T" .. texture .. ":0|t " .. link end
+
+                    Hekili:SpecializationChanged()
                 
                     return true
                 end
@@ -1368,11 +1370,13 @@ all:RegisterAura( "valarjars_path", {
 
 all:RegisterAbility( "kiljaedens_burning_wish", {
     item = 144259,
-    spend = 0,
+
     cast = 0,
     cooldown = 75,
-    texture = 1357805,
     gcd = 'off',
+
+    texture = 1357805,
+
     toggle = 'cooldowns',
 } )
 
