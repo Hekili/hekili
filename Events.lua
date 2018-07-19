@@ -502,9 +502,9 @@ ns.cpuProfile.spellcastEvents = spellcastEvents
 
 
 -- Need to make caching system.
---[[ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
     if UnitIsUnit( unit, "player" ) then Hekili:ForceUpdate( event ) end
-end ) ]]
+end )
 
 
 function ns.removeSpellFromFlight( spell )
