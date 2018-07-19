@@ -292,7 +292,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             id = 207998,
             duration = 8 
         } )
-        spec:RegisterAura( "shock_of_the_twisting_nether", 
+        spec:RegisterAura( "shock_of_the_twisting_nether", {
             id = 207999,
             duration = 8 
         } )
