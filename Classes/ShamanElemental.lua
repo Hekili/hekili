@@ -277,13 +277,25 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     spec:RegisterGear( "the_deceivers_blood_pact", 137035 ) -- 20% chance; not modeled.
     spec:RegisterGear( "alakirs_acrimony", 137102 ) -- passive dmg increase.
     spec:RegisterGear( "echoes_of_the_great_sundering", 137074 )
-        spec:RegisterAura( "echoes_of_the_great_sundering", 208723, "duration", 10 )
+        spec:RegisterAura( "echoes_of_the_great_sundering", {
+            id = 208723, 
+            duration =  10
+        } )
 
     spec:RegisterGear( "pristine_protoscale_girdle", 137083 ) -- not modeled.
     spec:RegisterGear( "eye_of_the_twisting_nether", 137050 )
-        spec:RegisterAura( "fire_of_the_twisting_nether", 207995, "duration", 8 )
-        spec:RegisterAura( "chill_of_the_twisting_nether", 207998, "duration", 8 )
-        spec:RegisterAura( "shock_of_the_twisting_nether", 207999, "duration", 8 )
+        spec:RegisterAura( "fire_of_the_twisting_nether", {
+            id = 207995,
+            duration = 8 
+        } )
+        spec:RegisterAura( "chill_of_the_twisting_nether", {
+            id = 207998,
+            duration = 8 
+        } )
+        spec:RegisterAura( "shock_of_the_twisting_nether", 
+            id = 207999,
+            duration = 8 
+        } )
 
         spec:RegisterStateTable( "twisting_nether", setmetatable( {}, {
             __index = function( t, k )
