@@ -705,6 +705,19 @@ do
     }
 
 
+    local realAnchorPositions = {
+        TOP = 'Top',
+        TOPLEFT = 'Top Left',
+        TOPRIGHT = 'Top Right',
+        BOTTOM = 'Bottom',
+        BOTTOMLEFT = 'Bottom Left',
+        BOTTOMRIGHT = 'Bottom Right',
+        CENTER = "Center",
+        LEFT = 'Left',
+        RIGHT = 'Right',
+    }
+
+
     local function getOptionTable( info, notif )
         local disp = info[2]
         local tab = Hekili.Options.args.displays
@@ -1205,7 +1218,7 @@ do
                                         name = 'Anchor Point',
                                         order = 2,
                                         width = 'full',
-                                        values = anchorPositions
+                                        values = realAnchorPositions
                                     },
                                     
                                     x = {
@@ -1485,7 +1498,7 @@ do
                                     anchor = {
                                         type = "select",
                                         name = "Anchor To",
-                                        values = anchorPositions,
+                                        values = realAnchorPositions,
                                         order = 1,
                                         width = "full",
                                     },
@@ -1553,7 +1566,7 @@ do
                                         name = 'Anchor Point',
                                         order = 2,
                                         width = 'full',
-                                        values = anchorPositions
+                                        values = realAnchorPositions
                                     },
                                     
                                     x = {
@@ -1621,7 +1634,7 @@ do
                                     anchor = {
                                         type = "select",
                                         name = "Anchor To",
-                                        values = anchorPositions,
+                                        values = realAnchorPositions,
                                         order = 1,
                                         width = "full",
                                     },

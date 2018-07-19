@@ -1474,28 +1474,36 @@ do
 
         local captionFont = conf.captions.font or conf.font
         b.Caption:SetFont( LSM:Fetch("font", captionFont), conf.captions.fontSize or 12, conf.captions.fontStyle or "OUTLINE" )
-        b.Caption:SetSize( b:GetWidth(), max( 12, b:GetHeight() / 2 ) )
 
         local capAnchor = conf.captions.anchor or "BOTTOM"
         b.Caption:ClearAllPoints()
         b.Caption:SetPoint( capAnchor, b.Shine, capAnchor, conf.captions.x or 0, conf.captions.y or 0 )
+        b.Caption:SetSize( b:GetWidth(), max( 12, b:GetHeight() / 2 ) )
         b.Caption:SetJustifyV( capAnchor )
         b.Caption:SetJustifyH( conf.captions.align or "CENTER" )
         b.Caption:SetTextColor( 1, 1, 1, 1 )
+
+        local capText = b.Caption:GetText()
+        b.Caption:SetText( nil )
+        b.Caption:SetText( capText )
 
 
         -- Keybinding Text
         b.Keybinding = b.Keybinding or b.Shine:CreateFontString(bName .. "_KB", "OVERLAY")
         local kbFont = conf.keybindings.font or conf.font
         b.Keybinding:SetFont( LSM:Fetch("font", kbFont), conf.keybindings.fontSize or 12, conf.keybindings.fontStyle or "OUTLINE" )
-        b.Keybinding:SetSize( b:GetWidth(), b:GetHeight() / 2 )
 
         local kbAnchor = conf.keybindings.anchor or "TOPRIGHT"
         b.Keybinding:ClearAllPoints()
         b.Keybinding:SetPoint( kbAnchor, b.Shine, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
+        b.Keybinding:SetSize( b:GetWidth(), b:GetHeight() / 2 )
         b.Keybinding:SetJustifyH( kbAnchor:match("RIGHT") and "RIGHT" or ( kbAnchor:match("LEFT") and "LEFT" or "CENTER" ) )
         b.Keybinding:SetJustifyV( kbAnchor:match("TOP") and "TOP" or ( kbAnchor:match("BOTTOM") and "BOTTOM" or "MIDDLE" ) )
         b.Keybinding:SetTextColor( 1, 1, 1, 1 )
+
+        local kbText = b.Keybinding:GetText()
+        b.Keybinding:SetText( nil )
+        b.Keybinding:SetText( kbText )
 
 
         -- Cooldown Wheel
@@ -1554,15 +1562,18 @@ do
 
             local tarFont = conf.targets.font or conf.font
             b.Targets:SetFont( LSM:Fetch( "font", tarFont ), conf.targets.fontSize or 12, conf.targets.fontStyle or "OUTLINE" )
-            b.Targets:SetSize( b:GetWidth(), b:GetHeight() / 2 )
 
             local tarAnchor = conf.targets.anchor or "BOTTOM"
             b.Targets:ClearAllPoints()
             b.Targets:SetPoint( tarAnchor, b.Shine, tarAnchor, conf.targets.x or 0, conf.targets.y or 0 )
-
+            b.Targets:SetSize( b:GetWidth(), b:GetHeight() / 2 )
             b.Targets:SetJustifyH( tarAnchor:match("RIGHT") and "RIGHT" or ( tarAnchor:match( "LEFT" ) and "LEFT" or "CENTER" ) )
             b.Targets:SetJustifyV( tarAnchor:match("TOP") and "TOP" or ( tarAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" ) )
             b.Targets:SetTextColor( 1, 1, 1, 1 )
+
+            local tText = b.Targets:GetText()
+            b.Targets:SetText( nil )
+            b.Targets:SetText( tText )                
             
             -- Aura Counter
             -- Disabled for Now
@@ -1590,15 +1601,20 @@ do
 
             local delayFont = conf.delays.font or conf.font
             b.DelayText:SetFont( LSM:Fetch("font", delayFont), conf.delays.fontSize or 12, conf.delays.fontStyle or "OUTLINE" )
-            b.DelayText:SetSize( b:GetWidth(), b:GetHeight() / 2 )
 
             local delayAnchor = conf.delays.anchor or "TOPLEFT"
             b.DelayText:ClearAllPoints()
             b.DelayText:SetPoint( delayAnchor, b.Shine, delayAnchor, conf.delays.x, conf.delays.y or 0 )
+            b.DelayText:SetSize( b:GetWidth(), b:GetHeight() / 2 )
 
             b.DelayText:SetJustifyH( delayAnchor:match( "RIGHT" ) and "RIGHT" or ( delayAnchor:match( "LEFT" ) and "LEFT" or "CENTER") )
             b.DelayText:SetJustifyV( delayAnchor:match( "TOP" ) and "TOP" or ( delayAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE") )
             b.DelayText:SetTextColor( 1, 1, 1, 1 )
+
+            local dText = b.DelayText:GetText()
+            b.DelayText:SetText( nil )
+            b.DelayText:SetText( dText )
+            
 
             -- Delay Icon
             b.DelayIcon = b.DelayIcon or b.Shine:CreateTexture( bName .. "_DelayIcon", "OVERLAY" )
