@@ -109,6 +109,23 @@ local oneTimeFixes = {
             p.toggles.mode.value = "automatic"
         end
     end,
+
+    reviseDisplayQueueAnchors_20180718 = function( p )
+        for name, display in pairs( p.displays ) do
+            if display.queue.offset then
+                if display.queue.anchor:sub( 1, 3 ) == "TOP" or display.queue.anchor:sub( 1, 6 ) == "BOTTOM" then
+                    display.queue.offsetY = display.queue.offset
+                    display.queue.offsetX = 0
+                else
+                    display.queue.offsetX = display.queue.offset
+                    display.queue.offsetY = 0
+                end
+                display.queue.offset = nil
+            end
+        end
+
+        p.runOnce.reviseDisplayQueueAnchors_20180718 = nil
+    end,
 }
 
 
@@ -157,7 +174,9 @@ local displayTemplate = {
         width = 50,
         height = 50,
 
-        offset = 5,
+        -- offset = 5, -- deprecated.
+        offsetX = 5,
+        offsetY = 0,
         spacing = 5,
         
         font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
@@ -913,10 +932,21 @@ do
                                 order = 1,
                             },
 
-                            offset = {
+                            offsetX = {
                                 type = 'range',
-                                name = 'Anchor Offset',
-                                desc = 'Specify the offset (in pixels) for the queue, in relation to the primary icon for this display.',
+                                name = 'Queue Horizontal Offset',
+                                desc = 'Specify the offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.',
+                                min = -100,
+                                max = 500,
+                                step = 1,
+                                width = "full",
+                                order = 2,
+                            },
+        
+                            offsetY = {
+                                type = 'range',
+                                name = 'Queue Vertical Offset',
+                                desc = 'Specify the offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.',
                                 min = -100,
                                 max = 500,
                                 step = 1,
@@ -1701,12 +1731,7 @@ do
                                     name = "X",
                                     desc = "Enter the horizontal position of the notification panel, " ..
                                         "relative to the center of the screen.  Negative values move the " ..
-                                        "display left; positive values move the display right.",
-                                    validate = function( info, val )
-                                        local x = tonumber( val )
-                                        if tostring( x ) ~= val then return "Please specify a numeric value." end
-                                        return true
-                                    end,
+                                        "panel left; positive values move the panel right.",
                                     min = -512,
                                     max = 512,
                                     step = 1,
@@ -1720,12 +1745,7 @@ do
                                     name = "Y",
                                     desc = "Enter the vertical position of the notification panel, " ..
                                         "relative to the center of the screen.  Negative values move the " ..
-                                        "display down; positive values move the display up.",
-                                    validate = function( info, val )
-                                        local x = tonumber( val )
-                                        if tostring( x ) ~= val then return "Please specify a numeric value." end
-                                        return true
-                                    end,
+                                        "panel down; positive values move the panel up.",
                                     width = "full",
                                     order = 2,
                                 },

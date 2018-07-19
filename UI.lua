@@ -163,6 +163,24 @@ function ns.StartConfiguration( external )
 
     HekiliNotification:SetScript( "OnMouseDown", Mover_OnMouseDown )
     HekiliNotification:SetScript( "OnMouseUp", Mover_OnMouseUp )
+    HekiliNotification:SetScript( "OnEnter", function( self )
+        local H = Hekili
+
+        if not H.Pause and H.Config then
+            GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
+        
+            GameTooltip:SetText( "Hekili: Notifications" )
+            GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+            GameTooltip:Show()
+
+        elseif ( H.Pause and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
+            H:ShowDiagnosticTooltip( ns.queue[ dispID ][ id ] )
+
+        end
+    end )
+    HekiliNotification:SetScript( "OnLeave", function(self)
+        GameTooltip:Hide()
+    end )
 
     for i, v in pairs( ns.UI.Displays ) do
         if v.Mover then
@@ -211,6 +229,24 @@ function ns.StartConfiguration( external )
 
             v:SetScript( "OnMouseDown", Mover_OnMouseDown )
             v:SetScript( "OnMouseUp", Mover_OnMouseUp )
+            v:SetScript( "OnEnter", function( self )
+                local H = Hekili
+        
+                if not H.Pause and H.Config then
+                    GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
+        
+                    GameTooltip:SetText( "Hekili: " .. i )
+                    GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+                    GameTooltip:Show()
+        
+                elseif ( H.Pause and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
+                    H:ShowDiagnosticTooltip( ns.queue[ dispID ][ id ] )
+        
+                end
+            end )
+            v:SetScript( "OnLeave", function(self)
+                GameTooltip:Hide()
+            end )
             v:Show()
 
             v.Header = v.Header or v:CreateFontString( "HekiliDisplay" .. i .. "Header", "OVERLAY", "GameFontNormal" )
@@ -1585,22 +1621,23 @@ do
         elseif id == 2 then
             -- Anchoring for the remainder.
             local queueAnchor = conf.queue.anchor or "RIGHT"
-            local qOffset = conf.queue.offset or 5
+            local qOffsetX = conf.queue.offsetX or 5
+            local qOffsetY = conf.queue.offsetY or 0
 
             b:ClearAllPoints()
 
             if queueAnchor:sub( 1, 5 ) == "RIGHT" then
                 local dir, align = "RIGHT", queueAnchor:sub(6)
-                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, qOffset * scale, 0 )
+                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, qOffsetX * scale, qOffsetY * scale )
             elseif queueAnchor:sub( 1, 4 ) == "LEFT" then
                 local dir, align = "LEFT", queueAnchor:sub(5)
-                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, -1 * qOffset * scale, 0 )
+                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, -1 * qOffsetX * scale, qOffsetY * scale )
             elseif queueAnchor:sub( 1, 3)  == "TOP" then
                 local dir, align = "TOP", queueAnchor:sub(4)
-                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, qOffset * scale )
+                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, qOffsetY * scale )
             else -- BOTTOM
                 local dir, align = "BOTTOM", queueAnchor:sub(7)
-                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, -1 * qOffset * scale )
+                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, -1 * qOffsetY * scale )
             end
         else
             local queueDirection = conf.queue.direction or "RIGHT"
@@ -1866,11 +1903,10 @@ function Hekili:ShowDiagnosticTooltip( q )
     -- Grab the default backdrop and copy it with a solid background.
     local backdrop = GameTooltip:GetBackdrop()
     backdrop.bgFile = [[Interface\Buttons\WHITE8X8]]
-
     tt:SetBackdrop(backdrop)
+    tt:SetBackdropColor(0, 0, 0, 1)
 
     tt:SetOwner(UIParent, "ANCHOR_CURSOR")
-    tt:SetBackdropColor(0, 0, 0, 1)
     tt:SetText(class.abilities[q.actionName].name)
     tt:AddDoubleLine(q.listName .. " #" .. q.action, "+" .. ns.formatValue(round(q.time or 0, 2)), 1, 1, 1, 1, 1, 1)
 
@@ -1941,5 +1977,5 @@ function Hekili:SaveCoordinates()
         self.DB.profile.displays[i].y = y
     end
 
-    _, _, _, self.DB.profile["Notification X"], self.DB.profile["Notification Y"] = HekiliNotification:GetPoint()
+    _, _, _, self.DB.profile.notifications.x, self.DB.profile.notifications.y = HekiliNotification:GetPoint()
 end
