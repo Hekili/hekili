@@ -191,7 +191,7 @@ function Hekili:OnInitialize()
                         end )
                         hookOnce = true
                     end
-                    ToggleDropDownMenu( 1, nil, Hekili_Menu, f:GetName(), "MENU" )
+                    ToggleDropDownMenu( 1, nil, Hekili_Menu, "cursor", 0, 0 )
                 end
                 GameTooltip:Hide()
             end,
