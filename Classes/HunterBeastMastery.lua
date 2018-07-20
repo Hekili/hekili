@@ -7,6 +7,9 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+-- needed for Frenzy.
+local FindUnitBuffByID = ns.FindUnitBuffByID
+
 
 if UnitClassBase( 'player' ) == 'HUNTER' then
     local spec = Hekili:NewSpecialization( 253 )
@@ -222,9 +225,27 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         beast_cleave = {
-            id = 115939,
+            id = 118455,
             duration = 4,
             max_stack = 1,
+            generate = function ()
+                local bc = buff.beast_cleave
+                local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 118455 )
+
+                if name then
+                    bc.name = name
+                    bc.count = 1
+                    bc.expires = expires
+                    bc.applied = expires - duration
+                    bc.caster = caster
+                    return
+                end
+
+                bc.count = 0
+                bc.expires = 0
+                bc.applied = 0
+                bc.caster = "nobody"
+            end,
         },
 
         bestial_wrath = {
@@ -277,6 +298,24 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 272790,
             duration = 8,
             max_stack = 3,
+            generate = function ()
+                local fr = buff.frenzy
+                local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 272790 )
+
+                if name then
+                    fr.name = name
+                    fr.count = count
+                    fr.expires = expires
+                    fr.applied = expires - duration
+                    fr.caster = caster
+                    return
+                end
+
+                fr.count = 0
+                fr.expires = 0
+                fr.applied = 0
+                fr.caster = "nobody"
+            end,
         },
 
         growl = {
@@ -434,6 +473,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 2058007,
             
+            recheck = function () return buff.frenzy.remains - gcd, buff.frenzy.remains, full_recharge_time - gcd, target.time_to_die - 9, ( 1.4 - charges_fractional ) * recharge end,
             handler = function ()
                 if buff.barbed_shot.down then applyBuff( 'barbed_shot' )
                 else
@@ -441,7 +481,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                         if buff[ 'barbed_shot_' .. i ].down then applyBuff( 'barbed_shot_' .. i ); break end
                     end
                 end
+
                 addStack( 'frenzy', 8, 1 )
+
                 setCooldown( 'bestial_wrath', cooldown.bestial_wrath.remains - 12 )
                 applyDebuff( 'target', 'barbed_shot_dot' )
             end,
@@ -475,6 +517,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 132127,
             
+            recheck = function () return buff.bestial_wrath.remains end,
             handler = function ()
                 applyBuff( 'bestial_wrath' )
             end,
@@ -718,7 +761,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 132176,
             
-            recheck = function () return buff.dire_frenzy.remains end,
+            recheck = function () return buff.barbed_shot.remains end,
             handler = function ()
             end,
         },
@@ -764,6 +807,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 132330,
             
+            velocity = 40,
+
             recheck = function () return buff.beast_cleave.remains - gcd, buff.beast_cleave.remains end,
             handler = function ()
                 applyBuff( 'beast_cleave' )
@@ -802,6 +847,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 461112,
             
+            recheck = function () return cooldown.bestial_wrath.remains - gcd, target.time_to_die - 15 end,
             handler = function ()
             end,
         },
