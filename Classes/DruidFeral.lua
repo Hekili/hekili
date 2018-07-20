@@ -430,7 +430,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 180,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 236149,
             
             form = "cat_form",
@@ -651,6 +651,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = false,
             texture = 571586,
+
+            toggle = "cooldowns",
             
             handler = function ()
                 shift( "cat_form" )
@@ -670,7 +672,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 45,
             spendType = "rage",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 1378702,
             
             form = "bear_form",
@@ -890,7 +892,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0,
             spendType = "rage",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 136080,
             
             handler = function ()
@@ -910,13 +912,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.14,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 136085,
             
             usable = function ()
                 if not talent.bloodtalons.enabled then return false end
                 if buff.bloodtalons.up then return false end
-                if buff.cat_form.up then return buff.predatory_swiftness.up or time == 0 end
+                if buff.cat_form.down or not buff.prowl.up then return buff.predatory_swiftness.up or time == 0 end
                 return false
             end,
             handler = function ()
@@ -938,7 +940,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.1,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 136081,
 
             talent = "restoration_affinity",
@@ -958,7 +960,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.06,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 135952,
             
             handler = function ()
@@ -972,7 +974,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 90,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 136059,
 
             talent = "renewal",
@@ -992,7 +994,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.04,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 132132,
             
             handler = function ()
@@ -1009,7 +1011,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = function () return 30 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 ) end,
             spendType = "energy",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 132152,
 
             aura = "rip",
@@ -1125,7 +1127,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.06,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 132163,
             
             handler = function ()
@@ -1200,7 +1202,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             recharge = 120,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 236169,
 
             handler = function ()
@@ -1268,7 +1270,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 4,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 135758,
             
             handler = function ()
@@ -1316,7 +1318,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 45,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 1817485,
 
             talent = "tiger_dash",
@@ -1399,7 +1401,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 15,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 538771,
             
             handler = function ()
@@ -1418,7 +1420,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = 0.3,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 236153,
 
             talent = "restoration_affinity",
