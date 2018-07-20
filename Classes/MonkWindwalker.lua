@@ -542,7 +542,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 60,
             gcd = "spell",
             
-            toggle = "cooldowns",
+            -- toggle = "cooldowns",
 
             startsCombat = true,
             texture = 608938,
