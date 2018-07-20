@@ -911,32 +911,54 @@ local function ReadKeybindings()
         table.wipe( v.lower )
     end
 
-    for i = 1, 12 do
-        StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
-    end
+    -- Bartender4 support from tanichan.
+    if _G["Bartender4"] then
+        -- Bartender
+        local bt4Button
+        local bt4Key
 
-    for i = 13, 24 do
-        StoreKeybindInfo( 2, GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
-    end
+        for i = 1, 12 do
+            StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
+        end
+        
+        for i = 13, 120 do 
+            bt4Key = GetBindingKey( "CLICK BT4Button" .. i .. ":LeftButton" )
+            bt4Button = _G[ "BT4Button" .. i ]
+        
+            if bt4Button then
+                local buttonActionType, buttonActionId = GetActionInfo( i )
+                StoreKeybindInfo( 2, bt4Key, buttonActionType, buttonActionId )
+            end
+        end
 
-    for i = 25, 36 do
-        StoreKeybindInfo( 3, GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
-    end
+    else
+        for i = 1, 12 do
+            StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
+        end
 
-    for i = 37, 48 do
-        StoreKeybindInfo( 4, GetBindingKey( "MULTIACTIONBAR4BUTTON" .. i - 36 ), GetActionInfo( i ) )
-    end
+        for i = 13, 24 do
+            StoreKeybindInfo( 2, GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
+        end
 
-    for i = 49, 60 do
-        StoreKeybindInfo( 5, GetBindingKey( "MULTIACTIONBAR2BUTTON" .. i - 48 ), GetActionInfo( i ) )
-    end
+        for i = 25, 36 do
+            StoreKeybindInfo( 3, GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
+        end
 
-    for i = 61, 72 do
-        StoreKeybindInfo( 6, GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
-    end
+        for i = 37, 48 do
+            StoreKeybindInfo( 4, GetBindingKey( "MULTIACTIONBAR4BUTTON" .. i - 36 ), GetActionInfo( i ) )
+        end
 
-    for i = 73, 120 do
-        StoreKeybindInfo( 7 + floor( ( i - 72 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. ( i - 72 ) % 12 ), GetActionInfo( i ) )
+        for i = 49, 60 do
+            StoreKeybindInfo( 5, GetBindingKey( "MULTIACTIONBAR2BUTTON" .. i - 48 ), GetActionInfo( i ) )
+        end
+
+        for i = 61, 72 do
+            StoreKeybindInfo( 6, GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
+        end
+
+        for i = 73, 120 do
+            StoreKeybindInfo( 7 + floor( ( i - 72 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. ( i - 72 ) % 12 ), GetActionInfo( i ) )
+        end
     end
 
     --[[ for k in pairs( keys ) do
