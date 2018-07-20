@@ -761,7 +761,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132340,
             
-            recheck = function () return rage.time_to_40 end,
+            recheck = function () return rage.time_to_30, rage.time_to_40 end,
             handler = function ()
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
             end,
