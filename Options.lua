@@ -1759,6 +1759,10 @@ do
                                     desc = "Enter the vertical position of the notification panel, " ..
                                         "relative to the center of the screen.  Negative values move the " ..
                                         "panel down; positive values move the panel up.",
+                                    min = -384,
+                                    max = 384,
+                                    step = 1,
+
                                     width = "full",
                                     order = 2,
                                 },
