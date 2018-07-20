@@ -540,10 +540,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = false,
             texture = 236171,
 
-            usable = function () return target.distance > 10 and ( query_time - max( action.charge.lastCast, action.heroic_leap.lastCast ) > gcd ) end,
+            usable = function () return ( equipped.weight_of_the_earth or target.distance > 10 ) and ( query_time - max( action.charge.lastCast, action.heroic_leap.lastCast ) > gcd * 2 ) end,
             handler = function ()
                 setDistance( 5 )
                 if talent.bounding_stride.enabled then applyBuff( "bounding_stride" ) end
+                if level < 116 and equipped.weight_of_the_earth then
+                    applyDebuff( "target", "colossus_smash" )
+                    active_dot.colossus_smash = max( 1, active_enemies )
+                end
             end,
         },
         
