@@ -284,6 +284,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 152279,
             duration = 3600,
             max_stack = 1,
+            dot = "buff"
         },
         chains_of_ice = {
             id = 45524,
@@ -676,6 +677,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 135372,
             
             recheck = function () return cooldown.pillar_of_frost.remains, gcd - runes.time_to_5, runic_power[ "time_to_" .. ( runic_power.max - 10 ) ], runes.time_to_3, runic_power.time_to_61 end,
+            usable = function () return not buff.empower_rune_weapon.up end,
+            readyTime = function () return buff.empower_rune_weapon.remains end,
             handler = function ()
                 stat.haste = state.haste + 0.15
                 gain( 1, "runes" )
