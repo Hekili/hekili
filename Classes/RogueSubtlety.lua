@@ -195,9 +195,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             max_stack = 1,
         },
         stealth = {
-            id = 1784,
+            id = function () return talent.subterfuge.up and 115191 or 1784 end,
             duration = 3600,
             max_stack = 1,
+            copy = { 115191, 1784 }
         },
         subterfuge = {
             id = 115192,
@@ -399,7 +400,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterHook( "runHandler", function( ability )
         local a = class.abilities[ ability ]
 
-        if not a or a.startsCombat then
+        if not a or a.startsCombat and stealthed.all then
             if buff.stealth.up then 
                 setCooldown( "stealth", 2 )
             end
@@ -408,6 +409,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             if level < 116 and stealthed.mantle and equipped.mantle_of_the_master_assassin then
                 applyBuff( "master_assassins_initiative", 5 )
                 -- revisit for subterfuge?
+            end
+
+            if talent.subterfuge.enabled and stealthed.rogue then
+                applyBuff( "subterfuge" )
             end
 
             removeBuff( "stealth" )
@@ -421,7 +426,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
         spec:RegisterAura( "master_assassins_initiative", {
             id = 235027,
-            duration = 3600
+            duration = 5
         } )
 
         spec:RegisterStateExpr( "mantle_duration", function()
