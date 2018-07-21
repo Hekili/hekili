@@ -915,6 +915,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                             if next_wait <= 0 then
                                                                 if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
+                                                            elseif next_wait >= rWait then
+                                                                if debug then self:Debug( "The currently chosen action ( %s ) is ready at or before the next action ( %.2fs <= %.2fs ).  Skipping.", ( rAction or "???" ), rWait, next_wait ) end
                                                             elseif time_ceiling and next_wait >= time_ceiling - state.now - state.offset then
                                                                 if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we would exceed our time ceiling in %.2fs.  Skipping.", next_action, next_wait ) end
                                                             elseif next_wait >= 10 then
@@ -976,7 +978,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     state.selectionTime = state.delay
 
                                                     if debug then
-                                                        self:Debug( "Action Chosen: %s at %f!", rAction, state.delay )
+                                                        self:Debug( "Action Chosen: %s at %.2f!", rAction, state.delay )
                                                     end
 
                                                     if entry.cycle_targets == 1 and state.active_enemies > 1 and ability and ability.cycle then
