@@ -120,32 +120,25 @@ end
 ns.checkImports = checkImports
 
 
-function ns.pruneDefaults()
-    
-    local profile = Hekili.DB.profile
-    
-    for i = #profile.displays, 1, -1 do
-        local display = profile.displays[ i ]
-        if not ns.isDefault( display.Name, "displays" ) then
-            display.Default = false
-        end 
-    end
-    
-    --[[ for i = #profile.actionLists, 1, -1 do
-        local list = profile.actionLists[ i ]
-        if type( list ) ~= 'table' or list.Name:match("^@") then
-            for dispID, display in ipairs( profile.displays ) do
-                if display.precombatAPL > i then display.precombatAPL = display.precombatAPL - 1 end
-                if display.defaultAPL > i then display.defaultAPL = display.defaultAPL - 1 end
-            end
-            table.remove( profile.actionLists, i )
-        elseif not ns.isDefault( list.Name, "actionLists" ) then
-            list.Default = false
-        end
-    end  ]]
-    
-end
+local function EmbedBlizOptions()
+    local panel = CreateFrame( "Frame", "HekiliDummyPanel", UIParent )
+    panel.name = "Hekili"
 
+    local open = CreateFrame( "Button", "HekiliOptionsButton", panel, "UIPanelButtonTemplate" )
+    open:SetPoint( "CENTER", panel, "CENTER", 0, 0 )
+    open:SetWidth( 250 )
+    open:SetHeight( 25 )
+    open:SetText( "Open Hekili Options Panel" )
+
+    open:SetScript( "OnClick", function ()
+        InterfaceOptionsFrameOkay:Click()
+        GameMenuButtonContinue:Click()
+
+        ns.StartConfiguration()
+    end )
+
+    InterfaceOptions_AddCategory( panel )
+end
 
 
 local hookOnce = false
@@ -158,17 +151,19 @@ function Hekili:OnInitialize()
     self.Options = self:GetOptions()
     self.Options.args.profiles = LibStub( "AceDBOptions-3.0" ):GetOptionsTable( self.DB )
     
-
     self.DB.RegisterCallback( self, "OnProfileChanged", "TotalRefresh" )
     self.DB.RegisterCallback( self, "OnProfileCopied", "TotalRefresh" )
     self.DB.RegisterCallback( self, "OnProfileReset", "TotalRefresh" )
     
+    _G.onInitStart = self.DB.profile.enabled
 
     local AceConfig = LibStub( "AceConfig-3.0" )
     AceConfig:RegisterOptionsTable( "Hekili", self.Options )
 
     local AceConfigDialog = LibStub( "AceConfigDialog-3.0" )
-    self.optionsFrame = AceConfigDialog:AddToBlizOptions( "Hekili", "Hekili" )
+    -- self.optionsFrame = AceConfigDialog:AddToBlizOptions( "Hekili", "Hekili" )
+    EmbedBlizOptions()
+
     self:RegisterChatCommand( "hekili", "CmdLine" )
     self:RegisterChatCommand( "hek", "CmdLine" )
     
@@ -204,11 +199,12 @@ function Hekili:OnInitialize()
         
         function ns.UI.Minimap:RefreshDataText()
             local p = Hekili.DB.profile
+            local m = p.toggles.mode.value
             local color = "FFFFD100"
             
             self.text = format( "|c%s%s|r %sCD|r %sInt|r %sPot|r",
             color,
-            p.toggles.mode.value == 'automatic' and "Auto" or "Dual",
+            m == "single" and "S" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or "Auto" ) ),
             p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
             p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
             p.toggles.potions.value  and "|cFF00FF00" or "|cFFFF0000" )
@@ -245,8 +241,10 @@ function Hekili:OnInitialize()
     self:UpdateDisplayVisibility()
     
     callHook( "onInitialize" )
-    
-    if class.file == 'NONE' then
+
+    _G.onInitEnd = self.DB.profile.enabled
+
+    --[[ if class.file == 'NONE' then
         if self.DB.profile.enabled then
             self.DB.profile.enabled = false
             self.DB.profile.AutoDisabled = true
@@ -256,7 +254,7 @@ function Hekili:OnInitialize()
                 buttons[j]:Hide()
             end
         end
-    end
+    end ]]
     
 end
 
@@ -285,7 +283,7 @@ function Hekili:ReInitialize()
         self:Enable()
     end
     
-    if class.file == 'NONE' then
+    --[[ if class.file == 'NONE' then
         self.DB.profile.enabled = false
         self.DB.profile.AutoDisabled = true
         for i, buttons in ipairs( ns.UI.Buttons ) do
@@ -293,51 +291,48 @@ function Hekili:ReInitialize()
                 buttons[j]:Hide()
             end
         end
-    end
+    end ]]
     
 end 
 
 
 function Hekili:OnEnable()
-
-    self.DB.profile.enabled = true
-
     ns.StartEventHandler()
-    self:BuildUI()
-    self:SpecializationChanged()
-    self:UpdateDisplayVisibility()
-    self:ForceUpdate()
-
-    self:OverrideBinds()
-    ns.ReadKeybindings()
-
+   
     self:TotalRefresh()
-    -- self:LoadScripts()
 
-    -- May want to refresh configuration options, key bindings.
-    if self.DB.profile.enabled then
-        -- self:UpdateDisplays()
-        ns.Audit()
-    else
+    ns.ReadKeybindings()
+    self:ForceUpdate()
+    ns.Audit()    
+
+    if not self.DB.profile.enabled then 
         self:Disable()
-    end
-    
+    end 
 end
 
+ns.cpuProfile.StartEventHandler = ns.StartEventHandler
+ns.cpuProfile.BuildUI = Hekili.BuildUI
+ns.cpuProfile.SpecializationChanged = Hekili.SpecializationChanged
+ns.cpuProfile.OverrideBinds = Hekili.OverrideBinds
+ns.cpuProfile.TotalRefresh = Hekili.TotalRefresh
 
 function Hekili:OnDisable()
-    self.DB.profile.enabled = false
     self:UpdateDisplayVisibility()
+    self:BuildUI()
 
     ns.StopEventHandler()
-    self:BuildUI()
 end
 
 
 function Hekili:Toggle()
     self.DB.profile.enabled = not self.DB.profile.enabled
-    if self.DB.profile.enabled then self:Enable()
-    else self:Disable() end
+
+    if self.DB.profile.enabled then
+        self:Enable()
+    else
+        self:Disable() 
+    end
+    
     self:UpdateDisplayVisibility()
 end
 

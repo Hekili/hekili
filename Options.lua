@@ -4540,6 +4540,8 @@ do
 end
 
 
+_G.sobLog = {}
+
 do
     do
         local completed = false
@@ -5803,26 +5805,15 @@ function Hekili:TotalRefresh()
     
     callHook( "onInitialize" )
     
-    --[[ for k, v in pairs( class.toggles ) do
-        if Hekili.DB.profile['Toggle State: '..v.name] == nil then
-            Hekili.DB.profile['Toggle State: '..v.name] = v.state
-        end
-    end
-    
-    for k, v in pairs( class.settings ) do
-        if Hekili.DB.profile['Class Option: '..v.name] == nil then
-            Hekili.DB.profile['Class Option: '..v.name] = v.state
-        end
-    end ]]
-
     self:RunOneTimeFixes()
     ns.checkImports()
     
-    self:OverrideBinds()
     self:LoadScripts()
     self:RefreshOptions()
     self:UpdateDisplayVisibility()
     self:BuildUI()
+
+    self:OverrideBinds()
 
     LibStub("LibDBIcon-1.0"):Refresh( "Hekili", self.DB.profile.iconStore )
     
