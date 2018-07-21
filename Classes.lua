@@ -2125,7 +2125,7 @@ function Hekili:SpecializationChanged()
         if not id then break end
 
         if i == currentSpec then
-            table.insert( specs, 2, id )
+            table.insert( specs, 1, id )
 
             state.spec.id = id
             state.spec.name = name        

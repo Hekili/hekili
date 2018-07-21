@@ -4540,8 +4540,6 @@ do
 end
 
 
-_G.sobLog = {}
-
 do
     do
         local completed = false
