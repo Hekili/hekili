@@ -376,6 +376,16 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         end 
     end )
 
+    spec:RegisterHook( "reset_precast", function ()
+        if state.buff.cat_form.down then
+            state.energy.regen = 10 + ( state.stat.haste * 10 )
+        end
+        state.debuff.rip.pmultiplier = nil
+        state.debuff.rake.pmultiplier = nil
+        state.debuff.thrash.pmultiplier = nil
+    end )
+
+
     local function comboSpender( a, r )
         if r == "combo_points" and a > 0 and talent.soul_of_the_forest.enabled then
             gain( a * 5, "energy" )
@@ -549,6 +559,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 gain( 5, "combo_points" )
                 applyDebuff( "target", "feral_frenzy" )
+                removeStack( "bloodtalons" )
             end,
 
             copy = "ashamanes_frenzy"
@@ -1440,10 +1451,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         cooldown = 120,
         gcd = "off",
 
-        usable = function () return boss and race.night_elf end,
-
         recheck = function () return energy[ "time_to_" .. action.rake.cost ], energy[ "time_to_" .. ( action.rake.cost + 1 ) ], buff.incarnation.remains - 0.1, buff.incarnation.remains end,
-
+        usable = function () return boss and race.night_elf end,
         handler = function ()
             applyBuff( "shadowmeld" )
         end,
