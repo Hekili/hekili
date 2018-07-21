@@ -105,6 +105,13 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             max_stack = 1,
         },
 
+        fires_of_justice = {
+            id = 209785,
+            duration = 15,
+            max_stack = 1,
+            copy = "the_fires_of_justice" -- backward compatibility
+        },
+
         greater_blessing_of_kings = {
             id = 203538,
             duration = 3600,
