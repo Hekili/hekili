@@ -346,9 +346,56 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 4.5
         } )
 
+    spec:RegisterGear( 'tier20', 147175, 147176, 147177, 147178, 147179, 147180 )
+        spec:RegisterAura( "lightning_crash", {
+            id = 242284,
+            duration = 16
+        } )
+        spec:RegisterAura( "crashing_lightning", {
+            id = 242286,
+            duration = 16,
+            max_stack = 15
+        } )
+
+    spec:RegisterGear( 'tier19', 138341, 138343, 138345, 138346, 138348, 138372 )
+    spec:RegisterGear( 'class', 139698, 139699, 139700, 139701, 139702, 139703, 139704, 139705 )
+    
     spec:RegisterGear( 'waycrest_legacy', 158362, 159631 )
     spec:RegisterGear( 'electric_mail', 161031, 161034, 161032, 161033, 161035 )
-    -- spec:RegisterGear( 'fake_set_test', 155325, 155262, 159907 )
+
+
+    spec:RegisterGear( 'akainus_absolute_justice', 137084 )
+    spec:RegisterGear( 'emalons_charged_core', 137616 )
+    spec:RegisterGear( 'eye_of_the_twisting_nether', 137050 )
+        spec:RegisterAura( "fire_of_the_twisting_nether", {
+            id = 207995,
+            duration = 8 
+        } )
+        spec:RegisterAura( "chill_of_the_twisting_nether", {
+            id = 207998,
+            duration = 8 
+        } )
+        spec:RegisterAura( "shock_of_the_twisting_nether", {
+            id = 207999,
+            duration = 8 
+        } )
+
+        spec:RegisterStateTable( "twisting_nether", setmetatable( {}, {
+            __index = function( t, k )
+                if k == 'count' then
+                    return ( state.buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( state.buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( state.buff.shock_of_the_twisting_nether.up and 1 or 0 )
+                end
+
+                return 0
+            end
+        } ) )
+
+    spec:RegisterGear( 'smoldering_heart', 151819 )
+    spec:RegisterGear( 'soul_of_the_farseer', 151647 )
+    spec:RegisterGear( 'spiritual_journey', 138117 )
+    spec:RegisterGear( 'storm_tempests', 137103 )
+    spec:RegisterGear( 'uncertain_reminder', 143732 )
+
 
     spec:SetPotion( 'prolonged_power' )
 
@@ -424,15 +471,15 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
                 removeBuff( 'crashing_lightning' )
                 
-                if set_bonus.tier20_2pc > 1 then
-                    applyBuff( 'lightning_crash' )
-                end
-
-                if level < 105 then 
+                if level < 116 then 
                     if equipped.emalons_charged_core and spell_targets.crash_lightning >= 3 then
                         applyBuff( 'emalons_charged_core', 10 )
                     end
 
+                    if set_bonus.tier20_2pc > 1 then
+                        applyBuff( 'lightning_crash' )
+                    end
+    
                     if equipped.eye_of_the_twisting_nether then
                         applyBuff( 'shock_of_the_twisting_nether', 8 )
                     end
@@ -497,7 +544,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             handler = function ()
                 applyBuff( 'flametongue', 16 + min( 4.8, buff.flametongue.remains ) )
 
-                if level < 105 and equipped.eye_of_the_twisting_nether then
+                if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'fire_of_the_twisting_nether', 8 )
                 end
             end,
@@ -518,7 +565,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             recheck = function () return buff.frostbrand.remains, buff.frostbrand.remains - 4.8, buff.frostbrand.remains - ( 6 + gcd ) end,
             handler = function ()
                 applyBuff( 'frostbrand', 16 + min( 4.8, buff.frostbrand.remains ) )
-                if level < 105 and equipped.eye_of_the_twisting_nether then
+                if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'chill_of_the_twisting_nether', 8 )
                 end
             end,
@@ -593,7 +640,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             handler = function ()
                 removeBuff( 'hot_hand' )
-                if level < 105 and equipped.eye_of_the_twisting_nether then
+                if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'fire_of_the_twisting_nether' )
                     if buff.crash_lightning.up then applyBuff( 'shock_of_the_twisting_nether' ) end
                 end
@@ -613,7 +660,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             startsCombat = true,
 
             handler = function ()
-                if level < 105 and equipped.eye_of_the_twisting_nether then
+                if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'shock_of_the_twisting_nether' )
                 end
             end,
@@ -651,7 +698,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             recheck = function () return ( 1.7 - charges_fractional ) * recharge end,
 
             handler = function ()
-                if level < 105 and equpped.eye_of_the_twisting_nether then
+                if level < 116 and equpped.eye_of_the_twisting_nether then
                     applyBuff( 'shock_of_the_twisting_nether' )
                 end
                 removeBuff( 'force_of_the_mountain' )
@@ -695,17 +742,19 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
                 setCooldown( 'windstrike', action.stormstrike.cooldown )
                 setCooldown( 'strike', action.stormstrike.cooldown )
+
+                if level < 116 then
+                    if equipped.storm_tempests then
+                        applyDebuff( 'target', 'storm_tempests', 15 )
+                    end
     
-                if level < 105 and equipped.storm_tempests then
-                    applyDebuff( 'target', 'storm_tempests', 15 )
-                end
-    
-                if set_bonus.tier20_4pc > 0 then
-                    addStack( 'crashing_lightning', 16, 1 )
-                end
-    
-                if level < 105 and equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
-                    applyBuff( 'shock_of_the_twisting_nether', 8 )
+                    if set_bonus.tier20_4pc > 0 then
+                        addStack( 'crashing_lightning', 16, 1 )
+                    end
+
+                    if equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
+                        applyBuff( 'shock_of_the_twisting_nether', 8 )
+                    end
                 end
             end,                    
 
@@ -725,7 +774,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             startsCombat = true,
             talent = 'sundering',
 
-            handler = function () if level < 105 and equipped.eye_of_the_twisting_nether then applyBuff( 'shock_of_the_twisting_nether' ) end end,
+            handler = function () if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( 'shock_of_the_twisting_nether' ) end end,
         },
 
 
@@ -782,16 +831,18 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
                 removeBuff( 'stormbringer' )
 
-                if level < 105 and equipped.storm_tempests then
-                    applyDebuff( 'target', 'storm_tempests', 15 )
-                end
+                if level < 116 then
+                    if equipped.storm_tempests then
+                        applyDebuff( 'target', 'storm_tempests', 15 )
+                    end
     
-                if set_bonus.tier20_4pc > 0 then
-                    addStack( 'crashing_lightning', 16, 1 )
-                end
-    
-                if level < 105 and equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
-                    applyBuff( 'shock_of_the_twisting_nether', 8 )
+                    if set_bonus.tier20_4pc > 0 then
+                        addStack( 'crashing_lightning', 16, 1 )
+                    end
+
+                    if equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
+                        applyBuff( 'shock_of_the_twisting_nether', 8 )
+                    end
                 end
             end,
         },
