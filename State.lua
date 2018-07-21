@@ -2092,9 +2092,12 @@ ns.metatables.mt_cooldowns = mt_cooldowns
 
 local mt_dot = {
     __index = function(t, k)
-        if class.auras[k] and class.auras[k].friendly then
+        local a = class.auras[ k ]
+
+        if a and a.dot == "buff" then
             return state.buff[ k ]
         end
+        
         return state.debuff[ k ]
     end,
 }
