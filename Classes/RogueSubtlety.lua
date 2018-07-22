@@ -195,7 +195,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             max_stack = 1,
         },
         stealth = {
-            id = function () return talent.subterfuge.up and 115191 or 1784 end,
+            id = function () return talent.subterfuge.enabled and 115191 or 1784 end,
             duration = 3600,
             max_stack = 1,
             copy = { 115191, 1784 }
@@ -400,19 +400,18 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterHook( "runHandler", function( ability )
         local a = class.abilities[ ability ]
 
-        if not a or a.startsCombat and stealthed.all then
-            if buff.stealth.up then 
-                setCooldown( "stealth", 2 )
-            end
-            emu_stealth_change = query_time
-
+        if stealthed.mantle and ( not a or a.startsCombat ) then
             if level < 116 and stealthed.mantle and equipped.mantle_of_the_master_assassin then
                 applyBuff( "master_assassins_initiative", 5 )
                 -- revisit for subterfuge?
             end
 
-            if talent.subterfuge.enabled and stealthed.rogue then
+            if talent.subterfuge.enabled and stealthed.mantle then
                 applyBuff( "subterfuge" )
+            end
+
+            if buff.stealth.up then 
+                setCooldown( "stealth", 2 )
             end
 
             removeBuff( "stealth" )
@@ -873,9 +872,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             nobuff = "shadow_dance",
 
             ready = function () return max( energy.time_to_max, buff.shadow_dance.remains ) end,
+            
             usable = function () return not stealthed.all end,
-
-            recheck = function () return apl_stealth_cds( ( 1.75 - charges_fractional ) * recharge, target.time_to_die - cooldown.symbols_of_death.remains ) end,
+            recheck = function () return apl_stealth_cds( remains, buff.subterfuge.remains, ( 1.75 - charges_fractional ) * recharge, target.time_to_die - cooldown.symbols_of_death.remains ) end,
             handler = function ()
                 applyBuff( "shadow_dance" )
                 if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
@@ -913,7 +912,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = true,
             texture = 1373912,
             
-            usable = function () return buff.stealth.up or buff.shadow_dance.up end,
+            usable = function () return stealthed.all end,
             handler = function ()
                 gain( buff.shadow_blades.up and 3 or 2, 'combo_points' )
                 
@@ -1017,7 +1016,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         
 
         stealth = {
-            id = 1784,
+            id = function () return talent.subterfuge.enabled and 115191 or 1784 end,
+            known = 1784,
             cast = 0,
             cooldown = 2,
             gcd = "off",
@@ -1025,13 +1025,15 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 132320,
 
-            usable = function () return not buff.stealth.up end,            
+            usable = function () return not buff.stealth.up and not buff.vanish.up end,            
             handler = function ()
                 applyBuff( 'stealth' )
                 if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
 
                 emu_stealth_change = query_time
             end,
+
+            copy = { 1784, 115191 }
         },
         
 

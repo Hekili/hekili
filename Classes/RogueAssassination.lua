@@ -341,21 +341,26 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterHook( "runHandler", function( ability )
         local a = class.abilities[ ability ]
 
-        if a and a.startsCombat then
-            if buff.stealth.up or buff.vanish.up then
-                if level < 116 and equipped.mantle_of_the_master_assassin then
-                    applyBuff( "master_assassins_initiative", 5 )
-                end
+        if stealthed.mantle and ( not a or a.startsCombat ) then
+            if level < 116 and equipped.mantle_of_the_master_assassin then
+                applyBuff( "master_assassins_initiative", 5 )
+            end
 
-                if talent.master_assassin.enabled then
-                    applyBuff( "master_assassin" )
-                end
+            if talent.master_assassin.enabled then
+                applyBuff( "master_assassin" )
+            end
+
+            if talent.subterfuge.enabled then
+                applyBuff( "subterfuge" )
+            end
+
+            if buff.stealth.up then
+                setCooldown( "stealth", 2 )
             end
     
             removeBuff( "stealth" )
             removeBuff( "shadowmeld" )
             removeBuff( "vanish" )
-            setCooldown( "stealth", 2 )
         end
     end )
 
