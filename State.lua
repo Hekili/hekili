@@ -393,7 +393,10 @@ state.min = safeMin
 state.floor = math.floor
 state.print = print
 
+state.FindUnitBuffByID = ns.FindUnitBuffByID
+state.FindUnitDebuffByID = ns.FindUnitDebuffByID
 state.GetItemCount = GetItemCount
+state.GetTime = GetTime
 state.GetTotemInfo = GetTotemInfo
 state.IsUsableSpell = IsUsableSpell
 state.IsPlayerSpell = IsPlayerSpell
@@ -410,6 +413,7 @@ state.ipairs = ipairs
 state.pairs = pairs
 state.type = type
 state.tonumber = tonumber
+state.tostring = tostring
 state.rawget = rawget
 state.rawset = rawset
 
@@ -819,7 +823,7 @@ state.spell_targets = setmetatable( {}, {
 
 
 local raid_event_filter = {
-    ["in"] = 0,
+    ["in"] = 3600,
     amount = 0,
     duration = 0,
     cooldown = 0,
@@ -2097,7 +2101,7 @@ local mt_dot = {
         if a and a.dot == "buff" then
             return state.buff[ k ]
         end
-        
+
         return state.debuff[ k ]
     end,
 }
@@ -2889,7 +2893,10 @@ local mt_default_debuff = {
     __index = function( t, k )
         local class_aura = class.auras[ t.key ]
         
-        if k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
+        if class_aura and rawget( class_aura, "meta" ) and class_aura.meta[ k ] then
+            return class_aura.meta[ k ]()
+
+        elseif k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if class_aura and class_aura.generate then
                 class_aura.generate()
                 return t[ k ]
