@@ -383,7 +383,7 @@ function Hekili:GetDefaults()
 
                 mode = {
                     key = "ALT-SHIFT-N",
-                    type = "AutoDual",
+                    type = "AutoSingle",
                     value = "automatic",
                 },
 
@@ -2916,6 +2916,20 @@ do
                         max = 1.5,
                         step = 0.05,
                         order = 3,
+                    },
+
+                    keybind = {
+                        type = "input",
+                        name = "Keybinding",
+                        desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
+                            "This can be helpful if the addon incorrectly detects your keybindings.",
+                        validate = function( info, val )
+                            val = val:trim()
+                            if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
+                            return true
+                        end,
+                        width = "full",
+                        order = 4,
                     }
                 }
             }
@@ -4699,7 +4713,7 @@ do
                             desc = "Select the Display Modes that can be cycled using your Display Mode key.\n\n" ..
                                 "|cFFFFD100Auto vs. Single|r - Using only the Primary display, toggle between automatic target counting and single-target recommendations.\n\n" .. 
                                 "|cFFFFD100Single vs. AOE|r - Using only the Primary display, toggle between single-target recommendations and AOE (multi-target) recommendations.\n\n" ..
-                                "|cFFFFD100Auto vs. Dual|r - Toggle between one display using automatic target counting and two displays, with one showing single-target recommendations and the other showing AOE recommendations.",
+                                "|cFFFFD100Auto vs. Dual|r - Toggle between one display using automatic target counting and two displays, with one showing single-target recommendations and the other showing AOE recommendations.  This will use additional CPU.",
                             values = {
                                 AutoSingle = "Auto vs. Single",
                                 SingleAOE = "Single vs. AOE",

@@ -686,7 +686,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             state.player.queued_off = nil
         end
 
-        Hekili:ForceUpdate( subtype, true )
+        -- Hekili:ForceUpdate( subtype, true )
     end
 
     if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
@@ -1010,7 +1010,18 @@ end )
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
     function Hekili:GetBindingForAction( key, caps )
-        if not key or not keys[ key ] then return "" end
+        if not key then return "" end
+
+        local override = state.spec.id
+        override = override and self.DB.profile.specs[ override ]
+        override = override and override.abilities[ key ]
+        override = override and override.keybind
+
+        if override and override ~= "" then
+            return override
+        end
+
+        if not keys[ key ] then return "" end
 
         local db = caps and keys[ key ].upper or keys[ key ].lower
 
@@ -1032,7 +1043,18 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
     end
 else
     function Hekili:GetBindingForAction( key, caps )
-        if not key or not keys[ key ] then return "" end
+        if not key then return "" end
+
+        local override = state.spec.id
+        override = override and self.DB.profile.specs[ override ]
+        override = override and override.abilities[ key ]
+        override = override and override.keybind
+
+        if override and override ~= "" then
+            return override
+        end
+
+        if not keys[ key ] then return "" end
 
         local db = caps and keys[ key ].upper or keys[ key ].lower
 
