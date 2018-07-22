@@ -280,10 +280,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
     local function calculate_multiplier( spellID )
 
-        local tigers_fury = FindUnitBuffByID( "player", class.auras.tigers_fury.id, nil, "PLAYER" )
-        local bloodtalons = FindUnitBuffByID( "player", class.auras.bloodtalons.id, nil, "PLAYER" )
-        local clearcasting = FindUnitBuffByID( "player", class.auras.clearcasting.id, nil, "PLAYER" )
-        local prowling = GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", class.auras.incarnation.id, nil, "PLAYER" )
+        local tigers_fury = FindUnitBuffByID( "player", class.auras.tigers_fury.id, "PLAYER" )
+        local bloodtalons = FindUnitBuffByID( "player", class.auras.bloodtalons.id, "PLAYER" )
+        local clearcasting = FindUnitBuffByID( "player", class.auras.clearcasting.id, "PLAYER" )
+        local prowling = GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", class.auras.incarnation.id, "PLAYER" )
 
         if spellID == 155722 then
             return 1 * ( prowling and 2 or 1 ) * ( bloodtalons and 1.2 or 1 ) * ( tigers_fury and 1.15 or 1 )
