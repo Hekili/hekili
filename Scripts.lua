@@ -314,7 +314,7 @@ function scripts:StoreValues( tbl, node, mod )
         local s, r = pcall( v )
 
         if s then tbl[ k ] = r
-        elseif type( r ) == 'string' then tbl[ k ] = r:match( "lua:%d+: (.*)" ) or r end
+        elseif type( r ) == 'string' then tbl[ k ] = r:match( "lua:(%d+: .*)" ) or r end
         if tbl[ k ] == nil then tbl[ k ] = 'nil' end
     end
 end
