@@ -271,6 +271,46 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             duration = 5,
             max_stack = 1,
         },
+
+        totem_mastery = {
+            duration = 120,
+            generate = function ()
+                local expires, remains = 0, 0
+
+                for i = 1, 5 do
+                    local _, name, cast, duration = GetTotemInfo(i)
+
+                    if name == class.abilities.totem_mastery.name then
+                        expires = cast + duration
+                        remains = expires - now
+                        break
+                    end
+                end
+
+                local up = buff.resonance_totem.up and remains > 0
+
+                local tm = buff.totem_mastery
+                tm.name = class.abilities.totem_mastery.name
+
+                if expires > 0 and up then
+                    tm.count = 4
+                    tm.expires = expires
+                    tm.applied = expires - 120
+                    tm.caster = "player"
+
+                    applyBuff( "resonance_totem", remains )
+                    applyBuff( "tailwind_totem", remains )
+                    applyBuff( "storm_totem", remains )
+                    applyBuff( "ember_totem", remains )
+                    return
+                end
+
+                tm.count = 0
+                tm.expires = 0
+                tm.applied = 0
+                tm.caster = "nobody"
+            end,
+        }
     } )
 
 
@@ -861,13 +901,17 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             talent = 'totem_mastery',
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 511726,
             
+            usable = function () return buff.totem_mastery.remains < 15 end,
             handler = function ()
-                -- applies ember_totem (210657)
-                -- applies tailwind_totem (210660)
-                -- applies resonance_totem (202188)
+                applyBuff( 'resonance_totem', 120 )
+                applyBuff( 'storm_totem', 120 )
+                applyBuff( 'ember_totem', 120 )
+                if buff.tailwind_totem.down then stat.spell_haste = stat.spell_haste + 0.02 end
+                applyBuff( 'tailwind_totem', 120 )
+                applyBuff( 'totem_mastery', 120 )
             end,
         },
         
