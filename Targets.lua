@@ -207,7 +207,7 @@ ns.wipeDebuffs = function()
 end
 
 
-ns.trackDebuff = function( spell, target, time, application )
+ns.trackDebuff = function( spell, target, time, application, nodot )
 
   debuffs[ spell ] = debuffs[ spell ] or {}
   debuffCount[ spell ] = debuffCount[ spell ] or 0
@@ -229,6 +229,7 @@ ns.trackDebuff = function( spell, target, time, application )
 
     debuff.last_seen = time
     debuff.applied = debuff.applied or time
+    debuff.nodot = nodot
 
     if application then
         debuff.pmod = debuffMods[ spell ]
@@ -254,6 +255,48 @@ end
 
 
 ns.numDebuffs = function( spell ) return debuffCount[ spell ] or 0 end
+
+
+ns.compositeDebuffCount = function( ... )
+    local n = 0
+
+    for i = 1, select( "#", ... ) do
+        local debuff = debuffs[ spell ]
+        if debuff then
+            for unit in pairs( debuff ) do
+                n = n + 1
+            end
+        end
+    end
+
+    return n
+end
+
+ns.conditionalDebuffCount = function( req1, req2, ... )
+    local n = 0
+
+    req1 = class.auras[ req1 ] and class.auras[ req1 ].id
+    req2 = class.auras[ req2 ] and class.auras[ req2 ].id
+
+    for i = 1, select( "#", ... ) do
+        local debuff = select( i, ... )
+        debuff = class.auras[ debuff ] and class.auras[ debuff ].id
+        debuff = debuff and debuffs[ debuff ]
+
+        if debuff then
+            for unit in pairs( debuff ) do
+                local reqExp = ( req1 and debuffs[ req1 ] and debuffs[ req1 ][ unit ] ) or ( req2 and debuffs[ req2 ] and debuffs[ req2 ][ unit ] )
+                if reqExp then
+                    n = n + 1
+                end
+            end
+        end
+    end
+
+    return n
+end
+
+
 ns.isWatchedDebuff = function( spell ) return debuffs[ spell ] ~= nil end
 
 
@@ -314,10 +357,13 @@ ns.Audit = function ()
     local grace = spec and spec.damageExpiration or 6
 
     for aura, targets in pairs( debuffs ) do
+        local a = class.auras[ aura ]
+        local window = a and a.duration or grace
+        local expires = a and a.no_ticks or false
+
         for unit, entry in pairs( targets ) do
             -- NYI: Check for dot vs. debuff, since debuffs won't 'tick'
-            local window = class.auras[ aura ] and class.auras[ aura ].duration or grace
-            if now - entry.last_seen > window then
+            if expires and now - entry.last_seen > window then
                 ns.trackDebuff( aura, unit )
             end
         end
