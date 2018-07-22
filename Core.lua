@@ -576,7 +576,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local rClash = clash or 0
     local rDepth = depth or 0
 
-    local strict = spec.strict or false
+    local strict = false -- disabled for now.
     local force_channel = false
     local stop = false
 
