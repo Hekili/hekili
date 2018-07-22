@@ -630,6 +630,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = true,
             texture = 236274,
             
+            usable = function () return buff.blindside.up or target.health_pct < 30 end,
             handler = function ()
                 gain( 1, "combo_points" )
                 removeBuff( "blindside" )
