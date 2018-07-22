@@ -6,7 +6,7 @@ addons:
     packages:
     - pandoc
  
-script: curl -s [url]https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh[/url] | bash
+script: curl -g -s [url]https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh[/url] | bash
  
 branches:
   only:
