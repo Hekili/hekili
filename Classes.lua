@@ -33,6 +33,7 @@ local specTemplate = {
     
     damage = true,
     damageExpiration = 8,
+    damageDots = true,
 
     throttleRefresh = false,
     maxRefresh = 10,
@@ -2175,6 +2176,9 @@ function Hekili:SpecializationChanged()
 
         if spec then
             if specID == currentID then
+                self.currentSpec = spec
+                self.currentSpecOpts = self.DB.profile.specs[ specID ]
+
                 for res, model in pairs( spec.resources ) do
                     class.resources[ res ] = model
                     state[ res ] = model.state
@@ -2255,6 +2259,11 @@ function Hekili:SpecializationChanged()
     self:UpdateDisplayVisibility()
     self:LoadScripts()
 
+end
+
+
+function Hekili:GetSpec()
+    return state.spec.id and class.specs[ state.spec.id ]
 end
 
 

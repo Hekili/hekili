@@ -691,7 +691,8 @@ do
                 local ability = class.abilities[ action ]
 
                 if ability then
-                    b:Show()
+                    if ( conf.flash.enabled and conf.flash.suppress ) then b:Hide()
+                    else b:Show() end
 
                     b.Texture:SetTexture( rec.texture or ability.texture or GetSpellTexture( ability.id ) )
                     b.Texture:SetTexCoord( unpack( b.texCoords ) )
@@ -741,7 +742,7 @@ do
             -- Force glow, range, SpellFlash updates.
             self.glowTimer = -1
             self.rangeTimer = -1
-            self.flashTimer = -1
+            -- self.flashTimer = -1
 
             self.refreshTimer = state.combat == 0 and oocRefresh or icRefresh
 
@@ -854,10 +855,13 @@ do
                 if a then
                     local ability = class.abilities[ a ]
 
+                    self.flashColor = self.flashColor or {}
+                    self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
+
                     if ability.item then
-                        LSF.FlashItem(ability.name, conf.flash.color )
+                        LSF.FlashItem(ability.name, self.flashColor )
                     else
-                        LSF.FlashAction(ability.name, conf.flash.color )
+                        LSF.FlashAction(ability.name, self.flashColor )
                     end
                 end
             end

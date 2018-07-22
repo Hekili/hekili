@@ -1142,7 +1142,13 @@ function Hekili:ProcessHooks( dispName, packName )
         self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
     end
 
-    for i = 1, ( display.numIcons or 4 ) do
+    local numRecs = display.numIcons or 4
+
+    if display.flash.enabled and display.flash.suppress then
+        numRecs = 1
+    end
+
+    for i = 1, numRecs do
 
         local chosen_action
         local chosen_depth = 0
@@ -1241,7 +1247,7 @@ function Hekili:ProcessHooks( dispName, packName )
             end
             
         else
-            for n = i, display.numIcons do
+            for n = i, numRecs do
                 action = action or ''
                 checkstr = checkstr and ( checkstr .. ':' .. action ) or action
                 slot[n] = nil

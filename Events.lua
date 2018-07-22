@@ -734,7 +734,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                     ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
                 elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
-                    ns.trackDebuff( spellID, destGUID, time )
+                    if Hekili.currentSpecOpts.damageDots then ns.trackDebuff( spellID, destGUID, time ) end
 
                 elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
                     ns.trackDebuff( spellID, destGUID )

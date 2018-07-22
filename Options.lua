@@ -228,6 +228,7 @@ local displayTemplate = {
     flash = {
         enabled = false,
         color = { 255/255, 215/255, 0, 1 }, -- gold.
+        suppress = false,
     },
 
     captions = {
@@ -1389,6 +1390,15 @@ do
                                 desc = "Specify a glow color for the SpellFlash highlight.",
                                 order = 2,
 
+                                width = "full",
+                                hidden = function () return SF == nil end,
+                            },
+
+                            suppress = {
+                                type = "toggle",
+                                name = "Hide Display",
+                                desc = "If checked, the addon will not show this display and will make recommendations via SpellFlash only.",
+                                order = 3,
                                 width = "full",
                                 hidden = function () return SF == nil end,
                             }
@@ -3110,6 +3120,16 @@ do
                                             order = 4,                                    
                                         },
                 
+                                        damageDots = {
+                                            type = "toggle",
+                                            name = "Detect Enemies by Damage over Time",
+                                            desc = "When checked, the addon will continue to count enemies who are taking damage from your damage over time effects (bleeds, etc.), even if they are not nearby or taking other damage from you.  " ..
+                                                "This may not be ideal for melee specializations, if you are no longer near the enemy that is taking damage over time.  For ranged specializations with damage over time effects, this should be enabled.",
+                                            width = "full",
+                                            disabled = function () return self.DB.profile.specs[ id ].damage == false end,
+                                            order = 5,
+                                        },
+
                                         damageExpiration = {
                                             type = "range",
                                             name = "Damage Detection Timeout",
@@ -3122,7 +3142,7 @@ do
                                             disabled = function( info, val )
                                                 return self.DB.profile.specs[ id ].damage == false
                                             end,
-                                            order = 5,
+                                            order = 6,
                                         },
                                     }
                                 },
