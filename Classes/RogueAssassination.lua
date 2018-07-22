@@ -843,6 +843,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = true,
             texture = 236273,
             
+            recheck = function () return energy.time_to_40, energy.time_to_50 end,
             handler = function ()
                 gain( 1, "combo_points" )
             end,
