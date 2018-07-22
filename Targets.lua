@@ -207,7 +207,7 @@ ns.wipeDebuffs = function()
 end
 
 
-ns.trackDebuff = function( spell, target, time, application, nodot )
+ns.trackDebuff = function( spell, target, time, application )
 
   debuffs[ spell ] = debuffs[ spell ] or {}
   debuffCount[ spell ] = debuffCount[ spell ] or 0
@@ -229,7 +229,6 @@ ns.trackDebuff = function( spell, target, time, application, nodot )
 
     debuff.last_seen = time
     debuff.applied = debuff.applied or time
-    debuff.nodot = nodot
 
     if application then
         debuff.pmod = debuffMods[ spell ]

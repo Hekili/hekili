@@ -15,9 +15,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     spec:RegisterResource( Enum.PowerType.Mana )   
     spec:RegisterResource( Enum.PowerType.Maelstrom, {
         mainhand = {
-            resource = 'maelstrom',
-            -- setting = 'forecast_swings',
-
             last = function ()
                 local swing = state.swings.mainhand
                 local t = state.query_time
@@ -30,9 +27,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         },
 
         offhand = {
-            resource = 'maelstrom',
-            -- setting = 'forecast_swings',
-
             last = function ()
                 local swing = state.swings.offhand
                 local t = state.query_time
@@ -45,8 +39,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         },
 
         fury_of_air = {
-            resource = 'maelstrom',
-            -- setting = 'forecast_fury',
             aura = 'fury_of_air',
 
             last = function ()
@@ -336,6 +328,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             return 0
         end } ) )
 
+
+    spec:RegisterGear( 'waycrest_legacy', 158362, 159631 )
+    spec:RegisterGear( 'electric_mail', 161031, 161034, 161032, 161033, 161035 )
+
     spec:RegisterGear( 'tier21', 152169, 152171, 152167, 152166, 152168, 152170 )
         spec:RegisterAura( 'force_of_the_mountain', {
             id = 254308,
@@ -360,8 +356,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     spec:RegisterGear( 'tier19', 138341, 138343, 138345, 138346, 138348, 138372 )
     spec:RegisterGear( 'class', 139698, 139699, 139700, 139701, 139702, 139703, 139704, 139705 )
     
-    spec:RegisterGear( 'waycrest_legacy', 158362, 159631 )
-    spec:RegisterGear( 'electric_mail', 161031, 161034, 161032, 161033, 161035 )
 
 
     spec:RegisterGear( 'akainus_absolute_justice', 137084 )
