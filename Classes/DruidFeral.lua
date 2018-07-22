@@ -932,6 +932,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 if buff.cat_form.down or not buff.prowl.up then return buff.predatory_swiftness.up or time == 0 end
                 return false
             end,
+            recheck = function () return buff.bloodtalons.remains end,
             handler = function ()
                 if buff.predatory_swiftness.down then unshift() end
                 removeBuff( "predatory_swiftness" )
