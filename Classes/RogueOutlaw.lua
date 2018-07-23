@@ -848,12 +848,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             id = 1784,
             cast = 0,
             cooldown = 2,
-            gcd = "spell",
+            gcd = "off",
             
             startsCombat = false,
             texture = 132320,
 
-            usable = function () return not buff.stealth.up end,            
+            usable = function () return not buff.stealth.up and not buff.vanish.up end,            
             handler = function ()
                 applyBuff( 'stealth' )
             end,
