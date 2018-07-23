@@ -156,6 +156,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             max_stack = 1,
         },
 
+        righteous_verdict = {
+            id = 267611,
+            duration = 6,
+            max_stack = 1,
+        },
+
         shield_of_vengeance = {
             id = 184662,
             duration = 15,
