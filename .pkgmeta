@@ -45,5 +45,3 @@ externals:
         url: https://repos.wowace.com/wow/librangecheck-2-0/trunk/LibRangeCheck-2.0
     Libs/LibCompress:
         url: https://repos.wowace.com/wow/libcompress/trunk
-    Libs/LibNameplateRegistry-1.0:
-        url: git://git.wowace.com/wow/libnameplateregistry-1-0/mainline.git/LibNameplateRegistry-1.0
