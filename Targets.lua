@@ -546,9 +546,8 @@ end
 --    We need to fine tune this a bit so that we can implement spell_targets.  We will flag targets as being hit by melee damage, spell damage, or ticking
 --    damage.
 
-do
+--[[ do
 
-    local NPR = LibStub( "LibNameplateRegistry-1.0" )
     local RC  = LibStub( "LibRangeCheck-2.0" )
 
     local targetCount = 0 
@@ -625,7 +624,7 @@ do
         lastCount = 0
 
         for guid, data in pairs( targetPool ) do
-            local unit = NPR:GetPlateByGUID( guid )
+            -- local unit = NPR:GetPlateByGUID( guid )
 
             if unit then
                 local _, distance = RC:GetRange( unit )
@@ -650,7 +649,7 @@ do
     end
 
 
-    --[[ local targetFrame = CreateFrame( "Frame" )
+    local targetFrame = CreateFrame( "Frame" )
 
     targetFrame:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
     targetFrame:SetScript( "OnEvent", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, ... )
@@ -658,9 +657,9 @@ do
         -- Targets 
 
 
-    end ) ]]
+    end )
 
-end
+end ]]
 
 
 
