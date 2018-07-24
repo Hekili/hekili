@@ -204,7 +204,7 @@ function Hekili:OnInitialize()
             
             self.text = format( "|c%s%s|r %sCD|r %sInt|r %sPot|r",
             color,
-            m == "single" and "S" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or "Auto" ) ),
+            m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or "Auto" ) ),
             p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
             p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
             p.toggles.potions.value  and "|cFF00FF00" or "|cFFFF0000" )
