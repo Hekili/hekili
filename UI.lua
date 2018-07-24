@@ -657,6 +657,7 @@ do
         if not self.Recommendations then
             return
         end
+
         local profile = Hekili.DB.profile
         local conf = profile.displays[ self.id ]
 
@@ -743,10 +744,6 @@ do
             self.glowTimer = -1
             self.rangeTimer = -1
             -- self.flashTimer = -1
-
-            self.refreshTimer = state.combat == 0 and oocRefresh or icRefresh
-
-            self.refreshCount = ( self.refreshCount or 0 ) + 1
 
             self:RefreshCooldowns()
             -- self.NewRecommendations = false
@@ -867,15 +864,6 @@ do
             end
 
             self.flashTimer = pulseFlash
-        end
-
-        self.counterTimer = (self.counterTimer or 0) - elapsed
-
-        if self.counterTimer < 0 then
-            self.refreshInLastTen = self.refreshCount or 0
-            self.refreshCount = 0
-
-            self.counterTimer = refreshPulse
         end
 
         self.targetTimer = self.targetTimer - elapsed

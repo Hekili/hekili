@@ -629,6 +629,17 @@ RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
 end )
 
 
+local function handleEnemyCasts( event, unit )
+    if UnitIsUnit( "target", unit ) then
+        Hekili:ForceUpdate( event, unit )
+    end 
+end 
+
+RegisterUnitEvent( "UNIT_SPELLCAST_START", handleEnemyCasts )
+RegisterUnitEvent( "UNIT_SPELLCAST_INTERRUPTED", handleEnemyCasts )
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", handleEnemyCasts )
+
+
 local aura_events = {
     SPELL_AURA_APPLIED      = true,
     SPELL_AURA_REFRESH      = true,
@@ -685,8 +696,6 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             state.player.queued_gcd = nil
             state.player.queued_off = nil
         end
-
-        -- Hekili:ForceUpdate( subtype, true )
     end
 
     if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
