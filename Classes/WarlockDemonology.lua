@@ -369,6 +369,30 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             max_stack = 1,
         },
 
+        grimoire_felguard = {
+            -- fake buff when grimoire_felguard is up.
+            duration = 15,
+            generate = function ()
+                local cast = rawget( class.abilities.grimoire_felguard, "lastCast" ) or 0
+                local up = cast + 15 > query_time
+
+                local gf = buff.grimoire_felguard
+                gf.name = class.abilities.grimoire_felguard.name
+
+                if up then
+                    fs.count = 1
+                    fs.expires = cast + 15
+                    fs.applied = cast
+                    fs.caster = "player"
+                    return
+                end
+                fs.count = 0
+                fs.expires = 0
+                fs.applied = 0
+                fs.caster = "nobody"                
+            end,
+        },
+
         legion_strike = {
             id = 30213,
             duration = 6,
@@ -883,6 +907,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             handler = function ()
                 summon_demon( "grimoire_felguard", 15 )
+                applyBuff( "grimoire_felguard" )
             end,
         },
         
