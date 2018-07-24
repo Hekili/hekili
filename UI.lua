@@ -969,6 +969,7 @@ do
             self.delayTimer = pulseDelay
         end
 
+        
         self.refreshTimer = self.refreshTimer - elapsed
 
         local spec = Hekili.DB.profile.specs[ state.spec.id ]
