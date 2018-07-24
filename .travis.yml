@@ -10,4 +10,4 @@ script: curl -s https://raw.githubusercontent.com/Hekili/packager/master/release
  
 branches:
   only:
-  - 8.0
+  - /^v8.*$/
