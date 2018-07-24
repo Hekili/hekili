@@ -93,7 +93,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         agony = {
             id = 980,
             duration = function () return 18 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
-            tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+            tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) * haste end,
             type = "Curse",
             max_stack = function () return ( talent.writhe_in_agony.enabled and 15 or 10 ) end,
         },
@@ -105,7 +105,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         corruption = {
             id = 146739,
             duration = function () return talent.absolute_corruption.enabled and 3600 or ( 14 * ( talent.creeping_death.enabled and 0.85 or 1 ) ) end,
-            tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+            tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) * haste end,
             type = "Magic",
             max_stack = 1,
         },
@@ -821,8 +821,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 136193,
             
             recheck = function ()
-                return dot.corruption.remains - ( cast_time + travel_time )
+                return dot.corruption.remains - ( cast_time + travel_time ), dot.seed_of_corruption.remains
             end,
+            usable = function () return dot.seed_of_corruption.down end,
             handler = function ()
                 applyDebuff( "target", "seed_of_corruption" )
             end,
