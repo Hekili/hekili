@@ -539,7 +539,7 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
 
     -- print( "UPF", GetTime(), power )
 
-    if power == "FOCUS" and state.focus then
+    if power == "FOCUS" and class.resources.focus then
         local now = GetTime()
         local elapsed = now - ( state.focus.last_tick or 0 )
 
@@ -551,7 +551,7 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
             state.focus.last_tick = now
         end
 
-    elseif power == "ENERGY" and state.energy then
+    elseif power == "ENERGY" and class.resources.energy then
         local now = GetTime()
         local elapsed = min( 0.12, now - ( state.energy.last_tick or 0 ) )
 
