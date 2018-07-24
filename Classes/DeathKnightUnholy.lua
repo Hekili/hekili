@@ -298,6 +298,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 6,
             type = "Disease",
             max_stack = 1,
+            tick_time = 1,
         },
         path_of_frost = {
             id = 3714,
@@ -333,6 +334,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         unholy_blight_dot = {
             id = 115994,
             duration = 14,
+            tick_time = 2,
         },
         unholy_frenzy = {
             id = 207289,
@@ -346,7 +348,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         virulent_plague = {
             id = 191587,
-            duration = 27.299,
+            duration = 21,
+            tick_time = function () return 3 * haste end,
             type = "Disease",
             max_stack = 1,
         },
