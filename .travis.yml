@@ -10,4 +10,4 @@ script: curl -s https://raw.githubusercontent.com/Hekili/packager/master/release
  
 branches:
   only:
-  - /^\d+\.\d+(\.\d+)?(-\S*)?$/
+  - /^v?\d+\.\d+(\.\d+)?(-\S*)?$/
