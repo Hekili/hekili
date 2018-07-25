@@ -734,7 +734,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 1373910,
             
-            usable = function () return combo_points.current > 0 and ( time > 0 or not prev_gcd[1].roll_the_bones ) end,
+            usable = function ()
+                if buff.rtb_buff_1.up then return false end -- don't recommend if we don't know what buff(s) we actually have.
+                if time == 0 and not ( rtb_buffs < 2 and ( buff.loaded_dice.up or buff.grand_melee.down and buff.ruthless_precision.down ) ) then return false end
+
+                return combo_points.current > 0
+            end,
             handler = function ()
                 if talent.alacrity.enabled and combo_points.current > 4 then
                     addStack( "alacrity", 20, 1 )
