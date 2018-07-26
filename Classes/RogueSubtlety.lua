@@ -1025,7 +1025,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 132320,
 
-            usable = function () return not buff.stealth.up and not buff.vanish.up end,            
+            usable = function () return time == 0 and not buff.stealth.up and not buff.vanish.up end,
+            readyTime = function () return buff.shadow_dance.remains end,
             handler = function ()
                 applyBuff( 'stealth' )
                 if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
