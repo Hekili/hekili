@@ -267,7 +267,7 @@ function ns.updateTalents()
     -- local specGroup = GetSpecialization()
 
     for k, v in pairs( class.talents ) do
-        local _, name, _, enabled, _, sID, _, _, _, known = GetTalentInfoByID( v, 1 )
+        local _, name, _, enabled, _, sID, _, _, _, _, known = GetTalentInfoByID( v, 1 )
 
         if not name then
             -- We probably used a spellID.
@@ -278,9 +278,8 @@ function ns.updateTalents()
 
         if rawget( state.talent, k ) then
             state.talent[ k ].enabled = enabled
-        else state.talent[ k ] = {
-                enabled = enabled,
-            }
+        else
+            state.talent[ k ] = { enabled = enabled }
         end
     end
 
