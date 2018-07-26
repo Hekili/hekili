@@ -491,7 +491,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             notalent = "gloomblade",
             
-            recheck = apl_build( energy[ "time_to_" .. ceil( energy.max - ( variable.stealth_threshold or 0 ) - 40 * ( not ( talent.alacrity.enabled or talent.shadow_focus.enabled or talent.master_of_shadows.enabled ) and 1 or 0 ) ) ] ),
+            recheck = function () return apl_build( energy[ "time_to_" .. ceil( energy.max - ( variable.stealth_threshold or 0 ) - 40 * ( not ( talent.alacrity.enabled or talent.shadow_focus.enabled or talent.master_of_shadows.enabled ) and 1 or 0 ) ) ] ) end,
             handler = function ()
             	applyDebuff( 'target', "shadows_grasp", 8 )
             	gain( buff.shadow_blades.up and 2 or 1, 'combo_points')
