@@ -154,7 +154,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         precise_shots = {
-            id = 260240,
+            id = 260242,
             duration = 15,
             max_stack = 2,
         },
