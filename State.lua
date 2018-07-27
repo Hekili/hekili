@@ -1028,7 +1028,7 @@ do
         for i = 1, n do
             local x = select( i, ... )
             
-            if type( x ) == "number" then table.insert( t, select( i, ... ) ) end
+            if type( x ) == "number" and x > 0 then table.insert( t, 0.01 + x ) end
         end
     end
 
