@@ -618,20 +618,22 @@ do
 
     local function Display_UpdateKeybindings( self )
         local conf = Hekili.DB.profile.displays[ self.id ]
-        
-        for i, b in ipairs( self.Buttons ) do
-            local r = self.Recommendations[i]
-            if r then
-                local a = r.actionName
 
-                if a then
-                    r.keybind = Hekili:GetBindingForAction( r.actionName, not conf.keybindings.lowercase == true )
-                end
+        if conf.keybindings and conf.keybindings.enabled then
+            for i, b in ipairs( self.Buttons ) do
+                local r = self.Recommendations[i]
+                if r then
+                    local a = r.actionName
 
-                if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
-                    b.Keybinding:SetText( r.keybind )
-                else
-                    b.Keybinding:SetText( nil )
+                    if a then
+                        r.keybind = Hekili:GetBindingForAction( r.actionName, not conf.keybindings.lowercase == true )
+                    end
+
+                    if i == 1 or conf.keybindings.queued then
+                        b.Keybinding:SetText( r.keybind )
+                    else
+                        b.Keybinding:SetText( nil )
+                    end
                 end
             end
         end
@@ -1673,12 +1675,12 @@ do
             local H = Hekili
 
             if not H.Pause and H.Config then
-                ns.Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
-                ns.Tooltip:SetBackdropColor( 0, 0, 0, 1 )
+                GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
+                GameTooltip:SetBackdropColor( 0, 0, 0, 1 )
 
-                ns.Tooltip:SetText( "Hekili: " .. dispID  )
-                ns.Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-                ns.Tooltip:Show()
+                GameTooltip:SetText( "Hekili: " .. dispID  )
+                GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+                GameTooltip:Show()
                 self:SetMovable( true )
 
             elseif ( H.Pause and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
@@ -1688,7 +1690,7 @@ do
         end )
 
         b:SetScript( "OnLeave", function(self)
-            ns.Tooltip:Hide()
+            GameTooltip:Hide()
         end )
 
         b:EnableMouse( false )
@@ -1906,7 +1908,7 @@ local key_cache = setmetatable( {}, {
 
 
 function Hekili:ShowDiagnosticTooltip( q )
-    local tt = ns.Tooltip
+    local tt = GameTooltip
     local fmt = ns.lib.Format
 
     -- Grab the default backdrop and copy it with a solid background.
