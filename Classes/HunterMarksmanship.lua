@@ -185,7 +185,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         trick_shots = {
-            id = 257621,
+            id = 257622,
+            duration = 20,
+            max_stack = 1,
         },
         trueshot = {
             id = 193526,
@@ -606,6 +608,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             recheck = function () return focus.time_to_91, focus.time_to_71, buff.steady_focus.remains, focus.time_to_46, cooldown.aimed_shot.full_recharge_time < gcd * buff.precise_shots.stack + action.aimed_shot.cast_time, buff.trick_shots.remains end,
             handler = function ()
                 if talent.calling_the_shots.enabled then cooldown.trueshot.expires = max( 0, cooldown.trueshot.expires - 2.5 ) end
+                if active_enemies > 2 then applyBuff( "trick_shots" ) end
                 removeBuff( "master_marksman" )
                 removeStack( "precise_shots" )
                 removeBuff( "steady_focus" )
