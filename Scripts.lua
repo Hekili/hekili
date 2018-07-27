@@ -736,9 +736,8 @@ function scripts:CheckVariable( scriptID )
     end
 
     local mods = script.Modifiers
-    local op = mods.op and mods.op() or 'set'
 
-    if op == 'set' then
+    if mods.value then
         local s, val = pcall( mods.value )
         if s then return val end
     end
