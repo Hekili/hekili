@@ -53,6 +53,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             max_stack = 1,
         },
 
+        blade_of_wrath = {
+            id = 281178,
+            duration = 10,
+            max_stack = 1,
+        },
+
         blessing_of_freedom = {
             id = 1044,
             duration = 8,
@@ -267,6 +273,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             texture = 1360757,
                         
             handler = function ()
+                removeBuff( "blade_of_wrath" )
                 removeBuff( 'sacred_judgment' )
                 if talent.divine_judgment.enabled then addStack( 'divine_judgment', 15, 1 ) end
             end,
