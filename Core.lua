@@ -628,6 +628,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     -- Used to notify timeToReady() about an artificial delay for this ability.
                     -- state.script.entry = entry.whenReady == 'script' and scriptID or nil
                     scripts:ImportModifiers( scriptID )
+                    local script = scripts:GetScript( scriptID )
 
                     wait_time = state:TimeToReady()
                     clash = state.ClashOffset()
@@ -758,12 +759,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             end
 
                                             -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.                                        
-                                            if not aScriptPass then 
-                                                if ability.recheck then
-                                                    state.recheck( entry.action, ability.recheck() )
-                                                else
-                                                    state.recheck( entry.action )
-                                                end
+                                            if not aScriptPass then
+                                                state.recheck( entry.action, scriptID, Stack )
 
                                                 -- self:Print( entry.action .. " has " .. #state.recheckTimes .. " rechecks." )
 

@@ -390,7 +390,6 @@ setmetatable( state.trinket.has_stacking_stat, mt_trinkets_has_stacking_stat )
 
 state.max = safeMax
 state.min = safeMin
-state.floor = math.floor
 state.print = print
 
 state.FindUnitBuffByID = ns.FindUnitBuffByID
@@ -407,6 +406,7 @@ state.UnitCastingInfo = UnitCastingInfo
 state.UnitChannelInfo = UnitChannelInfo
 state.UnitIsUnit = UnitIsUnit
 state.floor = math.floor
+state.ceil = math.ceil
 state.abs = math.abs
 state.table_insert = table.insert
 state.ipairs = ipairs
@@ -1022,8 +1022,18 @@ do
     local lastRecheckAbility = nil
     local lastRecheckTime = 0
 
-    function state.recheck( ability, ... )
-        local args = select( "#", ... )
+    local function recheckHelper( t, ... )
+        local n = select( "#", ... )
+
+        for i = 1, n do
+            local x = select( i, ... )
+            
+            if type( x ) == "number" then table.insert( t, select( i, ... ) ) end
+        end
+    end
+
+
+    function state.recheck( ability, script, stack )
 
         if ability == lastRecheckAbility and state.query_time == lastRecheckTime then
             return
@@ -1035,22 +1045,22 @@ do
         lastRecheckAbility = ability
         lastRecheckTime = state.query_time
 
-        -- Hekili:Print( "Recheck given " .. args .. " args for " .. ability .. "." )
-        -- print( ... )
-
         times[1] = 0.01 + ( state.gcd * 0.5 )
 
-        for i = 1, args do
-            local t = select( i, ... )
-
-            if type( t ) == 'number' and t > 0 then
-                table_insert( times, 0.01 + t )
-            else
-                -- Hekili:Print( "Arg " .. ( t and t or "(nil)" ) .. " was <= 0." )
-            end
+        if script and script.Recheck then
+            recheckHelper( times, script.Recheck() )
         end
 
-        if args > 0 then table_sort( times ) end
+        if stack and #stack > 0 then
+            for i, caller in ipairs( stack ) do
+                local callScript = caller.script
+                callScript = callScript and scripts:GetScript( callScript )
+                
+                if callScript and callScript.Recheck then recheckHelper( times, callScript.Recheck() ) end
+            end
+        end
+                
+        table_sort( times )
     end
 
 end
@@ -2258,6 +2268,10 @@ function state:TimeToResource( t, amount )
 end
 
 
+local function Resource_TimeToAmount( t, amount )
+    return state:TimeToResource( t, amount )
+end
+
 local mt_resource = {
     __index = function(t, k)
 
@@ -2315,6 +2329,9 @@ local mt_resource = {
             
         elseif k == 'time_to_max' then
             return state:TimeToResource( t, t.max )
+
+        elseif k == 'timeTo' then
+            return Resource_TimeToAmount
             
         elseif k:sub(1, 8) == 'time_to_' then
             local amount = k:sub(9)

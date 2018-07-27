@@ -99,7 +99,7 @@ local function forgetMeNots( str )
 end
 
 
-local invalid = "([^a-zA-Z0-9_.])"
+local invalid = "([^a-zA-Z0-9_.[])"
 
 
 local function extendExpression( str, expr, suffix )
@@ -111,6 +111,171 @@ local function extendExpression( str, expr, suffix )
     end
 
     return str
+end
+
+
+do
+    -- Okay, this is the auto-recheck parser.
+    
+    -- Part I:  Split into parts.
+    -- ex. combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
+    -- ...and break it into each compartmentalized expression:
+    -- combo_points<5, energy>=action.rake.cost, dot.rake_multiplier<2.1.
+
+    local boundaries = {
+        ["&"] = true,
+        ["|"] = true
+    }
+
+    local comparisons = {
+        ["<<"] = true,
+        [">>"] = true,
+        ["<="] = true,
+        [">="] = true,
+        ["=="] = true
+    }
+
+
+    function scripts:SplitExpr( str )
+        local output = {}
+
+        while( str:len() > 0 ) do
+            local finish = str:len()
+            local parens = 0
+
+            for i = 1, str:len() do
+                local char = str:sub( i, i )
+                if char == "(" then parens = parens + 1
+                elseif char == ")" then
+                    if parens > 0 then parens = parens - 1 end
+                elseif boundaries[ char ] and parens == 0 then
+                    finish = i - 1
+                    break
+                end
+            end
+
+            local expr = str:sub( 1, finish )
+
+            if expr:sub( 1, 1 ) == "(" and expr:sub( -1, -1 ) == ")" and expr:find( "[|&]" ) then
+                expr = expr:sub( 2, -2 )
+                local subExpr = scripts:SplitExpr( expr )
+                
+                for _, v in ipairs( subExpr ) do
+                    table.insert( output, v )
+                end
+            else
+                table.insert( output, expr )
+            end
+            str = str:sub( finish + 2, str:len() )
+        end
+
+        return output
+    end
+
+
+    local timely = {
+        { "(d?e?buff%.[a-z0-9_]+)%.down",       "%1.remains" },
+        { "(dot%.[a-z0-9_]+)%.down",            "%1.remains" },
+        { "!(d?e?buff%.[a-z0-9_]+)%.up",        "%1.remains" },
+        { "!(dot%.[a-z0-9_]+)%.up",             "%1.remains" },
+        { "!(d?e?buff%.[a-z0-9_]+)%.react",     "%1.remains" },
+        { "!(dot%.[a-z0-9_]+)%.react",          "%1.remains" },
+        { "!(d?e?buff%.[a-z0-9_]+)%.ticking",   "%1.remains" },
+        { "!(dot%.[a-z0-9_]+)%.ticking",        "%1.remains" },
+        { "!ticking",                           "remains" },
+        { "refreshable",                        "time_to_refresh" },
+        { "^(.-)%.deficit<=?(.-)$",             "%1[ 'time_to_' .. ( %1.max - ( %2 ) ) ]" },
+        { "^(.-)%.deficit>=?(.-)$",             "%1[ 'time_to_' .. ( %1.max - ( %2 ) ) ]" },
+        { "^cooldown%.([a-z0-9_]+)%.ready$",    "cooldown.%1.remains" },
+        { "^charges_fractional>=?(.-)$",        "( charges_fractional - %1 ) * recharge" },
+        { "^charges>=?(.-)$",                   "( charges - %1 ) * recharge" },
+        { "^(.-time_to_die)<=?(.-)$",           "%2 - %1" },
+    }
+
+    -- Things that tick down.
+    local decreases = {
+        ["remains$"] = true,
+        ["ticks_remain$"] = true,
+        ["time_to_%d+$"] = true,
+        -- ["deficit$"] = true,
+    }
+
+    -- Things that tick up.
+    local increases = {
+        ["^time$"] = true,
+        -- ["charges$"] = true,
+        -- ["charges_fractional$"] = true,        
+    }
+
+    local removals = {
+        ["%.current"] = ""
+    }
+    
+    -- Given an expression, can we assess whether it is time-based and progressing in a meaningful way?
+    -- 1.  Cooldowns
+    local function ConvertTimeComparison( expr )
+        for k, v in pairs( removals ) do
+            expr = expr:gsub( k, v )
+        end
+
+        local lhs, comp, rhs = expr:match( "^(.-)([<>=]+)(.-)$" )
+
+        if lhs and comp and rhs then
+            -- We are looking at a mathematic comparison.
+            for key in pairs( decreases ) do
+                if lhs:match( key ) and ( comp == "<=" or comp == "<" or comp == "==" ) then
+                    return true, lhs .. " - " .. rhs
+                end
+            end
+
+            for key in pairs( increases ) do
+                if lhs:match( key ) and ( comp == ">=" or comp == ">" or comp == "==" ) then
+                    return true, rhs .. " - " .. lhs
+                end
+            end
+
+            -- resources also tick up (usually, anyway)
+            for key in pairs( GetResourceInfo() ) do
+                if lhs == key and ( comp == ">=" or comp == ">" or comp == "==" ) then
+                    return true, lhs .. "[ 'time_to_' .. ( " .. rhs .. " ) ]"
+                end
+
+                if rhs == key and ( comp == "<=" or comp == "<" or comp == "==" ) then
+                    return true, rhs .. "[ 'time_to_' .. ( " .. lhs .. " ) ]"
+                end
+            end
+        end
+
+        for i, swap in ipairs( timely ) do
+            if expr:match( swap[1] ) then
+                return true, expr:gsub( swap[1], swap[2] )
+            end
+        end
+
+        return false, nil
+    end
+
+    function scripts:RecheckExpr( expr )
+        return ConvertTimeComparison( expr )
+    end
+
+    function scripts:BuildRecheck( conditions )
+        local recheck
+
+        local exprs = self:SplitExpr( conditions )
+
+        if #exprs > 0 then            
+            for i, expr in ipairs( exprs ) do
+                local converted, calc = ConvertTimeComparison( expr )
+
+                if converted then
+                    recheck = ( recheck and ( recheck .. ", " ) or "return " ) .. calc
+                end
+            end
+        end
+
+        return recheck
+    end
 end
 
 
@@ -325,6 +490,11 @@ function scripts:StoreReadyValues( tbl, node )
 end
 
 
+function scripts:GetScript( scriptID )
+    return self.DB[ scriptID ]
+end
+
+
 local function GetScriptElements( script )
     if type( script ) == 'number' then return end
 
@@ -396,9 +566,25 @@ local function ConvertScript( node, hasModifiers )
     
     local se = t and GetScriptElements( t )
 
+    -- autorecheck...    
+    local rs, rc, erc
+    if t then
+        rs = scripts:BuildRecheck( node.criteria:gsub( " ", "" ) )
+        if rs then 
+            rs = SimToLua( rs )
+            rc, erc = loadstring( rs )
+            if rc then setfenv( rc, state ) end
+        end
+
+        if type( rc ) ~= "function" then rc = nil end
+    end
+
     local output = {
         Conditions = sf,
         Error = e,
+        Recheck = rc,
+        RecheckScript = rs,
+        RecheckError = rce,
         Elements = se,
         Modifiers = {},
         ModElements = {},
