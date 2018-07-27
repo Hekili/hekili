@@ -1027,8 +1027,9 @@ do
 
         for i = 1, n do
             local x = select( i, ... )
-            
-            if type( x ) == "number" and x > 0 then table.insert( t, 0.01 + x ) end
+            if type( x ) == "number" and x > 0 and x < 3600 then
+                table.insert( t, 0.01 + x ) 
+            end
         end
     end
 
@@ -1056,10 +1057,12 @@ do
                 local callScript = caller.script
                 callScript = callScript and scripts:GetScript( callScript )
                 
-                if callScript and callScript.Recheck then recheckHelper( times, callScript.Recheck() ) end
+                if callScript and callScript.Recheck then
+                    recheckHelper( times, callScript.Recheck() )
+                end
             end
         end
-                
+                        
         table_sort( times )
     end
 

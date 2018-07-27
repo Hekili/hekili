@@ -760,7 +760,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                             -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.                                        
                                             if not aScriptPass then
-                                                state.recheck( entry.action, scriptID, Stack )
+                                                state.recheck( entry.action, script, Stack )
 
                                                 -- self:Print( entry.action .. " has " .. #state.recheckTimes .. " rechecks." )
 
