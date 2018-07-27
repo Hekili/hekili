@@ -391,8 +391,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             id = 35395,
             cast = 0,
             charges = 2,
-            cooldown = function () return ( talent.fires_of_justice.enabled and 5 or 6 ) * haste end,
-            recharge = function () return ( talent.fires_of_justice.enabled and 5 or 6 ) * haste end,
+            cooldown = function () return 6 * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
+            recharge = function () return 6 * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
             gcd = "spell",
 
             spend = -1,
