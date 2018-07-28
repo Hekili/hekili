@@ -64,7 +64,11 @@ local HekiliSpecMixin = {
             
             active_regen = 0,
             inactive_regen = 0,
-            last_tick = 0
+            last_tick = 0,
+
+            timeTo = function ( x )
+                return state:TimeToResource( r.state, x )
+            end,
         }, mt_resource )
         r.state.regenModel = regen
 
@@ -168,30 +172,30 @@ local HekiliSpecMixin = {
     end,
 
     RegisterStateExpr = function( self, key, func )
-        if rawget( state, key ) then
+        --[[ if rawget( state, key ) then
             Hekili:Error( "Cannot overwrite an existing value/table with RegisterStateExpr (" .. key .. ")." )
             return
-        end
+        end ]]
 
         setfenv( func, state )
         self.stateExprs[ key ] = func
     end,
 
     RegisterStateFunction = function( self, key, func )
-        if rawget( state, key ) then
+        --[[ if rawget( state, key ) then
             Hekili:Error( "Cannot overwrite an existing value/table with RegisterStateFunction." )
             return
-        end
+        end ]]
 
         setfenv( func, state )
         self.stateFuncs[ key ] = func
     end,
 
     RegisterStateTable = function( self, key, data )
-        if rawget( state, key ) then
-            Hekili:Error( "Cannot overwrite an existing table with RegisterStateTable." )
+        --[[ if rawget( state, key ) then
+            Hekili:Error( "Cannot overwrite an existing table with RegisterStateTable (" .. key .. ")." )
             return
-        end
+        end ]]
 
         for k, f in pairs( data ) do
             if type( f ) == 'function' then
@@ -205,7 +209,7 @@ local HekiliSpecMixin = {
             setfenv( meta.__index, state )
         end
 
-        rawset( state, key, data )
+        -- rawset( state, key, data )
         self.stateTables[ key ] = data
     end,
 
@@ -298,7 +302,10 @@ local HekiliSpecMixin = {
                     if not a.unlisted then class.abilityList[ ability ] = "|T" .. texture .. ":0|t " .. link end
                     if not a.unlisted then class.itemList[ ability ] = "|T" .. texture .. ":0|t " .. link end
 
-                    Hekili:SpecializationChanged()
+                    if class.abilities[ ability ] then
+                        class.abilities[ name ] = a
+                        class.abilities[ link ] = a
+                    end
                 
                     return true
                 end
@@ -429,7 +436,7 @@ function Hekili:RestoreDefaults()
         end
     end
 
-    self:RefreshOptions()
+    -- self:RefreshOptions()
 end
 
 ns.restoreDefaults = function( category, purge )
@@ -662,6 +669,8 @@ function Hekili:NewSpecialization( specID, name, texture )
         packs = {},
         options = {},
     }
+
+    class.num = class.num + 1
 
     for key, func in pairs( HekiliSpecMixin ) do
         spec[ key ] = func
@@ -2160,12 +2169,12 @@ function Hekili:SpecializationChanged()
 
 
     for k in pairs( class.stateTables ) do
-        state[ k ] = nil
+        rawset( state, k, nil )
         class.stateTables[ k ] = nil
     end
 
     for k in pairs( class.stateFuncs ) do
-        state[ k ] = nil
+        rawset( state, k, nil )
         class.stateFuncs[ k ] = nil
     end
 
@@ -2193,20 +2202,6 @@ function Hekili:SpecializationChanged()
 
                 for talent, id in pairs( spec.pvptalents ) do
                     class.pvptalents[ talent ] = id
-                end
-
-                for name, func in pairs( spec.stateExprs ) do
-                    class.stateExprs[ name ] = func
-                end
-
-                for name, func in pairs( spec.stateFuncs ) do
-                    class.stateFuncs[ name ] = func
-                    rawset( state, name, func )
-                end
-
-                for name, t in pairs( spec.stateTables ) do
-                    class.stateTables[ name ] = t
-                    rawset( state, name, t )
                 end
 
                 for name, func in pairs( spec.hooks ) do
@@ -2240,7 +2235,44 @@ function Hekili:SpecializationChanged()
                 if not class.packs[ k ] then class.packs[ k ] = v end
             end
 
+            for name, func in pairs( spec.stateExprs ) do
+                if not class.stateExprs[ name ] then
+                    if rawget( state, name ) then
+                        Hekili:Error( "Cannot RegisterStateExpr for an existing expression ( " .. spec.name .. " - " .. name .. " )." )
+                    else
+                        class.stateExprs[ name ] = func
+                        -- Hekili:Error( "Not real error, registered " .. name .. " for " .. spec.name .. " (RSE)." )
+                    end
+                end
+            end
+
+            for name, func in pairs( spec.stateFuncs ) do
+                if not class.stateFuncs[ name ] then
+                    if rawget( state, name ) then
+                        Hekili:Error( "Cannot RegisterStateFunc for an existing expression ( " .. spec.name .. " - " .. name .. " )." )
+                    else
+                        class.stateFuncs[ name ] = func
+                        rawset( state, name, func )
+                        -- Hekili:Error( "Not real error, registered " .. name .. " for " .. spec.name .. " (RSF)." )
+                    end
+                end
+            end
+
+            for name, t in pairs( spec.stateTables ) do
+                if not class.stateTables[ name ] then
+                    if rawget( state, name ) then
+                        Hekili:Error( "Cannot RegisterStateTable for an existing expression ( " .. spec.name .. " - " .. name .. " )." )
+                    else
+                        class.stateTables[ name ] = t
+                        rawset( state, name, t )
+                        -- Hekili:Error( "Not real error, registered " .. name .. " for " .. spec.name .. " (RST)." )
+                    end
+                end
+            end
+
+
             local s = Hekili.DB.profile.specs[ spec.id ]
+
             for k, v in pairs( spec.options ) do
                 if s[ k ] == nil then s[ k ] = v end
             end
@@ -2257,8 +2289,9 @@ function Hekili:SpecializationChanged()
     ns.callHook( 'specializationChanged' )
 
     self:UpdateDisplayVisibility()
-    self:LoadScripts()
 
+    self:RefreshOptions()    
+    self:LoadScripts()
 end
 
 
