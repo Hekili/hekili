@@ -50,7 +50,7 @@ state.max_targets = 0
 state.action = {}
 state.active_dot = {}
 state.args = {}
-state.artifact = {}
+state.azerite = {}
 state.aura = {}
 state.buff = {}
 state.auras = auras
@@ -417,6 +417,16 @@ state.tostring = tostring
 state.rawget = rawget
 state.rawset = rawset
 
+state.safenum = function( val )
+    if type( val ) == "number" then return val end
+    return val == true and 1 or 0
+end
+
+state.safebool = function( val )
+    if type( val ) == "boolean" then return val end
+    return val ~= 0 and true or false
+end
+
 state.boss = false
 state.combat = 0
 state.faction = UnitFactionGroup( 'player' )
@@ -558,7 +568,7 @@ function state.spendChargeTime( action, time )
 local function applyBuff( aura, duration, stacks, value )
 
     if not class.auras[ aura ] then
-        Error( "Attempted to apply/remove unknown aura '%s'.", aura ) 
+        Error( "Attempted to apply/remove unknown aura '%s'.", aura )
         local spec = class.specs[ state.spec.id ]
         if spec then
             spec:RegisterAura( aura, { duration = duration } )
@@ -826,6 +836,7 @@ local raid_event_filter = {
     ["in"] = 3600,
     amount = 0,
     duration = 0,
+    remains = 0,
     cooldown = 0,
     exists = false,
     distance = 0,
@@ -875,6 +886,7 @@ local function forecastResources( resource )
     r.forecast[1] = r.forecast[1] or {}
     r.forecast[1].t = now
     r.forecast[1].v = r.actual
+    r.forecast[1].e = "actual"
     r.fcount = 1
 
     local models = r.regenModel
@@ -940,6 +952,7 @@ local function forecastResources( resource )
                 r.forecast[ idx ] = r.forecast[ idx ] or {}
                 r.forecast[ idx ].t = now
                 r.forecast[ idx ].v = v
+                r.forecast[ idx ].e = e.name or 'none'
                 r.fcount = idx
             else
                 prev = now
@@ -959,6 +972,7 @@ local function forecastResources( resource )
                 r.forecast[ idx ] = r.forecast[ idx ] or {}
                 r.forecast[ idx ].t = now
                 r.forecast[ idx ].v = v
+                r.forecast[ idx ].e = e.name or 'none'
                 r.fcount = idx
 
                 -- interval() takes the last tick and the current value to remember the next step.
@@ -1145,6 +1159,9 @@ local mt_state = {
 
         elseif k == 'selectionTime' then
             return 60
+
+        elseif k == 'desired_targets' then
+            return 1
 
         elseif k == 'cycle' then
             return false
@@ -2267,13 +2284,9 @@ function state:TimeToResource( t, amount )
     -- This wasn't a modeled resource,, just look at regen time.
     if t.regen <= 0 then return 3600 end
     return max( 0, ( amount - t.current ) / t.regen )
-
 end
 
 
-local function Resource_TimeToAmount( t, amount )
-    return state:TimeToResource( t, amount )
-end
 
 local mt_resource = {
     __index = function(t, k)
@@ -2333,9 +2346,6 @@ local mt_resource = {
         elseif k == 'time_to_max' then
             return state:TimeToResource( t, t.max )
 
-        elseif k == 'timeTo' then
-            return Resource_TimeToAmount
-            
         elseif k:sub(1, 8) == 'time_to_' then
             local amount = k:sub(9)
             amount = tonumber(amount)
@@ -2699,8 +2709,9 @@ local mt_artifact_traits = {
     end
 }
 
-setmetatable( state.artifact, mt_artifact_traits )
-state.artifact.no_trait = { rank = 0 }
+setmetatable( state.azerite, mt_artifact_traits )
+state.azerite.no_trait = { rank = 0 }
+state.artifact = state.azerite
 -- rawset( state.artifact, no_trait, setmetatable( {}, mt_default_trait ) )
 
 
@@ -3260,7 +3271,7 @@ local mt_aura = {
 setmetatable( state, mt_state )
 setmetatable( state.action, mt_actions )
 setmetatable( state.active_dot, mt_active_dot )
--- setmetatable( state.artifact, mt_talents )
+-- setmetatable( state.azerite, mt_artifact_traits ) -- already set above.
 setmetatable( state.aura, mt_aura )
 setmetatable( state.buff, mt_buffs )
 setmetatable( state.cooldown, mt_cooldowns )
