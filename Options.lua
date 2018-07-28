@@ -4195,17 +4195,35 @@ do
                                                             multiline = 3,
                                                             dialogControl = "HekiliCustomEditor",
                                                             arg = function( info )
-                                                                local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
-        
-                                                                local entry = rawget( self.DB.profile.packs, pack )
-                                                                entry = entry and entry.lists[ list ]
-                                                                entry = entry and entry[ action ]
-        
+                                                                local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )        
                                                                 local results = {}
         
                                                                 state.reset()
-                                                                state.this_action = entry.action
+
+                                                                local apack = rawget( self.DB.profile.packs, pack )
+
+                                                                -- Let's load variables, just in case.
+                                                                for name, alist in pairs( apack.lists ) do
+                                                                    for i, entry in ipairs( alist ) do
+                                                                        if name ~= list or i ~= action then
+                                                                            if entry.action == "variable" then
+                                                                                local scriptID = pack .. ":" .. name .. ":" .. i
+                                                                                scripts:ImportModifiers( scriptID )
+                                                                                local vname = state.args.var_name
+
+                                                                                print( vname, scriptID )
+
+                                                                                if vname then state.variable[ "_" .. vname ] = scriptID end
+                                                                            end
+                                                                        end
+                                                                    end
+                                                                end
+                                                                
+                                                                local entry = apack and apack.lists[ list ]
+                                                                entry = entry and entry[ action ]        
         
+                                                                state.this_action = entry.action
+
                                                                 local scriptID = pack .. ":" .. list .. ":" .. action
         
                                                                 scripts:ImportModifiers( scriptID )
@@ -4291,7 +4309,41 @@ do
                                                     multiline = 6,
                                                     dialogControl = "HekiliCustomEditor",
                                                     arg = function( info )
-                                                        local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
+                                                        local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )        
+                                                        local results = {}
+
+                                                        state.reset()
+
+                                                        local apack = rawget( self.DB.profile.packs, pack )
+
+                                                        -- Let's load variables, just in case.
+                                                        for name, alist in pairs( apack.lists ) do
+                                                            for i, entry in ipairs( alist ) do
+                                                                if name ~= list or i ~= action then
+                                                                    if entry.action == "variable" then
+                                                                        local scriptID = pack .. ":" .. name .. ":" .. i
+                                                                        scripts:ImportModifiers( scriptID )
+                                                                        local vname = state.args.var_name
+
+                                                                        if vname then state.variable[ "_" .. vname ] = scriptID end
+                                                                    end
+                                                                end
+                                                            end
+                                                        end
+                                                        
+                                                        local entry = apack and apack.lists[ list ]
+                                                        entry = entry and entry[ action ]        
+
+                                                        state.this_action = entry.action
+
+                                                        local scriptID = pack .. ":" .. list .. ":" .. action
+
+                                                        scripts:ImportModifiers( scriptID )
+                                                        scripts:StoreValues( results, scriptID )
+                                                        
+                                                        return results, list, action
+                                                    end,                                      
+                                                        --[[ local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
 
                                                         local entry = rawget( self.DB.profile.packs, pack )
                                                         entry = entry and entry.lists[ list ]
@@ -4308,7 +4360,7 @@ do
                                                         scripts:StoreValues( results, scriptID )
                                                         
                                                         return results, list, action
-                                                    end,
+                                                    end, ]]
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
                                                         return e.action == "use_items"
@@ -7004,22 +7056,22 @@ local function Sanitize( segment, i, line, warnings )
         i = i:gsub( "|", "||" )
     end ]]
     
-    i, times = i:gsub( "debuff%.judgment%.up", "judgment_override" )
+    --[[ i, times = i:gsub( "debuff%.judgment%.up", "judgment_override" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'debuff.judgment.up' with 'judgment_override' (" .. times .. "x)." )
-    end
+    end ]]
     
-    i, times = i:gsub( "desired_targets", "1" )
+    --[[ i, times = i:gsub( "desired_targets", "1" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'desired_targets' with '1' (" .. times .. "x)." )
-    end
+    end ]]
     
-    i, times = i:gsub( "min:[a-z0-9_%+%-%%]", "" )
+    i, times = i:gsub( "min:(.-)(,?$?)", "%1%2" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Removed min:X check (not available in emulation) -- (" .. times .. "x)." )
     end
     
-    i, times = i:gsub( "max:[a-z0-9_%+%-%%]", "" )
+    i, times = i:gsub( "max:(.-)(,?$?)", "%1%2" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Removed max:X check (not available in emulation) -- (" .. times .. "x)." )
     end
@@ -7034,10 +7086,10 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.down' with 'target.in_range' (" .. times .. "x)." )
     end
     
-    i, times = i:gsub( "movement.distance", "target.distance" )
+    --[[ i, times = i:gsub( "movement.distance", "target.distance" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'movement.distance' with 'target.distance' (" .. times .. "x)." )
-    end
+    end ]]
     
     --[[ i, times = i:gsub( "buff.metamorphosis.extended_by_demonic", "buff.demonic_extended_metamorphosis.up" )
     if times > 0 then
@@ -7047,9 +7099,9 @@ local function Sanitize( segment, i, line, warnings )
     --[[ i, times = i:gsub( "buff.active_uas", "unstable_afflictions" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.active_uas' with 'unstable_afflictions' (" .. times .. "x)." )
-    end
+    end ]]
 
-    i, times = i:gsub( "rune%.([a-z0-9_]+)", "runes.%1")
+    --[[ i, times = i:gsub( "rune%.([a-z0-9_]+)", "runes.%1")
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'rune.X' with 'runes.X' (" .. times .. "x)." )
     end ]]
@@ -7065,7 +7117,7 @@ local function Sanitize( segment, i, line, warnings )
     end ]]
     
     
-    for token in i:gmatch( "incoming_damage_%d+m?s" ) do
+    --[[ for token in i:gmatch( "incoming_damage_%d+m?s" ) do
         local times = 0
         while (i:find(token)) do
             local strpos, strend = i:find(token)
@@ -7098,10 +7150,10 @@ local function Sanitize( segment, i, line, warnings )
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. "' to '" .. token .. ">0' (" .. times .. "x)." )
         end
         i = i:gsub( '\v', token )
-    end
+    end ]]
     
     
-    for token in i:gmatch( "set_bonus%.[%a%d_]+" ) do
+    --[[ for token in i:gmatch( "set_bonus%.[%a%d_]+" ) do
         local times = 0
         while (i:find(token)) do
             local strpos, strend = i:find(token)
@@ -7134,10 +7186,10 @@ local function Sanitize( segment, i, line, warnings )
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. "' to '" .. token .. "=1' (" .. times .. "x)." )
         end
         i = i:gsub( '\v', token )
-    end
+    end ]]
     
     
-    for token in i:gmatch( "cooldown%.[%a_]+%.remains" ) do
+    --[[ for token in i:gmatch( "cooldown%.[%a_]+%.remains" ) do
         local times = 0
         while (i:find(token)) do
             local strpos, strend = i:find(token)
@@ -7174,9 +7226,10 @@ local function Sanitize( segment, i, line, warnings )
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. "' to '" .. token .. ">0' (" .. times .. "x)." )
         end
         table.insert( warnings, "Line " .. line .. ": This entry checks the cooldown for '" .. token .. "' which can be result in odd behavior if '" .. token .. "' is toggled off/disabled." )
-    end
+    end ]]
+
     
-    for token in i:gmatch( "artifact%.[%a_]+%.rank" ) do
+    --[[ for token in i:gmatch( "artifact%.[%a_]+%.rank" ) do
         local times = 0
         while (i:find(token)) do
             local strpos, strend = i:find(token)
@@ -7212,9 +7265,9 @@ local function Sanitize( segment, i, line, warnings )
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. "' to '" .. token .. ">0' (" .. times .. "x)." )
         end
-    end 
+    end ]]
     
-    for token, attr in i:gmatch( "(d?e?buff%.[%a_]+%.)(remains)" ) do
+    --[[ for token, attr in i:gmatch( "(d?e?buff%.[%a_]+%.)(remains)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
@@ -7250,7 +7303,7 @@ local function Sanitize( segment, i, line, warnings )
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. attr .. "' to '" .. token .. "up' (" .. times .. "x)." )
         end
-    end
+    end ]]
     
     
     --[[ for token, attr in i:gmatch( "(d?e?buff%.[%a_]+%.)(react)" ) do
@@ -7292,7 +7345,7 @@ local function Sanitize( segment, i, line, warnings )
     end ]]
     
     
-    for token, attr in i:gmatch( "(trinket%.[%a%._]+%.)(react)" ) do
+    --[[ for token, attr in i:gmatch( "(trinket%.[%a%._]+%.)(react)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
@@ -7328,10 +7381,10 @@ local function Sanitize( segment, i, line, warnings )
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. attr .. "' to '" .. token .. "up' (" .. times .. "x)." )
         end
         i = i:gsub( '\v', token )
-    end
+    end ]]
     
     
-    for token, attr in i:gmatch( "(talent%.[%a%._]+%.)(enabled)" ) do
+    --[[ for token, attr in i:gmatch( "(talent%.[%a%._]+%.)(enabled)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
@@ -7368,10 +7421,10 @@ local function Sanitize( segment, i, line, warnings )
         end
         i = i:gsub( '\a', token .. 'rank' ) 
         i = i:gsub( '\v', token .. attr )
-    end 
+    end ]]
 
    
-    for token, attr in i:gmatch( "(d?e?buff%.[%a%._]+%.)(up)" ) do
+    --[[ for token, attr in i:gmatch( "(d?e?buff%.[%a%._]+%.)(up)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
@@ -7408,7 +7461,7 @@ local function Sanitize( segment, i, line, warnings )
         end
         i = i:gsub( '\a', token .. 'rank' ) 
         i = i:gsub( '\v', token .. attr )
-    end 
+    end ]]
 
 
     if segment == 'c' then
