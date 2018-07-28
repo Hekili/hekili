@@ -99,6 +99,7 @@ ns.auras = {
 
 Hekili.Class = {
     specs = {},
+    num = 0,
  
     file = "NONE",
  
