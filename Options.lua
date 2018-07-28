@@ -4211,8 +4211,6 @@ do
                                                                                 scripts:ImportModifiers( scriptID )
                                                                                 local vname = state.args.var_name
 
-                                                                                print( vname, scriptID )
-
                                                                                 if vname then state.variable[ "_" .. vname ] = scriptID end
                                                                             end
                                                                         end
