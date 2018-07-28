@@ -267,8 +267,9 @@ function Hekili:ReInitialize()
     checkImports()
     self:RunOneTimeFixes()
 
-    self:RefreshOptions()
-    self:LoadScripts()
+    -- self:RefreshOptions()
+    -- self:LoadScripts()
+    self:SpecializationChanged()
     
     ns.updateTalents()
     ns.updateGear()
@@ -762,12 +763,12 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             if not aScriptPass then
                                                 state.recheck( entry.action, script, Stack )
 
-                                                -- self:Print( entry.action .. " has " .. #state.recheckTimes .. " rechecks." )
-
                                                 if #state.recheckTimes == 0 then
                                                     if debug then self:Debug( "There were no recheck events to check." ) end
                                                 else
                                                     local base_delay = state.delay
+
+                                                    if debug then self:Debug( "There are " .. #state.recheckTimes .. " recheck events." ) end
 
                                                     for i, step in pairs( state.recheckTimes ) do
                                                         local new_wait = base_delay + step
@@ -841,7 +842,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     
                                                     if potion then
                                                         slot.scriptType = 'simc'
-                                                        data.script = scriptID
+                                                        slot.script = scriptID
                                                         slot.hook = caller
 
                                                         slot.display = dispName
