@@ -66,11 +66,17 @@ local HekiliSpecMixin = {
             inactive_regen = 0,
             last_tick = 0,
 
-            timeTo = function ( x )
+            timeTo = function( x )
                 return state:TimeToResource( r.state, x )
             end,
         }, mt_resource )
         r.state.regenModel = regen
+
+        if model and not model.timeTo then
+            model.timeTo = function( x )
+                return state:TimeToResource( r.state, x )
+            end
+        end
 
         if r.state.regenModel then
             for k, v in pairs( r.state.regenModel ) do
