@@ -114,6 +114,81 @@ local function extendExpression( str, expr, suffix )
 end
 
 
+-- Convert SimC syntax to Lua conditionals.
+local function SimToLua( str, modifier )
+    -- If no conditions were provided, function should return true.
+    if not str or type( str ) == "number" then return str end
+    
+    local orig = str
+    str = str:trim()
+    
+    if str == "" then return orig end
+    
+    -- Strip comments.
+    str = str:gsub("^%-%-.-\n", "")
+    
+    -- Replace '!' with ' not '.
+    str = forgetMeNots( str )
+    
+    for k in pairs( GetResourceInfo() ) do
+        if str:find( k ) then
+            str = extendExpression( str, k, "current" )
+        end
+    end
+
+    if str:find( "rune" ) then
+        str = extendExpression( str, "rune", "current" )
+    end
+
+    if str:find( "spell_targets" ) then
+        str = extendExpression( str, "spell_targets", "any" )
+    end
+
+    -- Replace '%' for division with actual division operator '/'.
+    str = str:gsub("%%", "/")
+    
+    -- Replace '&' with ' and '.
+    str = str:gsub("&", " and ")
+    
+    -- Replace '|' with ' or '.
+    str = str:gsub("||", " or "):gsub("|", " or ")
+    
+    if not modifier then
+        -- Replace assignment '=' with comparison '=='
+        str = str:gsub("([^=])=([^=])", "%1==%2" )
+        
+        -- Fix any conditional '==' that got impacted by previous.
+        str = str:gsub("==+", "==")
+        str = str:gsub(">=+", ">=")
+        str = str:gsub("<=+", "<=")
+        str = str:gsub("!=+", "~=")
+        str = str:gsub("~=+", "~=")
+    end
+    
+    -- Condense whitespace.
+    str = str:gsub("%s%s", " ")
+    
+    -- Condense parenthetical spaces.
+    str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")")
+    
+    -- Address equipped.number => equipped[number]
+    str = str:gsub("equipped%.(%d+)", "equipped[%1]")
+    str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
+    str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
+    str = str:gsub("%.in$", "['in']" )
+
+    str = str:gsub("prev%.(%d+)", "prev[%1]")
+    str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
+    str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
+    str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
+
+    --str = SpaceOut( str )
+    
+    return str
+end
+scripts.SimToLua = SimToLua
+
+
 do
     -- Okay, this is the auto-recheck parser.
     
@@ -172,7 +247,6 @@ do
         return output
     end
 
-
     local timely = {
         { "(d?e?buff%.[a-z0-9_]+)%.down",       "%1.remains" },
         { "(dot%.[a-z0-9_]+)%.down",            "%1.remains" },
@@ -184,19 +258,19 @@ do
         { "!(dot%.[a-z0-9_]+)%.ticking",        "%1.remains" },
         { "!ticking",                           "remains" },
         { "refreshable",                        "time_to_refresh" },
-        { "^(.-)%.deficit<=?(.-)$",             "%1[ 'time_to_' .. ( %1.max - ( %2 ) ) ]" },
-        { "^(.-)%.deficit>=?(.-)$",             "%1[ 'time_to_' .. ( %1.max - ( %2 ) ) ]" },
+        { "^(.-)%.deficit<=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
+        { "^(.-)%.deficit>=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^cooldown%.([a-z0-9_]+)%.ready$",    "cooldown.%1.remains" },
-        { "^charges_fractional>=?(.-)$",        "( charges_fractional - %1 ) * recharge" },
-        { "^charges>=?(.-)$",                   "( charges - %1 ) * recharge" },
-        { "^(.-time_to_die)<=?(.-)$",           "%2 - %1" },
+        { "^charges_fractional>=?(.-)$",        "(charges_fractional-%1)*recharge" },
+        { "^charges>=?(.-)$",                   "(charges-%1)*recharge" },
+        { "^(.-time_to_die)<=?(.-)$",           "%1 - %2" },
     }
 
     -- Things that tick down.
     local decreases = {
         ["remains$"] = true,
         ["ticks_remain$"] = true,
-        ["time_to_%d+$"] = true,
+        -- ["time_to_%d+$"] = true,
         -- ["deficit$"] = true,
     }
 
@@ -237,11 +311,11 @@ do
             -- resources also tick up (usually, anyway)
             for key in pairs( GetResourceInfo() ) do
                 if lhs == key and ( comp == ">=" or comp == ">" or comp == "==" ) then
-                    return true, lhs .. "[ 'time_to_' .. ( " .. rhs .. " ) ]"
+                    return true, lhs .. ".timeTo(" .. rhs .. ")"
                 end
 
                 if rhs == key and ( comp == "<=" or comp == "<" or comp == "==" ) then
-                    return true, rhs .. "[ 'time_to_' .. ( " .. lhs .. " ) ]"
+                    return true, rhs .. ".timeTo( " .. lhs .. ")"
                 end
             end
         end
@@ -262,6 +336,7 @@ do
     function scripts:BuildRecheck( conditions )
         local recheck
 
+        conditions = self:EmulateSyntax( conditions, true )
         local exprs = self:SplitExpr( conditions )
 
         if #exprs > 0 then            
@@ -269,6 +344,7 @@ do
                 local converted, calc = ConvertTimeComparison( expr )
 
                 if converted then
+                    -- calc = self:EmulateSyntax( calc, true )
                     recheck = ( recheck and ( recheck .. ", " ) or "return " ) .. calc
                 end
             end
@@ -276,76 +352,194 @@ do
 
         return recheck
     end
-end
 
 
+    local ops = {
+        ["+"] = true,
+        ["-"] = true,
+        ["*"] = true,
+        ["/"] = true,
+        ["%%"] = true,
+        ["|"] = true,
+        ["&"] = true,
+        ["<"] = true,
+        [">"] = true,
+        ["="] = true,
+     }
+     
+     local math_ops = {
+        ["+"] = true,
+        ["-"] = true,
+        ["*"] = true,
+        ["/"] = true,
+        ["%%"] = true,
+        ["<"] = true,
+        [">"] = true,
+        ["="] = true
+     }
 
--- Convert SimC syntax to Lua conditionals.
-local function SimToLua( str, modifier )
-    -- If no conditions were provided, function should return true.
-    if not str or str == '' then return nil end
-    if type( str ) == 'number' then return str end
-    
-    str = str:trim()
-    
-    -- Strip comments.
-    str = str:gsub("^%-%-.-\n", "")
-    
-    -- Replace '!' with ' not '.
-    str = forgetMeNots( str )
-    
-    for k in pairs( GetResourceInfo() ) do
-        if str:find( k ) then
-            str = extendExpression( str, k, "current" )
-        end
-    end
+     local comp_ops = {
+        ["<"] = true,
+        [">"] = true,
+        ["="] = true,
+     }
 
-    if str:find( "rune" ) then
-        str = extendExpression( str, "rune", "current" )
-    end
+     local bool_ops = {
+         ["|"] = true,
+         ["&"] = true
+     }
+     
+     
+     -- This is hideous.     
+     function scripts:EmulateSyntax( p, numeric )
+        if not p or type( p ) ~= "string" then return p end
 
-    if str:find( "spell_targets" ) then
-        str = extendExpression( str, "spell_targets", "any" )
-    end
-
-    -- Replace '%' for division with actual division operator '/'.
-    str = str:gsub("%%", "/")
-    
-    -- Replace '&' with ' and '.
-    str = str:gsub("&", " and ")
-    
-    -- Replace '|' with ' or '.
-    str = str:gsub("||", " or "):gsub("|", " or ")
-    
-    if not modifier then
-        -- Replace assignment '=' with comparison '=='
-        str = str:gsub("([^=])=([^=])", "%1==%2" )
+        local results = {}
         
-        -- Fix any conditional '==' that got impacted by previous.
-        str = str:gsub("==+", "==")
-        str = str:gsub(">=+", ">=")
-        str = str:gsub("<=+", "<=")
-        str = str:gsub("!=+", "~=")
-        str = str:gsub("~=+", "~=")
-    end
-    
-    -- Condense whitespace.
-    str = str:gsub("%s%s", " ")
-    
-    -- Condense parenthetical spaces.
-    str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")")
-    
-    -- Address equipped.number => equipped[number]
-    str = str:gsub("equipped%.(%d+)", "equipped[%1]")
-    str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
-    str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
-    
-    str = str:gsub("prev%.(%d+)", "prev[%1]")
-    str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
-    str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
-    str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
-    
-    return str 
+        local i, maxlen = 1, p:len()
+        local depth = 0
+
+        local bracketed = p:match("(%b())" ) == p
+        if bracketed then
+            p = p:sub( 2, p:len() - 1 )
+        end
+
+        local ands = p:find( " and " )
+        local ors = p:find( " or " )
+
+        if ands then p = p:gsub( " and ", "&" ) end
+        if ors then p = p:gsub( " or ", "|" ) end
+        p = p:gsub( "([%|&%-%+%*=%%/<>]) ", "%1" )
+        p = p:gsub( " ([%|&%-%+%*=%%/<>])", "%1" )
+
+        local orig = p
+        
+        while ( i <= maxlen ) do
+           local c = p:sub( i, i )
+           
+           if c == " " then -- do nothing
+           elseif c == "(" then depth = depth + 1
+           elseif c == ")" and depth > 0 then
+              depth = depth - 1
+              
+              if depth == 0 then
+                 local expr = p:sub( 1, i )
+                 
+                 table.insert( results, { 
+                       s = expr:trim(),
+                       t = "expr"
+                 } )
+                 
+                 if p ~= expr and expr:find( "[&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
+                 
+                 p = p:sub( i + 1 )
+                 i = 0
+                 depth = 0
+                 maxlen = p:len()
+              end
+           elseif depth == 0 and ops[c] then
+              if i > 1 then
+                 local expr = p:sub( 1, i - 1 )
+                 
+                 table.insert( results, {
+                       s = expr:trim(),
+                       t = "expr"
+                 } )
+                 
+                 if p ~= expr and expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
+              end
+
+              c = p:sub( i ):match( "^([&%|%-%+*%%/><=]+)" )
+              
+              table.insert( results, {
+                    s = c,
+                    t = "op",
+                    a = c:sub(1,1)
+              } )
+              
+              p = p:sub( i + c:len() )
+              i = 0
+              depth = 0
+              maxlen = p:len()
+           end
+           
+           i = i + 1
+        end
+        
+        if p:len() > 0 then
+           table.insert( results, {
+                 s = p:trim(),
+                 t = "expr" 
+           } )
+
+           if p:find( "[%&|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
+        end
+        
+        local output = ""
+        
+        -- So at this point, we've broken our string into all of its components.  Now let's iterate through and fix it up.
+        for i = 1, #results do
+            local prev, piece, next = i > 1 and results[i-1] or nil, results[i], i < #results and results[i+1] or nil
+           
+            if piece.t == "expr" then
+                if piece.r then
+                    if piece.s == orig then
+                        if bracketed then orig = "(" .. orig .. ")" end
+                        if ands then orig = orig:gsub( "&", " and " ) end
+                        if ors then orig = orig:gsub( "|", " or " ) end
+                        return orig 
+                    end
+                    piece.s = scripts:EmulateSyntax( piece.s, numeric )
+                end
+
+                if ( prev and prev.t == "op" and math_ops[ prev.a ] ) or ( next and next.t == "op" and math_ops[ next.a ] ) then
+                    -- This expression is getting mathed.
+                    -- Lets see what it returns and wrap it in btoi if it is a boolean expr.
+                    if piece.s:find("^variable") then
+                        -- Let's wrap the variable just to be sure.
+                        piece.s = "safenum(" .. piece.s .. ")"
+                    else
+                        local func, warn = loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
+                        if func then
+                            setfenv( func, state )
+                            -- maximum warningness
+                            local pass, val = pcall( func )
+                            if not pass then Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. val .. " (pcall-n)." )
+                            else if val == nil or type( val ) == "boolean" then piece.s = "safenum(" .. piece.s .. ")" end end
+                        else
+                            Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. warn .. " (loadstring-n)." )
+                        end
+                    end
+                    piece.r = nil
+                
+                elseif not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] )  ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] ) ) then
+                    -- This expression is not having math operations performed on it.
+                    -- Let's make sure it's a boolean.                
+                    if piece.s:find("^variable") then
+                        piece.s = "safebool(" .. piece.s .. ")"
+                    else    
+                        local func, warn = loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
+                        if func  then
+                            setfenv( func, state )
+                            local pass, val = pcall( func )
+                            if not pass then Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. val .. " (pcall-b)." )
+                            else if val == nil or type( val ) == "number" then piece.s = "safebool(" .. piece.s .. ")" end end
+                        else
+                            Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. warn .. " (loadstring-b)." )
+                        end                        
+                    end
+                    piece.r = nil
+                end
+            end
+           
+           output = output .. piece.s
+        end
+        
+        if bracketed then output = "(" .. output .. ")" end
+        if ands then output = output:gsub( "&", " and " ) end
+        if ors then output = output:gsub( "|", " or " ) end
+        return output
+     end
 end
 
 
@@ -427,6 +621,7 @@ local function SimCToSnapshot( str, modifier )
     str = str:gsub("equipped%.(%d+)", "equipped[%1]")
     str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
     str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
+    str = str:gsub("%.in$", "['in']" )
     
     str = str:gsub("prev%.(%d+)", "prev[%1]")
     str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
@@ -551,8 +746,15 @@ local nameMap = {
 
 
 -- Need to convert all the appropriate scripts and store them safely...
-local function ConvertScript( node, hasModifiers )
-    local t = SimToLua( node.criteria )
+local function ConvertScript( node, hasModifiers, noisy )
+    state.this_action = node.action
+
+    local t = node.criteria and node.criteria ~= "" and node.criteria
+    local clean = SimToLua( t )
+
+    t = scripts:EmulateSyntax( t )
+    t = SimToLua( t )
+
     local sf, e
 
     if t then sf, e = loadstring( "return " .. t ) end
@@ -564,12 +766,12 @@ local function ConvertScript( node, hasModifiers )
     end ]]
     if e then e = e:match( ":(%d+: .*)" ) end
     
-    local se = t and GetScriptElements( t )
+    local se = clean and GetScriptElements( clean )
 
     -- autorecheck...    
     local rs, rc, erc
-    if t then
-        rs = scripts:BuildRecheck( node.criteria:gsub( " ", "" ) )
+    if t and t ~= "" then        
+        rs = scripts:BuildRecheck( node.criteria )
         if rs then 
             rs = SimToLua( rs )
             rc, erc = loadstring( rs )
@@ -588,30 +790,34 @@ local function ConvertScript( node, hasModifiers )
         Elements = se,
         Modifiers = {},
         ModElements = {},
+        ModEmulates = {},
         SpecialMods = "",
 
-        Lua = t and t:trim() or nil,
-        SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil
+        Lua = clean and clean:trim() or nil,
+        Emulated = t and t:trim() or nil,
+        SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil,        
     }
     
     if hasModifiers then
         for m, value in pairs( newModifiers ) do
             if node[ m ] then
+                local emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
                 local o = SimToLua( node[ m ] )
                 output.SpecialMods = output.SpecialMods .. " - " .. m .. " : " .. o
 
                 local sf, e
                 if value then
-                    sf, e = loadstring( "return " .. o )
+                    sf, e = loadstring( "return " .. emulated )
                 else
                     o = "'" .. o .. "'"
-                    sf, e = loadstring( "return " .. o )
+                    sf, e = loadstring( "return " .. emulated )
                 end
 
                 if sf then
                     setfenv( sf, state )
                     output.Modifiers[ m ] = sf
                     output.ModElements[ m ] = GetScriptElements( o )
+                    output.ModEmulates[ m ] = emulated
                 else
                     output.Modifiers[ m ] = e
                 end
@@ -620,6 +826,7 @@ local function ConvertScript( node, hasModifiers )
 
         local name = nameMap[ node.action ]
         if name and node[ name ] then
+            -- local bitwrapped = SimToLua( scripts:EmulateSyntax( node[ name ] ) )
             local o = tostring( node[ name ] )
             o = "'" .. o .. "'"
             output.SpecialMods = output.SpecialMods .. " - " .. name .. " : " .. o
@@ -639,40 +846,6 @@ local function ConvertScript( node, hasModifiers )
 
     return output
 end
-
---[[ ReadyTime is replaced by rechecks...
-if node.ReadyTime and node.ReadyTime ~= '' then
-    local tReady = SimToLua( node.ReadyTime )
-    local rFunction, rError
-
-    if tReady then
-        if tReady:sub( 1, 8 ) == 'function' then
-            rFunction, rError = loadstring( format( "return %s", tReady ) )
-        else
-            rFunction, rError = loadstring( format(
-                "return function( wait, spend, resource )\n" ..
-                "    return max( 0, wait, %s )\n" ..
-                "end", tReady ) )
-        end
-    end
-
-    if rFunction then
-        _, rFunction = pcall( rFunction )
-        setfenv( rFunction, state )
-    end
-
-    if rError then
-        rError = rError:match( ":%d+: (.*)" )
-    end
-
-    Output.Ready = rFunction
-    Output.ReadyError = rError
-    Output.ReadyLua = tReady
-    Output.ReadyElements = tReady and getScriptElements( tReady )
-  end
-
-  return Output
-end ]]
 
 
 function scripts:CheckScript( scriptID, action, elem )
@@ -820,14 +993,16 @@ end
 
 function scripts:LoadScripts()
     local profile = Hekili.DB.profile
-
     wipe( self.DB )
+
+    state.reset()
 
     for pack, pData in pairs( profile.packs ) do
         if pData.spec and class.specs[ pData.spec ] then
             for list, lData in pairs( pData.lists ) do
                 for action, data in ipairs( lData ) do
                     local scriptID = pack .. ":" .. list .. ":" .. action
+
                     local script = ConvertScript( data, true )
 
                     if data.action == "call_action_list" or data.action == "run_action_list" then
@@ -861,6 +1036,37 @@ function Hekili:LoadScripts()
     self.Scripts:LoadScripts()
     self:UpdateDisplayVisibility()
 end
+
+
+function Hekili:LoadScript( pack, list, id )
+    local data = self.DB.profile.packs[ pack ].lists[ list ][ id ]
+    local scriptID = pack .. ":" .. list .. ":" .. id
+
+    local script = ConvertScript( data, true, true )
+
+    if data.action == "call_action_list" or data.action == "run_action_list" then
+        -- Check for Time Sensitive conditions.
+        script.TimeSensitive = false
+        
+        local lua = script.Lua
+
+        if lua then 
+            -- If resources are checked, it's time-sensitive.
+            for k in pairs( GetResourceInfo() ) do
+                if lua:find( k ) then script.TimeSensitive = true; break end
+            end
+
+            if not script.TimeSensitive then
+                -- Check for other time-sensitive variables.
+                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) then
+                    script.TimeSensitive = true
+                end
+            end
+        end
+    end
+    self.Scripts.DB[ scriptID ] = script
+end
+
 
 
 function scripts:ImplantDebugData( data )
