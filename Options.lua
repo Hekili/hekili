@@ -4924,7 +4924,7 @@ do
                             type = "keybinding",
                             name = "Defensives",
                             desc = "Set a key to toggle defensive/mitigation recommendations on/off.\n" ..
-                                "This applies only to tanking specializations.",
+                                "\nThis applies only to tanking specializations.",
                             order = 1,
                         },
 
@@ -4932,7 +4932,7 @@ do
                             type = "toggle",
                             name = "Show Defensives",
                             desc = "If checked, abilities marked as defensives can be recommended.\n" ..
-                                "This applies only to tanking specializations.",
+                                "\nThis applies only to tanking specializations.",
                             order = 2,                            
                         },
 
@@ -4940,7 +4940,7 @@ do
                             type = "toggle",
                             name = "Show Separately",
                             desc = "If checked, defensive/mitigation abilities will be shown separately in your Defensives Display.\n" ..
-                                "This applies only to tanking specializations.",
+                                "\nThis applies only to tanking specializations.",
                             order = 3,
                         }
                     }
@@ -7876,10 +7876,15 @@ end
 
 
 
-function Hekili:Notify( str )
+function Hekili:Notify( str, duration )
+    if not self.DB.profile.notifications.enabled then
+        self:Print( str )
+        return
+    end
+
     HekiliNotificationText:SetText( str )
     HekiliNotificationText:SetTextColor( 1, 0.8, 0, 1 )
-    UIFrameFadeOut( HekiliNotificationText, 3, 1, 0 )
+    UIFrameFadeOut( HekiliNotificationText, duration or 3, 1, 0 )
 end
 
 
@@ -7897,15 +7902,18 @@ function Hekili:FireToggle( name )
             if toggle.value == "automatic" then toggle.value = "dual" else toggle.value = "automatic" end
         end
 
-        if not toggle.type == "Reactive" then       
+        if toggle.type ~= "Reactive" then       
             local mode = "Unknown"
             if toggle.value == "automatic" then mode = "Automatic"
             elseif toggle.value == "single" then mode = "Single-Target"
             elseif toggle.value == "aoe" then mode = "AOE"
             elseif toggle.value == "dual" then mode = "Dual Display" end
 
-            self:Notify( "Mode: " .. mode )
-            self:Print( mode .. " mode activated." )
+            if self.DB.profile.notifications.enabled then
+                self:Notify( "Mode: " .. mode )
+            else
+                self:Print( mode .. " mode activated." )
+            end
         end
     
     elseif name == 'pause' then
@@ -7919,8 +7927,11 @@ function Hekili:FireToggle( name )
     else
         toggle.value = not toggle.value
 
-        self:Notify( name:gsub( "^(.)", strupper ) .. ": " .. ( toggle.value and "ON" or "OFF" ) )
-        self:Print( name:gsub( "^(.)", strupper ) .. ( toggle.value and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+        if self.DB.profile.notifications.enabled then
+            self:Notify( name:gsub( "^(.)", strupper ) .. ": " .. ( toggle.value and "ON" or "OFF" ) )
+        else
+            self:Print( name:gsub( "^(.)", strupper ) .. ( toggle.value and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+        end
     end
 
     if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", name, toggle.value ) end
