@@ -3941,7 +3941,18 @@ do
                                                 local p = rawget( Hekili.DB.profile.packs, pack )
 
                                                 for k in pairs( p.lists ) do
-                                                    if k == 'precombat' or k == 'default' then
+                                                    local err = false
+
+                                                    if Hekili.Scripts and Hekili.Scripts.DB then
+                                                        local scriptHead = "^" .. pack .. ":" .. k .. ":"
+                                                        for k, v in pairs( Hekili.Scripts.DB ) do                                                            
+                                                            if k:match( scriptHead ) and v.Error then err = true; break end
+                                                        end
+                                                    end
+
+                                                    if err then
+                                                        v[ k ] = "|cFFFF0000" .. k .. "|r"                                                        
+                                                    elseif k == 'precombat' or k == 'default' then
                                                         v[ k ] = "|cFF00B4FF" .. k .. "|r"
                                                     else
                                                         v[ k ] = k
