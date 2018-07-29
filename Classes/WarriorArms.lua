@@ -657,10 +657,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 6552,
             cast = 0,
             cooldown = 15,
-            gcd = "spell",
+            gcd = "off",
             
             startsCombat = true,
             texture = 132938,
+
+            toggle = "interrupts",
             
             usable = function () return target.casting end,
             handler = function ()
