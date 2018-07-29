@@ -230,10 +230,11 @@ RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
     ns.checkImports()
 end )
 
+
 RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event, unit )
     if unit == 'player' then
-        ns.specializationChanged()
-        ns.checkImports()
+        Hekili:SpecializationChanged()
+        Hekili:ForceUpdate( event )
     end
 end )
 
@@ -308,11 +309,11 @@ function ns.updateTalents()
 end
 
 
-RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event )
+--[[ RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event )
     ns.updateTalents()
 
     Hekili:ForceUpdate( event )
-end )
+end ) ]]
 
 
 
@@ -499,10 +500,18 @@ ns.cpuProfile.spellcastEvents = spellcastEvents
 
 
 
+local lowLevelWarned = false
 
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
-    if UnitIsUnit( unit, "player" ) then Hekili:ForceUpdate( event ) end
+    if UnitIsUnit( unit, "player" ) then
+        if lowLevelWarned == false and UnitLevel( "player" ) < 100 then
+            Hekili:Notify( "Hekili is designed for current content.\nUse below level 100 at your own risk.", 5 )
+            lowLevelWarned = true
+        end
+
+        Hekili:ForceUpdate( event ) 
+    end
 end )
 
 
