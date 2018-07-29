@@ -32,7 +32,7 @@ local recommendChange = {}
 -- checkImports()
 -- Remove any displays or action lists that were unsuccessfully imported.
 local function checkImports()
-    
+    --[[
     local profile = Hekili.DB.profile
     
     for i = #profile.displays, 1, -1 do
@@ -115,7 +115,7 @@ local function checkImports()
             end
             
         end
-    end
+    end ]]
 end
 ns.checkImports = checkImports
 
