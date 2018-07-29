@@ -1523,6 +1523,13 @@ all:RegisterAura( 'sephuzs_secret', {
     duration = 10
 } )
 
+all:RegisterGear( 'archimondes_hatred_reborn', 144249 )
+all:RegisterAura( 'archimondes_hatred_reborn', {
+    id = 235169,
+    duration = 10,
+    max_stack = 1
+} )
+
 all:RegisterGear( 'amanthuls_vision', 154172 )
 all:RegisterAura( 'glimpse_of_enlightenment', {
     id = 256818, 
