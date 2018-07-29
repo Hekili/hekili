@@ -318,6 +318,14 @@ do
                     return true, rhs .. ".timeTo( " .. lhs .. ")"
                 end
             end
+
+            if lhs == "rune" and ( comp == ">=" or comp == ">" or comp == "==" ) then
+                return true, "rune.timeTo(" .. rhs .. ")"
+            end
+
+            if rhs == "rune" and ( comp == "<=" or comp == "<" or comp == "==" ) then
+                return true, "rune.timeTo(" .. lhs .. ")"
+            end
         end
 
         for i, swap in ipairs( timely ) do
@@ -333,7 +341,7 @@ do
         return ConvertTimeComparison( expr )
     end
 
-    function scripts:BuildRecheck( conditions )
+    function scripts:BuildRecheck( conditions, noisy )
         local recheck
 
         conditions = self:EmulateSyntax( conditions, true )
@@ -430,7 +438,7 @@ do
                        t = "expr"
                  } )
                  
-                 if p ~= expr and expr:find( "[&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
+                 if expr:find( "[&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
                  
                  p = p:sub( i + 1 )
                  i = 0
@@ -446,7 +454,7 @@ do
                        t = "expr"
                  } )
                  
-                 if p ~= expr and expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
+                 if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
               end
 
               c = p:sub( i ):match( "^([&%|%-%+*%%/><=]+)" )
@@ -469,14 +477,15 @@ do
         if p:len() > 0 then
            table.insert( results, {
                  s = p:trim(),
-                 t = "expr" 
+                 t = "expr",
+                 l = true
            } )
 
-           if p:find( "[%&|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
+           if p:find( "[&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
         end
         
         local output = ""
-        
+
         -- So at this point, we've broken our string into all of its components.  Now let's iterate through and fix it up.
         for i = 1, #results do
             local prev, piece, next = i > 1 and results[i-1] or nil, results[i], i < #results and results[i+1] or nil
@@ -1017,6 +1026,8 @@ function scripts:LoadScripts()
                                 if lua:find( k ) then script.TimeSensitive = true; break end
                             end
 
+                            if lua:find( "rune" ) then script.TimeSensitive = true; break end
+
                             if not script.TimeSensitive then
                                 -- Check for other time-sensitive variables.
                                 if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) then
@@ -1055,6 +1066,8 @@ function Hekili:LoadScript( pack, list, id )
             for k in pairs( GetResourceInfo() ) do
                 if lua:find( k ) then script.TimeSensitive = true; break end
             end
+
+            if lua:find( "rune" ) then script.TimeSensitive = true end
 
             if not script.TimeSensitive then
                 -- Check for other time-sensitive variables.
