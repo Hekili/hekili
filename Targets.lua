@@ -85,6 +85,10 @@ function ns.getNumberTargets()
     return npCount
 end
 
+function Hekili:GetNumTargets()
+    return ns.getNumberTargets()
+end
+
 
 local forceRecount = false
 

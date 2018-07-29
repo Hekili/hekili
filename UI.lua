@@ -392,6 +392,18 @@ local function menu_Dual()
     Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
 end
 
+local function menu_Reactive()
+    local p = Hekili.DB.profile
+    p.toggles.mode.value = "reactive"
+    p.toggles.mode.type = "ReactiveDual"
+
+    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
+    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+    Hekili:UpdateDisplayVisibility()
+
+    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
+end
+
 local function menu_Cooldowns()
     Hekili:FireToggle( "cooldowns" )
     ns.UI.Minimap:RefreshDataText()
@@ -476,10 +488,10 @@ Hekili_Menu.initialize = function(self, level)
         i.checked = p.toggles.mode.value == 'dual'
         UIDropDownMenu_AddButton(i, level)
 
-        --[[ i.text = "Automatic"
-        i.func = menu_Auto
-        i.checked = p["Mode Status"] == 3
-        UIDropDownMenu_AddButton(i, level) ]]
+        i.text = "Reactive"
+        i.func = menu_Reactive
+        i.checked = p.toggles.mode.value == "reactive"
+        UIDropDownMenu_AddButton(i, level)
 
         i.notCheckable = nil
         i.tooltipText = nil
@@ -858,9 +870,9 @@ do
                     self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
 
                     if ability.item then
-                        LSF.FlashItem(ability.name, self.flashColor )
+                        LSF.FlashItem( ability.actualName or ability.name, self.flashColor )
                     else
-                        LSF.FlashAction(ability.name, self.flashColor )
+                        LSF.FlashAction( ability.actualName or ability.name, self.flashColor )
                     end
                 end
             end
@@ -879,7 +891,7 @@ do
                 local spec = state.spec.id and profile.specs[ state.spec.id ]
 
                 if self.id == 'Primary' then
-                    if ( mode == 'dual' or mode == 'single' ) then tMax = 1
+                    if ( mode == 'dual' or mode == 'single' or mode == 'reactive' ) then tMax = 1
                     elseif mode == 'aoe' then tMin = spec and spec.aoe or 3 end
                 elseif self.id == 'AOE' then tMin = spec and spec.aoe or 3 end
 
@@ -1297,7 +1309,7 @@ do
                         dispActive[i] = true
                     else
                         if i == 'AOE' then
-                            dispActive[i] = profile.toggles.mode.value == 'dual'
+                            dispActive[i] = profile.toggles.mode.value == 'dual' or profile.toggles.mode.value == "reactive"
                         elseif i == 'Interrupts' then
                             dispActive[i] = profile.toggles.interrupts.value and profile.toggles.interrupts.separate
                         elseif i == 'Defensives' then

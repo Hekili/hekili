@@ -204,7 +204,7 @@ function Hekili:OnInitialize()
             
             self.text = format( "|c%s%s|r %sCD|r %sInt|r %sPot|r",
             color,
-            m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or "Auto" ) ),
+            m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "rAOE" or "Auto" ) ) ),
             p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
             p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
             p.toggles.potions.value  and "|cFF00FF00" or "|cFFFF0000" )
@@ -1114,6 +1114,14 @@ function Hekili:ProcessHooks( dispName, packName )
                     Queue[ k ][ l ] = nil
                 end
             end
+        end
+    end
+
+    if dispName == "AOE" and self:GetToggleState( "mode" ) == "reactive" then
+        if self:GetNumTargets() < ( spec and spec.aoe or 3 ) then
+            UI.RecommendationsStr = nil
+            UI.NewRecommendations = true
+            return
         end
     end
 

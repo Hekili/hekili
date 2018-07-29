@@ -298,19 +298,24 @@ local HekiliSpecMixin = {
                 local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( data.item )
 
                 if name then
-                    a.name = link
+                    a.name = name
                     a.link = link
                     a.texture = texture
+
+                    if a.suffix then
+                        a.actualName = name
+                        a.name = a.name .. " " .. a.suffix
+                    end
                     
-                    self.abilities[ name ] = self.abilities[ name ] or a
-                    self.abilities[ link ] = self.abilities[ link ] or a
+                    self.abilities[ a.name ] = self.abilities[ a.name ] or a
+                    self.abilities[ a.link ] = self.abilities[ a.link ] or a
 
                     if not a.unlisted then class.abilityList[ ability ] = "|T" .. texture .. ":0|t " .. link end
                     if not a.unlisted then class.itemList[ ability ] = "|T" .. texture .. ":0|t " .. link end
 
                     if class.abilities[ ability ] then
-                        class.abilities[ name ] = a
-                        class.abilities[ link ] = a
+                        class.abilities[ a.name ] = a
+                        class.abilities[ a.link ] = a
                     end
                 
                     return true
@@ -362,7 +367,10 @@ local HekiliSpecMixin = {
                     a.name = spell:GetSpellName()
                     a.desc = spell:GetSpellDescription()
 
-                    if a.suffix then a.name = a.name .. " " .. a.suffix end
+                    if a.suffix then
+                        a.actualName = a.name
+                        a.name = a.name .. " " .. a.suffix
+                    end
 
                     local texture = a.texture or GetSpellTexture( a.id )
 
@@ -441,9 +449,26 @@ function Hekili:RestoreDefaults()
         
         end
     end
-
-    -- self:RefreshOptions()
 end
+
+
+function Hekili:RestoreDefault( name )
+    local p = self.DB.profile
+
+    local default = class.packs[ name ]
+
+    if default then
+        local data = self:DeserializeActionPack( default.import )
+
+        if data and type( data ) == 'table' then
+            p.packs[ name ] = data.payload
+            data.payload.version = default.version
+            data.payload.date = default.version
+            data.payload.builtIn = true
+        end
+    end
+end
+
 
 ns.restoreDefaults = function( category, purge )
     return

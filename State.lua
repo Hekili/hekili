@@ -524,45 +524,6 @@ function state.gainChargeTime( action, time )
     
 end
 
---[[
-function state.spendChargeTime( action, time )
-    
-    local ability = class.abilities[ action ]
-    
-    if not ability or not ability.charges then return end
-    
-    local cooldown = state.cooldown[ action ]
-    
-    if cooldown.charges_fractional == 0 then return end
-    
-    local charges_before = cooldown.charges_fractional
-    local charges_after = cooldown.charges_fractional - ( time / cooldown.recharge_time )
-    
-    if floor( charges_after ) < floor( charges_before ) then
-        -- We reduced our number of charges.
-        cooldown.charge = 
-        
-        if cooldown.next_charge < state.now + state.offset + time then
-            cooldown.charge = min( ability.charges, cooldown.charge + 1 )
-            
-            -- We have a charge, reset cooldown.
-            cooldown.duration = 0
-            cooldown.expires = 0
-        end
-        
-        
-        if cooldown.charge == ability.charges then
-            cooldown.next_charge = 0
-            cooldown.recharge = 0
-            cooldown.recharge_began = 0
-        else
-            cooldown.recharge_began = cooldown.next_charge
-            cooldown.next_charge = cooldown.next_charge + ability.recharge
-            cooldown.recharge = cooldown.next_charge - ( state.time + time )
-        end
-        
-    end ]]
-
 
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value )
@@ -3528,9 +3489,9 @@ function state.reset( dispName )
     
     if display then
         if dispName == 'Primary' then
-            if mode == "single" or mode == "dual" then state.max_targets = 1
+            if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
             elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
-            elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
+        elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
         elseif dispName == 'Interrupts' then state.filter = 'interrupts'
         elseif dispName == 'Defensives' then state.filter = 'defensives'
         end

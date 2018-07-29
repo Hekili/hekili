@@ -192,6 +192,7 @@ local displayTemplate = {
             automatic = true,
             dual = true,
             single = true,
+            reactive = true,
         },
         
         pve = {
@@ -479,6 +480,11 @@ function Hekili:GetDefaults()
 
                     flash = { 
                         color = { 0, 1, 0, 1 },
+                    },
+
+                    glow = {
+                        enabled = true,
+                        shine = true,
                     },
                 },
 
@@ -810,7 +816,7 @@ do
                                 name = "Enabled",
                                 desc = "If disabled, this display will not appear under any circumstances.",
                                 order = 0.5,
-                                hidden = function () return name == "Primary" or name == "AOE" end
+                                hidden = function () return name == "Primary" or name == "AOE" or name == "Defensives" or name == "Interrupts" end
                             },
 
                             numIcons = {
@@ -3453,7 +3459,7 @@ do
                     func = function ()
                         ACD:SelectGroup( "Hekili", "packs", "sharePacks" )
                     end,
-                    order = 101,
+                    order = 1000,
                 },
 
                 sharePacks = {
@@ -3464,7 +3470,7 @@ do
                     childGroups = "tab",
                     get = 'GetPackShareOption',
                     set = 'SetPackShareOption',
-                    order = 102,
+                    order = 1001,
                     args = {
                         import = {
                             type = "group",
@@ -3781,6 +3787,23 @@ do
                                     width = "full",
                                 },
 
+                                reload = {
+                                    type = "execute",
+                                    name = "Reload Pack",
+                                    order = 3,
+                                    confirm = true,
+                                    hidden = function ()
+                                        local p = rawget( Hekili.DB.profile.packs, pack )
+                                        return p and not p.builtIn
+                                    end,
+                                    func = function ()
+                                        Hekili.DB.profile.packs[ pack ] = nil
+                                        Hekili:RestoreDefault( pack )
+                                        Hekili:EmbedPackOptions()
+                                        ACD:SelectGroup( "Hekili", "packs", pack )
+                                    end
+                                },
+
                                 delete = {
                                     type = "execute",
                                     name = "Delete Pack",
@@ -3788,7 +3811,7 @@ do
                                     confirm = true,
                                     hidden = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
-                                        return p.builtIn
+                                        return p and p.builtIn
                                     end,
                                     func = function ()
                                         Hekili.DB.profile.packs[ pack ] = nil
@@ -4783,11 +4806,13 @@ do
                             desc = "Select the Display Modes that can be cycled using your Display Mode key.\n\n" ..
                                 "|cFFFFD100Auto vs. Single|r - Using only the Primary display, toggle between automatic target counting and single-target recommendations.\n\n" .. 
                                 "|cFFFFD100Single vs. AOE|r - Using only the Primary display, toggle between single-target recommendations and AOE (multi-target) recommendations.\n\n" ..
-                                "|cFFFFD100Auto vs. Dual|r - Toggle between one display using automatic target counting and two displays, with one showing single-target recommendations and the other showing AOE recommendations.  This will use additional CPU.",
+                                "|cFFFFD100Auto vs. Dual|r - Toggle between one display using automatic target counting and two displays, with one showing single-target recommendations and the other showing AOE recommendations.  This will use additional CPU.\n\n" ..
+                                "|cFFFFD100Reactive AOE|r - Use the Primary display for single-target recommendations, and when additional enemies are detected, show the AOE display.  (Disables Mode Toggle)",
                             values = {
                                 AutoSingle = "Auto vs. Single",
                                 SingleAOE = "Single vs. AOE",
-                                AutoDual = "Auto vs. Dual"
+                                AutoDual = "Auto vs. Dual",
+                                ReactiveDual = "Reactive AOE",
                             },
                             order = 2,
                         },
@@ -4816,6 +4841,10 @@ do
                                     output = output .. "\n\n|cffffd100Dual|r - The Primary display shows single-target recommendations and the AOE display shows multi-target recommendations."
                                 end
 
+                                if mType == "ReactiveDual" then
+                                    output = output .."\n\n|cffffd100Reactive|r - The mode toggle is disabled; the addon will also display the AOE display when more enemies are detected."
+                                end
+
                                 return output
                             end,
                             values = function( info, val )
@@ -4825,18 +4854,27 @@ do
                                     automatic = "Automatic",
                                     single = "Single",
                                     aoe = "AOE",
-                                    dual = "Dual"
+                                    dual = "Dual",
+                                    reactive = "Reactive"
                                 }
 
                                 if mType == "AutoSingle" then
                                     v.aoe = nil
                                     v.dual = nil
+                                    v.reactive = nil
                                 elseif mType == "SingleAOE" then
                                     v.automatic = nil
                                     v.dual = nil
+                                    v.reactive = nil
                                 elseif mType == "AutoDual" then
                                     v.single = nil
                                     v.aoe = nil
+                                    v.reactive = nil
+                                elseif mType == "ReactiveDual" then
+                                    v.automatic = nil
+                                    v.single = nil
+                                    v.aoe = nil
+                                    v.dual = nil
                                 end
 
                                 return v
@@ -7855,18 +7893,20 @@ function Hekili:FireToggle( name )
             if toggle.value == "automatic" then toggle.value = "single" else toggle.value = "automatic" end
         elseif toggle.type == "SingleAOE" then
             if toggle.value == "single" then toggle.value = "aoe" else toggle.value = "single" end
-        else
+        elseif toggle.type == "AutoDual" then
             if toggle.value == "automatic" then toggle.value = "dual" else toggle.value = "automatic" end
         end
 
-        local mode = "Unknown"
-        if toggle.value == "automatic" then mode = "Automatic"
-        elseif toggle.value == "single" then mode = "Single-Target"
-        elseif toggle.value == "aoe" then mode = "AOE"
-        elseif toggle.value == "dual" then mode = "Dual Display" end
+        if not toggle.type == "Reactive" then       
+            local mode = "Unknown"
+            if toggle.value == "automatic" then mode = "Automatic"
+            elseif toggle.value == "single" then mode = "Single-Target"
+            elseif toggle.value == "aoe" then mode = "AOE"
+            elseif toggle.value == "dual" then mode = "Dual Display" end
 
-        self:Notify( "Mode: " .. mode )
-        self:Print( mode .. " mode activated." )
+            self:Notify( "Mode: " .. mode )
+            self:Print( mode .. " mode activated." )
+        end
     
     elseif name == 'pause' then
         self:TogglePause()
