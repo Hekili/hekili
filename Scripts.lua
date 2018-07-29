@@ -261,9 +261,10 @@ do
         { "^(.-)%.deficit<=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^(.-)%.deficit>=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^cooldown%.([a-z0-9_]+)%.ready$",    "cooldown.%1.remains" },
-        { "^charges_fractional>=?(.-)$",        "(charges_fractional-%1)*recharge" },
+        { "^charges_fractional>=?(.-)$",        "(%1-charges_fractional)*recharge" },
         { "^charges>=?(.-)$",                   "(charges-%1)*recharge" },
         { "^(.-time_to_die)<=?(.-)$",           "%1 - %2" },
+        { "^(.-)%.time_to_(.-)<=?(.-)$",        "%1.time_to_%2-%3" },
     }
 
     -- Things that tick down.
