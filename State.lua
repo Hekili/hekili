@@ -1050,10 +1050,6 @@ do
 
     function state.recheck( ability, script, stack )
 
-        if ability == lastRecheckAbility and state.query_time == lastRecheckTime then
-            return
-        end
-
         local times = state.recheckTimes
         table_wipe( times )
 
