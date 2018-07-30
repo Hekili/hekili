@@ -2891,7 +2891,7 @@ local mt_default_debuff = {
             end
             
             local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
-            
+
             if real then
                 t.name = real.name
                 t.count = real.count
@@ -4002,9 +4002,10 @@ do
             return false
         end
 
-        if ability.nobuff and state.buff[ ability.nobuff ].up then
+        -- Moved this into TimeToReady; we can see when the buff falls off.
+        --[[ if ability.nobuff and state.buff[ ability.nobuff ].up then
             return false
-        end
+        end ]] 
 
         local hook = ns.callHook( "IsUsable", spell )
         if hook == false then return false end
@@ -4113,6 +4114,10 @@ function state:TimeToReady( action, pool )
     if spend and resource and spend > self[ resource ].current then
         wait = max( wait, self[ resource ][ 'time_to_' .. spend ] or 0 )        
         wait = ceil( wait * 100 ) / 100 -- round to the hundredth.
+    end
+
+    if ability.nobuff and self.buff[ ability.nobuff ].up then
+        wait = max( wait, self.buff[ ability.nobuff ].remains )
     end
     
     -- If ready is a function, it returns time.
