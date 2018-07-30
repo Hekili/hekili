@@ -110,28 +110,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 3600,
             max_stack = 1,
         },
-        bloodseeker = {
-            duration = 8,
-            name = "Bloodseeker",
-            generate = function ()
-                local cast = rawget( class.abilities.kill_command, "lastCast" ) or 0
-                local up = cast + 15 > query_time
-
-                local bs = debuff.bloodseeker
-
-                if up then
-                    bs.count = 1
-                    bs.expires = cast + 15
-                    bs.applied = cast
-                    bs.caster = "player"
-                    return
-                end
-                bs.count = 0
-                bs.expires = 0
-                bs.applied = 0
-                bs.caster = "nobody"
-            end,
-        },
         camouflage = {
             id = 199483,
             duration = 60,
@@ -198,6 +176,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 kc.applied = 0
                 kc.caster = "nobody"
             end,
+            copy = "bloodseeker"
         },
         masters_call = {
             id = 54216,
@@ -324,6 +303,16 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             current_wildfire_bomb = "wildfire_bomb"
         end
     end )
+
+    spec:RegisterStateTable( "bloodseeker", setmetatable( {}, {
+        __index = function( t, k )
+            if k == "count" then
+                return state.active_dot.kill_command
+            end
+
+            return state.debuff.kill_command[ k ]
+        end,
+    } ) )
 
 
     spec:RegisterStateExpr( "bloodseeker", function () return debuff.bloodseeker end )
@@ -722,7 +711,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 if talent.bloodseeker.enabled then
                     applyBuff( "predator", 8 )
-                    applyDebuff( "target", "bloodseeker", 8 )
+                    applyDebuff( "target", "kill_command", 8 )
                 end
                 if talent.tip_of_the_spear.enabled then addStack( "tip_of_the_spear", 20, 1 ) end
 
