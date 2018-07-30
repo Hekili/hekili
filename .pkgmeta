@@ -45,3 +45,5 @@ externals:
         url: https://repos.wowace.com/wow/librangecheck-2-0/trunk/LibRangeCheck-2.0
     Libs/LibCompress:
         url: https://repos.wowace.com/wow/libcompress/trunk
+    Libs/LibDualSpec-1.0:
+        url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git        
