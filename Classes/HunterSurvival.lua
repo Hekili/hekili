@@ -180,6 +180,24 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 259277,
             duration = 8,
             max_stack = 1,
+            generate = function ()
+                local kc = debuff.kill_command
+                local name, _, count, _, duration, expires, caster = FindUnitDebuffByID( "target", 259277, "PLAYER" )
+
+                if name then
+                    kc.name = name
+                    kc.count = 1
+                    kc.expires = expires
+                    kc.applied = expires - duration
+                    kc.caster = caster
+                    return
+                end
+
+                kc.count = 0
+                kc.expires = 0
+                kc.applied = 0
+                kc.caster = "nobody"
+            end,
         },
         masters_call = {
             id = 54216,
@@ -697,6 +715,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             
             startsCombat = true,
             texture = 132176,
+
+            cycle = function () return talent.bloodseeker.enabled and "bloodseeker" or nil end,
             
             usable = function () return pet.alive end,
             handler = function ()
@@ -770,6 +790,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                     if debuff.internal_bleeding.up then applyDebuff( "target", "internal_bleeding", 9, debuff.internal_bleeding.stack + 1 ) end
                 end
             end,
+
+            copy = "mongoose_bite_eagle"
         },
         
 
@@ -842,6 +864,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                     buff.coordinated_assault.expires = buff.coordinated_assault.expires + 1.5
                 end
             end,
+
+            copy = "raptor_strike_eagle"
         },
         
 
