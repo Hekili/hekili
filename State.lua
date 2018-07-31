@@ -1312,7 +1312,12 @@ local mt_state = {
             return t.cooldown[ action ].recharge_time
             
         elseif k == 'cast_regen' then
-            return max( ability.gcd ~= "off" and t.gcd or 0, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen
+            local res = ability.spendType or class.primaryResource
+            local regen = 0
+
+            if res and ability.spend then regen = regen - spend end
+
+            return regen + ( max( ability.gcd ~= "off" and t.gcd or 0, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen )
             
         elseif k == 'prowling' then
             return t.buff.prowl.up or ( t.buff.cat_form.up and t.buff.shadowform.up )
