@@ -287,6 +287,19 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     spec:RegisterStateExpr( "soul_shard", function () return soul_shards.current end )
 
 
+    state.sqrt = math.sqrt
+
+    spec:RegisterStateExpr( "time_to_shard", function ()
+        local num_agony = active_dot.agony
+        if num_agony == 0 then return 3600 end
+
+        return 1 / ( 0.16 / sqrt( num_agony ) * ( num_agony == 1 and 1.15 or 1 ) * num_agony / debuff.agony.tick_time )
+    end )
+
+
+
+
+
     spec:RegisterGear( 'tier21', 152174, 152177, 152172, 152176, 152173, 152175 )
     spec:RegisterGear( 'tier20', 147183, 147186, 147181, 147185, 147182, 147184 )
     spec:RegisterGear( 'tier19', 138314, 138323, 138373, 138320, 138311, 138317 )
