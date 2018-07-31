@@ -1480,6 +1480,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         nameplateRange = 8,
         
         damage = true,
+        damageDots = false,
         damageExpiration = 6,
     
         package = "Feral"
