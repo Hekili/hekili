@@ -46,4 +46,4 @@ externals:
     Libs/LibCompress:
         url: https://repos.wowace.com/wow/libcompress/trunk
     Libs/LibDualSpec-1.0:
-        url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git        
+        url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
