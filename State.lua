@@ -3959,6 +3959,11 @@ do
                 end
             end
         end
+
+        if ability.defensive and not profile.toggles.defensives.value then
+            return true
+        end
+
             
         --[[ if toggle and toggle ~= 'none' and not state.toggle[ toggle ] then
             return true
