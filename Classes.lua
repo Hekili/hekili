@@ -26,6 +26,8 @@ local wipe = table.wipe
 local specTemplate = {
     enabled = false,
 
+    potion = "prolonged_power",
+
     aoe = 2,
 
     nameplates = true,
