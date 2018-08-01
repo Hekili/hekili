@@ -3955,9 +3955,11 @@ do
         local toggle = option.toggle
         if not toggle or toggle == 'default' then toggle = ability.toggle end
 
-        if ability.id < -100 or ability.id > 0  then
-            if state.filter ~= 'none' then
-                if state.filter ~= toggle and ( ability.id < 100 or ability.id > 0 ) then return true end
+        if spell == "potion" and state.filter ~= "none" and state.filter ~= toggle then return true end
+        
+        if ability.id < -100 or ability.id > 0 then
+            if state.filter ~= 'none' and state.filter ~= toggle then
+                return true
             else
                 if toggle and toggle ~= 'none' then
                     if not self.toggle[ toggle ] or profile.toggles[ toggle ].separate then return true end

@@ -863,6 +863,15 @@ local function StoreKeybindInfo( page, key, aType, id )
         ability = GetItemInfo( id )
         ability = class.abilities[ ability ] and class.abilities[ ability ].key
 
+        if not ability then
+            for k, v in pairs( class.potions ) do
+                if v.item == id then
+                    ability = "potion"
+                    break
+                end
+            end
+        end
+
     end
 
     if ability then

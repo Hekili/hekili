@@ -842,8 +842,14 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                             if aScriptPass then
                                                 if entry.action == 'potion' then
-                                                    local potionName = state.args.potion or class.potion
+                                                    local potionName = state.args.potion or state.args.name
+                                                    if not potionName or potionName == "default" then potionName = class.potion end
                                                     local potion = class.potions[ potionName ]
+
+                                                    if debug then
+                                                        if not potionName then self:Debug( "No potion name set." )
+                                                        elseif not potion then self:Debug( "Unable to find potion '" .. potionName .. "'." ) end
+                                                    end
                                                     
                                                     if potion then
                                                         slot.scriptType = 'simc'
@@ -860,7 +866,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.button = i
                                                         slot.texture = select( 10, GetItemInfo( potion.item ) )
                                                         slot.caption = entry.caption
-                                                        slot.item = nil
+                                                        slot.item = potion.item
                                                         
                                                         slot.wait = state.delay
                                                         slot.resource = state.GetResourceType( rAction )

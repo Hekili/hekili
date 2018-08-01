@@ -1073,6 +1073,9 @@ all:RegisterPotions( {
 } )
 
 
+all:SetPotion( "prolonged_power" )
+
+
 all:RegisterAbilities( {
     global_cooldown = {
         id = 61304,
@@ -1257,10 +1260,11 @@ all:RegisterAbilities( {
         gcd = 'off',
 
         startsCombat = false,
-        toggle = 'potions',
+        toggle = "potions",
 
         handler = function ()
-            local potion = args.ModName or args.name or class.potion
+            local potion = args.potion or args.name
+            if not potion or potion == "default" then potion = class.potion end
             potion = class.potions[ potion ]
 
             if potion then
@@ -1270,9 +1274,13 @@ all:RegisterAbilities( {
 
         usable = function ()
             if not toggle.potions then return false end
-            local pName = args.ModName or args.name or class.potion
-            local potion = class.potions[ pName ]
+
+            local pName = args.potion or args.name
+            if not pName or pName == "default" then pName = class.potion end
+
+            local potion = class.potions[ pName ]            
             if not potion or GetItemCount( potion.item ) == 0 then return false end
+
             return true
         end,
     },
@@ -2163,6 +2171,8 @@ function Hekili:SpecializationChanged()
     wipe( class.packs )
     wipe( class.hooks )
 
+    class.potion = nil
+
     local specs = { 0 }
     local currentSpec = GetSpecialization()
     local currentID = GetSpecializationInfo( currentSpec )
@@ -2246,8 +2256,11 @@ function Hekili:SpecializationChanged()
                     class.hooks[ name ] = func
                 end 
 
-                class.potion = spec.potion or class.potion
                 class.potionList.default = "|cFFFFD100Default|r"
+            end
+
+            if spec.potion and not class.potion then
+                class.potion = spec.potion
             end
 
             for k, v in pairs( spec.auras ) do
