@@ -870,11 +870,13 @@ do
                     self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
 
                     if ability.item then
-                        LSF.FlashItem( ability.actualName or ability.name, self.flashColor )
-                        self.lastFlash = ability.actualName or ability.name
+                        local iname = LSF.ItemName( ability.item )
+                        LSF.FlashItem( iname, self.flashColor )
+                        self.lastFlash = a
                     else
-                        LSF.FlashAction( ability.actualName or ability.name, self.flashColor )
-                        self.lastFlash = ability.actualName or ability.name
+                        local sname = LSF.SpellName( ability.id )
+                        LSF.FlashAction( sname, self.flashColor )
+                        self.lastFlash = a
                     end
                 end
             end
