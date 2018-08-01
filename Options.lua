@@ -3066,13 +3066,30 @@ do
                                     }
                                 },
         
+                                potion = {
+                                    type = "select",
+                                    name = "Default Potion",
+                                    desc = "When the Action Pack recommends using your potion, it will recommend this potion (unless the action list specifies otherwise).",
+                                    order = 11,
+                                    width = "full",
+                                    values = function ()
+                                        local v = {}
+                                        
+                                        for k, p in pairs( class.potionList ) do
+                                            if k ~= "default" then v[ k ] = p end
+                                        end
+
+                                        return v
+                                    end,
+                                },
+        
                                 spacing3 = {
                                     type = "description",
                                     name = " ",
-                                    order = 11,
+                                    order = 11.99,
                                     width = "full",
                                 },
-        
+
                                 aoe = {
                                     type = "range",
                                     name = "AOE Target Count",
@@ -5861,6 +5878,7 @@ function Hekili:GetOptions()
                             
                             return snap and ns.snapshots[ display ][ snap ]
                         end,
+                        disabled = true,
                         multiline = 25,
                         width = "full",
                     }
