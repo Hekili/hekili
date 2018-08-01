@@ -835,7 +835,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cooldown = function() return buff.stormbringer.up and 0 or ( 3 * haste ) end,
             gcd = "spell",
 
-            spend = function() return buff.stormbringer.up and 0 or 6 end,
+            spend = function() return buff.stormbringer.up and 0 or 10 end,
             spendType = "maelstrom",
             
             texture = 1029585,
