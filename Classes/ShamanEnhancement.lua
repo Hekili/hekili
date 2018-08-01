@@ -729,14 +729,14 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = function()
                 if buff.stormbringer.up then return 0 end
-                if buff.ascendance.up then return 9 * 0.2 end
+                if buff.ascendance.up then return 3 * haste end
                 return 9 * haste
             end,
             gcd = "spell",
 
             spend = function()
                 if buff.stormbringer.up then return 0 end
-                if buff.ascendance.up then return 6 end
+                if buff.ascendance.up then return 10 end
                 return 30
             end,
 
@@ -747,8 +747,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             usable = function() return buff.ascendance.down end,
             handler = function ()
-                removeBuff( 'stormbringer' )
-
                 if buff.lightning_shield.up then
                     addStack( "lightning_shield", 3600, 2 )
                     if buff.lightning_shield.stack >= 20 then
@@ -759,6 +757,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
                 setCooldown( 'windstrike', action.stormstrike.cooldown )
                 setCooldown( 'strike', action.stormstrike.cooldown )
+
+                removeBuff( 'stormbringer' )
 
                 if level < 116 then
                     if equipped.storm_tempests then
@@ -832,8 +832,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         windstrike = {
             id = 115356,
             cast = 0,
-            cooldown = function() return buff.stormbringer.up and 0 or ( 9 * 0.2 * haste ) end,
-            gcd = "off",
+            cooldown = function() return buff.stormbringer.up and 0 or ( 3 * haste ) end,
+            gcd = "spell",
 
             spend = function() return buff.stormbringer.up and 0 or 6 end,
             spendType = "maelstrom",
