@@ -780,7 +780,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 end
             end,
 
-            copy = "mongoose_bite_eagle"
+            copy = { 265888, "mongoose_bite_eagle" }
         },
         
 
@@ -854,7 +854,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 end
             end,
 
-            copy = "raptor_strike_eagle"
+            copy = { "raptor_strike_eagle", 265189 },
         },
         
 
