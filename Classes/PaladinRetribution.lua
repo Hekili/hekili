@@ -749,7 +749,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             id = 96231,
             cast = 0,
             cooldown = 15,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = 'interrupts',
             
