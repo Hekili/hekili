@@ -4711,7 +4711,8 @@ do
         oneAuto = 1,
         oneSingle = 2,
         oneAOE = 3,
-        twoDisplays = 4
+        twoDisplays = 4,
+        reactive = 5,
     }
 
     function Hekili:SetToggle( info, val )
@@ -4732,6 +4733,7 @@ do
             if val == "AutoSingle" and not ( toggle.value == "automatic" or toggle.value == "single" ) then toggle.value = "automatic" end
             if val == "AutoDual" and not ( toggle.value == "automatic" or toggle.value == "dual" ) then toggle.value = "automatic" end
             if val == "SingleAOE" and not ( toggle.value == "single" or toggle.value == "aoe" ) then toggle.value = "single" end
+            if val == "ReactiveDual" and not toggle.value == "reactive" then toggle.value = "reactive" end
 
         elseif option == 'key' then
             for t, data in pairs( p.toggles ) do
@@ -7931,7 +7933,9 @@ function Hekili:FireToggle( name )
             if toggle.value == "automatic" then toggle.value = "dual" else toggle.value = "automatic" end
         end
 
-        if toggle.type ~= "Reactive" then       
+        if toggle.type == "ReactiveDual" then       
+            toggle.value = "reactive"
+        else
             local mode = "Unknown"
             if toggle.value == "automatic" then mode = "Automatic"
             elseif toggle.value == "single" then mode = "Single-Target"
