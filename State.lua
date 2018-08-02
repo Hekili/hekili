@@ -3962,7 +3962,7 @@ do
                 return true
             else
                 if toggle and toggle ~= 'none' then
-                    if not self.toggle[ toggle ] or profile.toggles[ toggle ].separate then return true end
+                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true end
                 end
             end
         end
