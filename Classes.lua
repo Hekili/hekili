@@ -1055,6 +1055,37 @@ all:RegisterAuras( {
     fireblood = {
         id = 273104,
         duration = 8,
+    },
+
+    dispellable_magic = {
+        generate = function ()
+            local dm = debuff.dispellable_magic
+
+            if UnitCanAttack( "player", "target" ) then
+                local i = 1
+                local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
+
+                while( name ) do
+                    if debuffType == "Magic" and canDispel then break end
+                    
+                    i = i + 1
+                    name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
+                end
+                
+                if canDispel then
+                    dm.count = count > 0 and count or 1
+                    dm.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    dm.caster = "nobody"
+                    return
+                end
+            end
+
+            dm.count = 0
+            dm.expires = 0
+            dm.applied = 0
+            dm.caster = "nobody"
+        end,
     }
 } )
 
