@@ -3885,7 +3885,7 @@ do
                                     name = "Profile",
                                     desc = "If this pack's action lists were imported from a SimulationCraft profile, the profile is included here.",
                                     order = 4,
-                                    multiline = 8,
+                                    multiline = 20,
                                     width = "full",
                                 },
 
@@ -3894,7 +3894,7 @@ do
                                     name = "Import Log",
                                     desc = "If this pack's action lists were imported from a SimulationCraft profile, any details logged at import are included here.",
                                     order = 5,
-                                    multiline = 3,
+                                    multiline = 10,
                                     width = "full",                                
                                     hidden = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
@@ -5136,7 +5136,7 @@ do
     local lastTime = 0    
 
     local function CLEU( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-        if sourceName and UnitIsUnit( sourceName, "player" ) then
+        if sourceName and UnitIsUnit( sourceName, "player" ) and type( spellName ) == 'string' then
             local now = GetTime()
             local token = key( spellName )
 
@@ -5880,7 +5880,7 @@ function Hekili:GetOptions()
                             
                             return snap and ns.snapshots[ display ][ snap ]
                         end,
-                        disabled = true,
+                        disabled = false,
                         multiline = 25,
                         width = "full",
                     }
