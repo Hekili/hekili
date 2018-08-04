@@ -279,6 +279,23 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 194310,
             duration = 30,
             max_stack = 6,
+            meta = {
+                stack = function ()
+                    -- Designed to work with Unholy Frenzy, time until 4th Festering Wound would be applied.
+                    local actual = debuff.festering_wound.count
+                    if buff.unholy_frenzy.down then return actual end
+
+                    local slot_time = now + offset
+                    local swing, speed = state.swings.mainhand, state.swings.mainhand_speed
+
+                    local last = swing + ( speed * floor( slot_time - swing ) / swing )
+                    local window = min( buff.unholy_frenzy.expires, query_time ) - last
+
+                    local bonus = floor( window / speed )
+
+                    return min( 6, actual + bonus )
+                end
+            }
         },
         grip_of_the_dead = {
             id = 273977,
@@ -400,6 +417,21 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     spec:RegisterStateExpr( "rune", function ()
         return runes.current
+    end )
+
+
+    spec:RegisterStateFunction( "time_to_wounds", function( x )
+        if debuff.festering_wound.stack >= x then return 0 end
+        if buff.unholy_frenzy.down then return 3600 end
+
+        local deficit = x - debuff.festering_wound.stack
+        local swing, speed = state.swings.mainhand, state.swings.mainhand_speed
+
+        local last = swing + ( speed * floor( query_time - swing ) / swing )
+        local fw = last + ( speed * deficit ) - query_time
+
+        if fw > buff.unholy_frenzy.remains then return 3600 end
+        return fw
     end )
 
 

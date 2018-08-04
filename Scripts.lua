@@ -265,12 +265,16 @@ do
         { "^charges>=?(.-)$",                   "(charges-%1)*recharge" },
         { "^(.-time_to_die)<=?(.-)$",           "%1 - %2" },
         { "^(.-)%.time_to_(.-)<=?(.-)$",        "%1.time_to_%2-%3" },
+        { "^debuff%.festering_wound%.stack[>=]=?(.-)$", -- UH DK helper during Unholy Frenzy.
+                                                "time_to_wounds(%1)" },
+        { "^dot%.festering_wound%.stack[>=]=?(.-)$",    -- UH DK helper during Unholy Frenzy.
+                                                "time_to_wounds(%1)" }
     }
 
     -- Things that tick down.
     local decreases = {
-        ["remains$"] = true,
-        ["ticks_remain$"] = true,
+        ["remains"] = true,
+        ["ticks_remain"] = true,
         -- ["time_to_%d+$"] = true,
         -- ["deficit$"] = true,
     }
