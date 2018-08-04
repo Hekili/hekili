@@ -3633,11 +3633,14 @@ do
                                             end,
                                             func = function ()
                                                 self.DB.profile.packs[ shareDB.imported.name ] = shareDB.imported.payload
+                                                shareDB.imported.payload.date = shareDB.imported.date
+                                                shareDB.imported.payload.version = shareDB.imported.date
                                                 
                                                 shareDB.import = ""
                                                 shareDB.imported = {}
                                                 shareDB.importStage = 2
                                                 
+                                                self:LoadScripts()
                                                 self:EmbedPackOptions()
                                             end,
                                         },
