@@ -1082,7 +1082,7 @@ do
                     local b = self.Buttons[ i ]
                     local a = class.abilities[ r.actionName ]
 
-                    if not b.glowing and not a.item and IsSpellOverlayed( a.id ) then
+                    if not b.glowing and a and not a.item and IsSpellOverlayed( a.id ) then
                         if conf.glow.shine then AutoCastShine_AutoCastStart( b.Shine )
                         else ActionButton_ShowOverlayGlow( b ) end
                         b.glowing = true
