@@ -102,6 +102,7 @@ state.race = {}
 state.script = {}
 state.set_bonus = {}
 state.settings = {}
+state.sim = {}
 state.spec = {}
 state.stance = {}
 state.stat = {}
@@ -121,6 +122,7 @@ state.target = {
     health = {},
     updated = true
 }
+state.sim.target = state.target
 state.toggle = {}
 state.totem = {}
 
@@ -397,8 +399,10 @@ state.FindUnitDebuffByID = ns.FindUnitDebuffByID
 state.GetItemCount = GetItemCount
 state.GetTime = GetTime
 state.GetTotemInfo = GetTotemInfo
-state.IsUsableSpell = IsUsableSpell
 state.IsPlayerSpell = IsPlayerSpell
+state.IsSpellKnown = IsSpellKnown
+state.IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
+state.IsUsableSpell = IsUsableSpell
 state.UnitBuff = UnitBuff
 state.UnitDebuff = UnitDebuff
 state.UnitCanAttack = UnitCanAttack
@@ -1601,7 +1605,7 @@ local mt_pets = {
             end
         end
 
-        if k == 'up' or k == 'exists' then
+        if k == 'up' or k == 'exists' or k == 'active' then
             for k, v in pairs( t ) do
                 if type(v) == 'table' then
                     if v.expires > state.query_time then return true end
@@ -1685,7 +1689,7 @@ local mt_target = {
             
         elseif k == 'unit' then
             if state.args.cycle_target then return UnitGUID( 'target' ) .. 'c' or 'cycle'
-                elseif state.args.target then return UnitGUID( 'target' ) .. '+' .. state.args.target or 'unknown' end
+            elseif state.args.target then return UnitGUID( 'target' ) .. '+' .. state.args.target or 'unknown' end
             return UnitGUID( 'target' ) or 'unknown'
             
         elseif k == 'time_to_die' then
@@ -3064,7 +3068,7 @@ local mt_default_action = {
             else return 1.5 end
             
         elseif k == 'execute_time' then
-            return max( t.gcd, t.cast_time )
+            return max( state.gcd, t.cast_time )
             
         elseif k == 'charges' then
             return class.abilities[ t.action ].charges and state.cooldown[ t.action ].charges or 0
@@ -3137,7 +3141,7 @@ local mt_default_action = {
             return 0
             
         elseif k == 'cast_regen' then
-            return floor( max( t.gcd, t.cast_time ) * state[ class.primaryResource ].regen )
+            return floor( max( state.gcd, t.cast_time ) * state[ class.primaryResource ].regen )
 
         elseif k == 'cost' then
             local a = class.abilities[ t.action ].spend
@@ -3468,6 +3472,8 @@ function state.reset( dispName )
     state.my_enemies = nil
     state.true_active_enemies = nil
     state.true_my_enemies = nil
+
+    state.cycle = nil
     
     state.latency = select( 4, GetNetStats() ) / 1000
     
