@@ -815,7 +815,7 @@ do
 
                 if conf.range.enabled then
                     if conf.range.type == "melee" and UnitExists( "target" ) then
-                        outOfRange = ( LRC:GetRange( "target" ) or 50 ) > 7
+                        outOfRange = ( LRC:GetRange( "target" ) or 50 ) >= 2
                     elseif conf.range.type == "ability" then
                         if a.item then
                             outOfRange = UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and IsItemInRange( a.item, "target" ) == false
