@@ -424,6 +424,10 @@ local HekiliSpecMixin = {
             if state.spec.id == self.id then func( ... ) end
         end )
     end,
+
+    RegisterCycle = function( self, func )
+        self.cycle = setfenv( func, state )
+    end,
 }
 
 --[[ function Hekili:RestoreDefaults()
