@@ -1095,6 +1095,7 @@ do
                     if i > 1 and not conf.glow.queued then
                         break
                     end
+
                     if not r.actionName then
                         break
                     end
@@ -1102,7 +1103,7 @@ do
                     local b = self.Buttons[ i ]
                     local a = class.abilities[ r.actionName ]
 
-                    if b.glowing and ( a.item or not IsSpellOverlayed( a.id ) ) then
+                    if b.glowing and ( not a or a.item or not IsSpellOverlayed( a.id ) ) then
                         if conf.glow.shine then AutoCastShine_AutoCastStop( b.Shine )
                         else ActionButton_HideOverlayGlow( b ) end
                         b.glowing = false
