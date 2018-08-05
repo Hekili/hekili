@@ -372,12 +372,13 @@ do
         ["-"] = true,
         ["*"] = true,
         ["/"] = true,
-        ["%%"] = true,
+        ["%"] = true,
         ["|"] = true,
         ["&"] = true,
         ["<"] = true,
         [">"] = true,
         ["="] = true,
+        ["!"] = true,
      }
      
      local math_ops = {
@@ -385,7 +386,7 @@ do
         ["-"] = true,
         ["*"] = true,
         ["/"] = true,
-        ["%%"] = true,
+        ["%"] = true,
         ["<"] = true,
         [">"] = true,
         ["="] = true
@@ -399,7 +400,8 @@ do
 
      local bool_ops = {
          ["|"] = true,
-         ["&"] = true
+         ["&"] = true,
+         ["!"] = true
      }
      
      
@@ -419,11 +421,14 @@ do
 
         local ands = p:find( " and " )
         local ors = p:find( " or " )
+        local nots = p:find( " not " )
 
         if ands then p = p:gsub( " and ", "&" ) end
         if ors then p = p:gsub( " or ", "|" ) end
-        p = p:gsub( "([%|&%-%+%*=%%/<>]) ", "%1" )
-        p = p:gsub( " ([%|&%-%+%*=%%/<>])", "%1" )
+        if nots then p = p:gsub( " not ", "!" ) end
+
+        p = p:gsub( "([!%|&%-%+%*=%%/<>]) ", "%1" )
+        p = p:gsub( " ([!%|&%-%+%*=%%/<>])", "%1" )
 
         local orig = p
         
@@ -462,7 +467,7 @@ do
                  if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
               end
 
-              c = p:sub( i ):match( "^([&%|%-%+*%%/><=]+)" )
+              c = p:sub( i ):match( "^([&%|%-%+*%%/><=!]+)" )
               
               table.insert( results, {
                     s = c,
@@ -486,7 +491,7 @@ do
                  l = true
            } )
 
-           if p:find( "[&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
+           if p:find( "[!&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
         end
         
         local output = ""
