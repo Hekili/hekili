@@ -386,7 +386,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136139,
             
             recheck = function () return remains, remains - ( tick_time + gcd ), remains - ( duration * 0.3 ) end,
             handler = function ()
@@ -405,7 +404,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136135,
             
             handler = function ()
             end,
@@ -419,7 +417,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = function () return buff.burning_rush.up and "off" or "spell" end,
             
             startsCombat = true,
-            texture = 538043,
 
             talent = "burning_rush",
             
@@ -437,7 +434,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 236292,
             
             handler = function ()
             end,
@@ -454,7 +450,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136118,
             
             recheck = function ()
                 return remains, remains - ( tick_time + gcd ), remains - ( duration * 0.3 )
@@ -475,7 +470,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 538745,
             
             handler = function ()
             end,
@@ -494,7 +488,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 136194,
             
             handler = function ()
             end,
@@ -510,7 +503,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "defensives",
 
             startsCombat = false,
-            texture = 538538,
 
             talent = "dark_pact",
             
@@ -530,7 +522,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "cooldowns",
 
             startsCombat = false,
-            texture = 463286,
 
             talent = "dark_soul_misery",
             
@@ -553,7 +544,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 425953,
 
             talent = "deathbolt",
             
@@ -573,7 +563,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 237559,
             
             handler = function ()
             end,
@@ -590,7 +579,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 237560,
             
             handler = function ()
             end,
@@ -607,7 +595,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 607512,
             
             handler = function ()
             end,
@@ -626,7 +613,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136169,
             
             handler = function ()
             end,
@@ -648,7 +634,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136163,
 
             talent = "drain_soul",
            
@@ -670,7 +655,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136154,
             
             handler = function ()
             end,
@@ -687,7 +671,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136155,
             
             handler = function ()
             end,
@@ -704,7 +687,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136183,
             
             handler = function ()
                 applyDebuff( "target", "fear" )
@@ -719,7 +701,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = false,
-            texture = 538443,
             
             usable = function () return pet.exists and buff.grimoire_of_sacrifice.down end,
             handler = function ()
@@ -738,7 +719,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 236298,
 
             talent = "haunt",
             
@@ -757,7 +737,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = false,
-            texture = 136168,
             
             handler = function ()
             end,
@@ -774,7 +753,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 607853,
 
             talent = "mortal_coil",
             
@@ -792,7 +770,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 132886,
 
             talent = "phantom_singularity",
             
@@ -814,7 +791,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 136223,
             
             handler = function ()
             end,
@@ -831,7 +807,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
             
             startsCombat = true,
-            texture = 136193,
             
             recheck = function ()
                 return dot.corruption.remains - ( cast_time + travel_time ), dot.seed_of_corruption.remains
@@ -853,7 +828,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136197,
             
             handler = function ()
                 if talent.shadow_embrace.enabled then
@@ -870,7 +844,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 607865,
             
             handler = function ()
                 applyDebuff( "target", "shadowfury" )
@@ -885,7 +858,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 136188,
 
             talent = "siphon_life",
             
@@ -905,7 +877,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = false,
-            texture = 136210,
             
             handler = function ()
                 applyBuff( "soulstone" )
@@ -923,7 +894,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136174,
 
             toggle = "interrupts",
             
@@ -946,7 +916,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 1416161,
             
             handler = function ()
                 summonPet( "darkglare", 20 )
@@ -1022,7 +991,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = false,
-            texture = 136148,
             
             handler = function ()
                 applyBuff( "unending_breath" )
@@ -1042,7 +1010,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "defensives",
 
             startsCombat = true,
-            texture = 136150,
             
             handler = function ()
                 applyBuff( "unending_resolve" )
@@ -1060,7 +1027,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
             
             startsCombat = true,
-            texture = 136228,
             
             recheck = function ()
                 return dot.unstable_affliction.remains - cast_time, dot.unstable_affliction_2.remains - cast_time, dot.unstable_affliction_3.remains - cast_time, dot.unstable_affliction_4.remains - cast_time, dot.unstable_affliction_5.remains - cast_time
@@ -1081,7 +1047,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
             
             startsCombat = true,
-            texture = 1391774,
             
             handler = function ()
                 applyDebuff( "target", "vile_taint" )

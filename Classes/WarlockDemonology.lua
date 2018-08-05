@@ -553,7 +553,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 236316,
             
             usable = function () return pet.exists end,
             handler = function ()
@@ -572,7 +571,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136135,
             
             handler = function ()
                 applyDebuff( 'target', 'banish', 30 )
@@ -592,7 +590,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             talent = 'bilescourge_bombers',
             
             startsCombat = true,
-            texture = 132182,
             
             handler = function ()
             end,
@@ -606,7 +603,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 538043,
             
             talent = 'burning_rush',
 
@@ -630,7 +626,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
             
             startsCombat = true,
-            texture = 1378282,
             
             handler = function ()
                 summon_demon( "dreadstalkers", 12, 2 )
@@ -648,7 +643,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 236292,
             
             handler = function ()
                 if pet.felguard.up then runHandler( 'axe_toss' )
@@ -670,7 +664,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 538745,
             
             handler = function ()
             end,
@@ -687,7 +680,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136194,
             
             handler = function ()
             end,
@@ -701,7 +693,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 538538,
 
             talent = 'dark_pact',
             
@@ -721,7 +712,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 2032588,
             
             handler = function ()
                 removeStack( 'demonic_core' )
@@ -740,7 +730,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 237559,
 
             talent = 'demonic_circle',
             
@@ -759,7 +748,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 237560,
 
             talent = 'demonic_circle',
             
@@ -778,7 +766,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 607512,
             
             handler = function ()
             end,
@@ -792,7 +779,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = false,
-            texture = 236292,
             
             handler = function ()
                 applyBuff( 'demonic_strength' )
@@ -810,7 +796,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136122,
 
             talent = 'doom',
             
@@ -831,7 +816,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136169,
             
             handler = function ()
                 applyDebuff( 'drain_life' )
@@ -849,7 +833,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136154,
             
             handler = function ()
             end,
@@ -866,7 +849,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136155,
             
             handler = function ()
             end,
@@ -883,7 +865,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136183,
             
             handler = function ()
                 applyDebuff( 'target', 'fear' )
@@ -903,7 +884,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = 'cooldowns',
 
             startsCombat = true,
-            texture = 136216,
             
             handler = function ()
                 summon_demon( "grimoire_felguard", 15 )
@@ -922,7 +902,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
             
             startsCombat = true,
-            texture = 535592,
             
             -- usable = function () return soul_shards.current >= 3 end,
             handler = function ()
@@ -941,7 +920,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             channeled = true,            
             startsCombat = false,
-            texture = 136168,
             
             handler = function ()
                 applyBuff( 'health_funnel' )
@@ -959,7 +937,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 2065588,
             
             handler = function ()
                 consume_demons( "wild_imps", "all" )
@@ -977,7 +954,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 607853,
             
             handler = function ()
                 applyDebuff( 'target', 'mortal_coil' )
@@ -997,7 +973,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "cooldowns", 
 
             startsCombat = false,
-            texture = 2065615,
             
             handler = function ()
                 applyBuff( "nether_portal" )
@@ -1012,7 +987,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = false,
-            texture = 236290,
             
             usable = function () return buff.wild_imps.count > 0 end,
             handler = function ()
@@ -1034,7 +1008,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136223,
             
             handler = function ()
             end,
@@ -1051,7 +1024,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136197,
             
             handler = function ()
                 gain( 1, "soul_shards" )
@@ -1066,7 +1038,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 607865,
             
             handler = function ()
             end,
@@ -1080,7 +1051,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 1452864,
             
             usable = function () return pet.exists end,
             handler = function ()
@@ -1096,7 +1066,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 136210,
             
             handler = function ()
             end,
@@ -1115,7 +1084,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "cooldowns",
             
             startsCombat = true,
-            texture = 2065628,
             
             handler = function ()
                 summon_demon( "demonic_tyrant", 15 )
@@ -1136,7 +1104,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
 
             startsCombat = false,
-            texture = 136216,
 
             usable = function () return not pet.exists end,
             handler = function ()
@@ -1157,7 +1124,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "cooldowns",
             
             startsCombat = true,
-            texture = 1616211,
             
             handler = function ()
                 summon_demon( "vilefiend", 15 )
@@ -1175,7 +1141,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            texture = 136148,
             
             handler = function ()
             end,
@@ -1194,7 +1159,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "defensives",
             
             startsCombat = true,
-            texture = 136150,
             
             handler = function ()
             end,
@@ -1208,7 +1172,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
-            texture = 1518639,
             
             handler = function ()
             end,
