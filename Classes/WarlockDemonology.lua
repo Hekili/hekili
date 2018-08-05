@@ -380,16 +380,16 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 gf.name = class.abilities.grimoire_felguard.name
 
                 if up then
-                    fs.count = 1
-                    fs.expires = cast + 15
-                    fs.applied = cast
-                    fs.caster = "player"
+                    gf.count = 1
+                    gf.expires = cast + 15
+                    gf.applied = cast
+                    gf.caster = "player"
                     return
                 end
-                fs.count = 0
-                fs.expires = 0
-                fs.applied = 0
-                fs.caster = "nobody"                
+                gf.count = 0
+                gf.expires = 0
+                gf.applied = 0
+                gf.caster = "nobody"                
             end,
         },
 
