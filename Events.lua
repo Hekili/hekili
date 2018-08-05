@@ -670,7 +670,7 @@ local dmg_events = {
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
 local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
-    if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' or subtype == "UNIT_DISIPPATES" then
+    if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' or subtype == "UNIT_DISSIPATES" or subtype == "PARTY_KILL" then
         if ns.isTarget( destGUID ) then
             ns.eliminateUnit( destGUID, true )
             ns.forceRecount()
