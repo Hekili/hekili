@@ -564,6 +564,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     
     local specID = state.spec.id
     local spec = rawget( self.DB.profile.specs, specID )
+    local module = class.specs[ specID ]
 
     local packName = self.DB.profile.specs[ specID ].package
     local pack = self.DB.profile.packs[ packName ]
@@ -973,12 +974,12 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     slot.button = i
                                                     slot.caption = entry.caption
                                                     slot.texture = ability.texture
+                                                    slot.indicator = ability.indicator
 
                                                     slot.wait = state.delay
 
                                                     slot.resource = state.GetResourceType( rAction )
                                                     
-                                                    -- slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
                                                     
                                                     rAction = state.this_action
                                                     rWait = state.delay
@@ -990,9 +991,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         self:Debug( "Action Chosen: %s at %.2f!", rAction, state.delay )
                                                     end
 
-                                                    if entry.cycle_targets == 1 and state.active_enemies > 1 and ability and ability.cycle then
-                                                        if state.dot[ ability.cycle ].up and state.active_dot[ ability.cycle ] < ( entry.max_cycle_targets or state.active_enemies ) then
+                                                    if entry.cycle_targets == 1 and state.active_enemies > 1 then
+                                                        if ability and ability.cycle and state.dot[ ability.cycle ].up and state.active_dot[ ability.cycle ] < ( entry.max_cycle_targets or state.active_enemies ) then
                                                             slot.indicator = 'cycle'
+                                                        elseif module and module.cycle then
+                                                            slot.indicator = module.cycle()
                                                         end
                                                     end
                                                 end
@@ -1240,7 +1243,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     state.setCooldown( action, cooldown )
                 end
                 
-                state.cycle = slot.indicator == 'cycle'
+                state.cycle = state.cycle or slot.indicator == 'cycle'
                 
                 -- Spend resources.
                 ns.spendResources( action )
