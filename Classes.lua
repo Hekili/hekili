@@ -179,6 +179,17 @@ local HekiliSpecMixin = {
         end
     end,
 
+
+    RegisterPower = function( self, power, id, aura )
+        self.powers[ power ] = id
+        CommitKey( power )
+
+        if auras and type( aura ) == "table" then
+            self:RegisterAura( power, aura )
+        end
+    end,
+
+
     RegisterStateExpr = function( self, key, func )
         --[[ if rawget( state, key ) then
             Hekili:Error( "Cannot overwrite an existing value/table with RegisterStateExpr (" .. key .. ")." )
@@ -682,6 +693,7 @@ function Hekili:NewSpecialization( specID, name, texture )
         
         talents = {},
         pvptalents = {},
+        powers = {},
         
         auras = {},
         pseudoAuras = 0,
@@ -1071,6 +1083,37 @@ all:RegisterAuras( {
 
                 while( name ) do
                     if debuffType == "Magic" and canDispel then break end
+                    
+                    i = i + 1
+                    name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
+                end
+                
+                if canDispel then
+                    dm.count = count > 0 and count or 1
+                    dm.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    dm.caster = "nobody"
+                    return
+                end
+            end
+
+            dm.count = 0
+            dm.expires = 0
+            dm.applied = 0
+            dm.caster = "nobody"
+        end,
+    },
+
+    dispellable_enrage = {
+        generate = function ()
+            local dm = debuff.dispellable_enrage
+
+            if UnitCanAttack( "player", "target" ) then
+                local i = 1
+                local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
+
+                while( name ) do
+                    if debuffType == "" and canDispel then break end
                     
                     i = i + 1
                     name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
