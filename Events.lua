@@ -322,10 +322,65 @@ RegisterEvent( "ENCOUNTER_START", function () state.boss = true end )
 RegisterEvent( "ENCOUNTER_END", function () state.boss = false end )
 
 
+do
+    local loc = ItemLocation.CreateEmpty()
+        
+    local GetAllTierInfoByItemID = C_AzeriteEmpoweredItem.GetAllTierInfoByItemID
+    local GetPowerInfo = C_AzeriteEmpoweredItem.GetPowerInfo
+    local IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
+    local IsPowerSelected = C_AzeriteEmpoweredItem.IsPowerSelected
+
+    local MAX_INV_SLOTS = 19
+
+    function ns.updatePowers()
+        local p = state.azerite
+
+        for k, v in pairs( p ) do
+            v.rank = 0
+        end
+
+        if next( class.powers ) == nil then
+            C_Timer.After( 3, ns.updatePowers )
+            return
+        end
+
+        for slot = 1, MAX_INV_SLOTS do
+            local id = GetInventoryItemID( "player", slot )
+            -- print( "Slot " .. slot .. " is " .. ( id or "nil" ) .. ".")
+
+            if id and IsAzeriteEmpoweredItemByID( id ) then
+                -- print( "It is Azerite Empowered." )
+                loc:SetEquipmentSlot( slot )
+                local tiers = GetAllTierInfoByItemID( id )
+
+                for tier, tierInfo in ipairs( tiers ) do
+                    for _, power in ipairs( tierInfo.azeritePowerIDs ) do
+                        -- print( "We have a power." )
+                        local pInfo = GetPowerInfo( power )
+
+                        if IsPowerSelected( loc, power ) then
+                            local name = class.powers[ pInfo.spellID ]
+                            -- print( pInfo.spellID, name, GetSpellInfo( pInfo.spellID ) )
+                            if not name then
+                                Hekili:Error( "Missing Azerite Power info for #" .. pInfo.spellID .. ": " .. GetSpellInfo( pInfo.spellID ) .. "." )
+                            else
+                                p[ name ] = rawget( p, name ) or { rank = 0 }
+                                p[ name ].rank = p[ name ].rank + 1
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        loc:Clear()
+    end
+end
+
+
 local gearInitialized = false
 
 function ns.updateGear()
-
     for thing in pairs( state.set_bonus ) do
         state.set_bonus[ thing ] = 0
     end
@@ -379,6 +434,8 @@ function ns.updateGear()
             end
         end
     end
+
+    ns.updatePowers()
 
     if not gearInitialized then
         C_Timer.After( 3, ns.updateGear )

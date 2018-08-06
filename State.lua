@@ -122,6 +122,7 @@ state.target = {
     health = {},
     updated = true
 }
+state.movement = state.target -- lazy!
 state.sim.target = state.target
 state.toggle = {}
 state.totem = {}
@@ -4253,7 +4254,7 @@ ns.attr = { "serenity", "active", "active_enemies", "my_enemies", "active_flame_
 
 
 
--- BfA
+--[[ BfA
 Hekili.ClassDB = {}
 
 local ClassDB = Hekili.ClassDB
@@ -4410,9 +4411,10 @@ end)
 do
     local loc = ItemLocation.CreateEmpty()
     
-    local GetAllTierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo
+    local GetAllTierInfoByItemID = C_AzeriteEmpoweredItem.GetAllTierInfoByItemID
     local GetPowerInfo = C_AzeriteEmpoweredItem.GetPowerInfo
     local IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
+    local IsPowerSelected = C_AzeriteEmpoweredItem.IsPowerSelected
     
     local MAX_INV_SLOTS = 19
 
@@ -4422,17 +4424,21 @@ do
         wipe( p.BySpellID )
 
         for slot = 1, MAX_INV_SLOTS do
-            loc:SetEquipmentSlot( slot )
             local id = GetInventoryItemID( "player", slot )
+            print( "Slot " .. slot .. " is " .. ( id or "nil" ) .. ".")
 
             if id and IsAzeriteEmpoweredItemByID( id ) then
-                local tiers = GetAllTierInfo( loc )
+                print( "It is Azerite Empowered." )
+                loc:SetEquipmentSlot( slot )
+                local tiers = GetAllTierInfoByItemID( id )
 
                 for tier, tierInfo in ipairs( tiers ) do
                     for _, power in ipairs( tierInfo.azeritePowerIDs ) do
+                        print( "We have a power." )
                         local pInfo = GetPowerInfo( power )
 
-                        if pInfo.selected then
+
+                        if IsPowerSelected( loc, power ) then
                             local powerID = p.ByPowerID[ pInfo.azeritePowerID ] or {}
                             local spellID = p.BySpellID[ pInfo.spellID ] or {}
 
@@ -4627,16 +4633,16 @@ do
 end
 
 
---[[ setmetatable( class.auras, {
+setmetatable( class.auras, {
     __index = function( t, k )
         -- aura was not detected, we'll map to no_aura.
         local aura = rawget( t, "no_aura" )
         t[ k ] = aura
         return aura
     end,
-} ) ]]
+} )
 
---[[ do
+do
     -- COMBAT LOG
 
     f
@@ -4648,4 +4654,5 @@ end
 
     LiveDB:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ()
         LiveDB:CLEU( CombatLogGetCurrentEventInfo() ) 
-    end ) ]]
+    end ) 
+end ]]
