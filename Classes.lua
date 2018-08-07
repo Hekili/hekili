@@ -502,164 +502,7 @@ end
 
 
 ns.restoreDefaults = function( category, purge )
-    return
-
-    --[[ local profile = Hekili.DB.profile
-
-    if purge then
-        for i, display in ipairs( Hekili.DB.profile.displays ) do
-            local disable = false
-            if display.Default then
-                disable = true
-                for x, default in ipairs( class.defaults ) do
-                    if default.type == 'displays' and default.name == display.Name then
-                        disable = false
-                        break
-                    end
-                end
-            end
-            if disable then
-                display.Default = false
-                display.enabled = false
-            end
-        end
-
-
-        for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-            local disable = false
-            if list.Default then
-                disable = true
-                for x, default in ipairs( class.defaults ) do
-                    if default.type == 'actionLists' and default.name == list.Name then
-                        disable = false
-                        break
-                    end
-                end
-            end
-            if disable then
-                list.Default = false
-                -- list.enabled = false
-            end
-        end
-    end
-
-
-    -- By default, restore action lists.
-    if not category or category == 'actionLists' then
-        for i, default in ipairs( class.defaults ) do
-            if default.type == 'actionLists' then
-                local reload = true
-                local index
-                
-                for j, list in ipairs( profile.actionLists ) do
-                    if list.Name == default.name then
-                        if type(list.Release) == 'string' then list.Release = tonumber( list.Release ) end
-                        reload = list.Default and ( list.Release < default.version )
-                        index = j
-                        break
-                    end
-                end
-                
-                if reload then
-                    local import = ns.deserializeActionList( default.import )
-                    
-                    if import and type( import ) == 'table' then
-                        import.Name = default.name
-                        import.Release = default.version
-                        import.Default = true
-                        if not index then index = #profile.actionLists + 1 end
-                        ns.Error( "rD() - putting " .. default.name .. " at index " .. index .. "." )
-                        profile.actionLists[ index ] = import
-                    else
-                        ns.Error( "restoreDefaults() - unable to import actionList " .. default.name .. "." )
-                    end
-                end
-            end
-        end
-    end
-    
-    
-    if not category or category == 'displays' then
-        for i, default in ipairs( class.defaults ) do
-            if default.type == 'displays' then
-                local reload = true
-                local index
-                
-                for j, display in ipairs( profile.displays ) do
-                    if display.Name == default.name then
-                        index = j
-                        if type( display.Release ) == 'string' then display.Release = tonumber( display.Release ) end
-                        reload = display.Default and ( display.Release < default.version )
-                        break
-                    end
-                end
-                
-                if reload then
-                    ns.Error( "restoreDefaults() - didn't find " .. default.name .. "." )
-                    local import = ns.deserializeDisplay( default.import )
-                    
-                    if import and type( import ) == 'table' then
-                        import.Name = default.name
-                        import.Release = default.version
-                        import.Default = true
-                        
-                        if index then
-                            local existing = profile.displays[ index ]
-
-                            -- Overwrite only what wasn't customized.
-                            for setting, value in pairs( import ) do
-                                if existing[ setting ] == nil then existing[ setting ] = value end
-                            end
-
-                            -- Except APLs and release.
-                            existing.Release = default.version
-                            existing.Default = true
-                            existing.precombatAPL = import.precombatAPL
-                            existing.defaultAPL = import.defaultAPL
-                        
-                        else
-                            index = #profile.displays + 1
-                            profile.displays[ index ] = import
-
-                        end
-
-                        local updated = profile.displays[ index ]
-
-                        if type( updated.precombatAPL ) == 'string' then
-                            for i, list in pairs( profile.actionLists ) do
-                                if list.Name == updated.precombatAPL then
-                                    updated.precombatAPL = i
-                                end
-                            end
-
-                            if type( updated.precombatAPL ) == 'string' then
-                                updated.precombatAPL = 0
-                            end
-                        end
-
-                        if type( updated.defaultAPL ) == 'string' then
-                            for i, list in pairs( profile.actionLists ) do
-                                if list.Name == updated.defaultAPL then
-                                    updated.defaultAPL = i
-                                end
-                            end
-
-                            if type( updated.defaultAPL ) == 'string' then
-                                updated.defaultAPL = 0
-                            end
-                        end
-
-                    else
-                        ns.Error( "restoreDefaults() - unable to import '" .. default.name .. "' display." )
-                    end
-                end
-            end
-        end
-    end
-    
-    self:RefreshOptions()
-    scripts:LoadScripts() ]]
-    
+    return    
 end
 
 
@@ -1648,6 +1491,15 @@ all:RegisterGear( 'sephuzs_secret', 132452 )
 all:RegisterAura( 'sephuzs_secret', {
     id = 208051, 
     duration = 10
+} )
+all:RegisterAbility( "buff_sephuzs_secret", {
+    name = "Sephuz's Secret (ICD)",
+    cast = 0,
+    cooldown = 30,
+    gcd = "off",
+
+    hidden = true,
+    usable = function () return false end,
 } )
 
 all:RegisterGear( 'archimondes_hatred_reborn', 144249 )
