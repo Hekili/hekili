@@ -264,7 +264,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterGear( 'the_wind_blows', 151811 )
 
 
-    combos = {
+    spec:RegisterStateTable( "combos", {
         blackout_kick = true,
         chi_burst = true,
         chi_wave = true,
@@ -277,7 +277,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         tiger_palm = true,
         touch_of_death = true,
         whirling_dragon_punch = true
-    }
+    } )
 
     local actual_combo, virtual_combo
 
