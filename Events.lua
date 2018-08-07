@@ -216,6 +216,7 @@ end
 
 
 RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
+    Hekili.PLAYER_ENTERING_WORLD = true
     Hekili:SpecializationChanged()
 
     ns.checkImports()

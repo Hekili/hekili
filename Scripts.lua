@@ -1017,7 +1017,7 @@ local function scriptLoader()
 end
 
 function scripts:LoadScripts()
-    if not scriptsLoaded and not Hekili.PLAYER_ENTERING_WORLD then
+    if not Hekili.PLAYER_ENTERING_WORLD then
         C_Timer.After( 1, scriptLoader )
         return
     end
