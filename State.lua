@@ -1318,6 +1318,9 @@ local mt_state = {
         elseif k == 'recharge_time' then
             -- TODO: Recheck what value SimC would use for recharge if an ability doesn't have charges.
             return t.cooldown[ action ].recharge_time
+
+        elseif k == 'cost' then
+            return ability and ability.cost or 0
             
         elseif k == 'cast_regen' then
             local res = ability.spendType or class.primaryResource
@@ -1394,7 +1397,10 @@ local mt_state = {
         if t.settings[k] ~= nil then return t.settings[k] end
         if t.toggle[k] ~= nil then return t.toggle[k] end
         
-        Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable.\n" .. debugstack() )
+        local stack = debugstack()
+        -- if stack then stack = stack:match( "^(.-\n?.-\n?.-)\n" ) end
+
+        Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable." .. ( stack and ( "\n" .. stack ) or "" ) )
         return k        
     end,
     __newindex = function(t, k, v)
