@@ -1010,7 +1010,18 @@ function scripts:ImportModifiers( scriptID )
 end
 
 
+local scriptsLoaded = false
+
+local function scriptLoader()
+    if not scriptsLoaded then scripts:LoadScripts() end
+end
+
 function scripts:LoadScripts()
+    if not scriptsLoaded and not Hekili.PLAYER_ENTERING_WORLD then
+        C_Timer.After( 1, scriptLoader )
+        return
+    end
+
     local profile = Hekili.DB.profile
     wipe( self.DB )
 
@@ -1051,6 +1062,8 @@ function scripts:LoadScripts()
             end
         end
     end
+
+    scriptsLoaded = true
 end
 
 function Hekili:LoadScripts()

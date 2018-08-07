@@ -226,7 +226,7 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
 end )
 
 RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
-    ns.specializationChanged()
+    Hekili:SpecializationChanged()
     ns.checkImports()
 end )
 
@@ -604,7 +604,7 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
 
     -- print( "UPF", GetTime(), power )
 
-    if power == "FOCUS" and class.resources.focus then
+    if power == "FOCUS" and rawget( state, "focus" ) then
         local now = GetTime()
         local elapsed = now - ( state.focus.last_tick or 0 )
 
@@ -616,7 +616,7 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
             state.focus.last_tick = now
         end
 
-    elseif power == "ENERGY" and class.resources.energy then
+    elseif power == "ENERGY" and rawget( state, "energy" ) then
         local now = GetTime()
         local elapsed = min( 0.12, now - ( state.energy.last_tick or 0 ) )
 
@@ -808,7 +808,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                     ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
                 elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
-                    if Hekili.currentSpecOpts.damageDots then ns.trackDebuff( spellID, destGUID, time ) end
+                    if Hekili.currentSpecOpts and Hekili.currentSpecOpts.damageDots then ns.trackDebuff( spellID, destGUID, time ) end
 
                 elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
                     ns.trackDebuff( spellID, destGUID )

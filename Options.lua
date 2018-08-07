@@ -2878,7 +2878,7 @@ do
 
         for k, v in pairs( class.abilityList ) do
             local a = class.abilities[ k ]
-            if ( a.id > 0 or a.id < -100 ) and v.id ~= 61304 then
+            if a and ( a.id > 0 or a.id < -100 ) and v.id ~= 61304 then
                 abilities[ v ] = k
             end
         end
@@ -5947,9 +5947,11 @@ end
 
 function Hekili:TotalRefresh()
     
-    self:SpecializationChanged()
-    self:RestoreDefaults()
-    
+    if Hekili.PLAYER_ENTERING_WORLD then
+        self:SpecializationChanged()
+        self:RestoreDefaults()
+    end
+        
     for i, queue in pairs( ns.queue ) do
         for j, _ in pairs( queue ) do
             ns.queue[ i ][ j ] = nil
@@ -5962,7 +5964,7 @@ function Hekili:TotalRefresh()
     self:RunOneTimeFixes()
     ns.checkImports()
     
-    self:LoadScripts()
+    -- self:LoadScripts()
     self:RefreshOptions()
     self:UpdateDisplayVisibility()
     self:BuildUI()
