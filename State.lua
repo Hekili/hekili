@@ -1394,7 +1394,7 @@ local mt_state = {
         if t.settings[k] ~= nil then return t.settings[k] end
         if t.toggle[k] ~= nil then return t.toggle[k] end
         
-        Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable." )
+        Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable.\n" .. debugstack() )
         return k        
     end,
     __newindex = function(t, k, v)
