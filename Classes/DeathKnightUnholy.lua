@@ -415,10 +415,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         return death_and_decay.remains
     end )
 
-    spec:RegisterStateExpr( "rune", function ()
-        return runes.current
-    end )
-
 
     spec:RegisterStateFunction( "time_to_wounds", function( x )
         if debuff.festering_wound.stack >= x then return 0 end
