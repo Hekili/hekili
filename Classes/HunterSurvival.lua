@@ -446,7 +446,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                     buff.coordinated_assault.expires = buff.coordinated_assault.expires + 1.5
                 end
 
-                if debuff.shrapnel_bomb.up then applyDebuff( "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
+                if debuff.shrapnel_bomb.up then applyDebuff( "target", "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
             end,
         },
         
@@ -501,7 +501,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                     active_dot.lacerate = active_dot.lacerate + 1
                 end
 
-                if debuff.shrapnel_bomb.up then applyDebuff( "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
+                if debuff.shrapnel_bomb.up then applyDebuff( "target", "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
 
                 if talent.birds_of_prey.enabled and buff.coordinated_assault.up and UnitIsUnit( "pettarget", "target" ) then
                     buff.coordinated_assault.expires = buff.coordinated_assault.expires + 1.5
