@@ -715,7 +715,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             recheck = function () return ( 1.7 - charges_fractional ) * recharge end,
 
             handler = function ()
-                if level < 116 and equpped.eye_of_the_twisting_nether then
+                if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'shock_of_the_twisting_nether' )
                 end
                 removeBuff( 'force_of_the_mountain' )
