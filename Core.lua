@@ -1256,7 +1256,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 end
 
                 -- Complete the channel.
-                if ability.cast > 0 and ability.channeled then -- class.resetCastExclusions[ ability ] then
+                if ability.cast > 0 and ( not ability.channeled or not ability.breakable ) then -- class.resetCastExclusions[ ability ] then
                     state.advance( ability.cast )
                 end
                 
