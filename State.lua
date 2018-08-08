@@ -3637,8 +3637,8 @@ function state.reset( dispName )
     end
 
     local last_act = state.player.lastcast and state.action[ state.player.lastcast ]
-    if last_act and last_act.startsCombat and state.time == 0 and state.now - last_act.lastCast < 0.5 then
-        state.combat = state.now - 0.05
+    if last_act and last_act.startsCombat and state.combat == 0 and state.now - last_act.lastCast < 1 then
+        state.false_start = last_act.lastCast - 0.1
     end
     
     -- interrupts

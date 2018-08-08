@@ -456,7 +456,7 @@ end )
 
 RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
     Hekili:UpdateDisplayVisibility()
-    state.combat = GetTime()
+    state.combat = GetTime() - 0.01
 end )
 
 
