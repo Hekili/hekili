@@ -863,7 +863,7 @@ do
             if conf.flash.enabled and LSF then
                 local a = self.Recommendations and self.Recommendations[ 1 ] and self.Recommendations[ 1 ].actionName
 
-                if a and a ~= self.lastFlash then
+                if a then
                     local ability = class.abilities[ a ]
 
                     self.flashColor = self.flashColor or {}
@@ -872,11 +872,9 @@ do
                     if ability.item then
                         local iname = LSF.ItemName( ability.item )
                         LSF.FlashItem( iname, self.flashColor )
-                        self.lastFlash = a
                     else
                         local sname = LSF.SpellName( ability.id )
                         LSF.FlashAction( sname, self.flashColor )
-                        self.lastFlash = a
                     end
                 end
             end
