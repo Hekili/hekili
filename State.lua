@@ -878,7 +878,7 @@ local function forecastResources( resource )
                 v.next = l + i
                 v.name = k
 
-                if v.next >= 0 then
+                if i > 0 and v.next >= 0 then
                     table.insert( events, v )
                 end
             end
@@ -1223,7 +1223,7 @@ local mt_state = {
             
             if not time then
                 return 0
-                -- Error("ERR: " .. remains)
+                -- Error("ERR: " .. remains )
             end
             
             time = tonumber( time )
@@ -1346,11 +1346,11 @@ local mt_state = {
             return aura and aura.duration or 30
             
         elseif k == 'refreshable' then
-            if app then return app.remains < 0.3 * app.duration end
+            if app then return app.remains < 0.3 * aura.duration end
             return false
 
         elseif k == 'time_to_refresh' then
-            if app then return max( 0, app.remains - 0.3 * app.duration ) end
+            if app then return max( 0, app.remains - ( 0.3 * aura.duration ) ) end
             return 0
             
         elseif k == 'ticking' then
@@ -2464,7 +2464,10 @@ local mt_default_buff = {
             end
             
         elseif k == 'refreshable' then
-            return t.remains < 0.3 * t.duration
+            return t.remains < 0.3 * aura.duration
+
+        elseif k == 'time_to_refresh' then
+            return t.up and ( max( 0, state.query_time - ( 0.3 * aura.duration ) ) ) or 0
             
         elseif k == 'cooldown_remains' then
             return state.cooldown[ t.key ] and state.cooldown[ t.key ].remains or 0
@@ -2953,6 +2956,9 @@ local mt_default_debuff = {
         elseif k == 'refreshable' then
             return t.remains < 0.3 * ( class_aura and class_aura.duration or 30 )
             
+        elseif k == 'time_to_refresh' then
+            return t.up and ( max( 0, state.query_time - ( 0.3 * class_aura.duration ) ) ) or 0
+        
         elseif k == 'stack' or k == 'react' then
             if t.up then return ( t.count ) else return 0 end
 
@@ -3628,6 +3634,11 @@ function state.reset( dispName )
         state.predictions[i] = nil
         state.predictionsOn[i] = nil
         state.predictionsOff[i] = nil
+    end
+
+    local last_act = state.player.lastcast and state.action[ state.player.lastcast ]
+    if last_act and last_act.startsCombat and state.time == 0 and state.now - last_act.lastCast < 0.5 then
+        state.combat = state.now - 0.05
     end
     
     -- interrupts
