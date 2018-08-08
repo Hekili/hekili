@@ -557,6 +557,14 @@ do
         if bracketed then output = "(" .. output .. ")" end
         if ands then output = output:gsub( "&", " and " ) end
         if ors then output = output:gsub( "|", " or " ) end
+        if nots then output = output:gsub( "!", " not " ) end
+
+        -- output = output:gsub( "  ", " " )
+        -- output = output:gsub( "not (safenum(", "safenum(not (" )
+        -- output = output:gsub( "not safebool(", "safebool(not " )        
+        output = output:gsub( "!safenum(%b())", "safenum(!%1)" )
+        output = output:gsub( "!%((%b())%)", "!%1" )
+        
         return output
      end
 end
