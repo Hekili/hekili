@@ -763,6 +763,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             state.player.queued_gcd = nil
             state.player.queued_off = nil
         end
+        Hekili:ForceUpdate()
     end
 
     if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
