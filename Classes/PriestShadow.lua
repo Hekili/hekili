@@ -27,6 +27,21 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             value = function () return ( state.talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * 3 end,
         },
 
+        mind_sear = {
+            aura = 'mind_sear',
+            debuff = true,
+
+            last = function ()
+                local app = state.debuff.mind_sear.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = function () return class.auras.mind_sear.tick_time end,
+            value = function () return ( state.talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * 1.25 * state.active_enemies end,
+        },
+
         -- need to revise the value of this, void decay ticks up and is impacted by void torrent.
         voidform = {
             aura = "voidform",
@@ -165,8 +180,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         mind_sear = {
             id = 48045,
-            duration = 3,
+            duration = function () return 3 * haste end,
             max_stack = 1,
+            tick_time = function () return 0.75 * haste end,
         },
         mind_vision = {
             id = 2096,
@@ -259,6 +275,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             id = 263165,
             duration = 4,
             max_stack = 1,
+            tick_time = 1,
         },
         voidform = {
             id = 194249,
@@ -493,7 +510,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             velocity = 15,
 
-            spend = function () return buff.empty_mind.stack + ( ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * -12 ) end,
+            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -12 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) * ( debuff.surrendered_to_madness.up and 0 or 1 ) end,
             spendType = "insanity",
             
             startsCombat = true,
@@ -548,6 +565,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 0,
             gcd = "spell",
 
+            spend = 0,
+            spendType = "insanity",
+
             channeled = true,
             breakable = true,
             breakchannel = function ()
@@ -557,9 +577,12 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             startsCombat = true,
             texture = 136208,
-            
+
+            aura = 'mind_flay',
+
             handler = function ()
                 applyDebuff( "target", "mind_flay" )
+                channelSpell( "mind_flay" )
                 if level < 116 then
                     if equipped.the_twins_painful_touch and action.mind_flay.lastCast < max( action.dark_ascension.lastCast, action.void_eruption.lastCast ) then
                         if debuff.shadow_word_pain.up and active_dot.shadow_word_pain < min( 4, active_enemies ) then
@@ -574,7 +597,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                         addStack( "empty_mind", nil, 3 )
                     end
                 end
-                channelSpell( "mind_flay" )
             end,
         },
         
@@ -582,16 +604,27 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         mind_sear = {
             id = 48045,
             cast = 3,
-            channeled = true,
-            breakable = true,
             cooldown = 0,
             gcd = "spell",
+
+            spend = 0,
+            spendType = "insanity",
             
+            channeled = true,
+            breakable = true,
+            breakchannel = function ()
+                removeDebuff( "target", "mind_sear" )
+            end,
+            prechannel = true,
+
             startsCombat = true,
             texture = 237565,
+
+            aura = 'mind_sear',
             
             handler = function ()
                 applyDebuff( "target", "mind_sear" )
+                channelSpell( "mind_sear" )
             end,
         },
         
@@ -828,6 +861,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             
             startsCombat = true,
             texture = 136207,
+
+            cycle = "shadow_word_pain",
             
             handler = function ()
                 applyDebuff( "target", "shadow_word_pain" )
@@ -846,7 +881,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             velocity = 15,
 
-            spend = -15,
+            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -15 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) * ( debuff.surrendered_to_madness.up and 0 or 1 ) end,
             spendType = "insanity",
             
             startsCombat = true,
@@ -884,9 +919,12 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 0,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 136200,
-            
+
+            essential = true,
+            nobuff = 'shadowform',
+
             handler = function ()
                 applyBuff( "shadowform" )
             end,
@@ -956,6 +994,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             
             startsCombat = true,
             texture = 135978,
+
+            cycle = 'vampiric_touch',
             
             handler = function ()
                 applyDebuff( "target", "vampiric_touch" )
@@ -985,6 +1025,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             startsCombat = true,
             texture = 1035040,
             
+            velocity = 40,
             buff = "voidform",
             bind = "void_eruption",
 
@@ -1029,12 +1070,12 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             startsCombat = true,
             texture = 1386551,
 
+            aura = "void_torrent",
             talent = "void_torrent",
             buff = "voidform",
 
             handler = function ()
-                -- applies voidform (194249)
-                -- applies void_torrent (263165)
+                applyDebuff( "target", "void_torrent" )
             end,
         },
     } )
