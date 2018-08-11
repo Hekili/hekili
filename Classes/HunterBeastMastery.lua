@@ -866,7 +866,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             essential = true,
 
-            usable = function () return not talent.lone_wolf.enabled and not pet.exists end,
+            usable = function () return not pet.exists end,
             handler = function ()
                 summonPet( 'made_up_pet', 3600, 'ferocity' )
             end,
