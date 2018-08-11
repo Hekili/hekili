@@ -589,8 +589,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                     state.delay = wait_time
 
-                    if wait_time >= rWait then
-                        if debug then self:Debug( "The action is not ready in time (%.2f > %.2f).", wait_time, rWait ) end
+                    if rWait - wait_time <= 0.05 then
+                        if debug then self:Debug( "The action is not ready in time (%.2f vs. %.2f ) - padded by 0.05s.", wait_time, rWait ) end
                     else
                         if state.channeling then
                             if debug then self:Debug( "NOTE:  We are channeling ( %s ) until %.2f.", state.player.channelSpell, state.player.channelEnd - state.query_time ) end
