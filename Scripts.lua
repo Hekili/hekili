@@ -761,6 +761,11 @@ local newModifiers = {
     value = true,
     value_else = true,
     wait = true,
+    interrupt = true,
+    interrupt_immediate = true,
+    interrupt_if = true,
+    chain = true,
+    early_chain_if = true
 }
 
 
@@ -869,6 +874,18 @@ local function ConvertScript( node, hasModifiers, noisy )
                 output.Modifiers[ name ] = e
             end
         end
+    end
+
+
+    -- This approach REALLY requires 
+
+    local ability = node.action
+    ability = ability and class.abilities[ ability ]
+
+    if ability and ability.channeled then
+        if output.Modifiers.chain then ability.funcs.chain = output.Modifiers.chain end
+        if output.Modifiers.interrupt then ability.funcs.interrupt = output.Modifiers.interrupt end
+        if output.Modifiers.interrupt_if then ability.funcs.interrupt_if = output.Modifiers.interrupt_if end
     end
 
     return output
@@ -1024,6 +1041,16 @@ local function scriptLoader()
     if not scriptsLoaded then scripts:LoadScripts() end
 end
 
+
+local channelModifiers = {
+    interrupt = 1,
+    interrupt_if = 1,
+    interrupt_immediate = 1,
+    chain = 1,
+    early_chain_if = 1,
+}
+
+
 function scripts:LoadScripts()
     if not Hekili.PLAYER_ENTERING_WORLD then
         C_Timer.After( 1, scriptLoader )
@@ -1032,11 +1059,13 @@ function scripts:LoadScripts()
 
     local profile = Hekili.DB.profile
     wipe( self.DB )
+    wipe( self.Channels )
 
     state.reset()
 
     for pack, pData in pairs( profile.packs ) do
-        if pData.spec and class.specs[ pData.spec ] then
+        local specData = pData.spec and class.specs[ pData.spec ]
+        if specData then
             for list, lData in pairs( pData.lists ) do
                 for action, data in ipairs( lData ) do
                     local scriptID = pack .. ":" .. list .. ":" .. action
@@ -1065,6 +1094,25 @@ function scripts:LoadScripts()
                             end
                         end
                     end
+
+                    local ability = data.action and specData.abilities[ data.action ]
+                    if ability and ability.channeled then
+                        if not self.Channels[ pack ] then self.Channels[ pack ] = {} end
+                        if not self.Channels[ pack ][ data.action ] then 
+                            self.Channels[ pack ][ data.action ] = {}
+                        end
+
+                        local cInfo = self.Channels[ pack ][ data.action ]
+
+                        -- This will load the channel criteria for the first entry for this ability in any of the action lists.
+                        -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
+                        -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
+
+                        for k in pairs( channelModifiers ) do
+                            if script.Modifiers[ k ] and not cInfo[ k ] then cInfo[ k ] = script.Modifiers[ k ] end
+                        end
+                    end
+
                     self.DB[ scriptID ] = script
                 end
             end
