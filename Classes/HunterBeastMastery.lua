@@ -864,6 +864,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = false,
             texture = 'Interface\\ICONS\\Ability_Hunter_BeastCall',
 
+            essential = true,
+
             usable = function () return not talent.lone_wolf.enabled and not pet.exists end,
             handler = function ()
                 summonPet( 'made_up_pet', 3600, 'ferocity' )

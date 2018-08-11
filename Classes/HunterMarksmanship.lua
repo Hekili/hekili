@@ -687,7 +687,27 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 if talent.steady_focus.enabled then applyBuff( "steady_focus", 12, min( 2, buff.steady_focus.stack + 1 ) ) end
             end,
         },
+
         
+        summon_pet = {
+            id = 883,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = 0,
+            spendType = "focus",
+
+            startsCombat = false,
+            essential = true,
+            texture = function () return GetStablePetInfo(1) or 'Interface\\ICONS\\Ability_Hunter_BeastCall' end,
+
+            usable = function () return false and not pet.exists end, -- turn this into a pref!
+            handler = function ()
+                summonPet( 'made_up_pet', 3600, 'ferocity' )
+            end,
+        },
+
 
         survival_of_the_fittest = {
             id = 281195,

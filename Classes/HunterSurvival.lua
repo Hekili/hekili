@@ -914,7 +914,28 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 applyDebuff( "target", "steel_trap" )
             end,
         },
+
         
+        summon_pet = {
+            id = 883,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = 0,
+            spendType = "focus",
+
+            startsCombat = false,
+            texture = 'Interface\\ICONS\\Ability_Hunter_BeastCall',
+
+            essential = true,
+
+            usable = function () return not pet.exists end,
+            handler = function ()
+                summonPet( 'made_up_pet', 3600, 'ferocity' )
+            end,
+        },
+
 
         tar_trap = {
             id = 187698,
