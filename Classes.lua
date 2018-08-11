@@ -2049,6 +2049,7 @@ local function runHandler( key, no_start )
         return
     end
 
+    if state.channeling then state.stopChanneling() end
     if ability.handler then ability.handler() end
 
     state.prev.last = key
