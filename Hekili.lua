@@ -127,12 +127,13 @@ Hekili.Class = {
     items = {},
     range = 8,
 	settings = {},
-	stances = {},
+    stances = {},
 	toggles = {}
 }
 
 Hekili.Scripts = {
-    DB = {}
+    DB = {},
+    Channels = {}
 }
 
 Hekili.State = {}
