@@ -1492,7 +1492,6 @@ local mt_state = {
             return 0
             
         elseif k == 'remains' then
-            print ( "remains", t.buff[ aura_name ], app, app.remains )
             if app then return app.remains end
             return 0
             
