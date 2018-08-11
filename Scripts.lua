@@ -876,18 +876,6 @@ local function ConvertScript( node, hasModifiers, noisy )
         end
     end
 
-
-    -- This approach REALLY requires 
-
-    local ability = node.action
-    ability = ability and class.abilities[ ability ]
-
-    if ability and ability.channeled then
-        if output.Modifiers.chain then ability.funcs.chain = output.Modifiers.chain end
-        if output.Modifiers.interrupt then ability.funcs.interrupt = output.Modifiers.interrupt end
-        if output.Modifiers.interrupt_if then ability.funcs.interrupt_if = output.Modifiers.interrupt_if end
-    end
-
     return output
 end
 
