@@ -930,12 +930,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 46584,
             cast = 0,
             cooldown = 30,
-            gcd = "spell",
+            gcd = "spell",            
             
             startsCombat = false,
             texture = 1100170,
+
+            essential = true, -- new flag, will allow recasting even in precombat APL.
             
-            usable = function () return not pet.exists end,
+            usable = function () return not pet.alive end,
             handler = function ()
                 summonPet( "ghoul", 3600 )
                 if talent.all_will_serve.enabled then summonPet( "skeleton", 3600 ) end
