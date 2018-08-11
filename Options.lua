@@ -2839,7 +2839,8 @@ do
         self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
         self.DB.profile.specs[ spec ][ option ] = val
 
-        if option == "package" then self:ForceUpdate() end
+        if option == "package" then self:ForceUpdate()
+        elseif option == "enabled" then ns.StartConfiguration() end
     end
 
 
