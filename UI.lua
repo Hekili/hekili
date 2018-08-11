@@ -668,7 +668,7 @@ do
     local LSR = LibStub("SpellRange-1.0")
 
     local function Display_OnUpdate( self, elapsed )
-        if not self.Recommendations then
+        if not self.Recommendations or not Hekili.PLAYER_ENTERING_WORLD then
             return
         end
 
@@ -807,49 +807,48 @@ do
                 local r = self.Recommendations[ i ]
                 local a = class.abilities[ r.actionName ]
 
-                if not a then
-                    break
-                end
+                if a and a.id then
+                    local outOfRange
 
-                local outOfRange
-
-                if conf.range.enabled then
-                    if conf.range.type == "melee" and UnitExists( "target" ) then
-                        outOfRange = ( LRC:GetRange( "target" ) or 50 ) > 7
-                    elseif conf.range.type == "ability" then
-                        if a.item then
-                            outOfRange = UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and IsItemInRange( a.item, "target" ) == false
-                        else
-                            outOfRange = LSR.IsSpellInRange( a.range and class.abilities[ a.range ].name or a.name, "target") == 0
+                    if conf.range.enabled then
+                        if conf.range.type == "melee" and UnitExists( "target" ) then
+                            outOfRange = ( LRC:GetRange( "target" ) or 50 ) > 7
+                        elseif conf.range.type == "ability" then
+                            if a.item then
+                                outOfRange = UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and IsItemInRange( a.item, "target" ) == false
+                            else
+                                local name = a.range and class.abilities[ a.range ] and class.abilities[ a.range ].name
+                                outOfRange = LSR.IsSpellInRange( name or a.name, "target") == 0
+                            end
                         end
                     end
-                end
 
-                if outOfRange and not b.outOfRange then
-                    b.Texture:SetDesaturated(true)
-                    b.Texture:SetVertexColor(1.0, 0.0, 0.0, 1.0)
-                    b.outOfRange = true
-                elseif b.outOfRange and not outOfRange then
-                    b.Texture:SetDesaturated(false)
-                    b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
-                    b.outOfRange = false
-                end
-
-                if not b.outOfRange then
-                    local unusable
-
-                    if a.item then
-                        unusable = not IsUsableItem(a.item)
-                    else
-                        _, unusable = IsUsableSpell(a.name)
+                    if outOfRange and not b.outOfRange then
+                        b.Texture:SetDesaturated(true)
+                        b.Texture:SetVertexColor(1.0, 0.0, 0.0, 1.0)
+                        b.outOfRange = true
+                    elseif b.outOfRange and not outOfRange then
+                        b.Texture:SetDesaturated(false)
+                        b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
+                        b.outOfRange = false
                     end
 
-                    if unusable and not b.unusable then
-                        b.Texture:SetVertexColor(0.4, 0.4, 0.4, 1.0)
-                        b.unusable = true
-                    elseif b.unusable and not unusable then
-                        b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
-                        b.unusable = false
+                    if not b.outOfRange then
+                        local unusable
+
+                        if a.item then
+                            unusable = not IsUsableItem(a.item)
+                        else
+                            _, unusable = IsUsableSpell(a.name)
+                        end
+
+                        if unusable and not b.unusable then
+                            b.Texture:SetVertexColor(0.4, 0.4, 0.4, 1.0)
+                            b.unusable = true
+                        elseif b.unusable and not unusable then
+                            b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
+                            b.unusable = false
+                        end
                     end
                 end
             end
