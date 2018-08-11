@@ -114,6 +114,7 @@ state.swings = {
     oh_speed = select( 2, UnitAttackSpeed( 'player' ) ) or 2.6,
     oh_projected = GetTime() + 3.9
 }
+state.system = {}
 state.table = table
 state.talent = {}
 state.target = {
@@ -400,6 +401,7 @@ state.FindUnitDebuffByID = ns.FindUnitDebuffByID
 state.GetItemCount = GetItemCount
 state.GetShapeshiftForm = GetShapeshiftForm
 state.GetShapeshiftFormInfo = GetShapeshiftFormInfo
+state.GetStablePetInfo = GetStablePetInfo
 state.GetTime = GetTime
 state.GetTotemInfo = GetTotemInfo
 state.IsPlayerSpell = IsPlayerSpell
@@ -1002,9 +1004,6 @@ do
 
     state.recheckTimes = {}
 
-    local lastRecheckAbility = nil
-    local lastRecheckTime = 0
-
     local function recheckHelper( t, ... )
         local n = select( "#", ... )
 
@@ -1017,15 +1016,113 @@ do
     end
 
 
-    function state.recheck( ability, script, stack )
+    local function channelInfo( ability )
+        if state.system.packName and scripts.Channels[ state.system.packName ] then
+            return scripts.Channels[ state.system.packName ][ state.player.channelSpell ], class.auras[ state.player.channelSpell ]
+        end
+    end
 
+
+    function state.recheck( ability, script, stack )
         local times = state.recheckTimes
         table_wipe( times )
 
-        lastRecheckAbility = ability
-        lastRecheckTime = state.query_time
+        local debug = Hekili.ActiveDebug
+        if debug then Hekili:Debug( "RECHECK - %s - %s", tostring( channeler ), ability ) end
 
-        times[1] = 0.01 + ( state.gcd * 0.5 )
+
+                
+        --[[ if channeler and aura then
+            local spell = state.channel
+            local remains = state.channel_remains
+            local aura = class.auras[ spell ]
+            local tick, duration = aura.tick_time, aura.duration
+
+            table.insert( times, remains )
+
+            if 
+            
+            if ability == spell then
+                -- We are looking at the spell we are channeling.
+                
+                -- Chain:  If true, try to chain at last tick.
+                if channeler.chain and channeler.chain() then
+                    if debug then Hekili:Debug( "CHANNELED RECHECK: CHAIN" ) end
+                    if remains - tick > minTime then
+                        minTime = remains - tick
+                        table.insert( times, 0.01 + minTime )
+                    end
+                end
+
+                -- Early Chain If:  Check after GCD.
+                if channeler.early_chain_if then
+                    if debug then Hekili:Debug( "CHANNELED RECHECK: EARLY CHAIN IF" ) end
+                    if state.cooldown.global_cooldown.remains > minTime then
+                        minTime = state.cooldown.global_cooldown.remains
+                        table.insert( times, 0.01 + minTime )
+                    end
+
+                    for i = 1, floor( duration / tick ) do
+                        if remains - ( i * tick ) > minTime then
+                            table.insert( times, 0.01 + remains - ( i * tick ) )
+                        else
+                            break
+                        end
+                    end
+                end
+
+            else
+                -- We are looking at other spells; higher priority spells can interrupt after a tick.
+                -- SimC would check at ticks, but this is really unpleasant in-game.
+                if channeler.interrupt and channeler.interrupt() then
+                    if debug then Hekili:Debug( "CHANNELED RECHECK: INTERRUPT" ) end
+                    if state.cooldown.global_cooldown.remains > minTime then
+                        minTime = state.cooldown.global_cooldown.remains
+                        table.insert( times, 0.01 + minTime )
+                    end
+
+                    for i = 1, floor( duration / tick ) do
+                        if remains - ( i * tick ) > minTime then
+                            table.insert( times, 0.01 + remains - ( i * tick ) )
+                        else
+                            break
+                        end
+                    end
+
+                elseif channeler.interrupt_if then
+                    -- If interrupt_immediate is flagged, ignore the GCD.
+                    if channeler.interrupt_immediate and channeler.interrupt_immediate() then
+                        if debug then Hekili:Debug( "CHANNELED RECHECK: INTERRUPT_IMMED" ) end
+                        for i = 1, floor( duration / tick ) do
+                            if remains - ( i * tick ) > minTime then
+                                table.insert( times, 0.01 + remains - ( i * tick ) )
+                            else
+                                break
+                            end
+                        end
+
+                    else
+                        if debug then Hekili:Debug( "CHANNELED RECHECK: INTERRUPT_IF" ) end
+                        if state.cooldown.global_cooldown.remains > minTime then
+                            minTime = state.cooldown.global_cooldown.remains
+                            table.insert( times, 0.01 + minTime )
+                        end
+                        for i = 1, floor( duration / tick ) do
+                            if remains - ( i * tick ) > minTime then
+                                table.insert( times, 0.01 + remains - ( i * tick ) )
+                            else
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+        end ]]
+
+        -- Not channeling.
+        -- if state.gcd * 0.5 > minTime then
+        --    table.insert( times, 0.01 + ( state.gcd * 0.5 ) )
+        --end
 
         if script and script.Recheck then
             recheckHelper( times, script.Recheck() )
@@ -1041,10 +1138,32 @@ do
                 end
             end
         end
-                        
+
+        if state.channeling then
+            local aura = class.auras[ state.channel ]
+            local remains = state.channel_remains
+            
+            if aura and aura.tick_time then
+                -- Put tick times into recheck.
+                local i = 1
+                while ( true ) do
+                    if remains - ( i * aura.tick_time ) > 0 then table.insert( times, 0.01 + remains - ( i * aura.tick_time ) )
+                    else break end
+                    i = i + 1
+                end
+
+                for i = #times, 1, -1 do
+                    local time = times[ i ]
+
+                    if ( ( remains - time ) / aura.tick_time ) % 1 <= 0.5 then
+                        table.remove( times, i )
+                    end
+                end
+            end
+        end
+
         table_sort( times )
     end
-
 end
 
 
@@ -1140,6 +1259,9 @@ local mt_state = {
         elseif k == 'channel' then
             return t.channeling and t.player.channelSpell or nil
             
+        elseif k == 'channel_remains' then
+            return t.channeling and ( t.player.channelEnd - t.query_time ) or 0
+
         elseif k == 'ranged' then
             return false
             
@@ -1344,7 +1466,7 @@ local mt_state = {
 
         if k == 'duration' then            
             return aura and aura.duration or 30
-            
+        
         elseif k == 'refreshable' then
             if app then return app.remains < 0.3 * aura.duration end
             return false
@@ -1358,11 +1480,11 @@ local mt_state = {
             return false
             
         elseif k == 'ticks' then
-            if app then return ( app.duration or 30 ) / ( app.tick_time or ( 3 * t.haste ) ) end
-            return 10
+            if app then return 1 + floor( ( app.duration or 30 ) / ( app.tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
+            return 0
             
         elseif k == 'ticks_remain' then
-            if app then return ( app.remains / ( app.tick_time or ( 3 * t.haste ) ) ) end
+            if app then return floor( app.remains / ( app.tick_time or ( 3 * t.haste ) ) ) end
             return 0
 
         elseif k == 'tick_time_remains' then
@@ -1370,11 +1492,12 @@ local mt_state = {
             return 0
             
         elseif k == 'remains' then
+            print ( "remains", t.buff[ aura_name ], app, app.remains )
             if app then return app.remains end
             return 0
             
         elseif k == 'tick_time' then
-            if app then return ( app.up and ( aura.tick_time or ( 3 * t.haste ) ) or 0 ) end
+            if aura and aura.tick_time then return aura.tick_time end
             return 0
 
         elseif k == 'duration' then
@@ -2484,8 +2607,13 @@ local mt_default_buff = {
         elseif k == 'stack_pct' then
             if t.up then return ( 100 * t.count / t.max_stack ) else return 0 end
 
+        elseif k == 'ticks' then
+            if t.up then return 1 + ( ( class.auras[ t.key ].duration or ( 30 * state.haste ) ) / ( class.auras[ t.key ].tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
+            return 0
+            
         elseif k == 'ticks_remain' then
-            if t.up then return math.ceil( t.remains / t.tick_time ) else return 0 end
+            if t.up then return math.floor( t.remains / t.tick_time ) end
+            return 0
         
         else
             if class.auras[ t.key ] and class.auras[ t.key ][ k ] ~= nil then
@@ -2980,6 +3108,10 @@ local mt_default_debuff = {
         elseif k == 'ticking' then
             return t.up
 
+        elseif k == 'ticks' then
+            if t.up then return floor( 1 + ( ( class_aura.duration or ( 30 * state.haste ) ) / ( class_aura.tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain ) end
+            return 0
+            
         elseif k == 'ticks_remain' then
             if not class_aura.tick_time then return t.remains end
             return floor( t.remains / class_aura.tick_time )       
@@ -3068,9 +3200,8 @@ ns.metatables.mt_debuffs = mt_debuffs
 -- Needs review.
 local mt_default_action = {
     __index = function(t, k)
-
-        local aura = class.abilities[ t.action ].aura or t.action
-        local ability = class.abilities[ t.action ]
+        local ability = t.action and class.abilities[ t.action ]
+        local aura = ability and ability.aura or t.action
 
         if k == 'enabled' then
             return state:IsKnown( t.action )            
@@ -3117,10 +3248,10 @@ local mt_default_action = {
             return ( state.dot[ aura ].ticking )
             
         elseif k == 'ticks' then
-            return math.ceil( state.dot[ aura ].duration / ( class.auras[ aura ].tick_time or ( 3 * state.haste ) ) )
+            return 1 + ( state.dot[ aura ].duration or ( 30 * state.haste ) / class.auras[ aura ].tick_time or ( 3 * state.haste ) ) - t.ticks_remain
             
         elseif k == 'ticks_remain' then
-            return math.ceil( state.dot[ aura ].remains / ( class.auras[ aura ].tick_time or ( 3 * state.haste ) ) )
+            return state.dot[ aura ].remains / ( class.auras[ aura ].tick_time or ( 3 * state.haste ) )
             
         elseif k == 'remains' then
             return ( state.dot[ aura ].remains )
@@ -3636,7 +3767,7 @@ function state.reset( dispName )
         state.predictionsOff[i] = nil
     end
 
-    local last_act = state.player.lastcast and state.action[ state.player.lastcast ]
+    local last_act = state.player.lastcast and class.abilities[ state.player.lastcast ]
     if last_act and last_act.startsCombat and state.combat == 0 and state.now - last_act.lastCast < 1 then
         state.false_start = last_act.lastCast - 0.1
     end
@@ -3713,6 +3844,9 @@ function state.reset( dispName )
         applyBuff( "player_casting", cast_time )
     end
 
+    state.min_recheck = 0
+
+    
     ns.callHook( "reset_precast" )
 
     
