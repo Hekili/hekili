@@ -729,6 +729,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             gcd = "spell",
 
             startsCombat = false,
+            essential = true,
+
+            texture = 132274,
             nobuff = "crippling_poison",
 
             handler = function ()
@@ -744,6 +747,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             gcd = "spell",
 
             startsCombat = false,
+            essential = true,
+            texture = 132290,
+
             nobuff = "deadly_poison",
             
             handler = function ()
@@ -1208,13 +1214,43 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             gcd = "spell",
 
             startsCombat = false,
+            essential = true,
 
+            texture = 134197,
             nobuff = "wound_poison",
 
             handler = function ()
                 applyBuff( "wound_poison" )
             end,
+        },
+
+
+        apply_poison = {
+            name = _G.MINIMAP_TRACKING_VENDOR_POISON,
+            cast = 1.5,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = false,
+            essential = true,
+
+            texture = function ()
+                if buff.deadly_poison.down then return class.abilities.deadly_poison.texture end
+                if buff.crippling_poison.down then return class.abilities.crippling_poison.texture end
+                return class.abilities.wound_poison.texture
+            end,
+
+            usable = function ()
+                return buff.deadly_poison.down or ( buff.wound_poison.down and buff.crippling_poison.down )
+            end,
+            handler = function ()
+                if buff.deadly_poison.down then applyBuff( "deadly_poison" )
+                elseif buff.crippling_poison.down then applyBuff( "crippling_poison" )
+                elseif buff.wound_poison.down then applyBuff( "wound_poison" ) end
+            end,
         }
+
+
     } )
 
 
