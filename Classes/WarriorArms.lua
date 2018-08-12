@@ -11,7 +11,7 @@ local state = Hekili.State
 if UnitClassBase( 'player' ) == 'WARRIOR' then
     local spec = Hekili:NewSpecialization( 71 )
 
-    local base_rage_gen, arms_rage_mult = 1.75, 4.286
+    local base_rage_gen, arms_rage_mult = 1.75, 4.000
 
     spec:RegisterResource( Enum.PowerType.Rage, {
         mainhand = {
@@ -25,7 +25,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             interval = 'mainhand_speed',
 
             value = function ()
-                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * state.swings.mainhand_speed
+                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * state.swings.mainhand_speed / state.haste
             end,
         }
     } )
