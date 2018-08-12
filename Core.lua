@@ -32,7 +32,7 @@ local recommendChange = {}
 -- checkImports()
 -- Remove any displays or action lists that were unsuccessfully imported.
 local function checkImports()
-                end
+end
 ns.checkImports = checkImports
 
 
@@ -441,7 +441,7 @@ function Hekili:CheckChannel( ability, prio )
     local remains = state.channel_remains
 
     if channel == ability then
-        if prio <= remains then
+        if prio <= remains + 0.01 then
             return false
         end
         if modifiers.early_chain_if then
@@ -673,8 +673,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
                                             break
                                         end ]]
-                                    end
                                     
+                                    else
+                                        if debug then self:Debug( "Action list (%s) not found.  Skipping.", name ) end
+
+                                    end                                    
                                 end
                                 
                             else
@@ -771,7 +774,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                 end
                                             end
 
-                                            if entry.action == state.channel then
+                                            -- Need to revisit this, make sure that lower priority abilities are only tested after the channel is over.
+                                            if entry.action == state.channel and aScriptPass then
                                                 if rWait <= state.player.channelEnd then
                                                     -- If a higher priority ability is selected, we should stop here.
                                                     if debug then self:Debug( "We have selected an ability that can break or finish our channel; stop here." ) end
