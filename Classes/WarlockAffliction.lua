@@ -134,9 +134,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         drain_soul = {
             id = 198590,
-            duration = 5,
+            duration = function () return 5 * haste end,
             max_stack = 1,
-            breakable = true,
+            tick_time = function () return haste end,
         },
         eye_of_kilrogg = {
             id = 126,
@@ -297,7 +297,15 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     end )
 
 
-
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
+        if sourceGUID == GUID and spellName == "Seed of Corruption" then
+            if subtype == "SPELL_CAST_SUCCESS" then
+                action.seed_of_corruption.flying = GetTime()
+            elseif subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" then
+                action.seed_of_corruption.flying = 0
+            end
+        end
+    end )
 
 
     spec:RegisterGear( 'tier21', 152174, 152177, 152172, 152176, 152173, 152175 )
@@ -807,6 +815,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
             
             startsCombat = true,
+            velocity = 30,
             
             recheck = function ()
                 return dot.corruption.remains - ( cast_time + travel_time ), dot.seed_of_corruption.remains
@@ -828,6 +837,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
+            velocity = 20,
+
+            notalent = "drain_soul",
+            cycle = function () return talent.shadow_embrace.enabled and "shadow_embrace" or nil end,
             
             handler = function ()
                 if talent.shadow_embrace.enabled then
