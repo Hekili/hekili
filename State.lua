@@ -2570,26 +2570,19 @@ local mt_default_buff = {
             return t[k]
             
         elseif k == 'up' or k == 'ticking' or k == 'react' then
-            return t.count > 0 and t.expires >= state.query_time
+            return t.applied <= state.query_time and t.expires >= state.query_time
 
-        elseif k == 'i_up' or k == 'rank' then
-            return ( t.count > 0 and t.expires >= state.query_time ) and 1 or 0
-            
         elseif k == 'down' then
-            return t.count == 0 or t.expires < state.query_time 
+            return t.applied > state.query_time or t.expires < state.query_time
             
         elseif k == 'remains' then
-            if t.expires > ( state.query_time ) then
-                return ( t.expires - ( state.query_time ) )
-            else
-                return 0                
-            end
+            return t.up and ( t.expires - state.query_time ) or 0
             
         elseif k == 'refreshable' then
-            return t.remains < 0.3 * aura.duration
+            return t.remains < 0.3 * ( aura.duration or 30 )
 
         elseif k == 'time_to_refresh' then
-            return t.up and ( max( 0, state.query_time - ( 0.3 * aura.duration ) ) ) or 0
+            return t.up and max( 0, t.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
             
         elseif k == 'cooldown_remains' then
             return state.cooldown[ t.key ] and state.cooldown[ t.key ].remains or 0
@@ -2620,7 +2613,7 @@ local mt_default_buff = {
             end
         end
         
-        Error("UNK: " .. k)
+        Error( "UNK: " .. k )
         
     end,
 
@@ -3295,11 +3288,11 @@ local mt_default_action = {
             return a
 
         elseif k == 'in_flight' then
-            if class.abilities[ t.action ].in_flight then
+            if class.abilities[ t.action ].in_flight ~= nil then
                 return class.abilities[ t.action ].in_flight
             end
 
-            for i, spell in pairs( ns.spells_in_flight ) do
+            for i, spell in ipairs( ns.spells_in_flight ) do
                 if spell.key == t.action then
                     return true
                 end

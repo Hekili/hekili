@@ -493,6 +493,7 @@ local lastForceEvent = 'NONE'
 
 local UNIT_POWER_ICD = true
 
+
 function Hekili:ForceUpdate( event )
     for i, d in pairs( ns.UI.Displays ) do
         d.criticalUpdate = true
@@ -547,7 +548,7 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
         end
 
         table.insert( spells_in_flight, 1, {
-            spell = class.abilities[ spellID ].key,
+            key = class.abilities[ spellID ].key,
             time = now + lands
         } )
 
