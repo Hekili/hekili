@@ -875,6 +875,27 @@ all:RegisterAuras( {
         end,
     },
 
+    movement = {
+        duration = 5,
+        max_stack = 1,
+        generate = function ()
+            local m = buff.movement
+
+            if moving then
+                m.count = 1
+                m.expires = query_time + 5
+                m.applied = query_time
+                m.caster = "player"
+                return
+            end
+
+            m.count = 0
+            m.expires = 0
+            m.applied = 0
+            m.caster = "nobody"
+        end,
+    },
+
     -- Why do we have this, again?
     unknown_buff = {},
 
