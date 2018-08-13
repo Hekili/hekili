@@ -748,6 +748,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             
             startsCombat = true,
             texture = 135844,
+
+            velocity = 47,
             
             handler = function ()
                 if not talent.glacial_spike.enabled then removeStack( "icicles" ) end
