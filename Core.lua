@@ -675,7 +675,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         end ]]
                                     
                                     else
-                                        if debug then self:Debug( "Action list (%s) not found.  Skipping.", name ) end
+                                        if debug then self:Debug( "Action list (%s) not found.  Skipping.", name or "no name" ) end
 
                                     end                                    
                                 end
