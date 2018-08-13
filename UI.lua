@@ -1047,8 +1047,6 @@ do
 
                 local expires = start + duration
 
-                if ability.key == "fire_blast" then print( start, duration, gStart, gDuration ) end
-
                 if ability.gcd ~= "off" and ( expires < gExpires ) then
                     start, duration = gStart, gDuration
                 end
