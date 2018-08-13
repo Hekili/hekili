@@ -973,6 +973,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spend = 1,
             spendType = "soul_shards",
 
+            essential = true,
+
             usable = function () return not pet.alive and not buff.grimoire_of_sacrifice.up end,
             handler = function () summonPet( "felhunter" ) end,
 

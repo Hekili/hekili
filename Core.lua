@@ -930,7 +930,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     state.selectionTime = state.delay
 
                                                     if debug then
-                                                        self:Debug( "Action Chosen: %s at %.2f!", rAction, state.delay )
+                                                        self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
                                                     end
 
                                                     if entry.cycle_targets == 1 and state.active_enemies > 1 then
