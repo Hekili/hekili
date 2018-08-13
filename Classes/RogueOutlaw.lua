@@ -875,7 +875,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 236283,
             
             handler = function ()
-                applyBuff( 'target', 'tricks_of_the_trade', 6)
+                applyBuff( "tricks_of_the_trade" )
             end,
         },
         
