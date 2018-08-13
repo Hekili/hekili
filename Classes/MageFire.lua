@@ -210,6 +210,24 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         },
         mirror_image = {
             id = 55342,
+            duration = 40,
+            max_stack = 3,
+            generate = function ()
+                local mi = buff.mirror_image
+
+                if action.mirror_image.lastCast > 0 and query_time < action.mirror_image.lastCast + 40 then
+                    mi.count = 1
+                    mi.applied = action.mirror_image.lastCast
+                    mi.expires = mi.applied + 40
+                    mi.caster = "player"
+                    return
+                end
+
+                mi.count = 0
+                mi.applied = 0
+                mi.expires = 0
+                mi.caster = "nobody"
+            end,
         },
         pyroclasm = {
             id = 269651,
@@ -235,6 +253,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             type = "Magic",
             max_stack = 1,
         },
+
+        -- Azerite Powers
+        preheat = {
+            id = 273333,
+            duration = 30,
+            max_stack = 1,
+        }
     } )
 
 
@@ -284,6 +309,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             talent = "blast_wave",
             
+            usable = function () return target.distance < 8 end,
             handler = function ()
                 applyDebuff( "target", "blast_wave" )
             end,
@@ -761,6 +787,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             handler = function ()
                 if talent.frenetic_speed.enabled then applyBuff( "frenetic_speed" ) end
                 applyDebuff( "target", "ignite" )
+
+                if azerite.preheat.enabled then applyDebuff( "target", "preheat" ) end
             end,
         },
         
