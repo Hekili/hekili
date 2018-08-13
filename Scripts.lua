@@ -1072,7 +1072,7 @@ function scripts:LoadScripts()
                                 if lua:find( k ) then script.TimeSensitive = true; break end
                             end
 
-                            if lua:find( "rune" ) then script.TimeSensitive = true; break end
+                            if lua:find( "rune" ) then script.TimeSensitive = true end
 
                             if not script.TimeSensitive then
                                 -- Check for other time-sensitive variables.
