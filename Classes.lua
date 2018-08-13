@@ -464,11 +464,12 @@ local HekiliSpecMixin = {
 
 function Hekili:RestoreDefaults()
     local p = self.DB.profile
+    local changed = false
 
     for k, v in pairs( class.packs ) do
         local existing = rawget( p.packs, k )
 
-        if not existing or not existing.version or existing.version < v.version then
+        if not existing or not existing.version or existing.version < v.version then            
             local data = self:DeserializeActionPack( v.import )
 
             if data and type( data ) == 'table' then
@@ -476,10 +477,13 @@ function Hekili:RestoreDefaults()
                 data.payload.version = v.version
                 data.payload.date = v.version
                 data.payload.builtIn = true
+                changed = true
             end
         
         end
     end
+
+    if changed then self:LoadScripts() end
 end
 
 

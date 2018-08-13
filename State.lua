@@ -1028,101 +1028,6 @@ do
         table_wipe( times )
 
         local debug = Hekili.ActiveDebug
-        if debug then Hekili:Debug( "RECHECK - %s - %s", tostring( channeler ), ability ) end
-
-
-                
-        --[[ if channeler and aura then
-            local spell = state.channel
-            local remains = state.channel_remains
-            local aura = class.auras[ spell ]
-            local tick, duration = aura.tick_time, aura.duration
-
-            table.insert( times, remains )
-
-            if 
-            
-            if ability == spell then
-                -- We are looking at the spell we are channeling.
-                
-                -- Chain:  If true, try to chain at last tick.
-                if channeler.chain and channeler.chain() then
-                    if debug then Hekili:Debug( "CHANNELED RECHECK: CHAIN" ) end
-                    if remains - tick > minTime then
-                        minTime = remains - tick
-                        table.insert( times, 0.01 + minTime )
-                    end
-                end
-
-                -- Early Chain If:  Check after GCD.
-                if channeler.early_chain_if then
-                    if debug then Hekili:Debug( "CHANNELED RECHECK: EARLY CHAIN IF" ) end
-                    if state.cooldown.global_cooldown.remains > minTime then
-                        minTime = state.cooldown.global_cooldown.remains
-                        table.insert( times, 0.01 + minTime )
-                    end
-
-                    for i = 1, floor( duration / tick ) do
-                        if remains - ( i * tick ) > minTime then
-                            table.insert( times, 0.01 + remains - ( i * tick ) )
-                        else
-                            break
-                        end
-                    end
-                end
-
-            else
-                -- We are looking at other spells; higher priority spells can interrupt after a tick.
-                -- SimC would check at ticks, but this is really unpleasant in-game.
-                if channeler.interrupt and channeler.interrupt() then
-                    if debug then Hekili:Debug( "CHANNELED RECHECK: INTERRUPT" ) end
-                    if state.cooldown.global_cooldown.remains > minTime then
-                        minTime = state.cooldown.global_cooldown.remains
-                        table.insert( times, 0.01 + minTime )
-                    end
-
-                    for i = 1, floor( duration / tick ) do
-                        if remains - ( i * tick ) > minTime then
-                            table.insert( times, 0.01 + remains - ( i * tick ) )
-                        else
-                            break
-                        end
-                    end
-
-                elseif channeler.interrupt_if then
-                    -- If interrupt_immediate is flagged, ignore the GCD.
-                    if channeler.interrupt_immediate and channeler.interrupt_immediate() then
-                        if debug then Hekili:Debug( "CHANNELED RECHECK: INTERRUPT_IMMED" ) end
-                        for i = 1, floor( duration / tick ) do
-                            if remains - ( i * tick ) > minTime then
-                                table.insert( times, 0.01 + remains - ( i * tick ) )
-                            else
-                                break
-                            end
-                        end
-
-                    else
-                        if debug then Hekili:Debug( "CHANNELED RECHECK: INTERRUPT_IF" ) end
-                        if state.cooldown.global_cooldown.remains > minTime then
-                            minTime = state.cooldown.global_cooldown.remains
-                            table.insert( times, 0.01 + minTime )
-                        end
-                        for i = 1, floor( duration / tick ) do
-                            if remains - ( i * tick ) > minTime then
-                                table.insert( times, 0.01 + remains - ( i * tick ) )
-                            else
-                                break
-                            end
-                        end
-                    end
-                end
-            end
-        end ]]
-
-        -- Not channeling.
-        -- if state.gcd * 0.5 > minTime then
-        --    table.insert( times, 0.01 + ( state.gcd * 0.5 ) )
-        --end
 
         if script and script.Recheck then
             recheckHelper( times, script.Recheck() )
@@ -3836,18 +3741,15 @@ function state.reset( dispName )
         applyBuff( "player_casting", cast_time )
     end
 
-    state.min_recheck = 0
-
-    
+    state.auto_advance = true
     ns.callHook( "reset_precast" )
-
     
     local ability = casting and class.abilities[ casting ]
 
     if cast_time and casting and ( not ability or not ability.breakable ) then
         
         -- print( format( "Advancing %.2f to cast %s.", cast_time, casting ) )
-        state.advance( cast_time )
+        if state.auto_advance then state.advance( cast_time ) end
         
         if ability then            
             if not ability.channeled then
