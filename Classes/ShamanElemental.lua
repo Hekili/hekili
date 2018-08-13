@@ -121,6 +121,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 eb.name = class.abilities.elemental_blast.name or "Elemental Blast"
                 eb.count = count
                 eb.applied = applied
+                eb.expires = applied + 15
                 eb.caster = count > 0 and 'player' or 'nobody'
             end
         },
@@ -900,6 +901,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             gcd = "spell",
 
             talent = 'totem_mastery',
+            essential = true,
             
             startsCombat = false,
             texture = 511726,
