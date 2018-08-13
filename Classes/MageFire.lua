@@ -50,6 +50,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         gladiators_medallion = 3583, -- 208683
         relentless = 3582, -- 196029
         adaptation = 3581, -- 214027
+
         prismatic_cloak = 828, -- 198064
         dampened_magic = 3524, -- 236788
         greater_pyroblast = 648, -- 203286
@@ -114,6 +115,27 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 15,
             type = "Magic",
             max_stack = 10,
+        },
+        fire_blasting = {
+            duration = 0.5,
+            max_stack = 1,
+            generate = function ()
+                local last = action.fire_blast.lastCast
+                local fb = buff.fire_blasting
+
+                if query_time - last < 0.5 then
+                    fb.count = 1
+                    fb.applied = last
+                    fb.expires = last + 0.5
+                    fb.caster = "player"
+                    return
+                end
+
+                fb.count = 0
+                fb.applied = 0
+                fb.expires = 0
+                fb.caster = "nobody"
+            end,
         },
         flamestrike = {
             id = 2120,
@@ -221,6 +243,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             if k == "active" then return talent.firestarter.enabled and target.health.pct > 90 end
         end, state )
     } ) )
+    
+
+    spec:RegisterHook( "reset_precast", function ()
+        auto_advance = false
+    end )
+
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -400,11 +428,15 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             
             startsCombat = true,
             texture = 135807,
+
+            nobuff = "fire_blasting", -- horrible.
             
             handler = function ()
                 if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
                 else applyBuff( "heating_up" ) end
+
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
+                applyBuff( "fire_blasting" )
             end,
         },
         
