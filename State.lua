@@ -1374,7 +1374,7 @@ local mt_state = {
         
         elseif k == 'refreshable' then
             if app then return app.remains < 0.3 * aura.duration end
-            return false
+            return true
 
         elseif k == 'time_to_refresh' then
             if app then return max( 0, app.remains - ( 0.3 * aura.duration ) ) end
