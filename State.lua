@@ -1367,7 +1367,7 @@ local mt_state = {
         local aura_name = ability and ability.aura or t.this_action
         local aura = class.auras[ aura_name ]
         
-        local app = t.buff[ aura_name ].up and t.buff[ aura_name ] or t.debuff[ aura_name ]
+        local app = t.buff[ aura_name ].up and t.buff[ aura_name ] or t.debuff[ aura_name ].up and t.debuff[ aura_name ]
 
         if k == 'duration' then            
             return aura and aura.duration or 30
@@ -1401,7 +1401,7 @@ local mt_state = {
             return 0
             
         elseif k == 'tick_time' then
-            if aura and aura.tick_time then return aura.tick_time end
+            if app and app.tick_time then return app.tick_time end
             return 0
 
         elseif k == 'duration' then
@@ -2933,29 +2933,29 @@ local mt_default_debuff = {
 
         elseif k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if class_aura and class_aura.generate then
-                class_aura.generate()
-                return t[ k ]
-            end
-            
-            local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
-
-            if real then
-                t.name = real.name
-                t.count = real.count
-                t.duration = real.duration
-                t.expires = real.expires
-                t.applied = max( 0, real.expires - real.duration )
-                t.caster = real.caster
-                t.id = real.id
-                t.timeMod = real.timeMod
-                t.v1 = real.v1
-                t.v2 = real.v2
-                t.v3 = real.v3
-                
-                t.unit = real.unit
+                class_aura.generate()                
             else
-                for attr, a_val in pairs( default_debuff_values ) do
-                    t[ attr ] = class.auras[ t.key ] and class.auras[ t.key ][ attr ] or a_val
+            
+                local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
+
+                if real then
+                    t.name = real.name
+                    t.count = real.count
+                    t.duration = real.duration
+                    t.expires = real.expires
+                    t.applied = max( 0, real.expires - real.duration )
+                    t.caster = real.caster
+                    t.id = real.id
+                    t.timeMod = real.timeMod
+                    t.v1 = real.v1
+                    t.v2 = real.v2
+                    t.v3 = real.v3
+                    
+                    t.unit = real.unit
+                else
+                    for attr, a_val in pairs( default_debuff_values ) do
+                        t[ attr ] = class.auras[ t.key ] and class.auras[ t.key ][ attr ] or a_val
+                    end
                 end
             end
             
@@ -3096,7 +3096,7 @@ ns.metatables.mt_debuffs = mt_debuffs
 -- Table of default handlers for actions.
 -- Needs review.
 local mt_default_action = {
-    __index = function(t, k)
+    __index = function( t, k )
         local ability = t.action and class.abilities[ t.action ]
         local aura = ability and ability.aura or t.action
 
@@ -4127,7 +4127,9 @@ ns.hasRequiredResources = function( ability )
     end
     
     return true
-    
+end
+function state:HasRequiredResources( action )
+    return ns.hasRequiredResources( action )
 end
 
 
@@ -4173,7 +4175,7 @@ function state:TimeToReady( action, pool )
         spend = ability.readySpend
     end
 
-    if spend and resource and spend > 0 and spend < 0 then
+    if spend and resource and spend > 0 and spend < 1 then
         spend = spend * self[ resource ].max
     end
 
