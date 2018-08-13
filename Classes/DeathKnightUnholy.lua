@@ -351,7 +351,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         unholy_blight_dot = {
             id = 115994,
             duration = 14,
-            tick_time = 2,
+            tick_time = function () return 2 * haste end,
         },
         unholy_frenzy = {
             id = 207289,
