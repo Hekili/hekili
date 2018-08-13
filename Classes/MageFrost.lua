@@ -11,7 +11,7 @@ local state = Hekili.State
 if UnitClassBase( 'player' ) == 'MAGE' then
     local spec = Hekili:NewSpecialization( 64 )
 
-    spec:RegisterResource( Enum.PowerType.ArcaneCharges )
+    -- spec:RegisterResource( Enum.PowerType.ArcaneCharges )
     spec:RegisterResource( Enum.PowerType.Mana )
     
     -- Talents
@@ -869,25 +869,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         },
         
 
-        --[[ portal_orgrimmar = {
-            id = 11417,
-            cast = 10,
-            cooldown = 60,
-            gcd = "spell",
-            
-            spend = 0.04,
-            spendType = "mana",
-            
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 135744,
-            
-            handler = function ()
-            end,
-        }, ]]
-        
-
         ray_of_frost = {
             id = 205021,
             cast = 5,
@@ -959,6 +940,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = false,
             texture = 609815,
 
+            nobuff = "rune_of_power",
             talent = "rune_of_power",
             
             handler = function ()
