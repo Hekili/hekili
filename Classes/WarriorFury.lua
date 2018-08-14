@@ -197,9 +197,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 8,
             max_stack = 1,
         },
-        meat_cleaver = {
-            id = 280392,
-        },
         piercing_howl = {
             id = 12323,
             duration = 15,
@@ -248,6 +245,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 85739,
             duration = 20,
             max_stack = 2,
+            copy = "meat_cleaver"
         },
     } )
 

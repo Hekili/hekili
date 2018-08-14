@@ -355,11 +355,36 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 15,
             max_stack = 1,
         },
-        thrash = {
+        thrash_bear = {
             id = 192090,
             duration = 15,
             max_stack = 3,
         },
+        thrash_cat ={
+            id = 106830, 
+            duration = function()
+                local x = 15 -- Base duration
+                return talent.jagged_wounds.enabled and x * 0.80 or x
+            end,
+            tick_time = function()
+                local x = 3 -- Base tick time
+                return talent.jagged_wounds.enabled and x * 0.80 or x
+            end,
+        },
+        --[[ thrash = {
+            id = function ()
+                if buff.cat_form.up then return 106830 end
+                return 192090
+            end,
+            duration = function()
+                local x = 15 -- Base duration
+                return talent.jagged_wounds.enabled and x * 0.80 or x
+            end,
+            tick_time = function()
+                local x = 3 -- Base tick time
+                return talent.jagged_wounds.enabled and x * 0.80 or x
+            end,
+        }, ]]
         tiger_dash = {
             id = 252216,
             duration = 5,
@@ -1433,6 +1458,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = -5,
             spendType = "rage",
             
+            cycle = "thrash_bear",
             startsCombat = true,
             texture = 451161,
 
@@ -1440,7 +1466,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             form = "bear_form",
             
             handler = function ()
-                applyDebuff( "target", "thrash", nil, debuff.thrash.stack + 1 )
+                applyDebuff( "target", "thrash_bear", nil, debuff.thrash.stack + 1 )
             end,
         },
         

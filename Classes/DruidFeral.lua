@@ -225,12 +225,20 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 return talent.jagged_wounds.enabled and x * 0.80 or x
             end,
         },
-        thrash = {
+        --[[ thrash = {
             id = function ()
                 if buff.cat_form.up then return 106830 end
                 return 192090
             end,
-        },
+            duration = function()
+                local x = 15 -- Base duration
+                return talent.jagged_wounds.enabled and x * 0.80 or x
+            end,
+            tick_time = function()
+                local x = 3 -- Base tick time
+                return talent.jagged_wounds.enabled and x * 0.80 or x
+            end,
+        }, ]]
         thick_hide = {
             id = 16931,
         },
