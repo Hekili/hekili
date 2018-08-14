@@ -2553,8 +2553,7 @@ local unknown_buff = setmetatable( {
 -- Fullscan definitely needs revamping, but it works for now.
 local mt_buffs = {
     -- The aura doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
-    __index = function( t, k )
-        
+    __index = function( t, k )        
         if k == '__scanned' then
             return false
         end
@@ -2565,7 +2564,11 @@ local mt_buffs = {
             return unknown_buff
         end
         
-        if k ~= aura.key and rawget( t, aura.key ) then
+        if k ~= aura.key then
+            t[ aura.key ] = rawget( t, aura.key ) or {
+                key = aura.key,
+                name = aura.name
+            }
             t[ k ] = t[ aura.key ]
         else
             t[k] = {
@@ -3047,7 +3050,11 @@ local mt_debuffs = {
         local aura = class.auras[ k ]
 
         if aura then       
-            if k ~= aura.key and rawget( t, aura.key ) then
+            if k ~= aura.key then
+                t[ aura.key ] = rawget( t, aura.key ) or {
+                    key = aura.key,
+                    name = aura.name
+                }
                 t[ k ] = t[ aura.key ]
             else
                 t[ k ] = {
