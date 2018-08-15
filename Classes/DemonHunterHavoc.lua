@@ -353,6 +353,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             id = 188499,
             cast = 0,
             cooldown = 9,
+            hasteCD = true,
             gcd = "spell",
             
             spend = function () return 35 - ( talent.first_blood.enabled and 20 or 0 ) end,
@@ -366,6 +367,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             handler = function ()
                 applyBuff( "blade_dance" )
+                setCooldown( "death_sweep", 9 * haste )
                 if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( 20, 'fury' ) end
             end,
         },
@@ -487,6 +489,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             known = 188499,
             cast = 0,
             cooldown = 9,
+            hasteCD = true,
             gcd = "spell",
             
             spend = function () return 35 - ( talent.first_blood.enabled and 20 or 0 ) end,
@@ -500,6 +503,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             handler = function ()
                 applyBuff( "death_sweep" )
+                setCooldown( "blade_dance", 9 * haste )
                 if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( 20, "fury" ) end
             end,
         },
@@ -638,6 +642,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             id = 232893,
             cast = 0,
             cooldown = 15,
+            hasteCD = true,
             gcd = "spell",
 
             spend = -40,
@@ -713,7 +718,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyBuff( "metamorphosis" )
                 last_metamorphosis = query_time
-                stat.haste = stat.haste + 25
+                stat.haste = stat.haste + e25
                 setDistance( 5 )
             end,
 
@@ -789,6 +794,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             charges = function () return talent.master_of_the_glaive.enabled and 2 or 1 end,
             cooldown = 9,
             recharge = 9,
+            hasteCD = true,
             gcd = "spell",
             
             startsCombat = true,
