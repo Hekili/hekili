@@ -1373,7 +1373,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = false,
             texture = 132242,
 
-            nobuff = "tigers_fury",
+            usable = function () return buff.tigers_fury.down or energy.deficit > 40 + energy.regen end,
             handler = function ()
                 shift( "cat_form" )
                 applyBuff( "tigers_fury", talent.predator.enabled and 14 or 10 )
