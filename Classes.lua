@@ -2200,11 +2200,12 @@ function Hekili:SpecializationChanged()
     wipe( class.auras )
     wipe( class.abilities )
     wipe( class.talents )
-    wipe( class.pvptalents )
+    wipe( class.pvptalents )    
     wipe( class.powers )
     wipe( class.gear )
     wipe( class.packs )
     wipe( class.hooks )
+    wipe( class.resources )
 
     class.potion = nil
 
@@ -2297,6 +2298,14 @@ function Hekili:SpecializationChanged()
             if spec.potion and not class.potion then
                 class.potion = spec.potion
             end
+
+            for res, model in pairs( spec.resources ) do
+                if not class.resources[ res ] then
+                    class.resources[ res ] = model
+                    state[ res ] = model.state
+                end
+            end
+            if rawget( state, "runes" ) then state.rune = state.runes end
 
             for k, v in pairs( spec.auras ) do
                 if not class.auras[ k ] then class.auras[ k ] = v end
