@@ -718,7 +718,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyBuff( "metamorphosis" )
                 last_metamorphosis = query_time
-                stat.haste = stat.haste + e25
+                stat.haste = stat.haste + 25
                 setDistance( 5 )
             end,
 
