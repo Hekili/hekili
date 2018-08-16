@@ -575,7 +575,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             talent = "energizing_elixir",
             
-            usable = function () return apl( cooldown.rising_sun_kick.remains, cooldown.fist_of_the_white_tiger.remains ) end,
             handler = function ()
                 gain( energy.max, "energy" )
                 gain( 2, "chi" )
