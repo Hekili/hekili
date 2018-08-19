@@ -752,6 +752,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 if combo_points.current == 5 then applyBuff( "predatory_swiftness" ) end
                 spend( combo_points.current, "combo_points" )
                 removeStack( "bloodtalons" )
+                removeBuff( "iron_jaws" )
             end,
         },
         
@@ -1367,13 +1368,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 30,
             gcd = "off",
 
-            spend = -40,
+            spend = -50,
             spendType = "energy",
             
             startsCombat = false,
             texture = 132242,
 
-            usable = function () return buff.tigers_fury.down or energy.deficit > 40 + energy.regen end,
+            usable = function () return buff.tigers_fury.down or energy.deficit > 50 + energy.regen end,
             handler = function ()
                 shift( "cat_form" )
                 applyBuff( "tigers_fury", talent.predator.enabled and 14 or 10 )
