@@ -253,6 +253,10 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         return max( class.abilities.eye_beam.lastCast, last_eye_beam )
     end )
 
+    spec:RegisterStateExpr( "extended_by_demonic", function ()
+        return buff.metamorphosis.up and buff.metamorphosis.extended_by_demonic
+    end )
+
 
     spec:RegisterStateExpr( "meta_cd_multiplier", function ()
         return 1
