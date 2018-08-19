@@ -3107,8 +3107,8 @@ local mt_default_action = {
         local ability = t.action and class.abilities[ t.action ]
         local aura = ability and ability.aura or t.action
 
-        if k == 'enabled' then
-            return state:IsKnown( t.action )            
+        if k == 'enabled' or k == 'known' then
+            return state:IsKnown( t.action )
 
         elseif k == 'gcd' then
             if t.gcd == 'off' then return 0
