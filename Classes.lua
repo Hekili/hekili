@@ -3712,7 +3712,7 @@ all:RegisterPowers( {
     iron_jaws = {
         id = 276021,
         triggers = {
-            iron_jaws = { 276021 },
+            iron_jaws = { 276021, 276026 },
         },
     },
 
