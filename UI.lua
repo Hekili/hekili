@@ -818,7 +818,7 @@ do
                                 outOfRange = UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and IsItemInRange( a.item, "target" ) == false
                             else
                                 local name = a.range and class.abilities[ a.range ] and class.abilities[ a.range ].name
-                                outOfRange = LSR.IsSpellInRange( name or a.name, "target") == 0
+                                outOfRange = LSR.IsSpellInRange( name or a.actualName or a.name, "target") == 0
                             end
                         end
                     end
@@ -839,7 +839,7 @@ do
                         if a.item then
                             unusable = not IsUsableItem(a.item)
                         else
-                            _, unusable = IsUsableSpell(a.name)
+                            _, unusable = IsUsableSpell(a.actualName or a.name)
                         end
 
                         if unusable and not b.unusable then
