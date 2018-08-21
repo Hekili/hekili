@@ -1112,6 +1112,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 summonPet( 'felguard', 3600 )
             end,
+
+            copy = "summon_felguard"
         },
 
 
