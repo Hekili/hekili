@@ -955,6 +955,25 @@ all:RegisterAuras( {
         duration = 8,
     },
 
+    out_of_range = {
+        generate = function ()
+            local oor = buff.out_of_range
+
+            if target.distance > 8 then
+                oor.count = 1
+                oor.applied = query_time
+                oor.expires = 3600
+                oor.caster = "player"
+                return
+            end
+
+            oor.count = 0
+            oor.applied = 0
+            oor.expires = 0
+            oor.caster = "nobody"
+        end,
+    },
+
     dispellable_curse = {
         generate = function ()
             local dm = debuff.dispellable_curse
