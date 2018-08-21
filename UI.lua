@@ -930,8 +930,16 @@ do
             local b = self.Buttons[ 1 ]
             local delay = rec.exact_time - now
 
+            local moment = 0
+
             local start, duration = GetSpellCooldown( 61304 )
-            local gRemains = start > 0 and (start + duration - now) or 0
+            if start > 0 then moment = start + duration - now end
+
+            _, _, _, start, duration = UnitCastingInfo( "player" )
+            if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
+
+            _, _, _, start, duration = UnitChannelInfo( "player" )
+            if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
 
             if conf.delays.type ~= "NONE" then
                 if conf.delays.type == "TEXT" then
@@ -940,20 +948,21 @@ do
                         self.delayIconShown = false
                     end
 
-                    if delay > gRemains + 0.1 then
+                    if delay > moment + 0.05 then
                         b.DelayText:SetText( format( "%.1f", delay ) )
                         self.delayTextShown = true
                     else
                         b.DelayText:SetText( nil )
                         self.delayTextShown = false
                     end
+
                 elseif conf.delays.type == "ICON" then
                     if self.delayTextShown then
                         b.DelayText:SetText(nil)
                         self.delayTextShown = false
                     end
 
-                    if delay > gRemains + 0.05 then
+                    if delay > moment + 0.05 then
                         b.DelayIcon:Show()
                         self.delayIconShown = true
 
