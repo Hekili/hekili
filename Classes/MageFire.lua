@@ -883,7 +883,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         damage = true,
         damageExpiration = 6,
     
-        package = nil,
+        package = "Fire",
     } )
 
 
