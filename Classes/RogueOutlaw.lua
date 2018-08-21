@@ -393,7 +393,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 132350,
             
-            usable = function () return buff.blade_flurry.remains < gcd end,
+            usable = function () return buff.blade_flurry.remains < gcd.expires end,
             handler = function ()
                 if talent.dancing_steel.enabled then 
                     applyBuff ( 'blade_flurry', 15 )
