@@ -529,7 +529,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 135834,
             
-            recheck = function () return target.time_to_die - gcd, buff.pillar_of_frost.remains - 1.5 * gcd, buff.pillar_of_frost.remains - gcd, buff.pillar_of_frost.remains - ( gcd * ( 1 + ( cooldown.frostwyrms_fury.remains == 0 and 1 or 0 ) ) ) end,
             handler = function ()
                 applyDebuff( "target", "chains_of_ice" )
                 removeBuff( "cold_heart_item" )
@@ -676,7 +675,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = false,
             texture = 135372,
             
-            recheck = function () return cooldown.pillar_of_frost.remains, gcd - runes.time_to_5, runic_power[ "time_to_" .. ( runic_power.max - 10 ) ], runes.time_to_3, runic_power.time_to_61 end,
             usable = function () return not buff.empower_rune_weapon.up end,
             readyTime = function () return buff.empower_rune_weapon.remains end,
             handler = function ()
@@ -700,7 +698,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 237520,
             
-            recheck = function () return buff.rime.remains, runic_power[ "time_to_" .. ( runic_power.max - 9 ) ], gcd - runes.time_to_2, buff.icy_talons.remains - gcd, runic_power[ "time_to_" .. ( runic_power.max - 39 ) ], cooldown.remorseless_winter.remains - 2 * gcd, runic_power[ "time_to_" .. ( runic_power.max - ( 15 + talent.runic_attenuation.rank * 3 ) ) ], runic_power[ "time_to_" .. ( runic_power.max - 19 ) ] end,
             handler = function ()
                 applyDebuff( "target", "razorice", 20, 2 )                
                 if talent.icy_talons.enabled then addStack( "icy_talons", 6, 1 ) end
@@ -742,7 +739,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             talent = "frostwyrms_fury",
             
-            recheck = function () return buff.pillar_of_frost.remains - gcd end,
+            recheck = function () return buff.pillar_of_frost.remains - gcd.remains end,
             handler = function ()
                 applyDebuff( "target", "frost_breath" )
             end,
@@ -762,7 +759,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 537514,
             
-            recheck = function () return buff.rime.remains, runic_power[ "time_to_" .. ( runic_power.max - 9 ) ], buff.icy_talons.remains - gcd, runic_power[ "time_to_" .. ( runic_power.max - 39 ) ], runic_power[ "time_to_" .. ( 15 + talent.runic_attenuation.rank * 3 ) ], runic_power[ "time_to_" .. ( runic_power.max - 20 ) ] end,
             handler = function ()
                 applyDebuff( "target", "razorice" )
                 if talent.icy_talons.enabled then addStack( "icy_talons", 6, 1 ) end

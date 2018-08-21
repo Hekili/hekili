@@ -395,7 +395,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             startsCombat = true,
             
-            recheck = function () return remains, remains - ( tick_time + gcd ), remains - ( duration * 0.3 ) end,
             handler = function ()
                 applyDebuff( "target", "agony" )
             end,
@@ -459,9 +458,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             startsCombat = true,
             
-            recheck = function ()
-                return remains, remains - ( tick_time + gcd ), remains - ( duration * 0.3 )
-            end,
             handler = function ()
                 applyDebuff( "target", "corruption" )
             end,
@@ -874,9 +870,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             talent = "siphon_life",
             
-            recheck = function ()
-                return remains, remains - ( tick_time + gcd ), remains - ( duration * 0.3 )
-            end,
             handler = function ()
                 applyDebuff( "target", "siphon_life" )
             end,

@@ -233,7 +233,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 135130,
             
-            recheck = function () return buff.precise_shots.remains, focus.time_to_71, buff.steady_focus.remains, buff.double_tap.remains, full_recharge_time - cast_time + gcd end,
             handler = function ()
                 applyBuff( "precise_shots" )
                 if talent.master_marksman.enabled then applyBuff( "master_marksman" ) end
@@ -257,7 +256,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 132218,
             
-            recheck = function () return focus.time_to_71, buff.steady_focus.remains, focus.time_to_61, cooldown.aimed_shot.full_recharge_time - gcd * buff.precise_shots.stack + action.aimed_shot.cast_time end,
             handler = function ()
                 if talent.calling_the_shots.enabled then cooldown.trueshot.expires = max( 0, cooldown.trueshot.expires - 2.5 ) end
                 removeBuff( "master_marksman" )
@@ -431,7 +429,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 537468,
             
-            recheck = function () return cooldown.rapid_fire.remains - gcd end,
             handler = function ()
                 applyBuff( "double_tap" )
             end,
@@ -605,7 +602,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 132330,
             
-            recheck = function () return focus.time_to_91, focus.time_to_71, buff.steady_focus.remains, focus.time_to_46, cooldown.aimed_shot.full_recharge_time < gcd * buff.precise_shots.stack + action.aimed_shot.cast_time, buff.trick_shots.remains end,
             handler = function ()
                 if talent.calling_the_shots.enabled then cooldown.trueshot.expires = max( 0, cooldown.trueshot.expires - 2.5 ) end
                 if active_enemies > 2 then applyBuff( "trick_shots" ) end

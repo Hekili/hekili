@@ -562,8 +562,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cooldown = function () return 12 * haste end,
             gcd = 'spell',
 
-            recheck = function () return buff.flametongue.remains, buff.flametongue.remains - 4.8, buff.flametongue.remains - ( 6 + gcd ) end,
-
             startsCombat = true,
 
             handler = function ()
@@ -587,7 +585,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             startsCombat = true,
 
-            recheck = function () return buff.frostbrand.remains, buff.frostbrand.remains - 4.8, buff.frostbrand.remains - ( 6 + gcd ) end,
             handler = function ()
                 applyBuff( 'frostbrand', 16 + min( 4.8, buff.frostbrand.remains ) )
                 if level < 116 and equipped.eye_of_the_twisting_nether then
