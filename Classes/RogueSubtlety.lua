@@ -679,11 +679,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 15,
             gcd = "off",
             
-            toggle = 'interrupt', 
+            toggle = 'interrupts', 
+            interrupt = true,
 
             startsCombat = true,
             texture = 132219,
             
+            usable = function () return target.casting end,
             handler = function ()
                 interrupt()
             end,
