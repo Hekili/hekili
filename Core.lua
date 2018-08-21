@@ -1158,6 +1158,7 @@ function Hekili:ProcessHooks( dispName, packName )
             
             slot.time = state.offset + wait
             slot.exact_time = state.now + state.offset + wait
+            slot.delay = wait
             slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
             slot.resources = slot.resources or {}
             slot.depth = chosen_depth
@@ -1180,7 +1181,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 
                 -- Start the GCD.
                 if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
-                    state.setCooldown( 'global_cooldown', state.gcd )
+                    state.setCooldown( 'global_cooldown', state.gcd.execute )
                 end
 
                 state.stopChanneling()
@@ -1200,7 +1201,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     state.setCooldown( action, cooldown )
                 end
                 
-                state.cycle = state.cycle or slot.indicator == 'cycle'
+                -- state.cycle = state.cycle or slot.indicator == 'cycle'
                 
                 -- Spend resources.
                 ns.spendResources( action )
