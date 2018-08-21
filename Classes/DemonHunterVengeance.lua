@@ -215,18 +215,53 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     end )
 
 
+    spec:RegisterStateTable( "fragments", {
+        real = 0,
+        realTime = 0,
+
+        virtual = {},
+    } )
+
+    spec:RegisterStateFunction( "queue_fragments", function( num )
+        fragments.real = fragments.real + num
+        fragments.realTime = GetTime() + 1
+    end )
+
+    spec:RegisterStateFunction( "purge_fragments", function()
+        fragments.real = 0
+        fragments.realTime = 0            
+    end )
+
+
     local queued_frag_modifier = 0
 
     spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceGUID == GUID then
             if subtype == "SPELL_CAST_SUCCESS" then
-                if spellID == 263642 then queued_frag_modifier = 2 end
-                if spellID == 203782 then queued_frag_modifier = 1 end
-                if spellID == 247454 then queued_frag_modifier = -5 end
-                if spellID == 228477 then queued_frag_modifier = -2 end
+                -- Fracture:  Generate 2 frags.
+                if spellID == 263642 then
+                    queue_fragments( 2 ) end
+                
+                -- Shear:  Generate 1 frag.
+                if spellID == 203782 then 
+                    queue_fragments( 1 ) end
+                
+                -- Spirit Bomb:  Up to 5 frags.
+                if spellID == 247454 then
+                    local name, _, count = FindUnitBuffByID( "player", 203981 )
+                    if name then queue_fragments( -1 * count ) end
+                end
+
+                -- Soul Cleave:  Up to 2 frags.
+                if spellID == 228477 then 
+                    local name, _, count = FindUnitBuffByID( "player", 203981 )
+                    if name then queue_fragments( -1 * min( 2, count ) ) end
+                end
             
-            elseif spellID == 203981 then
-                queued_frag_modifier = 0
+            -- We consumed or generated a fragment for real, so let's purge the real queue.
+            elseif spellID == 203981 and fragments.real > 0 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
+                fragments.real = fragments.real - 1
+            
             end
         end
     end )
@@ -235,14 +270,18 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         last_metamorphosis = nil
         last_infernal_strike = nil
 
-        if queued_frag_modifier ~= 0 then
-            buff.soul_fragments.count = min( 5, max( 0, buff.soul_fragments.count + queued_frag_modifier ) )
+        if fragments.realTime > 0 and fragments.realTime < now then
+            fragments.real = 0
+            fragments.realTime = 0
+        end
 
-            if buff.soul_fragments.count > 0 and buff.soul_fragments.down then
-                applyBuff( "soul_fragments", 3600, buff.soul_fragments.count )
-            end
+        table.wipe( fragments.virtual )
 
-            if buff.soul_fragments.count == 0 then removeBuff( "soul_fragments" ) end
+        if buff.soul_fragments.down then
+            -- Apply the buff with zero stacks.
+            applyBuff( "soul_fragments", nil, 0 + fragments.real )
+        else
+            addStack( "soul_fragments", nil, fragments.real )
         end
     end )
 
@@ -634,7 +673,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                     gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
                 end
                 
-                removeBuff( "soul_fragments" )
+                buff.soul_fragments.count = 0
                 applyBuff( "soul_barrier" )
             end,
         },
@@ -657,8 +696,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                     gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
                 end
                 
-                removeStack( "soul_fragments", 2 )
-
+                removeStack( "soul_fragments", min( buff.soul_fragments.stack, 2 ) )
                 if talent.void_reaver.enabled then applyDebuff( "target", "void_reaver" ) end
             end,
         },
@@ -696,8 +734,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 if talent.feed_the_demon.enabled then
                     gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
                 end
-                
-                removeBuff( "soul_fragments" )
+
+                buff.soul_fragments.count = 0
             end,
         },
         
