@@ -126,6 +126,12 @@ local oneTimeFixes = {
 
         p.runOnce.reviseDisplayQueueAnchors_20180718 = nil
     end,
+
+    enableAllOfTheThings_20180820 = function( p )
+        for name, spec in pairs( p.specs ) do
+            spec.enabled = true
+        end
+    end,
 }
 
 
@@ -7149,7 +7155,7 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Removed max:X check (not available in emulation) -- (" .. times .. "x)." )
     end
     
-    i, times = i:gsub( "buff.out_of_range.up", "!target.in_range" )
+    --[[ i, times = i:gsub( "buff.out_of_range.up", "!target.in_range" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.up' with '!target.in_range' (" .. times .. "x)." )
     end
@@ -7157,7 +7163,7 @@ local function Sanitize( segment, i, line, warnings )
     i, times = i:gsub( "buff.out_of_range.down", "target.in_range" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.down' with 'target.in_range' (" .. times .. "x)." )
-    end
+    end ]]
     
     --[[ i, times = i:gsub( "movement.distance", "target.distance" )
     if times > 0 then
