@@ -65,6 +65,7 @@ state.item_cd = {}
 state.debuff = {}
 state.dot = {}
 state.equipped = {}
+state.gcd = {}
 state.perk = {}
 state.pet = {
     fake_pet = {
@@ -396,6 +397,7 @@ state.max = safeMax
 state.min = safeMin
 state.print = print
 
+state.Enum = Enum
 state.FindUnitBuffByID = ns.FindUnitBuffByID
 state.FindUnitDebuffByID = ns.FindUnitDebuffByID
 state.GetItemCount = GetItemCount
@@ -1307,17 +1309,7 @@ local mt_state = {
             return ability and ability.cast or 0
             
         elseif k == 'execute_time' then
-            return max( t.gcd, ability and ability.cast or 0 )
-            
-        elseif k == 'gcd' then
-            local gcd = ability and ability.gcd or "spell"
-            if gcd == 'totem' then return 1 end
-
-            if UnitPowerType( 'player' ) == Enum.PowerType.Energy then
-                return t.buff.adrenaline_rush.up and 0.8 or 1
-            end
-
-            return max( 1.5 * t.haste, t.buff.voidform.up and 0.67 or 0.75 )
+            return max( state.gcd.execute, ability and ability.cast or 0 )
             
         elseif k == 'travel_time' then 
             local v = ability.velocity or 0
@@ -1355,7 +1347,7 @@ local mt_state = {
 
             if res and ability.spend then regen = regen - spend end
 
-            return regen + ( max( ability.gcd ~= "off" and t.gcd or 0, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen )
+            return regen + ( max( state.gcd.execute, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen )
             
         elseif k == 'prowling' then
             return t.buff.prowl.up or ( t.buff.cat_form.up and t.buff.shadowform.up )
@@ -1899,21 +1891,7 @@ local mt_default_cooldown = {
             t.id = ability.id
             
             local start, duration = GetSpellCooldown( id )
-
-            --[[ if t.key ~= "global_cooldown" and start and duration then
-                local gcd_start, gcd_duration = GetSpellCooldown( 61304 )
-                if gcd_start + gcd_duration == start + duration then
-                    start = 0
-                    duration = 0
-                end
-            end ]]
-
             local true_duration = duration
-            
-            --[[ if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
-                start = state.now
-                duration = 0
-            end ]]
             
             if t.key == 'ascendance' and state.buff.ascendance.up then
                 start = state.buff.ascendance.expires - class.auras.ascendance.duration
@@ -2139,6 +2117,42 @@ local mt_dot = {
     end,
 }
 ns.metatables.mt_dot = mt_dot
+
+
+local mt_gcd = {
+    __index = function( t, k )
+        if k == "execute" then
+            local ability = state.this_action and class.abilities[ state.this_action ]
+
+            -- We can specify this for any ability, if we want.
+            if ability and ability.gcdTime then return ability.gcdTime end
+
+            local gcd = ability and ability.gcd or "spell"
+            if gcd == "off" then return 0 end
+            if gcd == "totem" then return 1 end
+
+            if UnitPowerType( 'player' ) == Enum.PowerType.Energy then
+                return state.buff.adrenaline_rush.up and 0.8 or 1
+            end
+        
+            return max( 1.5 * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
+
+        elseif k == "remains" then
+            return state.cooldown.global_cooldown.remains
+            
+        elseif k == "max" or k == "duration" then
+            if UnitPowerType( 'player' ) == Enum.PowerType.Energy then
+                return state.buff.adrenaline_rush.up and 0.8 or 1
+            end
+
+            return max( 1.5 * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
+        end
+
+        return
+    end        
+}
+ns.metatables.mt_gcd = mt_gcd
+setmetatable( state.gcd, mt_gcd )
 
 
 local mt_prev_lookup = {
@@ -3110,16 +3124,13 @@ local mt_default_action = {
         if k == 'enabled' or k == 'known' then
             return state:IsKnown( t.action )
 
-        elseif k == 'gcd' then
-            if t.gcd == 'off' then return 0
-            elseif t.gcd == 'spell' then return max( 0.75, 1.5 * state.haste )
-                -- This needs a class/spec check to confirm GCD is reduced by haste.
-            elseif t.gcd == 'melee' then return max( 0.75, 1.5 * state.haste )
-            elseif t.gcd == 'totem' then return 1
-            else return 1.5 end
-            
         elseif k == 'execute_time' then
-            return max( state.gcd, t.cast_time )
+            local queued_action = state.this_action
+            state.this_action = t.action
+            local value = state.gcd.execute
+            state.this_action = queued_action
+
+            return max( value, t.cast_time )
             
         elseif k == 'charges' then
             return class.abilities[ t.action ].charges and state.cooldown[ t.action ].charges or 0
@@ -3192,7 +3203,7 @@ local mt_default_action = {
             return 0
             
         elseif k == 'cast_regen' then
-            return floor( max( state.gcd, t.cast_time ) * state[ class.primaryResource ].regen )
+            return floor( max( state.gcd.execute, t.cast_time ) * state[ class.primaryResource ].regen )
 
         elseif k == 'cost' then
             local a = class.abilities[ t.action ].spend
@@ -3734,6 +3745,7 @@ function state.reset( dispName )
         state.cast_start = startCast / 1000
         cast_time = ( endCast / 1000 ) - GetTime()
         casting = formatKey( spellcast )
+        applyBuff( "player_casting", cast_time )
     end
 
     state.stopChanneling( true )

@@ -114,6 +114,29 @@ local function extendExpression( str, expr, suffix )
 end
 
 
+local function SimcWithResources( str )
+    for k in pairs( GetResourceInfo() ) do
+        if str:find( k ) then
+            str = extendExpression( str, k, "current" )
+        end
+    end
+
+    if str:find( "rune" ) then
+        str = extendExpression( str, "rune", "current" )
+    end
+
+    if str:find( "spell_targets" ) then
+        str = extendExpression( str, "spell_targets", "any" )
+    end
+
+    if str:find( "gcd" ) then
+        str = extendExpression( str, "gcd", "execute" )
+    end
+
+    return str
+end
+
+
 -- Convert SimC syntax to Lua conditionals.
 local function SimToLua( str, modifier )
     -- If no conditions were provided, function should return true.
@@ -130,19 +153,7 @@ local function SimToLua( str, modifier )
     -- Replace '!' with ' not '.
     str = forgetMeNots( str )
     
-    for k in pairs( GetResourceInfo() ) do
-        if str:find( k ) then
-            str = extendExpression( str, k, "current" )
-        end
-    end
-
-    if str:find( "rune" ) then
-        str = extendExpression( str, "rune", "current" )
-    end
-
-    if str:find( "spell_targets" ) then
-        str = extendExpression( str, "spell_targets", "any" )
-    end
+    str = SimcWithResources( str )
 
     -- Replace '%' for division with actual division operator '/'.
     str = str:gsub("%%", "/")
@@ -570,25 +581,6 @@ do
 end
 
 
-local function SimcWithResources( str )
-    for k in pairs( GetResourceInfo() ) do
-        if str:find( k ) then
-            str = extendExpression( str, k, "current" )
-        end
-    end
-
-    if str:find( "rune" ) then
-        str = extendExpression( str, "rune", "current" )
-    end
-
-    if str:find( "spell_targets" ) then
-        str = extendExpression( str, "spell_targets", "any" )
-    end
-
-    return str
-end
-
-
 -- Convert SimC syntax to Lua conditionals.
 local function SimCToSnapshot( str, modifier )
     -- If no conditions were provided, function should return true.
@@ -603,19 +595,7 @@ local function SimCToSnapshot( str, modifier )
     -- Replace '!' with ' not '.
     -- str = forgetMeNots( str )
     
-    for k in pairs( GetResourceInfo() ) do
-        if str:find( k ) then
-            str = extendExpression( str, k, "current" )
-        end
-    end
-
-    if str:find( "rune" ) then
-        str = extendExpression( str, "rune", "current" )
-    end
-
-    if str:find( "spell_targets" ) then
-        str = extendExpression( str, "spell_targets", "any" )
-    end
+    str = SimcWithResources( str )
 
     -- Replace '%' for division with actual division operator '/'.
     -- str = str:gsub("%%", "/")

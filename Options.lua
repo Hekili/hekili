@@ -7083,7 +7083,7 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Converted 'pet.X.Y.Z...' to 'Z...' (" .. times .. "x)." )
     end
     
-    i, times = i:gsub( "gcd%.max", "gcd" )
+    --[[ i, times = i:gsub( "gcd%.max", "gcd" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'gcd.max' to 'gcd' (" .. times .. "x)." )
     end
@@ -7091,7 +7091,7 @@ local function Sanitize( segment, i, line, warnings )
     i, times = i:gsub( "gcd%.remains", "cooldown.global_cooldown.remains" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted gcd.remains to cooldown.global_cooldown.remains (" .. times .. "x)." )
-    end
+    end ]]
     
     --[[ i, times = i:gsub( "[!+-%*]?raid_event[.a-z0-9_><=~%-%+*]+", "" )
     if times > 0 then
