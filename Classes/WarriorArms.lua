@@ -194,6 +194,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 3,
             max_stack = 1,
         },
+
+        -- Azerite Powers
+        crushing_assault = {
+            id = 278826,
+            duration = 10,
+            max_stack = 1
+        }
     } )
 
 
@@ -478,7 +485,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         
 
         execute = {
-            id = 163201,
+            id = function () return talent.massacre.enabled and 281001 or 163201 end,
+            known = 163201,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
@@ -507,6 +515,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
             end,
+
+            copy = { 163201, 281001, 281000 }
         },
         
 
@@ -739,7 +749,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         skullsplitter = {
             id = 260643,
             cast = 0,
-            cooldown = function () return 21 * haste end,
+            cooldown = 21,
+            hasteCD = true,
             gcd = "spell",
 
             spend = -20,
@@ -763,6 +774,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             spend = function ()
                 if buff.deadly_calm.up then return 0 end
+                if buff.crushing_assault.up then return 0 end
                 return 20
             end,
             spendType = "rage",
@@ -773,6 +785,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             recheck = function () return rage.time_to_30, rage.time_to_40 end,
             handler = function ()
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
+                removeBuff( "crushing_assault" )
             end,
         },
         
@@ -845,6 +858,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 262161,
             cast = 0,
             cooldown = 45,
+            velocity = 25,
             gcd = "spell",
             
             startsCombat = true,
