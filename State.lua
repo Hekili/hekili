@@ -2002,14 +2002,12 @@ local mt_default_cooldown = {
             return t.remains > 0 and 0 or 1
             
         elseif k == 'recharge_time' then
-            if class.abilities[ t.key ].charges then
-                if t.next_charge > ( state.query_time ) then
-                    return ( t.next_charge - ( state.query_time ) )
-                else
-                    return 0
-                end
+            if t.charges <= 1 then return t.remains
+            elseif class.abilities[ t.key ].charges and t.next_charge > ( state.query_time ) then
+                return ( t.next_charge - ( state.query_time ) )
             end
-            return t.remains
+
+            return 0
             
         elseif k == 'up' or k == 'ready' then            
             return ( t.remains == 0 )
