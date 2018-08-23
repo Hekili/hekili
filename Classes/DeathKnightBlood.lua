@@ -142,7 +142,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
                 gain( amt * 10, "runic_power" )
 
-                if talent.rune_strike.enabled then gainChargeTime( "rune_strike", amt ) end            
+                if talent.rune_strike.enabled then gainChargeTime( "rune_strike", amt ) end
+
+                if azerite.eternal_rune_weapon.enabled and buff.dancing_rune_weapon.up then
+                    if buff.dancing_rune.weapon.expires - buff.dancing_rune_weapon.applied < buff.dancing_rune_weapon.duration + 5 then
+                        buff.dancing_rune_weapon.expires = min( buff.dancing_rune_weapon.applied + buff.dancing_rune_weapon.duration + 5, buff.dancing_rune_weapon.expires + ( 0.5 * amt ) )
+                        buff.eternal_rune_weapon.expires = min( buff.dancing_rune_weapon.applied + buff.dancing_rune_weapon.duration + 5, buff.dancing_rune_weapon.expires + ( 0.5 * amt ) )
+                    end
+                end
             
             elseif resource == "runic_power" then
                 local rp = runic_power
@@ -222,7 +229,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterAuras( {
         antimagic_shell = {
             id = 48707,
-            duration = function () return ( talent.antimagic_barrier.enabled and 6.5 or 5 ) * ( ( level < 116 and equipped.acherus_drapes ) and 2 or 1 ) end,
+            duration = function () return ( azerite.runic_barrier.enabled and 1 or 0 ) + ( talent.antimagic_barrier.enabled and 6.5 or 5 ) * ( ( level < 116 and equipped.acherus_drapes ) and 2 or 1 ) end,
             max_stack = 1,
         },
         asphyxiate = {
@@ -341,6 +348,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 8,
             max_stack = 1,
         },
+        unholy_strength = {
+            id = 53365,
+            duration = 15,
+            max_stack = 1,
+        },
         wraith_walk = {
             id = 212552,
             duration = 4,
@@ -359,8 +371,35 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 6,
             max_stack = 1,
         },
-        unholy_strength = {
-            id = 53365,
+
+        -- Azerite Powers (BDK)
+        bones_of_the_damned = {
+            id = 279503,
+            duration = 30,
+            max_stack = 1,
+        },
+
+        deep_cuts = {
+            id = 272685,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        -- procs when vampiric blood falls off.
+        embrace_of_the_darkfallen = {
+            id = 275926,
+            duration = 20,
+            max_stack = 1,
+        },
+
+        eternal_rune_weapon = {
+            id = 278543,
+            duration = 5,
+            max_stack = 1,
+        },
+
+        march_of_the_damned = {
+            id = 280149,
             duration = 15,
             max_stack = 1,
         },
@@ -563,6 +602,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyBuff( "dancing_rune_weapon" )
+                if azerite.eternal_rune_weapon.enabled then applyBuff( "dancing_rune_weapon" ) end
             end,
         },
         
@@ -664,7 +704,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         deaths_advance = {
             id = 48265,
             cast = 0,
-            cooldown = 45,
+            cooldown = function () return azerite.march_of_the_damned.enabled and 40 or 45 end,
             gcd = "spell",
             
             startsCombat = false,
@@ -726,7 +766,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "heart_strike" )
                 local targets = min( active_enemies, buff.death_and_decay.up and 5 or 2 )
 
-                -- ( ( buff.dancing_rune_weapon.up and 2 or 1 ) * ( 5 + ( talent.heartbreaker.enabled and ( targets * 2 ) ) or 0 ), "runic_power" )
+                if azerite.deep_cuts.enabled then applyDebuff( "target", "deep_cuts" ) end
 
                 if level < 116 and equipped.service_of_gorefiend then cooldown.vampiric_blood.expires = max( 0, cooldown.vampiric_blood.expires - 2 ) end
             end,
@@ -784,6 +824,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyBuff( "bone_shield", 30, buff.bone_shield.stack + ( buff.dancing_rune_weapon.up and 6 or 3 ) )
+                if azerite.bones_of_the_damned.enabled then applyBuff( "bones_of_the_damned" ) end
             end,
         },
         
