@@ -364,6 +364,32 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             max_stack = 1,
         },
 
+        felstorm = {
+            id = 89751,
+            duration = function () return 5 * haste end,
+            tick_time = function () return 1 * haste end,
+            max_stack = 1,
+            
+            generate = function () 
+                local fs = buff.felstorm
+
+                local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 89751 )
+
+                if name then
+                    fs.count = 1
+                    fs.applied = expires - duration
+                    fs.expires = expires
+                    fs.caster = "pet"
+                    return
+                end
+
+                fs.count = 0
+                fs.applied = 0
+                fs.expires = 0
+                fs.caster = "nobody"
+            end,
+        },
+
         from_the_shadows = {
             id = 270569,
             duration = 12,
@@ -1053,6 +1079,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = true,
+            nobuff = "felstorm",
             
             usable = function () return pet.exists end,
             handler = function ()
