@@ -692,7 +692,9 @@ do
 
         local now = GetTime()
 
-        if self.NewRecommendations then
+        self.recTimer = ( self.recTimer or 0 ) - elapsed
+
+        if self.NewRecommendations or self.recTimer < 0 then
             local alpha = self.alpha
 
             for i, b in ipairs( self.Buttons ) do
@@ -757,10 +759,9 @@ do
             -- Force glow, range, SpellFlash updates.
             self.glowTimer = -1
             self.rangeTimer = -1
-            -- self.flashTimer = -1
 
             self:RefreshCooldowns()
-            -- self.NewRecommendations = false
+            self.recTimer = 1
         end
 
 
