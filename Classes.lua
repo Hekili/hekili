@@ -195,10 +195,12 @@ local HekiliSpecMixin = {
             self.powers[ v.id ] = k
 
             for token, ids in pairs( v.triggers ) do
-                self:RegisterAura( token, {
-                    id = v.id,
-                    copy = ids
-                } )
+                if not self.auras[ k ] then
+                    self:RegisterAura( token, {
+                        id = v.id,
+                        copy = ids
+                    } )
+                end
             end
         end
     end,
@@ -2483,6 +2485,348 @@ end
 function Hekili.StoreInNamespace( key, value )
     -- ns[ key ] = value
 end
+
+
+-- Register Azerite Powers before going with generics...
+all:RegisterAuras( {
+    anduins_dedication = {
+        id = 280876,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    sylvanas_resolve = {
+        id = 280806,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    archive_of_the_titans = {
+        id = 280709,
+        duration = 60,
+        max_stack = 20,
+    },
+
+    battlefield_precision = {
+        id = 280855,
+        duration = 30,
+        max_stack = 25,
+    },
+
+    battlefield_focus = {
+        id = 280817,
+        duration = 30,
+        max_stack = 25,
+    },
+
+    -- from blightborne infusion; ruinous bolt.  ?
+    wandering_soul = {
+        id = 280204,
+        duration = 14,
+        max_stack = 1,
+    },
+
+    blood_rite = {
+        id = 280409,
+        duration = 15,
+        max_stack = 1,
+    },
+
+    champion_of_azeroth = {
+        id = 280713,
+        duration = 60,
+        max_stack = 4,
+    },
+
+    stand_as_one = {
+        id = 280858,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    collective_will = {
+        id = 280830,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    -- from stronger together
+    strength_of_the_humans = {
+        id = 280625,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    -- from combined might
+    might_of_the_orcs = {
+        id = 280841,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    dagger_in_the_back = {
+        id = 280286,
+        duration = 12,
+        tick_time = 3,
+        max_stack = 2,
+    },
+
+    filthy_transfusion = {
+        id = 273836,
+        duration = 6,
+        tick_time = 1,
+        max_stack = 1,
+    },
+
+    liberators_might = {
+        id = 280852,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    glory_in_battle = {
+        id = 280577,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    incite_the_pack = {
+        id = 280412,
+        duration = 20,
+        max_stack = 1,
+        copy = 280413,
+    },
+
+    last_gift = {
+        id = 280862,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    retaliatory_fury = {
+        id = 280788,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    meticulous_scheming = {
+        id = 273685,
+        duration = 8,
+        max_stack = 1,
+    },
+
+    seize_the_moment = {
+        id = 273714,
+        duration = 8,
+        max_stack = 1,
+    },
+
+    normalization_decrease = {
+        id = 280654,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    normalization_increase = {
+        id = 280653,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    rezans_fury = {
+        id = 273794,
+        duration = 12,
+        tick_time = 3,
+        max_stack = 1,
+    },
+
+    secrets_of_the_deep = {
+        id = 273842,
+        duration = 18,
+        max_stack = 1,
+        copy = 273843, -- Technically, there are distinct buffs but I doubt any APLs will care.
+    },
+
+    swirling_sands = {
+        id = 280433,
+        duration = 12,
+        max_stack = 1,
+    },
+
+    -- from synaptic_spark_capacitor
+    spark_coil = {
+        id = 280655,
+        duration = 10,
+        max_stack = 1,
+        copy = 280847,            
+    },
+
+    building_pressure = {
+        id = 280385,
+        duration = 30,
+        max_stack = 5,
+    },
+
+    tidal_surge = {
+        id = 280404,
+        duration = 6,
+        max_stack = 1,
+    },
+
+    tradewinds = {
+        id = 281843,
+        duration = 15,
+        max_stack = 1,
+    },
+
+    tradewinds_jumped = {
+        id = 281844,
+        duration = 8,
+        max_stack = 1,
+    },
+
+    -- not sure about spell ID, or if there really is a buff...
+    unstable_catalyst = {
+        id = 281515,
+        duration = 8,
+        max_stack = 1,
+    }
+} )
+
+
+-- "Ring 2" powers.
+all:RegisterAuras( {
+    ablative_shielding = {
+        id = 271543,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    azerite_globules = {
+        id = 279956,
+        duration = 60,
+        max_stack = 3,
+    },
+
+    azerite_veins = {
+        id = 270674,
+        duration = 18,
+        tick_time = 3,
+        max_stack = 1,
+    },
+
+    crystalline_carapace = {
+        id = 271538,
+        duration = 12,
+        max_stack = 1,
+    },
+
+    -- earthlink aura?
+
+    elemental_whirl_versatility = {
+        id = 268956,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    elemental_whirl_mastery = {
+        id = 268955,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    elemental_whirl_haste = {
+        id = 268954,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    elemental_whirl_critical_strike = {
+        id = 268953,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    elemental_whirl = {
+        alias = { "elemental_whirl_critical_strike", "elemental_whirl_haste", "elemental_whirl_mastery", "elemental_whirl_versatility" },
+        aliasMode = "longest", -- use duration info from the first buff that's up, as they should all be equal.
+        aliasType = "buff",
+        duration = 10,
+    },
+
+    lifespeed = {
+        id = 267665,
+        duration = 3600,
+        max_stack = 1,
+    },
+
+    overwhelming_power = {
+        id = 266180,
+        duration = 3600,
+        max_stack = 25
+    },
+
+    -- upwelling buff?
+
+    strength_in_numbers = {
+        id = 271550,
+        duration = 15,
+        max_stack = 5,
+    },
+
+    unstable_flames = {
+        id = 279902,
+        duration = 5,
+        max_stack = 5,
+    },
+
+    winds_of_war = {
+        id = 269214,
+        duration = 3,
+        max_stack = 5,
+    },
+} )
+
+
+-- "Ring 3" powers.
+all:RegisterAuras( {
+    -- autoselfcauterizer snare debuff.
+    cauterized = {
+        id = 280583,
+        duration = 5,
+        max_stack = 1,
+    },
+
+    bulwark_of_the_masses = {
+        id = 270657,
+        duration = 15,
+        max_stack = 1,
+    },
+
+    gemhide = {
+        id = 270576,
+        duration = 10,
+        max_stack = 1,
+    },
+
+    personal_absorbotron = {
+        id = 280661,
+        duration = 20,
+        max_stack = 1,
+    },
+
+    resounding_protection = {
+        id = 269279,
+        duration = 30,
+        max_stack = 1,
+    },
+
+    vampiric_speed = {
+        id = 269239,
+        duration = 6,
+        max_stack = 1,
+    },
+} )
 
 
 all:RegisterPowers( {
