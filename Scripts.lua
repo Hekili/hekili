@@ -758,7 +758,7 @@ local nameMap = {
 
 
 -- Need to convert all the appropriate scripts and store them safely...
-local function ConvertScript( node, hasModifiers, noisy )
+local function ConvertScript( node, hasModifiers, header )
     state.this_action = node.action
 
     local t = node.criteria and node.criteria ~= "" and node.criteria
@@ -769,7 +769,7 @@ local function ConvertScript( node, hasModifiers, noisy )
 
     local sf, e
 
-    if t then sf, e = loadstring( "return " .. t ) end
+    if t then sf, e = loadstring( "-- " .. header .. "\nreturn " .. t ) end
     if sf then setfenv( sf, state ) end
 
     --[[ if sf and not e then
@@ -786,7 +786,7 @@ local function ConvertScript( node, hasModifiers, noisy )
         rs = scripts:BuildRecheck( node.criteria )
         if rs then 
             rs = SimToLua( rs )
-            rc, erc = loadstring( rs )
+            rc, erc = loadstring( "-- " .. header .. " recheck\n" .. rs )
             if rc then setfenv( rc, state ) end
         end
 
@@ -1038,7 +1038,7 @@ function scripts:LoadScripts()
                 for action, data in ipairs( lData ) do
                     local scriptID = pack .. ":" .. list .. ":" .. action
 
-                    local script = ConvertScript( data, true )
+                    local script = ConvertScript( data, true, scriptID )
 
                     if data.action == "call_action_list" or data.action == "run_action_list" then
                         -- Check for Time Sensitive conditions.
@@ -1100,7 +1100,7 @@ function Hekili:LoadScript( pack, list, id )
     local data = self.DB.profile.packs[ pack ].lists[ list ][ id ]
     local scriptID = pack .. ":" .. list .. ":" .. id
 
-    local script = ConvertScript( data, true, true )
+    local script = ConvertScript( data, true, scriptID )
 
     if data.action == "call_action_list" or data.action == "run_action_list" then
         -- Check for Time Sensitive conditions.
