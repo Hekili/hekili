@@ -224,7 +224,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
     spec:RegisterStateFunction( "queue_fragments", function( num )
         fragments.real = fragments.real + num
-        fragments.realTime = GetTime() + 1
+        fragments.realTime = GetTime() + 1.25
     end )
 
     spec:RegisterStateFunction( "purge_fragments", function()
@@ -246,7 +246,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 if spellID == 203782 then 
                     queue_fragments( 1 ) end
                 
-                -- Spirit Bomb:  Up to 5 frags.
+                --[[ Spirit Bomb:  Up to 5 frags.
                 if spellID == 247454 then
                     local name, _, count = FindUnitBuffByID( "player", 203981 )
                     if name then queue_fragments( -1 * count ) end
@@ -256,7 +256,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 if spellID == 228477 then 
                     local name, _, count = FindUnitBuffByID( "player", 203981 )
                     if name then queue_fragments( -1 * min( 2, count ) ) end
-                end
+                end ]]
             
             -- We consumed or generated a fragment for real, so let's purge the real queue.
             elseif spellID == 203981 and fragments.real > 0 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
@@ -280,7 +280,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         if buff.soul_fragments.down then
             -- Apply the buff with zero stacks.
             applyBuff( "soul_fragments", nil, 0 + fragments.real )
-        else
+        elseif fragments.real > 0 then
             addStack( "soul_fragments", nil, fragments.real )
         end
     end )
