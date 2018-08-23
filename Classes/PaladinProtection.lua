@@ -267,6 +267,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
     spec:RegisterStateExpr( "last_blessed_hammer", function () return action.blessed_hammer.lastCast end )
     spec:RegisterStateExpr( "last_shield", function () return action.shield_of_the_righteous.lastCast end )
 
+    spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
+
     spec:RegisterHook( "reset_precast", function ()
         last_consecration = nil
         last_blessed_hammer = nil
