@@ -1360,7 +1360,7 @@ local mt_state = {
         local aura_name = ability and ability.aura or t.this_action
         local aura = class.auras[ aura_name ]
         
-        local app = t.buff[ aura_name ].up and t.buff[ aura_name ] or t.debuff[ aura_name ].up and t.debuff[ aura_name ]
+        local app = aura and ( t.buff[ aura_name ].up and t.buff[ aura_name ] or t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) or nil
 
         if k == 'duration' then            
             return aura and aura.duration or 30
@@ -2456,7 +2456,7 @@ local mt_default_buff = {
 
         elseif k == 'name' or k == 'count' or k == 'duration' or k == 'expires' or k == 'applied' or k == 'caster' or k == 'id' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if aura and aura.generate then
-                aura.generate()
+                aura.generate( t, "buff" )
                 --[[ for attr, a_val in pairs( default_buff_values ) do
                     t[ attr ] = rawget( t, attr ) or a_val
                 end ]]
@@ -2591,7 +2591,7 @@ local mt_buffs = {
         end
 
         if aura.generate then
-            aura.generate()
+            aura.generate( t[ k ], "buff" )
             return t[ k ]
         end
         
@@ -2949,7 +2949,7 @@ local mt_default_debuff = {
 
         elseif k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if class_aura and class_aura.generate then
-                class_aura.generate()                
+                class_aura.generate( t, "debuff" )
             else
             
                 local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
@@ -3077,7 +3077,7 @@ local mt_debuffs = {
             end
             
             if aura.generate then
-                aura.generate()
+                aura.generate( t[k], "debuff" )
                 return t[ k ]
             end
         
