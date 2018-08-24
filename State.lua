@@ -1343,12 +1343,7 @@ local mt_state = {
             return ability and ability.cost or 0
             
         elseif k == 'cast_regen' then
-            local res = ability.spendType or class.primaryResource
-            local regen = 0
-
-            if res and ability.spend then regen = regen - spend end
-
-            return regen + ( max( state.gcd.execute, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen )
+            return ( max( state.gcd.execute, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen ) - ( ability and ability.spend or 0 )
             
         elseif k == 'prowling' then
             return t.buff.prowl.up or ( t.buff.cat_form.up and t.buff.shadowform.up )
@@ -3202,7 +3197,7 @@ local mt_default_action = {
             return 0
             
         elseif k == 'cast_regen' then
-            return floor( max( state.gcd.execute, t.cast_time ) * state[ class.primaryResource ].regen )
+            return floor( max( state.gcd.execute, t.cast_time ) * state[ class.primaryResource ].regen ) - ( ability and ability.spend or 0 )
 
         elseif k == 'cost' then
             local a = class.abilities[ t.action ].spend
