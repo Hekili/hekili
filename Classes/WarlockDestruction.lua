@@ -219,7 +219,15 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             type = "Curse",
             max_stack = 1,
 
-            generate = function ()
+            generate = function ( t, type )
+                if type == "buff" then
+                    t.count = 0
+                    t.applied = 0
+                    t.expires = 0
+                    t.caster = "nobody"
+                    return
+                end
+                
                 local h = debuff.havoc
                 --[[ local name, _, count, _, duration, expires, caster = FindUnitDebuffByID( "target", 80240, "PLAYER" )
 
@@ -728,12 +736,16 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
                         
             startsCombat = true,
-            indicator = function () return target.unit == lastTarget and "cycle" or nil end,
+            indicator = function () return ( lastTarget == "lastTarget" or target.unit == lastTarget ) and "cycle" or nil end,
             cycle = "havoc",
             
             usable = function () return active_enemies > 1 end,
             handler = function ()
-                applyDebuff( "target", "havoc" )
+                if class.abilities.havoc.indicator == "cycle" then
+                    active_dot.havoc = active_dot.havoc + 1
+                else
+                    applyDebuff( "target", "havoc" )
+                end
                 applyBuff( "active_havoc" )
             end,
         },
@@ -766,7 +778,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
             
             startsCombat = true,
-            cycle = "immolate",
+            cycle = function () return not debuff.immolate.refreshable and "immolate" or nil end,
             
             handler = function ()
                 applyDebuff( "target", "immolate" )
