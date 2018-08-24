@@ -428,7 +428,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             talent = "butchery",
 
-            recheck = function () return full_recharge_time - gcd, full_recharge_time end,            
             usable = function () return charges > 1 or active_enemies > 1 or target.time_to_die < ( 9 * haste ) end,
             handler = function ()
                 removeBuff( "butchers_bone_apron" )
@@ -701,6 +700,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             recharge = 6,
             hasteCD = true,
             gcd = "spell",
+
+            spend = -15,
+            spendType = "focus",
             
             startsCombat = true,
             texture = 132176,
@@ -717,8 +719,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
                 if debuff.pheromone_bomb.up then gainCharges( "kill_command", 1 ) end
                 if debuff.shrapnel_bomb.up then applyDebuff( "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
-
-                gain( 15, "focus" )
             end,
         },
         
@@ -771,7 +771,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             talent = "mongoose_bite",
             
-            recheck = function () return focus.time_to_61 end,
             handler = function ()
                 if buff.mongoose_fury.down then applyBuff( "mongoose_fury" )
                 else applyBuff( "mongoose_fury", buff.mongoose_fury.remains, min( 5, buff.mongoose_fury.stack + 1 ) ) end
@@ -870,7 +869,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 1033905,
             
-            recheck = function () return remains - ( duration * 0.3 ), remains, buff.mongoose_fury.remains end,
             handler = function ()
                 removeBuff( "vipers_venom" )
                 applyDebuff( "target", "serpent_sting" )
@@ -994,7 +992,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             aura = "wildfire_bomb",
             bind = function () return current_wildfire_bomb end,
 
-            recheck = function () return full_recharge_time - gcd, full_recharge_time, buff.mongoose_fury.remains, remains - ( duration * 0.3 ), remains end,
             usable = function () return current_wildfire_bomb ~= "pheromone_bomb" or debuff.serpent_sting.up end,
             handler = function ()
                 if current_wildfire_bomb ~= "wildfire_bomb" then
