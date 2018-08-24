@@ -124,7 +124,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
         ironskin_brew = {
             id = 215479,
-            duration = 6,
+            duration = 7,
             max_stack = 1,
         },
         keg_smash = {
@@ -205,6 +205,28 @@ if UnitClassBase( 'player' ) == 'MONK' then
             duration = 10,
             unit = "player",
         },
+
+        ironskin_brew_icd = {
+            duration = 1,
+            generate = function ()
+                local icd = buff.ironskin_brew_icd
+
+                local applied = class.abilities.ironskin_brew.lastCast
+
+                if query_time - applied < 1 then
+                    icd.count = 1
+                    icd.applied = applied
+                    icd.expires = applied + 1
+                    icd.caster = "player"
+                    return
+                end
+
+                icd.count = 0
+                icd.applied = 0
+                icd.expires = 0
+                icd.caster = "nobody"
+            end
+        }
     } )
 
 
@@ -262,31 +284,49 @@ if UnitClassBase( 'player' ) == 'MONK' then
     local staggered_damage = {}
     local total_staggered = 0
 
-    local function trackBrewmasterDamage( event, _, subtype, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, arg1, _, _, _, arg5, _, _, arg8, _, _, arg11 )
-        if destGUID == state.GUID and subtype == "SPELL_ABSORBED" then
-            local now = GetTime()
+    local stagger_ticks = {}
 
-            if arg1 == destGUID and arg5 == 115069 then
-                table.insert( staggered_damage, 1, {
-                    t = now,
-                    d = arg8,
-                    s = 6603
-                } )
-                total_staggered = total_staggered + arg8
+    local function trackBrewmasterDamage( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, arg1, arg2, arg3, arg4, arg5, arg6, _, arg8, _, _, arg11 )
+        if destGUID == state.GUID then
+            if subtype == "SPELL_ABSORBED" then
+                local now = GetTime()
 
-            elseif arg8 == 115069 then
-                table.insert( staggered_damage, 1, {
-                    t = now,
-                    d = arg11,
-                    s = arg1,
-                } )
-                total_staggered = total_staggered + arg11
+                if arg1 == destGUID and arg5 == 115069 then
+                    table.insert( staggered_damage, 1, {
+                        t = now,
+                        d = arg8,
+                        s = 6603
+                    } )
+                    total_staggered = total_staggered + arg8
+
+                elseif arg8 == 115069 then
+                    table.insert( staggered_damage, 1, {
+                        t = now,
+                        d = arg11,
+                        s = arg1,
+                    } )
+                    total_staggered = total_staggered + arg11
+
+                end
+            elseif subtype == "SPELL_PERIODIC_DAMAGE" and sourceGUID == state.GUID and arg1 == 124255 then
+                table.insert( stagger_ticks, 1, arg4 )
+                stagger_ticks[ 31 ] = nil
 
             end
         end
     end
 
-    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", trackBrewmasterDamage )
+    -- Use register event so we can access local data.
+    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ()
+        trackBrewmasterDamage( "COMBAT_LOG_EVENT_UNFILTERED", CombatLogGetCurrentEventInfo() )
+    end )
+
+    local function resetStaggerTicks()
+        table.wipe( stagger_ticks )
+    end
+
+    spec:RegisterEvent( "PLAYER_REGEN_ENABLED", resetStaggerTicks )
+
 
     function stagger_in_last( t )
         local now = GetTime()
@@ -336,35 +376,58 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 else return 0 end
             end
 
-            if k == "heavy" then
-                return stagger == debuff.heavy_stagger and stagger.up
-                
+            -- SimC expressions.
+
+            if k == "light" then
+                return stagger == debuff.light_stagger and stagger.up
+            
             elseif k == "moderate" then
                 return stagger == debuff.moderate_stagger and stagger.up
                 
-            elseif k == "light" then
-                return stagger == debuff.light_stagger and stagger.up
+            elseif k == "heavy" then
+                return stagger == debuff.heavy_stagger and stagger.up
                 
             elseif k == "none" then
                 return stagger.down
                 
-            elseif k == 'tick' then
+            elseif k == 'percent' or k == 'pct' then
+                -- stagger tick dmg / current hp
+                return ceil( 100 * t.tick / health.current )
+
+            elseif k == 'tick' or k == 'amount' then
                 if bt then
-                    return t.amount / 20
+                    return t.amount_remains / 20
                 end
-                return t.amount / t.ticks_remain
+                return t.amount_remains / t.ticks_remain
 
             elseif k == 'ticks_remain' then
                 return floor( stagger.remains / 0.5 )
 
-            elseif k == 'amount' then
+            elseif k == 'amount_remains' then
                 if bt then
-                    t.amount = bt.GetNormalStagger()
+                    t.amount_remains = bt.GetNormalStagger()
                 else
-                    t.amount = UnitStagger( 'player' )
+                    t.amount_remains = UnitStagger( 'player' )
                 end
-                return t.amount
+                return t.amount_remains
 
+            elseif k:sub( 1, 17 ) == "last_tick_damage_" then
+                local ticks = k:match( "(%d+)$" )
+                ticks = tonumber( ticks )
+
+                if not ticks or ticks == 0 then return 0 end
+
+                -- This isn't actually looking backwards, but we'll worry about it later.
+                local total = 0
+
+                for i = 1, ticks do
+                    total = total + ( stagger_ticks[i] or 0 )
+                end
+
+                return total
+
+            
+                -- Hekili-specific expressions.
             elseif k == 'incoming_per_second' then
                 return avg_stagger_ps_in_last( 10 )
 
@@ -400,6 +463,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 120,
             gcd = "off",
             
+            toggle = "defensives",
             defensive = true,
 
             startsCombat = false,
@@ -533,6 +597,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 120,
             gcd = "spell",
             
+            toggle = "defensives",
             defensive = true,
 
             startsCombat = true,
@@ -553,6 +618,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 8,
             recharge = 8,
             gcd = "spell",
+
+            toggle = "defensives",
+            defensive = true,
             
             spend = 20,
             spendType = "energy",
@@ -560,7 +628,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = false,
             texture = 460692,
             
+            usable = function () return debuff.dispellable_poison.up or debuff.dispellable_disease.up end,
             handler = function ()
+                removeDebuff( "player", "dispellable_poison" )
+                removeDebuff( "player", "dispellable_disease" )
             end,
         },
         
@@ -591,6 +662,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 420,
             gcd = "spell",
             
+            toggle = "defensives",
             defensive = true,
 
             startsCombat = true,
@@ -610,6 +682,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 30,
             gcd = "spell",
             
+            toggle = "defensives",
             defensive = true,
 
             startsCombat = false,
@@ -670,13 +743,18 @@ if UnitClassBase( 'player' ) == 'MONK' then
             hasteCD = true,
             gcd = "off",
 
+            toggle = "defensives",
             defensive = true,
             
             startsCombat = false,
             texture = 1360979,
+
+            nobuff = "ironskin_brew_icd", -- implements 1s self-cooldown
             
+            --readyTime = function () return buff.ironskin_brew.remains - 3 end,
             handler = function ()
-                applyBuff( "ironskin_brew", buff.ironskin_brew.remains + 6 )
+                applyBuff( "ironskin_brew_icd" )
+                applyBuff( "ironskin_brew", buff.ironskin_brew.remains + 7 )
                 spendCharges( "purifying_brew", 1 )
 
                 if set_bonus.tier20_2pc == 1 then healing_sphere.count = healing_sphere.count + 1 end
@@ -776,6 +854,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             recharge = 15,
             hasteCD = true,
             gcd = "off",
+
+            toggle = "defensives",
+            defensive = true,
             
             startsCombat = false,
             texture = 133701,
@@ -880,6 +961,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             toggle = "interrupts",
             
+            usable = function () return target.casting end,
             handler = function ()
                 interrupt()
             end,
@@ -1026,6 +1108,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 300,
             gcd = "spell",
             
+            toggle = "defensives",
             defensive = true,
 
             startsCombat = false,
@@ -1070,7 +1153,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     } )
 
 
-    spec:RegisterPack( "Brewmaster", 20180730.2252, [[dG0ywaqijvLEeqH2eq8jIKAuukofLsRcO0RKKMfIKBrPQ2LGFjjgMq1XeILHiEgIQMgrIRbuTnev4BuQY4quPZbuqRdOOMhrQUhKAFuQCqev0cbspusvvxusvLpkPk0iLuL4KafzLcLzcuGBkPkyNsklvsvupfWufsxvsvXxLufzVQ6VsmyuomvlMIhJQjRWLjTzf9zKmAk50QSAIK8Aiz2qCBe2Tu)w0WjIJlPkPLd1ZjmDLUosTDeP(ornEjvopIY6LuLA(ePSFq)r(OpWWx9Rrs8iKBC7r(4bsibCsa3EpWsMe9bK4CuoL(aTtOpaOyvMWfRIFajoziPp(OpGiPXC9bS2vIamxPc1Tw0MapjQiocAeFVS5yFUvehbVIbjnvmt3(dL0vKGZ5HOIkrpftsKkrjjsPEiBufqXQmHlwfhehb)bm0hYcM638adF1VgjXJqUXTh5JhiHeWJifWFaNETs8daCe1)hyOc(de16eq2jGmhYK4CuoLcz5eYC(EzdziNyfq2mXqw9II6qUWdGCIv8rFGHoDAK9J(1I8rFaNVx2pGtVzX315OEaTDdIoEq)9RrYh9bC(Ez)au3Cl5SSwAjR7b02ni64b93Vg5)OpG2UbrhpOpahFRIp)bUMNextvgoHtPLiGhpoHaYSdYSuhzTceEDqgyHS4bPazGazg65mmt8EtYUMQyWQCyKY9d489Y(bgoHeTlwoM43VMu(OpG2UbrhpOpahFRIp)bUMNextvgoHtPLiGhpoHaYSdYSuhzTceEDqgyHS4bPazGaz2azg65mmCcjAxSCmryKYnKjnPbzg65mmU5KwOfcN64Hrk3qMTpGZ3l7hyM49MKDnvXGv5F)AG)rFaTDdIoEqFG2j0hWXCRJi7Hkkw(I1rbRMe3pGZ3l7hGwOLBvIF)AKJp6d489Y(bKK7L9dOTBq0Xd6VFn79rFaNVx2pGbjZrzsJj7b02ni64b93Vg5(rFaNVx2pGrXcfJ6AQhqB3GOJh0F)AGHF0hW57L9dGCuwROiv0dkcT3hqB3GOJh0F)ArI)rFaTDdIoEqFao(wfF(dSoMs3WEeAzZY4uiZoitkG)aoFVSFGRjDIsl9rxV983VwKiF0hqB3GOJh0hGJVvXN)aI1POuCWsDstgKjnPbz2azI1POuCGihk2xfYabY4zIms5oyWQSiWTCmLkktSZ3lBhbYSdnKXZezKYDWGvzrGWRRWTCmLkGm7dzXdGdzGazg65mC4SfOUUyWQCaRe(1ciZo0qMHEodhoBbQRlgSkhg0yFVSHmWczKeahYS9bC(Ez)asOX3KSRPkgSk)7xlcjF0hqB3GOJh0hGJVvXN)a2azg65mC4SfOUUyWQCyKYnKbcKXTCmLkktSZ3lBhbYSdYIeSh4qgiq218K4AQYWjCkTqEbKzhKzPoYAfi86GmWczXdrGmBHmqGmd9CgmiohvsVfEsyYWiLBideiJNjYiL7GbRYIa3YXuQOmXoFVSDeiZo0qgptKrk3bdwLfbcVUc3YXuQaYSpKfjehYSpKzdKfbYQczg65mC4SfOUUyWQCaRe(1cit6OHmd9CgoC2cuxxmyvomOX(EzdzGfYIhahYSfYabYm0Zz4WzlqDDXGv5awj8RfqM0rdzg65mC4SfOUUyWQCyqJ99YgYalKrYd489Y(boC2cuxxmyv(3VweY)rFaTDdIoEqFao(wfF(dCnpjUMQmCcNslrapECcbKbcKjwNIsXbl1jnzqgiqgptKrk3bdwLfbULJPurzID(Ez7iqM0rdzXd2d8hW57L9dyqCoQswxXGv5F)ArKYh9b02ni64b9b44Bv85paptKrk3bdwLfbULJPubKjDiJeideiZgitBftrgKvfYSbY0wXuKfWkL2qgyHmEMiJuUdOuQIGWfwbSs4xlGmBHmBHmPdzsjoKbcKzONZGbX5Os6TWtctggPCdzGaz8mrgPChqPufbHlSc0sEaNVx2pGbX5OkzDfdwL)9Rfb8p6dOTBq0Xd6dWX3Q4ZFaTvmfzqM0HmYh5bC(Ez)aoM7Tw2eJ1E)9RfHC8rFaTDdIoEqFao(wfF(diKOiiL1Xu6kGm7qdzK)bC(Ez)aOuQIGWfw)(1IyVp6dOTBq0Xd6dWX3Q4ZFad9CgmiohvsVfEsyYaTKhW57L9dShLIlsCeIF)Ari3p6d489Y(bqPufbHlSEaTDdIoEq)9Rfbm8J(aoFVSFadIZrL0BrS4dL(aA7geD8G(7xJK4F0hqB3GOJh0hGJVvXN)ag65myqCoQKEl8KWKHrk3qgiqMnqMHEodgKmhi0Inms5gYKM0GmBGmd9CgmizoqOfBGwcKbcKnYnyWQVwLCwMhwlJCdyDIvHLBquiZwiZ2hW57L9dyWQVwLCwMhw)9RrsKp6dOTBq0Xd6dWX3Q4ZFad9CgW0cRRPksLp0I81JWiL7hW57L9dGPfwxtvKkFOf5Rh)(1iHKp6d489Y(b4wxXqJf7dOTBq0Xd6VFnsi)h9bC(Ez)aCRRi7KwFaTDdIoEq)9RrIu(OpG2UbrhpOpahFRIp)bQVq26iAVbdIZrL0BHNeMmOTBq0bKbcKXZezKYDaLsveeUWkGvc)AbKzhKrXhqgiqMnqM2kMImiRkKzdKPTIPilGvkTHmWcz2az8mrgPChqPufbHlScyLWVwazvHmk(aYSfYSfYSfYSdnKbo4pGZ3l7hypkfxK4ie)(7dibR8KW47h9Rf5J(aA7geD8G(7xJKp6dOTBq0Xd6VFnY)rFaTDdIoEq)9RjLp6dOTBq0Xd6VFnW)OpGZ3l7hqsUx2pG2UbrhpO)(1ihF0hW57L9dWTUIHgl2hqB3GOJh0F)A27J(aoFVSFaU1vKDsRpG2UbrhpO)(7VpaPvS4Y(Rrs8iKBC7r(4bsijc4pGSJ7RPepq9e5SEUgyQw9iygYGSOwkKDess8czZedzs9qNonYk1qgwRxPpSoGmrsOqMtVjHV6aY4wEtPIamgyW1kKfbmdz1NwqlrsIxDazoFVSHmP2P3S476CusDagdm4AfYibmdz1NwqlrsIxDazoFVSHmPM6MBjNL1slzDsDagdgdmrijXRoGmsGmNVx2qgYjwrag7bKGZ5HOpayeYQF1PC6vhqMrNjwHmEsy8fYmk11IaKro5CvYkGSoB7B5yIjncK589YwazzJqwagZ57LTiibR8KW4l6jIlqbJ589YweKGvEsy8Tk6kZmhWyoFVSfbjyLNegFRIUIttrO967LnmgyeYaAxIWkxid73aYm0ZPoGmX6RaYm6mXkKXtcJVqMrPUwazEpGmjy1(sYDVMcYobKnYwdWyoFVSfbjyLNegFRIUIODjcRClI1xbmMZ3lBrqcw5jHX3QORij3lBymNVx2IGeSYtcJVvrxHBDfdnwSWyoFVSfbjyLNegFRIUc36kYoPvymymWiKv)Qt50RoGmL0kMmiBpcfYwlfYC(Myi7eqMtA)qCdIgGXC(Ezlq70Bw8DDokymNVx2IQORqDZTKZYAPLSoymNVx2IQORmCcjAxSCmbPUj6R5jX1uLHt4uAjc4XJtiSZsDK1kq41b24bPaIHEodZeV3KSRPkgSkhgPCdJ589YwufDLzI3Bs21ufdwLj1nrFnpjUMQmCcNslrapECcHDwQJSwbcVoWgpifqSXqpNHHtir7ILJjcJuULM0m0ZzyCZjTqleo1XdJuUTfgZ57LTOk6k0cTCRsqQ2ju0oMBDezpurXYxSoky1K4ggZ57LTOk6ksY9YggZ57LTOk6kgKmhLjnMmymNVx2IQORyuSqXOUMcgZ57LTOk6kihL1kksf9GIq7fgZ57LTOk6kxt6eLw6JUE7zzT0IbX5OkzDK6MOxhtPBypcTSzzCQDsbCymNVx2IQORiHgFtYUMQyWQmPUjAX6uukoyPoPjtAsZgX6uukoqKdf7RccptKrk3bdwLfbULJPurzID(Ez7i2HMNjYiL7GbRYIaHxxHB5ykvy)4bWbXqpNHdNTa11fdwLdyLWVwyhAd9CgoC2cuxxmyvomOX(EzdwscGBlmgyeYiNMKEHmULJPuiJWBNsj0EjfKzidYg60Prwit26quiB9g11uqMnoIStMaYwmTczzdzahr93witwHmKuwXq2TqMHmilcK59aYOLazBczrcGdz3eYKviZXkKTEJ6Akit(wlidrfciBT8gYSCKjKLtidmHZwG6AiZ4cfYg0yFVSHmAjbymNVx2IQORC4SfOUUyWQmPUjABm0Zz4WzlqDDXGv5WiLBq4woMsfLj257LTJyxKG9ahKR5jX1uLHt4uAH8c7SuhzTceEDGnEiITGyONZGbX5Os6TWtctggPCdcptKrk3bdwLfbULJPurzID(Ez7i2HMNjYiL7GbRYIaHxxHB5ykvy)iH423Mivn0Zz4WzlqDDXGv5awj8RfshTHEodhoBbQRlgSkhg0yFVSbB8a42cIHEodhoBbQRlgSkhWkHFTq6On0Zz4WzlqDDXGv5WGg77LnyjbgZ57LTOk6kgeNJQK1vmyvMu3e918K4AQYWjCkTeb84XjeGiwNIsXbl1jnzGWZezKYDWGvzrGB5ykvuMyNVx2oI0rhpypWHXC(EzlQIUIbX5OkzDfdwLj1nrZZezKYDWGvzrGB5ykviDsaXgTvmfzvTrBftrwaRuAdwEMiJuUdOuQIGWfwbSs4xlS1wPlL4GyONZGbX5Os6TWtctggPCdcptKrk3bukvrq4cRaTeymNVx2IQOR4yU3Aztmw7Lu3eT2kMImPt(iWyoFVSfvrxbLsveeUWIu3eTqIIGuwhtPRWo0KhgZ57LTOk6k7rP4IehHGu3eTHEodgeNJkP3cpjmzGwcmMZ3lBrv0vqPufbHlSGXC(EzlQIUIbX5Os6Tiw8HsHXC(EzlQIUIbR(AvYzzEyLu3eTHEodgeNJkP3cpjmzyKYni2yONZGbjZbcTydJuULM0SXqpNbdsMdeAXgOLaYi3GbR(AvYzzEyTmYnG1jwfwUbrT1wymNVx2IQORGPfwxtvKkFOf5RhK6MOn0ZzatlSUMQiv(qlYxpcJuUHXC(EzlQIUc36kgASyHXC(EzlQIUc36kYoPvymNVx2IQORShLIlsCecsDt0131r0EdgeNJkP3cpjmzqB3GOdq4zIms5oGsPkccxyfWkHFTWok(aeB0wXuKv1gTvmfzbSsPnyTHNjYiL7akLQiiCHvaRe(1IQu8HT2ARDObh8hqir5FnsihK7V)(pa]] )
+    spec:RegisterPack( "Brewmaster", 20180824.1034, [[dSu9Aaqiui6rOOYMasFIkfnkOWPaQwfkOxjfnlPuDlQOyxs1VuuggqCmOsldQ4zuPAAOqDnOO2gvk9nGIghqHZHcyDOqQ5HIY9Oc7dkYbPsHwOuYdrbsUivuQpIcKAKurjDsuizLujVefcntQuWnrbk2PIQFIcunuuiyPOarpfWuLcxLkkXxrbkTxq)vWGHCyklwOhJQjRWLjTze(mIgnrDAvwnvu9AOQztv3Mi7wv)wPHdLookqy5i9Cctx01rPTlLY3vKXtf58OiRhfvnFGs7xYqCHnGadlv4CCabxWaeWahg3Xfe3zmJzaiqYewfcG144nsfc8MKcbAr1jjtKkfcG1yYV2a2aciwwkxHaYzIvWONnJ8sz2yNVsZeNeR3YBFo1iYzItIpl634SiH5mdTTzyPlX5vXSgNsXb3znWb3adM9XhAr1jjtKkTlojoeiYE(Kr9WieyyPcNJdi4cgGag4W4oUGGlyIzWacySP8sHaaNedkiWqfCiqd5tuOtuiRqynoEJul0suiJN3(fYFIuuiILwiNvf)5VoeWFIuaBabgkHX6tyd4CCHnGagpV9HacSQrdY2pcIKE4viG(w0RdylycNJdSbeqFl61bSfeGtVuPNbbKvZNYfIzfswnFk3LmNkedleiD3IziGXZBFia5rKHLiKYAyDcMW5UdBab03IEDaBbb40lv6zqaz18PChlpleZkeyI5cbAHUNVs3tggMKrQb3ffctfswnFk3LmNkedlegfIKUSyleOfcKoJleybBHaPJtHaVqGwOilbrNyP5rW09KHivN6JD6HagpV9HadtcR(bzJkbt4CgdBab03IEDaBbb40lv6zqaz18PChlpleZkeyI5cbAHUNVs3tggMKrQb3ffctfswnFk3LmNkedlegfIKUSyleOfcKoJleybBHaPJtHaVqGwimkuKLGOpmjS6hKnQuFStFHalyluKLGOpoccwHgKmYJ3h70xiWHagpV9HaelnpcMUNmeP6emHZXmSbeqFl61bSfe4njfc4zfjDzfbY1p0pG1ZkzKkeW45TpeGvOHlvjycN7wydiGXZBFiWqZ1jiG(w0RdylycNdMWgqaJN3(qaSBE7db03IEDaBbt4CWa2acy882hce97oceSuMGa6BrVoGTGjCodaBabmEE7dbIkvOu83tcb03IEDaBbt4CCbb2acy882hc4ps5ueCo7Gus)ecOVf96a2cMW54IlSbeW45TpeG4OA0V7acOVf96a2cMW54IdSbeW45TpeWEUksQ5dCZ7Ha6BrVoGTGjCoUUdBab03IEDaBbb40lv6zqG0OKA2Ztsd5ggNwimviCWmeW45Tpe4(2w8A4pwM3wycNJlJHnGa6BrVoGTGaC6Lk9miqKLGOh9gh)YMb(kf3(yN(cbAHUNVs3tggMKrQbCzagGbKefctfcJcjRMpL7sMtfIHfcKoUfQzHePrsQ0U3ezipo(WWKmsnW4cbEHaTqrwcIU6zfxBAisTjVs7I044leZkeofc0cXiluKLGOF09f4VpeP6uNfleW45Tpe4O7lWFFis1jycNJlMHnGa6BrVoGTGaC6Lk9miaFx)yN(EKQtIox2OKQiqqnEE7B(cHPcHBHaTq8D9JD67rVXXhwNcrQo1PQKDVOqmRqUdbmEE7dbo6(c83hIuDcMW546wydiG(w0RdyliaNEPspdcisJKuPDS8SqyQqyui3wigwimkK7fYzkegfIVRFStFps1jrNlBusveiOgpV9nFHaVqGxiWleOfcJcjsJKuPDVjYqEC8HHjzKAa3cHPcHrHWOqG0bbNc1SqG0bbeCledlegfY9c5mfIVRFStFps1jrNlBusveiOgpV9nFHaVqGxigwirAKKkT7nrgYJJpmmjJudUdsHaVqGdbmEE7dbWYspcMUNmeP6emHZXfmHnGa6BrVoGTGaC6Lk9miaFx)yN(EKQtIox2OKQiqqnEE7B(cXScbshZqaJN3(qGO344dRtHivNGjCoUGbSbeqFl61bSfeGtVuPNbbWOq6RusMkuZcHrH0xPKm1PkP(fIHfIVRFStFhVsgesMqUtvj7ErHaVqGxiMvigdsHaTqrwcIE0BC8lBg4RuC7JD6leOfIVRFStFhVsgesMqUZIfcy882hce9ghFyDkeP6emHZXLbGnGa6BrVoGTGaC6Lk9miGaR69H0OKAkkeMCuiCGagpV9Ha4vYGqYeYWeohhqGnGa6BrVoGTGaC6Lk9miqAE9ZoLviFpzW52qdt3p66BrVokeOfkYsq0JEJJFzZaFLIBNfBHaTqrwcIoLviFpzW52qdt3p6SyHagpV9Ha5rQ0awZlbt4CCWf2acOVf96a2ccWPxQ0ZGayuO086N97BBXRH)yzEBdPSgIEJJpSo113IEDuiWc2cLMx)SlWQ8Z8HH6V2uktD9TOxhfc8cbAHISee9O344x2mWxP42zXcbmEE7dbYJuPbSMxcMW54GdSbeW45Tpei6no(LndIKE4viG(w0RdylycNJJ7WgqaJN3(qa8kzqizcziG(w0RdylycNJdJHnGa6BrVoGTGaC6Lk9miqKLGOtzfY3tgCUn0W09J(yNEiGXZBFiaLviFpzW52qdt3pGjCooyg2acOVf96a2ccWPxQ0ZGarwcIE0BC8lBg4RuC7JD6leOfcJcfzji6r)UdpRi7JD6leybBHWOqrwcIE0V7WZkYol2cbAHgB2Ju1s5WseioQggB2PkbvfYw0Rfc8cboeW45TpeisvlLdlrG4OkmHZXXTWgqaJN3(qaU8fISurcb03IEDaBbt4CCatydiGXZBFiax(ctwBkeqFl61bSfmHZXbmGnGa6BrVoGTGaC6Lk9miaJSqP51p7rVXXVSzGVsXTRVf96OqGwi(U(Xo9D8kzqizc5ovLS7ffctfIKpkeOfcJcPVsjzQqnlegfsFLsYuNQK6xigwimkeFx)yN(oELmiKmHCNQs29Ic1SqK8rHaVqGxiWleMCui3IziGXZBFiqEKknG18sWeohhga2acOVf96a2ccWPxQ0ZGa6RusMkeZkK74cbmEE7dbmk3EnKlLQFct4C3bb2acy882hcqzfY3tgCUn0W09diG(w0RdylyctiawQYxPOLWgW54cBab03IEDaBbt4CCGnGa6BrVoGTGjCU7Wgqa9TOxhWwWeoNXWgqa9TOxhWwWeohZWgqaJN3(qaSBE7db03IEDaBbt4C3cBabmEE7db4YxiYsfjeqFl61bSfmHZbtydiGXZBFiax(ctwBkeqFl61bSfmHjmHaTPuXTpCooGGlyacy6oiDCWbZ4abMm6FpPacWG1nYGCoJAodAgDHkudzTqNe2LMfIyPfYnhkHX6t3SquLbb7r1rHeRKwiJnxjl1rH4Y2tQIE5YnCVwiCz0fYz5fSyXU0uhfY45TFHCtJn3GLPXX7M9YLB4ETqUZOlKZYlyXIDPPokKXZB)c5MKhrgwIqkRH1j3SxUkxmkjSln1rHWPqgpV9lK)ePOxUGacSkhohh3cgqaS0L48keG5kKZ2jLZM6OqrLyPAH4Ru0YcfvY7f9c5g5CfBkk0VVZiBujcwFHmEE7lk0(EM6LlJN3(IowQYxPOLoi8MaF5Y45TVOJLQ8vkAzthZi2DuUmEE7l6yPkFLIw20XmJLus)0YB)YfZviG3WkK3Squ7gfkYsqOJcjslffkQelvleFLIwwOOsEVOq2pkewQ6my3mVNSqNOqJ91E5Y45TVOJLQ8vkAzthZeVHviVzqKwkkxgpV9fDSuLVsrlB6yg2nV9lxgpV9fDSuLVsrlB6ygx(crwQilxgpV9fDSuLVsrlB6ygx(ctwBA5QCXCfYz7KYztDuiTnLYuHYtslukRfY45sl0jkK1MDEl61E5Y45TVWHXMBWY044lxgpV9fnDmtGvnAq2(rqK0dVwUmEE7lA6yg5rKHLiKYAyDQ9JWHSA(uMzYQ5t5UK5edbP7wmxUmEE7lA6y2WKWQFq2OsTFeoKvZNYDS8KzGjMb9E(kDpzyysgPgCxGjz18PCxYCIHyqsxwSGcsNXGfSG0XbCqJSeeDILMhbt3tgIuDQp2PVCz882x00XmILMhbt3tgIuDQ9JWHSA(uUJLNmdmXmO3ZxP7jddtYi1G7cmjRMpL7sMtmeds6YIfuq6mgSGfKooGdkgrwcI(WKWQFq2Os9Xo9GfSrwcI(4iiyfAqYipEFStp4LlJN3(IMoMXk0WLQu7VjPo8SIKUSIa56h6hW6zLmsTCz882x00XmSBE7xUmEE7lA6yw0V7iqWszQCz882x00XSOsfkf)9KLlJN3(IMoM5ps5ueCo7Gus)SCz882x00XmIJQr)UJYLXZBFrthZSNRIKA(a38(YLXZBFrthZUVTfVg(JL5TnKYAi6no(W6u7hHJ0OKA2Ztsd5ggNIjCWC5QCXCfIrr3xG)(c1IQtfcl9w6LmvOjz912uAHUSq5U4lK4i)J442NfAysgPwi7hf6O7lWFFHIuDQqrwcIcDIcjDcX9KfcdB4CwrwOuwlKSA(uUlzovi(Qeeh)0plKX5lDCpzHYTq3N6lUKPcTefAysgPwO0WRp4Txi7hfk3cnyLWwi1jUkefIlBusvuOOsSuTqT2w9YLXZBFrthZo6(c83hIuDQ9JWrKLGOh9gh)YMb(kf3(yNEqVNVs3tggMKrQbCzagGbKeycdz18PCxYCIHG0XTPinssL29Mid5XXhgMKrQbgdoOrwcIU6zfxBAisTjVs7I044zgoGYiJSee9JUVa)9HivN6SylxgpV9fnDm7O7lWFFis1P2pch8D9JD67rQoj6CzJsQIab145TV5XeUGY31p2PVh9ghFyDkeP6uNQs29cM5E5QCXCfIrGLEemDpzHIQS12TS0cDIcfnHok0(f6xQK5pM3YB)cHX5SlukRfYBPwi1jSuviU9luspssLkk0ruirAKKkTqIJ51cDpNQMqhfABtPfkL1c5nrwi3bPq5XXlk0sleUyUqcLV)qaEVCz882x00XmSS0JGP7jdrQo1(r4qKgjPs7y5jMWWTmed3Dgm476h703JuDs05YgLufbcQXZBFZdo4GdkgI0ijvA3BImKhhFyysgPgWftyGbiDqWPjiDqabxgIH7odFx)yN(EKQtIox2OKQiqqnEE7BEWbNHI0ijvA3BImKhhFyysgPgCheWbVCvUyUc1YBC8fIb3Pc1IQtf6efIZsP6NEMkeRqhfk3cPxkR0crvSE9pHCHIuDsuOOj0rH2VqEvikukBFHKnprHScfP6uH4YgLulK1MDEl612l0slKFNkK(kLKPcLBH03IETqmIkzHaKmHC5Y45TVOPJzrVXXhwNcrQo1(r4GVRFStFps1jrNlBusveiOgpV9npZaPJ5YLXZBFrthZIEJJpSofIuDQ9JWbg6RusMAIH(kLKPovj1NH8D9JD674vYGqYeYDQkz3lahCMXyqanYsq0JEJJFzZaFLIBFStpO8D9JD674vYGqYeYDwSLRYfZvigCcc9fxBQNP2lukRfYnYi4gkew6T0lpMxffIreOq7xiUxT202luRfOqQxOTxOPlLlK(kLKPcjWQ)qPIcz)Oq8HOqILM6Oqr1VtLlJN3(IMoMHxjdcjti3(r4qGv9(qAusnfyYboLlJN3(IMoMLhPsdynVu7hHJ086NDkRq(EYGZTHgMUF013IEDaAKLGOh9gh)YMb(kf3olwqJSeeDkRq(EYGZTHgMUF0zXwUmEE7lA6ywEKknG18sTFeoWinV(z)(2w8A4pwM32qkRHO344dRtD9TOxhGfSP51p7cSk)mFyO(RnLYuxFl61b4Ggzji6rVXXVSzGVsXTZITCz882x00XSO344x2mis6HxlxgpV9fnDmdVsgesMqUCz882x00XmkRq(EYGZTHgMUF0(r4iYsq0PSc57jdo3gAy6(rFStF5Y45TVOPJzrQAPCyjcehvB)iCezji6rVXXVSzGVsXTp2PhumISee9OF3HNvK9Xo9GfSyezji6r)UdpRi7Sybf0XM9ivTuoSebIJQHXMDQsqvHSf9k4GxUmEE7lA6ygx(crwQilxgpV9fnDmJlFHjRnTCz882x00XS8ivAaR5LA)iCWitZRF2JEJJFzZaFLIBxFl61bO8D9JD674vYGqYeYDQkz3lWejFakg6RusMAIH(kLKPovj1NHyW31p2PVJxjdcjti3PQKDVOjjFao4GJjhUfZLlJN3(IMoMzuU9Aixkv)S9JWH(kLKjM5oULlJN3(IMoMrzfY3tgCUn0W09dyctiea]] )
 
 
 end
