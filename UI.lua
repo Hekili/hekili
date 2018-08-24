@@ -576,7 +576,12 @@ do
         ACTIVE_TALENT_GROUP_CHANGED = 1,
         ZONE_CHANGED = 1,
         ZONE_CHANGED_INDOORS = 1,
-        ZONE_CHANGED_NEW_AREA = 1
+        ZONE_CHANGED_NEW_AREA = 1,
+        PLAYER_CONTROL_LOST = 1,
+        PLAYER_CONTROL_GAINED = 1,
+        VEHICLE_UPDATE = 1,
+        PLAYER_MOUNT_DISPLAY_CHANGED = 1,
+        UPDATE_ALL_UI_WIDGETS = 1,
     }
 
 
@@ -1172,6 +1177,10 @@ do
                 self:RegisterEvent( "ZONE_CHANGED" )
                 self:RegisterEvent( "ZONE_CHANGED_INDOORS" )
                 self:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
+
+                self:RegisterEvent( "PLAYER_MOUNT_DISPLAY_CHANGED" )
+                self:RegisterEvent( "VEHICLE_UPDATE" )
+                self:RegisterEvent( "UPDATE_ALL_UI_WIDGETS" )
 
                 -- Update keybindings.
                 for k in pairs( kbEvents ) do
