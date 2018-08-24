@@ -1007,6 +1007,64 @@ all:RegisterAuras( {
         end,
     },
 
+    dispellable_poison = {
+        generate = function ()
+            local dm = debuff.dispellable_poison
+
+            local i = 1
+            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "player", i )
+
+            while( name ) do
+                if debuffType == "Poison" and canDispel then break end
+                
+                i = i + 1
+                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "player", i )
+            end
+            
+            if canDispel then
+                dm.count = count > 0 and count or 1
+                dm.expires = expirationTime > 0 and expirationTime or query_time + 5
+                dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                dm.caster = "nobody"
+                return
+            end
+
+            dm.count = 0
+            dm.expires = 0
+            dm.applied = 0
+            dm.caster = "nobody"
+        end,
+    },
+
+    dispellable_disease = {
+        generate = function ()
+            local dm = debuff.dispellable_disease
+
+            local i = 1
+            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "player", i )
+
+            while( name ) do
+                if debuffType == "Disease" and canDispel then break end
+                
+                i = i + 1
+                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "player", i )
+            end
+            
+            if canDispel then
+                dm.count = count > 0 and count or 1
+                dm.expires = expirationTime > 0 and expirationTime or query_time + 5
+                dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                dm.caster = "nobody"
+                return
+            end
+
+            dm.count = 0
+            dm.expires = 0
+            dm.applied = 0
+            dm.caster = "nobody"
+        end,
+    },
+
     dispellable_magic = {
         generate = function ()
             local dm = debuff.dispellable_magic
