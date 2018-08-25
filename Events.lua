@@ -463,8 +463,11 @@ end )
 RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     ns.updateGear()
     state.combat = 0
-    Hekili:UpdateDisplayVisibility()
 
+    state.swings.mh_actual = 0
+    state.swings.oh_actual = 0
+
+    Hekili:UpdateDisplayVisibility()
     Hekili:PurgeTTD()
 end )
 
@@ -781,7 +784,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             sw.oh_projected = sw.oh_actual + sw.oh_speed
 
         elseif not offhand and time > sw.mh_actual then
-            sw.mh_actual = time
+                sw.mh_actual = time
             sw.mh_speed = UnitAttackSpeed( 'player' ) or sw.mh_speed
             sw.mh_projected = sw.mh_actual + sw.mh_speed
 
