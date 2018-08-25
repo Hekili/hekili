@@ -304,6 +304,15 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         end
     end )
 
+    spec:RegisterStateTable( "next_wi_bomb", setmetatable( {}, {
+        __index = function( t, k )
+            if k == "shrapnel" then return state.current_wildfire_bomb == "shrapnel_bomb"
+            elseif k == "pheromone" then return state.current_wildfire_bomb == "pheromone_bomb"
+            elseif k == "volatile" then return state.current_wildfire_bomb == "volatile_bomb" end
+            return false
+        end
+    } ) )
+
     spec:RegisterStateTable( "bloodseeker", setmetatable( {}, {
         __index = function( t, k )
             if k == "count" then
