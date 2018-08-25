@@ -5782,14 +5782,14 @@ function Hekili:GetOptions()
                                 width = "full",
                             },
         
-                            patreon = {
+                            --[[ patreon = {
                                 type = 'input',
                                 name = "Patreon",
                                 order = 4,
                                 get = function () return "https://www.patreon.com/hekili" end,
                                 set = function () end,
                                 width = "full",
-                            },
+                            }, ]]
                         }
                     },
                 }
