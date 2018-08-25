@@ -108,12 +108,12 @@ state.spec = {}
 state.stance = {}
 state.stat = {}
 state.swings = {
-    mh_actual = GetTime(),
+    mh_actual = 0,
     mh_speed = UnitAttackSpeed( 'player' ) > 0 and UnitAttackSpeed( 'player' ) or 2.6,
-    mh_projected = GetTime() + 2.6,
-    oh_actual = GetTime() + 1.3,
+    mh_projected = 2.6,
+    oh_actual = 0,
     oh_speed = select( 2, UnitAttackSpeed( 'player' ) ) or 2.6,
-    oh_projected = GetTime() + 3.9
+    oh_projected = 3.9
 }
 state.system = {}
 state.table = table
@@ -3721,12 +3721,19 @@ function state.reset( dispName )
     state.health.max = UnitHealthMax( 'player' ) or 10000
     state.health.regen = 0
 
+    state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( 'player' )
+    state.swings.mh_speed = state.swings.mh_speed or 0
+    state.swings.oh_speed = state.swings.oh_speed or 0
+
     state.mainhand_speed = state.swings.mh_speed
     state.offhand_speed = state.swings.oh_speed
     
-    state.nextMH = state.swings.mh_projected
-    state.nextOH = state.swings.oh_projected
-    
+    state.nextMH = ( state.combat > 0 and state.swings.mh_actual > state.combat and state.swings.mh_actual + state.mainhand_speed ) or 0
+    state.nextOH = ( state.combat > 0 and state.swings.oh_actual > state.combat and state.swings.oh_actual + state.offhand_speed ) or 0
+
+    state.swings.mh_pseudo = nil    
+    state.swings.oh_pseudo = nil
+
     -- Special case spells that suck.
     if class.abilities[ 'ascendance' ] and state.buff.ascendance.up then
         setCooldown( 'ascendance', state.buff.ascendance.remains + 165 )
