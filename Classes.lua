@@ -2230,6 +2230,12 @@ local function runHandler( key, no_start )
     
     if state.time == 0 and ability.startsCombat and not no_start then
         state.false_start = state.query_time - 0.01
+
+        -- Assume MH swing at combat start and OH swing half a swing later?
+        if state.target.distance < 8 then
+            if state.swings.mainhand_speed > 0 and state.nextMH == 0 then state.swings.mh_pseudo = state.false_start end
+            if state.swings.offhand_speed > 0 and state.nextOH == 0 then state.swings.oh_pseudo = state.false_start + ( state.offhand_speed / 2 ) end
+        end
     end
 
     state.cast_start = 0
