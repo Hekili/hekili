@@ -469,11 +469,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = function () return 12 * haste end,
             recharge = function () return 12 * haste end,
             gcd = "spell",
+
+            velocity = 50,
             
             startsCombat = true,
             texture = 2058007,
             
-            recheck = function () return buff.frenzy.remains - gcd, buff.frenzy.remains, full_recharge_time - gcd, target.time_to_die - 9, ( 1.4 - charges_fractional ) * recharge end,
             handler = function ()
                 if buff.barbed_shot.down then applyBuff( 'barbed_shot' )
                 else
@@ -562,6 +563,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 15,
             gcd = "spell",
 
+            velocity = 50,
+
             talent = 'chimaera_shot',
             
             startsCombat = true,
@@ -578,6 +581,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
+
+            velocity = 45,
             
             spend = 35,
             spendType = "focus",
@@ -598,6 +603,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 5,
             gcd = "spell",
+
+            velocity = 50,
             
             startsCombat = true,
             texture = 135860,
@@ -800,6 +807,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
+
+            velocity = 50,
             
             spend = 40,
             spendType = "focus",
