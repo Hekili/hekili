@@ -702,11 +702,21 @@ end
 state.interrupt = interrupt
 
 
+-- Pet stuff.
+
+
 local function summonPet( name, duration, spec )
     
     state.pet[ name ] = rawget( state.pet, name ) or {}
     state.pet[ name ].name = name
     state.pet[ name ].expires = state.query_time + ( duration or 3600 )
+
+    local id = class.pets[ name ]
+    state.pet[ id ].id = id
+
+    if id then
+        state.pet[ id ] = state.pet[ name ]
+    end
 
     if spec then
         state.pet[ name ].spec = spec
@@ -715,9 +725,8 @@ local function summonPet( name, duration, spec )
             if type(v) == 'boolean' then state.pet[k] = false end
         end
 
-        state.pet[ spec ] = true
+        state.pet[ spec ] = state.pet[ name ]
     end
-
 end
 state.summonPet = summonPet
 
@@ -735,18 +744,14 @@ state.dismissPet = dismissPet
 
 local function summonTotem( name, elem, duration )
     
-    state.totem[ elem ] = rawget( state.totem, elem ) or {}
-    state.totem[ elem ].name = name
-    state.totem[ elem ].expires = state.query_time + duration
+    if elem then
+        state.totem[ elem ] = rawget( state.totem, elem ) or {}
+        state.totem[ elem ].name = name
+        state.totem[ elem ].expires = state.query_time + duration
+    end
     
-    state.pet[ elem ] = rawget( state.pet, elem ) or {}
-    state.pet[ elem ].name = name
-    state.pet[ elem ].expires = state.query_time + duration
-    
-    state.pet[ name ] = rawget( state.pet, name ) or {}
-    state.pet[ name ].name = name
-    state.pet[ name ].expires = state.query_time + duration
-    
+    summonPet( name, duration )
+    summonPet( elem, duration )    
 end
 state.summonTotem = summonTotem
 
@@ -1610,6 +1615,9 @@ local mt_default_pet = {
             
         elseif k == 'down' then
             return ( t.expires < ( state.query_time ) )
+
+        elseif k == 'id' then
+            return t.exists and UnitGUID( "pet" ):match( "(%d-)%-(.-)$") or nil
             
         end
         
@@ -1625,7 +1633,7 @@ local mt_pets = {
     __index = function(t, k)
         -- Should probably add all totems, but holding off for now.
         for id, pet in pairs( t ) do
-            if type( pet ) == 'table' and pet[ k ] then
+            if type( pet ) == 'table' and pet.up and pet[ k ] then
                 return pet[ k ]
             end
         end
@@ -3650,6 +3658,15 @@ function state.reset( dispName )
         end
     end
     
+    local petID = UnitGUID( "pet" )
+    if petID then
+        petID = tonumber( petID:match( "%-(%d+)%-[0-9A-F]+$" ) )
+
+        if class.pets[ petID ] then
+            summonPet( class.pets[ petID ] )
+        end
+    end
+
     state.target.health.actual = nil
     state.target.health.current = nil
     state.target.health.max = nil

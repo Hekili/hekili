@@ -118,11 +118,13 @@ Hekili.Class = {
     abilityList = {},
     itemList = {},
 
+    packs = {},
+    
+    pets = {},
+
     potions = {},
     potionList = {},
     
-    packs = {},
-
 	hooks = {},
     items = {},
     range = 8,
