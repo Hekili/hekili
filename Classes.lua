@@ -455,6 +455,11 @@ local HekiliSpecMixin = {
     RegisterCycle = function( self, func )
         self.cycle = setfenv( func, state )
     end,
+
+    RegisterPet = function( self, token, id )
+        self.pets[ token ] = id
+        self.pets[ id ] = token
+    end,
 }
 
 --[[ function Hekili:RestoreDefaults()
@@ -564,6 +569,8 @@ function Hekili:NewSpecialization( specID, name, texture )
         abilities = {},
         pseudoAbilities = 0,
         itemAbilities = 0,
+
+        pets = {},
 
         potions = {},
 
@@ -2292,6 +2299,8 @@ function Hekili:SpecializationChanged()
     wipe( class.hooks )
     wipe( class.resources )
 
+    wipe( class.pets )
+
     class.potion = nil
 
     local specs = { 0 }
@@ -2348,6 +2357,7 @@ function Hekili:SpecializationChanged()
     end
 
     wipe( class.stateExprs )
+
 
     for i, specID in ipairs( specs ) do
         local spec = class.specs[ specID ]
@@ -2406,6 +2416,10 @@ function Hekili:SpecializationChanged()
 
             for k, v in pairs( spec.gear ) do
                 if not class.gear[ k ] then class.gear[ k ] = v end
+            end
+
+            for k, v in pairs( spec.pets ) do
+                if not class.pets[ k ] then class.pets[ k ] = v end
             end
 
             for k, v in pairs( spec.potions ) do
