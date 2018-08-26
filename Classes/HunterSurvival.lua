@@ -316,10 +316,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
     spec:RegisterStateTable( "bloodseeker", setmetatable( {}, {
         __index = function( t, k )
             if k == "count" then
-                return state.active_dot.kill_command
+                return active_dot.kill_command
             end
 
-            return state.debuff.kill_command[ k ]
+            return debuff.kill_command[ k ]
         end,
     } ) )
 

@@ -341,7 +341,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         spec:RegisterStateTable( "twisting_nether", setmetatable( {}, {
             __index = function( t, k )
                 if k == 'count' then
-                    return ( state.buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( state.buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( state.buff.shock_of_the_twisting_nether.up and 1 or 0 )
+                    return ( buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( buff.shock_of_the_twisting_nether.up and 1 or 0 )
                 end
 
                 return 0

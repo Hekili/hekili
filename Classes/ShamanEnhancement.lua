@@ -334,9 +334,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     } )
 
 
-    spec:RegisterStateTable( 'feral_spirit', 
-        setmetatable( { onReset = function( self ) self.cast_time = nil end },
-        { __index = function( t, k )
+    spec:RegisterStateTable( 'feral_spirit', setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
+        __index = function( t, k )
             if k == 'cast_time' then
                 t.cast_time = class.abilities.feral_spirit.lastCast or 0
                 return t.cast_time
@@ -347,17 +346,18 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             end
 
             return false
-        end } ) )
+        end 
+    } ) )
 
-    spec:RegisterStateTable( 'twisting_nether',
-        setmetatable( { onReset = function( self ) end },
-        { __index = function( t, k )
+    spec:RegisterStateTable( 'twisting_nether', setmetatable( { onReset = function( self ) end }, { 
+        __index = function( t, k )
             if k == 'count' then
                 return ( buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( buff.shock_of_the_twisting_nether.up and 1 or 0 )
             end
             
             return 0
-        end } ) )
+        end 
+    } ) )
 
 
     spec:RegisterGear( 'waycrest_legacy', 158362, 159631 )
@@ -404,16 +404,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 207999,
             duration = 8 
         } )
-
-        spec:RegisterStateTable( "twisting_nether", setmetatable( {}, {
-            __index = function( t, k )
-                if k == 'count' then
-                    return ( state.buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( state.buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( state.buff.shock_of_the_twisting_nether.up and 1 or 0 )
-                end
-
-                return 0
-            end
-        } ) )
 
     spec:RegisterGear( 'smoldering_heart', 151819 )
     spec:RegisterGear( 'soul_of_the_farseer', 151647 )

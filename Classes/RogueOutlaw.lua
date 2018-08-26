@@ -260,15 +260,16 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
     spec:RegisterStateTable( "stealthed", setmetatable( {}, {
         __index = function( t, k )
-            local auras = stealth[ k ]
-            if not auras then return false end
-
-            for _, aura in pairs( auras ) do
-                if state.buff[ aura ].up then return true end
+            if k == "rogue" then
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
+            elseif k == "mantle" then
+                return buff.stealth.up or buff.vanish.up
+            elseif k == "all" then
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up
             end
 
             return false
-        end,
+        end
     } ) )
 
 

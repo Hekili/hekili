@@ -330,25 +330,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return combo_points.max
     end )
 
-    local stealth = {
-        rogue   = { "stealth", "vanish", "shadow_dance", "subterfuge" },
-        mantle  = { "stealth", "vanish" },
-        all     = { "stealth", "vanish", "shadow_dance", "subterfuge", "shadowmeld" }
-    }
-
-    spec:RegisterStateTable( "stealthed", setmetatable( {}, {
-        __index = function( t, k )
-            local auras = stealth[ k ]
-            if not auras then return false end
-
-            for _, aura in pairs( auras ) do
-                if buff[ aura ].up then return true end
-            end
-
-            return false
-        end,
-    } ) )
-
     -- Legendary from Legion, shows up in APL still.
     spec:RegisterGear( "cinidaria_the_symbiote", 133976 )
     spec:RegisterGear( "denial_of_the_halfgiants", 137100 )
