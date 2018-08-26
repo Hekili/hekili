@@ -2389,8 +2389,8 @@ ns.AbilitySettings = function ()
 
                         abilityToggles[ 'none' ] = 'None'
                         abilityToggles[ 'default' ] = 'Default' .. ( ability.toggle and ( ' |cFFFFD100(' .. ability.toggle .. ')|r' ) or ' |cFFFFD100(none)|r' )
+                        abilityToggles[ 'defensives' ] = 'Defensives'
                         abilityToggles[ 'cooldowns' ] = 'Cooldowns'
-                        abilityToggles[ 'artifact' ] = 'Artifact'
                         abilityToggles[ 'interrupts' ] = 'Interrupts'
                         abilityToggles[ 'potions' ] = 'Potions'
 
@@ -2921,6 +2921,7 @@ do
 
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
+                            toggles.defensives = "Defensives"
                             toggles.cooldowns = "Cooldowns"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
