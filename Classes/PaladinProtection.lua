@@ -138,7 +138,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 
                 if FindUnitBuffByID( "player", 188370 ) then
                     c.count = 1
-                    c.expires = last_consecration + 10
+                    c.expires = last_consecration + 12
                     c.applied = last_consecration
                     c.caster = "player"
                     return
@@ -152,7 +152,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         },
         consecration_dot = {
             id = 204242,
-            duration = 10,
+            duration = 12,
             max_stack = 1,
         },
         contemplation = {
@@ -550,6 +550,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             
             handler = function ()
                 applyBuff( "consecration", 12 )
+                appyDebuff( "target", "consecration_dot" )
                 last_consecration = query_time
             end,
         },
