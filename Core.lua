@@ -644,7 +644,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     aScriptPass = ts or scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
 
                                     if debug then 
-                                        self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", aScriptPass and "PASS" or "FAIL", state.offset, scripts:GetConditionsAndValues( scriptID ) )
+                                        self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", ts and deferred or ( aScriptPass and "PASS" or "FAIL" ), state.offset, scripts:GetConditionsAndValues( scriptID ) )
                                     end
 
                                     -- aScriptPass = ts or aScriptPass
