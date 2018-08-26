@@ -10,6 +10,7 @@ local state = Hekili.State
 
 local CommitKey = ns.commitKey
 
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local GetResourceInfo, GetResourceID, GetResourceKey = ns.GetResourceInfo, ns.GetResourceID, ns.GetResourceKey
 local RegisterEvent = ns.RegisterEvent
 
@@ -40,6 +41,28 @@ local specTemplate = {
     throttleRefresh = false,
     maxRefresh = 10,
 }
+
+
+local function Aura_DetectSharedAura( t, type )
+    if not t then return end
+    local finder = type == "debuff" and FindUnitDebuffByID or FindUnitBuffByID
+    local aura = class.auras[ t.key ]
+
+    local name, icon, count, debuffType, duration, expirationTime, caster = finder( aura.shared, aura.id )
+
+    if name then
+        t.count = count > 0 and count or 1
+        t.applied = expirationTime - duration
+        t.expires = expirationTime
+        t.caster = caster
+        return
+    end
+
+    t.count = 0
+    t.applied = 0
+    t.expires = 0
+    t.caster = "nobody"
+end
 
 
 local HekiliSpecMixin = {
@@ -128,6 +151,11 @@ local HekiliSpecMixin = {
         -- default values.
         data.duration  = data.duration or 30
         data.max_stack = data.max_stack or 1
+
+        -- This is a shared buff that can come from anyone, give it a special generator.
+        if data.shared then
+            a.generate = Aura_DetectSharedAura
+        end            
 
         for element, value in pairs( data ) do
             if type( value ) == 'function' then

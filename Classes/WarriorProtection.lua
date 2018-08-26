@@ -75,6 +75,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 6673,
             duration = 3600,
             max_stack = 1,
+            shared = "player", -- check for anyone's buff on the player.
         },
         berserker_rage = {
             id = 18499,

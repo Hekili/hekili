@@ -71,6 +71,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 3600,
             type = "Magic",
             max_stack = 1,
+            shared = "player", -- use anyone's buff on the player, not just player's.
         },
         blast_wave = {
             id = 157981,

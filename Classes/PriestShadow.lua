@@ -194,6 +194,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             duration = 3600,
             type = "Magic",
             max_stack = 1,
+            shared = "player", -- use anyone's buff on the player, not just player's.
         },
         power_word_shield = {
             id = 17,
