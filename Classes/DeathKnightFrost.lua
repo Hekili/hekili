@@ -436,9 +436,13 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterGear( "toravons_whiteout_bindings", 132458 )
 
 
-    --[[ spec:RegisterStateExpr( "runes", function ()
-        return rune
-    end ) ]]
+    spec:RegisterHook( "reset_precast", function ()
+        local control_expires = action.control_undead.lastCast + 300
+
+        if control_expires > now and pet.up then
+            summonPet( "controlled_undead", control_expires - now )
+        end
+    end )
 
 
     -- Abilities

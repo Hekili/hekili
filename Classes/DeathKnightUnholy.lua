@@ -242,7 +242,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 20,
             generate = function ()
                 local cast = class.abilities.dark_transformation.lastCast or 0
-                local up = ( pet.ghoul.up or pet.abomination.up ) and cast + 20 > state.query_time
+                local up = pet.ghoul.up and cast + 20 > state.query_time
 
                 local dt = buff.dark_transformation
                 dt.name = class.abilities.dark_transformation.name
@@ -471,6 +471,22 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterGear( "uvanimor_the_unbeautiful", 137037 )
 
 
+    spec:RegisterPet( "ghoul", 26125 )    
+    spec:RegisterPet( "gargoyle", 49206 )
+
+    spec:RegisterHook( "reset_precast", function ()
+        local expires = action.summon_gargoyle.lastCast + 35
+        if expires > now then
+            summonPet( "gargoyle", expires - now )
+        end
+
+        local control_expires = action.control_undead.lastCast + 300
+        if control_expires > now and pet.up and not pet.ghoul.up then
+            summonPet( "controlled_undead", control_expires - now )
+        end
+    end )
+
+
     -- Abilities
     spec:RegisterAbilities( {
         antimagic_shell = {
@@ -608,6 +624,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             usable = function () return target.is_undead and target.level <= level + 1 end,
             handler = function ()
+                dismissPet( "ghoul" )
                 summonPet( "controlled_undead", 300 )
             end,
         },
@@ -637,7 +654,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = false,
             texture = 342913,
             
-            usable = function () return pet.alive end,
+            usable = function () return pet.ghoul.alive end,
             handler = function ()
                 applyBuff( "dark_transformation" )
             end,

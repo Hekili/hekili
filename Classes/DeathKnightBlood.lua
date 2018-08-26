@@ -443,6 +443,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterGear( "uvanimor_the_unbeautiful", 137037 )
 
 
+    spec:RegisterHook( "reset_precast", function ()
+        local control_expires = action.control_undead.lastCast + 300
+        if control_expires > now and pet.up then
+            summonPet( "controlled_undead", control_expires - now )
+        end
+    end )    
+
+
     -- Abilities
     spec:RegisterAbilities( {
         antimagic_shell = {
