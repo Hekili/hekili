@@ -586,7 +586,7 @@ do
 
 
     local function CalculateAlpha( id )
-        if C_PetBattles.IsInBattle() or UnitOnTaxi("player") or Hekili.Barber or HasVehicleActionBar() or not Hekili:IsDisplayActive( id ) then
+        if C_PetBattles.IsInBattle() or UnitOnTaxi("player") or Hekili.Barber or HasVehicleActionBar() or IsFlying() or not Hekili:IsDisplayActive( id ) then
             return 0
         end
 
