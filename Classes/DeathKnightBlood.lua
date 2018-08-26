@@ -145,7 +145,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if talent.rune_strike.enabled then gainChargeTime( "rune_strike", amt ) end
 
                 if azerite.eternal_rune_weapon.enabled and buff.dancing_rune_weapon.up then
-                    if buff.dancing_rune.weapon.expires - buff.dancing_rune_weapon.applied < buff.dancing_rune_weapon.duration + 5 then
+                    if buff.dancing_rune_weapon.expires - buff.dancing_rune_weapon.applied < buff.dancing_rune_weapon.duration + 5 then
                         buff.dancing_rune_weapon.expires = min( buff.dancing_rune_weapon.applied + buff.dancing_rune_weapon.duration + 5, buff.dancing_rune_weapon.expires + ( 0.5 * amt ) )
                         buff.eternal_rune_weapon.expires = min( buff.dancing_rune_weapon.applied + buff.dancing_rune_weapon.duration + 5, buff.dancing_rune_weapon.expires + ( 0.5 * amt ) )
                     end
