@@ -2031,13 +2031,21 @@ ns.metatables.mt_default_cooldown = mt_default_cooldown
 local mt_cooldowns = {
     -- The action doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
     __index = function(t, k)
-        if not class.abilities[ k ] then
+
+        local entry = class.abilities[ k ]
+
+        if not entry then
             -- Error( "UNK: " .. k )
             return
         end
         
-        local ability = class.abilities[ k ].id
-        
+        if k ~= entry.key then
+            t[ k ] = t[ entry.key ]
+            return t[ k ]
+        end
+
+        local ability = entry.id
+
         local success, start, duration = pcall( GetSpellCooldown, ability )
         if not success then
             Error( "FAIL: " .. k )
