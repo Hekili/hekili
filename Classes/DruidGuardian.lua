@@ -377,6 +377,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = false,
             texture = 136097,
             
+            toggle = "defensives",
             defensive = true,
 
             handler = function ()
@@ -417,7 +418,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 1033476,
 
             talent = "bristling_fur",
-            defensive = true,
             
             handler = function ()
                 applyBuff( "bristling_fur" )
@@ -515,7 +515,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = false,
             texture = 132091,
             
+            toggle = "defensives",
             defensive = true,
+
             form = "bear_form",
 
             readyTime = function () return buff.frenzied_regeneration.remains end,
@@ -622,6 +624,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = false,
             texture = 1378702,
+
+            toggle = "defensives",
+            defensive = true,
 
             form = "bear_form",
             
@@ -930,7 +935,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = false,
             texture = 135952,
             
+            usable = function () return debuff.dispellable_poison.up or debuff.dispellable_curse.up end,
             handler = function ()
+                removeDebuff( "player", "dispellable_poison" )
+                removeDebuff( "player", "dispellable_curse" )
             end,
         },
         
@@ -1103,6 +1111,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = false,
             texture = 236169,
 
+            toggle = "defensives",
             defensive = true,
             
             handler = function ()
@@ -1126,6 +1135,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 134914,
 
             talent = "restoration_affinity",
+            toggle = "defensives",
+            defensive = true,
+            
             
             handler = function ()
                 unshift()
