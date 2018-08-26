@@ -550,7 +550,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             
             handler = function ()
                 applyBuff( "consecration", 12 )
-                appyDebuff( "target", "consecration_dot" )
+                applyDebuff( "target", "consecration_dot" )
                 last_consecration = query_time
             end,
         },
