@@ -54,6 +54,7 @@ state.azerite = {}
 state.aura = {}
 state.buff = {}
 state.auras = auras
+state.consumable = {}
 state.cooldown = {}
 --[[ state.health = {
     resource = "health",
@@ -990,8 +991,8 @@ local function gain( amount, resource, overcap )
     -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     if overcap then state[ resource ].actual = state[ resource ].current + amount
     else state[ resource ].actual = min( state[ resource ].max, state[ resource ].current + amount ) end
-    ns.callHook( 'gain', amount, resource, overcap )
     if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
+    ns.callHook( 'gain', amount, resource, overcap )
 end
 state.gain = gain
 
@@ -1000,8 +1001,8 @@ local function spend( amount, resource, noHook )
     
     -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
     state[ resource ].actual = max( 0, state[ resource ].actual - amount )
-    if not noHook then ns.callHook( 'spend', amount, resource ) end
     if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end    
+    if not noHook then ns.callHook( 'spend', amount, resource ) end
 end
 state.spend = spend
 
@@ -1187,7 +1188,7 @@ local mt_state = {
             return t.now + t.offset + t.delay
             
         elseif k == 'time_to_die' then
-            return max( 5, Hekili:GetTTD( 'target' ) - ( t.offset + t.delay ) )
+            return max( 5 - t.time, Hekili:GetTTD( 'target' ) - ( t.offset + t.delay ) )
             
         elseif k == 'moving' then
             return ( GetUnitSpeed('player') > 0 )
@@ -1421,7 +1422,7 @@ local mt_state = {
         -- if stack then stack = stack:match( "^(.-\n?.-\n?.-)\n" ) end
 
         Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable." .. ( stack and ( "\n" .. stack ) or "" ) )
-        return k        
+        return nil
     end,
     __newindex = function(t, k, v)
         rawset(t, k, v)
@@ -1685,11 +1686,16 @@ ns.metatables.mt_stances = mt_stances
 -- Need to add a commandline interface for these, but for some reason, I keep neglecting that.
 local mt_toggle = {
     __index = function(t, k)
+        if not k then return end
+
         if metafunctions.toggle[ k ] then
             return metafunctions.toggle[ k ]()
         end
 
-        local toggle = k and Hekili.DB.profile.toggles[ k ]
+        local db = Hekili.DB
+        if not db then return end
+
+        local toggle = db.profile.toggles[ k ]
         if toggle then return toggle.value end
     end
 }
@@ -1700,11 +1706,15 @@ local mt_settings = {
     __index = function(t, k)
         if metafunctions.settings[ k ] then
             return metafunctions.settings[ k ]()
-        elseif Hekili.DB.profile[ 'Class Option: '..k ] ~= nil then
-            return Hekili.DB.profile[ 'Class Option: '..k ]
-        elseif Hekili.DB.profile.trinkets[ state.this_action ] ~= nil then
-            --[[ if class.itemsInAPL[ state.spec.key ] and class.itemsInAPL[ state.spec.key ][ state.this_action ] then return false end ]]
-            return Hekili.DB.profile.trinkets[ state.this_action ][ k ]
+        end
+    
+        local db = Hekili.DB    
+        if not db then return end
+        
+        if db.profile[ 'Class Option: '..k ] ~= nil then
+            return db.profile[ 'Class Option: '..k ]
+        elseif db.profile.trinkets[ state.this_action ] ~= nil then
+            return db.profile.trinkets[ state.this_action ][ k ]
         end
         
         return
@@ -1726,7 +1736,7 @@ local mt_target = {
             return UnitGUID( 'target' ) or 'unknown'
             
         elseif k == 'time_to_die' then
-            return max( 5, Hekili:GetTTD( 'target' ) - ( state.offset + state.delay ) )
+            return max( 5 - state.time, Hekili:GetTTD( 'target' ) - ( state.offset + state.delay ) )
             
         elseif k == 'health_current' then
             return ( UnitHealth('target') > 0 and UnitHealth('target') or 50000 )
@@ -1860,6 +1870,15 @@ local mt_target_health = {
     end
 }
 ns.metatables.mt_target_health = mt_target_health
+
+
+
+local mt_consumable = {
+    __index = function( t, k )
+        return class.potion == k
+    end
+}
+setmetatable( state.consumable, mt_consumable )
 
 
 
@@ -2467,10 +2486,10 @@ local mt_default_buff = {
 
         elseif k == 'name' or k == 'count' or k == 'duration' or k == 'expires' or k == 'applied' or k == 'caster' or k == 'id' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if aura and aura.generate then
-                aura.generate( t, "buff" )
-                --[[ for attr, a_val in pairs( default_buff_values ) do
+                for attr, a_val in pairs( default_buff_values ) do
                     t[ attr ] = rawget( t, attr ) or a_val
-                end ]]
+                end
+                aura.generate( t, "buff" )
                 return t[ k ]
             end
             
