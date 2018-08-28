@@ -283,7 +283,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         if buff.feign_death.up and action ~= "feign_death" then removeBuff( "feign_death" ) end
     end )
 
-    local current_wildfire_bomb = "wildfire_bomb"
+
+    spec:RegisterStateExpr( "current_wildfire_bomb", function () return "wildfire_bomb" end )
+    -- current_wildfire_bomb = "wildfire_bomb"
 
     local function IsActiveSpell( id )
         local slot = FindSpellBookSlotBySpellID( id )
@@ -293,6 +295,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         return id == spellID 
     end
 
+    state.IsActiveSpell = IsActiveSpell
+
     spec:RegisterHook( "reset_precast", function()
         if talent.wildfire_infusion.enabled then
             if IsActiveSpell( 270335 ) then current_wildfire_bomb = "shrapnel_bomb"
@@ -301,6 +305,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             else current_wildfire_bomb = "wildfire_bomb" end                
         else
             current_wildfire_bomb = "wildfire_bomb"
+        end
+
+        if now - action.harpoon.lastCast < 1.5 then
+            setDistance( 5 )
         end
     end )
 
@@ -681,6 +689,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 applyDebuff( "target", "harpoon" )
                 if talent.terms_of_engagement.enabled then applyBuff( "terms_of_engagement" ) end
+                setDistance( 5 )
             end,
         },
         
@@ -704,7 +713,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         kill_command = {
             id = 259489,
             cast = 0,
-            charges = function () return talent.alpha_predator.enabled and 2 or 1 end,
+            charges = function () return talent.alpha_predator.enabled and 2 or nil end,
             cooldown = 6,
             recharge = 6,
             hasteCD = true,
@@ -814,7 +823,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 270323,            
             known = 259495,
             cast = 0,
-            charges = function () return talent.guerrilla_tactics.enabled and 2 or 1 end,
+            charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
             cooldown = 18,
             recharge = 18,
             gcd = "spell",
@@ -889,7 +898,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 270335,
             known = 259495,
             cast = 0,
-            charges = function () return talent.guerrilla_tactics.enabled and 2 or 1 end,
+            charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
             cooldown = 18,
             recharge = 18,
             hasteCD = true,
@@ -962,7 +971,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         volatile_bomb = {
             id = 271045,
             known = 259495,
-            charges = function () return talent.guerrilla_tactics.enabled and 2 or 1 end,
+            charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
             cast = 0,
             charges = 2,
             cooldown = 18,
@@ -986,7 +995,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         wildfire_bomb = {
             id = 259495,
             cast = 0,
-            charges = function () return talent.guerrilla_tactics.enabled and 2 or 1 end,
+            charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
             cooldown = 18,
             recharge = 18,
             hasteCD = true,
@@ -994,7 +1003,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             
             startsCombat = true,
             texture = function ()
-                if current_wildfire_bomb == "wildfire_bomb" then return 2065634 end
+                if not current_wildfire_bomb or current_wildfire_bomb == "wildfire_bomb" then return 2065634 end
                 return action[ current_wildfire_bomb ].texture
             end,
             
