@@ -503,6 +503,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             startsCombat = false,
             texture = 132115,
+
+            essential = true,
             
             noform = "cat_form",
             handler = function ()
@@ -832,8 +834,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cycle = "moonfire_cat",
             aura = "moonfire_cat",
 
-
-            recheck = function () return dot.moonfire_cat.remains - dot.moonfire_cat.duration * 0.3, dot.moonfire_cat.remains end,
             handler = function ()
                 applyDebuff( "target", "moonfire_cat" )
                 debuff.moonfire_cat.pmultiplier = persistent_multiplier
@@ -1290,7 +1290,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 removeStack( "clearcasting" )
             end,
 
-            copy = 213764,
+            copy = { 213764, "swipe" },
         },
 
         teleport_moonglade = {
