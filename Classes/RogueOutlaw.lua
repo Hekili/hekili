@@ -304,6 +304,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     end )
 
 
+    spec:RegisterHook( "spend", function( amt, resource )
+        if amt >= 5 and resource == "combo_points" then
+            gain( 1, "combo_points" )
+        end
+    end )
+
+
     -- Abilities
     spec:RegisterAbilities( {
         adrenaline_rush = {
@@ -729,7 +736,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            notalent= 'slice_and_dice',
+            notalent = 'slice_and_dice',
 
             spend = 25,
             spendType = "energy",
@@ -825,14 +832,22 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             startsCombat = false,
             texture = 132306,
+
+            talent = "slice_and_dice",
             
-            usable = function() return combo_points.current > 0 end,
+            usable = function()
+                if combo_points.current == 0 or buff.slice_and_dice.remains > 6 + ( 6 * combo_points.current ) then return false end
+                return true
+            end,
+
             handler = function ()
                 if talent.alacrity.enabled and combo_points.current > 4 then
                     addStack( "alacrity", 20, 1 )
                 end
+                
                 local combo = min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current )
-                applyBuff( "slice_and_dice", 12 + 6 * ( combo - 1 ) )
+                applyBuff( "slice_and_dice", 6 + 6 * ( combo - 1 ) )
+                spend( combo, "combo_points" )
             end,
         },
         
