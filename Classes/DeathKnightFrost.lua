@@ -669,7 +669,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         empower_rune_weapon = {
             id = 47568,
             cast = 0,
-            charges = function () return 1 + ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1 or 0 ) end,
+            charges = function () return ( level < 116 and equipped.seal_of_necrofantasia ) and 2 or nil end,
             cooldown = function () return 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
             recharge = function () return 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
             gcd = "spell",

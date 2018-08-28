@@ -590,7 +590,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         frost_nova = {
             id = 122,
             cast = 0,
-            charges = function () return talent.ice_ward.enabled and 2 or 1 end,
+            charges = function () return talent.ice_ward.enabled and 2 or nil end,
             cooldown = 30,
             recharge = 30,
             gcd = "spell",

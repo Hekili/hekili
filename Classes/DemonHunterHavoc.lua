@@ -793,7 +793,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         throw_glaive = {
             id = 185123,
             cast = 0,
-            charges = function () return talent.master_of_the_glaive.enabled and 2 or 1 end,
+            charges = function () return talent.master_of_the_glaive.enabled and 2 or nil end,
             cooldown = 9,
             recharge = 9,
             hasteCD = true,

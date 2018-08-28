@@ -384,7 +384,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         charge = {
             id = 100,
             cast = 0,
-            charges = function () return talent.double_time.enabled and 2 or 1 end,
+            charges = function () return talent.double_time.enabled and 2 or nil end,
             cooldown = function () return talent.double_time.enabled and 17 or 20 end,
             recharge = function () return talent.double_time.enabled and 17 or 20 end,
             gcd = "spell",
@@ -489,7 +489,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         heroic_leap = {
             id = 6544,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.timeless_stratagem ) and 3 or 1 end,
+            charges = function () return ( level < 116 and equipped.timeless_stratagem ) and 3 or nil end,
             cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
             recharge = function () return talent.bounding_stride.enabled and 30 or 45 end,
             gcd = "spell",

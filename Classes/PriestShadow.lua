@@ -503,7 +503,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         mind_blast = {
             id = 8092,
             cast = function () return haste * ( buff.shadowy_insight.up and 0 or 1.5 ) end,
-            charges = function () return ( level < 116 and equipped.mangazas_madness ) and 2 or 1 end,
+            charges = function () return ( level < 116 and equipped.mangazas_madness ) and 2 or nil end,
             cooldown = 7.5,
             recharge = 7.5,
             hasteCD = true,

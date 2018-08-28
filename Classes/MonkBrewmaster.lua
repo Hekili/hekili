@@ -771,7 +771,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         keg_smash = {
             id = 121253,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.stormstouts_last_gasp ) and 2 or 1 end,
+            charges = function () return ( level < 116 and equipped.stormstouts_last_gasp ) and 2 or nil end,
             cooldown = 8,
             recharge = 8,
             gcd = "spell",

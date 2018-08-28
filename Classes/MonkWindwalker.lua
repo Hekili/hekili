@@ -783,7 +783,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         roll = {
             id = 109132,
             cast = 0,
-            charges = function () return talent.celerity.enabled and 2 or 1 end,
+            charges = function () return talent.celerity.enabled and 2 or nil end,
             cooldown = function () return talent.celerity.enabled and 15 or 20 end,
             recharge = function () return talent.celerity.eanbled and 15 or 20 end,
             gcd = "spell",

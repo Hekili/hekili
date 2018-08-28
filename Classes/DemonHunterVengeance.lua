@@ -218,8 +218,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     spec:RegisterStateTable( "fragments", {
         real = 0,
         realTime = 0,
-
-        virtual = {},
     } )
 
     spec:RegisterStateFunction( "queue_fragments", function( num )

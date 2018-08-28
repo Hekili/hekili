@@ -596,7 +596,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         divine_steed = {
             id = 190784,
             cast = 0,
-            charges = function () return talent.cavalier.enabled and 2 or 1 end,
+            charges = function () return talent.cavalier.enabled and 2 or nil end,
             cooldown = 45,
             recharge = 45,
             gcd = "spell",
@@ -705,7 +705,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         hand_of_the_protector = {
             id = 213652,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.saruans_resolve ) and 2 or 1 end,
+            charges = function () return ( level < 116 and equipped.saruans_resolve ) and 2 or nil end,
             cooldown = function () return ( ( level < 116 and equipped.saruans_resolve ) and 0.9 or 1 ) * 15 * haste end,
             recharge = function () return ( ( level < 116 and equipped.saruans_resolve ) and 0.9 or 1 ) * 15 * haste end,
             gcd = "spell",
@@ -726,7 +726,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         judgment = {
             id = 275779,
             cast = 0,
-            charges = function () return talent.crusaders_judgment.enabled and 2 or 1 end,
+            charges = function () return talent.crusaders_judgment.enabled and 2 or nil end,
             cooldown = 6,
             recharge = 6,
             hasteCD = true,
@@ -770,7 +770,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         light_of_the_protector = {
             id = 184092,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.saruans_resolve ) and 2 or 1 end ,
+            charges = function () return ( level < 116 and equipped.saruans_resolve ) and 2 or nil end,
             cooldown = function () return ( ( level < 116 and equipped.saruans_resolve ) and 0.9 or 1 ) * 17 * haste end,
             recharge = function () return ( ( level < 116 and equipped.saruans_resolve ) and 0.9 or 1 ) * 17 * haste end,
             hasteCD = true,

@@ -433,7 +433,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         divine_steed = {
             id = 190784,
             cast = 0,
-            charges = function () return talent.cavalier.enabled and 2 or 1 end,
+            charges = function () return talent.cavalier.enabled and 2 or nil end,
             cooldown = 60,
             recharge = 60,
             gcd = "spell",

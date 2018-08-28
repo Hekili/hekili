@@ -374,7 +374,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         heroic_leap = {
             id = 6544,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.timeless_stratagem ) and 3 or 1 end,
+            charges = function () return ( level < 116 and equipped.timeless_stratagem ) and 3 or nil end,
             cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
             recharge = function () return talent.bounding_stride.enabled and 30 or 45 end,
             gcd = "spell",
@@ -591,7 +591,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         shield_block = {
             id = 2565,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.ararats_bloodmirror ) and 3 or 2 end,
+            charges = function () return ( level < 116 and equipped.ararats_bloodmirror ) and 3 or nil end,
             cooldown = 18,
             recharge = 18,
             hasteCD = true,
@@ -680,7 +680,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         spell_reflection = {
             id = 23920,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.ararats_bloodmirror ) and 2 or 1 end,
+            charges = function () return ( level < 116 and equipped.ararats_bloodmirror ) and 2 or nil end,
             cooldown = 25,
             recharge = 25,
             gcd = "off",

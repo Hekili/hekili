@@ -775,7 +775,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         lava_burst = {
             id = 51505,
             cast = function () return buff.lava_surge.up and 0 or ( 2 * haste ) end,
-            charges = function () return talent.echo_of_the_elements.enabled and 2 or 1 end,
+            charges = function () return talent.echo_of_the_elements.enabled and 2 or nil end,
             cooldown = function () return buff.ascendance.up and 0 or ( 8 * haste ) end,
             recharge = function () return buff.ascendance.up and 0 or ( 8 * haste ) end,
             gcd = "spell",
