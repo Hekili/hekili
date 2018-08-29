@@ -273,8 +273,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             fragments.realTime = 0
         end
 
-        table.wipe( fragments.virtual )
-
         if buff.soul_fragments.down then
             -- Apply the buff with zero stacks.
             applyBuff( "soul_fragments", nil, 0 + fragments.real )
