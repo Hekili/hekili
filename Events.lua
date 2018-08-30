@@ -328,6 +328,7 @@ do
     local loc = ItemLocation.CreateEmpty()
         
     local GetAllTierInfoByItemID = C_AzeriteEmpoweredItem.GetAllTierInfoByItemID
+    local GetAllTierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo
     local GetPowerInfo = C_AzeriteEmpoweredItem.GetPowerInfo
     local IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
     local IsPowerSelected = C_AzeriteEmpoweredItem.IsPowerSelected
@@ -348,21 +349,17 @@ do
 
         for slot = 1, MAX_INV_SLOTS do
             local id = GetInventoryItemID( "player", slot )
-            -- print( "Slot " .. slot .. " is " .. ( id or "nil" ) .. ".")
 
             if id and IsAzeriteEmpoweredItemByID( id ) then
-                -- print( "It is Azerite Empowered." )
                 loc:SetEquipmentSlot( slot )
-                local tiers = GetAllTierInfoByItemID( id )
+                local tiers = GetAllTierInfo( loc )
 
                 for tier, tierInfo in ipairs( tiers ) do
                     for _, power in ipairs( tierInfo.azeritePowerIDs ) do
-                        -- print( "We have a power." )
                         local pInfo = GetPowerInfo( power )
 
                         if IsPowerSelected( loc, power ) then
                             local name = class.powers[ pInfo.spellID ]
-                            -- print( pInfo.spellID, name, GetSpellInfo( pInfo.spellID ) )
                             if not name then
                                 Hekili:Error( "Missing Azerite Power info for #" .. pInfo.spellID .. ": " .. GetSpellInfo( pInfo.spellID ) .. "." )
                             else
