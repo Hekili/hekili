@@ -195,6 +195,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 3,
             max_stack = 1,
         },
+        victorious = {
+            id = 32216,
+            duration = 20,
+            max_stack = 1,
+        },
 
         -- Azerite Powers
         crushing_assault = {
@@ -848,6 +853,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132342,
 
             notalent = "impending_victory",
+
+            buff = "victorious",
             
             handler = function ()
                 removeBuff( "victorious" )
