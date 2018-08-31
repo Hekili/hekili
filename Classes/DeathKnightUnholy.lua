@@ -28,23 +28,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 return x == 6
             end,
 
-            value = 1
-        },
-
-        empower_rune = {
-            aura        = 'empower_rune_weapon',
-
-            last = function ()
-                return state.buff.empower_rune_weapon.applied + floor( state.query_time - state.buff.empower_rune_weapon.applied )
-            end,
-
-            stop = function ( x )
-                return x == 6
-            end,
-
-            interval = 5,
-            value = 1
-        },
+            value = 1,    
+        }
     }, setmetatable( {
         expiry = { 0, 0, 0, 0, 0, 0 },
         cooldown = 10,
@@ -152,7 +137,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             if set_bonus.tier20_4pc == 1 then
                 cooldown.army_of_the_dead.expires = max( 0, cooldown.army_of_the_dead.expires - 1 )
-            end        
+            end
         end
     end
 

@@ -30,21 +30,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             value = 1
         },
-
-        empower_rune = {
-            aura        = 'empower_rune_weapon',
-
-            last = function ()
-                return state.buff.empower_rune_weapon.applied + floor( state.query_time - state.buff.empower_rune_weapon.applied )
-            end,
-
-            stop = function ( x )
-                return x == 6
-            end,
-
-            interval = 5,
-            value = 1
-        },
     }, setmetatable( {
         expiry = { 0, 0, 0, 0, 0, 0 },
         cooldown = 10,
