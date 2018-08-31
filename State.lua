@@ -832,6 +832,24 @@ state.raid_event = setmetatable( {}, {
 } )
 
 
+-- We'll pretend we're in an active raid_event.adds when there are multiple targets.
+state.raid_event.adds = setmetatable( {
+    ["in"] = 3600, -- raid_event.adds.in appears to return time to the next add event, so we can just always say it's waaaay in the future.
+}, {
+    __index = function( t, k )
+        if k == "exists" or k == "up" then
+            return state.active_enemies > 1
+        elseif k == "in" then
+            return state.active_enemies > 1 and 0 or 3600
+        elseif k == "duration" or k == "remains" then
+            return state.active_enemies > 1 and state.target.time_to_die or 0
+        end
+
+        return 0
+    end
+} )
+
+
 -- Resource Modeling!
 local events = {}
 local remains = {}
