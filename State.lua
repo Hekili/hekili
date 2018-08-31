@@ -577,7 +577,7 @@ local function applyBuff( aura, duration, stacks, value )
         state.buff[ aura ] = state.buff[ aura ] or {}
         state.buff[ aura ].expires = state.query_time + ( duration or class.auras[ aura ].duration )
         state.buff[ aura ].applied = state.query_time
-        state.buff[ aura ].count = stacks or 1
+        state.buff[ aura ].count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
         state.buff[ aura ].v1 = value or 0
         state.buff[ aura ].caster = 'player'
     end
@@ -656,7 +656,7 @@ local function applyDebuff( unit, aura, duration, stacks, value )
         return
     end
     
-    if not duration then duration = class.auras[ aura ].duration or 15 end
+    duration = duration or class.auras[ aura ].duration or 15
     
     if duration == 0 then
         state.debuff[ aura ].expires = 0
@@ -671,7 +671,7 @@ local function applyDebuff( unit, aura, duration, stacks, value )
         
         state.debuff[ aura ] = state.debuff[ aura ] or {}
         state.debuff[ aura ].expires = state.query_time + duration
-        state.debuff[ aura ].count = stacks or 1
+        state.debuff[ aura ].count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
         state.debuff[ aura ].value = value or 0
         state.debuff[ aura ].applied = state.now
         state.debuff[ aura ].unit = unit or 'target'
@@ -871,7 +871,7 @@ local function forecastResources( resource )
 
     local timeout = FORECAST_DURATION * state.haste
     if state.class.file == "DEATHKNIGHT" and state.runes then
-        timeout = max( timeout, state.runes.expiry[6] - state.query_time )
+        timeout = max( timeout, 1 + state.runes.cooldown )
     end       
 
     local r = state[ resource ]
@@ -936,7 +936,7 @@ local function forecastResources( resource )
 
             if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < now ) then
                 table.remove( events, 1 )
-               
+
                 local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
                 local idx
 
@@ -1006,9 +1006,13 @@ ns.forecastResources = forecastResources
 
 
 local function gain( amount, resource, overcap )
-    -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
-    if overcap then state[ resource ].actual = state[ resource ].current + amount
-    else state[ resource ].actual = min( state[ resource ].max, state[ resource ].current + amount ) end
+    if state[ resource ].gain then
+        state[ resource ].gain( amount, resource, overcap )
+    else
+        -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
+        if overcap then state[ resource ].actual = state[ resource ].current + amount
+        else state[ resource ].actual = min( state[ resource ].max, state[ resource ].current + amount ) end
+    end
     if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
     ns.callHook( 'gain', amount, resource, overcap )
 end
@@ -1016,9 +1020,12 @@ state.gain = gain
 
 
 local function spend( amount, resource, noHook )
-    
-    -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
-    state[ resource ].actual = max( 0, state[ resource ].actual - amount )
+    if state[ resource ].spend then
+        state[ resource ].spend( amount, resource )
+    else
+        -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
+        state[ resource ].actual = max( 0, state[ resource ].actual - amount )
+    end
     if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end    
     if not noHook then ns.callHook( 'spend', amount, resource ) end
 end
@@ -1206,7 +1213,7 @@ local mt_state = {
             return t.now + t.offset + t.delay
             
         elseif k == 'time_to_die' then
-            return max( 5 - t.time, Hekili:GetTTD( 'target' ) - ( t.offset + t.delay ) )
+            return max( state.time < 20 and 2 or 1, 5 - t.time, Hekili:GetTTD( 'target' ) - ( t.offset + t.delay ) )
             
         elseif k == 'moving' then
             return ( GetUnitSpeed('player') > 0 )
@@ -1754,7 +1761,7 @@ local mt_target = {
             return UnitGUID( 'target' ) or 'unknown'
             
         elseif k == 'time_to_die' then
-            return max( 5 - state.time, Hekili:GetTTD( 'target' ) - ( state.offset + state.delay ) )
+            return max( state.time < 20 and 2 or 1, 5 - state.time, Hekili:GetTTD( 'target' ) - ( state.offset + state.delay ) )
             
         elseif k == 'health_current' then
             return ( UnitHealth('target') > 0 and UnitHealth('target') or 50000 )
