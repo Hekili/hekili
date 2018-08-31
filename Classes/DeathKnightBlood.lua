@@ -13,8 +13,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     spec:RegisterResource( Enum.PowerType.Runes, {
         rune_regen = {
-            resource = 'runes',
-
             last = function ()
                 return state.query_time
             end,
@@ -30,6 +28,21 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 return x == 6
             end,
 
+            value = 1
+        },
+
+        empower_rune = {
+            aura        = 'empower_rune_weapon',
+
+            last = function ()
+                return state.buff.empower_rune_weapon.applied + floor( state.query_time - state.buff.empower_rune_weapon.applied )
+            end,
+
+            stop = function ( x )
+                return x == 6
+            end,
+
+            interval = 5,
             value = 1
         },
     }, setmetatable( {
@@ -135,11 +148,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     local spendHook = function( amt, resource )
         if amt > 0 then
             if resource == "runes" then
-                local r = runes
-                r.actual = nil
-
-                r.spend( amt )
-
                 gain( amt * 10, "runic_power" )
 
                 if talent.rune_strike.enabled then gainChargeTime( "rune_strike", amt ) end
@@ -162,18 +170,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterHook( "spend", spendHook )
 
     
-    local gainHook = function( amt, resource )
-        if resource == 'runes' then
-            local r = runes
-            r.actual = nil
-
-            r.gain( amt )
-        end
-    end
-
-    spec:RegisterHook( "gain", gainHook )
-
-
     -- Talents
     spec:RegisterTalents( {
         heartbreaker = 19165, -- 221536
