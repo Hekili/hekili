@@ -82,7 +82,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         berserk = {
             id = 106951,
-            duration = 15,
+            duration = 20,
             max_stack = 1,
         },
         bear_form = {
@@ -477,7 +477,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = function ()
                 if buff.clearcasting.up then return 0 end
 
-                local x = 30
+                local x = 25
                 if buff.scent_of_blood.up then x = x + buff.scent_of_blood.v1 end
                 return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
             end,
@@ -1274,7 +1274,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             spend = function ()
                 if buff.clearcasting.up then return 0 end
-                return 40 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
+                return 35 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
             end,
             spendType = "energy",
             
@@ -1320,7 +1320,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             spend = function ()
                 if buff.clearcasting.up then return 0 end
-                return 45 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
+                return 40 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
             end,
             spendType = "energy",
             
