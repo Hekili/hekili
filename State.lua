@@ -2503,11 +2503,11 @@ local mt_alias_buff = {
 
 -- Table of default handlers for auras (buffs, debuffs).
 local mt_default_buff = {
-    __index = function(t, k)
+    __index = function( t, k )
         local aura = class.auras[ t.key ]
 
         if aura and rawget( aura, "meta" ) and aura.meta[ k ] then
-            return aura.meta[ k ]()
+            return aura.meta[ k ]( t, "buff" )
 
         elseif k == 'name' or k == 'count' or k == 'duration' or k == 'expires' or k == 'applied' or k == 'caster' or k == 'id' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if aura and aura.generate then
@@ -3000,7 +3000,7 @@ local mt_default_debuff = {
         local class_aura = class.auras[ t.key ]
         
         if class_aura and rawget( class_aura, "meta" ) and class_aura.meta[ k ] then
-            return class_aura.meta[ k ]()
+            return class_aura.meta[ k ]( t, "debuff" )
 
         elseif k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
             if class_aura and class_aura.generate then
