@@ -303,19 +303,23 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     } )
 
 
-    spec:RegisterStateExpr( "brain_freeze_active", function ()
-        return buff.brain_freeze.up
-    end )
-
     -- azerite power.
     spec:RegisterStateExpr( "winters_reach_active", function ()
-        return buff.winters_reach.up
+        return false
     end )
 
-    spec:RegisterStateExpr( "fingers_of_frost_active", function ()
-        return buff.fingers_of_frost.up
+    spec:RegisterStateFunction( "winters_reach", function( active )
+        winters_reach_active = active
     end )
-    -- spec:RegisterStateExpr( "")
+
+
+    spec:RegisterStateExpr( "fingers_of_frost_active", function ()
+        return false
+    end )
+
+    spec:RegisterStateFunction( "fingers_of_frost", function( active )
+        fingers_of_frost_active = active
+    end )
 
 
     spec:RegisterStateTable( "ground_aoe", {
@@ -335,7 +339,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         direction = "+",
     } )
 
+
     local FindUnitBuffByID = ns.FindUnitBuffByID
+
 
     spec:RegisterEvent( "UNIT_AURA", function( event, unit )
         if UnitIsUnit( unit, "player" ) and state.talent.incanters_flow.enabled then
@@ -360,21 +366,32 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     end )
 
 
-    spec:RegisterStateTable( "frostbolt_info", {
+    spec:RegisterStateTable( "frost_info", {
         last_target_actual = "nobody",
         last_target_virtual = "nobody",
         watching = true,
+
+        had_brain_freeze = false,
     } )
 
     spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-        if sourceGUID == GUID and subtype == "SPELL_CAST_SUCCESS" and spellID == 116 then
-            frostbolt_info.last_target_actual = destGUID
+        if sourceGUID == GUID and subtype == "SPELL_CAST_SUCCESS" then
+            if spellID == 116 then
+                frost_info.last_target_actual = destGUID
+            end
+
+            if spellID == 44614 and FindUnitBuffByID( "player", 205766 ) then
+                frost_info.had_brain_freeze = true
+            end
         end
     end )
 
+    spec:RegisterStateExpr( "brain_freeze_active", function ()
+        return debuff.winters_chill.up or ( prev_gcd[1].flurry and frost_info.had_brain_freeze )
+    end )
 
     spec:RegisterHook( "reset_precast", function ()
-        frostbolt_info.last_target_virtual = frostbolt_info.last_target_actual
+        frost_info.last_target_virtual = frost_info.last_target_actual
     end )
 
 
@@ -494,6 +511,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 135852,
             
+            usable = function ()
+                return target.distance <= 12
+            end,
             handler = function ()
                 applyDebuff( "target", "cone_of_cold" )
                 active_dot.cone_of_cold = max( active_enemies, active_dot.cone_of_cold )
@@ -626,12 +646,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 removeBuff( "ice_floes" )
 
                 if azerite.tunnel_of_ice.enabled then
-                    if frostbolt_info.last_target_virtual == target.unit then
+                    if frost_info.last_target_virtual == target.unit then
                         addStack( "tunnel_of_ice", nil, 1 )
                     else
                         removeBuff( "tunnel_of_ice" )
                     end
-                    frostbolt_info.last_target_virtual = target.unit
+                    frost_info.last_target_virtual = target.unit
                 end
             end,
         },
@@ -646,7 +666,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             spend = 0.01,
             spendType = "mana",
             
-            toggle = "cooldowns",
+            -- toggle = "cooldowns",
 
             startsCombat = true,
             texture = 629077,
