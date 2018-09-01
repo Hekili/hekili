@@ -1422,15 +1422,694 @@ all:RegisterAbilities( {
             return true
         end,
     },
+} )
 
-    use_items = {
+
+-- Use Items
+do
+    -- Should handle trinkets/items internally.
+    -- 1.  Check APLs and don't try to recommend items that have their own APL entries.
+    -- 2.  Respect item preferences registered in spec options.
+    
+    all:RegisterAbility( "use_items", {
         name = "|cff00ccff[Use Items]|r",
         cast = 0,
         cooldown = 120,
         gcd = 'off',
 
         toggle = 'cooldowns',
+    } )
+end
+
+
+
+-- BFA TRINKETS
+-- EQUIPPED EFFECTS
+all:RegisterAuras( {
+    -- Darkmoon Deck: Squalls
+    suffocating_squall = { id = 276132, duration = 26, max_stack = 1 }, -- I made up max duration (assume 13 card types and 2s per card).
+    
+    -- Construct Overcharger
+    titanic_overcharge = { id = 278070, duration = 10, max_stack = 8 },
+    
+    -- Xalzaix's Veiled Eye
+    xalzaixs_gaze = { id = 278158, duration = 20, max_stack = 1 },
+    
+    -- Syringe of Bloodborne Infirmity
+    wasting_infection = { id = 278110, duration = 12, max_stack = 1 },
+    critical_prowess = { id = 278109, duration = 6, max_stack = 5 },
+
+    -- Frenetic Corpuscle
+    frothing_rage = { id = 278140, duration = 45, max_stack = 4 },
+
+    -- Tear of the Void
+    voidspark = { id = 278831, duration = 14, max_stack = 1 },
+
+    -- Prism of Dark Intensity
+    dark_intensity = { id = 278378, duration = 18, max_stack = 6,
+        meta = {
+            -- Stacks every 3 seconds until expiration; should generalize this kind of thing...
+            stacks = function ( aura )
+                if aura.up then return 1 + floor( ( query_time - aura.applied ) / 3 ) end
+                return 0
+            end
+        }
     },
+
+    -- Plume of the Seaborne Avian
+    seaborne_tempest = { id = 278382, duration = 10, max_stack = 1 },
+
+    -- Drust-Runed Icicle
+    chill_of_the_runes = { id = 278862, duration = 12, max_stack = 1 },
+
+    -- Permafrost-Encrusted Heart
+    coldhearted_instincts = { id = 161381, duration = 15, max_stack = 5, copy = "cold_hearted_instincts",
+        meta = {
+            -- Stacks every 3 seconds until expiration; should generalize this kind of thing...
+            stacks = function ( aura )
+                if aura.up then return 1 + floor( ( query_time - aura.applied ) / 3 ) end
+                return 0
+            end
+        }
+    },
+
+    -- Spiritbound Voodoo Burl
+    coalesced_essence = { id = 278224, duration = 12, max_stack = 1 },
+
+    -- Wing Bone of the Budding Tempest
+    avian_tempest = { id = 278253, duration = 10, max_stack = 5 },
+
+    -- Razorcrest of the Enraged Matriarch
+    winged_tempest = { id = 278248, duration = 16, max_stack = 1 },
+
+    -- Hurricane Heart
+    hurricane_within = { id = 161416, duration = 12, max_stack = 6,
+        meta = {
+            -- Stacks every 2 seconds until expiration; should generalize this kind of thing...
+            stacks = function ( aura )
+                if aura.up then return 1 + floor( ( query_time - aura.applied ) / 2 ) end
+                return 0
+            end
+        }
+    },
+
+    -- Kraulok's Claw
+    krauloks_strength = { id = 278287, duration = 10, max_stack = 1 },
+
+    -- Doom's Hatred
+    blood_hatred = { id = 278356, duration = 10, max_stack = 1 },
+
+    -- Lion's Grace
+    lions_grace = { id = 278815, duration = 10, max_stack = 1 },
+
+    -- Landoi's Scrutiny
+    landois_scrutiny = { id = 281544, duration = 15, max_stack = 1 },
+
+    -- Leyshock's Grand Compilation
+    precision_module = { id = 281791, duration = 15, max_stack = 3 }, -- Crit.
+    iteration_capacitor = { id = 281792, duration = 15, max_stack = 3 }, -- Haste.
+    efficiency_widget = { id = 281794, duration = 15, max_stack = 3 }, -- Mastery.
+    adaptive_circuit = { id = 281795, duration = 15, max_stack = 3 }, -- Versatility.
+    leyshocks_grand_compilation = {
+        alias = { "precision_module", "iteration_capacitor", "efficiency_widget", "adaptive_circuit" },
+        aliasMode = "longest",
+        aliasType = "buff",
+        duration = 15,
+    },
+
+    -- Twitching Tentacle of Xalzaix
+    lingering_power_of_xalzaix = { id = 278155, duration = 30, max_stack = 5 },
+    uncontained_power = { id = 278156, duration = 12, max_stack = 1 },
+
+    -- Surging Alchemist Stone
+    -- I believe these buffs are recycled a lot...
+    agility = { id = 60233, duration = 15, max_stack = 1 },
+    intellect = { id = 60234, duration = 15, max_stack = 1 },
+    strength = { id = 60229, duration = 15, max_stack = 1 },
+
+    -- Harlan's Loaded Dice
+    loaded_die_mastery = { id = 267325, duration = 15, max_stack = 1 },
+    loaded_die_haste = { id = 267327, duration = 15, max_stack = 1 },
+    loaded_die_critical_strike = { id = 267330, duration = 15, max_stack = 1 },
+    loaded_die = {
+        alias = { "loaded_die_mastery", "loaded_die_haste", "loaded_die_critical_strike" },
+        aliasMode = "longest",
+        aliasType = "buff",
+        duration = 15,
+    },
+
+    -- Tiny Electromental in a Jar
+    phenomenal_power = { id = 267179, duration = 30, max_stack = 12 },
+
+    -- Rezan's Gleaming Eye
+    rezans_gleaming_eye = { id = 271103, duration = 15, max_stack = 1 },
+
+    -- Azerokk's Resonating Heart
+    resonating_elemental_heart = { id = 268441, duration = 15, max_stack = 1 },
+
+    -- Gore-Crusted Butcher's Block
+    butchers_eye = { id = 271104, duration = 15, max_stack = 1 },
+
+    -- Briny Barnacle
+    choking_brine = { id = 268194, duration = 6, max_stack = 1 },
+
+    -- Conch of Dark Whispers
+    conch_of_dark_whispers = { id = 271071, duration = 15, max_stack = 1 },
+
+    -- Dead Eye Spyglass
+    dead_ahead = { id = 268756, duration = 10, max_stack = 1 },
+    dead_ahead_crit = { id = 268769, duration = 10, max_stack = 5 },
+
+    -- Lingering Sporepods
+    lingering_spore_pods = { id = 268062, duration = 4, max_stack = 1 },
+
+} )
+
+
+-- BFA TRINKETS
+-- ON USE
+all:RegisterAbility( "void_portal_stone", {
+    cast = 0,
+    cooldown = 60, -- no CD reported in-game yet.
+    gcd = "off",
+
+    item = 161375,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "syphon_from_the_abyss" )
+    end,
+} )
+
+all:RegisterAura( "syphon_from_the_abyss", {
+    id = 278376,
+    duration = 14,
+    max_stack = 7,
+    meta = {
+        -- Stacks every 2 seconds until expiration; should generalize this kind of thing...
+        stacks = function ( aura )
+            if aura.up then return 1 + floor( ( query_time - aura.applied ) / 2 ) end
+            return 0
+        end
+    }
+} )
+
+
+all:RegisterAbility( "azurethos_singed_plumage", {
+    cast = 0,
+    cooldown = 88,
+    gcd = "off",
+
+    item = 161377,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "ruffling_tempest" )
+    end,
+} )
+
+all:RegisterAura( "ruffling_tempest", {
+    id = 278383,
+    duration = 15,
+    max_stack = 1,
+    -- Actually decrements but doesn't appear to use stacks to implement itself.
+} )
+
+
+all:RegisterAbility( "galecallers_beak", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 161379,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "gale_call" )
+    end,
+} )
+
+all:RegisterAura( "gale_call", {
+    id = 278385,
+    duration = 15,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "sublimating_iceshard", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 161382,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "sublimating_power" )
+    end,
+} )
+
+all:RegisterAura( "sublimating_power", {
+    id = 278869,
+    duration = 14,
+    max_stack = 1,
+    -- Decrements after 6 sec but doesn't appear to use stacks to convey this...
+} )
+
+
+all:RegisterAbility( "tzanes_barkspines", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 161411,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "barkspines" )
+    end,
+} )
+
+all:RegisterAura( "barkspines", {
+    id = 278227,
+    duration = 10,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "knot_of_spiritual_fury", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 161413,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "spiritual_fury" )
+    end,
+} )
+
+all:RegisterAura( "spiritual_fury", {
+    id = 278231,
+    duration = 12,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "sandscoured_idol", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 161417,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "secrets_of_the_sands" )
+    end,
+} )
+
+all:RegisterAura( "secrets_of_the_sands", {
+    id = 278267,
+    duration = 20,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "dunewalkers_survival_kit", {
+    cast = 0,
+    cooldown = 105,
+    gcd = "off",
+
+    item = 161418,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "dune_survival_kit" )
+    end,
+} )
+
+all:RegisterAura( "dune_survival_kit", {
+    id = 278260,
+    duration = 12,
+    max_stack = 4,
+    meta = {
+        -- Stacks every 2 seconds until expiration; should generalize this kind of thing...
+        stacks = function ( aura )
+            if aura.up then return 1 + floor( ( query_time - aura.applied ) / 3 ) end
+            return 0
+        end
+    }
+} )
+
+
+all:RegisterAbility( "dooms_wake", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 161462,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "dooms_wake" )
+    end,
+} )
+
+all:RegisterAura( "dooms_wake", {
+    id = 278317,
+    duration = 16,
+    max_stack = 1
+} )
+
+
+all:RegisterAbility( "dooms_fury", {
+    cast = 0,
+    cooldown = 105,
+    gcd = "off",
+
+    item = 161463,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "bristling_fury" )
+    end,
+} )
+
+all:RegisterAura( "bristling_fury", {
+    id = 278364,
+    duration = 18,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "lions_guile", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 161463,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "lions_guile" )
+    end,
+} )
+
+all:RegisterAura( "lions_guile", {
+    id = 278806,
+    duration = 16,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "lions_strength", {
+    cast = 0,
+    cooldown = 105,
+    gcd = "off",
+
+    item = 161463,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "lions_strength" )
+    end,
+} )
+
+all:RegisterAura( "lions_strength", {
+    id = 278819,
+    duration = 18,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "bygone_bee_almanac", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 163936,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "process_improvement" )
+    end,
+} )
+
+all:RegisterAura( "process_improvement", {
+    id = 281543,
+    duration = 12,
+    max_stack = 1,
+} ) -- extends on spending resources, could hook here...
+
+
+all:RegisterAbility( "mydas_talisman", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 158319,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "touch_of_gold" )
+    end,
+} )
+
+all:RegisterAura( "touch_of_gold", {
+    id = 265954,
+    duration = 20,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "merekthas_fang", {
+    cast = 3,
+    channeled = true,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 158367,
+    toggle = "cooldowns",
+
+    -- not sure if this debuffs during the channel...
+} )
+
+
+all:RegisterAbility( "razdunks_big_red_button", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 159611,
+    toggle = "cooldowns",
+
+    velocity = 10,
+} )
+
+
+all:RegisterAbility( "galecallers_boon", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 159614,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "galecallers_boon" )
+    end,
+} )
+
+all:RegisterAura( "galecallers_boon", {
+    id = 268311,
+    duration = 10,
+    max_stack = 1,
+    meta = {
+        remains = function( t )
+            if t.up then return max( 1, action.galecallers_boon.lastCast + 10 - query_time ) end
+            return 0
+        end
+    }
+} )
+
+
+all:RegisterAbility( "ignition_mages_fuse", {
+    cast = 0,
+    cooldown = 20,
+    gcd = "off",
+
+    item = 159615,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "ignition_mages_fuse" )
+    end,
+} )
+
+all:RegisterAura( "ignition_mages_fuse", {
+    id = 271115,
+    duration = 20,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "lustrous_golden_plumage", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 159617,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "golden_luster" )
+    end,
+} )
+
+all:RegisterAura( "golden_luster", {
+    id = 271107,
+    duration = 20,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "mchimbas_ritual_bandages", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 159618,
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "ritual_wraps" )
+    end,
+} )
+
+all:RegisterAura( "ritual_wraps", {
+    id = 265946,
+    duration = 6,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "rotcrusted_voodoo_doll", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 159624,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyDebuff( "target", "rotcrusted_voodoo_doll" )
+    end,
+} )
+
+all:RegisterAura( "rotcrusted_voodoo_doll", {
+    id = 271465,
+    duration = 6,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "vial_of_animated_blood", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 159625,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "blood_of_my_enemies" )
+    end,
+} )
+
+all:RegisterAura( "blood_of_my_enemies", {
+    id = 268836,
+    duration = 18,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "jes_howler", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 159627,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "motivating_howl" )
+    end,
+} )
+
+all:RegisterAura( "motivating_howl", {
+    id = 266047,
+    duration = 12,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "balefire_branch", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 159630,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "kindled_soul" )
+    end,
+} )
+
+all:RegisterAura( "kindled_soul", {
+    id = 268998,
+    duration = 20,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "sanguinating_totem", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 159624,
+    toggle = "defensives",
+} )
+
+
+all:RegisterAbility( "fetish_of_the_tormented_mind", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 160833,
+    toggle = "defensives",
+
+    handler = function ()
+        applyDebuff( "target", "doubting_mind" )
+    end,
+} )
+
+all:RegisterAura( "doubting_mind", {
+    id = 273559,
+    duration = 5,
+    max_stack = 1
 } )
 
 
