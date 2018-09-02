@@ -957,7 +957,9 @@ local function forecastResources( resource )
 
                 local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
 
-                local v = max( 0, min( r.max, val + bonus + ( type( e.value ) == 'number' and e.value or e.value( now ) ) ) )
+                local v = max( 0, min( r.max, val + bonus ) )
+                v = max( 0, min( r.max, v + ( type( e.value ) == 'number' and e.value or e.value( now ) ) ) )
+
                 local idx
 
                 if r.forecast[ r.fcount ].t == now then
