@@ -224,6 +224,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
         },
 
+        
         -- Fake buffs for forecasting.
         rtb_buff_1 = {
             duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
@@ -238,6 +239,34 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
             aliasType = "buff",
             duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+        },
+
+
+        -- Azerite Powers
+        brigands_blitz = {
+            id = 277725,
+            duration = 20,
+            max_stack = 10,
+        },
+        deadshot = {
+            id = 272940,
+            duration = 3600,
+            max_stack = 1,
+        },
+        paradise_lost = {
+            id = 278962,
+            duration = 3600,
+            max_stack = 1,
+        },
+        snake_eyes = {
+            id = 275863,
+            duration = 12,
+            max_stack = 5,
+        },
+        storm_of_steel = {
+            id = 273455,
+            duration = 3600,
+            max_stack = 1,
         },
     } )
 
@@ -343,6 +372,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     applyBuff( 'loaded_dice', 45 )
                     return
                 end
+
+                if azerite.brigands_blitz.enabled then
+                    applyBuff( "brigands_blitz" )
+                end
             end,
         },
         
@@ -391,6 +424,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 applyDebuff( 'target', 'between_the_eyes', combo_points.current ) 
+
+                if azerite.deadshot.enabled then
+                    applyBuff( "deadshot" )
+                end
 
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" ) 
             end,
@@ -525,6 +562,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if talent.alacrity.enabled and combo_points.current > 4 then
                     addStack( "alacrity", 20, 1 )
                 end
+                
+                removeBuff( "storm_of_steel" )
+
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
@@ -718,9 +758,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             handler = function ()
                 gain( buff.broadside.up and 2 or 1, 'combo_points' )
+
                 if talent.quick_draw.enabled and buff.opportunity.up then
                     gain( 1, 'combo_points' )
                 end
+
+                removeBuff( "deadshot" )
                 removeBuff( 'opportunity' )
             end,
         },
@@ -768,6 +811,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
                 for _, name in pairs( rtb_buff_list ) do
                     removeBuff( name )
+                end
+
+                if azerite.snake_eyes.enabled then
+                    applyBuff( "snake_eyes", 12, 5 )
                 end
 
                 applyBuff( "rtb_buff_1", 12 + 6 * ( combo_points.current - 1 ) )
