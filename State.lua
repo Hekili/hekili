@@ -3004,31 +3004,34 @@ local mt_default_debuff = {
         if class_aura and rawget( class_aura, "meta" ) and class_aura.meta[ k ] then
             return class_aura.meta[ k ]( t, "debuff" )
 
-        elseif k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
-            if class_aura and class_aura.generate then
-                class_aura.generate( t, "debuff" )
-            else
+        elseif k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then
+            if aura and aura.generate then
+                for attr, a_val in pairs( default_debuff_values ) do
+                    t[ attr ] = rawget( t, attr ) or a_val
+                end
+                aura.generate( t, "debuff" )
+                return t[ k ]
+            end
             
-                local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
+            local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
 
-                if real then
-                    t.name = real.name
-                    t.count = real.count
-                    t.duration = real.duration
-                    t.expires = real.expires
-                    t.applied = max( 0, real.expires - real.duration )
-                    t.caster = real.caster
-                    t.id = real.id
-                    t.timeMod = real.timeMod
-                    t.v1 = real.v1
-                    t.v2 = real.v2
-                    t.v3 = real.v3
-                    
-                    t.unit = real.unit
-                else
-                    for attr, a_val in pairs( default_debuff_values ) do
-                        t[ attr ] = class.auras[ t.key ] and class.auras[ t.key ][ attr ] or a_val
-                    end
+            if real then
+                t.name = real.name
+                t.count = real.count
+                t.duration = real.duration
+                t.expires = real.expires
+                t.applied = max( 0, real.expires - real.duration )
+                t.caster = real.caster
+                t.id = real.id
+                t.timeMod = real.timeMod
+                t.v1 = real.v1
+                t.v2 = real.v2
+                t.v3 = real.v3
+                
+                t.unit = real.unit
+            else
+                for attr, a_val in pairs( default_debuff_values ) do
+                    t[ attr ] = class.auras[ t.key ] and class.auras[ t.key ][ attr ] or a_val
                 end
             end
             
