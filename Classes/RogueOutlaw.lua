@@ -326,6 +326,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 136206,
 
             toggle = 'cooldowns',
+
+            nobuff = "stealth",
             
             handler = function ()
                 applyBuff( 'adrenaline_rush', 20 )
@@ -334,7 +336,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     setCooldown( "stealth", 2 )
                     removeBuff( "stealth" )
                 end
-
                 removeBuff( "vanish" )
                 removeBuff( "shadowmeld" )
 
