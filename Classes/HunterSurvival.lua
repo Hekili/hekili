@@ -725,7 +725,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 132176,
 
-            cycle = function () return talent.bloodseeker.enabled and "bloodseeker" or nil end,
+            cycle = function () return talent.bloodseeker.enabled and "kill_command" or nil end,
             
             usable = function () return pet.alive end,
             handler = function ()
