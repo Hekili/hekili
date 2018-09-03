@@ -2648,6 +2648,9 @@ local mt_buffs = {
         end
 
         if aura.generate then
+            for attr, a_val in pairs( default_debuff_values ) do
+                t[ k ][ attr ] = rawget( t[ k ], attr ) or a_val
+            end
             aura.generate( t[ k ], "buff" )
             return t[ k ]
         end
@@ -3137,7 +3140,10 @@ local mt_debuffs = {
             end
             
             if aura.generate then
-                aura.generate( t[k], "debuff" )
+                for attr, a_val in pairs( default_debuff_values ) do
+                    t[ k ][ attr ] = rawget( t[ k ], attr ) or a_val
+                end
+                aura.generate( t[ k ], "debuff" )
                 return t[ k ]
             end
         
