@@ -501,17 +501,27 @@ local function gainCharges( action, charges )
             state.cooldown[ action ].recharge = 0
             state.cooldown[ action ].recharge_began = 0
         end
+    
+    else
+        -- Error-proof gaining charges for abilities without charges.
+        if charges >= 1 then
+            setCooldown( action, 0 )
+        end
     end
     
 end
 state.gainCharges = gainCharges
 
 
-function state.gainChargeTime( action, time )
+function state.gainChargeTime( action, time )    
+    local ability = class.abilities[ action ]    
+    if not ability then return end
     
-    local ability = class.abilities[ action ]
-    
-    if not ability or not ability.charges then return end
+    if not ability.charges then
+        -- Error-proof gaining charge time on chargeless abilities.
+        cooldown[ action ].expires = cooldown[ action ].expires - time
+        return
+    end
     
     local cooldown = state.cooldown[ action ]
     
@@ -534,8 +544,20 @@ function state.gainChargeTime( action, time )
         cooldown.recharge_began = cooldown.next_charge
         cooldown.next_charge = cooldown.next_charge + ability.recharge
         cooldown.recharge = cooldown.next_charge - ( state.time + time )
+    end    
+end
+
+
+function state.reduceCooldown( action, time )
+    local ability = class.abilities[ action ]
+    if not ability then return end
+
+    if ability.charges then
+        state.gainChargeTime( action, time )
+        return
     end
-    
+
+    cooldown[ action ].expires = cooldown[ action ].expires - time
 end
 
 
@@ -2806,9 +2828,12 @@ ns.metatables.mt_perks = mt_perks
 -- Table for counting active dots.
 local mt_active_dot = {
     __index = function(t, k)
-        if class.auras[ k ] then
-            t[k] = ns.numDebuffs( class.auras[ k ].id )
-            return t[k]
+        local aura = class.auras[ k ]
+        
+        if aura then
+            if rawget( t, aura.key ) then return t[ aura.key ] end
+            t[ k ] = ns.numDebuffs( aura.id )
+            return t[ k ]
             
         else
             return 0
