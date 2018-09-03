@@ -877,18 +877,16 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             charges = 3,
             cooldown = 18,
             recharge = 18,
+            hasteCD = true,
             gcd = "off",
 
-            interrupt = true,
-            
             startsCombat = true,
             texture = 236265,
 
-            nobuff = "shield_of_the_righteous_icd",
-
-            readyTime = function () return gcd.remains end,            
+            readyTime = function () return max( gcd.remains, buff.shield_of_the_righteous_icd.remains, ( not talent.bastion_of_light.enabled or cooldown.bastion_of_light.remains > 0 ) and ( recharge * ( 2 - charges_fractional ) ) or 0 ) end,
             handler = function ()
                 removeBuff( "avengers_valor" )
+
                 applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
                 applyBuff( "shield_of_the_righteous_icd" )
 
