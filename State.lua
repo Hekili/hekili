@@ -2648,7 +2648,7 @@ local mt_buffs = {
         end
 
         if aura.generate then
-            for attr, a_val in pairs( default_debuff_values ) do
+            for attr, a_val in pairs( default_buff_values ) do
                 t[ k ][ attr ] = rawget( t[ k ], attr ) or a_val
             end
             aura.generate( t[ k ], "buff" )
