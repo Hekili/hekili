@@ -296,9 +296,19 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     spec:RegisterGear( "archavons_heavy_hand", 137060 )
     spec:RegisterGear( "weight_of_the_earth", 137077 ) -- NYI.
 
-
     spec:RegisterGear( "soul_of_the_battlelord", 151650 )
 
+
+    local function IsActiveSpell( id )
+        local slot = FindSpellBookSlotBySpellID( id )
+        if not slot then return false end
+
+        local _, _, spellID = GetSpellBookItemName( slot, "spell" )
+        return id == spellID 
+    end
+
+    state.IsActiveSpell = IsActiveSpell
+    
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -439,7 +449,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         
 
         execute = {
-            id = function () return talent.massacre.enabled and 280735 or 5308 end,
+            id = function () return IsActiveSpell( 280735 ) and 280735 or 5308 end,
             known = 5308,
             cast = 0,
             cooldown = 6,
@@ -452,7 +462,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 135358,
             
-            usable = function () return buff.sudden_death.up or buff.stone_heart.up or target.health.pct < ( talent.massacre.enabled and 35 or 20 ) end,
+            usable = function () return buff.sudden_death.up or buff.stone_heart.up or target.health.pct < ( IsActiveSpell( 280735 ) and 35 or 20 ) end,
             handler = function ()
                 if buff.stone_heart.up then removeBuff( "stone_heart" )
                 elseif buff.sudden_death.up then removeBuff( "sudden_death" ) end
