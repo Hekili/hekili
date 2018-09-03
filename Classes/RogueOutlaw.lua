@@ -293,9 +293,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         local a = class.abilities[ ability ]
 
         if a and a.startsCombat then
-            removeBuff( "stealth" )
             removeBuff( "shadowmeld" )
-            setCooldown( "stealth", 2 )
+            if buff.stealth.up then
+                removeBuff( "stealth" )
+                setCooldown( "stealth", 2 )
+            end
 
             if level < 116 and equipped.mantle_of_the_master_assassin then
                 applyBuff( "master_assassins_initiative", 5 )
@@ -326,9 +328,15 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             handler = function ()
                 applyBuff( 'adrenaline_rush', 20 )
+
+                if buff.stealth.up then
+                    setCooldown( "stealth", 2 )
+                    removeBuff( "stealth" )
+                end
+
                 removeBuff( "vanish" )
-                removeBuff( "stealth" )
                 removeBuff( "shadowmeld" )
+
                 if talent.loaded_dice.enabled then
                     applyBuff( 'loaded_dice', 45 )
                     return
