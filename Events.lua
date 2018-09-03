@@ -435,6 +435,7 @@ function ns.updateGear()
     end
 
     ns.updatePowers()
+    ns.updateTalents()
 
     if not gearInitialized then
         C_Timer.After( 3, ns.updateGear )
@@ -447,7 +448,6 @@ end
 
 RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", function()
     ns.updateGear()
-    ns.updateTalents()
 end )
 
 
