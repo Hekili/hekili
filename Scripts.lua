@@ -813,7 +813,7 @@ local function ConvertScript( node, hasModifiers, header )
     if hasModifiers then
         for m, value in pairs( newModifiers ) do
             if node[ m ] then
-                local emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
+                local emulated = ( m ~= "value" and m ~= "value_else" ) and SimToLua( scripts:EmulateSyntax( node[ m ] ) ) or node[ m ]
                 local o = SimToLua( node[ m ] )
                 output.SpecialMods = output.SpecialMods .. " - " .. m .. " : " .. o
 
