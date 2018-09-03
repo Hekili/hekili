@@ -288,6 +288,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return 0
     end )
 
+    
     -- We need to break stealth when we start combat from an ability.
     spec:RegisterHook( "runHandler", function( ability )
         local a = class.abilities[ ability ]
@@ -378,10 +379,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 135610,
             
             usable = function() return combo_points.current > 0 end,
+            
             handler = function ()
                 if talent.prey_on_the_weak.enabled then
-                    applyDebuff( 'target', 'prey_on_the_weak', 6)
-                    return
+                    applyDebuff( 'target', 'prey_on_the_weak', 6 )
                 end
 
                 if talent.alacrity.enabled and combo_points.current > 4 then
@@ -389,6 +390,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 applyDebuff( 'target', 'between_the_eyes', combo_points.current ) 
+
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" ) 
             end,
         },
