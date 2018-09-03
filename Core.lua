@@ -1202,7 +1202,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     state.setCooldown( action, cooldown )
                 end
 
-                -- state.cycle = state.cycle or slot.indicator == 'cycle'
+                state.cycle = slot.indicator == 'cycle'
                 
                 -- Spend resources.
                 ns.spendResources( action )
