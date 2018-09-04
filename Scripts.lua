@@ -820,9 +820,18 @@ local function ConvertScript( node, hasModifiers, header )
     if hasModifiers then
         for m, value in pairs( newModifiers ) do
             if node[ m ] then
-                local emulated = valueModifiers[ m ] and SimToLua( node[ m ] ) or SimToLua( scripts:EmulateSyntax( node[ m ] ) )
+                local emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
                 local o = SimToLua( node[ m ] )
                 output.SpecialMods = output.SpecialMods .. " - " .. m .. " : " .. o
+
+                if valueModifiers[ m ] then
+                    -- For these values, we need to avoid wrapping the whole thing in safenum/safebool and trust that it's written properly.
+                    if emulated:sub( 1, 7 ) == "safenum" then
+                        emulated = emulated:sub( 8 )
+                    elseif emulated:sub( 1, 8 ) == "safebool" then
+                        emulated = emulated:sub( 9 )
+                    end
+                end
 
                 local sf, e
                 if value then
