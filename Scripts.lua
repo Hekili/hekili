@@ -749,6 +749,13 @@ local newModifiers = {
 }
 
 
+local valueModifiers = {
+    sec = true,
+    value = true,
+    value_else = true,
+}
+
+
 local nameMap = {
     call_action_list = "list_name",
     run_action_list = "list_name",
@@ -813,7 +820,7 @@ local function ConvertScript( node, hasModifiers, header )
     if hasModifiers then
         for m, value in pairs( newModifiers ) do
             if node[ m ] then
-                local emulated = ( m ~= "value" and m ~= "value_else" ) and SimToLua( scripts:EmulateSyntax( node[ m ] ) ) or SimToLua( node[ m ] )
+                local emulated = valueModifiers[ m ] and SimToLua( node[ m ] ) or SimToLua( scripts:EmulateSyntax( node[ m ] ) )
                 local o = SimToLua( node[ m ] )
                 output.SpecialMods = output.SpecialMods .. " - " .. m .. " : " .. o
 
