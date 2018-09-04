@@ -464,14 +464,25 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     end )
 
 
-    -- Need hook for SPELL_CAST_SUCCESS to update the real value here.
     spec:RegisterStateExpr( "active_moon", function ()
         return "new_moon"
     end )
 
+    local function IsActiveSpell( id )
+        local slot = FindSpellBookSlotBySpellID( id )
+        if not slot then return false end
 
+        local _, _, spellID = GetSpellBookItemName( slot, "spell" )
+        return id == spellID 
+    end
+
+    state.IsActiveSpell = IsActiveSpell
+    
     spec:RegisterHook( "reset_precast", function ()
-        active_moon = nil
+        if IsActiveSpell( class.abilities.new_moon.id ) then active_moon = "new_moon"
+        elseif IsActiveSpell( class.abilities.half_moon.id ) then active_moon = "half_moon"
+        elseif IsActiveSpell( class.abilities.full_moon.id ) then active_moon = "full_moon"
+        else active_moon = nil end
     end )
 
 
@@ -735,6 +746,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         full_moon = {
             id = 274283,
+            known = 274281,
             cast = 3,
             charges = 3,
             cooldown = 25,
@@ -744,6 +756,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = -40,
             spendType = "astral_power",
 
+            texture = 1392542,
             startsCombat = true,
 
             talent = "new_moon",
@@ -773,7 +786,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             handler = function ()
                 if not buff.moonkin_form.up then unshift() end
-                applyDebuff( "target", "fury_of_elune" )
+                applyDebuff( "target", "fury_of_elune_ap" )
             end,
         },
         
@@ -796,7 +809,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         
 
         half_moon = {
-            id = 274282,
+            id = 274282, 
+            known = 274281,
             cast = 2,
             charges = 3,
             cooldown = 25,
@@ -806,12 +820,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = -20,
             spendType = "astral_power",
             
-            startsCombat = true,
             texture = 1392543,
+            startsCombat = true,
 
             talent = "new_moon",
             bind = "new_moon",
             
+            usable = function () return active_moon == 'half_moon' end,
             handler = function ()
                 spendCharges( "new_moon", 1 )
                 spendCharges( "full_moon", 1 )
@@ -1013,7 +1028,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         
 
         new_moon = {
-            id = 274281,
+            id = 274281, 
             cast = 1,
             charges = 3,
             cooldown = 25,
@@ -1023,6 +1038,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             spend = -10,
             spendType = "astral_power",
 
+            texture = 1392545,
             startsCombat = true,
             
             talent = "new_moon",
