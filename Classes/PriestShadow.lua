@@ -500,30 +500,64 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         
 
+        -- SimulationCraft module for Shadow Word: Void automatically substitutes SW:V for MB when talented.
         mind_blast = {
-            id = 8092,
+            id = function () return talent.shadow_word_void.enabled and 205351 or 8092 end,
             cast = function () return haste * ( buff.shadowy_insight.up and 0 or 1.5 ) end,
-            charges = function () return ( level < 116 and equipped.mangazas_madness ) and 2 or nil end,
-            cooldown = 7.5,
-            recharge = 7.5,
-            hasteCD = true,
+            charges = function ()
+                local n = 1
+                if talent.shadow_word_void.enabled then n = n + 1 end
+                if level < 116 and equipped.mangazas_madness then n = n + 1 end
+                return n > 1 and n or nil
+            end,
+            cooldown = function () return ( talent.shadow_word_void.enabled and 9 or 7.5 ) * haste end,
+            recharge = function () return ( talent.shadow_word_void.enabled and 9 or 7.5 ) * haste end,
             gcd = "spell",
 
             velocity = 15,
 
-            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -12 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) * ( debuff.surrendered_to_madness.up and 0 or 1 ) end,
+            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( ( talent.shadow_word_void.enabled and -15 or -12 ) - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) * ( debuff.surrendered_to_madness.up and 0 or 1 ) end,
             spendType = "insanity",
             
             startsCombat = true,
-            texture = 136224,
+            texture = function () return talent.shadow_word_void.enabled and 610679 or 136224 end,
 
-            notalent = "shadow_word_void",
+            -- notalent = "shadow_word_void",
             
             handler = function ()
                 removeBuff( "shadowy_insight" )
                 removeBuff( "empty_mind" )
             end,
+
+            copy = { "shadow_word_void", 205351 }
         },
+
+
+        --[[ shadow_word_void = {
+            id = 205351,
+            cast = 1.5,
+            charges = 2,
+            cooldown = 9,
+            recharge = 9,
+            hasteCD = true,
+            gcd = "spell",
+
+            velocity = 15,
+
+            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -15 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) * ( debuff.surrendered_to_madness.up and 0 or 1 ) end,
+            spendType = "insanity",
+            
+            startsCombat = true,
+            texture = 610679,
+
+            talent = "shadow_word_void",
+            
+            handler = function ()
+                -- applies voidform (194249)
+                -- applies mind_flay (15407)
+                -- removes shadow_word_pain (589)
+            end,
+        }, ]]
         
 
         mind_bomb = {
