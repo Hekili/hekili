@@ -517,13 +517,14 @@ function state.gainChargeTime( action, time )
     local ability = class.abilities[ action ]    
     if not ability then return end
     
+    local cooldown = state.cooldown[ action ]
+
     if not ability.charges then
         -- Error-proof gaining charge time on chargeless abilities.
-        cooldown[ action ].expires = cooldown[ action ].expires - time
+        cooldown.expires = cooldown.expires - time
         return
     end
     
-    local cooldown = state.cooldown[ action ]
     
     if cooldown.charge == ability.charges then return end
     
@@ -2074,12 +2075,15 @@ local mt_default_cooldown = {
             return t.remains > 0 and 0 or 1
             
         elseif k == 'recharge_time' then
+            if not t.charges then return t.duration end
+            return t.recharge
+            --[[
             if t.charges <= 1 then return t.remains
             elseif class.abilities[ t.key ].charges and t.next_charge > ( state.query_time ) then
                 return ( t.next_charge - ( state.query_time ) )
             end
 
-            return 0
+            return 0 ]]
             
         elseif k == 'up' or k == 'ready' then            
             return ( t.remains == 0 )
@@ -3229,7 +3233,7 @@ local mt_default_action = {
             return state.cooldown[ t.action ].charges_fractional
             
         elseif k == 'recharge_time' then
-            return class.abilities[ t.action ].recharge and state.cooldown[ t.action ].recharge or 0
+            return class.abilities[ t.action ].recharge or 0
            
         elseif k == 'max_charges' then
             return class.abilities[ t.action ].charges or 0
