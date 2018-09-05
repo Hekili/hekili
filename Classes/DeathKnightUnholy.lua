@@ -144,6 +144,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterHook( "spend", spendHook )
 
     
+    spec:RegisterStateFunction( "apply_festermight", function( n )
+        if azerite.festermight.enabled then
+            if buff.festermight.up then
+                addStack( "festermight", buff.festermight.remains, n )
+            else
+                applyBuff( "festermight", nil, n )
+            end
+        end
+    end )
+
+    
     -- Talents
     spec:RegisterTalents( {
         infected_claws = 22024, -- 207272
@@ -355,6 +366,15 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             type = "Magic",
             max_stack = 1,
         },
+
+
+
+        -- Azerite Powers
+        festermight = {
+            id = 274373,
+            duration = 20,
+            max_stack = 99,
+        }
     } )
 
 
@@ -497,9 +517,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             handler = function ()
                 if debuff.festering_wound.stack > 4 then
                     applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.remains - 4 )
+                    apply_festermight( 4 )
                     gain( 12, "runic_power" )
                 else                    
                     gain( 3 * debuff.festering_wound.stack, "runic_power" )
+                    apply_festermight( debuff.festering_wound.stack )
                     removeDebuff( "target", "festering_wound" )
                 end
                 -- summon pets?                
@@ -582,8 +604,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             talent = "clawing_shadows",
             
             handler = function ()
-                if debuff.festering_wound.stack > 1 then applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
+                if debuff.festering_wound.stack > 1 then
+                    applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
                 else removeDebuff( "target", "festering_wound" ) end
+                apply_festermight( 1 )
                 gain( 3, "runic_power" )
             end,
         },
@@ -976,6 +1000,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if debuff.festering_wound.stack > 1 then
                     applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
                 else removeDebuff( "target", "festering_wound" ) end
+                apply_festermight( 1 )
             end,
         },
         
