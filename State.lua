@@ -3037,11 +3037,11 @@ local mt_default_debuff = {
             return class_aura.meta[ k ]( t, "debuff" )
 
         elseif k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then
-            if aura and aura.generate then
+            if class_aura and class_aura.generate then
                 for attr, a_val in pairs( default_debuff_values ) do
                     t[ attr ] = rawget( t, attr ) or a_val
                 end
-                aura.generate( t, "debuff" )
+                class_aura.generate( t, "debuff" )
                 return t[ k ]
             end
             

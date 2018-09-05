@@ -844,7 +844,7 @@ all:RegisterAuras( {
             local aura = debuff.casting
 
             if UnitCanAttack( "player", "target" ) then
-                local _, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitCastingInfo( "target" )
+                local spell, _, _, startCast, endCast, _, _, notInterruptible = UnitCastingInfo( "target" )
         
                 if notInterruptible == false then
                     aura.name = "Casting " .. spell
@@ -856,7 +856,7 @@ all:RegisterAuras( {
                     return
                 end
 
-                _, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitChannelInfo( "target" )
+                spell, _, _, startCast, endCast, _, _, notInterruptible = UnitChannelInfo( "target" )
                 
                 if notInterruptible == false then
                     aura.name = "Casting " .. spell
