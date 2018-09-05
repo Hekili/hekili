@@ -915,7 +915,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
     spec:RegisterOptions( {
         enabled = true,
 
-        aoe = 2,
+        aoe = 3,
     
         nameplates = true,
         nameplateRange = 8,
