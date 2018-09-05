@@ -986,9 +986,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 136085,
             
             usable = function ()
-                -- if not talent.bloodtalons.enabled then return false end
                 if buff.bloodtalons.up then return false end
-                -- if buff.cat_form.down or not buff.prowl.up then return buff.predatory_swiftness.up or time == 0 end
+                if buff.cat_form.down or not buff.prowl.up then return buff.predatory_swiftness.up or time == 0 or boss end
                 return true
             end,
             recheck = function () return buff.bloodtalons.remains end,
