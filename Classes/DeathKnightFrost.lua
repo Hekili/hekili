@@ -403,6 +403,13 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 15,
             max_stack = 1,
         },
+
+        -- Azerite Powers
+        glacial_contagion = {
+            id = 274074,
+            duration = 14,
+            max_stack = 1,
+        }
     } )
 
 
