@@ -297,6 +297,19 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
     state.IsActiveSpell = IsActiveSpell
 
+
+    local pheromoneReset = false
+    local FindUnitDebuffByID = ns.FindUnitDebuffByID
+
+    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ()
+        local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+
+        if sourceGUID == state.GUID and spellID == 259489 and subtype == "SPELL_CAST_SUCCESS" then
+            pheromoneReset = FindUnitDebuffByID( "target", 270332 ) and true or false
+        end
+    end )
+
+
     spec:RegisterHook( "reset_precast", function()
         if talent.wildfire_infusion.enabled then
             if IsActiveSpell( 270335 ) then current_wildfire_bomb = "shrapnel_bomb"
@@ -305,6 +318,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             else current_wildfire_bomb = "wildfire_bomb" end                
         else
             current_wildfire_bomb = "wildfire_bomb"
+        end
+
+        if prev_gcd[1].kill_command and pheromoneReset and cooldown.kill_command.remains > 0 and ( now - action.kill_command.lastCast < 0.25 ) then
+            setCooldown( "kill_command", 0 )
         end
 
         if now - action.harpoon.lastCast < 1.5 then
