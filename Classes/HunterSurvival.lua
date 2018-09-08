@@ -216,7 +216,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         serpent_sting = {
             id = 259491,
-            duration = 15.599,
+            duration = 12,
             type = "Poison",
             max_stack = 1,
         },
