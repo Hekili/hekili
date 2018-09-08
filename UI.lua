@@ -944,8 +944,8 @@ do
             _, _, _, start, duration = UnitCastingInfo( "player" )
             if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
 
-            _, _, _, start, duration = UnitChannelInfo( "player" )
-            if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
+            --[[ _, _, _, start, duration = UnitChannelInfo( "player" )
+            if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end ]]
 
             if conf.delays.type ~= "NONE" then
                 if conf.delays.type == "TEXT" then
