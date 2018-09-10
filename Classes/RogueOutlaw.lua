@@ -799,10 +799,22 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 1373910,
             
             usable = function ()
-                if buff.rtb_buff_1.up then return false end -- don't recommend if we don't know what buff(s) we actually have.
-                if time == 0 and not ( rtb_buffs < 2 and ( buff.loaded_dice.up or buff.grand_melee.down and buff.ruthless_precision.down ) ) then return false end
+                if combo_points.current == 0 then return false end
 
-                return combo_points.current > 0
+                if buff.roll_the_bones.down then return true end
+                
+                -- Don't RtB if we've already done a simulated RtB.
+                if buff.rtb_buff_1.up then return false end
+
+                -- Handle reroll checks for pre-combat.
+                if time == 0 then
+                    if azerite.snake_eyes.rank >= 2 and buff.snake_eyes.stack >= 2 - ( buff.broadside.up and 1 or 0 ) then return false end
+                    if azerite.snake_eyes.enabled and ( rtb_buffs < 2 or ( azerite.snake_eyes.rank == 3 and rtb_buffs < 5 ) ) then return true end
+                    if ( azerite.deadshot.enabled or azerite.ace_up_your_sleeve.enabled ) and ( rtb_buffs < 2 and ( buff.loaded_dice.up or buff.ruthless_precision.remains <= cooldown.between_the_eyes.remains ) ) then return true end
+                    if rtb_buffs < 2 and ( buff.loaded_dice.up or ( not buff.grand_melee.up and not buff.ruthless_precision.up ) ) then return true end
+                end
+
+                return true
             end,
             handler = function ()
                 if talent.alacrity.enabled and combo_points.current > 4 then
