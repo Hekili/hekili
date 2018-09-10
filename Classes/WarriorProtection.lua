@@ -765,7 +765,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132342,
 
-            buff = "victory_rush",
+            buff = "victorious",
             
             handler = function ()
                 removeBuff( "victory_rush" )
