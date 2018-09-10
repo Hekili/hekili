@@ -222,7 +222,7 @@ do
     }
 
 
-    function scripts:SplitExpr( str )
+    function scripts:SplitExpr( str, noisy )
         local output = {}
 
         while( str:len() > 0 ) do
@@ -241,13 +241,19 @@ do
             end
 
             local expr = str:sub( 1, finish )
+            
+            local meat = expr:match( "(%b())" )
+            if meat then
+                meat = meat:sub( 2, -2 )
 
-            if expr:sub( 1, 1 ) == "(" and expr:sub( -1, -1 ) == ")" and expr:find( "[|&]" ) then
-                expr = expr:sub( 2, -2 )
-                local subExpr = scripts:SplitExpr( expr )
-                
-                for _, v in ipairs( subExpr ) do
-                    table.insert( output, v )
+                if meat:find( "[|&]" ) then
+                    local subExpr = scripts:SplitExpr( meat )
+                    
+                    for _, v in ipairs( subExpr ) do
+                        table.insert( output, v )
+                    end
+                else
+                    table.insert( output, expr )
                 end
             else
                 table.insert( output, expr )
@@ -272,8 +278,16 @@ do
         { "^(.-)%.deficit<=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^(.-)%.deficit>=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^cooldown%.([a-z0-9_]+)%.ready$",    "cooldown.%1.remains" },
-        { "^charges_fractional>=?(.-)$",        "(%1-charges_fractional)*recharge" },
-        { "^charges>=?(.-)$",                   "(charges-%1)*recharge" },
+        { "^charges_fractional[>=]+(.-)$",      "(%1-charges_fractional)*recharge" },
+        { "^charges>=?(.-)$",                   "(1+%1-charges_fractional)*recharge" },
+        { "^(cooldown%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$",
+                                                "(%2-%1.charges_fractional)*%1.recharge" },
+        { "^(cooldown%.[a-z0-9_]+)%.charges>=?(.-)$",
+                                                "(1+%2-%1.charges_fractional)*recharge" },
+        { "^(action%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$",
+                                                "(%2-%1.charges_fractional)*%1.recharge" },
+        { "^(action%.[a-z0-9_]+)%.charges>=?(.-)$",
+                                                "(1+%2-%1.charges_fractional)*%1.recharge" },
         { "^(.-time_to_die)<=?(.-)$",           "%1 - %2" },
         { "^(.-)%.time_to_(.-)<=?(.-)$",        "%1.time_to_%2-%3" },
         { "^debuff%.festering_wound%.stack[>=]=?(.-)$", -- UH DK helper during Unholy Frenzy.
@@ -306,6 +320,11 @@ do
     local function ConvertTimeComparison( expr )
         for k, v in pairs( removals ) do
             expr = expr:gsub( k, v )
+        end
+        
+        local bracketed = expr:match( "(%b())" )
+        if bracketed and bracketed:len() == expr:len() then
+            expr = expr:sub( 2, -2 )
         end
 
         local lhs, comp, rhs = expr:match( "^(.-)([<>=]+)(.-)$" )
@@ -357,10 +376,12 @@ do
         return ConvertTimeComparison( expr )
     end
 
-    function scripts:BuildRecheck( conditions, noisy )
+    function scripts:BuildRecheck( conditions )
         local recheck
 
+        conditions = conditions:gsub( " ", "" )
         conditions = self:EmulateSyntax( conditions, true )
+
         local exprs = self:SplitExpr( conditions )
 
         if #exprs > 0 then            
@@ -789,15 +810,18 @@ local function ConvertScript( node, hasModifiers, header )
 
     -- autorecheck...    
     local rs, rc, erc
-    if t and t ~= "" then        
+    if t and t ~= "" then
         rs = scripts:BuildRecheck( node.criteria )
         if rs then 
             rs = SimToLua( rs )
             rc, erc = loadstring( "-- " .. header .. " recheck\n" .. rs )
             if rc then setfenv( rc, state ) end
-        end
 
-        if type( rc ) ~= "function" then rc = nil end
+            if type( rc ) ~= "function" then
+                Hekili:Error( "Recheck function for " .. node.criteria .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
+                rc = nil
+            end    
+        end
     end
 
     local output = {
@@ -874,6 +898,7 @@ local function ConvertScript( node, hasModifiers, header )
 
     return output
 end
+scripts.ConvertScript = ConvertScript
 
 
 function scripts:CheckScript( scriptID, action, elem )
