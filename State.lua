@@ -2046,13 +2046,13 @@ local mt_default_cooldown = {
             return floor( t.charges_fractional )
             
         elseif k == 'charges_max' or k == 'max_charges' then
-            return class.abilities[ t.key ].charges
+            return ability.charges or 1
             
         elseif k == 'recharge' then
-            return class.abilities[ t.key ].recharge
+            return ability.recharge or ability.cooldown or 0
             
         elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
-            return ( ability.charges - t.charges_fractional ) * ability.recharge
+            return ( ( ability.charges or 1 ) - t.charges_fractional ) * ability.recharge
             
         elseif k == 'remains' then            
             if t.key == 'global_cooldown' then
