@@ -222,7 +222,7 @@ do
     }
 
 
-    function scripts:SplitExpr( str, noisy )
+    function scripts:SplitExpr( str )
         local output = {}
 
         while( str:len() > 0 ) do
@@ -241,20 +241,20 @@ do
             end
 
             local expr = str:sub( 1, finish )
-            
+
             local meat = expr:match( "(%b())" )
             if meat then
                 meat = meat:sub( 2, -2 )
-
+                
                 if meat:find( "[|&]" ) then
                     local subExpr = scripts:SplitExpr( meat )
                     
-                    for _, v in ipairs( subExpr ) do
-                        table.insert( output, v )
-                    end
-                else
-                    table.insert( output, expr )
+                for _, v in ipairs( subExpr ) do
+                    table.insert( output, v )
                 end
+            else
+                table.insert( output, expr )
+            end
             else
                 table.insert( output, expr )
             end
@@ -321,7 +321,7 @@ do
         for k, v in pairs( removals ) do
             expr = expr:gsub( k, v )
         end
-        
+
         local bracketed = expr:match( "(%b())" )
         if bracketed and bracketed:len() == expr:len() then
             expr = expr:sub( 2, -2 )
@@ -808,9 +808,20 @@ local function ConvertScript( node, hasModifiers, header )
     
     local se = clean and GetScriptElements( clean )
 
+    local varPool
+
+    if se then
+        for k, v in pairs( se ) do
+            if k:sub( 1, 8 ) == "variable" then
+                varPool = varPool or {}
+                table.insert( varPool, "_" .. ( k:sub( 10 ) ) )
+            end
+        end
+    end
+
     -- autorecheck...    
     local rs, rc, erc
-    if t and t ~= "" then
+    if t and t ~= "" then        
         rs = scripts:BuildRecheck( node.criteria )
         if rs then 
             rs = SimToLua( rs )
@@ -836,6 +847,8 @@ local function ConvertScript( node, hasModifiers, header )
         ModEmulates = {},
         SpecialMods = "",
 
+        Variables = varPool,
+
         Lua = clean and clean:trim() or nil,
         Emulated = t and t:trim() or nil,
         SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil,        
@@ -854,7 +867,28 @@ local function ConvertScript( node, hasModifiers, header )
                         emulated = emulated:sub( 8 )
                     elseif emulated:sub( 1, 8 ) == "safebool" then
                         emulated = emulated:sub( 9 )
+
                     end
+
+                    if node.action == "variable" then
+                        local var_val, var_recheck, var_err
+                        var_val = scripts:BuildRecheck( node[m] )
+                        if var_val then
+                            var_val = SimToLua( var_val )
+                            var_recheck, var_err = loadstring( "-- val " ..header .. " recheck\n" .. var_val )
+                            if var_recheck then setfenv( var_recheck, state ) end
+
+                            if type( var_recheck ) ~= "function" then
+                                Hekili:Error( "Variable recheck function for " .. node.criteria .. " ( " .. ( var_recheck or "nil" ) .. " ) was unsuccessful somehow." )
+                                var_recheck = nil
+                            end
+
+                            output.VarRecheck = var_recheck
+                            output.VarRecheckScript = var_val
+                            output.VarRecheckError = var_err
+                        end
+                    end
+
                 end
 
                 local sf, e
