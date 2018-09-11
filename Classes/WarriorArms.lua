@@ -211,6 +211,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 278826,
             duration = 10,
             max_stack = 1
+        },
+
+        test_of_might = {
+            id = 275540,
+            duration = 12,
+            max_stack = 1
         }
     } )
 
