@@ -1088,9 +1088,23 @@ do
 
         local debug = Hekili.ActiveDebug
 
-        if script and script.Recheck then
+        if script then
+            if script.Recheck then
             recheckHelper( times, script.Recheck() )
         end
+
+            if script.Variables then
+                for i, var in ipairs( script.Variables ) do
+                    local key = rawget( state.variable, var )
+
+                    if key then
+                        local vr = Hekili.Scripts.DB[ key ].VarRecheck
+
+                        if vr then recheckHelper( times, vr() ) end
+                    end
+                end
+            end
+        end      
 
         if stack and #stack > 0 then
             for i, caller in ipairs( stack ) do
@@ -1413,15 +1427,20 @@ local mt_state = {
         
         local app = aura and ( t.buff[ aura_name ].up and t.buff[ aura_name ] or t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) or nil
 
+        -- This uses the default aura duration (if available) to keep pandemic windows accurate.
+        local duration = aura and aura.duration or 15
+        -- This allows for overridden tick times on a particular application of an aura (i.e., Exsanguinate).
+        local tick_time = app and app.tick_time or ( aura and aura.tick_time ) or ( 3 * t.haste )
+
         if k == 'duration' then            
-            return aura and aura.duration or 30
+            return duration
         
         elseif k == 'refreshable' then
-            if app then return app.remains < 0.3 * aura.duration end
+            if app then return app.remains < 0.3 * duration end
             return true
 
         elseif k == 'time_to_refresh' then
-            if app then return max( 0, app.remains - ( 0.3 * aura.duration ) ) end
+            if app then return max( 0, app.remains - ( 0.3 * duration ) ) end
             return 0
             
         elseif k == 'ticking' then
@@ -1429,15 +1448,15 @@ local mt_state = {
             return false
             
         elseif k == 'ticks' then
-            if app then return 1 + floor( ( app.duration or 30 ) / ( app.tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
+            if app then return 1 + floor( duration / tick_time ) - t.ticks_remain end
             return 0
             
         elseif k == 'ticks_remain' then
-            if app then return floor( app.remains / ( app.tick_time or ( 3 * t.haste ) ) ) end
+            if app then return floor( app.remains / tick_time ) end
             return 0
 
         elseif k == 'tick_time_remains' then
-            if app then return ( app.remains % ( app.tick_time or ( 3 * t.haste ) ) ) end
+            if app then return ( app.remains % tick_time ) end
             return 0
             
         elseif k == 'remains' then
@@ -1445,13 +1464,10 @@ local mt_state = {
             return 0
             
         elseif k == 'tick_time' then
-            if app and app.tick_time then return app.tick_time end
-            return 0
+            return tick_time
 
         elseif k == 'duration' then
-            if app then return app.duration or 30 end
-            if aura then return aura.duration or 30 end
-            return 0
+            return duration
 
         end
 
@@ -2336,6 +2352,12 @@ function state:TimeToResource( t, amount )
     if not amount or amount > t.max then return 3600
     elseif t.current >= amount then return 0 end
 
+    local pad, lastTick = 0
+    if t.resource == "energy" or t.resource == "focus" then
+        -- Round any result requiring ticks to the next tick.
+        lastTick = t.last_tick
+    end
+
     if t.forecast and t.fcount > 0 then
         local q = state.query_time
         local index, slice
@@ -2360,7 +2382,13 @@ function state:TimeToResource( t, amount )
             
             if slice.v >= amount then
                 t.times[ amount ] = slice.t
-                return max( 0, t.times[ amount ] - q )
+
+                if lastTick then
+                    pad = ( slice.t - lastTick ) % 0.1
+                    pad = 0.1 - pad
+                end
+
+                return max( 0, pad + t.times[ amount ] - q )
 
             elseif after and after.v >= amount then
                 -- Our next slice will have enough resources.  Check to see if we'd regen enough in-between.
@@ -2368,21 +2396,32 @@ function state:TimeToResource( t, amount )
                 local deficit = amount - slice.v
                 local regen_time = deficit / t.regen
 
+                if lastTick then
+                    pad = ( slice.t - lastTick ) % 0.1
+                    pad = 0.1 - pad
+                end
+
                 if regen_time < time_diff then
-                    t.times[ amount ] = ( slice.t + regen_time )
+                    t.times[ amount ] = ( pad + slice.t + regen_time )
                 else
                     t.times[ amount ] = after.t
                 end
                 return max( 0, t.times[ amount ] - q )
             end
         end
+
         t.times[ amount ] = q + 3600
         return max( 0, t.times[ amount ] - q )
     end
 
     -- This wasn't a modeled resource,, just look at regen time.
+    if lastTick then
+        pad = ( slice.t - lastTick ) % 0.1
+        pad = 0.1 - pad
+    end
+
     if t.regen <= 0 then return 3600 end
-    return max( 0, ( amount - t.current ) / t.regen )
+    return max( 0, pad + ( ( amount - t.current ) / t.regen ) )
 end
 
 
@@ -3087,10 +3126,10 @@ local mt_default_debuff = {
             return 0
             
         elseif k == 'refreshable' then
-            return t.remains < 0.3 * ( class_aura and class_aura.duration or 30 )
+            return t.remains < 0.3 * ( class_aura and class_aura.duration or t.duration or 30 )
             
         elseif k == 'time_to_refresh' then
-            return t.up and ( max( 0, state.query_time - ( 0.3 * class_aura.duration ) ) ) or 0
+            return t.up and ( max( 0, state.query_time - ( 0.3 * ( class_aura and class_aura.duration or t.duration or 30 ) ) ) ) or 0
         
         elseif k == 'stack' or k == 'react' then
             if t.up then return ( t.count ) else return 0 end
@@ -4142,18 +4181,18 @@ do
         if spell == "potion" and state.filter ~= "none" and state.filter ~= toggle then return true end
         
         if ability.id < -100 or ability.id > 0 then
-            if state.filter ~= 'none' and state.filter ~= toggle then
+            if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then
                 return true
             else
                 if toggle and toggle ~= 'none' then
-                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true end
+                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle and not ability[ state.filter ] ) then return true end
                 end
             end
         end
 
-        if ability.defensive and not profile.toggles.defensives.value then
+        --[[ if ability.defensive and not profile.toggles.defensives.value then
             return true
-        end
+        end ]]
 
             
         --[[ if toggle and toggle ~= 'none' and not state.toggle[ toggle ] then
