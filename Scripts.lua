@@ -555,7 +555,9 @@ do
                             setfenv( func, state )
                             -- maximum warningness
                             local pass, val = pcall( func )
-                            if not pass then Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. val .. " (pcall-n)." )
+                            if not pass then
+                                local safepiece = piece.s:gsub( "%%", "%%%%" )
+                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-n)." )
                             else if val == nil or type( val ) == "boolean" then piece.s = "safenum(" .. piece.s .. ")" end end
                         else
                             Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. warn .. " (loadstring-n)." )
