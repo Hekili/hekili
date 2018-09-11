@@ -1038,6 +1038,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         damageDots = false,
         damageExpiration = 6,
     
+        potion = "battle_potion_of_intellect",
+        
         package = "Destruction",
     } )
 

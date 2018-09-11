@@ -132,6 +132,18 @@ local oneTimeFixes = {
             spec.enabled = true
         end
     end,
+
+    wipeSpecPotions_20180910_1 = function( p )
+        local latestVersion = 20180910.4
+
+        for id, spec in pairs( class.specs ) do            
+            if id > 0 and ( not p.specs[ id ].potionsReset or type( p.specs[ id ].potionsReset ) ~= 'number' or p.specs[ id ].potionsReset < latestVersion ) then
+                p.specs[ id ].potion = spec.potion
+                p.specs[ id ].potionsReset = latestVersion
+            end
+        end
+        p.runOnce.wipeSpecPotions_20180910_1 = nil
+    end,
 }
 
 

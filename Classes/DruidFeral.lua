@@ -1537,6 +1537,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         damageDots = false,
         damageExpiration = 6,
     
+        potion = "battle_potion_of_agility",
+    
         package = "Feral"
     } )
 

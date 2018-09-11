@@ -1073,6 +1073,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         damage = true,
         damageExpiration = 8,
     
+        potion = "potion_of_bursting_blood",
+
         package = "Survival"
     } )
 

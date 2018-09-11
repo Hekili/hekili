@@ -948,7 +948,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         nameplateRange = 8,
         
         damage = true,
+        damageDots = false,
         damageExpiration = 8,
+    
+        potion = "battle_potion_of_strength",
     
         package = "Frost DK",
     } )

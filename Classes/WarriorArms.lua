@@ -938,9 +938,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         nameplateRange = 8,
         
         damage = true,
-        damageExpiration = 8,
         damageDots = false,
-    
+        damageExpiration = 8,
+
+        potion = "potion_of_bursting_blood",
+
         package = "Arms",
     } )
 

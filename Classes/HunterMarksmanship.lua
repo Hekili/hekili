@@ -767,7 +767,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         damage = true,
         damageExpiration = 6,
     
-        package = "Marksmanship",        
+        potion = "potion_of_rising_death",
+
+        package = "Marksmanship",
     } )
 
 

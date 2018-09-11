@@ -1011,6 +1011,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         damage = true,
         damageExpiration = 6,
     
+        potion = "battle_potion_of_intellect",
+        
         package = "Elemental",
     } )
 end

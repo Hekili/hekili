@@ -853,6 +853,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         damage = true,
         damageExpiration = 8,
     
+        potion = "battle_potion_of_agility",
+    
         package = "Havoc",
     } )
 

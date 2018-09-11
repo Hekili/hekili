@@ -294,6 +294,16 @@ local HekiliSpecMixin = {
     RegisterPotion = function( self, potion, data )
         self.potions[ potion ] = data
 
+        if data.copy then
+            if type( data.copy ) == "table" then
+                for i, key in ipairs( data.copy ) do
+                    self.potions[ key ] = data
+                end
+            else
+                self.potions[ data.copy ] = data
+            end
+        end
+
         Hekili:ContinueOnItemLoad( data.item, function ()
             local name, link = GetItemInfo( data.item )
 
@@ -1208,7 +1218,76 @@ all:RegisterPotions( {
         item = 142117,
         buff = 'prolonged_power'
     },
+    battle_potion_of_agility = {
+        item = 163223,
+        buff = 'battle_potion_of_agility',
+    },
+    battle_potion_of_intellect = {
+        item = 163222,
+        buff = 'battle_potion_of_intellect',
+    },
+    battle_potion_of_stamina = {
+        item = 163225,
+        buff = 'battle_potion_of_stamina',
+    },
+    battle_potion_of_strength = {
+        item = 163224,
+        buff = 'battle_potion_of_strength',
+    },
+    potion_of_bursting_blood = {
+        item = 152560,
+        buff = 'potion_of_bursting_blood',
+        copy = "bursting_blood",
+    },
+    potion_of_rising_death = {
+        item = 152559,
+        buff = 'potion_of_rising_death',
+        copy = "rising_death",
+    },
+    steelskin_potion = {
+        item = 152557,
+        buff = 'steelskin_potion',
+    },
 } )
+
+
+all:RegisterAuras( {
+    battle_potion_of_agility = {
+        id = 279152,
+        duration = 25,
+        max_stack = 1,
+    },
+    battle_potion_of_intellect = {
+        id = 279151,
+        duration = 25,
+        max_stack = 1,
+    },
+    battle_potion_of_stamina = {
+        id = 279154,
+        duration = 25,
+        max_stack = 1,
+    },
+    battle_potion_of_strength = {
+        id = 279153,
+        duration = 25,
+        max_stack = 1,
+    },
+    potion_of_bursting_blood = {
+        id = 251316,
+        duration = 25,
+        max_stack = 1,
+    },
+    potion_of_rising_death = {
+        id = 269853,
+        duration = 25,
+        max_stack = 1,
+    },
+    steelskin_potion = {
+        id = 251231,
+        duration = 25,
+        max_stack = 1,
+    }
+})
 
 
 all:SetPotion( "prolonged_power" )

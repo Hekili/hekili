@@ -922,6 +922,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         damage = true,
         damageExpiration = 6,
     
+        potion = "potion_of_rising_death",
+    
         package = "Beast Mastery",
     } )
 end

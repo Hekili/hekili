@@ -1018,6 +1018,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         
         damage = true,
         damageExpiration = 8,
+
+        potion = "battle_potion_of_strength",
     
         package = "Blood",        
     } )

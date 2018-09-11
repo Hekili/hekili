@@ -1107,6 +1107,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         damage = true,
         damageExpiration = 6,
     
+        potion = "battle_potion_of_agility",
+        
         package = "Subtlety",
     } )
 

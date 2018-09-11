@@ -1315,6 +1315,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         damage = true,
         damageExpiration = 6,
     
+        potion = "steelskin_potion",
+    
         package = "Guardian",
     } )
 

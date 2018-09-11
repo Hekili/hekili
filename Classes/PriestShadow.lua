@@ -1127,6 +1127,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         damage = true,
         damageExpiration = 6,
     
+        potion = "potion_of_rising_death",
+        
         package = "Shadow",
     } )
 
