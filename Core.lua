@@ -747,7 +747,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         if new_wait >= 10 then
                                                             if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 10s ).", i, new_wait ) end
                                                             break
-                                                        elseif waitValue <= base_delay + step then
+                                                        elseif waitValue - 0.05 <= base_delay + step then
                                                             if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f < %.2f ).", i, waitValue, new_wait ) end
                                                             break
                                                         end
