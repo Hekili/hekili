@@ -32,7 +32,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             debuff = true,
 
             last = function ()
-                local app = state.debuff.garrote.applied
+                local app = state.debuff.garrote.last_tick
                 local exp = state.debuff.garrote.expires
                 local tick = state.debuff.garrote.tick_time
                 local t = state.query_time
@@ -56,7 +56,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             debuff = true,
 
             last = function ()
-                local app = state.debuff.internal_bleeding.applied
+                local app = state.debuff.internal_bleeding.last_tick
                 local exp = state.debuff.internal_bleeding.expires
                 local tick = state.debuff.internal_bleeding.tick_time
                 local t = state.query_time
@@ -80,7 +80,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             debuff = true,
 
             last = function ()
-                local app = state.debuff.rupture.applied
+                local app = state.debuff.rupture.last_tick
                 local exp = state.debuff.rupture.expires
                 local tick = state.debuff.rupture.tick_time
                 local t = state.query_time
@@ -99,7 +99,29 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             value = 7
         },
 
+        crimson_tempest_vim = {
+            aura = "crimson_tempest",
+            debuff = true,
+
+            last = function ()
+                local app = state.debuff.crimson_tempest.last_tick
+                local exp = state.debuff.crimson_tempest.expires
+                local tick = state.debuff.crimson_tempest.tick_time
+                local t = state.query_time
         
+                return min( exp, app + ( floor( ( t - app ) / tick ) * tick ) )
+            end,
+
+            stop = function ()
+                return state.debuff.wound_poison_dot.down and state.debuff.deadly_poison_dot.down
+            end,
+                
+            interval = function ()
+                return state.debuff.crimson_tempest.tick_time
+            end,
+
+            value = 7
+        },       
     } )
     
     -- Talents
@@ -234,9 +256,16 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     
     -- index: unitGUID; value: isExsanguinated (t/f)
     local crimson_tempests = {}
+    local ltCT = {}
+
     local garrotes = {}
+    local ltG = {}
+
     local internal_bleedings = {}
+    local ltIB = {}
+
     local ruptures = {}
+    local ltR = {}
 
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
         local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
@@ -273,6 +302,21 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 garrotes[ destGUID ] = true
                 internal_bleedings[ destGUID ] = true
                 ruptures[ destGUID ] = true
+            
+            elseif subtype == "SPELL_PERIODIC_DAMAGE" then
+                if spellID == 121411 then
+                    ltCT[ destGUID ] = GetTime()
+
+                elseif spellID == 703 then
+                    ltG[ destGUID ] = GetTime()
+
+                elseif spellID == 408 then
+                    ltIB[ destGUID ] = GetTime()
+
+                elseif spellID == 1943 then
+                    ltR[ destGUID ] = GetTime()
+
+                end
             end
         end
     end )
@@ -335,6 +379,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         debuff.garrote.pmultiplier           = nil
         debuff.internal_bleeding.pmultiplier = nil
         debuff.rupture.pmultiplier           = nil
+
+        state.energy.noSmooth = true
     end )
 
 
@@ -395,6 +441,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             meta = {
                 exsanguinated = function () return debuff.crimson_tempest.up and crimson_tempests[ target.unit ] end,
                 tick_time = function () return debuff.crimson_tempest.exsanguinated and haste or ( 2 * haste ) end,
+                last_tick = function () return ltCT[ target.unit ] or debuff.crimson_tempest.applied end,
             },                    
         },
         crimson_vial = {
@@ -453,6 +500,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             meta = {
                 exsanguinated = function () return debuff.garrote.up and garrotes[ target.unit ] end,
                 tick_time = function () return debuff.garrote.exsanguinated and haste or ( 2 * haste ) end,
+                last_tick = function () return ltG[ target.unit ] or debuff.garrote.applied end,
             },                    
         },
         garrote_silence = {
@@ -472,6 +520,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             meta = {
                 exsanguinated = function () return debuff.internal_bleeding.up and internal_bleedings[ target.unit ] end,
                 tick_time = function () return debuff.internal_bleeding.exsanguinated and ( 0.5 * haste ) or haste end,
+                last_tick = function () return ltIB[ target.unit ] or debuff.internal_bleeding.applied end,
             },                    
         },
         kidney_shot = {
@@ -506,11 +555,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         rupture = {
             id = 1943,
-            duration = 8,
+            duration = function () return talent.deeper_stratagem.enabled and 28 or 24 end,
             max_stack = 1,
             meta = {
                 exsanguinated = function () return debuff.rupture.up and ruptures[ target.unit ] end,
                 tick_time = function () return debuff.rupture.exsanguinated and haste or ( 2 * haste ) end,
+                last_tick = function () return ltR[ target.unit ] or debuff.rupture.applied end,
             },                    
         },
         seal_fate = {
@@ -857,9 +907,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = true,
             texture = 236273,
             
-            recheck = function () return energy.time_to_40, energy.time_to_50 end,
             handler = function ()
                 gain( 1, "combo_points" )
+                removeBuff( "hidden_blades" )
             end,
         },
         
@@ -1054,7 +1104,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return combo_points.current > 0 end,
             remains = function () return remains - ( duration * 0.3 ), remains - tick_time, remains - tick_time * 2, remains, cooldown.exsanguinate.remains - 1, 10 - time end,
             handler = function ()
-                applyDebuff( "target", "rupture", 4 + ( 4 * combo_points.current ) )
+                applyDebuff( "target", "rupture", min( dot.rupture.remains, class.auras.rupture.duration * 0.3 ) + 4 + ( 4 * combo_points.current ) )
                 debuff.rupture.pmultiplier = persistent_multiplier
 
                 spend( combo_points.current, "combo_points" )
