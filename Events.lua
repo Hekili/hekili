@@ -501,8 +501,7 @@ function Hekili:ForceUpdate( event )
 end
 
 
-local function spellcastEvents( event, unit, spell, _, _, spellID )
-
+local function spellcastEvents( subtype, sourceGUID, destGUID, spellName, spellID )
     local now = GetTime()
 
     state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
@@ -528,7 +527,8 @@ local function spellcastEvents( event, unit, spell, _, _, spellID )
             state.player.lastoffgcdtime = now
         end
 
-        ability.lastCast = now            
+        ability.lastCast = now
+        ability.lastUnit = destGUID
     end
 
     -- This is an ability with a travel time.
@@ -756,7 +756,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
     if sourceGUID == state.GUID and ( subtype == 'SPELL_CAST_SUCCESS' or subtype == 'SPELL_CAST_START' ) then
         if subtype == 'SPELL_CAST_SUCCESS' then
-            spellcastEvents( subtype, sourceGUID, spellName, _, _, spellID )
+            spellcastEvents( subtype, sourceGUID, destGUID, spellName, spellID )
             state.player.queued_ability = nil
             state.player.queued_time = nil
             state.player.queued_tt = nil
