@@ -1464,7 +1464,8 @@ local mt_state = {
             return 0
             
         elseif k == 'tick_time' then
-            return tick_time
+            if app then return tick_time end
+            return 0
 
         elseif k == 'duration' then
             return duration
