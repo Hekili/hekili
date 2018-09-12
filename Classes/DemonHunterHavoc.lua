@@ -187,7 +187,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             max_stack = 1,
             meta = {
                 extended_by_demonic = function ()
-                    return talent.demonic.enabled and buff.metamorphosis.duration > 30
+                    return talent.demonic.enabled and ( buff.metamorphosis.duration ~= 30 and buff.metamorphosis.duration > ( action.eye_beam.cast + 8 ) )
                 end,
             },
         },
@@ -574,8 +574,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
                 if talent.demonic.enabled then
                     if buff.metamorphosis.up then
+                        buff.metamorphosis.duration = buff.metamorphosis.remains + 8
                         buff.metamorphosis.expires = buff.metamorphosis.expires + 8
-                        buff.metamorphosis.duration = buff.metamorphosis.duration + 8
                     else
                         applyBuff( "metamorphosis", action.eye_beam.cast + 8 )
                         buff.metamorphosis.duration = action.eye_beam.cast + 8
