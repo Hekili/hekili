@@ -3110,20 +3110,16 @@ local mt_default_debuff = {
             return t[ k ]
             
         elseif k == 'up' then
-            return ( t.count > 0 and t.expires >= state.query_time )
-
+            return t.applied <= state.query_time and t.expires >= state.query_time
 
         elseif k == 'i_up' or k == 'rank' then
-            return ( t.count > 0 and t.expires >= state.query_time ) and 1 or 0
+            return t.up and 1 or 0
 
         elseif k == 'down' then
-            return ( t.count == 0 or t.expires < state.query_time )
+            return not t.up
             
         elseif k == 'remains' then
-            if t.expires > state.query_time then
-                return ( t.expires - state.query_time )
-                
-            end
+            if t.up then return t.expires - state.query_time end
             return 0
             
         elseif k == 'refreshable' then
