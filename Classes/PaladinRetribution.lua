@@ -122,12 +122,14 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             id = 203538,
             duration = 3600,
             max_stack = 1,
+            shared = "player", -- check for anyone's buff on the player.
         },
 
         greater_blessing_of_wisdom = {
             id = 203539,
             duration = 3600,
             max_stack = 1,
+            shared = "player", -- check for anyone's buff on the player.
         },
 
         hammer_of_justice = {
