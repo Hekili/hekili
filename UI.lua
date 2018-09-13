@@ -567,19 +567,31 @@ do
         PET_BATTLE_CLOSE = 1,
         BARBER_SHOP_OPEN = 1,
         BARBER_SHOP_CLOSE = 1,
+
+        PLAYER_GAINS_VEHICLE_DATA = 1,
+        PLAYER_LOSES_VEHICLE_DATA = 1,        
         UNIT_ENTERED_VEHICLE = 1,
         UNIT_EXITED_VEHICLE = 1,
+        UNIT_EXITING_VEHICLE = 1,
+        VEHICLE_ANGLE_SHOW = 1,
+        VEHICLE_UPDATE = 1,
+        UPDATE_VEHICLE_ACTIONBAR = 1,
+
         PLAYER_TARGET_CHANGED = 1,
+
         PLAYER_REGEN_ENABLED = 1,
         PLAYER_REGEN_DISABLED = 1,
+
         PLAYER_SPECIALIZATION_CHANGED = 1,
         ACTIVE_TALENT_GROUP_CHANGED = 1,
+
         ZONE_CHANGED = 1,
         ZONE_CHANGED_INDOORS = 1,
         ZONE_CHANGED_NEW_AREA = 1,
+
         PLAYER_CONTROL_LOST = 1,
         PLAYER_CONTROL_GAINED = 1,
-        VEHICLE_UPDATE = 1,
+
         PLAYER_MOUNT_DISPLAY_CHANGED = 1,
         UPDATE_ALL_UI_WIDGETS = 1,
     }
@@ -1161,26 +1173,9 @@ do
                 self:RegisterEvent( "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" )
 
                 -- Recalculate Alpha/Visibility.
-                self:RegisterEvent( "PET_BATTLE_OPENING_START" )
-                self:RegisterEvent( "PET_BATTLE_CLOSE" )
-                self:RegisterEvent( "BARBER_SHOP_OPEN" )
-                self:RegisterEvent( "BARBER_SHOP_CLOSE" )
-                self:RegisterUnitEvent( "UNIT_ENTERED_VEHICLE", "player" )
-                self:RegisterUnitEvent( "UNIT_EXITED_VEHICLE", "player" )
-                self:RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player" )
-                self:RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED" )
-                self:RegisterEvent( "PLAYER_TARGET_CHANGED" )
-                self:RegisterEvent( "PLAYER_CONTROL_LOST" )
-                self:RegisterEvent( "PLAYER_CONTROL_GAINED" )
-                self:RegisterEvent( "PLAYER_REGEN_DISABLED" )
-                self:RegisterEvent( "PLAYER_REGEN_ENABLED" )
-                self:RegisterEvent( "ZONE_CHANGED" )
-                self:RegisterEvent( "ZONE_CHANGED_INDOORS" )
-                self:RegisterEvent( "ZONE_CHANGED_NEW_AREA" )
-
-                self:RegisterEvent( "PLAYER_MOUNT_DISPLAY_CHANGED" )
-                self:RegisterEvent( "VEHICLE_UPDATE" )
-                self:RegisterEvent( "UPDATE_ALL_UI_WIDGETS" )
+                for e in pairs( alphaUpdateEvents ) do
+                    self:RegisterEvent( e )
+                end
 
                 -- Update keybindings.
                 for k in pairs( kbEvents ) do
