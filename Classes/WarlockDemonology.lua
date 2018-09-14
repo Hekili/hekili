@@ -826,6 +826,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             talent = 'doom',
             
+            readyTime = function () return debuff.doom.remains end,
             handler = function ()
                 applyDebuff( 'target', 'doom' )
             end,
