@@ -403,7 +403,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             if buff.stealth.up then
                 setCooldown( "stealth", 2 )
             end
-    
             removeBuff( "stealth" )
             removeBuff( "shadowmeld" )
             removeBuff( "vanish" )

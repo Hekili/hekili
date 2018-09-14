@@ -322,16 +322,22 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterHook( "runHandler", function( ability )
         local a = class.abilities[ ability ]
 
-        if a and a.startsCombat then
-            removeBuff( "shadowmeld" )
-            if buff.stealth.up then
-                removeBuff( "stealth" )
-                setCooldown( "stealth", 2 )
-            end
-
+        if stealthed.mantle and ( not a or a.startsCombat ) then
             if level < 116 and equipped.mantle_of_the_master_assassin then
                 applyBuff( "master_assassins_initiative", 5 )
             end
+
+            if talent.subterfuge.enabled then
+                applyBuff( "subterfuge" )
+            end
+
+            if buff.stealth.up then
+                setCooldown( "stealth", 2 )
+            end
+    
+            removeBuff( "stealth" )
+            removeBuff( "shadowmeld" )
+            removeBuff( "vanish" )
         end
     end )
 
@@ -361,12 +367,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 applyBuff( 'adrenaline_rush', 20 )
 
-                if buff.stealth.up then
-                    setCooldown( "stealth", 2 )
-                    removeBuff( "stealth" )
-                end
-                removeBuff( "vanish" )
-                removeBuff( "shadowmeld" )
+
 
                 if talent.loaded_dice.enabled then
                     applyBuff( 'loaded_dice', 45 )
@@ -395,7 +396,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return stealthed.all end,            
             handler = function ()
                 gain( buff.broadside.up and 3 or 2, 'combo_points' )
-                removeBuff( 'stealth' )
             end,
         },
         
@@ -812,6 +812,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     if azerite.snake_eyes.enabled and ( rtb_buffs < 2 or ( azerite.snake_eyes.rank == 3 and rtb_buffs < 5 ) ) then return true end
                     if ( azerite.deadshot.enabled or azerite.ace_up_your_sleeve.enabled ) and ( rtb_buffs < 2 and ( buff.loaded_dice.up or buff.ruthless_precision.remains <= cooldown.between_the_eyes.remains ) ) then return true end
                     if rtb_buffs < 2 and ( buff.loaded_dice.up or ( not buff.grand_melee.up and not buff.ruthless_precision.up ) ) then return true end
+                    return false
                 end
 
                 return true
