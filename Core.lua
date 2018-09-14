@@ -162,10 +162,7 @@ function Hekili:OnInitialize()
     self:UpdateDisplayVisibility()
     
     callHook( "onInitialize" )
-
-    _G.onInitEnd = self.DB.profile.enabled
-
-        end
+end
     
 
 function Hekili:ReInitialize()
@@ -452,6 +449,11 @@ function Hekili:CheckChannel( ability, prio )
         end
 
     else
+        -- If interrupt_global is flagged, we interrupt for any potential cast.  Don't bother with additional testing.
+        if modifiers.interrupt_global and modifiers.interrupt_global() then
+            return true
+        end
+        
         local act = state.this_action
         state.this_action = channel
 
@@ -461,6 +463,7 @@ function Hekili:CheckChannel( ability, prio )
             state.this_action = act
             return val
         end
+
         if modifiers.interrupt and modifiers.interrupt() then
             local val = state.cooldown.global_cooldown.up and ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 )
             state.this_action = act

@@ -766,6 +766,7 @@ local newModifiers = {
     wait = true,
     interrupt = true,
     interrupt_immediate = true,
+    interrupt_global = true,
     interrupt_if = true,
     chain = true,
     early_chain_if = true
@@ -1091,6 +1092,7 @@ local channelModifiers = {
     interrupt = 1,
     interrupt_if = 1,
     interrupt_immediate = 1,
+    interrupt_global = 1,
     chain = 1,
     early_chain_if = 1,
 }
