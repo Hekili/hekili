@@ -450,6 +450,8 @@ function Hekili:CheckChannel( ability, prio )
 
     else
         -- If interrupt_global is flagged, we interrupt for any potential cast.  Don't bother with additional testing.
+        -- REVISIT THIS:  Interrupt Global allows entries from any action list rather than just the current (sub) list.
+        -- That means interrupt / interrupt_if should narrow their scope to the current APL (at some point, anyway).
         if modifiers.interrupt_global and modifiers.interrupt_global() then
             return true
         end
