@@ -402,12 +402,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     
 
     spec:RegisterHook( "IsUsable", function( spell )
-        if talent.hit_combo.enabled and buff.hit_combo.up then
-            if spell == 'tiger_palm' then
-                local lc = class.abilities[ spell ].lastCast or 0                
-                if ( combat == 0 or lc >= combat ) and last_combo == spell then return false end
-            elseif last_combo == spell then return false end
-        end
+        if talent.hit_combo.enabled and buff.hit_combo.up and last_combo == spell then return false end
     end )
 
 
