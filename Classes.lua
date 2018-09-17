@@ -36,7 +36,7 @@ local specTemplate = {
     
     damage = true,
     damageExpiration = 8,
-    damageDots = true,
+    damageDots = false,
 
     throttleRefresh = false,
     maxRefresh = 10,
@@ -498,6 +498,11 @@ local HekiliSpecMixin = {
         self.pets[ token ] = id
         self.pets[ id ] = token
     end,
+
+    -- info should be an AceOption table.
+    RegisterPref = function( self, info )
+        table.insert( self.prefs, info )
+    end
 }
 
 --[[ function Hekili:RestoreDefaults()
@@ -611,6 +616,9 @@ function Hekili:NewSpecialization( specID, name, texture )
         pets = {},
 
         potions = {},
+
+        prefs = {},
+        numPrefs = 0,
 
         stateExprs = {}, -- expressions are returned as values and take no args.
         stateFuncs = {}, -- functions can take arguments and can be used as helper functions in handlers.
