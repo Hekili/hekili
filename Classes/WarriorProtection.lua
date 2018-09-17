@@ -594,7 +594,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         shield_block = {
             id = 2565,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.ararats_bloodmirror ) and 3 or nil end,
+            charges = function () return ( level < 116 and equipped.ararats_bloodmirror ) and 3 or 2 end,
             cooldown = 18,
             recharge = 18,
             hasteCD = true,
