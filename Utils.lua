@@ -282,3 +282,12 @@ function ns.FindUnitDebuffByID( unit, id, filter )
 
     return name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3
 end
+
+
+function ns.IsActiveSpell( id )
+    local slot = FindSpellBookSlotBySpellID( id )
+    if not slot then return false end
+
+    local _, _, spellID = GetSpellBookItemName( slot, "spell" )
+    return id == spellID 
+end
