@@ -676,7 +676,7 @@ do
     local pulseFlash = 0.5
 
     local oocRefresh = 0.5
-    local icRefresh = 0.25
+    local icRefresh = 0.2
 
     local refreshPulse = 10
 
@@ -860,6 +860,29 @@ do
                             _, unusable = IsUsableSpell(a.actualName or a.name)
                         end
 
+                        if i == 1 and conf.delays.fade then
+                            local delay = r.exact_time - now            
+                            local moment = 0
+                
+                            local start, duration = GetSpellCooldown( 61304 )
+                            if start > 0 then moment = start + duration - now end
+    
+                            local rStart, rDuration
+                            if a.item then
+                                rStart, rDuration = GetItemCooldown( a.id )
+                            else
+                                rStart, rDuration = GetSpellCooldown( a.id )
+                            end
+                            if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
+                
+                            _, _, _, start, duration = UnitCastingInfo( "player" )
+                            if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
+    
+                            if delay > moment + 0.05 then
+                                unusable = true
+                            end
+                        end    
+
                         if unusable and not b.unusable then
                             b.Texture:SetVertexColor(0.4, 0.4, 0.4, 1.0)
                             b.unusable = true
@@ -946,20 +969,28 @@ do
 
         if rec.exact_time and self.delayTimer < 0 then
             local b = self.Buttons[ 1 ]
-            local delay = rec.exact_time - now
+            local a = class.abilities[ rec.actionName ]
 
+            local delay = rec.exact_time - now
             local moment = 0
 
-            local start, duration = GetSpellCooldown( 61304 )
-            if start > 0 then moment = start + duration - now end
+            if delay > 0 then
+                local start, duration = GetSpellCooldown( 61304 )
+                if start > 0 then moment = start + duration - now end
 
-            _, _, _, start, duration = UnitCastingInfo( "player" )
-            if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
+                _, _, _, start, duration = UnitCastingInfo( "player" )
+                if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
 
-            --[[ _, _, _, start, duration = UnitChannelInfo( "player" )
-            if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end ]]
+                local rStart, rDuration
+                if a.item then
+                    rStart, rDuration = GetItemCooldown( a.id )
+                else
+                    rStart, rDuration = GetSpellCooldown( a.id )
+                end
+                if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
+            end
 
-            if conf.delays.type ~= "NONE" then
+            if conf.delays.type ~= "NONE" and conf.delays.type ~= "FADE" then
                 if conf.delays.type == "TEXT" then
                     if self.delayIconShown then
                         b.DelayIcon:Hide()
