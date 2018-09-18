@@ -1578,15 +1578,24 @@ do
                         args = {
                             type = {
                                 type = "select",
-                                name = "Indicator Type",
+                                name = "Indicator",
                                 desc = "Specify the type of indicator to use when you should wait before casting the ability.",                                
                                 values = {
                                     __NA = "No Indicator",
                                     ICON = "Show Icon (Color)",
-                                    TEXT = "Show Text (Countdown)"
+                                    TEXT = "Show Text (Countdown)",
+                                    FADE = "Fade Icon"
                                 },                        
                                 width = "full",
                                 order = 1,
+                            },
+
+                            fade = {
+                                type = "toggle",
+                                name = "Fade as Unusable",
+                                desc = "Fade the primary icon when you should wait before using the ability, similar to when an ability is lacking required resources.",
+                                width = "full",
+                                order = 1.5
                             },
 
                             pos = {
@@ -2904,73 +2913,76 @@ do
 
         for k, v in orderedPairs( abilities ) do
             local ability = class.abilities[ v ]
+            local option
 
-            local option = {
-                type = "group",
-                name = function () return ability.name end,
-                order = 1,
-                set = "SetAbilityOption",
-                get = "GetAbilityOption",
-                args = {
-                    disabled = {
-                        type = "toggle",
-                        name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
-                        desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
-                            "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
-                        width = "full",
-                        order = 1,
-                    },
+            if not ability.item then
+                option = {
+                    type = "group",
+                    name = function () return ability.name end,
+                    order = 1,
+                    set = "SetAbilityOption",
+                    get = "GetAbilityOption",
+                    args = {
+                        disabled = {
+                            type = "toggle",
+                            name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
+                            desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
+                                "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
+                            width = "full",
+                            order = 1,
+                        },
 
-                    toggle = {
-                        type = "select",
-                        name = "Require Toggle",
-                        desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
-                            "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
-                        width = "full",
-                        order = 2,
-                        values = function ()
-                            table.wipe( toggles )
+                        toggle = {
+                            type = "select",
+                            name = "Require Toggle",
+                            desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
+                                "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
+                            width = "full",
+                            order = 2,
+                            values = function ()
+                                table.wipe( toggles )
 
-                            toggles.none = "None"
-                            toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
-                            toggles.defensives = "Defensives"
-                            toggles.cooldowns = "Cooldowns"
-                            toggles.interrupts = "Interrupts"
-                            toggles.potions = "Potions"
+                                toggles.none = "None"
+                                toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
+                                toggles.defensives = "Defensives"
+                                toggles.cooldowns = "Cooldowns"
+                                toggles.interrupts = "Interrupts"
+                                toggles.potions = "Potions"
 
-                            return toggles
-                        end,
-                    },
+                                return toggles
+                            end,
+                        },
 
-                    clash = {
-                        type = "range",
-                        name = "Clash",
-                        desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
-                            "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
-                        width = "full",
-                        min = -1.5,
-                        max = 1.5,
-                        step = 0.05,
-                        order = 3,
-                    },
+                        clash = {
+                            type = "range",
+                            name = "Clash",
+                            desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
+                                "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
+                            width = "full",
+                            min = -1.5,
+                            max = 1.5,
+                            step = 0.05,
+                            order = 3,
+                        },
 
-                    keybind = {
-                        type = "input",
-                        name = "Keybinding",
-                        desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
-                            "This can be helpful if the addon incorrectly detects your keybindings.",
-                        validate = function( info, val )
-                            val = val:trim()
-                            if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
-                            return true
-                        end,
-                        width = "full",
-                        order = 4,
+                        keybind = {
+                            type = "input",
+                            name = "Keybinding",
+                            desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
+                                "This can be helpful if the addon incorrectly detects your keybindings.",
+                            validate = function( info, val )
+                                val = val:trim()
+                                if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
+                                return true
+                            end,
+                            width = "full",
+                            order = 4,
+                        }
                     }
                 }
-            }
 
-            db.plugins.actions[ v ] = option
+                db.plugins.actions[ v ] = option
+            end
         end
     end
 
@@ -2988,12 +3000,13 @@ do
             order = 30,
             set = "SetSpecOption",
             get = "GetSpecOption",
+            childGroups = "select",
             args = {
-                specList = {
+                --[[ specList = {
                     type = "header",
                     name = "Specializations",
                     order = 5,
-                }
+                } ]]
             },
             plugins = {
                 spec = {},
@@ -3012,13 +3025,13 @@ do
 
                 specs[ id ] = '|T' .. texture .. ':0|t ' .. name
 
-                db.args.specs.plugins.spec[ 'btn'..sName ] = {
+                --[[ db.args.specs.plugins.spec[ 'btn'..sName ] = {
                     type = 'execute',
                     name = name,
                     desc = description,
                     order = 10 + i,
                     func = function () ACD:SelectGroup( "Hekili", "specs", sName ) end,
-                }
+                } ]]
 
                 db.args.specs.plugins.spec[ sName ] = {
                     type = "group",
@@ -3038,7 +3051,7 @@ do
 
                         default = {
                             type = "group",
-                            name = name,
+                            name = "System",
                             order = 10,
                             args = {
                                 packInfo = {
@@ -3221,17 +3234,31 @@ do
                                             disabled = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
                                         },
         
-                                        strict = {
+                                        --[[ strict = {
                                             type = "toggle",
                                             name = "Use Strict APL Testing",
                                             desc = "When |cFFFFD100Use Strict APL Testing|r is enabled, the addon will perform fewer checks when deciding whether to branch off to another Action Priority List.  " ..
                                                 "In many cases, this will be more efficient with CPU usage, but may result in choppy recommendations depending on how your action lists have been written.",
                                             width = "full",
                                             order = 5,
-                                        }
+                                        } ]]
                                     }
                                 }
                             }
+                        },
+
+                        preferences = {
+                            type = "group",
+                            name = specs[ id ],
+                            desc = "If there are any special preferences for this specialization, you can adjust them here.",
+                            order = 12,
+                            args = {},
+                            plugins = {
+                                prefs = {}
+                            },
+                            disabled = function ()
+                                return #class.specs[ id ].prefs == 0
+                            end,
                         },
 
                         abilities = {
@@ -3245,6 +3272,19 @@ do
                             plugins = {
                                 actions = {}
                             }
+                        },
+
+                        items = {
+                            type = "group",
+                            name = "Trinkets/Gear",
+                            desc = "In this section, you can set preferences for using trinkets or equipped gear.",
+                            order = 25,
+                            childGroups = "select",
+                            args = {
+                            },
+                            plugins = {
+                                equipment = {}
+                            }
                         }
                     }
                 }            
@@ -3256,13 +3296,13 @@ do
             i = i + 1
         end
 
-        db.args.specs.args.header = {
+        --[[ db.args.specs.args.header = {
             type = "description",
             name = i > 1 and "Hekili supports the following specializations for your current class.  You can customize settings " ..
                 "for your specialization in the appropriate section below." or "No specializations for your current class are supported by Hekili.",
             fontSize = 'medium',
             order = 1,
-        }
+        } ]]
 
     end
 
