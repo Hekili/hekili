@@ -408,6 +408,7 @@ state.GetSpellCount = GetSpellCount
 state.GetStablePetInfo = GetStablePetInfo
 state.GetTime = GetTime
 state.GetTotemInfo = GetTotemInfo
+state.IsActiveSpell = ns.IsActiveSpell
 state.IsPlayerSpell = IsPlayerSpell
 state.IsSpellKnown = IsSpellKnown
 state.IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
@@ -1138,6 +1139,8 @@ do
                     end
                 end
             end
+
+            table.insert( times, remains )
         end
 
         table_sort( times )
