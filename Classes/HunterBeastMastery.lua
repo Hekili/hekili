@@ -296,7 +296,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         frenzy = {
             id = 272790,
-            duration = 8,
+            duration = function () return azerite.feeding_frenzy.enabled and 9 or 8 end,
             max_stack = 3,
             generate = function ()
                 local fr = buff.frenzy
