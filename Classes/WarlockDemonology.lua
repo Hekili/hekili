@@ -574,7 +574,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     -- Abilities
     spec:RegisterAbilities( {
         axe_toss = {
-            id = 119914,
+            id = 89766,
+            known = function () return IsSpellKnownOrOverridesKnown( 119914 ) end,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
@@ -663,7 +664,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         
 
-        command_demon = {
+        --[[ command_demon = {
             id = 119898,
             cast = 0,
             cooldown = 0,
@@ -678,7 +679,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 elseif pet.succubus.up then runHandler( 'seduction' )
                 elseif pet.imp.up then runHandler( 'singe_magic' ) end
             end,
-        },
+        }, ]]
         
 
         create_healthstone = {
@@ -806,6 +807,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
             
             startsCombat = false,
+            nobuff = "felstorm",
             
             handler = function ()
                 applyBuff( 'demonic_strength' )
