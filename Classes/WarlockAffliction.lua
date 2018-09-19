@@ -891,10 +891,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         
 
         spell_lock = {
-            id = 132409,
+            id = 19647,
+            known = function () return IsSpellKnownOrOverridesKnown( 119910 ) or IsSpellKnownOrOverridesKnown( 132409 ) end,
             cast = 0,
             cooldown = 24,
-            gcd = "spell",
+            gcd = "off",
             
             spend = 0.02,
             spendType = "mana",
