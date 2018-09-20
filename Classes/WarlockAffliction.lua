@@ -369,7 +369,18 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown.sindorei_spite_icd.expires = last_sindorei_spite + icd
             cooldown.sindorei_spite_icd.duration = icd
         end
-    end)
+    end )
+
+
+    spec:RegisterStateExpr( "target_uas", function ()
+        return buff.active_uas.stack
+    end )
+
+    spec:RegisterStateExpr( "contagion", function ()
+        return max( debuff.unstable_affliction.remains, debuff.unstable_affliction_2.remains, debuff.unstable_affliction_3.remains, debuff.unstable_affliction_4.remains, debuff.unstable_affliction_5.remains )
+    end )
+
+    
     
 
     -- Abilities
