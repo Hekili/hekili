@@ -123,6 +123,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             type = "Magic",
             max_stack = 1,
         },
+        lethal_shots = {
+            id = 260395,
+            duration = 15,
+            max_stack = 1,
+        },
         lock_and_load = {
             id = 194594,
             duration = 15,
