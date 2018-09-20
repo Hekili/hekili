@@ -649,7 +649,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     aScriptPass = ts or scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
 
                                     if debug then 
-                                        self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", ts and deferred or ( aScriptPass and "PASS" or "FAIL" ), state.offset, scripts:GetConditionsAndValues( scriptID ) )
+                                        self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", ts and "deferred" or ( aScriptPass and "PASS" or "FAIL" ), state.offset, scripts:GetConditionsAndValues( scriptID ) )
                                     end
 
                                     -- aScriptPass = ts or aScriptPass
@@ -746,14 +746,16 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                     if debug then self:Debug( "There are " .. #state.recheckTimes .. " recheck events." ) end
 
+                                                    local first_rechannel = 0
+
                                                     for i, step in pairs( state.recheckTimes ) do
                                                         local new_wait = base_delay + step
 
                                                         if new_wait >= 10 then
                                                             if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 10s ).", i, new_wait ) end
                                                             break
-                                                        elseif waitValue - 0.05 <= base_delay + step then
-                                                            if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f < %.2f ).", i, waitValue, new_wait ) end
+                                                        elseif waitValue <= base_delay + step + 0.05 then
+                                                            if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f <= %.2f + 0.05 ).", i, waitValue, new_wait ) end
                                                             break
                                                         end
 
@@ -773,15 +775,23 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             if debug then self:Debug( "Unable to recheck #%d at %.2f, as APL conditions would not pass.", i, state.delay ) end
                                                         end
 
-                                                        if aScriptPass then break
+                                                        if aScriptPass then
+                                                            if first_rechannel == 0 and state.channel and entry.action == state.channel then
+                                                                first_rechannel = state.delay
+                                                                if debug then self:Debug( "This is the currently channeled spell; it would be rechanneled at this time, will check end of channel.  " .. state.channel_remains ) end
+                                                            elseif first_rechannel > 0 and not state.channel then
+                                                                if debug then self:Debug( "Appears that the ability would be cast again at the end of the channel, stepping back to first rechannel point.  " .. state.channel_remains ) end
+                                                                state.delay = first_rechannel
+                                                                break
+                                                            else break end
                                                         else state.delay = base_delay end
                                                     end
                                                 end
                                             end
 
                                             -- Need to revisit this, make sure that lower priority abilities are only tested after the channel is over.
-                                            if entry.action == state.channel and aScriptPass then
-                                                if rWait <= state.player.channelEnd then
+                                            if entry.action == state.channel then -- and aScriptPass then
+                                                if ( aScriptPass and rWait <= state.player.channelEnd ) or waitValue <= state.player.channelEnd then
                                                     -- If a higher priority ability is selected, we should stop here.
                                                     if debug then self:Debug( "We have selected an ability that can break or finish our channel; stop here." ) end
                                                     stop = true
