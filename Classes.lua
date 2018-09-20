@@ -3184,7 +3184,11 @@ function Hekili:SpecializationChanged()
                 class.potionList.default = "|cFFFFD100Default|r"
             end
 
-            if spec.potion and not class.potion then
+            if self.currentSpecOpts.potion then
+                class.potion = self.currentSpecOpts.potion
+            end
+
+            if not class.potion and spec.potion then
                 class.potion = spec.potion
             end
 

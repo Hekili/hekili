@@ -417,9 +417,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     spec:RegisterGear( 'storm_tempests', 137103 )
     spec:RegisterGear( 'uncertain_reminder', 143732 )
 
-
-    spec:SetPotion( 'prolonged_power' )
-
     spec:RegisterAbilities( {
         ascendance = {
             id = 114051,
