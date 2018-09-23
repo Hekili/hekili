@@ -291,3 +291,27 @@ function ns.IsActiveSpell( id )
     local _, _, spellID = GetSpellBookItemName( slot, "spell" )
     return id == spellID 
 end
+
+
+
+local itemCache = {}
+
+local function itemCacheHelper( id, ... )
+    local n = select( "#", ... )
+    if n == 0 then return end
+
+    local cache = {}
+
+    for i = 1, n do
+        cache[ i ] = select( i, ... )
+    end
+
+    itemCache[ id ] = cache
+    return ...
+end
+
+
+function ns.CachedGetItemInfo( id )
+    if itemCache[ id ] then return unpack( itemCache[ id ] ) end
+    return itemCacheHelper( id, GetItemInfo( id ) )
+end
