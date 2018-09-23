@@ -18,6 +18,9 @@ local lower, match, upper = string.lower, string.match, string.upper
 local string_format = string.format
 
 
+local GetItemInfo = ns.CachedGetItemInfo
+
+
 -- Abandoning AceEvent in favor of darkend's solution from:
 -- http://andydote.co.uk/2014/11/23/good-design-in-warcraft-addons.html
 -- This should be a bit friendlier for our modules.
@@ -150,7 +153,7 @@ RegisterEvent( "GET_ITEM_INFO_RECEIVED", function( event, itemID, success )
             for i, func in ipairs( callbacks ) do
                 func()
                 callbacks[ i ] = nil
-            end                
+            end
         end
 
         itemCallbacks[ itemID ] = nil
@@ -725,6 +728,12 @@ local dmg_events = {
     SWING_DAMAGE            = true
 }
 
+
+local dmg_filtered = {
+    [280705] = true, -- Laser Matrix.
+}
+
+
 -- Use dots/debuffs to count active targets.
 -- Track dot power (until 6.0) for snapshotting.
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
@@ -842,7 +851,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             ns.removeSpellFromFlight( action.key )
         end
 
-        if hostile and dmg_events[ subtype ] then
+        if hostile and dmg_events[ subtype ] and not dmg_filtered[ spellID ] then
             ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
             if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
