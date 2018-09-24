@@ -169,7 +169,7 @@ end
 function Hekili:RunItemCallbacks()
     for item, callbacks in pairs( itemCallbacks ) do
         for i = #callbacks, 1, -1 do
-            if callbacks[ i ]() then table.remove( callbacks, i ) end
+            if callbacks[ i ]( true ) then table.remove( callbacks, i ) end
         end
 
         if #callbacks == 0 then
@@ -385,6 +385,8 @@ function ns.updateGear()
         state.set_bonus[ thing ] = 0
     end
 
+    table.wipe( state.items )
+
     for set, items in pairs( class.gear ) do
         state.set_bonus[ set ] = 0
         for item, _ in pairs( items ) do
@@ -432,11 +434,29 @@ function ns.updateGear()
                 state.set_bonus[ key ] = 1
                 gearInitialized = true
             end
+
+            local usable = class.itemMap[ item ]
+            if usable then table.insert( state.items, usable ) end
         end
     end
 
     ns.updatePowers()
     ns.updateTalents()
+
+    local itemList = class.itemPack.lists.items
+    table.wipe( itemList )
+
+    if #state.items > 0 then
+        for i, item in ipairs( state.items ) do
+            itemList[ i ] = {
+                action = item,
+                enabled = true,                
+            }
+        end
+
+        Hekili:LoadItemScripts()
+        Hekili:ForceUpdate()
+    end
 
     if not gearInitialized then
         C_Timer.After( 3, ns.updateGear )
@@ -696,6 +716,10 @@ RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
     state.target.updated = true
     Hekili:ForceUpdate( event, true )
 end )
+
+
+RegisterEvent( "PLAYER_STARTED_MOVING", function() Hekili:ForceUpdate() end )
+RegisterEvent( "PLAYER_STOPPED_MOVING", function() Hekili:ForceUpdate() end )
 
 
 local function handleEnemyCasts( event, unit )

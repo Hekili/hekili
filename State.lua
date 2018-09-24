@@ -62,11 +62,11 @@ state.cooldown = {}
     max = 10000,
     regen = 0
 } ]]
-state.item_cd = {}
 state.debuff = {}
 state.dot = {}
 state.equipped = {}
 state.gcd = {}
+state.items = {}
 state.perk = {}
 state.pet = {
     fake_pet = {
@@ -3639,8 +3639,9 @@ Hekili.AuraDB = ns.auras
 function state.putTrinketsOnCD( val )
     val = val or 10
 
-    for k, _ in pairs( class.items ) do
-        setCooldown( k, max( val, state.cooldown[ k ].remains ) )
+    setCooldown( "use_items", max( val, state.cooldown.use_items.remains ) )
+    for i, item in ipairs( state.items ) do
+        setCooldown( item, max( val, state.cooldown.use_items.remains ) )
     end
 end
 
@@ -4234,6 +4235,14 @@ do
         end
 
         if ability.buff and not state.buff[ ability.buff ].up then
+            return false
+        end
+
+        if self.args.moving == 1 and state.buff.movement.down then
+            return false
+        end
+
+        if self.args.moving == 0 and state.buff.movement.up then
             return false
         end
 

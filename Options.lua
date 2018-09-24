@@ -23,6 +23,7 @@ local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
 local tableCopy = ns.tableCopy
 
+local GetItemInfo = ns.CachedGetItemInfo
 
 local LDB = LibStub( "LibDataBroker-1.1", true )
 local LDBIcon = LibStub( "LibDBIcon-1.0", true )
@@ -372,6 +373,8 @@ local packTemplate = {
     source = "",
     date = date("%Y-%m-%d %H:%M"),
 
+    hidden = false,
+
     lists = {
         precombat = {
         },
@@ -438,6 +441,17 @@ function Hekili:GetDefaults()
                             disabled = false,
                             toggle = "default",
                             clash = 0
+                        }
+                    },
+                    items = {
+                        ['**'] = {
+                            disabled = false,
+                            toggle = "default",
+                            clash = 0,
+                            targetMin = 0,
+                            targetMax = 0,
+                            boss = false,
+                            criteria = nil
                         }
                     }
                 },
@@ -3405,6 +3419,11 @@ do
         if type( val ) == 'string' then val = val:trim() end
 
         data[ option ] = val
+
+        if option == "enable_moving" and not val then
+            data.moving = nil
+        end
+
         self:LoadScripts()
     end
 
@@ -3492,7 +3511,9 @@ do
                     validate = function( info, val )
                         val = val:trim()
                         if rawget( Hekili.DB.profile.packs, val ) then return "Please specify a unique pack name."
-                        elseif val == "(none)" then return "Don't get smart, missy." end
+                        elseif val == "UseItems" then return "UseItems is a reserved name."
+                        elseif val == "(none)" then return "Don't get smart, missy."
+                        elseif val:find( "^[a-zA-Z0-9 _']" ) then return "Only alphanumeric characters, spaces, underscores, and apostrophes are allowed in pack names." end
                         return true
                     end,
                 },
@@ -3816,7 +3837,7 @@ do
         local count = 0
 
         for pack, data in orderedPairs( self.DB.profile.packs ) do
-            if data.spec and class.specs[ data.spec ] then
+            if data.spec and class.specs[ data.spec ] and not data.hidden then
                 packs.plugins.links.packButtons = packs.plugins.links.packButtons or {
                     type = "header",
                     name = "Installed Packs",
@@ -3880,6 +3901,7 @@ do
                                         Hekili.DB.profile.packs[ pack ] = nil
                                         Hekili:RestoreDefault( pack )
                                         Hekili:EmbedPackOptions()
+                                        Hekili:LoadScripts()
                                         ACD:SelectGroup( "Hekili", "packs", pack )
                                     end
                                 },
@@ -4472,11 +4494,11 @@ do
                                                         scripts:StoreValues( results, scriptID )
                                                         
                                                         return results, list, action
-                                                    end, ]]
+                                                    end,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
                                                         return e.action == "use_items"
-                                                    end,
+                                                    end, ]]
                                                 },
 
                                                 showModifiers = {

@@ -362,6 +362,8 @@ local HekiliSpecMixin = {
             a.link = link or ability
             a.texture = texture or "Interface\\ICONS\\Spell_Nature_BloodLust"
 
+            class.itemMap[ data.item ] = ability
+
             Hekili:ContinueOnItemLoad( data.item, function( success )
                 if not success then
                     -- Assume the item is not presently in-game.
@@ -369,7 +371,11 @@ local HekiliSpecMixin = {
                         if a == entry then
                             class.abilities[ key ] = nil
                             class.abilityList[ key ] = nil
+                            class.itemList[ key ] = nil
+
                             self.abilities[ key ] = nil
+                            self.abilityList[ key ] = nil
+                            self.itemList[ key ] = nil
                         end
                     end
 
@@ -388,6 +394,7 @@ local HekiliSpecMixin = {
                         a.name = a.name .. " " .. a.suffix
                     end
                     
+                    self.abilities[ ability ] = self.abilities[ ability ] or a
                     self.abilities[ a.name ] = self.abilities[ a.name ] or a
                     self.abilities[ a.link ] = self.abilities[ a.link ] or a
 
@@ -465,16 +472,18 @@ local HekiliSpecMixin = {
             end
         end
 
-        self.abilities[ ability ] = a
-        self.abilities[ a.id ] = a
+        if not a.item then
+            self.abilities[ ability ] = a
+            self.abilities[ a.id ] = a
+            
+            if not a.unlisted then class.abilityList[ ability ] = class.abilityList[ ability ] or a.name end
 
-        if not a.unlisted then class.abilityList[ ability ] = class.abilityList[ ability ] or a.name end
-
-        if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
-            self.abilities[ data.copy ] = a
-        elseif type( data.copy ) == 'table' then
-            for _, key in ipairs( data.copy ) do
-                self.abilities[ key ] = a
+            if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
+                self.abilities[ data.copy ] = a
+            elseif type( data.copy ) == 'table' then
+                for _, key in ipairs( data.copy ) do
+                    self.abilities[ key ] = a
+                end
             end
         end
             
@@ -495,7 +504,7 @@ local HekiliSpecMixin = {
 
     RegisterOptions = function( self, options )
         self.options = options
-        for k,v in pairs( specTemplate) do
+        for k, v in pairs( specTemplate ) do
             if options[ k ] == nil then options[ k ] = v end
         end
     end,
@@ -518,7 +527,11 @@ local HekiliSpecMixin = {
     -- info should be an AceOption table.
     RegisterPref = function( self, info )
         table.insert( self.prefs, info )
-    end
+    end,
+
+    RegisterUsableItem = function( self, item, info )
+        
+    end,
 }
 
 --[[ function Hekili:RestoreDefaults()
@@ -1539,8 +1552,6 @@ do
         cast = 0,
         cooldown = 120,
         gcd = 'off',
-
-        toggle = 'cooldowns',
     } )
 end
 
@@ -2536,6 +2547,26 @@ all:RegisterAbility( "dread_aspirants_badge", {
 } )
 
 
+-- BREWFEST
+all:RegisterAbility( "brawlers_statue", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 117357,
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "drunken_evasiveness" )
+    end
+} )
+
+all:RegisterAura( "drunken_evasiveness", {
+    id = 127967,
+    duration = 20,
+    max_stack = 1
+} )
+
 
 
 -- LEGION LEGENDARIES
@@ -3080,14 +3111,14 @@ function addItemSettings( key, itemID, options )
 end
 
 
-local function addUsableItem( key, id )
+--[[ local function addUsableItem( key, id )
     class.items = class.items or {}
     class.items[ key ] = id
 
     addGearSet( key, id )
     addItemSettings( key, id )
 end
-ns.addUsableItem = addUsableItem
+ns.addUsableItem = addUsableItem ]]
 
 
 function Hekili:GetAbilityInfo( index )
@@ -3098,9 +3129,7 @@ function Hekili:GetAbilityInfo( index )
 
     -- Decide if more details are needed later.
     return ability.id, ability.name, ability.key, ability.item
-
 end
-
 
 class.interrupts = {}
 
@@ -3455,19 +3484,6 @@ do
             end
         end
     end
-end
-    
-    
-
-
--- Was for module support; disabled.
-function Hekili.RetrieveFromNamespace( key )
-    return nil
-end
-
-
-function Hekili.StoreInNamespace( key, value )
-    -- ns[ key ] = value
 end
 
 

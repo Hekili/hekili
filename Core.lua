@@ -23,6 +23,7 @@ local string_format = string.format
 local mt_resource = ns.metatables.mt_resource
 local ToggleDropDownMenu = L_ToggleDropDownMenu
 
+local GetItemInfo = ns.CachedGetItemInfo
 
 local updatedDisplays = {}
 local recommendChecks = {}
@@ -516,8 +517,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local spec = rawget( self.DB.profile.specs, specID )
     local module = class.specs[ specID ]
 
-    local packName = self.DB.profile.specs[ specID ].package
-    local pack = self.DB.profile.packs[ packName ]
+    packName = packName or self.DB.profile.specs[ specID ].package
+
+    local pack
+    if ( packName == "UseItems" ) then pack = class.itemPack
+    else pack = self.DB.profile.packs[ packName ] end
 
     local list = pack.lists[ listName ]
     
@@ -537,8 +541,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local force_channel = false
     local stop = false
 
-    table.wipe( itemTried )
-    
     if self:IsListActive( packName, listName ) then
         local actID = 1
         
@@ -620,30 +622,25 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         elseif precombatFilter and not ability.essential then
                             if debug then self:Debug( "We are already in-combat and this pre-combat action is not essential.  Skipping." ) end
                         else
-                            if entry.action == 'use_items' then
-                                local aScriptPass = true
+                            --[[ if entry.action == 'use_items' then
+                                local aScriptPass = #state.items > 0
 
-                                if aScriptPass then
-                                    local uiList = "usable_items"
-                                    
-                                    if pack.lists[ uiList ] then
-                                        if debug then self:Debug( "The usable_items action list was found; calling it." ) end
-                                        rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, packName, uiList, slot, rAction, rWait, rClash, rDepth, scriptID )
-                                        if debug then self:Debug( "Returned from usable_items action list, current recommendation is %s (+%.2f).", rAction or "none", rWait ) end
-
-                                    else
-                                        if debug then self:Debug( "The usable_items action list was not found; skipping it." ) end
-                                    end
-
+                                if not aScriptPass then
+                                    if debug then self:Debug( "No supported usable items were equipped." ) end
+                                else
+                                    if debug then self:Debug( "Player wearing %d supported items; testing.", #state.items ) end
+                                    rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, "__useItems", "items", slot, rAction, rWait, rClash, rDepth, scriptID )
+                                    if debug then self:Debug( "Returned from usable_items action list, current recommendation is %s (+%.2f).", rAction or "none", rWait ) end
                                 end
 
-                            elseif entry.action == 'call_action_list' or entry.action == 'run_action_list' then
+                            else]] 
+                            if entry.action == 'call_action_list' or entry.action == 'run_action_list' or entry.action == 'use_items' then
                                 -- We handle these here to avoid early forking between starkly different APLs.
                                 local aScriptPass = true
                                 local ts = not strict and scripts:IsTimeSensitive( scriptID )
 
                                 if not entry.criteria or entry.criteria == "" then
-                                    if debug then self:Debug( "There is no criteria for this action list." ) end
+                                    if debug then self:Debug( "There is no criteria for %s.", entry.action == 'use_items' and "Use Items" or "this action list." ) end
                                     -- aScriptPass = ts or self:CheckStack()
                                 else
                                     aScriptPass = ts or scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
@@ -656,39 +653,47 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 end
                                 
                                 if aScriptPass then
-                                    local name = state.args.list_name
 
-                                    if InUse[ name ] then
-                                        if debug then self:Debug( "Action list (%s) was found, but would cause a loop.", name ) end
-
-                                    elseif name and pack.lists[ name ] then
-                                        if debug then self:Debug( "Action list (%s) was found.", name ) end
-
+                                    if entry.action == "use_items" then
                                         self:AddToStack( scriptID, name, caller, entry.action == "run_action_list" )
 
                                         local pAction, pWait = rAction, rWait
-
-                                        rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rClash, rDepth, scriptID )
-                                        if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NoAction", rWait ) end
+                                        rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rClash, rDepth, scriptID )
+                                        if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", name, rAction or "NoAction", rWait ) end
 
                                         self:PopStack()
-
-                                        -- REVISIT THIS:  IF A RUN_ACTION_LIST CALLER IS NOT TIME SENSITIVE, DON'T BOTHER LOOPING THROUGH IT IF ITS CONDITIONS DON'T PASS.
-                                        --[[ if entry.action == 'run_action_list' and not ts then
-                                            if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
-                                            break
-                                        end ]]
-                                    
                                     else
-                                        if debug then self:Debug( "Action list (%s) not found.  Skipping.", name or "no name" ) end
+                                        if InUse[ name ] then
+                                            if debug then self:Debug( "Action list (%s) was found, but would cause a loop.", name ) end
 
-                                    end                                    
+                                        elseif name and pack.lists[ name ] then
+                                            if debug then self:Debug( "Action list (%s) was found.", name ) end
+                                            self:AddToStack( scriptID, name, caller, entry.action == "run_action_list" )
+
+                                            rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rClash, rDepth, scriptID )
+                                            if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NoAction", rWait ) end
+
+                                            self:PopStack()
+
+                                            -- REVISIT THIS:  IF A RUN_ACTION_LIST CALLER IS NOT TIME SENSITIVE, DON'T BOTHER LOOPING THROUGH IT IF ITS CONDITIONS DON'T PASS.
+                                            --[[ if entry.action == 'run_action_list' and not ts then
+                                                if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
+                                                break
+                                            end ]]
+                                        
+                                        else
+                                            if debug then self:Debug( "Action list (%s) not found.  Skipping.", name or "no name" ) end
+
+                                        end
+                                    end
                                 end
                                 
                             else
                                 local usable = state:IsUsable()
                                 if debug then self:Debug( "The action (%s) is %susable at (%.2f + %.2f).", entry.action, usable and "" or "NOT ", state.offset, state.delay ) end
                                 
+                                --[[ Tweak to avoid trying to use an item via Use Items when it already appears in the APL; not needed in BfA.
+
                                 if ability.item then
                                     if listName == "Usable Items" then                                    
                                         if itemTried[ entry.action ] then
@@ -698,7 +703,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     else
                                         itemTried[ entry.action ] = true
                                     end
-                                end
+                                end ]]
                                 
                                 if usable then
                                     rClash = state:ClashOffset( entry.action ) or rClash

@@ -1435,11 +1435,11 @@ do
     end
 
     function Hekili:IsListActive( pack, list )
-        return listActive[ pack .. ":" .. list ] == true
+        return pack == "UseItems" or ( listActive[ pack .. ":" .. list ] == true )
     end
 
     function Hekili:IsActionActive( pack, list, action )
-        return actsActive[ pack .. ":" .. list .. ":" .. action ] == true
+        return pack == "UseItems" or ( actsActive[ pack .. ":" .. list .. ":" .. action ] == true )
     end
 
     function Hekili:DumpActionActive()

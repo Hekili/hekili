@@ -121,6 +121,10 @@ local function SimcWithResources( str )
         end
     end
 
+    if str:find( "health" ) then
+        str = extendExpression( str, "health", "current" )
+    end
+
     if str:find( "rune" ) then
         str = extendExpression( str, "rune", "current" )
     end
@@ -1107,12 +1111,18 @@ function scripts:LoadScripts()
     local profile = Hekili.DB.profile
     wipe( self.DB )
     wipe( self.Channels )
+    wipe( self.PackInfo )
 
     state.reset()
 
     for pack, pData in pairs( profile.packs ) do
         local specData = pData.spec and class.specs[ pData.spec ]
+
         if specData then
+            self.PackInfo[ pack ] = {
+                items = {},                        
+            }
+
             for list, lData in pairs( pData.lists ) do
                 for action, data in ipairs( lData ) do
                     local scriptID = pack .. ":" .. list .. ":" .. action
@@ -1142,21 +1152,32 @@ function scripts:LoadScripts()
                         end
                     end
 
-                    local ability = data.action and specData.abilities[ data.action ]
-                    if ability and ability.channeled then
-                        if not self.Channels[ pack ] then self.Channels[ pack ] = {} end
-                        if not self.Channels[ pack ][ data.action ] then 
-                            self.Channels[ pack ][ data.action ] = {}
+                    local ability
+
+                    if data.action then
+                        ability = specData.abilities[ data.action ] or class.specs[0].abilities[ data.action ]
+                    end
+
+                    if ability then
+                        if ability.channeled then
+                            if not self.Channels[ pack ] then self.Channels[ pack ] = {} end
+                            if not self.Channels[ pack ][ data.action ] then 
+                                self.Channels[ pack ][ data.action ] = {}
+                            end
+
+                            local cInfo = self.Channels[ pack ][ data.action ]
+
+                            -- This will load the channel criteria for the first entry for this ability in any of the action lists.
+                            -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
+                            -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
+
+                            for k in pairs( channelModifiers ) do
+                                if script.Modifiers[ k ] and not cInfo[ k ] then cInfo[ k ] = script.Modifiers[ k ] end
+                            end
                         end
 
-                        local cInfo = self.Channels[ pack ][ data.action ]
-
-                        -- This will load the channel criteria for the first entry for this ability in any of the action lists.
-                        -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
-                        -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
-
-                        for k in pairs( channelModifiers ) do
-                            if script.Modifiers[ k ] and not cInfo[ k ] then cInfo[ k ] = script.Modifiers[ k ] end
+                        if ability.item then
+                            self.PackInfo[ pack ].items[ data.action ] = true
                         end
                     end
 
@@ -1166,6 +1187,8 @@ function scripts:LoadScripts()
         end
     end
 
+    self:LoadItemScripts()
+
     scriptsLoaded = true
 end
 
@@ -1173,6 +1196,87 @@ function Hekili:LoadScripts()
     self.Scripts:LoadScripts()
     self:UpdateDisplayVisibility()
 end
+
+
+function Hekili:LoadItemScripts()
+    self.Scripts:LoadScripts()
+end
+
+
+function Hekili.Scripts:LoadItemScripts()
+    for k in pairs( self.DB ) do
+        if k:sub( 9 ) == "UseItems:" then
+            self.DB[ k ] = nil
+        end
+    end
+
+    local pack = "UseItems"
+    self.PackInfo[ pack ] = self.PackInfo[ pack ] or {
+        items = {}
+    }
+
+    for list, lData in pairs( class.itemPack.lists ) do
+        for action, data in ipairs( lData ) do
+            local scriptID = pack .. ":" .. list .. ":" .. action
+
+            local script = ConvertScript( data, true, scriptID )
+
+            if data.action == "call_action_list" or data.action == "run_action_list" then
+                -- Check for Time Sensitive conditions.
+                script.TimeSensitive = false
+                
+                local lua = script.Lua
+
+                if lua then 
+                    -- If resources are checked, it's time-sensitive.
+                    for k in pairs( GetResourceInfo() ) do
+                        if lua:find( k ) then script.TimeSensitive = true; break end
+                    end
+
+                    if lua:find( "rune" ) then script.TimeSensitive = true end
+
+                    if not script.TimeSensitive then
+                        -- Check for other time-sensitive variables.
+                        if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) then
+                            script.TimeSensitive = true
+                        end
+                    end
+                end
+            end
+
+            local ability
+
+            if data.action then
+                ability = class.abilities[ data.action ] or class.specs[0].abilities[ data.action ]
+            end
+
+            if ability then
+                if ability.channeled then
+                    if not self.Channels[ pack ] then self.Channels[ pack ] = {} end
+                    if not self.Channels[ pack ][ data.action ] then 
+                        self.Channels[ pack ][ data.action ] = {}
+                    end
+
+                    local cInfo = self.Channels[ pack ][ data.action ]
+
+                    -- This will load the channel criteria for the first entry for this ability in any of the action lists.
+                    -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
+                    -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
+
+                    for k in pairs( channelModifiers ) do
+                        if script.Modifiers[ k ] and not cInfo[ k ] then cInfo[ k ] = script.Modifiers[ k ] end
+                    end
+                end
+
+                if ability.item then
+                    self.PackInfo[ pack ].items[ data.action ] = true
+                end
+            end
+
+            self.DB[ scriptID ] = script
+        end
+    end
+end    
 
 
 function Hekili:LoadScript( pack, list, id )

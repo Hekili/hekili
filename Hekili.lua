@@ -117,6 +117,12 @@ Hekili.Class = {
     abilities = {},
     abilityList = {},
     itemList = {},
+    itemMap = {},
+    itemPack = {
+        lists = {
+            items = {}
+        }
+    },
 
     packs = {},
     
@@ -126,7 +132,6 @@ Hekili.Class = {
     potionList = {},
     
 	hooks = {},
-    items = {},
     range = 8,
 	settings = {},
     stances = {},
@@ -135,7 +140,8 @@ Hekili.Class = {
 
 Hekili.Scripts = {
     DB = {},
-    Channels = {}
+    Channels = {},
+    PackInfo = {},
 }
 
 Hekili.State = {}

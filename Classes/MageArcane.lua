@@ -412,7 +412,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             id = 30451,
             cast = function () 
                 if buff.presence_of_mind.up then return 0 end
-                return 2.3 * ( 1 - ( 0.08 * arcane_charges.current ) ) * haste end,
+                return 2.25 * ( 1 - ( 0.08 * arcane_charges.current ) ) * haste end,
             cooldown = 0,
             gcd = "spell",
             
