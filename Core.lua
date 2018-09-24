@@ -655,14 +655,14 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 if aScriptPass then
 
                                     if entry.action == "use_items" then
-                                        self:AddToStack( scriptID, name, caller, entry.action == "run_action_list" )
-
+                                        -- self:AddToStack( scriptID, "items", caller, entry.action == "run_action_list" )
                                         local pAction, pWait = rAction, rWait
                                         rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rClash, rDepth, scriptID )
-                                        if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", name, rAction or "NoAction", rWait ) end
-
-                                        self:PopStack()
+                                        if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NoAction", rWait ) end
+                                        -- self:PopStack()
                                     else
+                                        name = state.args.list_name
+
                                         if InUse[ name ] then
                                             if debug then self:Debug( "Action list (%s) was found, but would cause a loop.", name ) end
 
