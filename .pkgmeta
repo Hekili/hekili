@@ -47,3 +47,6 @@ externals:
         url: https://repos.wowace.com/wow/libcompress/trunk
     Libs/LibDualSpec-1.0:
         url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
+    Libs/LibItemBuffs-1.0:
+        url: git://github.com/AdiAddons/LibItemBuffs-1.0.git
+        tag: latest        

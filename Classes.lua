@@ -10,6 +10,7 @@ local state = Hekili.State
 
 local CommitKey = ns.commitKey
 
+local GetItemInfo = ns.CachedGetItemInfo
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local GetResourceInfo, GetResourceID, GetResourceKey = ns.GetResourceInfo, ns.GetResourceID, ns.GetResourceKey
 local RegisterEvent = ns.RegisterEvent
@@ -361,7 +362,20 @@ local HekiliSpecMixin = {
             a.link = link or ability
             a.texture = texture or "Interface\\ICONS\\Spell_Nature_BloodLust"
 
-            Hekili:ContinueOnItemLoad( data.item, function ()
+            Hekili:ContinueOnItemLoad( data.item, function( success )
+                if not success then
+                    -- Assume the item is not presently in-game.
+                    for key, entry in pairs( class.abilities ) do
+                        if a == entry then
+                            class.abilities[ key ] = nil
+                            class.abilityList[ key ] = nil
+                            self.abilities[ key ] = nil
+                        end
+                    end
+
+                    return
+                end
+
                 local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( data.item )
 
                 if name then
@@ -377,8 +391,10 @@ local HekiliSpecMixin = {
                     self.abilities[ a.name ] = self.abilities[ a.name ] or a
                     self.abilities[ a.link ] = self.abilities[ a.link ] or a
 
-                    if not a.unlisted then class.abilityList[ ability ] = "|T" .. texture .. ":0|t " .. link end
-                    if not a.unlisted then class.itemList[ ability ] = "|T" .. texture .. ":0|t " .. link end
+                    if not a.unlisted then 
+                        class.abilityList[ ability ] = "|T" .. texture .. ":0|t " .. link
+                        class.itemList[ data.item ] = "|T" .. texture .. ":0|t " .. link 
+                    end
 
                     if class.abilities[ ability ] then
                         class.abilities[ a.name ] = a
@@ -2175,7 +2191,7 @@ all:RegisterAbility( "sanguinating_totem", {
     cooldown = 90,
     gcd = "off",
 
-    item = 159624,
+    item = 160753,
     toggle = "defensives",
 } )
 
@@ -2198,6 +2214,328 @@ all:RegisterAura( "doubting_mind", {
     duration = 5,
     max_stack = 1
 } )
+
+
+all:RegisterAbility( "whirlwings_plumage", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 158215,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "gryphons_pride" )
+    end,
+} )
+
+all:RegisterAura( "gryphons_pride", {
+    id = 268550,
+    duration = 20,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "dread_combatants_medallion", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 161811,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "rapid_adaptation" )
+    end,
+} )
+
+all:RegisterAura( "rapid_adaptation", {
+    id = 277179,
+    duration = 20,
+    max_stack = 1
+} )
+
+
+all:RegisterAbility( "dread_combatants_insignia", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 161813,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "dig_deep" )
+    end,
+} )
+
+all:RegisterAura( "dig_deep", {
+    id = 277185,
+    duration = 15,
+    max_stack = 1
+} )
+
+
+-- Dread Combatant's Badge
+all:RegisterAura( "taste_of_victory", {
+    id = 277182,
+    duration = 20,
+    max_stack = 1
+} )
+
+
+all:RegisterAbility( "dread_gladiators_medallion", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 161674,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "rapid_adaptation" )
+    end,
+} )
+
+
+all:RegisterAbility( "dread_gladiators_emblem", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 161675,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "toughen_up" )
+    end,
+} )
+
+all:RegisterAura( "toughen_up", {
+    id = 277187,
+    duration = 15,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "dread_gladiators_badge", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 161902,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "dig_deep" )
+    end,
+} )
+
+
+-- Galewind Chimes
+all:RegisterAura( "galewind_chimes", {
+    id = 268518,
+    duration = 8,
+    max_stack = 1,
+} )
+
+-- Gilded Loa Figurine
+all:RegisterAura( "will_of_the_loa", {
+    id = 273974,
+    duration = 10,
+    max_stack = 1,
+} )
+
+-- Emblem of Zandalar
+all:RegisterAura( "speed_of_the_spirits", {
+    id = 273992,
+    duration = 8,
+    max_stack = 1,
+} )
+
+-- Dinobone Charm
+all:RegisterAura( "primal_instinct", {
+    id = 273988,
+    duration = 7,
+    max_stack = 1
+} )
+
+
+all:RegisterAbility( "pearl_divers_compass", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 158162,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "true_north" )
+    end,
+} )
+
+all:RegisterAura( "true_north", {
+    id = 273935,
+    duration = 12,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "first_mates_spyglass", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 158163,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "spyglass_sight" )
+    end,
+} )
+
+all:RegisterAura( "spyglass_sight", {
+    id = 273955,
+    duration = 15,
+    max_stack = 1
+} )
+
+
+all:RegisterAbility( "plunderbeards_flask", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 158164,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "bolstered_spirits" )
+    end,
+} )
+
+all:RegisterAura( "bolstered_spirits", {
+    id = 273942,
+    duration = 10,
+    max_stack = 10,
+} )
+
+
+all:RegisterAura( "living_oil_cannister", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 158216,
+    toggle = "cooldowns",
+} )
+
+
+all:RegisterAura( "sound_barrier", {
+    id = 268531,
+    duration = 8,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "vial_of_storms", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+    
+    item = 158224,
+    toggle = "cooldowns",
+} )
+
+
+all:RegisterAura( "sirens_melody", {
+    id = 268512,
+    duration = 6,
+    max_stack = 1,
+} )
+
+
+all:RegisterAura( "tick", {
+    id = 274430,
+    duration = 6,
+    max_stack = 1,
+} )
+
+all:RegisterAura( "tock", {
+    id = 274431,
+    duration = 6,
+    max_stack = 1,
+} )
+
+all:RegisterAura( "soulguard", {
+    id = 274459,
+    duration = 12,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "berserkers_juju", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 161117,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "berserkers_frenzy" )
+    end,
+} )
+
+all:RegisterAura( "berserkers_frenzy", {
+    id = 274472,
+    duration = 10,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "dread_aspirants_medallion", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+    
+    item = 162897,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "rapid_adaptation" )
+    end,
+} )
+
+
+all:RegisterAbility( "dread_aspirants_emblem", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 162898,
+    toggle = "cooldowns",
+    
+    handler = function ()
+        applyBuff( "toughen_up" )
+    end,
+} )
+
+
+all:RegisterAbility( "dread_aspirants_badge", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 162966,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "dig_deep" )
+    end,
+} )
+
+
 
 
 -- LEGION LEGENDARIES
@@ -2550,236 +2888,6 @@ all:RegisterAura( 'norgannons_command', {
     duration = 15,
     max_stack = 6 
 } )
-
-
---[[ all:RegisterAbility( "draught_of_souls", {
-    item = 140808,
-    spend = 0,
-    cast = 0,
-    cooldown = 80,
-    gcd = 'off',
-    toggle = 'cooldowns',
-    handler = function () applyBuff( "fel_crazed_rage", 3 ); setCooldown( "global_cooldown", 3 ) end
-} )
-
-all:RegisterAura( "fel_crazed_rage", 225141, "duration", 3, "incapacitate", true )
-
-
-all:RegisterAbility( "faulty_countermeasure", {
-    item = 137539,
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-    handler = function () applyBuff( "sheathed_in_frost", 30 ) end
-} )
-
-all:RegisterAura( "sheathed_in_frost", 214962, "duration", 30 )
-
-
-all:RegisterAbility( "feloiled_infernal_machine", {
-    item = 144482,
-    spend = 0,
-    cast = 0,
-    cooldown = 80,
-    gcd = 'off',
-    toggle = 'cooldowns',
-    handler = function () applyBuff( "grease_the_gears" ) end
-} )
-
-all:RegisterAura( "grease_the_gears", 238534, "duration", 20 )
-
-
-all:RegisterAbility( "forgefiends_fabricator", {
-    item = 151963,
-    spend = 0,
-    cast = 0,
-    cooldown = 30,
-    gcd = 'off',
-} )
-
-
-all:RegisterAbility( "horn_of_valor", {
-    item = 133642,
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-    handler = function () applyBuff( "valarjars_path" ) end
-} )
-
-all:RegisterAura( "valarjars_path", 215956, "duration", 30 )
-
-
-all:RegisterAbility( "kiljaedens_burning_wish", {
-    item = 144259,
-    spend = 0,
-    cast = 0,
-    cooldown = 75,
-    texture = 1357805,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-
-all:RegisterAbility( "might_of_krosus", {
-    item = 140799,
-    spend = 0,
-    cast = 0,
-    cooldown = 30,
-    gcd = 'off',
-    handler = function () if active_enemies > 3 then setCooldown( "might_of_krosus", 15 ) end end
-} )
-
-
-all:RegisterAbility( "ring_of_collapsing_futures", {
-    item = 142173,
-    spend = 0,
-    cast = 0,
-    cooldown = 15,
-    gcd = 'off',
-    ready = function () return debuff.temptation.remains end,
-	handler = function () applyDebuff( "player", "temptation", 30, debuff.temptation.stack + 1 ) end
-} )
-
-all:RegisterAura( 'temptation', 234143, 'duration', 30, 'max_stack', 20 )
-
-
-all:RegisterAbility( "specter_of_betrayal", {
-    item = 151190,
-    spend = 0,
-    cast = 0,
-    cooldown = 45,
-    gcd = 'off',
-} )
-
-
-all:RegisterAbility( "tiny_oozeling_in_a_jar", {
-    item = 137439,
-    spend = 0,
-    cast = 0,
-    cooldown = 20,
-    gcd = "off",
-    usable = function () return buff.congealing_goo.stack == 6 end,
-	handler = function () removeBuff( "congealing_goo" ) end
-} )
-
-all:RegisterAura( "congealing_goo", 215126, "duration", 60, "max_stack", 6 )
-
-
-all:RegisterAbility( "umbral_moonglaives", {
-    item = 147012,
-    spend = 0,
-    cast = 0,
-    cooldown = 90,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-
-all:RegisterAbility( "unbridled_fury", {
-    item = 139327,
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-	handler = function () applyBuff( "unbridled_fury" ) end
-} )
-
-all:RegisterAura( "wild_gods_fury", 221695, "duration", 30 )
-
-
-all:RegisterAbility( "vial_of_ceaseless_toxins", {
-    item = 147011,
-    spend = 0,
-    cast = 0,
-    cooldown = 60,
-    gcd = 'off',
-    toggle = 'cooldowns',
-	handler = function () applyDebuff( "target", "ceaseless_toxin", 20 ) end
-} )
-
-all:RegisterAura( "ceaseless_toxin", 242497, "duration", 20 )
-
-
-all:RegisterAbility( "tome_of_unraveling_sanity", {
-    item = 147019,
-    spend = 0,
-    cast = 0,
-    cooldown = 60,
-    gcd = "off",
-    toggle = "cooldowns",
-    handler = function () applyDebuff( "target", "insidious_corruption", 12 ) end
-} )
-
-all:RegisterAura( "insidious_corruption", 243941, "duration", 12 )
-all:RegisterAura( "extracted_sanity", 243942, "duration", 24 ) ]]
-
-
-
-
---[[
-    
-all:RegisterAbility( 'potion', {
-    name = '|cff00ccff[Potion]|r',
-    spend = 0,
-    cast = 0,
-    gcd = 'off',
-    cooldown = 60,
-    passive = true,
-    toggle = 'potions',
-    usable = function ()
-        if not toggle.potions then return false end
-
-        local pName = args.ModName or args.name or class.potion
-
-        local potion = class.potions[ pName ]
-
-        if not potion or GetItemCount( potion.item ) == 0 then return false end
-        return true
-    end
-} )
-
-modifyAbility( 'potion', 'cooldown', function ( x )
-    if time > 0 then return 3600 end
-    return x
-end )
-
-	handler = function ()
-    local potion = args.ModName or args.name or class.potion
-    local potion = class.potions[ potion ]
-    
-    if potion then
-        applyBuff( potion.buff, potion.duration or 25 )
-    end
-    
-end )
-
-
-all:RegisterAbility( "use_items", {
-    name = "|cff00ccff[Use Items]|r",
-    spend = 0,
-    cast = 0,
-    cooldown = 120,
-    gcd = 'off',
-    toggle = 'cooldowns',
-} )
-
-
-class.itemsInAPL = {}
-
--- If an item is handled by a spec's APL, drop it from Use Items.
-function ns.registerItem( key, spec )
-    if not key or not spec then return end
-
-    class.itemsInAPL[ spec ] = class.itemsInAPL[ spec ] or {}
-
-    class.itemsInAPL[ spec ][ key ] = not class.itemsInAPL[ spec ][ key ]
-end
-]]
 
 
 ns.addToggle = function( name, default, optionName, optionDesc )
@@ -3184,7 +3292,7 @@ function Hekili:SpecializationChanged()
                 class.potionList.default = "|cFFFFD100Default|r"
             end
 
-            if self.currentSpecOpts.potion then
+            if self.currentSpecOpts and self.currentSpecOpts.potion then
                 class.potion = self.currentSpecOpts.potion
             end
 

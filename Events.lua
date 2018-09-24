@@ -149,11 +149,9 @@ RegisterEvent( "GET_ITEM_INFO_RECEIVED", function( event, itemID, success )
     local callbacks = itemCallbacks[ itemID ]
 
     if callbacks then
-        if success then
-            for i, func in ipairs( callbacks ) do
-                func()
-                callbacks[ i ] = nil
-            end
+        for i, func in ipairs( callbacks ) do
+            func( success )
+            callbacks[ i ] = nil
         end
 
         itemCallbacks[ itemID ] = nil

@@ -71,6 +71,7 @@ Libs/LibRangeCheck-2.0
 Libs/LibSharedMedia-3.0
 Libs/LibSpellRange-1.0
 Libs/LibDataBroker-1-1
+Libs/LibItemBuffs-1.0
 CHANGES.txt
 Classes/Notes
 Libs/LibNameplateRegistry-1.0/LibNameplateRegistry-1.0.lua
@@ -78,3 +79,4 @@ Libs/LibNameplateRegistry-1.0/LibNameplateRegistry-1.0.xml
 Textures/LOGO-ORANGE.png
 Textures/LOGO-WHITE.png
 UI.lua
+Libs/LibItemBuffs-1.0/.docmeta

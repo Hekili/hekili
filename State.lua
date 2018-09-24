@@ -2009,7 +2009,7 @@ local mt_default_cooldown = {
             
             end
             
-            t.duration = duration or 0
+            t.duration = max( duration or 0, ability.cooldown or 0, ability.recharge or 0 ) or 0
             t.expires = start and ( start + duration ) or 0
             t.true_duration = true_duration
             t.true_expires = start and ( start + true_duration ) or 0
