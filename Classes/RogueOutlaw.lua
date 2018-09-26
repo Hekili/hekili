@@ -797,13 +797,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             startsCombat = false,
             texture = 1373910,
-
-            --[[ nobuff = function ()
-                if time == 0 then
-                    return buff.roll_the_bones.remains
-                end
-                return nil
-            end, ]]
             
             usable = function ()
                 if combo_points.current == 0 then return false end
@@ -811,10 +804,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 -- Don't RtB if we've already done a simulated RtB.
                 if buff.rtb_buff_1.up then return false end
 
-                if buff.roll_the_bones.down then return true end                
+                if buff.roll_the_bones.down then return true end
 
                 -- Handle reroll checks for pre-combat.
-                if time == 0 and combo_points.current >= 5 then
+                if time == 0 then
+                    if combo_points.current < 5 then return false end
+
                     local reroll = rtb_buffs < 2 and ( buff.loaded_dice.up or not buff.grand_melee.up and not buff.ruthless_precision.up )
                     
                     if azerite.deadshot.enabled or azerite.ace_up_your_sleeve.enabled then
