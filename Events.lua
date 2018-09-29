@@ -231,6 +231,7 @@ end )
 RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
     Hekili:SpecializationChanged()
     ns.checkImports()
+    ns.updateGear()
 end )
 
 
@@ -380,6 +381,29 @@ end
 
 local gearInitialized = false
 
+function Hekili:UpdateUseItems()
+    local itemList = class.itemPack.lists.items
+    table.wipe( itemList )
+
+    if #state.items > 0 then
+        for i, item in ipairs( state.items ) do
+            if not self:IsItemScripted( item ) then
+                table.insert( itemList, {
+                    action = item,
+                    enabled = true,
+                    criteria = "( ! settings.boss | boss ) & " ..
+                        "( settings.targetMin = 0 | active_enemies >= settings.targetMin ) & " ..
+                        "( settings.targetMax = 0 | active_enemies <= settings.targetMax )"
+                } )
+            end
+        end
+
+        self:LoadItemScripts()
+        self:ForceUpdate()
+    end
+end
+
+
 function ns.updateGear()
     for thing in pairs( state.set_bonus ) do
         state.set_bonus[ thing ] = 0
@@ -443,20 +467,7 @@ function ns.updateGear()
     ns.updatePowers()
     ns.updateTalents()
 
-    local itemList = class.itemPack.lists.items
-    table.wipe( itemList )
-
-    if #state.items > 0 then
-        for i, item in ipairs( state.items ) do
-            itemList[ i ] = {
-                action = item,
-                enabled = true,                
-            }
-        end
-
-        Hekili:LoadItemScripts()
-        Hekili:ForceUpdate()
-    end
+    Hekili:UpdateUseItems()
 
     if not gearInitialized then
         C_Timer.After( 3, ns.updateGear )
