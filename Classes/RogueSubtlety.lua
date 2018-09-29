@@ -735,6 +735,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             spend = function () return 25 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
             
+            cycle = "nightblade",
+
             startsCombat = true,
             texture = 1373907,
 
@@ -883,6 +885,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             spend = function () return 40 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
+
+            cycle = function () return talent.find_weakness.enabled and "find_weakness" or nil end,
             
             startsCombat = true,
             texture = 1373912,

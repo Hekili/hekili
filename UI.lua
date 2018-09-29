@@ -1574,7 +1574,6 @@ do
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
 
-
         -- Backdrop (for borders)
         b.Backdrop = b.Backdrop or CreateFrame("Frame", bName .. "_Backdrop", b )
         b.Backdrop:ClearAllPoints()
