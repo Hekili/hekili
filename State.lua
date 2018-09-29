@@ -1773,18 +1773,20 @@ ns.metatables.mt_toggle = mt_toggle
 
 
 local mt_settings = {
-    __index = function(t, k)
+    __index = function( t, k )
         if metafunctions.settings[ k ] then
             return metafunctions.settings[ k ]()
         end
-    
-        local db = Hekili.DB    
-        if not db then return end
+
+        local ability = state.this_action and class.abilities[ state.this_action ]        
         
-        if db.profile[ 'Class Option: '..k ] ~= nil then
-            return db.profile[ 'Class Option: '..k ]
-        elseif db.profile.trinkets[ state.this_action ] ~= nil then
-            return db.profile.trinkets[ state.this_action ][ k ]
+        if t.spec then
+            if t.spec.settings[ k ] ~= nil then return t.spec.settings[ k ] end
+
+            if ability then
+                if ability.item and t.spec.items[ state.this_action ] ~= nil then return t.spec.items[ state.this_action ][ k ]
+                elseif not ability.item and t.spec.abilities[ state.this_action ] ~= nil then return t.spec.abilities[ state.this_action ][ k ] end
+            end
         end
         
         return
@@ -4172,7 +4174,8 @@ do
 
         local profile = Hekili.DB.profile
         local spec = profile.specs[ state.spec.id ]
-        local option = spec.abilities[ spell ]
+
+        local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
 
         if option.disabled then return true end
 
