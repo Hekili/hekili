@@ -403,10 +403,11 @@ local HekiliSpecMixin = {
                         class.itemList[ data.item ] = "|T" .. texture .. ":0|t " .. link 
                     end
 
-                    if class.abilities[ ability ] then
-                        class.abilities[ a.name ] = a
-                        class.abilities[ a.link ] = a
-                    end
+                    class.abilities[ ability ] = a
+                    class.abilities[ a.name ] = a
+                    class.abilities[ a.link ] = a
+
+                    Hekili:EmbedItemOptions()
                 
                     return true
                 end
@@ -3208,6 +3209,17 @@ end
 ns.setRole = setRole
 
 
+function Hekili:GetActiveSpecOption( opt )
+    if not self.currentSpecOpts then return end
+    return self.currentSpecOpts[ opt ]
+end
+
+
+function Hekili:GetActivePack()
+    return self:GetActiveSpecOption( "package" )
+end
+
+
 function Hekili:SpecializationChanged()
     for k, _ in pairs( state.spec ) do
         state.spec[ k ] = nil
@@ -3297,6 +3309,7 @@ function Hekili:SpecializationChanged()
             if specID == currentID then
                 self.currentSpec = spec
                 self.currentSpecOpts = self.DB.profile.specs[ specID ]
+                state.settings.spec = self.DB.profile.specs[ specID ]
 
                 for res, model in pairs( spec.resources ) do
                     class.resources[ res ] = model
