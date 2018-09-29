@@ -1176,7 +1176,7 @@ function scripts:LoadScripts()
                             end
                         end
 
-                        if ability.item then
+                        if ability.item and data.enabled then
                             self.PackInfo[ pack ].items[ data.action ] = true
                         end
                     end
@@ -1187,19 +1187,23 @@ function scripts:LoadScripts()
         end
     end
 
-    self:LoadItemScripts()
-
     scriptsLoaded = true
 end
 
+
 function Hekili:LoadScripts()
     self.Scripts:LoadScripts()
+    self:UpdateUseItems()
     self:UpdateDisplayVisibility()
 end
 
 
-function Hekili:LoadItemScripts()
-    self.Scripts:LoadScripts()
+function Hekili:IsItemScripted( token )
+    local pack = Hekili:GetActivePack()
+    if not pack then return false end
+    if not self.Scripts.PackInfo[ pack ] then return false end
+    
+    return self.Scripts.PackInfo[ pack ].items[ token ] or false
 end
 
 
@@ -1211,9 +1215,9 @@ function Hekili.Scripts:LoadItemScripts()
     end
 
     local pack = "UseItems"
-    self.PackInfo[ pack ] = self.PackInfo[ pack ] or {
+    --[[ self.PackInfo[ pack ] = self.PackInfo[ pack ] or {
         items = {}
-    }
+    } ]]
 
     for list, lData in pairs( class.itemPack.lists ) do
         for action, data in ipairs( lData ) do
@@ -1267,16 +1271,17 @@ function Hekili.Scripts:LoadItemScripts()
                         if script.Modifiers[ k ] and not cInfo[ k ] then cInfo[ k ] = script.Modifiers[ k ] end
                     end
                 end
-
-                if ability.item then
-                    self.PackInfo[ pack ].items[ data.action ] = true
-                end
             end
 
             self.DB[ scriptID ] = script
         end
     end
 end    
+
+
+function Hekili:LoadItemScripts()
+    self.Scripts:LoadItemScripts()
+end
 
 
 function Hekili:LoadScript( pack, list, id )
