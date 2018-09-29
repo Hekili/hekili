@@ -509,7 +509,7 @@ end
 local waitBlock = {}
 local listDepth = 0
 
-function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action, wait, clash, depth, caller )
+function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action, wait, depth, caller )
 
     local display = self.DB.profile.displays[ dispName ]
     
@@ -527,14 +527,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     
     local debug = self.ActiveDebug
     
-    if debug then self:Debug( "Current recommendation was %s at +%.2fs (clash: %.2f).", action or "NO ACTION", wait or 60, clash or 0 ) end
+    if debug then self:Debug( "Current recommendation was %s at +%.2fs.", action or "NO ACTION", wait or 60 ) end
     -- if debug then self:Debug( "ListCheck: Success(%s-%s)", packName, listName ) end
 
     local precombatFilter = listName == "precombat" and state.time > 0
 
     local rAction = action
     local rWait = wait or 60
-    local rClash = clash or 0
     local rDepth = depth or 0
 
     local strict = false -- disabled for now.
@@ -596,8 +595,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                     state.delay = wait_time
 
-                    if rWait - wait_time <= 0.05 then
-                        if debug then self:Debug( "The action is not ready in time (%.2f vs. %.2f ) - padded by 0.05s.", wait_time, rWait ) end
+                    if ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
+                        if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
                     else
                         if state.channeling then
                             if debug then self:Debug( "NOTE:  We are channeling ( %s ) until %.2f.", state.player.channelSpell, state.player.channelEnd - state.query_time ) end
@@ -622,18 +621,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         elseif precombatFilter and not ability.essential then
                             if debug then self:Debug( "We are already in-combat and this pre-combat action is not essential.  Skipping." ) end
                         else
-                            --[[ if entry.action == 'use_items' then
-                                local aScriptPass = #state.items > 0
-
-                                if not aScriptPass then
-                                    if debug then self:Debug( "No supported usable items were equipped." ) end
-                                else
-                                    if debug then self:Debug( "Player wearing %d supported items; testing.", #state.items ) end
-                                    rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, "__useItems", "items", slot, rAction, rWait, rClash, rDepth, scriptID )
-                                    if debug then self:Debug( "Returned from usable_items action list, current recommendation is %s (+%.2f).", rAction or "none", rWait ) end
-                                end
-
-                            else]] 
                             if entry.action == 'call_action_list' or entry.action == 'run_action_list' or entry.action == 'use_items' then
                                 -- We handle these here to avoid early forking between starkly different APLs.
                                 local aScriptPass = true
@@ -657,7 +644,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     if entry.action == "use_items" then
                                         -- self:AddToStack( scriptID, "items", caller, entry.action == "run_action_list" )
                                         local pAction, pWait = rAction, rWait
-                                        rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rClash, rDepth, scriptID )
+                                        rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rDepth, scriptID )
                                         if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NoAction", rWait ) end
                                         -- self:PopStack()
                                     else
@@ -670,7 +657,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             if debug then self:Debug( "Action list (%s) was found.", name ) end
                                             self:AddToStack( scriptID, name, caller, entry.action == "run_action_list" )
 
-                                            rAction, rWait, rClash, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rClash, rDepth, scriptID )
+                                            rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rDepth, scriptID )
                                             if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NoAction", rWait ) end
 
                                             self:PopStack()
@@ -706,9 +693,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 end ]]
                                 
                                 if usable then
-                                    rClash = state:ClashOffset( entry.action ) or rClash
-                                    local waitValue = max( 0, rWait - rClash )
-                                    local readyFirst = state.delay < waitValue
+                                    local waitValue = max( 0, rWait - state:ClashOffset( rAction ) )
+                                    local readyFirst = state.delay - clash < waitValue
 
                                     if debug then self:Debug( " - the action is %sready before the current recommendation (at +%.2f vs. +%.2f).", readyFirst and "" or "NOT ", state.delay, waitValue ) end
                                     
@@ -838,7 +824,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             
                                                         rAction = state.this_action
                                                         rWait = state.delay
-                                                        rClash = clash
 
                                                         state.selectionTime = state.delay
                                                     end
@@ -945,7 +930,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     
                                                     rAction = state.this_action
                                                     rWait = state.delay
-                                                    rClash = clash
 
                                                     state.selectionTime = state.delay
 
@@ -989,7 +973,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     if listCache[ scriptID ] then wipe( listCache[ scriptID ] ) end
     if listValue[ scriptID ] then wipe( listValue[ scriptID ] ) end
 
-    return rAction, rWait, rClash, rDepth
+    return rAction, rWait, rDepth
 end
 
 
@@ -1015,7 +999,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     local display = rawget( self.DB.profile.displays, dispName )
     local pack = rawget( self.DB.profile.packs, packName )
 
-    local action, wait, clash, depth = nil, 60, 0, 0
+    local action, wait, depth = nil, 60, 0
     
     state.min_recheck = 0
     state.this_action = nil
@@ -1027,7 +1011,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         local listName = "precombat"
         
         if debug then self:Debug( "\nProcessing precombat action list [ %s - %s ].", packName, listName ) end        
-        action, wait, clash, depth = self:GetPredictionFromAPL( dispName, packName, "precombat", slot, action, wait, clash, depth )
+        action, wait, depth = self:GetPredictionFromAPL( dispName, packName, "precombat", slot, action, wait, depth )
         if debug then self:Debug( "Completed precombat action list [ %s - %s ].", packName, listName ) end
     else
         if debug then
@@ -1042,13 +1026,13 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         local listName = "default"
 
         if debug then self:Debug("\nProcessing default action list [ %s - %s ].", packName, listName ) end
-        action, wait, clash, depth = self:GetPredictionFromAPL( dispName, packName, "default", slot, action, wait, clash, depth )
+        action, wait, depth = self:GetPredictionFromAPL( dispName, packName, "default", slot, action, wait, depth )
         if debug then self:Debug( "Completed default action list [ %s - %s ].", packName, listName ) end
     end
     
     if debug then self:Debug( "Recommendation is %s at %.2f + %.2f.", action or "NO ACTION", state.offset, wait ) end
     
-    return action, wait, clash, depth
+    return action, wait, depth
 end
 
 
@@ -1165,7 +1149,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
         state.delay = 0
 
-        local action, wait, clash, depth = self:GetNextPrediction( dispName, packName, slot )
+        local action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
 
         local gcd_remains = state.cooldown.global_cooldown.remains
         state.delay = wait
