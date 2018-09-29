@@ -453,7 +453,8 @@ function Hekili:GetDefaults()
                             boss = false,
                             criteria = nil
                         }
-                    }
+                    },
+                    settings = {},
                 },
             },
 
@@ -588,6 +589,14 @@ function Hekili:GetDefaults()
     }
     
     return defaults
+end
+
+
+-- Instead of repetitive nested tables, moving config categories to the main panel and having you pick which spec you're modifying at a given time.
+local optionSpec = "current"
+
+local function GetContext( info )
+    
 end
 
 
@@ -1736,14 +1745,14 @@ do
             cmdHidden = true,
             get = 'GetDisplayOption',
             set = 'SetDisplayOption',
-            order = 20,
+            order = 30,
 
             args = {
                 header = {
                     type = "description",
                     name = "Hekili has up to four built-in displays (identified in blue) that can display " ..
                         "different kinds of recommendations.  The addons recommendations are based upon the " ..
-                        "Action Packs that are generally (but not exclusively) based on SimulationCraft profiles " ..
+                        "Priorities that are generally (but not exclusively) based on SimulationCraft profiles " ..
                         "so that you can compare your performance to the results of your simulations.",
                     fontSize = "medium",
                     width = "full",
@@ -2823,15 +2832,30 @@ function Hekili:NewSetOption( info, value )
 end
 
 
+local specs = {}
+local activeSpec
+
+local function GetCurrentSpec()
+    local id, name = GetSpecializationInfo( GetSpecialization() )
+    return activeSpec or id
+end
+
+local function SetCurrentSpec( _, val )
+    activeSpec = val
+end
+
+local function GetCurrentSpecList()
+    return specs
+end
+
+
 do
     local packs = {}
 
-    local specs = {}
     local specNameByID = {}
     local specIDByName = {}
 
     local ACD = LibStub( "AceConfigDialog-3.0" )
-
 
     local shareDB = {
         actionPack = "",
@@ -2870,7 +2894,7 @@ do
 
     function Hekili:SetSpecOption( info, val )
         local n = #info
-        local spec, option = info[2], info[n]
+        local spec, option = info[1], info[n]
 
         spec = specIDByName[ spec ]
         if not spec then return end
@@ -2880,14 +2904,14 @@ do
         self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
         self.DB.profile.specs[ spec ][ option ] = val
 
-        if option == "package" then self:ForceUpdate()
+        if option == "package" then self:UpdateUseItems(); self:ForceUpdate()
         elseif option == "enabled" then ns.StartConfiguration() end
     end
 
 
     function Hekili:GetSpecOption( info )
         local n = #info
-        local spec, option = info[2], info[n]
+        local spec, option = info[1], info[n]
 
         spec = specIDByName[ spec ]
         if not spec then return end
@@ -2899,17 +2923,41 @@ do
 
     function Hekili:SetAbilityOption( info, val )
         local n = #info
-        local spec, ability, option = info[2], info[4], info[n]
+        local ability, option = info[2], info[n]
 
-        self.DB.profile.specs[ specIDByName[ spec ] ].abilities[ ability ][ option ] = val
+        local spec = GetCurrentSpec()
+
+        self.DB.profile.specs[ spec ].abilities[ ability ][ option ] = val
     end
     
     function Hekili:GetAbilityOption( info )
         local n = #info
-        local spec, ability, option = info[2], info[4], info[n]
+        local ability, option = info[2], info[n]
 
-        return self.DB.profile.specs[ specIDByName[ spec ] ].abilities[ ability ][ option ]
+        local spec = GetCurrentSpec()
+
+        return self.DB.profile.specs[ spec ].abilities[ ability ][ option ]
     end
+
+
+    function Hekili:SetItemOption( info, val )
+        local n = #info
+        local item, option = info[2], info[n]
+
+        local spec = GetCurrentSpec()
+
+        self.DB.profile.specs[ spec ].items[ item ][ option ] = val
+    end
+    
+    function Hekili:GetItemOption( info )
+        local n = #info
+        local item, option = info[2], info[n]
+
+        local spec = GetCurrentSpec()
+
+        return self.DB.profile.specs[ spec ].items[ item ][ option ]
+    end
+
 
     function Hekili:EmbedAbilityOptions( db )
         db = db or self.Options
@@ -2920,83 +2968,194 @@ do
 
         for k, v in pairs( class.abilityList ) do
             local a = class.abilities[ k ]
-            if a and ( a.id > 0 or a.id < -100 ) and v.id ~= 61304 then
+            if a and ( a.id > 0 or a.id < -100 ) and a.id ~= 61304 and not a.item then
                 abilities[ v ] = k
             end
         end
 
         for k, v in orderedPairs( abilities ) do
             local ability = class.abilities[ v ]
-            local option
+            local option = {
+                type = "group",
+                name = function () return ability.name end,
+                order = 1,
+                set = "SetAbilityOption",
+                get = "GetAbilityOption",
+                args = {
+                    disabled = {
+                        type = "toggle",
+                        name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
+                        desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
+                            "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
+                        width = "full",
+                        order = 1,
+                    },
 
-            if not ability.item then
-                option = {
-                    type = "group",
-                    name = function () return ability.name end,
-                    order = 1,
-                    set = "SetAbilityOption",
-                    get = "GetAbilityOption",
-                    args = {
-                        disabled = {
-                            type = "toggle",
-                            name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
-                            desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
-                                "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
-                            width = "full",
-                            order = 1,
-                        },
+                    keybind = {
+                        type = "input",
+                        name = "Keybinding",
+                        desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
+                            "This can be helpful if the addon incorrectly detects your keybindings.",
+                        validate = function( info, val )
+                            val = val:trim()
+                            if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
+                            return true
+                        end,
+                        width = "single",
+                        order = 2,
+                    },
 
-                        toggle = {
-                            type = "select",
-                            name = "Require Toggle",
-                            desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
-                                "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
-                            width = "full",
-                            order = 2,
-                            values = function ()
-                                table.wipe( toggles )
+                    toggle = {
+                        type = "select",
+                        name = "Require Toggle",
+                        desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
+                            "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
+                        width = "full",
+                        order = 3,
+                        values = function ()
+                            table.wipe( toggles )
 
-                                toggles.none = "None"
-                                toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
-                                toggles.defensives = "Defensives"
-                                toggles.cooldowns = "Cooldowns"
-                                toggles.interrupts = "Interrupts"
-                                toggles.potions = "Potions"
+                            toggles.none = "None"
+                            toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
+                            toggles.defensives = "Defensives"
+                            toggles.cooldowns = "Cooldowns"
+                            toggles.interrupts = "Interrupts"
+                            toggles.potions = "Potions"
 
-                                return toggles
-                            end,
-                        },
+                            return toggles
+                        end,
+                    },
 
-                        clash = {
-                            type = "range",
-                            name = "Clash",
-                            desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
-                                "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
-                            width = "full",
-                            min = -1.5,
-                            max = 1.5,
-                            step = 0.05,
-                            order = 3,
-                        },
+                    clash = {
+                        type = "range",
+                        name = "Clash",
+                        desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
+                            "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
+                        width = "full",
+                        min = -1.5,
+                        max = 1.5,
+                        step = 0.05,
+                        order = 4,
+                    },
+                }
+            }
 
-                        keybind = {
-                            type = "input",
-                            name = "Keybinding",
-                            desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
-                                "This can be helpful if the addon incorrectly detects your keybindings.",
-                            validate = function( info, val )
-                                val = val:trim()
-                                if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
-                                return true
-                            end,
-                            width = "full",
-                            order = 4,
-                        }
+            db.args.abilities.plugins.actions[ v ] = option
+        end
+    end
+
+
+    function Hekili:EmbedItemOptions( db )
+        db = db or self.Options
+        if not db then return end
+
+        local abilities = {}
+        local toggles = {}
+
+        for k, v in pairs( class.abilities ) do
+            if v.item and not abilities[ v.key ] and class.itemList[ v.item ] then
+                abilities[ class.itemList[ v.item ] ] = v.key
+            end
+        end
+
+        for k, v in orderedPairs( abilities ) do
+            local ability = class.abilities[ v ]
+            local option = {
+                type = "group",
+                name = function () return ability.name end,
+                order = 1,
+                set = "SetItemOption",
+                get = "GetItemOption",
+                args = {
+                    disabled = {
+                        type = "toggle",
+                        name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
+                        desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
+                            "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
+                        width = "full",
+                        order = 1,
+                    },
+
+                    keybind = {
+                        type = "input",
+                        name = "Keybinding",
+                        desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
+                            "This can be helpful if the addon incorrectly detects your keybindings.",
+                        validate = function( info, val )
+                            val = val:trim()
+                            if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
+                            return true
+                        end,
+                        width = "single",
+                        order = 2,
+                    },
+
+                    toggle = {
+                        type = "select",
+                        name = "Require Toggle",
+                        desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
+                            "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
+                        width = "full",
+                        order = 3,
+                        values = function ()
+                            table.wipe( toggles )
+
+                            toggles.none = "None"
+                            toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
+                            toggles.defensives = "Defensives"
+                            toggles.cooldowns = "Cooldowns"
+                            toggles.interrupts = "Interrupts"
+                            toggles.potions = "Potions"
+
+                            return toggles
+                        end,
+                    },
+
+                    --[[ clash = {
+                        type = "range",
+                        name = "Clash",
+                        desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
+                            "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
+                        width = "full",
+                        min = -1.5,
+                        max = 1.5,
+                        step = 0.05,
+                        order = 4,
+                    }, ]]
+
+                    targetMin = {
+                        type = "range",
+                        name = "Minimum Targets",
+                        desc = "If set above zero, the addon will only allow " .. k .. " to be recommended via [Use Items] if there are at least this many detected enemies.\nSet to zero to ignore.",
+                        width = "full",
+                        min = 0,
+                        max = 15,
+                        step = 1,
+                        order = 5,
+                    },
+
+                    targetMax = {
+                        type = "range",
+                        name = "Maximum Targets",
+                        desc = "If set above zero, the addon will only allow " .. k .. " to be recommended via [Use Items] if there are this many detected enemies (or fewer).\nSet to zero to ignore.",
+                        width = "full",
+                        min = 0,
+                        max = 15,
+                        step = 1,
+                        order = 6,
+                    },
+
+                    boss = {
+                        type = "toggle",
+                        name = "Boss Encounter Only",
+                        desc = "If checked, the addon will not recommend " .. k .. " via [Use Items] unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
+                        width = "full",
+                        order = 7
                     }
                 }
+            }
 
-                db.plugins.actions[ v ] = option
-            end
+            db.args.items.plugins.equipment[ v ] = option
         end
     end
 
@@ -3008,25 +3167,6 @@ do
 
         local i = 1
         
-        db.args.specs = db.args.specs or {
-            type = "group",
-            name = "Specialization",
-            order = 30,
-            set = "SetSpecOption",
-            get = "GetSpecOption",
-            childGroups = "select",
-            args = {
-                --[[ specList = {
-                    type = "header",
-                    name = "Specializations",
-                    order = 5,
-                } ]]
-            },
-            plugins = {
-                spec = {},
-            }
-        }
-
         while( true ) do
             local id, name, description, texture, role = GetSpecializationInfo( i )
 
@@ -3047,14 +3187,15 @@ do
                     func = function () ACD:SelectGroup( "Hekili", "specs", sName ) end,
                 } ]]
 
-                db.args.specs.plugins.spec[ sName ] = {
+                db.plugins.specializations[ sName ] = {
                     type = "group",
                     name = specs[ id ],
                     desc = description,
-                    order = 20 + i,
-                    childGroups = "tab",
+                    order = 50 + i,
+                    childGroups = "tree",
+                    get = "GetSpecOption",
+                    set = "SetSpecOption",
                     args = {
-
                         enabled = {
                             type = "toggle",
                             name = "Enabled",
@@ -3063,247 +3204,189 @@ do
                             width = "full",
                         },
 
-                        default = {
-                            type = "group",
-                            name = "System",
+                        packInfo = {
+                            type = 'group',
+                            name = "",
+                            inline = true,
                             order = 10,
                             args = {
-                                packInfo = {
-                                    type = 'group',
-                                    name = "",
-                                    inline = true,
-                                    order = 10,
-                                    args = {
-                                        package = {
-                                            type = "select",
-                                            name = "Action Package",
-                                            desc = "The addon will use the selected action package when making its priority recommendations.",
-                                            order = 1,
-                                            width = "full",
-                                            values = function( info, val )
-                                                wipe( packs )
-                
-                                                for key, pkg in pairs( self.DB.profile.packs ) do
-                                                    local pname = pkg.builtIn and "|cFF00B4FF" .. key .. "|r" or key
-                                                    if pkg.spec == id then
-                                                        packs[ key ] = '|T' .. texture .. ':0|t ' .. pname
-                                                    end
-                                                end
-                
-                                                packs[ '(none)' ] = '(none)'
-                
-                                                return packs
-                                            end,
-                                        },
-                                        
-                                        openPackage = {
-                                            type = 'execute',
-                                            name = "Open Action Package",
-                                            desc = "Open and view this action package and its action lists.",
-                                            order = 2,
-                                            width = "single",
-                                            disabled = function( info, val )
-                                                local pack = self.DB.profile.specs[ id ].package
-                                                return rawget( self.DB.profile.packs, pack ) == nil
-                                            end,
-                                            func = function ()
-                                                ACD:SelectGroup( "Hekili", "packs", self.DB.profile.specs[ id ].package )
-                                            end,
-                                        }
-                                    }
-                                },
-        
-                                potion = {
+                                package = {
                                     type = "select",
-                                    name = "Default Potion",
-                                    desc = "When the Action Pack recommends using your potion, it will recommend this potion (unless the action list specifies otherwise).",
-                                    order = 11,
+                                    name = "Priority",
+                                    desc = "The addon will use the selected package when making its priority recommendations.",
+                                    order = 1,
                                     width = "full",
-                                    values = function ()
-                                        local v = {}
-                                        
-                                        for k, p in pairs( class.potionList ) do
-                                            if k ~= "default" then v[ k ] = p end
+                                    values = function( info, val )
+                                        wipe( packs )
+        
+                                        for key, pkg in pairs( self.DB.profile.packs ) do
+                                            local pname = pkg.builtIn and "|cFF00B4FF" .. key .. "|r" or key
+                                            if pkg.spec == id then
+                                                packs[ key ] = '|T' .. texture .. ':0|t ' .. pname
+                                            end
                                         end
-
-                                        return v
+        
+                                        packs[ '(none)' ] = '(none)'
+        
+                                        return packs
                                     end,
                                 },
-        
-                                spacing3 = {
-                                    type = "description",
-                                    name = " ",
-                                    order = 11.99,
-                                    width = "full",
-                                },
-
-                                aoe = {
-                                    type = "range",
-                                    name = "AOE Target Count",
-                                    desc = "When the AOE Display is shown, it will assume that there are at least this many active targets.",
-                                    width = "full",
-                                    min = 2,
-                                    max = 5,
-                                    step = 1,
-                                    order = 12,
-                                },
-        
-                                spacing4 = {
-                                    type = "description",
-                                    name = " ",
-                                    order = 13,
-                                    width = "full",
-                                },
-        
-                                targetDetection = {
-                                    type = "group",
-                                    name = "Target Detection",
-                                    inline = true,
-                                    order = 15,
-                                    args = {
-                                        nameplates = {
-                                            type = "toggle",
-                                            name = "Use Nameplate Detection",
-                                            desc = "If checked, the addon will count any enemies with visible nameplates within a small radius of your character.  " ..
-                                                "This is typically desirable for melee character specializations.",
-                                            width = "full",
-                                            order = 2,
-                                        },
-                
-                                        nameplateRange = {
-                                            type = "range",
-                                            name = "Nameplate Detection Range",
-                                            desc = "When |cFFFFD100Use Nameplate Detection|r is checked, the addon will count any enemies with visible nameplates within this radius of your character.",
-                                            width = "full",
-                                            disabled = function( info, val )
-                                                return self.DB.profile.specs[ id ].nameplates == false
-                                            end,
-                                            order = 3,
-                                        },
-                
-                                        damage = {
-                                            type = "toggle",
-                                            name = "Detect Enemies by Damage",
-                                            desc = "If checked, the addon will count any enemies that you've hit (or hit you) within the past several seconds as active enemies.  " ..
-                                                "This is typically desirable for ranged character specializations.",
-                                            width = "full",
-                                            order = 4,                                    
-                                        },
-                
-                                        damageDots = {
-                                            type = "toggle",
-                                            name = "Detect Enemies by Damage over Time",
-                                            desc = "When checked, the addon will continue to count enemies who are taking damage from your damage over time effects (bleeds, etc.), even if they are not nearby or taking other damage from you.  " ..
-                                                "This may not be ideal for melee specializations, if you are no longer near the enemy that is taking damage over time.  For ranged specializations with damage over time effects, this should be enabled.",
-                                            width = "full",
-                                            disabled = function () return self.DB.profile.specs[ id ].damage == false end,
-                                            order = 5,
-                                        },
-
-                                        damageExpiration = {
-                                            type = "range",
-                                            name = "Damage Detection Timeout",
-                                            desc = "When |cFFFFD100Detect Enemies by Damage|r is checked, the addon will count enemies for up to this many seconds before forgetting about them.  " ..
-                                                "Enemies will also be forgotten if they die or despawn.  This is helpful when enemies spread out or move out of range.",
-                                            width = "full",
-                                            min = 5,
-                                            max = 10,
-                                            step = 0.1,
-                                            disabled = function( info, val )
-                                                return self.DB.profile.specs[ id ].damage == false
-                                            end,
-                                            order = 6,
-                                        },
-                                    }
-                                },
-        
-                                performance = {
-                                    type = "group",
-                                    name = "Performance",
-                                    inline = true,
-                                    order = 20,
-                                    args = {
-                                        throttleRefresh = {
-                                            type = "toggle",
-                                            name = "Throttle Updates",
-                                            desc = "By default, the addon will update its recommendations after any relevant combat events.  However, some combat events can occur in rapid succession, " ..
-                                                "leading to higher CPU usage and reduced game performance.  If you choose to |cffffd100Throttle Updates|r, you can specify the |cffffd100Maximum Update Frequency|r" ..
-                                                "for this specialization.",
-                                            order = 1,
-                                            width = "full",
-                                        },
-        
-                                        maxRefresh = {
-                                            type = "range",
-                                            name = "Maximum Update Frequency",
-                                            desc = "Specify the maximum number of times per second that the addon should update its recommendations.\n\n" ..
-                                                "If set to |cffffd1004|r, the addon will not update its recommendations more frequently than every |cffffd1000.25|r seconds.\n\n" ..
-                                                "If set to |cffffd10020|r, the addon will not update its recommendations more frequently than every |cffffd1000.05|r seconds.\n\n" ..
-                                                "The addon aims for updates every 0.1 seconds (10 updates per second) by default.",
-                                            order = 2,
-                                            width = "full",
-                                            min = 4,
-                                            max = 20,
-                                            step = 1,
-                                            disabled = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
-                                        },
-        
-                                        --[[ strict = {
-                                            type = "toggle",
-                                            name = "Use Strict APL Testing",
-                                            desc = "When |cFFFFD100Use Strict APL Testing|r is enabled, the addon will perform fewer checks when deciding whether to branch off to another Action Priority List.  " ..
-                                                "In many cases, this will be more efficient with CPU usage, but may result in choppy recommendations depending on how your action lists have been written.",
-                                            width = "full",
-                                            order = 5,
-                                        } ]]
-                                    }
+                                
+                                openPackage = {
+                                    type = 'execute',
+                                    name = "View Priority",
+                                    desc = "Open and view this priority pack and its action lists.",
+                                    order = 2,
+                                    width = "single",
+                                    disabled = function( info, val )
+                                        local pack = self.DB.profile.specs[ id ].package
+                                        return rawget( self.DB.profile.packs, pack ) == nil
+                                    end,
+                                    func = function ()
+                                        ACD:SelectGroup( "Hekili", "packs", self.DB.profile.specs[ id ].package )
+                                    end,
                                 }
                             }
                         },
 
-                        preferences = {
-                            type = "group",
-                            name = specs[ id ],
-                            desc = "If there are any special preferences for this specialization, you can adjust them here.",
-                            order = 12,
-                            args = {},
-                            plugins = {
-                                prefs = {}
-                            },
-                            disabled = function ()
-                                return #class.specs[ id ].prefs == 0
+                        potion = {
+                            type = "select",
+                            name = "Default Potion",
+                            desc = "When recommending a potion, the addon will suggest this potion unless unless the action list specifies otherwise.",
+                            order = 11,
+                            width = "full",
+                            values = function ()
+                                local v = {}
+                                
+                                for k, p in pairs( class.potionList ) do
+                                    if k ~= "default" then v[ k ] = p end
+                                end
+
+                                return v
                             end,
                         },
 
-                        abilities = {
+                        spacing3 = {
+                            type = "description",
+                            name = " ",
+                            order = 11.99,
+                            width = "full",
+                        },
+
+                        aoe = {
+                            type = "range",
+                            name = "AOE Target Count",
+                            desc = "When the AOE Display is shown, it will assume that there are at least this many active targets.",
+                            width = "full",
+                            min = 2,
+                            max = 5,
+                            step = 1,
+                            order = 12,
+                        },
+
+                        spacing4 = {
+                            type = "description",
+                            name = " ",
+                            order = 13,
+                            width = "full",
+                        },
+
+                        targetDetection = {
                             type = "group",
-                            name = "Abilities",
-                            desc = "In this section, you can edit some of your abilities while in this specialization.",
+                            name = "Target Detection",
+                            inline = true,
                             order = 15,
-                            childGroups = "select",
                             args = {
-                            },
-                            plugins = {
-                                actions = {}
+                                nameplates = {
+                                    type = "toggle",
+                                    name = "Use Nameplate Detection",
+                                    desc = "If checked, the addon will count any enemies with visible nameplates within a small radius of your character.  " ..
+                                        "This is typically desirable for melee character specializations.",
+                                    width = "full",
+                                    order = 2,
+                                },
+        
+                                nameplateRange = {
+                                    type = "range",
+                                    name = "Nameplate Detection Range",
+                                    desc = "When |cFFFFD100Use Nameplate Detection|r is checked, the addon will count any enemies with visible nameplates within this radius of your character.",
+                                    width = "full",
+                                    disabled = function( info, val )
+                                        return self.DB.profile.specs[ id ].nameplates == false
+                                    end,
+                                    order = 3,
+                                },
+        
+                                damage = {
+                                    type = "toggle",
+                                    name = "Detect Enemies by Damage",
+                                    desc = "If checked, the addon will count any enemies that you've hit (or hit you) within the past several seconds as active enemies.  " ..
+                                        "This is typically desirable for ranged character specializations.",
+                                    width = "full",
+                                    order = 4,                                    
+                                },
+        
+                                damageDots = {
+                                    type = "toggle",
+                                    name = "Detect Enemies by Damage over Time",
+                                    desc = "When checked, the addon will continue to count enemies who are taking damage from your damage over time effects (bleeds, etc.), even if they are not nearby or taking other damage from you.  " ..
+                                        "This may not be ideal for melee specializations, if you are no longer near the enemy that is taking damage over time.  For ranged specializations with damage over time effects, this should be enabled.",
+                                    width = "full",
+                                    disabled = function () return self.DB.profile.specs[ id ].damage == false end,
+                                    order = 5,
+                                },
+
+                                damageExpiration = {
+                                    type = "range",
+                                    name = "Damage Detection Timeout",
+                                    desc = "When |cFFFFD100Detect Enemies by Damage|r is checked, the addon will count enemies for up to this many seconds before forgetting about them.  " ..
+                                        "Enemies will also be forgotten if they die or despawn.  This is helpful when enemies spread out or move out of range.",
+                                    width = "full",
+                                    min = 5,
+                                    max = 10,
+                                    step = 0.1,
+                                    disabled = function( info, val )
+                                        return self.DB.profile.specs[ id ].damage == false
+                                    end,
+                                    order = 6,
+                                },
                             }
                         },
 
-                        items = {
+                        performance = {
                             type = "group",
-                            name = "Trinkets/Gear",
-                            desc = "In this section, you can set preferences for using trinkets or equipped gear.",
-                            order = 25,
-                            childGroups = "select",
+                            name = "Performance",
+                            inline = true,
+                            order = 20,
                             args = {
-                            },
-                            plugins = {
-                                equipment = {}
+                                throttleRefresh = {
+                                    type = "toggle",
+                                    name = "Throttle Updates",
+                                    desc = "By default, the addon will update its recommendations after any relevant combat events.  However, some combat events can occur in rapid succession, " ..
+                                        "leading to higher CPU usage and reduced game performance.  If you choose to |cffffd100Throttle Updates|r, you can specify the |cffffd100Maximum Update Frequency|r" ..
+                                        "for this specialization.",
+                                    order = 1,
+                                    width = "full",
+                                },
+
+                                maxRefresh = {
+                                    type = "range",
+                                    name = "Maximum Update Frequency",
+                                    desc = "Specify the maximum number of times per second that the addon should update its recommendations.\n\n" ..
+                                        "If set to |cffffd1004|r, the addon will not update its recommendations more frequently than every |cffffd1000.25|r seconds.\n\n" ..
+                                        "If set to |cffffd10020|r, the addon will not update its recommendations more frequently than every |cffffd1000.05|r seconds.\n\n" ..
+                                        "The addon aims for updates every 0.1 seconds (10 updates per second) by default.",
+                                    order = 2,
+                                    width = "full",
+                                    min = 4,
+                                    max = 20,
+                                    step = 1,
+                                    disabled = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
+                                },
                             }
                         }
                     }
                 }            
-
-                self:EmbedAbilityOptions( db.args.specs.plugins.spec[ sName ].args.abilities )
 
             end
 
@@ -3482,8 +3565,8 @@ do
 
         local packs = db.args.packs or {
             type = "group",
-            name = "Action Packs",
-            desc = "Action Packs are bundles of action lists used to make decisions for each specialization.",
+            name = "Priorities",
+            desc = "Priorities (or action packs) are bundles of action lists used to make recommendations for each specialization.",
             get = 'GetPackOption',
             set = 'SetPackOption',
             order = 40,
@@ -3491,15 +3574,15 @@ do
             args = {
                 packDesc = {
                     type = "description",
-                    name = "Action Packs are shareable profiles for the addon, including action lists used to determine " ..
-                        "which abilities will be recommended.",
+                    name = "Priorities (or action packs) are bundles of action lists used to make recommendations for each specialization.  " ..
+                        "They can be customized and shared.",
                     order = 1,
                     fontSize = "medium",
                 },
 
                 newPackHeader = {
                     type = "header",
-                    name = "Create a New Pack",
+                    name = "Create a New Priority",
                     order = 200
                 },
 
@@ -3513,7 +3596,7 @@ do
                         if rawget( Hekili.DB.profile.packs, val ) then return "Please specify a unique pack name."
                         elseif val == "UseItems" then return "UseItems is a reserved name."
                         elseif val == "(none)" then return "Don't get smart, missy."
-                        elseif val:find( "^[a-zA-Z0-9 _']" ) then return "Only alphanumeric characters, spaces, underscores, and apostrophes are allowed in pack names." end
+                        elseif val:find( "[^a-zA-Z0-9 _']" ) then return "Only alphanumeric characters, spaces, underscores, and apostrophes are allowed in pack names." end
                         return true
                     end,
                 },
@@ -3551,19 +3634,19 @@ do
 
                 shareBtn = {
                     type = "execute",
-                    name = "Share Packs",
-                    desc = "Your action packs can be shared with other addon users with these export strings.\n\n" ..
+                    name = "Share Priorities",
+                    desc = "Each Priority can be shared with other addon users with these export strings.\n\n" ..
                         "You can also import a shared export string here.",
                     func = function ()
                         ACD:SelectGroup( "Hekili", "packs", "sharePacks" )
                     end,
-                    order = 1000,
+                    order = 101,
                 },
 
                 sharePacks = {
                     type = "group",
-                    name = "|cFF1EFF00Share Packs|r",
-                    desc = "Your Action Packs can be shared with other addon users with these export strings.\n\n" ..
+                    name = "|cFF1EFF00Share Priorities|r",
+                    desc = "Your Priorities can be shared with other addon users with these export strings.\n\n" ..
                         "You can also import a shared export string here.",
                     childGroups = "tab",
                     get = 'GetPackShareOption',
@@ -3583,7 +3666,7 @@ do
                                     args = {
                                         guide = {
                                             type = "description",
-                                            name = "Paste an Action Pack import string here to begin.",
+                                            name = "Paste a Priority import string here to begin.",
                                             order = 1,
                                             width = "full",
                                             fontSize = "medium",
@@ -3616,7 +3699,7 @@ do
         
                                         importBtn = {
                                             type = "execute",
-                                            name = "Import Action Pack",
+                                            name = "Import Priority",
                                             order = 5,
                                             func = function ()
                                                 shareDB.imported, shareDB.error = self:DeserializeActionPack( shareDB.import )
@@ -3683,10 +3766,21 @@ do
 
                                                 table.sort( listNames )
 
-                                                local o = "The imported Action Pack has the following lists included:  "
-
-                                                for i, name in ipairs( listNames ) do
-                                                    o = o .. name .. ", "
+                                                local o
+                                                
+                                                if #listNames == 0 then
+                                                    o = "The imported Priority has no lists included."
+                                                elseif #listNames == 1 then
+                                                    o = "The imported Priority has one action list:  " .. listNames[1] .. "."
+                                                elseif #listNames == 2 then
+                                                    o = "The imported Priority has two action lists:  " .. listNames[1] .. " and " .. listNames[2] .. "."
+                                                else
+                                                    o = "The imported Priority has the following lists included:  "
+                                                    for i, name in ipairs( listNames ) do
+                                                        if i == 1 then o = o .. name
+                                                        elseif i == #listNames then o = o .. ", and " .. name .. "."
+                                                        else o = o .. ", " .. name end
+                                                    end
                                                 end
 
                                                 return o
@@ -3708,9 +3802,9 @@ do
                                             order = 11,
                                             confirm = function ()
                                                 if rawget( self.DB.profile.packs, shareDB.imported.name ) then
-                                                    return "You already have a \"" .. shareDB.imported.name .. "\" action pack.\nOverwrite it?"
+                                                    return "You already have a \"" .. shareDB.imported.name .. "\" Priority.\nOverwrite it?"
                                                 end
-                                                return "Create a new Action Pack named \"" .. shareDB.imported.name .. "\" from the imported data?"
+                                                return "Create a new Priority named \"" .. shareDB.imported.name .. "\" from the imported data?"
                                             end,
                                             func = function ()
                                                 self.DB.profile.packs[ shareDB.imported.name ] = shareDB.imported.payload
@@ -3779,7 +3873,7 @@ do
                             args = {
                                 guide = {
                                     type = "description",
-                                    name = "Select the Action Pack to export, then click Export Action Pack to generate an export string.",
+                                    name = "Select a Priority pack to export.",
                                     order = 1,
                                     fontSize = "medium",
                                     width = "full",
@@ -3787,7 +3881,7 @@ do
 
                                 actionPack = {
                                     type = "select",
-                                    name = "Action Packs",
+                                    name = "Priorities",
                                     order = 2,
                                     values = function ()
                                         local v = {}
@@ -3805,7 +3899,7 @@ do
 
                                 exportString = {
                                     type = "input",
-                                    name = "Action Pack Export String",
+                                    name = "Priority Export String",
                                     order = 3,
                                     multiline = 8,
                                     get = function ()
@@ -3927,7 +4021,7 @@ do
                         profile = {
                             type = "group",
                             name = "Profile",
-                            desc = "If this Action Pack was generated with a SimulationCraft profile, the profile can be stored " ..
+                            desc = "If this Priority was generated with a SimulationCraft profile, the profile can be stored " ..
                                 "or retrieved here.  The profile can also be re-imported or overwritten with a newer profile.",
                             order = 2,
                             args = {
@@ -3940,7 +4034,7 @@ do
                                         source = {
                                             type = "input",
                                             name = "Source",
-                                            desc = "If the Action Pack is based on a SimulationCraft profile or a popular guide, it is a " ..
+                                            desc = "If the Priority is based on a SimulationCraft profile or a popular guide, it is a " ..
                                                 "good idea to provide a link to the source (especially before sharing).",
                                             order = 1,
                                             width = "full",
@@ -3949,7 +4043,7 @@ do
                                         author = {
                                             type = "input",
                                             name = "Author",
-                                            desc = "The author field is automatically filled out when creating a new Action Pack.  " ..
+                                            desc = "The author field is automatically filled out when creating a new Priority.  " ..
                                                 "You can update it here.",
                                             order = 2,
                                             width = "double",
@@ -3958,7 +4052,7 @@ do
                                         date = {
                                             type = "input",
                                             name = "Last Updated",
-                                            desc = "This date is automatically updated when any changes are made to the action lists for this Action Pack.",
+                                            desc = "This date is automatically updated when any changes are made to the action lists for this Priority.",
                                             order = 3,
                                             set = function () end,
                                         },
@@ -4798,12 +4892,13 @@ do
         oneAOE = 3,
         twoDisplays = 4,
         reactive = 5,
-    }
+    }    
 
-    function Hekili:SetToggle( info, val )
-        local p = Hekili.DB.profile
+    local function SetToggle( info, val )
+        local self = Hekili
+        local p = self.DB.profile
         local n = #info
-        local bind, option = info[2], info[ n ]
+        local bind, option = info[ 2 ], info[ n ]
 
         local toggle = p.toggles[ bind ]
         if not toggle then return end
@@ -4834,7 +4929,8 @@ do
         end
     end
 
-    function Hekili:GetToggle( info )
+    local function GetToggle( info )
+        local self = Hekili
         local p = Hekili.DB.profile
         local n = #info
         local bind, option = info[2], info[ n ]
@@ -4854,9 +4950,9 @@ do
         db.args.toggles = db.args.toggles or {
             type = 'group',
             name = 'Toggles',
-            order = 10,
-            get = 'GetToggle',
-            set = 'SetToggle',
+            order = 20,
+            get = GetToggle,
+            set = SetToggle,
             args = {
                 info = {
                     type = "description",
@@ -5140,7 +5236,7 @@ do
 
                             local sName = lower( name )
 
-                            if db.args.specs.plugins.spec[ sName ] then
+                            if db.plugins.specializations[ sName ] then
                                 db.args.toggles.args.specLinks.args[ sName ] = db.args.toggles.args.specLinks.args[ sName ] or {
                                     type = "execute",
                                     name = name,
@@ -5856,21 +5952,55 @@ function Hekili:GetOptions()
                                 set = function () end,
                                 width = "full",
                             },
-        
-                            --[[ patreon = {
-                                type = 'input',
-                                name = "Patreon",
-                                order = 4,
-                                get = function () return "https://www.patreon.com/hekili" end,
-                                set = function () end,
-                                width = "full",
-                            }, ]]
                         }
                     },
                 }
             },
 
-            IssueReport = {
+            abilities = {
+                type = "group",
+                name = "Abilities",
+                order = 80,
+                childGroups = "select",
+                args = {
+                    spec = {
+                        type = "select",
+                        name = "Specialization",
+                        desc = "These options apply to your selected specialization.",
+                        order = 0.1,
+                        width = "full",
+                        set = SetCurrentSpec,
+                        get = GetCurrentSpec,
+                        values = GetCurrentSpecList,
+                    },                },
+                plugins = {
+                    actions = {}
+                }
+            },
+
+            items = {
+                type = "group",
+                name = "Gear and Trinkets",
+                order = 81,
+                childGroups = "select",
+                args = {
+                    spec = {
+                        type = "select",
+                        name = "Specialization",
+                        desc = "These options apply to your selected specialization.",
+                        order = 0.1,
+                        width = "full",
+                        set = SetCurrentSpec,
+                        get = GetCurrentSpec,
+                        values = GetCurrentSpecList,
+                    },    
+                },
+                plugins = {
+                    equipment = {}
+                }
+            },
+
+            issues = {
                 type = "group",
                 name = "Issue Reporting",
                 order = 85,
@@ -5907,7 +6037,7 @@ function Hekili:GetOptions()
             snapshots = {
                 type = "group",
                 name = "Snapshots",
-                order = 90,
+                order = 86,
                 args = {                    
                     Display = {
                         type = "select",
@@ -5971,55 +6101,24 @@ function Hekili:GetOptions()
                     }
                 }
             },
-            make_defaults = {
-                type = 'group',
-                name = 'Defaults',
-                -- desc = "",
-                order = 99,
-                childGroups = 'tab',
-                hidden = function()
-                    return not Hekili.MakeDefaults
-                end,
-                args = {
-                    defaults = {
-                        type = "input",
-                        name = "Export Defaults",
-                        desc = "A full export of class defaults can be copied from here and pasted into the appropriate class module.",
-                        width = 'full',
-                        order = 1,
-                        get = function ()
-                            local out = ''
-                            
-                            for i, list in ipairs( Hekili.DB.profile.actionLists ) do
-                                out = out .. "    storeDefault( [[" .. list.Name .. "]], 'actionLists', " .. date("%Y%m%d.%H%M%S") .. ", [[" .. ns.serializeActionList( i ) .. "]] )\n\n"
-                            end
-                            
-                            out = out .. "\n"
-                            
-                            for i, display in ipairs( Hekili.DB.profile.displays ) do
-                                out = out .. "    storeDefault( [[" .. display.Name .. "]], 'displays', " .. date("%Y%m%d.%H%M%S") .. ", [[" .. ns.serializeDisplay( i ) .. "]] )\n\n"
-                            end
-                            
-                            return out
-                        end,
-                        set = function ()
-                            return
-                        end,
-                        multiline = 29
-                    }
-                }
-            }
+        },
+
+        plugins = {
+            specializations = {},
         }
     }
-
-    
+   
     self:EmbedToggleOptions( Options )
-
-    self:EmbedSpecOptions( Options )
 
     self:EmbedDisplayOptions( Options )
 
     self:EmbedPackOptions( Options )
+
+    self:EmbedAbilityOptions( Options )
+    
+    self:EmbedItemOptions( Options )
+
+    self:EmbedSpecOptions( Options )
 
     self:EmbedSkeletonOptions( Options )
     
@@ -6061,10 +6160,13 @@ end
 function Hekili:RefreshOptions()
     if not self.Options then return end
 
-    self:EmbedSpecOptions()
     -- db.args.abilities = ns.AbilitySettings()
+
     self:EmbedDisplayOptions()
     self:EmbedPackOptions()
+    self:EmbedSpecOptions()
+    self:EmbedAbilityOptions()
+    self:EmbedItemOptions()
 
     self.Options.args.class = ns.ClassSettings()
     
@@ -6945,7 +7047,7 @@ function Hekili:DeserializeActionPack( str )
     local serial = StringToTable( str, true )
     
     if not serial or type( serial ) == "string" or serial.type ~= "package" then
-        return serial or "Unable to restore action pack from the provided string."
+        return serial or "Unable to restore Priority from the provided string."
     end
 
     serial.payload.builtIn = false
