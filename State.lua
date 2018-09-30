@@ -1413,7 +1413,7 @@ local mt_state = {
             return t.cooldown[ action ].recharge_time
 
         elseif k == 'cost' then
-            return ability and ability.cost or 0
+            return ability and ability.spend or 0
             
         elseif k == 'cast_regen' then
             return ( max( state.gcd.execute, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen ) - ( ability and ability.spend or 0 )
