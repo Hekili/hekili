@@ -3342,7 +3342,7 @@ do
                                     desc = "When |cFFFFD100Detect Enemies by Damage|r is checked, the addon will count enemies for up to this many seconds before forgetting about them.  " ..
                                         "Enemies will also be forgotten if they die or despawn.  This is helpful when enemies spread out or move out of range.",
                                     width = "full",
-                                    min = 5,
+                                    min = 3,
                                     max = 10,
                                     step = 0.1,
                                     disabled = function( info, val )
