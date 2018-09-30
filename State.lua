@@ -1782,6 +1782,7 @@ local mt_settings = {
         
         if rawget( t, "spec" ) then
             if t.spec.settings[ k ] ~= nil then return t.spec.settings[ k ] end
+            if t.spec[ k ] ~= nil then return t.spec[ k ] end
 
             if ability then
                 if ability.item and t.spec.items[ state.this_action ] ~= nil then return t.spec.items[ state.this_action ][ k ]

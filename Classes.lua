@@ -31,6 +31,7 @@ local specTemplate = {
     potion = "prolonged_power",
 
     aoe = 2,
+    cycle = false,
 
     nameplates = true,
     nameplateRange = 8,

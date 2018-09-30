@@ -3284,6 +3284,16 @@ do
                             order = 12,
                         },
 
+                        cycle = {
+                            type = "toggle",
+                            name = "Recommend Target Cycling",
+                            desc = "When target cycling is enabled, the addon may show an icon (|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t) when you should use an ability on a different target.  " ..
+                                "This works well for some specs, that simply want to apply a debuff to another target (like Windwalker), but can be less-effective for specializations that are concerned with " ..
+                                "maintaining dots/debuffs based on their durations (like Affliction).  This feature is targeted for improvement in a future update.",
+                            width = "full",
+                            order = 12.5
+                        },
+
                         spacing4 = {
                             type = "description",
                             name = " ",

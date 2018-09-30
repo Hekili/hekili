@@ -812,7 +812,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.action = actID
                                                         slot.actionName = state.this_action
 
-                                                        slot.button = i
                                                         slot.texture = select( 10, GetItemInfo( potion.item ) )
                                                         slot.caption = entry.caption
                                                         slot.item = potion.item
@@ -918,7 +917,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     slot.action = actID
                                                     slot.actionName = state.this_action
 
-                                                    slot.button = i
                                                     slot.caption = entry.caption
                                                     slot.texture = ability.texture
                                                     slot.indicator = ability.indicator
@@ -938,10 +936,14 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     end
 
                                                     if entry.cycle_targets == 1 and state.active_enemies > 1 then
-                                                        if ability and ability.cycle and state.dot[ ability.cycle ].up and state.active_dot[ ability.cycle ] < ( entry.max_cycle_targets or state.active_enemies ) then
-                                                            slot.indicator = 'cycle'
-                                                        elseif module and module.cycle then
-                                                            slot.indicator = module.cycle()
+                                                        if not state.settings.cycle then
+                                                            if debug then self:Debug( "This entry would cycle through targets but target cycling is disabled." ) end
+                                                        else
+                                                            if ability and ability.cycle and state.dot[ ability.cycle ].up and state.active_dot[ ability.cycle ] < ( entry.max_cycle_targets or state.active_enemies ) then
+                                                                slot.indicator = 'cycle'
+                                                            elseif module and module.cycle then
+                                                                slot.indicator = module.cycle()
+                                                            end
                                                         end
                                                     end
                                                 end
@@ -1130,6 +1132,7 @@ function Hekili:ProcessHooks( dispName, packName )
         
         Queue[ i ] = Queue[ i ] or {}        
         local slot = Queue[ i ]
+        slot.index = i
         
         local attempts = 0
         local iterated = false
@@ -1144,8 +1147,6 @@ function Hekili:ProcessHooks( dispName, packName )
                 self:Debug( "[ ** ] Currently channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
             end
         end
-
-
 
         state.delay = 0
 
