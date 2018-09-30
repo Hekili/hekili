@@ -2040,6 +2040,7 @@ all:RegisterAbility( "galecallers_boon", {
     item = 159614,
     toggle = "cooldowns",
 
+    usable = function () return buff.movement.down end,
     handler = function ()
         applyBuff( "galecallers_boon" )
     end,
