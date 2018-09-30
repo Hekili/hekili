@@ -2652,8 +2652,8 @@ all:RegisterAbility( "ring_of_collapsing_futures", {
     cast = 0, 
     cooldown = 15,
     gcd = 'off',
-    ready = function () return debuff.temptation.remains end,
-
+    
+    readyTime = function () return debuff.temptation.remains end,
     handler = function ()
         applyDebuff( "player", "temptation", 30, debuff.temptation.stack + 1 )
     end
@@ -2720,7 +2720,7 @@ all:RegisterAbility( "ring_of_collapsing_futures", {
     cast = 0,
     cooldown = 15,
     gcd = 'off',
-    ready = function () return debuff.temptation.remains end,
+    readyTime = function () return debuff.temptation.remains end,
     handler = function () applyDebuff( "player", "temptation", 30, debuff.temptation.stack + 1 ) end
 } )
 
