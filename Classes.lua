@@ -1704,6 +1704,21 @@ all:RegisterAuras( {
 
 -- BFA TRINKETS
 -- ON USE
+all:RegisterAbility( "endless_tincture_of_fractional_power", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 152636,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        -- I don't know the auras it applies...
+    end
+} )
+
+
 all:RegisterAbility( "void_portal_stone", {
     cast = 0,
     cooldown = 60, -- no CD reported in-game yet.
