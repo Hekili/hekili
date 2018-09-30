@@ -391,9 +391,9 @@ function Hekili:UpdateUseItems()
                 table.insert( itemList, {
                     action = item,
                     enabled = true,
-                    criteria = "( ! settings.boss | boss ) & " ..
-                        "( settings.targetMin = 0 | active_enemies >= settings.targetMin ) & " ..
-                        "( settings.targetMax = 0 | active_enemies <= settings.targetMax )"
+                    criteria = "( ! settings.boss || boss ) & " ..
+                        "( settings.targetMin = 0 || active_enemies >= settings.targetMin ) & " ..
+                        "( settings.targetMax = 0 || active_enemies <= settings.targetMax )"
                 } )
             end
         end
