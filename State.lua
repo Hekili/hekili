@@ -1780,7 +1780,7 @@ local mt_settings = {
 
         local ability = state.this_action and class.abilities[ state.this_action ]        
         
-        if t.spec then
+        if rawget( t, "spec" ) then
             if t.spec.settings[ k ] ~= nil then return t.spec.settings[ k ] end
 
             if ability then
