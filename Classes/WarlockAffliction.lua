@@ -983,7 +983,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             usable = function () return not pet.alive and not buff.grimoire_of_sacrifice.up end,
             handler = function () summonPet( "felhunter" ) end,
 
-            copy = "summon_pet"
+            copy = { "summon_pet", 112869 }
         },
         
 
