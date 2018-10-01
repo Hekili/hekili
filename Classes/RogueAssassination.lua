@@ -1304,7 +1304,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             usable = function ()
                 return ( buff.deadly_poison.down and buff.wound_poison.down and action.deadly_poison.known ) or
-                    ( buff.crippling_poison.down and action.crippling_poison.known )
+                    ( time == 0 and buff.crippling_poison.down and action.crippling_poison.known )
             end,
 
             handler = function ()
