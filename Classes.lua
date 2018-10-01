@@ -1970,7 +1970,7 @@ all:RegisterAbility( "lions_strength", {
     cooldown = 105,
     gcd = "off",
 
-    item = 161463,
+    item = 161474,
     toggle = "cooldowns",
 
     handler = function ()
