@@ -1417,7 +1417,7 @@ all:RegisterAbilities( {
         end,
         cast = 0,
         cooldown = 120,
-        gcd = "off",
+        gcd = "spell",
 
         startsCombat = true,
 
@@ -1432,6 +1432,8 @@ all:RegisterAbilities( {
             elseif class.file == "ROGUE" then gain( 15, "energy" )
             elseif class.file == "WARRIOR" then gain( 15, "rage" )
             elseif class.file == "DEMONHUNTER" then gain( 15, "fury" ) end 
+
+            removeDebuff( "target", "dispellable_magic" )
         end,
     },
 
