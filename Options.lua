@@ -3579,7 +3579,7 @@ do
             desc = "Priorities (or action packs) are bundles of action lists used to make recommendations for each specialization.",
             get = 'GetPackOption',
             set = 'SetPackOption',
-            order = 40,
+            order = 65,
             childGroups = 'tree',
             args = {
                 packDesc = {
