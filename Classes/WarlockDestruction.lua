@@ -1030,6 +1030,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         enabled = true,
 
         aoe = 3,
+        cycle = true,
     
         nameplates = false,
         nameplateRange = 8,
