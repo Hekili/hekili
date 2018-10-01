@@ -2905,6 +2905,7 @@ do
         self.DB.profile.specs[ spec ][ option ] = val
 
         if option == "package" then self:UpdateUseItems(); self:ForceUpdate()
+        elseif option == "potion" and state.spec[ info[1] ] then class.potion = val
         elseif option == "enabled" then ns.StartConfiguration() end
     end
 
