@@ -753,7 +753,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 1360979,
 
             nobuff = "ironskin_brew_icd", -- implements 1s self-cooldown
-            readyTime = function () return max( ( 2 - charges_fractional ) * recharge, buff.ironskin_brew.remains - 3 ) end, -- should reserve 1 charge for purifying.
+            readyTime = function () return max( ( 2 - charges_fractional ) * recharge, buff.ironskin_brew.remains - gcd.max ) end, -- should reserve 1 charge for purifying.
+            usable = function () return ( tanking or incoming_damage_3s > 0 ) end,
+
             handler = function ()
                 applyBuff( "ironskin_brew_icd" )
                 applyBuff( "ironskin_brew", min( 21, buff.ironskin_brew.remains + 7 ) )
