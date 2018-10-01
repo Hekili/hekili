@@ -1704,7 +1704,7 @@ local mt_pets = {
     __index = function(t, k)
         -- Should probably add all totems, but holding off for now.
         for id, pet in pairs( t ) do
-            if type( pet ) == 'table' and pet.up and pet[ k ] then
+            if type( pet ) == 'table' and pet.up and pet[ k ] ~= nil then
                 return pet[ k ]
             end
         end
