@@ -914,7 +914,13 @@ do
                         local iname = LSF.ItemName( ability.item )
                         LSF.FlashItem( iname, self.flashColor )
                     else
-                        local sname = LSF.SpellName( ability.id )
+                        local id = ability.known
+                        
+                        if id == nil or type( id ) ~= "number" then
+                            id = ability.id
+                        end
+                        
+                        local sname = LSF.SpellName( id )
                         LSF.FlashAction( sname, self.flashColor )
                     end
                 end
