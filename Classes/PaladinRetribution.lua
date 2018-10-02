@@ -88,7 +88,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
         divine_right = {
             id = 278523,
-            duration = 10,
+            duration = 15,
             max_stack = 1,
         },
 
