@@ -1308,7 +1308,7 @@ local mt_state = {
             return ( 1 / ( 1 + t.stat.melee_haste ) )
             
         elseif k == 'mastery_value' then
-            return ( GetMastery() / 100 )
+            return ( GetMasteryEffect() / 100 )
             
         elseif k == 'miss_react' then
             return false
@@ -3343,7 +3343,9 @@ local mt_default_action = {
 
         elseif k == 'cost' then
             local a = class.abilities[ t.action ].spend
+            if not a then return 0 end
             if type( a ) == 'function' then a = a() end
+            if a > 0 and a < 1 then a = a * state[ class.abilities[ t.action ].spendType or class.primaryResource ].modmax end
             return a
 
         elseif k == 'in_flight' then
@@ -3843,6 +3845,12 @@ function state.reset( dispName )
         if res then
             res.actual = UnitPower( 'player', power.type )
             res.max = UnitPowerMax( 'player', power.type )
+
+            res.modmax = res.max
+            if k == "mana" and state.spec.arcane then
+                res.modmax = res.modmax / ( 1 + state.mastery_value )
+            end
+
             res.last_tick = rawget( res, 'last_tick' ) or 0
             res.tick_rate = rawget( res, 'tick_rate' ) or 0.1
 
@@ -4291,15 +4299,11 @@ ns.hasRequiredResources = function( ability )
         if resource == 'focus' or resource == 'energy' then
             -- Thought: We'll already delay CD based on time to get energy/focus.
             -- So let's leave it alone.
-            return true
-            
-        elseif resource == 'holy_power' and state.equipped.liadrins_fury_unleashed and ( state.buff.crusade.up or state.buff.avenging_wrath.up ) then
-            -- Holy Power is a time-regen resource during AW/Crusade, if you have the legendary ring.
-            return true
+            return true            
         end
         
         if spend > 0 and spend < 1 then
-            spend = ( spend * state[ resource ].max )
+            spend = ( spend * state[ resource ].modmax )
         end
         
         if spend > 0 then
@@ -4357,7 +4361,7 @@ function state:TimeToReady( action, pool )
     end
 
     if spend and resource and spend > 0 and spend < 1 then
-        spend = spend * self[ resource ].max
+        spend = spend * self[ resource ].modmax
     end
 
     -- Okay, so we don't have enough of the resource.
@@ -4447,7 +4451,7 @@ function state:IsReadyNow( action )
         end
 
         if spend > 0 and spend < 1 then
-            spend = ( spend * state[ resource ].max )
+            spend = ( spend * state[ resource ].modmax )
         end
 
         if spend > 0 then
