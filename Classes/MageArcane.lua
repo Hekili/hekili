@@ -175,7 +175,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             max_stack = 1,
         },
         clearcasting = {
-            id = 79684,
+            id = 263725,
             duration = 15,
             type = "Magic",
             max_stack = 1,
@@ -304,7 +304,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     spec:RegisterHook( "gain", function( amt, resource )
         if resource == "arcane_charges" then
             if arcane_charges.current == 0 then removeBuff( "arcane_charge" )
-            else applyBuff( "arcane_charge", nil, arcane_charges.current ) end
+            else 
+                applyBuff( "arcane_charge", nil, arcane_charges.current )
+            end
         end
     end )
 
@@ -328,6 +330,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         burn_info.start = burn_info.__start
         burn_info.average = burn_info.__average
         burn_info.n = burn_info.__n
+
+        if arcane_charges.current > 0 then applyBuff( "arcane_charge", nil, arcane_charges.current ) end
     end )
 
     spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
@@ -416,7 +420,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 0.0275 * ( 1 + arcane_charges.current ) * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
+            spend = function () 
+                if buff.rule_of_threes.up then return 0 end
+                return 0.0275 * ( 1 + arcane_charges.current ) * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
             spendType = "mana",
             
             startsCombat = true,
@@ -428,7 +434,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     if buff.presence_of_mind.down then setCooldown( "presence_of_mind", 60 ) end
                 end
                 if arcane_charges.current < arcane_charges.max then gain( 1, "arcane_charges" ) end
-                if talent.rule_of_threes.enabled and  arcane_charges.current == 3 then applyBuff( "rule_of_threes" ) end
+                removeBuff( "rule_of_threes" )
+                if talent.rule_of_threes.enabled and arcane_charges.current == 2 then applyBuff( "rule_of_threes" ) end
             end,
         },
         
@@ -501,13 +508,16 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return buff.clearcasting.up and 0 or 0.15 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
+            spend = function () 
+                if buff.rule_of_threes.up then return 0 end
+                return buff.clearcasting.up and 0 or 0.15 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
             spendType = "mana",
             
             startsCombat = true,
             texture = 136096,
             
             handler = function ()
+                removeBuff( "rule_of_threes" )
                 removeBuff( "clearcasting" )
             end,
         },
