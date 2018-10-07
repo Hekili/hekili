@@ -136,7 +136,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             max_stack = 1,
         },
         loaded_dice = {
-            id = 240837,
+            id = 256171,
             duration = 45,
             max_stack = 1,
         },
@@ -345,6 +345,17 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterHook( "spend", function( amt, resource )
         if amt >= 5 and resource == "combo_points" then
             gain( 1, "combo_points" )
+
+            local cdr = amt * ( buff.true_bearing.up and 2 or 1 )
+
+            reduceCooldown( "adrenaline_rush", cdr )
+            reduceCooldown( "between_the_eyes", cdr )
+            reduceCooldown( "sprint", cdr )
+            reduceCooldown( "grappling_hook", cdr )
+            reduceCooldown( "vanish", cdr )
+
+            reduceCooldown( "blade_rush", cdr )
+            reduceCooldown( "killing_spree", cdr )
         end
     end )
 
