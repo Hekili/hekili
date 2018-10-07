@@ -277,11 +277,17 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         -- AZERITE POWERS
+        blur_of_talons = {
+            id = 277969,
+            duration = 6,
+            max_stack = 5,
+        },
+        
         latent_poison = {
             id = 273286,
             duration = 20,
             max_stack = 10
-        }
+        },
     } )
 
 
@@ -834,6 +840,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                         gainChargeTime( "volatile_bomb", 1 )
                     end
                 end
+
+                if azerite.blur_of_talons.enabled and buff.coordinated_assault.up then
+                    addStack( "blur_of_talons", nil, 1)
+                end
             end,
 
             copy = { 265888, "mongoose_bite_eagle" }
@@ -918,6 +928,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                         gainChargeTime( "pheromone_bomb", 1 )
                         gainChargeTime( "volatile_bomb", 1 )
                     end
+                end
+
+
+                if azerite.blur_of_talons.enabled and buff.coordinated_assault.up then
+                    addStack( "blur_of_talons", nil, 1)
                 end
             end,
 
