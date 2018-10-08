@@ -523,7 +523,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             form = "bear_form",
 
             readyTime = function () return buff.frenzied_regeneration.remains end,
-            usable = function () return tanking or incoming_damage_3s > 0 end,
+
             handler = function ()
                 applyBuff( "frenzied_regeneration" )
                 gain( health.max * 0.08, "health" )
