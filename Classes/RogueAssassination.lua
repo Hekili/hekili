@@ -954,7 +954,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
                 gain( 1, "combo_points" )
 
-                if stealthed.rogue then applyDebuff( "target", "garrote_silence" ) end
+                if stealthed.rogue then
+                    applyDebuff( "target", "garrote_silence" ) 
+
+                    if azerite.shrouded_suffocation.enabled then
+                        gain( 2, "combo_points" )
+                    end
+                end
             end,
         },
         
