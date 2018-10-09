@@ -515,7 +515,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             startsCombat = false,
             texture = 136024,
 
-            toggle = "cooldowns",            
+            toggle = "defensives",            
             
             handler = function ()
                 summonPet( "greater_earth_elemental", 60 )
