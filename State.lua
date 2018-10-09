@@ -1319,7 +1319,7 @@ local mt_state = {
         elseif k == 'cast_delay' then return 0
 
         elseif k == 'in_flight' then return t.action[ t.this_action ].in_flight
-            
+        
         elseif type(k) == 'string' and k:sub(1, 16) == 'incoming_damage_' then
             local remains = k:sub(17)
             local time = remains:match("^(%d+)[m]?s")
@@ -1340,7 +1340,7 @@ local mt_state = {
             table.insert( t.purge, k )
             return t[ k ]
             
-        elseif k:sub(1, 14) == 'incoming_heal_' then
+        elseif type(k) == 'string' and k:sub(1, 14) == 'incoming_heal_' then
             local remains = k:sub(15)
             local time = remains:match("^(%d+)[m]?s")
             
