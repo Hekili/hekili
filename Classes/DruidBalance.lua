@@ -1350,7 +1350,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return buff.oneths_overconfidence.up and 0 or 50 end,
+            spend = function ()
+                if buff.oneths_overconfidence.up then return 0 end
+                return talent.soul_of_the_forest.enabled and 40 or 50
+            end,
             spendType = "astral_power",
             
             startsCombat = true,
