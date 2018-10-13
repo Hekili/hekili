@@ -213,6 +213,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             max_stack = 1
         },
 
+        executioners_precision = {
+            id = 242188,
+            duration = 30,
+            max_stack = 2
+        },
+
         test_of_might = {
             id = 275540,
             duration = 12,
@@ -531,6 +537,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 else removeBuff( "sudden_death" ) end
 
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
+                if azerite.executioners_precision.enabled then
+                    applyDebuff( "target", "executioners_precision", nil, min( 2, debuff.executioners_precision.stack + 1 ) )
+                end                
             end,
 
             copy = { 163201, 281001, 281000 }
@@ -655,6 +664,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyDebuff( "target", "mortal_wounds" )
                 applyDebuff( "target", "deep_wounds" )
                 removeBuff( "overpower" )
+                removeDebuff( "target", "executioners_precision" )
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 6, "rage" ) end
                 if level < 116 and set_bonus.tier21_4pc == 1 then addStack( "weighted_blade", 12, 1 ) end
             end,
