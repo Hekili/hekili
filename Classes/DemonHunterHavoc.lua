@@ -149,6 +149,12 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         demon_blades = {
             id = 203555,
         },
+        -- Demonic Origins PvP Talent.
+        demonic_origins = {
+            id = 235894,
+            duration = 3600,
+            max_stack = 1,
+        },
         demonic_wards = {
             id = 278386,
         },
@@ -183,11 +189,11 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         metamorphosis = {
             id = 162264,
-            duration = 30,
+            duration = function () return buff.demonic_origins.up and 15 or 30 end,
             max_stack = 1,
             meta = {
                 extended_by_demonic = function ()
-                    return talent.demonic.enabled and ( buff.metamorphosis.duration ~= 30 and buff.metamorphosis.duration > ( action.eye_beam.cast + 8 ) )
+                    return talent.demonic.enabled and ( buff.metamorphosis.up and buff.metamorphosis.duration % 15 > 0 and buff.metamorphosis.duration > ( action.eye_beam.cast + 8 ) )
                 end,
             },
         },
@@ -715,7 +721,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         metamorphosis = {
             id = 191427,
             cast = 0,
-            cooldown = 240,
+            cooldown = function () return buff.demonic_origins.up and 120 or 240 end,
             gcd = "spell",
             
             toggle = "cooldowns",
@@ -809,7 +815,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1305159,
             
             handler = function ()
-                applyDebuff( "target", "master_of_the_glaive" )
+                if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
             end,
         },
         
