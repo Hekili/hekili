@@ -323,6 +323,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             startsCombat = true,
             texture = 828455,
+
+            toggle = "interrupts",
             
             usable = function () return debuff.dispellable_magic.up end,
             handler = function ()
@@ -664,6 +666,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 2065625,
 
             talent = "soul_barrier",
+            
+            toggle = "defensives",
             
             handler = function ()
                 if talent.feed_the_demon.enabled then
