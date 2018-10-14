@@ -913,16 +913,18 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
     spec:RegisterOptions( {
         enabled = true,
+    
+        potion = "potion_of_rising_death",
+
+        buffPadding = 0.25,
+
+        nameplates = false,
+        nameplateRange = 8,
 
         aoe = 3,
     
-        nameplates = false,
-        nameplateRange = 8,
-        
         damage = true,
         damageExpiration = 3,
-    
-        potion = "potion_of_rising_death",
     
         package = "Beast Mastery",
     } )

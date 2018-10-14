@@ -3270,29 +3270,43 @@ do
                         spacing3 = {
                             type = "description",
                             name = " ",
-                            order = 11.99,
+                            order = 11.01,
                             width = "full",
                         },
 
-                        aoe = {
-                            type = "range",
-                            name = "AOE Target Count",
-                            desc = "When the AOE Display is shown, it will assume that there are at least this many active targets.",
-                            width = "full",
-                            min = 2,
-                            max = 5,
-                            step = 1,
-                            order = 12,
-                        },
-
-                        cycle = {
-                            type = "toggle",
-                            name = "Recommend Target Cycling",
-                            desc = "When target cycling is enabled, the addon may show an icon (|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t) when you should use an ability on a different target.  " ..
-                                "This works well for some specs, that simply want to apply a debuff to another target (like Windwalker), but can be less-effective for specializations that are concerned with " ..
-                                "maintaining dots/debuffs based on their durations (like Affliction).  This feature is targeted for improvement in a future update.",
-                            width = "full",
-                            order = 12.5
+                        padding = {
+                            type = "group",
+                            inline = true,
+                            name = "Aura Padding",
+                            order = 11.1,
+                            args = {
+                                buffPadding = {
+                                    type = "range",
+                                    name = "Buff Padding",
+                                    desc = "This setting will cause the addon to treat your buffs as though they are going to fall off earlier than they " ..
+                                        "actually will.  For instance, if set to |cFFFFD1000.25|r seconds, then a buff that will expire in |cFFFFD1004|r seconds will " ..
+                                        "be treated as though it would fall off in |cFFFFD1003.75|r seconds.  Depending on your spec's priority, this may lead you to " ..
+                                        "refresh your buffs more frequently, which is helpful when trying to chain a buff or maintain stacks without the buff falling off.",
+                                    order = 1,
+                                    width = "full",
+                                    min = 0,
+                                    max = 1,
+                                    step = 0.01
+                                },
+                                debuffPadding = {
+                                    type = "range",
+                                    name = "Debuff Padding",
+                                    desc = "This setting will cause the addon to treat your debuffs (or DoT effects) as though they are going to fall off earlier than they " ..
+                                        "actually will.  For instance, if set to |cFFFFD1000.25|r seconds, then a debuff that will expire in |cFFFFD1004|r seconds will " ..
+                                        "be treated as though it will expire in |cFFFFD1003.75|r seconds.  Depending on your spec's priority, this may lead you to " ..
+                                        "refresh your debuffs more frequently, which is helpful when trying to chain a debuff or maintain stacks without the debuff falling off.",
+                                    order = 1,
+                                    width = "full",
+                                    min = 0,
+                                    max = 1,
+                                    step = 0.01
+                                },                                
+                            }
                         },
 
                         spacing4 = {
@@ -3304,7 +3318,7 @@ do
 
                         targetDetection = {
                             type = "group",
-                            name = "Target Detection",
+                            name = "Target Handling",
                             inline = true,
                             order = 15,
                             args = {
@@ -3314,7 +3328,7 @@ do
                                     desc = "If checked, the addon will count any enemies with visible nameplates within a small radius of your character.  " ..
                                         "This is typically desirable for melee character specializations.",
                                     width = "full",
-                                    order = 2,
+                                    order = 1,
                                 },
         
                                 nameplateRange = {
@@ -3325,8 +3339,29 @@ do
                                     disabled = function( info, val )
                                         return self.DB.profile.specs[ id ].nameplates == false
                                     end,
+                                    order = 2,
+                                },
+
+                                aoe = {
+                                    type = "range",
+                                    name = "AOE Target Count",
+                                    desc = "When the AOE Display is shown, it will assume that there are at least this many active targets.",
+                                    width = "full",
+                                    min = 2,
+                                    max = 5,
+                                    step = 1,
                                     order = 3,
                                 },
+        
+                                cycle = {
+                                    type = "toggle",
+                                    name = "Recommend Target Cycling",
+                                    desc = "When target cycling is enabled, the addon may show an icon (|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t) when you should use an ability on a different target.  " ..
+                                        "This works well for some specs, that simply want to apply a debuff to another target (like Windwalker), but can be less-effective for specializations that are concerned with " ..
+                                        "maintaining dots/debuffs based on their durations (like Affliction).  This feature is targeted for improvement in a future update.",
+                                    width = "full",
+                                    order = 3.1
+                                },        
         
                                 damage = {
                                     type = "toggle",

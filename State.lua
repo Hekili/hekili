@@ -2623,7 +2623,7 @@ local mt_default_buff = {
             return t.applied > state.query_time or t.expires < state.query_time
             
         elseif k == 'remains' then
-            return t.up and ( t.expires - state.query_time ) or 0
+            return t.up and max( 0, t.expires - state.query_time - state.settings.buffPadding ) or 0
             
         elseif k == 'refreshable' then
             return t.remains < 0.3 * ( aura.duration or 30 )
@@ -3125,7 +3125,8 @@ local mt_default_debuff = {
             return not t.up
             
         elseif k == 'remains' then
-            if t.up then return t.expires - state.query_time end
+            if t.up then                
+                return max( 0, t.expires - state.query_time - state.settings.debuffPadding ) end
             return 0
             
         elseif k == 'refreshable' then
@@ -4198,7 +4199,7 @@ do
                 return true
             else
                 if toggle and toggle ~= 'none' then
-                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle and not ability[ state.filter ] ) then return true end
+                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true end
                 end
             end
         end

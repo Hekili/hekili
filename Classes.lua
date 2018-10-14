@@ -33,8 +33,14 @@ local specTemplate = {
     aoe = 2,
     cycle = false,
 
+    buffPadding = 0,
+    debuffPadding = 0,
+    
     nameplates = true,
     nameplateRange = 8,
+
+    buffPadding = 0.25,
+    debuffPadding = 0,
     
     damage = true,
     damageExpiration = 8,
@@ -1531,8 +1537,6 @@ all:RegisterAbilities( {
         end,
 
         usable = function ()
-            if not toggle.potions then return false end
-
             local pName = args.potion or args.name
             if not pName or pName == "default" then pName = class.potion end
 
