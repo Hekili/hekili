@@ -4192,9 +4192,7 @@ do
         local toggle = option.toggle
         if not toggle or toggle == 'default' then toggle = ability.toggle end
 
-        if spell == "potion" and state.filter ~= "none" and state.filter ~= toggle then return true end
-        
-        if ability.id < -100 or ability.id > 0 then
+        if ability.id < -100 or ability.id > 0 or spell == "potion" then
             if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then
                 return true
             else
