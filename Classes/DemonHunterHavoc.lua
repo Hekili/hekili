@@ -240,6 +240,18 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             duration = 3,
             max_stack = 1,
         },
+
+        -- Azerite
+        thirsting_blades = {
+            id = 278736,
+            duration = 30,
+            max_stack = 40,
+            meta = {
+                stack = function ( t )
+                    return min( 40, t.count + floor( query_time - t.applied ) )
+                end,
+            }
+        }
     } )
 
 
@@ -346,7 +358,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 40,
+            spend = function () return 40 - buff.thirsting_blades.stack end,
             spendType = "fury",
             
             startsCombat = true,
@@ -354,7 +366,10 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             bind = "chaos_strike",
             buff = "metamorphosis",
+            
             handler = function ()
+                removeBuff( "thirsting_blades" )
+                if azerite.thirsting_blades.enabled then applyBuff( "thirsting_blades", nil, 0 ) end
             end,
         },
         
@@ -426,7 +441,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 40,
+            spend = function () return 40 - buff.thirsting_blades.stack end,
             spendType = "fury",
             
             startsCombat = true,
@@ -436,6 +451,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             nobuff = "metamorphosis",
             
             handler = function ()
+                removeBuff( "thirsting_blades" )
+                if azerite.thirsting_blades.enabled then applyBuff( "thirsting_blades", nil, 0 ) end
             end,
         },
         

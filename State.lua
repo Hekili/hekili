@@ -2644,7 +2644,7 @@ local mt_default_buff = {
             if t.up then return ( t.count ) else return 0 end
             
         elseif k == 'stack_pct' then
-            if t.up then return ( 100 * t.count / t.max_stack ) else return 0 end
+            if t.up then return ( 100 * t.stack / t.max_stack ) else return 0 end
 
         elseif k == 'ticks' then
             if t.up then return 1 + ( ( class.auras[ t.key ].duration or ( 30 * state.haste ) ) / ( class.auras[ t.key ].tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
