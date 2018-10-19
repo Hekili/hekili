@@ -142,7 +142,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             end
         },
         backdraft = {
-            id = 196406,
+            id = 117828,
             duration = 10,
             type = "Magic",
             max_stack = function () return talent.flashover.enabled and 2 or 1 end,
