@@ -170,6 +170,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             max_stack = 1,
         },
 
+        selfless_healer = {
+            id = 114250,
+            duration = 15,
+            max_stack = 4,
+        },
+
         shield_of_vengeance = {
             id = 184662,
             duration = 15,
