@@ -2593,6 +2593,19 @@ all:RegisterAura( "drunken_evasiveness", {
 
 
 
+-- HALLOW'S END
+
+all:RegisterAbility( "the_horsemans_sinister_slicer", {
+    cast = 0,
+    cooldown = 600,
+    gcd = "off",
+
+    item = 117356,
+    toggle = "cooldowns",
+} )
+
+
+
 -- LEGION LEGENDARIES
 all:RegisterGear( 'rethus_incessant_courage', 146667 )
     all:RegisterAura( 'rethus_incessant_courage', { id = 241330 } )
