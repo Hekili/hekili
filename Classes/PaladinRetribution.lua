@@ -187,6 +187,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             duration = 5,
             max_stack = 1,
         },
+
+        zeal = {
+            id = 217020,
+            duration = 12,
+            max_stack = 3
+        },
     } )
 
     spec:RegisterGear( 'tier19', 138350, 138353, 138356, 138359, 138362, 138369 )
