@@ -1320,11 +1320,19 @@ do
                                 width = "full",
                             },
 
+                            fit = {
+                                type = "toggle",
+                                name = "Border Inside",
+                                desc = "If enabled, when borders are enabled, the button's border will fit inside the button (instead of around it).",
+                                order = 2,
+                                width = "full",
+                            },
+
                             color = {
                                 type = "color",
                                 name = "Border Color",
                                 desc = "When borders are enabled, the border will use this color.",
-                                order = 2,
+                                order = 3,
                                 width = "full",
                                 disabled = function () return data.border.enabled == false end,
                             }

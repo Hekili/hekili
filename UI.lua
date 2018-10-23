@@ -1477,12 +1477,18 @@ do
 
         local scale = self:GetScale()
 
+        local borderOffset = 0
+
+        if conf.border.enabled and conf.border.fit then
+            borderOffset = 2
+        end
+
         if id == 1 then
-            b:SetHeight( scale * ( conf.primaryHeight or 50 ) )
-            b:SetWidth( scale * ( conf.primaryWidth or 50 ) )
+            b:SetHeight( scale * ( ( conf.primaryHeight or 50 ) - borderOffset ) )
+            b:SetWidth( scale * ( ( conf.primaryWidth or 50 ) - borderOffset  ) )
         else
-            b:SetHeight( scale * ( conf.queue.height or 30 ) )
-            b:SetWidth( scale * ( conf.queue.width or 50 ) )
+            b:SetHeight( scale * ( ( conf.queue.height or 30 ) - borderOffset  ) )
+            b:SetWidth( scale * ( ( conf.queue.width or 50 ) - borderOffset  ) )
         end
 
         -- Texture
@@ -1702,27 +1708,27 @@ do
         elseif id == 2 then
             -- Anchoring for the remainder.
             local queueAnchor = conf.queue.anchor or "RIGHT"
-            local qOffsetX = conf.queue.offsetX or 5
-            local qOffsetY = conf.queue.offsetY or 0
+            local qOffsetX = ( conf.queue.offsetX or 5 )
+            local qOffsetY = ( conf.queue.offsetY or 0 )
 
             b:ClearAllPoints()
 
             if queueAnchor:sub( 1, 5 ) == "RIGHT" then
                 local dir, align = "RIGHT", queueAnchor:sub(6)
-                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, qOffsetX * scale, qOffsetY * scale )
+                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, ( borderOffset + qOffsetX ) * scale, qOffsetY * scale )
             elseif queueAnchor:sub( 1, 4 ) == "LEFT" then
                 local dir, align = "LEFT", queueAnchor:sub(5)
-                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, -1 * qOffsetX * scale, qOffsetY * scale )
+                b:SetPoint( align .. getInverseDirection(dir), "Hekili_" .. dispID .. "_B1", align .. dir, -1 * ( borderOffset + qOffsetX ) * scale, qOffsetY * scale )
             elseif queueAnchor:sub( 1, 3)  == "TOP" then
                 local dir, align = "TOP", queueAnchor:sub(4)
-                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, qOffsetY * scale )
+                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, ( borderOffset + qOffsetY ) * scale )
             else -- BOTTOM
                 local dir, align = "BOTTOM", queueAnchor:sub(7)
-                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, -1 * qOffsetY * scale )
+                b:SetPoint( getInverseDirection(dir) .. align, "Hekili_" .. dispID .. "_B1", dir .. align, 0, -1 * ( borderOffset + qOffsetY ) * scale )
             end
         else
             local queueDirection = conf.queue.direction or "RIGHT"
-            local btnSpacing = conf.queue.spacing or 5
+            local btnSpacing = borderOffset + ( conf.queue.spacing or 5 )
 
             b:ClearAllPoints()
 
