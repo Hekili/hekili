@@ -1983,6 +1983,13 @@ local mt_default_cooldown = {
             id = ability.item
         end
 
+        local raw = false
+
+        if k:sub(1, 5) == "true_" then
+            k = k:sub(6)
+            raw = true
+        end
+
         if k == 'duration' or k == 'expires' or k == 'next_charge' or k == 'charge' or k == 'recharge_began' then
             -- Refresh the ID in case we changed specs and ability is spec dependent.
             t.id = ability.id
@@ -2047,12 +2054,12 @@ local mt_default_cooldown = {
             return t[k]
             
         elseif k == 'charges' then
-            if state:IsDisabled( t.key ) then
+            if not raw and state:IsDisabled( t.key ) then
                 return 0
             end
 
             return floor( t.charges_fractional )
-            
+
         elseif k == 'charges_max' or k == 'max_charges' then
             return ability.charges or 1
             
@@ -2069,7 +2076,7 @@ local mt_default_cooldown = {
             
             -- If the ability is toggled off in the profile, we may want to fake its CD.
             -- Revisit this if I add base_cooldown to the ability tables.
-            if state:IsDisabled( t.key ) then
+            if not raw and state:IsDisabled( t.key ) then
                 return ability.cooldown
             end
             
@@ -2077,16 +2084,10 @@ local mt_default_cooldown = {
             bonus_cdr = ns.callHook( "cooldown_recovery", bonus_cdr ) or bonus_cdr
             
             return max( 0, t.expires - state.query_time - bonus_cdr )
-            
-        elseif k == 'true_remains' then
-            return max( 0, t.true_expires - state.query_time )
-            
-            --[[ if t.key == 'global_cooldown' then return remains end
-            return max( class.abilities[ t.key ].gcd ~= 'off' and state.cooldown.global_cooldown.remains or 0, remains ) ]]
-            
+           
         elseif k == 'charges_fractional' then
             if not state:IsKnown( t.key ) then return 1 end
-            if state:IsDisabled( t.key ) then return 0 end
+            if not raw and state:IsDisabled( t.key ) then return 0 end
             
             if ability.charges then 
                 if t.charge < ability.charges then
@@ -2099,15 +2100,8 @@ local mt_default_cooldown = {
             return t.remains > 0 and 0 or 1
             
         elseif k == 'recharge_time' then
-            if not t.charges then return t.duration end
+            if not ability.charges then return t.duration or 0 end
             return t.recharge
-            --[[
-            if t.charges <= 1 then return t.remains
-            elseif class.abilities[ t.key ].charges and t.next_charge > ( state.query_time ) then
-                return ( t.next_charge - ( state.query_time ) )
-            end
-
-            return 0 ]]
             
         elseif k == 'up' or k == 'ready' then            
             return ( t.remains == 0 )
