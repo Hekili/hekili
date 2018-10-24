@@ -1004,7 +1004,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 132320,
 
-            usable = function () return time == 0 and not buff.stealth.up and not buff.vanish.up end,
+            usable = function () return time == 0 and not buff.stealth.up and not buff.vanish.up end,            
             readyTime = function () return buff.shadow_dance.remains end,
             handler = function ()
                 applyBuff( 'stealth' )

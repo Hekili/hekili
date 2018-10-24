@@ -1198,7 +1198,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 132320,
             
-            usable = function () return buff.stealth.down and buff.vanish.down end,
+            usable = function () return time == 0 and not buff.stealth.up and not buff.vanish.up end,            
             handler = function ()
                 applyBuff( "stealth" )
             end,
