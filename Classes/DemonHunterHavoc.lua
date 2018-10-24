@@ -248,6 +248,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             max_stack = 40,
             meta = {
                 stack = function ( t )
+                    if t.down then return 0 end
                     return min( 40, t.count + floor( query_time - t.applied ) )
                 end,
             }
