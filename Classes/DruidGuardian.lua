@@ -836,7 +836,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             talent = "pulverize",
             form = "bear_form",
             
-            usable = function () return debuff.thrash_bear.up end,
+            usable = function () return debuff.thrash_bear.stack >= 2 end,
             handler = function ()
                 if debuff.thrash_bear.count > 2 then debuff.thrash_bear.count = debuff.thrash_bear.count - 2
                 else removeDebuff( "target", "thrash_bear" ) end
