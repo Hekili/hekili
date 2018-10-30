@@ -847,7 +847,9 @@ local raid_event_filter = {
     distance = 0,
     max_distance = 0,
     min_distance = 0,
-    to_pct = 0
+    to_pct = 0,
+    up = false,
+    down = true
 }
 
 state.raid_event = setmetatable( {}, {
@@ -3256,9 +3258,19 @@ local mt_default_action = {
         if k == 'enabled' or k == 'known' then
             return state:IsKnown( t.action )
 
+        elseif k == 'gcd' then
+            local queued_action = state.this_action
+            state.this_action = t.action
+
+            local value = state.gcd.execute
+            state.this_action = queued_action
+
+            return value
+        
         elseif k == 'execute_time' then
             local queued_action = state.this_action
             state.this_action = t.action
+
             local value = state.gcd.execute
             state.this_action = queued_action
 
@@ -3305,18 +3317,6 @@ local mt_default_action = {
 
         elseif k == 'tick_time' then
             return class.auras[ aura ].tick_time or ( 3 * state.haste )
-            
-        --[[ elseif k == 'tick_time' then
-            if IsWatchedDoT( t.action ) then
-                return ( GetWatchedDoT( t.action ).tick_time * state.haste )
-            end
-            return 0
-            
-        elseif k == 'tick_damage' then
-            if IsWatchedDoT( t.action ) then
-                return select(2, GetWatchedDoT( t.action ).handler() )
-            end
-            return 0 ]]
             
         elseif k == 'travel_time' then
             -- NYI: maybe capture the last travel time for the spell and use that?
@@ -3386,7 +3386,7 @@ local mt_actions = {
         t[k] = {
             action = k,
             name = action.name,
-            gcd = action.gcd
+            gcdType = action.gcd
         }
 
         local h = state.haste
