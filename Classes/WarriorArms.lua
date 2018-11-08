@@ -377,6 +377,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 applyBuff( "bladestorm" )
+                setCooldown( "global_cooldown", 4 * haste )
                 if level < 116 and equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
             end,
         },
