@@ -566,7 +566,9 @@ end
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value )
 
-    if not class.auras[ aura ] then
+    local auraInfo = class.auras[ aura ]
+
+    if not auraInfo then
         Error( "Attempted to apply/remove unknown aura '%s'.", aura )
         local spec = class.specs[ state.spec.id ]
         if spec then
@@ -576,6 +578,11 @@ local function applyBuff( aura, duration, stacks, value )
         end
 
         if not class.auras[ aura ] then return end
+        auraInfo = class.auras[ aura ]
+    end
+
+    if auraInfo.alias then
+        aura = auraInfo.alias[1]
     end
 
     if state.cycle then
@@ -612,15 +619,19 @@ local function applyBuff( aura, duration, stacks, value )
     elseif aura ~= 'potion' and class.auras.potion and class.auras[ aura ].id == class.auras.potion.id then
         applyBuff( 'potion', duration, stacks, value )
     end
-    
 end
 state.applyBuff = applyBuff
 
 
 local function removeBuff( aura )
-    
     applyBuff( aura, 0 )
-    
+
+    local auraInfo = class.auras[ aura ]
+    if auraInfo and auraInfo.alias then
+        for _, child in ipairs( auraInfo.alias ) do
+            applyBuff( child, 0 )
+        end
+    end    
 end
 state.removeBuff = removeBuff
 
