@@ -214,7 +214,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
         executioners_precision = {
-            id = 242188,
+            id = 272870,
             duration = 30,
             max_stack = 2,
         },
