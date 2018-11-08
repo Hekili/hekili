@@ -183,8 +183,18 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         primal_fury = {
             id = 159286,
         },
-        prowl = {
+        prowl_base = {
             id = 5215,
+            duration = 3600,
+        },
+        prowl_incarnation = {
+            id = 102547,
+            duration = 3600,
+        },
+        prowl = {
+            alias = { "prowl_base", "prowl_incarnation" },
+            aliasMode = "first",
+            aliasType = "buff",
             duration = 3600,
         },
         rake = {
@@ -921,7 +931,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             recheck = function () return buff.incarnation.remains - 0.1 end,
             handler = function ()
                 shift( "cat_form" )
-                applyBuff( "prowl" )
+                applyBuff( buff.incarnation.up and "prowl_incarnation" or "prowl_base" )
             end,
         },
         
