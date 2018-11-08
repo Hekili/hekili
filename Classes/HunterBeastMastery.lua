@@ -458,6 +458,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             
             handler = function ()
                 applyBuff( 'aspect_of_the_wild' )
+
+                if azerite.primal_instinct.enabled then gainCharges( "barbed_shot", 1 ) end
             end,
         },
         
