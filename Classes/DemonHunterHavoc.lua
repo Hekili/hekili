@@ -603,6 +603,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                     else
                         applyBuff( "metamorphosis", action.eye_beam.cast + 8 )
                         buff.metamorphosis.duration = action.eye_beam.cast + 8
+                        stat.haste = stat.haste + 25
                     end
                 end
             end,
