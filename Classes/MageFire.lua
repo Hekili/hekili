@@ -260,6 +260,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             id = 273333,
             duration = 30,
             max_stack = 1,
+        },
+
+        blaster_master = {
+            id = 274598,
+            duration = 3,
+            max_stack = 1,
         }
     } )
 
@@ -463,6 +469,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 else applyBuff( "heating_up" ) end
 
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
+                if azerite.blaster_master.enabled then applyBuff( "blaster_master" ) end
+                
                 applyBuff( "fire_blasting" )
             end,
         },
