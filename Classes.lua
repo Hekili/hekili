@@ -404,6 +404,7 @@ local HekiliSpecMixin = {
                     self.abilities[ ability ] = self.abilities[ ability ] or a
                     self.abilities[ a.name ] = self.abilities[ a.name ] or a
                     self.abilities[ a.link ] = self.abilities[ a.link ] or a
+                    self.abilities[ a.id ] = self.abilities[ a.link ] or a
 
                     if not a.unlisted then 
                         class.abilityList[ ability ] = "|T" .. texture .. ":0|t " .. link
@@ -413,6 +414,7 @@ local HekiliSpecMixin = {
                     class.abilities[ ability ] = a
                     class.abilities[ a.name ] = a
                     class.abilities[ a.link ] = a
+                    class.abilities[ a.id ] = a
 
                     Hekili:EmbedItemOptions()
                 
