@@ -465,7 +465,7 @@ local HekiliSpecMixin = {
             if not spell:IsSpellEmpty() then 
                 spell:ContinueOnSpellLoad( function () 
                     a.name = spell:GetSpellName()
-                    a.desc = spell:GetSpellDescription()
+                    a.desc = GetSpellDescription( a.id ) -- spell:GetSpellDescription() was returning raw tooltip data.
 
                     if a.suffix then
                         a.actualName = a.name
