@@ -246,6 +246,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     spec:RegisterHook( "reset_precast", function ()
         rageSpent = 0
         if buff.bladestorm.up then setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) ) end
+
+        -- Map buff.executioners_precision to debuff.executioners_precision; use rawset to avoid changing the meta table.
+        rawset( buff, "executioners_precision", debuff.executioners_precision )
     end )
 
 

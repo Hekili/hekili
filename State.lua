@@ -3086,7 +3086,7 @@ local default_debuff_values = {
 local mt_default_debuff = {
     __index = function( t, k )
         local class_aura = class.auras[ t.key ]
-        
+
         if class_aura and rawget( class_aura, "meta" ) and class_aura.meta[ k ] then
             return class_aura.meta[ k ]( t, "debuff" )
 
