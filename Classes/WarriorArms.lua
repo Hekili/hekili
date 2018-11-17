@@ -243,12 +243,31 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         end
     end )
 
+
+    local last_cs_target = nil
+
+    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
+        local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+
+        if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" and spellName == class.abilities.colossus_smash.name then
+            last_cs_target = destGUID
+        end
+    end )
+
+
     spec:RegisterHook( "reset_precast", function ()
         rageSpent = 0
         if buff.bladestorm.up then setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) ) end
 
         -- Map buff.executioners_precision to debuff.executioners_precision; use rawset to avoid changing the meta table.
         rawset( buff, "executioners_precision", debuff.executioners_precision )
+
+        -- print( prev_gcd[1].colossus_smash, time - action.colossus_smash.lastCast, last_cs_target == target.unit, debuff.colossus_smash.down )
+
+        if prev_gcd[1].colossus_smash and time - action.colossus_smash.lastCast < 1 and last_cs_target == target.unit and debuff.colossus_smash.down then
+            -- Apply Colossus Smash early because its application is delayed for some reason.
+            applyDebuff( "target", "colossus_smash", 10 )
+        end
     end )
 
 
@@ -434,6 +453,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 464973,
+            velocity = 20, -- short delay in applying the debuff...
 
             notalent = "warbreaker",
             
