@@ -262,8 +262,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         -- Map buff.executioners_precision to debuff.executioners_precision; use rawset to avoid changing the meta table.
         rawset( buff, "executioners_precision", debuff.executioners_precision )
 
-        -- print( prev_gcd[1].colossus_smash, time - action.colossus_smash.lastCast, last_cs_target == target.unit, debuff.colossus_smash.down )
-
         if prev_gcd[1].colossus_smash and time - action.colossus_smash.lastCast < 1 and last_cs_target == target.unit and debuff.colossus_smash.down then
             -- Apply Colossus Smash early because its application is delayed for some reason.
             applyDebuff( "target", "colossus_smash", 10 )
@@ -453,7 +451,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = true,
             texture = 464973,
-            velocity = 20, -- short delay in applying the debuff...
 
             notalent = "warbreaker",
             
