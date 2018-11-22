@@ -676,8 +676,14 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 end
                                 
                             else
-                                local usable = state:IsUsable()
-                                if debug then self:Debug( "The action (%s) is %susable at (%.2f + %.2f).", entry.action, usable and "" or "NOT ", state.offset, state.delay ) end
+                                local usable, why = state:IsUsable()
+                                if debug then
+                                    if usable then
+                                        self:Debug( "The action (%s) is usable at (%.2f + %.2f).", entry.action, state.offset, state.delay )
+                                    else
+                                        self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", entry.action, state.offset, state.delay, why )
+                                    end
+                                end
                                 
                                 --[[ Tweak to avoid trying to use an item via Use Items when it already appears in the APL; not needed in BfA.
 
@@ -854,7 +860,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         local extra_amt   = state.args.extra_amount or 0
 
                                                         local next_known  = next_action and state:IsKnown( next_action )
-                                                        local next_usable = next_action and state:IsUsable( next_action )
+                                                        local next_usable, next_why = next_action and state:IsUsable( next_action )
                                                         local next_cost   = next_action and state.action[ next_action ].cost or 0
                                                         local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource                                                    
 
@@ -865,7 +871,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         elseif not next_known then
                                                             if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not known.  Skipping.", next_action ) end
                                                         elseif not next_usable then
-                                                            if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable.  Skipping.", next_action ) end                                               
+                                                            if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable because %s.  Skipping.", next_action, next_why ) end
                                                         else
                                                             local next_wait = max( state:TimeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
 

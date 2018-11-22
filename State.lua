@@ -875,13 +875,15 @@ state.raid_event.adds = setmetatable( {
     ["in"] = 3600, -- raid_event.adds.in appears to return time to the next add event, so we can just always say it's waaaay in the future.
 }, {
     __index = function( t, k )
-        if k == "up" then
+        if k == "up" or k == "exists" then
             return state.active_enemies > 1
+        elseif k == "down" then
+            return state.active_enemies <= 1
         elseif k == "in" then
             return state.active_enemies > 1 and 0 or 3600
         elseif k == "duration" or k == "remains" then
             return state.active_enemies > 1 and state.target.time_to_die or 0
-        end
+        elseif raid_event_filter[k] ~= nil then return raid_event_filter[k] end
 
         return 0
     end
@@ -2116,7 +2118,7 @@ local mt_default_cooldown = {
             if not ability.charges then return t.duration or 0 end
             return t.recharge
             
-        elseif k == 'up' or k == 'ready' then            
+        elseif k == 'up' or k == 'ready' then
             return ( t.remains == 0 )
             
         end
@@ -3959,14 +3961,16 @@ function state.reset( dispName )
         
     end
 
-    
     -- Delay to end of GCD.
-    local delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
+    local delay = 0    
+    if state.settings.spec.gcdSync and ( state.display == "Primary" or state.display == "AOE" ) then
+        delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
+    end
     delay = ns.callHook( "reset_postcast", delay )
     
-    --[[ if delay > 0 then
+    if delay > 0 then
         state.advance( delay )
-    end ]]
+    end
     
 end
 
@@ -4227,7 +4231,7 @@ do
 
     -- Filter out non-resource driven issues with abilities.
     -- Unusable abilities are treated as on CD unless overridden.
-    function state:IsUsable( spell )
+    function state:IsUsable( spell )        
         spell = spell or self.this_action
 
         local ability = class.abilities[ spell ]    
@@ -4235,32 +4239,42 @@ do
 
         local profile = Hekili.DB.profile
 
-        if state.rangefilter and UnitExists( 'target' ) and LSR.IsSpellInRange( ability.id, 'target' ) == 0 then
-            return false
+        if self.rangefilter and UnitExists( 'target' ) and LSR.IsSpellInRange( ability.id, 'target' ) == 0 then
+            return false, "filtered out of range"
         end
 
-        if ability.item and not state.equipped[ ability.item ] then
-            return false
+        if ability.item then
+            if not self.equipped[ ability.item ] then
+                return false, "item not equipped"
+            end
+        else
+            local cfg = self.settings.spec.abilities[ spell ]
+
+            if cfg.targetMin > 0 and self.active_enemies < cfg.targetMin then
+                return false, "active_enemies[" .. self.active_enemies .. "] is less than ability's minimum targets [" .. cfg.targetMin .. "]"
+            elseif cfg.targetMax > 0 and self.active_enemies > cfg.targetMax then
+                return false, "active_enemies[" .. self.active_enemies .. "] is more than ability's maximum targets [" .. cfg.targetMax .. "]"
+            end
         end
 
         if ability.form and not state.buff[ ability.form ].up then
-            return false
+            return false, "required form (" .. ability.form .. ") not active"
         end
 
         if ability.noform and state.buff[ ability.noform ].up then
-            return false
+            return false, "not usable in current form (" .. ability.noform .. ")"
         end
 
         if ability.buff and not state.buff[ ability.buff ].up then
-            return false
+            return false, "required buff (" .. ability.buff .. ") not active"
         end
 
         if self.args.moving == 1 and state.buff.movement.down then
-            return false
+            return false, "entry requires movement and player is not moving"
         end
 
         if self.args.moving == 0 and state.buff.movement.up then
-            return false
+            return false, "entry requires no movement and player is moving"
         end
 
         -- Moved this into TimeToReady; we can see when the buff falls off.
@@ -4272,14 +4286,18 @@ do
         if hook == false then return false end
 
         if ability.usable ~= nil then
-            if type( ability.usable ) == 'number' then 
-                return IsUsableSpell( ability.usable )
+            if type( ability.usable ) == 'number' then
+                if IsUsableSpell( ability.usable ) then
+                    return true
+                end
+                return false, "IsSpellUsable(" .. ability.usable .. ") was false"
             end
-            return ability.usable
+            local usable, reason = ability.funcs.usable()
+            if usable then return true end
+            return false, reason or "ability 'usable' function returned false without explanation"
         end
         
-        return true
-        
+        return true        
     end
 
 end

@@ -32,6 +32,7 @@ local specTemplate = {
 
     aoe = 2,
     cycle = false,
+    gcdSync = true,
 
     buffPadding = 0,
     debuffPadding = 0,
@@ -3271,6 +3272,9 @@ function Hekili:SpecializationChanged()
 
     class.primaryResource = nil
 
+    wipe( state.buff )
+    wipe( state.debuff )
+
     wipe( class.auras )
     wipe( class.abilities )
     wipe( class.talents )
@@ -3390,6 +3394,7 @@ function Hekili:SpecializationChanged()
             if rawget( state, "runes" ) then state.rune = state.runes end
 
             for k, v in pairs( spec.auras ) do
+                if k == "prowl" then print( "PROWL", specID, "PRESENT", class.auras[k] ) end
                 if not class.auras[ k ] then class.auras[ k ] = v end
             end
 

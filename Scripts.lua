@@ -282,6 +282,7 @@ do
         { "^(.-)%.deficit<=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^(.-)%.deficit>=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^cooldown%.([a-z0-9_]+)%.ready$",    "cooldown.%1.remains" },
+        { "^cooldown%.([a-z0-9_]+)%.up$",       "cooldown.%1.remains" },
         { "^charges_fractional[>=]+(.-)$",      "(%1-charges_fractional)*recharge" },
         { "^charges>=?(.-)$",                   "(1+%1-charges_fractional)*recharge" },
         { "^(cooldown%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$",

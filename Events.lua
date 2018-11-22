@@ -228,11 +228,11 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
     Hekili:BuildUI()
 end )
 
-RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
+--[[ RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
     Hekili:SpecializationChanged()
     ns.checkImports()
     ns.updateGear()
-end )
+end ) ]]
 
 
 RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event, unit )

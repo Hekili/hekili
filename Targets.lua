@@ -28,6 +28,15 @@ local RegisterEvent = ns.RegisterEvent
 local tinsert, tremove = table.insert, table.remove
 
 
+local unitIDs = { "boss1", "boss2", "boss3", "boss4", "boss5" }
+
+for i = 1, 80 do
+    unitIDs[ #unitIDs + 1 ] = "nameplate" .. i
+end
+
+local RC = LibStub( "LibRangeCheck-2.0" )
+
+
 -- New Nameplate Proximity System
 function ns.getNumberTargets()
     local showNPs = GetCVar( 'nameplateShowEnemies' ) == "1"
@@ -42,39 +51,26 @@ function ns.getNumberTargets()
     spec = spec and rawget( Hekili.DB.profile.specs, spec )
 
     if spec and spec.nameplates and showNPs then
-        local RC = LibStub( "LibRangeCheck-2.0" )
+        for i, unit in ipairs( unitIDs ) do
+            if UnitExists( unit ) then
+                local guid = UnitGUID( unit )                
+                local _, range = RC:GetRange( unit )
 
-        for i = 1, 80 do
-            local unit = 'nameplate'..i
-
-            local _, maxRange = RC:GetRange( unit )
-
-            if maxRange and maxRange <= spec.nameplateRange and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and UnitInPhase( unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
-                nameplates[ UnitGUID( unit ) ] = maxRange
-                npCount = npCount + 1
-            end
-        end
-
-        for i = 1, 5 do
-            local unit = 'boss'..i
-
-            local guid = UnitGUID( unit )
-
-            if not nameplates[ guid ] then
-                local maxRange = RC:GetRange( unit )
-
-                if maxRange and maxRange <= spec.nameplateRange and UnitExists( unit ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( 'player', unit ) and UnitInPhase( unit ) and ( UnitIsPVP( 'player' ) or not UnitIsPlayer( unit ) ) then
-                    nameplates[ UnitGUID( unit ) ] = maxRange
+                if not nameplates[ guid ] and ( unit == "target" or ( range and range < spec.nameplateRange ) ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                     npCount = npCount + 1
                 end
+
+                nameplates[ guid ] = range -- record as seen
             end
         end
     end
 
+
+    -- check other units in the damage list, but only if we didn't rule them out as nameplates already.
     if not spec or ( spec.damage or not spec.nameplates ) or not showNPs then
-        local db = spec and ( spec.myTargetsOnly and myTargets or targets ) or targets
+        local db = spec and ( spec.myTargetsOnly and myTargets or targets ) or targets -- spec.myTargetsOnly isn't an actual thing; revisit.
         
-        for k,v in pairs( db ) do
+        for k, v in pairs( db ) do
             if not nameplates[ k ] then
                 nameplates[ k ] = true
                 npCount = npCount + 1

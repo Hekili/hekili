@@ -440,7 +440,9 @@ function Hekili:GetDefaults()
                         ['**'] = {
                             disabled = false,
                             toggle = "default",
-                            clash = 0
+                            clash = 0,
+                            targetMin = 0,
+                            targetMax = 0
                         }
                     },
                     items = {
@@ -3035,6 +3037,28 @@ do
                         end,
                     },
 
+                    targetMin = {
+                        type = "range",
+                        name = "Minimum Targets",
+                        desc = "If set above zero, the addon will only allow " .. k .. " to be recommended, if there are at least this many detected enemies.  All other action list conditions must also be met.\nSet to zero to ignore.",
+                        width = "full",
+                        min = 0,
+                        max = 15,
+                        step = 1,
+                        order = 3.1,
+                    },
+
+                    targetMax = {
+                        type = "range",
+                        name = "Maximum Targets",
+                        desc = "If set above zero, the addon will only allow " .. k .. " to be recommended if there are this many detected enemies (or fewer).  All other action list conditions must also be met.\nSet to zero to ignore.",
+                        width = "full",
+                        min = 0,
+                        max = 15,
+                        step = 1,
+                        order = 3.2,
+                    },
+
                     clash = {
                         type = "range",
                         name = "Clash",
@@ -3369,7 +3393,15 @@ do
                                         "maintaining dots/debuffs based on their durations (like Affliction).  This feature is targeted for improvement in a future update.",
                                     width = "full",
                                     order = 3.1
-                                },        
+                                },
+
+                                gcdSync = {
+                                    type = "toggle",
+                                    name = "Sync First Recommendation with GCD",
+                                    desc = "If checked (default), the addon's first recommendation will be delayed to the start of the GCD in your Primary and AOE displays.",
+                                    width = "full",
+                                    order = 3.2,
+                                },
         
                                 damage = {
                                     type = "toggle",
