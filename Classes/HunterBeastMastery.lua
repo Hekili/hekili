@@ -390,6 +390,14 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         wild_call = {
             id = 185789,
         },
+
+
+        -- Azerite Powers
+        primal_instincts = {
+            id = 279810,
+            duration = 20,
+            max_stack = 1
+        }
     } )
 
     -- Abilities
@@ -459,7 +467,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 applyBuff( 'aspect_of_the_wild' )
 
-                if azerite.primal_instinct.enabled then gainCharges( "barbed_shot", 1 ) end
+                if azerite.primal_instincts.enabled then gainCharges( "barbed_shot", 1 ) end
             end,
         },
         
