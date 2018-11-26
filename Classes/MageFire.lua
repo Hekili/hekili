@@ -885,6 +885,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         enabled = true,
 
         aoe = 3,
+        gcdSync = false,
     
         nameplates = false,
         nameplateRange = 8,
