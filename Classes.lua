@@ -3394,7 +3394,6 @@ function Hekili:SpecializationChanged()
             if rawget( state, "runes" ) then state.rune = state.runes end
 
             for k, v in pairs( spec.auras ) do
-                if k == "prowl" then print( "PROWL", specID, "PRESENT", class.auras[k] ) end
                 if not class.auras[ k ] then class.auras[ k ] = v end
             end
 
