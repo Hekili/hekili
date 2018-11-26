@@ -980,7 +980,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             essential = true,
 
-            usable = function () return not pet.alive and not buff.grimoire_of_sacrifice.up end,
+            usable = function ()
+                if pet.alive then return false, "pet is alive"
+                elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
+                return true
+            end,
             handler = function () summonPet( "felhunter" ) end,
 
             copy = { "summon_pet", 112869 }
