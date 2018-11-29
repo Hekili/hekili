@@ -353,7 +353,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             reduceCooldown( "sprint", cdr )
             reduceCooldown( "grappling_hook", cdr )
             reduceCooldown( "vanish", cdr )
-    
+
             reduceCooldown( "blade_rush", cdr )
             reduceCooldown( "killing_spree", cdr )
         end
@@ -848,7 +848,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 if azerite.snake_eyes.enabled then
-                    applyBuff( "snake_eyes", 12, combo_points.current )
+                    applyBuff( "snake_eyes", 12, 5 )
                 end
 
                 applyBuff( "rtb_buff_1", 12 + 6 * ( combo_points.current - 1 ) )
