@@ -3963,7 +3963,7 @@ function state.reset( dispName )
 
     -- Delay to end of GCD.
     local delay = 0    
-    if state.settings.spec.gcdSync and ( state.display == "Primary" or state.display == "AOE" ) then
+    if state.settings.spec and state.settings.spec.gcdSync and ( state.display == "Primary" or state.display == "AOE" ) then
         delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
     end
     delay = ns.callHook( "reset_postcast", delay )
@@ -4291,6 +4291,8 @@ do
                     return true
                 end
                 return false, "IsSpellUsable(" .. ability.usable .. ") was false"
+            elseif type( rawget( ability, "usable" ) ) == 'boolean' then
+                return ability.usable
             end
             local usable, reason = ability.funcs.usable()
             if usable then return true end
