@@ -298,7 +298,11 @@ do
         { "^debuff%.festering_wound%.stack[>=]=?(.-)$", -- UH DK helper during Unholy Frenzy.
                                                 "time_to_wounds(%1)" },
         { "^dot%.festering_wound%.stack[>=]=?(.-)$",    -- UH DK helper during Unholy Frenzy.
-                                                "time_to_wounds(%1)" }
+                                                "time_to_wounds(%1)" },
+        { "exsanguinated",                      "remains" }, -- Assassination
+        { "^(debuff%.[a-z0-9_]+)%.exsanguinated",
+                                                "%1.remains" }, -- Assassination
+        { "^(dot%.[a-z0-9_]+)%.exsanguianted",  "%1.remains" } -- Assassination
     }
 
     -- Things that tick down.

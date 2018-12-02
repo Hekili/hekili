@@ -380,6 +380,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         debuff.garrote.pmultiplier           = nil
         debuff.internal_bleeding.pmultiplier = nil
         debuff.rupture.pmultiplier           = nil
+
+        debuff.crimson_tempest.exsanguinated   = nil -- debuff.crimson_tempest.up and crimson_tempests[ target.unit ]
+        debuff.garrote.exsanguinated           = nil -- debuff.garrote.up and garrotes[ target.unit ]
+        debuff.internal_bleeding.exsanguinated = nil -- debuff.internal_bleeding.up and internal_bleedings[ target.unit ]
+        debuff.rupture.exsanguinated           = nil -- debuff.rupture.up and ruptures[ target.unit ]
     end )
 
 
@@ -757,6 +762,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 applyDebuff( "target", "crimson_tempest", 2 + ( combo_points.current * 2 ) )
                 debuff.crimson_tempest.pmultiplier = persistent_multiplier
+                debuff.crimson_tempest.exsanguinated = false
                 
                 spend( combo_points.current, "combo_points" )
 
@@ -890,10 +896,25 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             talent = "exsanguinate",
 
             handler = function ()
-                if debuff.crimson_tempest.up then debuff.crimson_tempest.expires = query_time + ( debuff.crimson_tempest.remains / 2 ) end
-                if debuff.garrote.up then debuff.garrote.expires = query_time + ( debuff.garrote.remains / 2 ) end
-                if debuff.internal_bleeding.up then debuff.internal_bleeding.expires = query_time + ( debuff.internal_bleeding.remains / 2 ) end
-                if debuff.rupture.up then debuff.rupture.expires = query_time + ( debuff.rupture.expires / 2 ) end
+                if debuff.crimson_tempest.up then
+                    debuff.crimson_tempest.expires = query_time + ( debuff.crimson_tempest.remains / 2 ) 
+                    debuff.crimson_tempest.exsanguinated = true
+                end
+                
+                if debuff.garrote.up then
+                    debuff.garrote.expires = query_time + ( debuff.garrote.remains / 2 )
+                    debuff.garrote.exsanguinated = true
+                end
+
+                if debuff.internal_bleeding.up then
+                    debuff.internal_bleeding.expires = query_time + ( debuff.internal_bleeding.remains / 2 )
+                    debuff.internal_bleeding.exsanguinated = true
+                end
+
+                if debuff.rupture.up then
+                    debuff.rupture.expires = query_time + ( debuff.rupture.remains / 2 )
+                    debuff.rupture.exsanguinate = true
+                end
             end,
         },
         
@@ -951,6 +972,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 applyDebuff( "target", "garrote" )
                 debuff.garrote.pmultiplier = persistent_multiplier
+                debuff.garrote.exsanguinated = false
 
                 gain( 1, "combo_points" )
 
@@ -1001,6 +1023,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if talent.internal_bleeding.enabled then
                     applyDebuff( "target", "internal_bleeding" )
                     debuff.internal_bleeding.pmultiplier = persistent_multiplier
+                    debuff.internal_bleeding.exsanguinated = false
                 end
                 
                 applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
@@ -1115,6 +1138,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 applyDebuff( "target", "rupture", min( dot.rupture.remains, class.auras.rupture.duration * 0.3 ) + 4 + ( 4 * combo_points.current ) )
                 debuff.rupture.pmultiplier = persistent_multiplier
+                debuff.rupture.exsanguinated = false
 
                 spend( combo_points.current, "combo_points" )
             end,

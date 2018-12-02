@@ -1957,7 +1957,7 @@ all:RegisterAbility( "lions_guile", {
     cooldown = 120,
     gcd = "off",
 
-    item = 161463,
+    item = 161473,
     toggle = "cooldowns",
 
     handler = function ()
