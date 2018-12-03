@@ -851,7 +851,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     end
 
                                                 elseif entry.action == 'pool_resource' then
-                                                    if state.args.for_next == 1 then
+                                                    if state.args.for_next == 1 and false then
                                                         -- Pooling for the next entry in the list.
                                                         local next_entry  = list[ actID + 1 ]
                                                         local next_action = next_entry and next_entry.action
@@ -930,7 +930,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     slot.wait = state.delay
 
                                                     slot.resource = state.GetResourceType( rAction )
-                                                    
                                                     
                                                     rAction = state.this_action
                                                     rWait = state.delay
