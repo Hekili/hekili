@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state =  Hekili.State
 
+local FindUnitBuffByID = ns.FindUnitBuffByID
+
 
 if UnitClassBase( 'player' ) == 'ROGUE' then
     local spec = Hekili:NewSpecialization( 259 )
@@ -383,7 +385,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
     -- Enemies with either Deadly Poison or Wound Poison applied.
     spec:RegisterStateExpr( 'poisoned_enemies', function ()
-        return active_dot.deadly_poison or 0
+        return max( active_dot.deadly_poison_dot, active_dot.wound_poison_dot, 0 )
     end )
 
     spec:RegisterStateExpr( 'poison_remains', function ()
@@ -717,6 +719,17 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 20,
             max_stack = 30,
         },
+
+        -- PvP Talents
+        creeping_venom = {
+            id = 198097,
+            duration = 4,            
+        },
+
+        system_shock = {
+            id = 198222,
+            duration = 2,
+        }
     } )
 
     -- Abilities
@@ -923,7 +936,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     applyDebuff( "target", "creeping_venom" )
                 end
                     
-                applyDebuff( "target", "envenom", 1 + combo_points.current )
+                applyBuff( "envenom", 1 + combo_points.current )
                 spend( combo_points.current, "combo_points" )
                 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end

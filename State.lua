@@ -680,7 +680,8 @@ local function applyDebuff( unit, aura, duration, stacks, value )
         local spec = class.specs[ state.spec.id ]
         if spec then
             spec:RegisterAura( aura, { duration = duration } )
-            Hekili:SpecializationChanged()
+            class.auras[ aura ] = spec.auras[ aura ]
+            -- Hekili:SpecializationChanged()
         end
 
         if not class.auras[ aura ] then return end

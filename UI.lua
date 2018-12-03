@@ -1080,7 +1080,7 @@ do
             self:SetAlpha( 0 )
         else
             if preAlpha == 0 and newAlpha > 0 then
-                Hekili:ForceUpdate()
+                Hekili:ForceUpdate( "DISPLAY_ALPHA_CHANGED" )
             end
             self:SetAlpha( newAlpha )
             self:Show()

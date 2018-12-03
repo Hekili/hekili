@@ -399,7 +399,7 @@ function Hekili:UpdateUseItems()
         end
 
         self:LoadItemScripts()
-        self:ForceUpdate()
+        -- self:ForceUpdate( "UPDATE_USE_ITEMS" )
     end
 end
 
@@ -728,8 +728,8 @@ RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
 end )
 
 
-RegisterEvent( "PLAYER_STARTED_MOVING", function() Hekili:ForceUpdate() end )
-RegisterEvent( "PLAYER_STOPPED_MOVING", function() Hekili:ForceUpdate() end )
+RegisterEvent( "PLAYER_STARTED_MOVING", function( event ) Hekili:ForceUpdate( event ) end )
+RegisterEvent( "PLAYER_STOPPED_MOVING", function( event ) Hekili:ForceUpdate( event ) end )
 
 
 local function handleEnemyCasts( event, unit )
@@ -805,7 +805,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             state.player.queued_gcd = nil
             state.player.queued_off = nil
         end
-        Hekili:ForceUpdate()
+        Hekili:ForceUpdate( subtype )
     end
 
     if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then

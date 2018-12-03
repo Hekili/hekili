@@ -341,7 +341,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 if ns.castsOn[1] == "tiger_palm" then ns.castsOn[1] = "none" end
                 actual_combo = "none"
                 
-                Hekili:ForceUpdate()
+                Hekili:ForceUpdate( "WW_MISSED" )
             
             elseif subtype == "SPELL_CAST_SUCCESS" and state.combos[ ability ] then
                 prev_combo = actual_combo

@@ -210,7 +210,7 @@ function Hekili:OnEnable()
     self:TotalRefresh()
 
     ns.ReadKeybindings()
-    self:ForceUpdate()
+    self:ForceUpdate( "ADDON_ENABLED" )
     ns.Audit()    
 
     if not self.DB.profile.enabled then 
