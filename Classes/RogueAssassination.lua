@@ -121,7 +121,31 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             end,
 
             value = 7
-        },       
+        },
+
+        nothing_personal = {
+            aura = "nothing_personal",
+            debuff = true,
+
+            last = function ()
+                local app = state.debuff.nothing_personal.last_tick
+                local exp = state.debuff.nothing_personal.expires
+                local tick = state.debuff.nothing_personal.tick_time
+                local t = state.query_time
+        
+                return min( exp, app + ( floor( ( t - app ) / tick ) * tick ) )
+            end,
+
+            stop = function ()
+                return state.debuff.nothing_personal.down
+            end,
+
+            interval = function ()
+                return state.debuff.nothing_personal.tick_time
+            end,
+
+            value = 4
+        }
     } )
     
     -- Talents
@@ -236,9 +260,15 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         [1943]   = true
     }
 
+
+    local function isStealthed()
+        return ( FindUnitBuffByID( "player", 1784 ) or FindUnitBuffByID( "player", 115191 ) or FindUnitBuffByID( "player", 115192 ) or FindUnitBuffByID( "player", 11327 ) or GetTime() - stealth_dropped < 0.2 )
+    end
+
+
     local calculate_multiplier = setfenv( function( spellID )
         local mult = 1
-        local stealth = FindUnitBuffByID( "player", 1784 ) or FindUnitBuffByID( "player", 115191 ) or FindUnitBuffByID( "player", 115192 ) or FindUnitBuffByID( "player", 11327 ) or GetTime() - stealth_dropped < 0.2
+        local stealth = isStealthed()
 
         if stealth then
             if talent.nightstalker.enabled then
@@ -261,6 +291,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
     local garrotes = {}
     local ltG = {}
+    local ssG = {}
 
     local internal_bleedings = {}
     local ltIB = {}
@@ -287,6 +318,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 elseif spellID == 703 then
                     -- Garrote
                     garrotes[ destGUID ] = false
+                    ssG[ destGUID ] = state.azerite.shrouded_suffocation.enabled and isStealthed()
 
                 elseif spellID == 408 then
                     -- Internal Bleeding (from Kidney Shot)
@@ -363,15 +395,22 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return ns.compositeDebuffCount( "garrote", "internal_bleeding", "rupture", "crimson_tempest" )
     end )
 
+    spec:RegisterStateExpr( "ss_buffed", function ()
+        return debuff.garrote.up and ssG[ target.unit ]
+    end )
+
     -- Count of bleeds on all poisoned (Deadly/Wound) targets.
     spec:RegisterStateExpr( 'poisoned_bleeds', function ()
         return ns.conditionalDebuffCount( "deadly_poison_dot", "wound_poison_dot", "garrote", "internal_bleeding", "rupture" )
     end )
 
     spec:RegisterStateExpr( "pmultiplier", function ()
-        if not this_action then return false end
+        -- Hm, maybe this should be current pmultiplier, not pmultiplier on current application.
+        return persistent_multiplier
+        
+        --[[if not this_action then return false end
         local aura = this_action == "kidney_shot" and "internal_bleeding" or this_action
-        return debuff[ aura ].pmultiplier
+        return debuff[ aura ].pmultiplier]]
     end )
 
 
@@ -385,6 +424,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         debuff.garrote.exsanguinated           = nil -- debuff.garrote.up and garrotes[ target.unit ]
         debuff.internal_bleeding.exsanguinated = nil -- debuff.internal_bleeding.up and internal_bleedings[ target.unit ]
         debuff.rupture.exsanguinated           = nil -- debuff.rupture.up and ruptures[ target.unit ]
+
+        debuff.garrote.ss_buffed               = false
     end )
 
 
@@ -504,6 +545,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 exsanguinated = function () return debuff.garrote.up and garrotes[ target.unit ] end,
                 tick_time = function () return debuff.garrote.exsanguinated and haste or ( 2 * haste ) end,
                 last_tick = function () return ltG[ target.unit ] or debuff.garrote.applied end,
+                ss_buffed = function () return debuff.garrote.up and ssG[ target.unit ] end,
             },                    
         },
         garrote_silence = {
@@ -659,11 +701,22 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
 
         -- Azerite Powers
+        nothing_personal = {
+            id = 286581,
+            duration = 20,
+            tick_time = 2
+        },
+
+        scent_of_blood = {
+            id = 277731,
+            duration = 24,            
+        },
+
         sharpened_blades = {
             id = 272916,
             duration = 20,
             max_stack = 30,
-        },       
+        },
     } )
 
     -- Abilities
@@ -756,6 +809,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 464079,
 
             talent = "crimson_tempest",
+            aura = "crimson_tempest",
+            cycle = "crimson_tempest",            
             
             usable = function () return combo_points.current > 0 end,
             recheck = function () return debuff.crimson_tempest.remains - ( 2 + ( spell_targets.crimson_tempest > 4 and 1 or 0 ) ) end,
@@ -858,10 +913,21 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return combo_points.current > 0 end,
             recheck = function () return energy[ "time_to_" .. ( energy.max - ( 25 + ( variable.energy_regen_combined or 0 ) ) ) ], energy[ "time_to_" .. ( energy.max - 25 ) ] end,
             handler = function ()
+                if pvptalent.system_shock.enabled then
+                    if combo_points.current >= 5 and debuff.garrote.up and debuff.rupture.up and ( debuff.deadly_poison_dot.up or debuff.wound_poison_dot.up ) then
+                        applyDebuff( "target", "system_shock", 2 )
+                    end
+                end
+
+                if pvptalent.creeping_venom.enabled then
+                    applyDebuff( "target", "creeping_venom" )
+                end
+                    
                 applyDebuff( "target", "envenom", 1 + combo_points.current )
                 spend( combo_points.current, "combo_points" )
                 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
+
             end,
         },
         
@@ -913,7 +979,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
                 if debuff.rupture.up then
                     debuff.rupture.expires = query_time + ( debuff.rupture.remains / 2 )
-                    debuff.rupture.exsanguinate = true
+                    debuff.rupture.exsanguinated = true
                 end
             end,
         },
@@ -967,6 +1033,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             startsCombat = true,
             texture = 132297,
+
+            aura = "garrote",
+            cycle = "garrote",
             
             recheck = function () return remains - ( duration * 0.3 ), remains - tick_time, remains - tick_time * 2, remains - 10 end,
             handler = function ()
@@ -981,6 +1050,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
                     if azerite.shrouded_suffocation.enabled then
                         gain( 2, "combo_points" )
+                        debuff.garrote.ss_buffed = true
                     end
                 end
             end,
@@ -1017,6 +1087,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             startsCombat = true,
             texture = 132298,
+
+            aura = "internal_bleeding",
+            cycle = "internal_bleeding",
             
             usable = function () return combo_points.current > 0 end,
             handler = function ()
@@ -1132,6 +1205,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             startsCombat = true,
             texture = 132302,
+
+            aura = "rupture",
+            cycle = "rupture",
             
             usable = function () return combo_points.current > 0 end,
             remains = function () return remains - ( duration * 0.3 ), remains - tick_time, remains - tick_time * 2, remains, cooldown.exsanguinate.remains - 1, 10 - time end,
@@ -1139,6 +1215,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 applyDebuff( "target", "rupture", min( dot.rupture.remains, class.auras.rupture.duration * 0.3 ) + 4 + ( 4 * combo_points.current ) )
                 debuff.rupture.pmultiplier = persistent_multiplier
                 debuff.rupture.exsanguinated = false
+
+                if azerite.scent_of_blood.enabled then
+                    applyBuff( "scent_of_blood", dot.rupture.remains )
+                end
 
                 spend( combo_points.current, "combo_points" )
             end,
@@ -1168,8 +1248,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             id = 36554,
             cast = 0,
             charges = 1,
-            cooldown = 30,
-            recharge = 30,
+            cooldown = function ()
+                if pvptalent.intent_to_kill.enabled and debuff.vendetta.up then return 10 end
+                return 30
+            end,
+            recharge = function ()
+                if pvptalent.intent_to_kill.enabled and debuff.vendetta.up then return 10 end
+                return 30
+            end,                
             gcd = "spell",
             
             startsCombat = false,
@@ -1293,6 +1379,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             startsCombat = false,
             texture = 458726,
+
+            aura = "vendetta",
             
             handler = function ()
                 applyDebuff( "target", "vendetta" )

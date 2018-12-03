@@ -1107,8 +1107,8 @@ do
 
         if script then
             if script.Recheck then
-            recheckHelper( times, script.Recheck() )
-        end
+                recheckHelper( times, script.Recheck() )
+            end
 
             if script.Variables then
                 for i, var in ipairs( script.Variables ) do
@@ -1121,7 +1121,20 @@ do
                     end
                 end
             end
-        end      
+        end
+
+        local data = class.abilities[ ability ]
+        if data and data.aura then
+            local a = state.buff[ data.aura ]
+            if a and a.up then
+                recheckHelper( times, a.remains )
+            end
+
+            a = state.debuff[ data.aura ]
+            if a and a.up then
+                recheckHelper( times, a.remains )
+            end
+        end
 
         if stack and #stack > 0 then
             for i, caller in ipairs( stack ) do

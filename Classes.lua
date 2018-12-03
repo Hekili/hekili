@@ -4559,6 +4559,14 @@ all:RegisterPowers( {
         },
     },
 
+    -- Echoing Blades
+    echoing_blades = {
+        id = 287649,
+        triggers = {
+            echoing_blades = { 287649, 287650, 287653 },
+        }
+    },
+
     -- Echoing Howl
     echoing_howl = {
         id = 275917,
@@ -5377,6 +5385,14 @@ all:RegisterPowers( {
         triggers = {
             niuzaos_blessing = { 278535, 277665 },
         },
+    },
+
+    -- Nothing Personal
+    nothing_personal = {
+        id = 286581,
+        triggers = {
+            nothing_personal = { 286581, 286579, 289467 },
+        }
     },
 
     -- On My Way

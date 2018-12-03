@@ -520,12 +520,6 @@ ns.castsAll = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' 
 local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
-local lastForceTime = 0
-local lastForceEvent = 'NONE'
-
-local UNIT_POWER_ICD = true
-
-
 function Hekili:ForceUpdate( event )
     for i, d in pairs( ns.UI.Displays ) do
         d.criticalUpdate = true
@@ -633,6 +627,8 @@ local spell_names = setmetatable( {}, {
 } )
 
 
+local lastPowerUpdate = 0
+
 local function UNIT_POWER_FREQUENT( event, unit, power )
 
     if not UnitIsUnit( unit, "player" ) then return end
@@ -665,7 +661,10 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
 
     end
 
-    Hekili:ForceUpdate( event )
+    if GetTime() - lastPowerUpdate > 0.1 then
+        Hekili:ForceUpdate( event )
+        lastPowerUpdate = GetTime()
+    end
 end
 ns.cpuProfile.UNIT_POWER_FREQUENT = UNIT_POWER_FREQUENT
 
