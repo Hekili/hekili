@@ -904,7 +904,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     else
                                                         -- Pooling for a Wait Value.
                                                         -- NYI.
-                                                        if debug then self:Debug( "Pooling for a specified period of time is not supported yet.  Skipping." ) end
+                                                        -- if debug then self:Debug( "Pooling for a specified period of time is not supported yet.  Skipping." ) end
+                                                        if debug then self:Debug( "pool_resource is disabled as pooling is automatically accounted for by the forecasting engine." ) end
                                                     end
 
                                                     --[[ if entry.PoolForNext or state.args.for_next == 1 then

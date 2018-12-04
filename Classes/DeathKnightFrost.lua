@@ -226,24 +226,45 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
-        adaptation = 3540, -- 214027
-        relentless = 3539, -- 196029
-        gladiators_medallion = 3538, -- 208683
+    if not ns.PTR then
+        spec:RegisterPvpTalents( { 
+            adaptation = 3540, -- 214027
+            relentless = 3539, -- 196029
+            gladiators_medallion = 3538, -- 208683
 
-        antimagic_zone = 3435, -- 51052
-        heartstop_aura = 3439, -- 199719
-        deathchill = 701, -- 204080
-        delirium = 702, -- 233396
-        tundra_stalker = 703, -- 279941
-        frozen_center = 704, -- 204135
-        overpowered_rune_weapon = 705, -- 233394
-        chill_streak = 706, -- 204160
-        cadaverous_pallor = 3515, -- 201995
-        dark_simulacrum = 3512, -- 77606
-        decomposing_aura = 45, -- 199720
-        necrotic_aura = 43, -- 199642
-    } )
+            antimagic_zone = 3435, -- 51052
+            heartstop_aura = 3439, -- 199719
+            deathchill = 701, -- 204080
+            delirium = 702, -- 233396
+            tundra_stalker = 703, -- 279941
+            frozen_center = 704, -- 204135
+            overpowered_rune_weapon = 705, -- 233394
+            chill_streak = 706, -- 204160
+            cadaverous_pallor = 3515, -- 201995
+            dark_simulacrum = 3512, -- 77606
+            decomposing_aura = 45, -- 199720
+            necrotic_aura = 43, -- 199642
+        } )
+    else
+        -- PvP Talents
+        spec:RegisterPvpTalents( { 
+            adaptation = 3540, -- 214027
+            relentless = 3539, -- 196029
+            gladiators_medallion = 3538, -- 208683
+
+            antimagic_zone = 3435, -- 51052
+            dark_simulacrum = 3512, -- 77606
+            cadaverous_pallor = 3515, -- 201995
+            chill_streak = 706, -- 204160
+            delirium = 702, -- 233396
+            deathchill = 701, -- 204080
+            lichborne = 3742, -- 287081
+            dead_of_winter = 3743, -- 287250
+            heartstop_aura = 3439, -- 199719
+            transfusion = 3749, -- 288977
+            necrotic_aura = 43, -- 199642
+        } )
+    end
 
     -- Auras
     spec:RegisterAuras( {
@@ -297,6 +318,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         dark_succor = {
             id = 178819,
+            duration = 20,
         },
         death_pact = {
             id = 48743,
@@ -404,13 +426,41 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 1,
         },
 
-        -- Azerite Powers
-        glacial_contagion = {
-            id = 274074,
-            duration = 14,
+
+        -- PvP Talents
+        transfusion = {
+            id = 288977,
+            duration = 7,
             max_stack = 1,
-        }
+        },
     } )
+
+
+    -- Azerite Powers
+    if ns.PTR then
+        spec:RegisterAuras( {
+            cold_hearted = {
+                id = 288426,
+                duration = 8,
+                max_stack = 1
+            },
+            
+            frostwhelps_indignation = {
+                id = 287338,
+                duration = 6,
+                max_stack = 1,
+            },
+        } )
+
+    else
+        spec:RegisterAuras( {
+            glacial_contagion = {
+                id = 274074,
+                duration = 14,
+                max_stack = 1,
+            }
+        } )
+    end
 
 
     spec:RegisterGear( "acherus_drapes", 132376 )
@@ -634,9 +684,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 45,
+            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( ns.PTR and 35 or 45 ) ) end,
             spendType = "runic_power",
-            
+                        
             startsCombat = true,
             texture = 237517,
             
@@ -812,7 +862,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         icebound_fortitude = {
             id = 48792,
             cast = 0,
-            cooldown = 180,
+            cooldown = function ()
+                if azerite.cold_hearted.enabled then return 165 end
+                return 180
+            end,
             gcd = "spell",
             
             toggle = "defensives",
@@ -934,6 +987,26 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             end,
             handler = function ()
                 applyBuff( "remorseless_winter" )
+            end,
+        },   
+        
+        
+        transfusion = {
+            id = 288977,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = -20,
+            spendType = "runic_power",
+            
+            startsCombat = false,
+            texture = 237515,
+
+            pvptalent = "transfusion",
+            
+            handler = function ()
+                applyBuff( "transfusion" )
             end,
         },
     } )

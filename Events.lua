@@ -671,14 +671,6 @@ ns.cpuProfile.UNIT_POWER_FREQUENT = UNIT_POWER_FREQUENT
 RegisterUnitEvent( "UNIT_POWER_FREQUENT", UNIT_POWER_FREQUENT )
 
 
---[[ RegisterUnitEvent( "UNIT_POWER_UPDATE", function( event, unit, power )
-    if not UnitIsUnit( unit, "player" ) then return end
-
-    print( "UPU", GetTime(), power )
-    Hekili:ForceUpdate( event )
-end ) ]]
-
-
 local autoAuraKey = setmetatable( {}, {
     __index = function( t, k )
         local name = GetSpellInfo( k )

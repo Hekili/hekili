@@ -352,39 +352,82 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 6,
             max_stack = 1,
         },
-
-        -- Azerite Powers (BDK)
-        bones_of_the_damned = {
-            id = 279503,
-            duration = 30,
-            max_stack = 1,
-        },
-
-        deep_cuts = {
-            id = 272685,
-            duration = 15,
-            max_stack = 1,
-        },
-
-        -- procs when vampiric blood falls off.
-        embrace_of_the_darkfallen = {
-            id = 275926,
-            duration = 20,
-            max_stack = 1,
-        },
-
-        eternal_rune_weapon = {
-            id = 278543,
-            duration = 5,
-            max_stack = 1,
-        },
-
-        march_of_the_damned = {
-            id = 280149,
-            duration = 15,
-            max_stack = 1,
-        },
     } )
+
+
+    -- Azerite Powers
+    if ns.PTR then
+        spec:RegisterAuras( {
+            bloody_runeblade = {
+                id = 289349,
+                duration = 5,
+                max_stack = 1
+            },
+
+            bones_of_the_damned = {
+                id = 279503,
+                duration = 30,
+                max_stack = 1,
+            },
+
+            cold_hearted = {
+                id = 288426,
+                duration = 8,
+                max_stack = 1
+            },
+
+            deep_cuts = {
+                id = 272685,
+                duration = 15,
+                max_stack = 1,
+            },
+
+            eternal_rune_weapon = {
+                id = 278543,
+                duration = 5,
+                max_stack = 1,
+            },
+
+            march_of_the_damned = {
+                id = 280149,
+                duration = 15,
+                max_stack = 1,
+            },
+        })
+    else
+        spec:RegisterAuras( {
+            bones_of_the_damned = {
+                id = 279503,
+                duration = 30,
+                max_stack = 1,
+            },
+
+            deep_cuts = {
+                id = 272685,
+                duration = 15,
+                max_stack = 1,
+            },
+
+            -- procs when vampiric blood falls off.
+            embrace_of_the_darkfallen = {
+                id = 275926,
+                duration = 20,
+                max_stack = 1,
+            },
+
+            eternal_rune_weapon = {
+                id = 278543,
+                duration = 5,
+                max_stack = 1,
+            },
+
+            march_of_the_damned = {
+                id = 280149,
+                duration = 15,
+                max_stack = 1,
+            },
+        })
+    end
 
 
     spec:RegisterGear( "tier19", 138355, 138361, 138364, 138349, 138352, 138358 )
@@ -765,7 +808,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         icebound_fortitude = {
             id = 48792,
             cast = 0,
-            cooldown = 180,
+            cooldown = function ()
+                if azerite.cold_hearted.enabled then return 165 end
+                return 180
+            end,
             gcd = "spell",
             
             toggle = "defensives",
@@ -957,7 +1003,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyBuff( "tombstone" )
             end,
         },
-        
+
 
         vampiric_blood = {
             id = 55233,

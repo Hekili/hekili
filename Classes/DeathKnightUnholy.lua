@@ -186,26 +186,50 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         summon_gargoyle = 22538, -- 49206
     } )
 
-    -- PvP Talents
-    spec:RegisterPvpTalents( { 
-        adaptation = 3537, -- 214027
-        relentless = 3536, -- 196029
-        gladiators_medallion = 3535, -- 208683
 
-        ghoulish_monstrosity = 3733, -- 280428
-        necrotic_aura = 3437, -- 199642
-        cadaverous_pallor = 163, -- 201995
-        reanimation = 152, -- 210128
-        heartstop_aura = 44, -- 199719
-        decomposing_aura = 3440, -- 199720
-        necrotic_strike = 149, -- 223829
-        unholy_mutation = 151, -- 201934
-        wandering_plague = 38, -- 199725
-        antimagic_zone = 42, -- 51052
-        dark_simulacrum = 41, -- 77606
-        crypt_fever = 40, -- 199722
-        pandemic = 39, -- 199724
-    } )
+    -- PvP Talents
+    if ns.PTR then
+        -- PvP Talents
+        spec:RegisterPvpTalents( { 
+            adaptation = 3537, -- 214027
+            relentless = 3536, -- 196029
+            gladiators_medallion = 3535, -- 208683
+
+            necrotic_aura = 3437, -- 199642
+            decomposing_aura = 3440, -- 199720
+            cadaverous_pallor = 163, -- 201995
+            antimagic_zone = 42, -- 51052
+            reanimation = 152, -- 210128
+            dark_simulacrum = 41, -- 77606
+            life_and_death = 40, -- 288855
+            necromancers_bargain = 3746, -- 288848
+            raise_abomination = 3747, -- 288853
+            transfusion = 3748, -- 288977
+            lichborne = 3754, -- 287081
+            necrotic_strike = 149, -- 223829
+        } )
+    else
+        spec:RegisterPvpTalents( { 
+            adaptation = 3537, -- 214027
+            relentless = 3536, -- 196029
+            gladiators_medallion = 3535, -- 208683
+
+            ghoulish_monstrosity = 3733, -- 280428
+            necrotic_aura = 3437, -- 199642
+            cadaverous_pallor = 163, -- 201995
+            reanimation = 152, -- 210128
+            heartstop_aura = 44, -- 199719
+            decomposing_aura = 3440, -- 199720
+            necrotic_strike = 149, -- 223829
+            unholy_mutation = 151, -- 201934
+            wandering_plague = 38, -- 199725
+            antimagic_zone = 42, -- 51052
+            dark_simulacrum = 41, -- 77606
+            crypt_fever = 40, -- 199722
+            pandemic = 39, -- 199724
+        } )
+    end
+
 
     -- Auras
     spec:RegisterAuras( {
@@ -226,6 +250,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         dark_succor = {
             id = 178819,
+            duration = 20,
         },
         dark_transformation = {
             id = 63560, 
@@ -366,16 +391,39 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             type = "Magic",
             max_stack = 1,
         },
-
-
-
-        -- Azerite Powers
-        festermight = {
-            id = 274373,
-            duration = 20,
-            max_stack = 99,
-        }
     } )
+
+
+    -- Azerite Powers
+    if ns.PTR then
+        spec:RegisterAuras( {
+            cold_hearted = {
+                id = 288426,
+                duration = 8,
+                max_stack = 1
+            },
+
+            festermight = {
+                id = 274373,
+                duration = 20,
+                max_stack = 99,
+            },
+
+            helchains = {
+                id = 286979,
+                duration = 15,
+                max_stack = 1
+            }
+        } )
+    else
+        spec:RegisterAuras( {
+            festermight = {
+                id = 274373,
+                duration = 20,
+                max_stack = 99,
+            }    
+        } )
+    end
 
 
     spec:RegisterStateTable( 'death_and_decay', 
@@ -660,6 +708,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             usable = function () return pet.ghoul.alive end,
             handler = function ()
                 applyBuff( "dark_transformation" )
+                if azerite.helchains.enabled then applyBuff( "helchains" ) end
             end,
         },
         
@@ -764,7 +813,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return buff.dark_succor.up and 0 or 45 end,
+            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( ns.PTR and 35 or 45 ) ) end,
             spendType = "runic_power",
             
             startsCombat = true,
@@ -857,7 +906,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         icebound_fortitude = {
             id = 48792,
             cast = 0,
-            cooldown = 180,
+            cooldown = function ()
+                if azerite.cold_hearted.enabled then return 165 end
+                return 180
+            end,
             gcd = "spell",
             
             toggle = "defensives",
@@ -867,6 +919,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyBuff( "icebound_fortitude" )
+                if azerite.cold_hearted.enabled then applyBuff( "cold_hearted" ) end
             end,
         },
         
