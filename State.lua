@@ -420,6 +420,7 @@ state.UnitCanAttack = UnitCanAttack
 state.UnitCastingInfo = UnitCastingInfo
 state.UnitChannelInfo = UnitChannelInfo
 state.UnitIsUnit = UnitIsUnit
+state.UnitIsPlayer = UnitIsPlayer
 state.abs = math.abs
 state.ceil = math.ceil
 state.floor = math.floor
@@ -1904,6 +1905,9 @@ local mt_target = {
             
         elseif k == 'is_undead' then
             return UnitCreatureType( 'target' ) == BATTLE_PET_NAME_4
+
+        elseif k == 'is_player' then
+            return UnitIsPlayer( 'target' )
             
         elseif k:sub(1, 6) == 'within' then
             local maxR = k:match( "^within(%d+)$" )
@@ -4167,6 +4171,14 @@ function state:IsKnown( sID, notoggle )
 
     if ability.notalent and state.talent[ ability.notalent ].enabled then
         return false
+    end
+
+    if ability.pvptalent and not state.pvptalent[ ability.pvptalent ].enabled then
+        return false, "PvP talent ( " .. ability.pvptalent .. " ) not enabled"
+    end
+
+    if ability.nopvptalent and state.pvptalent[ ability.nopvptalent ].enabled then
+        return false, "PvP talent ( " ..ability.nopvptalent .. " ) enabled"
     end
 
     if ability.trait and not state.artifact[ ability.trait ].enabled then
