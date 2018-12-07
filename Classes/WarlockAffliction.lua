@@ -9,7 +9,7 @@ local state = Hekili.State
 
 
 if UnitClassBase( 'player' ) == 'WARLOCK' then
-    local spec = Hekili:NewSpecialization( 265 )
+    local spec = Hekili:NewSpecialization( 265, true )
 
     spec:RegisterResource( Enum.PowerType.SoulShards, {
         -- regen effects.

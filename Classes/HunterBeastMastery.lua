@@ -12,7 +12,7 @@ local FindUnitBuffByID = ns.FindUnitBuffByID
 
 
 if UnitClassBase( 'player' ) == 'HUNTER' then
-    local spec = Hekili:NewSpecialization( 253 )
+    local spec = Hekili:NewSpecialization( 253, true )
 
     spec:RegisterResource( Enum.PowerType.Focus, {
         aspect_of_the_wild = {

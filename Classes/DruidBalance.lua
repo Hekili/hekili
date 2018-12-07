@@ -9,7 +9,7 @@ local state = Hekili.State
 
 
 if UnitClassBase( 'player' ) == 'DRUID' then
-    local spec = Hekili:NewSpecialization( 102 )
+    local spec = Hekili:NewSpecialization( 102, true )
 
     spec:RegisterResource( Enum.PowerType.LunarPower, {
         fury_of_elune = {            

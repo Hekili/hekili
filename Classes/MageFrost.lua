@@ -9,7 +9,7 @@ local state = Hekili.State
 
 
 if UnitClassBase( 'player' ) == 'MAGE' then
-    local spec = Hekili:NewSpecialization( 64 )
+    local spec = Hekili:NewSpecialization( 64, true )
 
     -- spec:RegisterResource( Enum.PowerType.ArcaneCharges )
     spec:RegisterResource( Enum.PowerType.Mana )

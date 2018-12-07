@@ -9,7 +9,7 @@ local state = Hekili.State
 
 
 if UnitClassBase( 'player' ) == 'HUNTER' then
-    local spec = Hekili:NewSpecialization( 254 )
+    local spec = Hekili:NewSpecialization( 254, true )
 
     spec:RegisterResource( Enum.PowerType.Focus )
     

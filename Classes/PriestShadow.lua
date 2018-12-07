@@ -9,7 +9,7 @@ local state = Hekili.State
 
 
 if UnitClassBase( 'player' ) == 'PRIEST' then
-    local spec = Hekili:NewSpecialization( 258 )
+    local spec = Hekili:NewSpecialization( 258, true )
 
     spec:RegisterResource( Enum.PowerType.Insanity, {
         mind_flay = {
@@ -81,6 +81,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     } )
     spec:RegisterResource( Enum.PowerType.Mana )
     
+
     -- Talents
     spec:RegisterTalents( {
         fortress_of_the_mind = 22328, -- 193195
@@ -112,6 +113,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         surrender_to_madness = 21979, -- 193223
     } )
 
+
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         gladiators_medallion = 3476, -- 208683
@@ -134,6 +136,19 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
     spec:RegisterHook( "reset_precast", function ()
         if buff.voidform.up then applyBuff( "shadowform" ) end
+    end )
+
+
+    spec:RegisterHook( 'runHandler', function( ability )
+        -- Make sure only the correct debuff is applied for channels to help resource forecasting.
+        if ability == "mind_sear" then
+            removeDebuff( "target", "mind_flay" )
+        elseif ability == "mind_flay" then
+            removeDebuff( "target", "mind_sear" )
+        else
+            removeDebuff( "target", "mind_flay" )
+            removeDebuff( "target", "mind_sear" )
+        end
     end )
 
 
@@ -529,35 +544,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 removeBuff( "empty_mind" )
             end,
 
-            copy = { "shadow_word_void", 205351 }
+            copy = { "shadow_word_void", 205351 },
         },
-
-
-        --[[ shadow_word_void = {
-            id = 205351,
-            cast = 1.5,
-            charges = 2,
-            cooldown = 9,
-            recharge = 9,
-            hasteCD = true,
-            gcd = "spell",
-
-            velocity = 15,
-
-            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -15 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) * ( debuff.surrendered_to_madness.up and 0 or 1 ) end,
-            spendType = "insanity",
-            
-            startsCombat = true,
-            texture = 610679,
-
-            talent = "shadow_word_void",
-            
-            handler = function ()
-                -- applies voidform (194249)
-                -- applies mind_flay (15407)
-                -- removes shadow_word_pain (589)
-            end,
-        }, ]]
         
 
         mind_bomb = {
@@ -836,6 +824,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cast = 0,
             cooldown = 20,
             gcd = "spell",
+
+            spend = -20,
+            spendType = "insanity",
             
             startsCombat = true,
             texture = 136201,
@@ -905,7 +896,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         
 
-        shadow_word_void = {
+        --[[ shadow_word_void = {
             id = 205351,
             cast = 1.5,
             charges = 2,
@@ -929,7 +920,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 -- applies mind_flay (15407)
                 -- removes shadow_word_pain (589)
             end,
-        },
+        }, ]]
         
 
         shadowfiend = {
@@ -1074,11 +1065,16 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
         void_eruption = {
             id = 228260,
-            cast = function () return haste * ( talent.legacy_of_the_void.enabled and 0.6 or 1 ) * 2.5 end,
+            cast = function ()
+                if pvptalent.void_origins.enabled then return 0 end
+                return haste * ( talent.legacy_of_the_void.enabled and 0.6 or 1 ) * 2.5 
+            end,
             cooldown = 0,
             gcd = "spell",
             
-            spend = 0,
+            spend = function ()
+                return talent.legacy_of_the_void.enabled and 60 or 90
+            end,
             spendType = "insanity",
             
             startsCombat = true,
@@ -1087,9 +1083,10 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             nobuff = "voidform",
             bind = "void_bolt",
             
-            usable = function () return insanity.current >= ( talent.legacy_of_the_void.enabled and 60 or 90 ) end,
+            -- ready = function () return insanity.current >= ( talent.legacy_of_the_void.enabled and 60 or 90 ) end,
             handler = function ()
                 applyBuff( "voidform", nil, ( level < 116 and equipped.mother_shahrazs_seduction ) and 3 or 1 )
+                gain( talent.legacy_of_the_void.enabled and 60 or 90, "insanity" )
             end,
         },
         

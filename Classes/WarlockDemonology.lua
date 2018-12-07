@@ -9,7 +9,7 @@ local state = Hekili.State
 
 
 if UnitClassBase( 'player' ) == 'WARLOCK' then
-    local spec = Hekili:NewSpecialization( 266 )
+    local spec = Hekili:NewSpecialization( 266, true )
 
     spec:RegisterResource( Enum.PowerType.SoulShards )
     spec:RegisterResource( Enum.PowerType.Mana )
