@@ -405,6 +405,7 @@ state.GetItemCount = GetItemCount
 state.GetShapeshiftForm = GetShapeshiftForm
 state.GetShapeshiftFormInfo = GetShapeshiftFormInfo
 state.GetSpellCount = GetSpellCount
+state.GetSpellInfo = GetSpellInfo
 state.GetStablePetInfo = GetStablePetInfo
 state.GetTime = GetTime
 state.GetTotemInfo = GetTotemInfo
