@@ -41,7 +41,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             end,
 
             interval = 1,
-            value = 8
+            value = 7
         },
 
         blind_fury = {
@@ -718,7 +718,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             handler = function ()
                 applyBuff( "immolation_aura" )
-                gain( 8, "fury" )
+                gain( 10, "fury" )
             end,
         },
         
@@ -753,6 +753,12 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 last_metamorphosis = query_time
                 stat.haste = stat.haste + 25
                 setDistance( 5 )
+
+                if azerite.chaotic_transformation.enabled then
+                    setCooldown( "eye_beam", 0 )
+                    setCooldown( "blade_dance", 0 )
+                    setCooldown( "annihilation", 0 )
+                end
             end,
 
             meta = {
