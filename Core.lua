@@ -681,7 +681,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     if usable then
                                         self:Debug( "The action (%s) is usable at (%.2f + %.2f).", entry.action, state.offset, state.delay )
                                     else
-                                        self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", entry.action, state.offset, state.delay, why )
+                                        self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", entry.action, state.offset, state.delay, why or "IsUsable returned false" )
                                     end
                                 end
                                 
