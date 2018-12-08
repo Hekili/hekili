@@ -20,8 +20,6 @@ local table_sort = table.sort
 local table_wipe = table.wipe
 local table_copy = ns.tableCopy
 
-local PTR = ns.PTR
-
 local class = Hekili.Class
 local scripts = Hekili.Scripts
 -- This will be our environment table for local functions.
@@ -29,6 +27,7 @@ local state = Hekili.State
 
 state.iteration = 0
 
+local PTR = ns.PTR
 state.PTR = PTR
 
 state.now = 0
@@ -457,14 +456,19 @@ state._G = 0
 
 -- Place an ability on cooldown in the simulated game state.
 local function setCooldown( action, duration )
+    print( "setCooldown", action, duration )
+    if false then
     state.cooldown[ action ] = state.cooldown[ action ] or {}
     state.cooldown[ action ].duration = duration
     state.cooldown[ action ].expires = state.query_time + duration   
+end
 end
 state.setCooldown = setCooldown
 
 
 local function spendCharges( action, charges )
+    print( "spendCharges", action, charges )
+    if false then
     if class.abilities[ action ].charges and charges > 0 then
         state.cooldown[ action ] = state.cooldown[ action ] or {}
         
@@ -484,6 +488,7 @@ local function spendCharges( action, charges )
             state.cooldown[ action ].expires = 0
         end
     end
+end
 end
 state.spendCharges = spendCharges
 
@@ -2209,8 +2214,9 @@ local mt_cooldowns = {
         end
         
         if class.abilities[ k ].charges then
-            local charges, maxCharges, start, duration = GetSpellCharges( t[k].id )
+            local charges, maxCharges, start, duration = GetSpellCharges( t[ k ].id )
             t[ k ].charge = charge or 1
+
             if charges then
                 if start + duration < state.query_time then
                     t[ k ].charge = t[ k ].charge + 1
@@ -2842,9 +2848,10 @@ ns.metatables.mt_talents = mt_talents
 
 local mt_default_pvptalent = {
     __index = function( t, k )
-        local enlisted = state.buff.enlisted.up
+        local enlisted = false -- C_PvP.IsWarModeDesired()
 
         if k == 'enabled' then return enlisted and t._enabled or false
+        elseif k == "_enabled" then return false
         elseif k == 'i_enabled' or k == 'rank' then return ( enlisted and t._enabled ) and 1 or 0 end
 
         return k
@@ -4275,12 +4282,14 @@ do
                 return false, "item not equipped"
             end
         else
-            local cfg = self.settings.spec.abilities[ spell ]
+            local cfg = self.settings.spec and self.settings.spec.abilities[ spell ]
 
-            if cfg.targetMin > 0 and self.active_enemies < cfg.targetMin then
-                return false, "active_enemies[" .. self.active_enemies .. "] is less than ability's minimum targets [" .. cfg.targetMin .. "]"
-            elseif cfg.targetMax > 0 and self.active_enemies > cfg.targetMax then
-                return false, "active_enemies[" .. self.active_enemies .. "] is more than ability's maximum targets [" .. cfg.targetMax .. "]"
+            if cfg then
+                if cfg.targetMin > 0 and self.active_enemies < cfg.targetMin then
+                    return false, "active_enemies[" .. self.active_enemies .. "] is less than ability's minimum targets [" .. cfg.targetMin .. "]"
+                elseif cfg.targetMax > 0 and self.active_enemies > cfg.targetMax then
+                    return false, "active_enemies[" .. self.active_enemies .. "] is more than ability's maximum targets [" .. cfg.targetMax .. "]"
+                end
             end
         end
 
