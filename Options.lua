@@ -2414,12 +2414,12 @@ ns.AbilitySettings = function ()
         end
     end
     
-    for k, v in orderedPairs( class.abilityList ) do
+    for k, v in pairs( abilities ) do
         local ability = class.abilities[ k ]
 
         local abOption = {
             type = 'group',
-            name = function () return ability.name end,
+            name = ability.name or k or v,
             order = 2,
             -- childGroups = "inline",
             args = {
