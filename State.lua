@@ -456,19 +456,14 @@ state._G = 0
 
 -- Place an ability on cooldown in the simulated game state.
 local function setCooldown( action, duration )
-    print( "setCooldown", action, duration )
-    if false then
     state.cooldown[ action ] = state.cooldown[ action ] or {}
     state.cooldown[ action ].duration = duration
     state.cooldown[ action ].expires = state.query_time + duration   
-end
 end
 state.setCooldown = setCooldown
 
 
 local function spendCharges( action, charges )
-    print( "spendCharges", action, charges )
-    if false then
     if class.abilities[ action ].charges and charges > 0 then
         state.cooldown[ action ] = state.cooldown[ action ] or {}
         
@@ -488,7 +483,6 @@ local function spendCharges( action, charges )
             state.cooldown[ action ].expires = 0
         end
     end
-end
 end
 state.spendCharges = spendCharges
 
