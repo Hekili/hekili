@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     local spec = Hekili:NewSpecialization( 250 )
@@ -186,6 +188,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         bonestorm = 21209, -- 194844
     } )
 
+
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         adaptation = 3468, -- 214027
@@ -206,6 +209,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         heartstop_aura = 3438, -- 199719
     } )
 
+    
     -- Auras
     spec:RegisterAuras( {
         antimagic_shell = {
@@ -352,82 +356,112 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 6,
             max_stack = 1,
         },
+
+        -- Azerite Powers
+        bloody_runeblade = PTR and {
+            id = 289349,
+            duration = 5,
+            max_stack = 1
+        } or nil,
+
+        bones_of_the_damned = {
+            id = 279503,
+            duration = 30,
+            max_stack = 1,
+        },
+
+        cold_hearted = {
+            id = 288426,
+            duration = 8,
+            max_stack = 1
+        },
+
+        deep_cuts = {
+            id = 272685,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        embrace_of_the_darkfallen = not PTR and {
+            id = 275926,
+            duration = 20,
+            max_stack = 1,
+        } or nil,
+
+        eternal_rune_weapon = {
+            id = 278543,
+            duration = 5,
+            max_stack = 1,
+        },
+
+        march_of_the_damned = {
+            id = 280149,
+            duration = 15,
+            max_stack = 1,
+        },
+
+
+        -- PvP Talents
+        antimagic_zone = {
+            id = 145629,
+            duration = 10,
+            max_stack = 1,
+        },
+        
+        blood_for_blood = {
+            id = 233411,
+            duration = 12,
+            max_stack = 1,
+        },
+
+        dark_simulacrum = {
+            id = 77606,
+            duration = 12,
+            max_stack = 1,
+        },
+
+        death_chain = {
+            id = 203173,
+            duration = 10,
+            max_stack = 1
+        },
+        
+        decomposing_aura = {
+            id = 228581,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        focused_assault = PTR and {
+            id = 206891,
+            duration = 6,
+            max_stack = 1,
+        } or nil,
+
+        heartstop_aura = {
+            id = 228579,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        intimidated = not PTR and {
+            id = 206891,
+            duration = 6,
+            max_stack = 1,
+        } or nil,
+
+        necrotic_aura = {
+            id = 214968,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        strangulate = {
+            id = 47476,
+            duration = 5,
+            max_stack = 1,                
+        }, 
     } )
-
-
-    -- Azerite Powers
-    if ns.PTR then
-        spec:RegisterAuras( {
-            bloody_runeblade = {
-                id = 289349,
-                duration = 5,
-                max_stack = 1
-            },
-
-            bones_of_the_damned = {
-                id = 279503,
-                duration = 30,
-                max_stack = 1,
-            },
-
-            cold_hearted = {
-                id = 288426,
-                duration = 8,
-                max_stack = 1
-            },
-
-            deep_cuts = {
-                id = 272685,
-                duration = 15,
-                max_stack = 1,
-            },
-
-            eternal_rune_weapon = {
-                id = 278543,
-                duration = 5,
-                max_stack = 1,
-            },
-
-            march_of_the_damned = {
-                id = 280149,
-                duration = 15,
-                max_stack = 1,
-            },
-        })
-    else
-        spec:RegisterAuras( {
-            bones_of_the_damned = {
-                id = 279503,
-                duration = 30,
-                max_stack = 1,
-            },
-
-            deep_cuts = {
-                id = 272685,
-                duration = 15,
-                max_stack = 1,
-            },
-
-            -- procs when vampiric blood falls off.
-            embrace_of_the_darkfallen = {
-                id = 275926,
-                duration = 20,
-                max_stack = 1,
-            },
-
-            eternal_rune_weapon = {
-                id = 278543,
-                duration = 5,
-                max_stack = 1,
-            },
-
-            march_of_the_damned = {
-                id = 280149,
-                duration = 15,
-                max_stack = 1,
-            },
-        })
-    end
 
 
     spec:RegisterGear( "tier19", 138355, 138361, 138364, 138349, 138352, 138358 )
@@ -494,6 +528,25 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         
 
+        antimagic_zone = {
+            id = 51052,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            toggle = "defensives",
+
+            startsCombat = false,
+            texture = 237510,
+
+            pvptalent = "antimagic_zone",
+            
+            handler = function ()
+                applyBuff( "antimagic_zone" )
+            end,
+        },
+        
+
         asphyxiate = {
             id = 221562,
             cast = 0,
@@ -539,6 +592,26 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if level < 116 and set_bonus.tier20_2pc == 1 then
                     applyBuff( "gravewarden" )
                 end
+            end,
+        },
+
+        
+        blood_for_blood = {
+            id = 233411,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.15,
+            spendType = "health",
+            
+            startsCombat = false,
+            texture = 1035037,
+            
+            pvptalent = "blood_for_blood",
+
+            handler = function ()
+                applyBuff( "blood_for_blood" )
             end,
         },
         
@@ -647,9 +720,35 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             startsCombat = true,
             texture = 136088,
+
+            nopvptalent = "murderous_intent",
             
             handler = function ()
                 applyDebuff( "target", "dark_command" )
+            end,
+        },
+        
+
+        dark_simulacrum = {
+            id = 77606,
+            cast = 0,
+            cooldown = function () return PTR and 20 or 25 end,
+            gcd = "spell",
+            
+            spend = function () return PTR and 0 or 20 end,
+            spendType = "runic_power",
+            
+            startsCombat = true,
+            texture = 135888,
+
+            pvptalent = "dark_simulacrum",
+            
+            usable = function ()
+                if not target.is_player then return false, "target is not a player" end
+                return true
+            end,
+            handler = function ()
+                applyDebuff( "target", "dark_simulacrum" )
             end,
         },
         
@@ -692,10 +791,28 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         }, ]]
         
 
+        death_chain = {
+            id = 203173,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 1390941,
+
+            pvptalent = "death_chain",
+            
+            handler = function ()
+                applyDebuff( "target", "death_chain" )
+                active_dot.death_chain = min( 3, active_enemies )
+            end,
+        },
+        
+
         death_grip = {
             id = 49576,
             cast = 0,
-            charges = 1,
+            charges = function () return pvptalent.unholy_command.enabled and 2 or 1 end,
             cooldown = 15,
             recharge = 15,
             gcd = "spell",
@@ -798,6 +915,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "heart_strike" )
                 local targets = min( active_enemies, buff.death_and_decay.up and 5 or 2 )
 
+                removeBuff( "blood_for_blood" )
+
                 if azerite.deep_cuts.enabled then applyDebuff( "target", "deep_cuts" ) end
 
                 if level < 116 and equipped.service_of_gorefiend then cooldown.vampiric_blood.expires = max( 0, cooldown.vampiric_blood.expires - 2 ) end
@@ -883,6 +1002,23 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             end,
         },
         
+
+        murderous_intent = {
+            id = 207018,
+            cast = 0,
+            cooldown = 20,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 136088,
+
+            pvptalent = "murderous_intent",
+            
+            handler = function ()
+                applyDebuff( "target", PTR and "focused_assault" or "intimidated" )
+            end,
+        },
+
 
         path_of_frost = {
             id = 3714,
@@ -975,6 +1111,29 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             end,
         }, ]]
         
+        
+        strangulate = {
+            id = 47476,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 0,
+            spendType = "runes",
+            
+            toggle = "interrupts",
+            pvptalent = "strangulate",
+            interrupt = true,
+
+            startsCombat = true,
+            texture = 136214,
+            
+            handler = function ()
+                interrupt()
+                applyDebuff( "target", "strangulate" )
+            end,
+        },
+                
 
         tombstone = {
             id = 219809,

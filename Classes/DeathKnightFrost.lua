@@ -7,6 +7,7 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
 
 if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     local spec = Hekili:NewSpecialization( 251 )
@@ -181,13 +182,13 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 buff.remorseless_winter.expires = buff.remorseless_winter.expires + ( 0.5 * amt )
             end
         
-        elseif amt > 0 and resource == "runic_power" then
+        --[[ elseif amt > 0 and resource == "runic_power" then
             if set_bonus.tier20_2pc == 1 and buff.pillar_of_frost.up then
                 virtual_rp_spent_since_pof = virtual_rp_spent_since_pof + amt
 
                 applyBuff( "pillar_of_frost", buff.pillar_of_frost.remains + floor( virtual_rp_spent_since_pof / 60 ) )
                 virtual_rp_spent_since_pof = virtual_rp_spent_since_pof % 60
-            end
+            end ]]
         end
     end
 
@@ -225,46 +226,29 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         breath_of_sindragosa = 22537, -- 152279
     } )
 
-    -- PvP Talents
-    if not ns.PTR then
-        spec:RegisterPvpTalents( { 
-            adaptation = 3540, -- 214027
-            relentless = 3539, -- 196029
-            gladiators_medallion = 3538, -- 208683
+    
+    spec:RegisterPvpTalents( { 
+        adaptation = 3540, -- 214027
+        relentless = 3539, -- 196029
+        gladiators_medallion = 3538, -- 208683
 
-            antimagic_zone = 3435, -- 51052
-            heartstop_aura = 3439, -- 199719
-            deathchill = 701, -- 204080
-            delirium = 702, -- 233396
-            tundra_stalker = 703, -- 279941
-            frozen_center = 704, -- 204135
-            overpowered_rune_weapon = 705, -- 233394
-            chill_streak = 706, -- 204160
-            cadaverous_pallor = 3515, -- 201995
-            dark_simulacrum = 3512, -- 77606
-            decomposing_aura = 45, -- 199720
-            necrotic_aura = 43, -- 199642
-        } )
-    else
-        -- PvP Talents
-        spec:RegisterPvpTalents( { 
-            adaptation = 3540, -- 214027
-            relentless = 3539, -- 196029
-            gladiators_medallion = 3538, -- 208683
+        antimagic_zone = 3435, -- 51052
+        cadaverous_pallor = 3515, -- 201995
+        chill_streak = 706, -- 204160
+        dark_simulacrum = 3512, -- 77606
+        dead_of_winter = PTR and 3743 or nil, -- 287250
+        deathchill = 701, -- 204080
+        decomposing_aura = not PTR and 45 or nil, -- 199720
+        delirium = 702, -- 233396
+        frozen_center = not PTR and 704 or nil, -- 204135
+        heartstop_aura = 3439, -- 199719
+        lichborne = PTR and 3742 or nil, -- 136187
+        necrotic_aura = 43, -- 199642
+        overpowered_rune_weapon = not PTR and 705 or nil, -- 233394
+        transfusion = PTR and 3749 or nil, -- 237515/
+        tundra_stalker = not PTR and 703 or nil, -- 279941        
+    } )
 
-            antimagic_zone = 3435, -- 51052
-            dark_simulacrum = 3512, -- 77606
-            cadaverous_pallor = 3515, -- 201995
-            chill_streak = 706, -- 204160
-            delirium = 702, -- 233396
-            deathchill = 701, -- 204080
-            lichborne = 3742, -- 287081
-            dead_of_winter = 3743, -- 287250
-            heartstop_aura = 3439, -- 199719
-            transfusion = 3749, -- 288977
-            necrotic_aura = 43, -- 199642
-        } )
-    end
 
     -- Auras
     spec:RegisterAuras( {
@@ -408,7 +392,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         remorseless_winter = {
             id = 196770,
-            duration = 12.5,
+            duration = 8,
             max_stack = 1,
         },
         rime = {
@@ -428,39 +412,69 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
 
         -- PvP Talents
+        -- Chill Streak
+        chilled = {
+            id = 204206,
+            duration = 4,
+            max_stack = 1
+        },
+
+        dead_of_winter = PTR and {
+            id = 289959,
+            duration = 4,
+            max_stack = 5,
+        } or nil,
+
+        deathchill = {
+            id = 204085,
+            duration = 4,
+            max_stack = 1
+        },
+
+        delirium = {
+            id = 233396,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        decomposing_aura = not PTR and {
+            id = 199720,
+            duration = 6,
+            max_stack = 5
+        } or nil,
+
+        heartstop_aura = {
+            id = 199719,
+            duration = 3600,
+            max_stack = 1,
+        },
+
         transfusion = {
             id = 288977,
             duration = 7,
             max_stack = 1,
         },
+
+
+        -- Azerite Powers
+        cold_hearted = PTR and {
+            id = 288426,
+            duration = 8,
+            max_stack = 1
+        } or nil,
+        
+        frostwhelps_indignation = PTR and {
+            id = 287338,
+            duration = 6,
+            max_stack = 1,
+        } or nil,
+
+        glacial_contagion = not PTR and {
+            id = 274074,
+            duration = 14,
+            max_stack = 1,
+        } or nil,
     } )
-
-
-    -- Azerite Powers
-    if ns.PTR then
-        spec:RegisterAuras( {
-            cold_hearted = {
-                id = 288426,
-                duration = 8,
-                max_stack = 1
-            },
-            
-            frostwhelps_indignation = {
-                id = 287338,
-                duration = 6,
-                max_stack = 1,
-            },
-        } )
-
-    else
-        spec:RegisterAuras( {
-            glacial_contagion = {
-                id = 274074,
-                duration = 14,
-                max_stack = 1,
-            }
-        } )
-    end
 
 
     spec:RegisterGear( "acherus_drapes", 132376 )
@@ -583,6 +597,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "chains_of_ice" )
                 removeBuff( "cold_heart_item" )
                 removeBuff( "cold_heart_talent" )
+
+                --[[ if pvptalent.deathchill.enabled and debuff.chains_of_ice.up then
+                    applyDebuff( "target", "deathchill" )
+                end ]]
             end,
         },
         
@@ -618,6 +636,30 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyDebuff( "target", "dark_command" )
+            end,
+        },
+        
+
+        dark_simulacrum = {
+            id = 77606,
+            cast = 0,
+            cooldown = function () return PTR and 20 or 25 end,
+            gcd = "spell",
+            
+            spend = function () return PTR and 0 or 20 end,
+            spendType = "runic_power",
+            
+            startsCombat = true,
+            texture = 135888,
+
+            pvptalent = "dark_simulacrum",
+            
+            usable = function ()
+                if not target.is_player then return false, "target is not a player" end
+                return true
+            end,
+            handler = function ()
+                applyDebuff( "target", "dark_simulacrum" )
             end,
         },
         
@@ -684,7 +726,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( ns.PTR and 35 or 45 ) ) end,
+            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( PTR and 35 or 45 ) ) end,
             spendType = "runic_power",
                         
             startsCombat = true,
@@ -752,6 +794,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "razorice", 20, 2 )                
                 if talent.icy_talons.enabled then addStack( "icy_talons", 6, 1 ) end
                 if talent.obliteration.enabled and buff.pillar_of_frost.up then applyBuff( "killing_machine" ) end
+                -- if pvptalent.delirium.enabled then applyDebuff( "target", "delirium" ) end
             end,
         },
         
@@ -853,6 +896,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 active_dot.frost_fever = max( active_dot.frost_fever, active_enemies )
 
                 if talent.obliteration.enabled and buff.pillar_of_frost.up then applyBuff( "killing_machine" ) end
+                -- if pvptalent.delirium.enabled then applyDebuff( "target", "delirium" ) end
 
                 removeBuff( "rime" )
             end,
@@ -940,7 +984,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 458718,
             
@@ -973,7 +1017,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         remorseless_winter = {
             id = 196770,
             cast = 0,
-            cooldown = 20,
+            cooldown = 20, -- function () return 20 end, -- pvptalent.dead_of_winter.enabled and 45 or 20 end,
             gcd = "spell",
             
             spend = 1,
@@ -982,13 +1026,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = false,
             texture = 538770,
             
-            recheck = function ()
-                return buff.remorseless_winter.remains - gcd, buff.remorseless_winter.remains
-            end,
             handler = function ()
                 applyBuff( "remorseless_winter" )
+                -- if pvptalent.deathchill.enabled then applyDebuff( "target", "deathchill" ) end
             end,
-        },   
+        },
         
         
         transfusion = {

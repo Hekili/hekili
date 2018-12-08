@@ -8,7 +8,7 @@ local class = Hekili.Class
 local state = Hekili.State
 
 
-if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
+if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
     local spec = Hekili:NewSpecialization( 252 )
 
     spec:RegisterResource( Enum.PowerType.Runes, {
