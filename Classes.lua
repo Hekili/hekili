@@ -704,23 +704,23 @@ local all = Hekili:NewSpecialization( 0, "All", "Interface\\Addons\\Hekili\\Text
 
 all:RegisterAuras( {
 
-    enlisted_level = {
+    enlisted_a = {
         id = 282559,
         duration = 3600,
     },
 
-    enlisted_idk = {
+    enlisted_b = {
         id = 289954,
         duration = 3600,
     },
 
-    enlisted_max = {
+    enlisted_c = {
         id = 269083,
         duration = 3600,
     },
 
     enlisted = {
-        alias = { "enlisted_max", "enlisted_level", "enlisted_idk" },
+        alias = { "enlisted_c", "enlisted_b", "enlisted_a" },
         aliasMode = "first",
         aliasType = "buff",
         duration = 3600,
@@ -1237,6 +1237,35 @@ all:RegisterAuras( {
                     dm.caster = "nobody"
                     return
                 end
+            end
+
+            dm.count = 0
+            dm.expires = 0
+            dm.applied = 0
+            dm.caster = "nobody"
+        end,
+    },
+
+    reversible_magic = {
+        generate = function ()
+            local dm = debuff.reversible_magic
+
+            local i = 1
+            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+
+            while( name ) do
+                if debuffType == "Magic" and canDispel then break end
+                
+                i = i + 1
+                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+            end
+            
+            if canDispel then
+                dm.count = count > 0 and count or 1
+                dm.expires = expirationTime > 0 and expirationTime or query_time + 5
+                dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                dm.caster = "nobody"
+                return
             end
 
             dm.count = 0
