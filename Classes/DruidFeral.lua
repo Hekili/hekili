@@ -22,35 +22,67 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
     
     -- Talents
-    spec:RegisterTalents( {
-        blood_scent = 22363, -- 202022
-        predator = 22364, -- 202021
-        lunar_inspiration = 22365, -- 155580
+    if not PTR then spec:RegisterTalents( {
+            blood_scent = 22363, -- 202022
+            predator = 22364, -- 202021
+            lunar_inspiration = 22365, -- 155580
 
-        tiger_dash = 19283, -- 252216
-        renewal = 18570, -- 108238
-        wild_charge = 18571, -- 102401
+            tiger_dash = 19283, -- 252216
+            renewal = 18570, -- 108238
+            wild_charge = 18571, -- 102401
 
-        balance_affinity = 22163, -- 197488
-        guardian_affinity = 22158, -- 217615
-        restoration_affinity = 22159, -- 197492
+            balance_affinity = 22163, -- 197488
+            guardian_affinity = 22158, -- 217615
+            restoration_affinity = 22159, -- 197492
 
-        mighty_bash = 21778, -- 5211
-        mass_entanglement = 18576, -- 102359
-        typhoon = 18577, -- 132469
+            mighty_bash = 21778, -- 5211
+            mass_entanglement = 18576, -- 102359
+            typhoon = 18577, -- 132469
 
-        soul_of_the_forest = 21708, -- 158476
-        jagged_wounds = 18579, -- 202032
-        incarnation = 21704, -- 102543
+            soul_of_the_forest = 21708, -- 158476
+            jagged_wounds = 18579, -- 202032
+            incarnation = 21704, -- 102543
 
-        sabertooth = 21714, -- 202031
-        brutal_slash = 21711, -- 202028
-        savage_roar = 22370, -- 52610
+            sabertooth = 21714, -- 202031
+            brutal_slash = 21711, -- 202028
+            savage_roar = 22370, -- 52610
 
-        moment_of_clarity = 21646, -- 236068
-        bloodtalons = 21649, -- 155672
-        feral_frenzy = 21653, -- 274837
-    } )
+            moment_of_clarity = 21646, -- 236068
+            bloodtalons = 21649, -- 155672
+            feral_frenzy = 21653, -- 274837
+        } )
+    else
+        spec:RegisterTalents( {
+            predator = 22363, -- 202021
+            sabertooth = 22364, -- 202031
+            lunar_inspiration = 22365, -- 155580
+    
+            tiger_dash = 19283, -- 252216
+            renewal = 18570, -- 108238
+            wild_charge = 18571, -- 102401
+    
+            balance_affinity = 22163, -- 197488
+            guardian_affinity = 22158, -- 217615
+            restoration_affinity = 22159, -- 197492
+    
+            mighty_bash = 21778, -- 5211
+            mass_entanglement = 18576, -- 102359
+            typhoon = 18577, -- 132469
+    
+            soul_of_the_forest = 21708, -- 158476
+            savage_roar = 18579, -- 52610
+            incarnation_king_of_the_jungle = 21704, -- 102543
+    
+            scent_of_blood = 21714, -- 285564
+            brutal_slash = 21711, -- 202028
+            primal_wrath = 22370, -- 285381
+    
+            moment_of_clarity = 21646, -- 236068
+            bloodtalons = 21649, -- 155672
+            feral_frenzy = 21653, -- 274837
+        } )
+    end
+
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
@@ -58,19 +90,22 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         relentless = 3433, -- 196029
         gladiators_medallion = 3431, -- 208683
         
-        protector_of_the_grove = 847, -- 209730
-        thorns = 201, -- 236696
         earthen_grasp = 202, -- 236023
-        freedom_of_the_herd = 203, -- 213200
-        malornes_swiftness = 601, -- 236012
-        king_of_the_jungle = 602, -- 203052
         enraged_maim = 604, -- 236026
-        savage_momentum = 820, -- 205673
         ferocious_wound = 611, -- 236020
+        freedom_of_the_herd = 203, -- 213200
         fresh_wound = 612, -- 203224
+        heart_of_the_wild = PTR and 3053 or nil, -- 236019
+        king_of_the_jungle = 602, -- 203052
+        leader_of_the_pack = PTR and 3751 or nil, -- 202626
+        malornes_swiftness = 601, -- 236012
+        protector_of_the_grove = 847, -- 209730
         rip_and_tear = 620, -- 203242
-        tooth_and_claw = 3053, -- 236019
+        savage_momentum = 820, -- 205673
+        thorns = 201, -- 236696
+        tooth_and_claw = not PTR and 3053 or nil, -- 236019
     } )
+
 
     -- Auras
     spec:RegisterAuras( {
@@ -223,6 +258,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 52610,
             duration = 36,
         },
+        scent_of_blood = {
+            id = 285646,
+            duration = 6,
+            max_stack = 1,
+        },
         shadowmeld = {
             id = 58984,
             duration = 3600,
@@ -292,12 +332,54 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         yseras_gift = {
             id = 145108,
         },
+
+
+        -- PvP Talents
+        cyclone = {
+            id = 209753,
+            duration = 6,
+            max_stack = 1,
+        },
+
+        ferocious_wound = {
+            id = 236021,
+            duration = 30,
+            max_stack = 2,
+        },
+
+        king_of_the_jungle = {
+            id = 203059,
+            duration = 24,
+            max_stack = 3,
+        },
+
+        leader_of_the_pack = {
+            id = 202636,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        thorns = {
+            id = 236696,
+            duration = 12,
+            type = "Magic",
+            max_stack = 1,
+        },
+
+
+        -- Azerite Powers
+        iron_jaws = {
+            id = 276026,
+            duration = 30,
+            max_stack = 1,
+        },
+        
+        jungle_fury = {
+            id = 274426,
+            duration = function () return talent.predator.enabled and 17 or 12 end,
+            max_stack = 1,
+        },
     } )
-
-
-    --[[ spec:RegisterStateExpr( 'gcd', function()
-        return buff.cat_form.up and 1.0 or max( 0.75, 1.5 * haste )
-    end ) ]]
 
 
     local tf_spells = { rake = true, rip = true, thrash = true, moonfire_cat = true }
@@ -444,6 +526,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         opener_done = nil
     end )
 
+    spec:RegisterHook( "gain", function( amt, resource )
+        if azerite.untamed_ferocity.enabled and amt > 0 and resource == "combo_points" then
+            if talent.incarnation.enabled then gainChargeTime( "incarnation", 0.2 )
+            else gainChargeTime( "berserk", 0.3 ) end
+        end
+    end )
+
 
     local function comboSpender( a, r )
         if r == "combo_points" and a > 0 and talent.soul_of_the_forest.enabled then
@@ -538,7 +627,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 132141,
             
             form = "cat_form",
-            usable = function () return active_enemies > 2 or charges_fractional > 2.5 end,
+            ready = function () return active_enemies > 2 and 0 or ( 2.5 - charges_fractional ) * recharge end, -- Use this for timing purposes.
+            -- usable = function () return active_enemies > 2 or charges_fractional > 2.5 end,
             handler = function ()
                 gain( 1, "combo_points" )
                 removeStack( "bloodtalons" )
@@ -564,6 +654,26 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         
 
+        cyclone = {
+            id = 209753,
+            cast = 1.7,
+            cooldown = 0,
+            gcd = "spell",
+
+            pvptalent = "cyclone",
+            
+            spend = 0.15,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136022,
+            
+            handler = function ()
+                applyDebuff( "target", "cyclone" )
+            end,
+        },
+        
+
         dash = {
             id = 1850,
             cast = 0,
@@ -578,6 +688,26 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 shift( "cat_form" )
                 applyBuff( "dash" )
+            end,
+        },
+        
+
+        enraged_maul = {
+            id = 236716,
+            cast = 0,
+            cooldown = 3,
+            gcd = "spell",
+
+            pvptalent = "heart_of_the_wild",
+            form = "bear_form",
+            
+            spend = 40,
+            spendType = "rage",
+            
+            startsCombat = true,
+            texture = 132136,
+            
+            handler = function ()                
             end,
         },
         
@@ -645,6 +775,16 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             usable = function () return buff.apex_predator.up or combo_points.current > 0 end,
             handler = function ()
+                if not PTR and ( target.health_pct < 25 or talent.sabertooth.enabled ) and debuff.rip.up then
+                    debuff.rip.expires = query_time + min( debuff.rip.remains + debuff.rip.duration, debuff.rip.duration * 1.3 )
+                elseif PTR and talent.sabertooth.enabled and debuff.rip.up then
+                    debuff.rip.expires = debuff.rip.expires + ( 4 * combo_points.current )
+                end
+
+                if pvptalent.ferocious_wound.enabled and combo_points.current >= 5 then
+                    applyDebuff( "target", "ferocious_wound", nil, min( 2, debuff.ferocious_wound.stack + 1 ) )
+                end
+
                 if buff.apex_predator.up then
                     applyBuff( "predatory_swiftness" )
                     removeBuff( "apex_predator" )
@@ -656,10 +796,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
                 
                 removeStack( "bloodtalons" )
-
-                if ( target.health_pct < 25 or talent.sabertooth.enabled ) and debuff.rip.up then
-                    debuff.rip.expires = query_time + min( debuff.rip.remains + debuff.rip.duration, debuff.rip.duration * 1.3 )
-                end
             end,
         },
         
@@ -913,6 +1049,30 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         
 
+        primal_wrath = {
+            id = 285381,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            talent = "primal_wrath",
+            
+            spend = 20,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 1392547,
+            
+            usable = function () return combo_points.current > 0 end,
+            handler = function ()
+                applyDebuff( "target", "rip", 4 * combo_points.current )
+                active_dot.rip = active_enemies
+
+                spend( combo_points.current, "combo_points" )
+            end,
+        },
+        
+
         prowl = {
             id = 5215,
             cast = 0,
@@ -1115,13 +1275,34 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         
 
+        rip_and_tear = {
+            id = 203242,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 60,
+            spendType = "energy",
+            
+            talent = "rip_and_tear",
+
+            startsCombat = true,
+            texture = 1029738,
+            
+            handler = function ()
+                applyDebuff( "target", "rip" )
+                applyDebuff( "target", "rake" )
+            end,
+        },
+        
+
         savage_roar = {
             id = 52610,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 30 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 ) end,
+            spend = function () return ( PTR and 25 or 30 ) * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 ) end,
             spendType = "energy",
             
             startsCombat = false,
@@ -1135,6 +1316,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
                 local cost = min( 5, combo_points.current )
                 spend( cost, "combo_points" )
+                if PTR and buff.savage_roar.down then energy.regen = energy.regen * 1.1 end
                 applyBuff( "savage_roar", 6 + ( 6 * cost ) )
             end,
         },
@@ -1179,6 +1361,12 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             usable = function () return target.casting end,
             handler = function ()
                 interrupt()
+
+                if pvptalent.savage_momentum.enabled then
+                    gainChargeTime( "tigers_fury", 10 )
+                    gainChargeTime( "survival_instincts", 10 )
+                    gainChargeTime( "stampeding_roar", 10 )
+                end
             end,
         },
         
@@ -1329,7 +1517,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             spend = function ()
                 if buff.clearcasting.up then return 0 end
-                return 35 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
+                return max( 0, ( 35 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 ) ) + buff.scent_of_blood.v1 )
             end,
             spendType = "energy",
             
@@ -1365,6 +1553,26 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         
 
+        thorns = {
+            id = 236696,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            pvptalent = "thorns",
+            
+            spend = 0.12,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 136104,
+            
+            handler = function ()
+                applyBuff( "thorns" )
+            end,
+        },
+        
+
         thrash_cat = {
             id = 106830,
             known = 106832,
@@ -1391,6 +1599,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 applyDebuff( "target", "thrash_cat" )
                 active_dot.thrash_cat = max( active_dot.thrash, true_active_enemies )
                 debuff.thrash_cat.pmultiplier = persistent_multiplier
+
+                applyBuff( "scent_of_blood" )
+                buff.scent_of_blood.v1 = -3 * active_enemies
 
                 removeStack( "bloodtalons" )
                 removeStack( "clearcasting" )
@@ -1432,7 +1643,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             usable = function () return buff.tigers_fury.down or energy.deficit > 50 + energy.regen end,
             handler = function ()
                 shift( "cat_form" )
-                applyBuff( "tigers_fury", talent.predator.enabled and 14 or 10 )
+                applyBuff( "tigers_fury", talent.predator.enabled and 15 or 10 )
+                if azerite.jungle_fury.enabled then applyBuff( "jungle_fury" ) end
             end,
         },
         
