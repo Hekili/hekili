@@ -7,8 +7,10 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
 
-if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
+
+if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     local spec = Hekili:NewSpecialization( 252 )
 
     spec:RegisterResource( Enum.PowerType.Runes, {
@@ -188,47 +190,30 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
 
 
     -- PvP Talents
-    if ns.PTR then
-        -- PvP Talents
-        spec:RegisterPvpTalents( { 
-            adaptation = 3537, -- 214027
-            relentless = 3536, -- 196029
-            gladiators_medallion = 3535, -- 208683
+    spec:RegisterPvpTalents( { 
+        adaptation = 3537, -- 214027
+        relentless = 3536, -- 196029
+        gladiators_medallion = 3535, -- 208683
 
-            necrotic_aura = 3437, -- 199642
-            decomposing_aura = 3440, -- 199720
-            cadaverous_pallor = 163, -- 201995
-            antimagic_zone = 42, -- 51052
-            reanimation = 152, -- 210128
-            dark_simulacrum = 41, -- 77606
-            life_and_death = 40, -- 288855
-            necromancers_bargain = 3746, -- 288848
-            raise_abomination = 3747, -- 288853
-            transfusion = 3748, -- 288977
-            lichborne = 3754, -- 287081
-            necrotic_strike = 149, -- 223829
-        } )
-    else
-        spec:RegisterPvpTalents( { 
-            adaptation = 3537, -- 214027
-            relentless = 3536, -- 196029
-            gladiators_medallion = 3535, -- 208683
-
-            ghoulish_monstrosity = 3733, -- 280428
-            necrotic_aura = 3437, -- 199642
-            cadaverous_pallor = 163, -- 201995
-            reanimation = 152, -- 210128
-            heartstop_aura = 44, -- 199719
-            decomposing_aura = 3440, -- 199720
-            necrotic_strike = 149, -- 223829
-            unholy_mutation = 151, -- 201934
-            wandering_plague = 38, -- 199725
-            antimagic_zone = 42, -- 51052
-            dark_simulacrum = 41, -- 77606
-            crypt_fever = 40, -- 199722
-            pandemic = 39, -- 199724
-        } )
-    end
+        antimagic_zone = 42, -- 51052
+        cadaverous_pallor = 163, -- 201995
+        crypt_fever = not PTR and 40 or nil, -- 199722 -- DELETE 8.1
+        dark_simulacrum = 41, -- 77606
+        decomposing_aura = not PTR and 3440 or nil, -- 199720 -- DELETE 8.1
+        ghoulish_monstrosity = not PTR and 3733 or nil, -- 280428 -- DELETE 8.1
+        heartstop_aura = not PTR and 44 or nil, -- 199719 -- DELETE 8.1
+        lichborne = PTR and 3754 or nil, -- 287081 -- ADDED 8.1
+        life_and_death = PTR and 40 or nil, -- 288855 -- ADDED 8.1
+        necromancers_bargain = PTR and 3746 or nil, -- 288848 -- DELETE
+        necrotic_aura = 3437, -- 199642
+        necrotic_strike = 149, -- 223829
+        pandemic = not PTR and 39 or nil, -- 199724 -- DELETE 8.1
+        raise_abomination = PTR and 3747 or nil, -- 288853
+        reanimation = 152, -- 210128
+        transfusion = PTR and 3748 or nil, -- 288977 -- ADDED 8.1
+        unholy_mutation = not PTR and 151 or nil, -- 201934 -- DELETE 8.1
+        wandering_plague = not PTR and 38 or nil, -- 199725 -- DELETE 8.1
+    } )
 
 
     -- Auras
@@ -391,39 +376,35 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
             type = "Magic",
             max_stack = 1,
         },
+
+
+        -- PvP Talents
+        crypt_fever = {
+            id = 288849,
+            duration = 4,
+            max_stack = 1,
+        },
+
+
+        -- Azerite Powers
+        cold_hearted = PTR and {
+            id = 288426,
+            duration = 8,
+            max_stack = 1
+        } or nil,
+
+        festermight = {
+            id = 274373,
+            duration = 20,
+            max_stack = 99,
+        },
+
+        helchains = PTR and {
+            id = 286979,
+            duration = 15,
+            max_stack = 1
+        } or nil,
     } )
-
-
-    -- Azerite Powers
-    if ns.PTR then
-        spec:RegisterAuras( {
-            cold_hearted = {
-                id = 288426,
-                duration = 8,
-                max_stack = 1
-            },
-
-            festermight = {
-                id = 274373,
-                duration = 20,
-                max_stack = 99,
-            },
-
-            helchains = {
-                id = 286979,
-                duration = 15,
-                max_stack = 1
-            }
-        } )
-    else
-        spec:RegisterAuras( {
-            festermight = {
-                id = 274373,
-                duration = 20,
-                max_stack = 99,
-            }    
-        } )
-    end
 
 
     spec:RegisterStateTable( 'death_and_decay', 
@@ -554,7 +535,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
         apocalypse = {
             id = 275699,
             cast = 0,
-            cooldown = 90,
+            cooldown = PTR and function () return pvptalent.necromancers_bargain.enabled and 45 or 90 end or 90,
             gcd = "spell",
             
             toggle = "cooldowns",
@@ -572,6 +553,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
                     apply_festermight( debuff.festering_wound.stack )
                     removeDebuff( "target", "festering_wound" )
                 end
+
+                if pvptalent.necromancers_bargain.enabled then applyDebuff( "target", "crypt_fever" ) end
                 -- summon pets?                
             end,
         },
@@ -587,6 +570,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
             spendType = "runes",
             
             toggle = "cooldowns",
+            nopvptalent = "raise_abomination",
 
             startsCombat = false,
             texture = 237511,
@@ -692,6 +676,30 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
             
             handler = function ()
                 applyDebuff( "target", "dark_command" )
+            end,
+        },
+        
+
+        dark_simulacrum = {
+            id = 77606,
+            cast = 0,
+            cooldown = function () return PTR and 20 or 25 end,
+            gcd = "spell",
+            
+            spend = function () return PTR and 0 or 20 end,
+            spendType = "runic_power",
+            
+            startsCombat = true,
+            texture = 135888,
+
+            pvptalent = "dark_simulacrum",
+            
+            usable = function ()
+                if not target.is_player then return false, "target is not a player" end
+                return true
+            end,
+            handler = function ()
+                applyDebuff( "target", "dark_simulacrum" )
             end,
         },
         
@@ -813,7 +821,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( ns.PTR and 35 or 45 ) ) end,
+            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( PTR and 35 or 45 ) ) end,
             spendType = "runic_power",
             
             startsCombat = true,
@@ -924,6 +932,23 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
         },
         
 
+        lichborne = PTR and {
+            id = 287081,
+            cast = 0,
+            cooldown = 60,
+            gcd = "off",
+            
+            pvptalent = "lichborne",
+
+            startsCombat = false,
+            texture = 136187,
+            
+            handler = function ()
+                applyBuff( "lichborne" )
+            end,
+        } or nil,
+        
+
         mind_freeze = {
             id = 47528,
             cast = 0,
@@ -978,6 +1003,23 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
             
             handler = function ()
                 applyBuff( "path_of_frost" )
+            end,
+        },
+        
+
+        raise_abomination = {
+            id = 288853,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+            pvptalent = "raise_abomination",
+
+            startsCombat = false,
+            texture = 298667,
+            
+            handler = function ()                
             end,
         },
         
@@ -1093,6 +1135,26 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' and false then
             end,
         },
         
+
+        transfusion = {
+            id = 288977,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = -20,
+            spendType = "runic_power",
+            
+            startsCombat = false,
+            texture = 237515,
+
+            pvptalent = "transfusion",
+            
+            handler = function ()
+                applyBuff( "transfusion" )
+            end,
+        },
+
 
         unholy_blight = {
             id = 115989,

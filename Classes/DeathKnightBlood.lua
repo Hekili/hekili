@@ -195,18 +195,18 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         gladiators_medallion = 3467, -- 208683
         relentless = 3466, -- 196029
 
-        strangulate = 206, -- 47476
-        blood_for_blood = 607, -- 233411
-        last_dance = 608, -- 233412
-        death_chain = 609, -- 203173
-        walking_dead = 205, -- 202731
-        unholy_command = 204, -- 202727
-        murderous_intent = 841, -- 207018
-        dark_simulacrum = 3511, -- 77606
-        decomposing_aura = 3441, -- 199720
         antimagic_zone = 3434, -- 51052
-        necrotic_aura = 3436, -- 199642
+        blood_for_blood = 607, -- 233411
+        dark_simulacrum = 3511, -- 77606
+        death_chain = 609, -- 203173
+        decomposing_aura = 3441, -- 199720
         heartstop_aura = 3438, -- 199719
+        last_dance = 608, -- 233412
+        murderous_intent = 841, -- 207018
+        necrotic_aura = 3436, -- 199642
+        strangulate = 206, -- 47476
+        unholy_command = 204, -- 202727
+        walking_dead = 205, -- 202731
     } )
 
     
@@ -386,7 +386,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 275926,
             duration = 20,
             max_stack = 1,
-        } or nil,
+        } or nil, -- DELETE 8.1
 
         eternal_rune_weapon = {
             id = 278543,
@@ -432,7 +432,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 1,
         },
 
-        focused_assault = PTR and {
+        focused_assault = PTR and { -- ADD 8.1
             id = 206891,
             duration = 6,
             max_stack = 1,
@@ -444,7 +444,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 1,
         },
 
-        intimidated = not PTR and {
+        intimidated = not PTR and { -- DELETE 8.1
             id = 206891,
             duration = 6,
             max_stack = 1,

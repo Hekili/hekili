@@ -236,17 +236,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         cadaverous_pallor = 3515, -- 201995
         chill_streak = 706, -- 204160
         dark_simulacrum = 3512, -- 77606
-        dead_of_winter = PTR and 3743 or nil, -- 287250
+        dead_of_winter = PTR and 3743 or nil, -- 287250 -- ADDED 8.1
         deathchill = 701, -- 204080
-        decomposing_aura = not PTR and 45 or nil, -- 199720
+        decomposing_aura = not PTR and 45 or nil, -- 199720 -- DELETE 8.1
         delirium = 702, -- 233396
-        frozen_center = not PTR and 704 or nil, -- 204135
+        frozen_center = not PTR and 704 or nil, -- 204135 -- DELETE 8.1
         heartstop_aura = 3439, -- 199719
-        lichborne = PTR and 3742 or nil, -- 136187
+        lichborne = PTR and 3742 or nil, -- 136187 -- ADDED 8.1
         necrotic_aura = 43, -- 199642
         overpowered_rune_weapon = not PTR and 705 or nil, -- 233394
         transfusion = PTR and 3749 or nil, -- 237515/
-        tundra_stalker = not PTR and 703 or nil, -- 279941        
+        tundra_stalker = not PTR and 703 or nil, -- 279941 -- DELETE 8.1  
     } )
 
 
@@ -446,6 +446,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         heartstop_aura = {
             id = 199719,
             duration = 3600,
+            max_stack = 1,
+        },
+
+        lichborne = {
+            id = 287081,
+            duration = 10,
             max_stack = 1,
         },
 
@@ -726,7 +732,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( PTR and 35 or 45 ) ) end,
+            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( PTR and 35 or 45 ) ) end, -- CHANGE 8.1
             spendType = "runic_power",
                         
             startsCombat = true,
@@ -923,6 +929,23 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         
 
+        lichborne = PTR and {
+            id = 287081,
+            cast = 0,
+            cooldown = 60,
+            gcd = "off",
+            
+            pvptalent = "lichborne",
+
+            startsCombat = false,
+            texture = 136187,
+            
+            handler = function ()
+                applyBuff( "lichborne" )
+            end,
+        } or nil,
+        
+
         mind_freeze = {
             id = 47528,
             cast = 0,
@@ -990,6 +1013,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyBuff( "pillar_of_frost" )
+                if azerite.frostwhelps_indignation.enabled then applyBuff( "frostwhelps_indignation" ) end
                 virtual_rp_spent_since_pof = 0
             end,
         },
@@ -1017,7 +1041,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         remorseless_winter = {
             id = 196770,
             cast = 0,
-            cooldown = 20, -- function () return 20 end, -- pvptalent.dead_of_winter.enabled and 45 or 20 end,
+            cooldown = PTR and function () return pvptalent.dead_of_winter.enabled and 45 or 20 end or 20, -- CHANGED 8.1
             gcd = "spell",
             
             spend = 1,

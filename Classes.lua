@@ -704,10 +704,27 @@ local all = Hekili:NewSpecialization( 0, "All", "Interface\\Addons\\Hekili\\Text
 
 all:RegisterAuras( {
 
-    --[[ enlisted = {
+    enlisted_level = {
+        id = 282559,
+        duration = 3600,
+    },
+
+    enlisted_idk = {
+        id = 289954,
+        duration = 3600,
+    },
+
+    enlisted_max = {
         id = 269083,
         duration = 3600,
-    }, ]]
+    },
+
+    enlisted = {
+        alias = { "enlisted_max", "enlisted_level", "enlisted_idk" },
+        aliasMode = "first",
+        aliasType = "buff",
+        duration = 3600,
+    },
 
     ancient_hysteria = {
         id = 90355,
