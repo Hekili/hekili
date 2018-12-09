@@ -540,6 +540,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local force_channel = false
     local stop = false
 
+
     if self:IsListActive( packName, listName ) then
         local actID = 1
         
@@ -663,10 +664,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             self:PopStack()
 
                                             -- REVISIT THIS:  IF A RUN_ACTION_LIST CALLER IS NOT TIME SENSITIVE, DON'T BOTHER LOOPING THROUGH IT IF ITS CONDITIONS DON'T PASS.
-                                            --[[ if entry.action == 'run_action_list' and not ts then
-                                                if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
-                                                break
-                                            end ]]
+                                            -- if entry.action == 'run_action_list' and not ts then
+                                            --    if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
+                                            --    break
+                                            -- end
                                         
                                         else
                                             if debug then self:Debug( "Action list (%s) not found.  Skipping.", name or "no name" ) end
@@ -684,19 +685,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", entry.action, state.offset, state.delay, why or "IsUsable returned false" )
                                     end
                                 end
-                                
-                                --[[ Tweak to avoid trying to use an item via Use Items when it already appears in the APL; not needed in BfA.
-
-                                if ability.item then
-                                    if listName == "Usable Items" then                                    
-                                        if itemTried[ entry.action ] then
-                                            usable = false
-                                            if debug then self:Debug( "The action (%s) was previously tested; skipping.", entry.action ) end
-                                        end
-                                    else
-                                        itemTried[ entry.action ] = true
-                                    end
-                                end ]]
                                 
                                 if usable then
                                     local waitValue = max( 0, rWait - state:ClashOffset( rAction ) )
@@ -908,9 +896,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         if debug then self:Debug( "pool_resource is disabled as pooling is automatically accounted for by the forecasting engine." ) end
                                                     end
 
-                                                    --[[ if entry.PoolForNext or state.args.for_next == 1 then
-                                                        if debug then self:Debug( "Pool Resource is not used in the Predictive Engine; ignored." ) end
-                                                    end ]]
+                                                    -- if entry.PoolForNext or state.args.for_next == 1 then
+                                                    --    if debug then self:Debug( "Pool Resource is not used in the Predictive Engine; ignored." ) end
+                                                    -- end
 
                                                 else
                                                     slot.scriptType = 'simc'
@@ -959,7 +947,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 end
                                 
                                 if rWait == 0 or force_channel then break end
-
+                                
                             end
                         end
                     end
@@ -1184,7 +1172,6 @@ function Hekili:ProcessHooks( dispName, packName )
             end                            
             
             if i < display.numIcons then
-
                 -- Advance through the wait time.
                 if state.delay > 0 then state.advance( state.delay ) end
 

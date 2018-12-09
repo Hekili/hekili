@@ -2007,12 +2007,12 @@ local mt_default_cooldown = {
             return ability.meta[ k ]()
         end
 
-        local GetSpellCooldown = _G.GetSpellCooldown
+        local GetCooldown = _G.GetSpellCooldown
         local profile = Hekili.DB.profile
         local id = ability.id
        
         if ability and rawget( ability, "item" ) then
-            GetSpellCooldown = _G.GetItemCooldown
+            GetCooldown = _G.GetItemCooldown
             id = ability.item
         end
 
@@ -2027,7 +2027,9 @@ local mt_default_cooldown = {
             -- Refresh the ID in case we changed specs and ability is spec dependent.
             t.id = ability.id
             
-            local start, duration = GetSpellCooldown( id )
+            local start, duration = 0, 0
+
+            if id > 0 then start, duration = GetCooldown( id ) end
             local true_duration = duration
             
             if t.key == 'ascendance' and state.buff.ascendance.up then
@@ -2169,68 +2171,9 @@ local mt_cooldowns = {
 
         local ability = entry.id
 
-        local success, start, duration = pcall( GetSpellCooldown, ability )
-        if not success then
-            Error( "FAIL: " .. k )
-            return nil
-        end
-        
-        if k == 'ascendance' and state.buff.ascendance.up then
-            start = state.buff.ascendance.expires - class.auras[k].duration
-            duration = class.abilities[k].cooldown
-            
-        elseif k == 'potion' then
-            local itemName = state.args.ModName or state.args.name or class.potion
-            local potion = class.potions[ itemName ]
-            
-            if state.toggle.potions and potion and GetItemCount( potion.item ) > 0 then
-                start, duration = GetItemCooldown( potion.item )
-                
-            else
-                start = state.now
-                duration = 0
-                
-            end
+        t[ k ] = { key = k }
+        return t[ k ]
 
-        elseif not state:IsKnown( ability ) then
-            start = state.now
-            duration = 0
-        end
-        
-        if start then
-            t[k] = {
-                key = k, name = class.abilities[ k ].name, id = ability, duration = duration, expires = (start + duration)
-            }
-        else
-            t[k] = {
-                key = k, name = class.abilities[ k ].name, id = ability, duration = 0, expires = 0
-            }
-        end
-        
-        if class.abilities[ k ].charges then
-            local charges, maxCharges, start, duration = GetSpellCharges( t[ k ].id )
-            t[ k ].charge = charge or 1
-
-            if charges then
-                if start + duration < state.query_time then
-                    t[ k ].charge = t[ k ].charge + 1
-                    if t[ k ].charge < class.abilities[ k ].charges then
-                        t[ k ].next_charge = t[ k ].next_charge + class.abilities[ k ].cooldown
-                    else
-                        t[ k ].next_charge = 0
-                    end
-                else
-                    t[ k ].next_charge = charges < class.abilities[ k ].charges and ( start + duration ) or 0
-                end
-            else
-                t[ k ].next_charge = 0
-            end
-        else
-            t[ k ].charge = t[ k ].expires < state.query_time and 1 or 0
-            t[ k ].next_charge = t[ k ].expires
-        end
-        
-        return t[k]
     end, 
     __newindex = function(t, k, v)
         rawset( t, k, setmetatable( v, mt_default_cooldown ) )
@@ -3996,8 +3939,6 @@ end
 
 
 function state.advance( time )
-    
-    -- print( format( "Advance %.2f at %.2f + %.2f.", time, state.now, state.offset ) )
 
     if time <= 0 then
         return
@@ -4438,7 +4379,7 @@ function state:TimeToReady( action, pool )
     end
 
     -- cacheTTR[ action ] = wait
-    return wait   
+    return wait
 end
 
 

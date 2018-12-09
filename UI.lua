@@ -706,7 +706,6 @@ do
             self.paused = false
         end
 
-
         local now = GetTime()
 
         self.recTimer = ( self.recTimer or 0 ) - elapsed
@@ -818,6 +817,7 @@ do
             end
         end
 
+
         self.rangeTimer = ( self.rangeTimer or 0 ) - elapsed
 
         if self.rangeTimer < 0 then
@@ -898,6 +898,7 @@ do
             self.rangeTimer = pulseRange
         end
 
+        
         self.flashTimer = ( self.flashTimer or 0 ) - elapsed
 
         if self.flashTimer < 0 then
@@ -928,6 +929,7 @@ do
 
             self.flashTimer = pulseFlash
         end
+
 
         self.targetTimer = self.targetTimer - elapsed
 
