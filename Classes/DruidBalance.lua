@@ -71,19 +71,19 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         relentless = 3542, -- 196029
         gladiators_medallion = 3541, -- 208683
 
-        thorns = 3731, -- 236696
-        protector_of_the_grove = 3728, -- 209730
-        dying_stars = 822, -- 232546
-        deep_roots = 834, -- 233755
-        moonkin_aura = 185, -- 209740
-        ironfeather_armor = 1216, -- 233752
-        cyclone = 857, -- 209753
-        faerie_swarm = 836, -- 209749
-        moon_and_stars = 184, -- 233750
         celestial_downpour = 183, -- 200726
-        crescent_burn = 182, -- 200567
         celestial_guardian = 180, -- 233754
+        crescent_burn = 182, -- 200567
+        cyclone = 857, -- 209753
+        deep_roots = 834, -- 233755
+        dying_stars = 822, -- 232546
+        faerie_swarm = 836, -- 209749
+        ironfeather_armor = 1216, -- 233752
+        moon_and_stars = 184, -- 233750
+        moonkin_aura = 185, -- 209740
         prickling_thorns = 3058, -- 200549
+        protector_of_the_grove = 3728, -- 209730
+        thorns = 3731, -- 236696
     } )
 
     
@@ -305,7 +305,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         starfall = {
             id = 191034,
-            duration = 8,
+            duration = function () return pvptalent.celestial_downpour.enabled and 16 or 8 end,
             max_stack = 1,
 
             generate = function ()
@@ -420,6 +420,47 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
 
+        -- PvP Talents
+        celestial_guardian = {
+            id = 234081,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        cyclone = {
+            id = 209753,
+            duration = 6,
+            max_stack = 1,
+        },
+
+        faerie_swarm = {
+            id = 209749,
+            duration = 5,
+            type = "Magic",
+            max_stack = 1,
+        },
+
+        moon_and_stars = {
+            id = 234084,
+            duration = 10,
+            max_stack = 1,
+        },
+
+        moonkin_aura = {
+            id = 209746,
+            duration = 18,
+            type = "Magic",
+            max_stack = 3,
+        },
+
+        thorns = {
+            id = 236696,
+            duration = 12,
+            type = "Magic",
+            max_stack = 1,
+        },
+
+
         -- Azerite Powers
         dawning_sun = {
             id = 276153,
@@ -453,6 +494,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         removeBuff( "travel_form" )
         removeBuff( "aquatic_form" )
         removeBuff( "stag_form" )
+        removeBuff( "celestial_guardian" )
     end )
     
 
@@ -466,6 +508,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         removeBuff( "aquatic_form" )
         removeBuff( "stag_form" )
         applyBuff( form )
+        
+        if form == "bear_form" and pvptalent.celestial_guardian.enabled then
+            applyBuff( "celestial_guardian" )
+        end
     end )
 
 
@@ -613,6 +659,27 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             handler = function ()
                 applyBuff( "celestial_alignment" )
+                if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
+            end,
+        },
+        
+
+        cyclone = {
+            id = 209753,
+            cast = 1.7,
+            cooldown = 0,
+            gcd = "spell",
+
+            pvptalent = "cyclone",
+            
+            spend = 0.15,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136022,
+            
+            handler = function ()
+                applyDebuff( "target", "cyclone" )
             end,
         },
         
@@ -674,6 +741,23 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         
 
+        faerie_swarm = {
+            id = 209749,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+            
+            pvptalent = "faerie_swarm",
+
+            startsCombat = true,
+            texture = 538516,
+            
+            handler = function ()
+                applyDebuff( "target", "faerie_swarm" )
+            end,
+        },
+        
+
         ferocious_bite = {
             id = 22568,
             cast = 0,
@@ -687,6 +771,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 132127,
 
             form = "cat_form",
+            talent = "feral_affinity",
             
             usable = function () return combo_points.current > 0 end,
             handler = function ()
@@ -882,6 +967,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 shift( "moonkin_form" )
                 applyBuff( "incarnation" )
+
+                if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
             end,
 
             copy = "incarnation_chosen_of_elune"
@@ -1391,6 +1478,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 removeBuff( "oneths_intuition" )
                 removeBuff( "sunblaze" )
 
+                if pvptalent.moonkin_aura.enabled then
+                    addStack( "moonkin_aura", nil, 1 )
+                end
+
                 if level < 116 and set_bonus.tier21_4pc == 1 then
                     applyBuff( "solar_solstice" )
                 end
@@ -1525,6 +1616,26 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 shift( "cat_form" )
                 applyBuff( "tiger_dash" )
+            end,
+        },
+        
+
+        thorns = {
+            id = 236696,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            pvptalent = "thorns",
+            
+            spend = 0.12,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 136104,
+            
+            handler = function ()
+                applyBuff( "thorns" )
             end,
         },
         
