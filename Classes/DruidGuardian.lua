@@ -24,7 +24,22 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             interval = 1,
             value = 10
-        }            
+        },
+
+        raging_frenzy = {
+            aura = "frenzied_regeneration",
+            pvptalent = "raging_frenzy",
+
+            last = function ()
+                local app = state.buff.frenzied_regeneration.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 1,
+            value = 10 -- tooltip says 60, meaning this would be 20, but NOPE.
+        },
     } )
 
     spec:RegisterResource( Enum.PowerType.LunarPower )
@@ -32,6 +47,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     spec:RegisterResource( Enum.PowerType.ComboPoints )
     spec:RegisterResource( Enum.PowerType.Energy )
     
+
     -- Talents
     spec:RegisterTalents( {
         brambles = 22419, -- 203953
@@ -39,7 +55,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         bristling_fur = 22420, -- 155835
 
         tiger_dash = 19283, -- 252216
-        intimidating_roar = 22916, -- 236748
+        intimidating_roar = not PTR and 22916 or nil, -- 236748
+        ursols_vortex = PTR and 22916 or nil, -- 102793
         wild_charge = 18571, -- 102401
 
         balance_affinity = 22163, -- 197488
@@ -63,6 +80,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         pulverize = 22425, -- 80313
     } )
 
+
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         relentless = 3465, -- 196029
@@ -84,6 +102,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         raging_frenzy = 192, -- 236153
         clan_defender = 191, -- 213951
     } )
+
 
     -- Auras
     spec:RegisterAuras( {
@@ -302,6 +321,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             max_stack = 1,
             type = "Magic",
         },
+        ursols_vortex = {
+            id = 127797,
+            duration = 3600,
+            max_stack = 1,
+        },
         wild_charge = {
             id = 102401,
         },
@@ -312,6 +336,50 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         yseras_gift = {
             id = 145108,
+        },        
+
+
+        -- PvP Talents
+        demoralizing_roar = {
+            id = 201664,
+            duration = 8,
+            max_stack = 1,
+        },
+
+        den_mother = {
+            id = 236181,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        focused_assault = {
+            id = 206891,
+            duration = 6,
+            max_stack = 1,
+        },
+
+        master_shapeshifter_feral = {
+            id = 236188,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        overrun = {
+            id = 202244,
+            duration = 3,
+            max_stack = 1,
+        },
+
+        protector_of_the_pack = {
+            id = 201940,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        sharpened_claws = {
+            id = 279943,
+            duration = 6,
+            max_stack = 1,
         },
     } )
 
@@ -368,6 +436,23 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
     -- Abilities
     spec:RegisterAbilities( {
+        alpha_challenge = {
+            id = 207017,
+            cast = 0,
+            cooldown = 20,
+            gcd = "spell",
+
+            pvptalent = "alpha_challenge",
+            
+            startsCombat = true,
+            texture = 132270,
+            
+            handler = function ()
+                applyDebuff( "target", "focused_assault" )
+            end,
+        },
+        
+
         barkskin = {
             id = 22812,
             cast = 0,
@@ -440,6 +525,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             handler = function ()
                 shift( "cat_form" )
+                if pvptalent.master_shapeshifter.enabled and talent.feral_affinity.enabled then
+                    applyBuff( "master_shapeshifter_feral" )
+                end
             end,
         },
         
@@ -457,6 +545,24 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             handler = function ()
                 applyBuff( "dash" )
+            end,
+        },
+        
+
+        demoralizing_roar = {
+            id = 201664,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            pvptalent = "demoralizing_roar",
+            
+            startsCombat = true,
+            texture = 132117,
+            
+            handler = function ()
+                applyDebuff( "demoralizing_roar" )
+                active_dot.demoralizing_roar = active_enemies
             end,
         },
         
@@ -539,6 +645,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cast = 0,
             cooldown = 8,
             gcd = "spell",
+
+            nopvptalent = "alpha_challenge",
             
             startsCombat = true,
             texture = 132270,
@@ -741,7 +849,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             form = "bear_form",
             
-            handler = function ()                
+            handler = function ()
+                if pvptalent.sharpened_claws.enabled then applyBuff( "sharpened_claws" ) end
             end,
         },
         
@@ -803,6 +912,21 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             handler = function ()
                 shift( "moonkin_form" )
+            end,
+        },
+        
+
+        overrun = {
+            id = 202246,
+            cast = 0,
+            cooldown = 25,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 1408833,
+            
+            handler = function ()
+                applyDebuff( "target", "overrun" )
             end,
         },
         
@@ -1045,7 +1169,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         stampeding_roar = {
             id = 106898,
             cast = 0,
-            cooldown = 120,
+            cooldown = PTR and 60 or 120,
             gcd = "spell",
             
             startsCombat = false,
@@ -1275,6 +1399,23 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
             end,
         }, ]]
+        
+
+        ursols_vortex = {
+            id = 102793,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            talent = "ursols_vortex",
+
+            startsCombat = true,
+            texture = 571588,
+            
+            handler = function ()
+                applyDebuff( "target", "ursols_vortex" )
+            end,
+        },
         
 
         wild_charge = {
