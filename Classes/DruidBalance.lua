@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'DRUID' then
     local spec = Hekili:NewSpecialization( 102, true )
@@ -775,9 +777,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             usable = function () return combo_points.current > 0 end,
             handler = function ()
-                if target.health.pct < 25 and debuff.rip.up then
+                --[[ if target.health.pct < 25 and debuff.rip.up then
                     applyDebuff( "target", "rip", min( debuff.rip.duration * 1.3, debuff.rip.remains + debuff.rip.duration ) )
-                end
+                end ]]
                 spend( combo_points.current, "combo_points" )
             end,
         },
