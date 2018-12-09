@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     local spec = Hekili:NewSpecialization( 581 )
@@ -23,7 +25,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             end,
 
             interval = 1,
-            value = 7
+            value = PTR and 8 or 7
         },
     } )
     
@@ -64,18 +66,19 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         relentless = 3545, -- 196029
         adaptation = 3546, -- 214027
 
-        everlasting_hunt = 815, -- 205626
         cleansed_by_flame = 814, -- 205625
-        jagged_spikes = 816, -- 205627
-        illidans_grasp = 819, -- 205630
-        tormentor = 1220, -- 207029
-        sigil_mastery = 1948, -- 211489
-        unending_hatred = 3727, -- 213480
-        solitude = 802, -- 211509
         demonic_trample = 3423, -- 205629
-        reverse_magic = 3429, -- 205604
         detainment = 3430, -- 205596
+        everlasting_hunt = 815, -- 205626
+        illidans_grasp = 819, -- 205630
+        jagged_spikes = 816, -- 205627
+        reverse_magic = 3429, -- 205604
+        sigil_mastery = 1948, -- 211489
+        solitude = 802, -- 211509
+        tormentor = 1220, -- 207029
+        unending_hatred = 3727, -- 213480
     } )
+
 
     -- Auras
     spec:RegisterAuras( {
@@ -105,7 +108,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         fiery_brand = {
             id = 207771,
-            duration = 8,
+            duration = function () return azerite.revel_in_pain.enabled and 10 or 8 end,
             max_stack = 1,
         },
         frailty = {
@@ -194,6 +197,39 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             duration = 12,
             max_stack = 1,
         },
+
+
+        -- PvP Talents
+        demonic_trample = {
+            id = 205629,
+            duration = 3,
+            max_stack = 1,
+        },
+
+        everlasting_hunt = {
+            id = 208769,
+            duration = 3,
+            max_stack = 1,
+        },
+
+        focused_assault = {
+            id = 206891,
+            duration = 6,
+            max_stack = 5,
+        },
+
+        illidans_grasp = {
+            id = 205630,
+            duration = 6,
+            type = "Magic",
+            max_stack = 1,
+        },
+
+        revel_in_pain = {
+            id = 272987,
+            duration = 15,
+            max_stack = 1,
+        },
     } )
 
 
@@ -273,6 +309,14 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             fragments.realTime = 0
         end
 
+        if buff.demonic_trample.up then
+            setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.demonic_trample.remains ) )
+        end
+
+        if buff.illidans_grasp.up then
+            setCooldown( "illidans_grasp", 0 )
+        end
+
         if buff.soul_fragments.down then
             -- Apply the buff with zero stacks.
             applyBuff( "soul_fragments", nil, 0 + fragments.real )
@@ -329,7 +373,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             usable = function () return debuff.dispellable_magic.up end,
             handler = function ()
                 removeDebuff( "dispellable_magic" )
-                gain( 20, "pain" )
+                gain( buff.solitude.up and 22 or 20, "pain" )
             end,
         },
         
@@ -361,6 +405,28 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         
 
+        demonic_trample = {
+            id = 205629,
+            cast = 0,
+            charges = 2,
+            cooldown = 12,
+            recharge = 12,
+            gcd = "spell",
+
+            pvptalent = "demonic_trample",
+            nobuff = "demonic_trample",
+            
+            startsCombat = false,
+            texture = 134294,
+            
+            handler = function ()
+                spendCharges( "infernal_strike", 1 )
+                setCooldown( "global_cooldown", 3 )
+                applyBuff( "demonic_trample" )
+            end,
+        },
+        
+
         disrupt = {
             id = 183752,
             cast = 0,
@@ -375,7 +441,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             toggle = "interrupts",
             usable = function () return target.casting end,            
             handler = function ()
-                gain( 30, "pain" )
+                gain( buff.solitude.up and 33 or 30, "pain" )
                 interrupt()
             end,
         },
@@ -408,7 +474,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 15,
             gcd = "spell",
 
-            spend = -30,
+            spend = function () return buff.solitude.enabled and -33 or -30 end,
             spendType = "pain",
             
             startsCombat = true,
@@ -452,7 +518,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1388065,
             
             handler = function ()
-                gain( 25, "pain" )
+                gain( buff.solitude.up and 27 or 25, "pain" )
                 addStack( "soul_fragments", nil, 2 )
             end,
         },
@@ -472,6 +538,30 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         }, ]]
         
 
+        illidans_grasp = {
+            id = function () return debuff.illidans_grasp.up and 208173 or 205630 end,
+            known = 205630,
+            cast = 0,
+            cooldown = function () return buff.illidans_grasp.up and ( 54 + buff.illidans_grasp.remains ) or 0 end,
+            gcd = "off",
+            
+            pvptalent = "illidans_grasp",
+            aura = "illidans_grasp",
+            breakable = true,
+            channeled = true,
+
+            startsCombat = true,
+            texture = function () return buff.illidans_grasp.up and 252175 or 1380367 end,
+            
+            handler = function ()
+                if buff.illidans_grasp.up then removeBuff( "illidans_grasp" )
+                else applyBuff( "illidans_grasp" ) end
+            end,
+
+            copy = { 205630, 208173 }
+        },
+        
+
         immolation_aura = {
             id = 178740,
             cast = 0,
@@ -487,6 +577,10 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 if level < 116 and equipped.kirel_narak then
                     cooldown.fiery_brand.expires = cooldown.fiery_brand.expires - ( 2 * active_enemies )
                 end
+
+                if pvptalent.cleansed_by_flame.enabled then
+                    removeDebuff( "player", "reversible_magic" )
+                end
             end,
         },
         
@@ -494,7 +588,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         imprison = {
             id = 217832,
             cast = 0,
-            cooldown = 45,
+            cooldown = function () return pvptalent.detainment.enabled and 60 or 45 end,
             gcd = "spell",
             
             startsCombat = false,
@@ -521,6 +615,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             handler = function ()
                 setDistance( 5 )
+                spendCharges( "demonic_trample", 1 )
                 applyBuff( "infernal_striking" )
                 
                 if talent.flame_crash.enabled then
@@ -543,7 +638,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             handler = function ()
                 applyBuff( "metamorphosis" )
-                gain( 7, "pain" )
+                gain( PTR and 8 or 7, "pain" )
 
                 if level < 116 and equipped.runemasters_pauldrons then
                     setCooldown( "sigil_of_chains", 0 )
@@ -558,13 +653,31 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         
 
+        reverse_magic = {
+            id = 205604,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            -- toggle = "cooldowns",
+            pvptalent = "reverse_magic",
+
+            startsCombat = false,
+            texture = 1380372,
+            
+            handler = function ()
+                if debuff.reversible_magic.up then removeDebuff( "player", "reversible_magic" ) end
+            end,
+        },
+
+
         shear = {
             id = 203782,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
 
-            spend = -10,
+            spend = function () return buff.solitude.up and -11 or -10 end,
             spendType = "pain",
             
             startsCombat = true,
@@ -581,7 +694,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         sigil_of_chains = {
             id = 202138,
             cast = 0,
-            cooldown = 90,
+            cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 90 end,
             gcd = "spell",
             
             startsCombat = true,
@@ -603,7 +716,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             id = function () return talent.concentrated_sigils.enabled and 204513 or 204596 end,
             known = 204596,
             cast = 0,
-            cooldown = 30,
+            cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 30 end,
             gcd = "spell",
             
             startsCombat = true,
@@ -621,7 +734,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             id = function () return talent.concentrated_sigils.enabled and 202140 or 207684 end,
             known = 207684,
             cast = 0,
-            cooldown = 90,
+            cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 90 end,
             gcd = "spell",
             
             toggle = "cooldowns",
@@ -641,7 +754,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             id = function () return talent.concentrated_sigils.enabled and 207682 or 202137 end,
             known = 202137,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 60 end,
             gcd = "spell",
             
             toggle = "cooldowns",
@@ -769,9 +882,28 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             startsCombat = true,
             texture = 1344654,
+
+            nopvptalent = "tormentor",
             
             handler = function ()
                 applyDebuff( "target", "torment" )
+            end,
+        },
+
+
+        tormentor = {
+            id = 207029,
+            cast = 0,
+            cooldown = 20,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 1344654,
+
+            pvptalent = "tormentor",
+            
+            handler = function ()
+                applyDebuff( "target", "focused_assault" )
             end,
         },
     } )

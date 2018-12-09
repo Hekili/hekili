@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     local spec = Hekili:NewSpecialization( 577 )
@@ -91,24 +93,26 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         nemesis = 22547, -- 206491
     } )
 
+
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         gladiators_medallion = 3426, -- 208683
         relentless = 3427, -- 196029
         adaptation = 3428, -- 214027
 
-        mana_break = 813, -- 203704
-        detainment = 812, -- 205596
-        rain_from_above = 811, -- 206803
+        cover_of_darkness = 1206, -- 227635
         demonic_origins = 810, -- 235893
-        mana_rift = 809, -- 235903
+        detainment = 812, -- 205596
         eye_of_leotheras = 807, -- 206649
         glimpse = 1204, -- 203468
-        cover_of_darkness = 1206, -- 227635
+        mana_break = 813, -- 203704
+        mana_rift = 809, -- 235903
+        rain_from_above = 811, -- 206803
         reverse_magic = 806, -- 205604
-        unending_hatred = 1218, -- 213480
         solitude = 805, -- 211509
+        unending_hatred = 1218, -- 213480
     } )
+
 
     -- Auras
     spec:RegisterAuras( {
@@ -149,12 +153,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         demon_blades = {
             id = 203555,
         },
-        -- Demonic Origins PvP Talent.
-        demonic_origins = {
-            id = 235894,
-            duration = 3600,
-            max_stack = 1,
-        },
         demonic_wards = {
             id = 278386,
         },
@@ -189,7 +187,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         metamorphosis = {
             id = 162264,
-            duration = function () return buff.demonic_origins.up and 15 or 30 end,
+            duration = function () return pvptalent.demonic_origins.enabled and 15 or 30 end,
             max_stack = 1,
             meta = {
                 extended_by_demonic = function ()
@@ -239,6 +237,44 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             id = 198793,
             duration = 3,
             max_stack = 1,
+        },
+
+        -- PvP Talents
+        demonic_origins = not PTR and {
+            id = 235894,
+            duration = 3600,
+            max_stack = 1,
+        } or nil,
+
+        eye_of_leotheras = {
+            id = 206649,
+            duration = 6,
+            type = "Magic",
+            max_stack = 1,
+        },
+
+        mana_break = {
+            id = 203704,
+            duration = 10,
+            max_stack = 1,
+        },
+
+        rain_from_above_launch = {
+            id = 206803,
+            duration = 1,
+            max_stack = 1,
+        },
+
+        rain_from_above = {
+            id = 206804,
+            duration = 10,
+            max_stack = 1,
+        },
+
+        solitude = {
+            id = 211510,
+            duration = 3600,
+            max_stack = 1
         },
 
         -- Azerite
@@ -394,7 +430,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyBuff( "blade_dance" )
                 setCooldown( "death_sweep", 9 * haste )
-                if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( 20, 'fury' ) end
+                if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( buff.solitude.up and 22 or 20, 'fury' ) end
             end,
         },
         
@@ -470,7 +506,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             usable = function () return debuff.dispellable_magic.up end,
             handler = function ()
                 removeDebuff( "dispellable_magic" )
-                gain( 20, "fury" )
+                gain( buff.solitude.up and 22 or 20, "fury" )
             end,
         },
         
@@ -530,7 +566,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyBuff( "death_sweep" )
                 setCooldown( "blade_dance", 9 * haste )
-                if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( 20, "fury" ) end
+                if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( buff.solitude.up and 22 or 20, "fury" ) end
             end,
         },
         
@@ -541,7 +577,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = -20,
+            spend = function () return buff.solitude.up and -22 or -20 end,
             spendType = "fury",
             
             startsCombat = true,
@@ -569,7 +605,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             usable = function () return target.casting end,
             handler = function ()
                 interrupt()
-                gain( 30, "fury" )
+                gain( buff.solitude.up and 33 or 30, "fury" )
             end,
         },
         
@@ -606,6 +642,23 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                         stat.haste = stat.haste + 25
                     end
                 end
+            end,
+        },
+        
+
+        eye_of_leotheras = {
+            id = 206649,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            pvptalent = "eye_of_leotheras",
+
+            startsCombat = true,
+            texture = 1380366,
+            
+            handler = function ()
+                applyDebuff( "target", "eye_of_leotheras" )
             end,
         },
         
@@ -678,7 +731,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             hasteCD = true,
             gcd = "spell",
 
-            spend = -40,
+            spend = function () return buff.solitude.up and -44 or -40 end,
             spendType = "fury",
             
             startsCombat = true,
@@ -688,6 +741,19 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 setDistance( 5 )
             end,
+        },
+
+
+        fel_lance = {
+            id = 206966,
+            cast = 1,
+            cooldown = 0,
+            gcd = "spell",
+
+            pvptalent = "rain_from_above",
+            buff = "rain_from_above",
+
+            startsCombat = true,
         },
         
 
@@ -718,29 +784,69 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             handler = function ()
                 applyBuff( "immolation_aura" )
-                gain( 10, "fury" )
+                gain( buff.solitude.up and 11 or 10, "fury" )
             end,
         },
         
 
-        --[[ imprison = {
+        imprison = {
             id = 217832,
             cast = 0,
-            cooldown = 45,
+            cooldown = function () return pvptalent.detainment.enabled and 60 or 45 end,
             gcd = "spell",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 1380368,
             
             handler = function ()
+                applyDebuff( "target", "imprison" )
             end,
-        }, ]]
+        },
+        
+
+        mana_break = {
+            id = 203704,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 50,
+            spendType = "fury",
+
+            pvptalent = "mana_break",
+            
+            startsCombat = true,
+            texture = 1380369,
+            
+            handler = function ()
+                applyDebuff( "target", "mana_break" )
+            end,
+        },
+
+
+        mana_rift = {
+            id = 235903,
+            cast = 0,
+            cooldown = 10,
+            gcd = "spell",
+            
+            spend = 50,
+            spendType = "fury",
+
+            pvptalent = "mana_rift",
+            
+            startsCombat = true,
+            texture = 1033912,
+            
+            handler = function ()
+            end,
+        },
         
 
         metamorphosis = {
             id = 191427,
             cast = 0,
-            cooldown = function () return buff.demonic_origins.up and 120 or 240 end,
+            cooldown = function () return pvptalent.demonic_origins.up and 120 or 240 end,
             gcd = "spell",
             
             toggle = "cooldowns",
@@ -812,6 +918,41 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         
 
+        rain_from_above = {
+            id = 206803,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            pvptalent = "rain_from_above",
+
+            startsCombat = false,
+            texture = 1380371,
+            
+            handler = function ()
+                applyBuff( "rain_from_above" )
+            end,
+        },
+        
+
+        reverse_magic = {
+            id = 205604,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            -- toggle = "cooldowns",
+            pvptalent = "reverse_magic",
+
+            startsCombat = false,
+            texture = 1380372,
+            
+            handler = function ()
+                if debuff.reversible_magic.up then removeDebuff( "player", "reversible_magic" ) end
+            end,
+        },
+
+
         --[[ spectral_sight = {
             id = 188501,
             cast = 0,
@@ -874,6 +1015,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                     applyDebuff( "target", "vengeful_retreat" )
                     if talent.momentum.enabled then applyBuff( "prepared" ) end
                 end
+
+                if pvptalent.glimpse.enabled then applyBuff( "blur", 3 ) end
             end,
         },
     } )
