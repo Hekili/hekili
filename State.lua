@@ -937,6 +937,7 @@ local function forecastResources( resource )
                 ( not v.spec      or state.spec[ v.spec ] ) and
                 ( not v.equip     or state.equipped[ v.equip ] ) and 
                 ( not v.talent    or state.talent[ v.talent ].enabled ) and
+                ( not v.pvptalent or state.pvptalent[ v.pvptalent ].enabled ) and
                 ( not v.aura      or state[ v.debuff and 'debuff' or 'buff' ][ v.aura ].remains > 0 ) and
                 ( not v.set_bonus or state.set_bonus[ v.set_bonus ] > 0 ) and
                 ( not v.setting   or state.settings[ v.setting ] ) then
