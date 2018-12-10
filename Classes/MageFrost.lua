@@ -76,6 +76,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         blink = {
             id = 1953,
         },
+        blizzard = PTR and {
+            id = 12486,
+            duration = 3,
+            max_stack = 1,
+        } or nil,
         bone_chilling = {
             id = 205766,
             duration = 8,
@@ -150,6 +155,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 fo.expires = 0
                 fo.caster = "nobody"
             end,
+        },
+        frozen_orb_snare = {
+            id = 289308,
+            duration = 3,
+            max_stack = 1,
         },
         glacial_spike = {
             id = 228600,
@@ -295,22 +305,24 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 300,
             max_stack = 3
         },
-        winters_reach = {
+        winters_reach = not PTR and {
             id = 273347,
             duration = 15,
             max_stack = 1,
-        },
+        } or nil,
     } )
 
 
     -- azerite power.
-    spec:RegisterStateExpr( "winters_reach_active", function ()
-        return false
-    end )
+    if not PTR then
+        spec:RegisterStateExpr( "winters_reach_active", function ()
+            return false
+        end )
 
-    spec:RegisterStateFunction( "winters_reach", function( active )
-        winters_reach_active = active
-    end )
+        spec:RegisterStateFunction( "winters_reach", function( active )
+            winters_reach_active = active
+        end )
+    end
 
 
     spec:RegisterStateExpr( "fingers_of_frost_active", function ()
@@ -455,7 +467,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             velocity = 20,
             
             handler = function ()
-                applyDebuff( "target", "chilled" )
+                applyDebuff( "target", "blizzard" )
             end,
         },
         
@@ -602,7 +614,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if talent.bone_chilling.enabled then addStack( "bone_chilling", nil, 1 ) end
                 removeBuff( "ice_floes" )
 
-                removeBuff( "winters_reach" )
+                if not PTR then removeBuff( "winters_reach" ) end
             end,
         },
         
@@ -674,6 +686,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             handler = function ()
                 addStack( "fingers_of_frost", nil, 1 )
                 if talent.freezing_rain.enabled then applyBuff( "freezing_rain" ) end
+                applyBuff( "frozen_orb" )
+                if PTR then applyDebuff( "target", "frozen_orb_snare" ) end
             end,
         },
         

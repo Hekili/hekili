@@ -290,7 +290,18 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             max_stack = 1,
         },
 
-        -- Azerite Powers.
+        -- Azerite Powers
+        brain_storm = PTR and {
+            id = 273330,
+            duration = 30,
+            max_stack = 1,
+        } or nil,
+
+        equipoise = PTR and {
+            id = 264352,
+            duration = 3600,
+            max_stack = 1,
+        } or nil,
     } )
 
 
@@ -298,6 +309,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         if resource == "arcane_charges" then
             if arcane_charges.current == 0 then removeBuff( "arcane_charge" )
             else applyBuff( "arcane_charge", nil, arcane_charges.current ) end
+        
+        elseif resource == "mana" then
+            if azerite.equipoise.enabled and mana.percent < 70 then
+                removeBuff( "equipoise" )
+            end
         end
     end )
 
@@ -674,6 +690,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             handler = function ()
                 stop_burn_phase()
                 applyBuff( "evocation" )
+                if azerite.brain_storm.enabled then applyBuff( "brain_storm" ) end
             end,
         },
         

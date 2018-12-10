@@ -256,17 +256,23 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         },
 
         -- Azerite Powers
-        preheat = {
+        preheat = not PTR and {
             id = 273333,
             duration = 30,
             max_stack = 1,
-        },
+        } or nil,
 
         blaster_master = {
             id = 274598,
             duration = 3,
+            max_stack = 3,
+        },
+
+        wildfire = PTR and {
+            id = 288800,
+            duration = 10,
             max_stack = 1,
-        }
+        } or nil,
     } )
 
 
@@ -382,6 +388,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             handler = function ()
                 applyBuff( "combustion" )
                 stat.crit = stat.crit + 100
+
+                if azerite.wildfire.enabled then applyBuff( 'wildfire' ) end
             end,
         },
         
@@ -469,7 +477,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 else applyBuff( "heating_up" ) end
 
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
-                if azerite.blaster_master.enabled then applyBuff( "blaster_master" ) end
+                if azerite.blaster_master.enabled then addStack( "blaster_master", nil, 1 ) end
                 
                 applyBuff( "fire_blasting" )
             end,
