@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state =  Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'ROGUE' then
     local spec = Hekili:NewSpecialization( 261 )
@@ -199,11 +201,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 15,
             max_stack = 1,
         },
-        shuriken_combo = {
+        shuriken_combo = not PTR and {
             id = 245640,
             duration = 15,
             max_stack = 4,
-        },
+        } or nil,
         shuriken_tornado = {
             id = 277925,
             duration = 4,
@@ -232,11 +234,42 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
 
         -- Azerite Powers
-        sharpened_blades = {
+        blade_in_the_shadows = {
+            id = 279754,
+            duration = 60,
+            max_stack = 10,
+        },
+
+        nights_vengeance = {
+            id = 273424,
+            duration = 8,
+            max_stack = 1,
+        },
+
+        perforate = {
+            id = 277720,
+            duration = 12,
+            max_stack = 1
+        },
+
+        replicating_shadows = {
+            id = 286131,
+            duration = 1,
+            max_stack = 50
+        },
+
+        sharpened_blades = not PTR and {
             id = 272916,
             duration = 20,
             max_stack = 30,
+        } or nil,
+
+        the_first_dance = {
+            id = 278981,
+            duration = function () return buff.shadow_dance.duration end,
+            max_stack = 1,
         },
+        
     } )
 
 
@@ -399,7 +432,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     end )
 
 
-        -- We need to break stealth when we start combat from an ability.
+    -- We need to break stealth when we start combat from an ability.
     spec:RegisterHook( "runHandler", function( ability )
         local a = class.abilities[ ability ]
 
@@ -486,7 +519,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             notalent = "gloomblade",
             
             handler = function ()
-            	applyDebuff( 'target', "shadows_grasp", 8 )
+                applyDebuff( 'target', "shadows_grasp", 8 )
+                if azerite.perforate.enabled and buff.perforate.up then
+                    -- We'll assume we're attacking from behind if we've already put up Perforate once.
+                    addStack( "perforate", nil, 1 )
+                    gainChargeTime( "shadow_blades", 0.5 )
+                end
             	gain( buff.shadow_blades.up and 2 or 1, 'combo_points')
             end,
         },
@@ -628,6 +666,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             	if talent.alacrity.enabled and combo_points.current > 4 then
                     addStack( "alacrity", 20, 1 )
                 end
+                removeBuff( "nights_vengeance" )
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
@@ -761,6 +800,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     addStack( "alacrity", 20, 1 )
                 end
                 local combo = min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current )
+
+                if azerite.nights_vengeance.enabled then applyBuff( "nights_vengeance" ) end
                 
                 applyDebuff( "target", "nightblade", 8 + 2 * ( combo - 1 ) )
                 spend( combo, "combo_points" )
@@ -870,7 +911,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 applyBuff( "shadow_dance" )
                 if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
-            	if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows", 3 ) end
+                if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows", 3 ) end
+                if azerite.the_first_dance.enabled then
+                    gain( 2, "combo_points" )
+                    applyBuff( "the_first_dance" )
+                end
             end,
         },
         
@@ -898,7 +943,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return 40 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function () return ( ( PTR and azerite.blade_in_the_shadows.enabled ) and 38 or 40 ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
 
             cycle = function () return talent.find_weakness.enabled and "find_weakness" or nil end,
@@ -909,6 +954,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return stealthed.all end,
             handler = function ()
                 gain( buff.shadow_blades.up and 3 or 2, 'combo_points' )
+                if azerite.blade_in_the_shadows.enabled then addStack( "blade_in_the_shadows", nil, 1 ) end
                 
                 if talent.find_weakness.enabled then
                     applyDebuff( "target", "find_weakness" )
@@ -948,7 +994,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             handler = function ()
             	gain( active_enemies + ( buff.shadow_blades.up and 1 or 0 ), 'combo_points')
-            	addStack( "shuriken_combo", 15, active_enemies - 1 )
+            	if not PTR then addStack( "shuriken_combo", 15, active_enemies - 1 ) end
             end,
         },
         
@@ -989,7 +1035,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             handler = function ()
                 gain( active_enemies + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
-                removeBuff( "sharpened_blades" )
+                if not PTR then removeBuff( "sharpened_blades" ) end
             end,
         },
         

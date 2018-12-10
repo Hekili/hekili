@@ -8,6 +8,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state =  Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'ROGUE' then
     local spec = Hekili:NewSpecialization( 260 )
@@ -253,6 +255,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 3600,
             max_stack = 1,
         },
+        keep_your_wits_about_you = PTR and {
+            id = 288988,
+            duration = 15,
+            max_stack = 30,
+        } or nil,
         paradise_lost = {
             id = 278962,
             duration = 3600,
