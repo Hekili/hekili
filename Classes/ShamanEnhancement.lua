@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 -- Generate the Enhancement spec database only if you're actually a Shaman.
 if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
@@ -56,7 +58,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             value = -3,
         },
 
-        ls_overcharge = {
+        ls_overcharge = not PTR and {
             aura = "lightning_shield_overcharge",
 
             last = function ()
@@ -68,7 +70,21 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             interval = 1,
             value = 10
-        }
+        } or nil,
+
+        resonance_totem = {
+            aura = 'resonance_totem',
+
+            last = function ()
+                local app = state.buff.resonance_totem.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 1,
+            value = 1,
+        },
     } )
 
 
@@ -332,17 +348,47 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
 
         -- Azerite Powers
+        ancestral_resonance = {
+            id = 277943,
+            duration = 15,
+            max_stack = 1,
+        },
+
         lightning_conduit = {
             id = 275391,
             duration = 60,
             max_stack = 1
         },
 
+        primal_primer = {
+            id = 273006,
+            duration = 30,
+            max_stack = 10,
+        },
+
+        roiling_storm = {
+            id = 278719,
+            duration = 3600,
+            max_stack = 15,
+            meta = {
+                stack = function ( t )
+                    if t.down then return 0 end
+                    return min( 15, t.count + floor( ( query_time - t.applied ) / 2 ) )
+                end,
+            }
+        },
+
         strength_of_earth = {
             id = 273465,
             duration = 10,
             max_stack = 1,
-        }
+        },
+
+        thunderaans_fury = {
+            id = 287802,
+            duration = 6,
+            max_stack = 1,
+        },
     } )
 
 
@@ -666,6 +712,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             handler = function ()
                 removeBuff( 'hot_hand' )
+                removeDebuff( "target", "primal_primer" )
+
                 if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'fire_of_the_twisting_nether' )
                     if buff.crash_lightning.up then applyBuff( 'shock_of_the_twisting_nether' ) end
@@ -748,8 +796,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             spend = function()
                 if buff.stormbringer.up then return 0 end
-                if buff.ascendance.up then return 10 end
-                return 30
+                return max( 0, ( buff.roiling_storm.stack * -2 ) + ( buff.ascendance.up and 10 or 30 ) )
             end,
 
             spendType = 'maelstrom',
@@ -772,7 +819,12 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 setCooldown( 'windstrike', action.stormstrike.cooldown )
                 setCooldown( 'strike', action.stormstrike.cooldown )
 
-                removeBuff( 'stormbringer' )
+                if buff.stormbringer.up then
+                    removeBuff( 'stormbringer' )
+                elseif azerite.roiling_storm.enabled then
+                    applyBuff( "roiling_storm", nil, 0 )
+                end
+
                 removeBuff( "gathering_storms" )
 
                 if azerite.lightning_conduit.enabled then
@@ -868,7 +920,12 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 setCooldown( 'stormstrike', action.stormstrike.cooldown )
                 setCooldown( 'strike', action.stormstrike.cooldown )
 
-                removeBuff( 'stormbringer' )
+                if buff.stormbringer.up then
+                    removeBuff( 'stormbringer' )
+                elseif azerite.roiling_storm.enabled then
+                    applyBuff( "roiling_storm", nil, 0 ) -- apply at 0 stacks, will stack over time.
+                end
+
                 removeBuff( "gathering_storms" )
 
                 removeBuff( "strength_of_earth" )

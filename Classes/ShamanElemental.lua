@@ -7,21 +7,38 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'SHAMAN' then
     local spec = Hekili:NewSpecialization( 262, true )
 
-    spec:RegisterResource( Enum.PowerType.Maelstrom )
+    spec:RegisterResource( Enum.PowerType.Maelstrom, {
+        resonance_totem = {
+            aura = 'resonance_totem',
+
+            last = function ()
+                local app = state.buff.resonance_totem.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 1,
+            value = 1,
+        },
+    } )
     spec:RegisterResource( Enum.PowerType.Mana )
     
     -- Talents
     spec:RegisterTalents( {
-        exposed_elements = 22356, -- 260694
+        exposed_elements = not PTR and 22356 or nil, -- 260694
+        earthen_rage = PTR and 22356 or nil, -- 170374
         echo_of_the_elements = 22357, -- 108283
         elemental_blast = 22358, -- 117014
 
         aftershock = 23108, -- 273221
-        master_of_the_elements = 22139, -- 16166
+        call_the_thunder = PTR and 22139 or nil, -- 260897
         totem_mastery = 23190, -- 210643
 
         spirit_wolf = 23162, -- 260878
@@ -31,12 +48,13 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         high_voltage = 19271, -- 260890
         storm_elemental = 19272, -- 192249
         liquid_magma_totem = 19273, -- 192222
+        master_of_the_elements = 22139, -- 16166
 
         natures_guardian = 22144, -- 30884
         ancestral_guidance = 22172, -- 108281
         wind_rush_totem = 21966, -- 192077
 
-        earthen_rage = 22145, -- 170374
+        surge_of_power = PTR and 22145 or nil, -- 262303
         primal_elementalist = 19266, -- 117013
         icefury = 23111, -- 210714
 
@@ -167,7 +185,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
         flame_shock = {
             id = 188389,
-            duration = 18,
+            duration = 24,
             type = "Magic",
             max_stack = 1,
         },
@@ -211,13 +229,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             max_stack = 1,
         },
         
-        --[[ don't need this, it is in Classes.lua
-        sated = {
-            id = 57724,
-            duration = 600,
-            max_stack = 1,
-        }, ]]
-
         spirit_wolf = {
             id = 260881,
             duration = 3600,
@@ -243,6 +254,18 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             max_stack = 2,
         },
         
+        surge_of_power = {
+            id = 285514,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        surge_of_power_debuff = {
+            id = 285515,
+            duration = 6,
+            max_stack = 1,
+        },
+
         tailwind_totem = {
             id = 210659,
             duration = 120,
@@ -311,7 +334,21 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 tm.applied = 0
                 tm.caster = "nobody"
             end,
-        }
+        },
+
+
+        -- Azerite Powers
+        ancestral_resonance = {
+            id = 277943,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        tectonic_thunder = {
+            id = 286976,
+            duration = 15,
+            max_stack = 1,
+        },
     } )
 
 
@@ -472,7 +509,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
         chain_lightning = {
             id = 188443,
-            cast = function () return buff.stormkeeper.up and 0 or ( 2 * haste ) end,
+            cast = function () return ( buff.tectonic_thunder.up or buff.stormkeeper.up ) and 0 or ( 2 * haste ) end,
             cooldown = 0,
             gcd = "spell",
             
@@ -486,8 +523,14 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 136015,
             
             handler = function ()
-                removeBuff( 'master_of_the_elements' )
-                removeBuff( 'stormkeeper' )
+                removeBuff( "master_of_the_elements" )
+                
+                if buff.stormkeeper.up then
+                    gain( 2 * min( 5, active_enemies ), "maelstrom" )
+                    removeStack( "stormkeeper" )
+                else
+                    removeBuff( "tectonic_thunder" )
+                end
 
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
@@ -592,6 +635,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             
             handler = function ()
                 removeBuff( "echoes_of_the_great_sundering" )
+                removeBuff( "master_of_the_elements" )
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
         },
@@ -635,7 +679,9 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         fire_elemental = {
             id = 198067,
             cast = 0,
+            charges = 1,
             cooldown = 150,
+            recharge = 150,
             gcd = "spell",
 
             toggle = 'cooldowns',
@@ -661,6 +707,10 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             
             handler = function ()
                 applyDebuff( 'target', 'flame_shock' )
+                if buff.surge_of_power.up then
+                    active_dot.surge_of_power = min( active_enemies, active_dot.flame_shock + 1 )
+                    removeBuff( "surge_of_power" )
+                end
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
             end,
         },
@@ -678,6 +728,17 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
                 removeBuff( 'master_of_the_elements' )
                 applyDebuff( 'target', 'frost_shock' )
+
+                if buff.icefury.up then
+                    gain( 8, "maelstrom" )
+                    removeStack( "icefury", 1 )
+                end
+
+                if buff.surge_of_power.up then
+                    applyDebuff( "target", "surge_of_power_debuff" )
+                    removeBuff( "surge_of_power" )
+                end
+
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "chill_of_the_twisting_nether" ) end
             end,
         },
@@ -737,7 +798,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 30,
             gcd = "spell",
             
-            spend = -15,
+            spend = PTR and -25 or -15,
             spendType = 'maelstrom',
 
             startsCombat = true,
@@ -780,15 +841,19 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             recharge = function () return buff.ascendance.up and 0 or ( 8 * haste ) end,
             gcd = "spell",
             
-            spend = 0.06,
-            spendType = "mana",
+            spend = -10,
+            spendType = "maelstrom",
             
             startsCombat = true,
             texture = 237582,
             
             handler = function ()
                 removeBuff( "lava_surge" )
-                gain( 10, "maelstrom" )
+                if talent.master_of_the_elements.enabled then applyBuff( "master_of_the_elements" ) end
+                if talent.surge_of_power.enabled then
+                    gainChargeTime( "fire_elemental", 6 )
+                    removeBuff( "surge_of_power" )
+                end
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
             end,
         },
@@ -807,7 +872,17 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 136048,
             
             handler = function ()
-                removeStack( 'stormkeeper' )
+                removeBuff( "master_of_the_elements" )
+                
+                if buff.stormkeeper.up then
+                    gain( 3, "maelstrom" )
+                    removeStack( 'stormkeeper' )
+                end
+
+                if buff.surge_of_power.up then
+                    gain( 3, "maelstrom" )
+                    removeBuff( "surge_of_power" )
+                end
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
         },
@@ -847,7 +922,9 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         storm_elemental = {
             id = 192249,
             cast = 0,
+            charges = 1,
             cooldown = 150,
+            recharge = 150,
             gcd = "spell",
             
             toggle = 'cooldowns',
