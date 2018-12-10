@@ -88,7 +88,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         bursting_shot = {
             id = 186387,
-            duration = 4,
+            duration = PTR and 6 or 4,
             max_stack = 1,
         },
         camouflage = {
@@ -111,6 +111,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         explosive_shot = {
             id = 212431,
+            duration = 3,
+            type = "Magic",
+            max_stack = 1,
         },
         feign_death = {
             id = 5384,
@@ -194,10 +197,26 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 20,
             max_stack = 1,
         },
-        trueshot = {
+        trueshot = PTR and {
+            id = 288613,
+            duration = 15,
+            max_stack = 1,
+        } or {
             id = 193526,
             duration = 15,
             max_stack = 1,
+        },
+
+
+        -- Azerite Powers
+        unerring_vision = {
+            id = 274447,
+            duration = function () return buff.trueshot.duration end,
+            max_stack = 10,
+            meta = {
+                stack = function () return max( 1, ceil( query_time - buff.trueshot.applied ) ) end,
+                count = function () return max( 1, ceil( query_time - buff.trueshot.applied ) ) end,
+            }
         },
     } )
 
@@ -235,8 +254,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 19434,
             cast = function () return buff.lock_and_load.up and 0 or ( 2.5 * haste ) end,
             charges = 2,
-            cooldown = 12,
-            recharge = 12,
+            cooldown = function () return haste * ( ( PTR and buff.trueshot.up ) and 4.8 or 12 ) end,
+            recharge = function () return haste * ( ( PTR and buff.trueshot.up ) and 4.8 or 12 ) end,
             gcd = "spell",
             
             spend = function () return buff.lock_and_load.up and 0 or 30 end,
@@ -464,7 +483,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         exhilaration = {
             id = 109304,
             cast = 0,
-            cooldown = 120,
+            cooldown = function () return azerite.natures_salve.enabled and 105 or 120 end,
             gcd = "spell",
             
             toggle = "defensives",
@@ -490,12 +509,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 236178,
             
             handler = function ()
+                applyDebuff( "target", "explosive_shot" )
                 removeBuff( "steady_focus" )
             end,
         },
         
 
-        explosive_shot_detonate = {
+        explosive_shot_detonate = not PTR and {
             id = 212679,
             cast = 0,
             cooldown = 0,
@@ -507,7 +527,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             usable = function () return prev_gcd[1].explosive_shot end,
             handler = function ()
             end,
-        },
+        } or nil,
         
 
         feign_death = {
@@ -644,9 +664,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         rapid_fire = {
             id = 257044,
-            cast = function () return 3 * ( talent.streamline.enabled and 1.3 or 1 ) * haste end,
+            cast = function () return 3 * ( talent.streamline.enabled and ( PTR and 1.2 or 1.3 ) or 1 ) * haste end,
             channeled = true,
-            cooldown = 20,
+            cooldown = function () return ( PTR and buff.trueshot.up ) and ( haste * 8 ) or 20 end,
             gcd = "spell",
             
             startsCombat = true,
@@ -655,6 +675,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 applyBuff( "rapid_fire" )
                 removeBuff( "lethal_shots" )
+                removeBuff( "trick_shots" )
             end,
             postchannel = function () removeBuff( "double_tap" ) end,
         },
@@ -689,12 +710,16 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 1.75,
             cooldown = 0,
             gcd = "spell",
+
+            spend = PTR and -10 or nil,
+            spendType = PTR and "focus" or nil,
             
             startsCombat = true,
             texture = 132213,
             
             handler = function ()
                 if talent.steady_focus.enabled then applyBuff( "steady_focus", 12, min( 2, buff.steady_focus.stack + 1 ) ) end
+                if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 4 end
             end,
         },
 
@@ -752,7 +777,24 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         
 
-        trueshot = {
+        trueshot = PTR and {
+            id = 288613,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = false,
+            texture = 132329,
+            
+            handler = function ()
+                applyBuff( "trueshot" )
+                if azerite.unerring_vision.enabled then
+                    applyBuff( "unerring_vision" )
+                end
+            end,
+        } or {
             id = 193526,
             cast = 0,
             cooldown = 180,

@@ -288,6 +288,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 20,
             max_stack = 10
         },
+
+        primeval_intuition = {
+            id = 288573,
+            duration = 12,
+            max_stack = 5,
+        },
     } )
 
 
@@ -841,6 +847,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                     end
                 end
 
+                if azerite.primeval_intuition.enabled then
+                    addStack( "primeval_intuition", nil, 1 )
+                end
+
                 if azerite.blur_of_talons.enabled and buff.coordinated_assault.up then
                     addStack( "blur_of_talons", nil, 1)
                 end
@@ -930,6 +940,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                     end
                 end
 
+                if azerite.primeval_intuition.enabled then
+                    addStack( "primeval_intuition", nil, 1 )
+                end
 
                 if azerite.blur_of_talons.enabled and buff.coordinated_assault.up then
                     addStack( "blur_of_talons", nil, 1)
