@@ -217,7 +217,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 10,
             meta = {
                 stack = function () return max( 1, ceil( query_time - buff.trueshot.applied ) ) end,
-                count = function () return max( 1, ceil( query_time - buff.trueshot.applied ) ) end,
             }
         },
     } )
