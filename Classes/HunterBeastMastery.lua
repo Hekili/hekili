@@ -272,6 +272,18 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
 
+        dire_beast_basilisk = {
+            id = 209967,
+            duration = 30,
+            max_stack = 1,
+        },
+
+        dire_beast_hawk = {
+            id = 208684,
+            duration = 3600,
+            max_stack = 1,
+        },
+
         eagle_eye = {
             id = 6197,
             duration = 60,
@@ -392,6 +404,65 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
 
+        -- PvP Talents
+        dire_beast_hawk = {
+            id = 208684,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        hiexplosive_trap = {
+            id = 236777,
+            duration = 0.1,
+            max_stack = 1,
+        },
+
+        interlope = {
+            id = 248518,
+            duration = 45,
+            max_stack = 1,
+        },
+
+        roar_of_sacrifice = {
+            id = 53480,
+            duration = 12,
+            max_stack = 1,
+        },
+
+        scorpid_sting = {
+            id = 202900,
+            duration = 8,
+            type = "Poison",
+            max_stack = 1,
+        },
+
+        spider_sting = {
+            id = 202914,
+            duration = 4,
+            type = "Poison",
+            max_stack = 1,
+        },
+
+        the_beast_within = {
+            id = 212704,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        viper_sting = {
+            id = 202797,
+            duration = 6,
+            type = "Poison",
+            max_stack = 1,
+        },
+
+        wild_protector = {
+            id = 204205,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+
         -- Azerite Powers
         primal_instincts = {
             id = 279810,
@@ -425,7 +496,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_cheetah = {
             id = 186257,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return pvptalent.hunting_pack.enabled and 90 or 180 end,
             gcd = "spell",
             
             startsCombat = false,
@@ -531,6 +602,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             recheck = function () return buff.bestial_wrath.remains end,
             handler = function ()
                 applyBuff( 'bestial_wrath' )
+                if pvptalent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
             end,
         },
         
@@ -661,6 +733,47 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         
 
+        dire_beast_basilisk = {
+            id = 205691,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            spend = 60,
+            spendType = "focus",
+            
+            toggle = "cooldowns",
+            pvptalent = "dire_beast_basilisk",
+
+            startsCombat = true,
+            texture = 1412204,
+            
+            handler = function ()
+                applyDebuff( "target", "dire_beast_basilisk" )
+            end,
+        },
+        
+
+        dire_beast_hawk = {
+            id = 208652,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+            
+            spend = 30,
+            spendType = "focus",
+
+            pvptalent = "dire_beast_hawk",
+            
+            startsCombat = true,
+            texture = 612363,
+            
+            handler = function ()
+                applyDebuff( "target", "dire_beast_hawk" )
+            end,
+        },
+        
+
         disengage = {
             id = 781,
             cast = 0,
@@ -751,6 +864,38 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         
 
+        hiexplosive_trap = {
+            id = 236776,
+            cast = 0,
+            cooldown = 40,
+            gcd = "spell",
+
+            pvptalent = "hiexplosive_trap",
+            
+            startsCombat = false,
+            texture = 135826,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        interlope = {
+            id = 248518,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            pvptalent = "interlope",
+            
+            startsCombat = false,
+            texture = 132180,
+            
+            handler = function ()
+            end,
+        },
+        
+
         intimidation = {
             id = 19577,
             cast = 0,
@@ -803,11 +948,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
+
+            nopvptalent = "interlope",
             
             startsCombat = true,
             texture = 132180,
             
-            handler = function ()
+            handler = function ()                
             end,
         },
         
@@ -831,6 +978,61 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             recheck = function () return buff.beast_cleave.remains - gcd, buff.beast_cleave.remains end,
             handler = function ()
                 applyBuff( 'beast_cleave' )
+            end,
+        },
+        
+
+        roar_of_sacrifice = {
+            id = 53480,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            pvptalent = "roar_of_sacrifice",
+            
+            startsCombat = false,
+            texture = 464604,
+            
+            handler = function ()
+                applyBuff( "roar_of_sacrifice" )
+            end,
+        },
+        
+
+        scorpid_sting = {
+            id = 202900,
+            cast = 0,
+            cooldown = 24,
+            gcd = "spell",
+
+            pvptalent = "scorpid_sting",
+            
+            startsCombat = true,
+            texture = 132169,
+            
+            handler = function ()
+                applyDebuff( "target", "scorpid_sting" )
+                setCooldown( "spider_sting", max( 8, cooldown.spider_sting.remains ) )
+                setCooldown( "viper_sting", max( 8, cooldown.viper_sting.remains ) )
+            end,
+        },
+        
+
+        spider_sting = {
+            id = 202914,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            pvptalent = "spider_sting",
+            
+            startsCombat = true,
+            texture = 1412206,
+            
+            handler = function ()
+                applyDebuff( "target", "spider_sting" )
+                setCooldown( "scorpid_sting", max( 8, cooldown.scorpid_sting.remains ) )
+                setCooldown( "viper_sting", max( 8, cooldown.viper_sting.remains ) )
             end,
         },
         
@@ -904,6 +1106,24 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
         },
 
+        viper_sting = {
+            id = 202797,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            pvptalent = "viper_sting",
+            
+            startsCombat = true,
+            texture = 236200,
+            
+            handler = function ()
+                applyDebuff( "target", "spider_sting" )
+                setCooldown( "scorpid_sting", max( 8, cooldown.scorpid_sting.remains ) )
+                setCooldown( "viper_sting", max( 8, cooldown.viper_sting.remains ) )
+            end,
+        },
+        
         --[[ wartime_ability = {
             id = 264739,
             cast = 0,
