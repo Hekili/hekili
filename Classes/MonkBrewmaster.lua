@@ -157,7 +157,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
         rushing_jade_wind = {
             id = 116847,
-            duration = function () return 9 * haste end,
+            duration = function () return 6 * haste end,
             max_stack = 1,
         },
         sign_of_the_warrior = {
