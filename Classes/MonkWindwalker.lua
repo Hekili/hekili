@@ -12,7 +12,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     local spec = Hekili:NewSpecialization( 269 )
 
     spec:RegisterResource( Enum.PowerType.Energy, {
-        rushing_jade_wind = {
+        rushing_jade_wind = not PTR and {
             resource = 'energy',
             -- setting = 'forecast_fury',
             aura = 'rushing_jade_wind',
@@ -32,7 +32,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             interval = function () return 0.75 * state.haste end,
             value = -3,
-        },
+        } or nil,
 
         crackling_jade_lightning = {
             aura = 'crackling_jade_lightning',
@@ -208,7 +208,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 107428,
             duration = 10,
         },
-        rushing_jade_wind = {
+        rushing_jade_wind = PTR and {
+            id = 116847,
+            duration = function () return 9 * haste end,
+            max_stack = 1,
+            dot = "buff",
+        } or {
             id = 261715,
             duration = 3600,
             dot = "buff",
@@ -839,7 +844,29 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
         
 
-        rushing_jade_wind = {
+        rushing_jade_wind = PTR and {
+            id = 116847,
+            cast = 0,
+            cooldown = function ()
+                local x = 6 * haste
+                if buff.serenity.up then x = max( 0, x - ( buff.serenity.remains / 2 ) ) end
+                return x
+            end,
+            hasteCD = true,
+            gcd = "spell",
+            
+            spend = 1,
+            spendType = "chi",
+            
+            talent = "rushing_jade_wind",
+
+            startsCombat = false,
+            texture = 606549,
+            
+            handler = function ()
+                applyBuff( "rushing_jade_wind" )
+            end,
+        } or {
             id = 261715,
             cast = 0,
             cooldown = function ()
