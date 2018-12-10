@@ -9,6 +9,7 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
+
 if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     local spec = Hekili:NewSpecialization( 251 )
 

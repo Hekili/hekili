@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'MONK' then
     local spec = Hekili:NewSpecialization( 269 )
@@ -136,6 +138,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 116706,
             duration = 8,
         },
+        exit_strategy = {
+            id = 289324,
+            duration = 2,
+            max_stack = 1
+        },
         eye_of_the_tiger = {
             id = 196608,
             duration = 8
@@ -166,7 +173,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 fsk.applied = 0
                 fsk.caster = "nobody"
             end,
-        },
+        },        
         hit_combo = {
             id = 196741,
             duration = 10,
@@ -266,17 +273,35 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
 
         -- Azerite Powers
-        iron_fists = {
-            id = 272806,
-            duration = 10,
+        dance_of_chiji = {
+            id = 286587,
+            duration = 15,
+            max_stack = 1
+        },
+
+        fury_of_xuen = {
+            id = 287062,
+            duration = 20,
+            max_stack = 67,
+        },
+
+        fury_of_xuen_haste = {
+            id = 287063,
+            duration = 8,
             max_stack = 1,
         },
 
-        swift_roundhouse = {
+        iron_fists = not PTR and {
+            id = 272806,
+            duration = 10,
+            max_stack = 1,
+        } or nil,
+
+        swift_roundhouse = not PTR and {
             id = 278710,
             duration = 12,
             max_stack = 2,
-        },
+        } or nil,
 
         sunrise_technique = {
             id = 273298,
@@ -366,8 +391,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             if last_combo == key then removeBuff( "hit_combo" )
             else
                 if talent.hit_combo.enabled then addStack( "hit_combo", 10, 1 ) end
+                if azerite.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end
                 
-                if azerite.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then
+                if not PTR and azerite.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then
                     cooldown.touch_of_death.expires = cooldown.touch_of_death.expires - 0.25
                 end
             end
@@ -453,7 +479,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 if talent.eye_of_the_tiger.enabled then applyDebuff( "target", "eye_of_the_tiger" ) end
                 applyDebuff( "target", "mark_of_the_crane", 15 )
 
-                if azerite.swift_roundhouse.enabled then
+                if not PTR and azerite.swift_roundhouse.enabled then
                     addStack( "swift_roundhouse", nil, 1 )
                 end
             end,
@@ -667,7 +693,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
             
             handler = function ()
                 if level < 116 and set_bonus.tier20_4pc == 1 then applyBuff( "pressure_point", 5 + action.fists_of_fury.cast ) end
-                if azerite.iron_fists.enabled and active_enemies > 3 then applyBuff( "iron_fists" ) end
+                if not PTR and azerite.iron_fists.enabled and active_enemies > 3 then applyBuff( "iron_fists" ) end
+                if PTR and buff.fury_of_xuen.stack >= 50 then
+                    applyBuff( "fury_of_xuen_haste" )
+                    summonPet( "xuen", 8 )
+                    removeBuff( "fury_of_xuen" )
+                end
             end,
         },
         
@@ -819,7 +850,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 applyDebuff( 'target', 'mark_of_the_crane' )
                 removeBuff( 'pressure_point' )
-                removeBuff( "swift_roundhouse" )
+                if not PTR then removeBuff( "swift_roundhouse" ) end
 
                 if azerite.sunrise_technique.enabled then applyDebuff( "target", "sunrise_technique" ) end
             end,
@@ -840,6 +871,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             notalent = "chi_torpedo",
             
             handler = function ()
+                if azerite.exit_strategy.enabled then applyBuff( "exit_strategy" ) end
             end,
         },
         
@@ -959,7 +991,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 2,
+            spend = function () return buff.dance_of_chiji.up and 0 or 2 end,
             spendType = "chi",
             
             startsCombat = true,

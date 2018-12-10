@@ -7,6 +7,9 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
+
 -- needed for Frenzy.
 local FindUnitBuffByID = ns.FindUnitBuffByID
 

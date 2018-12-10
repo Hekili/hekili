@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'MONK' then
     local spec = Hekili:NewSpecialization( 268 )
@@ -226,6 +228,14 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 icd.expires = 0
                 icd.caster = "nobody"
             end
+        },
+
+
+        -- Azerite Powers
+        straight_no_chaser = {
+            id = 285959,
+            duration = 7,
+            max_stack = 1,
         }
     } )
 
@@ -761,6 +771,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 applyBuff( "ironskin_brew", min( 21, buff.ironskin_brew.remains + 7 ) )
                 spendCharges( "purifying_brew", 1 )
 
+                -- NOTE:  CHECK FOR DURATION EXTENSION LIKE ISB...
+                if PTR and azerite.straight_no_chaser.enabled then applyBuff( "straight_no_chaser" ) end
                 if set_bonus.tier20_2pc == 1 then healing_sphere.count = healing_sphere.count + 1 end
 
                 removeBuff( "blackout_combo" )
