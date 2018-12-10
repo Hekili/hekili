@@ -91,7 +91,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         },
         avenging_wrath = {
             id = 31884,
-            duration = 20,
+            duration = function () return azerite.lights_decree.enabled and 25 or 20 end,
             max_stack = 1,
         },
         blessed_hammer = {
@@ -245,6 +245,15 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 end
             end,
         },
+
+
+        -- Azerite Powers
+        empyreal_ward = PTR and {
+            id = 287731,
+            duration = 60,
+            max_stack = 1,
+        },
+
     } )
 
 
@@ -778,7 +787,9 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             texture = 135928,
             
             handler = function ()
+                gain( health.max, "health" )
                 applyDebuff( "player", "forbearance" )
+                if PTR and azerite.empyreal_ward.enabled then applyBuff( "empyrael_ward" ) end
             end,
         },
         

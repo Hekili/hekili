@@ -49,7 +49,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
     spec:RegisterAuras( {
         avenging_wrath = {
             id = 31884,
-            duration = 20,
+            duration = function () return azerite.lights_decree.enabled and 25 or 20 end,
             max_stack = 1,
         },
 
@@ -83,12 +83,6 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         divine_purpose = {
             id = 223819,
             duration = 12,
-            max_stack = 1,
-        },
-
-        divine_right = {
-            id = 278523,
-            duration = 15,
             max_stack = 1,
         },
 
@@ -193,6 +187,27 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             duration = 12,
             max_stack = 3
         },
+
+
+        -- Azerite Powers
+        divine_right = not PTR and {
+            id = 278523,
+            duration = 15,
+            max_stack = 1,
+        } or nil,
+
+        empyreal_ward = PTR and {
+            id = 287731,
+            duration = 60,
+            max_stack = 1,
+        },
+
+        empyrean_power = PTR and {
+            id = 286393,
+            duration = 15,
+            max_stack = 1
+        },
+
     } )
 
     spec:RegisterGear( 'tier19', 138350, 138353, 138356, 138359, 138362, 138369 )
@@ -263,7 +278,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             
             usable = function () return not buff.avenging_wrath.up end,
             handler = function ()
-                applyBuff( 'avenging_wrath', 20 )
+                applyBuff( 'avenging_wrath' )
                 if level < 115 then
                     if equipped.liadrins_fury_unleashed then gain( 1, 'holy_power' ) end
                 end
@@ -469,6 +484,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
+                if buff.empyrean_power.up then return 0 end
                 return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 )
             end,
             spendType = "holy_power",
@@ -754,7 +770,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             
             handler = function ()
                 gain( health.max, "health" )
-                applyDebuff( 'player', 'forbearance', 30 )                
+                applyDebuff( 'player', 'forbearance', 30 )
+                if PTR and azerite.empyreal_ward.enabled then applyBuff( "empyrael_ward" ) end
             end,
         },
         
