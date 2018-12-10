@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'PRIEST' then
     local spec = Hekili:NewSpecialization( 258, true )
@@ -63,6 +65,24 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             end,
         },
 
+        void_torrent = {
+            aura = "void_torrent",
+
+            last = function ()
+                local app = state.buff.void_torrent.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            stop = function( x )
+                return x == 0
+            end,
+
+            interval = 1,
+            value = 7.5,
+        },
+
         vamp_touch_t19 = {
             aura = "vampiric_touch",
             set_bonus = "tier19_2pc",
@@ -90,7 +110,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
         body_and_soul = 22315, -- 64129
         sanlayn = 23374, -- 199855
-        mania = 21976, -- 193173
+        mania = not PTR and 21976 or nil, -- 193173
+        intangibility = PTR and 21976 or nil, -- 288733
 
         twist_of_fate = 23125, -- 109142
         misery = 23126, -- 238558
@@ -170,6 +191,11 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             duration = 10,
             max_stack = 1,
         },
+        focused_will = {
+            id = 45242,
+            duration = 8,
+            max_stack = 2,
+        },
         levitate = {
             id = 111759,
             duration = 600,
@@ -183,7 +209,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         mind_bomb = {
             id = 226943,
-            duration = 5,
+            duration = 6,
             type = "Magic",
             max_stack = 1,
         },
@@ -269,7 +295,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         surrendered_to_madness = {
             id = 263406,
-            duration = 30,
+            duration = PTR and 15 or 30,
             max_stack = 1,
         },
         vampiric_embrace = {
@@ -325,6 +351,44 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 end,
             },
         },
+        weakened_soul = {
+            id = 6788,
+            duration = function () return 7.5 * haste end,
+            max_stack = 1,
+        },
+
+
+        -- Azerite Powers
+        chorus_of_insanity = {
+            id = 279572,
+            duration = 120,
+            max_stack = 120,
+        },
+
+        death_denied = {
+            id = 287723,
+            duration = 10,
+            max_stack = 1,
+        },
+
+        depth_of_the_shadows = {
+            id = 275544,
+            duration = 12,
+            max_stack = 30
+        },
+
+        searing_dialogue = {
+            id = 288371,
+            duration = 1,
+            max_stack = 1
+        },
+
+        thought_harvester = {
+            id = 288343,
+            duration = 20,
+            max_stack = 1
+        },
+
     } )
 
 
@@ -423,6 +487,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             usable = function () return debuff.dispellable_magic.up end,
             handler = function ()
                 removeDebuff( "target", "dispellable_magic" )
+                gain( 6, "insanity" )
             end,
         },
         
@@ -430,7 +495,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         dispersion = {
             id = 47585,
             cast = 0,
-            cooldown = 120,
+            cooldown = function () return talent.intangibility.enabled and 90 or 120 end,
             gcd = "spell",
             
             toggle = "defensives",
@@ -474,6 +539,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             texture = 463835,
             
             handler = function ()
+                if azerite.death_denied.enabled then applyBuff( "death_denied" ) end
             end,
         },
         
@@ -511,6 +577,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             usable = function () return debuff.dispellable_magic.up end,
             handler = function ()
                 removeDebuff( "target", "dispellable_magic" )
+                gain( 6, "insanity" )
             end,
         },
         
@@ -647,6 +714,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             
             handler = function ()
                 applyDebuff( "target", "mind_sear" )
+                removeBuff( "thought_harvester" )
+                if azerite.searing_dialogue.enabled then applyDebuff( "target", "searing_dialogue" ) end
                 channelSpell( "mind_sear" )
             end,
         },
@@ -717,13 +786,17 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             
             spend = 0.02,
             spendType = "mana",
+
+            nodebuff = "weakened_soul",
             
             startsCombat = false,
             texture = 135940,
             
             handler = function ()
                 applyBuff( "power_word_shield" )
-                if talent.body_and_soul.enabled then applyBuff( "power_word_shield" ) end
+                applyDebuff( "weakened_soul" )
+                if talent.body_and_soul.enabled then applyBuff( "body_and_soul" ) end
+                gain( 6, "insanity" )
             end,
         },
         
@@ -780,6 +853,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             texture = 135935,
             
             handler = function ()
+                gain( 6, "insanity" )
             end,
         },
         
@@ -849,6 +923,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             texture = 136202,
             
             handler = function ()
+                removeBuff( "depth_of_the_shadows" )
             end,
         },
         
@@ -980,7 +1055,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         surrender_to_madness = {
             id = 193223,
             cast = 0,
-            cooldown = 240,
+            cooldown = PTR and 180 or 240,
             gcd = "spell",
             
             toggle = "cooldowns",
@@ -1044,7 +1119,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             spend = function ()
                 if debuff.surrendered_to_madness.up then return 0 end
-                return buff.surrender_to_madness.up and -32 or -16
+                return buff.surrender_to_madness.up and ( PTR and -40 or -32 ) or ( PTR and -20 or -16 )
             end,
             spendType = "insanity",
             
