@@ -432,6 +432,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     end )
 
 
+    spec:RegisterStateExpr( "priority_rotation", function ()
+        return false
+    end )
+
+
     -- We need to break stealth when we start combat from an ability.
     spec:RegisterHook( "runHandler", function( ability )
         local a = class.abilities[ ability ]
