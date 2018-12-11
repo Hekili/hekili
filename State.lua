@@ -1287,7 +1287,7 @@ local mt_state = {
             return t.now + t.offset + t.delay
             
         elseif k == 'time_to_die' then
-            return max( state.time < 20 and 2 or 1, 5 - t.time, Hekili:GetTTD( 'target' ) - ( t.offset + t.delay ) )
+            return Hekili:GetGreatestTTD() -- max( state.time < 20 and 2 or 1, 5 - t.time, Hekili:GetTTD( 'target' ) - ( t.offset + t.delay ) )
             
         elseif k == 'moving' then
             return ( GetUnitSpeed('player') > 0 )
