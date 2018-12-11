@@ -396,7 +396,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
                 if azerite.gathering_storm.enabled then
                     applyBuff( "gathering_storm", 6 + ( 4 * haste ), 5 )
-                end,
+                end
             end,
         },
         
