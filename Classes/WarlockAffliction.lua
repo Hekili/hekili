@@ -104,7 +104,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         corruption = {
             id = 146739,
-            duration = function () return talent.absolute_corruption.enabled and 3600 or ( 14 * ( talent.creeping_death.enabled and 0.85 or 1 ) ) end,
+            duration = function () return ( talent.absolute_corruption.enabled and ( target.is_player and 24 or 3600 ) or 14 ) * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) * haste end,
             type = "Magic",
             max_stack = 1,
@@ -129,8 +129,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         drain_life = {
             id = 234153,
-            duration = 5.001,
+            duration = function () return 5 * haste end,
             max_stack = 1,
+            tick_time = function () return haste end,
         },
         drain_soul = {
             id = 198590,
@@ -225,7 +226,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         unstable_affliction = {
             id = 233490,
-            duration = function () return 8 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+            duration = function () return ( pvptalent.endless_affliction.enabled and 14 or 8 ) * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             type = "Magic",
             max_stack = 1,
@@ -233,28 +234,28 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         unstable_affliction_2 = {
             id = 233496,
-            duration = function () return 8 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+            duration = function () return ( pvptalent.endless_affliction.enabled and 14 or 8 ) * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             type = "Magic",
             max_stack = 1,
         },
         unstable_affliction_3 = {
             id = 233497,
-            duration = function () return 8 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+            duration = function () return ( pvptalent.endless_affliction.enabled and 14 or 8 ) * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             type = "Magic",
             max_stack = 1,
         },
         unstable_affliction_4 = {
             id = 233498,
-            duration = function () return 8 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+            duration = function () return ( pvptalent.endless_affliction.enabled and 14 or 8 ) * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             type = "Magic",
             max_stack = 1,
         },
         unstable_affliction_5 = {
             id = 233499,
-            duration = function () return 8 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+            duration = function () return ( pvptalent.endless_affliction.enabled and 14 or 8 ) * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             type = "Magic",
             max_stack = 1,
@@ -270,6 +271,59 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             duration = 10,
             type = "Magic",
             max_stack = 1,
+        },
+
+
+        -- PvP Talents
+        casting_circle = {
+            id = 221705,
+            duration = 3600,
+            max_stack = 1,
+        },
+        curse_of_fragility = {
+            id = 199954,
+            duration = 10,
+            max_stack = 1,
+        },
+        curse_of_shadows = {
+            id = 234877,
+            duration = 10,
+            type = "Curse",
+            max_stack = 1,
+        },
+        curse_of_tongues = {
+            id = 199890,
+            duration = 10,
+            type = "Curse",
+            max_stack = 1,
+        },
+        curse_of_weakness = {
+            id = 199892,
+            duration = 10,
+            type = "Curse",
+            max_stack = 1,
+        },
+        demon_armor = {
+            id = 285933,
+            duration = 3600,
+            max_stack = 1,
+        },
+        essence_drain = {
+            id = 221715,
+            duration = 6,
+            type = "Magic",
+            max_stack = 5,
+        },
+        nether_ward = {
+            id = 212295,
+            duration = 3,
+            type = "Magic",
+            max_stack = 1,
+        },
+        soulshatter = {
+            id = 236471,
+            duration = 8,
+            max_stack = 5,
         },
 
 
@@ -377,6 +431,24 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown.sindorei_spite_icd.expires = last_sindorei_spite + icd
             cooldown.sindorei_spite_icd.duration = icd
         end
+
+        if debuff.drain_soul.up then            
+            local ticks = debuff.drain_soul.ticks_remain
+            if pvptalent.rot_and_decay.enabled then
+                for i = 1, 5 do
+                    if debuff[ "unstable_affliction_" .. i ].up then debuff[ "unstable_affliction_" .. i ].expires = debuff[ "unstable_affliction_" .. i ].expires + ticks end
+                end
+                if debuff.corruption.up then debuff.corruption.expires = debuff.corruption.expires + 1 end
+                if debuff.agony.up then debuff.agony.expires = debuff.agony.expires + 1 end
+            end
+            if pvptalent.essence_drain.enabled and health.pct < 100 then
+                addStack( "essence_drain", debuff.drain_soul.remains, debuff.essence_drain.stack + ticks )
+            end
+        end
+        
+        if buff.casting_circle.up then
+            applyBuff( "casting_circle", action.casting_circle.lastCast + 8 - query_time )
+        end
     end )
 
 
@@ -453,6 +525,26 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         
 
+        casting_circle = {
+            id = 221703,
+            cast = 0.5,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 0.02,
+            spendType = "mana",
+            
+            pvptalent = "casting_circle",
+
+            startsCombat = false,
+            texture = 1392953,
+            
+            handler = function ()
+                applyBuff( "casting_circle", 8 )
+            end,
+        },
+        
+
         --[[ command_demon = {
             id = 119898,
             cast = 0,
@@ -517,6 +609,73 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         }, ]]
         
 
+        curse_of_fragility = {
+            id = 199954,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            spend = 0.01,
+            spendType = "mana",
+
+            pvptalent = "curse_of_fragility",            
+            
+            startsCombat = true,
+            texture = 132097,
+            
+            usable = function () return target.is_player end,
+            handler = function ()
+                applyDebuff( "target", "curse_of_fragility" )
+                setCooldown( "curse_of_tongues", max( 6, cooldown.curse_of_tongues.remains ) )
+                setCooldown( "curse_of_weakness", max( 6, cooldown.curse_of_weakness.remains ) )
+            end,
+        },
+        
+
+        curse_of_tongues = {
+            id = 199890,
+            cast = 0,
+            cooldown = 15,
+            gcd = "spell",
+            
+            spend = 0.01,
+            spendType = "mana",
+
+            pvptalent = "curse_of_tongues",
+            
+            startsCombat = true,
+            texture = 136140,
+            
+            handler = function ()
+                applyDebuff( "target", "curse_of_tongues" )
+                setCooldown( "curse_of_fragility", max( 6, cooldown.curse_of_fragility.remains ) )
+                setCooldown( "curse_of_weakness", max( 6, cooldown.curse_of_weakness.remains ) )
+            end,
+        },
+        
+
+        curse_of_weakness = {
+            id = 199892,
+            cast = 0,
+            cooldown = 20,
+            gcd = "spell",
+            
+            spend = 0.01,
+            spendType = "mana",
+
+            pvptalent = "curse_of_weakness",
+            
+            startsCombat = true,
+            texture = 615101,
+            
+            handler = function ()
+                applyDebuff( "target", "curse_of_weakness" )
+                setCooldown( "curse_of_fragility", max( 6, cooldown.curse_of_fragility.remains ) )
+                setCooldown( "curse_of_tongues", max( 6, cooldown.curse_of_tongues.remains ) )
+            end,
+        },
+        
+
         dark_pact = {
             id = 108416,
             cast = 0,
@@ -572,6 +731,23 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             handler = function ()
                 -- applies shadow_embrace (32390)
+            end,
+        },
+        
+
+        demon_armor = {
+            id = 285933,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            pvptalent = "demon_armor",
+            
+            startsCombat = false,
+            texture = 136185,
+            
+            handler = function ()
+                applyBuff( "demon_armor" )
             end,
         },
         
@@ -787,6 +963,23 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         
 
+        nether_ward = {
+            id = 212295,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            pvptalent = "nether_ward",
+            
+            startsCombat = false,
+            texture = 135796,
+            
+            handler = function ()
+                applyBuff( "nether_ward" )
+            end,
+        },
+        
+
         phantom_singularity = {
             id = 205179,
             cast = 0,
@@ -892,6 +1085,39 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             handler = function ()
                 applyDebuff( "target", "siphon_life" )
+            end,
+        },
+        
+
+        soulshatter = {
+            id = 212356,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+            pvptalent = "soulshatter",
+
+            startsCombat = true,
+            texture = 135728,
+            
+            usable = function () return buff.active_uas.stack > 0 or active_dot.agony > 0 or active_dot.corruption > 0 or active_dot.siphon_life > 0 end,
+            handler = function ()
+                local targets = min( 5, max( buff.active_uas.stack, active_dot.agony, active_dot.corruption, active_dot.siphon_life ) )
+
+                applyBuff( "soulshatter", nil, targets )
+                stat.haste = stat.haste + ( 0.1 * targets )
+
+                gain( targets, "soul_shards" )
+
+                active_dot.agony = max( 0, active_dot.agony - targets )
+                if active_dot.agony == 0 then removeDebuff( "target", "agony" ) end
+
+                active_dot.corruption = max( 0, active_dot.corruption - targets )
+                if active_dot.corruption == 0 then removeDebuff( "target", "corruption" ) end
+
+                active_dot.siphon_life = max( 0, active_dot.siphon_life - targets )
+                if active_dot.siphon_life == 0 then removeDebuff( "target", "siphon_life" ) end
             end,
         },
         
