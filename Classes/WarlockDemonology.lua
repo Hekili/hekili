@@ -338,7 +338,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         doom = {
             id = 265412,
-            duration = 30,            
+            duration = function () return 30 * haste end,
+            max_stack = 1,
         },
 
         drain_life = {
@@ -568,6 +569,13 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             }
         },
 
+
+        -- Azerite Powers
+        forbidden_knowledge = {
+            id = 279666,
+            duration = 15,
+            max_stack = 1,
+        },
     } )
 
 
@@ -742,6 +750,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
             
             handler = function ()
+                if buff.forbidden_knowledge.up and buff.demonic_core.down then
+                    removeBuff( "forbidden_knowledge" )
+                end
+
                 removeStack( 'demonic_core' )
                 gain( 2, "soul_shards" )
             end,
@@ -998,7 +1010,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 180,
             gcd = "spell",
             
-            spend = 3,
+            spend = PTR and 1 or 3,
             spendType = "soul_shards",
             
             toggle = "cooldowns", 
@@ -1121,6 +1133,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 summon_demon( "demonic_tyrant", 15 )
                 applyBuff( "demonic_power", 15 )
                 if talent.demonic_consumption.enabled then consume_demons( "wild_imps", "all" ) end
+                if azerite.baleful_invocation.enabled then gain( 5, "soul_shards" ) end
                 extend_demons()
             end,
         },

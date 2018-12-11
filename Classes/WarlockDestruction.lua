@@ -12,7 +12,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     local spec = Hekili:NewSpecialization( 267, true )
 
     spec:RegisterResource( Enum.PowerType.SoulShards, {
-        {
+        infernal = {
             aura = "infernal",
             
             last = function ()
@@ -24,6 +24,20 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             interval = 1,
             value = 0.1
+        },
+
+        chaos_shards = {
+            aura = "chaos_shards",
+
+            last = function ()
+                local app = state.buff.chaos_shards.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 0.5,
+            value = 0.2,
         }
     }, setmetatable( {
         actual = nil,
@@ -99,6 +113,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         dark_soul_instability = 23092, -- 113858
     } )
 
+
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         relentless = 3493, -- 196029
@@ -117,6 +132,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         curse_of_tongues = 3503, -- 199890
         curse_of_fragility = 3502, -- 199954
     } )
+
 
     -- Auras
     spec:RegisterAuras( {
@@ -145,7 +161,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             id = 117828,
             duration = 10,
             type = "Magic",
-            max_stack = function () return talent.flashover.enabled and 2 or 1 end,
+            max_stack = function () return talent.flashover.enabled and 4 or 2 end,
         },
         blood_pact = {
             id = 6307,
@@ -327,6 +343,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             duration = 8,
             max_stack = 1,
         },
+
+
+        -- Azerite Powers
+        chaos_shards = {
+            id = 287660,
+            duration = 2,
+            max_stack = 1
+        },
     } )
 
 
@@ -453,7 +477,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         chaos_bolt = {
             id = 116858,
-            cast = 3,
+            cast = function () return ( buff.backdraft.up and 2.1 or 3 ) * haste end,
             cooldown = 0,
             gcd = "spell",
             
@@ -470,6 +494,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     if debuff.immolate.remains <= 5 then removeDebuff( "target", "immolate" )
                     else debuff.immolate.expires = debuff.immolate.expires - 5 end
                 end
+                removeStack( "backdraft" )
             end,
         },
         
@@ -505,7 +530,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             handler = function ()
                 gain( 0.5, "soul_shards" )
-                addStack( "backdraft", nil, talent.flashover.enabled and 2 or 1 )
+                addStack( "backdraft", nil, talent.flashover.enabled and 4 or 2 )
                 if talent.roaring_blaze.enabled then applyDebuff( "target", "conflagrate" ) end
             end,
         },

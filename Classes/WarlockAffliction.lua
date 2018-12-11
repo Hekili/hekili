@@ -271,6 +271,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             type = "Magic",
             max_stack = 1,
         },
+
+
+        -- Azerite Powers
+        inevitable_demise = {
+            id = 273525,
+            duration = 20,
+            max_stack = 50,
+        },
     } )
 
 
@@ -630,6 +638,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
             
             handler = function ()
+                removeBuff( "inevitable_demise" )
             end,
         },
         
@@ -1057,6 +1066,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             end,
             handler = function ()
                 applyUnstableAffliction()
+                if azerite.dreadful_calling.enabled then
+                    gainChargeTime( "summon_darkglare", 1 )
+                end
             end,
         },
         
