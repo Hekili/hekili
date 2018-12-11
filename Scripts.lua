@@ -587,8 +587,10 @@ do
                         local func, warn = loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
                         if func  then
                             setfenv( func, state )
-                            local pass, val = pcall( func )
-                            if not pass then Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. val .. " (pcall-b)." )
+                            local pass, val = pcall( func )                            
+                            if not pass then
+                                local safepiece = piece.s:gsub( "%%", "%%%%" )
+                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-b)." )
                             else if val == nil or type( val ) == "number" then piece.s = "safebool(" .. piece.s .. ")" end end
                         else
                             Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. warn .. " (loadstring-b)." )
