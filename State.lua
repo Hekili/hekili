@@ -1287,8 +1287,11 @@ local mt_state = {
             return t.now + t.offset + t.delay
             
         elseif k == 'time_to_die' then
-            return Hekili:GetGreatestTTD() -- max( state.time < 20 and 2 or 1, 5 - t.time, Hekili:GetTTD( 'target' ) - ( t.offset + t.delay ) )
-            
+            return Hekili:GetGreatestTTD() - ( t.offset + t.delay )
+        
+        elseif k == "expected_combat_length" then
+            return Hekili:GetGreatestTTD() + t.time + t.offset + t.delay
+
         elseif k == 'moving' then
             return ( GetUnitSpeed('player') > 0 )
             
@@ -2143,7 +2146,8 @@ local mt_default_cooldown = {
             return ( t.remains == 0 )
             
         end
-        
+
+        Error( "UNK: cooldown." .. t.key .. "." .. k )
         return
         
     end
@@ -2161,7 +2165,7 @@ local mt_cooldowns = {
         local entry = class.abilities[ k ]
 
         if not entry then
-            -- Error( "UNK: " .. k )
+            Error( "UNK: cooldown." .. k )
             return
         end
         
@@ -2633,7 +2637,7 @@ local mt_default_buff = {
             end
         end
         
-        Error( "UNK: " .. k )
+        Error( "UNK: buff." .. t.key .. "." .. k )
         
     end,
 
@@ -2892,7 +2896,7 @@ local mt_default_totem = {
             
         end
         
-        Error("UNK: " .. k)
+        Error( "UNK: totem." .. name or "no_name" .. "." .. k )
     end
 }
 Hekili.mt_default_totem = mt_default_totem
@@ -2931,7 +2935,7 @@ local mt_totem = {
             return t[k]
         end
         
-        Error( "UNK: " .. k )
+        Error( "UNK: totem." .. k )
         
         end, __newindex = function(t, k, v)
         rawset( t, k, setmetatable( v, mt_default_totem ) )
@@ -3148,7 +3152,7 @@ local mt_default_debuff = {
             end
         end
         
-        -- Error ("UNK: " .. k)
+        Error ( "UNK: debuff." .. t.key .. "." .. k )
     end
 }
 ns.metatables.mt_default_debuff = mt_default_debuff

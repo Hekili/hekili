@@ -269,8 +269,8 @@ do
     end
 
     local timely = {
-        { "(d?e?buff%.[a-z0-9_]+)%.down",       "%1.remains" },
-        { "(dot%.[a-z0-9_]+)%.down",            "%1.remains" },
+        { "^(d?e?buff%.[a-z0-9_]+)%.down",      "%1.remains" },
+        { "^(dot%.[a-z0-9_]+)%.down",           "%1.remains" },
         { "!(d?e?buff%.[a-z0-9_]+)%.up",        "%1.remains" },
         { "!(dot%.[a-z0-9_]+)%.up",             "%1.remains" },
         { "!(d?e?buff%.[a-z0-9_]+)%.react",     "%1.remains" },
@@ -278,7 +278,7 @@ do
         { "!(d?e?buff%.[a-z0-9_]+)%.ticking",   "%1.remains" },
         { "!(dot%.[a-z0-9_]+)%.ticking",        "%1.remains" },
         { "!ticking",                           "remains" },
-        { "refreshable",                        "time_to_refresh" },
+        { "^refreshable",                       "time_to_refresh" },
         { "^(.-)%.deficit<=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^(.-)%.deficit>=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^cooldown%.([a-z0-9_]+)%.ready$",    "cooldown.%1.remains" },
