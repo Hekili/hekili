@@ -1487,7 +1487,7 @@ local mt_state = {
             return 0
             
         elseif k == 'ticks_remain' then
-            if app then return floor( app.remains / tick_time ) end
+            if app then return 1 + floor( app.remains / tick_time ) end
             return 0
 
         elseif k == 'tick_time_remains' then
