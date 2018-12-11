@@ -259,11 +259,12 @@ local HekiliSpecMixin = {
 
         setfenv( func, state )
         self.stateExprs[ key ] = func
+        class.stateExprs[ key ] = func
 
-        if rawget( state, key ) == nil then
+        --[[ if rawget( state, key ) == nil then
             class.stateExprs[ key ] = func
             rawset( state, key, func ) 
-        end -- to prevent errors at login
+        end -- to prevent errors at login ]]
     end,
 
     RegisterStateFunction = function( self, key, func )
@@ -274,11 +275,12 @@ local HekiliSpecMixin = {
 
         setfenv( func, state )
         self.stateFuncs[ key ] = func
+        class.stateFuncs[ key ] = func
 
-        if rawget( state, key ) == nil then
+        --[[ if rawget( state, key ) == nil then
             class.stateFuncs[ key ] = func
             rawset( state, key, func )
-        end -- to prevent errors at login
+        end -- to prevent errors at login ]]
     end,
 
     RegisterStateTable = function( self, key, data )
@@ -300,10 +302,12 @@ local HekiliSpecMixin = {
         end
 
         self.stateTables[ key ] = data
-        if rawget( state, key ) == nil then
+        class.stateTables[ key ] = data
+
+        --[[ if rawget( state, key ) == nil then
             class.stateTables[ key ] = data
             rawset( state, key, data )
-        end
+        end ]]
     end,
 
     RegisterGear = function( self, key, ... )
@@ -3423,7 +3427,6 @@ function Hekili:SpecializationChanged()
     if rawget( state, "rune" ) then state.rune = nil; class.rune = nil; end
     class.primaryResource = nil
 
-
     for k in pairs( class.stateTables ) do
         rawset( state, k, nil )
         class.stateTables[ k ] = nil
@@ -3434,9 +3437,10 @@ function Hekili:SpecializationChanged()
         class.stateFuncs[ k ] = nil
     end
 
-    wipe( class.stateExprs )
-
-    ns.callHook( 'specializationChanged' )
+    for k in pairs( class.stateExprs ) do
+        rawset( state, k, nil )
+        class.stateExprs[ k ] = nil
+    end
 
     for i, specID in ipairs( specs ) do
         local spec = class.specs[ specID ]
@@ -3520,7 +3524,7 @@ function Hekili:SpecializationChanged()
             for name, func in pairs( spec.stateExprs ) do
                 if not class.stateExprs[ name ] then
                     if rawget( state, name ) then
-                        Hekili:Error( "Cannot RegisterStateExpr for an existing expression ( " .. spec.name .. " - " .. name .. " )." )
+                        Hekili:Error( "Cannot RegisterStateExpr for an existing expression ( " .. spec.name .. " - " .. name .. " ) -- " .. tostring( rawget( state, name ) ) .. "." )
                     else
                         class.stateExprs[ name ] = func
                         -- Hekili:Error( "Not real error, registered " .. name .. " for " .. spec.name .. " (RSE)." )
@@ -3564,6 +3568,8 @@ function Hekili:SpecializationChanged()
 
     state.GUID = UnitGUID( 'player' )
     state.player.unit = UnitGUID( 'player' )
+
+    ns.callHook( 'specializationChanged' )
 
     ns.updateGear()
     ns.updateTalents()
