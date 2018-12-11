@@ -2011,7 +2011,7 @@ local mt_default_cooldown = {
         local ability = t.key and class.abilities[ t.key ]
 
         if rawget( ability, 'meta' ) and ability.meta[ k ] then
-            return ability.meta[ k ]()
+            return ability.meta[ k ]( t )
         end
 
         local GetCooldown = _G.GetSpellCooldown

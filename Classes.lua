@@ -255,6 +255,11 @@ local HekiliSpecMixin = {
 
         setfenv( func, state )
         self.stateExprs[ key ] = func
+
+        if rawget( state, key ) == nil then
+            class.stateExprs[ key ] = func
+            rawset( state, key, func ) 
+        end -- to prevent errors at login
     end,
 
     RegisterStateFunction = function( self, key, func )
@@ -265,6 +270,11 @@ local HekiliSpecMixin = {
 
         setfenv( func, state )
         self.stateFuncs[ key ] = func
+
+        if rawget( state, key ) == nil then
+            class.stateFuncs[ key ] = func
+            rawset( state, key, func )
+        end -- to prevent errors at login
     end,
 
     RegisterStateTable = function( self, key, data )
@@ -285,8 +295,11 @@ local HekiliSpecMixin = {
             setfenv( meta.__index, state )
         end
 
-        -- rawset( state, key, data )
         self.stateTables[ key ] = data
+        if rawget( state, key ) == nil then
+            class.stateTables[ key ] = data
+            rawset( state, key, data )
+        end
     end,
 
     RegisterGear = function( self, key, ... )
@@ -3395,6 +3408,7 @@ function Hekili:SpecializationChanged()
 
     wipe( class.stateExprs )
 
+    ns.callHook( 'specializationChanged' )
 
     for i, specID in ipairs( specs ) do
         local spec = class.specs[ specID ]
@@ -3525,8 +3539,6 @@ function Hekili:SpecializationChanged()
 
     ns.updateGear()
     ns.updateTalents()
-
-    ns.callHook( 'specializationChanged' )
 
     self:UpdateDisplayVisibility()
 
