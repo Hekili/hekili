@@ -568,7 +568,7 @@ do
                             setfenv( func, state )
                             -- maximum warningness
                             local pass, val = pcall( func )
-                            if not pass then
+                            if not pass and not piece.s:match("variable") then
                                 local safepiece = piece.s:gsub( "%%", "%%%%" )
                                 Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-n)." )
                             else if val == nil or type( val ) == "boolean" then piece.s = "safenum(" .. piece.s .. ")" end end
@@ -588,7 +588,7 @@ do
                         if func  then
                             setfenv( func, state )
                             local pass, val = pcall( func )                            
-                            if not pass then
+                            if not pass and not piece.s:match("variable") then
                                 local safepiece = piece.s:gsub( "%%", "%%%%" )
                                 Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-b)." )
                             else if val == nil or type( val ) == "number" then piece.s = "safebool(" .. piece.s .. ")" end end

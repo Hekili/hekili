@@ -285,9 +285,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     } ) )
     
 
-    --[[ spec:RegisterHook( "reset_precast", function ()
-        auto_advance = false
-    end ) ]]
+    spec:RegisterStateExpr( "auto_advance", function () return false end )
 
 
     -- Abilities
@@ -447,6 +445,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 134153,
             
+            usable = function () return target.within12 end,
             handler = function ()
                 if talent.alexstraszas_fury.enabled then
                     if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
@@ -777,7 +776,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             recharge = 40,
             gcd = "spell",
             
-            toggle = "cooldowns",
+            -- toggle = "cooldowns",
 
             startsCombat = false,
             texture = 609815,

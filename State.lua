@@ -1250,6 +1250,9 @@ local mt_state = {
 
         elseif k == 'delay' then
             return 0
+        
+        elseif k == 'auto_advance' then
+            return true
 
         elseif k == 'selection' then
             return t.selectionTime < 60
@@ -1665,7 +1668,7 @@ local mt_stat = {
             return 0
             
         elseif k == 'crit' then
-            return ( GetCritChance( 'player' ) + ( t.mod_crit_pct or 0 ) )
+            return ( max( GetCritChance( 'player' ), GetSpellCritChance( 'player' ), GetRangedCritChance( 'player' ) ) + ( t.mod_crit_pct or 0 ) )
             
         end
         
@@ -3898,7 +3901,6 @@ function state.reset( dispName )
         applyBuff( "player_casting", cast_time )
     end
 
-    state.auto_advance = true
     ns.callHook( "reset_precast" )
     
     local ability = casting and class.abilities[ casting ]
@@ -3906,7 +3908,11 @@ function state.reset( dispName )
     if cast_time and casting and ( not ability or not ability.breakable ) then
         
         -- print( format( "Advancing %.2f to cast %s.", cast_time, casting ) )
-        if state.auto_advance then state.advance( cast_time ) end
+        if state.auto_advance then
+            state.advance( cast_time )
+        else
+            state.setCooldown( "global_cooldown", max( cast_time, state.cooldown.global_cooldown.remains ) )
+        end
         
         if ability then            
             if not ability.channeled then
