@@ -199,6 +199,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 15,
             max_stack = 1,
         },
+
+
+        -- Azerite Powers
+        bastion_of_might = {
+            id = 287379,
+            duration = 20,
+            max_stack = 1,
+        },
+        
+        intimidating_presence = {
+            id = 288644,
+            duration = 12,
+            max_stack = 1,
+        },
+
+
     } )
 
 
@@ -273,6 +289,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 applyBuff( "avatar" )
+                if azerite.bastion_of_might.enabled then
+                    applyBuff( "bastion_of_might" )
+                    applyBuff( "ignore_pain" )
+                end
             end,
         },
         
@@ -412,7 +432,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 190456,
             cast = 0,
             cooldown = 0,
-            gcd = "spell",
+            gcd = "off",
             
             spend = function () return ( buff.vengeance_ignore_pain.up and 0.67 or 1 ) * 40 end,
             spendType = "rage",
@@ -420,6 +440,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = false,
             texture = 1377132,
             
+            ready = function () return action.ignore_pain.lastCast + 1 - query_time end,
             handler = function ()
                 if talent.vengeance.enabled then applyBuff( "vengeance_revenge" ) end
                 removeBuff( "vengeance_ignore_pain" )
@@ -484,6 +505,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 applyDebuff( "target", "intimidating_shout" )
                 active_dot.intimidating_shout = max( active_dot.intimidating_shout, active_enemies )
+                if azerite.intimidating_presence.enabled then applyDebuff( "target", "intimidating_presence" ) end
             end,
         },
         
@@ -595,8 +617,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 2565,
             cast = 0,
             charges = function () return ( level < 116 and equipped.ararats_bloodmirror ) and 3 or 2 end,
-            cooldown = 18,
-            recharge = 18,
+            cooldown = 16,
+            recharge = 16,
             hasteCD = true,
             gcd = "off",
 

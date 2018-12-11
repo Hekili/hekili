@@ -211,12 +211,30 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 278826,
             duration = 10,
             max_stack = 1
-        },
+        },        
 
-        executioners_precision = {
+        executioners_precision = not PTR and {
             id = 272870,
             duration = 30,
             max_stack = 2,
+        } or nil,
+
+        gathering_storm = {
+            id = 273415,
+            duration = 6,
+            max_stack = 5,
+        },
+
+        intimidating_presence = {
+            id = 288644,
+            duration = 12,
+            max_stack = 1,
+        },
+
+        striking_the_anvil = {
+            id = 288455,
+            duration = 15,
+            max_stack = 1,
         },
 
         test_of_might = {
@@ -257,7 +275,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     spec:RegisterHook( "reset_precast", function ()
         rageSpent = 0
-        if buff.bladestorm.up then setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) ) end
+        if buff.bladestorm.up then
+            setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) )
+            if buff.gathering_storm.up then applyBuff( "gathering_storm", buff.bladestorm.remains + 6, 4 ) end
+        end
 
         -- Map buff.executioners_precision to debuff.executioners_precision; use rawset to avoid changing the meta table.
         rawset( buff, "executioners_precision", debuff.executioners_precision )
@@ -397,6 +418,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyBuff( "bladestorm" )
                 setCooldown( "global_cooldown", 4 * haste )
                 if level < 116 and equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
+
+                if azerite.gathering_storm.enabled then
+                    applyBuff( "gathering_storm", 6 + ( 4 * haste ), 4 )
+                end
             end,
         },
         
@@ -552,7 +577,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 if not buff.sudden_death.up and not buff.stone_heart.up then
                     local overflow = min( rage.current, 20 )
                     spend( overflow, "rage" )
-                    gain( 0.3 * ( 20 + overflow ), "rage" )
+                    gain( 0.2 * ( 20 + overflow ), "rage" )
                 end
                 if buff.stone_heart.up then removeBuff( "stone_heart" )
                 else removeBuff( "sudden_death" ) end
@@ -662,6 +687,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 applyBuff( "intimidating_shout" )
+                if azerite.intimidating_presence.enabled then applyDebuff( "target", "intimidating_presence" ) end
             end,
         },
         
@@ -708,6 +734,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     addStack( "overpower", 15, 1 )
                 else
                     applyBuff( "overpower" )
+                end
+
+                if buff.striking_the_anvil.up then
+                    removeBuff( "striking_the_anvil" )
+                    gainChargeTime( "mortal_strike", 1.5 )
                 end
             end,
         },

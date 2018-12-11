@@ -131,7 +131,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     spec:RegisterHook( "reset_precast", function ()
         rageSpent = 0
-        if buff.bladestorm.up then setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) ) end
+        if buff.bladestorm.up then
+            setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) )
+            if buff.gathering_storm.up then
+                applyBuff( "gathering_storm", buff.bladestorm.remains + 6, 5 )
+            end
+        end
+
     end )
 
 
@@ -248,6 +254,27 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 20,
             max_stack = 2,
             copy = "meat_cleaver"
+        },
+
+
+        -- Azerite Powers
+        gathering_storm = {
+            id = 273415,
+            duration = 6,
+            max_stack = 5,
+        },
+
+        -- Cold Steel, Hot Blood
+        gushing_wound = {
+            id = 288091,
+            duration = 6,
+            max_stack = 1,
+        },
+
+        intimidating_presence = {
+            id = 288644,
+            duration = 12,
+            max_stack = 1,
         },
     } )
 
@@ -366,6 +393,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 setCooldown( "global_cooldown", 4 * haste )
 
                 if level < 116 and equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
+
+                if azerite.gathering_storm.enabled then
+                    applyBuff( "gathering_storm", 6 + ( 4 * haste ), 5 )
+                end,
             end,
         },
         
@@ -564,6 +595,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 applyDebuff( "target", "intimidating_shout" )
+                if azerite.intimidating_presence.enabled then applyDebuff( "target", "intimidating_presence" ) end
             end,
         },
         
