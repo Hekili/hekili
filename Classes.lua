@@ -2,6 +2,10 @@
 -- July 2014
 
 
+--[[ TODO FOR 8.1
+     - Check APLs for DKs, DHs, Druids. ]]
+
+
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
