@@ -1243,6 +1243,9 @@ local mt_state = {
 
         elseif class.stateExprs[ k ] then
             return class.stateExprs[ k ]()
+
+        elseif k == "display" then
+            return "Primary"
             
         -- First, any values that don't reference an ability or aura.
         elseif k == 'this_action' or k == 'current_action' then
