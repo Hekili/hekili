@@ -194,10 +194,6 @@ local HekiliSpecMixin = {
                             class.auras[ a.name ] = a
                         end
                     end )
-                else
-                    print( "BAD SPELL " .. a.id )
-                    _G.badspell = _G.badspell or ""
-                    _G.badspell = _G.badspell .. "[" .. a.id .. "] "
                 end
             end
             self.auras[ a.id ] = a
