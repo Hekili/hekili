@@ -1796,6 +1796,27 @@ all:RegisterAbility( "endless_tincture_of_fractional_power", {
 } )
 
 
+all:RegisterAbility( "mercys_psalter", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 155564,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "potency" )
+    end,
+} )
+
+all:RegisterAura( "potency", {
+    id = 268523,
+    duration = 15,
+    max_stack = 1,
+} )
+
+
 all:RegisterAbility( "void_portal_stone", {
     cast = 0,
     cooldown = 60, -- no CD reported in-game yet.
