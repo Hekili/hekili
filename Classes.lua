@@ -2057,7 +2057,10 @@ all:RegisterAbility( "lions_guile", {
 all:RegisterAura( "lions_guile", {
     id = 278806,
     duration = 16,
-    max_stack = 1,
+    max_stack = 10,
+    meta = {
+        stack = function( t ) return t.down and 0 or min( 6, 1 + ( ( query_time - t.app ) / 2 ) ) end,
+    }
 } )
 
 
