@@ -1022,6 +1022,8 @@ do
 
                     if delay > moment + 0.05 then
                         b.DelayIcon:Show()
+                        b.DelayIcon:SetAlpha( self.alpha )
+
                         self.delayIconShown = true
 
                         if delay < 0.5 then
@@ -1535,6 +1537,16 @@ do
         -- Indicator Icons.
         b.Icon = b.Icon or b.Shine:CreateTexture( nil, "OVERLAY" )
         b.Icon: SetSize( max( 10, b:GetWidth() / 3 ), max( 10, b:GetHeight() / 3 ) )
+        
+        if conf.keepAspectRatio and b.Icon:GetHeight() ~= b.Icon:GetWidth() then
+            local biggest = max( b.Icon:GetHeight(), b.Icon:GetWidth() )
+            local height = 0.5 * b.Icon:GetHeight() / biggest
+            local width = 0.5 * b.Icon:GetWidth() / biggest
+
+            b.Icon:SetTexCoord( 0.5 - width, 0.5 + width, 0.5 - height, 0.5 + height )
+        else
+            b.Icon:SetTexCoord( 0, 1, 0, 1 )
+        end
         
         local iconAnchor = conf.indicators.anchor or "RIGHT"
         
