@@ -168,6 +168,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         rend = {
             id = 772,
             duration = 12,
+            tick_time = 3,
             max_stack = 1,
         },
         --[[ seasoned_soldier = {
