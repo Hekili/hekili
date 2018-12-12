@@ -558,9 +558,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         -- UGLY
         if talent.incarnation.enabled then
-            cooldown.ca_inc = cooldown.incarnation
+            rawset( cooldown, "ca_inc", cooldown.incarnation )
         else
-            cooldown.ca_inc = cooldown.celestial_alignment
+            rawset( cooldown, "ca_inc", cooldown.celestial_alignment )
         end
     end )
 
@@ -680,6 +680,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 applyBuff( "celestial_alignment" )
                 if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
             end,
+
+            copy = "ca_inc"
         },
         
 
