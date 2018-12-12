@@ -405,6 +405,7 @@ state.GetShapeshiftForm = GetShapeshiftForm
 state.GetShapeshiftFormInfo = GetShapeshiftFormInfo
 state.GetSpellCount = GetSpellCount
 state.GetSpellInfo = GetSpellInfo
+state.GetSpellTexture = GetSpellTexture
 state.GetStablePetInfo = GetStablePetInfo
 state.GetTime = GetTime
 state.GetTotemInfo = GetTotemInfo
@@ -4097,7 +4098,7 @@ function state:IsKnown( sID, notoggle )
     if type(sID) ~= 'number' then sID = class.abilities[ sID ] and class.abilities[ sID ].id or nil end
 
     if not sID then
-        return false -- no ability
+        return false, "could not find valid ID" -- no ability
 
     elseif sID < 0 then
         return true
@@ -4165,6 +4166,10 @@ end
 do
     local LSR = LibStub( "SpellRange-1.0" )
 
+    local toggleSpells = {
+        potion = true,
+        cancel_buff = true
+    }
 
     -- If an ability has been manually disabled, don't consider it.    
     function state:IsDisabled( spell )
@@ -4185,7 +4190,7 @@ do
         local toggle = option.toggle
         if not toggle or toggle == 'default' then toggle = ability.toggle end
 
-        if ability.id < -100 or ability.id > 0 or spell == "potion" then
+        if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
             if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then
                 return true
             else

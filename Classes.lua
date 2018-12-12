@@ -1621,6 +1621,30 @@ all:RegisterAbilities( {
             return true
         end,
     },
+
+    cancel_buff = {
+        name = '|cff00ccff[Cancel Buff]|r',
+        cast = 0,
+        gcd = 'off',
+
+        startsCombat = false,
+
+        buff = function () return args.buff_name or nil end,
+
+        indicator = "cancel",
+        texture = function ()
+            local a = class.auras[ args.buff_name ]
+            a = a and a.id
+            a = a and GetSpellTexture( a )
+
+            return a or 134400
+        end,
+
+        usable = function () return args.buff_name ~= nil, "no buff name detected" end,
+        handler = function ()
+            removeBuff( args.buff_name )
+        end,
+    }
 } )
 
 

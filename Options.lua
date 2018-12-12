@@ -7952,6 +7952,7 @@ do
         run_action_list = "list_name",
         potion = "potion",
         variable = "var_name",
+        cancel_buff = "buff_name",
     }
 
     function Hekili:ParseActionList( list )

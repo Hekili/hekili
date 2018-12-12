@@ -800,6 +800,7 @@ local nameMap = {
     run_action_list = "list_name",
     variable = "var_name",
     potion = "potion",
+    cancel_buff = "buff_name",
 }
 
 
