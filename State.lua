@@ -29,6 +29,7 @@ state.iteration = 0
 
 local PTR = ns.PTR
 state.PTR = PTR
+state.ptr = ptr and 1 or 0
 
 state.now = 0
 state.offset = 0
@@ -193,6 +194,11 @@ state.trinket = {
     has_stacking_stat = {
     },
     
+    stacking_proc = {
+    },
+    has_stacking_proc = {
+    },
+    
     stat = {
     },
     has_stat = {
@@ -263,6 +269,7 @@ local mt_trinket_any_stacking_stat = {
 }
 
 setmetatable( state.trinket.stacking_stat, mt_trinket_any_stacking_stat )
+setmetatable( state.trinket.stacking_proc, mt_trinket_any_stacking_stat )
 
 local mt_trinket_any_stat = {
     __index = function( t, k )
