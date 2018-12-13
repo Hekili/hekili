@@ -419,6 +419,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 if level < 116 and equipped.kazzalax_fujiedas_fury then addStack( "fujiedas_fury", 10, 1 ) end
                 removeBuff( "bloody_rage" )
                 removeStack( "whirlwind" )
+                if azerite.cold_steel_hot_blood.enabled and stat.crit >= 100 then
+                    applyDebuff( "target", "gushing_wound" )
+                    gain( 4, "rage" )
+                end
             end,
         },
         
