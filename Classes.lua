@@ -559,9 +559,18 @@ local HekiliSpecMixin = {
         self.cycle = setfenv( func, state )
     end,
 
-    RegisterPet = function( self, token, id )
-        self.pets[ token ] = id
-        self.pets[ id ] = token
+    RegisterPet = function( self, token, id, spell, duration )
+        self.pets[ token ] = {
+            id = id,
+            token = token,
+            spell = spell,
+            duration = type( duration ) == 'function' and setfenv( duration, state ) or duration
+        }
+    end,
+
+    RegisterTotem = function( self, token, id )
+        self.totems[ token ] = id
+        self.totems[ id ] = token
     end,
 
     -- info should be an AceOption table.
@@ -684,6 +693,7 @@ function Hekili:NewSpecialization( specID, isRanged )
         itemAbilities = 0,
 
         pets = {},
+        totems = {},
 
         potions = {},
 
@@ -3537,6 +3547,10 @@ function Hekili:SpecializationChanged()
 
             for k, v in pairs( spec.pets ) do
                 if not class.pets[ k ] then class.pets[ k ] = v end
+            end
+
+            for k, v in pairs( spec.totems ) do
+                if not class.totems[ k ] then class.totems[ k ] = v end
             end
 
             for k, v in pairs( spec.potions ) do

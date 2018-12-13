@@ -157,6 +157,7 @@ Hekili.Class = {
     packs = {},
     
     pets = {},
+    totems = {},
 
     potions = {},
     potionList = {},

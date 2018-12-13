@@ -171,12 +171,23 @@ ns.isMyTarget = function( id ) return myTargets[ id ] ~= nil end
 local minions = {}
 
 ns.updateMinion = function( id, time )
-    minions[ id ] = time
+    minions[ id ] = time    
 end
 
 ns.isMinion = function( id )
     return minions[ id ] ~= nil or UnitGUID( "pet" ) == id
 end
+
+function Hekili:HasMinionID( id )
+    for k, v in pairs( minions ) do
+        local npcID = tonumber( k:match( "%-(%d+)%-[0-9A-F]+$" ) )
+
+        if npcID == id and v > state.now then
+            return true, v
+        end
+    end
+end
+
 
 function Hekili:DumpMinions()
     local o = ""

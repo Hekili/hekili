@@ -751,11 +751,8 @@ local function summonPet( name, duration, spec )
     state.pet[ name ].name = name
     state.pet[ name ].expires = state.query_time + ( duration or 3600 )
 
-    local id = class.pets[ name ]
-    state.pet[ id ].id = id
-
-    if id then
-        state.pet[ id ] = state.pet[ name ]
+    if class.pets[ name ] then
+        state.pet[ name ].id = id
     end
 
     if spec then
@@ -3783,8 +3780,25 @@ function state.reset( dispName )
     if petID then
         petID = tonumber( petID:match( "%-(%d+)%-[0-9A-F]+$" ) )
 
-        if class.pets[ petID ] then
-            summonPet( class.pets[ petID ] )
+        for k, v in pairs( class.pets ) do
+            if v.id == petID then
+                local lastCast = v.spell and class.abilities[ v.spell ] and class.abilities[ v.spell ].lastCast or 0
+                local duration = v.duration and ( ( type( v.duration ) == 'function' and v.duration() ) or v.duration ) or 3600
+
+                if lastCast > 0 and duration < 3600 then
+                    summonPet( k, lastCast + duration - state.now )
+                else
+                    summonPet( k )
+                end
+            end
+        end
+    end
+
+    for i = 1, 5 do
+        local _, _, start, duration, icon = GetTotemInfo(i)
+
+        if icon and class.totems[ icon ] then
+            summonPet( class.totems[ icon ], start + duration - state.now )
         end
     end
 
