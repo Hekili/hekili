@@ -502,6 +502,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterPet( "ghoul", 26125 )    
     spec:RegisterPet( "gargoyle", 49206 )
 
+
     spec:RegisterHook( "reset_precast", function ()
         local expires = action.summon_gargoyle.lastCast + 35
         if expires > now then
@@ -511,6 +512,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         local control_expires = action.control_undead.lastCast + 300
         if control_expires > now and pet.up and not pet.ghoul.up then
             summonPet( "controlled_undead", control_expires - now )
+        end
+
+        if talent.all_will_serve.enabled and pet.ghoul.up then
+            summonPet( "skeleton" )
         end
     end )
 
