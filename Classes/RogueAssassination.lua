@@ -129,24 +129,23 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
 
         nothing_personal = {
-            aura = "nothing_personal",
-            debuff = true,
+            aura = "nothing_personal_regen",
 
             last = function ()
-                local app = state.debuff.nothing_personal.last_tick
-                local exp = state.debuff.nothing_personal.expires
-                local tick = state.debuff.nothing_personal.tick_time
+                local app = state.buff.nothing_personal_regen.applied
+                local exp = state.buff.nothing_personal_regen.expires
+                local tick = state.buff.nothing_personal_regen.tick_time
                 local t = state.query_time
         
                 return min( exp, app + ( floor( ( t - app ) / tick ) * tick ) )
             end,
 
             stop = function ()
-                return state.debuff.nothing_personal.down
+                return state.buff.nothing_personal_regen.down
             end,
 
             interval = function ()
-                return state.debuff.nothing_personal.tick_time
+                return state.buff.nothing_personal_regen.tick_time
             end,
 
             value = 4
@@ -708,6 +707,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         -- Azerite Powers
         nothing_personal = {
             id = 286581,
+            duration = 20,
+            tick_time = 2,
+            max_stack = 1,
+        },
+
+        nothing_personal_regen = {
+            id = 289467,
             duration = 20,
             tick_time = 2,
             max_stack = 1,
@@ -1402,7 +1408,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 applyDebuff( "target", "vendetta" )
                 applyBuff( "vendetta_regen" )
-                if azerite.nothing_personal.enabled then applyDebuff( "target", "nothing_personal" ) end
+                if azerite.nothing_personal.enabled then
+                    applyDebuff( "target", "nothing_personal" )
+                    applyBuff( "nothing_personal_regen" )
+                end
             end,
         },
 
