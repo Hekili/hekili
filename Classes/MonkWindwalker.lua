@@ -997,7 +997,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 606543,
             
-            handler = function ()                
+            handler = function ()
+                removeBuff( "dance_of_chiji" )
             end,
         },
         
