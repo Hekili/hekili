@@ -339,6 +339,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         doom = {
             id = 265412,
             duration = function () return 30 * haste end,
+            tick_time = function () return 30 * haste end,
             max_stack = 1,
         },
 
