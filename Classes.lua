@@ -192,6 +192,10 @@ local HekiliSpecMixin = {
                         a.name = spell:GetSpellName()
                         a.desc = GetSpellDescription( a.id )
 
+                        if not a.funcs.texture then
+                            a.texture = a.texture or GetSpellTexture( a.id )
+                        end
+
                         self.auras[ a.name ] = a
                         if GetSpecializationInfo( GetSpecialization() or 0 ) == self.id then
                             -- Copy to class table as well.
@@ -1633,10 +1637,11 @@ all:RegisterAbilities( {
 
         indicator = "cancel",
         texture = function ()
-            local a = class.auras[ args.buff_name ]
+            local a = class.auras[ args.buff_name ]            
+            if a.texture then return a.texture end
+            
             a = a and a.id
             a = a and GetSpellTexture( a )
-
             return a or 134400
         end,
 
