@@ -3477,7 +3477,6 @@ function Hekili:SpecializationChanged()
     end
 
     for k in pairs( class.stateExprs ) do
-        rawset( state, k, nil )
         class.stateExprs[ k ] = nil
     end
 
