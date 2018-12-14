@@ -385,8 +385,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     } )
 
 
-    local tf_spells = { rake = true, rip = true, thrash = true, moonfire_cat = true }
-    local bt_spells = { rake = true, rip = true, thrash = true }
+    local tf_spells = { rake = true, rip = true, thrash = true, moonfire_cat = true, primal_wrath = true }
+    local bt_spells = { rake = true, rip = true, thrash = true, primal_wrath = true }
     local mc_spells = { thrash = true }
     local pr_spells = { rake = true }
 
@@ -410,7 +410,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         if spellID == 155722 then
             return 1 * ( prowling and 2 or 1 ) * ( bloodtalons and 1.2 or 1 ) * ( tigers_fury and 1.15 or 1 )
 
-        elseif spellID == 1079 then
+        elseif spellID == 1079 or spellID == 285381 then
             return 1 * ( bloodtalons and 1.2 or 1 ) * ( tigers_fury and 1.15 or 1 )
 
         elseif spellID == 106830 then
