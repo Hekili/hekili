@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local PTR = ns.PTR
+
 
 if UnitClassBase( 'player' ) == 'WARLOCK' then
     local spec = Hekili:NewSpecialization( 266, true )
@@ -1140,7 +1142,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
 
         
-        summon_pet = {
+        summon_felguard = {
             id = 30146,
             cast = function () return 2.5 * haste end,
             cooldown = 0,
@@ -1157,7 +1159,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 summonPet( 'felguard', 3600 )
             end,
 
-            copy = "summon_felguard"
+            copy = "summon_pet"
         },
 
 
