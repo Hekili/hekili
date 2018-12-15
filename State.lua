@@ -29,7 +29,7 @@ state.iteration = 0
 
 local PTR = ns.PTR
 state.PTR = PTR
-state.ptr = ptr and 1 or 0
+state.ptr = PTR and 1 or 0
 
 state.now = 0
 state.offset = 0
