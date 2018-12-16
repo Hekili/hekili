@@ -1,4 +1,4 @@
-<!-- $Id: LibUIDropDownMenuTemplates.xml 31 2018-04-24 08:55:11Z arith $ -->
+<!-- $Id: LibUIDropDownMenuTemplates.xml 34 2018-07-25 13:26:33Z arith $ -->
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 	<Include file="LibUIDropDownMenuTemplates.lua"/>
@@ -13,7 +13,7 @@
 		<Size x="100" y="16"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentHighlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+				<Texture name="$parentHighlight" parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture name="$parentCheck" file="Interface\Common\UI-DropDownRadioChecks">
@@ -34,7 +34,7 @@
 					</Anchors>
 					<TexCoords left="0.5" right="1.0" top="0.5" bottom="1.0"/>
 				</Texture>
-				<Texture name="$parentIcon" hidden="true">
+				<Texture parentKey="Icon" name="$parentIcon" hidden="true">
 					<Size>
 						<AbsDimension x="16" y="16"/>
 					</Size>
@@ -77,7 +77,7 @@
 				</Layers>
 				<Scripts>
 					<OnClick>
-						securecall("CloseMenus");
+						CloseMenus();
 						L_UIDropDownMenuButton_OpenColorPicker(self:GetParent());
 					</OnClick>
 					<OnEnter>
@@ -92,7 +92,7 @@
 				</Scripts>
 				<NormalTexture name="$parentNormalTexture" file="Interface\ChatFrame\ChatFrameColorSwatch"/>
 			</Button>
-			<Button name="$parentExpandArrow" hidden="true">
+			<Button name="$parentExpandArrow" hidden="true" motionScriptsWhileDisabled="true">
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -109,10 +109,16 @@
 					</OnClick>
 					<OnEnter>
 						local level =  self:GetParent():GetParent():GetID() + 1;
-						local listFrame = _G["L_DropDownList"..level];
-						if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
-							L_ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+
+						L_CloseDropDownMenus(level);
+
+						if self:IsEnabled() then
+							local listFrame = _G["L_DropDownList"..level];
+							if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
+								L_ToggleDropDownMenu(level, self:GetParent().value, nil, nil, nil, nil, self:GetParent().menuList, self);
+							end
 						end
+
 						L_UIDropDownMenu_StopCounting(self:GetParent():GetParent());
 					</OnEnter>
 					<OnLeave>
@@ -132,25 +138,8 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnEnter>
-						L_UIDropDownMenu_StopCounting(self:GetParent():GetParent());
-						L_CloseDropDownMenus(self:GetParent():GetParent():GetID() + 1);
-						local parent = self:GetParent();
-						if ( parent.tooltipTitle and parent.tooltipWhileDisabled) then
-							if ( parent.tooltipOnButton ) then
-								GameTooltip:SetOwner(parent, "ANCHOR_RIGHT");
-								GameTooltip:AddLine(parent.tooltipTitle, 1.0, 1.0, 1.0);
-								GameTooltip:AddLine(parent.tooltipText, nil, nil, nil, true);
-								GameTooltip:Show();
-							else
-								GameTooltip_AddNewbieTip(parent, parent.tooltipTitle, 1.0, 1.0, 1.0, parent.tooltipText, 1);
-							end
-						end
-					</OnEnter>
-					<OnLeave>
-						L_UIDropDownMenu_StartCounting(self:GetParent():GetParent());
-						GameTooltip:Hide();
-					</OnLeave>
+					<OnEnter function="L_UIDropDownMenuButtonInvisibleButton_OnEnter"/>
+					<OnLeave function="L_UIDropDownMenuButtonInvisibleButton_OnLeave"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -161,34 +150,8 @@
 			<OnClick>
 				L_UIDropDownMenuButton_OnClick(self, button, down);
 			</OnClick>
-			<OnEnter>
-				if ( self.hasArrow ) then
-					local level =  self:GetParent():GetID() + 1;
-					local listFrame = _G["L_DropDownList"..level];
-					if ( not listFrame or not listFrame:IsShown() or select(2, listFrame:GetPoint()) ~= self ) then
-						L_ToggleDropDownMenu(self:GetParent():GetID() + 1, self.value, nil, nil, nil, nil, self.menuList, self);
-					end
-				else
-					L_CloseDropDownMenus(self:GetParent():GetID() + 1);
-				end
-				_G[self:GetName().."Highlight"]:Show();
-				L_UIDropDownMenu_StopCounting(self:GetParent());
-				if ( self.tooltipTitle ) then
-					if ( self.tooltipOnButton ) then
-						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-						GameTooltip:AddLine(self.tooltipTitle, 1.0, 1.0, 1.0);
-						GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
-						GameTooltip:Show();
-					else
-						GameTooltip_AddNewbieTip(self, self.tooltipTitle, 1.0, 1.0, 1.0, self.tooltipText, 1);
-					end
-				end
-			</OnEnter>
-			<OnLeave>
-				_G[self:GetName().."Highlight"]:Hide();
-				L_UIDropDownMenu_StartCounting(self:GetParent());
-				GameTooltip:Hide();
-			</OnLeave>
+			<OnEnter function="L_UIDropDownMenuButton_OnEnter"/>
+			<OnLeave function="L_UIDropDownMenuButton_OnLeave"/>
 			<OnEnable>
 				self.invisibleButton:Hide();
 			</OnEnable>
