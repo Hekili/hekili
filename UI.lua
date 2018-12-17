@@ -23,11 +23,12 @@ local UIDropDownMenu_AddSeparator = L_UIDropDownMenu_AddSeparator
 
 
 function Hekili:GetScale()
-    local monitorIndex = (tonumber(GetCVar("gxMonitor")) or 0) + 1
+    return PixelUtil.GetNearestPixelSize( 1, PixelUtil.GetPixelToUIUnitFactor(), 1 )
+    --[[ local monitorIndex = (tonumber(GetCVar("gxMonitor")) or 0) + 1
     local resolutions = {GetScreenResolutions()}
     local resolution = resolutions[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
 
-    return GetCVar("UseUIScale") == "1" and (GetScreenHeight() / resolution:match("%d+x(%d+)")) or 1
+    return (GetCVar("UseUIScale") == "1" and (GetScreenHeight() / resolution:match("%d+x(%d+)")) or 1) ]]
 end
 
 
