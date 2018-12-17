@@ -426,8 +426,10 @@ state.UnitDebuff = UnitDebuff
 state.UnitCanAttack = UnitCanAttack
 state.UnitCastingInfo = UnitCastingInfo
 state.UnitChannelInfo = UnitChannelInfo
+state.UnitClassification = UnitClassification
 state.UnitIsUnit = UnitIsUnit
 state.UnitIsPlayer = UnitIsPlayer
+state.UnitLevel = UnitLevel
 state.abs = math.abs
 state.ceil = math.ceil
 state.floor = math.floor
@@ -451,7 +453,7 @@ state.safebool = function( val )
     return val ~= 0 and true or false
 end
 
-state.boss = false
+state.inEncounter = false
 state.combat = 0
 state.faction = UnitFactionGroup( 'player' )
 state.race[ formatKey( UnitRace('player') ) ] = true
@@ -1270,6 +1272,9 @@ local mt_state = {
 
         elseif k == 'desired_targets' then
             return 1
+
+        elseif k == 'boss' then
+            return ( t.inEncounter or UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) == true
 
         elseif k == 'cycle' then
             return false

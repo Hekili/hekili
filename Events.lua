@@ -322,8 +322,8 @@ end ) ]]
 
 
 -- TBD:  Consider making `boss' a check to see whether the current unit is a boss# unit instead.
-RegisterEvent( "ENCOUNTER_START", function () state.boss = true end )
-RegisterEvent( "ENCOUNTER_END", function () state.boss = false end )
+RegisterEvent( "ENCOUNTER_START", function () state.inEncounter = true end )
+RegisterEvent( "ENCOUNTER_END", function () state.inEncounter = false end )
 
 
 do
@@ -716,6 +716,7 @@ end )
 
 RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
     state.target.updated = true
+    Hekili.UpdateTTD( "target" )
     Hekili:ForceUpdate( event, true )
 end )
 

@@ -423,7 +423,6 @@ do
     local function InitTTD( unit )
 
         if not unit then return end
-
         local GUID = UnitGUID( unit )
 
         TTD[ GUID ] = TTD[ GUID ] or tremove( recycleBin ) or {}
@@ -439,8 +438,9 @@ do
 
 
     local function UpdateTTD( unit )
+        local guid = UnitExists( unit ) and UnitGUID( unit )
+        if not guid then return end
 
-        local guid = UnitGUID( unit )
         local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
 
         local now = GetTime()
@@ -479,6 +479,7 @@ do
         ttd.sec = projected
 
     end
+    Hekili.UpdateTTD = UpdateTTD
 
 
     local seen  = {}
