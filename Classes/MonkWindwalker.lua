@@ -14,28 +14,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
     local spec = Hekili:NewSpecialization( 269 )
 
     spec:RegisterResource( Enum.PowerType.Energy, {
-        rushing_jade_wind = not PTR and {
-            resource = 'energy',
-            -- setting = 'forecast_fury',
-            aura = 'rushing_jade_wind',
-
-            last = function ()
-                local app = state.buff.rushing_jade_wind.applied
-                local t = state.query_time
-
-                if state.buff.rushing_jade_wind.last_tick and state.buff.rushing_jade_wind.last_tick > state.buff.rushing_jade_wind.applied then app = state.buff.rushing_jade_wind.last_tick end
-
-                return app + ( floor( ( t - app ) / ( 0.75 * state.haste ) ) * ( 0.75 * state.haste ) )
-            end,
-
-            stop = function( x )
-                return x < 3
-            end,
-
-            interval = function () return 0.75 * state.haste end,
-            value = -3,
-        } or nil,
-
         crackling_jade_lightning = {
             aura = 'crackling_jade_lightning',
             debuff = true,
@@ -94,21 +72,20 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        gladiators_medallion = 3574, -- 208683
-        relentless = 3573, -- 196029
         adaptation = 3572, -- 214027
-        
-        tiger_style = 3737, -- 206743
-        heavyhanded_strikes = 3734, -- 232054
-        eminence = 3616, -- 216255
-        tigereye_brew = 675, -- 247483
-        grapple_weapon = 3052, -- 233759
+        relentless = 3573, -- 196029
+        gladiators_medallion = 3574, -- 208683
+
         disabling_reach = 3050, -- 201769
-        yulons_gift = 1959, -- 232879
-        fast_feet = 3527, -- 201201
-        control_the_mists = 852, -- 233765
-        fortifying_brew = 73, -- 201318
+        grapple_weapon = 3052, -- 233759
+        tigereye_brew = 675, -- 247483
+        turbo_fists = 3745, -- 287681
+        pressure_points = 3744, -- 287599
+        reverse_harm = 852, -- 287771
+        wind_waker = 3737, -- 287506
+        alpha_tiger = 3734, -- 287503
         ride_the_wind = 77, -- 201372
+        fortifying_brew = 73, -- 201318
     } )
 
     -- Auras
@@ -215,14 +192,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 107428,
             duration = 10,
         },
-        rushing_jade_wind = PTR and {
+        rushing_jade_wind = {
             id = 116847,
             duration = function () return 9 * haste end,
             max_stack = 1,
-            dot = "buff",
-        } or {
-            id = 261715,
-            duration = 3600,
             dot = "buff",
         },
         serenity = {
@@ -272,6 +245,56 @@ if UnitClassBase( 'player' ) == 'MONK' then
             max_stack = 1,
         },
 
+        -- PvP Talents
+        alpha_tiger = {
+            id = 287504,
+            duration = 8,
+            max_stack = 1,
+        },
+
+        fortifying_brew = {
+            id = 201318,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        grapple_weapon = {
+            id = 233759,
+            duration = 6,
+            max_stack = 1,
+        },
+
+        heavyhanded_strikes = {
+            id = 201787,
+            duration = 2,
+            max_stack = 1,
+        },
+
+        ride_the_wind = {
+            id = 201447,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        tigereye_brew_stack = {
+            id = 248646,
+            duration = 120,
+            max_stack = 20,
+        },
+
+        tigereye_brew = {
+            id = 247483,
+            duration = 20,
+            max_stack = 1
+        },
+
+        wind_waker = {
+            id = 290500,
+            duration = 4,
+            max_stack = 1,
+        },
+
+
         -- Azerite Powers
         dance_of_chiji = {
             id = 286587,
@@ -290,18 +313,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             duration = 8,
             max_stack = 1,
         },
-
-        iron_fists = not PTR and {
-            id = 272806,
-            duration = 10,
-            max_stack = 1,
-        } or nil,
-
-        swift_roundhouse = not PTR and {
-            id = 278710,
-            duration = 12,
-            max_stack = 2,
-        } or nil,
 
         sunrise_technique = {
             id = 273298,
@@ -356,6 +367,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterStateExpr( "last_combo", function () return virtual_combo or actual_combo end )
 
 
+    local tigers_palmed = {}
+    local tigers_palmed_v = {}
+
+
     -- If a Tiger Palm missed, pretend we never cast it.
     -- Use RegisterEvent since we're looking outside the state table.
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
@@ -370,13 +385,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 if ns.castsAll[2] == "tiger_palm" then ns.castsAll[2] = "none" end
                 if ns.castsOn[1] == "tiger_palm" then ns.castsOn[1] = "none" end
                 actual_combo = "none"
-                
+            
                 Hekili:ForceUpdate( "WW_MISSED" )
             
             elseif subtype == "SPELL_CAST_SUCCESS" and state.combos[ ability ] then
                 prev_combo = actual_combo
                 actual_combo = ability
-            
+
+                -- For Alpha Tiger.
+                if ability == "tiger_palm" and not tigers_palmed[ destGUID ] then tigers_palmed[ destGUID ] = GetTime() end
+                
             elseif subtype == "SPELL_DAMAGE" and spellID == 148187 then
                 -- track the last tick.
                 state.buff.rushing_jade_wind.last_tick = GetTime()
@@ -391,11 +409,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             if last_combo == key then removeBuff( "hit_combo" )
             else
                 if talent.hit_combo.enabled then addStack( "hit_combo", 10, 1 ) end
-                if azerite.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end
-                
-                if not PTR and azerite.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then
-                    cooldown.touch_of_death.expires = cooldown.touch_of_death.expires - 0.25
-                end
+                if azerite.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end                
             end
             virtual_combo = key
         end
@@ -427,6 +441,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         if buff.rushing_jade_wind.up then setCooldown( "rushing_jade_wind", 0 ) end
 
+        table.wipe( tigers_palmed_v )
+        for k, v in pairs( tigers_palmed ) do
+            if now - v > 30 then tigers_palmed[ k ] = nil
+            else tigers_palmed_v[ k ] = v end
+        end
+
         spinning_crane_kick.count = nil
         virtual_combo = nil
     end )
@@ -445,7 +465,27 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 end
         end } ) )
 
-    -- spec:RegisterStateExpr( "gcd", function () return 1.0 end )
+    spec:RegisterStateExpr( "alpha_tiger_ready", function ()
+        if not pvptalent.alpha_tiger.enabled then
+            return false
+        elseif not tigers_palmed_v[ target.unit ] or query_time - tigers_palmed_v[ target.unit ] > 30 then
+            return true
+        elseif cycle then
+            local count = 0
+            for k, v in pairs( tigers_palmed_v ) do
+                if query_time - v < 30 then count = count + 1 end
+            end
+            return count < active_enemies
+        end
+        return false
+    end )
+
+    spec:RegisterStateExpr( "alpha_tiger_ready_in", function ()
+        if not pvptalent.alpha_tiger.enabled then return 3600 end
+        if not tigers_palmed_v[ target.unit ] then return 0 end
+        if query_time - tigers_palmed_v[ target.unit ] > 30 then return 0 end
+        return 30 - tigers_palmed_v[ target.unit ] - query_time
+    end )
 
 
     -- Abilities
@@ -478,10 +518,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
                 if talent.eye_of_the_tiger.enabled then applyDebuff( "target", "eye_of_the_tiger" ) end
                 applyDebuff( "target", "mark_of_the_crane", 15 )
-
-                if not PTR and azerite.swift_roundhouse.enabled then
-                    addStack( "swift_roundhouse", nil, 1 )
-                end
             end,
         },
         
@@ -672,7 +708,13 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         fists_of_fury = {
             id = 113656,
-            cast = 4,
+            cast = function ()
+                if buff.alpha_tiger.up then
+                    -- FoF does not benefit from AT's haste.
+                    return 4 / ( 0.9 + stat.spell_haste )
+                end
+                return 4 * haste
+            end,
             channeled = true,
             cooldown = function ()
                 local x = 24 * haste
@@ -693,12 +735,32 @@ if UnitClassBase( 'player' ) == 'MONK' then
             
             handler = function ()
                 if level < 116 and set_bonus.tier20_4pc == 1 then applyBuff( "pressure_point", 5 + action.fists_of_fury.cast ) end
-                if not PTR and azerite.iron_fists.enabled and active_enemies > 3 then applyBuff( "iron_fists" ) end
-                if PTR and buff.fury_of_xuen.stack >= 50 then
+                if buff.fury_of_xuen.stack >= 50 then
                     applyBuff( "fury_of_xuen_haste" )
                     summonPet( "xuen", 8 )
                     removeBuff( "fury_of_xuen" )
                 end
+                if pvptalent.turbo_fists.enabled then
+                    applyDebuff( "target", "heavyhanded_strikes", action.fists_of_fury.cast_time + 2 )
+                end
+            end,
+        },
+        
+
+        fortifying_brew = {
+            id = 201318,
+            cast = 0,
+            cooldown = 90,
+            gcd = "off",
+            
+            toggle = "defensives",
+            pvptalent = "fortifying_brew",
+
+            startsCombat = false,
+            texture = 1616072,
+            
+            handler = function ()
+                applyBuff( "fortifying_brew" )
             end,
         },
         
@@ -719,6 +781,23 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     applyBuff( "flying_serpent_kick" )
                     setCooldown( "global_cooldown", 2 )
                 end
+            end,
+        },
+        
+
+        grapple_weapon = {
+            id = 233759,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            pvptalent = "grapple_weapon",
+            
+            startsCombat = true,
+            texture = 132343,
+            
+            handler = function ()
+                applyDebuff( "target", "grapple_weapon" )
             end,
         },
         
@@ -810,6 +889,27 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
         
 
+        reverse_harm = {
+            id = 287771,
+            cast = 0,
+            cooldown = 10,
+            gcd = "spell",
+            
+            spend = 40,
+            spendType = "energy",
+
+            pvptalent = "reverse_harm",
+            
+            startsCombat = true,
+            texture = 627486,
+            
+            handler = function ()
+                health.current = min( health.max, health.current + 0.08 * health.max )
+                gain( 2, "chi" )
+            end,
+        },
+        
+
         ring_of_peace = {
             id = 116844,
             cast = 0,
@@ -850,7 +950,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 applyDebuff( 'target', 'mark_of_the_crane' )
                 removeBuff( 'pressure_point' )
-                if not PTR then removeBuff( "swift_roundhouse" ) end
 
                 if azerite.sunrise_technique.enabled then applyDebuff( "target", "sunrise_technique" ) end
             end,
@@ -876,7 +975,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
         
 
-        rushing_jade_wind = PTR and {
+        rushing_jade_wind = {
             id = 116847,
             cast = 0,
             cooldown = function ()
@@ -898,48 +997,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 applyBuff( "rushing_jade_wind" )
             end,
-        } or {
-            id = 261715,
-            cast = 0,
-            cooldown = function ()
-                if buff.rushing_jade_wind.up then return 0 end
-
-                local x = 6 * haste
-                if buff.serenity.up then x = max( 0, x - ( buff.serenity.remains / 2 ) ) end
-                return x
-            end,
-            gcd = function () return buff.rushing_jade_wind.up and "off" or "spell" end,
-            
-            spend = function ()
-                if buff.rushing_jade_wind.up then return 0 end
-                return 3
-            end,
-            spendPerSec = function ()
-                if buff.rushing_jade_wind.up then return 0 end
-                return 3
-            end,
-            spendType = "energy",
-            
-            startsCombat = true,
-            texture = 606549,
-
-            talent = "rushing_jade_wind",
-            indicator = function () return buff.rushing_jade_wind.up and "cancel" or nil end,
-            
-            cycle = "mark_of_the_crane",
-
-            handler = function ()
-                if buff.rushing_jade_wind.down then
-                    applyBuff( "rushing_jade_wind", 3600 )
-                    active_dot.mark_of_the_crane = min( active_enemies, active_dot.mark_of_the_crane + ( debuff.mark_of_the_crane.down and 2 or 1 ) )
-                    applyDebuff( "target", "mark_of_the_crane" )
-                else
-                    setCooldown( "rushing_jade_wind", action.rushing_jade_wind.cooldown - ( query_time - buff.rushing_jade_wind.applied ) )
-                    removeBuff( "rushing_jade_wind" )
-                end
-            end,
-
-            copy = 148187
         },
         
 
@@ -1047,10 +1104,35 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     applyBuff( "eye_of_the_tiger" )
                 end
 
+                if pvptalent.alpha_tiger.enabled and ( not tigers_palmed_v[ target.unit ] or ( query_time - tigers_palmed_v[ target.unit ] ) > 30 ) then
+                    if buff.alpha_tiger.down then stat.haste = stat.haste + 0.10 end
+                    applyBuff( "alpha_tiger" )
+                    tigers_palmed_v[ target.unit ] = query_time
+                end
+
                 applyDebuff( "target", "mark_of_the_crane" )
 
                 gain( buff.power_strikes.up and 3 or 2, "chi" )
                 removeBuff( "power_strikes" )
+            end,
+        },
+        
+
+        tigereye_brew = {
+            id = 247483,
+            cast = 0,
+            cooldown = 1,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 613399,
+            
+            buff = "tigereye_brew_stack",
+            pvptalent = "tigereye_brew",
+
+            handler = function ()
+                applyBuff( "tigereye_brew", 2 * min( 10, buff.tigereye_brew_stack.stack ) )
+                removeStack( "tigereye_brew_stack", min( 10, buff.tigereye_brew_stack.stack ) )
             end,
         },
         
