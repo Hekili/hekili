@@ -227,6 +227,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         last_summon.name = nil
         last_summon.at = nil
         last_summon.count = nil
+
+        if demonic_tyrant_v[ 1 ] and demonic_tyrant_v[ 1 ] > query_time then
+            summonPet( "demonic_tyrant", demonic_tyrant_v[ 1 ] - query_time )
+        end
     end )
 
 
@@ -1054,7 +1058,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 
                 return true
             end,
-            usable = function () return buff.wild_imps.stack > 1 end,
+            usable = function () return buff.wild_imps.count > 0 end,
             handler = function ()
                 local num = min( 2, buff.wild_imps.count )
                 consume_demons( "wild_imps", num )
@@ -1179,7 +1183,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 summonPet( 'felguard', 3600 )
             end,
 
-            copy = "summon_pet"
+            copy = { "summon_pet", 112870, "summon_wrathguard" }
         },
 
 
