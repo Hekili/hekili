@@ -904,7 +904,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 627486,
             
             handler = function ()
-                health.current = min( health.max, health.current + 0.08 * health.max )
+                health.actual = min( health.max, health.current + 0.08 * health.max )
                 gain( 2, "chi" )
             end,
         },
