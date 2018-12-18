@@ -1162,6 +1162,31 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
     
         return db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
     end
+elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
+    function Hekili:GetBindingForAction( key, caps )
+        if not key then return "" end
+
+        local override = state.spec.id
+        override = override and self.DB.profile.specs[ override ]
+        override = override and override.abilities[ key ]
+        override = override and override.keybind
+
+        if override and override ~= "" then
+            return override
+        end
+
+        if not keys[ key ] then return "" end
+
+        local db = caps and keys[ key ].upper or keys[ key ].lower
+
+        if state.stealthed.all then
+            return db[ 7 ] or db[ 8 ] or db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or ""
+
+        end
+    
+        return db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+    end
+
 else
     function Hekili:GetBindingForAction( key, caps )
         if not key then return "" end
