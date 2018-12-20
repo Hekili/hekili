@@ -708,13 +708,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         fists_of_fury = {
             id = 113656,
-            cast = function ()
-                if buff.alpha_tiger.up then
-                    -- FoF does not benefit from AT's haste.
-                    return 4 / ( 0.9 + stat.spell_haste )
-                end
-                return 4 * haste
-            end,
+            cast = 4,
             channeled = true,
             cooldown = function ()
                 local x = 24 * haste
