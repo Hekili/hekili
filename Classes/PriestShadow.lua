@@ -22,7 +22,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 local app = state.debuff.mind_flay.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / class.auras.mind_flay.tick_time ) * class.auras.mind_flay.tick_time
             end,
 
             interval = function () return class.auras.mind_flay.tick_time end,
@@ -37,7 +37,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 local app = state.debuff.mind_sear.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / class.auras.mind_sear.tick_time ) * class.auras.mind_sear.tick_time
             end,
 
             interval = function () return class.auras.mind_sear.tick_time end,
@@ -92,12 +92,40 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 local app = state.debuff.vampiric_touch.applied
                 local t = state.query_time
 
-                return app + floor( t - app )
+                return app + floor( ( t - app ) / class.auras.vampiric_touch.tick_time ) * class.auras.vampiric_touch.tick_time
             end,
 
             interval = function () return state.debuff.vampiric_touch.tick_time end,
             value = 1
-        }
+        },
+
+        mindbender = {
+            aura = "mindbender",
+
+            last = function ()
+                local app = state.buff.mindbender.expires - 15
+                local t = state.query_time
+
+                return app + floor( ( t - app ) / ( 1.5 * state.haste ) ) * ( 1.5 * state.haste )
+            end,
+
+            interval = function () return 1.5 * state.haste end,
+            value = function () return state.debuff.surrendered_to_madness.up and 0 or ( state.buff.surrender_to_madness.up and 12 or 6 ) end,
+        },
+
+        shadowfiend = {
+            aura = "shadowfiend",
+
+            last = function ()
+                local app = state.buff.shadowfiend.expires - 15
+                local t = state.query_time
+
+                return app + floor( ( t - app ) / ( 1.5 * state.haste ) ) * ( 1.5 * state.haste )
+            end,
+
+            interval = function () return 1.5 * state.haste end,
+            value = function () return state.debuff.surrendered_to_madness.up and 0 or ( state.buff.surrender_to_madness.up and 6 or 3 ) end,
+        },
     } )
     spec:RegisterResource( Enum.PowerType.Mana )
     
@@ -155,8 +183,19 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     } )
 
 
+    spec:RegisterTotem( "mindbender", 136214 )
+    spec:RegisterTotem( "shadowfiend", 136199 )
+
+
     spec:RegisterHook( "reset_precast", function ()
         if buff.voidform.up then applyBuff( "shadowform" ) end
+
+        if pet.mindbender.active then applyBuff( "mindbender", pet.mindbender.remains ) end
+        if pet.shadowfiend.active then applyBuff( "shadowfiend", pet.shadowfiend.remains ) end
+
+        if action.void_bolt.in_flight then
+            runHandler( "void_bolt" )
+        end
     end )
 
 
@@ -230,6 +269,10 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             duration = 60,
             max_stack = 1,
         },
+        mindbender = {
+            duration = 15,
+            max_stack = 1,
+        },
         power_word_fortitude = {
             id = 21562,
             duration = 3600,
@@ -268,6 +311,10 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             max_stack = 1,
             tick_time = function () return 2 * haste end,
         },
+        shadowfiend = {
+            duration = 15,
+            max_stack = 1
+        },
         shadowform = {
             id = 232698,
             duration = 3600,
@@ -295,7 +342,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         surrendered_to_madness = {
             id = 263406,
-            duration = PTR and 15 or 30,
+            duration = 15,
             max_stack = 1,
         },
         vampiric_embrace = {
@@ -394,7 +441,12 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
     spec:RegisterHook( "advance_end", function ()
         if buff.voidform.up and insanity.current == 0 then
+            insanity.regen = 0
             removeBuff( "voidform" )
+            if buff.surrender_to_madness.up then
+                removeBuff( "surrender_to_madness" )
+                applyDebuff( "player", "surrendered_to_madness" )
+            end
             applyBuff( "shadowform" )
         end
     end )
@@ -611,7 +663,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 removeBuff( "empty_mind" )
             end,
 
-            copy = { "shadow_word_void", 205351 },
+            copy = { "shadow_word_void", 205351, 8092 },
         },
         
 
@@ -687,6 +739,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                         addStack( "empty_mind", nil, 3 )
                     end
                 end
+                forecastResources( "insanity" )
             end,
         },
         
@@ -717,6 +770,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 removeBuff( "thought_harvester" )
                 if azerite.searing_dialogue.enabled then applyDebuff( "target", "searing_dialogue" ) end
                 channelSpell( "mind_sear" )
+                forecastResources( "insanity" )
             end,
         },
         
@@ -754,6 +808,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             
             handler = function ()
                 summonPet( "mindbender", 15 )
+                applyBuff( "mindbender" )
             end,
         },
         
@@ -1005,11 +1060,14 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             gcd = "spell",
             
             toggle = "cooldowns",
+            notalent = "mindbender",
 
             startsCombat = true,
             texture = 136199,
             
             handler = function ()
+                summonPet( "shadowfiend", 15 )
+                applyBuff( "shadowfiend" )
             end,
         },
         
