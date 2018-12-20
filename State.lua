@@ -12,7 +12,7 @@ local ResourceRegenerates = ns.ResourceRegenerates
 
 local Error = ns.Error
 
-local round, roundUp = ns.round, ns.roundUp
+local round, roundUp, roundDown = ns.round, ns.roundUp, ns.roundDown
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 
 local table_insert = table.insert
@@ -916,9 +916,9 @@ local function forecastResources( resource )
     table.wipe( events )
     table.wipe( remains )
 
-    local now = state.now + state.offset
+    local now = roundDown( state.now + state.offset, 2 )
 
-    local timeout = FORECAST_DURATION * state.haste
+    local timeout = roundDown( FORECAST_DURATION * state.haste, 2 )
     if state.class.file == "DEATHKNIGHT" and state.runes then
         timeout = max( timeout, 1 + state.runes.cooldown )
     end       
@@ -952,7 +952,7 @@ local function forecastResources( resource )
                 local r = state[ v.resource ]
 
                 local l = v.last()
-                local i = ( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ) )
+                local i = roundDown( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ), 2 )
 
                 v.next = l + i
                 v.name = k
@@ -984,7 +984,7 @@ local function forecastResources( resource )
 
             local bonus = r.regen * ( now - prev )
 
-            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < now ) then
+            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < now  ) then
                 table.remove( events, 1 )
 
                 local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
@@ -1026,7 +1026,7 @@ local function forecastResources( resource )
                 r.fcount = idx
 
                 -- interval() takes the last tick and the current value to remember the next step.
-                local step = type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, v ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) )
+                local step = roundDown( type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, v ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) ), 2 )
 
                 remains[ e.resource ] = finish - e.next
                 e.next = e.next + step
@@ -1055,6 +1055,7 @@ local function forecastResources( resource )
 
 end
 ns.forecastResources = forecastResources
+state.forecastResources = forecastResources
 
 
 local function gain( amount, resource, overcap )
@@ -1283,7 +1284,7 @@ local mt_state = {
             return 0
 
         elseif k == 'channeling' then
-            return t.player.channelSpell ~= nil and t.player.channelEnd > t.query_time
+            return t.player.channelSpell ~= nil and t.player.channelEnd >= t.query_time
 
         elseif k == 'channel' then
             return t.channeling and t.player.channelSpell or nil
@@ -3646,7 +3647,7 @@ end
 
 function state.reset( dispName )
     
-    state.now = GetTime()
+    state.now = roundUp( GetTime(), 2 )
     state.offset = 0
     state.delay = 0
     state.cast_start = 0

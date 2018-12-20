@@ -120,12 +120,18 @@ end
 
 
 function ns.roundUp( num, places )
-
     num = num or 0
     local tens = 10 ^ ( places or 0 )
 
     return ceil( num * tens ) / tens
+end
 
+
+function ns.roundDown( num, places )
+    num = num or 0
+    local tens = 10 ^ ( places or 0 )
+
+    return floor( num * tens ) / tens
 end
 
 
