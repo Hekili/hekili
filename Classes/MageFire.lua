@@ -280,7 +280,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     spec:RegisterStateTable( "firestarter", setmetatable( {}, {
         __index = setfenv( function( t, k )
-            if k == "active" then return talent.firestarter.enabled and target.health.pct > 90 end
+            if k == "active" then return talent.firestarter.enabled and target.health.pct > 90
+            elseif k == "remains" then
+                if not talent.firestarter.enabled or target.health.pct <= 90 then return 0 end
+                return max( 0, floor( target.time_to_die * 90 / target.health.pct ) )
+            end
         end, state )
     } ) )
     
