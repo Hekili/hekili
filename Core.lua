@@ -212,10 +212,6 @@ function Hekili:OnEnable()
     ns.ReadKeybindings()
     self:ForceUpdate( "ADDON_ENABLED" )
     ns.Audit()    
-
-    if not self.DB.profile.enabled then 
-        self:Disable()
-    end 
 end
 
 ns.cpuProfile.StartEventHandler = ns.StartEventHandler

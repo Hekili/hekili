@@ -984,7 +984,7 @@ local function forecastResources( resource )
 
             local bonus = r.regen * ( now - prev )
 
-            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < now  ) then
+            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < now ) then
                 table.remove( events, 1 )
 
                 local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
@@ -3357,13 +3357,10 @@ local mt_default_action = {
         else
             local val = class.abilities[ t.action ][ k ]
 
-            if val then
+            if val ~= nil then
                 if type( val ) == 'function' then return val() end
                 return val
             end
-
-            return 0
-            
         end
         
         return 0

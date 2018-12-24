@@ -556,14 +556,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         end )
     end
 
-    spec:RegisterStateExpr( "", function( k )
-        local a = k and action[ k ]
-        a = a and a.ap_check
-
-        return a == true
-    end )
-
-
     spec:RegisterStateExpr( "active_moon", function ()
         return "new_moon"
     end )
