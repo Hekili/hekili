@@ -993,6 +993,50 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             end,
         },
         
+        
+        summon_felhunter = {
+            id = 691,
+            cast = 2.5,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = 1,
+            spendType = "soul_shards",
+
+            essential = true,
+
+            usable = function ()
+                if pet.alive then return false, "pet is alive"
+                elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
+                return true
+            end,
+            handler = function () summonPet( "felhunter" ) end,
+
+            copy = { 112869 }
+        },
+        
+        
+        summon_imp = {
+            id = 688,
+            cast = 2.5,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = 1,
+            spendType = "soul_shards",
+
+            essential = true,
+
+            usable = function ()
+                if pet.alive then return false, "pet is alive"
+                elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
+                return true
+            end,
+            handler = function () summonPet( "imp" ) end,
+
+            copy = "summon_pet"
+        },
+        
 
         summon_infernal = {
             id = 1122,
