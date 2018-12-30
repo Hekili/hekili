@@ -1094,7 +1094,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             notalent = "clawing_shadows",
 
-            usable = function () return debuff.festering_wound.up end,
+            --[[ 20181230:  Remove Festering Wounds requirement, improves AOE.
+            usable = function ()
+                if debuff.festering_wound.down then return false, "requires festering_wound" end
+                return true
+            end, ]]
             handler = function ()
                 gain( 3, "runic_power" )
                 if debuff.festering_wound.stack > 1 then
