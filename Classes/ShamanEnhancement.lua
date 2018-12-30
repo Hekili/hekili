@@ -505,7 +505,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         },
 
         bloodlust = {
-            id = 2825,
+            id = function () return pvptalent.shamanism.enabled and 204361 or 2825 end,
+            known = 2825,
             cast = 0,
             cooldown = 300,
             gcd = 'spell', -- Ugh.
@@ -518,6 +519,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             handler = function ()
                 applyBuff( 'bloodlust', 40 )
             end,
+
+            copy = { 204361, 2825 }
         },
 
         crash_lightning = {
@@ -705,7 +708,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function() return buff.hot_hand.up and 0 or 30 end,
+            spend = function() return buff.hot_hand.up and 0 or 40 end,
             spendType = "maelstrom",
 
             startsCombat = true,
