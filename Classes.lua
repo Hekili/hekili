@@ -2709,6 +2709,28 @@ all:RegisterAbility( "dread_aspirants_badge", {
 } )
 
 
+all:RegisterAbility( "knot_of_ancient_fury", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 166795,
+    toggle = "cooldowns",
+
+    handler = function ()
+
+    end,
+} )
+
+all:RegisterAura( "fury_of_the_forest_lord", {
+    id = 278231,
+    duration = 12,
+    max_stack = 1
+} )
+
+
+
+
 -- BREWFEST
 all:RegisterAbility( "brawlers_statue", {
     cast = 0,
@@ -2731,8 +2753,8 @@ all:RegisterAura( "drunken_evasiveness", {
 
 
 
--- HALLOW'S END
 
+-- HALLOW'S END
 all:RegisterAbility( "the_horsemans_sinister_slicer", {
     cast = 0,
     cooldown = 600,
