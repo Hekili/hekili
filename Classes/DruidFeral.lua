@@ -25,67 +25,36 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
     
     -- Talents
-    if not PTR then spec:RegisterTalents( {
-            blood_scent = 22363, -- 202022
-            predator = 22364, -- 202021
-            lunar_inspiration = 22365, -- 155580
+    spec:RegisterTalents( {
+        predator = 22363, -- 202021
+        sabertooth = 22364, -- 202031
+        lunar_inspiration = 22365, -- 155580
 
-            tiger_dash = 19283, -- 252216
-            renewal = 18570, -- 108238
-            wild_charge = 18571, -- 102401
+        tiger_dash = 19283, -- 252216
+        renewal = 18570, -- 108238
+        wild_charge = 18571, -- 102401
 
-            balance_affinity = 22163, -- 197488
-            guardian_affinity = 22158, -- 217615
-            restoration_affinity = 22159, -- 197492
+        balance_affinity = 22163, -- 197488
+        guardian_affinity = 22158, -- 217615
+        restoration_affinity = 22159, -- 197492
 
-            mighty_bash = 21778, -- 5211
-            mass_entanglement = 18576, -- 102359
-            typhoon = 18577, -- 132469
+        mighty_bash = 21778, -- 5211
+        mass_entanglement = 18576, -- 102359
+        typhoon = 18577, -- 132469
 
-            soul_of_the_forest = 21708, -- 158476
-            jagged_wounds = 18579, -- 202032
-            incarnation = 21704, -- 102543
+        soul_of_the_forest = 21708, -- 158476
+        savage_roar = 18579, -- 52610
+        incarnation = 21704, -- 102543
 
-            sabertooth = 21714, -- 202031
-            brutal_slash = 21711, -- 202028
-            savage_roar = 22370, -- 52610
+        scent_of_blood = 21714, -- 285564
+        brutal_slash = 21711, -- 202028
+        primal_wrath = 22370, -- 285381
 
-            moment_of_clarity = 21646, -- 236068
-            bloodtalons = 21649, -- 155672
-            feral_frenzy = 21653, -- 274837
-        } )
-    else
-        spec:RegisterTalents( {
-            predator = 22363, -- 202021
-            sabertooth = 22364, -- 202031
-            lunar_inspiration = 22365, -- 155580
+        moment_of_clarity = 21646, -- 236068
+        bloodtalons = 21649, -- 155672
+        feral_frenzy = 21653, -- 274837
+    } )
     
-            tiger_dash = 19283, -- 252216
-            renewal = 18570, -- 108238
-            wild_charge = 18571, -- 102401
-    
-            balance_affinity = 22163, -- 197488
-            guardian_affinity = 22158, -- 217615
-            restoration_affinity = 22159, -- 197492
-    
-            mighty_bash = 21778, -- 5211
-            mass_entanglement = 18576, -- 102359
-            typhoon = 18577, -- 132469
-    
-            soul_of_the_forest = 21708, -- 158476
-            savage_roar = 18579, -- 52610
-            incarnation_king_of_the_jungle = 21704, -- 102543
-    
-            scent_of_blood = 21714, -- 285564
-            brutal_slash = 21711, -- 202028
-            primal_wrath = 22370, -- 285381
-    
-            moment_of_clarity = 21646, -- 236068
-            bloodtalons = 21649, -- 155672
-            feral_frenzy = 21653, -- 274837
-        } )
-    end
-
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
