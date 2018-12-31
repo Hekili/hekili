@@ -54,7 +54,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         bloodtalons = 21649, -- 155672
         feral_frenzy = 21653, -- 274837
     } )
-    
+
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
@@ -1046,7 +1046,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         
 
         prowl = {
-            id = 5215,
+            id = function () return buff.incarnation.up and 102547 or 5215 end,
             cast = 0,
             cooldown = function ()
                 if buff.prowl.up then return 0 end
@@ -1065,6 +1065,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 shift( "cat_form" )
                 applyBuff( buff.incarnation.up and "prowl_incarnation" or "prowl_base" )
             end,
+
+            copy = { 5215, 102547 }
         },
         
 
