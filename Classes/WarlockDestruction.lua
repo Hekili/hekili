@@ -1026,6 +1026,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
 
             essential = true,
+            bind = "summon_pet",
 
             usable = function ()
                 if pet.alive then return false, "pet is alive"

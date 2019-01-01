@@ -1168,7 +1168,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         
         summon_felguard = {
             id = 30146,
-            known = 30146,
             cast = function () return 2.5 * haste end,
             cooldown = 0,
             gcd = "spell",
@@ -1179,12 +1178,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = false,
             essential = true,
 
+            bind = "summon_pet",
+            
             usable = function () return not pet.exists end,
             handler = function ()
                 summonPet( 'felguard', 3600 )
             end,
 
-            copy = { "summon_pet", 112870, "summon_wrathguard" }
+            copy = { "summon_pet", 112870 }
         },
 
 
