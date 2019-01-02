@@ -452,9 +452,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
     end )
     
 
-    --[[ spec:RegisterHook( "IsUsable", function( spell )
-        if talent.hit_combo.enabled and buff.hit_combo.up and last_combo == spell then return false end
-    end ) ]]
+    spec:RegisterHook( "IsUsable", function( spell )
+        -- Allow repeats to happen if your chi has decayed to 0.
+        if talent.hit_combo.enabled and buff.hit_combo.up and ( spell ~= "tiger_palm" or chi.current == 0 ) and last_combo == spell then return false end
+    end )
 
 
     spec:RegisterStateTable( "spinning_crane_kick", setmetatable( { onReset = function( self ) self.count = nil end },
