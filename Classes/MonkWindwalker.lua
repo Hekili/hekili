@@ -454,7 +454,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     spec:RegisterHook( "IsUsable", function( spell )
         -- Allow repeats to happen if your chi has decayed to 0.
-        if talent.hit_combo.enabled and buff.hit_combo.up and ( spell ~= "tiger_palm" or chi.current == 0 ) and last_combo == spell then return false end
+        if talent.hit_combo.enabled and buff.hit_combo.up and ( spell ~= "tiger_palm" or chi.current > 0 ) and last_combo == spell then
+            return false, "would break hit_combo"
+        end
     end )
 
 
