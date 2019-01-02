@@ -2709,6 +2709,26 @@ all:RegisterAbility( "dread_aspirants_badge", {
 } )
 
 
+all:RegisterAbility( "knot_of_ancient_wisdom", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 166793,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "wisdom_of_the_forest_lord" )
+    end,
+} )
+
+all:RegisterAura( "wisdom_of_the_forest_lord", {
+    id = 278267,
+    duration = 20,
+    max_stack = 5
+} )
+
+
 all:RegisterAbility( "knot_of_ancient_fury", {
     cast = 0,
     cooldown = 60,
