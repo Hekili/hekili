@@ -755,8 +755,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             essential = true,
         
             readyTime = function () return buff.lightning_shield.remains - 120 end,
-            usable = function () return buff.lightning_shield.remains < 120 end,
-            handler = function () applyBuff( 'lightning_shield' ) end,
+            usable = function () return buff.lightning_shield.remains < 120 and ( time == 0 or buff.lightning_shield.stack == 1 ) end,
+            handler = function () applyBuff( 'lightning_shield', nil, 1 ) end,
         },
 
 
