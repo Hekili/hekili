@@ -824,6 +824,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
 
             startsCombat = true,
+            toggle = "interrupts",
 
             usable = function ()
                 if debuff.dispellable_magic.down then return false, "no dispellable magic aura" end
@@ -1062,9 +1063,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
             velocity = 30,
             
-            recheck = function ()
-                return dot.corruption.remains - ( cast_time + travel_time ), dot.seed_of_corruption.remains
-            end,
             usable = function () return dot.seed_of_corruption.down end,
             handler = function ()
                 applyDebuff( "target", "seed_of_corruption" )
@@ -1325,9 +1323,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             startsCombat = true,
             
-            recheck = function ()
-                return dot.unstable_affliction.remains - cast_time, dot.unstable_affliction_2.remains - cast_time, dot.unstable_affliction_3.remains - cast_time, dot.unstable_affliction_4.remains - cast_time, dot.unstable_affliction_5.remains - cast_time
-            end,
             handler = function ()
                 applyUnstableAffliction()
                 if azerite.dreadful_calling.enabled then
