@@ -4141,6 +4141,12 @@ do
                                             desc = "This date is automatically updated when any changes are made to the action lists for this Priority.",
                                             order = 3,
                                             set = function () end,
+                                            get = function ()
+                                                local d = data.date or 0
+
+                                                if type(d) == "string" then return d end
+                                                return format( "%.4f", d )
+                                            end,
                                         },
                                     },
                                 },
