@@ -1044,13 +1044,6 @@ function Hekili:GetDisplayByName( name )
 end
 
 
-local tSlot = {}
-local iterationSteps = {}
-
-local lastHooks = {}
-local lastCount = {}
-
-
 function Hekili:ProcessHooks( dispName, packName )
 
     if self.Pause then return end
