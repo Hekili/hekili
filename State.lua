@@ -1774,6 +1774,9 @@ local mt_pets = {
             
         elseif k == 'dead' then
             return UnitExists( 'pet' ) and UnitIsDead( 'pet' )
+
+        elseif k == 'health_pct' or k == 'health_percent' then
+            return t.alive and 100 * UnitHealth( 'pet ' ) / UnitHealthMax( 'pet' )
             
         end
         
