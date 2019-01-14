@@ -293,17 +293,17 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         },
 
         -- Azerite Powers
-        brain_storm = PTR and {
+        brain_storm = {
             id = 273330,
             duration = 30,
             max_stack = 1,
-        } or nil,
+        },
 
-        equipoise = PTR and {
+        equipoise = {
             id = 264352,
             duration = 3600,
             max_stack = 1,
-        } or nil,
+        },
     } )
 
 
@@ -322,7 +322,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     spec:RegisterHook( "gain", function( amt, resource )
         if resource == "arcane_charges" then
             if arcane_charges.current == 0 then removeBuff( "arcane_charge" )
-            else 
+            else
+                if talent.rule_of_threes.enabled and arcane_charges.current >= 3 and arcane_charges.current - resource < 3 then
+                    applyBuff( "rule_of_threes" )
+                end
                 applyBuff( "arcane_charge", nil, arcane_charges.current )
             end
         end
@@ -332,10 +335,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     spec:RegisterStateTable( "burn_info", setmetatable( {
         __start = 0,
         start = 0,
-        __average = 0,
-        average = 0,
-        n = 0,
-        __n = 0,
+        __average = 20,
+        average = 20,
+        n = 1,
+        __n = 1,
     }, {
         __index = function( t, k )
             if k == "active" then
@@ -344,7 +347,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         end,
     } ) )
 
+
     spec:RegisterHook( "reset_precast", function ()
+        if burn_info.__start > 0 and ( ( state.time == 0 and now - player.casttime > ( gcd.execute * 4 ) ) or ( now - burn_info.__start >= 45 ) ) and ( ( cooldown.evocation.remains == 0 and cooldown.arcane_power.remains < action.evocation.cooldown - 45 ) or ( cooldown.evocation.remains > cooldown.arcane_power.remains + 45 ) ) then
+            Hekili:Print( "Burn phase ended to avoid Evocation and Arcane Power desynchronization (%.2f seconds).", now - burn_info.__start )
+            burn_info.__start = 0
+        end
+
         burn_info.start = burn_info.__start
         burn_info.average = burn_info.__average
         burn_info.n = burn_info.__n
@@ -352,22 +361,25 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         if arcane_charges.current > 0 then applyBuff( "arcane_charge", nil, arcane_charges.current ) end
     end )
 
-    spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
+
+    --[[ spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
         state.burn_info.__start = 0
-        state.burn_info.__average = 0
-        state.burn_info.__n = 0
+        state.burn_info.__average = 20
+        state.burn_info.__n = 1
     end )
+
 
     spec:RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
         state.burn_info.__start = 0
-        state.burn_info.__average = 0
-        state.burn_info.__n = 0
-    end )
+        state.burn_info.__average = 20
+        state.burn_info.__n = 1
+    end ) ]]
 
 
     spec:RegisterStateFunction( "start_burn_phase", function ()
         burn_info.start = query_time
     end )
+
 
     spec:RegisterStateFunction( "stop_burn_phase", function ()
         if burn_info.start > 0 then
@@ -386,7 +398,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     end )
 
     spec:RegisterStateExpr( "average_burn_length", function ()
-        return burn_info.average or 0
+        return burn_info.average or 15
     end )
 
 
@@ -394,13 +406,15 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         if sourceGUID == GUID and subtype == "SPELL_CAST_SUCCESS" then
             if spellID == 12042 then
                 burn_info.__start = GetTime()
-            elseif spellID == 12051 and burn_info.start > 0 then
+                Hekili:Print( "Burn phase started." )
+            elseif spellID == 12051 and burn_info.__start > 0 then
                 burn_info.__average = burn_info.__average * burn_info.__n
                 burn_info.__average = burn_info.__average + ( query_time - burn_info.__start )
                 burn_info.__n = burn_info.__n + 1
     
                 burn_info.__average = burn_info.__average / burn_info.__n
                 burn_info.__start = 0
+                Hekili:Print( "Burn phase ended." )
             end
         end
     end )
@@ -451,9 +465,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     removeStack( "presence_of_mind" )
                     if buff.presence_of_mind.down then setCooldown( "presence_of_mind", 60 ) end
                 end
-                if arcane_charges.current < arcane_charges.max then gain( 1, "arcane_charges" ) end
                 removeBuff( "rule_of_threes" )
-                if talent.rule_of_threes.enabled and arcane_charges.current == 2 then applyBuff( "rule_of_threes" ) end
+                if arcane_charges.current < arcane_charges.max then gain( 1, "arcane_charges" ) end
             end,
         },
         
@@ -569,6 +582,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             gcd = "spell",
             
             toggle = "cooldowns",
+            nobuff = "arcane_power", -- don't overwrite a free proc.
 
             startsCombat = true,
             texture = 136048,
@@ -692,7 +706,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             handler = function ()
                 stop_burn_phase()
                 applyBuff( "evocation" )
-                if azerite.brain_storm.enabled then applyBuff( "brain_storm" ) end
+                if azerite.brain_storm.enabled then
+                    gain( 2, "arcane_charges" )
+                    applyBuff( "brain_storm" ) 
+                end
             end,
         },
         
@@ -1022,12 +1039,37 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     } )
 
 
+    spec:RegisterPrefs( {
+        arcane_info = {
+            type = "description",
+            name = "The Arcane Mage module treats combat as one of two phases.  The 'Burn' phase begins when you have used Arcane Power and begun aggressively burning mana.  The 'Conserve' phase starts when you've completed a burn phase and used Evocation to refill your mana bar.  This phase is less " ..
+                "aggressive with mana expenditure, so that you will be ready when it is time to start another burn phase.",
+            
+            width = "full",
+            order = 1,
+        },
+
+        conserve_mana = {
+            type = "range",
+            name = "Minimum Mana (Conserve Phase)",
+            desc = "Specify the amount of mana (%) that should be conserved when conserving mana before a burn phase.",
+            
+            min = 25,
+            max = 100,
+            step = 1,
+
+            width = "full",
+            order = 2,
+        }
+    } )
+
+
     spec:RegisterOptions( {
-        enabled = false,
+        enabled = true,
 
         aoe = 3,
     
-        nameplates = false,
+        nameplates = true,
         nameplateRange = 8,
         
         damage = true,
