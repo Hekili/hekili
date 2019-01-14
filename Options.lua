@@ -2932,6 +2932,13 @@ do
     end
 
 
+    function Hekili:SetSpecPref( info, val )
+    end
+
+    function Hekili:GetSpecPref( info )
+    end
+
+
     function Hekili:SetAbilityOption( info, val )
         local n = #info
         local ability, option = info[2], info[n]
@@ -3212,14 +3219,6 @@ do
 
                 specs[ id ] = '|T' .. texture .. ':0|t ' .. name
 
-                --[[ db.args.specs.plugins.spec[ 'btn'..sName ] = {
-                    type = 'execute',
-                    name = name,
-                    desc = description,
-                    order = 10 + i,
-                    func = function () ACD:SelectGroup( "Hekili", "specs", sName ) end,
-                } ]]
-
                 db.plugins.specializations[ sName ] = {
                     type = "group",
                     name = specs[ id ],
@@ -3228,12 +3227,13 @@ do
                     childGroups = "tree",
                     get = "GetSpecOption",
                     set = "SetSpecOption",
+                    
                     args = {
                         enabled = {
                             type = "toggle",
                             name = "Enabled",
                             desc = "If checked, the addon will provide priority recommendations for " .. name .. ".",
-                            order = 5,
+                            order = 0,
                             width = "full",
                         },
 
@@ -3471,8 +3471,15 @@ do
                                 },
                             }
                         }
+                    },
+
+                    plugins = {
+                        prefs = {}
                     }
-                }            
+                }
+
+                local userPrefs = class.specs[ id ] and class.specs[ id ].prefs
+                
 
             end
 
