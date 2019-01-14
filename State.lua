@@ -4032,6 +4032,7 @@ function state.advance( time )
                 resource.actual = min( resource.max, max( 0, resource.actual + ( resource.regen * time ) ) )
             end
         else
+            -- revisit this, may want to forecastResources( k ) instead.
             state.delay = time
             resource.actual = resource.current
             state.delay = 0
@@ -4112,13 +4113,9 @@ ns.spendResources = function( ability )
             resource = resource or 'health'
         end
         
-        if Hekili.ActiveDebug then Hekili:Debug( "Cost of " .. ability .. " is " .. cost .. "." ) end
-
         if cost > 0 and cost < 1 then
             cost = ( cost * state[ resource ].modmax )
-            if Hekili.ActiveDebug then Hekili:Debug( "Cost of " .. ability .. " is " .. cost .. " after checking max resource." ) end
         end
-
 
         if cost ~= 0 then
             state.spend( cost, resource )            
