@@ -3336,7 +3336,7 @@ local mt_default_action = {
             return 0
             
         elseif k == 'cast_regen' then
-            return floor( max( state.gcd.execute, t.cast_time ) * state[ class.primaryResource ].regen ) - ( ability and ability.spend or 0 )
+            return floor( max( state.gcd.execute, t.cast_time ) * state[ class.primaryResource ].regen ) - ( ability and t.cost or 0 )
 
         elseif k == 'cost' then
             local a = class.abilities[ t.action ].spend
@@ -4031,6 +4031,10 @@ function state.advance( time )
             if not override and resource.regen and resource.regen ~= 0 then
                 resource.actual = min( resource.max, max( 0, resource.actual + ( resource.regen * time ) ) )
             end
+        else
+            state.delay = time
+            resource.actual = resource.current
+            state.delay = 0
         end
     end
 
@@ -4108,9 +4112,13 @@ ns.spendResources = function( ability )
             resource = resource or 'health'
         end
         
+        if Hekili.ActiveDebug then Hekili:Debug( "Cost of " .. ability .. " is " .. cost .. "." ) end
+
         if cost > 0 and cost < 1 then
-            cost = ( cost * state[ resource ].max )
+            cost = ( cost * state[ resource ].modmax )
+            if Hekili.ActiveDebug then Hekili:Debug( "Cost of " .. ability .. " is " .. cost .. " after checking max resource." ) end
         end
+
 
         if cost ~= 0 then
             state.spend( cost, resource )            
