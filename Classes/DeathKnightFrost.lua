@@ -237,17 +237,13 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         cadaverous_pallor = 3515, -- 201995
         chill_streak = 706, -- 204160
         dark_simulacrum = 3512, -- 77606
-        dead_of_winter = PTR and 3743 or nil, -- 287250 -- ADDED 8.1
+        dead_of_winter = 3743, -- 287250
         deathchill = 701, -- 204080
-        decomposing_aura = not PTR and 45 or nil, -- 199720 -- DELETE 8.1
         delirium = 702, -- 233396
-        frozen_center = not PTR and 704 or nil, -- 204135 -- DELETE 8.1
         heartstop_aura = 3439, -- 199719
-        lichborne = PTR and 3742 or nil, -- 136187 -- ADDED 8.1
+        lichborne = 3742, -- 136187
         necrotic_aura = 43, -- 199642
-        overpowered_rune_weapon = not PTR and 705 or nil, -- 233394
-        transfusion = PTR and 3749 or nil, -- 237515/
-        tundra_stalker = not PTR and 703 or nil, -- 279941 -- DELETE 8.1  
+        transfusion = 3749, -- 237515
     } )
 
 
@@ -420,11 +416,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 1
         },
 
-        dead_of_winter = PTR and {
+        dead_of_winter = {
             id = 289959,
             duration = 4,
             max_stack = 5,
-        } or nil,
+        },
 
         deathchill = {
             id = 204085,
@@ -437,12 +433,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 15,
             max_stack = 1,
         },
-
-        decomposing_aura = not PTR and {
-            id = 199720,
-            duration = 6,
-            max_stack = 5
-        } or nil,
 
         heartstop_aura = {
             id = 199719,
@@ -464,23 +454,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
 
         -- Azerite Powers
-        cold_hearted = PTR and {
+        cold_hearted = {
             id = 288426,
             duration = 8,
             max_stack = 1
-        } or nil,
+        },
         
-        frostwhelps_indignation = PTR and {
+        frostwhelps_indignation = {
             id = 287338,
             duration = 6,
             max_stack = 1,
-        } or nil,
-
-        glacial_contagion = not PTR and {
-            id = 274074,
-            duration = 14,
-            max_stack = 1,
-        } or nil,
+        },
     } )
 
 
@@ -650,10 +634,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         dark_simulacrum = {
             id = 77606,
             cast = 0,
-            cooldown = function () return PTR and 20 or 25 end,
+            cooldown = 20,
             gcd = "spell",
             
-            spend = function () return PTR and 0 or 20 end,
+            spend = 0,
             spendType = "runic_power",
             
             startsCombat = true,
@@ -733,7 +717,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( PTR and 35 or 45 ) ) end, -- CHANGE 8.1
+            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * 35 ) end,
             spendType = "runic_power",
                         
             startsCombat = true,
@@ -930,7 +914,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         
 
-        lichborne = PTR and {
+        lichborne = {
             id = 287081,
             cast = 0,
             cooldown = 60,
@@ -944,7 +928,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             handler = function ()
                 applyBuff( "lichborne" )
             end,
-        } or nil,
+        },
         
 
         mind_freeze = {
@@ -1042,7 +1026,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         remorseless_winter = {
             id = 196770,
             cast = 0,
-            cooldown = PTR and function () return pvptalent.dead_of_winter.enabled and 45 or 20 end or 20, -- CHANGED 8.1
+            cooldown = function () return pvptalent.dead_of_winter.enabled and 45 or 20 end,
             gcd = "spell",
             
             spend = 1,

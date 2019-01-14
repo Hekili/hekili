@@ -197,22 +197,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
         antimagic_zone = 42, -- 51052
         cadaverous_pallor = 163, -- 201995
-        crypt_fever = not PTR and 40 or nil, -- 199722 -- DELETE 8.1
         dark_simulacrum = 41, -- 77606
-        decomposing_aura = not PTR and 3440 or nil, -- 199720 -- DELETE 8.1
-        ghoulish_monstrosity = not PTR and 3733 or nil, -- 280428 -- DELETE 8.1
-        heartstop_aura = not PTR and 44 or nil, -- 199719 -- DELETE 8.1
-        lichborne = PTR and 3754 or nil, -- 287081 -- ADDED 8.1
-        life_and_death = PTR and 40 or nil, -- 288855 -- ADDED 8.1
-        necromancers_bargain = PTR and 3746 or nil, -- 288848 -- DELETE
+        lichborne = 3754, -- 287081 -- ADDED 8.1
+        life_and_death = 40, -- 288855 -- ADDED 8.1
         necrotic_aura = 3437, -- 199642
         necrotic_strike = 149, -- 223829
-        pandemic = not PTR and 39 or nil, -- 199724 -- DELETE 8.1
-        raise_abomination = PTR and 3747 or nil, -- 288853
+        raise_abomination = 3747, -- 288853
         reanimation = 152, -- 210128
-        transfusion = PTR and 3748 or nil, -- 288977 -- ADDED 8.1
-        unholy_mutation = not PTR and 151 or nil, -- 201934 -- DELETE 8.1
-        wandering_plague = not PTR and 38 or nil, -- 199725 -- DELETE 8.1
+        transfusion = 3748, -- 288977 -- ADDED 8.1
     } )
 
 
@@ -387,11 +379,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
 
         -- Azerite Powers
-        cold_hearted = PTR and {
+        cold_hearted = {
             id = 288426,
             duration = 8,
             max_stack = 1
-        } or nil,
+        },
 
         festermight = {
             id = 274373,
@@ -399,11 +391,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 99,
         },
 
-        helchains = PTR and {
+        helchains = {
             id = 286979,
             duration = 15,
             max_stack = 1
-        } or nil,
+        }
     } )
 
 
@@ -540,7 +532,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         apocalypse = {
             id = 275699,
             cast = 0,
-            cooldown = PTR and function () return pvptalent.necromancers_bargain.enabled and 45 or 90 end or 90,
+            cooldown = function () return pvptalent.necromancers_bargain.enabled and 45 or 90 end,
             gcd = "spell",
             
             toggle = "cooldowns",
@@ -688,10 +680,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         dark_simulacrum = {
             id = 77606,
             cast = 0,
-            cooldown = function () return PTR and 20 or 25 end,
+            cooldown = 20,
             gcd = "spell",
             
-            spend = function () return PTR and 0 or 20 end,
+            spend = 0,
             spendType = "runic_power",
             
             startsCombat = true,
@@ -826,7 +818,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * ( PTR and 35 or 45 ) ) end,
+            spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * 35 ) end,
             spendType = "runic_power",
             
             startsCombat = true,
@@ -937,7 +929,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         
 
-        lichborne = PTR and {
+        lichborne = {
             id = 287081,
             cast = 0,
             cooldown = 60,
@@ -951,7 +943,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             handler = function ()
                 applyBuff( "lichborne" )
             end,
-        } or nil,
+        },
         
 
         mind_freeze = {

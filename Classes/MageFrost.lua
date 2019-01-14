@@ -78,11 +78,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         blink = {
             id = 1953,
         },
-        blizzard = PTR and {
+        blizzard = {
             id = 12486,
             duration = 3,
             max_stack = 1,
-        } or nil,
+        },
         bone_chilling = {
             id = 205766,
             duration = 8,
@@ -307,24 +307,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 300,
             max_stack = 3
         },
-        winters_reach = not PTR and {
-            id = 273347,
-            duration = 15,
-            max_stack = 1,
-        } or nil,
     } )
-
-
-    -- azerite power.
-    if not PTR then
-        spec:RegisterStateExpr( "winters_reach_active", function ()
-            return false
-        end )
-
-        spec:RegisterStateFunction( "winters_reach", function( active )
-            winters_reach_active = active
-        end )
-    end
 
 
     spec:RegisterStateExpr( "fingers_of_frost_active", function ()
@@ -615,8 +598,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
                 if talent.bone_chilling.enabled then addStack( "bone_chilling", nil, 1 ) end
                 removeBuff( "ice_floes" )
-
-                if not PTR then removeBuff( "winters_reach" ) end
             end,
         },
         
@@ -689,7 +670,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 addStack( "fingers_of_frost", nil, 1 )
                 if talent.freezing_rain.enabled then applyBuff( "freezing_rain" ) end
                 applyBuff( "frozen_orb" )
-                if PTR then applyDebuff( "target", "frozen_orb_snare" ) end
+                applyDebuff( "target", "frozen_orb_snare" )
             end,
         },
         

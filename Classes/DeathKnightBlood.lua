@@ -358,11 +358,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
 
         -- Azerite Powers
-        bloody_runeblade = PTR and {
+        bloody_runeblade = {
             id = 289349,
             duration = 5,
             max_stack = 1
-        } or nil,
+        },
 
         bones_of_the_damned = {
             id = 279503,
@@ -381,12 +381,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 15,
             max_stack = 1,
         },
-
-        embrace_of_the_darkfallen = not PTR and {
-            id = 275926,
-            duration = 20,
-            max_stack = 1,
-        } or nil, -- DELETE 8.1
 
         eternal_rune_weapon = {
             id = 278543,
@@ -432,23 +426,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 1,
         },
 
-        focused_assault = PTR and { -- ADD 8.1
+        focused_assault = {
             id = 206891,
             duration = 6,
             max_stack = 1,
-        } or nil,
+        },
 
         heartstop_aura = {
             id = 228579,
             duration = 3600,
             max_stack = 1,
         },
-
-        intimidated = not PTR and { -- DELETE 8.1
-            id = 206891,
-            duration = 6,
-            max_stack = 1,
-        } or nil,
 
         necrotic_aura = {
             id = 214968,
@@ -732,10 +720,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         dark_simulacrum = {
             id = 77606,
             cast = 0,
-            cooldown = function () return PTR and 20 or 25 end,
+            cooldown = 20,
             gcd = "spell",
             
-            spend = function () return PTR and 0 or 20 end,
+            spend = 0,
             spendType = "runic_power",
             
             startsCombat = true,
@@ -1015,7 +1003,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             pvptalent = "murderous_intent",
             
             handler = function ()
-                applyDebuff( "target", PTR and "focused_assault" or "intimidated" )
+                applyDebuff( "target", "focused_assault" )
             end,
         },
 

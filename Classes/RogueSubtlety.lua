@@ -201,11 +201,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 15,
             max_stack = 1,
         },
-        shuriken_combo = not PTR and {
-            id = 245640,
-            duration = 15,
-            max_stack = 4,
-        } or nil,
         shuriken_tornado = {
             id = 277925,
             duration = 4,
@@ -257,12 +252,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 1,
             max_stack = 50
         },
-
-        sharpened_blades = not PTR and {
-            id = 272916,
-            duration = 20,
-            max_stack = 30,
-        } or nil,
 
         the_first_dance = {
             id = 278981,
@@ -948,7 +937,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return ( ( PTR and azerite.blade_in_the_shadows.enabled ) and 38 or 40 ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function () return ( azerite.blade_in_the_shadows.enabled and 38 or 40 ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
 
             cycle = function () return talent.find_weakness.enabled and "find_weakness" or nil end,
@@ -999,7 +988,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             handler = function ()
             	gain( active_enemies + ( buff.shadow_blades.up and 1 or 0 ), 'combo_points')
-            	if not PTR then addStack( "shuriken_combo", 15, active_enemies - 1 ) end
             end,
         },
         
@@ -1040,7 +1028,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             handler = function ()
                 gain( active_enemies + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
-                if not PTR then removeBuff( "sharpened_blades" ) end
             end,
         },
         

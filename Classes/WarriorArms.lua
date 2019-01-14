@@ -8,6 +8,9 @@ local class = Hekili.Class
 local state = Hekili.State
 
 
+local PTR = ns.PTR
+
+
 if UnitClassBase( 'player' ) == 'WARRIOR' then
     local spec = Hekili:NewSpecialization( 71 )
 
@@ -214,12 +217,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             max_stack = 1
         },        
 
-        executioners_precision = not PTR and {
-            id = 272870,
-            duration = 30,
-            max_stack = 2,
-        } or nil,
-
         gathering_storm = {
             id = 273415,
             duration = 6,
@@ -280,9 +277,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) )
             if buff.gathering_storm.up then applyBuff( "gathering_storm", buff.bladestorm.remains + 6, 4 ) end
         end
-
-        -- Map buff.executioners_precision to debuff.executioners_precision; use rawset to avoid changing the meta table.
-        rawset( buff, "executioners_precision", debuff.executioners_precision )
 
         if prev_gcd[1].colossus_smash and time - action.colossus_smash.lastCast < 1 and last_cs_target == target.unit and debuff.colossus_smash.down then
             -- Apply Colossus Smash early because its application is delayed for some reason.
@@ -584,9 +578,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 else removeBuff( "sudden_death" ) end
 
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
-                if azerite.executioners_precision.enabled then
-                    applyDebuff( "target", "executioners_precision", nil, min( 2, debuff.executioners_precision.stack + 1 ) )
-                end                
             end,
 
             copy = { 163201, 281001, 281000 }
@@ -712,7 +703,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyDebuff( "target", "mortal_wounds" )
                 applyDebuff( "target", "deep_wounds" )
                 removeBuff( "overpower" )
-                removeDebuff( "target", "executioners_precision" )
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 6, "rage" ) end
                 if level < 116 and set_bonus.tier21_4pc == 1 then addStack( "weighted_blade", 12, 1 ) end
             end,

@@ -32,13 +32,12 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     
     -- Talents
     spec:RegisterTalents( {
-        exposed_elements = not PTR and 22356 or nil, -- 260694
-        earthen_rage = PTR and 22356 or nil, -- 170374
+        earthen_rage = 22356, -- 170374
         echo_of_the_elements = 22357, -- 108283
         elemental_blast = 22358, -- 117014
 
         aftershock = 23108, -- 273221
-        call_the_thunder = PTR and 22139 or nil, -- 260897
+        call_the_thunder = 22139, -- 260897
         totem_mastery = 23190, -- 210643
 
         spirit_wolf = 23162, -- 260878
@@ -54,7 +53,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         ancestral_guidance = 22172, -- 108281
         wind_rush_totem = 21966, -- 192077
 
-        surge_of_power = PTR and 22145 or nil, -- 262303
+        surge_of_power = 22145, -- 262303
         primal_elementalist = 19266, -- 117013
         icefury = 23111, -- 210714
 
@@ -877,7 +876,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 30,
             gcd = "spell",
             
-            spend = PTR and -25 or -15,
+            spend = -25,
             spendType = 'maelstrom',
 
             startsCombat = true,

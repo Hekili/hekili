@@ -67,15 +67,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         ferocious_wound = 611, -- 236020
         freedom_of_the_herd = 203, -- 213200
         fresh_wound = 612, -- 203224
-        heart_of_the_wild = PTR and 3053 or nil, -- 236019
+        heart_of_the_wild = 3053, -- 236019
         king_of_the_jungle = 602, -- 203052
-        leader_of_the_pack = PTR and 3751 or nil, -- 202626
+        leader_of_the_pack = 3751, -- 202626
         malornes_swiftness = 601, -- 236012
         protector_of_the_grove = 847, -- 209730
         rip_and_tear = 620, -- 203242
         savage_momentum = 820, -- 205673
         thorns = 201, -- 236696
-        tooth_and_claw = not PTR and 3053 or nil, -- 236019
     } )
 
 
@@ -747,9 +746,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             usable = function () return buff.apex_predator.up or combo_points.current > 0 end,
             handler = function ()
-                if not PTR and ( target.health_pct < 25 or talent.sabertooth.enabled ) and debuff.rip.up then
-                    debuff.rip.expires = query_time + min( debuff.rip.remains + debuff.rip.duration, debuff.rip.duration * 1.3 )
-                elseif PTR and talent.sabertooth.enabled and debuff.rip.up then
+                if talent.sabertooth.enabled and debuff.rip.up then
                     debuff.rip.expires = debuff.rip.expires + ( 4 * combo_points.current )
                 end
 
@@ -1280,7 +1277,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return ( PTR and 25 or 30 ) * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 ) end,
+            spend = function () return 25 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 ) end,
             spendType = "energy",
             
             startsCombat = false,
@@ -1294,7 +1291,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
                 local cost = min( 5, combo_points.current )
                 spend( cost, "combo_points" )
-                if PTR and buff.savage_roar.down then energy.regen = energy.regen * 1.1 end
+                if buff.savage_roar.down then energy.regen = energy.regen * 1.1 end
                 applyBuff( "savage_roar", 6 + ( 6 * cost ) )
             end,
         },

@@ -1028,7 +1028,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 180,
             gcd = "spell",
             
-            spend = PTR and 1 or 3,
+            spend = 1,
             spendType = "soul_shards",
             
             toggle = "cooldowns", 

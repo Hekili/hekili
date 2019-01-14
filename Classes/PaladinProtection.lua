@@ -8,6 +8,9 @@ local class = Hekili.Class
 local state = Hekili.State
 
 
+local PTR = ns.PTR
+
+
 if UnitClassBase( 'player' ) == 'PALADIN' then
     local spec = Hekili:NewSpecialization( 66 )
 
@@ -248,7 +251,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
 
         -- Azerite Powers
-        empyreal_ward = PTR and {
+        empyreal_ward = {
             id = 287731,
             duration = 60,
             max_stack = 1,
@@ -789,7 +792,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             handler = function ()
                 gain( health.max, "health" )
                 applyDebuff( "player", "forbearance" )
-                if PTR and azerite.empyreal_ward.enabled then applyBuff( "empyrael_ward" ) end
+                if azerite.empyreal_ward.enabled then applyBuff( "empyrael_ward" ) end
             end,
         },
         

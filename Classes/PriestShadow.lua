@@ -138,8 +138,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
         body_and_soul = 22315, -- 64129
         sanlayn = 23374, -- 199855
-        mania = not PTR and 21976 or nil, -- 193173
-        intangibility = PTR and 21976 or nil, -- 288733
+        intangibility = 21976, -- 288733
 
         twist_of_fate = 23125, -- 109142
         misery = 23126, -- 238558
@@ -1113,7 +1112,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         surrender_to_madness = {
             id = 193223,
             cast = 0,
-            cooldown = PTR and 180 or 240,
+            cooldown = 180,
             gcd = "spell",
             
             toggle = "cooldowns",
@@ -1177,7 +1176,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             spend = function ()
                 if debuff.surrendered_to_madness.up then return 0 end
-                return buff.surrender_to_madness.up and ( PTR and -40 or -32 ) or ( PTR and -20 or -16 )
+                return buff.surrender_to_madness.up and -40 or -20
             end,
             spendType = "insanity",
             

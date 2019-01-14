@@ -772,7 +772,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 spendCharges( "purifying_brew", 1 )
 
                 -- NOTE:  CHECK FOR DURATION EXTENSION LIKE ISB...
-                if PTR and azerite.straight_no_chaser.enabled then applyBuff( "straight_no_chaser" ) end
+                if azerite.straight_no_chaser.enabled then applyBuff( "straight_no_chaser" ) end
                 if set_bonus.tier20_2pc == 1 then healing_sphere.count = healing_sphere.count + 1 end
 
                 removeBuff( "blackout_combo" )

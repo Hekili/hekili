@@ -193,7 +193,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         honor_among_thieves = 132, -- 198032
         maneuverability = 3448, -- 197000
         shiv = 131, -- 248744
-        deadly_brew = not PTR and 134 or nil, -- 197044
         intent_to_kill = 130, -- 197007
         creeping_venom = 141, -- 198092
         flying_daggers = 144, -- 198128
@@ -724,12 +723,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 24,            
         },
 
-        sharpened_blades = not PTR and {
-            id = 272916,
-            duration = 20,
-            max_stack = 30,
-        } or nil,
-
         -- PvP Talents
         creeping_venom = {
             id = 198097,
@@ -1212,7 +1205,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             
             handler = function ()
                 gain( 1, "combo_points" )
-                if not PTR then removeBuff( "sharpened_blades" ) end
             end,
         },
         

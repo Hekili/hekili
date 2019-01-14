@@ -25,7 +25,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             end,
 
             interval = 1,
-            value = PTR and 8 or 7
+            value = 8,
         },
     } )
     
@@ -638,7 +638,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             handler = function ()
                 applyBuff( "metamorphosis" )
-                gain( PTR and 8 or 7, "pain" )
+                gain( 8, "pain" )
 
                 if level < 116 and equipped.runemasters_pauldrons then
                     setCooldown( "sigil_of_chains", 0 )

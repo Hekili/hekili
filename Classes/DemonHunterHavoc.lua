@@ -240,12 +240,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
 
         -- PvP Talents
-        demonic_origins = not PTR and {
-            id = 235894,
-            duration = 3600,
-            max_stack = 1,
-        } or nil,
-
         eye_of_leotheras = {
             id = 206649,
             duration = 6,

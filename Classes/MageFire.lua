@@ -258,23 +258,17 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         },
 
         -- Azerite Powers
-        preheat = not PTR and {
-            id = 273333,
-            duration = 30,
-            max_stack = 1,
-        } or nil,
-
         blaster_master = {
             id = 274598,
             duration = 3,
             max_stack = 3,
         },
 
-        wildfire = PTR and {
+        wildfire = {
             id = 288800,
             duration = 10,
             max_stack = 1,
-        } or nil,
+        },
     } )
 
 

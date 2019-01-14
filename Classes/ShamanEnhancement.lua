@@ -58,20 +58,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             value = -3,
         },
 
-        ls_overcharge = not PTR and {
-            aura = "lightning_shield_overcharge",
-
-            last = function ()
-                local app = state.buff.lightning_shield_overcharge.applied
-                local t = state.query_time
-
-                return app + floor( t - app )
-            end,
-
-            interval = 1,
-            value = 10
-        } or nil,
-
         resonance_totem = {
             aura = 'resonance_totem',
 

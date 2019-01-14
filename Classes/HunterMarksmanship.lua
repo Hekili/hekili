@@ -90,7 +90,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         bursting_shot = {
             id = 186387,
-            duration = PTR and 6 or 4,
+            duration = 6,
             max_stack = 1,
         },
         camouflage = {
@@ -199,12 +199,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 20,
             max_stack = 1,
         },
-        trueshot = PTR and {
+        trueshot = {
             id = 288613,
-            duration = 15,
-            max_stack = 1,
-        } or {
-            id = 193526,
             duration = 15,
             max_stack = 1,
         },
@@ -665,9 +661,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         rapid_fire = {
             id = 257044,
-            cast = function () return 3 * ( talent.streamline.enabled and ( PTR and 1.2 or 1.3 ) or 1 ) * haste end,
+            cast = function () return ( 3 * haste ) + ( talent.streamline.enabled and 0.6 or 0 ) end,
             channeled = true,
-            cooldown = function () return ( PTR and buff.trueshot.up ) and ( haste * 8 ) or 20 end,
+            cooldown = function () return buff.trueshot.up and ( haste * 8 ) or 20 end,
             gcd = "spell",
             
             startsCombat = true,
@@ -712,8 +708,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = PTR and -10 or nil,
-            spendType = PTR and "focus" or nil,
+            spend = -10,
+            spendType = "focus",
             
             startsCombat = true,
             texture = 132213,
@@ -778,7 +774,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         
 
-        trueshot = PTR and {
+        trueshot = {
             id = 288613,
             cast = 0,
             cooldown = 120,
@@ -801,20 +797,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                     return talent.calling_the_shots.enabled and 90 or t.duration
                 end,
             }
-        } or {
-            id = 193526,
-            cast = 0,
-            cooldown = 180,
-            gcd = "spell",
-            
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 132329,
-            
-            handler = function ()
-                applyBuff( "trueshot" )
-            end,
         },
     } )
 

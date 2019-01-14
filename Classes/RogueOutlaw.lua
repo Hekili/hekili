@@ -255,11 +255,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 3600,
             max_stack = 1,
         },
-        keep_your_wits_about_you = PTR and {
+        keep_your_wits_about_you = {
             id = 288988,
             duration = 15,
             max_stack = 30,
-        } or nil,
+        },
         paradise_lost = {
             id = 278962,
             duration = 3600,
