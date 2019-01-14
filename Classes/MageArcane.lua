@@ -323,7 +323,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         if resource == "arcane_charges" then
             if arcane_charges.current == 0 then removeBuff( "arcane_charge" )
             else
-                if talent.rule_of_threes.enabled and arcane_charges.current >= 3 and arcane_charges.current - resource < 3 then
+                if talent.rule_of_threes.enabled and arcane_charges.current >= 3 and arcane_charges.current - amt < 3 then
                     applyBuff( "rule_of_threes" )
                 end
                 applyBuff( "arcane_charge", nil, arcane_charges.current )
