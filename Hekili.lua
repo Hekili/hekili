@@ -13,7 +13,7 @@ local format = string.format
 local upper  = string.upper
 
 
-ns.PTR = GetBuildInfo() == "8.1.0"
+ns.PTR = GetBuildInfo() == "8.1.5"
 
 
 ns.Patrons = {
