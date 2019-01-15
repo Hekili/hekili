@@ -366,7 +366,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         local tigers_fury = FindUnitBuffByID( "player", class.auras.tigers_fury.id, "PLAYER" ) and snapshot_value.tigers_fury or 1
         local bloodtalons = FindUnitBuffByID( "player", class.auras.bloodtalons.id, "PLAYER" ) and snapshot_value.bloodtalons or 1
-        local clearcasting = FindUnitBuffByID( "player", class.auras.clearcasting.id, "PLAYER" ) and snapshot_value.clearcasting or 1
+        local clearcasting = FindUnitBuffByID( "player", class.auras.clearcasting.id, "PLAYER" ) and talent.moment_of_clarity.enabled and snapshot_value.clearcasting or 1
         local prowling = (GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", class.auras.incarnation.id, "PLAYER" )) and snapshot_value.prowling or 1     
 
         if spellID == 155722 then
