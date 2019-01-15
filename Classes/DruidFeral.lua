@@ -171,7 +171,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         moonfire_cat = {
             id = 155625, 
-            duration = 16
+            duration = 16,
+            tick_time = function() return 2 * haste end,
         },
         moonkin_form = {
             id = 197625,
@@ -205,14 +206,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         rake = {
             id = 155722, 
-            duration = function()
-                local x = 15 -- Base duration
-                return talent.jagged_wounds.enabled and x * 0.8333 or x
-            end,
-            tick_time = function()
-                local x = 3 -- Base Tick
-                return talent.jagged_wounds.enabled and x * 0.8333 or x
-            end,
+            duration = 15,
+            tick_time = function() return 3 * haste end,
         },
         regrowth = { 
             id = 8936, 
@@ -220,10 +215,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         rip = {
             id = 1079,
-            duration = function()
-                local x = 24 --Base duration
-                    return ( talent.jagged_wounds.enabled and x * 0.80 or x )
-            end,
+            duration = 24,
+            tick_time = function() return 2 * haste end,
         },
         savage_roar = {
             id = 52610,
@@ -256,14 +249,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         thrash_cat ={
             id = 106830, 
-            duration = function()
-                local x = 15 -- Base duration
-                return talent.jagged_wounds.enabled and x * 0.80 or x
-            end,
-            tick_time = function()
-                local x = 3 -- Base tick time
-                return talent.jagged_wounds.enabled and x * 0.80 or x
-            end,
+            duration = 15,
+            tick_time = function() return 3 * haste end,
         },
         --[[ thrash = {
             id = function ()
@@ -289,8 +276,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         tigers_fury = {
             id = 5217,
             duration = function()
-                local x = 8 -- Base Duration
-                if talent.predator.enabled then return x + 4 end
+                local x = 10 -- Base Duration
+                if talent.predator.enabled then return x + 5 end
                 return x
             end,
         },
@@ -353,10 +340,18 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     } )
 
 
-    local tf_spells = { rake = true, rip = true, thrash = true, moonfire_cat = true, primal_wrath = true }
-    local bt_spells = { rake = true, rip = true, thrash = true, primal_wrath = true }
-    local mc_spells = { thrash = true }
+    -- Snapshotting
+    local tf_spells = { rake = true, rip = true, thrash_cat = true, moonfire_cat = true, primal_wrath = true }
+    local bt_spells = { rake = true, rip = true, thrash_cat = true, primal_wrath = true }
+    local mc_spells = { thrash_cat = true }
     local pr_spells = { rake = true }
+    
+    local snapshot_value = {
+        tigers_fury = 1.15,
+        bloodtalons = 1.25,
+        clearcasting = 1.15, -- TODO: Only if talented MoC, not used by 8.1 script
+        prowling = 2
+    }
 
     local modifiers = {
         [1822]   = 155722,
@@ -365,27 +360,26 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         [8921]   = 155625
     }
 
-
     local stealth_dropped = 0
 
     local function calculate_multiplier( spellID )
 
-        local tigers_fury = FindUnitBuffByID( "player", class.auras.tigers_fury.id, "PLAYER" )
-        local bloodtalons = FindUnitBuffByID( "player", class.auras.bloodtalons.id, "PLAYER" )
-        local clearcasting = FindUnitBuffByID( "player", class.auras.clearcasting.id, "PLAYER" )
-        local prowling = GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", class.auras.incarnation.id, "PLAYER" )
+        local tigers_fury = FindUnitBuffByID( "player", class.auras.tigers_fury.id, "PLAYER" ) and snapshot_value.tigers_fury or 1
+        local bloodtalons = FindUnitBuffByID( "player", class.auras.bloodtalons.id, "PLAYER" ) and snapshot_value.bloodtalons or 1
+        local clearcasting = FindUnitBuffByID( "player", class.auras.clearcasting.id, "PLAYER" ) and snapshot_value.clearcasting or 1
+        local prowling = (GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", class.auras.incarnation.id, "PLAYER" )) and snapshot_value.prowling or 1     
 
         if spellID == 155722 then
-            return 1 * ( prowling and 2 or 1 ) * ( bloodtalons and 1.2 or 1 ) * ( tigers_fury and 1.15 or 1 )
+            return 1 * bloodtalons * tigers_fury * prowling
 
         elseif spellID == 1079 or spellID == 285381 then
-            return 1 * ( bloodtalons and 1.2 or 1 ) * ( tigers_fury and 1.15 or 1 )
+            return 1 * bloodtalons * tigers_fury
 
         elseif spellID == 106830 then
-            return 1 * ( clearcasting and 1.2 or 1 ) * ( bloodtalons and 1.2 or 1 ) * ( tigers_fury and 1.15 or 1 )
+            return 1 * bloodtalons * tigers_fury * clearcasting
 
         elseif spellID == 155625 then
-            return 1 * ( tigers_fury and 1.15 or 1 )
+            return 1 * tigers_fury
 
         end
 
@@ -397,10 +391,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         if not this_action then return mult end
 
-        if tf_spells[ this_action ] and buff.tigers_fury.up then mult = mult * 1.15 end
-        if bt_spells[ this_action ] and buff.bloodtalons.up then mult = mult * 1.20 end
-        if mc_spells[ this_action ] and buff.clearcasting.up then mult = mult * 1.20 end
-        if pr_spells[ this_action ] and ( buff.incarnation.up or buff.prowl.up or buff.shadowmeld.up or state.query_time - stealth_dropped < 0.2 ) then mult = mult * 2.00 end
+        if tf_spells[ this_action ] and buff.tigers_fury.up then mult = mult * snapshot_value.tigers_fury end
+        if bt_spells[ this_action ] and buff.bloodtalons.up then mult = mult * snapshot_value.bloodtalons end
+        if mc_spells[ this_action ] and buff.clearcasting.up then mult = mult * snapshot_value.clearcasting end
+        if pr_spells[ this_action ] and ( buff.incarnation.up or buff.prowl.up or buff.shadowmeld.up or state.query_time - stealth_dropped < 0.2 ) then mult = mult * snapshot_value.prowling end
 
         return mult
     end )
