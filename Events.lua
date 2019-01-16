@@ -16,6 +16,7 @@ local GroupMembers = ns.GroupMembers
 local abs = math.abs
 local lower, match, upper = string.lower, string.match, string.upper
 local string_format = string.format
+local insert, remove, sort, unpack, wipe = table.insert, table.remove, table.sort, table.unpack, table.wipe
 
 
 local GetItemInfo = ns.CachedGetItemInfo
@@ -510,8 +511,6 @@ local dynamic_keys = setmetatable( {}, {
     end
 } )
 
-ns.spells_in_flight = {}
-local spells_in_flight = ns.spells_in_flight
 
 ns.castsOff = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' }
 ns.castsOn = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' }
@@ -558,26 +557,8 @@ local function spellcastEvents( subtype, sourceGUID, destGUID, spellName, spellI
     end
 
     -- This is an ability with a travel time.
-    if class.abilities[ spellID ] and class.abilities[ spellID ].velocity then
-
-        local lands = state.latency or 0.05
-
-        -- If we have a hostile target, we'll assume we're waiting for them to get hit.
-        if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
-            -- Let's presume that the target is at max range.
-            local RC = LibStub( "LibRangeCheck-2.0" )
-            local _, range = RC:GetRange( 'target' )
-
-            if range then
-                lands = range > 0 and ( range / class.abilities[ spellID ].velocity ) or lands
-            end
-        end
-
-        table.insert( spells_in_flight, 1, {
-            key = class.abilities[ spellID ].key,
-            time = now + lands
-        } )
-
+    if ability and ability.velocity then
+        state:LaunchProjectile( ability )
     end
 
 end
@@ -600,14 +581,6 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, 
     end
 end )
 
-
-function ns.removeSpellFromFlight( spell )
-    for i = #spells_in_flight, 1, -1 do
-        if spells_in_flight[i].spell == spell then
-            table.remove( spells_in_flight, i )
-        end
-    end
-end
 
 
 local power_tick_data = {
@@ -873,7 +846,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         local action = class.abilities[ spellID ]
         
         if subtype ~= 'SPELL_CAST_SUCCESS' and action and action.velocity then
-            ns.removeSpellFromFlight( action.key )
+            state:Impact( action.key )
         end
 
         if hostile and dmg_events[ subtype ] and not dmg_filtered[ spellID ] then
