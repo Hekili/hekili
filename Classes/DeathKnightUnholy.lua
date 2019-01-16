@@ -226,7 +226,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 1,
         },
         dark_succor = {
-            id = 178819,
+            id = 101568,
             duration = 20,
         },
         dark_transformation = {
