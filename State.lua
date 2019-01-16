@@ -20,6 +20,11 @@ local table_sort = table.sort
 local table_wipe = table.wipe
 local table_copy = ns.tableCopy
 
+-- Clean up table_x later.
+local insert, remove, sort, unpack, wipe = table.insert, table.remove, table.sort, table.unpack, table.wipe
+local RC = LibStub( "LibRangeCheck-2.0" )
+
+
 local class = Hekili.Class
 local scripts = Hekili.Scripts
 -- This will be our environment table for local functions.
@@ -3350,12 +3355,7 @@ local mt_default_action = {
                 return class.abilities[ t.action ].in_flight
             end
 
-            for i, spell in ipairs( ns.spells_in_flight ) do
-                if spell.key == t.action then
-                    return true
-                end
-            end
-            return false
+            return state:IsInFlight( t.action, true )
             
         else
             local val = class.abilities[ t.action ][ k ]
@@ -3645,6 +3645,110 @@ function state.putTrinketsOnCD( val )
 end
 
 
+do
+    local inFlight = {}
+    local virtualQueue = {}
+
+    function state:ResetFlightData()
+        wipe( virtualQueue )
+
+        for i = #inFlight, 1, -1 do
+            if inFlight[i].time > self.now then
+                insert( virtualQueue, 1, inFlight[i] )
+            else
+                remove( byImpact, i )
+            end
+        end
+    end
+
+
+    local function byTime( a, b )
+        return a.time < b.time
+    end
+
+    local function insertSort( data, virtual )
+        local t = virtual and virtualQueue or inFlight
+
+        insert( t, data )
+        sort( t, byTime )
+    end
+
+
+    function state:LaunchProjectile( ability, virtual )
+        local eta = state.latency or 0.05
+
+        -- If we have a hostile target, we'll assume we're waiting for them to get hit.
+        if UnitExists( 'target' ) and not UnitIsFriend( 'player', 'target' ) then
+            -- Let's presume that the target is at max range.
+            local _, range = RC:GetRange( 'target' )
+
+            if range and range > 0 then
+                eta = ( range / ability.velocity )
+            end
+        end
+
+        local data = {
+            action = ability.key,
+            time = GetTime() + lands
+        }
+
+        -- Anything that needs to be retained from cast time but occurs on impact.
+        if ability.snapshot then 
+            ability.snapshot( data )
+        end
+
+        insertSort( data, virtual )
+    end
+
+
+    function state:Impact( ability )
+        local n
+
+        for i, proj in ipairs( inFlight ) do
+            if proj.action == ability then n = i; break end
+        end
+
+        if n then remove( inFlight, n ) end
+    end
+
+
+    function state:NumActiveProjectiles( virtual )
+        return virtual and #virtualQueue or #inFlight
+    end
+
+    function state:IsInFlight( ability, virtual )
+        for i, impact in ipairs( virtual and virtualQueue or inFlight ) do
+            if impact.action == ability then return true end
+        end
+
+        return false
+    end
+
+
+    local times = {}
+    function state:GetImpactTimes( virtual )
+        wipe( times )
+
+        for i, impact in ipairs( virtual and virtualQueue or inFlight ) do
+            times[ i ] = impact.time
+        end
+
+        return unpack( times )
+    end
+
+
+    function state:IterateProjectiles( virtual )
+        local t = virtual and virtualQueue or inFlight
+
+        local i, n = 0, getn( t )
+        return function ()
+            i = i + 1
+            if i <= n then return i, t[i] end
+        end
+    end
+end
+
+
 function state.reset( dispName )
     
     state.now = roundUp( GetTime(), 2 )
@@ -3671,16 +3775,9 @@ function state.reset( dispName )
     state.cycle = nil
     
     state.latency = select( 4, GetNetStats() ) / 1000
-    
-    local spells_in_flight = ns.spells_in_flight
-    
-    for i = #spells_in_flight, 1, -1 do
-        if spells_in_flight[i].time < state.now then
-            table.remove( spells_in_flight, i )
-        else
-            break
-        end
-    end
+
+    -- Projectiles
+    state:ResetFlightData()
 
     if ns.recountRequired() then ns.recountTargets() end
 
@@ -3991,36 +4088,32 @@ function state.advance( time )
     
     state.delay = 0
     
+    local realOffset = state.offset
+
     if state.player.queued_ability then
-        local saved_offset = state.offset
         local lands = max( state.now + 0.01, state.player.queued_lands )
         
         if lands > state.query_time and lands <= state.query_time + time then
             state.offset = lands - state.query_time
+            Hekili:Print( "Using queued ability '" .. state.player.queued_ability .. "' at " .. state.query_time .. "." )
             ns.runHandler( state.player.queued_ability, true )
         end
-        
-        state.offset = saved_offset
     end
+
     
-    local projected = ns.spells_in_flight
-    
-    if projected and #projected > 0 then
-        local saved_offset = state.offset
-        
-        for i = #projected, 1, -1 do
-            local proj = projected[i]
-            
-            if proj.time > state.query_time and proj.time <= state.query_time + time then
-                state.offset = proj.time - state.query_time
-                ns.runHandler( proj.spell, true )
-            else
-                break
-            end
+    state.offset = realOffset
+
+    for i, projectile in state:IterateProjectiles( true ) do
+        if projectile.time > state.query_time and projectile.time <= state.query_time + time then
+            state.offset = projectile.time - state.now
+            ns.runHandler( projectile.action, true )
+        else
+            break
         end
-        
-        state.offset = saved_offset
     end
+
+    state.offset = realOffset
+
 
     for k in pairs( class.resources ) do
         local resource = state[ k ]
