@@ -3689,7 +3689,7 @@ do
 
         local data = {
             action = ability.key,
-            time = GetTime() + lands
+            time = GetTime() + eta
         }
 
         -- Anything that needs to be retained from cast time but occurs on impact.
