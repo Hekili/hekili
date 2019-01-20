@@ -17,6 +17,7 @@ local round = ns.round
 local format = string.format
 
 local Masque, MasqueGroup
+
 local UIDropDownMenuTemplate = L_UIDropDownMenuTemplate
 local UIDropDownMenu_AddButton = L_UIDropDownMenu_AddButton
 local UIDropDownMenu_AddSeparator = L_UIDropDownMenu_AddSeparator
@@ -451,11 +452,7 @@ Hekili_Menu.initialize = function(self, level)
         i.checked = p.enabled
         UIDropDownMenu_AddButton(i, level)
 
-        i.text = " "
-        i.func = nil
-        i.notCheckable = 1
-        i.disabled = 1
-        UIDropDownMenu_AddButton(i, level)
+        UIDropDownMenu_AddSeparator(level)
 
         i.notCheckable = nil
         i.disabled = nil
@@ -499,11 +496,7 @@ Hekili_Menu.initialize = function(self, level)
         i.tooltipTitle = nil
         i.tooltipOnButton = nil
 
-        i.text = " "
-        i.func = nil
-        i.notCheckable = 1
-        i.disabled = 1
-        UIDropDownMenu_AddButton(i, level)
+        UIDropDownMenu_AddSeparator(level)
 
         i.notCheckable = nil
         i.disabled = nil
@@ -541,11 +534,7 @@ Hekili_Menu.initialize = function(self, level)
         i.hasArrow = nil
         i.value = nil
 
-        i.text = " "
-        i.func = nil
-        i.notCheckable = 1
-        i.disabled = 1
-        UIDropDownMenu_AddButton(i, level)
+        UIDropDownMenu_AddSeparator(level)
 
         i.notCheckable = nil
         i.disabled = nil
