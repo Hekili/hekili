@@ -3656,7 +3656,7 @@ do
             if inFlight[i].time > self.now then
                 insert( virtualQueue, 1, inFlight[i] )
             else
-                remove( byImpact, i )
+                remove( inFlight, i )
             end
         end
     end
