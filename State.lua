@@ -38,7 +38,11 @@ state.ptr = PTR and 1 or 0
 
 state.now = 0
 state.offset = 0
+
 state.delay = 0
+state.delayMin = 0
+state.delayMax = 60
+
 state.false_start = 0
 state.latency = 0
 state.filter = "none"
@@ -1101,7 +1105,7 @@ do
 
         for i = 1, n do
             local x = select( i, ... )
-            if type( x ) == "number" and x > 0 and x < 3600 then
+            if type( x ) == "number" and x > state.delayMin and x < state.delayMax then
                 table.insert( t, 0.01 + x ) 
             end
         end
@@ -3629,6 +3633,7 @@ local function ScrapeUnitAuras( unit )
     end
     
 end
+Hekili.ScrapeUnitAuras = ScrapeUnitAuras
 ns.cpuProfile.ScrapeUnitAuras = ScrapeUnitAuras
 
 
@@ -3648,6 +3653,10 @@ end
 do
     local inFlight = {}
     local virtualQueue = {}
+
+    local realSnaps = {}
+    local virtualSnaps = {}
+
 
     function state:ResetFlightData()
         wipe( virtualQueue )
@@ -3689,13 +3698,12 @@ do
 
         local data = {
             action = ability.key,
-            time = GetTime() + eta
+            time = GetTime() + eta,
         }
 
         -- Anything that needs to be retained from cast time but occurs on impact.
-        if ability.snapshot then 
-            ability.snapshot( data )
-        end
+        if ability.funcs.onCast then ability.funcs.onCast( data ) end
+        data.impact = ability.funcs.onImpact
 
         insertSort( data, virtual )
     end
@@ -3737,6 +3745,18 @@ do
     end
 
 
+    function state:GetImpactDelays( virtual )
+        wipe( times )
+
+        for i, impact in ipairs( virtual and virtualQueue or inFlight ) do
+            local t = impact.time - state.now - state.offset
+            if t > 0 then insert( times, t ) end
+        end
+
+        return unpack( times )
+    end
+
+
     function state:IterateProjectiles( virtual )
         local t = virtual and virtualQueue or inFlight
 
@@ -3745,6 +3765,11 @@ do
             i = i + 1
             if i <= n then return i, t[i] end
         end
+    end
+
+
+    function state:GetProjectiles( virtual )
+        return virtual and virtualQueue or inFlight
     end
 end
 
@@ -3942,7 +3967,7 @@ function state.reset( dispName )
     if last_act and last_act.startsCombat and state.combat == 0 and state.now - last_act.lastCast < 1 then
         state.false_start = last_act.lastCast - 0.1
     end
-    
+   
     -- interrupts
     state.target.casting = nil
     state.target.cast_end = nil
@@ -4077,6 +4102,12 @@ function state.reset( dispName )
 end
 
 
+function state:SetConstraint( min, max )
+    state.delayMin = min or 0
+    state.delayMax = max or 3600
+end
+
+
 function state.advance( time )
 
     if time <= 0 then
@@ -4095,18 +4126,31 @@ function state.advance( time )
         
         if lands > state.query_time and lands <= state.query_time + time then
             state.offset = lands - state.query_time
-            Hekili:Print( "Using queued ability '" .. state.player.queued_ability .. "' at " .. state.query_time .. "." )
+            -- Hekili:Print( "Using queued ability '" .. state.player.queued_ability .. "' at " .. state.query_time .. "." )
             ns.runHandler( state.player.queued_ability, true )
         end
     end
 
-    
     state.offset = realOffset
 
-    for i, projectile in state:IterateProjectiles( true ) do
+    local projectiles = state:GetProjectiles( true )
+    local projectile = projectiles[ 1 ]
+    
+    while( projectile ) do
+        state.offset = realOffset
+
         if projectile.time > state.query_time and projectile.time <= state.query_time + time then
             state.offset = projectile.time - state.now
-            ns.runHandler( projectile.action, true )
+
+            if Hekili.ActiveDebug then Hekili:Debug( "While advancing by %.2f to %.2f, %s impacted at %.2f (method: %s).", time, realOffset + time, projectile.action, state.offset, projectile.impact and "impact" or "handler" ) end
+
+            if projectile.impact then projectile:impact()
+            else ns.runHandler( projectile.action, true ) end
+
+            if Hekili.ActiveDebug then Hekili:Debug( "Projectiles: %d", #projectiles ) end
+            remove( projectiles, 1 )
+            projectile = projectiles[ 1 ]
+            if Hekili.ActiveDebug then Hekili:Debug( "Projectiles: %d", #projectiles ) end
         else
             break
         end
@@ -4516,14 +4560,12 @@ function state:TimeToReady( action, pool )
     
     -- If ready is a function, it returns time.
     -- Ignore this if we are just checking pool_resources.
-    if not pool then
-        if ability.readyTime then
-            wait = max( wait, ability.readyTime )
-        end
+    if not pool and ability.readyTime then
+        wait = max( wait, ability.readyTime )
     end
 
     -- cacheTTR[ action ] = wait
-    return wait
+    return max( wait, self.delayMin )
 end
 
 
@@ -4547,7 +4589,12 @@ function state:IsReady( action )
         end
         
         if resource == 'focus' or resource == 'energy' or state.script.entry then
-            return self:TimeToReady( action ) <= state.delay
+            local ttr = self:TimeToReady( action )
+
+            if ttr <= self.delayMin or ttr >= self.delayMax then return false, "not ready within our time contraint"
+            elseif ttr >= state.delay then return false, "not ready before selected action" end
+
+            return true
         end
         
     end

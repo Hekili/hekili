@@ -520,7 +520,7 @@ local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
 function Hekili:ForceUpdate( event )
-    for i, d in pairs( ns.UI.Displays ) do
+    for i, d in pairs( ns.UI.Displays ) do        
         d.criticalUpdate = true
     end
 end
@@ -679,16 +679,20 @@ local autoAuraKey = setmetatable( {}, {
 
 
 RegisterUnitEvent( "UNIT_AURA", function( event, unit )
-    if UnitIsUnit( unit, 'player' ) then
-        state.player.updated = true
-    elseif UnitIsUnit( "target", unit ) then
-        state.target.updated = true
+    if UnitIsUnit( unit, 'player' ) and state.player.updated then
+        Hekili.ScrapeUnitAuras( "player" )
+        state.player.updated = false
+        
+    elseif UnitIsUnit( unit, "target" ) and state.target.updated then
+        Hekili.ScrapeUnitAuras( "target" )
+        state.target.updated = false
     end
 end )
 
 
 RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
-    state.target.updated = true
+    Hekili.ScrapeUnitAuras( "target" )
+    state.target.updated = false
     Hekili.UpdateTTD( "target" )
     Hekili:ForceUpdate( event, true )
 end )
