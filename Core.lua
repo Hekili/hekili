@@ -592,7 +592,14 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                     state.delay = wait_time
 
-                    if ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
+                    if wait_time < state.delayMin then
+                        wait_time = state.delayMin
+                        if debug then self:Debug( "The action was ready before our recommendation window; delaying to %.2f.", state.delayMin ) end
+                    end
+
+                    if wait_time > state.delayMax then
+                        if debug then self:Debug( "The action is not ready before our maximum delay window (%.2f) for this query.", state.delayMax ) end
+                    elseif ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
                         if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
                     else
                         if state.channeling then
@@ -998,7 +1005,6 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     local action, wait, depth = nil, 60, 0
     
-    state.min_recheck = 0
     state.this_action = nil
 
     state.selectionTime = 60
@@ -1136,9 +1142,30 @@ function Hekili:ProcessHooks( dispName, packName )
             end
         end
 
+        local action, wait, depth
+        
         state.delay = 0
+        state.delayMin = 0
+        state.delayMax = 0
 
-        local action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
+        local hadProj = false
+
+        for i, impact in state:IterateProjectiles( true ) do
+            local t = impact.time - state.now - state.offset
+            state:SetConstraint( state.delayMax, t )
+            hadProj = true
+
+            if debug then self:Debug( "[ ** ] In-flight projectile #%d for %s landing at %.2f; checking pre-impact recommendations.", i, impact.action, t ) end
+            action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
+        end
+
+        if not action then
+            state.delayMin = state.delayMax
+            state.delayMax = 60
+
+            if hadProj and debug then self:Debug( "[ ** ] No recommendation before projectile impact(s), checking recommendations after %.2f.", state.delayMin ) end
+            action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
+        end
 
         local gcd_remains = state.cooldown.global_cooldown.remains
         state.delay = wait
