@@ -344,6 +344,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             startsCombat = true,
             texture = 132366,
+
+            -- toggle = "defensives", -- should probably be a defensive...
             
             handler = function ()
                 applyDebuff( "target", "demoralizing_shout" )
@@ -439,6 +441,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             startsCombat = false,
             texture = 1377132,
+
+            toggle = "defensives",
             
             ready = function () return action.ignore_pain.lastCast + 1 - query_time end,
             handler = function ()
