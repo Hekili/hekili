@@ -377,6 +377,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 1,
         },
 
+        necrotic_wound = {
+            id = 223929,
+            duration = 18,
+            max_stack = 1,
+        },
+
 
         -- Azerite Powers
         cold_hearted = {
@@ -491,8 +497,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterGear( "uvanimor_the_unbeautiful", 137037 )
 
 
-    spec:RegisterPet( "ghoul", 26125 )    
-    spec:RegisterPet( "gargoyle", 49206 )
+    spec:RegisterPet( "ghoul", 26125, "raise_dead", 3600 )
+    spec:RegisterTotem( "gargoyle", 458967 )
+    spec:RegisterTotem( "abomination", 298667 )
 
 
     spec:RegisterHook( "reset_precast", function ()
@@ -508,6 +515,15 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
         if talent.all_will_serve.enabled and pet.ghoul.up then
             summonPet( "skeleton" )
+        end
+
+        rawset( cooldown, "army_of_the_dead", nil )
+        rawset( cooldown, "raise_abomination", nil )
+    
+        if pvptalent.raise_abomination.enabled then
+            cooldown.army_of_the_dead = cooldown.raise_abomination
+        else
+            cooldown.raise_abomination = cooldown.army_of_the_dead
         end
     end )
 
@@ -558,25 +574,48 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         
 
         army_of_the_dead = {
-            id = 42650,
+            id = function () return pvptalent.raise_abomination.enabled and 288853 or 42650 end,
             cast = 0,
             cooldown = 480,
             gcd = "spell",
             
-            spend = 3,
+            spend = function () return pvptalent.raise_abomination.enabled and 0 or 3 end,
             spendType = "runes",
             
             toggle = "cooldowns",
-            nopvptalent = "raise_abomination",
+            -- nopvptalent = "raise_abomination",
 
             startsCombat = false,
-            texture = 237511,
+            texture = function () return pvptalent.raise_abomination.enabled and 298667 or 237511 end,
             
             handler = function ()
-                applyBuff( "army_of_the_dead", 4 )
-                if set_bonus.tier20_2pc == 1 then applyBuff( "master_of_ghouls" ) end
+                if pvptalent.raise_abomination.enabled then
+                    summonPet( "abomination" )
+                else
+                    applyBuff( "army_of_the_dead", 4 )
+                    if set_bonus.tier20_2pc == 1 then applyBuff( "master_of_ghouls" ) end
+                end
             end,
+
+            copy = { 288853, 42650, "army_of_the_dead", "raise_abomination" }
         },
+
+
+        --[[ raise_abomination = {
+            id = 288853,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+            pvptalent = "raise_abomination",
+
+            startsCombat = false,
+            texture = 298667,
+            
+            handler = function ()                
+            end,
+        }, ]]
         
 
         asphyxiate = {
@@ -965,6 +1004,31 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 interrupt()
             end,
         },
+
+
+        necrotic_strike = {
+            id = 223829,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = 1,
+            spendType = "runes",
+
+            startsCombat = true,
+            texture = 132481,
+
+            pvptalent = "necrotic_strike",
+
+            handler = function ()
+                if debuff.festering_wound.up then
+                    if debuff.festering_wound.stack == 1 then removeDebuff( "target", "festering_wound" )
+                    else applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 ) end
+
+                    applyDebuff( "target", "necrotic_wound" )
+                end
+            end,
+        },
         
 
         outbreak = {
@@ -1000,23 +1064,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyBuff( "path_of_frost" )
-            end,
-        },
-        
-
-        raise_abomination = {
-            id = 288853,
-            cast = 0,
-            cooldown = 90,
-            gcd = "spell",
-            
-            toggle = "cooldowns",
-            pvptalent = "raise_abomination",
-
-            startsCombat = false,
-            texture = 298667,
-            
-            handler = function ()                
             end,
         },
         
