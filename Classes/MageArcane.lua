@@ -348,9 +348,14 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     } ) )
 
 
+    spec:RegisterTotem( "rune_of_power", 609815 )
+
     spec:RegisterHook( "reset_precast", function ()
+        if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
+        else removeBuff( "rune_of_power" ) end
+
         if burn_info.__start > 0 and ( ( state.time == 0 and now - player.casttime > ( gcd.execute * 4 ) ) or ( now - burn_info.__start >= 45 ) ) and ( ( cooldown.evocation.remains == 0 and cooldown.arcane_power.remains < action.evocation.cooldown - 45 ) or ( cooldown.evocation.remains > cooldown.arcane_power.remains + 45 ) ) then
-            Hekili:Print( "Burn phase ended to avoid Evocation and Arcane Power desynchronization (%.2f seconds).", now - burn_info.__start )
+            -- Hekili:Print( "Burn phase ended to avoid Evocation and Arcane Power desynchronization (%.2f seconds).", now - burn_info.__start )
             burn_info.__start = 0
         end
 

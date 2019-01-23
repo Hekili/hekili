@@ -281,6 +281,14 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             end
         end, state )
     } ) )
+
+
+    spec:RegisterTotem( "rune_of_power", 609815 )
+
+    spec:RegisterHook( "reset_precast", function ()
+        if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
+        else removeBuff( "rune_of_power" ) end
+    end )
     
 
     spec:RegisterStateExpr( "auto_advance", function () return false end )
@@ -373,7 +381,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             id = 190319,
             cast = 0,
             cooldown = 120,
-            gcd = "spell",
+            gcd = "off",
+            castableWhileCasting = true,
             
             spend = 0.1,
             spendType = "mana",
@@ -462,6 +471,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = function () return talent.flame_on.enabled and 10 or 12 end,
             recharge = function () return talent.flame_on.enabled and 10 or 12 end,
             gcd = "off",
+            castableWhileCasting = true,
             
             spend = 0.01,
             spendType = "mana",
@@ -478,6 +488,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 if azerite.blaster_master.enabled then addStack( "blaster_master", nil, 1 ) end
                 
+                removeDebuff( "target", "preheat" )
+
                 applyBuff( "fire_blasting" )
             end,
         },
@@ -496,7 +508,39 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 135812,
 
             velocity = 45,
-            
+
+            -- Used by the real event handler, must use *real* data.
+            -- Only purpose is to add any needed flags to the data table for onImpact.
+            onRealCastFinish = function( data )
+                if PlayerBuffUp( "combustion" ) then
+                    data.willCrit = true
+                end
+            end,
+
+            onCastFinish = function( data )
+                if buff.combustion.up then
+                    data.willCrit = true
+                end
+            end,
+
+            onImpact = function( data )
+                if data.willCrit or ( talent.firestarter.enabled and target.health.pct > 90 ) or ( stat.crit + ( buff.enhanced_pyrotechnics.stack * 10 ) >= 100 ) then
+                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
+                    else applyBuff( "heating_up" ) end
+
+                    removeBuff( "enhanced_pyrotechnics" )
+
+                    if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
+                else
+                    removeBuff( "heating_up" )
+                    addStack( "enhanced_pyrotechnics", nil, buff.enhanced_pyrotechnics.stack + 1 )
+                end
+
+                applyDebuff( "target", "ignite" )
+                if talent.conflagration.enabled then applyDebuff( "target", "conflagration" ) end
+            end,
+
+            --[[ Old handler.
             handler = function ()
                 if buff.combustion.up or ( talent.firestarter.enabled and target.health.pct > 90 ) or ( stat.crit + ( buff.enhanced_pyrotechnics.stack * 10 ) >= 100 ) then
                     if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
@@ -510,7 +554,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
                 applyDebuff( "target", "ignite" )
                 if talent.conflagration.enabled then applyDebuff( "target", "conflagration" ) end
-            end,
+            end, ]]
         },
         
 
@@ -629,9 +673,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 1033911,
 
-            velocity = 25,
+            velocity = function ()
+                return target.maxR / 1.5
+            end,
             
-            handler = function ()
+            onImpact = function ()
                 applyDebuff( "target", "meteor_burn" )
             end,
         },
@@ -671,14 +717,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 1392549,
 
             talent = "phoenix_flames",
-            
-            handler = function ()
-                if buff.combustion.up or ( talent.firestarter.enabled and target.health.pct > 90 ) then
-                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-                    else applyBuff( "heating_up" ) end
 
-                    if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
-                end
+            velocity = 50,
+            
+            onImpact = function ()
+                if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
+                else applyBuff( "heating_up" ) end
 
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
             end,
@@ -716,8 +760,46 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 135808,
 
             velocity = 35,
+
+            -- Used by the real event handler, must use *real* data.
+            -- Only purpose is to add any needed flags to the data table for onImpact.
+            onRealCastFinish = function( data )
+                if PlayerBuffUp( "combustion" ) or ( talent.firestarter.enabled and target.health.pct > 90 ) then
+                    data.willCrit = true
+                end
+            end,
+
+            onCastFinish = function( data )
+                if buff.combustion.up or ( talent.firestarter.enabled and target.health.pct > 90 ) then
+                    data.willCrit = true
+                end
+
+                removeBuff( "hot_streak" )
+                removeStack( "pyroclasm" )
+            end,
+
+            onImpact = function( data )
+                if Hekili.ActiveDebug then Hekili:Debug( "willCrit: %d, heating_up: %d, hot_streak: %d, ignite: %d", willCrit and 1 or 0, buff.heating_up.up and 1 or 0, buff.hot_streak.up and 1 or 0, debuff.ignite.up and 1 or 0 ) end
+
+                if data.willCrit then
+                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
+                    else applyBuff( "heating_up" ) end
+
+                    if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
+                else
+                    removeBuff( "heating_up" )
+                end
+
+                applyDebuff( "target", "ignite" )
+                if Hekili.ActiveDebug then Hekili:Debug( "willCrit: %d, heating_up: %d, hot_streak: %d, ignite: %d", willCrit and 1 or 0, buff.heating_up.up and 1 or 0, buff.hot_streak.up and 1 or 0, debuff.ignite.up and 1 or 0 ) end
+            end,
             
-            handler = function ()
+            usable = function () 
+                if action.pyroblast.cast > 0 and not boss then return false, "hardcasts only allowed on bosses" end
+                return true
+            end,
+
+            --[[ handler = function ()
                 if buff.combustion.up or ( talent.firestarter.enabled and target.health.pct > 90 ) then
                     if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
                     else applyBuff( "heating_up" ) end
@@ -725,10 +807,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 end
 
+                if buff.hot_streak.up then
+                    removeBuff( "hot_streak" )
+                    removeStack( "pyroclasm" )
+                end
+                
                 applyDebuff( "target", "ignite" )
-                removeBuff( "hot_streak" )
-                removeBuff( "pyroclasm" )
-            end,
+            end, ]]
         },
         
 
@@ -802,6 +887,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             
             handler = function ()
                 if talent.frenetic_speed.enabled then applyBuff( "frenetic_speed" ) end
+
+                if buff.combustion.up or stat.crit >= 100 then
+                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
+                    else applyBuff( "heating_up" ) end
+                end
+
                 applyDebuff( "target", "ignite" )
 
                 if azerite.preheat.enabled then applyDebuff( "target", "preheat" ) end
