@@ -2617,13 +2617,13 @@ local mt_default_buff = {
             return t[k]
             
         elseif k == 'up' or k == 'ticking' or k == 'react' then
-            return t.applied <= state.query_time and t.remains > 0
+            return t.applied <= state.query_time and t.expires > state.query_time
 
         elseif k == 'down' then
-            return t.applied > state.query_time or t.remains <= 0
+            return t.applied > state.query_time or t.expires <= state.query_time
             
         elseif k == 'remains' then
-            return t.applied <= state.query_time and max( 0, t.expires - state.query_time - ( ( aura and aura.strictTiming and 0 ) or state.settings.buffPadding or 0 ) ) or 0
+            return t.up and max( 0, t.expires - state.query_time - ( ( aura and aura.strictTiming and 0 ) or state.settings.buffPadding or 0 ) ) or 0
             
         elseif k == 'refreshable' then
             return t.remains < 0.3 * ( aura.duration or 30 )
@@ -4006,7 +4006,7 @@ function state:RunHandler( key, noStart )
         return
     end
 
-    if state.channeling then state.stopChanneling() end    
+    if state.channeling then state.stopChanneling() end
     if ability.handler then ability.handler() end
 
     state.prev.last = key
@@ -4303,6 +4303,7 @@ function state.reset( dispName )
         state.applyBuff( "player_casting", cast_time )
         state.buff.player_casting.applied = startCast
         state.buff.player_casting.duration = endCast - startCast
+        state.buff.player_casting.expires = endCast
 
         casting = class.abilities[ spellID ] and class.abilities[ spellID ].key or formatKey( spellcast )
     end
@@ -4319,10 +4320,10 @@ function state.reset( dispName )
         state.applyBuff( "player_casting", cast_time )
         state.buff.player_casting.applied = startCast
         state.buff.player_casting.duration = endCast - startCast
-
-        state.channelSpell( casting, startCast, cast_time )
+        state.buff.player_casting.expires = endCast
 
         casting = spellID and class.abilities[ spellID ] and class.abilities[ spellID ].key or formatKey( spellcast )
+        state.channelSpell( casting, startCast, endCast - startCast )
     end
 
     ns.callHook( "reset_precast" )
@@ -4334,11 +4335,9 @@ function state.reset( dispName )
     local ability = casting and class.abilities[ casting ]
 
     if casting and cast_time > 0 then
-        if state.spec.canCastWhileCasting then
-            -- Can cast while casting.
-            state:QueueEvent( casting, "hardcast", true, nil, cast_time )
+        state:QueueEvent( casting, "hardcast", true, nil, cast_time )
 
-        else
+        if not state.spec.canCastWhileCasting then
             -- Cannot cast while casting.
             if ( not ability or not ability.breakable ) then
                 -- Revisit auto-advance, we may be overcompensating for it now that we use the queue.
@@ -4352,40 +4351,46 @@ function state.reset( dispName )
 
                 if ability then
                     if not ability.channeled then
+                        state.advance( cast_time )
+                        --[[
+                        state.advance( state.buff.player_casting.remains )
+
                         if ability.charges and ability.recharge > 0 then
                             state.spendCharges( casting, 1 )
                         else
                             state.setCooldown( casting, ability.cooldown )
                         end
 
+                        ns.spendResources( casting )
+                        
+                        -- If we're here, the spell should be in our queue.
+                        state:ProcessEvent( casting, true )
+
                         -- Projectile (w/ meaningful impact event)
                         if ability.isProjectile then
                             state:QueueEvent( casting, "projectile", true )
-                        else
-                            state:RunHandler( casting )
-                        end
+                        end ]]
 
-                        ns.spendResources( casting )
-                        
                     elseif ability.postchannel then
                         ability.postchannel()
                         
                     end
                 end
             end
-
-            -- Delay to end of GCD.
-            local delay = 0    
-            if state.settings.spec and state.settings.spec.gcdSync and ( state.display == "Primary" or state.display == "AOE" ) then
-                delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
-            end
-            delay = ns.callHook( "reset_postcast", delay )
-            
-            if delay > 0 then
-                state.advance( delay )
-            end
         end
     end    
+
+    -- Delay to end of GCD.
+    local delay = 0    
+    if state.settings.spec and state.settings.spec.gcdSync and ( state.display == "Primary" or state.display == "AOE" ) then
+        delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
+    end
+    delay = ns.callHook( "reset_postcast", delay )
+    
+    if delay > 0 then
+        if Hekili.ActiveDebug then Hekili:Debug( "Advancing by %.2f per GCD or cast or channel or reset_postcast value.", delay ) end
+        state.advance( delay )
+    end
 end
 
 
@@ -4407,6 +4412,8 @@ function state.advance( time )
     if time <= 0 then
         return
     end
+
+    if Hekili.ActiveDebug then Hekili:Debug( "Advancing clock by %.2f...", time ) end
     
     time = ns.callHook( 'advance', time ) or time
     -- time = roundUp( time, 3 )
@@ -4858,9 +4865,6 @@ function state:TimeToReady( action, pool )
     if not pool and ability.readyTime then
         wait = max( wait, ability.readyTime )
     end
-
-    if not flowControl[ action ] and self.buff.player_casting.up and not self.spec.castableWhileCasting[ action ] then wait = max( wait, self.buff.player_casting.remains ) end
-    -- if Hekili.ActiveDebug then Hekili:Debug( "%s is ready in %.2f (remaining cast time: %.2f, delay: %.2f)", action, wait, self.buff.player_casting.remains, self.delay ) end
 
     -- cacheTTR[ action ] = wait
     return max( wait, self.delayMin )

@@ -422,11 +422,10 @@ end
 function Hekili:CheckChannel( ability, prio )
     if not state.channeling then return true end
 
-    local aura = class.auras[ state.channel ]
+    local channel = state.channel
+    local aura = class.auras[ channel ]
     if not aura or not aura.tick_time then return true end
 
-    local channel = state.channel
-    
     local modifiers = scripts.Channels[ state.system.packName ]
     modifiers = modifiers and modifiers[ channel ]
 
@@ -671,7 +670,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     end
                                 end
     
-                            elseif state.buff.player_casting.up and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ entry.action ] then
+                            elseif state.buff.player_casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ entry.action ] then
                                 if debug then self:Debug( "Player is casting and cannot use " .. entry.action .. " while casting." ) end
 
                             else                                
@@ -695,7 +694,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         
                                         if hasResources then
                                             local aScriptPass = self:CheckStack()
-                                            local channelPass = self:CheckChannel( entry.action, rWait )
+                                            local channelPass = not state.channeling or self:CheckChannel( entry.action, rWait )
 
                                             if not aScriptPass then
                                                 if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
@@ -1097,16 +1096,15 @@ function Hekili:ProcessHooks( dispName, packName )
     state.system.display  = dispName
     state.system.dispInfo = display
 
-    state.reset( dispName )
-
     local debug = self.ActiveDebug
     
-    local gcd_length = state.gcd
-
     if debug then
         self:SetupDebug( dispName )
         self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
     end
+
+    state.reset( dispName )
+    local gcd_length = state.gcd
 
     local numRecs = display.numIcons or 4
 
@@ -1211,6 +1209,11 @@ function Hekili:ProcessHooks( dispName, packName )
                 if not state.spec.canCastWhileCasting then state.stopChanneling() end
 
                 if ability.cast == 0 or not state.spec.canCastWhileCasting then                   
+                    -- Start the GCD.
+                    if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
+                        state.setCooldown( 'global_cooldown', state.gcd.execute )
+                    end
+
                     -- Advance the clock by cast_time.
                     if ability.cast > 0 and not ability.channeled then
                         state.advance( ability.cast )
@@ -1218,11 +1221,6 @@ function Hekili:ProcessHooks( dispName, packName )
 
                     local cooldown = ability.cooldown
                     
-                    -- Start the GCD.
-                    if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
-                        state.setCooldown( 'global_cooldown', state.gcd.execute )
-                    end
-
                     -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
                     -- if ability.charges and ability.charges > 1 and ability.recharge > 0 then
                     if ability.charges and ability.recharge > 0 then
