@@ -542,6 +542,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     if equipped.eye_of_the_twisting_nether then
                         applyBuff( 'shock_of_the_twisting_nether', 8 )
                     end
+
+                    if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
+                    if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
+                    if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
                 end
             end,
         },
@@ -575,7 +579,11 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             handler = function ()
                 applyDebuff( 'target', 'earthen_spike' )
-            end,
+
+                if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
+                if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
+                if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
+        end,
         },
 
         feral_spirit = {
@@ -605,6 +613,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     applyBuff( 'fire_of_the_twisting_nether', 8 )
                 end
 
+                if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
+
                 removeBuff( "strength_of_earth" )
             end,
         },
@@ -627,6 +637,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'chill_of_the_twisting_nether', 8 )
                 end
+
+                if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
 
                 removeBuff( "strength_of_earth" )
             end,
@@ -652,7 +664,9 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             handler = function ()
                 if buff.fury_of_air.up then removeBuff( 'fury_of_air' )
                 else applyBuff( 'fury_of_air', 3600 ) end
-            end,
+
+                if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
+        end,
         },
 
 
@@ -707,6 +721,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     applyBuff( 'fire_of_the_twisting_nether' )
                     if buff.crash_lightning.up then applyBuff( 'shock_of_the_twisting_nether' ) end
                 end
+
+                if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
+                if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_fire" ) end
+                if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
             end,
         },
 
@@ -726,7 +744,9 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'shock_of_the_twisting_nether' )
                 end
-            end,
+
+                if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
+        end,
         },
 
 
@@ -788,7 +808,9 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     applyBuff( 'shock_of_the_twisting_nether' )
                 end
                 removeBuff( 'force_of_the_mountain' )
-                if set_bonus.tier21_4pc > 0 then applyDebuff( 'target', 'exposted_elements', 4.5 ) end
+                if set_bonus.tier21_4pc > 0 then applyDebuff( 'target', 'exposed_elements', 4.5 ) end
+
+                if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
 
                 if azerite.strength_of_earth.enabled then applyBuff( "strength_of_earth" ) end
             end,
@@ -857,6 +879,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                         applyBuff( 'shock_of_the_twisting_nether', 8 )
                     end
                 end
+    
+                if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
+                if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
+                if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
             end,                    
 
             copy = "strike", -- copies this ability to this key or keys (if a table value)
@@ -875,7 +901,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             startsCombat = true,
             talent = 'sundering',
 
-            handler = function () if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( 'shock_of_the_twisting_nether' ) end end,
+            handler = function ()
+                if level < 116 and equipped.eye_of_the_twisting_nether then
+                    applyBuff( 'fire_of_the_twisting_nether' )
+                end
+
+                if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
+            end,
         },
 
 
@@ -954,6 +986,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                         applyBuff( 'shock_of_the_twisting_nether', 8 )
                     end
                 end
+
+                if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
+                if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
+                if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
             end,
         },
     } )
