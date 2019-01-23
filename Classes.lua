@@ -80,6 +80,19 @@ local function Aura_DetectSharedAura( t, type )
 end
 
 
+local protectedFunctions = {
+    onCastStart = true, -- virtual handler for spellcast start.
+    onCastFinish = true, -- virtual handler for spellcast finish.
+    
+    onImpact = true, -- real and virtual handler for spell impact.
+
+    onRealCastStart = true, -- real handler for spellcast start.
+    onRealCastFinish = true, -- real handler for spellcast finish.
+
+    handler = true, -- generic handler for abilities that do not require queueing.
+}
+
+
 local HekiliSpecMixin = {
     RegisterResource = function( self, resourceID, regen, model )
         local resource = GetResourceKey( resourceID )
@@ -244,7 +257,7 @@ local HekiliSpecMixin = {
             self.powers[ v.id ] = k
 
             for token, ids in pairs( v.triggers ) do
-                if not self.auras[ k ] then
+                if not self.auras[ token ] then
                     self:RegisterAura( token, {
                         id = v.id,
                         copy = ids
@@ -450,12 +463,16 @@ local HekiliSpecMixin = {
             if type( value ) == 'function' then
                 setfenv( value, state )
 
-                if key ~= 'handler' and key ~= 'recheck' then a.funcs[ key ] = value
+                if not protectedFunctions[ key ] then a.funcs[ key ] = value
                 else a[ key ] = value end
                 data[ key ] = nil
             else
                 a[ key ] = value
             end
+        end
+
+        if a.velocity and a.onImpact then
+            a.isProjectile = true
         end
 
         a.lastCast = 0
@@ -496,7 +513,11 @@ local HekiliSpecMixin = {
                 end
             end
         end
-            
+
+        if a.castableWhileCasting then
+            self.canCastWhileCasting = true
+            self.castableWhileCasting[ a.key ] = true
+        end            
     end,
 
     RegisterAbilities = function( self, abilities )
@@ -677,6 +698,8 @@ function Hekili:NewSpecialization( specID, isRanged )
         funcHooks = {},
         gearSets = {},
         interrupts = {},
+
+        castableWhileCasting = {},
 
         packs = {},
         options = {},
@@ -958,6 +981,7 @@ all:RegisterAuras( {
             aura.v1 = 0
             aura.caster = 'target'
         end,
+        strictTiming = true,
     },
 
     player_casting = {
@@ -996,6 +1020,7 @@ all:RegisterAuras( {
             aura.v1 = 0
             aura.caster = 'target'
         end,
+        strictTiming = true,
     },
 
     movement = {
@@ -1543,6 +1568,7 @@ all:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = 'off',
+        essential = true,
     },
 
     run_action_list = {
@@ -1550,6 +1576,7 @@ all:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = 'off',
+        essential = true,
     },
 
     wait = {
@@ -1557,6 +1584,7 @@ all:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = 'off',
+        essential = true,
     },
 
     pool_resource = {
@@ -1571,6 +1599,7 @@ all:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = 'off',
+        essential = true,
     },
 
     potion = {
@@ -3329,54 +3358,9 @@ end
 ns.addPet = addPet
 
 
-local function runHandler( key, no_start )
-
-    local ability = class.abilities[ key ]
-
-    if not ability then
-        -- ns.Error( "runHandler() attempting to run handler for non-existant ability '" .. key .. "'." )
-        return
-    end
-
-    if state.channeling then state.stopChanneling() end
-    if ability.handler then ability.handler() end
-
-    state.prev.last = key
-    state[ ability.gcd == 'off' and 'prev_off_gcd' or 'prev_gcd' ].last = key
-
-    table.insert( state.predictions, 1, key )
-    table.insert( state[ ability.gcd == 'off' and 'predictionsOff' or 'predictionsOn' ], 1, key )
-    
-    state.predictions[6] = nil
-    state.predictionsOn[6] = nil
-    state.predictionsOff[6] = nil
-    
-    if state.time == 0 and ability.startsCombat and not no_start then
-        state.false_start = state.query_time - 0.01
-
-        -- Assume MH swing at combat start and OH swing half a swing later?
-        if state.target.distance < 8 then
-            if state.swings.mainhand_speed > 0 and state.nextMH == 0 then state.swings.mh_pseudo = state.false_start end
-            if state.swings.offhand_speed > 0 and state.nextOH == 0 then state.swings.oh_pseudo = state.false_start + ( state.offhand_speed / 2 ) end
-        end
-    end
-
-    state.cast_start = 0
-    
-    ns.callHook( 'runHandler', key )
-    
-end
-ns.runHandler = runHandler
-state.runHandler = runHandler
-
-
-
 local function addStance( key, spellID )
-
     class.stances[ key ] = spellID
-    
     ns.commitKey( key )
-    
 end
 ns.addStance = addStance
 
@@ -3447,7 +3431,10 @@ function Hekili:SpecializationChanged()
 
             state.spec.id = id
             state.spec.name = name        
-            state.spec.key = getSpecializationKey( state.spec.id )
+            state.spec.key = getSpecializationKey( id )
+            
+            state.spec.canCastWhileCasting = class.specs[ id ].canCastWhileCasting
+            state.spec.castableWhileCasting = class.specs[ id ].castableWhileCasting
 
             for k in pairs( state.role ) do
                 state.role[ k ] = false

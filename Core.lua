@@ -13,7 +13,6 @@ local clashOffset = ns.clashOffset
 local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
 local getResourceName = ns.getResourceName
-local runHandler = ns.runHandler
 local tableCopy = ns.tableCopy
 local timeToReady = ns.timeToReady
 local trim = string.trim
@@ -555,8 +554,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 break
 
             end
-            -- end
-            
+            -- end            
 
             if self:IsActionActive( packName, listName, actID ) then
                 -- Check for commands before checking actual actions.
@@ -592,11 +590,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                     state.delay = wait_time
 
-                    if wait_time < state.delayMin then
-                        wait_time = state.delayMin
-                        if debug then self:Debug( "The action was ready before our recommendation window; delaying to %.2f.", state.delayMin ) end
-                    end
-
                     if wait_time > state.delayMax then
                         if debug then self:Debug( "The action is not ready before our maximum delay window (%.2f) for this query.", state.delayMax ) end
                     elseif ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
@@ -606,23 +599,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             if debug then self:Debug( "NOTE:  We are channeling ( %s ) until %.2f.", state.player.channelSpell, state.player.channelEnd - state.query_time ) end
                         end
                         -- APL checks.
-                        if entry.action == 'variable' then
-                            local name = state.args.var_name
-                            
-                            if name ~= nil then -- and aScriptValue ~= nil then
-                                local aScriptPass = scripts:CheckScript( scriptID )
-
-                                if aScriptPass then
-                                    if debug then self:Debug( " - variable.%s will reference this script entry (%s).", name or "MISSING", scriptID ) end
-                                    
-                                    -- We just store the scriptID so that the variable actually gets tested at time of comparison.
-                                    state.variable[ "_" .. name ] = scriptID
-                                else
-                                    if debug then self:Debug( " - conditions were NOT MET, ignoring (%s).", name ) end
-                                end
-                            end
-
-                        elseif precombatFilter and not ability.essential then
+                        if precombatFilter and not ability.essential then
                             if debug then self:Debug( "We are already in-combat and this pre-combat action is not essential.  Skipping." ) end
                         else
                             if entry.action == 'call_action_list' or entry.action == 'run_action_list' or entry.action == 'use_items' then
@@ -644,7 +621,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 end
                                 
                                 if aScriptPass then
-
                                     if entry.action == "use_items" then
                                         -- self:AddToStack( scriptID, "items", caller, entry.action == "run_action_list" )
                                         local pAction, pWait = rAction, rWait
@@ -679,7 +655,26 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     end
                                 end
                                 
-                            else
+                            elseif entry.action == 'variable' then
+                                local name = state.args.var_name
+                                
+                                if name ~= nil then -- and aScriptValue ~= nil then
+                                    local aScriptPass = scripts:CheckScript( scriptID )
+    
+                                    if aScriptPass then
+                                        if debug then self:Debug( " - variable.%s will reference this script entry (%s).", name or "MISSING", scriptID ) end
+                                        
+                                        -- We just store the scriptID so that the variable actually gets tested at time of comparison.
+                                        state.variable[ "_" .. name ] = scriptID
+                                    else
+                                        if debug then self:Debug( " - conditions were NOT MET, ignoring (%s).", name ) end
+                                    end
+                                end
+    
+                            elseif state.buff.player_casting.up and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ entry.action ] then
+                                if debug then self:Debug( "Player is casting and cannot use " .. entry.action .. " while casting." ) end
+
+                            else                                
                                 local usable, why = state:IsUsable()
                                 if debug then
                                     if usable then
@@ -1150,20 +1145,35 @@ function Hekili:ProcessHooks( dispName, packName )
 
         local hadProj = false
 
-        for i, impact in state:IterateProjectiles( true ) do
-            local t = impact.time - state.now - state.offset
-            state:SetConstraint( state.delayMax, t )
+        local events = state:GetQueue( true )        
+        local event = events[ 1 ]
+        local n = 1
+
+        while( event ) do
+            local t = event.time - state.now - state.offset
+            state:SetConstraint( 0, t - 0.01 )
+
             hadProj = true
 
-            if debug then self:Debug( "[ ** ] In-flight projectile #%d for %s landing at %.2f; checking pre-impact recommendations.", i, impact.action, t ) end
+            if debug then self:Debug( "\n[ ** ] Queued event #%d (%s %s) due at %.2f; checking pre-impact recommendations.", n, event.action, event.type, t ) end
             action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
+
+            if not action then
+                if debug then self:Debug( "\n[ ** ] No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).", n, event.action, event.type, t, state.offset + state.delay ) end
+                state.advance( t )
+
+                event = events[ 1 ]
+                n = n + 1
+            else
+                break
+            end
         end
 
         if not action then
-            state.delayMin = state.delayMax
-            state.delayMax = 60
+            state.delayMin = 0
+            state.delayMax = 10
 
-            if hadProj and debug then self:Debug( "[ ** ] No recommendation before projectile impact(s), checking recommendations after %.2f.", state.delayMin ) end
+            if hadProj and debug then self:Debug( "\n[ ** ] No recommendation before projectile impact(s), checking recommendations after %.2f.", state.delayMin ) end
             action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
         end
 
@@ -1198,49 +1208,96 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 local ability = class.abilities[ action ]
                 
-                -- Start the GCD.
-                if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
-                    state.setCooldown( 'global_cooldown', state.gcd.execute )
-                end
+                if not state.spec.canCastWhileCasting then state.stopChanneling() end
 
-                state.stopChanneling()
-                
-                -- Advance the clock by cast_time.
-                if ability.cast > 0 and not ability.channeled then
-                    state.advance( ability.cast )
-                end
+                if ability.cast == 0 or not state.spec.canCastWhileCasting then                   
+                    -- Advance the clock by cast_time.
+                    if ability.cast > 0 and not ability.channeled then
+                        state.advance( ability.cast )
+                    end
 
-                local cooldown = ability.cooldown
-                
-                -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
-                -- if ability.charges and ability.charges > 1 and ability.recharge > 0 then
-                if ability.charges and ability.recharge > 0 then
-                    state.spendCharges( action, 1 )
+                    local cooldown = ability.cooldown
                     
-                elseif action ~= 'global_cooldown' then
-                    state.setCooldown( action, cooldown )
-                end
+                    -- Start the GCD.
+                    if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
+                        state.setCooldown( 'global_cooldown', state.gcd.execute )
+                    end
 
-                state.cycle = slot.indicator == 'cycle'
-                
-                -- Spend resources.
-                ns.spendResources( action )
-                
-                -- Perform the action.
-                ns.runHandler( action )
+                    -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
+                    -- if ability.charges and ability.charges > 1 and ability.recharge > 0 then
+                    if ability.charges and ability.recharge > 0 then
+                        state.spendCharges( action, 1 )
+                        
+                    elseif action ~= 'global_cooldown' then
+                        state.setCooldown( action, cooldown )
+                    end
 
-                if ability.item then
-                    state.putTrinketsOnCD( cooldown / 6 )
-                end
+                    state.cycle = slot.indicator == 'cycle'
+                    
+                    -- Spend resources.
+                    ns.spendResources( action )
+                    
+                    -- Perform the action.
+                    -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+                    if ability.isProjectile then
+                        state:QueueEvent( action, "projectile", true )
+                    else
+                        state:RunHandler( action )
+                    end
 
-                -- Complete the channel.
-                if ability.cast > 0 and ( ability.channeled and not ability.breakable ) then -- class.resetCastExclusions[ ability ] then
-                    state.advance( ability.cast )
-                end
-                
-                -- Move the clock forward if the GCD hasn't expired.
-                if state.cooldown.global_cooldown.remains > 0 then
-                    state.advance( state.cooldown.global_cooldown.remains )
+                    if ability.item then
+                        state.putTrinketsOnCD( cooldown / 6 )
+                    end
+
+                    -- Complete the channel.
+                    if ability.cast > 0 and ( ability.channeled and not ability.breakable ) then -- class.resetCastExclusions[ ability ] then
+                        state.advance( ability.cast )
+                    end
+                    
+                    -- Move the clock forward if the GCD hasn't expired.
+                    if state.cooldown.global_cooldown.remains > 0 then
+                        state.advance( state.cooldown.global_cooldown.remains )
+                    end
+                else
+                    -- We can cast while casting; queue it up.
+                    local cast = ability.cast
+
+                    state.cycle = slot.indicator == 'cycle'
+
+                    if cast > 0 then
+                        state:QueueEvent( action, "hardcast", true, nil, cast )
+
+                    else
+                        -- Instant cast, no need to delay.
+                        local cooldown = ability.cooldown
+
+                        -- Start the GCD.
+                        if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
+                            state.setCooldown( 'global_cooldown', state.gcd.execute )
+                        end
+
+                        if ability.charges and ability.recharge > 0 then
+                            state.spendCharges( action, 1 )
+                        
+                        elseif action ~= 'global_cooldown' then
+                            state.setCooldown( action, cooldown )
+                        end
+
+                        ns.spendResources( action )
+
+                        if ability.isProjectile then
+                            state:QueueEvent( action, "projectile", true )
+                        else
+                            if ability.onCastFinish then ability.onCastFinish()
+                            else state:RunHandler( action ) end
+                        end
+
+                        if ability.item then state.putTrinketsOnCD( cooldown / 6 ) end
+
+                        if ability.cast > 0 and ( ability.channeled and not ability.breakable ) then
+                            state.advance( cast )
+                        end
+                    end
                 end
             end
             

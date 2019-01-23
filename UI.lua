@@ -1447,6 +1447,13 @@ do
         DevTools_Dump( actsActive )
     end
 
+
+    function Hekili:ForceUpdate( event )
+        for i, d in pairs( ns.UI.Displays ) do        
+            d.criticalUpdate = true
+        end
+    end    
+
     
     local LSM = LibStub("LibSharedMedia-3.0", true)
     local LRC = LibStub("LibRangeCheck-2.0")

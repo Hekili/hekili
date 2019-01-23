@@ -89,7 +89,7 @@ end
 ns.RegisterEvent = function( event, handler )
 
     handlers[ event ] = handlers[ event ] or {}
-    table.insert( handlers[ event ], handler )
+    insert( handlers[ event ], handler )
 
     events:RegisterEvent( event )
 
@@ -104,7 +104,7 @@ function ns.UnregisterEvent( event, handler )
 
     for i = #hands, 1, -1 do
         if hands[i] == handler then
-            table.remove( hands, i )
+            remove( hands, i )
         end
     end
 end
@@ -114,7 +114,7 @@ end
 ns.RegisterUnitEvent = function( event, handler, u1, u2 )
 
     unitHandlers[ event ] = unitHandlers[ event ] or {}
-    table.insert( unitHandlers[ event ], handler )
+    insert( unitHandlers[ event ], handler )
 
     unitEvents:RegisterUnitEvent( event, 'player', 'target' )
 
@@ -129,7 +129,7 @@ function ns.UnregisterUnitEvent( event, handler )
 
     for i = #hands, 1, -1 do
         if hands[i] == handler then
-            table.remove( hands, i )
+            remove( hands, i )
         end
     end
 end
@@ -161,7 +161,7 @@ end )
 
 function Hekili:ContinueOnItemLoad( itemID, func )
     local callbacks = itemCallbacks[ itemID ] or {}
-    table.insert( callbacks, func )
+    insert( callbacks, func )
     itemCallbacks[ itemID ] = callbacks
 
     C_Item.RequestLoadItemDataByID( itemID )        
@@ -170,7 +170,7 @@ end
 function Hekili:RunItemCallbacks()
     for item, callbacks in pairs( itemCallbacks ) do
         for i = #callbacks, 1, -1 do
-            if callbacks[ i ]( true ) then table.remove( callbacks, i ) end
+            if callbacks[ i ]( true ) then remove( callbacks, i ) end
         end
 
         if #callbacks == 0 then
@@ -384,12 +384,12 @@ local gearInitialized = false
 
 function Hekili:UpdateUseItems()
     local itemList = class.itemPack.lists.items
-    table.wipe( itemList )
+    wipe( itemList )
 
     if #state.items > 0 then
         for i, item in ipairs( state.items ) do
             if not self:IsItemScripted( item ) then
-                table.insert( itemList, {
+                insert( itemList, {
                     action = item,
                     enabled = true,
                     criteria = "( ! settings.boss || boss ) & " ..
@@ -410,7 +410,7 @@ function ns.updateGear()
         state.set_bonus[ thing ] = 0
     end
 
-    table.wipe( state.items )
+    wipe( state.items )
 
     for set, items in pairs( class.gear ) do
         state.set_bonus[ set ] = 0
@@ -461,7 +461,7 @@ function ns.updateGear()
             end
 
             local usable = class.itemMap[ item ]
-            if usable then table.insert( state.items, usable ) end
+            if usable then insert( state.items, usable ) end
         end
     end
 
@@ -519,9 +519,32 @@ ns.castsAll = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' 
 local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
-function Hekili:ForceUpdate( event )
-    for i, d in pairs( ns.UI.Displays ) do        
-        d.criticalUpdate = true
+function state:AddToHistory( spellID )
+    local ability = class.abilities[ spellID ]
+    local key = ability and ability.key or dynamic_keys[ spellID ]
+
+    local now = GetTime()
+    local player = self.player
+
+    player.lastcast = key
+    player.casttime = now
+
+    if ability then
+        local history = self.prev.history
+        insert( history, 1, key )
+        history[6] = nil
+
+        if ability.gcd ~= "off" then
+            history = self.prev_gcd.history
+            player.lastgcd = key
+            player.lastgcdtime = now
+        else
+            history = self.prev_off_gcd.history
+            player.lastoffgcd = key
+            player.lastoffgcdtime = now
+        end
+        insert( history, 1, key )
+        history[6] = nil
     end
 end
 
@@ -535,17 +558,17 @@ local function spellcastEvents( subtype, sourceGUID, destGUID, spellName, spellI
     local ability = class.abilities[ spellID ]
 
     if ability then
-        table.insert( castsAll, 1, ability.key )
+        insert( castsAll, 1, ability.key )
         castsAll[ 6 ] = nil
 
         if ability.gcd ~= 'off' then
-            table.insert( castsOn, 1, ability.key )
+            insert( castsOn, 1, ability.key )
             castsOn[ 6 ] = nil
 
             state.player.lastgcd = ability.key
             state.player.lastgcdtime = now
         else
-            table.insert( castsOff, 1, ability.key )
+            insert( castsOff, 1, ability.key )
             castsOff[ 6 ] = nil
 
             state.player.lastoffgcd = ability.key
@@ -557,8 +580,8 @@ local function spellcastEvents( subtype, sourceGUID, destGUID, spellName, spellI
     end
 
     -- This is an ability with a travel time.
-    if ability and ability.velocity then
-        state:LaunchProjectile( ability )
+    if ability and ability.isProjectile then
+        state:QueueEvent( ability.key, "projectile" )
     end
 
 end
@@ -576,8 +599,6 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, 
             Hekili:Notify( "Hekili is designed for current content.\nUse below level 100 at your own risk.", 5 )
             lowLevelWarned = true
         end
-
-        Hekili:ForceUpdate( event ) 
     end
 end )
 
@@ -693,6 +714,7 @@ end )
 RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
     Hekili.ScrapeUnitAuras( "target" )
     state.target.updated = false
+
     Hekili.UpdateTTD( "target" )
     Hekili:ForceUpdate( event, true )
 end )
@@ -711,6 +733,13 @@ end
 RegisterUnitEvent( "UNIT_SPELLCAST_START", handleEnemyCasts )
 RegisterUnitEvent( "UNIT_SPELLCAST_INTERRUPTED", handleEnemyCasts )
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", handleEnemyCasts )
+
+
+local cast_events = {
+    SPELL_CAST_START        = true,
+    SPELL_CAST_FAILED       = true,
+    SPELL_CAST_SUCCESS      = true
+}
 
 
 local aura_events = {
@@ -765,17 +794,28 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         return
     end
 
-    if sourceGUID == state.GUID and ( subtype == 'SPELL_CAST_SUCCESS' or subtype == 'SPELL_CAST_START' ) then
-        if subtype == 'SPELL_CAST_SUCCESS' then
-            spellcastEvents( subtype, sourceGUID, destGUID, spellName, spellID )
-            state.player.queued_ability = nil
-            state.player.queued_time = nil
-            state.player.queued_tt = nil
-            state.player.queued_lands = nil
-            state.player.queued_gcd = nil
-            state.player.queued_off = nil
+    if sourceGUID == state.GUID then
+        -- Started a spellcast.
+        if cast_events[ subtype ] then
+            local ability = class.abilities[ spellID ]
+
+            if subtype == "SPELL_CAST_START" then
+                state:QueueEvent( spellID, "hardcast" )
+
+            elseif subtype == "SPELL_CAST_FAILED" then
+                state:CancelCastEvent( spellID )
+
+            elseif subtype == "SPELL_CAST_SUCCESS" then
+                -- We completed a spellcast, it may have been queued and have data available to us.
+                local event = state:RemoveQueuedSpell( spellID )                
+
+                if ability and ability.isProjectile then
+                    state:QueueEvent( spellID, "projectile", event )
+                end
+            end
+
+            Hekili:ForceUpdate( subtype )
         end
-        Hekili:ForceUpdate( subtype )
     end
 
     if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
@@ -850,7 +890,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         local action = class.abilities[ spellID ]
         
         if subtype ~= 'SPELL_CAST_SUCCESS' and action and action.velocity then
-            state:Impact( action.key )
+            state:Unqueue( action.key )
         end
 
         if hostile and dmg_events[ subtype ] and not dmg_filtered[ spellID ] then
@@ -1005,8 +1045,8 @@ local defaultBarMap = {
 local function ReadKeybindings()
 
     for k, v in pairs( keys ) do
-        table.wipe( v.upper )
-        table.wipe( v.lower )
+        wipe( v.upper )
+        wipe( v.lower )
     end
 
     -- Bartender4 support from tanichan.
