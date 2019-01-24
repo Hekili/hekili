@@ -4033,6 +4033,10 @@ function state:RunHandler( key, noStart )
     ns.callHook( 'runHandler', key )    
 end
 
+function state.runHandler( key, noStart )
+    state:RunHandler( key, noStart )
+end
+
 
 function state.reset( dispName )
     
