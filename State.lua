@@ -3816,8 +3816,8 @@ do
             ns.spendResources( action )
 
             -- Perform the action.
-            if entry.func then entry.func( entry ) end
-            self:RunHandler( action )
+            if entry.func then entry.func( entry )
+            else self:RunHandler( action ) end
 
             -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
             if ability.isProjectile then
@@ -4345,7 +4345,8 @@ function state.reset( dispName )
 
     if casting and cast_time > 0 then
         -- A hardcast on reset should have been caught for real.
-        if not state:IsCasting( casting, true ) then state:QueueEvent( casting, "hardcast", true, nil, cast_time ) end
+        if not state:IsCasting( casting, true ) then 
+            state:QueueEvent( casting, "hardcast", true, nil, cast_time ) end
 
         if not state.spec.canCastWhileCasting then
             -- Cannot cast while casting.
@@ -4426,7 +4427,7 @@ function state.advance( time )
     if Hekili.ActiveDebug then Hekili:Debug( "Advancing clock by %.2f...", time ) end
     
     time = ns.callHook( 'advance', time ) or time
-    -- time = roundUp( time, 3 )
+    time = roundUp( time, 2 )
     
     state.delay = 0
     
@@ -4437,17 +4438,18 @@ function state.advance( time )
         
         if lands > state.query_time and lands <= state.query_time + time then
             state.offset = lands - state.query_time
-            -- Hekili:Print( "Using queued ability '" .. state.player.queued_ability .. "' at " .. state.query_time .. "." )
+            if Hekili.ActiveDebug then Hekili:Debug( "Using queued ability '" .. state.player.queued_ability .. "' at " .. state.query_time .. "." ) end
             state:RunHandler( state.player.queued_ability, true )
+
+            state.offset = realOffset
         end
     end
-
-    state.offset = realOffset
 
     local events = state:GetQueue( true )
     local event = events[ 1 ]
 
     while( event ) do
+        if Hekili.ActiveDebug then Hekili:Debug( "%s %s in %f.", event.action, event.type, event.time - state.query_time + time ) end
         if event.time > state.query_time and event.time <= state.query_time + time then
             state.offset = event.time - state.now
 

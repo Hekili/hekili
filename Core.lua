@@ -1126,14 +1126,14 @@ function Hekili:ProcessHooks( dispName, packName )
         
         if debug then self:Debug( "\n[ ** ] Checking for recommendation #%d ( time offset: %.2f, remaining GCD: %.2f ).", i, state.offset, state.cooldown.global_cooldown.remains ) end
         
-        if debug then
+        --[[ if debug then
             for k in pairs( class.resources ) do
                 self:Debug( "[ ** ] %s, %d / %d", k, state[ k ].current, state[ k ].max )
             end
             if state.channeling then
                 self:Debug( "[ ** ] Currently channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
             end
-        end
+        end ]]
 
         local action, wait, depth
         
@@ -1148,12 +1148,21 @@ function Hekili:ProcessHooks( dispName, packName )
         local n = 1
 
         while( event ) do
+            if debug then
+                for k in pairs( class.resources ) do
+                    self:Debug( "[ ** ] %s, %d / %d", k, state[ k ].current, state[ k ].max )
+                end
+                if state.channeling then
+                    self:Debug( "[ ** ] Currently channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
+                end
+            end
+
             local t = event.time - state.now - state.offset
             state:SetConstraint( 0, t - 0.01 )
 
             hadProj = true
 
-            if debug then self:Debug( "\n[ ** ] Queued event #%d (%s %s) due at %.2f; checking pre-impact recommendations.", n, event.action, event.type, t ) end
+            if debug then self:Debug( "\n[ ** ] Queued event #%d (%s %s) due at %.2f; checking pre-event recommendations.", n, event.action, event.type, t ) end
             action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
 
             if not action then
@@ -1170,8 +1179,18 @@ function Hekili:ProcessHooks( dispName, packName )
         if not action then
             state.delayMin = 0
             state.delayMax = 10
+            
+            if hadProj and debug then self:Debug( "\n[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.delayMin ) end
 
-            if hadProj and debug then self:Debug( "\n[ ** ] No recommendation before projectile impact(s), checking recommendations after %.2f.", state.delayMin ) end
+            if debug then
+                for k in pairs( class.resources ) do
+                    self:Debug( "[ ** ] %s, %d / %d", k, state[ k ].current, state[ k ].max )
+                end
+                if state.channeling then
+                    self:Debug( "[ ** ] Currently channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
+                end
+            end    
+    
             action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
         end
 

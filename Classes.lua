@@ -3433,9 +3433,6 @@ function Hekili:SpecializationChanged()
             state.spec.name = name        
             state.spec.key = getSpecializationKey( id )
             
-            state.spec.canCastWhileCasting = class.specs[ id ].canCastWhileCasting
-            state.spec.castableWhileCasting = class.specs[ id ].castableWhileCasting
-
             for k in pairs( state.role ) do
                 state.role[ k ] = false
             end
@@ -3485,6 +3482,9 @@ function Hekili:SpecializationChanged()
                 self.currentSpecOpts = self.DB.profile.specs[ specID ]
                 state.settings.spec = self.DB.profile.specs[ specID ]
 
+                state.spec.canCastWhileCasting = spec.canCastWhileCasting
+                state.spec.castableWhileCasting = spec.castableWhileCasting    
+    
                 for res, model in pairs( spec.resources ) do
                     class.resources[ res ] = model
                     state[ res ] = model.state
