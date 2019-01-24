@@ -2275,31 +2275,32 @@ local mt_prev_lookup = {
                 if idx == #state.predictions + 1 then
                     return state.player.queued_ability
                 end
-                return ns.castsAll[ idx - #state.predictions + 1 ]
+                return state.prev.history[ idx - #state.predictions + 1 ]
             end
 
             if idx == 1 and state.prev.override then
                 return state.prev.override == k
             end
 
-            return ns.castsAll[ idx - #state.predictions ] == k
+            return state.prev.history[ idx - #state.predictions ] == k
             
         elseif t.meta == 'castsOn' then
             -- Check predictions first.
             if state.predictionsOn[ idx ] then return state.predictionsOn[ idx ] == k end
+
             -- There isn't a prediction for that entry yet, go back to actual collected data.
             if state.player.queued_ability and state.player.queued_gcd then
-                if idx == np + 1 then
+                if idx == #state.predictionsOn + 1 then
                     return state.player.queued_ability
                 end
-                return ns.castsOn[ idx - #state.predictionsOn + 1 ]
+                return state.prev_gcd.history[ idx - #state.predictionsOn + 1 ]
             end
 
             if idx == 1 and state.prev_gcd.override then
                 return state.prev_gcd.override == k
             end
 
-            return ns.castsOn[ idx - #state.predictionsOn ] == k
+            return state.prev_gcd.history[ idx - #state.predictionsOn ] == k
             
         end
         
@@ -2307,17 +2308,17 @@ local mt_prev_lookup = {
         if state.predictionsOff[ idx ] then return state.predictionsOff[ idx ] == k end
 
         if state.player.queued_ability and state.player.queued_off then
-            if idx == np + 1 then
+            if idx == #state.predictionsOff + 1 then
                 return state.player.queued_ability
             end
-            return ns.castsOff[ idx - #state.predictionsOff + 1 ]
+            return state.prev_off_gcd.history[ idx - #state.predictionsOff + 1 ]
         end
 
         if idx == 1 and state.prev_off_gcd.override then
             return state.prev_off_gcd.override == k
         end
 
-        return ns.castsOff[ idx - #state.predictionsOff ] == k
+        return state.prev_off_gcd.history[ idx - #state.predictionsOff ] == k
         
     end
 }
@@ -4018,6 +4019,10 @@ function state:RunHandler( key, noStart )
     state.predictions[6] = nil
     state.predictionsOn[6] = nil
     state.predictionsOff[6] = nil
+
+    state.prev.override = nil
+    state.prev_gcd.override = nil
+    state.prev_off_gcd.override = nil
     
     if state.time == 0 and ability.startsCombat and not noStart then
         state.false_start = state.query_time - 0.01
@@ -4339,7 +4344,8 @@ function state.reset( dispName )
     local ability = casting and class.abilities[ casting ]
 
     if casting and cast_time > 0 then
-        state:QueueEvent( casting, "hardcast", true, nil, cast_time )
+        -- A hardcast on reset should have been caught for real.
+        if not state:IsCasting( casting, true ) then state:QueueEvent( casting, "hardcast", true, nil, cast_time ) end
 
         if not state.spec.canCastWhileCasting then
             -- Cannot cast while casting.

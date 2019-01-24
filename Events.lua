@@ -519,7 +519,7 @@ ns.castsAll = { 'no_action', 'no_action', 'no_action', 'no_action', 'no_action' 
 local castsOn, castsOff, castsAll = ns.castsOn, ns.castsOff, ns.castsAll
 
 
-function state:AddToHistory( spellID )
+function state:AddToHistory( spellID, destGUID )
     local ability = class.abilities[ spellID ]
     local key = ability and ability.key or dynamic_keys[ spellID ]
 
@@ -545,6 +545,9 @@ function state:AddToHistory( spellID )
         end
         insert( history, 1, key )
         history[6] = nil
+
+        ability.lastCast = now
+        ability.lastUnit = destGUID
     end
 end
 
@@ -626,8 +629,6 @@ local lastPowerUpdate = 0
 local function UNIT_POWER_FREQUENT( event, unit, power )
 
     if not UnitIsUnit( unit, "player" ) then return end
-
-    -- print( "UPF", GetTime(), power )
 
     if power == "FOCUS" and rawget( state, "focus" ) then
         local now = GetTime()
@@ -809,12 +810,13 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 -- We completed a spellcast, it may have been queued and have data available to us.
                 local event = state:RemoveQueuedSpell( spellID )                
 
-                if ability and ability.isProjectile then
-                    state:QueueEvent( spellID, "projectile", event )
+                if ability then
+                    if ability.isProjectile then state:QueueEvent( spellID, "projectile", event ) end
+                    state:AddToHistory( ability.key )
                 end
             end
 
-            Hekili:ForceUpdate( subtype )
+            Hekili:ForceUpdate( subtype, destGUID )
         end
     end
 
