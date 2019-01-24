@@ -812,11 +812,11 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                 if ability then
                     if ability.isProjectile then state:QueueEvent( spellID, "projectile", event ) end
-                    state:AddToHistory( ability.key )
+                    state:AddToHistory( ability.key, destGUID )
                 end
             end
 
-            Hekili:ForceUpdate( subtype, destGUID )
+            Hekili:ForceUpdate( subtype )
         end
     end
 
