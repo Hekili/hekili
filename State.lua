@@ -3816,7 +3816,7 @@ do
             ns.spendResources( action )
 
             -- Perform the action.
-            if entry.func then entry.func( entry )
+            if entry.func then self:HandleCast( action, entry )
             else self:RunHandler( action ) end
 
             -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
@@ -3829,7 +3829,7 @@ do
             end
         
         elseif entry.type == "projectile" then
-            if entry.func then entry.func( entry ) end
+            if entry.func then self:HandleImpact( action, entry ) end
         
         end
 
@@ -3838,18 +3838,89 @@ do
     end
 
 
-    function state:HandleImpact( projectile )
-        local ability = class.abilities[ projectile.action ]
-        if not ability then return end        
-
-        if projectile.func then projectile:func() end
+    function state:HandleCast( key, event, noStart )
+        local ability = class.abilities[ key ]
     
-        -- Anything that impacts should probably start combat, no?
-        if self.time == 0 and ability.startsCombat then
-            self:StartCombat( ability )
+        if not ability then
+            -- ns.Error( "runHandler() attempting to run handler for non-existant ability '" .. key .. "'." )
+            return
         end
+    
+        if state.channeling then state.stopChanneling() end
+    
+        if ability.onCastFinish then ability.onCastFinish( event )
+        elseif ability.handler then ability.handler( event ) end
+    
+        state.prev.last = key
+        state[ ability.gcd == 'off' and 'prev_off_gcd' or 'prev_gcd' ].last = key
+    
+        table.insert( state.predictions, 1, key )
+        table.insert( state[ ability.gcd == 'off' and 'predictionsOff' or 'predictionsOn' ], 1, key )
+        
+        state.predictions[6] = nil
+        state.predictionsOn[6] = nil
+        state.predictionsOff[6] = nil
+    
+        state.prev.override = nil
+        state.prev_gcd.override = nil
+        state.prev_off_gcd.override = nil
+        
+        if state.time == 0 and ability.startsCombat and not noStart then
+            state.false_start = state.query_time - 0.01
+    
+            -- Assume MH swing at combat start and OH swing half a swing later?
+            if state.target.distance < 8 then
+                if state.swings.mainhand_speed > 0 and state.nextMH == 0 then state.swings.mh_pseudo = state.false_start end
+                if state.swings.offhand_speed > 0 and state.nextOH == 0 then state.swings.oh_pseudo = state.false_start + ( state.offhand_speed / 2 ) end
+            end
+        end
+    
+        state.cast_start = 0
+        ns.callHook( 'runHandler', key )    
     end
-
+    
+    
+    function state:HandleImpact( key, event, noStart )
+        local ability = class.abilities[ key ]
+    
+        if not ability then
+            -- ns.Error( "runHandler() attempting to run handler for non-existant ability '" .. key .. "'." )
+            return
+        end
+    
+        if state.channeling then state.stopChanneling() end
+    
+        if ability.onImpact then ability.onImpact( event )
+        elseif ability.handler then ability.handler( event ) end
+    
+        state.prev.last = key
+        state[ ability.gcd == 'off' and 'prev_off_gcd' or 'prev_gcd' ].last = key
+    
+        table.insert( state.predictions, 1, key )
+        table.insert( state[ ability.gcd == 'off' and 'predictionsOff' or 'predictionsOn' ], 1, key )
+        
+        state.predictions[6] = nil
+        state.predictionsOn[6] = nil
+        state.predictionsOff[6] = nil
+    
+        state.prev.override = nil
+        state.prev_gcd.override = nil
+        state.prev_off_gcd.override = nil
+        
+        if state.time == 0 and ability.startsCombat and not noStart then
+            state.false_start = state.query_time - 0.01
+    
+            -- Assume MH swing at combat start and OH swing half a swing later?
+            if state.target.distance < 8 then
+                if state.swings.mainhand_speed > 0 and state.nextMH == 0 then state.swings.mh_pseudo = state.false_start end
+                if state.swings.offhand_speed > 0 and state.nextOH == 0 then state.swings.oh_pseudo = state.false_start + ( state.offhand_speed / 2 ) end
+            end
+        end
+    
+        state.cast_start = 0
+        ns.callHook( 'runHandler', key )    
+    end
+    
 
     -- This will unqueue all event types for a particular action.
     function state:Unqueue( action, virtual )
