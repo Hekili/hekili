@@ -765,8 +765,11 @@ do
             -- Force glow, range, SpellFlash updates.
             self.glowTimer = -1
             self.rangeTimer = -1
+            self.flashTimer = -1
+            self.delayTimer = -1
 
             self:RefreshCooldowns()
+
             self.recTimer = 1
         end
 
@@ -1041,9 +1044,9 @@ do
             end
 
             self.delayTimer = pulseDelay
-        end
+        end        
 
-        
+
         self.refreshTimer = self.refreshTimer - elapsed
 
         local spec = Hekili.DB.profile.specs[ state.spec.id ]
@@ -1056,6 +1059,7 @@ do
             self.lastUpdate = now
             self.refreshTimer = refreshRate
         end
+
     end
 
     local function Display_UpdateAlpha( self )

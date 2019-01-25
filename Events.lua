@@ -34,7 +34,6 @@ local itemCallbacks = {}
 
 local timerRecount = 0
 
-
 local activeDisplays = {}
 
 function Hekili:GetActiveDisplays()
@@ -728,7 +727,10 @@ RegisterEvent( "PLAYER_STOPPED_MOVING", function( event ) Hekili:ForceUpdate( ev
 local function handleEnemyCasts( event, unit )
     if UnitIsUnit( "target", unit ) then
         Hekili:ForceUpdate( event, unit )
-    end 
+    elseif UnitIsUnit( "player", unit ) and event == "UNIT_SPELLCAST_START" then
+        -- May want to force update here in case SPELL_CAST_START doesn't fire in CLEU.
+        Hekili:ForceUpdate( event, unit )
+    end
 end 
 
 RegisterUnitEvent( "UNIT_SPELLCAST_START", handleEnemyCasts )
@@ -745,11 +747,13 @@ local cast_events = {
 
 local aura_events = {
     SPELL_AURA_APPLIED      = true,
-    SPELL_AURA_REFRESH      = true,
     SPELL_AURA_APPLIED_DOSE = true,
+    SPELL_AURA_REFRESH      = true,
     SPELL_AURA_REMOVED      = true,
+    SPELL_AURA_REMOVED_DOSE = true,
     SPELL_AURA_BROKEN       = true,
-    SPELL_AURA_BROKEN_SPELL = true
+    SPELL_AURA_BROKEN_SPELL = true,
+    SPELL_CAST_SUCCESS      = true -- it appears you can refresh stacking buffs w/o a SPELL_AURA_x event.
 }
 
 
@@ -841,14 +845,14 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
 
     -- Player/Minion Event
-    elseif sourceGUID == state.GUID or ns.isMinion( sourceGUID ) then
+    elseif sourceGUID == state.GUID or ns.isMinion( sourceGUID ) or ( sourceGUID == destGUID and sourceGUID == UnitGUID( 'target' ) ) then
 
         if aura_events[ subtype ] then
             if state.GUID == destGUID then 
                 state.player.updated = true
                 if class.auras[ spellID ] then Hekili:ForceUpdate( subtype ) end
             end
-   
+
             if UnitGUID( 'target' ) == destGUID then
                 state.target.updated = true
                 if class.auras[ spellID ] then Hekili:ForceUpdate( subtype ) end

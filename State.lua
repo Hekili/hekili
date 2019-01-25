@@ -3920,7 +3920,7 @@ do
         state.cast_start = 0
         ns.callHook( 'runHandler', key )    
     end
-    
+
 
     -- This will unqueue all event types for a particular action.
     function state:Unqueue( action, virtual )
@@ -4026,6 +4026,15 @@ do
         end
 
         return false
+    end
+
+
+    function state:QueuedCastRemains( action, virtual )
+        for i, entry in ipairs( virtual and virtualQueue or realQueue ) do
+            if entry.type == "hardcast" and entry.action == action then return max( 0, entry.time - self.query_time ) end
+        end
+
+        return 0
     end
 
 
@@ -4406,6 +4415,7 @@ function state.reset( dispName )
         state.channelSpell( casting, startCast, endCast - startCast )
     end
 
+
     ns.callHook( "reset_precast" )
 
     -- Okay, two paths here.
@@ -4433,7 +4443,7 @@ function state.reset( dispName )
 
                 if ability then
                     if not ability.channeled then
-                        state.advance( cast_time )
+                        state.advance( max( cast_time, state:QueuedCastRemains( casting, true ) ) )
                         --[[
                         state.advance( state.buff.player_casting.remains )
 
@@ -4520,11 +4530,10 @@ function state.advance( time )
     local event = events[ 1 ]
 
     while( event ) do
-        if Hekili.ActiveDebug then Hekili:Debug( "%s %s in %f.", event.action, event.type, event.time - state.query_time + time ) end
         if event.time > state.query_time and event.time <= state.query_time + time then
             state.offset = event.time - state.now
 
-            if Hekili.ActiveDebug then Hekili:Debug( "While advancing by %.2f to %.2f, %s %s occurred at %.2f (method: %s).", time, realOffset + time, event.action, event.type, state.offset, event.func and "impact" or "handler" ) end
+            if Hekili.ActiveDebug then Hekili:Debug( "While advancing by %.2f to %.2f, %s %s occurred at %.2f.", time, realOffset + time, event.action, event.type, state.offset ) end
 
             if event.func then state:ProcessEvent( event, true )
             else state:RunHandler( event.action, true ) end
