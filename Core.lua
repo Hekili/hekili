@@ -670,7 +670,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     end
                                 end
     
-                            elseif state.buff.player_casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ entry.action ] then
+                            elseif state.buff.casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ entry.action ] then
                                 if debug then self:Debug( "Player is casting and cannot use " .. entry.action .. " while casting." ) end
 
                             else                                

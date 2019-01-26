@@ -778,7 +778,7 @@ state.setStance = setStance
 
 
 local function interrupt()
-    state.removeDebuff( 'target', 'casting' )
+    removeDebuff( 'target', 'casting' )
 end
 state.interrupt = interrupt
 
@@ -1934,7 +1934,7 @@ local mt_target = {
             return UnitExists( 'target' )
             
         elseif k == 'casting' then
-            return state.debuff.casting.up
+            return state.debuff.casting.up and not state.debuff.casting.v2
             
         elseif k == 'in_range' then
             return t.distance <= 8
@@ -3121,8 +3121,10 @@ local mt_alias_debuff = {
 
 local default_debuff_values = {
     count = 0,
+    lastCount = 0,
+    lastApplied = 0,
     expires = 0,
-    applied = 0,
+    applied = 0,    
     duration = 15,
     caster = 'nobody',
     timeMod = 1,
@@ -3898,7 +3900,7 @@ do
                 if ability.onRealCastStart then ability.onRealCastStart( data ) end
             end
             
-            state.applyBuff( "player_casting", eta )
+            state.applyBuff( "casting", eta )
             data.func = ability.onCastFinish or ability.handler
         end
 
@@ -4500,22 +4502,16 @@ function state.reset( dispName )
     
     local cast_time, casting = 0, nil
 
-    local spellcast, _, _, startCast, endCast, _, _, _, spellID = UnitCastingInfo( 'player' )
-    if endCast ~= nil then
-        endCast = endCast / 1000
-        startCast = startCast / 1000
-
-        cast_time = endCast - state.now
-
-        state.applyBuff( "player_casting", cast_time )
-        state.buff.player_casting.applied = startCast
-        state.buff.player_casting.duration = endCast - startCast
-        state.buff.player_casting.expires = endCast
-
-        casting = class.abilities[ spellID ] and class.abilities[ spellID ].key or formatKey( spellcast )
+    if state.buff.casting.up then
+        cast_time = state.buff.casting.remains
+        
+        local castID = state.buff.casting.v1
+        local cast_info = class.abilities[ castID ]
+        
+        casting = cast_info and cast_info.key or formatKey( state.buff.casting.name )
     end
 
-    state.stopChanneling( true )
+    --[[ state.stopChanneling( true )
 
     local spellcast, _, _, startCast, endCast, _, _, spellID = UnitChannelInfo( 'player' )
     if endCast ~= nil then
@@ -4531,8 +4527,7 @@ function state.reset( dispName )
 
         casting = spellID and class.abilities[ spellID ] and class.abilities[ spellID ].key or formatKey( spellcast )
         state.channelSpell( casting, startCast, endCast - startCast )
-    end
-
+    end ]]
 
     ns.callHook( "reset_precast" )
 

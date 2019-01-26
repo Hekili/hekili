@@ -945,46 +945,67 @@ all:RegisterAuras( {
 
     casting = {
         name = "Casting",
-        generate = function ()
-            local aura = debuff.casting
+        strictTiming = true, -- Ignore buffPadding.
+        generate = function( t, auraType )
+            local unit = auraType == "debuff" and "target" or "player"
 
-            if UnitCanAttack( "player", "target" ) then
-                local spell, _, _, startCast, endCast, _, _, notInterruptible = UnitCastingInfo( "target" )
-        
-                if notInterruptible == false then
-                    aura.name = "Casting " .. spell
-                    aura.count = 1
-                    aura.expires = endCast / 1000
-                    aura.applied = startCast / 1000
-                    aura.v1 = spell
-                    aura.caster = 'target'
+            if unit == "player" then stopChanneling( true ) end
+
+            if unit == "player" or UnitCanAttack( "player", "target" ) then
+                local spell, _, _, startCast, endCast, _, _, notInterruptible, spellID = UnitCastingInfo( unit )
+
+                if spell then
+                    startCast = startCast / 1000
+                    endCast = endCast / 1000
+
+                    t.name = spell
+                    t.count = 1
+                    t.expires = endCast
+                    t.applied = startCast
+                    t.duration = endCast - startCast
+                    t.v1 = spellID
+                    t.v2 = notInterruptible
+                    t.caster = unit
+
                     return
                 end
 
-                spell, _, _, startCast, endCast, _, _, notInterruptible = UnitChannelInfo( "target" )
-                
-                if notInterruptible == false then
-                    aura.name = "Casting " .. spell
-                    aura.count = 1
-                    aura.expires = endCast / 1000
-                    aura.applied = startCast / 1000
-                    aura.v1 = spell
-                    aura.caster = 'target'
+                spell, _, _, startCast, endCast, _, notInterruptible, spellID = UnitChannelInfo( unit )
+
+                if spell then
+                    startCast = startCast / 1000
+                    endCast = endCast / 1000
+
+                    t.name = spell
+                    t.count = 1
+                    t.expires = endCast
+                    t.applied = startCast
+                    t.duration = endCast - startCast
+                    t.v1 = spellID
+                    t.v2 = notInterruptible
+                    t.caster = unit
+
+                    if unit == "player" then
+                        local castInfo = class.abilities[ spellID ]
+                        local key = castInfo and castInfo.key or formatKey( spell )
+                        channelSpell( key, startCast, endCast - startCast )
+                    end
+
                     return
                 end
             end
 
-            aura.name = "Casting"
-            aura.count = 0
-            aura.expires = 0
-            aura.applied = 0
-            aura.v1 = 0
-            aura.caster = 'target'
+            t.name = "Casting"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.v1 = 0
+            t.v2 = false
+            t.caster = unit
         end,
-        strictTiming = true,
     },
 
-    player_casting = {
+    --[[ player_casting = {
         name = "Casting",
         generate = function ()
             local aura = buff.player_casting
@@ -1021,7 +1042,7 @@ all:RegisterAuras( {
             aura.caster = 'target'
         end,
         strictTiming = true,
-    },
+    }, ]]
 
     movement = {
         duration = 5,
