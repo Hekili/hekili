@@ -1519,7 +1519,7 @@ local mt_state = {
         local aura_name = ability and ability.aura or t.this_action
         local aura = class.auras[ aura_name ]
         
-        local app = aura and ( t.buff[ aura_name ].up and t.buff[ aura_name ] or t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) or nil
+        local app = aura and ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) or nil
 
         -- This uses the default aura duration (if available) to keep pandemic windows accurate.
         local duration = aura and aura.duration or 15
@@ -1533,8 +1533,10 @@ local mt_state = {
             if app then return app.remains < 0.3 * duration end
             return true
 
-        elseif k == 'time_to_refresh' then
-            if app then return max( 0, app.remains - ( 0.3 * duration ) ) end
+        elseif k == 'time_to_refresh' then            
+            if app then
+                return max( 0, app.remains - ( 0.3 * app.duration ) ) 
+            end
             return 0
             
         elseif k == 'ticking' then
@@ -2538,6 +2540,7 @@ ns.metatables.mt_resource = mt_resource
 
 
 local default_buff_values = {
+    name = "no_name",
     count = 0,
     lastCount = 0,
     lastApplied = 0,
@@ -2618,6 +2621,8 @@ local requiresLookup = {
 
 -- Table of default handlers for auras (buffs, debuffs).
 local mt_default_buff = {
+    mtID = "default_buff",
+
     __index = function( t, k )
         local aura = class.auras[ t.key ]
 
@@ -2677,7 +2682,13 @@ local mt_default_buff = {
             return t.applied > state.query_time or t.expires <= state.query_time
             
         elseif k == 'remains' then
-            return t.up and max( 0, t.expires - state.query_time - ( ( aura and aura.strictTiming and 0 ) or state.settings.buffPadding or 0 ) ) or 0
+            if t.up then
+                if aura and aura.strictTiming then
+                    return max( 0, t.expires - state.query_time )
+                end
+                return max( 0, t.expires - state.query_time - ( state.settings.buffPadding or 0 ) )
+            end
+            return 0
             
         elseif k == 'refreshable' then
             return t.remains < 0.3 * ( aura.duration or 30 )
@@ -3120,6 +3131,7 @@ local mt_alias_debuff = {
 
 
 local default_debuff_values = {
+    name = "no_name",
     count = 0,
     lastCount = 0,
     lastApplied = 0,
@@ -3137,6 +3149,8 @@ local default_debuff_values = {
 -- Table of default handlers for debuffs.
 -- Needs review.
 local mt_default_debuff = {
+    mtID = "default_debuff",
+
     __index = function( t, k )
         local class_aura = class.auras[ t.key ]
 
@@ -3155,7 +3169,7 @@ local mt_default_debuff = {
             local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
 
             if real then
-                t.name = real.name
+                t.name = real.name or t.key
                 t.count = real.count
                 t.lastCount = real.lastCount or 0
                 t.lastApplied = real.lastApplied or 0
@@ -3178,7 +3192,7 @@ local mt_default_debuff = {
             
             return t[ k ]
             
-        elseif k == 'up' or 'ticking' then
+        elseif k == 'up' or k == 'ticking' then
             return t.applied <= state.query_time and t.expires >= state.query_time
 
         elseif k == 'i_up' or k == 'rank' then
@@ -3188,8 +3202,12 @@ local mt_default_debuff = {
             return not t.up
             
         elseif k == 'remains' then
-            if t.up then                
-                return max( 0, t.expires - state.query_time - state.settings.debuffPadding ) end
+            if t.up then
+                if class_aura and class_aura.strictTiming then
+                    return max( 0, t.expires - state.query_time )
+                end
+                return max( 0, t.expires - state.query_time - ( state.settings.buffPadding or 0 ) )
+            end
             return 0
             
         elseif k == 'refreshable' then
@@ -3267,6 +3285,7 @@ local mt_debuffs = {
     -- The debuff/ doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
     __index = function( t, k )        
         local aura = class.auras[ k ]
+        print( "aura", k, "exists?", aura )
 
         if aura then       
             if k ~= aura.key then
@@ -3298,8 +3317,7 @@ local mt_debuffs = {
         
         end
         
-        local real = auras.player.debuff[ k ] or auras.target.debuff[ k ]
-        
+        local real = auras.player.debuff[ k ] or auras.target.debuff[ k ]        
         local debuff = t[k]
         
         if real then
@@ -3337,6 +3355,7 @@ local mt_debuffs = {
             debuff.unit = aura.unit or 'player'
         end
         
+        t[k] = debuff
         return t[ k ]
     end, 
     
