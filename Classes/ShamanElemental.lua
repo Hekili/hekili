@@ -336,6 +336,12 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
+        wind_gust = {
+            id = 263806,
+            duration = 30,
+            max_stack = 20
+        },
+
 
         -- Azerite Powers
         ancestral_resonance = {
@@ -608,6 +614,10 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     removeBuff( "tectonic_thunder" )
                 end
 
+                if pet.storm_elemental.up then
+                    addStack( "wind_gust", nil, 1 )
+                end
+                
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
         },
@@ -961,6 +971,11 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     gain( 3, "maelstrom" )
                     removeBuff( "surge_of_power" )
                 end
+
+                if pet.storm_elemental.up then
+                    addStack( "wind_gust", nil, 1 )
+                end
+                
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
         },
