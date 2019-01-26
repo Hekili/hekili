@@ -68,6 +68,24 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     -- Auras
     spec:RegisterAuras( {
+        active_blizzard = {
+            duration = function () return 8 * haste end,
+            max_stack = 1,
+            generate = function( t )
+                if query_time - action.blizzard.lastCast < 8 * haste then
+                    t.count = 1
+                    t.applied = action.blizzard.lastCast
+                    t.expires = t.applied + ( 8 * haste )
+                    t.caster = "player"
+                    return
+                end
+
+                t.count = 0
+                t.applied = 0
+                t.expires = 0
+                t.caster = "nobody"
+            end,
+        },
         arcane_intellect = {
             id = 1459,
             duration = 3600,
@@ -326,6 +344,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     return buff.frozen_orb.remains
                 end
             end, state )
+        } ),
+
+        blizzard = setmetatable( {}, {
+            __index = setfenv( function( t, k )
+                if k == "remains" then return buff.active_blizzard.remains end
+            end, state )
         } )
     } )
 
@@ -333,7 +357,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     spec:RegisterStateTable( "incanters_flow", {
         changed = 0,
         count = 0,
-        direction = "+",
+        direction = 0,
     } )
 
 
@@ -347,13 +371,17 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             if name and count ~= state.incanters_flow.count and state.combat > 0 then
                 if count == 1 then
-                    state.incanters_flow.direction = "+"
+                    if state.incanters_flow.direction == -1 then
+                        state.incanters_flow.direction = 0
+                    elseif state.incanters_flow.direction == 0 then
+                        state.incanters_flow.direction = 1
+                    end
                 elseif count == 5 then
-                    state.incanters_flow.direction = "-"
-                elseif count > state.incanters_flow.count then
-                    state.incanters_flow.direction = "+"
-                elseif count < state.incanters_flow.count then
-                    state.incanters_flow.direction = "-"
+                    if state.incanters_flow.direction == 1 then
+                        state.incanters_flow.direction = 0
+                    elseif state.incanters_flow.direction == 0 then
+                        state.incanters_flow.direction = -1
+                    end
                 end
 
                 state.incanters_flow.count = count
@@ -368,7 +396,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         last_target_virtual = "nobody",
         watching = true,
 
-        had_brain_freeze = false,
+        real_brain_freeze = false,
+        virtual_brain_freeze = false
     } )
 
     spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
@@ -377,14 +406,14 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 frost_info.last_target_actual = destGUID
             end
 
-            if spellID == 44614 and FindUnitBuffByID( "player", 205766 ) then
-                frost_info.had_brain_freeze = true
+            if spellID == 44614 then
+                frost_info.real_brain_freeze = FindUnitBuffByID( "player", 190446 ) ~= nil
             end
         end
     end )
 
     spec:RegisterStateExpr( "brain_freeze_active", function ()
-        return debuff.winters_chill.up or ( prev_gcd[1].flurry and frost_info.had_brain_freeze )
+        return frost_info.virtual_brain_freeze
     end )
 
 
@@ -395,6 +424,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         else removeBuff( "rune_of_power" ) end
     
         frost_info.last_target_virtual = frost_info.last_target_actual
+        frost_info.virtual_brain_freeze = frost_info.real_brain_freeze
     end )
 
 
@@ -459,6 +489,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             
             handler = function ()
                 applyDebuff( "target", "blizzard" )
+                applyBuff( "active_blizzard" )
             end,
         },
         
@@ -597,6 +628,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if buff.brain_freeze.up then
                     applyDebuff( "target", "winters_chill" )
                     removeBuff( "brain_freeze" )
+                    frost_info.virtual_brain_freeze = true
+                else
+                    frost_info.virtual_brain_freeze = false
                 end
 
                 applyDebuff( "target", "flurry" )
@@ -642,8 +676,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             
             handler = function ()
                 addStack( "icicles", nil, 1 )
+                
                 applyDebuff( "target", "chilled" )
                 if talent.bone_chilling.enabled then addStack( "bone_chilling", nil, 1 ) end
+                
                 removeBuff( "ice_floes" )
 
                 if azerite.tunnel_of_ice.enabled then
