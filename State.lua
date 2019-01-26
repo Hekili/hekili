@@ -783,9 +783,16 @@ end
 state.interrupt = interrupt
 
 
+-- Use this for readyTime in an interrupt action; will interrupt casts at end of cast and channels ASAP.
+local function timeToInterrupt()
+    if debuff.casting.down then return 3600 end
+    if debuff.casting.v3 then return 0 end
+    return debuff.casting.remains - 0.25
+end
+state.interrupt = timeToInterrupt
+
+
 -- Pet stuff.
-
-
 local function summonPet( name, duration, spec )
     
     state.pet[ name ] = rawget( state.pet, name ) or {}
@@ -3337,11 +3344,11 @@ local mt_debuffs = {
             debuff.unit = real.unit
             
         else
-            debuff.name = aura.name or "No Name"
+            debuff.name = aura and aura.name or "No Name"
             debuff.count = 0
             debuff.lastCount = 0
             debuff.lastApplied = 0
-            debuff.duration = aura.duration or 30
+            debuff.duration = aura and aura.duration or 30
             debuff.expires = 0
             debuff.applied = 0
             debuff.caster = 'nobody'
@@ -4572,7 +4579,7 @@ function state.reset( dispName )
 
                 state.setCooldown( "global_cooldown", max( cast_time, state.cooldown.global_cooldown.remains ) )
 
-                if ability then
+                if ability and dispName ~= "Interrupts" and dispName ~= "Defensives" then
                     if not ability.channeled then
                         state.advance( max( cast_time, state:QueuedCastRemains( casting, true ) ) )
                         --[[
@@ -4944,6 +4951,10 @@ do
 
         if ability.buff and not state.buff[ ability.buff ].up then
             return false, "required buff (" .. ability.buff .. ") not active"
+        end
+
+        if ability.debuff and not state.debuff[ ability.debuff ].up then
+            return false, "required debuff (" ..ability.debuff .. ") not active"
         end
 
         if self.args.moving == 1 and state.buff.movement.down then

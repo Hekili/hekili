@@ -967,6 +967,7 @@ all:RegisterAuras( {
                     t.duration = endCast - startCast
                     t.v1 = spellID
                     t.v2 = notInterruptible
+                    t.v3 = false
                     t.caster = unit
 
                     return
@@ -985,6 +986,7 @@ all:RegisterAuras( {
                     t.duration = endCast - startCast
                     t.v1 = spellID
                     t.v2 = notInterruptible
+                    t.v3 = true -- channeled.
                     t.caster = unit
 
                     if unit == "player" then
