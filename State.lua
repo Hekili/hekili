@@ -789,7 +789,7 @@ local function timeToInterrupt()
     if debuff.casting.v3 then return 0 end
     return debuff.casting.remains - 0.25
 end
-state.interrupt = timeToInterrupt
+state.timeToInterrupt = timeToInterrupt
 
 
 -- Pet stuff.
