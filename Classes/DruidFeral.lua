@@ -1329,7 +1329,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             toggle = "interrupts",
             
-            usable = function () return target.casting end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
 

@@ -668,7 +668,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 135856,
 
-            usable = function () return target.casting end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
             end,

@@ -943,6 +943,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             toggle = "interrupts",
 
             usable = function () return debuff.casting.up end,
+
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function () interrupt() end,
         },
 

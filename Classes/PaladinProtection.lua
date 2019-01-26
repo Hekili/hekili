@@ -535,6 +535,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             talent = "blinding_light",
             usable = function () return target.casting end,
+            readyTime = function () return debuff.casting.up and ( debuff.casting.remains - 0.5 ) or 3600 end,
             handler = function ()
                 interrupt()
                 applyDebuff( "target", "blinding_light" )
@@ -831,7 +832,9 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             toggle = "interrupts",
 
-            usable = function () return debuff.casting.up end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
             end,

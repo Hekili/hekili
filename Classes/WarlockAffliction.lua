@@ -876,7 +876,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
            
             handler = function ()
                 applyDebuff( "target", "drain_soul" )
-                applyBuff( "player_casting", 5 * haste )
+                applyBuff( "casting", 5 * haste )
                 channelSpell( "drain_soul" )
             end,
         },
@@ -1184,7 +1184,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             toggle = "interrupts",
             
-            usable = function () return target.casting end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
             end,

@@ -1431,7 +1431,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 252188,
             
-            usable = function () return target.casting end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 if buff.moonkin_form.down then unshift() end
                 interrupt()

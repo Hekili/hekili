@@ -439,7 +439,10 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1305153,
 
             toggle = "interrupts",
-            usable = function () return target.casting end,            
+
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 gain( buff.solitude.up and 33 or 30, "pain" )
                 interrupt()
@@ -765,6 +768,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             toggle = "interrupts",
 
             usable = function () return debuff.casting.remains > ( talent.quickened_sigils.enabled and 1 or 2 ) end,
+
             handler = function ()
                 interrupt() -- early, but oh well.
                 create_sigil( "silence" )

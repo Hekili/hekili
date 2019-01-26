@@ -547,6 +547,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             toggle = "interrupts",
             
             usable = function () return target.casting end,
+            readyTime = function () return debuff.casting.up and ( debuff.casting.remains - 0.5 ) or 3600 end,
             handler = function ()
                 interrupt()
                 applyDebuff( "target", "asphyxiate" )
@@ -984,7 +985,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 237527,
 
             toggle = "interrupts",
-            usable = function () return target.casting end,            
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
             end,
@@ -1115,7 +1118,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             startsCombat = true,
             texture = 136214,
-            
+
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
                 applyDebuff( "target", "strangulate" )

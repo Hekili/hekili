@@ -1085,7 +1085,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             toggle = "interrupts",
             interrupt = true,
 
-            usable = function () return target.casting end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
             end,

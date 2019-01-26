@@ -1101,7 +1101,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             toggle = "interrupts",
             interrupt = true,
 
-            usable = function () return target.casting end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
                 applyDebuff( "target", "silence" )

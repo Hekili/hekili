@@ -942,7 +942,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             toggle = "interrupts",
             
-            usable = function () return target.casting end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
             end,
@@ -961,7 +963,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 135771,
             
-            recheck = function () return buff.frozen_pulse.remains, buff.rime.remains, runes.time_to_4 - gcd, runes.time_to_5 - gcd, runic_power[ "time_to_" .. ( runic_power.max - 25 ) ], runic_power[ "time_to_" .. ( runic_power.max - ( 25 + talent.runic_attenuation.rank * 3 ) ) ] end,
             handler = function ()
                 removeStack( "inexorable_assault" )
                 applyDebuff( "target", "razorice", nil, debuff.razorice.stack + 1 )

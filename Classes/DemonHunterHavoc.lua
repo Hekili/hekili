@@ -596,7 +596,9 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             toggle = "interrupts",
 
-            usable = function () return target.casting end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
                 gain( buff.solitude.up and 33 or 30, "fury" )

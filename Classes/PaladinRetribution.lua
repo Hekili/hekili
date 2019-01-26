@@ -788,7 +788,9 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             startsCombat = true,
             texture = 523893,
             
-            usable = function () return debuff.casting.up end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
             handler = function ()
                 interrupt()
             end,
