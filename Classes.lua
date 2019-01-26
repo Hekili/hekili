@@ -21,7 +21,9 @@ local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDeb
 local GetResourceInfo, GetResourceID, GetResourceKey = ns.GetResourceInfo, ns.GetResourceID, ns.GetResourceKey
 local RegisterEvent = ns.RegisterEvent
 
+local formatKey = ns.formatKey
 local getSpecializationKey = ns.getSpecializationKey
+
 local tableCopy = ns.tableCopy
 
 local mt_resource = ns.metatables.mt_resource
