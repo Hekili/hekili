@@ -3358,7 +3358,7 @@ local mt_debuffs = {
             debuff.v2 = 0
             debuff.v3 = 0
             
-            debuff.unit = aura.unit or 'player'
+            debuff.unit = aura and aura.unit or 'player'
         end
         
         t[k] = debuff
