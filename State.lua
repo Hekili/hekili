@@ -614,27 +614,35 @@ local function applyBuff( aura, duration, stacks, value )
         return
     end
     
-    if not state.buff[ aura ] then return end
+    local b = state.buff[ aura ]
+    if not b then return end
     if not duration then duration = class.auras[ aura ].duration or 15 end
     
     if duration == 0 then
-        state.buff[ aura ].expires = 0
-        state.buff[ aura ].count = 0
-        state.buff[ aura ].v1 = 0
-        state.buff[ aura ].applied = 0
-        state.buff[ aura ].caster = 'unknown'
+        b.expires = 0
+
+        b.lastCount = b.count
+        b.lastApplied = b.applied
+
+        b.count = 0
+        b.v1 = 0
+        b.applied = 0
+        b.caster = 'unknown'
         
         state.active_dot[ aura ] = max( 0, state.active_dot[ aura ] - 1 )
         
     else
-        if not state.buff[ aura ].up then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+        if not b.up then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
         
-        state.buff[ aura ] = state.buff[ aura ] or {}
-        state.buff[ aura ].expires = state.query_time + ( duration or class.auras[ aura ].duration )
-        state.buff[ aura ].applied = state.query_time
-        state.buff[ aura ].count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
-        state.buff[ aura ].v1 = value or 0
-        state.buff[ aura ].caster = 'player'
+        b.lastCount = b.count
+        b.lastApplied = b.applied
+
+        -- state.buff[ aura ] = state.buff[ aura ] or {}
+        b.expires = state.query_time + duration
+        b.applied = state.query_time
+        b.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
+        b.v1 = value or 0
+        b.caster = 'player'
     end
     
     if aura == 'heroism' or aura == 'time_warp' or aura == 'ancient_hysteria' then
@@ -669,9 +677,11 @@ local function addStack( aura, duration, stacks, value )
     stacks = stacks or 1
 
     local max_stack = a and a.max_stack or 1
+
+    local b = state.buff[ aura ]
     
-    if state.buff[ aura ].remains > 0 then
-        applyBuff( aura, duration, min( max_stack, state.buff[ aura ].count + stacks ), value )
+    if b.remains > 0 then
+        applyBuff( aura, duration, min( max_stack, b.count + stacks ), value )
     else
         applyBuff( aura, duration, min( max_stack, stacks ), value )
     end
@@ -681,11 +691,13 @@ state.addStack = addStack
 
 
 local function removeStack( aura, stacks )
-    
     stacks = stacks or 1
+
+    local b = state.buff[ aura ]
     
-    if state.buff[ aura ].count > stacks then
-        state.buff[ aura ].count = max( 1, state.buff[ aura ].count - stacks )
+    if b.count > stacks then
+        b.lastCount = b.count
+        b.count = max( 1, b.count - stacks )
     else
         removeBuff( aura )
     end
@@ -716,25 +728,34 @@ local function applyDebuff( unit, aura, duration, stacks, value )
         return
     end
     
+    local d = state.debuff[ aura ]
     duration = duration or class.auras[ aura ].duration or 15
     
     if duration == 0 then
-        state.debuff[ aura ].expires = 0
-        state.debuff[ aura ].count = 0
-        state.debuff[ aura ].value = 0
-        state.debuff[ aura ].applied = 0
-        state.debuff[ aura ].unit = unit
+        d.expires = 0
+
+        d.lastCount = d.count
+        d.lastApplied = d.lastApplied
+
+        d.count = 0
+        d.value = 0
+        d.applied = 0
+        d.unit = unit
         
         state.active_dot[ aura ] = max( 0, state.active_dot[ aura ] - 1 )
     else
-        if state.debuff[ aura ].down then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+        if d.down then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
         
-        state.debuff[ aura ] = state.debuff[ aura ] or {}
-        state.debuff[ aura ].expires = state.query_time + duration
-        state.debuff[ aura ].count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
-        state.debuff[ aura ].value = value or 0
-        state.debuff[ aura ].applied = state.now
-        state.debuff[ aura ].unit = unit or 'target'
+        -- state.debuff[ aura ] = state.debuff[ aura ] or {}
+        d.expires = state.query_time + duration
+
+        d.lastCount = d.count or 0
+        d.lastApplied = d.applied or 0
+
+        d.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
+        d.value = value or 0
+        d.applied = state.now
+        d.unit = unit or 'target'
     end
     
 end
@@ -2518,6 +2539,8 @@ ns.metatables.mt_resource = mt_resource
 
 local default_buff_values = {
     count = 0,
+    lastCount = 0,
+    lastApplied = 0,
     expires = 0,
     applied = 0,
     duration = 15,
@@ -2576,6 +2599,23 @@ local mt_alias_buff = {
 }
 
 
+local requiresLookup = {
+    name = true,
+    count = true,
+    lastCount = true,
+    lastApplied = true,
+    expires = true,
+    applied = true,
+    caster = true,
+    id = true,
+    timeMod = true,
+    v1 = true,
+    v2 = true,
+    v3 = true,
+    unit = true
+}
+
+
 -- Table of default handlers for auras (buffs, debuffs).
 local mt_default_buff = {
     __index = function( t, k )
@@ -2584,7 +2624,7 @@ local mt_default_buff = {
         if aura and rawget( aura, "meta" ) and aura.meta[ k ] then
             return aura.meta[ k ]( t, "buff" )
 
-        elseif k == 'name' or k == 'count' or k == 'duration' or k == 'expires' or k == 'applied' or k == 'caster' or k == 'id' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then            
+        elseif requiresLookup[ k ] then
             if aura and aura.generate then
                 for attr, a_val in pairs( default_buff_values ) do
                     t[ attr ] = rawget( t, attr ) or a_val
@@ -2598,6 +2638,8 @@ local mt_default_buff = {
             if real then
                 t.name = real.name
                 t.count = real.count
+                t.lastCount = real.lastCount or 0
+                t.lastApplied = real.lastApplied or 0                
                 t.duration = real.duration
                 t.expires = real.expires
                 t.applied = max( 0, real.expires - real.duration )
@@ -2617,8 +2659,19 @@ local mt_default_buff = {
             
             return t[k]
             
-        elseif k == 'up' or k == 'ticking' or k == 'react' then
+        elseif k == 'up' or k == 'ticking' then
             return t.applied <= state.query_time and t.expires > state.query_time
+
+        elseif k == 'react' then
+            -- React returns stacks assuming you've had time to react to them.
+            if state.query_time > t.applied + state.latency then
+                if t.expires > state.query_time then
+                    return t.count
+                end
+                return 0
+            end
+
+            return state.query_time > t.lastApplied and t.lastCount or 0
 
         elseif k == 'down' then
             return t.applied > state.query_time or t.expires <= state.query_time
@@ -2735,6 +2788,8 @@ local mt_buffs = {
         if real then
             buff.name = real.name
             buff.count = real.count
+            buff.lastCount = real.lastCount or 0
+            buff.lastApplied = real.lastApplied or 0
             buff.duration = real.duration
             buff.expires = real.expires
             buff.applied = max( 0, real.expires - real.duration )
@@ -2750,6 +2805,8 @@ local mt_buffs = {
         else
             buff.name = aura.name or "No Name"
             buff.count = 0
+            buff.lastCount = 0
+            buff.lastApplied = 0
             buff.duration = aura.duration or 30
             buff.expires = 0
             buff.applied = 0
@@ -3084,7 +3141,7 @@ local mt_default_debuff = {
         if class_aura and rawget( class_aura, "meta" ) and class_aura.meta[ k ] then
             return class_aura.meta[ k ]( t, "debuff" )
 
-        elseif k == 'name' or k == 'count' or k == 'expires' or k == 'applied' or k == 'duration' or k == 'caster' or k == 'timeMod' or k == 'v1' or k == 'v2' or k == 'v3' or k == 'unit' then
+        elseif requiresLookup[ k ] then
             if class_aura and class_aura.generate then
                 for attr, a_val in pairs( default_debuff_values ) do
                     t[ attr ] = rawget( t, attr ) or a_val
@@ -3098,6 +3155,8 @@ local mt_default_debuff = {
             if real then
                 t.name = real.name
                 t.count = real.count
+                t.lastCount = real.lastCount or 0
+                t.lastApplied = real.lastApplied or 0
                 t.duration = real.duration
                 t.expires = real.expires
                 t.applied = max( 0, real.expires - real.duration )
@@ -3117,7 +3176,7 @@ local mt_default_debuff = {
             
             return t[ k ]
             
-        elseif k == 'up' then
+        elseif k == 'up' or 'ticking' then
             return t.applied <= state.query_time and t.expires >= state.query_time
 
         elseif k == 'i_up' or k == 'rank' then
@@ -3137,8 +3196,19 @@ local mt_default_debuff = {
         elseif k == 'time_to_refresh' then
             return t.up and ( max( 0, state.query_time - ( 0.3 * ( class_aura and class_aura.duration or t.duration or 30 ) ) ) ) or 0
         
-        elseif k == 'stack' or k == 'react' then
+        elseif k == 'stack' then
             if t.up then return ( t.count ) else return 0 end
+
+        elseif k == 'react' then
+            -- React returns stacks assuming you've had time to react to them.
+            if state.query_time > t.applied + state.latency then
+                if t.expires > state.query_time then
+                    return t.count
+                end
+                return 0
+            end
+
+            return state.query_time > t.lastApplied and t.lastCount or 0
 
         elseif k == 'max_stack' or k == 'max_stacks' then
             return class_aura and class_aura.max_stack or 1
@@ -3155,9 +3225,6 @@ local mt_default_debuff = {
             -- Persistent modifier, used by Druids.
             return ns.getModifier( class_aura.id, state.target.unit )
             
-        elseif k == 'ticking' then
-            return t.up
-
         elseif k == 'ticks' then
             if t.up then return floor( 1 + ( ( class_aura.duration or ( 30 * state.haste ) ) / ( class_aura.tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain ) end
             return 0
@@ -3229,11 +3296,43 @@ local mt_debuffs = {
         
         end
         
-        local real = auras.target.debuff[ k ] or auras.player.debuff[ k ]
-        local debuff = t[ k ]
+        local real = auras.player.debuff[ k ] or auras.target.debuff[ k ]
         
-        for key, value in pairs( real or default_debuff_values ) do
-            debuff[ key ] = value
+        local debuff = t[k]
+        
+        if real then
+            debuff.name = real.name
+            debuff.count = real.count
+            debuff.lastCount = real.lastCount or 0
+            debuff.lastApplied = real.lastApplied or 0
+            debuff.duration = real.duration
+            debuff.expires = real.expires
+            debuff.applied = max( 0, real.expires - real.duration )
+            debuff.caster = real.caster
+            debuff.id = real.id
+            debuff.timeMod = real.timeMod
+            debuff.v1 = real.v1
+            debuff.v2 = real.v2
+            debuff.v3 = real.v3
+            
+            debuff.unit = real.unit
+            
+        else
+            debuff.name = aura.name or "No Name"
+            debuff.count = 0
+            debuff.lastCount = 0
+            debuff.lastApplied = 0
+            debuff.duration = aura.duration or 30
+            debuff.expires = 0
+            debuff.applied = 0
+            debuff.caster = 'nobody'
+            debuff.id = nil
+            debuff.timeMod = 1
+            debuff.v1 = 0
+            debuff.v2 = 0
+            debuff.v3 = 0
+            
+            debuff.unit = aura.unit or 'player'
         end
         
         return t[ k ]
@@ -3531,6 +3630,13 @@ local function ScrapeUnitAuras( unit )
     
     for k,v in pairs( db.buff ) do
         v.name = nil
+        
+        -- Gonna help out "react."
+        if v.count ~= v.lastCount then
+            v.lastCount = v.count
+            v.lastApplied = v.applied
+        end
+
         v.count = 0
         v.expires = 0
         v.applied = 0
@@ -3545,6 +3651,13 @@ local function ScrapeUnitAuras( unit )
     
     for k,v in pairs( db.debuff ) do
         v.name = nil
+
+        -- Gonna help out "react."
+        if v.count ~= v.lastCount then
+            v.lastCount = v.count
+            v.lastApplied = v.applied
+        end
+
         v.count = 0
         v.expires = 0
         v.applied = 0
@@ -4132,6 +4245,7 @@ function state.reset( dispName )
     state.false_start = 0
 
     state.selectionTime = 60
+    state.selectedAction = nil
     
     local _, zone = GetInstanceInfo()
     
@@ -4212,6 +4326,8 @@ function state.reset( dispName )
         for attr in pairs( default_buff_values ) do
             v[ attr ] = nil
         end
+        v.lastCount = nil
+        v.lastApplied = nil
     end
     
     for k, v in pairs( state.cooldown ) do
@@ -4234,6 +4350,8 @@ function state.reset( dispName )
         for attr in pairs( default_debuff_values ) do
             v[ attr ] = nil            
         end
+        v.lastCount = nil
+        v.lastApplied = nil
     end
     
     state.pet.exists = nil

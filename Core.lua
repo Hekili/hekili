@@ -821,6 +821,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         rWait = state.delay
 
                                                         state.selectionTime = state.delay
+                                                        state.selectedAction = rAction
                                                     end
 
                                                 elseif entry.action == 'wait' then
@@ -926,6 +927,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     rWait = state.delay
 
                                                     state.selectionTime = state.delay
+                                                    state.selectedAction = rAction
 
                                                     if debug then
                                                         self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
@@ -1002,6 +1004,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     state.this_action = nil
 
     state.selectionTime = 60
+    state.selectedAction = nil
 
     if pack.lists.precombat then
         local list = pack.lists.precombat
