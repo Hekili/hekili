@@ -3285,7 +3285,6 @@ local mt_debuffs = {
     -- The debuff/ doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
     __index = function( t, k )        
         local aura = class.auras[ k ]
-        print( "aura", k, "exists?", aura )
 
         if aura then       
             if k ~= aura.key then
