@@ -3651,15 +3651,30 @@ local autoAuraKey = setmetatable( {}, {
 } )
 
 
+local lastTarget
+
 local function ScrapeUnitAuras( unit )
-    
     local db = ns.auras[ unit ]
+    
+    local newTarget = false
+
+    if unit == "target" then        
+        local guid = UnitGUID( "target" )
+        
+        if guid ~= lastTarget then
+            newTarget = true
+            lastTarget = guid
+        end
+    end
     
     for k,v in pairs( db.buff ) do
         v.name = nil
         
         -- Gonna help out "react."
-        if v.count ~= v.lastCount then
+        if newTarget then
+            v.lastCount = 0
+            v.lastApplied = 0
+        elseif v.count ~= v.lastCount then
             v.lastCount = v.count
             v.lastApplied = v.applied
         end
@@ -3680,7 +3695,10 @@ local function ScrapeUnitAuras( unit )
         v.name = nil
 
         -- Gonna help out "react."
-        if v.count ~= v.lastCount then
+        if newTarget then
+            v.lastCount = 0
+            v.lastApplied = 0
+        elseif v.count ~= v.lastCount then
             v.lastCount = v.count
             v.lastApplied = v.applied
         end
@@ -3776,6 +3794,7 @@ local function ScrapeUnitAuras( unit )
 end
 Hekili.ScrapeUnitAuras = ScrapeUnitAuras
 ns.cpuProfile.ScrapeUnitAuras = ScrapeUnitAuras
+
 
 Hekili.AuraDB = ns.auras
 
