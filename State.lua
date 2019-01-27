@@ -785,7 +785,7 @@ state.interrupt = interrupt
 
 -- Use this for readyTime in an interrupt action; will interrupt casts at end of cast and channels ASAP.
 local function timeToInterrupt()
-    if debuff.casting.down then return 3600 end
+    if debuff.casting.down or debuff.casting.v2 then return 3600 end
     if debuff.casting.v3 then return 0 end
     return debuff.casting.remains - 0.25
 end
