@@ -4630,15 +4630,17 @@ function state.reset( dispName )
     end    
 
     -- Delay to end of GCD.
-    local delay = 0    
-    if state.settings.spec and state.settings.spec.gcdSync and ( state.display == "Primary" or state.display == "AOE" ) then
-        delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
-    end
-    delay = ns.callHook( "reset_postcast", delay )
-    
-    if delay > 0 then
-        if Hekili.ActiveDebug then Hekili:Debug( "Advancing by %.2f per GCD or cast or channel or reset_postcast value.", delay ) end
-        state.advance( delay )
+    if dispName == "Primary" or dispName == "AOE" then
+        local delay = 0    
+        if state.settings.spec and state.settings.spec.gcdSync then
+            delay = state.cooldown.global_cooldown and state.cooldown.global_cooldown.remains or 0
+        end
+        delay = ns.callHook( "reset_postcast", delay )
+        
+        if delay > 0 then
+            if Hekili.ActiveDebug then Hekili:Debug( "Advancing by %.2f per GCD or cast or channel or reset_postcast value.", delay ) end
+            state.advance( delay )
+        end
     end
 end
 
