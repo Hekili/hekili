@@ -3657,34 +3657,13 @@ local autoAuraKey = setmetatable( {}, {
 } )
 
 
-local lastTarget
-
-local function ScrapeUnitAuras( unit )
+local function ScrapeUnitAuras( unit, newTarget )
     local db = ns.auras[ unit ]
-    
-    local newTarget = false
-
-    if unit == "target" then        
-        local guid = UnitGUID( "target" )
-        
-        if guid ~= lastTarget then
-            newTarget = true
-            lastTarget = guid
-        end
-    end
     
     for k,v in pairs( db.buff ) do
         v.name = nil
-        
-        -- Gonna help out "react."
-        if newTarget then
-            v.lastCount = 0
-            v.lastApplied = 0
-        elseif v.count ~= v.lastCount then
-            v.lastCount = v.count
-            v.lastApplied = v.applied
-        end
-
+        v.lastCount = newTarget and 0 or v.count
+        v.lastApplied = newTarget and 0 or v.applied
         v.count = 0
         v.expires = 0
         v.applied = 0
@@ -3699,16 +3678,8 @@ local function ScrapeUnitAuras( unit )
     
     for k,v in pairs( db.debuff ) do
         v.name = nil
-
-        -- Gonna help out "react."
-        if newTarget then
-            v.lastCount = 0
-            v.lastApplied = 0
-        elseif v.count ~= v.lastCount then
-            v.lastCount = v.count
-            v.lastApplied = v.applied
-        end
-
+        v.lastCount = newTarget and 0 or v.count
+        v.lastApplied = newTarget and 0 or v.applied
         v.count = 0
         v.expires = 0
         v.applied = 0

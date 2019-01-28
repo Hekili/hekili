@@ -1053,7 +1053,7 @@ do
         local throttle = spec.throttleUpdates and ( 1 / spec.maxRefresh ) or 0
         local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh )
 
-        if ( self.criticalUpdate and now - self.lastUpdate > throttle ) or self.refreshTimer < 0 then
+        if not Hekili.UpdatedThisFrame and ( self.criticalUpdate and now - self.lastUpdate > throttle ) or self.refreshTimer < 0 then
             Hekili:ProcessHooks( self.id )
             self.criticalUpdate = false
             self.lastUpdate = now

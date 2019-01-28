@@ -63,6 +63,7 @@ function ns.StartEventHandler()
     end )
 
     events:SetScript( "OnUpdate", function( self, elapsed )
+        Hekili.UpdatedThisFrame = false
         timerRecount = timerRecount - elapsed
 
         if timerRecount < 0 then
@@ -711,8 +712,8 @@ RegisterUnitEvent( "UNIT_AURA", function( event, unit )
 end )
 
 
-RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
-    Hekili.ScrapeUnitAuras( "target" )
+RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
+    Hekili.ScrapeUnitAuras( "target", true )
     state.target.updated = false
 
     Hekili.UpdateTTD( "target" )
