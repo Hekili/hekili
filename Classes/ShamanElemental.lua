@@ -305,9 +305,10 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     local _, name, cast, duration = GetTotemInfo(i)
 
                     if name == class.abilities.totem_mastery.name then
-                        expires = cast + duration
-                        remains = expires - now
-                        break
+                        if cast + duration > expires then
+                            expires = cast + duration
+                            remains = expires - now
+                        end
                     end
                 end
 
@@ -431,6 +432,24 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             return false
         end 
     } ) )
+
+
+    local hadTotem = false
+    local hadTotemAura = false
+
+    spec:RegisterHook( "reset_precast", function ()
+        for i = 1, 5 do
+            local hasTotem, name = GetTotemInfo( i )
+
+            if name == class.abilities.totem_mastery.name and hasTotem ~= up then
+                ScrapeUnitAuras( "player" )
+                return
+            end
+        end
+
+        local hasTotemAura = FindUnitBuffByID( "player", 210652 ) ~= nil
+        if hasTotemAura ~= hadTotemAura then ScrapeUnitAuras( "player" ) end
+    end )
 
 
     spec:RegisterGear( "the_deceivers_blood_pact", 137035 ) -- 20% chance; not modeled.
@@ -1076,7 +1095,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             startsCombat = false,
             texture = 511726,
             
-            usable = function () return buff.totem_mastery.remains < 15 end,
+            readyTime = function () return buff.totem_mastery.remains - 15 end,
+
             handler = function ()
                 applyBuff( 'resonance_totem', 120 )
                 applyBuff( 'storm_totem', 120 )

@@ -3799,6 +3799,7 @@ local function ScrapeUnitAuras( unit )
     
 end
 Hekili.ScrapeUnitAuras = ScrapeUnitAuras
+state.ScrapeUnitAuras = ScrapeUnitAuras
 ns.cpuProfile.ScrapeUnitAuras = ScrapeUnitAuras
 
 

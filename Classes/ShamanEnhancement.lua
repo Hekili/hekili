@@ -301,9 +301,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     local _, name, cast, duration = GetTotemInfo(i)
 
                     if name == class.abilities.totem_mastery.name then
-                        expires = cast + duration
-                        remains = expires - now
-                        break
+                        if cast + duration > expires then
+                            expires = cast + duration
+                            remains = expires - now
+                        end
                     end
                 end
 
@@ -312,7 +313,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 local tm = buff.totem_mastery
                 tm.name = class.abilities.totem_mastery.name
 
-                if expires > 0 and up then
+                if remains > 0 and up then
                     tm.count = 4
                     tm.expires = expires
                     tm.applied = expires - 120
@@ -402,6 +403,25 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             return 0
         end 
     } ) )
+
+
+    local hadTotem = false
+    local hadTotemAura = false
+
+    spec:RegisterHook( "reset_precast", function ()
+        for i = 1, 5 do
+            local hasTotem, name = GetTotemInfo( i )
+
+            if name == class.abilities.totem_mastery.name and hasTotem ~= up then
+                ScrapeUnitAuras( "player" )
+                return
+            end
+        end
+
+        local hasTotemAura = FindUnitBuffByID( "player", 262417 ) ~= nil
+        if hasTotemAura ~= hadTotemAura then ScrapeUnitAuras( "player" ) end
+    end )
+
 
     spec:RegisterGear( 'waycrest_legacy', 158362, 159631 )
     spec:RegisterGear( 'electric_mail', 161031, 161034, 161032, 161033, 161035 )
