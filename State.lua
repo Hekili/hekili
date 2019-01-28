@@ -1416,7 +1416,10 @@ local mt_state = {
             return state:InFlightRemains( t.this_action, true )
 
         elseif k == 'executing' then
-            return state:IsCasting( t.this_action, true ) or state.prev[1][ t.this_action ]
+            return state:IsCasting( t.this_action, true ) or ( state.prev[1][ t.this_action ] and state.gcd.remains > 0 )
+
+        elseif k == 'execute_remains' then
+            return ( state:IsCasting( t.this_action, true ) and max( state:QueuedCastRemains( t.this_action, true ), state.gcd.remains ) ) or ( state.prev[1][ t.this_action ] and state.gcd.remains ) or 0
         
         elseif type(k) == 'string' and k:sub(1, 16) == 'incoming_damage_' then
             local remains = k:sub(17)
@@ -3406,7 +3409,7 @@ local mt_default_action = {
             state.this_action = queued_action
 
             return max( value, t.cast_time )
-            
+
         elseif k == 'charges' then
             return class.abilities[ t.action ].charges and state.cooldown[ t.action ].charges or 0
             
@@ -3486,7 +3489,10 @@ local mt_default_action = {
             return state:InFlightRemains( t.action, true )
         
         elseif k == "executing" then
-            return state:IsCasting( t.action, true ) or state.prev[1][ t.action ]
+            return state:IsCasting( t.action, true ) or ( state.prev[1][ t.action ] and state.gcd.remains > 0 )
+            
+        elseif k == 'execute_remains' then
+            return ( state:IsCasting( t.action, true ) and max( state:QueuedCastRemains( t.action, true ), state.gcd.remains ) ) or ( state.prev[1][ t.action ] and state.gcd.remains ) or 0
             
         else
             local val = class.abilities[ t.action ][ k ]

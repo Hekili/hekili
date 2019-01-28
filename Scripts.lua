@@ -277,7 +277,7 @@ do
         { "!(dot%.[a-z0-9_]+)%.react",          "%1.remains" },
         { "!(d?e?buff%.[a-z0-9_]+)%.ticking",   "%1.remains" },
         { "!(dot%.[a-z0-9_]+)%.ticking",        "%1.remains" },
-        { "!ticking",                           "remains" },
+        { "!ticking",                           "remains" },        
         { "^refreshable",                       "time_to_refresh" },
         { "^(.-)%.deficit<=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
         { "^(.-)%.deficit>=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
@@ -293,6 +293,7 @@ do
                                                 "(%2-%1.charges_fractional)*%1.recharge" },
         { "^(action%.[a-z0-9_]+)%.charges>=?(.-)$",
                                                 "(1+%2-%1.charges_fractional)*%1.recharge" },
+        { "^!(action%.[a-z0-9]+)%.executing$", "%1.execute_remains" },
         { "^(.-time_to_die)<=?(.-)$",           "%1 - %2" },
         { "^(.-)%.time_to_(.-)<=?(.-)$",        "%1.time_to_%2-%3" },
         { "^debuff%.festering_wound%.stack[>=]=?(.-)$", -- UH DK helper during Unholy Frenzy.
@@ -313,6 +314,7 @@ do
     local decreases = {
         ["remains"] = true,
         ["ticks_remain"] = true,
+        ["execute_remains"] = true,
         -- ["time_to_%d+$"] = true,
         -- ["deficit$"] = true,
     }
