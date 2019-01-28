@@ -720,6 +720,11 @@ RegisterEvent( "PLAYER_TARGET_CHANGED", function ( event )
 end )
 
 
+RegisterEvent( "PLAYER_TOTEM_UPDATE", function( event )
+    Hekil:ForceUpdate( event )
+end )
+
+
 RegisterEvent( "PLAYER_STARTED_MOVING", function( event ) Hekili:ForceUpdate( event ) end )
 RegisterEvent( "PLAYER_STOPPED_MOVING", function( event ) Hekili:ForceUpdate( event ) end )
 
