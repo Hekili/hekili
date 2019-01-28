@@ -1180,8 +1180,7 @@ function Hekili:ProcessHooks( dispName, packName )
         end
 
         if not action then
-            state.delayMin = 0
-            state.delayMax = 10
+            state:SetConstraint( 0, 15 )
             
             if hadProj and debug then self:Debug( "\n[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.delayMin ) end
 

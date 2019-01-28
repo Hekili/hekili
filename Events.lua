@@ -721,7 +721,7 @@ end )
 
 
 RegisterEvent( "PLAYER_TOTEM_UPDATE", function( event )
-    Hekil:ForceUpdate( event )
+    Hekili:ForceUpdate( event )
 end )
 
 
