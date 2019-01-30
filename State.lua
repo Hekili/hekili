@@ -955,9 +955,9 @@ local function forecastResources( resource )
     table.wipe( events )
     table.wipe( remains )
 
-    local now = roundDown( state.now + state.offset, 2 )
+    local now = roundUp( state.now + state.offset, 2 )
 
-    local timeout = roundDown( FORECAST_DURATION * state.haste, 2 )
+    local timeout = roundUp( FORECAST_DURATION * state.haste, 2 )
     if state.class.file == "DEATHKNIGHT" and state.runes then
         timeout = max( timeout, 1 + state.runes.cooldown )
     end       
@@ -991,7 +991,7 @@ local function forecastResources( resource )
                 local r = state[ v.resource ]
 
                 local l = v.last()
-                local i = roundDown( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ), 2 )
+                local i = roundUp( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ), 2 )
 
                 v.next = l + i
                 v.name = k
@@ -1065,7 +1065,7 @@ local function forecastResources( resource )
                 r.fcount = idx
 
                 -- interval() takes the last tick and the current value to remember the next step.
-                local step = roundDown( type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, v ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) ), 2 )
+                local step = roundUp( type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, v ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) ), 2 )
 
                 remains[ e.resource ] = finish - e.next
                 e.next = e.next + step
