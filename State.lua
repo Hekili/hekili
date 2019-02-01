@@ -1348,7 +1348,7 @@ local mt_state = {
             return Hekili:GetGreatestTTD() - ( t.offset + t.delay )
         
         elseif k == "expected_combat_length" then
-            return Hekili:GetGreatestTTD() + t.time + t.offset + t.delay
+            return Hekili:GetGreatestTTD() + t.time -- + t.offset + t.delay
 
         elseif k == 'moving' then
             return ( GetUnitSpeed('player') > 0 )
