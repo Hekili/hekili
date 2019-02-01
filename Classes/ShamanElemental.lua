@@ -44,10 +44,9 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         earth_shield = 23163, -- 974
         static_charge = 23164, -- 265046
 
-        high_voltage = 19271, -- 260890
+        master_of_the_elements = 19271, -- 16166
         storm_elemental = 19272, -- 192249
         liquid_magma_totem = 19273, -- 192222
-        master_of_the_elements = 22139, -- 16166
 
         natures_guardian = 22144, -- 30884
         ancestral_guidance = 22172, -- 108281
