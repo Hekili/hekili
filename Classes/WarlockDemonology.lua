@@ -86,11 +86,17 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     local other_demon_v = {}
     
     local imps = {}
+    local guldan = {}
+    local guldan_v = {}
+
+    local shards_for_guldan = 0
+
 
     local last_summon = {}
 
 
     local FindUnitBuffByID = ns.FindUnitBuffByID
+
 
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
         local _, subtype, _, source, _, _, _, destGUID, _, _, _, spellID, spellName = CombatLogGetCurrentEventInfo()
@@ -107,14 +113,30 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
                 -- Wild Imp: 104317 and 279910, 20 seconds uptime.
                 elseif spellID == 104317 or spellID == 279910 then
-                    table.insert( wild_imps, now + 20 )
+                    table.insert( wild_imps, now + 22 )
                     
                     imps[ destGUID ] = {
                         t = now,
                         casts = 0,
-                        expires = math.ceil( now + 20 ),
-                        max = math.ceil( now + 20 )
+                        expires = math.ceil( now + 22 ),
+                        max = math.ceil( now + 22 )
                     }
+
+                    if guldan[ 1 ] then
+                        -- If this imp is impacting within 0.1s of the expected queued imp, remove that imp from the queue.
+                        if abs( now - guldan[ 1 ] ) < 0.1 then
+                            table.remove( guldan, 1 )
+                        end
+                    end
+
+                    -- Expire missed/lost Gul'dan predictions.
+                    while( guldan[ 1 ] ) do
+                        if guldan[ 1 ] < now then
+                            table.remove( guldan, 1 )
+                        else
+                            break
+                        end
+                    end
 
                 -- Demonic Tyrant: 265187, 15 seconds uptime.
                 elseif spellID == 265187 then table.insert( demonic_tyrant, now + 15 )
@@ -131,6 +153,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 -- 267996 - Darkhound
                 elseif spellID >= 267986 and spellID <= 267996 then table.insert( other_demon, now + 15 ) end
 
+            elseif subtype == "SPELL_CAST_START" and spellID == 105174 then
+                shards_for_guldan = UnitPower( "player", Enum.PowerType.SoulShards )
+
             elseif subtype == "SPELL_CAST_SUCCESS" then
                 if spellID == 196277 then
                     table.wipe( wild_imps )
@@ -140,6 +165,12 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     if wild_imps[1] then table.remove( wild_imps, 1 ) end
                     if wild_imps[1] then table.remove( wild_imps, 1 ) end
                 
+                elseif spellID == 105174 then
+                    -- Hand of Guldan; queue imps.
+                    if shards_for_guldan >= 1 then table.insert( guldan, now + 1.11 ) end
+                    if shards_for_guldan >= 2 then table.insert( guldan, now + 1.51 ) end
+                    if shards_for_guldan >= 3 then table.insert( guldan, now + 1.91 ) end
+
                 end
             
             end
@@ -199,6 +230,20 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         table.sort( wild_imps_v )
 
 
+        --[[ i = 1
+        while( guldan[i] ) do
+            if guldan[i] < now then
+                print( "reset removing imp" )
+                table.remove( guldan, i )
+            else
+                i = i + 1
+            end
+        end ]]
+
+        wipe( guldan_v )
+        for n, t in ipairs( guldan ) do guldan_v[ n ] = t end
+
+
         i = 1
         while( demonic_tyrant[ i ] ) do
             if demonic_tyrant[ i ] < now then
@@ -230,6 +275,20 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         if demonic_tyrant_v[ 1 ] and demonic_tyrant_v[ 1 ] > query_time then
             summonPet( "demonic_tyrant", demonic_tyrant_v[ 1 ] - query_time )
+        end
+    end )
+
+
+    spec:RegisterHook( "advance_end", function ()
+        for i = #guldan_v, 1, -1 do
+            local imp = guldan_v[i]
+
+            if imp <= query_time then
+                if ( imp + 22 ) > query_time then
+                    insert( wild_imps_v, imp + 22 )
+                end
+                remove( guldan_v, i )
+            end
         end
     end )
 
@@ -545,6 +604,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     local c = 0
                     for i, exp in ipairs( wild_imps_v ) do
                         if exp > query_time then c = c + 1 end
+                    end
+
+                    -- Count queued HoG imps.
+                    for i, spawn in ipairs( guldan_v ) do
+                        if spawn <= query_time and ( spawn + 22 ) >= query_time then c = c + 1 end
                     end
                     return c
                 end,
@@ -967,7 +1031,13 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 local extra_shards = min( 2, soul_shards.current )
                 spend( extra_shards, "soul_shards" )
-                summon_demon( "wild_imps", 25, 1 + extra_shards, 1.5 )
+
+                insert( guldan_v, query_time + 1.05 )
+                insert( guldan_v, query_time + 1.50 )
+                insert( guldan_v, query_time + 1.90 )
+                
+                -- Don't immediately summon; queue them up.
+                -- summon_demon( "wild_imps", 25, 1 + extra_shards, 1.5 )
             end,
         },
         
@@ -1052,14 +1122,21 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             talent = "power_siphon",
             
-            ready = function ()
-                if last_summon.name == "wild_imps" and buff.wild_imps.stack - last_summon.count < 2 then
-                    return last_summon.at + 1.5 - query_time
-                end
+            readyTime = function ()
+                if buff.wild_imps.stack >= 2 then return 0 end
+
+                local imp_deficit = 2 - buff.wild_imps.stack
                 
-                return true
+                for i, imp in ipairs( guldan_v ) do
+                    if imp > query_time then
+                        imp_deficit = imp_deficit - 1
+                        if imp_deficit == 0 then return imp - query_time end
+                    end
+                end
+
+                return 3600
             end,
-            usable = function () return buff.wild_imps.count > 0 end,
+
             handler = function ()
                 local num = min( 2, buff.wild_imps.count )
                 consume_demons( "wild_imps", num )

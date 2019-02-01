@@ -451,6 +451,8 @@ state.rawget = rawget
 state.rawset = rawset
 state.select = select
 state.table_insert = table.insert
+state.insert = table.insert
+state.remove = table.remove
 state.tonumber = tonumber
 state.tostring = tostring
 state.type = type
@@ -3855,7 +3857,11 @@ do
 
         for i = #realQueue, 1, -1 do
             if realQueue[i].time > self.now then
-                insert( virtualQueue, 1, realQueue[i] )
+                local e = {}
+                for k,v in pairs( realQueue[i] ) do
+                    e[k] = v
+                end
+                insert( virtualQueue, 1, e )
             else
                 remove( realQueue, i )
             end
