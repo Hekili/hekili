@@ -696,6 +696,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             local aScriptPass = self:CheckStack()
                                             local channelPass = not state.channeling or self:CheckChannel( entry.action, rWait )
 
+                                            if debug then self:Debug( "Current channeling? %s %s", tostring(state.channeling), tostring(self:CheckChannel( entry.action, rWait ) ) ) end
+
                                             if not aScriptPass then
                                                 if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
 
@@ -1226,18 +1228,21 @@ function Hekili:ProcessHooks( dispName, packName )
                 if state.delay > 0 then state.advance( state.delay ) end
 
                 local ability = class.abilities[ action ]
+                local cast = ability.cast
                 
                 if not state.spec.canCastWhileCasting then state.stopChanneling() end
 
-                if ability.cast == 0 or not state.spec.canCastWhileCasting then                   
+                if cast == 0 or ability.channeled or not state.spec.canCastWhileCasting then                   
                     -- Start the GCD.
                     if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
                         state.setCooldown( 'global_cooldown', state.gcd.execute )
                     end
 
+                    state.stopChanneling()
+
                     -- Advance the clock by cast_time.
-                    if ability.cast > 0 and not ability.channeled then
-                        state.advance( ability.cast )
+                    if cast > 0 and not ability.channeled then
+                        state.advance( cast )
                     end
 
                     local cooldown = ability.cooldown
@@ -1269,26 +1274,21 @@ function Hekili:ProcessHooks( dispName, packName )
                     end
 
                     -- Complete the channel.
-                    if ability.cast > 0 and ( ability.channeled and not ability.breakable ) then -- class.resetCastExclusions[ ability ] then
-                        state.advance( ability.cast )
-                    end
-                    
-                    -- Move the clock forward if the GCD hasn't expired.
-                    if state.cooldown.global_cooldown.remains > 0 then
-                        state.advance( state.cooldown.global_cooldown.remains )
-                    end
+                    if cast > 0 and ( ability.channeled and not ability.breakable ) then -- class.resetCastExclusions[ ability ] then
+                        state.advance( cast )
+                    end                    
                 else
                     -- We can cast while casting; queue it up.
-                    local cast = ability.cast
-
                     state.cycle = slot.indicator == 'cycle'
 
-                    if cast > 0 then
+                    if cast > 0 and not ability.channeled then
                         state:QueueEvent( action, "hardcast", true, nil, cast )
 
                     else
                         -- Instant cast, no need to delay.
                         local cooldown = ability.cooldown
+
+                        if not state.spec.canCastWhileCasting then state.stopChanneling() end
 
                         -- Start the GCD.
                         if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
@@ -1315,6 +1315,11 @@ function Hekili:ProcessHooks( dispName, packName )
 
                         if ability.cast > 0 and ( ability.channeled and not ability.breakable ) then
                             state.advance( cast )
+                        end
+
+                        -- Move the clock forward if the GCD hasn't expired.
+                        if state.cooldown.global_cooldown.remains > 0 then
+                            state.advance( state.cooldown.global_cooldown.remains )
                         end
                     end
                 end

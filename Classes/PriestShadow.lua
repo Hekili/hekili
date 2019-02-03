@@ -724,6 +724,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             handler = function ()
                 applyDebuff( "target", "mind_flay" )
                 channelSpell( "mind_flay" )
+
                 if level < 116 then
                     if equipped.the_twins_painful_touch and action.mind_flay.lastCast < max( action.dark_ascension.lastCast, action.void_eruption.lastCast ) then
                         if debuff.shadow_word_pain.up and active_dot.shadow_word_pain < min( 4, active_enemies ) then
@@ -738,6 +739,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                         addStack( "empty_mind", nil, 3 )
                     end
                 end
+                
                 forecastResources( "insanity" )
             end,
         },
@@ -766,9 +768,10 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             
             handler = function ()
                 applyDebuff( "target", "mind_sear" )
+                channelSpell( "mind_sear" )
+
                 removeBuff( "thought_harvester" )
                 if azerite.searing_dialogue.enabled then applyDebuff( "target", "searing_dialogue" ) end
-                channelSpell( "mind_sear" )
                 forecastResources( "insanity" )
             end,
         },
