@@ -696,8 +696,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             local aScriptPass = self:CheckStack()
                                             local channelPass = not state.channeling or self:CheckChannel( entry.action, rWait )
 
-                                            if debug then self:Debug( "Current channeling? %s %s", tostring(state.channeling), tostring(self:CheckChannel( entry.action, rWait ) ) ) end
-
                                             if not aScriptPass then
                                                 if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
 
@@ -1276,7 +1274,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     -- Complete the channel.
                     if cast > 0 and ( ability.channeled and not ability.breakable ) then -- class.resetCastExclusions[ ability ] then
                         state.advance( cast )
-                    end                    
+                    end
                 else
                     -- We can cast while casting; queue it up.
                     state.cycle = slot.indicator == 'cycle'
