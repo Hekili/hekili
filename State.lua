@@ -863,7 +863,7 @@ function state.channelSpell( name, start, duration )
             state.player.channelEnd   = state.player.channelStart + ( duration or ability.cast )
         end
 
-        applyBuff( "casting", duration, nil, ability.id )
+        applyBuff( "casting", duration, nil, ability and ability.id or 0 )
         -- state.buff.casting.v3 = true
     end
 end
