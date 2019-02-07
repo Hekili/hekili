@@ -786,7 +786,8 @@ local newModifiers = {
     interrupt_global = true,
     interrupt_if = true,
     chain = true,
-    early_chain_if = true
+    early_chain_if = true,
+    line_cd = true
 }
 
 
@@ -794,6 +795,7 @@ local valueModifiers = {
     sec = true,
     value = true,
     value_else = true,
+    line_cd = true
 }
 
 

@@ -27,8 +27,11 @@ local RC = LibStub( "LibRangeCheck-2.0" )
 
 local class = Hekili.Class
 local scripts = Hekili.Scripts
+
+
 -- This will be our environment table for local functions.
 local state = Hekili.State
+
 
 state.iteration = 0
 
@@ -5063,6 +5066,11 @@ function state:TimeToReady( action, pool )
 
     if ability.gcd ~= 'off' then
         wait = max( wait, self.cooldown.global_cooldown.remains )
+    end
+
+    if ( state.args.line_cd and type( state.args.line_cd ) == 'number' ) and ability.lastCast > self.combat then
+        if Hekili.Debug then Hekili:Debug( "Line CD is " .. state.args.line_cd .. ", last cast was " .. ability.lastCast .. ", remaining CD: " .. max( 0, ability.lastCast + self.args.line_cd - self.query_time ) ) end
+        wait = max( wait, ability.lastCast + self.args.line_cd - self.query_time )
     end
     
     wait = ns.callHook( "TimeToReady", wait, action )
