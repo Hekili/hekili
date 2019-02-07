@@ -3600,6 +3600,10 @@ do
             data.moving = nil
         end
 
+        if option == "line_cd" and not val then
+            data.line_cd = nil
+        end
+
         self:LoadScripts()
     end
 
@@ -4742,44 +4746,11 @@ do
                                                     end,
                                                 },
 
-                                                modCooldown = {
-                                                    type = "group",
-                                                    inline = true,
-                                                    name = "",
-                                                    order = 22,
-                                                    args = {
-                                                        enable_line_cd = {
-                                                            type = "toggle",
-                                                            name = "Line Cooldown",
-                                                            desc = "If enabled, this entry cannot be recommended unless the specified amount of time has passed since its last use.",
-                                                            order = 1,
-                                                        },
-
-                                                        line_cd = {
-                                                            type = "input",
-                                                            name = "Entry Cooldown",
-                                                            desc = "If set, this entry cannot be recommended unless this time has passed since the last time the ability was used.",
-                                                            order = 2,
-                                                            width = "double", 
-                                                            disabled = function( info )
-                                                                local e = GetListEntry( pack )
-                                                                return not e.enable_line_cd
-                                                            end,
-                                                        },
-                                                    },
-                                                    hidden = function ()
-                                                        local e = GetListEntry( pack )
-                                                        local ability = e.action and class.abilities[ e.action ]
-
-                                                        return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
-                                                    end,
-                                                },
-
                                                 modMoving = {
                                                     type = "group",
                                                     inline = true,
                                                     name = "",
-                                                    order = 23,
+                                                    order = 22,
                                                     args = {
                                                         enable_moving = {
                                                             type = "toggle",
@@ -4803,6 +4774,39 @@ do
                                                                 return not e.enable_moving
                                                             end,
                                                         }
+                                                    },
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        local ability = e.action and class.abilities[ e.action ]
+
+                                                        return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
+                                                    end,
+                                                },
+
+                                                modCooldown = {
+                                                    type = "group",
+                                                    inline = true,
+                                                    name = "",
+                                                    order = 23,
+                                                    args = {
+                                                        --[[ enable_line_cd = {
+                                                            type = "toggle",
+                                                            name = "Line Cooldown",
+                                                            desc = "If enabled, this entry cannot be recommended unless the specified amount of time has passed since its last use.",
+                                                            order = 1,
+                                                        }, ]]
+
+                                                        line_cd = {
+                                                            type = "input",
+                                                            name = "Entry Cooldown",
+                                                            desc = "If set, this entry cannot be recommended unless this time has passed since the last time the ability was used.",
+                                                            order = 1,
+                                                            width = "full", 
+                                                            --[[ disabled = function( info )
+                                                                local e = GetListEntry( pack )
+                                                                return not e.enable_line_cd
+                                                            end, ]]
+                                                        },
                                                     },
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
