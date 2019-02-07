@@ -171,6 +171,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     if shards_for_guldan >= 2 then table.insert( guldan, now + 1.51 ) end
                     if shards_for_guldan >= 3 then table.insert( guldan, now + 1.91 ) end
 
+                elseif spellID == 265187 and state.talent.demonic_consumption.enabled then
+                    table.wipe( wild_imps )
+                    table.wipe( imps )
+
                 end
             
             end
