@@ -811,7 +811,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
     spec:RegisterOptions( {
         enabled = true,
 
-        aoe = 2,
+        aoe = 3,
     
         nameplates = false,
         nameplateRange = 8,
