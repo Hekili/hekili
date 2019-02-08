@@ -297,6 +297,15 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     end )
 
 
+    -- Provide a way to confirm if all Hand of Gul'dan imps have landed.
+    spec:RegisterStateExpr( "spawn_remains", function ()
+        if #guldan_v > 0 then
+            return max( 0, guldan_v[ #guldan_v ] - query_time )
+        end
+        return 0
+    end )
+
+
     spec:RegisterHook( "spend", function( amt, resource )
         if resource == "soul_shards" and buff.nether_portal.up then
             summon_demon( "other", 15, amt )
