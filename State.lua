@@ -856,17 +856,25 @@ state.setDistance = setDistance
 
 
 -- For tracking if we are currently channeling.
-function state.channelSpell( name, start, duration )
+function state.channelSpell( name, start, duration, id )
     if name then
         local ability = class.abilities[ name ]
 
+        start = start or state.query_time
+
         if ability then
-            state.player.channelSpell = name
-            state.player.channelStart = start or state.query_time
-            state.player.channelEnd   = state.player.channelStart + ( duration or ability.cast )
+            duration = duration or ability.cast
         end
 
-        applyBuff( "casting", duration, nil, ability and ability.id or 0 )
+        if not duration then return end
+
+        state.player.channelSpell = name
+        state.player.channelStart = start
+        state.player.channelEnd = start + duration
+
+        applyBuff( "casting", duration, nil, id or ( ability and ability.id ) or 0 )
+        state.buff.casting.applied = start
+        state.buff.casting.expires = start + duration
         -- state.buff.casting.v3 = true
     end
 end
@@ -4545,24 +4553,6 @@ function state.reset( dispName )
         
         casting = ability and ability.key or formatKey( state.buff.casting.name )
     end
-
-    --[[ state.stopChanneling( true )
-
-    local spellcast, _, _, startCast, endCast, _, _, spellID = UnitChannelInfo( 'player' )
-    if endCast ~= nil then
-        endCast = endCast / 1000
-        startCast = startCast / 1000
-
-        cast_time = endCast - state.now
-
-        state.applyBuff( "player_casting", cast_time )
-        state.buff.player_casting.applied = startCast
-        state.buff.player_casting.duration = endCast - startCast
-        state.buff.player_casting.expires = endCast
-
-        casting = spellID and class.abilities[ spellID ] and class.abilities[ spellID ].key or formatKey( spellcast )
-        state.channelSpell( casting, startCast, endCast - startCast )
-    end ]]
 
     ns.callHook( "reset_precast" )
 
