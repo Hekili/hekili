@@ -4355,6 +4355,8 @@ function state.reset( dispName )
     for k in pairs( state.stat ) do
         state.stat[ k ] = nil
     end
+
+    state.haste = nil
     
     if state.target.updated then
         ScrapeUnitAuras( 'target' )
