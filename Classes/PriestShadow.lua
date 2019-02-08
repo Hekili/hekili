@@ -795,25 +795,45 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         }, ]]
         
 
+        -- SimulationCraft module: Mindbender and Shadowfiend are interchangeable.
         mindbender = {
-            id = 200174,
+            id = function () return talent.mindbender.enabled and 200174 or 34433 end,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return talent.mindbender.enabled and 60 or 180 end,
             gcd = "spell",
             
             toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 136214,
+            texture = function () return talent.mindbender.enabled and 136214 or 136199 end,
 
-            talent = "mindbender",
+            -- talent = "mindbender",
             
             handler = function ()
-                summonPet( "mindbender", 15 )
-                applyBuff( "mindbender" )
+                summonPet( talent.mindbender.enabled and "mindbender" or "shadowfiend", 15 )
+                applyBuff( talent.mindbender.enabled and "mindbender" or "shadowfiend" )
             end,
+
+            copy = { "shadowfiend", 200174, 34433 }
         },
-        
+
+        --[[ shadowfiend = {
+            id = 34433,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+            notalent = "mindbender",
+
+            startsCombat = true,
+            texture = 136199,
+            
+            handler = function ()
+                summonPet( "shadowfiend", 15 )
+                applyBuff( "shadowfiend" )
+            end,
+        }, ]]                
 
         power_word_fortitude = {
             id = 21562,
@@ -1055,7 +1075,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         }, ]]
         
 
-        shadowfiend = {
+        --[[ shadowfiend = {
             id = 34433,
             cast = 0,
             cooldown = 180,
@@ -1071,7 +1091,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 summonPet( "shadowfiend", 15 )
                 applyBuff( "shadowfiend" )
             end,
-        },
+        }, ]]
         
 
         shadowform = {
