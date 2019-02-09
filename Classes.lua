@@ -1847,6 +1847,25 @@ all:RegisterAuras( {
 -- ON USE
 
 
+-- Sea Giant's Tidestone
+all:RegisterAbility( "sea_giants_tidestone", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 165664,
+    toggle = "cooldowns",
+
+    handler = function () applyBuff( "ferocity_of_the_skrog" ) end
+} )
+
+all:RegisterAura( "ferocity_of_the_skrog", {
+    id = 285482,
+    duration = 12,
+    max_stack = 1
+} )
+
+
 -- Battle of Dazar'alor
 all:RegisterAbility( "invocation_of_yulon", {
     cast = 0,
