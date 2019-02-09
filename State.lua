@@ -1566,9 +1566,13 @@ local mt_state = {
             end
             return 0
             
-        elseif k == 'ticking' then
+        elseif k == 'ticking' or k == "up" then
             if app then return app.up end
             return false
+
+        elseif k == "down" then
+            if app then return app.down end
+            return true
             
         elseif k == 'ticks' then
             if app then return 1 + floor( duration / tick_time ) - t.ticks_remain end
@@ -1589,9 +1593,6 @@ local mt_state = {
         elseif k == 'tick_time' then
             if app then return tick_time end
             return 0
-
-        elseif k == 'duration' then
-            return duration
 
         end
 
@@ -2692,7 +2693,8 @@ local mt_default_buff = {
             return t[k]
             
         elseif k == 'up' or k == 'ticking' then
-            return t.applied <= state.query_time and t.expires > state.query_time
+            return t.remains > 0
+            
 
         elseif k == 'react' then
             -- React returns stacks assuming you've had time to react to them.
@@ -2706,16 +2708,13 @@ local mt_default_buff = {
             return state.query_time > t.lastApplied and t.lastCount or 0
 
         elseif k == 'down' then
-            return t.applied > state.query_time or t.expires <= state.query_time
+            return t.remains == 0
             
         elseif k == 'remains' then
-            if t.up then
-                if aura and aura.strictTiming then
-                    return max( 0, t.expires - state.query_time )
-                end
-                return max( 0, t.expires - state.query_time - ( state.settings.buffPadding or 0 ) )
+            if aura and aura.strictTiming then
+                return max( 0, t.expires - state.query_time )
             end
-            return 0
+            return max( 0, t.expires - state.query_time - ( state.settings.buffPadding or 0 ) )
             
         elseif k == 'refreshable' then
             return t.remains < 0.3 * ( aura.duration or 30 )
@@ -3220,7 +3219,7 @@ local mt_default_debuff = {
             return t[ k ]
             
         elseif k == 'up' or k == 'ticking' then
-            return t.applied <= state.query_time and t.expires > state.query_time
+            return t.remains > 0
 
         elseif k == 'i_up' or k == 'rank' then
             return t.up and 1 or 0
@@ -3229,13 +3228,10 @@ local mt_default_debuff = {
             return not t.up
             
         elseif k == 'remains' then
-            if t.up then
-                if class_aura and class_aura.strictTiming then
-                    return max( 0, t.expires - state.query_time )
-                end
-                return max( 0, t.expires - state.query_time - ( state.settings.buffPadding or 0 ) )
+            if class_aura and class_aura.strictTiming then
+                return max( 0, t.expires - state.query_time )
             end
-            return 0
+            return max( 0, t.expires - state.query_time - ( state.settings.buffPadding or 0 ) )
             
         elseif k == 'refreshable' then
             return t.remains < 0.3 * ( class_aura and class_aura.duration or t.duration or 30 )
