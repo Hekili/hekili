@@ -1153,7 +1153,7 @@ do
         for i = 1, n do
             local x = select( i, ... )
             if type( x ) == "number" and x > state.delayMin and x < state.delayMax then
-                table.insert( t, 0.01 + x ) 
+                table.insert( t, roundUp( x, 2 ) )
             end
         end
     end
@@ -1222,7 +1222,7 @@ do
                 -- Put tick times into recheck.
                 local i = 1
                 while ( true ) do
-                    if remains - ( i * aura.tick_time ) > 0 then table.insert( times, 0.01 + remains - ( i * aura.tick_time ) )
+                    if remains - ( i * aura.tick_time ) > 0 then table.insert( times, roundUp( remains - ( i * aura.tick_time ), 2 ) )
                     else break end
                     i = i + 1
                 end
@@ -3220,7 +3220,7 @@ local mt_default_debuff = {
             return t[ k ]
             
         elseif k == 'up' or k == 'ticking' then
-            return t.applied <= state.query_time and t.expires >= state.query_time
+            return t.applied <= state.query_time and t.expires > state.query_time
 
         elseif k == 'i_up' or k == 'rank' then
             return t.up and 1 or 0
@@ -4283,7 +4283,7 @@ end
 
 function state.reset( dispName )
     
-    state.now = roundUp( GetTime(), 2 )
+    state.now = GetTime()
     state.offset = 0
     state.delay = 0
     state.cast_start = 0
