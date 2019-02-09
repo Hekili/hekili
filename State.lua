@@ -3231,7 +3231,7 @@ local mt_default_debuff = {
             if class_aura and class_aura.strictTiming then
                 return max( 0, t.expires - state.query_time )
             end
-            return max( 0, t.expires - state.query_time - ( state.settings.buffPadding or 0 ) )
+            return max( 0, t.expires - state.query_time - ( state.settings.debuffPadding or 0 ) )
             
         elseif k == 'refreshable' then
             return t.remains < 0.3 * ( class_aura and class_aura.duration or t.duration or 30 )
