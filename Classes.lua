@@ -1917,6 +1917,7 @@ all:RegisterAura( "incandescent_mastery", {
 } )
 
 
+
 all:RegisterAbility( "variable_intensity_gigavolt_oscillating_reactor", {
     cast = 0,
     cooldown = 90,
@@ -1925,14 +1926,23 @@ all:RegisterAbility( "variable_intensity_gigavolt_oscillating_reactor", {
     item = 165572,
     toggle = "cooldowns",
 
+    buff = "vigor_engaged",
+    readyTime = function () return max( 0, buff.vigor_engaged.applied + 12 - query_time ) end,
+
     handler = function() applyBuff( "oscillating_overload" ) end
 } )
 
 all:RegisterAura( "vigor_engaged", {
-    id = 287915,
+    id = 287916,
     duration = 3600,
     max_stack = 6
     -- May need to emulate the stacking portion.    
+} )
+
+all:RegisterAura( "vigor_cooldown", {
+    id = 287967,
+    duration = 6,
+    max_stack = 1
 } )
 
 all:RegisterAura( "oscillating_overload", {
