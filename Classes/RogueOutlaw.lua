@@ -385,6 +385,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 applyBuff( 'adrenaline_rush', 20 )
                 energy.regen = energy.regen * 1.6
+                forecastResources( 'energy' )
 
                 if talent.loaded_dice.enabled then
                     applyBuff( 'loaded_dice', 45 )
