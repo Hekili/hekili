@@ -24,6 +24,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
             end,
 
+            stop = function () return state.time == 0 or state.swings.mainhand == 0 end,
             interval = 'mainhand_speed',
             value = 5
         },
@@ -36,6 +37,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 return swing + ( floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed )
             end,
 
+            stop = function () return state.time == 0 or state.swings.offhand == 0 end,
             interval = 'offhand_speed',
             value = 5
         },

@@ -19,7 +19,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             -- setting = "forecast_fury",
 
             last = function ()
-                local swing = state.combat == 0 and state.now or state.swings.mainhand
+                local swing = state.swings.mainhand
                 local t = state.query_time
 
                 return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
@@ -27,8 +27,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             interval = "mainhand_speed",
 
-            stop = function () return state.time == 0 end,
-
+            stop = function () return state.time == 0 or state.swings.mainhand == 0 end,
             value = function ()
                 return ( state.talent.war_machine.enabled and 1.1 or 1 ) * ( base_rage_gen * fury_rage_mult * state.swings.mainhand_speed / state.haste )
             end
@@ -46,8 +45,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             interval = 'offhand_speed',
 
-            stop = function () return state.time == 0 end,
-            
+            stop = function () return state.time == 0 or state.swings.offhand == 0 end,
             value = function ()
                 return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.mainhand_speed * offhand_mod / state.haste
             end,
