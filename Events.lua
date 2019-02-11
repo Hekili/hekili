@@ -9,6 +9,7 @@ local state = Hekili.State
 local TTD = ns.TTD
 
 local formatKey = ns.formatKey
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local getSpecializationInfo = ns.getSpecializationInfo
 local getSpecializationKey = ns.getSpecializationKey
 local GroupMembers = ns.GroupMembers
@@ -862,7 +863,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
         local aura = class.auras and class.auras[ spellID ]
 
-        if aura then
+        if aura then            
             if hostile and sourceGUID ~= destGUID and not aura.friendly then
                 -- Aura Tracking
                 if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
