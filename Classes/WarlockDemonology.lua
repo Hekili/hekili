@@ -167,9 +167,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 
                 elseif spellID == 105174 then
                     -- Hand of Guldan; queue imps.
-                    if shards_for_guldan >= 1 then table.insert( guldan, now + 1.11 ) end
-                    if shards_for_guldan >= 2 then table.insert( guldan, now + 1.51 ) end
-                    if shards_for_guldan >= 3 then table.insert( guldan, now + 1.91 ) end
+                    if shards_for_guldan >= 3 then table.insert( guldan, 1, now + 1.91 ) end
+                    if shards_for_guldan >= 2 then table.insert( guldan, 1, now + 1.51 ) end
+                    if shards_for_guldan >= 1 then table.insert( guldan, 1, now + 1.11 ) end
 
                 elseif spellID == 265187 and state.talent.demonic_consumption.enabled then
                     table.wipe( wild_imps )
@@ -1045,9 +1045,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 local extra_shards = min( 2, soul_shards.current )
                 spend( extra_shards, "soul_shards" )
 
-                insert( guldan_v, query_time + 1.05 )
-                insert( guldan_v, query_time + 1.50 )
-                insert( guldan_v, query_time + 1.90 )
+                if extra_shards >= 3 then insert( guldan_v, 1, query_time + 1.90 ) end
+                if extra_shards >= 2 then insert( guldan_v, 1, query_time + 1.50 ) end
+                insert( guldan_v, 1, query_time + 1.05 )
                 
                 -- Don't immediately summon; queue them up.
                 -- summon_demon( "wild_imps", 25, 1 + extra_shards, 1.5 )
@@ -1248,6 +1248,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
             
             handler = function ()
+                summonPet( "demonic_tyrant", 15 )
                 summon_demon( "demonic_tyrant", 15 )
                 applyBuff( "demonic_power", 15 )
                 if talent.demonic_consumption.enabled then consume_demons( "wild_imps", "all" ) end
