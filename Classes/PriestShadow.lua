@@ -371,7 +371,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             max_stack = 99,
             meta = {
                 drop_time = function ()
-                    if buff.voidform.down then return query_time end
+                    if buff.voidform.applied == 0 then return 0 end
 
                     local app = buff.voidform.applied
                     app = app + floor( query_time - app )
@@ -393,7 +393,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 end,
 
                 remains = function ()                    
-                    return buff.voidform.drop_time - query_time
+                    return max( 0, buff.voidform.drop_time - query_time )
                 end,
             },
         },
