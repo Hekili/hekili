@@ -420,7 +420,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 147362,
             cast = 0,
             cooldown = 24,
-            gcd = "spell",
+            gcd = "off",
             
             startsCombat = true,
             texture = 249170,
