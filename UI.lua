@@ -717,8 +717,11 @@ do
                     if ( conf.flash.enabled and conf.flash.suppress ) then b:Hide()
                     else b:Show() end
 
-                    b.Texture:SetTexture( rec.texture or ability.texture or GetSpellTexture( ability.id ) )
-                    b.Texture:SetTexCoord( unpack( b.texCoords ) )
+                    if action ~= b.lastAction then
+                        b.Texture:SetTexture( rec.texture or ability.texture or GetSpellTexture( ability.id ) )
+                        b.Texture:SetTexCoord( unpack( b.texCoords ) )
+                        b.lastAction = action
+                    end
 
                     b.Texture:Show()
 
@@ -1114,7 +1117,11 @@ do
                     start, duration = gStart, gDuration
                 end
 
-                cd:SetCooldown( start, duration )
+                if cd.lastStart ~= start or cd.lastDuration ~= duration then
+                    cd:SetCooldown( start, duration )
+                    cd.lastStart = start
+                    cd.lastDuration = duration
+                end
             end
         end
     end
