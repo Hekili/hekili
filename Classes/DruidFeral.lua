@@ -1380,11 +1380,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             
             spend = 0.06,
             spendType = "mana",
+
+            toggle = "interrupts",
             
             startsCombat = false,
             texture = 132163,
             
+            usable = function () return debuff.dispellable_enrage.up end,
             handler = function ()
+                removeDebuff( "target", "dispellable_enrage" )
             end,
         },
         
