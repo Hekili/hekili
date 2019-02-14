@@ -370,6 +370,10 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             duration = 3600,
             max_stack = 99,
             meta = {
+                up = function ()
+                    return buff.voidform.applied > 0 and buff.voidform.drop_time > query_time
+                end,
+
                 drop_time = function ()
                     if buff.voidform.applied == 0 then return 0 end
 
@@ -389,7 +393,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 end,
 
                 stacks = function ()
-                    return buff.voidform.up and ( buff.voidform.count + floor( offset + delay ) ) or 0
+                    return buff.voidform.applied > 0 and ( buff.voidform.count + floor( offset + delay ) ) or 0
                 end,
 
                 remains = function ()                    
