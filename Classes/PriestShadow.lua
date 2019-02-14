@@ -193,8 +193,17 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         if Hekili.ActiveDebug then Hekili:Debug( "vf app:%.2f up:%s rem:%.2f\nsf up:%s rem:%.2f", buff.voidform.applied, tostring(buff.voidform.up), buff.voidform.remains, tostring(buff.shadowform.up), buff.shadowform.remains ) end
         if buff.voidform.up then applyBuff( "shadowform" ) end
 
-        if pet.mindbender.active then applyBuff( "mindbender", pet.mindbender.remains ) end
-        if pet.shadowfiend.active then applyBuff( "shadowfiend", pet.shadowfiend.remains ) end
+        if pet.mindbender.active then
+            applyBuff( "mindbender", pet.mindbender.remains )
+            buff.mindbender.applied = action.mindbender.lastCast
+            buff.mindbender.duration = 15
+            buff.mindbender.expires = action.mindbender.lastCast + 15
+        elseif pet.shadowfiend.active then
+            applyBuff( "shadowfiend", pet.shadowfiend.remains )
+            buff.shadowfiend.applied = action.shadowfiend.lastCast
+            buff.shadowfiend.duration = 15
+            buff.shadowfiend.expires = action.shadowfiend.lastCast + 15
+        end
 
         if action.void_bolt.in_flight then
             runHandler( "void_bolt" )
