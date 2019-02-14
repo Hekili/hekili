@@ -7,6 +7,9 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local FindUnitBuffByID = ns.FindUnitBuffByID
+
+
 local PTR = ns.PTR
 
 
@@ -187,6 +190,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
 
     spec:RegisterHook( "reset_precast", function ()
+        if Hekili.ActiveDebug then Hekili:Debug( "vf app:%.2f up:%s rem:%.2f\nsf up:%s rem:%.2f", buff.voidform.applied, tostring(buff.voidform.up), buff.voidform.remains, tostring(buff.shadowform.up), buff.shadowform.remains ) end
         if buff.voidform.up then applyBuff( "shadowform" ) end
 
         if pet.mindbender.active then applyBuff( "mindbender", pet.mindbender.remains ) end
@@ -369,6 +373,36 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             id = 194249,
             duration = 3600,
             max_stack = 99,
+            generate = function( t )
+                local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = FindUnitBuffByID( "player", 194249 )
+
+                if name then
+                    t.name = name
+                    t.count = max( 1, count )
+                    t.applied = max( action.void_eruption.lastCast, action.dark_ascension.lastCast, now )
+                    t.expires = t.applied + 3600
+                    t.duration = 3600
+                    t.caster = "player"
+                    t.timeMod = 1
+                    t.v1 = v1
+                    t.v2 = v2
+                    t.v3 = v3
+                    t.unit = "player"
+                    return
+                end
+
+                t.name = nil
+                t.count = 0
+                t.expires = 0
+                t.applied = 0
+                t.duration = 3600
+                t.caster = 'nobody'
+                t.timeMod = 1
+                t.v1 = 0
+                t.v2 = 0
+                t.v3 = 0
+                t.unit = unit                
+            end,
             meta = {
                 up = function ()
                     return buff.voidform.applied > 0 and buff.voidform.drop_time > query_time
