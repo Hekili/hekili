@@ -2693,8 +2693,7 @@ local mt_default_buff = {
             return t[k]
             
         elseif k == 'up' or k == 'ticking' then
-            return t.remains > 0
-            
+            return t.remains > 0            
 
         elseif k == 'react' then
             -- React returns stacks assuming you've had time to react to them.

@@ -2445,10 +2445,7 @@ all:RegisterAura( "galecallers_boon", {
     duration = 10,
     max_stack = 1,
     meta = {
-        remains = function( t )
-            if t.up then return max( 1, action.galecallers_boon.lastCast + 10 - query_time ) end
-            return 0
-        end
+        remains = function( t ) return max( 0, action.galecallers_boon.lastCast + 10 - query_time ) end
     }
 } )
 
