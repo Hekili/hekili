@@ -492,7 +492,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             texture = 236250,
             
             handler = function ()
-                if buff.divine_purpose.up then removeBuff( 'divine_purpose' )
+                if buff.empyrean_power.up then removeBuff( 'empyrean_power' )
+                elseif buff.divine_purpose.up then removeBuff( 'divine_purpose' )
                 else
                     removeBuff( 'fires_of_justice' )
                     removeBuff( 'hidden_retribution_t21_4p' )
