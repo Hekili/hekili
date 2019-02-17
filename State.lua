@@ -5051,7 +5051,7 @@ function state:TimeToReady( action, pool )
     local wait = self.cooldown[ action ].remains
     local ability = class.abilities[ action ]
 
-    if ability.gcd ~= 'off' then
+    if ability.gcd ~= 'off' and not self.args.use_off_gcd then
         wait = max( wait, self.cooldown.global_cooldown.remains )
     end
 

@@ -787,7 +787,8 @@ local newModifiers = {
     interrupt_if = true,
     chain = true,
     early_chain_if = true,
-    line_cd = true
+    line_cd = true,
+    use_off_gcd = true
 }
 
 
