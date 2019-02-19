@@ -477,13 +477,13 @@ do
         end
 
         ttd.sec = projected
-
     end
     Hekili.UpdateTTD = UpdateTTD
 
 
     local seen  = {}
     local units = { 'target', 'focus', 'focustarget', 'mouseover', 'boss1', 'boss2', 'boss3', 'boss4', 'boss5' }
+
 
     local function PulseTTD()
 
@@ -492,34 +492,42 @@ do
         -- Check all nameplates first.
         for i = 1, 30 do
             local np = 'nameplate' .. i
-            if UnitExists( np ) and UnitCanAttack( 'player', np ) then
+            if UnitExists( np ) then
                 local guid = UnitGUID( np )
 
-                if guid and not seen[ guid ] then
-                    seen[ guid ] = true
-                    UpdateTTD( np )
+                if UnitCanAttack( 'player', np ) then
+                    if guid and not seen[ guid ] then
+                        seen[ guid ] = true
+                        UpdateTTD( np )
+                    end
+                else
+                    tinsert( recycleBin, TTD[ guid ] )
+                    TTD[ guid ] = nil
                 end
             end
         end
 
         -- Check common units.
         for _, unit in pairs( units ) do
-            if UnitExists( unit ) and UnitCanAttack( 'player', unit ) then
+            if UnitExists( unit ) then
                 local guid = UnitGUID( unit )
-
-                if guid and not seen[ guid ] then
-                    seen[ guid ] = true
-                    UpdateTTD( unit )
+                if UnitCanAttack( 'player', unit ) then
+                    if guid and not seen[ guid ] then
+                        seen[ guid ] = true
+                        UpdateTTD( unit )
+                    end
+                else
+                    tinsert( recycleBin, TTD[ guid ] )
+                    TTD[ guid ] = nil
                 end
             end
         end
-
     end
 
     Hekili.TTDTimer = C_Timer.NewTicker( 1, PulseTTD )
 
 
-    function Hekili:PurgeTTD()
+    function Hekili:PurgeTTD( unit )
         for guid, unit in pairs( TTD ) do
             tinsert( recycleBin, unit )
             TTD[ guid ] = nil
