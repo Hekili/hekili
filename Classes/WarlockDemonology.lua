@@ -89,8 +89,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     local guldan = {}
     local guldan_v = {}
 
-    local shards_for_guldan = 0
+    local dcon_imps = 0
+    local dcon_imps_v = 0
 
+    local shards_for_guldan = 0
 
     local last_summon = {}
 
@@ -172,6 +174,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     if shards_for_guldan >= 1 then table.insert( guldan, 1, now + 1.11 ) end
 
                 elseif spellID == 265187 and state.talent.demonic_consumption.enabled then
+                    dcon_imps = #guldan + #wild_imps + #imps
+                    print( "Wiping " .. dcon_imps .. " imps for dcon." )
+                    table.wipe( guldan ) -- wipe incoming imps, too.
                     table.wipe( wild_imps )
                     table.wipe( imps )
 
@@ -246,6 +251,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         wipe( guldan_v )
         for n, t in ipairs( guldan ) do guldan_v[ n ] = t end
+        
+        dcon_imps_v = dcon_imps
 
 
         i = 1
@@ -1081,7 +1088,16 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             startsCombat = true,
             velocity = 30,
-            
+
+            usable = function ()
+                if buff.wild_imps.stack > 0 then return true end
+                if prev_gcd[1].summon_demonic_tyrant then
+                    if dcon_imps_v > 2 and query_time - action.summon_demonic_tyrant.lastCast < 0.1 then return true end
+                    return false, format( "post-tyrant window is 0.1s with 3+ imps; you had %d imps and tyrant cast was %.2f seconds ago", dcon_imps_v, query_time - action.summon_demonic_tyrant.lastCast )
+                end 
+                return false, "no imps available"
+            end,
+
             handler = function ()
                 if azerite.explosive_potential.enabled and buff.wild_imps.stack >= 3 then applyBuff( "explosive_potential" ) end
                 consume_demons( "wild_imps", "all" )
@@ -1151,7 +1167,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             end,
 
             handler = function ()
-                local num = min( 2, buff.wild_imps.count )
+                local num = min( 2, buff.wild_imps.count ) 
                 consume_demons( "wild_imps", num )
 
                 addStack( "demonic_core", 20, num )
@@ -1251,7 +1267,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 summonPet( "demonic_tyrant", 15 )
                 summon_demon( "demonic_tyrant", 15 )
                 applyBuff( "demonic_power", 15 )
-                if talent.demonic_consumption.enabled then consume_demons( "wild_imps", "all" ) end
+                if talent.demonic_consumption.enabled then
+                    dcon_imps_v = buff.wild_imps.stack
+                    consume_demons( "wild_imps", "all" )
+                end
                 if azerite.baleful_invocation.enabled then gain( 5, "soul_shards" ) end
                 extend_demons()
             end,
