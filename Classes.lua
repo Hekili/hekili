@@ -361,6 +361,7 @@ local HekiliSpecMixin = {
         }, {
             __index = function( t, k )
                 if t.funcs[ k ] then return t.funcs[ k ]() end
+                if k == "lastCast" then return state.queuedHx[ t.key ] or t.realCast end
                 return
             end
         } )
@@ -477,7 +478,7 @@ local HekiliSpecMixin = {
             a.isProjectile = true
         end
 
-        a.lastCast = 0
+        a.realCast = 0
 
         if a.id and a.id > 0 then
             local spell = Spell:CreateFromSpellID( a.id )

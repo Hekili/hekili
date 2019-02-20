@@ -115,6 +115,7 @@ state.predictionsOff = {}
 state.predictionsOn = {}
 state.purge = {}
 state.pvptalent = {}
+state.queuedHx = {}
 state.race = {}
 state.script = {}
 state.set_bonus = {}
@@ -448,6 +449,7 @@ state.UnitLevel = UnitLevel
 state.abs = math.abs
 state.ceil = math.ceil
 state.floor = math.floor
+state.format = string.format
 state.ipairs = ipairs
 state.pairs = pairs
 state.rawget = rawget
@@ -969,8 +971,8 @@ local FORECAST_DURATION = 10.01
 local function forecastResources( resource )
     if not resource then return end
 
-    table.wipe( events )
-    table.wipe( remains )
+    wipe( events )
+    wipe( remains )
 
     local now = roundDown( state.now + state.offset, 2 )
 
@@ -984,8 +986,8 @@ local function forecastResources( resource )
     -- We account for haste here so that we don't compute lots of extraneous future resource gains in Bloodlust/high haste situations.
     remains[ resource ] = timeout
 
-    table.wipe( r.times )
-    table.wipe( r.values )
+    wipe( r.times )
+    wipe( r.values )
     r.forecast[1] = r.forecast[1] or {}
     r.forecast[1].t = now
     r.forecast[1].v = r.actual
@@ -4009,6 +4011,7 @@ do
     
         table.insert( state.predictions, 1, key )
         table.insert( state[ ability.gcd == 'off' and 'predictionsOff' or 'predictionsOn' ], 1, key )
+        state.queuedHx[ key ] = state.query_time
         
         state.predictions[6] = nil
         state.predictionsOn[6] = nil
@@ -4471,6 +4474,8 @@ function state.reset( dispName )
         state.predictionsOn[i] = nil
         state.predictionsOff[i] = nil
     end
+
+    wipe( state.queuedHx )
 
     local last_act = state.player.lastcast and class.abilities[ state.player.lastcast ]
     if last_act and last_act.startsCombat and state.combat == 0 and state.now - last_act.lastCast < 1 then

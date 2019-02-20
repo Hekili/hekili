@@ -547,51 +547,10 @@ function state:AddToHistory( spellID, destGUID )
         insert( history, 1, key )
         history[6] = nil
 
-        ability.lastCast = now
+        ability.realCast = now
         ability.lastUnit = destGUID
     end
 end
-
-
-local function spellcastEvents( subtype, sourceGUID, destGUID, spellName, spellID )
-    local now = GetTime()
-
-    state.player.lastcast = class.abilities[ spellID ] and class.abilities[ spellID ].key or dynamic_keys[ spellID ]
-    state.player.casttime = now
-
-    local ability = class.abilities[ spellID ]
-
-    if ability then
-        insert( castsAll, 1, ability.key )
-        castsAll[ 6 ] = nil
-
-        if ability.gcd ~= 'off' then
-            insert( castsOn, 1, ability.key )
-            castsOn[ 6 ] = nil
-
-            state.player.lastgcd = ability.key
-            state.player.lastgcdtime = now
-        else
-            insert( castsOff, 1, ability.key )
-            castsOff[ 6 ] = nil
-
-            state.player.lastoffgcd = ability.key
-            state.player.lastoffgcdtime = now
-        end
-
-        ability.lastCast = now
-        ability.lastUnit = destGUID
-    end
-
-    -- This is an ability with a travel time.
-    if ability and ability.isProjectile then
-        state:QueueEvent( ability.key, "projectile" )
-    end
-
-end
-ns.cpuProfile.spellcastEvents = spellcastEvents
-
-
 
 
 local lowLevelWarned = false
