@@ -1060,7 +1060,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         
 
         storm_earth_and_fire = {
-            id = 137639,
+            id = function () return buff.storm_earth_and_fire.up and 221771 or 137639 end,
             cast = 0,
             charges = 2,
             cooldown = 90,
@@ -1078,6 +1078,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 applyBuff( "storm_earth_and_fire" )
             end,
+
+            copy = { 137639, 221771 }
         },
         
 
