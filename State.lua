@@ -78,6 +78,12 @@ state.debuff = {}
 state.dot = {}
 state.equipped = {}
 state.gcd = {}
+
+state.history = {
+    casts = {},
+    units = {}
+}
+
 state.items = {}
 state.perk = {}
 state.pet = {
@@ -115,7 +121,6 @@ state.predictionsOff = {}
 state.predictionsOn = {}
 state.purge = {}
 state.pvptalent = {}
-state.queuedHx = {}
 state.race = {}
 state.script = {}
 state.set_bonus = {}
@@ -4011,7 +4016,7 @@ do
     
         table.insert( state.predictions, 1, key )
         table.insert( state[ ability.gcd == 'off' and 'predictionsOff' or 'predictionsOn' ], 1, key )
-        state.queuedHx[ key ] = state.query_time
+        state.history.casts[ key ] = state.query_time
         
         state.predictions[6] = nil
         state.predictionsOn[6] = nil
@@ -4475,7 +4480,8 @@ function state.reset( dispName )
         state.predictionsOff[i] = nil
     end
 
-    wipe( state.queuedHx )
+    wipe( state.history.casts )
+    wipe( state.history.units )
 
     local last_act = state.player.lastcast and class.abilities[ state.player.lastcast ]
     if last_act and last_act.startsCombat and state.combat == 0 and state.now - last_act.lastCast < 1 then
@@ -5060,8 +5066,9 @@ function state:TimeToReady( action, pool )
         wait = max( wait, self.cooldown.global_cooldown.remains )
     end
 
-    if ( state.args.line_cd and type( state.args.line_cd ) == 'number' ) and ability.lastCast > self.combat then
-        if Hekili.Debug then Hekili:Debug( "Line CD is " .. state.args.line_cd .. ", last cast was " .. ability.lastCast .. ", remaining CD: " .. max( 0, ability.lastCast + self.args.line_cd - self.query_time ) ) end
+    local line_cd = state.args.line_cd
+    if ( line_cd and type( line_cd ) == 'number' ) and ability.lastCast > self.combat then
+        if Hekili.Debug then Hekili:Debug( "Line CD is " .. line_cd .. ", last cast was " .. ability.lastCast .. ", remaining CD: " .. max( 0, ability.lastCast + line_cd - self.query_time ) ) end
         wait = max( wait, ability.lastCast + self.args.line_cd - self.query_time )
     end
     

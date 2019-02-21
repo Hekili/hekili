@@ -548,7 +548,7 @@ function state:AddToHistory( spellID, destGUID )
         history[6] = nil
 
         ability.realCast = now
-        ability.lastUnit = destGUID
+        ability.realUnit = destGUID
     end
 end
 

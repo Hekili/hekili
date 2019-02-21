@@ -1240,7 +1240,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                     -- Advance the clock by cast_time.
                     if cast > 0 and not ability.channeled then
-                        state.advance( cast )
+                        state.advance( cast )                        
                     end
 
                     local cooldown = ability.cooldown
@@ -1258,6 +1258,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     
                     -- Spend resources.
                     ns.spendResources( action )
+                    state.history.casts[ action ] = state.query_time
                     
                     -- Perform the action.
                     -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
@@ -1301,6 +1302,7 @@ function Hekili:ProcessHooks( dispName, packName )
                         end
 
                         ns.spendResources( action )
+                        state.history.casts[ action ] = state.query_time
 
                         if ability.isProjectile then
                             state:QueueEvent( action, "projectile", true )
