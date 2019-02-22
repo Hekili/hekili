@@ -1089,7 +1089,7 @@ local function forecastResources( resource )
                 r.fcount = idx
 
                 -- interval() takes the last tick and the current value to remember the next step.
-                local step = roundDown( type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, v ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) ), 2 )
+                local step = roundUp( type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, v ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) ), 2 )
 
                 remains[ e.resource ] = finish - e.next
                 e.next = e.next + step
