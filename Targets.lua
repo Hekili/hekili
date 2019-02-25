@@ -487,8 +487,9 @@ do
                 enemy.rate = difference / elapsed
                 enemy.n = 1
             else
-                local newRate = enemy.rate * enemy.n + ( difference / elapsed )
-                enemy.n = enemy.n + 1
+                local samples = min( enemy.n, 9 )
+                local newRate = enemy.rate * samples + ( difference / elapsed )
+                enemy.n = samples + 1
                 enemy.rate = newRate / enemy.n
             end
         end
@@ -579,7 +580,7 @@ do
             local guid = UnitGUID( unit )
 
             if guid then
-                if db[ guid ] and not UnitExists( unit ) or UnitThreatSituation( "player", unit ) or UnitIsDead( unit ) then
+                if db[ guid ] and not UnitExists( unit ) or not UnitThreatSituation( "player", unit ) or UnitIsDead( unit ) then
                     EliminateEnemy( guid )
                 else
                     local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
