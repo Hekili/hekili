@@ -17,22 +17,34 @@ local myTargets = {}
 local nameplates = {}
 local addMissingTargets = true
 
-local npCount = 0
-local lastNpCount = 0
+local fullCount = 0
+local lastFullCount = 0
 
 local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
 local FeignEvent = ns.FeignEvent
 local RegisterEvent = ns.RegisterEvent
 
-local tinsert, tremove = table.insert, table.remove
+local tinsert, tremove, twipe = table.insert, table.remove, table.wipe
 
 
-local unitIDs = { "boss1", "boss2", "boss3", "boss4", "boss5" }
+local unitIDs = { "target", "focus", "boss1", "boss2", "boss3", "boss4", "boss5" }
+local npGUIDs = {}
 
-for i = 1, 80 do
-    unitIDs[ #unitIDs + 1 ] = "nameplate" .. i
-end
+Hekili.npGUIDs = npGUIDs
+
+local f = CreateFrame( "Frame" )
+f:RegisterEvent( "NAME_PLATE_UNIT_ADDED" )
+f:RegisterEvent( "NAME_PLATE_UNIT_REMOVED" )
+
+f:SetScript( "OnEvent", function( self, event, unit )
+    if event == "NAME_PLATE_UNIT_ADDED" then
+        npGUIDs[ unit ] = UnitGUID( unit )
+    elseif event == "NAME_PLATE_UNIT_REMOVED" then
+        npGUIDs[ unit ] = nil
+    end
+end )
+
 
 local RC = LibStub( "LibRangeCheck-2.0" )
 
@@ -41,48 +53,61 @@ local RC = LibStub( "LibRangeCheck-2.0" )
 function ns.getNumberTargets()
     local showNPs = GetCVar( 'nameplateShowEnemies' ) == "1"
 
-    for k,v in pairs( nameplates ) do
-        nameplates[k] = nil
-    end
+    twipe( nameplates )
+    fullCount = 0
     Hekili.TargetDebug = nil
-
-    npCount = 0
 
     local spec = state.spec.id
     spec = spec and rawget( Hekili.DB.profile.specs, spec )
 
     if spec and spec.nameplates and showNPs then
-        for i, unit in ipairs( unitIDs ) do
-            if UnitExists( unit ) then
-                local guid = UnitGUID( unit )                
+        for unit, guid in pairs( npGUIDs ) do
+            if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                 local _, range = RC:GetRange( unit )
 
-                Hekili.TargetDebug = ( Hekili.TargetDebug or "" ) .. format( "%12s - %2d - %s\n", unit, range or 0, guid )
+                local rate, n = Hekili:GetTTD( unit )
+                Hekili.TargetDebug = ( Hekili.TargetDebug or "" ) .. format( "%12s - %2d - %s - %.2f - %d\n", unit, range or 0, guid, rate or 0, n or 0 )
 
-                if not nameplates[ guid ] and ( unit == "target" or ( range and range < spec.nameplateRange ) ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
-                    npCount = npCount + 1
+                if range and range <= spec.nameplateRange then
+                    fullCount = fullCount + 1
                 end
+            end
 
-                nameplates[ guid ] = range -- record as seen
+            nameplates[ guid ] = true
+
+            --[[ if not nameplates[ guid ] and ( unit == "target" or ( range and range < spec.nameplateRange ) ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                fullCount = fullCount + 1
+            end ]]
+        end
+    end
+
+    for i, unit in ipairs( unitIDs ) do
+        local guid = UnitGUID( unit )
+
+        if guid then
+            if not nameplates[ guid ] and ( range and range <= spec.nameplateRange ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                Hekili.TargetDebug = ( Hekili.TargetDebug or "" ) .. format( "%12s - %2d - %s\n", unit, range or 0, guid )
+                fullCount = fullCount + 1
+            end
+
+            nameplates[ guid ] = true
+        end
+    end
+
+    if not showNPs or not spec or ( spec.damage or not spec.nameplates ) then
+        local db = spec and ( spec.myTargetsOnly and myTargets or targets ) or targets
+
+        for guid, seen in pairs( db ) do
+            if not nameplates[ guid ] then
+                fullCount = fullCount + 1
+                nameplates[ guid ] = true
             end
         end
     end
 
-
-    -- check other units in the damage list, but only if we didn't rule them out as nameplates already.
-    if not spec or ( spec.damage or not spec.nameplates ) or not showNPs then
-        local db = spec and ( spec.myTargetsOnly and myTargets or targets ) or targets -- spec.myTargetsOnly isn't an actual thing; revisit.
-        
-        for k, v in pairs( db ) do
-            if not nameplates[ k ] then
-                nameplates[ k ] = true
-                npCount = npCount + 1
-            end
-        end
-    end
-
-    return npCount
+    return max( 1, fullCount )
 end
+
 
 function Hekili:GetNumTargets()
     return ns.getNumberTargets()
@@ -102,14 +127,14 @@ end
 
 
 function ns.recountTargets()
-    lastNpCount = npCount
-    npCount = ns.getNumberTargets()
+    lastFullCount = fullCount
+    fullCount = ns.getNumberTargets()
     forceRecount = false
 end
 
 
 function ns.targetsChanged()
-    return ( lastNpCount < 2 and npCount > 1 ) or ( npCount < 2 and lastNpCount > 1 )
+    return ( lastFullCount < 2 and fullCount > 1 ) or ( fullCount < 2 and lastFullCount > 1 )
 end
 
 
@@ -404,6 +429,8 @@ ns.Audit = function ()
         end
     end
 
+    Hekili:ExpireTTDs()
+
     if Hekili.DB.profile.enabled then
         C_Timer.After( 1, ns.Audit )
     end
@@ -411,285 +438,171 @@ end
 
 
 
-
-
 do
+    -- New TTD, hopefully more aggressive and accurate than old TTD.
+    Hekili.TTD = Hekili.TTD or {}
+    local db = Hekili.TTD
 
-    local recycleBin = {}    
-    local TTD = ns.TTD
+    local recycle = {}
 
 
-    -- Borrowed TTD linear regression model from 'Nemo' by soulwhip (with permission).
-    local function InitTTD( unit )
+    local function EliminateEnemy( guid )
+        local enemy = db[ guid ]
+        if not enemy then return end
 
-        if not unit then return end
-        local GUID = UnitGUID( unit )
-
-        TTD[ GUID ] = TTD[ GUID ] or tremove( recycleBin ) or {}
-        TTD[ GUID ].n = 1
-        TTD[ GUID ].timeSum = GetTime()
-        TTD[ GUID ].healthSum = UnitHealth( unit ) or 0
-        TTD[ GUID ].timeMean = TTD[ GUID ].timeSum * TTD[ GUID ].timeSum
-        TTD[ GUID ].healthMean = TTD[ GUID ].timeSum * TTD[ GUID ].healthSum
-        TTD[ GUID ].name = UnitName( unit )
-        TTD[ GUID ].sec = state.boss and 300 or 15
-
+        db[ guid ] = nil
+        twipe( enemy )
+        tinsert( recycle, enemy )
     end
 
 
-    local function UpdateTTD( unit )
-        local guid = UnitExists( unit ) and UnitGUID( unit )
-        if not guid then return end
+    local function UpdateEnemy( guid, healthPct, time )
+        local enemy = db[ guid ]
+        time = time or GetTime()
 
-        local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+        if not enemy then
+            -- This is the first time we've seen the enemy.
+            enemy = tremove( recycle, 1 ) or {}
+            db[ guid ] = enemy
 
-        local now = GetTime()
+            enemy.firstSeen = time
+            enemy.firstHealth = healthPct
+            enemy.lastSeen = time
+            enemy.lastHealth = healthPct
 
+            enemy.rate = 0
+            enemy.n = 0
 
-        if not TTD[ guid ] or health == healthMax or not TTD[ guid ].n then
-            InitTTD( unit )
-        end
-
-        local ttd = TTD[ guid ]
-
-        ttd.n = ttd.n + 1
-
-        ttd.timeSum = ttd.timeSum + now
-        ttd.timeMean = ttd.timeMean + ( now * now )
-
-        ttd.healthSum = ttd.healthSum + health
-        ttd.healthMean = ttd.healthMean + ( now * health )
-
-        local projected
-        local difference = ( ttd.healthSum * ttd.timeMean - ttd.healthMean * ttd.timeSum )
-
-        if difference > 0 then
-            local divisor = ( ttd.healthSum * ttd.timeSum ) - ( ttd.healthMean * ttd.n )
-
-            projected = 0
-            if divisor > 0 then projected = difference / divisor - now end
-        end
-
-        if not projected or projected <= 0 or ttd.n < 3 then
             return
-        else
-            projected = ceil( projected )
         end
 
-        ttd.sec = projected
-    end
-    Hekili.UpdateTTD = UpdateTTD
+        local difference = enemy.lastHealth - healthPct
 
+        -- We don't recalculate the rate when enemies heal.
+        if difference > 0 then
+            local elapsed = time - enemy.lastSeen
 
-    local seen  = {}
-    local units = { 'target', 'focus', 'focustarget', 'mouseover', 'boss1', 'boss2', 'boss3', 'boss4', 'boss5' }
-
-
-    local function PulseTTD()
-
-        table.wipe( seen )
-
-        -- Check all nameplates first.
-        for i = 1, 30 do
-            local np = 'nameplate' .. i
-            if UnitExists( np ) then
-                local guid = UnitGUID( np )
-
-                if UnitCanAttack( 'player', np ) then
-                    if guid and not seen[ guid ] then
-                        seen[ guid ] = true
-                        UpdateTTD( np )
-                    end
-                else
-                    tinsert( recycleBin, TTD[ guid ] )
-                    TTD[ guid ] = nil
-                end
+            -- If this is our first health difference, just store it.    
+            if enemy.n == 0 then
+                enemy.rate = difference / elapsed
+                enemy.n = 1
+            else
+                local newRate = enemy.rate * enemy.n + ( difference / elapsed )
+                enemy.n = enemy.n + 1
+                enemy.rate = newRate / enemy.n
             end
         end
 
-        -- Check common units.
-        for _, unit in pairs( units ) do
-            if UnitExists( unit ) then
-                local guid = UnitGUID( unit )
-                if UnitCanAttack( 'player', unit ) then
-                    if guid and not seen[ guid ] then
-                        seen[ guid ] = true
-                        UpdateTTD( unit )
-                    end
-                else
-                    tinsert( recycleBin, TTD[ guid ] )
-                    TTD[ guid ] = nil
-                end
-            end
-        end
+        enemy.lastHealth = healthPct
+        enemy.lastSeen = time
     end
 
-    Hekili.TTDTimer = C_Timer.NewTicker( 1, PulseTTD )
-
-
-    function Hekili:PurgeTTD( unit )
-        for guid, unit in pairs( TTD ) do
-            tinsert( recycleBin, unit )
-            TTD[ guid ] = nil
-        end
-    end
-
-
-    function Hekili:DumpTTDs() 
-        for guid, death in pairs( TTD ) do
-            DevTools_Dump( death )
-        end
-    end
+    
+    local DEFAULT_TTD = 15  
+    local INF = ( 1 / 0 )
 
 
     function Hekili:GetTTD( unit )
-        local GUID = UnitGUID( unit ) or unit
+        local guid = UnitExists( unit ) and UnitCanAttack( "player", unit ) and UnitGUID( unit )
+        if not guid then return INF end
 
-        if not TTD[ GUID ] then return 15 end
+        local enemy = db[ guid ]
+        if not enemy then return INF end
 
-        if state.time < 5 then return max( TTD[ GUID ].sec, 15 - state.time ) end
+        -- Don't have enough data to predict yet.
+        if enemy.rate == 0 then return INF, enemy.n end
+        
+        local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+        local healthPct = health / healthMax
 
-        return min( 300, TTD[ GUID ].sec or 15 )
+        if healthPct == 0 then return 0, enemy.n end
+
+        return ceil( healthPct / enemy.rate ), enemy.n
     end
 
     
     function Hekili:GetGreatestTTD()
-        local ttd = 15 - state.time
+        local time = 0
 
-        for k, v in pairs( TTD ) do
-            if v.sec > ttd then ttd = v.sec end
+        for k, v in pairs( db ) do
+            if v.n > 0 then time = max( time, ceil( v.lastHealth / v.rate ) ) end
         end
 
-        return min( 300, ttd )
+        return time
     end
+
+
+    local bosses = {}
+
+    function Hekili:GetAddWaveTTD()
+        if not UnitExists( "boss1" ) then return self:GetGreatestTTD() end
+
+        twipe( bosses )
+
+        for i = 1, 5 do
+            local unit = "boss" .. i
+            local guid = UnitExists( unit ) and UnitGUID( unit )
+            if guid then bosses[ guid ] = true end
+        end
+
+        local time = 0
+
+        for k,v in pairs( db ) do
+            if not bosses[ k ] and v.n > 0 then time = max( time, ceil( v.lastHealth / v.rate ) ) end
+        end
+
+        return time
+    end
+
+
+    function Hekili:ExpireTTDs( all )
+        local now = GetTime()
+
+        for k, v in pairs( db ) do
+            if all or now - v.lastSeen > 10 then EliminateEnemy( k ) end
+        end
+    end
+
+
+    local trackedUnits = { "target", "boss1", "boss2", "boss3", "boss4", "boss5", "focus" }
+    local seen = {}
+
+    local UpdateTTDs
+
+
+    UpdateTTDs = function()
+        twipe( seen )
+
+        local now = GetTime()
+
+        for i, unit in ipairs( trackedUnits ) do
+            local guid = UnitGUID( unit )
+
+            if guid then
+                if db[ guid ] and not UnitExists( unit ) or UnitThreatSituation( "player", unit ) or UnitIsDead( unit ) then
+                    EliminateEnemy( guid )
+                else
+                    local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+                    UpdateEnemy( guid, health / healthMax, now )
+                end
+                seen[ guid ] = true
+            end
+        end
+
+        for unit, guid in pairs( npGUIDs ) do
+            if db[ guid ] and not UnitThreatSituation( "player", unit ) then
+                EliminateEnemy( guid )
+            elseif not seen[ guid ] and UnitThreatSituation( "player", unit ) then
+                local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+                UpdateEnemy( guid, health / healthMax, now )
+            end
+            seen[ guid ] = true
+        end
+
+        C_Timer.After( 0.25, UpdateTTDs )
+    end
+
+
+    C_Timer.After( 0.25, UpdateTTDs )
+
 end
-
-
-
-
-
-
--- New Target Detection
--- January 2018
-
--- 1. Nameplate Detection
---    Overall, nameplate detection is really good.  Except when a target's nameplate goes off the screen.  So we need to count other potential targets.
---
--- 2. Damage Detection
---    We need to fine tune this a bit so that we can implement spell_targets.  We will flag targets as being hit by melee damage, spell damage, or ticking
---    damage.
-
---[[ do
-
-    local RC  = LibStub( "LibRangeCheck-2.0" )
-
-    local targetCount = 0 
-       
-    local targetPool = {}
-    local recycleBin = {}
-
-    local function newTarget( guid, unit )
-        if not guid or targetPool[ guid ] then return end
-
-        local target = tremove( recycleBin ) or {}
-
-        target.guid = guid
-
-        target.lastMelee  = 0  -- last SWING_DAMAGE by you.
-        target.lastSpell  = 0  -- last SPELL_DAMAGE by you.
-        target.lastTick   = 0  -- last SPELL_PERIODIC_DAMAGE by you.
-        target.lastAttack = 0  -- last SWING_DAMAGE by target to a friendly.
-
-        tinsert( targetPool, target )
-        return target
-    end
-
-
-    local function expireTarget( guid )
-        if not guid then return end
-
-        local target = targetPool[ guid ]
-
-        if not target then return end
-
-        targetPool[ guid ] = nil
-        tinsert( recycleBin, target )
-    end
-
-
-    local function updateTarget( guid, unit, melee, spell, tick )
-        if not guid and not unit then return end
-        guid = guid or UnitGUID( unit )
-
-        local target = targetPool[ guid ] or newTarget( guid, unit ) 
-
-        if melee then target.lastMelee = GetTime() end
-        if spell then target.lastSpell = GetTime() end
-        if tick  then target.lastTick  = GetTime() end
-    end
-
-
-    local function expireTargets( limit )
-        local now = GetTime()
-
-        for guid, data in pairs( targetPool ) do
-            local latest = max( data.lastMelee, data.lastSpell, data.lastTick )
-            if now - latest > limit then
-                expireTarget( GUID )
-            end
-        end
-    end
-
-
-    local lastCount, lastRange, lastLimit, lastTime = 0, 0, 0, 0
-
-    local function getTargetsWithin( x, limit )
-        local now = GetTime()
-        limit = limit or 5        
-
-        if x == lastRange and limit == lastLimit and now == lastTime then
-            return lastCount
-        end
-
-        lastRange = x
-        lastLimit = limit
-        lastTime  = now
-        lastCount = 0
-
-        for guid, data in pairs( targetPool ) do
-            -- local unit = NPR:GetPlateByGUID( guid )
-
-            if unit then
-                local _, distance = RC:GetRange( unit )
-
-                if distance <= x then
-                    lastCount = lastCount + 1
-                end
-
-            elseif limit <= 8 then
-                -- If they're in melee, use the last hit.
-                if now - data.lastMelee < limit then
-                    lastCount = lastCount + 1
-                end
-            
-            else
-                -- Try the cached unit vs. GUIDs.
-                -- Consider that target changes may happen really quickly, may have to reconsider this.               
-            end
-        end
-
-        return lastCount
-    end
-
-
-    local targetFrame = CreateFrame( "Frame" )
-
-    targetFrame:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
-    targetFrame:SetScript( "OnEvent", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, ... )
-
-        -- Targets 
-
-
-    end )
-
-end ]]

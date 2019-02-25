@@ -499,7 +499,7 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.oh_actual = 0
 
     Hekili:UpdateDisplayVisibility()
-    Hekili:PurgeTTD()
+    Hekili:ExpireTTDs( true )
 end )
 
 
@@ -676,7 +676,7 @@ RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
     Hekili.ScrapeUnitAuras( "target", true )
     state.target.updated = false
 
-    Hekili.UpdateTTD( "target" )
+    -- Hekili.UpdateTTD( "target" )
     Hekili:ForceUpdate( event, true )
 end )
 
@@ -726,6 +726,14 @@ local dmg_events = {
 }
 
 
+local death_events = {
+    UNIT_DIED               = true,
+    UNIT_DESTROYED          = true,
+    UNIT_DISSSIPATES        = true,
+    PARTY_KILL              = true,
+    SPELL_INSTAKILL         = true,
+}
+
 local dmg_filtered = {
     [280705] = true, -- Laser Matrix.
 }
@@ -736,7 +744,7 @@ local dmg_filtered = {
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
 local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
-    if subtype == 'UNIT_DIED' or subtype == 'UNIT_DESTROYED' or subtype == "UNIT_DISSIPATES" or subtype == "PARTY_KILL" then
+    if death_events[ subtype ] then
         if ns.isTarget( destGUID ) then
             ns.eliminateUnit( destGUID, true )
             ns.forceRecount()
@@ -861,7 +869,14 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
 
         if hostile and dmg_events[ subtype ] and not dmg_filtered[ spellID ] then
-            ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+            if subtype == "SPELL_DAMAGE" and interrupt > 0 and ns.isTarget( destGUID ) then
+                -- Interrupt is actually overkill.
+                ns.eliminateUnit( destGUID, true )
+                ns.forceRecount()
+                Hekili:ForceUpdate( "SPELL_DAMAGE_OVERKILL" )
+            else
+                ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+            end
 
             if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
                 state.swings.last_foa_tick = time
