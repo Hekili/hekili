@@ -1881,6 +1881,25 @@ all:RegisterAura( "ferocity_of_the_skrog", {
 } )
 
 
+-- Ritual Feather
+all:RegisterAbility( "ritual_feather_of_unng_ak", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+    
+    item = 165664,
+    toggle = "cooldowns",
+
+    handler = function () applyBuff( "might_of_the_blackpaw" ) end
+} )
+
+all:RegisterAura( "might_of_the_blackpaw", {
+    id = 285489,
+    duration = 16,
+    max_stack = 1
+} )
+
+
 -- Battle of Dazar'alor
 all:RegisterAbility( "invocation_of_yulon", {
     cast = 0,
