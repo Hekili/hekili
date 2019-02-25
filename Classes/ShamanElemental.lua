@@ -457,6 +457,15 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     } ) )
 
 
+    local function natural_harmony( elem1, elem2, elem3 )
+        if not azerite.natural_harmony.enabled then return end
+
+        if elem1 then applyBuff( "natural_harmony_" .. elem1 ) end
+        if elem2 then applyBuff( "natural_harmony_" .. elem2 ) end
+        if elem3 then applyBuff( "natural_harmony_" .. elem3 ) end
+    end
+
+
     local hadTotem = false
     local hadTotemAura = false
 
@@ -659,6 +668,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 if pet.storm_elemental.up then
                     addStack( "wind_gust", nil, 1 )
                 end
+
+                natural_harmony( "nature" )
                 
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
@@ -733,6 +744,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 if talent.exposed_elements.enabled then applyBuff( 'exposed_elements' ) end
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
                 if talent.surge_of_power.enabled then applyBuff( "surge_of_power" ) end
+
+                natural_harmony( "nature" )
             end,
         },
         
@@ -767,6 +780,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 removeBuff( "echoes_of_the_great_sundering" )
                 removeBuff( "master_of_the_elements" )
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
+                natural_harmony( "nature" )
             end,
         },
         
@@ -788,6 +802,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     applyBuff( "chill_of_the_twisting_nether" )
                     applyBuff( "shock_of_the_twisting_nether" )
                 end
+
+                natural_harmony( "fire", "frost", "nature" )
             end,
         },
         
@@ -842,6 +858,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     removeBuff( "surge_of_power" )
                 end
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
+                natural_harmony( "fire" )
             end,
         },
         
@@ -870,6 +887,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 end
 
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "chill_of_the_twisting_nether" ) end
+                natural_harmony( "frost" )
             end,
         },
         
@@ -937,6 +955,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
                 removeBuff( 'master_of_the_elements' )
                 applyBuff( 'icefury', 15, 4 )
+                natural_harmony( "frost" )
             end,
         },
         
@@ -959,6 +978,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
                 removeStack( 'stormkeeper' )
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
+                natural_harmony( "fire" )
             end,
         },
         
@@ -985,6 +1005,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     removeBuff( "surge_of_power" )
                 end
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
+                natural_harmony( "fire" )
             end,
         },
         
@@ -1019,6 +1040,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 end
                 
                 if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
+                natural_harmony( "nature" )
             end,
         },
         
