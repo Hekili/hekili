@@ -14,7 +14,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
     local spec = Hekili:NewSpecialization( 254, true )
 
     spec:RegisterResource( Enum.PowerType.Focus )
-    
+
     -- Talents
     spec:RegisterTalents( {
         master_marksman = 22279, -- 260309
@@ -237,20 +237,20 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 20,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 645217,
-            
+
             talent = "a_murder_of_crows",
 
             handler = function ()
                 applyDebuff( "target", "a_murder_of_crows" )
             end,
         },
-        
+
 
         aimed_shot = {
             id = 19434,
@@ -259,13 +259,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = function () return haste * ( ( PTR and buff.trueshot.up ) and 4.8 or 12 ) end,
             recharge = function () return haste * ( ( PTR and buff.trueshot.up ) and 4.8 or 12 ) end,
             gcd = "spell",
-            
+
             spend = function () return buff.lock_and_load.up and 0 or 30 end,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 135130,
-            
+
             handler = function ()
                 applyBuff( "precise_shots" )
                 if talent.master_marksman.enabled then applyBuff( "master_marksman" ) end
@@ -275,20 +275,20 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 removeBuff( "double_tap" )
             end,
         },
-        
+
 
         arcane_shot = {
             id = 185358,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return buff.master_marksman.up and 0 or 15 end,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 132218,
-            
+
             handler = function ()
                 if talent.calling_the_shots.enabled then cooldown.trueshot.expires = max( 0, cooldown.trueshot.expires - 2.5 ) end
                 removeBuff( "master_marksman" )
@@ -296,7 +296,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 removeBuff( "steady_focus" )
             end,
         },
-        
+
 
         aspect_of_the_cheetah = {
             id = 186257,
@@ -306,30 +306,30 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             startsCombat = false,
             texture = 132242,
-            
+
             handler = function ()
                 applyBuff( "aspect_of_the_cheetah" )
             end,
         },
-        
+
 
         aspect_of_the_turtle = {
             id = 186265,
             cast = 0,
             cooldown = function () return 180 * ( talent.born_to_be_wild.enabled and 0.8 or 1 ) end,
             gcd = "off",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 132199,
-            
+
             handler = function ()
                 applyBuff( "aspect_of_the_turtle" )
                 setCooldown( "global_cooldown", 5 )
             end,
         },
-        
+
 
         barrage = {
             id = 120360,
@@ -337,96 +337,96 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             channeled = true,
             cooldown = 20,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 236201,
 
             talent = "barrage",
-            
+
             handler = function ()
             end,
         },
-        
+
 
         binding_shot = {
             id = 109248,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 462650,
-            
+
             handler = function ()
                 applyDebuff( "target", "binding_shot" )
             end,
         },
-        
+
 
         bursting_shot = {
             id = 186387,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 10,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 1376038,
-            
+
             handler = function ()
                 applyDebuff( "target", "bursting_shot" )
                 removeBuff( "steady_focus" )
             end,
         },
-        
+
 
         camouflage = {
             id = 199483,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 461113,
-            
+
             usable = function () return time == 0 end,
             handler = function ()
                 applyBuff( "camouflage" )
             end,
         },
-        
+
 
         concussive_shot = {
             id = 5116,
             cast = 0,
             cooldown = 5,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135860,
-            
+
             handler = function ()
                 applyDebuff( "target", "concussive_shot" )
             end,
         },
-        
+
 
         counter_shot = {
             id = 147362,
             cast = 0,
             cooldown = 24,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 249170,
 
             toggle = "interrupts",
-            
+
             debuff = "casting",
             readyTime = state.timeToInterrupt,
 
@@ -434,7 +434,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 interrupt()
             end,
         },
-        
+
 
         disengage = {
             id = 781,
@@ -443,201 +443,201 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 20,
             recharge = 20,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 132294,
-            
+
             handler = function ()
                 if talent.posthaste.enabled then applyBuff( "posthaste" ) end
             end,
         },
-        
+
 
         double_tap = {
             id = 260402,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 537468,
-            
+
             handler = function ()
                 applyBuff( "double_tap" )
             end,
         },
-        
+
 
         --[[ eagle_eye = {
             id = 6197,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 132172,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         exhilaration = {
             id = 109304,
             cast = 0,
             cooldown = function () return azerite.natures_salve.enabled and 105 or 120 end,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 461117,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         explosive_shot = {
             id = 212431,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 20,
             spendType = "focus",
-            
+
             startsCombat = false,
             texture = 236178,
-            
+
             handler = function ()
                 applyDebuff( "target", "explosive_shot" )
                 removeBuff( "steady_focus" )
             end,
         },
-        
+
 
         explosive_shot_detonate = not PTR and {
             id = 212679,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1044088,
-            
+
             usable = function () return prev_gcd[1].explosive_shot end,
             handler = function ()
             end,
         } or nil,
-        
+
 
         feign_death = {
             id = 5384,
             cast = 0,
             cooldown = 30,
             gcd = "off",
-            
+
             startsCombat = false,
             texture = 132293,
-            
+
             handler = function ()
                 applyBuff( "feign_death" )
             end,
         },
-        
+
 
         --[[ flare = {
             id = 1543,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135815,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         freezing_trap = {
             id = 187650,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135834,
-            
+
             handler = function ()
                 applyDebuff( "target", "freezing_trap" )
             end,
         },
-        
+
 
         hunters_mark = {
             id = 257284,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 236188,
 
             talent = "hunters_mark",
-            
+
             usable = function () return debuff.hunters_mark.down end,
             handler = function ()
                 applyDebuff( "target", "hunters_mark" )
             end,
         },
-        
+
 
         masters_call = {
             id = 272682,
             cast = 0,
             cooldown = 45,
             gcd = "off",
-            
+
             startsCombat = false,
             texture = 236189,
-            
+
             handler = function ()
                 applyBuff( "masters_call" )
             end,
         },
-        
+
 
         misdirection = {
             id = 34477,
             cast = 0,
             cooldown = 30,
             gcd = "off",
-            
+
             startsCombat = false,
             texture = 132180,
-            
+
             handler = function ()
                 applyBuff( "misdirection" )
             end,
         },
-        
+
 
         multishot = {
             id = 257620,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return buff.master_marksman.up and 0 or 15 end,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 132330,
-            
+
             handler = function ()
                 if talent.calling_the_shots.enabled then cooldown.trueshot.expires = max( 0, cooldown.trueshot.expires - 2.5 ) end
                 if active_enemies > 2 then applyBuff( "trick_shots" ) end
@@ -646,25 +646,25 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 removeBuff( "steady_focus" )
             end,
         },
-        
+
 
         piercing_shot = {
             id = 198670,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 35,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 132092,
-            
+
             handler = function ()
                 removeBuff( "steady_focus" )
             end,
         },
-        
+
 
         rapid_fire = {
             id = 257044,
@@ -672,10 +672,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             channeled = true,
             cooldown = function () return buff.trueshot.up and ( haste * 8 ) or 20 end,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 461115,
-            
+
             handler = function ()
                 applyBuff( "rapid_fire" )
                 removeBuff( "lethal_shots" )
@@ -683,31 +683,31 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
             postchannel = function () removeBuff( "double_tap" ) end,
         },
-        
+
 
         serpent_sting = {
             id = 271788,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 10,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 1033905,
 
             velocity = 45,
 
             talent = "serpent_sting",
-            
+
             recheck = function () return remains - ( duration * 0.3 ), remains end,
             handler = function ()
                 applyDebuff( "target", "serpent_sting" )
                 removeBuff( "steady_focus" )
             end,
         },
-        
+
 
         steady_shot = {
             id = 56641,
@@ -717,17 +717,17 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             spend = -10,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 132213,
-            
+
             handler = function ()
                 if talent.steady_focus.enabled then applyBuff( "steady_focus", 12, min( 2, buff.steady_focus.stack + 1 ) ) end
                 if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 4 end
             end,
         },
 
-        
+
         summon_pet = {
             id = 883,
             cast = 0,
@@ -753,45 +753,45 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 136094,
-            
+
             usable = function () return not pet.alive end,
             handler = function ()
                 applyBuff( "survival_of_the_fittest" )
             end,
         },
-        
+
 
         tar_trap = {
             id = 187698,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 576309,
-            
+
             handler = function ()
                 applyDebuff( "target", "tar_trap" )
             end,
         },
-        
+
 
         trueshot = {
             id = 288613,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 132329,
-            
+
             handler = function ()
                 applyBuff( "trueshot" )
                 if azerite.unerring_vision.enabled then
@@ -812,13 +812,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         enabled = true,
 
         aoe = 3,
-    
+
         nameplates = false,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 6,
-    
+
         potion = "potion_of_rising_death",
 
         package = "Marksmanship",

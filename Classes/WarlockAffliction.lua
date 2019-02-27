@@ -37,7 +37,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     } ) )
 
     spec:RegisterResource( Enum.PowerType.Mana )
-    
+
     -- Talents
     spec:RegisterTalents( {
         nightfall = 22039, -- 108558
@@ -106,7 +106,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
                     local last_real_tick = now + ( floor( ( now - app ) / tick ) * tick )
                     local ticks_since = floor( ( query_time - last_real_tick ) / tick )
-                    
+
                     return min( 10, t.count + ticks_since )
                 end,
             }
@@ -352,7 +352,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
     spec:RegisterHook( "TimeToReady", function( wait, action )
         local ability = action and class.abilities[ action ]
-    
+
         if ability and ability.spend and ability.spendType == "soul_shards" and ability.spend > soul_shard then
             wait = 3600
         end
@@ -388,7 +388,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     spec:RegisterGear( 'tier20', 147183, 147186, 147181, 147185, 147182, 147184 )
     spec:RegisterGear( 'tier19', 138314, 138323, 138373, 138320, 138311, 138317 )
     spec:RegisterGear( 'class', 139765, 139768, 139767, 139770, 139764, 139769, 139766, 139763 )
-    
+
     spec:RegisterGear( 'amanthuls_vision', 154172 )
     spec:RegisterGear( 'hood_of_eternal_disdain', 132394 )
     spec:RegisterGear( 'norgannons_foresight', 132455 )
@@ -437,7 +437,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
     spec:RegisterHook( "reset_precast", function ()
         soul_shards.actual = nil
-    
+
         local icd = 25
 
         if now - last_sindorei_spite < icd then
@@ -459,7 +459,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 addStack( "essence_drain", debuff.drain_soul.remains, debuff.essence_drain.stack + ticks )
             end
         end
-        
+
         if buff.casting_circle.up then
             applyBuff( "casting_circle", action.casting_circle.lastCast + 8 - query_time )
         end
@@ -474,8 +474,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         return max( debuff.unstable_affliction.remains, debuff.unstable_affliction_2.remains, debuff.unstable_affliction_3.remains, debuff.unstable_affliction_4.remains, debuff.unstable_affliction_5.remains )
     end )
 
-    
-    
+
+
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -494,149 +494,149 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
                 applyDebuff( "target", "agony", nil, max( azerite.sudden_onset.enabled and 4 or 1, debuff.agony.stack ) )
             end,
         },
-        
+
 
         --[[ banish = {
             id = 710,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         burning_rush = {
             id = 111400,
             cast = 0,
             cooldown = 0,
             gcd = function () return buff.burning_rush.up and "off" or "spell" end,
-            
+
             startsCombat = true,
 
             talent = "burning_rush",
-            
+
             handler = function ()
                 if buff.burning_rush.down then applyBuff( "burning_rush" )
                 else removeBuff( "burning_rush" ) end
             end,
         },
-        
+
 
         casting_circle = {
             id = 221703,
             cast = 0.5,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             pvptalent = "casting_circle",
 
             startsCombat = false,
             texture = 1392953,
-            
+
             handler = function ()
                 applyBuff( "casting_circle", 8 )
             end,
         },
-        
+
 
         --[[ command_demon = {
             id = 119898,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         corruption = {
             id = 172,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
                 applyDebuff( "target", "corruption" )
             end,
         },
-        
+
 
         --[[ create_healthstone = {
             id = 6201,
             cast = 3,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         create_soulwell = {
             id = 29893,
             cast = 3,
             cooldown = 120,
             gcd = "spell",
-            
+
             spend = 0.05,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         curse_of_fragility = {
             id = 199954,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
 
             pvptalent = "curse_of_fragility",            
-            
+
             startsCombat = true,
             texture = 132097,
-            
+
             usable = function () return target.is_player end,
             handler = function ()
                 applyDebuff( "target", "curse_of_fragility" )
@@ -644,83 +644,83 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 setCooldown( "curse_of_weakness", max( 6, cooldown.curse_of_weakness.remains ) )
             end,
         },
-        
+
 
         curse_of_tongues = {
             id = 199890,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
 
             pvptalent = "curse_of_tongues",
-            
+
             startsCombat = true,
             texture = 136140,
-            
+
             handler = function ()
                 applyDebuff( "target", "curse_of_tongues" )
                 setCooldown( "curse_of_fragility", max( 6, cooldown.curse_of_fragility.remains ) )
                 setCooldown( "curse_of_weakness", max( 6, cooldown.curse_of_weakness.remains ) )
             end,
         },
-        
+
 
         curse_of_weakness = {
             id = 199892,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
 
             pvptalent = "curse_of_weakness",
-            
+
             startsCombat = true,
             texture = 615101,
-            
+
             handler = function ()
                 applyDebuff( "target", "curse_of_weakness" )
                 setCooldown( "curse_of_fragility", max( 6, cooldown.curse_of_fragility.remains ) )
                 setCooldown( "curse_of_tongues", max( 6, cooldown.curse_of_tongues.remains ) )
             end,
         },
-        
+
 
         dark_pact = {
             id = 108416,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
 
             talent = "dark_pact",
-            
+
             handler = function ()
                 spend( 0.2 * health.current, "health" )
                 applyBuff( "dark_pact" )
             end,
         },
-        
+
 
         dark_soul = {
             id = 113860,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
 
             talent = "dark_soul_misery",
-            
+
             handler = function ()
                 applyBuff( "dark_soul_misery" )
                 stat.haste = stat.haste + 0.3
@@ -728,26 +728,26 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             copy = "dark_soul_misery"
         },
-        
+
 
         deathbolt = {
             id = 264106,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
 
             talent = "deathbolt",
-            
+
             handler = function ()
                 -- applies shadow_embrace (32390)
             end,
         },
-        
+
 
         demon_armor = {
             id = 285933,
@@ -756,59 +756,59 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
 
             pvptalent = "demon_armor",
-            
+
             startsCombat = false,
             texture = 136185,
-            
+
             handler = function ()
                 applyBuff( "demon_armor" )
             end,
         },
-        
+
 
         --[[ demonic_circle = {
             id = 48018,
             cast = 0.5,
             cooldown = 10,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         demonic_circle_teleport = {
             id = 48020,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         demonic_gateway = {
             id = 111771,
             cast = 2,
             cooldown = 10,
             gcd = "spell",
-            
+
             spend = 0.2,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
             end,
         }, ]]
@@ -835,7 +835,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 removeDebuff( "dispellable_magic" )
             end,
         },
-        
+
 
         drain_life = {
             id = 234153,
@@ -844,17 +844,17 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             breakable = true,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
                 removeBuff( "inevitable_demise" )
             end,
         },
-        
+
 
         drain_soul = {
             id = 198590,
@@ -869,101 +869,101 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             spend = 0,
             spendType = "mana",
-            
+
             startsCombat = true,
 
             talent = "drain_soul",
-           
+
             handler = function ()
                 applyDebuff( "target", "drain_soul" )
                 applyBuff( "casting", 5 * haste )
                 channelSpell( "drain_soul" )
             end,
         },
-        
+
 
         --[[ enslave_demon = {
             id = 1098,
             cast = 3,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         eye_of_kilrogg = {
             id = 126,
             cast = 2,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         fear = {
             id = 5782,
             cast = 1.7,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.15,
             spendType = "mana",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
                 applyDebuff( "target", "fear" )
             end,
         },
-        
+
 
         grimoire_of_sacrifice = {
             id = 108503,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = false,
-            
+
             usable = function () return pet.exists and buff.grimoire_of_sacrifice.down end,
             handler = function ()
                 applyBuff( "grimoire_of_sacrifice" )
             end,
         },
-        
+
 
         haunt = {
             id = 48181,
             cast = 1.5,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
 
             talent = "haunt",
-            
+
             handler = function ()
                 applyDebuff( "target", "haunt" )
             end,
         },
-        
+
 
         health_funnel = {
             id = 755,
@@ -972,33 +972,33 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             breakable = true,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = false,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         mortal_coil = {
             id = 6789,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
 
             talent = "mortal_coil",
-            
+
             handler = function ()
                 applyDebuff( "target", "mortal_coil" )
                 gain( 0.2 * health.max, "health" )
             end,
         },
-        
+
 
         nether_ward = {
             id = 212295,
@@ -1007,134 +1007,134 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
 
             pvptalent = "nether_ward",
-            
+
             startsCombat = false,
             texture = 135796,
-            
+
             handler = function ()
                 applyBuff( "nether_ward" )
             end,
         },
-        
+
 
         phantom_singularity = {
             id = 205179,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
 
             talent = "phantom_singularity",
-            
+
             handler = function ()
                 applyDebuff( "target", "phantom_singularity" )
             end,
         },
-        
+
 
         --[[ ritual_of_summoning = {
             id = 698,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         seed_of_corruption = {
             id = 27243,
             cast = 2.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "soul_shards",
-            
+
             startsCombat = true,
             velocity = 30,
-            
+
             usable = function () return dot.seed_of_corruption.down end,
             handler = function ()
                 applyDebuff( "target", "seed_of_corruption" )
             end,
         },
-        
+
 
         shadow_bolt = {
             id = 232670,
             cast = 2,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             velocity = 20,
 
             notalent = "drain_soul",
             cycle = function () return talent.shadow_embrace.enabled and "shadow_embrace" or nil end,
-            
+
             handler = function ()
                 if talent.shadow_embrace.enabled then
                     addStack( "shadow_embrace", 10, 1 )
                 end
             end,
         },
-        
+
 
         shadowfury = {
             id = 30283,
             cast = 1.5,
             cooldown = 60,
             gcd = "spell",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
                 applyDebuff( "target", "shadowfury" )
             end,
         },
-        
+
 
         siphon_life = {
             id = 63106,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
 
             talent = "siphon_life",
-            
+
             handler = function ()
                 applyDebuff( "target", "siphon_life" )
             end,
         },
-        
+
 
         soulshatter = {
             id = 212356,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
             pvptalent = "soulshatter",
 
             startsCombat = true,
             texture = 135728,
-            
+
             usable = function () return buff.active_uas.stack > 0 or active_dot.agony > 0 or active_dot.corruption > 0 or active_dot.siphon_life > 0 end,
             handler = function ()
                 local targets = min( 5, max( buff.active_uas.stack, active_dot.agony, active_dot.corruption, active_dot.siphon_life ) )
@@ -1154,21 +1154,21 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 if active_dot.siphon_life == 0 then removeDebuff( "target", "siphon_life" ) end
             end,
         },
-        
+
 
         soulstone = {
             id = 20707,
             cast = 3,
             cooldown = 600,
             gcd = "spell",
-            
+
             startsCombat = false,
-            
+
             handler = function ()
                 applyBuff( "soulstone" )
             end,
         },
-        
+
 
         spell_lock = {
             id = 19647,
@@ -1176,14 +1176,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cast = 0,
             cooldown = 24,
             gcd = "off",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
 
             toggle = "interrupts",
-            
+
             debuff = "casting",
             readyTime = state.timeToInterrupt,
 
@@ -1191,21 +1191,21 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 interrupt()
             end,
         },
-        
+
 
         summon_darkglare = {
             id = 205180,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
-            
+
             handler = function ()
                 summonPet( "darkglare", 20 )
             end,
@@ -1224,7 +1224,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             usable = function () return not pet.alive end,
             handler = function () summonPet( "imp" ) end,
         },
-        
+
 
         summon_voidwalker = {
             id = 697,
@@ -1239,7 +1239,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function () summonPet( "voidwalker" ) end,
         },
 
-        
+
         summon_felhunter = {
             id = 691,
             cast = 2.5,
@@ -1262,7 +1262,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             copy = { "summon_pet", 112869 }
         },
-        
+
 
         summon_succubus = {
             id = 712,
@@ -1276,55 +1276,55 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             usable = function () return not pet.alive end,
             handler = function () summonPet( "succubus" ) end,
         },
-        
+
 
         unending_breath = {
             id = 5697,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = false,
-            
+
             handler = function ()
                 applyBuff( "unending_breath" )
             end,
         },
-        
+
 
         unending_resolve = {
             id = 104773,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             toggle = "defensives",
 
             startsCombat = true,
-            
+
             handler = function ()
                 applyBuff( "unending_resolve" )
             end,
         },
-        
+
 
         unstable_affliction = {
             id = 30108,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "soul_shards",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
                 applyUnstableAffliction()
                 if azerite.dreadful_calling.enabled then
@@ -1332,19 +1332,19 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 end
             end,
         },
-        
+
 
         vile_taint = {
             id = 278350,
             cast = 1.5,
             cooldown = 20,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "soul_shards",
-            
+
             startsCombat = true,
-            
+
             handler = function ()
                 applyDebuff( "target", "vile_taint" )
             end,
@@ -1356,15 +1356,15 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         enabled = true,
 
         aoe = 3,
-    
+
         nameplates = false,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 6,
-    
+
         potion = "battle_potion_of_intellect",
-        
+
         package = "Affliction",
     } )
 

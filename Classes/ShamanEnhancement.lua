@@ -134,7 +134,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 114051,
             duration = 15,
         },
-        
+
         astral_shift = { 
             id = 108271,
             duration = 8,
@@ -176,7 +176,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 120,
             max_stack =1 ,
         },
-        
+
         feral_spirit = {            
             name = "Feral Spirit",
             duration = 15,
@@ -293,7 +293,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 120,
             max_stack =1 ,
         },
-        
+
         totem_mastery = {
             duration = 120,
             generate = function ()
@@ -401,7 +401,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             if k == 'count' then
                 return ( buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( buff.shock_of_the_twisting_nether.up and 1 or 0 )
             end
-            
+
             return 0
         end 
     } ) )
@@ -451,7 +451,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
     spec:RegisterGear( 'tier19', 138341, 138343, 138345, 138346, 138348, 138372 )
     spec:RegisterGear( 'class', 139698, 139699, 139700, 139701, 139702, 139703, 139704, 139705 )
-    
+
 
 
     spec:RegisterGear( 'akainus_absolute_justice', 137084 )
@@ -485,7 +485,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             readyTime = function() return buff.ascendance.remains end,
             recheck = function () return buff.ascendance.remains end,
-            
+
             nobuff = 'ascendance',
             talent = 'ascendance',
             toggle = 'cooldowns',
@@ -518,10 +518,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 300,
             gcd = 'spell', -- Ugh.
-            
+
             spend = 0.215,
             spendType = 'mana',
-            
+
             startsCombat = false,
 
             handler = function ()
@@ -541,7 +541,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             spendType = 'maelstrom',
 
             recheck = function () return buff.crash_lightning.remains end,
-            
+
             startsCombat = true,
 
             handler = function ()
@@ -551,7 +551,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 end
 
                 removeBuff( 'crashing_lightning' )
-                
+
                 if level < 116 then 
                     if equipped.emalons_charged_core and spell_targets.crash_lightning >= 3 then
                         applyBuff( 'emalons_charged_core', 10 )
@@ -560,7 +560,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     if set_bonus.tier20_2pc > 1 then
                         applyBuff( 'lightning_crash' )
                     end
-    
+
                     if equipped.eye_of_the_twisting_nether then
                         applyBuff( 'shock_of_the_twisting_nether', 8 )
                     end
@@ -577,17 +577,17 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 300,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 136024,
 
             toggle = "defensives",            
-            
+
             handler = function ()
                 summonPet( "greater_earth_elemental", 60 )
             end,
         },
-        
+
         earthen_spike = {
             id = 188089,
             cast = 0,
@@ -756,7 +756,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = function() return talent.overcharge.enabled and ( 12 * haste ) or 0 end,
             gcd = "spell",
-            
+
             spend = function() return talent.overcharge.enabled and min( maelstrom.current, 40 ) or 0 end,
             spendType = 'maelstrom',
 
@@ -781,7 +781,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             startsCombat = false,
             talent = 'lightning_shield',
             essential = true,
-        
+
             readyTime = function () return buff.lightning_shield.remains - 120 end,
             usable = function () return buff.lightning_shield.remains < 120 and ( time == 0 or buff.lightning_shield.stack == 1 ) end,
             handler = function () applyBuff( 'lightning_shield', nil, 1 ) end,
@@ -793,22 +793,22 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.2,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136075,
 
             toggle = "interrupts",
             interrupt = true,
-            
+
             usable = function () return debuff.dispellable_magic.up, "requires dispellable magic aura" end,
             handler = function ()
                 removeDebuff( "dispellable_magic" )
             end,
         },
-        
+
 
         rockbiter = {
             id = 193786,
@@ -817,7 +817,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             recharge = function() local x = 6 * haste; return talent.boulderfist.enabled and ( x * 0.85 ) or x end,
             charges = 2,
             gcd = "spell",
-            
+
             spend = -25,
             spendType = "maelstrom",
 
@@ -892,7 +892,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     if equipped.storm_tempests then
                         applyDebuff( 'target', 'storm_tempests', 15 )
                     end
-    
+
                     if set_bonus.tier20_4pc > 0 then
                         addStack( 'crashing_lightning', 16, 1 )
                     end
@@ -901,7 +901,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                         applyBuff( 'shock_of_the_twisting_nether', 8 )
                     end
                 end
-    
+
                 if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
                 if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
                 if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
@@ -981,7 +981,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             spend = function() return buff.stormbringer.up and 0 or 10 end,
             spendType = "maelstrom",
-            
+
             texture = 1029585,
 
             known = 17364,
@@ -1004,7 +1004,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     if equipped.storm_tempests then
                         applyDebuff( 'target', 'storm_tempests', 15 )
                     end
-    
+
                     if set_bonus.tier20_4pc > 0 then
                         addStack( 'crashing_lightning', 16, 1 )
                     end
@@ -1026,15 +1026,15 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         enabled = true,
 
         aoe = 2,
-    
+
         nameplates = true,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 8,
-    
+
         potion = "battle_potion_of_agility",
-        
+
         package = "Enhancement",
     } )
 

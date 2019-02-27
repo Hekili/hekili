@@ -145,7 +145,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     spec:RegisterHook( "spend", spendHook )
 
-    
+
     spec:RegisterStateFunction( "apply_festermight", function( n )
         if azerite.festermight.enabled then
             if buff.festermight.up then
@@ -156,7 +156,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         end
     end )
 
-    
+
     -- Talents
     spec:RegisterTalents( {
         infected_claws = 22024, -- 207272
@@ -410,10 +410,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         { __index = function( t, k )
             if k == 'ticking' then
                 return buff.death_and_decay.up
-            
+
             elseif k == 'remains' then
                 return buff.death_and_decay.remains
-            
+
             end
 
             return false
@@ -427,7 +427,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             elseif k == 'remains' then
                 return buff.death_and_decay.remains
-            
+
             end
 
             return false
@@ -519,7 +519,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
         rawset( cooldown, "army_of_the_dead", nil )
         rawset( cooldown, "raise_abomination", nil )
-    
+
         if pvptalent.raise_abomination.enabled then
             cooldown.army_of_the_dead = cooldown.raise_abomination
         else
@@ -535,27 +535,27 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cast = 0,
             cooldown = 60,
             gcd = "off",
-            
+
             startsCombat = false,
             texture = 136120,
-            
+
             handler = function ()
                 applyBuff( "antimagic_shell" )
             end,
         },
-        
+
 
         apocalypse = {
             id = 275699,
             cast = 0,
             cooldown = function () return pvptalent.necromancers_bargain.enabled and 45 or 90 end,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 1392565,
-            
+
             handler = function ()
                 if debuff.festering_wound.stack > 4 then
                     applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.remains - 4 )
@@ -571,23 +571,23 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 -- summon pets?                
             end,
         },
-        
+
 
         army_of_the_dead = {
             id = function () return pvptalent.raise_abomination.enabled and 288853 or 42650 end,
             cast = 0,
             cooldown = 480,
             gcd = "spell",
-            
+
             spend = function () return pvptalent.raise_abomination.enabled and 0 or 3 end,
             spendType = "runes",
-            
+
             toggle = "cooldowns",
             -- nopvptalent = "raise_abomination",
 
             startsCombat = false,
             texture = function () return pvptalent.raise_abomination.enabled and 298667 or 237511 end,
-            
+
             handler = function ()
                 if pvptalent.raise_abomination.enabled then
                     summonPet( "abomination" )
@@ -606,47 +606,47 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
             pvptalent = "raise_abomination",
 
             startsCombat = false,
             texture = 298667,
-            
+
             handler = function ()                
             end,
         }, ]]
-        
+
 
         asphyxiate = {
             id = 108194,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 538558,
 
             talent = "asphyxiate",
-            
+
             handler = function ()
                 applyDebuff( "target", "asphyxiate" )
             end,
         },
-        
+
 
         chains_of_ice = {
             id = 45524,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 135834,
-            
+
             recheck = function ()
                 return buff.unholy_strength.remains - gcd, buff.unholy_strength.remains
             end,
@@ -655,22 +655,22 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 removeBuff( "cold_heart_item" )
             end,
         },
-        
+
 
         clawing_shadows = {
             id = 207311,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 615099,
 
             talent = "clawing_shadows",
-            
+
             handler = function ()
                 if debuff.festering_wound.stack > 1 then
                     applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
@@ -679,57 +679,57 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 gain( 3, "runic_power" )
             end,
         },
-        
+
 
         control_undead = {
             id = 111673,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 237273,
-            
+
             usable = function () return target.is_undead and target.level <= level + 1 end,
             handler = function ()
                 dismissPet( "ghoul" )
                 summonPet( "controlled_undead", 300 )
             end,
         },
-        
+
 
         dark_command = {
             id = 56222,
             cast = 0,
             cooldown = 8,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 136088,
-            
+
             handler = function ()
                 applyDebuff( "target", "dark_command" )
             end,
         },
-        
+
 
         dark_simulacrum = {
             id = 77606,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 135888,
 
             pvptalent = "dark_simulacrum",
-            
+
             usable = function ()
                 if not target.is_player then return false, "target is not a player" end
                 return true
@@ -738,82 +738,82 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "dark_simulacrum" )
             end,
         },
-        
+
 
         dark_transformation = {
             id = 63560,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 342913,
-            
+
             usable = function () return pet.ghoul.alive end,
             handler = function ()
                 applyBuff( "dark_transformation" )
                 if azerite.helchains.enabled then applyBuff( "helchains" ) end
             end,
         },
-        
+
 
         death_and_decay = {
             id = 43265,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 136144,
 
             notalent = "defile",
-            
+
             handler = function ()
                 applyBuff( "death_and_decay", 10 )
                 if talent.grip_of_the_dead.enabled then applyDebuff( "target", "grip_of_the_dead" ) end
             end,
         },
-        
+
 
         death_coil = {
             id = 47541,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return buff.sudden_doom.up and 0 or 40 end,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 136145,
-            
+
             handler = function ()
                 removeStack( "sudden_doom" )
                 if set_bonus.tier21_2pc == 1 then applyDebuff( "target", "coils_of_devastation" ) end
                 if cooldown.dark_transformation.remains > 0 then setCooldown( 'dark_transformation', cooldown.dark_transformation.remains - 1 ) end
             end,
         },
-        
+
 
         --[[ death_gate = {
             id = 50977,
             cast = 4,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = false,
             texture = 135766,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         death_grip = {
             id = 49576,
@@ -822,47 +822,47 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 25,
             recharge = 25,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 237532,
-            
+
             handler = function ()
                 applyDebuff( "target", "death_grip" )
                 setDistance( 5 )
             end,
         },
-        
+
 
         death_pact = {
             id = 48743,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 136146,
 
             talent = "death_pact",
-            
+
             handler = function ()
                 gain( health.max * 0.5, "health" )
                 applyBuff( "death_pact" )
             end,
         },
-        
+
 
         death_strike = {
             id = 49998,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return buff.dark_succor.up and 0 or ( ( buff.transfusion.up and 0.5 or 1 ) * 35 ) end,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 237517,
-            
+
             handler = function ()
                 removeBuff( "dark_succor" )
                 if level < 116 and equipped.death_march then
@@ -871,53 +871,53 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 end
             end,
         },
-        
+
 
         deaths_advance = {
             id = 48265,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 237561,
-            
+
             handler = function ()
                 applyBuff( "deaths_advance" )
             end,
         },
-        
+
 
         defile = {
             id = 152280,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             talent = "defile",
 
             startsCombat = true,
             texture = 1029008,
-            
+
             handler = function ()
                 applyBuff( "death_and_decay" )
                 applyDebuff( "target", "defile", 1 )
             end,
         },
-        
+
 
         epidemic = {
             id = 207317,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 136066,
 
@@ -927,25 +927,25 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             handler = function ()
             end,
         },
-        
+
 
         festering_strike = {
             id = 85948,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 2,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 879926,
-            
+
             handler = function ()
                 applyDebuff( "target", "festering_wound", 24, debuff.festering_wound.stack + 2 )
             end,
         },
-        
+
 
         icebound_fortitude = {
             id = 48792,
@@ -955,50 +955,50 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 return 180
             end,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 237525,
-            
+
             handler = function ()
                 applyBuff( "icebound_fortitude" )
                 if azerite.cold_hearted.enabled then applyBuff( "cold_hearted" ) end
             end,
         },
-        
+
 
         lichborne = {
             id = 287081,
             cast = 0,
             cooldown = 60,
             gcd = "off",
-            
+
             pvptalent = "lichborne",
 
             startsCombat = false,
             texture = 136187,
-            
+
             handler = function ()
                 applyBuff( "lichborne" )
             end,
         },
-        
+
 
         mind_freeze = {
             id = 47528,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 237527,
 
             toggle = "interrupts",
-            
+
             debuff = "casting",
             readyTime = state.timeToInterrupt,
 
@@ -1031,17 +1031,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 end
             end,
         },
-        
+
 
         outbreak = {
             id = 77575,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = -10,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 348565,
 
@@ -1050,89 +1050,89 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "virulent_plague", talent.ebon_fever.enabled and 10.5 or 21 )
             end,
         },
-        
+
 
         path_of_frost = {
             id = 3714,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = false,
             texture = 237528,
-            
+
             handler = function ()
                 applyBuff( "path_of_frost" )
             end,
         },
-        
+
 
         --[[ raise_ally = {
             id = 61999,
             cast = 0,
             cooldown = 600,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "runic_power",
-            
+
             startsCombat = false,
             texture = 136143,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         raise_dead = {
             id = 46584,
             cast = 0,
             cooldown = 30,
             gcd = "spell",            
-            
+
             startsCombat = false,
             texture = 1100170,
 
             essential = true, -- new flag, will allow recasting even in precombat APL.
-            
+
             usable = function () return not pet.alive end,
             handler = function ()
                 summonPet( "ghoul", 3600 )
                 if talent.all_will_serve.enabled then summonPet( "skeleton", 3600 ) end
             end,
         },
-        
+
 
         --[[ runeforging = {
             id = 53428,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 237523,
-            
+
             usable = false,
             handler = function ()
             end,
         }, ]]
-        
+
 
         scourge_strike = {
             id = 55090,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 237530,
-            
+
             notalent = "clawing_shadows",
 
             --[[ 20181230:  Remove Festering Wounds requirement, improves AOE.
@@ -1148,43 +1148,43 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 apply_festermight( 1 )
             end,
         },
-        
+
 
         soul_reaper = {
             id = 130736,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 636333,
 
             talent = "soul_reaper",
-            
+
             handler = function ()
                 applyDebuff( "target", "soul_reaper" )
             end,
         },
-        
+
 
         summon_gargoyle = {
             id = 49206,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 458967,
-            
+
             talent = "summon_gargoyle",
 
             handler = function ()
                 summonPet( "gargoyle", 30 )
             end,
         },
-        
+
 
         transfusion = {
             id = 288977,
@@ -1194,12 +1194,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             spend = -20,
             spendType = "runic_power",
-            
+
             startsCombat = false,
             texture = 237515,
 
             pvptalent = "transfusion",
-            
+
             handler = function ()
                 applyBuff( "transfusion" )
             end,
@@ -1211,41 +1211,41 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 136132,
 
             talent = "unholy_blight",
-            
+
             handler = function ()
                 applyBuff( "unholy_blight" )
                 applyDebuff( "unholy_blight_dot" )
             end,
         },
-        
+
 
         unholy_frenzy = {
             id = 207289,
             cast = 0,
             cooldown = 75,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 136224,
 
             talent = "unholy_frenzy",
-            
+
             handler = function ()
                 applyBuff( "unholy_frenzy" )
                 stat.haste = state.haste + 0.20
             end,
         },
-        
+
 
         wraith_walk = {
             id = 212552,
@@ -1253,12 +1253,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             channeled = 4,
             cooldown = 60,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 1100041,
 
             talent = "wraith_walk",
-            
+
             handler = function ()
                 applyBuff( "wraith_walk" )
             end,
@@ -1270,15 +1270,15 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         enabled = true,
 
         aoe = 2,
-    
+
         nameplates = true,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 8,
-    
+
         potion = "battle_potion_of_strength",
-    
+
         package = "Unholy",
     } )
 

@@ -38,7 +38,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     spec:RegisterResource( Enum.PowerType.Mana )
 
-    
+
     -- Talents
     spec:RegisterTalents( {
         eye_of_the_tiger = 23106, -- 196607
@@ -375,7 +375,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     -- Use RegisterEvent since we're looking outside the state table.
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
         local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
-        
+
         if sourceGUID == state.GUID then
             local ability = class.abilities[ spellID ] and class.abilities[ spellID ].key
             if not ability then return end
@@ -385,16 +385,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 if ns.castsAll[2] == "tiger_palm" then ns.castsAll[2] = "none" end
                 if ns.castsOn[1] == "tiger_palm" then ns.castsOn[1] = "none" end
                 actual_combo = "none"
-            
+
                 Hekili:ForceUpdate( "WW_MISSED" )
-            
+
             elseif subtype == "SPELL_CAST_SUCCESS" and state.combos[ ability ] then
                 prev_combo = actual_combo
                 actual_combo = ability
 
                 -- For Alpha Tiger.
                 if ability == "tiger_palm" and not tigers_palmed[ destGUID ] then tigers_palmed[ destGUID ] = GetTime() end
-                
+
             elseif subtype == "SPELL_DAMAGE" and spellID == 148187 then
                 -- track the last tick.
                 state.buff.rushing_jade_wind.last_tick = GetTime()
@@ -450,7 +450,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         spinning_crane_kick.count = nil
         virtual_combo = nil
     end )
-    
+
 
     spec:RegisterHook( "IsUsable", function( spell )
         -- Allow repeats to happen if your chi has decayed to 0.
@@ -498,16 +498,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function ()
                 if buff.serenity.up or buff.bok_proc.up then return 0 end
                 return 1
             end,
             spendType = "chi",
-            
+
             startsCombat = true,
             texture = 574575,
-            
+
             cycle = 'mark_of_the_crane',
 
             handler = function ()
@@ -523,24 +523,24 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 applyDebuff( "target", "mark_of_the_crane", 15 )
             end,
         },
-        
+
 
         chi_burst = {
             id = 123986,
             cast = function () return 1 * haste end,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135734,
 
             talent = "chi_burst",
-            
+
             handler = function ()
                 gain( min( 2, active_enemies ), "chi" )
             end,
         },
-        
+
 
         chi_torpedo = {
             id = 115008,
@@ -549,24 +549,24 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 20,
             recharge = 20,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 607849,
-            
+
             talent = "chi_torpedo",            
 
             handler = function ()
                 applyBuff( "chi_torpedo" )
             end,
         },
-        
+
 
         chi_wave = {
             id = 115098,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 606541,
 
@@ -575,7 +575,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
             end,
         },
-        
+
 
         crackling_jade_lightning = {
             id = 117952,
@@ -584,11 +584,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
             breakable = true,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 20,
             spendPerSec = 20,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 606542,
 
@@ -597,23 +597,23 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 removeBuff( "the_emperors_capacitor" )   
             end,
         },
-        
+
 
         dampen_harm = {
             id = 122278,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 620827,
-            
+
             talent = "dampen_harm",
             handler = function ()
                 applyBuff( "dampen_harm" )
             end,
         },
-        
+
 
         detox = {
             id = 218164,
@@ -622,92 +622,92 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 8,
             recharge = 8,
             gcd = "spell",
-            
+
             spend = 20,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 460692,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         diffuse_magic = {
             id = 122783,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 775460,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         disable = {
             id = 116095,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 132316,
-            
+
             handler = function ()
                 if not debuff.disable.up then applyDebuff( "target", "disable" )
                 else applyDebuff( "target", "disable_root" ) end
             end,
         },
-        
+
 
         energizing_elixir = {
             id = 115288,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             -- toggle = "cooldowns",
 
             startsCombat = true,
             texture = 608938,
 
             talent = "energizing_elixir",
-            
+
             handler = function ()
                 gain( energy.max, "energy" )
                 gain( 2, "chi" )
             end,
         },
-        
+
 
         fist_of_the_white_tiger = {
             id = 261947,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 40,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 2065583,
 
             talent = "fist_of_the_white_tiger",
-            
+
             handler = function ()
                 gain( 3, "chi" )
             end,
         },
-        
+
 
         fists_of_fury = {
             id = 113656,
@@ -719,17 +719,17 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 return x
             end,
             gcd = "spell",
-            
+
             spend = function ()
                 if buff.serenity.up then return 0 end
                 if level < 116 and equipped.katsuos_eclipse then return 2 end
                 return 3
             end,
             spendType = "chi",
-            
+
             startsCombat = true,
             texture = 627606,
-            
+
             handler = function ()
                 if level < 116 and set_bonus.tier20_4pc == 1 then applyBuff( "pressure_point", 5 + action.fists_of_fury.cast ) end
                 if buff.fury_of_xuen.stack >= 50 then
@@ -742,35 +742,35 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 end
             end,
         },
-        
+
 
         fortifying_brew = {
             id = 201318,
             cast = 0,
             cooldown = 90,
             gcd = "off",
-            
+
             toggle = "defensives",
             pvptalent = "fortifying_brew",
 
             startsCombat = false,
             texture = 1616072,
-            
+
             handler = function ()
                 applyBuff( "fortifying_brew" )
             end,
         },
-        
+
 
         flying_serpent_kick = {
             id = 101545,
             cast = 0,
             cooldown = 25,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 606545,
-            
+
             handler = function ()
                 if buff.flying_serpent_kick.up then
                     removeBuff( "flying_serpent_kick" )
@@ -780,7 +780,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 end
             end,
         },
-        
+
 
         grapple_weapon = {
             id = 233759,
@@ -789,80 +789,80 @@ if UnitClassBase( 'player' ) == 'MONK' then
             gcd = "spell",
 
             pvptalent = "grapple_weapon",
-            
+
             startsCombat = true,
             texture = 132343,
-            
+
             handler = function ()
                 applyDebuff( "target", "grapple_weapon" )
             end,
         },
-        
+
 
         invoke_xuen = {
             id = 123904,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 620832,
 
             talent = "invoke_xuen",
-            
+
             handler = function ()
                 summonPet( "xuen", 45 )
             end,
 
             copy = "invoke_xuen_the_white_tiger"
         },
-        
+
 
         leg_sweep = {
             id = 119381,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 642414,
-            
+
             handler = function ()
                 applyDebuff( "target", "leg_sweep" )
                 active_dot.leg_sweep = active_enemies
             end,
         },
-        
+
 
         paralysis = {
             id = 115078,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 629534,
-            
+
             handler = function ()
                 applyDebuff( "target", "paralysis", 60 )
             end,
         },
-        
+
 
         provoke = {
             id = 115546,
             cast = 0,
             cooldown = 8,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 620830,
-            
+
             handler = function ()
                 applyDebuff( "target", "provoke", 8 )
             end,
@@ -874,54 +874,54 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cast = 10,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 132132,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         reverse_harm = {
             id = 287771,
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             spend = 40,
             spendType = "energy",
 
             pvptalent = "reverse_harm",
-            
+
             startsCombat = true,
             texture = 627486,
-            
+
             handler = function ()
                 health.actual = min( health.max, health.current + 0.08 * health.max )
                 gain( 2, "chi" )
             end,
         },
-        
+
 
         ring_of_peace = {
             id = 116844,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 839107,
 
             talent = "ring_of_peace",
-            
+
             handler = function ()
             end,
         },
-        
+
 
         rising_sun_kick = {
             id = 107428,
@@ -932,16 +932,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 return x
             end,
             gcd = "spell",
-            
+
             spend = function ()
                 if buff.serenity.up then return 0 end
                 return 2
             end,
             spendType = "chi",
-            
+
             startsCombat = true,
             texture = 642415,
-            
+
             cycle = "mark_of_the_crane",
 
             handler = function ()
@@ -951,7 +951,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 if azerite.sunrise_technique.enabled then applyDebuff( "target", "sunrise_technique" ) end
             end,
         },
-        
+
 
         roll = {
             id = 109132,
@@ -960,17 +960,17 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = function () return talent.celerity.enabled and 15 or 20 end,
             recharge = function () return talent.celerity.eanbled and 15 or 20 end,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 574574,
 
             notalent = "chi_torpedo",
-            
+
             handler = function ()
                 if azerite.exit_strategy.enabled then applyBuff( "exit_strategy" ) end
             end,
         },
-        
+
 
         rushing_jade_wind = {
             id = 116847,
@@ -982,34 +982,34 @@ if UnitClassBase( 'player' ) == 'MONK' then
             end,
             hasteCD = true,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "chi",
-            
+
             talent = "rushing_jade_wind",
 
             startsCombat = false,
             texture = 606549,
-            
+
             handler = function ()
                 applyBuff( "rushing_jade_wind" )
             end,
         },
-        
+
 
         serenity = {
             id = 152173,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 988197,
 
             talent = "serenity",
-            
+
             handler = function ()
                 applyBuff( "serenity" )
                 setCooldown( "fist_of_the_white_tiger", cooldown.fist_of_the_white_tiger.remains - ( cooldown.fist_of_the_white_tiger.remains / 2 ) )
@@ -1018,14 +1018,14 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 setCooldown( "rushing_jade_wind", cooldown.rushing_jade_wind.remains - ( cooldown.rushing_jade_wind.remains / 2 ) )
             end,
         },
-        
+
 
         spear_hand_strike = {
             id = 116705,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 608940,
 
@@ -1038,7 +1038,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 interrupt()
             end,
         },
-        
+
 
         spinning_crane_kick = {
             id = 101546,
@@ -1046,18 +1046,18 @@ if UnitClassBase( 'player' ) == 'MONK' then
             channeled = true,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return buff.dance_of_chiji.up and 0 or 2 end,
             spendType = "chi",
-            
+
             startsCombat = true,
             texture = 606543,
-            
+
             handler = function ()
                 removeBuff( "dance_of_chiji" )
             end,
         },
-        
+
 
         storm_earth_and_fire = {
             id = function () return buff.storm_earth_and_fire.up and 221771 or 137639 end,
@@ -1066,7 +1066,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 90,
             recharge = 90,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
@@ -1081,20 +1081,20 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             copy = { 137639, 221771 }
         },
-        
+
 
         tiger_palm = {
             id = 100780,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 50,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 606551,
-            
+
             cycle = "mark_of_the_crane",
 
             buff = function () return prev_gcd[1].tiger_palm and buff.hit_combo.up and "hit_combo" or nil end,
@@ -1117,17 +1117,17 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 removeBuff( "power_strikes" )
             end,
         },
-        
+
 
         tigereye_brew = {
             id = 247483,
             cast = 0,
             cooldown = 1,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 613399,
-            
+
             buff = "tigereye_brew_stack",
             pvptalent = "tigereye_brew",
 
@@ -1136,36 +1136,36 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 removeStack( "tigereye_brew_stack", min( 10, buff.tigereye_brew_stack.stack ) )
             end,
         },
-        
+
 
         tigers_lust = {
             id = 116841,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 651727,
 
             talent = "tigers_lust",
-            
+
             handler = function ()
                 applyBuff( "tigers_lust" )
             end,
         },
-        
+
 
         touch_of_death = {
             id = 115080,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 606552,
-            
+
             cycle = "touch_of_death",
 
             handler = function ()
@@ -1175,14 +1175,14 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 applyDebuff( "target", "touch_of_death" )
             end,
         },
-        
+
 
         touch_of_karma = {
             id = 122470,
             cast = 0,
             cooldown = 90,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 651728,
 
@@ -1194,62 +1194,62 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 applyDebuff( "target", "touch_of_karma_debuff" )
             end,
         },
-        
+
 
         transcendence = {
             id = 101643,
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 627608,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         transcendence_transfer = {
             id = 119996,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 237585,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         vivify = {
             id = 116670,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 1360980,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         whirling_dragon_punch = {
             id = 152175,
             cast = 0,
             cooldown = 24,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 988194,
-            
+
             talent = "whirling_dragon_punch",
 
             usable = function () return cooldown.fists_of_fury.remains > 0 and cooldown.rising_sun_kick.remains > 0 end,
@@ -1264,15 +1264,15 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         aoe = 2,
         cycle = true,
-    
+
         nameplates = true,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 8,
-    
+
         potion = "potion_of_bursting_blood",
-        
+
         package = "Windwalker",
 
         strict = false

@@ -237,24 +237,24 @@ local function GenerateDiagnosticTooltip( widget, event )
     local options = user.options
     local path = user.path
     local appName = user.appName
-    
+
     local name    = GetOptionsMemberValue( "name",  opt, options, path, appName )
     local arg, listName, actID = GetOptionsMemberValue( "arg",   opt, options, path, appName )
     local desc    = GetOptionsMemberValue( "desc",  opt, options, path, appName )
     local usage   = GetOptionsMemberValue( "usage", opt, options, path, appName )
     local descStyle = opt.descStyle
-    
+
     if descStyle and descStyle ~= "tooltip" then return end
-    
+
     GameTooltip:SetOwner( widget.frame, "ANCHOR_TOPRIGHT" )
     GameTooltip:SetText(name, 1, .82, 0, 1)
-    
+
     if type( arg ) == "string" then
         GameTooltip:AddLine(arg, 1, 1, 1, 1)
     end
-    
+
     local tested = false
-    
+
     local packName, script = path[ 2 ], path[ #path ]
     -- print( unpack( path ) )
 
@@ -272,7 +272,7 @@ local function GenerateDiagnosticTooltip( widget, event )
             GameTooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
 
             if warning then GameTooltip:AddLine( warning, 1, 0, 0 ) end
-        
+
         else
             local result, warning = scripts:CheckScript( scriptID, action, script )
 
@@ -284,22 +284,22 @@ local function GenerateDiagnosticTooltip( widget, event )
 
         tested = true
     end
-        
+
     if arg then -- and #arg > 0 then        
         if tested then GameTooltip:AddLine(" ") end
-        
+
         GameTooltip:AddLine( "Values" )
         for k, v in orderedPairs( arg ) do
             GameTooltip:AddDoubleLine( key_cache[ k ], ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
         end
     end
-    
+
     if type( usage ) == "string" then
         GameTooltip:AddLine( "Usage: "..usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
     end
-    
+
     GameTooltip:Show()
-    
+
 end
 
 

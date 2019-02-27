@@ -15,7 +15,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     -- spec:RegisterResource( Enum.PowerType.ArcaneCharges )
     spec:RegisterResource( Enum.PowerType.Mana )
-    
+
     -- Talents
     spec:RegisterTalents( {
         firestarter = 22456, -- 205026
@@ -289,7 +289,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
         else removeBuff( "rune_of_power" ) end
     end )
-    
+
 
     spec:RegisterStateExpr( "auto_advance", function () return false end )
 
@@ -301,39 +301,39 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
 
             nobuff = "arcane_intellect",
             essential = true,
-            
+
             startsCombat = false,
             texture = 135932,
-           
+
             handler = function ()
                 applyBuff( "arcane_intellect" )
             end,
         },
-        
+
 
         blast_wave = {
             id = 157981,
             cast = 0,
             cooldown = 25,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135903,
 
             talent = "blast_wave",
-            
+
             usable = function () return target.distance < 8 end,
             handler = function ()
                 applyDebuff( "target", "blast_wave" )
             end,
         },
-        
+
 
         blazing_barrier = {
             id = 235313,
@@ -342,18 +342,18 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             gcd = "spell",
 
             defensive = true,
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 132221,
-            
+
             handler = function ()
                 applyBuff( "blazing_barrier" )
             end,
         },
-        
+
 
         blink = {
             id = function () return talent.shimmer.enabled and 212653 or 1953 end,
@@ -362,10 +362,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = function () return talent.shimmer.enabled and 20 or 15 end,
             recharge = function () return talent.shimmer.enabled and 20 or 15 end,
             gcd = "off",
-            
+
             spend = function () return 0.02 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = function () return talent.shimmer.enabled and 135739 or 135736 end,
 
@@ -384,15 +384,15 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 120,
             gcd = "off",
             castableWhileCasting = true,
-            
+
             spend = 0.1,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 135824,
-            
+
             handler = function ()
                 applyBuff( "combustion" )
                 stat.crit = stat.crit + 100
@@ -400,24 +400,24 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if azerite.wildfire.enabled then applyBuff( 'wildfire' ) end
             end,
         },
-        
+
 
         --[[ conjure_refreshment = {
             id = 190336,
             cast = 3,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 134029,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         counterspell = {
             id = 2139,
@@ -427,10 +427,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             interrupt = true,
             toggle = "interrupts",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135856,
 
@@ -441,20 +441,20 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 interrupt()
             end,
         },
-        
+
 
         dragons_breath = {
             id = 31661,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 134153,
-            
+
             usable = function () return target.within12 end,
             handler = function ()
                 if talent.alexstraszas_fury.enabled then
@@ -465,7 +465,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 applyDebuff( "target", "dragons_breath" )
             end,
         },
-        
+
 
         fire_blast = {
             id = 108853,
@@ -475,38 +475,38 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             recharge = function () return talent.flame_on.enabled and 10 or 12 end,
             gcd = "off",
             castableWhileCasting = true,
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135807,
 
             nobuff = "fire_blasting", -- horrible.
-            
+
             handler = function ()
                 if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
                 else applyBuff( "heating_up" ) end
 
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 if azerite.blaster_master.enabled then addStack( "blaster_master", nil, 1 ) end
-                
+
                 removeDebuff( "target", "preheat" )
 
                 applyBuff( "fire_blasting" )
             end,
         },
-        
+
 
         fireball = {
             id = 133,
             cast = 2.25,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135812,
 
@@ -548,7 +548,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if buff.combustion.up or ( talent.firestarter.enabled and target.health.pct > 90 ) or ( stat.crit + ( buff.enhanced_pyrotechnics.stack * 10 ) >= 100 ) then
                     if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
                     else applyBuff( "heating_up" ) end
-                    
+
                     if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 else
                     addStack( "enhanced_pyrotechnics", nil, 1 )
@@ -559,20 +559,20 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if talent.conflagration.enabled then applyDebuff( "target", "conflagration" ) end
             end, ]]
         },
-        
+
 
         flamestrike = {
             id = 2120,
             cast = function () return buff.hot_streak.up and 0 or 4 * haste end,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135826,
-            
+
             handler = function ()
                 removeBuff( "hot_streak" )
                 if buff.combustion.up then applyBuff( "heating_up" ) end
@@ -581,7 +581,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 applyDebuff( "target", "flamestrike" )
             end,
         },
-        
+
 
         frost_nova = {
             id = 122,
@@ -590,123 +590,123 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 30,
             recharge = 30,
             gcd = "spell",
-            
+
             defensive = true,
 
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135848,
-            
+
             handler = function ()
                 applyDebuff( "target", "frost_nova" )
             end,
         },
-        
+
 
         ice_block = {
             id = 45438,
             cast = 0,
             cooldown = 240,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensive = true,
 
             startsCombat = false,
             texture = 135841,
-            
+
             handler = function ()
                 applyBuff( "ice_block" )
                 applyDebuff( "player", "hypothermia" )
             end,
         },
-        
+
 
         invisibility = {
             id = 66,
             cast = 0,
             cooldown = 300,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             toggle = "defensives",
             defensive = true,
 
             startsCombat = false,
             texture = 132220,
-            
+
             handler = function ()
                 applyBuff( "preinvisibility" )
                 applyBuff( "invisibility", 23 )
             end,
         },
-        
+
 
         living_bomb = {
             id = 44457,
             cast = 0,
             cooldown = 12,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 236220,
-            
+
             handler = function ()
                 applyDebuff( "target", "living_bomb" )
             end,
         },
-        
+
 
         meteor = {
             id = 153561,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 1033911,
 
             velocity = function ()
                 return target.maxR / 1.5
             end,
-            
+
             onImpact = function ()
                 applyDebuff( "target", "meteor_burn" )
             end,
         },
-        
+
 
         mirror_image = {
             id = 55342,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 135994,
 
             talent = "mirror_image",
-            
+
             handler = function ()
                 applyBuff( "mirror_image" )
             end,
         },
-        
+
 
         phoenix_flames = {
             id = 257541,
@@ -715,14 +715,14 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 30,
             recharge = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1392549,
 
             talent = "phoenix_flames",
 
             velocity = 50,
-            
+
             onImpact = function ()
                 if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
                 else applyBuff( "heating_up" ) end
@@ -730,35 +730,35 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
             end,
         },
-        
+
 
         polymorph = {
             id = 118,
             cast = 1.7,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 136071,
-            
+
             handler = function ()
                 applyDebuff( "target", "polymorph" )
             end,
         },
-        
+
 
         pyroblast = {
             id = 11366,
             cast = function () return buff.hot_streak.up and 0 or 4.5 * haste end,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135808,
 
@@ -796,7 +796,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 applyDebuff( "target", "ignite" )
                 if Hekili.ActiveDebug then Hekili:Debug( "willCrit: %d, heating_up: %d, hot_streak: %d, ignite: %d", willCrit and 1 or 0, buff.heating_up.up and 1 or 0, buff.hot_streak.up and 1 or 0, debuff.ignite.up and 1 or 0 ) end
             end,
-            
+
             usable = function () 
                 if action.pyroblast.cast > 0 and not boss then return false, "hardcasts only allowed on bosses" end
                 return true
@@ -814,45 +814,45 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     removeBuff( "hot_streak" )
                     removeStack( "pyroclasm" )
                 end
-                
+
                 applyDebuff( "target", "ignite" )
             end, ]]
         },
-        
+
 
         remove_curse = {
             id = 475,
             cast = 0,
             cooldown = 8,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136082,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         ring_of_frost = {
             id = 113724,
             cast = 2,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 0.08,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 464484,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         rune_of_power = {
             id = 116011,
@@ -861,7 +861,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 40,
             recharge = 40,
             gcd = "spell",
-            
+
             -- toggle = "cooldowns",
 
             startsCombat = false,
@@ -869,25 +869,25 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             nobuff = "rune_of_power",
             talent = "rune_of_power",
-            
+
             handler = function ()
                 applyBuff( "rune_of_power" )
             end,
         },
-        
+
 
         scorch = {
             id = 2948,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135827,
-            
+
             handler = function ()
                 if talent.frenetic_speed.enabled then applyBuff( "frenetic_speed" ) end
 
@@ -901,57 +901,57 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if azerite.preheat.enabled then applyDebuff( "target", "preheat" ) end
             end,
         },
-        
+
 
         slow_fall = {
             id = 130,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135992,
-            
+
             handler = function ()
                 applyBuff( "slow_fall" )
             end,
         },
-        
+
 
         spellsteal = {
             id = 30449,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.21,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135729,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         time_warp = {
             id = 80353,
             cast = 0,
             cooldown = 300,
             gcd = "off",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 458224,
-            
+
             handler = function ()
                 applyBuff( "time_warp" )
                 applyDebuff( "player", "temporal_displacement" )
@@ -965,15 +965,15 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
         aoe = 3,
         gcdSync = false,
-    
+
         nameplates = false,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 6,
-    
+
         potion = "battle_potion_of_intellect",
-        
+
         package = "Fire",
     } )
 

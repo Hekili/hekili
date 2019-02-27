@@ -61,7 +61,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             value = 40,
         }
     } )
-    
+
     -- Talents
     spec:RegisterTalents( {
         blind_fury = 21854, -- 203550
@@ -377,7 +377,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     spec:RegisterGear( "soul_of_the_slayer", 151639 )
     spec:RegisterGear( "chaos_theory", 151798 )
     spec:RegisterGear( "oblivions_embrace", 151799 )
-    
+
 
 
     -- Abilities
@@ -388,22 +388,22 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return 40 - buff.thirsting_blades.stack end,
             spendType = "fury",
-            
+
             startsCombat = true,
             texture = 1303275,
 
             bind = "chaos_strike",
             buff = "metamorphosis",
-            
+
             handler = function ()
                 removeBuff( "thirsting_blades" )
                 if azerite.thirsting_blades.enabled then applyBuff( "thirsting_blades", nil, 0 ) end
             end,
         },
-        
+
 
         blade_dance = {
             id = 188499,
@@ -411,89 +411,89 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 9,
             hasteCD = true,
             gcd = "spell",
-            
+
             spend = function () return 35 - ( talent.first_blood.enabled and 20 or 0 ) end,
             spendType = "fury",
-            
+
             startsCombat = true,
             texture = 1305149,
 
             bind = "death_sweep",
             nobuff = "metamorphosis",
-            
+
             handler = function ()
                 applyBuff( "blade_dance" )
                 setCooldown( "death_sweep", 9 * haste )
                 if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( buff.solitude.up and 22 or 20, 'fury' ) end
             end,
         },
-        
+
 
         blur = {
             id = 198589,
             cast = 0,
             cooldown = 60,
             gcd = "off",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 1305150,
-            
+
             handler = function ()
                 applyBuff( "blur" )
             end,
         },
-        
+
 
         chaos_nova = {
             id = 179057,
             cast = 0,
             cooldown = function () return talent.unleashed_power.enabled and 40 or 60 end,
             gcd = "spell",
-            
+
             spend = function () return talent.unleashed_power.enabled and 0 or 30 end,
             spendType = "fury",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 135795,
-            
+
             handler = function ()
                 applyDebuff( "target", "chaos_nova" )
             end,
         },
-        
+
 
         chaos_strike = {
             id = 162794,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return 40 - buff.thirsting_blades.stack end,
             spendType = "fury",
-            
+
             startsCombat = true,
             texture = 1305152,
 
             bind = "annihilation",
             nobuff = "metamorphosis",
-            
+
             handler = function ()
                 removeBuff( "thirsting_blades" )
                 if azerite.thirsting_blades.enabled then applyBuff( "thirsting_blades", nil, 0 ) end
             end,
         },
-        
+
 
         consume_magic = {
             id = 278326,
             cast = 0,
             cooldown = 10,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 828455,
 
@@ -503,42 +503,42 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 gain( buff.solitude.up and 22 or 20, "fury" )
             end,
         },
-        
+
 
         dark_slash = {
             id = 258860,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 136189,
 
             talent = "dark_slash",
-            
+
             handler = function ()
                 applyDebuff( "target", "dark_slash" )
             end,
         },
-        
+
 
         darkness = {
             id = 196718,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = true,
             texture = 1305154,
-            
+
             handler = function ()
                 last_darkness = query_time
                 applyBuff( "darkness" )
             end,
         },
-        
+
 
         death_sweep = {
             id = 210152,
@@ -547,23 +547,23 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 9,
             hasteCD = true,
             gcd = "spell",
-            
+
             spend = function () return 35 - ( talent.first_blood.enabled and 20 or 0 ) end,
             spendType = "fury",
-            
+
             startsCombat = true,
             texture = 1309099,
 
             bind = "blade_dance",
             buff = "metamorphosis",
-            
+
             handler = function ()
                 applyBuff( "death_sweep" )
                 setCooldown( "blade_dance", 9 * haste )
                 if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( buff.solitude.up and 22 or 20, "fury" ) end
             end,
         },
-        
+
 
         demons_bite = {
             id = 162243,
@@ -573,27 +573,27 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             spend = function () return buff.solitude.up and -22 or -20 end,
             spendType = "fury",
-            
+
             startsCombat = true,
             texture = 135561,
 
             notalent = "demon_blades",
-            
+
             handler = function ()
                 if level < 116 and equipped.anger_of_the_halfgiants then gain( 1, "fury" ) end
             end,
         },
-        
+
 
         disrupt = {
             id = 183752,
             cast = 0,
             cooldown = 15,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 1305153,
-            
+
             toggle = "interrupts",
 
             debuff = "casting",
@@ -604,7 +604,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 gain( buff.solitude.up and 33 or 30, "fury" )
             end,
         },
-        
+
 
         eye_beam = {
             id = 198013,
@@ -615,13 +615,13 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             end,
             channeled = true,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "fury",
-            
+
             startsCombat = true,
             texture = 1305156,
-            
+
             handler = function ()
                 -- not sure if we need to model blind_fury gains.
                 -- if talent.blind_fury.enabled then gain( 120, "fury" ) end
@@ -640,24 +640,24 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 end
             end,
         },
-        
+
 
         eye_of_leotheras = {
             id = 206649,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             pvptalent = "eye_of_leotheras",
 
             startsCombat = true,
             texture = 1380366,
-            
+
             handler = function ()
                 applyDebuff( "target", "eye_of_leotheras" )
             end,
         },
-        
+
 
         fel_barrage = {
             id = 258925,
@@ -665,39 +665,39 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 60,
             channeled = true,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 2065580,
 
             talent = "fel_barrage",
-            
+
             handler = function ()
                 applyBuff( "fel_barrage", 2 )
             end,
         },
-        
+
 
         fel_eruption = {
             id = 211881,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 10,
             spendType = "fury",
-            
+
             startsCombat = true,
             texture = 1118739,
 
             talent = "fel_eruption",
-            
+
             handler = function ()
                 applyDebuff( "target", "fel_eruption" )
             end,
         },
-        
+
 
         fel_rush = {
             id = 195072,
@@ -706,10 +706,10 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 10,
             recharge = 10,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1247261,
-            
+
             usable = function () return not prev_gcd[1].fel_rush end,            
             handler = function ()
                 if talent.momentum.enabled then applyBuff( "momentum" ) end
@@ -718,7 +718,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 setCooldown( "global_cooldown", 0.25 )
             end,
         },
-        
+
 
         felblade = {
             id = 232893,
@@ -729,7 +729,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             spend = function () return buff.solitude.up and -44 or -40 end,
             spendType = "fury",
-            
+
             startsCombat = true,
             texture = 1344646,
 
@@ -751,69 +751,69 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             startsCombat = true,
         },
-        
+
 
         --[[ glide = {
             id = 131347,
             cast = 0,
             cooldown = 1.5,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1305157,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         immolation_aura = {
             id = 258920,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1344649,
 
             talent = "immolation_aura",
-            
+
             handler = function ()
                 applyBuff( "immolation_aura" )
                 gain( buff.solitude.up and 11 or 10, "fury" )
             end,
         },
-        
+
 
         imprison = {
             id = 217832,
             cast = 0,
             cooldown = function () return pvptalent.detainment.enabled and 60 or 45 end,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 1380368,
-            
+
             handler = function ()
                 applyDebuff( "target", "imprison" )
             end,
         },
-        
+
 
         mana_break = {
             id = 203704,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 50,
             spendType = "fury",
 
             pvptalent = "mana_break",
-            
+
             startsCombat = true,
             texture = 1380369,
-            
+
             handler = function ()
                 applyDebuff( "target", "mana_break" )
             end,
@@ -825,31 +825,31 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             spend = 50,
             spendType = "fury",
 
             pvptalent = "mana_rift",
-            
+
             startsCombat = true,
             texture = 1033912,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         metamorphosis = {
             id = 191427,
             cast = 0,
             cooldown = function () return pvptalent.demonic_origins.up and 120 or 240 end,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 1247262,
-            
+
             handler = function ()
                 applyBuff( "metamorphosis" )
                 last_metamorphosis = query_time
@@ -873,76 +873,76 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 end
             }
         },
-        
+
 
         nemesis = {
             id = 206491,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 236299,
-            
+
             talent = "nemesis",
 
             handler = function ()
                 applyDebuff( "target", "nemesis" )
             end,
         },
-        
+
 
         netherwalk = {
             id = 196555,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = true,
             texture = 463284,
 
             talent = "netherwalk",
-            
+
             handler = function ()
                 applyBuff( "netherwalk" )
                 setCooldown( "global_cooldown", 5 )
             end,
         },
-        
+
 
         rain_from_above = {
             id = 206803,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             pvptalent = "rain_from_above",
 
             startsCombat = false,
             texture = 1380371,
-            
+
             handler = function ()
                 applyBuff( "rain_from_above" )
             end,
         },
-        
+
 
         reverse_magic = {
             id = 205604,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             -- toggle = "cooldowns",
             pvptalent = "reverse_magic",
 
             startsCombat = false,
             texture = 1380372,
-            
+
             handler = function ()
                 if debuff.reversible_magic.up then removeDebuff( "player", "reversible_magic" ) end
             end,
@@ -954,15 +954,15 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1247266,
-            
+
             handler = function ()
                 -- applies spectral_sight (188501)
             end,
         }, ]]
-        
+
 
         throw_glaive = {
             id = 185123,
@@ -972,40 +972,40 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             recharge = 9,
             hasteCD = true,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1305159,
-            
+
             handler = function ()
                 if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
             end,
         },
-        
+
 
         torment = {
             id = 281854,
             cast = 0,
             cooldown = 8,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 1344654,
-            
+
             handler = function ()
                 applyDebuff( "target", "torment" )
             end,
         },
-        
+
 
         vengeful_retreat = {
             id = 198793,
             cast = 0,
             cooldown = function () return talent.momentum.enabled and 20 or 25 end,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1348401,
-            
+
             handler = function ()
                 if target.within8 then
                     applyDebuff( "target", "vengeful_retreat" )
@@ -1022,15 +1022,15 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         enabled = true,
 
         aoe = 2,
-    
+
         nameplates = true,
         nameplateRange = 7,
-        
+
         damage = true,
         damageExpiration = 8,
-    
+
         potion = "battle_potion_of_agility",
-    
+
         package = "Havoc",
     } )
 

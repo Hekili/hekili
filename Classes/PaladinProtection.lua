@@ -16,7 +16,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
     spec:RegisterResource( Enum.PowerType.HolyPower )
     spec:RegisterResource( Enum.PowerType.Mana )
-    
+
     -- Talents
     spec:RegisterTalents( {
         holy_shield = 22428, -- 152261
@@ -271,7 +271,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
     spec:RegisterGear( 'tier21', 152151, 152153, 152149, 152148, 152150, 152152 )
     spec:RegisterGear( 'class', 139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697 )
-    
+
     spec:RegisterGear( "breastplate_of_the_golden_valkyr", 137017 )
     spec:RegisterGear( "heathcliffs_immortality", 137047 )
     spec:RegisterGear( 'justice_gaze', 137065 )
@@ -305,19 +305,19 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             channeled = true,
             cooldown = 180,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensives = true,
 
 
             startsCombat = false,
             texture = 135909,
-            
+
             handler = function ()
                 applyBuff( "aegis_of_light" )
             end,
         },
-        
+
 
         ardent_defender = {
             id = 31850,
@@ -325,30 +325,30 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = function ()
                 return ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( ( level < 116 and equipped.pillars_of_inmost_light ) and 0.75 or 1 ) * 120 end,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensives = true,
 
             startsCombat = false,
             texture = 135870,
-            
+
             handler = function ()
                 applyBuff( "ardent_defender" )
             end,
         },
-        
+
 
         avengers_shield = {
             id = 31935,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             interrupt = true,
 
             startsCombat = true,
             texture = 135874,
-            
+
             handler = function ()
                 applyBuff( "avengers_valor" )
                 applyDebuff( "target", "avengers_shield" )
@@ -363,31 +363,31 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 end
             end,
         },
-        
+
 
         avenging_wrath = {
             id = 31884,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 135875,
-            
+
             handler = function ()
                 applyBuff( "avenging_wrath" )
             end,
         },
-        
+
 
         bastion_of_light = {
             id = 204035,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensives = true,
 
@@ -395,12 +395,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             texture = 535594,
 
             talent = "bastion_of_light",
-            
+
             handler = function ()
                 gainCharges( "shield_of_the_righteous", 3 )
             end,
         },
-        
+
 
         blessed_hammer = {
             id = 204019,
@@ -410,18 +410,18 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             recharge = 4.5,
             hasteCD = true,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 535595,
 
             talent = "blessed_hammer",
-            
+
             handler = function ()
                 applyDebuff( "target", "blessed_hammer" )
                 last_blessed_hammer = query_time
             end,
         },
-        
+
 
         blessing_of_freedom = {
             id = 1044,
@@ -430,18 +430,18 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 25,
             recharge = 25,
             gcd = "spell",
-            
+
             spend = 0.15,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135968,
-            
+
             handler = function ()
                 applyBuff( "blessing_of_freedom" )
             end,
         },
-        
+
 
         blessing_of_protection = {
             id = 1022,
@@ -450,10 +450,10 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 300,
             recharge = 300,
             gcd = "spell",
-            
+
             spend = 0.15,
             spendType = "mana",
-            
+
             toggle = "defensives",
             defensives = true,
 
@@ -468,7 +468,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 applyDebuff( "player", "forbearance" )
             end,
         },
-        
+
 
         blessing_of_sacrifice = {
             id = 6940,
@@ -477,36 +477,36 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 120,
             recharge = 120,
             gcd = "off",
-            
+
             spend = 0.07,
             spendType = "mana",
-            
+
             defensives = true,
 
             startsCombat = false,
             texture = 135966,
-            
+
             handler = function ()
                 applyBuff( "blessing_of_sacrifice" )
             end,
         },
-        
+
 
         blessing_of_spellwarding = {
             id = 204018,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             spend = 0.15,
             spendType = "mana",
-            
+
             -- toggle = "cooldowns",
             defensives = true,
 
             startsCombat = false,
             texture = 135880,
-            
+
             talent = "blessing_of_spellwarding",
 
             usable = function () return debuff.forbearance.down end,
@@ -515,17 +515,17 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 applyDebuff( "player", "forbearance" )
             end,
         },
-        
+
 
         blinding_light = {
             id = 115750,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             spend = 0.08,
             spendType = "mana",
-            
+
             interrupt = true,
 
             startsCombat = true,
@@ -542,7 +542,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 active_dot.blinding_light = max( active_enemies, active_dot.blinding_light )
             end,
         },
-        
+
 
         cleanse_toxins = {
             id = 213644,
@@ -551,17 +551,17 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 8,
             recharge = 8,
             gcd = "spell",
-            
+
             spend = 0.06,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135953,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         consecration = {
             id = 26573,
@@ -569,38 +569,38 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 4.5,
             hasteCD = true,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135926,
-            
+
             handler = function ()
                 applyBuff( "consecration", 12 )
                 applyDebuff( "target", "consecration_dot" )
                 last_consecration = query_time
             end,
         },
-        
+
 
         --[[ contemplation = {
             id = 121183,
             cast = 0,
             cooldown = 8,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 134916,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         divine_shield = {
             id = 642,
             cast = 0,
             cooldown = function () return ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * 300 end,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensives = true,
 
@@ -617,7 +617,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 end
             end,
         },
-        
+
 
         divine_steed = {
             id = 190784,
@@ -626,69 +626,69 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 45,
             recharge = 45,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 1360759,
-            
+
             handler = function ()
                 applyBuff( "divine_steed" )
             end,
         },
-        
+
 
         flash_of_light = {
             id = 19750,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.22,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135907,
-            
+
             handler = function ()
                 gain( 0.5 * health.max, "health" )
             end,
         },
-        
+
 
         guardian_of_ancient_kings = {
             id = 86659,
             cast = 0,
             cooldown = 300,
             gcd = "off",
-            
+
             toggle = "defensives",
             defensives = true,
 
             startsCombat = false,
             texture = 135919,
-            
+
             handler = function ()
                 applyBuff( "guardian_of_ancient_kings" )
             end,
         },
-        
+
 
         hammer_of_justice = {
             id = 853,
             cast = 0,
             cooldown = function () return ( level < 116 and equipped.justice_gaze ) and 15 or 60 end,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135963,
-            
+
             handler = function ()
                 applyDebuff( "target", "hammer_of_justice" )
             end,
         },
-        
+
 
         hammer_of_the_righteous = {
             id = 53595,
@@ -698,16 +698,16 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             recharge = 4.5,
             hasteCD = true,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 236253,
-            
+
             notalent = "blessed_hammer",
 
             handler = function ()
             end,
         },
-        
+
 
         hand_of_reckoning = {
             id = 62124,
@@ -716,18 +716,18 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 8,
             recharge = 8,
             gcd = "off",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135984,
-            
+
             handler = function ()
                 applyDebuff( "target", "hand_of_reckoning" )
             end,
         },
-        
+
 
         hand_of_the_protector = {
             id = 213652,
@@ -736,20 +736,20 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = function () return ( ( level < 116 and equipped.saruans_resolve ) and 0.9 or 1 ) * 15 * haste end,
             recharge = function () return ( ( level < 116 and equipped.saruans_resolve ) and 0.9 or 1 ) * 15 * haste end,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensives = true,
 
             startsCombat = false,
             texture = 236248,
-            
+
             talent = "hand_of_the_protector",
 
             handler = function ()
                 gain( 0.1 * health.max, "health" )
             end,
         },
-        
+
 
         judgment = {
             id = 275779,
@@ -759,44 +759,44 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             recharge = 6,
             hasteCD = true,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135959,
-            
+
             handler = function ()
                 applyDebuff( "target", "judgment" )
-                
+
                 if talent.judgment_of_light.enabled then applyDebuff( "target", "judgment_of_light", 30, 25 ) end
-                
+
                 if talent.fist_of_justice.enabled then
                     cooldown.hammer_of_justice.expires = max( 0, cooldown.hammer_of_justice.expires - 6 ) 
                 end
             end,
         },
-        
+
 
         lay_on_hands = {
             id = 633,
             cast = 0,
             cooldown = function () return ( ( level < 116 and equipped.tyrs_hand_of_faith ) and 0.3 or 1 ) * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * 600 end,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensives = true,
 
             startsCombat = false,
             texture = 135928,
-            
+
             handler = function ()
                 gain( health.max, "health" )
                 applyDebuff( "player", "forbearance" )
                 if azerite.empyreal_ward.enabled then applyBuff( "empyrael_ward" ) end
             end,
         },
-        
+
 
         light_of_the_protector = {
             id = 184092,
@@ -806,7 +806,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             recharge = function () return ( ( level < 116 and equipped.saruans_resolve ) and 0.9 or 1 ) * 17 * haste end,
             hasteCD = true,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensives = true,
 
@@ -814,19 +814,19 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             texture = 1360763,
 
             notalent = "hand_of_the_protector",
-            
+
             handler = function ()
                 gain( 0.1 * health.max, "health" )
             end,
         },
-        
+
 
         rebuke = {
             id = 96231,
             cast = 0,
             cooldown = 15,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 523893,
 
@@ -839,54 +839,54 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 interrupt()
             end,
         },
-        
+
 
         --[[ redemption = {
             id = 7328,
             cast = 10,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135955,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         repentance = {
             id = 20066,
             cast = 1.7,
             cooldown = 15,
             gcd = "spell",
-            
+
             interrupt = true,
 
             spend = 0.1,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135942,
-            
+
             handler = function ()
                 applyDebuff( "target", "repentance" )
             end,
         },
-        
+
 
         seraphim = {
             id = 152262,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 1030103,
-            
+
             usable = function () return cooldown.shield_of_the_righteous.charges > 0 end,
             handler = function ()
                 local used = min( 2, cooldown.shield_of_the_righteous.charges )
@@ -894,7 +894,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 spendCharges( "shield_of_the_righteous", used )
             end,
         },
-        
+
 
         shield_of_the_righteous = {
             id = 53600,
@@ -933,15 +933,15 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         enabled = true,
 
         aoe = 2,
-    
+
         nameplates = true,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 8,
-    
+
         potion = "potion_of_bursting_blood",
-        
+
         package = "Protection Paladin",
     } )
 

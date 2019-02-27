@@ -226,7 +226,7 @@ function Hekili:DumpMinions()
 
     return o
 end
-        
+
 
 local debuffs = {}
 local debuffCount = {}
@@ -498,21 +498,21 @@ do
         enemy.lastSeen = time
     end
 
-    
+
     local DEFAULT_TTD = 15  
-    local INF = ( 1 / 0 )
+    local FOREVER = 3600
 
 
     function Hekili:GetTTD( unit )
         local guid = UnitExists( unit ) and UnitCanAttack( "player", unit ) and UnitGUID( unit )
-        if not guid then return INF end
+        if not guid then return FOREVER end
 
         local enemy = db[ guid ]
-        if not enemy then return INF end
+        if not enemy then return FOREVER end
 
         -- Don't have enough data to predict yet.
-        if enemy.rate == 0 then return INF, enemy.n end
-        
+        if enemy.n < 3 or enemy.rate == 0 then return FOREVER, enemy.n end
+
         local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
         local healthPct = health / healthMax
 
@@ -521,7 +521,7 @@ do
         return ceil( healthPct / enemy.rate ), enemy.n
     end
 
-    
+
     function Hekili:GetGreatestTTD()
         local time = 0
 

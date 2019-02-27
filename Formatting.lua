@@ -824,7 +824,7 @@ local COLOR_NORMAL = '|r'
 function ns.formatValue( value )
 
   if value == nil then value = 'nil' end
-  
+
   if type( value ) == 'number' then
     -- Check for decimal places.
     if select(2, modf( value )) ~= 0 then

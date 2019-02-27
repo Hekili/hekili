@@ -41,38 +41,38 @@ local exprBreak = {
 local function forgetMeNots( str )
    -- First, handle already bracketed "!(X)" -> "not (X)".
    local found = 1
-   
+
    while found > 0 do
       str, found = str:gsub( "%s*!%s*(%b())%s*", " not %1 " )
    end
-   
+
    -- The remaining conditions are not bracketed, but may include brackets.
    -- Such as !5>2+(1*3).
    -- So we'll start from the !, then go through the string until it's time to stop.
-   
+
    local i = 1
    local substring
-   
+
    while( str:find("!") ) do   
       local start = str:find("!")
-      
+
       --while str:sub( start, start ):match("%s") do
       --   start = start + 1
       --      end
-      
+
       local parens = 0
       local finish = -1
-      
+
       for j = start, str:len() do
          local char = str:sub( j, j )
-         
+
          if char == "(" then         
             parens = parens + 1
-            
+
          elseif char == ")" then         
             if parens > 0 then parens = parens - 1
             else finish = j - 1; break end
-            
+
          elseif parens == 0 then
             -- We are not within a bracketed part of the string.  We can end here.
             if exprBreak[ char ] then
@@ -81,9 +81,9 @@ local function forgetMeNots( str )
             end
          end
       end
-      
+
       if finish == -1 then finish = str:len() end
-      
+
       substring = str:sub( start + 1, finish )
       substring = substring:trim()
 
@@ -92,7 +92,7 @@ local function forgetMeNots( str )
       i = i + 1
       if i >= 100 then self:Debug( "Was unable to convert '!' to 'not' in string [%s].", str ); break end
    end
-   
+
    str = str:gsub( "%s%s", " " )
 
    return str
@@ -145,33 +145,33 @@ end
 local function SimToLua( str, modifier )
     -- If no conditions were provided, function should return true.
     if not str or type( str ) == "number" then return str end
-    
+
     local orig = str
     str = str:trim()
-    
+
     if str == "" then return orig end
-    
+
     -- Strip comments.
     str = str:gsub("^%-%-.-\n", "")
-    
+
     -- Replace '!' with ' not '.
     str = forgetMeNots( str )
-    
+
     str = SimcWithResources( str )
 
     -- Replace '%' for division with actual division operator '/'.
     str = str:gsub("%%", "/")
-    
+
     -- Replace '&' with ' and '.
     str = str:gsub("&", " and ")
-    
+
     -- Replace '|' with ' or '.
     str = str:gsub("||", " or "):gsub("|", " or ")
-    
+
     if not modifier then
         -- Replace assignment '=' with comparison '=='
         str = str:gsub("([^=])=([^=])", "%1==%2" )
-        
+
         -- Fix any conditional '==' that got impacted by previous.
         str = str:gsub("==+", "==")
         str = str:gsub(">=+", ">=")
@@ -179,19 +179,19 @@ local function SimToLua( str, modifier )
         str = str:gsub("!=+", "~=")
         str = str:gsub("~=+", "~=")
     end
-    
+
     -- Condense whitespace.
     str = str:gsub("%s%s", " ")
-    
+
     -- Condense parenthetical spaces.
     str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")")
-    
+
     -- Address equipped.number => equipped[number]
     str = str:gsub("equipped%.(%d+)", "equipped[%1]")
     str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
     str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
     str = str:gsub("%.in$", "['in']" )
-    
+
     str = str:gsub("time_to_imps%.(%b()).remains", "time_to_imps[%1].remains" )
     str = str:gsub("time_to_imps%.(%d+).remains", "time_to_imps[%1].remains" )
 
@@ -201,7 +201,7 @@ local function SimToLua( str, modifier )
     str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
 
     --str = SpaceOut( str )
-    
+
     return str
 end
 scripts.SimToLua = SimToLua
@@ -209,7 +209,7 @@ scripts.SimToLua = SimToLua
 
 do
     -- Okay, this is the auto-recheck parser.
-    
+
     -- Part I:  Split into parts.
     -- ex. combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
     -- ...and break it into each compartmentalized expression:
@@ -243,10 +243,10 @@ do
             local meat = expr:match( "(%b())" )
             if meat then
                 meat = meat:sub( 2, -2 )
-                
+
                 if meat:find( "[|&]" ) then
                     local subExpr = scripts:SplitExpr( meat )
-                    
+
                 for _, v in ipairs( subExpr ) do
                     table.insert( output, v )
                 end
@@ -323,7 +323,7 @@ do
     local removals = {
         ["%.current"] = ""
     }
-    
+
     local lessOrEqual = {
         ["<"] = true,
         ["<="] = true,
@@ -338,7 +338,7 @@ do
         ["=="] = true
     }
 
-    
+
     -- Given an expression, can we assess whether it is time-based and progressing in a meaningful way?
     -- 1.  Cooldowns
     local function ConvertTimeComparison( expr )
@@ -436,7 +436,7 @@ do
         ["="] = true,
         ["!"] = true,
      }
-     
+
      local math_ops = {
         ["+"] = true,
         ["-"] = true,
@@ -459,14 +459,14 @@ do
          ["&"] = true,
          ["!"] = true
      }
-     
-     
+
+
      -- This is hideous.     
      function scripts:EmulateSyntax( p, numeric )
         if not p or type( p ) ~= "string" then return p end
 
         local results = {}
-        
+
         local i, maxlen = 1, p:len()
         local depth = 0
 
@@ -487,25 +487,25 @@ do
         p = p:gsub( " ([!%|&%-%+%*=%%/<>])", "%1" )
 
         local orig = p
-        
+
         while ( i <= maxlen ) do
            local c = p:sub( i, i )
-           
+
            if c == " " then -- do nothing
            elseif c == "(" then depth = depth + 1
            elseif c == ")" and depth > 0 then
               depth = depth - 1
-              
+
               if depth == 0 then
                  local expr = p:sub( 1, i )
-                 
+
                  table.insert( results, { 
                        s = expr:trim(),
                        t = "expr"
                  } )
-                 
+
                  if expr:find( "[&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
-                 
+
                  p = p:sub( i + 1 )
                  i = 0
                  depth = 0
@@ -514,32 +514,32 @@ do
            elseif depth == 0 and ops[c] then
               if i > 1 then
                  local expr = p:sub( 1, i - 1 )
-                 
+
                  table.insert( results, {
                        s = expr:trim(),
                        t = "expr"
                  } )
-                 
+
                  if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
               end
 
               c = p:sub( i ):match( "^([&%|%-%+*%%/><=!]+)" )
-              
+
               table.insert( results, {
                     s = c,
                     t = "op",
                     a = c:sub(1,1)
               } )
-              
+
               p = p:sub( i + c:len() )
               i = 0
               depth = 0
               maxlen = p:len()
            end
-           
+
            i = i + 1
         end
-        
+
         if p:len() > 0 then
            table.insert( results, {
                  s = p:trim(),
@@ -549,13 +549,13 @@ do
 
            if p:find( "[!&%|%-%+/%%%*]" ) ~= nil then results[#results].r = true end
         end
-        
+
         local output = ""
 
         -- So at this point, we've broken our string into all of its components.  Now let's iterate through and fix it up.
         for i = 1, #results do
             local prev, piece, next = i > 1 and results[i-1] or nil, results[i], i < #results and results[i+1] or nil
-           
+
             if piece.t == "expr" then
                 if piece.r then
                     if piece.s == orig then
@@ -588,7 +588,7 @@ do
                         end
                     end
                     piece.r = nil
-                
+
                 elseif not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] )  ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] ) ) then
                     -- This expression is not having math operations performed on it.
                     -- Let's make sure it's a boolean.                
@@ -610,10 +610,10 @@ do
                     piece.r = nil
                 end
             end
-           
+
            output = output .. piece.s
         end
-        
+
         if bracketed then output = "(" .. output .. ")" end
         if ands then output = output:gsub( "&", " and " ) end
         if ors then output = output:gsub( "|", " or " ) end
@@ -624,7 +624,7 @@ do
         -- output = output:gsub( "not safebool(", "safebool(not " )        
         output = output:gsub( "!safenum(%b())", "safenum(!%1)" )
         output = output:gsub( "!%((%b())%)", "!%1" )
-        
+
         return output
      end
 end
@@ -635,30 +635,30 @@ local function SimCToSnapshot( str, modifier )
     -- If no conditions were provided, function should return true.
     if not str or str == '' then return nil end
     if type( str ) == 'number' then return str end
-    
+
     str = str:trim()
-    
+
     -- Strip comments.
     str = str:gsub("^%-%-.-\n", "")
-    
+
     -- Replace '!' with ' not '.
     -- str = forgetMeNots( str )
-    
+
     str = SimcWithResources( str )
 
     -- Replace '%' for division with actual division operator '/'.
     -- str = str:gsub("%%", "/")
-    
+
     -- Replace '&' with ' and '.
     -- str = str:gsub("&", " and ")
-    
+
     -- Replace '|' with ' or '.
     -- str = str:gsub("||", " or "):gsub("|", " or ")
-    
+
     --[[ if not modifier then
         -- Replace assignment '=' with comparison '=='
         str = str:gsub("([^=])=([^=])", "%1==%2" )
-        
+
         -- Fix any conditional '==' that got impacted by previous.
         str = str:gsub("==+", "==")
         str = str:gsub(">=+", ">=")
@@ -666,26 +666,26 @@ local function SimCToSnapshot( str, modifier )
         str = str:gsub("!=+", "~=")
         str = str:gsub("~=+", "~=")
     end 
-    
+
     -- Condense whitespace.
     str = str:gsub("%s%s", " ")
-    
+
     -- Condense parenthetical spaces.
     str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")") ]]
-    
+
     -- Address equipped.number => equipped[number]
     str = str:gsub("equipped%.(%d+)", "equipped[%1]")
     str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
     str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
     str = str:gsub("%.in$", "['in']" )
-    
+
     str = str:gsub("prev%.(%d+)", "prev[%1]")
     str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
     str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
     str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
-    
+
     return str
-    
+
 end
 
 
@@ -755,7 +755,7 @@ local function GetScriptElements( script )
         if not e[ s ] and not tonumber( s ) then
             local ef = loadstring( 'return '.. ( s or true ) )
             if ef then setfenv( ef, state ) end
-      
+
             local success, v = pcall( ef )
             e[ s ] = ef
         end
@@ -838,7 +838,7 @@ local function ConvertScript( node, hasModifiers, header )
         if not pass then e = val end
     end ]]
     if e then e = e:match( ":(%d+: .*)" ) end
-    
+
     local se = clean and GetScriptElements( clean )
 
     local varPool
@@ -886,7 +886,7 @@ local function ConvertScript( node, hasModifiers, header )
         Emulated = t and t:trim() or nil,
         SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil,        
     }
-    
+
     if hasModifiers then
         for m, value in pairs( newModifiers ) do
             if node[ m ] then
@@ -996,7 +996,7 @@ function scripts:CheckScript( scriptID, action, elem )
                 return value
             end
         end
-    
+
     else
         if not script.Modifiers[ elem ] then
             state.this_action = prev_action
@@ -1037,7 +1037,7 @@ function scripts:CheckVariable( scriptID )
 
     return false, "no op or error"
 end
-    
+
 
 
 -- Attaches modifiers for the current entry to the state.args table.
@@ -1158,7 +1158,7 @@ function scripts:LoadScripts()
                     if data.action == "call_action_list" or data.action == "run_action_list" then
                         -- Check for Time Sensitive conditions.
                         script.TimeSensitive = false
-                        
+
                         local lua = script.Lua
 
                         if lua then 
@@ -1228,7 +1228,7 @@ function Hekili:IsItemScripted( token )
     local pack = Hekili:GetActivePack()
     if not pack then return false end
     if not self.Scripts.PackInfo[ pack ] then return false end
-    
+
     return self.Scripts.PackInfo[ pack ].items[ token ] or false
 end
 
@@ -1254,7 +1254,7 @@ function Hekili.Scripts:LoadItemScripts()
             if data.action == "call_action_list" or data.action == "run_action_list" then
                 -- Check for Time Sensitive conditions.
                 script.TimeSensitive = false
-                
+
                 local lua = script.Lua
 
                 if lua then 
@@ -1319,7 +1319,7 @@ function Hekili:LoadScript( pack, list, id )
     if data.action == "call_action_list" or data.action == "run_action_list" then
         -- Check for Time Sensitive conditions.
         script.TimeSensitive = false
-        
+
         local lua = script.Lua
 
         if lua then 

@@ -145,7 +145,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                         buff.eternal_rune_weapon.expires = min( buff.dancing_rune_weapon.applied + buff.dancing_rune_weapon.duration + 5, buff.dancing_rune_weapon.expires + ( 0.5 * amt ) )
                     end
                 end
-            
+
             elseif resource == "runic_power" then
                 local rp = runic_power
 
@@ -156,7 +156,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     spec:RegisterHook( "spend", spendHook )
 
-    
+
     -- Talents
     spec:RegisterTalents( {
         heartbreaker = 19165, -- 221536
@@ -209,7 +209,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         walking_dead = 205, -- 202731
     } )
 
-    
+
     -- Auras
     spec:RegisterAuras( {
         antimagic_shell = {
@@ -401,7 +401,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 10,
             max_stack = 1,
         },
-        
+
         blood_for_blood = {
             id = 233411,
             duration = 12,
@@ -419,7 +419,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 10,
             max_stack = 1
         },
-        
+
         decomposing_aura = {
             id = 228581,
             duration = 3600,
@@ -504,48 +504,48 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cast = 0,
             cooldown = function () return talent.antimagic_barrier.enabled and 45 or 60 end,
             gcd = "off",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 136120,
-            
+
             handler = function ()
                 applyBuff( "antimagic_shell" )
             end,
         },
-        
+
 
         antimagic_zone = {
             id = 51052,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 237510,
 
             pvptalent = "antimagic_zone",
-            
+
             handler = function ()
                 applyBuff( "antimagic_zone" )
             end,
         },
-        
+
 
         asphyxiate = {
             id = 221562,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 538558,
-            
+
             toggle = "interrupts",
-            
+
             usable = function () return target.casting end,
             readyTime = function () return debuff.casting.up and ( debuff.casting.remains - 0.5 ) or 3600 end,
             handler = function ()
@@ -553,7 +553,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "asphyxiate" )
             end,
         },
-        
+
 
         blood_boil = {
             id = 50842,
@@ -562,10 +562,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 7.5,
             recharge = 7.5,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 237513,
-            
+
             handler = function ()
                 applyDebuff( "target", "blood_plague" )
                 active_dot.blood_plague = active_enemies
@@ -584,26 +584,26 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             end,
         },
 
-        
+
         blood_for_blood = {
             id = 233411,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.15,
             spendType = "health",
-            
+
             startsCombat = false,
             texture = 1035037,
-            
+
             pvptalent = "blood_for_blood",
 
             handler = function ()
                 applyBuff( "blood_for_blood" )
             end,
         },
-        
+
 
         blooddrinker = {
             id = 206931,
@@ -611,127 +611,127 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 30,
             channeled = true,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 838812,
-            
+
             talent = "blooddrinker",
 
             handler = function ()
                 applyDebuff( "target", "blooddrinker" )
             end,
         },
-        
+
 
         bonestorm = {
             id = 194844,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "runic_power",
-            
+
             -- toggle = "cooldowns",
 
             startsCombat = true,
             texture = 342917,
 
             talent = "bonestorm",
-            
+
             handler = function ()
                 local cost = min( runic_power.current, 100 )
                 spend( cost, "runic_power" )
                 applyBuff( "bonestorm", cost / 10 )
             end,
         },
-        
+
 
         consumption = {
             id = 274156,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1121487,
 
             talent = "consumption",
-            
+
             handler = function ()                
             end,
         },
-        
+
 
         control_undead = {
             id = 111673,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 237273,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         dancing_rune_weapon = {
             id = 49028,
             cast = 0,
             cooldown = function () return pvptalent.last_dance.enabled and 60 or 120 end,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 135277,
-            
+
             handler = function ()
                 applyBuff( "dancing_rune_weapon" )
                 if azerite.eternal_rune_weapon.enabled then applyBuff( "dancing_rune_weapon" ) end
             end,
         },
-        
+
 
         dark_command = {
             id = 56222,
             cast = 0,
             cooldown = 8,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 136088,
 
             nopvptalent = "murderous_intent",
-            
+
             handler = function ()
                 applyDebuff( "target", "dark_command" )
             end,
         },
-        
+
 
         dark_simulacrum = {
             id = 77606,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 135888,
 
             pvptalent = "dark_simulacrum",
-            
+
             usable = function ()
                 if not target.is_player then return false, "target is not a player" end
                 return true
@@ -740,63 +740,63 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "dark_simulacrum" )
             end,
         },
-        
+
 
         death_and_decay = {
             id = 43265,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = function () return buff.crimson_scourge.up and 0 or 1 end,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 136144,
-            
+
             handler = function ()
                 applyBuff( "death_and_decay" )
                 removeBuff( "crimson_scourge" )
             end,
         },
-        
+
 
         --[[ death_gate = {
             id = 50977,
             cast = 4,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = -10,
             spendType = "runic_power",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 135766,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         death_chain = {
             id = 203173,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1390941,
 
             pvptalent = "death_chain",
-            
+
             handler = function ()
                 applyDebuff( "target", "death_chain" )
                 active_dot.death_chain = min( 3, active_enemies )
             end,
         },
-        
+
 
         death_grip = {
             id = 49576,
@@ -805,29 +805,29 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 15,
             recharge = 15,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 237532,
-            
+
             handler = function ()
                 applyDebuff( "target", "death_grip" )
                 setDistance( 5 )
             end,
         },
-        
+
 
         death_strike = {
             id = 49998,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return ( talent.ossuary.enabled and buff.bone_shield.stack >= 5 ) and 40 or 45 end,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 237517,
-            
+
             handler = function ()
                 applyBuff( "blood_shield" ) -- gain absorb shield
                 gain( 0.075 * health.max * ( 1.2 * buff.haemostasis.stack ) * ( 1.08 * buff.hemostasis.stack ), "health" )
@@ -837,69 +837,69 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if talent.voracious.enabled then applyBuff( "voracious" ) end
             end,
         },
-        
+
 
         deaths_advance = {
             id = 48265,
             cast = 0,
             cooldown = function () return azerite.march_of_the_damned.enabled and 40 or 45 end,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 237561,
-            
+
             handler = function ()
                 applyBuff( "deaths_advance" )
             end,
         },
-        
+
 
         deaths_caress = {
             id = 195292,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 1376743,
-            
+
             handler = function ()
                 applyDebuff( "target", "blood_plague" )
             end,
         },
-        
+
 
         gorefiends_grasp = {
             id = 108199,
             cast = 0,
             cooldown = function () return talent.tightening_grasp.enabled and 90 or 120 end,
             gcd = "spell",
-            
+
             -- toggle = "cooldowns",
 
             startsCombat = false,
             texture = 538767,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         heart_strike = {
             id = 206930,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 135675,
-            
+
             handler = function ()                
                 applyDebuff( "target", "heart_strike" )
                 local targets = min( active_enemies, buff.death_and_decay.up and 5 or 2 )
@@ -911,7 +911,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if level < 116 and equipped.service_of_gorefiend then cooldown.vampiric_blood.expires = max( 0, cooldown.vampiric_blood.expires - 2 ) end
             end,
         },
-        
+
 
         icebound_fortitude = {
             id = 48792,
@@ -921,66 +921,66 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 return 180
             end,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 237525,
-            
+
             handler = function ()
                 applyBuff( "icebound_fortitude" )
             end,
         },
-        
+
 
         mark_of_blood = {
             id = 206940,
             cast = 0,
             cooldown = 6,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 132205,
 
             talent = "mark_of_blood",
-            
+
             handler = function ()
                 applyDebuff( "target", "mark_of_blood" )
             end,
         },
-        
+
 
         marrowrend = {
             id = 195182,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 2,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 1376745,
-            
+
             handler = function ()
                 applyBuff( "bone_shield", 30, buff.bone_shield.stack + ( buff.dancing_rune_weapon.up and 6 or 3 ) )
                 if azerite.bones_of_the_damned.enabled then applyBuff( "bones_of_the_damned" ) end
             end,
         },
-        
+
 
         mind_freeze = {
             id = 47528,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "runic_power",
-            
+
             startsCombat = true,
             texture = 237527,
 
@@ -992,19 +992,19 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 interrupt()
             end,
         },
-        
+
 
         murderous_intent = {
             id = 207018,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 136088,
 
             pvptalent = "murderous_intent",
-            
+
             handler = function ()
                 applyDebuff( "target", "focused_assault" )
             end,
@@ -1016,37 +1016,37 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 237528,
-            
+
             handler = function ()
                 applyBuff( "path_of_frost" )
             end,
         },
-        
+
 
         --[[ raise_ally = {
             id = 61999,
             cast = 0,
             cooldown = 600,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "runic_power",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 136143,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         rune_strike = {
             id = 210764,
@@ -1055,17 +1055,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 60,
             recharge = 60,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 237518,
 
             talent = "rune_strike",
-            
+
             handler = function ()
                 gain( 1, "runes" )
             end,
         },
-        
+
 
         rune_tap = {
             id = 194679,
@@ -1074,44 +1074,44 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 25,
             recharge = 25,
             gcd = "spell",
-            
+
             spend = 1,
             spendType = "runes",
-            
+
             startsCombat = true,
             texture = 237529,
 
             talent = "rune_tap",
-            
+
             handler = function ()
                 applyBuff( "rune_tap" )
             end,
         },
-        
+
 
         --[[ runeforging = {
             id = 53428,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 237523,
-            
+
             handler = function ()
             end,
         }, ]]
-        
-        
+
+
         strangulate = {
             id = 47476,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "runes",
-            
+
             toggle = "interrupts",
             pvptalent = "strangulate",
             interrupt = true,
@@ -1127,14 +1127,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "strangulate" )
             end,
         },
-                
+
 
         tombstone = {
             id = 219809,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
@@ -1142,7 +1142,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             talent = "tombstone",
             buff = "bone_shield",
-            
+
             handler = function ()
                 local bs = min( 5, buff.bone_shield.stack )
 
@@ -1163,31 +1163,31 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 136168,
-            
+
             handler = function ()
                 applyBuff( "vampiric_blood" )
             end,
         },
-        
+
 
         --[[ wartime_ability = {
             id = 264739,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1518639,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         wraith_walk = {
             id = 212552,
@@ -1196,10 +1196,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             channeled = true,
             cooldown = 60,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1100041,
-            
+
             handler = function ()
                 applyBuff( "wraith_walk" )
             end,
@@ -1211,15 +1211,15 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         enabled = true,
 
         aoe = 2,
-    
+
         nameplates = true,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 8,
 
         potion = "battle_potion_of_strength",
-    
+
         package = "Blood",        
     } )
 

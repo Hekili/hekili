@@ -330,7 +330,7 @@ RegisterEvent( "ENCOUNTER_END", function () state.inEncounter = false end )
 
 do
     local loc = ItemLocation.CreateEmpty()
-        
+
     local GetAllTierInfoByItemID = C_AzeriteEmpoweredItem.GetAllTierInfoByItemID
     local GetAllTierInfo = C_AzeriteEmpoweredItem.GetAllTierInfo
     local GetPowerInfo = C_AzeriteEmpoweredItem.GetPowerInfo
@@ -427,22 +427,22 @@ function ns.updateGear()
 
     if ItemBuffs and T1 then
         local t1buff = ItemBuffs:GetItemBuffs( T1 )
-        
+
         if type(t1buff) == 'table' then t1buff = t1buff[1] end
-        
+
         class.auras.trinket1 = class.auras[ t1buff ]
         state.trinket.t1.id = T1
     else
         state.trinket.t1.id = 0
     end
-    
+
     local T2 = GetInventoryItemID( "player", 14 )
-    
+
     if ItemBuffs and T2 then
         local t2buff = ItemBuffs:GetItemBuffs( T2 )
-        
+
         if type(t2buff) == 'table' then t2buff = t2buff[1] end
-        
+
         class.auras.trinket2 = class.auras[ t2buff ]
         state.trinket.t2.id = T2
     else
@@ -639,7 +639,7 @@ local autoAuraKey = setmetatable( {}, {
 
             while ( true ) do 
                 local new = key .. '_' .. i
-                
+
                 if not class.auras[ new ] then
                     key = new
                     break
@@ -664,7 +664,7 @@ RegisterUnitEvent( "UNIT_AURA", function( event, unit )
     if UnitIsUnit( unit, 'player' ) and state.player.updated then
         Hekili.ScrapeUnitAuras( "player" )
         state.player.updated = false
-        
+
     elseif UnitIsUnit( unit, "target" ) and state.target.updated then
         Hekili.ScrapeUnitAuras( "target" )
         state.target.updated = false
@@ -863,7 +863,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
 
         local action = class.abilities[ spellID ]
-        
+
         if subtype ~= 'SPELL_CAST_SUCCESS' and action and action.velocity then
             state:Unqueue( action.key )
         end
@@ -905,7 +905,7 @@ local function UNIT_COMBAT( event, unit, action, descriptor, damage, damageType 
             ns.storeHealing( GetTime(), damage )
         end
     end
-        
+
 end
 ns.cpuProfile.UNIT_COMBAT = UNIT_COMBAT
 
@@ -952,7 +952,7 @@ local function StoreKeybindInfo( page, key, aType, id )
     elseif aType == "macro" then
         local sID = GetMacroSpell( id )
         ability = sID and class.abilities[ sID ] and class.abilities[ sID ].key
-    
+
     elseif aType == "item" then
         ability = GetItemInfo( id )
         ability = class.abilities[ ability ] and class.abilities[ ability ].key
@@ -1040,11 +1040,11 @@ local function ReadKeybindings()
         for i = 1, 12 do
             StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
         end
-        
+
         for i = 13, 120 do 
             bt4Key = GetBindingKey( "CLICK BT4Button" .. i .. ":LeftButton" )
             bt4Button = _G[ "BT4Button" .. i ]
-        
+
             if bt4Button then
                 local buttonActionType, buttonActionId = GetActionInfo( i )
                 StoreKeybindInfo( 2, bt4Key, buttonActionType, buttonActionId )
@@ -1158,7 +1158,7 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
             return db[ 10 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 1 ] or ""
 
         end
-    
+
         return db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
     end
 elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
@@ -1182,7 +1182,7 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
             return db[ 7 ] or db[ 8 ] or db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or ""
 
         end
-    
+
         return db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
     end
 

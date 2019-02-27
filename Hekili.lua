@@ -131,20 +131,20 @@ ns.auras = {
 Hekili.Class = {
     specs = {},
     num = 0,
- 
+
     file = "NONE",
- 
+
 	resources = {},
     talents = {},
     pvptalents = {},
     auras = {},
     powers = {},
     gear = {},
-    
+
     stateExprs = {},
     stateFuncs = {},
     stateTables = {},
-    
+
     abilities = {},
     abilityList = {},
     itemList = {},
@@ -156,13 +156,13 @@ Hekili.Class = {
     },
 
     packs = {},
-    
+
     pets = {},
     totems = {},
 
     potions = {},
     potionList = {},
-    
+
 	hooks = {},
     range = 8,
 	settings = {},

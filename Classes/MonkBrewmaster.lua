@@ -16,7 +16,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterResource( Enum.PowerType.Energy )
     spec:RegisterResource( Enum.PowerType.Chi )
     spec:RegisterResource( Enum.PowerType.Mana )
-    
+
     -- Talents
     spec:RegisterTalents( {
         eye_of_the_tiger = 23106, -- 196607
@@ -252,7 +252,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterGear( 'tier20', 147154, 147156, 147152, 147151, 147153, 147155 )
     spec:RegisterGear( 'tier21', 152145, 152147, 152143, 152142, 152144, 152146 )
     spec:RegisterGear( 'class', 139731, 139732, 139733, 139734, 139735, 139736, 139737, 139738 )
-    
+
     spec:RegisterGear( 'cenedril_reflector_of_hatred', 137019 )
     spec:RegisterGear( 'cinidaria_the_symbiote', 133976 )
     spec:RegisterGear( 'drinking_horn_cover', 137097 )
@@ -389,16 +389,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
             -- SimC expressions.
             if k == "light" then
                 return t.percent < 3.5
-            
+
             elseif k == "moderate" then
                 return t.percent >= 3.5 and t.percent <= 6.5
-                
+
             elseif k == "heavy" then
                 return t.percent > 6.5
-                
+
             elseif k == "none" then
                 return stagger.down
-                
+
             elseif k == 'percent' or k == 'pct' then
                 -- stagger tick dmg / current hp
                 return ceil( 100 * t.tick / health.current )
@@ -435,7 +435,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
                 return total
 
-            
+
                 -- Hekili-specific expressions.
             elseif k == 'incoming_per_second' then
                 return avg_stagger_ps_in_last( 10 )
@@ -461,7 +461,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         end
     } ) )
-    
+
 
 
     -- Abilities
@@ -471,7 +471,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cast = 0,
             cooldown = 120,
             gcd = "off",
-            
+
             toggle = "defensives",
             defensive = true,
 
@@ -479,14 +479,14 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 629483,
 
             talent = "black_ox_brew",
-                        
+
             handler = function ()
                 gain( energy.max, "energy" )
                 gainCharges( "ironskin_brew", class.abilities.ironskin_brew.charges )
                 gainCharges( "purifying_brew", class.abilities.purifying_brew.charges )                
             end,
         },
-        
+
 
         blackout_strike = {
             id = 205523,
@@ -494,10 +494,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 3,
             hasteCD = true,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1500803,
-            
+
             handler = function ()
                 if talent.blackout_combo.enabled then
                     applyBuff( "blackout_combo" )
@@ -505,17 +505,17 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 addStack( "elusive_brawler", 10, 1 )
             end,
         },
-        
+
 
         breath_of_fire = {
             id = 115181,
             cast = 0,
             cooldown = function () return buff.blackout_combo.up and 12 or 15 end,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 615339,
-            
+
             handler = function ()
                 removeBuff( "blackout_combo" )
 
@@ -525,23 +525,23 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 addStack( "elusive_brawler", 10, active_enemies * ( 1 + set_bonus.tier21_2pc ) )                
             end,
         },
-        
+
 
         chi_burst = {
             id = 123986,
             cast = 1,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135734,
 
             talent = "chi_burst",
-                        
+
             handler = function ()                
             end,
         },
-        
+
 
         chi_torpedo = {
             id = 115008,
@@ -550,33 +550,33 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 20,
             recharge = 20,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 607849,
 
             talent = "chi_torpedo",
-            
+
             handler = function ()
                 addStack( "chi_torpedo", nil, 1 )
             end,
         },
-        
+
 
         chi_wave = {
             id = 115098,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 606541,
 
             talent = "chi_wave",
-            
+
             handler = function ()                
             end,
         },
-        
+
 
         crackling_jade_lightning = {
             id = 117952,
@@ -585,27 +585,27 @@ if UnitClassBase( 'player' ) == 'MONK' then
             breakable = true,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 20,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 606542,
-            
+
             handler = function ()
                 removeBuff( "the_emperors_capacitor" )
                 applyDebuff( "target", "crackling_jade_lightning" )
                 -- applies crackling_jade_lightning (117952)
             end,
         },
-        
+
 
         dampen_harm = {
             id = 122278,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensive = true,
 
@@ -613,12 +613,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 620827,
 
             talent = "dampen_harm",
-            
+
             handler = function ()
                 applyBuff( "dampen_harm" )
             end,
         },
-        
+
 
         detox = {
             id = 218164,
@@ -630,33 +630,33 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             toggle = "defensives",
             defensive = true,
-            
+
             spend = 20,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 460692,
-            
+
             usable = function () return debuff.dispellable_poison.up or debuff.dispellable_disease.up end,
             handler = function ()
                 removeDebuff( "player", "dispellable_poison" )
                 removeDebuff( "player", "dispellable_disease" )
             end,
         },
-        
+
 
         expel_harm = {
             id = 115072,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 15,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 627486,
-            
+
             usable = function () return healing_sphere.count > 0 end,
             handler = function ()
                 if level < 116 and set_bonus.tier20_4pc == 1 then stagger.amount = stagger.amount * ( 1 - ( 0.05 * healing_sphere.count ) ) end
@@ -664,34 +664,34 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 healing_sphere.count = 0
             end,
         },
-        
+
 
         fortifying_brew = {
             id = 115203,
             cast = 0,
             cooldown = 420,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensive = true,
 
             startsCombat = true,
             texture = 615341,
-            
+
             handler = function ()
                 applyBuff( "fortifying_brew" )
                 health.max = health.max * 1.2
                 health.actual = health.actual * 1.2
             end,
         },
-        
+
 
         guard = {
             id = 115295,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensive = true,
 
@@ -699,12 +699,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 611417,
 
             talent = "guard",
-            
+
             handler = function ()
                 applyBuff( "guard" )
             end,
         },
-        
+
 
         healing_elixir = {
             id = 122281,
@@ -716,36 +716,36 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             toggle = "defensives",
             defensive = true,
-            
+
             startsCombat = true,
             texture = 608939,
 
             talent = "healing_elixir",
-            
+
             handler = function ()
                 gain( 0.15 * health.max, "health" )
             end,
         },
-        
+
 
         invoke_niuzao = {
             id = 132578,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 608951,
-            
+
             handler = function ()
                 summonPet( "niuzao", 45 )
             end,
 
             copy = "invoke_niuzao_the_black_ox"
         },
-        
+
 
         ironskin_brew = {
             id = 115308,
@@ -758,7 +758,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             toggle = "defensives",
             defensive = true,
-            
+
             startsCombat = false,
             texture = 1360979,
 
@@ -780,7 +780,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             copy = "brews"
         },
-        
+
 
         keg_smash = {
             id = 121253,
@@ -789,78 +789,78 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 8,
             recharge = 8,
             gcd = "spell",
-            
+
             spend = 40,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 594274,
-            
+
             handler = function ()
                 applyDebuff( "target", "keg_smash" )
-                
+
                 gainChargeTime( 'ironskin_brew', 4 + ( buff.blackout_combo.up and 2 or 0 ) )
                 gainChargeTime( 'purifying_brew', 4 + ( buff.blackout_combo.up and 2 or 0 ) )
                 cooldown.fortifying_brew.expires = max( 0, cooldown.fortifying_brew.expires - 4 + ( buff.blackout_combo.up and 2 or 0 ) )
-                
+
                 removeBuff( "blackout_combo" )
                 addStack( "elusive_brawler", nil, 1 )
 
                 if level < 116 and equipped.salsalabims_lost_tunic then setCooldown( "breath_of_fire", 0 ) end
             end,
         },
-        
+
 
         leg_sweep = {
             id = 119381,
             cast = 0,
             cooldown = function () return talent.tiger_tail_sweep.enabled and 50 or 60 end,
             gcd = "spell",
-            
+
             -- toggle = "cooldowns",
 
             startsCombat = true,
             texture = 642414,            
-            
+
             handler = function ()
                 applyDebuff( "target", "leg_sweep" )
                 interrupt()
             end,
         },
-        
+
 
         paralysis = {
             id = 115078,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 20,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 629534,
-            
+
             handler = function ()
                 applyDebuff( "target", "paralysis" )
             end,
         },
-        
+
 
         provoke = {
             id = 115546,
             cast = 0,
             cooldown = 8,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 620830,
-            
+
             handler = function ()
                 applyDebuff( "target", "provoke" )
             end,
         },
-        
+
 
         purifying_brew = {
             id = 119582,
@@ -873,16 +873,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             toggle = "defensives",
             defensive = true,
-            
+
             startsCombat = false,
             texture = 133701,
 
             -- usable = function () return stagger.pct > 0 end,
             handler = function ()
                 spendCharges( 'ironskin_brew', 1 )
-                
+
                 if set_bonus.tier20_2pc == 1 then healing_sphere.count = healing_sphere.count + 1 end
-    
+
                 if buff.blackout_combo.up then
                     addStack( 'elusive_brawler', 10, 1 )
                     removeBuff( 'blackout_combo' )
@@ -895,40 +895,40 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 if level < 116 and equipped.gai_plins_soothing_sash then gain( stagger.amount * 0.25, 'health' ) end
             end,
         },
-        
+
 
         resuscitate = {
             id = 115178,
             cast = 10,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 132132,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         ring_of_peace = {
             id = 116844,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 839107,
 
             talent = "ring_of_peace",
-            
+
             handler = function ()                
             end,
         },
-        
+
 
         roll = {
             id = 109132,
@@ -937,16 +937,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = function () return talent.celerity.enabled and 15 or 20 end,
             recharge = function () return talent.celerity.enabled and 15 or 20 end,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 574574,
 
             notalent = "chi_torpedo",
-            
+
             handler = function ()
             end,
         },
-        
+
 
         rushing_jade_wind = {
             id = 116847,
@@ -954,30 +954,30 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 6,
             hasteCD = true,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 606549,
-            
+
             handler = function ()
                 applyBuff( "rushing_jade_wind" )
             end,
         },
-        
+
 
         spear_hand_strike = {
             id = 116705,
             cast = 0,
             cooldown = 15,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 608940,
 
             toggle = "interrupts",
-            
+
             debuff = "casting",
             readyTime = state.timeToInterrupt,
 
@@ -985,37 +985,37 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 interrupt()
             end,
         },
-        
+
 
         summon_black_ox_statue = {
             id = 115315,
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 627607,
 
             talent = "summon_black_ox_statue",
-            
+
             handler = function ()
                 summonPet( "black_ox_statue" )
             end,
         },
-        
+
 
         tiger_palm = {
             id = 100780,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 25,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 606551,
-            
+
             handler = function ()
                 removeBuff( "blackout_combo" )
                 if talent.eye_of_the_tiger.enabled then
@@ -1027,98 +1027,98 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 cooldown.fortifying_brew.expires = max( 0, cooldown.fortifying_brew.expires - 1 )
             end,
         },
-        
+
 
         tigers_lust = {
             id = 116841,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 651727,
 
             talent = "tigers_lust",
-            
+
             handler = function ()
                 applyBuff( "tigers_lust" )
             end,
         },
-        
+
 
         transcendence = {
             id = 101643,
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 627608,
-            
+
             handler = function ()
                 applyBuff( "transcendence" )
             end,
         },
-        
+
 
         transcendence_transfer = {
             id = 119996,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 237585,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         vivify = {
             id = 116670,
             cast = 1.5,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 0,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 1360980,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         --[[ wartime_ability = {
             id = 264739,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1518639,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         zen_flight = {
             id = 125883,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 660248,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         zen_meditation = {
             id = 115176,
@@ -1126,30 +1126,30 @@ if UnitClassBase( 'player' ) == 'MONK' then
             channeled = true,
             cooldown = 300,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensive = true,
 
             startsCombat = false,
             texture = 642417,
-            
+
             handler = function ()
                 applyBuff( "zen_meditation" )
             end,
         },
-        
+
 
         --[[ zen_pilgrimage = {
             id = 126892,
             cast = 10,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 775462,
-            
+
             handler = function ()
             end,
         },]]
@@ -1160,16 +1160,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
         enabled = true,
 
         aoe = 2,
-    
+
         nameplates = true,
         nameplateRange = 8,
-        
+
         damage = true,
         damageDots = false,
         damageExpiration = 8,
-    
+
         potion = "battle_potion_of_agility",
-        
+
         package = "Brewmaster"
     } )
 

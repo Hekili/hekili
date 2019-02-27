@@ -15,7 +15,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     -- spec:RegisterResource( Enum.PowerType.ArcaneCharges )
     spec:RegisterResource( Enum.PowerType.Mana )
-    
+
     -- Talents
     spec:RegisterTalents( {
         bone_chilling = 22457, -- 205027
@@ -422,7 +422,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     spec:RegisterHook( "reset_precast", function ()
         if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
         else removeBuff( "rune_of_power" ) end
-    
+
         frost_info.last_target_virtual = frost_info.last_target_actual
         frost_info.virtual_brain_freeze = frost_info.real_brain_freeze
     end )
@@ -435,21 +435,21 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
 
             nobuff = "arcane_intellect",
             essential = true,
-            
+
             startsCombat = false,
             texture = 135932,
-           
+
             handler = function ()
                 applyBuff( "arcane_intellect" )
             end,
         },
-        
+
 
         blink = {
             id = function () return talent.shimmer.enabled and 212653 or 1953 end,
@@ -458,10 +458,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = function () return talent.shimmer.enabled and 20 or 15 end,
             recharge = function () return talent.shimmer.enabled and 20 or 15 end,
             gcd = "off",
-            
+
             spend = function () return 0.02 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = function () return talent.shimmer.enabled and 135739 or 135736 end,
 
@@ -478,33 +478,33 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cast = function () return buff.freezing_rain.up and 0 or 2 * haste end,
             cooldown = 8,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135857,
 
             velocity = 20,
-            
+
             handler = function ()
                 applyDebuff( "target", "blizzard" )
                 applyBuff( "active_blizzard" )
             end,
         },
-        
+
 
         cold_snap = {
             id = 235219,
             cast = 0,
             cooldown = 300,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 135865,
-            
+
             handler = function ()
                 setCooldown( "ice_barrier", 0 )
                 setCooldown( "frost_nova", 0 )
@@ -512,39 +512,39 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 setCooldown( "ice_block", 0 )
             end,
         },
-        
+
 
         comet_storm = {
             id = 153595,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 2126034,
 
             talent = "comet_storm",
-            
+
             handler = function ()
             end,
         },
-        
+
 
         cone_of_cold = {
             id = 120,
             cast = 0,
             cooldown = 12,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135852,
-            
+
             usable = function ()
                 return target.distance <= 12
             end,
@@ -553,24 +553,24 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 active_dot.cone_of_cold = max( active_enemies, active_dot.cone_of_cold )
             end,
         },
-        
+
 
         --[[ conjure_refreshment = {
             id = 190336,
             cast = 3,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 134029,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         counterspell = {
             id = 2139,
@@ -580,10 +580,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             interrupt = true,
             toggle = "interrupts",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135856,
 
@@ -594,22 +594,22 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 interrupt()
             end,
         },
-        
+
 
         ebonbolt = {
             id = 257537,
             cast = 2.5,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1392551,
-            
+
             handler = function ()
                 applyBuff( "brain_freeze" )
             end,
         },
-        
+
 
         flurry = {
             id = 44614,
@@ -619,13 +619,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             end,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 1506795,
-            
+
             handler = function ()
                 if buff.brain_freeze.up then
                     applyDebuff( "target", "winters_chill" )
@@ -642,7 +642,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 removeBuff( "ice_floes" )
             end,
         },
-        
+
 
         frost_nova = {
             id = 122,
@@ -651,37 +651,37 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 30,
             recharge = 30,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135848,
-            
+
             handler = function ()
                 applyDebuff( "target", "frost_nova" )
             end,
         },
-        
+
 
         frostbolt = {
             id = 116,
             cast = 2,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135846,
-            
+
             handler = function ()
                 addStack( "icicles", nil, 1 )
-                
+
                 applyDebuff( "target", "chilled" )
                 if talent.bone_chilling.enabled then addStack( "bone_chilling", nil, 1 ) end
-                
+
                 removeBuff( "ice_floes" )
 
                 if azerite.tunnel_of_ice.enabled then
@@ -694,22 +694,22 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 end
             end,
         },
-        
+
 
         frozen_orb = {
             id = 84714,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             -- toggle = "cooldowns",
 
             startsCombat = true,
             texture = 629077,
-            
+
             handler = function ()
                 addStack( "fingers_of_frost", nil, 1 )
                 if talent.freezing_rain.enabled then applyBuff( "freezing_rain" ) end
@@ -717,29 +717,29 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 applyDebuff( "target", "frozen_orb_snare" )
             end,
         },
-        
+
 
         glacial_spike = {
             id = 199786,
             cast = 3,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 1698699,
 
             talent = "glacial_spike",
-            
+
             usable = function () return buff.icicles.stack >= 5 end,
             handler = function ()
                 removeBuff( "icicles" )
                 applyDebuff( "target", "glacial_spike" )
             end,
         },
-        
+
 
         ice_barrier = {
             id = 11426,
@@ -748,37 +748,37 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             gcd = "spell",
 
             defensive = true,
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135988,
-            
+
             handler = function ()
                 applyBuff( "ice_barrier" )
             end,
         },
-        
+
 
         ice_block = {
             id = 45438,
             cast = 0,
             cooldown = 240,
             gcd = "spell",
-            
+
             toggle = "defensives",
             defensive = true,
 
             startsCombat = false,
             texture = 135841,
-            
+
             handler = function ()
                 applyBuff( "ice_block" )
                 applyDebuff( "player", "hypothermia" )
             end,
         },
-        
+
 
         ice_floes = {
             id = 108839,
@@ -787,32 +787,32 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 20,
             recharge = 20,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 610877,
 
             talent = "ice_floes",
-            
+
             handler = function ()
                 applyBuff( "ice_floes" )
             end,
         },
-        
+
 
         ice_lance = {
             id = 30455,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135844,
 
             velocity = 47,
-            
+
             handler = function ()
                 if not talent.glacial_spike.enabled then removeStack( "icicles" ) end
                 removeStack( "fingers_of_frost" )
@@ -829,36 +829,36 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 end 
             end,
         },
-        
+
 
         ice_nova = {
             id = 157997,
             cast = 0,
             cooldown = 25,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1033909,
 
             talent = "ice_nova",
-            
+
             handler = function ()
                 applyDebuff( "target", "ice_nova" )
             end,
         },
-        
+
 
         icy_veins = {
             id = 12472,
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 135838,
-            
+
             handler = function ()
                 applyBuff( "icy_veins" )
                 stat.haste = stat.haste + 0.30
@@ -869,69 +869,69 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 end
             end,
         },
-        
+
 
         invisibility = {
             id = 66,
             cast = 0,
             cooldown = 300,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             toggle = "defensives",
             defensive = true,
 
             startsCombat = false,
             texture = 132220,
-            
+
             handler = function ()
                 applyBuff( "preinvisibility" )
                 applyBuff( "invisibility", 23 )
             end,
         },
-        
+
 
         mirror_image = {
             id = 55342,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 135994,
 
             talent = "mirror_image",
-            
+
             handler = function ()
                 applyBuff( "mirror_image" )
             end,
         },
-        
+
 
         polymorph = {
             id = 118,
             cast = 1.7,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 136071,
-            
+
             handler = function ()
                 applyDebuff( "target", "polymorph" )
             end,
         },
-        
+
 
         ray_of_frost = {
             id = 205021,
@@ -940,58 +940,58 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             gcd = "spell",
 
             channeled = true,
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 1698700,
 
             talent = "ray_of_frost",
-            
+
             handler = function ()
                 applyDebuff( "target", "ray_of_frost" )
             end,
         },
-        
+
 
         remove_curse = {
             id = 475,
             cast = 0,
             cooldown = 8,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136082,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         ring_of_frost = {
             id = 113724,
             cast = 2,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 0.08,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 464484,
 
             talent = "ring_of_frost",
-            
+
             handler = function ()                
             end,
         },
-        
+
 
         rune_of_power = {
             id = 116011,
@@ -1000,66 +1000,66 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 40,
             recharge = 40,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 609815,
 
             nobuff = "rune_of_power",
             talent = "rune_of_power",
-            
+
             handler = function ()
                 applyBuff( "rune_of_power" )
             end,
         },
-        
+
 
         slow_fall = {
             id = 130,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135992,
-            
+
             handler = function ()
                 applyBuff( "slow_fall" )
             end,
         },
-        
+
 
         spellsteal = {
             id = 30449,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.21,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135729,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         water_elemental = {
             id = 31687,
             cast = 1.5,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 0.03,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 135862,
-            
+
             notalent = "lonely_winter",
 
             usable = function () return not pet.alive end,
@@ -1069,22 +1069,22 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             copy = "summon_water_elemental"
         },
-        
+
 
         time_warp = {
             id = 80353,
             cast = 0,
             cooldown = 300,
             gcd = "off",
-            
+
             spend = 0.04,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 458224,
-            
+
             handler = function ()
                 applyBuff( "time_warp" )
                 applyDebuff( "player", "temporal_displacement" )
@@ -1097,15 +1097,15 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         enabled = true,
 
         aoe = 3,
-    
+
         nameplates = false,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 6,
-    
+
         potion = "potion_of_rising_death",
-        
+
         package = "Frost Mage",
     } )
 

@@ -28,7 +28,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             value = 8,
         },
     } )
-    
+
     -- Talents
     spec:RegisterTalents( {
         abyssal_strike = 22502, -- 207550
@@ -275,11 +275,11 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 -- Fracture:  Generate 2 frags.
                 if spellID == 263642 then
                     queue_fragments( 2 ) end
-                
+
                 -- Shear:  Generate 1 frag.
                 if spellID == 203782 then 
                     queue_fragments( 1 ) end
-                
+
                 --[[ Spirit Bomb:  Up to 5 frags.
                 if spellID == 247454 then
                     local name, _, count = FindUnitBuffByID( "player", 203981 )
@@ -291,15 +291,15 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                     local name, _, count = FindUnitBuffByID( "player", 203981 )
                     if name then queue_fragments( -1 * min( 2, count ) ) end
                 end ]]
-            
+
             -- We consumed or generated a fragment for real, so let's purge the real queue.
             elseif spellID == 203981 and fragments.real > 0 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
                 fragments.real = fragments.real - 1
-            
+
             end
         end
     end )
-    
+
     spec:RegisterHook( "reset_precast", function ()
         last_metamorphosis = nil
         last_infernal_strike = nil
@@ -325,7 +325,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         end
     end )
 
-    
+
     -- Gear Sets
     spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
     spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
@@ -354,7 +354,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             duration = 3600,
             max_stack = 15
         } )
-    
+
 
 
     -- Abilities
@@ -364,19 +364,19 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 828455,
 
             toggle = "interrupts",
-            
+
             usable = function () return debuff.dispellable_magic.up end,
             handler = function ()
                 removeDebuff( "dispellable_magic" )
                 gain( buff.solitude.up and 22 or 20, "pain" )
             end,
         },
-        
+
 
         demon_spikes = {
             id = 203720,
@@ -388,7 +388,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             gcd = "off",
 
             defensive = true,
-            
+
             startsCombat = false,
             texture = 1344645,
 
@@ -398,12 +398,12 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 return max( 0, ( 1 + action.demon_spikes.lastCast ) - query_time )
             end, 
                 -- ICD
-            
+
             handler = function ()
                 applyBuff( "demon_spikes", buff.demon_spikes.remains + buff.demon_spikes.duration )
             end,
         },
-        
+
 
         demonic_trample = {
             id = 205629,
@@ -415,24 +415,24 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             pvptalent = "demonic_trample",
             nobuff = "demonic_trample",
-            
+
             startsCombat = false,
             texture = 134294,
-            
+
             handler = function ()
                 spendCharges( "infernal_strike", 1 )
                 setCooldown( "global_cooldown", 3 )
                 applyBuff( "demonic_trample" )
             end,
         },
-        
+
 
         disrupt = {
             id = 183752,
             cast = 0,
             cooldown = 15,
             gcd = "off",
-            
+
             interrupt = true,
 
             startsCombat = true,
@@ -448,7 +448,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 interrupt()
             end,
         },
-        
+
 
         fel_devastation = {
             id = 212084,
@@ -457,19 +457,19 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             channeled = true,
             cooldown = 60,
             gcd = "spell",
-            
+
             -- toggle = "cooldowns",
 
             startsCombat = true,
             texture = 1450143,
 
             talent = "fel_devastation",
-            
+
             handler = function ()
                 applyBuff( "fel_devastation" )
             end,
         },
-        
+
 
         felblade = {
             id = 232893,
@@ -479,34 +479,34 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             spend = function () return buff.solitude.enabled and -33 or -30 end,
             spendType = "pain",
-            
+
             startsCombat = true,
             texture = 1344646,
 
             talent = "felblade",
-            
+
             handler = function ()
                 setDistance( 5 )
             end,
         },
-        
+
 
         fiery_brand = {
             id = 204021,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 1344647,
-            
+
             handler = function ()
                 applyDebuff( "target", "fiery_brand" )
             end,
         },
-        
+
 
         fracture = {
             id = 263642,
@@ -516,30 +516,30 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             recharge = 4.5,
             hasteCD = true,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1388065,
-            
+
             handler = function ()
                 gain( buff.solitude.up and 27 or 25, "pain" )
                 addStack( "soul_fragments", nil, 2 )
             end,
         },
-        
+
 
         --[[ glide = {
             id = 131347,
             cast = 0,
             cooldown = 1.5,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1305157,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         illidans_grasp = {
             id = function () return debuff.illidans_grasp.up and 208173 or 205630 end,
@@ -547,7 +547,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cast = 0,
             cooldown = function () return buff.illidans_grasp.up and ( 54 + buff.illidans_grasp.remains ) or 0 end,
             gcd = "off",
-            
+
             pvptalent = "illidans_grasp",
             aura = "illidans_grasp",
             breakable = true,
@@ -555,7 +555,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             startsCombat = true,
             texture = function () return buff.illidans_grasp.up and 252175 or 1380367 end,
-            
+
             handler = function ()
                 if buff.illidans_grasp.up then removeBuff( "illidans_grasp" )
                 else applyBuff( "illidans_grasp" ) end
@@ -563,17 +563,17 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             copy = { 205630, 208173 }
         },
-        
+
 
         immolation_aura = {
             id = 178740,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1344649,
-            
+
             handler = function ()
                 applyBuff( "immolation_aura" )
 
@@ -586,22 +586,22 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 end
             end,
         },
-        
+
 
         imprison = {
             id = 217832,
             cast = 0,
             cooldown = function () return pvptalent.detainment.enabled and 60 or 45 end,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 1380368,
-            
+
             handler = function ()
                 applyDebuff( "target", "imprison" )
             end,
         },
-        
+
 
         infernal_strike = {
             id = 189110,
@@ -610,35 +610,35 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = function () return talent.abyssal_strike.enabled and 12 or 20 end,
             recharge = function () return talent.abyssal_strike.enabled and 12 or 20 end,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 1344650,
 
             nobuff = "infernal_striking",
-            
+
             handler = function ()
                 setDistance( 5 )
                 spendCharges( "demonic_trample", 1 )
                 applyBuff( "infernal_striking" )
-                
+
                 if talent.flame_crash.enabled then
                     create_sigil( "flame" )
                 end
             end,
         },
-        
+
 
         metamorphosis = {
             id = 187827,
             cast = 0,
             cooldown = 180,
             gcd = "off",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 1247263,
-            
+
             handler = function ()
                 applyBuff( "metamorphosis" )
                 gain( 8, "pain" )
@@ -654,20 +654,20 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 last_metamorphosis = query_time
             end,
         },
-        
+
 
         reverse_magic = {
             id = 205604,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             -- toggle = "cooldowns",
             pvptalent = "reverse_magic",
 
             startsCombat = false,
             texture = 1380372,
-            
+
             handler = function ()
                 if debuff.reversible_magic.up then removeDebuff( "player", "reversible_magic" ) end
             end,
@@ -682,38 +682,38 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             spend = function () return buff.solitude.up and -11 or -10 end,
             spendType = "pain",
-            
+
             startsCombat = true,
             texture = 1344648,
 
             notalent = "fracture",
-            
+
             handler = function ()
                 addStack( "soul_fragments", nil, 1 )
             end,
         },
-        
+
 
         sigil_of_chains = {
             id = 202138,
             cast = 0,
             cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 90 end,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1418286,
 
             talent = "sigil_of_chains",
-            
+
             handler = function ()
                 create_sigil( "chains" )
-                
+
                 if level < 116 and equipped.spirit_of_the_darkness_flame then
                     addStack( "spirit_of_the_darkness_flame", nil, active_enemies )
                 end
             end,
         },
-        
+
 
         sigil_of_flame = {
             id = function () return talent.concentrated_sigils.enabled and 204513 or 204596 end,
@@ -721,17 +721,17 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cast = 0,
             cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 30 end,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1344652,
-            
+
             handler = function ()
                 create_sigil( "flame" )
             end,
 
             copy = { 204596, 204513 }
         },
-        
+
 
         sigil_of_misery = {
             id = function () return talent.concentrated_sigils.enabled and 202140 or 207684 end,
@@ -739,19 +739,19 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cast = 0,
             cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 90 end,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 1418287,
-            
+
             handler = function ()
                 create_sigil( "misery" )
             end,
 
             copy = { 207684, 202140 }
         },
-        
+
 
         sigil_of_silence = {
             id = function () return talent.concentrated_sigils.enabled and 207682 or 202137 end,
@@ -759,12 +759,12 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cast = 0,
             cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 60 end,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 1418288,
-            
+
             toggle = "interrupts",
 
             usable = function () return debuff.casting.remains > ( talent.quickened_sigils.enabled and 1 or 2 ) end,
@@ -776,81 +776,81 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             copy = { 207682, 202137 },
         },
-        
+
 
         soul_barrier = {
             id = 263648,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 2065625,
 
             talent = "soul_barrier",
-            
+
             toggle = "defensives",
-            
+
             handler = function ()
                 if talent.feed_the_demon.enabled then
                     gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
                 end
-                
+
                 buff.soul_fragments.count = 0
                 applyBuff( "soul_barrier" )
             end,
         },
-        
+
 
         soul_cleave = {
             id = 228477,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "pain",
-            
+
             startsCombat = true,
             texture = 1344653,
-            
+
             handler = function ()
                 if talent.feed_the_demon.enabled then
                     gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
                 end
-                
+
                 removeStack( "soul_fragments", min( buff.soul_fragments.stack, 2 ) )
                 if talent.void_reaver.enabled then applyDebuff( "target", "void_reaver" ) end
             end,
         },
-        
+
 
         --[[ spectral_sight = {
             id = 188501,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1247266,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         spirit_bomb = {
             id = 247454,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "pain",
-            
+
             startsCombat = true,
             texture = 1097742,
-            
+
             buff = "soul_fragments",
 
             handler = function ()
@@ -861,7 +861,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 buff.soul_fragments.count = 0
             end,
         },
-        
+
 
         throw_glaive = {
             id = 204157,
@@ -869,26 +869,26 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 3,
             hasteCD = true,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1305159,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         torment = {
             id = 185245,
             cast = 0,
             cooldown = 8,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 1344654,
 
             nopvptalent = "tormentor",
-            
+
             handler = function ()
                 applyDebuff( "target", "torment" )
             end,
@@ -900,12 +900,12 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1344654,
 
             pvptalent = "tormentor",
-            
+
             handler = function ()
                 applyDebuff( "target", "focused_assault" )
             end,
@@ -917,20 +917,20 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         enabled = true,
 
         aoe = 2,
-    
+
         nameplates = true,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 8,
-    
+
         potion = "steelskin_potion",
-    
+
         package = "Vengeance",
     } )
 
 
     spec:RegisterPack( "Vengeance", 20181211.1749, [[dOKpwaqivvIEeHQnri8jvvQgLGQoLcIvPQs5vGsZsG6wQQyxq1Vavdtb1XuiltjPNjOmnqrxJGY2euPVrqyCeeDoqHwNsIENQkjZJq09uv2NcsheuWcvOEiHunrcjxuvLuBuvLGpQKq1ifuXjvsWkvLMPQkH2PcmucsTucfpvOPkGRQKqzRes5RkjK2Ru)vPgmshM0Ib5XenzQ6YO2mu(SsmAb50uETQQMnvUTI2TOFdmCcCCLeILd55iMUKRRk2UsQVtO04ji58cK5tq1(v5EuhOJET4EWQdpsihT6Or4JecycJHbJDScsa3rbQ8VUWDm1j3rrJZfwtj3rbAqoG67aDKaEqsUJHQsazLWHVyvOhiCjycNyZhNwgiLifRGtSPeoKdabhct)XZRHlabWmhtGl0iwmQ5jWfAXSffpb5oCEYIrBrJZfwtjJtSPSJqpMRwHSH6OxlUhS6WJeYrRoAe(iHaMW4QWyhjcyzpqyc5OogY8EoBOo6zISJIFurJZfwtjFurXtqE0W5jlgDVHQsazLWHVyvOhiCjycNyZhNwgiLifRGtSPeoKdabhct)XZRHlabWmhtGl0iwmQ5jWfAXSffpb5oCEYIrBrJZfwtjJtSP8Ef)OIIL8eIrhD0OGp6Qdpsip6phDu4Usyg29EVIFurpKMlmzL3R4h9NJcdEp7pQOmc6rqD0cCupJPpU6OQSmqEuNrk87v8J(ZrfDqUMrf7p6dH3wXZJYzHmMCuma6OfYY)CroAbo6dH3wXtYV6OiEcwZ(JkbP3kdKe87v8J(ZrHbVN9hLaM8rTucMwUCuVo1f(OWpQmKIw4JkrwXitpAboQO4jipAuG9Nj43R4h9NJkgMWO18r1JkdPOf(OaSJUcjgJs1D0yHS)8r16OQZD0YMmb)Ef)O)CuyW7z)rJGh3rhRiKXi8okabWmh3rXpQOX5cRPKpQO4jipA48KfJU3qvjGSs4WxSk0deUemHtS5JtldKsKIvWj2uchYbGGdHP)451WfGayMJjWfAelg18e4cTy2IINGChopzXOTOX5cRPKXj2uEVIFurXsEcXOJoAuWhD1HhjKh9NJokCxjmd7EVxXpQOhsZfMSY7v8J(ZrHbVN9hvugb9iOoAboQNX0hxDuvwgipQZif(9k(r)5OIoixZOI9h9HWBR45r5SqgtokgaD0cz5FUihTah9HWBR4j5xDuepbRz)rLG0BLbsc(9k(r)5OWG3Z(Jsat(OwkbtlxoQxN6cFu4hvgsrl8rLiRyKPhTahvu8eKhnkW(Ze87v8J(Zrfdty0A(O6rLHu0cFua2rxHeJrP6oASq2F(OADu15oAztMGFVIF0Fokm49S)OrWJ7OJveYye(9EVIF0FTqXYNI9hfIXai(OsWesRJcXlwsWpkmiLSGIC0eK)esrtSh3rvzzGKCuq6cc)EvzzGKGlaXsWesRpmNs(FVQSmqsWfGyjycPfSFW1NLjNLwgiVxvwgij4cqSemH0c2p4yaG)Ef)OXufqcbQJIuZFuOhmm2FusPf5OqmgaXhvcMqADuiEXsYr10Fubi(hbGQSC5Og5OEqY43RkldKeCbiwcMqAb7hCsQciHa1MuArUxvwgij4cqSemH0c2p4caLbY79Ef)O)AHILpf7pkVMrbD0YM8rRq8rvzbqh1ihvxRMtHCm(9QYYaj5tFkWwRsL)VxvwgijW(b3Be0JG6EvzzGKa7hCjijptEp1ftEVQSmqsG9d(dH3wXtY9QYYajb2p4s152QSmqUDgPco1j)bH00hSH9vQJZcxgsri2VXCmjeoNkKJ93RkldKey)GlvNBRYYa52zKk4uN8NNX4KyRzY9QYYajb2p4s152QSmqUDgPco1j)La0uD379k(r)fmgf0rhJ00FuXakTmqEVQSmqsWHqA6)i2I52aSnMtNCWg2NeaCEGytCmJrbTHqA6Xr8uTKiYvVxvwgij4qin9W(b3smgLQBtkK9Nd2W(KaGZdeBIJzmkOnestpoINQLKVHVxvwgij4qin9W(bhZyuqBiKM(7vLLbscoestpSFWT5e40Ya5wFqAWg2Nhu4ygJcAdH00JxM8VLl3RkldKeCiKMEy)GJXUTNxRKsldKbByFEqHJzmkOnestpEzY)wUCVQSmqsWHqA6H9dULymkv3Mui7phSH95bfoMXOG2qin94Lj)B5Y9QYYajbhcPPh2p4eBXCBa2gZPtoyd7ZdkCmJrbTHqA6Xlt(3YL79Ef)OIIX4KyRzY9QYYajb3ZyCsS1m5ZZtqUjcS)mjyd7l8ypo3gXYqkAH3Lnzrosewkbtlx2EDQl8omYqeUWdVklBnV5KNgtgAyIWsjyA5Y2RtDH3Hreb0dggUNNGCtey)zcUhi2Cicx4H3sjyA5Y2RtDH3cJm0HXxvy)wiwDvi8Pkud5EvzzGKG7zmoj2AM8rapUnKIqgJc2W(cVklBnV5KNgtgAyIWsjyA5Y2RtDH3Hreb0dggUNNGCtey)zcUhi2Cicx4H3sjyA5Y2RtDH3cJm0HXH5VfIvxfcFQc1qUxvwgij4EgJtITMjW(bFYLobibHaeJCVQSmqsW9mgNeBntG9doMXOG2qin9379k(rhaqt1DuXakTmqEVQSmqsWtaAQUplXyuQUnPq2Foyd7d7X52iwgsrl8USjlYr3RkldKe8eGMQd2p4ebgYQneycfSH9rapUngsxMCwKH(bZ7vLLbscEcqt1b7hCc4XTLowxZbByF)YsDCw4ebgYQneycHZPc5y)9QYYajbpbOP6G9dob842shRR5GnSVsDCw4ebgYQneycHZPc5yViiGh3gdPltolY3W3RkldKe8eGMQd2p42CcCAzGCRpinyd7tGAPi)GXHVxvwgij4janvhSFWXyhKt9CWg2Na1sr(jedFVQSmqsWtaAQoy)GJHuz9G4GnSpc4XTXq6YKZIiYVWUxvwgij4janvhSFWXy32ZRvsPLbY7vLLbscEcqt1b7hCITyUnaBJ50jFVQSmqsWtaAQoy)GtcXk6EvzzGKGNa0uDW(bVcHaIDV4uBn3X1mIyGShS6WJeYrdpcM4Jgfgm7OyvuA5cPJROWGygScdwXx5rpAGq8rTPaaQokgaD0F3Zy6JR(9JI4vKhdX(Jsat(O6tbMAX(JkdP5ctWV3Frl5JoALhDfljpceaqf7pQkldKh931NcS1Qu5)Fh)EV3vykaGk2FuHDuvwgipQZifb)E7OZifPd0riKM(oqpyuhOJCQqo23J7OezfJmTJsaW5bInXXmgf0gcPPhhXt1sYrf5rxTJQSmq2rITyUnaBJ50j3vpy1oqh5uHCSVh3rjYkgzAhLaGZdeBIJzmkOnestpoINQLKJ(D0H7OkldKD0smgLQBtkK9N7QhewhOJQSmq2rmJrbTHqA67iNkKJ994U6bWSd0rovih77XDuISIrM2rpOWXmgf0gcPPhVm5Flx6OkldKD0MtGtldKB9bPD1dewhOJCQqo23J7OezfJmTJEqHJzmkOnestpEzY)wU0rvwgi7ig72EETskTmq2vpiC7aDKtfYX(EChLiRyKPD0dkCmJrbTHqA6Xlt(3YLoQYYazhTeJrP62Kcz)5U6bcrhOJCQqo23J7OezfJmTJEqHJzmkOnestpEzY)wU0rvwgi7iXwm3gGTXC6K7QRo6zm9XvDGEWOoqhvzzGSJ6tb2AvQ8Fh5uHCSVh3vpy1oqhvzzGSJEJGEeuDKtfYX(ECx9GW6aDuLLbYokbj5zY7PUyYoYPc5yFpUREam7aDuLLbYo(q4Tv8K0rovih77XD1dewhOJCQqo23J7OezfJmTJL64SWLHueI9BmhtcHZPc5yFhvzzGSJs152QSmqUDgP6OZi1o1j3riKM(U6bHBhOJCQqo23J7OkldKDuQo3wLLbYTZivhDgP2Po5o6zmoj2AM0vpqi6aDKtfYX(EChvzzGSJs152QSmqUDgP6OZi1o1j3XeGMQRRU6OaelbtiT6a9GrDGoYPc5yFpUREWQDGoYPc5yFpUREqyDGoYPc5yFpUREam7aDKtfYX(ECx9aH1b6OkldKDuaOmq2rovih77XD1vh9mgNeBnt6a9GrDGoYPc5yFpUJsKvmY0og(JI94CBeldPOfEx2KpQip6OJkIJAPemTCz71PUW7WihDihv4c)OH)OQSS18MtEAm5Od9OHDurCulLGPLlBVo1fEhg5OI4Oqpyy4EEcYnrG9Nj4EGyZJoKJkCHF0WFulLGPLlBVo1fElmYrh6rhgFvHD0F7OHy1vHWNQqD0H0rvwgi7ONNGCtey)zsx9Gv7aDKtfYX(EChLiRyKPDm8hvLLTM3CYtJjhDOhnSJkIJAPemTCz71PUW7Wihvehf6bdd3ZtqUjcS)mb3deBE0HCuHl8Jg(JAPemTCz71PUWBHro6qp6W4W8O)2rdXQRcHpvH6OdPJQSmq2rc4XTHueYyux9GW6aDuLLbYoo5sNaKGqaIr6iNkKJ994U6bWSd0rvwgi7iMXOG2qin9DKtfYX(ECxD1XeGMQRd0dg1b6iNkKJ994okrwXit7i2JZTrSmKIw4Dzt(OI8OJ6OkldKD0smgLQBtkK9N7QhSAhOJCQqo23J7OezfJmTJeWJBJH0LjNf5Od97OWSJQSmq2rIadz1gcmH6QhewhOJCQqo23J7OezfJmTJ)YJwQJZcNiWqwTHatiCovih77OkldKDKaECBPJ11Cx9ay2b6iNkKJ994okrwXit7yPoolCIadz1gcmHW5uHCS)OI4OeWJBJH0LjNf5OFhD4oQYYazhjGh3w6yDn3vpqyDGoYPc5yFpUJsKvmY0okqT8OI87OW4WDuLLbYoAZjWPLbYT(G0U6bHBhOJCQqo23J7OezfJmTJculpQi)oQqmChvzzGSJySdYPEUREGq0b6iNkKJ994okrwXit7ib842yiDzYzroQi)oAyDuLLbYoIHuz9G4U6bczhOJQSmq2rm2T98ALuAzGSJCQqo23J7QhaJDGoQYYazhj2I52aSnMtNCh5uHCSVh3vpy0WDGoQYYazhjHyf1rovih77XD1dgnQd0rvwgi7yfcbe7EXP2AUJCQqo23J7QRU6O(uHaOogTPO3vxDd]] )
 
-    
+
 end

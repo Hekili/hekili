@@ -40,7 +40,7 @@ do
 
         for t = 1, EJ_GetNumTiers() do
             EJ_SelectTier( t )
-            
+
             local i = 1
             while EJ_GetInstanceByIndex( i, true ) do
                 local instanceID, name = EJ_GetInstanceByIndex( i, true )                
@@ -67,23 +67,23 @@ end
 local defaultAPLs = {
     ['Survival Primary'] = { "SimC Survival: precombat", "SimC Survival: default" },
     ['Survival AOE'] = { "SimC Survival: precombat", "SimC Survival: default" },
-    
+
     ['Windwalker Primary'] = { "SimC Windwalker: precombat", "SimC Windwalker: default" },
     ['Windwalker AOE'] = { "SimC Windwalker: precombat", "SimC Windwalker: default" },
-    
+
     ['Brewmaster Primary'] = { 0, "Brewmaster: Default" },
     ['Brewmaster AOE'] = { 0, "Brewmaster: Default" },
     ['Brewmaster Defensives'] = { 0, "Brewmaster: Defensives" },
-    
+
     ['Enhancement Primary'] = { 'SimC Enhancement: precombat', 'SimC Enhancement: default' },
     ['Enhancement AOE'] = { 'SimC Enhancement: precombat', 'SimC Enhancement: default' },
-    
+
     ['Elemental Primary'] = { 'SEL Elemental Precombat', 'SEL Elemental Default' },
     ['Elemental AOE'] = { 'SEL Elemental Precombat', 'SEL Elemental Default' },
-    
+
     ['Retribution Primary'] = { 'SimC Retribution: precombat', 'SimC Retribution: default' },
     ['Retribution AOE'] = { 'SimC Retribution: precombat', 'SimC Retribution: default' },
-    
+
     ['Protection Primary'] = { 0, 'Protection Default' }
 } 
 
@@ -151,16 +151,16 @@ local oneTimeFixes = {
 function Hekili:RunOneTimeFixes()   
     local profile = Hekili.DB.profile
     if not profile then return end
-    
+
     profile.runOnce = profile.runOnce or {}
-    
+
     for k, v in pairs( oneTimeFixes ) do
         if not profile.runOnce[ k ] then
             profile.runOnce[k] = true
             v( profile )
         end
     end
-    
+
 end
 
 
@@ -189,7 +189,7 @@ local displayTemplate = {
         direction = 'RIGHT',
         style = 'RIGHT',
         alignment = 'CENTER',
-        
+
         width = 50,
         height = 50,
 
@@ -197,7 +197,7 @@ local displayTemplate = {
         offsetX = 5,
         offsetY = 0,
         spacing = 5,
-        
+
         font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
         fontSize = 12,
         fontStyle = "OUTLINE"
@@ -213,7 +213,7 @@ local displayTemplate = {
             single = true,
             reactive = true,
         },
-        
+
         pve = {
             alpha = 1,
             always = 1,
@@ -254,7 +254,7 @@ local displayTemplate = {
     captions = {
         enabled = false,
         queued = false,
-        
+
         align = "CENTER",
         anchor = "BOTTOM",
         x = 0,
@@ -340,15 +340,15 @@ local actionTemplate = {
     sync = "",
 
     wait_on_ready = 0, -- NYI
-    
+
     -- Call/Run Action List
     list_name = "default",
-    
+
     -- Pool Resource
     wait = "0.5",
     for_next = 1,
     extra_amount = "0",
-    
+
     -- Potion
     potion = "default",
 
@@ -433,7 +433,7 @@ function Hekili:GetDefaults()
                     separate = false,
                 },
             },
-            
+
             specs = {
                 ['**'] = {
                     abilities = {
@@ -463,13 +463,13 @@ function Hekili:GetDefaults()
             packs = {
                 ['**'] = packTemplate
             },                       
-            
+
             notifications = {
                 enabled = true,
 
                 x = 0,
                 y = 0,
-                
+
                 font = ElvUI and "Expressway" or "Arial Narrow",
                 fontSize = 20,
                 fontStyle = "OUTLINE",
@@ -487,7 +487,7 @@ function Hekili:GetDefaults()
 
                     x = -82,
                     y = -225,
-                
+
                     numIcons = 4,
                     order = 1,
 
@@ -506,7 +506,7 @@ function Hekili:GetDefaults()
                     builtIn = true,
 
                     name = "AOE",
-                    
+
                     x = -82,
                     y = -170,
 
@@ -558,17 +558,17 @@ function Hekili:GetDefaults()
                         color = { 1, 1, 1, 1 },
                     },
                 },
-                
+
                 ['**'] = displayTemplate
             },
 
             -- STILL NEED TO REVISE.
             Clash = 0,
             -- (above)
-                       
+
             runOnce = {
             },
-            
+
             clashes = {
             },
             trinkets = {
@@ -583,13 +583,13 @@ function Hekili:GetDefaults()
                 pvp = {},
                 encounters = {},
             },
-            
+
             iconStore = {
                 hide = false,
             },
         },
     }
-    
+
     return defaults
 end
 
@@ -598,7 +598,7 @@ end
 local optionSpec = "current"
 
 local function GetContext( info )
-    
+
 end
 
 
@@ -806,14 +806,14 @@ do
 
         local display = info[2]
         local data = display and Hekili.DB.profile.displays[ display ]
-        
+
         if data then
             tab.args.x.min = -1 * max( data.primaryWidth, data.queue.width )
             tab.args.x.max = max( data.primaryWidth, data.queue.width )
 
             tab.args.y.min = -1 * max( data.primaryHeight, data.queue.height )
             tab.args.y.max = max( data.primaryHeight, data.queue.height )
-            
+
             return
         end
 
@@ -852,7 +852,7 @@ do
                         name = "Main",
                         desc = "Includes display position, icons, primary icon size/shape, etc.",
                         order = 1,
- 
+
                         args = {
                             enabled = {
                                 type = "toggle",
@@ -931,11 +931,11 @@ do
                                         min = 10,
                                         max = 500,
                                         step = 1,
-                                        
+
                                         width = "full",
                                         order = 1,
                                     },
-                                    
+
                                     primaryHeight = {
                                         type = "range",
                                         name = "Height",
@@ -943,7 +943,7 @@ do
                                         min = 10,
                                         max = 500,
                                         step = 1,
-                                        
+
                                         width = "full",
                                         order = 2,                                            
                                     },
@@ -1005,7 +1005,7 @@ do
                                 width = "full",
                                 order = 2,
                             },
-        
+
                             offsetY = {
                                 type = 'range',
                                 name = 'Queue Vertical Offset',
@@ -1016,7 +1016,7 @@ do
                                 width = "full",
                                 order = 2,
                             },
-        
+
 
                             direction = {
                                 type = 'select',
@@ -1031,7 +1031,7 @@ do
                                 width = "full",
                                 order = 5,
                             },
-        
+
 
                             width = {
                                 type = 'range',
@@ -1044,7 +1044,7 @@ do
                                 order = 10,
                                 width = "full"
                             },
-        
+
                             height = {
                                 type = 'range',
                                 name = 'Height',
@@ -1056,7 +1056,7 @@ do
                                 order = 11,
                                 width = "full"
                             },
-                                            
+
                             spacing = {
                                 type = 'range',
                                 name = 'Spacing',
@@ -1077,7 +1077,7 @@ do
                         order = 3,
 
                         args = {
-                            
+
                             advanced = {
                                 type = "toggle",
                                 name = "Advanced",
@@ -1270,7 +1270,7 @@ do
                                         width = 'full',
                                         values = realAnchorPositions
                                     },
-                                    
+
                                     x = {
                                         type = "range",
                                         name = "X Offset",
@@ -1312,7 +1312,7 @@ do
                         desc = "Enable/disable or set the color for icon borders.\n\n" ..
                             "You may want to disable this if you use Masque or other tools to skin your Hekili icons.",
                         order = 4,
-                        
+
                         args = {
                             enabled = {
                                 type = "toggle",
@@ -1373,7 +1373,7 @@ do
                             }
                         }
                     },
-                    
+
                     glow = {
                         type = "group",
                         name = "Glows",
@@ -1435,7 +1435,7 @@ do
                                 type = "toggle",
                                 name = "Enabled",
                                 desc = "If enabled, the addon will place a colorful glow on the first recommended ability for this display.",
-                                
+
                                 width = "full",
                                 order = 1,
                                 hidden = function () return SF == nil end,
@@ -1513,7 +1513,7 @@ do
                                             BOTTOM = 'Bottom',
                                         }
                                     },
-                                    
+
                                     x = {
                                         type = "range",
                                         name = "X Offset",
@@ -1644,7 +1644,7 @@ do
                                         width = 'full',
                                         values = realAnchorPositions
                                     },
-                                    
+
                                     x = {
                                         type = "range",
                                         name = "X Offset",
@@ -1879,7 +1879,7 @@ do
                             type = "group",
                             inline = true,
                             name = "Text",
-                            
+
                             order = 5,
                             args = fontElements,
                         },
@@ -1937,7 +1937,7 @@ do
                                             name = "Import String",
                                             order = 1.5,                                             
                                         },
-        
+
                                         selectExisting = {
                                             type = "select",
                                             name = "Select a Saved Style",
@@ -1948,7 +1948,7 @@ do
                                             end,
                                             set = function( info, val )
                                                 local style = self.DB.global.styles[ val ]
-        
+
                                                 if style then shareDB.import = style.payload end
                                             end,
                                             values = function ()
@@ -1956,15 +1956,15 @@ do
                                                 local values = {
                                                     ["0000000000"] = "Select a Saved Style"
                                                 }
-        
+
                                                 for k, v in pairs( db ) do
                                                     values[ k ] = k .. " (|cFF00FF00" .. v.date .. "|r)"
                                                 end
-        
+
                                                 return values
                                             end,
                                         },
-        
+
                                         importString = {
                                             type = "input",
                                             name = "Import String",
@@ -1983,14 +1983,14 @@ do
                                             name = "Import",
                                             order = 4,
                                         },
-        
+
                                         importBtn = {
                                             type = "execute",
                                             name = "Import Style",
                                             order = 5,
                                             func = function ()
                                                 shareDB.imported, shareDB.error = self:DeserializeStyle( shareDB.import )
-        
+
                                                 if shareDB.error then
                                                     shareDB.import = "The Import String provided could not be decompressed.\n" .. shareDB.error
                                                     shareDB.error = nil
@@ -2017,7 +2017,7 @@ do
                                             type = "description",
                                             name = function ()
                                                 local creates, replaces = {}, {}
-                                                
+
                                                 for k, v in pairs( shareDB.imported ) do
                                                     if rawget( self.DB.profile.displays, k ) then
                                                         table.insert( replaces, k )
@@ -2068,11 +2068,11 @@ do
                                                 for k, v in pairs( shareDB.imported ) do
                                                     if type( v ) == "table" then self.DB.profile.displays[ k ] = v end
                                                 end
-                                                
+
                                                 shareDB.import = ""
                                                 shareDB.imported = {}
                                                 shareDB.importStage = 2
-                                                
+
                                                 self:EmbedDisplayOptions()
                                                 self:BuildUI()
                                             end,
@@ -2142,19 +2142,19 @@ do
                                             fontSize = "medium",
                                             width = "full",
                                         },
-        
+
                                         displays = {
                                             type = "header",
                                             name = "Displays",
                                             order = 2,
                                         },
-        
+
                                         exportHeader = {
                                             type = "header",
                                             name = "Export",
                                             order = 1000,
                                         },
-        
+
                                         exportBtn = {
                                             type = "execute",
                                             name = "Export Style",
@@ -2164,17 +2164,17 @@ do
                                                 for key, share in pairs( shareDB.displays ) do
                                                     if share then table.insert( disps, key ) end
                                                 end
-        
+
                                                 shareDB.export = self:SerializeStyle( unpack( disps ) )
                                                 shareDB.exportStage = 1
                                             end,
                                             disabled = function ()
                                                 local hasDisplay = false
-        
+
                                                 for key, value in pairs( shareDB.displays ) do
                                                     if value then hasDisplay = true; break end
                                                 end
-        
+
                                                 return not hasDisplay
                                             end,
                                         },                                        
@@ -2185,7 +2185,7 @@ do
                                     hidden = function ()
                                         local plugins = self.Options.args.displays.args.shareDisplays.args.export.args.stage0.plugins.displays
                                         wipe( plugins )
-            
+
                                         local i = 1
                                         for dispName, display in pairs( self.DB.profile.displays ) do
                                             local pos = 20 + ( display.builtIn and display.order or i )
@@ -2200,7 +2200,7 @@ do
                                             }
                                             i = i + 1
                                         end
-        
+
                                         return shareDB.exportStage ~= 0 
                                     end,
                                 },
@@ -2221,7 +2221,7 @@ do
                                             width = "full",
                                             hidden = function () return shareDB.export == "" end,
                                         },
-        
+
                                         instructions = {
                                             type = "description",
                                             name = "You can copy the above string to share your selected display style settings, or " ..
@@ -2255,7 +2255,7 @@ do
                                                     order = 2,
                                                     width = "double",                                            
                                                 },
-                
+
                                                 storeStyle = {
                                                     type = "execute",
                                                     name = "Store Export String",
@@ -2326,7 +2326,7 @@ end
 
 
 ns.ClassSettings = function ()
-    
+
     local option = {
         type = 'group',
         name = "Class/Specialization",
@@ -2337,7 +2337,7 @@ ns.ClassSettings = function ()
             return #class.toggles == 0 and #class.settings == 0
         end
     }
-    
+
     option.args.toggles = {
         type = 'group',
         name = 'Toggles',
@@ -2349,7 +2349,7 @@ ns.ClassSettings = function ()
             return #class.toggles == 0
         end
     }
-    
+
     for i = 1, #class.toggles do
         option.args.toggles.args[ 'Bind: ' .. class.toggles[i].name ] = {
             type = 'keybinding',
@@ -2365,7 +2365,7 @@ ns.ClassSettings = function ()
             order = 1 + ( i - 1 ) * 2
         }
     end
-    
+
     option.args.settings = {
         type = 'group',
         name = 'Settings',
@@ -2376,7 +2376,7 @@ ns.ClassSettings = function ()
             return #class.settings == 0
         end
     }
-    
+
     for i, setting in ipairs(class.settings) do
         option.args.settings.args[ setting.name ] = setting.option
         option.args.settings.args[ setting.name ].order = i
@@ -2390,7 +2390,7 @@ end
 local abilityToggles = {}
 
 ns.AbilitySettings = function ()
-    
+
     local option = {
         type = 'group',
         name = "Abilities and Items",
@@ -2413,7 +2413,7 @@ ns.AbilitySettings = function ()
             abilities[ v.name ] = v.key
         end
     end
-    
+
     for k, v in pairs( abilities ) do
         local ability = class.abilities[ k ]
 
@@ -2462,7 +2462,7 @@ ns.AbilitySettings = function ()
                     step = 0.05,
                     order = 3
                 },
-                
+
                 spacer01 = {
                     type = "description",
                     name = " ",
@@ -2479,7 +2479,7 @@ ns.AbilitySettings = function ()
                     width = "full",
                     hidden = function() return ability.item == nil end,
                 },
-    
+
                 itemDescription = {
                     type = "description",
                     name = function () return "This ability requires that " .. ( ability.link or ability.name ) .. " is equipped.  This item can be recommended via |cFF00CCFF[Use Items]|r in your " ..
@@ -2489,7 +2489,7 @@ ns.AbilitySettings = function ()
                     width = "full",
                     hidden = function() return ability.item == nil end,
                 },
-    
+
                 spacer02 = {
                     type = "description",
                     name = " ",
@@ -2566,14 +2566,14 @@ ns.AbilitySettings = function ()
 
         option.args[ v ] = abOption
     end
-    
+
     return option
-    
+
 end
 
 
 ns.TrinketSettings = function ()
-    
+
     local option = {
         type = 'group',
         name = "Trinkets/Gear",
@@ -2649,9 +2649,9 @@ ns.TrinketSettings = function ()
         }
 
     end
-    
+
     return option
-    
+
 end
 
 
@@ -2724,10 +2724,10 @@ do
 
             lists[ list ] = lists[ list ] .. "actions+=/" .. action .. "\n"
         end
-            
+
         local count = 0
         local output = {}
-            
+
         for name, list in pairs( lists ) do
             local import, warnings = self:ParseActionList( list )
 
@@ -2760,7 +2760,7 @@ do
         else
             AddWarning( "Imported " .. count .. " action lists." )
         end
-            
+
         return output, impControl.warnings
     end
 end
@@ -2789,7 +2789,7 @@ local snapshots = {
     displays = {},
     snaps = {},
     empty = {},
-    
+
     display = "none",
     snap = {},
 }
@@ -2797,11 +2797,11 @@ local snapshots = {
 
 local config = {
     qsDisplay = 99999,
-    
+
     qsShowTypeGroup = false,
     qsDisplayType = 99999,
     qsTargetsAOE = 3,
-    
+
     displays = {}, -- auto-populated and recycled.
     displayTypes = {
         [1] = "Primary",
@@ -2813,31 +2813,31 @@ local config = {
 
 
 function Hekili:NewGetOption( info )
-    
+
     local depth = #info
     local option = depth and info[depth] or nil
-    
+
     if not option then return end
-    
+
     if config[ option ] then return config[ option ] end
-    
+
     return
 end
 
 
 function Hekili:NewSetOption( info, value )
-    
+
     local depth = #info
     local option = depth and info[depth] or nil
-    
+
     if not option then return end
-    
+
     local nValue = tonumber( value )
     local sValue = tostring( value )
-    
+
     if option == 'qsShowTypeGroup' then config[option] = value
     else config[option] = nValue end
-    
+
     return
 end
 
@@ -2891,7 +2891,7 @@ do
         local option = info[ n ]
 
         if type(val) == 'string' then val = val:trim() end
-        
+
         shareDB[ option ] = val
 
         if option == "actionPack" and rawget( self.DB.profile.packs, shareDB.actionPack ) then
@@ -2947,7 +2947,7 @@ do
 
         self.DB.profile.specs[ spec ].abilities[ ability ][ option ] = val
     end
-    
+
     function Hekili:GetAbilityOption( info )
         local n = #info
         local ability, option = info[2], info[n]
@@ -2966,7 +2966,7 @@ do
 
         self.DB.profile.specs[ spec ].items[ item ][ option ] = val
     end
-    
+
     function Hekili:GetItemOption( info )
         local n = #info
         local item, option = info[2], info[n]
@@ -3206,12 +3206,12 @@ do
         if not db then return end
 
         local i = 1
-        
+
         while( true ) do
             local id, name, description, texture, role = GetSpecializationInfo( i )
 
             if not id then break end
-            
+
             if role ~= "HEALER" and class.specs[ id ] then
                 local sName = lower( name )
                 specNameByID[ id ] = sName
@@ -3227,7 +3227,7 @@ do
                     childGroups = "tree",
                     get = "GetSpecOption",
                     set = "SetSpecOption",
-                    
+
                     args = {
                         enabled = {
                             type = "toggle",
@@ -3251,20 +3251,20 @@ do
                                     width = "full",
                                     values = function( info, val )
                                         wipe( packs )
-        
+
                                         for key, pkg in pairs( self.DB.profile.packs ) do
                                             local pname = pkg.builtIn and "|cFF00B4FF" .. key .. "|r" or key
                                             if pkg.spec == id then
                                                 packs[ key ] = '|T' .. texture .. ':0|t ' .. pname
                                             end
                                         end
-        
+
                                         packs[ '(none)' ] = '(none)'
-        
+
                                         return packs
                                     end,
                                 },
-                                
+
                                 openPackage = {
                                     type = 'execute',
                                     name = "View Priority",
@@ -3290,7 +3290,7 @@ do
                             width = "full",
                             values = function ()
                                 local v = {}
-                                
+
                                 for k, p in pairs( class.potionList ) do
                                     if k ~= "default" then v[ k ] = p end
                                 end
@@ -3362,7 +3362,7 @@ do
                                     width = "full",
                                     order = 1,
                                 },
-        
+
                                 nameplateRange = {
                                     type = "range",
                                     name = "Nameplate Detection Range",
@@ -3384,7 +3384,7 @@ do
                                     step = 1,
                                     order = 3,
                                 },
-        
+
                                 cycle = {
                                     type = "toggle",
                                     name = "Recommend Target Cycling",
@@ -3402,7 +3402,7 @@ do
                                     width = "full",
                                     order = 3.2,
                                 },
-        
+
                                 damage = {
                                     type = "toggle",
                                     name = "Detect Enemies by Damage",
@@ -3411,7 +3411,7 @@ do
                                     width = "full",
                                     order = 4,                                    
                                 },
-        
+
                                 damageDots = {
                                     type = "toggle",
                                     name = "Detect Enemies by Damage over Time",
@@ -3479,7 +3479,7 @@ do
                 }
 
                 local userPrefs = class.specs[ id ] and class.specs[ id ].prefs
-                
+
 
             end
 
@@ -3559,7 +3559,7 @@ do
             option = nameMap[ data.action ]
             if not data[ option ] then data[ option ] = defaultNames[ option ] end
         end
-        
+
         if toggleToNumber[ option ] then return data[ option ] == 1 end
         return data[ option ]
     end
@@ -3578,7 +3578,7 @@ do
             packControl.actionID = format( "%04d", val )
             self:LoadScripts()
             return
-        
+
         elseif option == 'newListName' then
             packControl.newListName = val:trim()
             self:LoadScripts()
@@ -3590,7 +3590,7 @@ do
         data = data[ actionID ]
 
         if option == "inputName" or option == "selectName" then option = nameMap[ data.action ] end
-        
+
         if toggleToNumber[ option ] then val = val and 1 or 0 end
         if type( val ) == 'string' then val = val:trim() end
 
@@ -3774,7 +3774,7 @@ do
                                             name = "Import String",
                                             order = 1.5,                                             
                                         },
-        
+
                                         importString = {
                                             type = "input",
                                             name = "Import String",
@@ -3793,14 +3793,14 @@ do
                                             name = "Import",
                                             order = 4,
                                         },
-        
+
                                         importBtn = {
                                             type = "execute",
                                             name = "Import Priority",
                                             order = 5,
                                             func = function ()
                                                 shareDB.imported, shareDB.error = self:DeserializeActionPack( shareDB.import )
-        
+
                                                 if shareDB.error then
                                                     shareDB.import = "The Import String provided could not be decompressed.\n" .. shareDB.error
                                                     shareDB.error = nil
@@ -3864,7 +3864,7 @@ do
                                                 table.sort( listNames )
 
                                                 local o
-                                                
+
                                                 if #listNames == 0 then
                                                     o = "The imported Priority has no lists included."
                                                 elseif #listNames == 1 then
@@ -3907,11 +3907,11 @@ do
                                                 self.DB.profile.packs[ shareDB.imported.name ] = shareDB.imported.payload
                                                 shareDB.imported.payload.date = shareDB.imported.date
                                                 shareDB.imported.payload.version = shareDB.imported.date
-                                                
+
                                                 shareDB.import = ""
                                                 shareDB.imported = {}
                                                 shareDB.importStage = 2
-                                                
+
                                                 self:LoadScripts()
                                                 self:EmbedPackOptions()
                                             end,
@@ -4070,7 +4070,7 @@ do
                                     width = "full",
                                     values = specs,
                                 },
-            
+
                                 desc = {
                                     type = "input",
                                     name = "Description",
@@ -4136,7 +4136,7 @@ do
                                             order = 1,
                                             width = "full",
                                         },
-                    
+
                                         author = {
                                             type = "input",
                                             name = "Author",
@@ -4145,7 +4145,7 @@ do
                                             order = 2,
                                             width = "double",
                                         },
-                    
+
                                         date = {
                                             type = "input",
                                             name = "Last Updated",
@@ -4183,7 +4183,7 @@ do
                                         return not p.warnings or p.warnings == ""
                                     end,
                                 },
-            
+
                                 reimport = {
                                     type = "execute",
                                     name = "(Re)Import",
@@ -4203,7 +4203,7 @@ do
                                         p.date = tonumber( date("%Y%m%d.%H%M%S") )
 
                                         if not p.lists[ packControl.listName ] then packControl.listName = "default" end
-                                        
+
                                         local id = tonumber( packControl.actionID )
                                         if not p.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
 
@@ -4257,7 +4257,7 @@ do
                                                         v[ k ] = k
                                                     end
                                                 end
-            
+
                                                 return v
                                             end,
                                         },
@@ -4280,7 +4280,7 @@ do
                                                         local key = format( "%04d", i )
                                                         local action = entry.action
                                                         local desc
-                                                        
+
                                                         if not action then action = "Unassigned"
                                                         else action = class.abilities[ action ] and class.abilities[ action ].name or action end
 
@@ -4307,7 +4307,7 @@ do
 
                                                         elseif entry.criteria and entry.criteria:len() > 0 then
                                                             desc = entry.criteria 
-                                                        
+
                                                         end
 
                                                         if desc then desc = desc:gsub( "[\r\n]", "" ) end
@@ -4377,13 +4377,13 @@ do
                                                     order = 2,
                                                     values = function ()
                                                         local v = {}
-                                                        
+
                                                         local p = rawget( Hekili.DB.profile.packs, pack )
 
                                                         for i = 1, #p.lists[ packControl.listName ] do
                                                             v[ i ] = i
                                                         end
-            
+
                                                         return v
                                                     end,
                                                 },        
@@ -4424,11 +4424,11 @@ do
                                                             hidden = function()
                                                                 local e = GetListEntry( pack )
                                                                 local ability = e.action and class.abilities[ e.action ]
-                                                                
+
                                                                 return not ability or ( ability.id < 0 and ability.id > -10 )
                                                             end,
                                                         },
-            
+
                                                         list_name = {
                                                             type = "select",
                                                             name = "Action List",
@@ -4447,7 +4447,7 @@ do
                                                                         end
                                                                     end
                                                                 end
-            
+
                                                                 return v
                                                             end,
                                                             order = 4,
@@ -4457,7 +4457,7 @@ do
                                                                 return not ( e.action == "call_action_list" or e.action == "run_action_list" )
                                                             end,                                                    
                                                         },
-            
+
                                                         potion = {
                                                             type = "select",
                                                             name = "Potion",
@@ -4530,7 +4530,7 @@ do
                                                             arg = function( info )
                                                                 local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )        
                                                                 local results = {}
-        
+
                                                                 state.reset()
 
                                                                 local apack = rawget( self.DB.profile.packs, pack )
@@ -4549,17 +4549,17 @@ do
                                                                         end
                                                                     end
                                                                 end
-                                                                
+
                                                                 local entry = apack and apack.lists[ list ]
                                                                 entry = entry and entry[ action ]        
-        
+
                                                                 state.this_action = entry.action
 
                                                                 local scriptID = pack .. ":" .. list .. ":" .. action
-        
+
                                                                 scripts:ImportModifiers( scriptID )
                                                                 scripts:StoreValues( results, scriptID, "value" )
-                                                                
+
                                                                 return results, list, action
                                                             end,
                                                             hidden = function ()
@@ -4661,7 +4661,7 @@ do
                                                                 end
                                                             end
                                                         end
-                                                        
+
                                                         local entry = apack and apack.lists[ list ]
                                                         entry = entry and entry[ action ]        
 
@@ -4671,7 +4671,7 @@ do
 
                                                         scripts:ImportModifiers( scriptID )
                                                         scripts:StoreValues( results, scriptID )
-                                                        
+
                                                         return results, list, action
                                                     end,                                      
                                                         --[[ local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
@@ -4689,7 +4689,7 @@ do
 
                                                         scripts:ImportModifiers( scriptID )
                                                         scripts:StoreValues( results, scriptID )
-                                                        
+
                                                         return results, list, action
                                                     end,
                                                     hidden = function ()
@@ -4890,7 +4890,7 @@ do
                                         }
                                     }
                                 },
-                                
+
                                 newActionGroup = {
                                     type = "group",
                                     inline = true,
@@ -4972,7 +4972,7 @@ do
                 ClearOverrideBindings( Hekili_Keyhandler )
                 completed = false
             end
-    
+
             for name, toggle in pairs( Hekili.DB.profile.toggles ) do
                 if toggle.key and toggle.key ~= "" then
                     SetOverrideBindingClick( Hekili_Keyhandler, true, toggle.key, "Hekili_Keyhandler", name )
@@ -5009,7 +5009,7 @@ do
         if option == 'value' then
             if bind == 'pause' then self:TogglePause()            
             else self:FireToggle( bind ) end
-        
+
         elseif option == 'type' then
             toggle.type = val
 
@@ -5022,10 +5022,10 @@ do
             for t, data in pairs( p.toggles ) do
                 if data.key == val then data.key = "" end
             end
-            
+
             toggle.key = val
             self:OverrideBinds()
-        
+
         else
             toggle[ option ] = val
 
@@ -5136,7 +5136,7 @@ do
                             name = "Mode",
                             desc = function( info, val )
                                 local mType = self.DB.profile.toggles.mode.type
-                                
+
                                 local output = "Select your Display Mode."
 
                                 if mType == "AutoSingle" or mType == "AutoDual" then
@@ -5365,10 +5365,10 @@ end
 do
     -- Generate a spec skeleton.
     local listener = CreateFrame( "Frame" )
-    
+
     local indent = ""
     local output = {}
-                        
+
     local function key( s )
         return ( lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s", "_" ) )
     end
@@ -5505,16 +5505,16 @@ do
                 if tab == spec then
                     for j = offset, offset + n do
                         local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
-                        
+
                         if name and spellID ~= mastery_spell then 
                             local token = key( name )
-                            
+
                             castTime = castTime / 1000
 
                             local cost, min_cost, max_cost, cost_per_sec, cost_percent, resource
-                            
+
                             local costs = GetSpellPowerCost( spellID )
-                            
+
                             if costs then
                                 for k, v in pairs( costs ) do
                                     if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
@@ -5525,11 +5525,11 @@ do
                                     end
                                 end
                             end
-                            
+
                             local passive = IsPassiveSpell( spellID )
                             local harmful = IsHarmfulSpell( spellID )
                             local helpful = IsHelpfulSpell( spellID )
-                            
+
                             local _, charges, _, recharge = GetSpellCharges( spellID )
                             local cooldown
                             if recharge then cooldown = recharge
@@ -5537,15 +5537,15 @@ do
                                 cooldown = GetSpellBaseCooldown( spellID )
                                 if cooldown then cooldown = cooldown / 1000 end
                             end
-                            
+
                             local selfbuff = SpellIsSelfBuff( spellID )
                             local talent = IsTalentSpell( spellID )
-                            
+
                             if selfbuff or passive then
                                 auras[ token ] = auras[ token ] or {}
                                 auras[ token ].id = spellID
                             end
-                            
+
                             if not passive then
                                 local a = abilities[ token ] or {}
 
@@ -5568,7 +5568,7 @@ do
                                 end
 
                                 a.startsCombat = not helpful
-                                
+
                                 a.cooldown = cooldown
                                 if a.charges and a.charges > 1 then 
                                     a.charges = charges
@@ -5591,10 +5591,10 @@ do
                 if tab == spec then
                     for j = offset, offset + n do
                         local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
-                        
+
                         if name and spellID ~= mastery_spell then 
                             local token = key( name )
-                            
+
                             if castTime % 10 > 0 then
                                 -- We can catch hasted cast times 90% of the time...
                                 castTime = castTime * haste
@@ -5602,9 +5602,9 @@ do
                             castTime = castTime / 1000
 
                             local cost, min_cost, max_cost, spendPerSec, cost_percent, resource
-                            
+
                             local costs = GetSpellPowerCost( spellID )
-                            
+
                             if costs then
                                 for k, v in pairs( costs ) do
                                     if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
@@ -5615,11 +5615,11 @@ do
                                     end
                                 end
                             end
-                            
+
                             local passive = IsPassiveSpell( spellID )
                             local harmful = IsHarmfulSpell( spellID )
                             local helpful = IsHelpfulSpell( spellID )
-                            
+
                             local _, charges, _, recharge = GetSpellCharges( spellID )
                             local cooldown
                             if recharge then cooldown = recharge
@@ -5627,15 +5627,15 @@ do
                                 cooldown = GetSpellBaseCooldown( spellID )
                                 if cooldown then cooldown = cooldown / 1000 end
                             end
-                            
+
                             local selfbuff = SpellIsSelfBuff( spellID )
                             local talent = IsTalentSpell( spellID )
-                            
+
                             if selfbuff or passive then
                                 auras[ token ] = auras[ token ] or {}
                                 auras[ token ].id = spellID
                             end
-                            
+
                             if not passive then
                                 local a = abilities[ token ] or {}
 
@@ -5658,7 +5658,7 @@ do
                                 end
 
                                 a.startsCombat = not helpful
-                                
+
                                 a.cooldown = cooldown
                                 a.charges = charges
                                 a.recharge = recharge
@@ -5709,7 +5709,7 @@ do
                     auras[ token ] = a
                 end
             end
-        
+
         elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
             if UnitIsUnit( "player", unit ) then
                 local spellID = select( 3, ... )
@@ -5787,7 +5787,7 @@ do
                     func = function()
                         indent = ""
                         wipe( output )
-                        
+
                         append( "if UnitClassBase( 'player' ) == '" .. UnitClassBase( "player" ) .. "' then" )
                         increaseIndent()
 
@@ -5907,7 +5907,7 @@ do
                 return not Hekili.Skeleton
             end,
         }
-    
+
     end
 end
 
@@ -5996,7 +5996,7 @@ function Hekili:GetOptions()
                                 desc = "Enables or disables the addon.",
                                 order = 1
                             },
-                            
+
                             minimapIcon = {
                                 type = "toggle",
                                 name = "Hide Minimap Icon",
@@ -6016,7 +6016,7 @@ function Hekili:GetOptions()
                                 type = 'description',
                                 name = function ()
                                     local output = "\n|cFF00CCFFTHANK YOU TO ALL PATRONS SUPPORTING THIS ADDON'S DEVELOPMENT!|r\n\n"
-        
+
                                     for i, name in ipairs( ns.Patrons ) do
                                         if i == 1 then
                                             output = output .. name
@@ -6026,7 +6026,7 @@ function Hekili:GetOptions()
                                             output = output .. ", " .. name
                                         end
                                     end
-                                    
+
                                     output = output .. "\n\nPlease see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n"
                                     return output
                                 end,
@@ -6037,7 +6037,7 @@ function Hekili:GetOptions()
                                 order = 2,
                                 width = "full"
                             },
-        
+
                             curse = {
                                 type = 'input',
                                 name = "Twitch / Curse",
@@ -6046,7 +6046,7 @@ function Hekili:GetOptions()
                                 set = function () end,
                                 width = "full",
                             },
-        
+
                             github = {
                                 type = "input",
                                 name = "GitHub",
@@ -6149,11 +6149,11 @@ function Hekili:GetOptions()
                         order = 1,
                         values = function( info )
                             local displays = snapshots.displays
-                            
+
                             for k in pairs( ns.snapshots ) do
                                 displays[k] = k
                             end
-                            
+
                             return displays
                         end,
                         set = function( info, val )
@@ -6172,12 +6172,12 @@ function Hekili:GetOptions()
                         values = function( info )
                             for k, v in pairs( ns.snapshots ) do
                                 snapshots.snaps[k] = snapshots.snaps[k] or {}
-                                
+
                                 for idx in pairs( v ) do
                                     snapshots.snaps[k][idx] = idx
                                 end
                             end
-                            
+
                             return snapshots.display and snapshots.snaps[ snapshots.display ] or snapshots.empty
                         end,
                         set = function( info, val )
@@ -6195,7 +6195,7 @@ function Hekili:GetOptions()
                         get = function( info )
                             local display = snapshots.display
                             local snap = display and snapshots.snap[ display ]
-                            
+
                             return snap and ns.snapshots[ display ][ snap ]
                         end,
                         disabled = false,
@@ -6210,7 +6210,7 @@ function Hekili:GetOptions()
             specializations = {},
         }
     }
-   
+
     self:EmbedToggleOptions( Options )
 
     self:EmbedDisplayOptions( Options )
@@ -6218,36 +6218,36 @@ function Hekili:GetOptions()
     self:EmbedPackOptions( Options )
 
     self:EmbedAbilityOptions( Options )
-    
+
     self:EmbedItemOptions( Options )
 
     self:EmbedSpecOptions( Options )
 
     self:EmbedSkeletonOptions( Options )
-    
+
     return Options
 end
 
 
 function Hekili:TotalRefresh()
-    
+
     if Hekili.PLAYER_ENTERING_WORLD then
         self:SpecializationChanged()
         self:RestoreDefaults()
     end
-        
+
     for i, queue in pairs( ns.queue ) do
         for j, _ in pairs( queue ) do
             ns.queue[ i ][ j ] = nil
         end
         ns.queue[ i ] = nil
     end
-    
+
     callHook( "onInitialize" )
-    
+
     self:RunOneTimeFixes()
     ns.checkImports()
-    
+
     -- self:LoadScripts()
     self:RefreshOptions()
     self:UpdateDisplayVisibility()
@@ -6256,7 +6256,7 @@ function Hekili:TotalRefresh()
     self:OverrideBinds()
 
     LibStub("LibDBIcon-1.0"):Refresh( "Hekili", self.DB.profile.iconStore )
-    
+
 end
 
 
@@ -6272,7 +6272,7 @@ function Hekili:RefreshOptions()
     self:EmbedItemOptions()
 
     self.Options.args.class = ns.ClassSettings()
-    
+
     -- Until I feel like making this better at managing memory.
     collectgarbage()
 end
@@ -6281,19 +6281,19 @@ end
 function Hekili:GetOption( info, input )
     local category, depth, option = info[1], #info, info[#info]
     local profile = Hekili.DB.profile
-    
+
     if category == 'general' then
         return profile[ option ]
-        
+
     --[[ elseif category == 'class' then
         if info[2] == 'toggles' then
             return profile['Toggle '..option]
-            
+
         elseif info[2] == 'settings' then
             return profile['Class Option: '..option]
 
         end ]]
-            
+
     --[[ elseif category == 'abilities' then
         local ability = info[2]
 
@@ -6317,109 +6317,109 @@ function Hekili:GetOption( info, input )
             return tostring( profile[ option ] )
         end
         return profile[option] ]]
-        
+
     elseif category == 'bindings' then
-        
+
         if option:match( "TOGGLE" ) or option == "HEKILI_SNAPSHOT" then
             return select( 1, GetBindingKey( option ) )
-            
+
         elseif option == 'Pause' then
             return self.Pause
-            
+
         else
             return profile[ option ]
-            
+
         end
-        
+
     elseif category == 'displays' then
-        
+
         -- This is a generic display option/function.
         if depth == 2 then
             return nil
-            
+
             -- This is a display (or a hook).
         else
             local dispKey, dispID = info[2], tonumber( match( info[2], "^D(%d+)" ) )
             local hookKey, hookID = info[3], tonumber( match( info[3] or "", "^P(%d+)" ) )
             local display = profile.displays[ dispID ]
-            
+
             -- This is a specific display's settings.
             if depth == 3 or not hookID then
-                
+
                 if option == 'x' or option == 'y' then
                     return tostring( display[ option ] )
-                    
+
                 elseif option == 'spellFlashColor' or option == 'iconBorderColor' then
                     if type( display[option] ) ~= 'table' then display[option] = { r = 1, g = 1, b = 1, a = 1 } end
                     return display[option].r, display[option].g, display[option].b, display[option].a
-                    
+
                 elseif option == 'Copy To' or option == 'Import' then
                     return nil
-                    
+
                 else
                     return display[ option ]
-                    
+
                 end
-                
+
                 -- This is a priority hook.
             else
                 local hook = display.Queues[ hookID ]
-                
+
                 if option == 'Move' then
                     return hookID
-                    
+
                 else
                     return hook[ option ]
-                    
+
                 end
-                
+
             end
-            
+
         end
-        
+
     elseif category == 'actionLists' then
-        
+
         -- This is a general action list option.
         if depth == 2 then
             return nil
-            
+
         else
             local listKey, listID = info[2], tonumber( match( info[2], "^L(%d+)" ) )
             local actKey, actID = info[3], tonumber( match( info[3], "^A(%d+)" ) )
             local list = listID and profile.actionLists[ listID ]
-            
+
             -- This is a specific action list.
             if depth == 3 or not actID then
                 return list[ option ]
-                
+
                 -- This is a specific action.
             elseif listID and actID then
                 local action = list.Actions[ actID ]
-                
+
                 if option == 'ConsumableArgs' then option = 'Args' end
-                
+
                 if option == 'Move' then
                     return actID
-                    
+
                 else
                     return action[ option ]
-                    
+
                 end
-                
+
             end
-            
+
         end
-        
+
     end
-    
+
     ns.Error( "GetOption() - should never see." )
-    
+
 end
 
 
 local getUniqueName = function( category, name )
     local numChecked, suffix, original = 0, 1, name
-    
+
     while numChecked < #category do
         for i, instance in ipairs( category ) do
             if name == instance.Name then
@@ -6431,7 +6431,7 @@ local getUniqueName = function( category, name )
             end
         end
     end
-    
+
     return name
 end
 
@@ -6440,11 +6440,11 @@ function Hekili:SetOption( info, input, ... )
     local category, depth, option, subcategory = info[1], #info, info[#info], nil
     local Rebuild, RebuildUI, RebuiltScripts, RebuildOptions, RebuildCache, Select
     local profile = Hekili.DB.profile
-    
+
     if category == 'general' then
         -- We'll preset the option here; works for most options.
         profile[ option ] = input
-        
+
         if option == 'enabled' then
             for i, buttons in ipairs( ns.UI.Buttons ) do
                 for j, _ in ipairs( buttons ) do
@@ -6455,15 +6455,15 @@ function Hekili:SetOption( info, input, ... )
                     end
                 end
             end
-            
+
             if input == true then self:Enable()
             else self:Disable() end
-            
+
             return
-            
+
         elseif option == 'minimapIcon' then
             profile.iconStore.hide = input
-            
+
             if LDBIcon then
                 if input then
                     LDBIcon:Hide( "Hekili" )
@@ -6471,18 +6471,18 @@ function Hekili:SetOption( info, input, ... )
                     LDBIcon:Show( "Hekili" )
                 end
             end
-            
+
         elseif option == 'Audit Targets' then
             return
-            
+
         end
-        
+
         -- General options do not need add'l handling.
         return
-        
+
     --[[ elseif category == 'class' then
         subcategory = info[2]
-        
+
         if subcategory == 'toggles' then
             if option:match("State:") then
                 Hekili:ClassToggle( option:match("State: (.-)$") )
@@ -6490,12 +6490,12 @@ function Hekili:SetOption( info, input, ... )
                 profile[ 'Toggle ' .. option ] = input
                 Hekili:OverrideBinds()
             end
-            
+
         elseif subcategory == 'settings' then
             profile[ 'Class Option: '..option] = input
 
         end ]]
-            
+
     --[[ elseif category == 'abilities' then
         local ability = info[2]
 
@@ -6516,32 +6516,32 @@ function Hekili:SetOption( info, input, ... )
 
         Hekili:ForceUpdate()
         return ]]
-        
+
     --[[ elseif category == 'notifs' then
         profile[ option ] = input
-        
+
         if option == 'Notification X' or option == 'Notification Y' then
             profile[ option ] = tonumber( input )
         end
-        
+
         RebuildUI = true ]]
-        
+
     elseif category == 'bindings' then
-        
+
         local revert = profile[ option ]
         profile[ option ] = input
-        
+
         if option:match( "TOGGLE" ) or option == "HEKILI_SNAPSHOT" then
             if GetBindingKey( option ) then
                 SetBinding( GetBindingKey( option ) )
             end
             SetBinding( input, option )
             SaveBindings( GetCurrentBindingSet() )
-            
+
         elseif option == 'Mode' then
             profile[option] = revert
             self:ToggleMode()
-            
+
         elseif option == 'Pause' then
             profile[option] = revert
             self:TogglePause()
@@ -6556,22 +6556,22 @@ function Hekili:SetOption( info, input, ... )
             profile[option] = revert
             self:ToggleArtifact()
             return
-            
+
         elseif option == 'Potions' then
             profile[option] = revert
             self:TogglePotions()
             return
-            
+
         elseif option == 'Hardcasts' then
             profile[option] = revert
             self:ToggleHardcasts()
             return
-            
+
         elseif option == 'Interrupts' then
             profile[option] = revert
             self:ToggleInterrupts()
             return
-            
+
         elseif option == 'Switch Type' then
             if input == 0 then
                 if profile['Mode Status'] == 1 or profile['Mode Status'] == 2 then
@@ -6585,65 +6585,65 @@ function Hekili:SetOption( info, input, ... )
                     self:Print("Switch type updated; reverting to single-target.")
                 end
             end
-            
+
         elseif option == 'Mode Status' or option:match("Toggle_") or option == 'BloodlustCooldowns' or option == 'CooldownArtifact' then
             -- do nothing, we're good.
-            
+
         else -- Toggle Names.
             if input:trim() == "" then
                 profile[ option ] = nil
             end
-            
+
         end
-        
+
         -- Bindings do not need add'l handling.
         return
-        
+
     elseif category == 'displays' then
-        
+
         -- This is a generic display option/function.
         if depth == 2 then
-            
+
             if option == 'newDisplay' then
                 self.DB.profile.displays[ key ] = {}
                 self:EmbedDisplayOptions()
-                
+
                 C_Timer.After( 0.25, self[ 'ProcessDisplay'..index ] )
-                
+
             elseif option == 'importDisplay' then
                 local import = ns.deserializeDisplay( input )
-                
+
                 if not import then
                     Hekili:Print("Unable to import from given input string.")
                     return
                 end
-                
+
                 import.Name = getUniqueName( profile.displays, import.Name )
                 table.insert( profile.displays, import )
-                
+
             end
-            
+
             Rebuild = true
-            
+
             -- This is a display (or a hook).
         else
             local dispKey, dispID = info[2], info[2] and tonumber( match( info[2], "^D(%d+)" ) )
             local hookKey, hookID = info[3], info[3] and tonumber( match( info[3], "^P(%d+)" ) )
             local display = dispID and profile.displays[ dispID ]
-            
+
             -- This is a specific display's settings.
             if depth == 3 or not hookID then
                 local revert = display[option]
                 display[option] = input
-                
+
                 if option == 'x' or option == 'y' then
                     display[option] = tonumber( input )
                     RebuildUI = true
-                    
+
                 elseif option == 'Name' then
                     Hekili.Options.args.displays.args[ dispKey ].name = input
                     if input ~= revert and display.Default then display.Default = false end
-                    
+
                 elseif option == 'enabled' then
                     -- Might want to replace this with RebuildUI = true
                     for i, button in ipairs( ns.UI.Buttons[ dispID ] ) do
@@ -6654,35 +6654,35 @@ function Hekili:SetOption( info, input, ... )
                         end
                     end
                     RebuildUI = true
-                    
+
                 elseif option == 'minST' or option == 'maxST' or option == 'minAE' or option == 'maxAE' then
                     -- do nothing, it's already set.
-                    
+
                 elseif option == 'spellFlash' then
-                    
+
                 elseif option == 'spellFlashColor' or option == 'iconBorderColor' then
                     if type( display[ option ] ~= 'table' ) then display[ option ] = {} end
                     display[ option ].r = input
                     display[ option ].g = select( 1, ... )
                     display[ option ].b = select( 2, ... )
                     display[ option ].a = select( 3, ... )
-                    
+
                 elseif option == 'Script' then
                     display[option] = input:trim()
                     RebuildScripts = true
-                    
+
                 elseif option == 'Copy To' then
                     local index = #profile.displays + 1
-                    
+
                     profile.displays[ index ] = tableCopy( display )
                     profile.displays[ index ].Name = input
                     profile.displays[ index ].Default = false
-                    
+
                     Rebuild = true
-                    
+
                 elseif option == 'Import' then
                     local import = ns.deserializeDisplay( input )
-                    
+
                     if not import then
                         Hekili:Print("Unable to import from given input string.")
                         return
@@ -6691,7 +6691,7 @@ function Hekili:SetOption( info, input, ... )
                     local name = display.Name
 
                     local validSpecs = { [0] = 1 }
-                    
+
                     for i = 1, GetNumSpecializations() do
                         validSpecs[ GetSpecializationInfo( i ) ] = 1
                     end
@@ -6700,205 +6700,205 @@ function Hekili:SetOption( info, input, ... )
 
                     profile.displays[ dispID ] = import
                     profile.displays[ dispID ].Name = name
-                    
+
                     Rebuild = true
-                    
+
                 elseif option == 'Icons Shown' then
                     if ns.queue[ dispID ] then
                         for i = input + 1, #ns.queue[ dispID ] do
                             ns.queue[ dispID ][ i ] = nil
                         end
                     end
-                    
+
                 end
-                
+
                 RebuildUI = true
-                
+
                 -- This is a priority hook.
             else
                 local hook = display.Queues[ hookID ]
-                
+
                 if option == 'Move' then
                     local placeholder = table.remove( display.Queues, hookID )
                     table.insert( display.Queues, input, placeholder )
                     Rebuild, Select = true, 'P'..input
-                    
+
                 elseif option == 'Script' then
                     hook[ option ] = input:trim()
                     RebuildScripts = true
-                    
+
                 elseif option == 'Name' then
                     Hekili.Options.args.displays.args[ dispKey ].args[ hookKey ].name = '|cFFFFD100' .. hookID .. '.|r ' .. input
                     hook[ option ] = input
-                    
+
                 elseif option == 'Action List' or option == 'Enabled' then
                     hook[ option ] = input
                     RebuildCache = true
-                    
+
                 else
                     hook[ option ] = input
-                    
+
                 end
-                
+
             end
         end
-        
+
     elseif category == 'actionLists' then
-        
+
         if depth == 2 then
-            
+
             if option == 'New Action List' then
                 local key = ns.newActionList( input )
                 if key then
                     RebuildOptions, RebuildCache = true, true
                 end
-                
+
             elseif option == 'Import Action List' then
                 local import = ns.deserializeActionList( input )
-                
+
                 if not import or type( import ) == 'string' then
                     Hekili:Print("Unable to import from given input string.")
                     return
                 end
-                
+
                 import.Name = getUniqueName( profile.actionLists, import.Name )
                 profile.actionLists[ #profile.actionLists + 1 ] = import
                 Rebuild = true
-                
+
             end
-            
+
         else
             local listKey, listID = info[2], info[2] and tonumber( match( info[2], "^L(%d+)" ) )
             local actKey, actID = info[3], info[3] and tonumber( match( info[3], "^A(%d+)" ) )
             local list = profile.actionLists[ listID ]
-            
+
             if depth == 3 or not actID then
-                
+
                 local revert = list[ option ]
                 list[option] = input
-                
+
                 if option == 'Name' then
                     Hekili.Options.args.actionLists.args[ listKey ].name = input
                     if input ~= revert and list.Default then list.Default = false end
-                    
+
                 elseif option == 'Enabled' or option == 'Specialization' then
                     RebuildCache = true
-                    
+
                 elseif option == 'Script' then
                     list[ option ] = input:trim()
                     RebuildScripts = true
-                    
+
                     -- Import/Exports
                 elseif option == 'Copy To' then
                     list[option] = nil
-                    
+
                     local index = #profile.actionLists + 1
-                    
+
                     profile.actionLists[ index ] = tableCopy( list )
                     profile.actionLists[ index ].Name = input
                     profile.actionLists[ index ].Default = false
-                    
+
                     Rebuild = true
-                    
+
                 elseif option == 'Import Action List' then
                     list[option] = nil
-                    
+
                     local import = ns.deserializeActionList( input )
-                    
+
                     if not import or type( import ) == 'string' then
                         Hekili:Print("Unable to import from given import string.")
                         return
                     end
-                    
+
                     import.Name = list.Name
                     table.remove( profile.actionLists, listID )
                     table.insert( profile.actionLists, listID, import )
                     -- profile.actionLists[ listID ] = import
                     Rebuild = true
-                    
+
                 elseif option == 'SimulationCraft' then
                     list[option] = nil
-                    
+
                     local import, warnings = self:ImportSimulationCraftActionList( input )
-                    
+
                     if warnings then
                         Hekili:Print( "|cFFFF0000WARNING:|r\nThe following issues were noted during actionlist import." )
                         for i = 1, #warnings do
                             Hekili:Print( warnings[i] )
                         end
                     end
-                    
+
                     if not import then
                         Hekili:Print( "No actions were successfully imported." )
                         return
                     end
-                    
+
                     wipe( list.Actions )
-                    
+
                     for i, entry in ipairs( import ) do
-                        
+
                         local key = ns.newAction( listID, class.abilities[ entry.Ability ].name )
-                        
+
                         local action = list.Actions[ i ]
-                        
+
                         action.Ability = entry.Ability
                         action.Args = entry.Args
-                        
+
                         action.CycleTargets = entry.CycleTargets
                         action.MaximumTargets = entry.MaximumTargets
                         action.CheckMovement = entry.CheckMovement or false
                         action.Movement = entry.Movement
                         action.ModName = entry.ModName or ''
                         action.ModVarName = entry.ModVarName or ''
-                        
+
                         action.Indicator = 'none'
-                        
+
                         action.Script = entry.Script
                         action.Enabled = true
                     end
-                    
+
                     Rebuild = true
-                    
+
                 end
-                
+
                 -- This is a specific action.
             else
                 local list = profile.actionLists[ listID ]
                 local action = list.Actions[ actID ]
-                
+
                 action[ option ] = input
-                
+
                 if option == 'Name' then
                     Hekili.Options.args.actionLists.args[ listKey ].args[ actKey ].name = '|cFFFFD100' .. actID .. '.|r ' .. input
-                    
+
                 elseif option == 'Enabled' then
                     RebuildCache = true
-                    
+
                 elseif option == 'Move' then
                     action[ option ] = nil
                     local placeholder = table.remove( list.Actions, actID )
                     table.insert( list.Actions, input, placeholder )
                     Rebuild, Select = true, 'A'..input
-                    
+
                 elseif option == 'Script' or option == 'Args' then
                     input = input:trim()
                     RebuildScripts = true
-                    
+
                 elseif option == 'ReadyTime' then
                     list[ option ] = input:trim()
                     RebuildScripts = true
-                    
+
                 elseif option == 'ConsumableArgs' then
                     action[ option ] = nil
                     action.Args = input
                     RebuildScripts = true
-                    
+
                 end
-                
+
             end
         end
     end
-    
+
     if Rebuild then
         ns.refreshOptions()
         ns.loadScripts()
@@ -6909,13 +6909,13 @@ function Hekili:SetOption( info, input, ... )
         if RebuildCache and not RebuildUI then Hekili:UpdateDisplayVisibility() end
         if RebuildUI then Hekili:BuildUI() end
     end
-    
+
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-    
+
     if Select then
         LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", category, info[2], Select )
     end
-    
+
 end
 
 
@@ -6938,14 +6938,14 @@ function Hekili:CmdLine( input )
             Hekili.Skeleton = true
         end
         ns.StartConfiguration()
-        
+
     elseif input:trim() == 'center' then                
         for i, v in ipairs( Hekili.DB.profile.displays ) do
             ns.UI.Buttons[i][1]:ClearAllPoints()
             ns.UI.Buttons[i][1]:SetPoint("CENTER", 0, (i-1) * 50 )
         end
         self:SaveCoordinates()
-        
+
     elseif input:trim() == 'recover' then
         self.DB.profile.displays = {}
         self.DB.profile.actionLists = {}
@@ -6953,7 +6953,7 @@ function Hekili:CmdLine( input )
         -- ns.convertDisplays()
         self:BuildUI()
         self:Print("Default displays and action lists restored.")
-        
+
     else
         LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
     end
@@ -7083,11 +7083,11 @@ end
 function ns.serializeDisplay( display )
     if not Hekili.DB.profile.displays[ display ] then return nil end
     local serial = tableCopy( Hekili.DB.profile.displays[ display ] )
-    
+
     -- Change actionlist IDs to actionlist names so we can validate later.
     if serial.precombatAPL ~= 0 then serial.precombatAPL = Hekili.DB.profile.actionLists[ serial.precombatAPL ].Name end
     if serial.defaultAPL ~= 0 then serial.defaultAPL = Hekili.DB.profile.actionLists[ serial.defaultAPL ].Name end
-    
+
     return TableToString( serial, true )
 end
 
@@ -7096,7 +7096,7 @@ Hekili.SerializeDisplay = ns.serializeDisplay
 
 function ns.deserializeDisplay( str )
     local display = StringToTable( str, true )
-    
+
     if type( display.precombatAPL ) == 'string' then
         for i, list in ipairs( Hekili.DB.profile.actionLists ) do
             if display.precombatAPL == list.Name then
@@ -7104,12 +7104,12 @@ function ns.deserializeDisplay( str )
                 break
             end
         end
-        
+
         if type( display.precombatAPL ) == 'string' then
             display.precombatAPL = 0
         end
     end
-    
+
     if type( display.defaultAPL ) == 'string' then
         for i, list in ipairs( Hekili.DB.profile.actionLists ) do
             if display.defaultAPL == list.Name then
@@ -7117,12 +7117,12 @@ function ns.deserializeDisplay( str )
                 break
             end
         end
-        
+
         if type( display.defaultAPL ) == 'string' then
             display.defaultAPL = 0
         end
     end
-    
+
     return display
 end
 
@@ -7148,13 +7148,13 @@ end
 
 function Hekili:DeserializeActionPack( str )
     local serial = StringToTable( str, true )
-    
+
     if not serial or type( serial ) == "string" or serial.type ~= "package" then
         return serial or "Unable to restore Priority from the provided string."
     end
 
     serial.payload.builtIn = false
-    
+
     return serial
 end
 
@@ -7220,53 +7220,53 @@ local ignore_actions = {
 
 
 local function make_substitutions( i, swaps, prefixes, postfixes ) 
-    
+
     if not i then return nil end
-    
+
     for k,v in pairs( swaps ) do
-        
+
         for token in i:gmatch( k ) do
-            
+
             local times = 0
             while (i:find(token)) do
                 local strpos, strend = i:find(token)
-                
+
                 local pre = i:sub( strpos - 1, strpos - 1 )
                 local j = 2
-                
+
                 while ( pre == '(' and strpos - j > 0 ) do
                     pre = i:sub( strpos - j, strpos - j )
                     j = j + 1
                 end
-                
+
                 local post = i:sub( strend + 1, strend + 1 )
                 j = 2
-                
+
                 while ( post == ')' and strend + j < i:len() ) do
                     post = i:sub( strend + j, strend + j )
                     j = j + 1
                 end
-                
+
                 local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
                 local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-                
+
                 if not ( prefixes and prefixes[ pre ] ) and pre ~= '.' and pre ~= '_' and not pre:match('%a') and not ( postfixes and postfixes[ post ] ) and post ~= '.' and post ~= '_' and not post:match('%a') then
                     i = start .. '\a' .. finish
                 else
                     i = start .. '\v' .. finish
                 end
-                
+
             end
-            
+
             i = i:gsub( '\v', token )
             i = i:gsub( '\a', v )
-            
+
         end
-        
+
     end
-    
+
     return i
-    
+
 end
 ns.accomm = accommodate_targets
 
@@ -7274,16 +7274,16 @@ ns.accomm = accommodate_targets
 local function accommodate_targets( targets, ability, i, line, warnings )
     local insert_targets = targets
     local insert_ability = ability
-    
+
     if ability == 'storm_earth_and_fire' then
         insert_targets = type( targets ) == 'number' and min( 2, ( targets - 1 ) ) or 2
         insert_ability = 'storm_earth_and_fire_target'
     elseif ability == 'windstrike' then
         insert_ability = 'stormstrike'
     end
-    
+
     local swaps = {}
-    
+
     swaps["d?e?buff%."..insert_ability.."%.up"] = "active_dot."..insert_ability.. ">=" ..insert_targets
     swaps["d?e?buff%."..insert_ability.."%.down"] = "active_dot."..insert_ability.. "<" ..insert_targets
     swaps["dot%."..insert_ability.."%.up"] = "active_dot."..insert_ability..'>=' ..insert_targets
@@ -7292,15 +7292,15 @@ local function accommodate_targets( targets, ability, i, line, warnings )
     swaps["up"] = "active_dot."..insert_ability..">=" ..insert_targets
     swaps["ticking"] = "active_dot."..insert_ability..">=" ..insert_targets
     swaps["down"] = "active_dot."..insert_ability.."<" ..insert_targets 
-    
+
     return make_substitutions( i, swaps )
 end
 
 
 local function Sanitize( segment, i, line, warnings )
-    
+
     if i == nil then return i end
-    
+
     local operators = {
         [">"] = true,
         ["<"] = true,
@@ -7311,145 +7311,145 @@ local function Sanitize( segment, i, line, warnings )
         ["%"] = true,
         ["*"] = true
     }
-    
+
     local maths = {
         ['+'] = true,
         ['-'] = true,
         ['*'] = true,
         ['%%'] = true
     }
-    
+
     local times = 0
-    
+
 
     for token in i:gmatch( "stealthed" ) do
-        
+
         local times = 0
         while (i:find(token)) do
-            
+
             local strpos, strend = i:find(token)
-            
+
             local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
             local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
             local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
             local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-            
+
             if pre ~= '.' and pre ~= '_' and not pre:match('%a') and post ~= '.' and post ~= '_' and not post:match('%a') then
                 i = start .. '\a' .. finish
             else
                 i = start .. '\v' .. finish
             end
-            
+
         end
-        
+
         i = i:gsub( '\v', token )
         i = i:gsub( '\a', token..'.rogue' )
-        
+
     end 
 
     for token in i:gmatch( "equipped%.[0-9]+" ) do
-        
+
         local itemID = tonumber( token:match( "([0-9]+)" ) )
         local itemName = GetItemInfo( itemID )
         local itemKey = formatKey( itemName )
-        
+
         if itemKey and itemKey ~= '' then
             i = i:gsub( tostring( itemID ), itemKey )
         end
-        
+
     end   
-    
+
     i, times = i:gsub( "pet%.[%w_]+%.([%w_]+)%.", "%1." )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'pet.X.Y...' to 'Y...' (" .. times .. "x)." )
     end
-    
+
     i, times = i:gsub( "pet%.[%w_]+%.[%w_]+%.([%w_]+)%.", "%1." )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'pet.X.Y.Z...' to 'Z...' (" .. times .. "x)." )
     end
-    
+
     --[[ i, times = i:gsub( "gcd%.max", "gcd" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'gcd.max' to 'gcd' (" .. times .. "x)." )
     end
-    
+
     i, times = i:gsub( "gcd%.remains", "cooldown.global_cooldown.remains" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted gcd.remains to cooldown.global_cooldown.remains (" .. times .. "x)." )
     end ]]
-    
+
     --[[ i, times = i:gsub( "[!+-%*]?raid_event[.a-z0-9_><=~%-%+*]+", "" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Removed 'raid_event' check(s) (" .. times .. "x)." )
-        
+
         local cleaning = true
         i = i:gsub( "||", "|" )
         while( cleaning ) do
-            
+
             cleaning = false
             i, times = i:gsub( "%(%)", "" )
             cleaning = cleaning or times > 0
-            
+
             i, times = i:gsub( "^[|&]+", "" )
             cleaning = cleaning or times > 0
-            
+
             i, times = i:gsub( "[|&]+$", "" )
             cleaning = cleaning or times > 0
-            
+
             i, times = i:gsub( "%([|&]+", "(" )
             cleaning = cleaning or times > 0
-            
+
             i, times = i:gsub( "[|&]+%)", ")" )
             cleaning = cleaning or times > 0
-            
+
             i = i:gsub( "||", "|" )
             i = i:gsub( "|&", "|" )
             i = i:gsub( "&|", "&" )
             i = i:gsub( "&&", "&" )
-            
+
             -- i, times = i:gsub( "([|&])[|&]", "%1" )
             -- cleaning = cleaning or times > 0
-            
+
         end
         i = i:gsub( "|", "||" )
     end ]]
-    
+
     --[[ i, times = i:gsub( "debuff%.judgment%.up", "judgment_override" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'debuff.judgment.up' with 'judgment_override' (" .. times .. "x)." )
     end ]]
-    
+
     --[[ i, times = i:gsub( "desired_targets", "1" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'desired_targets' with '1' (" .. times .. "x)." )
     end ]]
-    
+
     i, times = i:gsub( "min:[a-z0-9_%.]+(,?$?)", "%1" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Removed min:X check (not available in emulation) -- (" .. times .. "x)." )
     end
-    
+
     i, times = i:gsub( "max:[a-z0-9_%.]+(,?$?)", "%1" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Removed max:X check (not available in emulation) -- (" .. times .. "x)." )
     end
-    
+
     --[[ i, times = i:gsub( "buff.out_of_range.up", "!target.in_range" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.up' with '!target.in_range' (" .. times .. "x)." )
     end
-    
+
     i, times = i:gsub( "buff.out_of_range.down", "target.in_range" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.out_of_range.down' with 'target.in_range' (" .. times .. "x)." )
     end ]]
-    
+
     --[[ i, times = i:gsub( "movement.distance", "target.distance" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'movement.distance' with 'target.distance' (" .. times .. "x)." )
     end ]]
-    
+
     --[[ i, times = i:gsub( "buff.metamorphosis.extended_by_demonic", "buff.demonic_extended_metamorphosis.up" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Replaced 'buff.metamorphosis.extended_by_demonic' with 'buff.demonic_extended_metamorphosis.up' (" .. times .. "x)." )
@@ -7474,29 +7474,29 @@ local function Sanitize( segment, i, line, warnings )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted spell_targets.X syntax to active_enemies(" .. times .. "x)." )
     end ]]
-    
-    
+
+
     --[[ for token in i:gmatch( "incoming_damage_%d+m?s" ) do
         local times = 0
         while (i:find(token)) do
             local strpos, strend = i:find(token)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local j = 2
-            
+
             while ( pre == '(' and strpos - j > 0 ) do
                 pre = i:sub( strpos - j, strpos - j )
                 j = j + 1
             end
-            
+
             local post = i:sub( strend + 1, strend + 1 )
             j = 2
-            
+
             while ( post == ')' and strend + j < i:len() ) do
                 post = i:sub( strend + j, strend + j )
                 j = j + 1
             end
-            
+
             if not operators[pre] and not operators[post] then
                 i = i:sub( 1, strpos - 1 ) .. '\v' .. '>0' .. i:sub( strend + 1 )
                 times = times + 1
@@ -7504,35 +7504,35 @@ local function Sanitize( segment, i, line, warnings )
                 i = i:sub( 1, strpos - 1 ) .. '\v' .. i:sub( strend + 1 )
             end
         end
-        
+
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. "' to '" .. token .. ">0' (" .. times .. "x)." )
         end
         i = i:gsub( '\v', token )
     end ]]
-    
-    
+
+
     --[[ for token in i:gmatch( "set_bonus%.[%a%d_]+" ) do
         local times = 0
         while (i:find(token)) do
             local strpos, strend = i:find(token)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local j = 2
-            
+
             while ( pre == '(' and strpos - j > 0 ) do
                 pre = i:sub( strpos - j, strpos - j )
                 j = j + 1
             end
-            
+
             local post = i:sub( strend + 1, strend + 1 )
             j = 2
-            
+
             while ( post == ')' and strend + j < i:len() ) do
                 post = i:sub( strend + j, strend + j )
                 j = j + 1
             end
-            
+
             if not operators[pre] and not operators[post] then
                 i = i:sub( 1, strpos - 1 ) .. '\v' .. '>0' .. i:sub( strend + 1 )
                 times = times + 1
@@ -7540,38 +7540,38 @@ local function Sanitize( segment, i, line, warnings )
                 i = i:sub( 1, strpos - 1 ) .. '\v' .. i:sub( strend + 1 )
             end
         end
-        
+
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. "' to '" .. token .. "=1' (" .. times .. "x)." )
         end
         i = i:gsub( '\v', token )
     end ]]
-    
-    
+
+
     --[[ for token in i:gmatch( "cooldown%.[%a_]+%.remains" ) do
         local times = 0
         while (i:find(token)) do
             local strpos, strend = i:find(token)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local j = 2
-            
+
             while ( pre == '(' and strpos - j > 0 ) do
                 pre = i:sub( strpos - j, strpos - j )
                 j = j + 1
             end
-            
+
             local post = i:sub( strend + 1, strend + 1 )
             j = 2
-            
+
             while ( post == ')' and strend + j < i:len() ) do
                 post = i:sub( strend + j, strend + j )
                 j = j + 1
             end
-            
+
             local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
             local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-            
+
             if not operators[pre] and not operators[post] then
                 i = start .. '\v' .. '>0' .. finish
                 times = times + 1
@@ -7579,7 +7579,7 @@ local function Sanitize( segment, i, line, warnings )
                 i = start .. '\v' .. finish
             end
         end
-        
+
         i = i:gsub( '\v', token )
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. "' to '" .. token .. ">0' (" .. times .. "x)." )
@@ -7587,31 +7587,31 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": This entry checks the cooldown for '" .. token .. "' which can be result in odd behavior if '" .. token .. "' is toggled off/disabled." )
     end ]]
 
-    
+
     --[[ for token in i:gmatch( "artifact%.[%a_]+%.rank" ) do
         local times = 0
         while (i:find(token)) do
             local strpos, strend = i:find(token)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local j = 2
-            
+
             while ( pre == '(' and strpos - j > 0 ) do
                 pre = i:sub( strpos - j, strpos - j )
                 j = j + 1
             end
-            
+
             local post = i:sub( strend + 1, strend + 1 )
             j = 2
-            
+
             while ( post == ')' and strend + j < i:len() ) do
                 post = i:sub( strend + j, strend + j )
                 j = j + 1
             end
-            
+
             local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
             local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-            
+
             if not operators[pre] and not operators[post] then
                 i = start .. '\v' .. '>0' .. finish
                 times = times + 1
@@ -7619,37 +7619,37 @@ local function Sanitize( segment, i, line, warnings )
                 i = start .. '\v' .. finish
             end
         end
-        
+
         i = i:gsub( '\v', token )
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. "' to '" .. token .. ">0' (" .. times .. "x)." )
         end
     end ]]
-    
+
     --[[ for token, attr in i:gmatch( "(d?e?buff%.[%a_]+%.)(remains)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local j = 2
-            
+
             while ( pre == '(' and strpos - j > 0 ) do
                 pre = i:sub( strpos - j, strpos - j )
                 j = j + 1
             end
-            
+
             local post = i:sub( strend + 1, strend + 1 )
             j = 2
-            
+
             while ( post == ')' and strend + j < i:len() ) do
                 post = i:sub( strend + j, strend + j )
                 j = j + 1
             end
-            
+
             local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
             local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-            
+
             if not operators[pre] and not operators[post] then
                 i = start .. '\v' .. 'up' .. finish
                 times = times + 1
@@ -7657,38 +7657,38 @@ local function Sanitize( segment, i, line, warnings )
                 i = start .. '\v' .. attr .. finish
             end
         end
-        
+
         i = i:gsub( '\v', token )
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. attr .. "' to '" .. token .. "up' (" .. times .. "x)." )
         end
     end ]]
-    
-    
+
+
     --[[ for token, attr in i:gmatch( "(d?e?buff%.[%a_]+%.)(react)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local j = 2
-            
+
             while ( pre == '(' and strpos - j > 0 ) do
                 pre = i:sub( strpos - j, strpos - j )
                 j = j + 1
             end
-            
+
             local post = i:sub( strend + 1, strend + 1 )
             j = 2
-            
+
             while ( post == ')' and strend + j < i:len() ) do
                 post = i:sub( strend + j, strend + j )
                 j = j + 1
             end
-            
+
             local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
             local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-            
+
             if not operators[pre] and not operators[post] then
                 i = start .. '\v' .. 'up' .. finish
                 times = times + 1
@@ -7696,38 +7696,38 @@ local function Sanitize( segment, i, line, warnings )
                 i = start .. '\v' .. attr .. finish
             end
         end
-        
+
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. attr .. "' to '" .. token .. "up' (" .. times .. "x)." )
         end
         i = i:gsub( '\v', token )
     end ]]
-    
-    
+
+
     --[[ for token, attr in i:gmatch( "(trinket%.[%a%._]+%.)(react)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local j = 2
-            
+
             while ( pre == '(' and strpos - j > 0 ) do
                 pre = i:sub( strpos - j, strpos - j )
                 j = j + 1
             end
-            
+
             local post = i:sub( strend + 1, strend + 1 )
             j = 2
-            
+
             while ( post == ')' and strend + j < i:len() ) do
                 post = i:sub( strend + j, strend + j )
                 j = j + 1
             end
-            
+
             local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
             local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-            
+
             if not operators[pre] and not operators[post] then
                 i = start .. '\v' .. 'up' .. finish
                 times = times + 1
@@ -7735,38 +7735,38 @@ local function Sanitize( segment, i, line, warnings )
                 i = start .. '\v' .. attr .. finish
             end
         end
-        
+
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted unconditional '" .. token .. attr .. "' to '" .. token .. "up' (" .. times .. "x)." )
         end
         i = i:gsub( '\v', token )
     end ]]
-    
-    
+
+
     --[[ for token, attr in i:gmatch( "(talent%.[%a%._]+%.)(enabled)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local j = 2
-            
+
             while ( pre == '(' and strpos - j > 0 ) do
                 pre = i:sub( strpos - j, strpos - j )
                 j = j + 1
             end
-            
+
             local post = i:sub( strend + 1, strend + 1 )
             j = 2
-            
+
             while ( post == ')' and strend + j < i:len() ) do
                 post = i:sub( strend + j, strend + j )
                 j = j + 1
             end
-            
+
             local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
             local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-            
+
             if maths[pre] or maths[post] then
                 i = start .. '\a' .. finish
                 times = times + 1
@@ -7774,7 +7774,7 @@ local function Sanitize( segment, i, line, warnings )
                 i = start .. '\v' .. finish
             end
         end
-        
+
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted '" .. token .. attr .. "' to '" .. token .. "rank' for mathematical comparison (" .. times .. "x)." )
         end
@@ -7782,31 +7782,31 @@ local function Sanitize( segment, i, line, warnings )
         i = i:gsub( '\v', token .. attr )
     end ]]
 
-   
+
     --[[ for token, attr in i:gmatch( "(d?e?buff%.[%a%._]+%.)(up)" ) do
         local times = 0
         while (i:find(token..attr)) do
             local strpos, strend = i:find(token..attr)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local j = 2
-            
+
             while ( pre == '(' and strpos - j > 0 ) do
                 pre = i:sub( strpos - j, strpos - j )
                 j = j + 1
             end
-            
+
             local post = i:sub( strend + 1, strend + 1 )
             j = 2
-            
+
             while ( post == ')' and strend + j < i:len() ) do
                 post = i:sub( strend + j, strend + j )
                 j = j + 1
             end
-            
+
             local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
             local finish = strend < i:len() and i:sub( strend + 1 ) or ''
-            
+
             if maths[pre] or maths[post] then
                 i = start .. '\a' .. finish
                 times = times + 1
@@ -7814,7 +7814,7 @@ local function Sanitize( segment, i, line, warnings )
                 i = start .. '\v' .. finish
             end
         end
-        
+
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted '" .. token .. attr .. "' to '" .. token .. "rank' for mathematical comparison (" .. times .. "x)." )
         end
@@ -7828,10 +7828,10 @@ local function Sanitize( segment, i, line, warnings )
             local times = 0
             while (i:find(token)) do
                 local strpos, strend = i:find(token)
-                
+
                 local pre = i:sub( strpos - 1, strpos - 1 )
                 local post = i:sub( strend + 1, strend + 1 )
-                
+
                 if pre ~= '_' and post ~= '.' then
                     i = i:sub( 1, strpos - 1 ) .. '\v.unit' .. i:sub( strend + 1 )
                     times = times + 1
@@ -7839,23 +7839,23 @@ local function Sanitize( segment, i, line, warnings )
                     i = i:sub( 1, strpos - 1 ) .. '\v' .. i:sub( strend + 1 )
                 end
             end
-            
+
             if times > 0 then
                 table.insert( warnings, "Line " .. line .. ": Converted non-specific 'target' to 'target.unit' (" .. times .. "x)." )
             end
             i = i:gsub( '\v', token )
         end
     end 
-    
-    
+
+
     for token in i:gmatch( "player" ) do
         local times = 0
         while (i:find(token)) do
             local strpos, strend = i:find(token)
-            
+
             local pre = i:sub( strpos - 1, strpos - 1 )
             local post = i:sub( strend + 1, strend + 1 )
-            
+
             if pre ~= '_' and post ~= '.' then
                 i = i:sub( 1, strpos - 1 ) .. '\v.unit' .. i:sub( strend + 1 )
                 times = times + 1
@@ -7863,13 +7863,13 @@ local function Sanitize( segment, i, line, warnings )
                 i = i:sub( 1, strpos - 1 ) .. '\v' .. i:sub( strend + 1 )
             end
         end
-        
+
         if times > 0 then
             table.insert( warnings, "Line " .. line .. ": Converted non-specific 'player' to 'player.unit' (" .. times .. "x)." )
         end
         i = i:gsub( '\v', token )
     end
-    
+
     --[[ i,times = i:gsub( "(set_bonus%.[^%.=|&]+)=1", "%1" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted set_bonus.X=1 to set_bonus.X (" .. times .. "x)." )
@@ -7878,7 +7878,7 @@ local function Sanitize( segment, i, line, warnings )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted set_bonus.X=0 to !set_bonus.X (" .. times .. "x)." )
     end ]]
-    
+
     return i
 end
 
@@ -7886,53 +7886,53 @@ end
 local function strsplit( str, delimiter )
     local result = {}
     local from = 1
-    
+
     if not delimiter or delimiter == "" then
         result[1] = str
         return result
     end
-    
+
     local delim_from, delim_to = string.find( str, delimiter, from )
-    
+
     while delim_from do
         table.insert( result, string.sub( str, from, delim_from - 1 ) )
         from = delim_to + 1
         delim_from, delim_to = string.find( str, delimiter, from )
     end
-    
+
     table.insert( result, string.sub( str, from ) )
     return result
 end
 
 
 --[[ local function StoreModifier( entry, key, value )
-    
+
     if key ~= 'if' and key ~= 'ability' then
         if not entry.Args then entry.Args = key .. '=' .. value
         else entry.Args = entry.Args .. "," .. key .. "=" .. value end
     end
-    
+
     if key == 'if' then
         entry.Script = value
-        
+
     elseif key == 'cycle_targets' then
         entry.CycleTargets = tonumber( value ) == 1 and true or false
-        
+
     elseif key == 'max_cycle_targets' then
         entry.MaximumTargets = value
-        
+
     elseif key == 'moving' then
         entry.CheckMovement = true
         entry.Moving = tonumber( value )
-        
+
     elseif key == 'name' then
         local v = value:match( '"(.*)"'' ) or value
         entry.ModName = v
         entry.ModVarName = v
-        
+
     elseif key == 'value' then -- for 'variable' type, overwrites Script
         entry.Script = value
-        
+
     elseif key == 'target_if' then
         entry.TargetIf = value
 
@@ -7953,9 +7953,9 @@ end
 
     elseif key == 'sec' then
         entry.WaitSeconds = value
-        
+
     end
-    
+
 end ]]
 
 do
@@ -7999,37 +7999,37 @@ do
 
         for i in list:gmatch( "action.-=/?([^\n^$]*)") do
             line = line + 1
-            
+
             if i:sub(1, 3) == 'jab' then
                 for token in i:gmatch( 'cooldown%.expel_harm%.remains>=gcd' ) do
-                    
+
                     local times = 0
                     while (i:find(token)) do
                         local strpos, strend = i:find(token)
-                        
+
                         local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
                         local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
                         local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
-                        
+
                         local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
                         local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
-                        
+
                         i = start .. repl .. finish
                         times = times + 1
                     end
                     table.insert( warnings, "Line " .. line .. ": Removed unnecessary expel_harm cooldown check from action entry for jab (" .. times .. "x)." )
                 end
             end
-        
+
             --[[ for token in i:gmatch( 'spell_targets[.%a_]-' ) do
-                
+
                 local times = 0
                 while (i:find(token)) do
                     local strpos, strend = i:find(token)
-                    
+
                     local start = strpos > 2 and i:sub( 1, strpos - 1 ) or ''
                     local finish = strend < i:len() - 1 and i:sub( strend + 1 ) or ''
-                    
+
                     i = start .. enemies .. finish
                     times = times + 1
                 end
@@ -8041,36 +8041,36 @@ do
                     local times = 0
                     while (i:find(token)) do
                         local strpos, strend = i:find(token)
-                        
+
                         local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
                         local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
                         local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
-                        
+
                         local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
                         local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
-                        
+
                         i = start .. repl .. finish
                         times = times + 1
                     end
                     table.insert( warnings, "Line " .. line .. ": Removed unnecessary energy cap check from action entry for fists_of_fury (" .. times .. "x)." )
                 end
             end
-        
+
             local components = strsplit( i, "," )
             local result = {}
-            
+
             for a, str in ipairs( components ) do                
                 -- First element is the action, if supported.
                 if a == 1 then
                     local ability = str:trim()
-                    
+
                     if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then                   
                         result.action = class.abilities[ ability ] and class.abilities[ ability ].key or ability
                     elseif not ignore_actions[ ability ] then
                         table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
                         result.action = ability
                     end
-                    
+
                 else
                     local key, value = str:match( "^(.-)=(.-)$" )
 
@@ -8092,7 +8092,7 @@ do
                 result[ nameMap[ result.action ] ] = result.name
                 result.name = nil
             end
-        
+
             --[[ if result.target_if then
                 if result.criteria and result.criteria:len() > 0 then   
                     result.criteria = format( "( %s ) & ( %s )", result.criteria, result.target_if )
@@ -8122,14 +8122,14 @@ do
 
             table.insert( output, result )
         end
-    
+
         if n > 0 then
             table.insert( warnings, "The following auras were used in the action list but were not found in the addon database:" )
             for k in orderedPairs( missing ) do
                 table.insert( warnings, " - " .. k )
             end
         end
-        
+
         return #output > 0 and output or nil, #warnings > 0 and warnings or nil    
     end
 end
@@ -8142,7 +8142,7 @@ local warnOnce = false
 function Hekili:TogglePause( ... )
 
     Hekili.btns = ns.UI.Buttons
-    
+
     if not self.Pause then
         self.ActiveDebug = true
 
@@ -8164,15 +8164,15 @@ function Hekili:TogglePause( ... )
     else
         self.Pause = false
     end
-    
+
     local MouseInteract = self.Pause or self.Config
-    
+
     for _, group in pairs( ns.UI.Buttons ) do
         for _, button in pairs( group ) do
             button:EnableMouse( MouseInteract )
         end
     end
-    
+
     self:Print( ( not self.Pause and "UN" or "" ) .. "PAUSED." )
     self:Notify( ( not self.Pause and "UN" or "" ) .. "PAUSED" )
 
@@ -8181,7 +8181,7 @@ end
 
 -- Key Bindings
 function Hekili:MakeSnapshot( ... )
-    
+
     self.ActiveDebug = true
 
     for i, display in pairs( ns.UI.Displays ) do
@@ -8241,7 +8241,7 @@ function Hekili:FireToggle( name )
                 self:Print( mode .. " mode activated." )
             end
         end
-    
+
     elseif name == 'pause' then
         self:TogglePause()
         return

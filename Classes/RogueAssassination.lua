@@ -2,13 +2,12 @@
 -- June 2018
 
 local addon, ns = ...
-local Hekili = _G[ addon ] 
+local Hekili = _G[ addon ]
 
 local class = Hekili.Class
 local state =  Hekili.State
 
 local PTR = ns.PTR
-
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
 
@@ -48,7 +47,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             stop = function ()
                 return state.debuff.wound_poison_dot.down and state.debuff.deadly_poison_dot.down
             end,
-                
+
             interval = function ()
                 return state.debuff.garrote.tick_time
             end,
@@ -72,7 +71,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             stop = function ()
                 return state.debuff.wound_poison_dot.down and state.debuff.deadly_poison_dot.down
             end,
-                
+
             interval = function ()
                 return state.debuff.internal_bleeding.tick_time
             end,
@@ -96,7 +95,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             stop = function ()
                 return state.debuff.wound_poison_dot.down and state.debuff.deadly_poison_dot.down
             end,
-                
+
             interval = function ()
                 return state.debuff.rupture.tick_time
             end,
@@ -107,20 +106,20 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         crimson_tempest_vim = {
             aura = "crimson_tempest",
             debuff = true,
-        
+
             last = function ()
                 local app = state.debuff.crimson_tempest.last_tick
                 local exp = state.debuff.crimson_tempest.expires
                 local tick = state.debuff.crimson_tempest.tick_time
                 local t = state.query_time
-        
+
                 return min( exp, app + ( floor( ( t - app ) / tick ) * tick ) )
             end,
 
             stop = function ()
                 return state.debuff.wound_poison_dot.down and state.debuff.deadly_poison_dot.down
             end,
-                
+
             interval = function ()
                 return state.debuff.crimson_tempest.tick_time
             end,
@@ -136,7 +135,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 local exp = state.buff.nothing_personal_regen.expires
                 local tick = state.buff.nothing_personal_regen.tick_time
                 local t = state.query_time
-        
+
                 return min( exp, app + ( floor( ( t - app ) / tick ) * tick ) )
             end,
 
@@ -151,7 +150,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             value = 4
         }
     } )
-    
+
     -- Talents
     spec:RegisterTalents( {
         master_poisoner = 22337, -- 196864
@@ -227,7 +226,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             return false
         end
     } ) )
-    
+
 
     -- Legendary from Legion, shows up in APL still.
     spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
@@ -287,7 +286,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return mult
     end, state )
 
-    
+
     -- index: unitGUID; value: isExsanguinated (t/f)
     local crimson_tempests = {}
     local ltCT = {}
@@ -317,7 +316,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if spellID == 121411 then
                     -- Crimson Tempest
                     crimson_tempests[ destGUID ] = false
-                
+
                 elseif spellID == 703 then
                     -- Garrote
                     garrotes[ destGUID ] = false
@@ -331,14 +330,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     -- Rupture
                     ruptures[ destGUID ] = false
                 end
-            
+
             elseif subtype == "SPELL_CAST_SUCCESS" and spellID == 200806 then
                 -- Exsanguinate
                 crimson_tempests[ destGUID ] = true
                 garrotes[ destGUID ] = true
                 internal_bleedings[ destGUID ] = true
                 ruptures[ destGUID ] = true
-            
+
             elseif subtype == "SPELL_PERIODIC_DAMAGE" then
                 if spellID == 121411 then
                     ltCT[ destGUID ] = GetTime()
@@ -410,7 +409,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterStateExpr( "pmultiplier", function ()
         -- Hm, maybe this should be current pmultiplier, not pmultiplier on current application.
         return persistent_multiplier
-        
+
         --[[if not this_action then return false end
         local aura = this_action == "kidney_shot" and "internal_bleeding" or this_action
         return debuff[ aura ].pmultiplier]]
@@ -742,49 +741,49 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 136175,
-            
+
             handler = function ()
                 applyDebuff( "target", "blind" )
                 -- applies blind (2094)
             end,
         },
-        
+
 
         blindside = {
             id = 111240,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return buff.blindside.up and 0 or 30 end,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 236274,
-            
+
             usable = function () return buff.blindside.up or target.health_pct < 30 end,
             handler = function ()
                 gain( 1, "combo_points" )
                 removeBuff( "blindside" )
             end,
         },
-        
+
 
         cheap_shot = {
             id = 1833,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 40,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 132092,
-            
+
             usable = function () return stealthed.all or buff.subterfuge.up end,
             handler = function ()
                 applyDebuff( "target", "cheap_shot" )
@@ -793,67 +792,67 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if talent.prey_on_the_weak.enabled then applyDebuff( "target", "prey_on_the_weak" ) end
             end,
         },
-        
+
 
         cloak_of_shadows = {
             id = 31224,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = false,
             texture = 136177,
-            
+
             handler = function ()
                 applyBuff( "cloak_of_shadows" )
             end,
         },
-        
+
 
         crimson_tempest = {
             id = 121411,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 35,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 464079,
 
             talent = "crimson_tempest",
             aura = "crimson_tempest",
             cycle = "crimson_tempest",            
-            
+
             usable = function () return combo_points.current > 0 end,
             recheck = function () return debuff.crimson_tempest.remains - ( 2 + ( spell_targets.crimson_tempest > 4 and 1 or 0 ) ) end,
             handler = function ()
                 applyDebuff( "target", "crimson_tempest", 2 + ( combo_points.current * 2 ) )
                 debuff.crimson_tempest.pmultiplier = persistent_multiplier
                 debuff.crimson_tempest.exsanguinated = false
-                
+
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
             end,
         },
-        
+
 
         crimson_vial = {
             id = 185311,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 1373904,
-            
+
             handler = function ()
                 applyBuff( "crimson_vial" )
             end,
@@ -876,7 +875,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 applyBuff( "crippling_poison" )
             end,
         },
-        
+
 
         deadly_poison = {
             id = 2823,
@@ -889,43 +888,43 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132290,
 
             nobuff = "deadly_poison",
-            
+
             handler = function ()
                 applyBuff( "deadly_poison" )
             end,
         },
-        
-        
+
+
         distract = {
             id = 1725,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 30,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 132289,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         envenom = {
             id = 32645,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 35,
 
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 132287,
-            
+
             usable = function () return combo_points.current > 0 end,
             recheck = function () return energy[ "time_to_" .. ( energy.max - ( 25 + ( variable.energy_regen_combined or 0 ) ) ) ], energy[ "time_to_" .. ( energy.max - 25 ) ] end,
             handler = function ()
@@ -938,40 +937,40 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if pvptalent.creeping_venom.enabled then
                     applyDebuff( "target", "creeping_venom" )
                 end
-                    
+
                 applyBuff( "envenom", 1 + combo_points.current )
                 spend( combo_points.current, "combo_points" )
-                
+
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
 
             end,
         },
-        
+
 
         evasion = {
             id = 5277,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 136205,
-            
+
             handler = function ()
                 applyBuff( "evasion" )
             end,
         },
-        
+
 
         exsanguinate = {
             id = 200806,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             spend = 25,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 538040,
 
@@ -982,7 +981,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     debuff.crimson_tempest.expires = query_time + ( debuff.crimson_tempest.remains / 2 ) 
                     debuff.crimson_tempest.exsanguinated = true
                 end
-                
+
                 if debuff.garrote.up then
                     debuff.garrote.expires = query_time + ( debuff.garrote.remains / 2 )
                     debuff.garrote.exsanguinated = true
@@ -999,60 +998,60 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
             end,
         },
-        
+
 
         fan_of_knives = {
             id = 51723,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 35,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 236273,
-            
+
             handler = function ()
                 gain( 1, "combo_points" )
                 removeBuff( "hidden_blades" )
             end,
         },
-        
+
 
         feint = {
             id = 1966,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = 35,
             spendType = "energy",
-            
+
             startsCombat = false,
             texture = 132294,
-            
+
             handler = function ()
                 applyBuff( "feint" )
             end,
         },
-        
+
 
         garrote = {
             id = 703,
             cast = 0,
             cooldown = function () return ( talent.subterfuge.enabled and ( buff.stealth.up or buff.subterfuge.up ) ) and 0 or 6 end,
             gcd = "spell",
-            
+
             spend = 45,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 132297,
 
             aura = "garrote",
             cycle = "garrote",
-            
+
             recheck = function () return remains - ( duration * 0.3 ), remains - tick_time, remains - tick_time * 2, remains - 10 end,
             handler = function ()
                 applyDebuff( "target", "garrote" )
@@ -1071,14 +1070,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
             end,
         },
-        
+
 
         kick = {
             id = 1766,
             cast = 0,
             cooldown = 15,
             gcd = "off",
-            
+
             startsCombat = true,
             texture = 132219,
 
@@ -1092,23 +1091,23 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 interrupt()
             end,
         },
-        
+
 
         kidney_shot = {
             id = 408,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             spend = 25,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 132298,
 
             aura = "internal_bleeding",
             cycle = "internal_bleeding",
-            
+
             usable = function () return combo_points.current > 0 end,
             handler = function ()
                 if talent.internal_bleeding.enabled then
@@ -1116,45 +1115,45 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     debuff.internal_bleeding.pmultiplier = persistent_multiplier
                     debuff.internal_bleeding.exsanguinated = false
                 end
-                
+
                 applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
             end,
         },
-        
+
 
         marked_for_death = {
             id = 137619,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             -- toggle = "cooldowns",
 
             startsCombat = false,
             texture = 236364,
-            
+
             handler = function ()
                 gain( 5, "combo_points" )
                 applyDebuff( "target", "marked_for_death" )
             end,
         },
-        
+
 
         mutilate = {
             id = 1329,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 50,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 132304,
-            
+
             handler = function ()
                 gain( 2, "combo_points" )
 
@@ -1163,69 +1162,69 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
             end,
         },
-        
+
 
         --[[ pick_lock = {
             id = 1804,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 136058,
-            
+
             handler = function ()
             end,
         },
-        
+
 
         pick_pocket = {
             id = 921,
             cast = 0,
             cooldown = 0.5,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 133644,
-            
+
             handler = function ()
             end,
         }, ]]
-        
+
 
         poisoned_knife = {
             id = 185565,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 40,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 1373909,
-            
+
             handler = function ()
                 gain( 1, "combo_points" )
             end,
         },
-        
+
 
         rupture = {
             id = 1943,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 25,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 132302,
 
             aura = "rupture",
             cycle = "rupture",
-            
+
             usable = function () return combo_points.current > 0 end,
             remains = function () return remains - ( duration * 0.3 ), remains - tick_time, remains - tick_time * 2, remains, cooldown.exsanguinate.remains - 1, 10 - time end,
             handler = function ()
@@ -1240,26 +1239,26 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 spend( combo_points.current, "combo_points" )
             end,
         },
-        
+
 
         sap = {
             id = 6770,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 35,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 132310,
-            
+
             usable = function () return stealthed.all end,
             handler = function ()
                 applyDebuff( "target", "sap" )
             end,
         },
-        
+
 
         shadowstep = {
             id = 36554,
@@ -1274,109 +1273,109 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 return 30
             end,                
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 132303,
-            
+
             handler = function ()
                 applyBuff( "shadowstep" )
                 setDistance( 5 )
             end,
         },
-        
+
 
         shroud_of_concealment = {
             id = 114018,
             cast = 0,
             cooldown = 360,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 635350,
-            
+
             usable = function () return stealthed.all end,
             handler = function ()
                 applyBuff( "shroud_of_concealment" )
             end,
         },
-        
+
 
         sprint = {
             id = 2983,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 132307,
-            
+
             handler = function ()
                 applyBuff( "sprint" )
             end,
         },
-        
+
 
         stealth = {
             id = 1784,
             cast = 0,
             cooldown = 2,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 132320,
-            
+
             usable = function () return time == 0 and not buff.stealth.up and not buff.vanish.up end,            
             handler = function ()
                 applyBuff( "stealth" )
             end,
         },
-        
+
 
         toxic_blade = {
             id = 245388,
             cast = 0,
             cooldown = 25,
             gcd = "spell",
-            
+
             spend = 20,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 135697,
 
             talent = "toxic_blade",
-            
+
             handler = function ()
                 applyDebuff( "target", "toxic_blade" )
                 gain( 1, "combo_points" )
             end,
         },
-        
+
 
         tricks_of_the_trade = {
             id = 57934,
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 236283,
-            
+
             handler = function ()
                 applyBuff( "tricks_of_the_trade" )
             end,
         },
-        
+
 
         vanish = {
             id = 1856,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 132331,
-            
+
             usable = function () return boss end,
             recheck = function () return master_assassin_remains, cooldown.exsanguinate.remains - 1, cooldown.exsanguinate.remains, debuff.garrote.remains - ( debuff.garrote.duration * 0.3 ) end,
             handler = function ()
@@ -1384,21 +1383,21 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 applyBuff( "stealth" )
             end,
         },
-        
+
 
         vendetta = {
             id = 79140,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 458726,
 
             aura = "vendetta",
-            
+
             handler = function ()
                 applyDebuff( "target", "vendetta" )
                 applyBuff( "vendetta_regen" )
@@ -1432,7 +1431,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = false,
             essential = true,
 
@@ -1460,15 +1459,15 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         enabled = true,
 
         aoe = 3,
-    
+
         nameplates = true,
         nameplateRange = 8,
-        
+
         damage = true,
         damageExpiration = 6,
-    
+
         potion = "battle_potion_of_agility",
-        
+
         package = "Assassination",
     } )
 

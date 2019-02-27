@@ -14,7 +14,7 @@ local eIndex = {}
 
 ns.Error = function( ... )
     local output = format( ... )
-    
+
     if not errors[ output ] then
         errors[ output ] = {
             n = 1,
@@ -167,11 +167,11 @@ end
 local orderedIndex = {}
 
 local function __genOrderedIndex( t )
-    
+
     for i = #orderedIndex, 1, -1 do
         orderedIndex[i] = nil
     end
-    
+
     for key in pairs( t ) do
         table.insert( orderedIndex, key )
     end
@@ -246,7 +246,7 @@ function ns.GroupMembers( reversed, forceParty )
         elseif i <= numGroupMembers and i > 0 then
             ret = unit .. i
         end
-        
+
         i = i + ( reversed and -1 or 1 )
         return ret
     end

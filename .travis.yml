@@ -1,13 +1,13 @@
 sudo: required
 language: c
- 
+
 addons:
   apt:
     packages:
     - pandoc
- 
+
 script: curl -s https://raw.githubusercontent.com/Hekili/packager/master/release.sh | bash
- 
+
 branches:
   only:
   - /^v?\d+\.\d+(\.\d+)?(-\S*)?$/
