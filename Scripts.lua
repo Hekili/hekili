@@ -220,15 +220,6 @@ do
         ["|"] = true
     }
 
-    local comparisons = {
-        ["<<"] = true,
-        [">>"] = true,
-        ["<="] = true,
-        [">="] = true,
-        ["=="] = true
-    }
-
-
     function scripts:SplitExpr( str )
         local output = {}
 
@@ -315,9 +306,9 @@ do
 
     -- Things that tick down.
     local decreases = {
-        ["remains"] = true,
-        ["ticks_remain"] = true,
-        ["execute_remains"] = true,
+        ["remains$"] = true,
+        ["ticks_remain$"] = true,
+        ["execute_remains$"] = true,
         -- ["time_to_%d+$"] = true,
         -- ["deficit$"] = true,
     }
@@ -332,6 +323,21 @@ do
     local removals = {
         ["%.current"] = ""
     }
+    
+    local lessOrEqual = {
+        ["<"] = true,
+        ["<="] = true,
+        ["="] = true,
+        ["=="] = true
+    }
+
+    local moreOrEqual = {
+        [">"] = true,
+        [">="] = true,
+        ["="] = true,
+        ["=="] = true
+    }
+
     
     -- Given an expression, can we assess whether it is time-based and progressing in a meaningful way?
     -- 1.  Cooldowns
@@ -350,33 +356,33 @@ do
         if lhs and comp and rhs then
             -- We are looking at a mathematic comparison.
             for key in pairs( decreases ) do
-                if lhs:match( key ) and ( comp == "<=" or comp == "<" or comp == "==" ) then
+                if lhs:match( key ) and lessOrEqual[ comp ] then
                     return true, lhs .. " - " .. rhs
                 end
             end
 
             for key in pairs( increases ) do
-                if lhs:match( key ) and ( comp == ">=" or comp == ">" or comp == "==" ) then
+                if lhs:match( key ) and moreOrEqual[ comp ] then
                     return true, rhs .. " - " .. lhs
                 end
             end
 
             -- resources also tick up (usually, anyway)
             for key in pairs( GetResourceInfo() ) do
-                if lhs == key and ( comp == ">=" or comp == ">" or comp == "==" ) then
+                if lhs == key and moreOrEqual[ comp ] then
                     return true, lhs .. ".timeTo(" .. rhs .. ")"
                 end
 
-                if rhs == key and ( comp == "<=" or comp == "<" or comp == "==" ) then
+                if rhs == key and lessOrEqual[ comp ] then
                     return true, rhs .. ".timeTo( " .. lhs .. ")"
                 end
             end
 
-            if lhs == "rune" and ( comp == ">=" or comp == ">" or comp == "==" ) then
+            if lhs == "rune" and moreOrEqual[ comp ] then
                 return true, "rune.timeTo(" .. rhs .. ")"
             end
 
-            if rhs == "rune" and ( comp == "<=" or comp == "<" or comp == "==" ) then
+            if rhs == "rune" and lessOrEqual[ comp ] then
                 return true, "rune.timeTo(" .. lhs .. ")"
             end
         end

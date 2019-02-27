@@ -5086,6 +5086,9 @@ function state:TimeToReady( action, pool )
         if Hekili.Debug then Hekili:Debug( "Line CD is " .. line_cd .. ", last cast was " .. ability.lastCast .. ", remaining CD: " .. max( 0, ability.lastCast + line_cd - self.query_time ) ) end
         wait = max( wait, ability.lastCast + self.args.line_cd - self.query_time )
     end
+
+    local synced = state.args.sync and class.abilities[ state.args.sync ]
+    if synced then wait = max( wait, state.cooldown[ state.args.sync ].remains ) end
     
     wait = ns.callHook( "TimeToReady", wait, action )
     
