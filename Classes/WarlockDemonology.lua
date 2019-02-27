@@ -295,8 +295,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             local imp = guldan_v[i]
 
             if imp <= query_time then
-                if ( imp + 22 ) > query_time then
-                    insert( wild_imps_v, imp + 22 )
+                if ( imp + 20 ) > query_time then
+                    insert( wild_imps_v, imp + 20 )
                 end
                 remove( guldan_v, i )
             end
@@ -395,6 +395,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 
             local queued = #guldan_v
 
+            if queued == 0 then return 0 end
+            
             if time_to_n == 0 or time_to_n >= queued then
                 return max( 0, guldan_v[ queued ] - query_time )
             end
@@ -676,7 +678,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             meta = {
                 up = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and exp >= query_time or false end,
                 down = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and exp < query_time or true end,
-                applied = function () local exp = wild_imps_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
+                applied = function () local exp = wild_imps_v[ 1 ]; return exp and ( exp - 20 ) or 0 end,
                 remains = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and max( 0, exp - query_time ) or 0 end,
                 count = function () 
                     local c = 0
@@ -686,7 +688,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
                     -- Count queued HoG imps.
                     for i, spawn in ipairs( guldan_v ) do
-                        if spawn <= query_time and ( spawn + 22 ) >= query_time then c = c + 1 end
+                        if spawn <= query_time and ( spawn + 20 ) >= query_time then c = c + 1 end
                     end
                     return c
                 end,
@@ -699,7 +701,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             meta = {
                 up = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp >= query_time or false end,
                 down = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp < query_time or true end,
-                applied = function () local exp = vilefiend_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
+                applied = function () local exp = vilefiend_v[ 1 ]; return exp and ( exp - 15 ) or 0 end,
                 remains = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and max( 0, exp - query_time ) or 0 end,
                 count = function () 
                     local c = 0
@@ -717,7 +719,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             meta = {
                 up = function () local exp = other_demon_v[ 1 ]; return exp and exp >= query_time or false end,
                 down = function () local exp = other_demon_v[ 1 ]; return exp and exp < query_time or true end,
-                applied = function () local exp = other_demon_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
+                applied = function () local exp = other_demon_v[ 1 ]; return exp and ( exp - 15 ) or 0 end,
                 remains = function () local exp = other_demon_v[ 1 ]; return exp and max( 0, exp - query_time ) or 0 end,
                 count = function () 
                     local c = 0
