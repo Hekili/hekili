@@ -115,13 +115,13 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
                 -- Wild Imp: 104317 and 279910, 20 seconds uptime.
                 elseif spellID == 104317 or spellID == 279910 then
-                    table.insert( wild_imps, now + 22 )
+                    table.insert( wild_imps, now + 20 )
                     
                     imps[ destGUID ] = {
                         t = now,
                         casts = 0,
-                        expires = math.ceil( now + 22 ),
-                        max = math.ceil( now + 22 )
+                        expires = math.ceil( now + 20 ),
+                        max = math.ceil( now + 20 )
                     }
 
                     if guldan[ 1 ] then
@@ -169,9 +169,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 
                 elseif spellID == 105174 then
                     -- Hand of Guldan; queue imps.
-                    if shards_for_guldan >= 3 then table.insert( guldan, 1, now + 1.91 ) end
-                    if shards_for_guldan >= 2 then table.insert( guldan, 1, now + 1.51 ) end
-                    if shards_for_guldan >= 1 then table.insert( guldan, 1, now + 1.11 ) end
+                    if shards_for_guldan >= 1 then table.insert( guldan, now + 1.11 ) end
+                    if shards_for_guldan >= 2 then table.insert( guldan, now + 1.51 ) end
+                    if shards_for_guldan >= 3 then table.insert( guldan, now + 1.91 ) end
 
                 elseif spellID == 265187 and state.talent.demonic_consumption.enabled then
                     dcon_imps = #guldan + #wild_imps + #imps
@@ -372,6 +372,64 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
 
     spec:RegisterStateExpr( "soul_shard", function () return soul_shards.current end )
+
+
+    -- New imp forecasting expressions for Demo.
+    spec:RegisterStateExpr( "incoming_imps", function ()
+        local n = 0
+        
+        for i, time in ipairs( guldan_v ) do
+            if time < query_time then break end
+            n = n + 1
+        end
+    
+        return n
+    end )
+
+
+    local time_to_n = 0
+
+    spec:RegisterStateTable( "query_imp_spawn", setmetatable( {}, {
+        __index = function( t, k )
+            if k ~= 'remains' then return 0 end
+                
+            local queued = #guldan_v
+
+            if time_to_n == 0 or time_to_n >= queued then
+                return max( 0, guldan_v[ queued ] - query_time )
+            end
+
+            local count = 0
+            local remains = 0
+
+            for i, time in ipairs( guldan_v ) do
+                if time > query_time then
+                    count = count + 1
+                    remains = time - query_time
+
+                    if count >= time_to_n then break end
+                end
+            end
+
+            return remains
+        end,
+    } ) )
+
+    spec:RegisterStateTable( "time_to_imps", setmetatable( {}, {
+        __index = function( t, k )
+            if type( k ) == "number" then
+                time_to_n = min( #guldan_v, k )
+            elseif k == "all" then
+                time_to_n = #guldan_v
+            else
+                time_to_n = 0
+            end
+
+            return query_imp_spawn
+        end
+    } ) )
+
+
 
 
     -- Auras
@@ -1046,15 +1104,16 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
             
             startsCombat = true,
+            flightTime = 0.7,
             
             -- usable = function () return soul_shards.current >= 3 end,
             handler = function ()
                 local extra_shards = min( 2, soul_shards.current )
                 spend( extra_shards, "soul_shards" )
 
-                if extra_shards >= 3 then insert( guldan_v, 1, query_time + 1.90 ) end
-                if extra_shards >= 2 then insert( guldan_v, 1, query_time + 1.50 ) end
-                insert( guldan_v, 1, query_time + 1.05 )
+                insert( guldan_v, query_time + 1.05 )
+                if extra_shards > 0 then insert( guldan_v, query_time + 1.50 ) end
+                if extra_shards > 1 then insert( guldan_v, query_time + 1.90 ) end
                 
                 -- Don't immediately summon; queue them up.
                 -- summon_demon( "wild_imps", 25, 1 + extra_shards, 1.5 )
