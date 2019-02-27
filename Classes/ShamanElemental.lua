@@ -465,6 +465,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         if elem3 then applyBuff( "natural_harmony_" .. elem3 ) end
     end
 
+    setfenv( natural_harmony, state )
+
 
     local hadTotem = false
     local hadTotemAura = false
