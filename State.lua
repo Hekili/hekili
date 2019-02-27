@@ -1435,9 +1435,19 @@ local mt_state = {
         elseif k == 'cast_delay' then return 0
 
         elseif k == 'in_flight' then
+            local data = t.action[ t.this_action ]
+            if data and data.flightTime then
+                return data.lastCast + data.flightTime - query_time > 0
+            end
+
             return state:IsInFlight( t.this_action, true )
 
         elseif k == 'in_flight_remains' then
+            local data = t.action[ t.this_action ]
+            if data and data.flightTime then
+                return max( 0, data.lastCast + data.flightTime - query_time )
+            end
+
             return state:InFlightRemains( t.this_action, true )
 
         elseif k == 'executing' then
@@ -3499,13 +3509,17 @@ local mt_default_action = {
             return a
 
         elseif k == 'in_flight' then
-            if class.abilities[ t.action ].in_flight ~= nil then
-                return class.abilities[ t.action ].in_flight
+            if ability and ability.flightTime then
+                return ability.lastCast + ability.flightTime - query_time > 0
             end
 
             return state:IsInFlight( t.action, true )
 
         elseif k == "in_flight_remains" then
+            if ability and ability.flightTime then
+                return max( 0, ability.lastCast + ability.flightTime - query_time )
+            end
+
             return state:InFlightRemains( t.action, true )
         
         elseif k == "executing" then

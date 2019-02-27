@@ -191,6 +191,9 @@ local function SimToLua( str, modifier )
     str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
     str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
     str = str:gsub("%.in$", "['in']" )
+    
+    str = str:gsub("time_to_imps%.(%b()).remains", "time_to_imps[%1].remains" )
+    str = str:gsub("time_to_imps%.(%d+).remains", "time_to_imps[%1].remains" )
 
     str = str:gsub("prev%.(%d+)", "prev[%1]")
     str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")

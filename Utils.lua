@@ -45,6 +45,10 @@ end
 
 function ns.SpaceOut( str )
     str = str:gsub( "([!<>=|&()*%-%+%%])", " %1 " ):gsub("%s+", " ")
+
+    str = str:gsub( "%.%s+%(", ".(" )
+    str = str:gsub( "%)%s+%.", ")." )
+
     str = str:gsub( "([<>~!|]) ([|=])", "%1%2" )
     str = str:trim()
     return str
