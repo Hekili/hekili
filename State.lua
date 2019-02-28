@@ -490,9 +490,16 @@ state._G = 0
 
 -- Place an ability on cooldown in the simulated game state.
 local function setCooldown( action, duration )
-    state.cooldown[ action ] = state.cooldown[ action ] or {}
-    state.cooldown[ action ].duration = duration
-    state.cooldown[ action ].expires = state.query_time + duration   
+    local cd = state.cooldown[ action ] or {}
+    cd.duration = duration
+    cd.expires = state.query_time + duration
+
+    cd.charge = 0
+    cd.recharge_began = state.query_time
+    cd.next_charge = cd.expires
+    cd.recharge = duration
+
+    state.cooldown[ action ] = cd
 end
 state.setCooldown = setCooldown
 
@@ -549,7 +556,7 @@ end
 state.gainCharges = gainCharges
 
 
-function state.gainChargeTime( action, time )    
+function state.gainChargeTime( action, time, debug )    
     local ability = class.abilities[ action ]    
     if not ability then return end
 
@@ -561,27 +568,28 @@ function state.gainChargeTime( action, time )
         return
     end
 
-
     if cooldown.charge == ability.charges then return end
 
-    if cooldown.next_charge < state.now + state.offset + time then
+    cooldown.next_charge = cooldown.next_charge - time
+    cooldown.expires = cooldown.expires - time
+
+    if cooldown.next_charge <= state.query_time then
         cooldown.charge = min( ability.charges, cooldown.charge + 1 )
 
         -- We have a charge, reset cooldown.
-        cooldown.duration = 0
+        -- cooldown.duration = 0
         cooldown.expires = 0
+
+        if cooldown.charge == ability.charges then
+            cooldown.next_charge = 0
+            cooldown.recharge = 0
+            cooldown.recharge_began = 0
+        else
+            cooldown.recharge_began = cooldown.next_charge
+            cooldown.next_charge = cooldown.next_charge + ability.recharge
+            cooldown.recharge = cooldown.next_charge - ( state.time + time )
+        end    
     end
-
-
-    if cooldown.charge == ability.charges then
-        cooldown.next_charge = 0
-        cooldown.recharge = 0
-        cooldown.recharge_began = 0
-    else
-        cooldown.recharge_began = cooldown.next_charge
-        cooldown.next_charge = cooldown.next_charge + ability.recharge
-        cooldown.recharge = cooldown.next_charge - ( state.time + time )
-    end    
 end
 
 
