@@ -583,7 +583,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             rawset( cooldown, "ca_inc", cooldown.celestial_alignment )
         end
 
-        if buff.warrior_of_elune.up then setCooldown( "warrior_of_elune", 3600 ) end
+        if buff.warrior_of_elune.up then
+            setCooldown( "warrior_of_elune", 3600 ) 
+        end
     end )
 
 
@@ -1091,7 +1093,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
                 if buff.warrior_of_elune.up then
                     removeStack( "warrior_of_elune" )
-                    if buff.warrior_of_elune.down then setCooldown( "warrior_of_elune", 45 ) end
+                    if buff.warrior_of_elune.down then
+                        setCooldown( "warrior_of_elune", 45 ) 
+                    end
                 end
 
                 if azerite.dawning_sun.enabled then applyBuff( "dawning_sun" ) end
