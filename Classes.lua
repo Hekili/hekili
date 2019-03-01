@@ -1880,7 +1880,7 @@ all:RegisterAbility( "ritual_feather_of_unng_ak", {
     cooldown = 60,
     gcd = "off",
 
-    item = 165664,
+    item = 165665,
     toggle = "cooldowns",
 
     handler = function () applyBuff( "might_of_the_blackpaw" ) end
