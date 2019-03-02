@@ -1584,10 +1584,17 @@ local mt_state = {
             return duration
 
         elseif k == 'refreshable' then
+            -- When cycling targets, we want to consider that there may be a valid other target.
+            if t.args.cycle_targets and t.active_dot[ aura_name ] < ( t.args.max_cycle_targets or t.true_active_enemies ) then
+                return true
+            end
             if app then return app.remains < 0.3 * duration end
             return true
 
         elseif k == 'time_to_refresh' then            
+            if t.args.cycle_targets and t.active_dot[ aura_name ] < ( t.args.max_cycle_targets or t.true_active_enemies ) then
+                return 0
+            end
             if app then
                 return max( 0, app.remains - ( 0.3 * app.duration ) ) 
             end
@@ -3260,9 +3267,15 @@ local mt_default_debuff = {
             return max( 0, t.expires - state.query_time - ( state.settings.debuffPadding or 0 ) )
 
         elseif k == 'refreshable' then
+            if state.args.cycle_targets and state.active_dot[ t.key ] < ( state.args.max_cycle_targets or state.true_active_enemies ) then
+                return true
+            end
             return t.remains < 0.3 * ( class_aura and class_aura.duration or t.duration or 30 )
 
         elseif k == 'time_to_refresh' then
+            if state.args.cycle_targets and state.active_dot[ t.key ] < ( state.args.max_cycle_targets or state.true_active_enemies ) then
+                return 0
+            end
             return t.up and ( max( 0, state.query_time - ( 0.3 * ( class_aura and class_aura.duration or t.duration or 30 ) ) ) ) or 0
 
         elseif k == 'stack' then
