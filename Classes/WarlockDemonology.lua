@@ -1002,7 +1002,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             talent = 'doom',
 
-            readyTime = function () return debuff.doom.remains end,
+            readyTime = function () return isCyclingTargets() and 0 or debuff.doom.remains end,
+            usable = function () return isCyclingTargets() or target.time_to_die > debuff.doom.duration end,
             handler = function ()
                 applyDebuff( 'target', 'doom' )
             end,
