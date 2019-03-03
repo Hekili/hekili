@@ -1605,6 +1605,7 @@ local mt_state = {
             -- When cycling targets, we want to consider that there may be a valid other target.
             if t.isCyclingTargets() then return true end
             if app then return app.remains < 0.3 * duration end
+            return true
 
         elseif k == 'time_to_refresh' then
             if t.isCyclingTargets() then return 0 end
