@@ -805,7 +805,8 @@ local valueModifiers = {
     sec = true,
     value = true,
     value_else = true,
-    line_cd = true
+    line_cd = true,
+    max_cycle_targets = true
 }
 
 
