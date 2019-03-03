@@ -55,7 +55,7 @@ function ns.getNumberTargets()
 
     twipe( nameplates )
     fullCount = 0
-    Hekili.TargetDebug = nil
+    Hekili.TargetDebug = ""
 
     local spec = state.spec.id
     spec = spec and rawget( Hekili.DB.profile.specs, spec )
@@ -66,7 +66,7 @@ function ns.getNumberTargets()
                 local _, range = RC:GetRange( unit )
 
                 local rate, n = Hekili:GetTTD( unit )
-                Hekili.TargetDebug = ( Hekili.TargetDebug or "" ) .. format( "%12s - %2d - %s - %.2f - %d\n", unit, range or 0, guid, rate or 0, n or 0 )
+                Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
 
                 if range and range <= spec.nameplateRange then
                     fullCount = fullCount + 1
@@ -86,7 +86,7 @@ function ns.getNumberTargets()
 
         if guid then
             if not nameplates[ guid ] and ( range and range <= spec.nameplateRange ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
-                Hekili.TargetDebug = ( Hekili.TargetDebug or "" ) .. format( "%12s - %2d - %s\n", unit, range or 0, guid )
+                Hekili.TargetDebug = format( "%s%12s - %2d - %s\n", Hekili.TargetDebug, unit, range or 0, guid )
                 fullCount = fullCount + 1
             end
 
@@ -501,17 +501,20 @@ do
 
     local DEFAULT_TTD = 15  
     local FOREVER = 3600
+    local TRIVIAL = 5
 
 
     function Hekili:GetTTD( unit )
+        local default = UnitIsTrivial( unit ) and TRIVIAL or FOREVER
+
         local guid = UnitExists( unit ) and UnitCanAttack( "player", unit ) and UnitGUID( unit )
-        if not guid then return FOREVER end
+        if not guid then return default end
 
         local enemy = db[ guid ]
-        if not enemy then return FOREVER end
+        if not enemy then return default end
 
         -- Don't have enough data to predict yet.
-        if enemy.n < 3 or enemy.rate == 0 then return FOREVER, enemy.n end
+        if enemy.n < 3 or enemy.rate == 0 then return default, enemy.n end
 
         local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
         local healthPct = health / healthMax
@@ -570,7 +573,6 @@ do
 
     local UpdateTTDs
 
-
     UpdateTTDs = function()
         twipe( seen )
 
@@ -579,8 +581,8 @@ do
         for i, unit in ipairs( trackedUnits ) do
             local guid = UnitGUID( unit )
 
-            if guid then
-                if db[ guid ] and not UnitExists( unit ) or not UnitThreatSituation( "player", unit ) or UnitIsDead( unit ) then
+            if guid and not seen[ guid ] then
+                if db[ guid ] and ( not UnitExists( unit ) or UnitIsDead( unit ) or not UnitCanAttack( "player", unit ) ) then
                     EliminateEnemy( guid )
                 else
                     local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
@@ -591,9 +593,9 @@ do
         end
 
         for unit, guid in pairs( npGUIDs ) do
-            if db[ guid ] and not UnitThreatSituation( "player", unit ) then
+            if db[ guid ] and ( not UnitExists( unit ) or UnitIsDead( unit ) or not UnitCanAttack( "player", unit ) ) then
                 EliminateEnemy( guid )
-            elseif not seen[ guid ] and UnitThreatSituation( "player", unit ) then
+            elseif not seen[ guid ] then
                 local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
                 UpdateEnemy( guid, health / healthMax, now )
             end
