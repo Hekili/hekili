@@ -743,6 +743,15 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                         state.delay = base_delay + step
 
+                                                        local usable, why = state:IsUsable()
+                                                        if debug then
+                                                            if not usable then
+                                                                self:Debug( "The action (%s) is no longer usable at (%.2f + %.2f) because %s.", entry.action, state.offset, state.delay, why or "IsUsable returned false" )
+                                                                state.delay = base_delay
+                                                                break
+                                                            end
+                                                        end
+
                                                         if self:CheckStack() then
                                                             aScriptPass = scripts:CheckScript( scriptID )
                                                             channelPass = self:CheckChannel( entry.action, rWait )
