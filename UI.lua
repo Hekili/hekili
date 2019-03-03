@@ -698,6 +698,21 @@ do
 
         local now = GetTime()
 
+
+        self.refreshTimer = self.refreshTimer - elapsed
+
+        local spec = Hekili.DB.profile.specs[ state.spec.id ]
+        local throttle = spec.throttleUpdates and ( 1 / spec.maxRefresh ) or 0
+        local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh )
+
+        if not Hekili.UpdatedThisFrame and ( self.criticalUpdate and now - self.lastUpdate > throttle ) or self.refreshTimer < 0 then
+            Hekili:ProcessHooks( self.id )
+            self.criticalUpdate = false
+            self.lastUpdate = now
+            self.refreshTimer = refreshRate
+        end
+
+
         self.recTimer = ( self.recTimer or 0 ) - elapsed
 
         if self.NewRecommendations or self.recTimer < 0 then
@@ -1048,21 +1063,6 @@ do
 
             self.delayTimer = pulseDelay
         end        
-
-
-        self.refreshTimer = self.refreshTimer - elapsed
-
-        local spec = Hekili.DB.profile.specs[ state.spec.id ]
-        local throttle = spec.throttleUpdates and ( 1 / spec.maxRefresh ) or 0
-        local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh )
-
-        if not Hekili.UpdatedThisFrame and ( self.criticalUpdate and now - self.lastUpdate > throttle ) or self.refreshTimer < 0 then
-            Hekili:ProcessHooks( self.id )
-            self.criticalUpdate = false
-            self.lastUpdate = now
-            self.refreshTimer = refreshRate
-        end
-
     end
 
     local function Display_UpdateAlpha( self )
@@ -1196,6 +1196,7 @@ do
             self.auraTimer = 0
             self.delayTimer = 0
             self.glowTimer = 0
+            self.recTimer = 0
             self.refreshTimer = 0
             self.targetTimer = 0
 
