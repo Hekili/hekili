@@ -602,10 +602,10 @@ do
             seen[ guid ] = true
         end
 
-        C_Timer.After( 0.25, UpdateTTDs )
+        C_Timer.After( 0.5, UpdateTTDs )
     end
 
 
-    C_Timer.After( 0.25, UpdateTTDs )
+    C_Timer.After( 0.5, UpdateTTDs )
 
 end
