@@ -28,7 +28,7 @@ local RegisterEvent = ns.RegisterEvent
 local tinsert, tremove, twipe = table.insert, table.remove, table.wipe
 
 
-local unitIDs = { "target", "focus", "boss1", "boss2", "boss3", "boss4", "boss5" }
+local unitIDs = { "target", "targettarget", "focus", "focustarget", "boss1", "boss2", "boss3", "boss4", "boss5" }
 local npGUIDs = {}
 
 Hekili.npGUIDs = npGUIDs
@@ -74,10 +74,6 @@ function ns.getNumberTargets()
             end
 
             nameplates[ guid ] = true
-
-            --[[ if not nameplates[ guid ] and ( unit == "target" or ( range and range < spec.nameplateRange ) ) and ( not UnitIsDead( unit ) ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
-                fullCount = fullCount + 1
-            end ]]
         end
     end
 
@@ -85,8 +81,8 @@ function ns.getNumberTargets()
         local guid = UnitGUID( unit )
 
         if guid then
-            if not nameplates[ guid ] and ( range and range <= spec.nameplateRange ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
-                Hekili.TargetDebug = format( "%s%12s - %2d - %s\n", Hekili.TargetDebug, unit, range or 0, guid )
+            if not nameplates[ guid ] and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                Hekili.TargetDebug = format( "%s%12s - %2d - %s\n", Hekili.TargetDebug, unit, 0, guid )
                 fullCount = fullCount + 1
             end
 
@@ -99,6 +95,7 @@ function ns.getNumberTargets()
 
         for guid, seen in pairs( db ) do
             if not nameplates[ guid ] then
+                Hekili.TargetDebug = format( "%s%12s - %2d - %s\n", Hekili.TargetDebug, "dmg", range or 0, guid )
                 fullCount = fullCount + 1
                 nameplates[ guid ] = true
             end

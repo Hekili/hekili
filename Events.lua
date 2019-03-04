@@ -869,7 +869,8 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
 
         if hostile and dmg_events[ subtype ] and not dmg_filtered[ spellID ] then
-            if subtype == "SPELL_DAMAGE" and interrupt > 0 and ns.isTarget( destGUID ) then
+            -- Don't wipe overkill targets in rested areas (it is likely a dummy).
+            if not IsResting( "player" ) and subtype == "SPELL_DAMAGE" and interrupt > 0 and ns.isTarget( destGUID ) then
                 -- Interrupt is actually overkill.
                 ns.eliminateUnit( destGUID, true )
                 ns.forceRecount()
