@@ -210,7 +210,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         },
 
         lava_surge = {
-            id = 77756,
+            id = 77762,
             duration = 10,
             max_stack = 1,
         },
