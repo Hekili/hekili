@@ -342,6 +342,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             startsCombat = false,
             texture = 135964,
 
+            readyTime = function () return debuff.forbearance.remains end,
+
             handler = function ()
                 applyBuff( 'blessing_of_protection' )
                 applyDebuff( 'player', 'forbearance' )
@@ -450,7 +452,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             startsCombat = false,
             texture = 524354,
 
-            usable = function () return not debuff.forbearance.up end,
+            readyTime = function () return debuff.forbearance.remains end,
+
             handler = function ()
                 applyBuff( 'divine_shield' )
                 applyDebuff( 'player', 'forbearance' )
@@ -769,6 +772,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             startsCombat = false,
             texture = 135928,
+
+            readyTime = function () return debuff.forbearance.remains end,
 
             handler = function ()
                 gain( health.max, "health" )

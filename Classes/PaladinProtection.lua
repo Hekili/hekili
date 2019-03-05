@@ -462,7 +462,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             notalent = "blessing_of_spellwarding",
 
-            usable = function () return debuff.forbearance.down end,
+            readyTime = function () return debuff.forbearance.remains end,
+
             handler = function ()
                 applyBuff( "blessing_of_protection" )
                 applyDebuff( "player", "forbearance" )
@@ -509,7 +510,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             talent = "blessing_of_spellwarding",
 
-            usable = function () return debuff.forbearance.down end,
+            readyTime = function () return debuff.forbearance.remains end,
+
             handler = function ()
                 applyBuff( "blessing_of_spellwarding" )
                 applyDebuff( "player", "forbearance" )
@@ -606,6 +608,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             startsCombat = false,
             texture = 524354,
+
+            readyTime = function () return debuff.forbearance.remains end,
 
             handler = function ()
                 applyBuff( "divine_shield" )
@@ -789,6 +793,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             startsCombat = false,
             texture = 135928,
+
+            readyTime = function () return debuff.forbearance.remains end,
 
             handler = function ()
                 gain( health.max, "health" )
