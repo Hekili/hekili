@@ -75,15 +75,17 @@ function ns.getNumberTargets()
 
             nameplates[ guid ] = true
         end
-    end
 
-    for i, unit in ipairs( unitIDs ) do
-        local guid = UnitGUID( unit )
+        for unit, guid in pairs( unitIDs ) do
+            if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                local _, range = RC:GetRange( unit )
 
-        if guid then
-            if not nameplates[ guid ] and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
-                Hekili.TargetDebug = format( "%s%12s - %2d - %s\n", Hekili.TargetDebug, unit, 0, guid )
-                fullCount = fullCount + 1
+                local rate, n = Hekili:GetTTD( unit )
+                Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
+
+                if range and range <= spec.nameplateRange then
+                    fullCount = fullCount + 1
+                end
             end
 
             nameplates[ guid ] = true
