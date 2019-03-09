@@ -145,6 +145,18 @@ local oneTimeFixes = {
         end
         p.runOnce.wipeSpecPotions_20180910_1 = nil
     end,
+
+    enabledArcaneMageOnce_20190309 = function( p )
+        local arcane = class.specs[ 62 ]
+
+        if arcane and not arcane.enabled then
+            arcane.enabled = true
+            return
+        end
+
+        -- Clears the flag if Arcane wasn't actually enabled.
+        p.runOnce.enabledArcaneMageOnce_20190309 = nil
+    end,
 }
 
 
