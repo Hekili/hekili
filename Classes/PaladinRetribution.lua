@@ -56,6 +56,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             max_stack = 1,
         },
 
+        avenging_wrath_crit = ns.PTR and {
+            id = 294027,
+            duration = 20,
+            max_stack = 1
+        } or nil,
+
         blade_of_wrath = {
             id = 281178,
             duration = 10,
@@ -278,6 +284,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             usable = function () return not buff.avenging_wrath.up end,
             handler = function ()
                 applyBuff( 'avenging_wrath' )
+                if PTR then applyBuff( "avenging_wrath_crit" ) end
                 if level < 115 then
                     if equipped.liadrins_fury_unleashed then gain( 1, 'holy_power' ) end
                 end
@@ -501,6 +508,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                     removeBuff( 'fires_of_justice' )
                     removeBuff( 'hidden_retribution_t21_4p' )
                 end
+
+                if PTR and buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
 
                 if level < 116 then
                     if equipped.whisper_of_the_nathrezim then applyBuff( 'whisper_of_the_nathrezim', 4 ) end
@@ -876,6 +885,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                     removeBuff( 'fires_of_justice' )
                     removeBuff( 'hidden_retribution_t21_4p' )
                 end
+                if PTR and buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
                 if talent.righteous_verdict.enabled then applyBuff( 'righteous_verdict' ) end
                 if level < 115 and equipped.whisper_of_the_nathrezim then applyBuff( 'whisper_of_the_nathrezim', 4 ) end
                 if talent.divine_judgment.enabled then addStack( 'divine_judgment', 15, 1 ) end
