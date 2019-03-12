@@ -740,6 +740,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 132127,
 
+            form = "cat_form",
+
             usable = function () return buff.apex_predator.up or combo_points.current > 0 end,
             handler = function ()
                 if talent.sabertooth.enabled and debuff.rip.up then
@@ -1486,7 +1488,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             talent = "restoration_affinity",
 
-            handler = function ()                
+            handler = function ()
+                unshift()
             end,
         },
 
