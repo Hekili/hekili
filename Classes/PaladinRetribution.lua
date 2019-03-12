@@ -323,7 +323,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             recharge = 25,
             gcd = "spell",
 
-            spend = 0.15,
+            spend = 0.07,
             spendType = "mana",
 
             startsCombat = false,
@@ -364,7 +364,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 90,
             gcd = "spell",
 
-            spend = 0.08,
+            spend = 0.06,
             spendType = "mana",
 
             talent = 'blinding_light',
@@ -835,7 +835,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 15,
             gcd = "spell",
 
-            spend = 0.1,
+            spend = 0.06,
             spendType = "mana",
 
             startsCombat = false,

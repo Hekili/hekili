@@ -378,6 +378,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             handler = function ()
                 applyBuff( "avenging_wrath" )
+                applyBuff( "avenging_wrath_crit" )
             end,
         },
 
@@ -431,7 +432,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             recharge = 25,
             gcd = "spell",
 
-            spend = 0.15,
+            spend = 0.07,
             spendType = "mana",
 
             startsCombat = false,
@@ -525,7 +526,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 90,
             gcd = "spell",
 
-            spend = 0.08,
+            spend = 0.06,
             spendType = "mana",
 
             interrupt = true,
@@ -750,6 +751,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             talent = "hand_of_the_protector",
 
             handler = function ()
+                if PTR and buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
                 gain( 0.1 * health.max, "health" )
             end,
         },
@@ -822,6 +824,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             notalent = "hand_of_the_protector",
 
             handler = function ()
+                if PTR and buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
                 gain( 0.1 * health.max, "health" )
             end,
         },
@@ -872,7 +875,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             interrupt = true,
 
-            spend = 0.1,
+            spend = 0.06,
             spendType = "mana",
 
             startsCombat = false,
