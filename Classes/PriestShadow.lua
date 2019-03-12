@@ -576,7 +576,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.04,
+            spend = 0.016,
             spendType = "mana",
 
             startsCombat = true,
@@ -948,7 +948,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 60,
             gcd = "spell",
 
-            spend = 0.03,
+            spend = 0.012,
             spendType = "mana",
 
             startsCombat = true,
@@ -1005,7 +1005,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.04,
+            spend = 0.012,
             spendType = "mana",
 
             startsCombat = true,
