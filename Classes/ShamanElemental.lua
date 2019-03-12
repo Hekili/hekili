@@ -1067,7 +1067,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.2,
+            spend = 0.1,
             spendType = "mana",
 
             startsCombat = true,
