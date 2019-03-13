@@ -569,6 +569,7 @@ do
 
         PLAYER_TARGET_CHANGED = 1,
 
+        PLAYER_ENTERING_WORLD = 1,
         PLAYER_REGEN_ENABLED = 1,
         PLAYER_REGEN_DISABLED = 1,
 
@@ -705,7 +706,7 @@ do
         local throttle = spec.throttleUpdates and ( 1 / spec.maxRefresh ) or 0
         local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh )
 
-        if not Hekili.UpdatedThisFrame and ( self.criticalUpdate and now - self.lastUpdate > throttle ) or self.refreshTimer < 0 then
+        if not self.NewRecommendations and ( ( self.criticalUpdate and now - self.lastUpdate > throttle ) or self.refreshTimer < 0 ) then
             Hekili:ProcessHooks( self.id )
             self.criticalUpdate = false
             self.lastUpdate = now
@@ -773,8 +774,6 @@ do
                         else ActionButton_HideOverlayGlow( b ) end
                         b.glowing = false
                     end
-
-                    self.NewRecommendations = false
                 else
                     b:Hide()
                 end
@@ -788,6 +787,7 @@ do
 
             self:RefreshCooldowns()
 
+            self.NewRecommendations = false
             self.recTimer = 1
         end
 

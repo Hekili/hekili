@@ -112,7 +112,7 @@ end
 
 
 -- For our purposes, all UnitEvents are player/target oriented.
-ns.RegisterUnitEvent = function( event, handler, u1, u2 )
+ns.RegisterUnitEvent = function( event, handler )
 
     unitHandlers[ event ] = unitHandlers[ event ] or {}
     insert( unitHandlers[ event ], handler )
@@ -486,7 +486,6 @@ end )
 
 
 RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
-    Hekili:UpdateDisplayVisibility()
     state.combat = GetTime() - 0.01
 end )
 
@@ -498,7 +497,6 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
 
-    Hekili:UpdateDisplayVisibility()
     Hekili:ExpireTTDs( true )
 end )
 
@@ -685,18 +683,13 @@ RegisterEvent( "PLAYER_STARTED_MOVING", function( event ) Hekili:ForceUpdate( ev
 RegisterEvent( "PLAYER_STOPPED_MOVING", function( event ) Hekili:ForceUpdate( event ) end )
 
 
-local function handleEnemyCasts( event, unit )
-    if UnitIsUnit( "target", unit ) then
-        Hekili:ForceUpdate( event, unit )
-    elseif UnitIsUnit( "player", unit ) and event == "UNIT_SPELLCAST_START" then
-        -- May want to force update here in case SPELL_CAST_START doesn't fire in CLEU.
-        Hekili:ForceUpdate( event, unit )
-    end
+local function HandleCasts( event, unit )
+    Hekili:ForceUpdate( event, unit )
 end 
 
-RegisterUnitEvent( "UNIT_SPELLCAST_START", handleEnemyCasts )
-RegisterUnitEvent( "UNIT_SPELLCAST_INTERRUPTED", handleEnemyCasts )
-RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", handleEnemyCasts )
+RegisterUnitEvent( "UNIT_SPELLCAST_START", HandleCasts )
+RegisterUnitEvent( "UNIT_SPELLCAST_INTERRUPTED", HandleCasts )
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", HandleCasts )
 
 
 local cast_events = {
