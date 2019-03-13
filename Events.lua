@@ -401,7 +401,6 @@ function Hekili:UpdateUseItems()
         end
 
         self:LoadItemScripts()
-        -- self:ForceUpdate( "UPDATE_USE_ITEMS" )
     end
 end
 

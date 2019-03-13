@@ -667,9 +667,7 @@ do
     local pulseFlash = 0.5
 
     local oocRefresh = 0.5
-    local icRefresh = 0.2
-
-    local refreshPulse = 10
+    local icRefresh = 0.25
 
     local LRC = LibStub("LibRangeCheck-2.0")
     local LSF = SpellFlashCore
@@ -1460,7 +1458,7 @@ do
     end
 
 
-    function Hekili:ForceUpdate( event )
+    function Hekili:ForceUpdate( event, ... )
         for i, d in pairs( ns.UI.Displays ) do        
             d.criticalUpdate = true
         end
