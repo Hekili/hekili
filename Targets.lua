@@ -525,11 +525,16 @@ do
 
 
     function Hekili:GetGreatestTTD()
-        local time = 0
+        local time, validUnit = 0, false
 
         for k, v in pairs( db ) do
-            if v.n > 0 then time = max( time, ceil( v.lastHealth / v.rate ) ) end
+            if v.n > 3 then
+                time = max( time, ceil( v.lastHealth / v.rate ) )
+                validUnit = true
+            end
         end
+
+        if not validUnit then return FOREVER end
 
         return time
     end
