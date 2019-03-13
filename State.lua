@@ -1394,7 +1394,7 @@ local mt_state = {
 
         elseif k == 'time_to_die' then
             if not t.boss then return 3600 end
-            return Hekili:GetGreatestTTD() - ( t.offset + t.delay )
+            return max( 1, Hekili:GetGreatestTTD() - ( t.offset + t.delay ) )
 
         elseif k == "expected_combat_length" then
             if not t.boss then return 3600 end
