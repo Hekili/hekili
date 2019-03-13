@@ -3721,124 +3721,133 @@ local autoAuraKey = setmetatable( {}, {
 } )
 
 
-local function ScrapeUnitAuras( unit, newTarget )
-    local db = ns.auras[ unit ]
 
-    for k,v in pairs( db.buff ) do
-        v.name = nil
-        v.lastCount = newTarget and 0 or v.count
-        v.lastApplied = newTarget and 0 or v.applied
-        v.count = 0
-        v.expires = 0
-        v.applied = 0
-        v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
-        v.caster = 'nobody'
-        v.timeMod = 1
-        v.v1 = 0
-        v.v2 = 0
-        v.v3 = 0
-        v.unit = unit
-    end
+do
+    local scraped = {}
 
-    for k,v in pairs( db.debuff ) do
-        v.name = nil
-        v.lastCount = newTarget and 0 or v.count
-        v.lastApplied = newTarget and 0 or v.applied
-        v.count = 0
-        v.expires = 0
-        v.applied = 0
-        v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
-        v.caster = 'nobody'
-        v.timeMod = 1
-        v.v1 = 0
-        v.v2 = 0
-        v.v3 = 0
-        v.unit = unit
-    end
+    function state.ScrapeUnitAuras( unit, newTarget )
+        local db = ns.auras[ unit ]
 
-    if not UnitExists( unit ) then return end
-
-    local i = 1
-    while ( true ) do
-        local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i, "PLAYER" )
-        if not name then break end
-
-        local key = class.auras[ spellID ] and class.auras[ spellID ].key
-        -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
-        if not key then key = autoAuraKey[ spellID ] end
-
-        if key then 
-            db.buff[ key ] = db.buff[ key ] or {}
-            local buff = db.buff[ key ]
-
-            if expires == 0 then
-                expires = GetTime() + 3600
-                duration = 7200
+        if scraped[ unit ] then
+            for k,v in pairs( db.buff ) do
+                v.name = nil
+                v.lastCount = newTarget and 0 or v.count
+                v.lastApplied = newTarget and 0 or v.applied
+                v.count = 0
+                v.expires = 0
+                v.applied = 0
+                v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
+                v.caster = 'nobody'
+                v.timeMod = 1
+                v.v1 = 0
+                v.v2 = 0
+                v.v3 = 0
+                v.unit = unit
             end
 
-            buff.key = key
-            buff.id = spellID
-            buff.name = name
-            buff.count = count > 0 and count or 1
-            buff.expires = expires
-            buff.duration = duration
-            buff.applied = expires - duration
-            buff.caster = caster
-            buff.timeMod = timeMod
-            buff.v1 = v1
-            buff.v2 = v2
-            buff.v3 = v3
-
-            buff.unit = unit
-        end
-
-        i = i + 1
-    end
-
-    i = 1
-    while ( true ) do
-        local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, "PLAYER" )
-        if not name then break end
-
-        local key = class.auras[ spellID ] and class.auras[ spellID ].key
-        -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
-        if not key then key = autoAuraKey[ spellID ] end
-
-        if key then 
-            db.debuff[ key ] = db.debuff[ key ] or {}
-            local debuff = db.debuff[ key ]
-
-            if expires == 0 then
-                expires = GetTime() + 3600
-                duration = 7200
+            for k,v in pairs( db.debuff ) do
+                v.name = nil
+                v.lastCount = newTarget and 0 or v.count
+                v.lastApplied = newTarget and 0 or v.applied
+                v.count = 0
+                v.expires = 0
+                v.applied = 0
+                v.duration = class.auras[ k ] and class.auras[ k ].duration or v.duration
+                v.caster = 'nobody'
+                v.timeMod = 1
+                v.v1 = 0
+                v.v2 = 0
+                v.v3 = 0
+                v.unit = unit
             end
 
-            debuff.key = key
-            debuff.id = spellID
-            debuff.name = name
-            debuff.count = count > 0 and count or 1
-            debuff.expires = expires
-            debuff.duration = duration
-            debuff.applied = expires - duration
-            debuff.caster = caster
-            debuff.timeMod = timeMod
-            debuff.v1 = v1
-            debuff.v2 = v2
-            debuff.v3 = v3
-
-            debuff.unit = unit
+            scraped[ unit ] = false
         end
 
-        i = i + 1
+        if not UnitExists( unit ) then return end
+
+        scraped[ unit ] = true
+
+        local i = 1
+        while ( true ) do
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i, "PLAYER" )
+            if not name then break end
+
+            local key = class.auras[ spellID ] and class.auras[ spellID ].key
+            -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
+            if not key then key = autoAuraKey[ spellID ] end
+
+            if key then 
+                db.buff[ key ] = db.buff[ key ] or {}
+                local buff = db.buff[ key ]
+
+                if expires == 0 then
+                    expires = GetTime() + 3600
+                    duration = 7200
+                end
+
+                buff.key = key
+                buff.id = spellID
+                buff.name = name
+                buff.count = count > 0 and count or 1
+                buff.expires = expires
+                buff.duration = duration
+                buff.applied = expires - duration
+                buff.caster = caster
+                buff.timeMod = timeMod
+                buff.v1 = v1
+                buff.v2 = v2
+                buff.v3 = v3
+
+                buff.unit = unit
+            end
+
+            i = i + 1
+        end
+
+        i = 1
+        while ( true ) do
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, "PLAYER" )
+            if not name then break end
+
+            local key = class.auras[ spellID ] and class.auras[ spellID ].key
+            -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
+            if not key then key = autoAuraKey[ spellID ] end
+
+            if key then 
+                db.debuff[ key ] = db.debuff[ key ] or {}
+                local debuff = db.debuff[ key ]
+
+                if expires == 0 then
+                    expires = GetTime() + 3600
+                    duration = 7200
+                end
+
+                debuff.key = key
+                debuff.id = spellID
+                debuff.name = name
+                debuff.count = count > 0 and count or 1
+                debuff.expires = expires
+                debuff.duration = duration
+                debuff.applied = expires - duration
+                debuff.caster = caster
+                debuff.timeMod = timeMod
+                debuff.v1 = v1
+                debuff.v2 = v2
+                debuff.v3 = v3
+
+                debuff.unit = unit
+            end
+
+            i = i + 1
+        end
     end
 
+    Hekili.ScrapeUnitAuras = state.ScrapeUnitAuras    
+    ns.cpuProfile.ScrapeUnitAuras = state.ScrapeUnitAuras
+    Hekili.AuraDB = ns.auras
 end
-Hekili.ScrapeUnitAuras = ScrapeUnitAuras
-state.ScrapeUnitAuras = ScrapeUnitAuras
-ns.cpuProfile.ScrapeUnitAuras = ScrapeUnitAuras
-
-
-Hekili.AuraDB = ns.auras
+local ScrapeUnitAuras = state.ScrapeUnitAuras
 
 
 -- Helper functions to query the real aura data that has been scraped.
