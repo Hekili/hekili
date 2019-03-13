@@ -469,11 +469,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     end )
 
 
-    spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
-        rip_applied = false
-    end )
-
-
     spec:RegisterHook( "runHandler", function( ability )
         local a = class.abilities[ ability ]
 
