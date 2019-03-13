@@ -367,20 +367,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     end )
 
 
-    --[[ spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
-        state.burn_info.__start = 0
-        state.burn_info.__average = 20
-        state.burn_info.__n = 1
-    end )
-
-
-    spec:RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
-        state.burn_info.__start = 0
-        state.burn_info.__average = 20
-        state.burn_info.__n = 1
-    end ) ]]
-
-
     spec:RegisterStateFunction( "start_burn_phase", function ()
         burn_info.start = query_time
     end )
