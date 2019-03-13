@@ -495,8 +495,6 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
 
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
-
-    Hekili:ExpireTTDs( true )
 end )
 
 
@@ -673,7 +671,6 @@ RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
     Hekili.ScrapeUnitAuras( "target", true )
     state.target.updated = false
 
-    -- Hekili.UpdateTTD( "target" )
     Hekili:ForceUpdate( event, true )
 end )
 

@@ -23,7 +23,6 @@ local lastFullCount = 0
 local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
 local FeignEvent = ns.FeignEvent
-local RegisterEvent = ns.RegisterEvent
 
 local tinsert, tremove, twipe = table.insert, table.remove, table.wipe
 
@@ -608,7 +607,6 @@ do
 
         C_Timer.After( 0.5, UpdateTTDs )
     end
-
 
     C_Timer.After( 0.5, UpdateTTDs )
 
