@@ -1116,7 +1116,6 @@ function Hekili:ProcessHooks( dispName, packName )
     end
 
     state.reset( dispName )
-    local gcd_length = state.gcd
 
     local numRecs = display.numIcons or 4
 
