@@ -698,21 +698,7 @@ do
         local now = GetTime()
 
 
-        self.refreshTimer = self.refreshTimer - elapsed
-
-        local spec = Hekili.DB.profile.specs[ state.spec.id ]
-        local throttle = spec.throttleUpdates and ( 1 / spec.maxRefresh ) or 0
-        local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh )
-
-        if not self.NewRecommendations and ( ( self.criticalUpdate and now - self.lastUpdate > throttle ) or self.refreshTimer < 0 ) then
-            Hekili:ProcessHooks( self.id )
-            self.criticalUpdate = false
-            self.lastUpdate = now
-            self.refreshTimer = refreshRate
-        end
-
-
-        self.recTimer = ( self.recTimer or 0 ) - elapsed
+        self.recTimer = self.recTimer - elapsed
 
         if self.NewRecommendations or self.recTimer < 0 then
             local alpha = self.alpha
@@ -790,6 +776,20 @@ do
         end
 
 
+        self.refreshTimer = self.refreshTimer - elapsed
+
+        local spec = Hekili.DB.profile.specs[ state.spec.id ]
+        local throttle = spec.throttleUpdates and ( 1 / spec.maxRefresh ) or ( 1 / 60 )
+        local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh )
+
+        if Hekili.freshFrame and ( ( self.criticalUpdate and now - self.lastUpdate > throttle ) or self.refreshTimer < 0 ) then
+            Hekili:ProcessHooks( self.id )
+            self.criticalUpdate = false
+            self.lastUpdate = now
+            self.refreshTimer = refreshRate
+        end
+
+
         self.glowTimer = self.glowTimer - elapsed
 
         if self.glowTimer < 0 then
@@ -827,7 +827,7 @@ do
         end
 
 
-        self.rangeTimer = ( self.rangeTimer or 0 ) - elapsed
+        self.rangeTimer = self.rangeTimer - elapsed
 
         if self.rangeTimer < 0 then
             for i, b in ipairs( self.Buttons ) do
@@ -908,7 +908,7 @@ do
         end
 
         
-        self.flashTimer = ( self.flashTimer or 0 ) - elapsed
+        self.flashTimer = self.flashTimer - elapsed
 
         if self.flashTimer < 0 then
             if conf.flash.enabled and LSF then
@@ -1193,7 +1193,9 @@ do
 
             self.auraTimer = 0
             self.delayTimer = 0
+            self.flashTimer = 0
             self.glowTimer = 0
+            self.rangeTimer = 0
             self.recTimer = 0
             self.refreshTimer = 0
             self.targetTimer = 0
