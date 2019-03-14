@@ -64,7 +64,7 @@ function ns.StartEventHandler()
     end )
 
     events:SetScript( "OnUpdate", function( self, elapsed )
-        Hekili.UpdatedThisFrame = false
+        Hekili.freshFrame = true
         timerRecount = timerRecount - elapsed
 
         if timerRecount < 0 then
@@ -79,11 +79,10 @@ end
 
 
 function ns.StopEventHandler()
-
     events:SetScript( "OnEvent", nil )
     unitEvents:SetScript( "OnEvent", nil )
-    events:SetScript( "OnUpdate", nil )
 
+    events:SetScript( "OnUpdate", nil )
 end
 
 
@@ -184,36 +183,37 @@ end
 RegisterEvent( "DISPLAY_SIZE_CHANGED", function () Hekili:BuildUI() end )
 
 
-local itemAuditComplete = false
+do    
+    local itemAuditComplete = false
 
-function ns.auditItemNames()
+    local auditItemNames = function ()
+        local failure = false
 
-    local failure = false
+        for key, ability in pairs( class.abilities ) do
+            if ability.recheck_name then
+                local name, link = GetItemInfo( ability.item )
 
-    for key, ability in pairs( class.abilities ) do
-        if ability.recheck_name then
-            local name, link = GetItemInfo( ability.item )
+                if name then
+                    ability.name = name
+                    ability.texture = nil
+                    ability.link = link
+                    ability.elem.name = name
+                    ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
 
-            if name then
-                ability.name = name
-                ability.texture = nil
-                ability.link = link
-                ability.elem.name = name
-                ability.elem.texture = select( 10, GetItemInfo( ability.item ) )
-
-                class.abilities[ name ] = ability
-                ability.recheck_name = nil
-            else
-                failure = true
+                    class.abilities[ name ] = ability
+                    ability.recheck_name = nil
+                else
+                    failure = true
+                end
             end
         end
-    end
 
-    if failure then
-        C_Timer.After( 1, ns.auditItemNames )
-    else
-        ns.ReadKeybindings()
-        itemAuditComplete = true
+        if failure then
+            C_Timer.After( 1, ns.auditItemNames )
+        else
+            ns.ReadKeybindings()
+            itemAuditComplete = true
+        end
     end
 end
 
@@ -229,12 +229,6 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
 
     Hekili:BuildUI()
 end )
-
---[[ RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ()
-    Hekili:SpecializationChanged()
-    ns.checkImports()
-    ns.updateGear()
-end ) ]]
 
 
 RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event, unit )
