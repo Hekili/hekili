@@ -1291,6 +1291,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
     UI.NewRecommendations = true
     UI.RecommendationsStr = checkstr
+    Hekili.freshFrame     = false
 end
 ns.cpuProfile.ProcessHooks = Hekili.ProcessHooks
 
