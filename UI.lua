@@ -1074,7 +1074,7 @@ do
             -- self:Deactivate()
             self:SetAlpha( 0 )
         else
-            if preAlpha == 0 and newAlpha > 0 then
+            if preAlpha == 0 and newAlpha > 0 then                
                 Hekili:ForceUpdate( "DISPLAY_ALPHA_CHANGED" )
             end
             self:SetAlpha( newAlpha )
