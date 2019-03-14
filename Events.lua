@@ -375,101 +375,124 @@ do
 end
 
 
-local gearInitialized = false
+do
+    local gearInitialized = false
 
-function Hekili:UpdateUseItems()
-    local itemList = class.itemPack.lists.items
-    wipe( itemList )
+    function Hekili:UpdateUseItems()
+        local itemList = class.itemPack.lists.items
+        wipe( itemList )
 
-    if #state.items > 0 then
+        if #state.items > 0 then
+            for i, item in ipairs( state.items ) do
+                if not self:IsItemScripted( item ) then
+                    insert( itemList, {
+                        action = item,
+                        enabled = true,
+                        criteria = "( ! settings.boss || boss ) & " ..
+                            "( settings.targetMin = 0 || active_enemies >= settings.targetMin ) & " ..
+                            "( settings.targetMax = 0 || active_enemies <= settings.targetMax )"
+                    } )
+                end
+            end
+
+            self:LoadItemScripts()
+        end
+    end
+
+
+    local wasWearing = {}
+
+    function ns.updateGear()
+        for thing in pairs( state.set_bonus ) do
+            state.set_bonus[ thing ] = 0
+        end
+
+        wipe( wasWearing )
+
         for i, item in ipairs( state.items ) do
-            if not self:IsItemScripted( item ) then
-                insert( itemList, {
-                    action = item,
-                    enabled = true,
-                    criteria = "( ! settings.boss || boss ) & " ..
-                        "( settings.targetMin = 0 || active_enemies >= settings.targetMin ) & " ..
-                        "( settings.targetMax = 0 || active_enemies <= settings.targetMax )"
-                } )
+            wasWearing[i] = item
+        end
+
+        wipe( state.items )
+
+        for set, items in pairs( class.gear ) do
+            state.set_bonus[ set ] = 0
+            for item, _ in pairs( items ) do
+                if IsEquippedItem( GetItemInfo( item ) ) then
+                    state.set_bonus[ set ] = state.set_bonus[ set ] + 1
+                end
             end
         end
 
-        self:LoadItemScripts()
-    end
-end
+        local ItemBuffs = LibStub( "LibItemBuffs-1.0", true )
+        local T1 = GetInventoryItemID( "player", 13 )
 
+        if ItemBuffs and T1 then
+            local t1buff = ItemBuffs:GetItemBuffs( T1 )
 
-function ns.updateGear()
-    for thing in pairs( state.set_bonus ) do
-        state.set_bonus[ thing ] = 0
-    end
+            if type(t1buff) == 'table' then t1buff = t1buff[1] end
 
-    wipe( state.items )
+            class.auras.trinket1 = class.auras[ t1buff ]
+            state.trinket.t1.id = T1
+        else
+            state.trinket.t1.id = 0
+        end
 
-    for set, items in pairs( class.gear ) do
-        state.set_bonus[ set ] = 0
-        for item, _ in pairs( items ) do
-            if IsEquippedItem( GetItemInfo( item ) ) then
-                state.set_bonus[ set ] = state.set_bonus[ set ] + 1
+        local T2 = GetInventoryItemID( "player", 14 )
+
+        if ItemBuffs and T2 then
+            local t2buff = ItemBuffs:GetItemBuffs( T2 )
+
+            if type(t2buff) == 'table' then t2buff = t2buff[1] end
+
+            class.auras.trinket2 = class.auras[ t2buff ]
+            state.trinket.t2.id = T2
+        else
+            state.trinket.t2.id = 0
+        end
+
+        for i = 1, 19 do
+            local item = GetInventoryItemID( 'player', i )
+
+            if item then
+                state.set_bonus[ item ] = 1
+                local key = GetItemInfo( item )
+                if key then
+                    key = formatKey( key )
+                    state.set_bonus[ key ] = 1
+                    gearInitialized = true
+                end
+
+                local usable = class.itemMap[ item ]
+                if usable then insert( state.items, usable ) end
             end
         end
-    end
 
-    local ItemBuffs = LibStub( "LibItemBuffs-1.0", true )
-    local T1 = GetInventoryItemID( "player", 13 )
+        ns.updatePowers()
+        ns.updateTalents()
 
-    if ItemBuffs and T1 then
-        local t1buff = ItemBuffs:GetItemBuffs( T1 )
+        local sameItems = #wasWearing == #state.items
 
-        if type(t1buff) == 'table' then t1buff = t1buff[1] end
-
-        class.auras.trinket1 = class.auras[ t1buff ]
-        state.trinket.t1.id = T1
-    else
-        state.trinket.t1.id = 0
-    end
-
-    local T2 = GetInventoryItemID( "player", 14 )
-
-    if ItemBuffs and T2 then
-        local t2buff = ItemBuffs:GetItemBuffs( T2 )
-
-        if type(t2buff) == 'table' then t2buff = t2buff[1] end
-
-        class.auras.trinket2 = class.auras[ t2buff ]
-        state.trinket.t2.id = T2
-    else
-        state.trinket.t2.id = 0
-    end
-
-    for i = 1, 19 do
-        local item = GetInventoryItemID( 'player', i )
-
-        if item then
-            state.set_bonus[ item ] = 1
-            local key = GetItemInfo( item )
-            if key then
-                key = formatKey( key )
-                state.set_bonus[ key ] = 1
-                gearInitialized = true
+        if sameItems then
+            for i = 1, #state.items do
+                if wasWearing[i] ~= state.items[i] then
+                    sameItems = false
+                    break
+                end
             end
-
-            local usable = class.itemMap[ item ]
-            if usable then insert( state.items, usable ) end
         end
+
+        if not sameItems then
+            Hekili:UpdateUseItems()
+        end
+
+        if not gearInitialized then
+            C_Timer.After( 3, ns.updateGear )
+        else
+            ns.ReadKeybindings()
+        end
+
     end
-
-    ns.updatePowers()
-    ns.updateTalents()
-
-    Hekili:UpdateUseItems()
-
-    if not gearInitialized then
-        C_Timer.After( 3, ns.updateGear )
-    else
-        ns.ReadKeybindings()
-    end
-
 end
 
 
@@ -484,7 +507,7 @@ end )
 
 
 RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
-    ns.updateGear()
+    -- ns.updateGear()
     state.combat = 0
 
     state.swings.mh_actual = 0
