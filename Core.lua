@@ -276,15 +276,9 @@ local z_PVP = {
 }
 
 
-local listIsBad = {}    -- listIsBad uses scriptIDs for keys; all entries after these lists should be excluded if the script returned TRUE.
-local listBlock = {}    -- Run Action List entries go in here.  If criteria passes for the RAL, entries that follow cannot be used.
-
 local listStack = {}    -- listStack for a given index returns the scriptID of its caller (or 0 if called by a display).
 local listCache = {}    -- listCache is a table of return values for a given scriptID at various times.
 local listValue = {}    -- listValue shows the cached values from the listCache.
-
-local itemTried = {}    -- Items that are tested in a specialization APL aren't reused here.
-
 
 local Stack = {}
 local Block = {}
@@ -364,55 +358,6 @@ function Hekili:CheckStack()
         listCache[ s.script ] = cache
 
         if not cache[ t ] then return false end
-    end
-
-    return true
-end
-
-
-function Hekili:CheckAPLStack()
-    local t = state.query_time
-    local pack = self.ActivePack
-
-    for scriptID, listID in pairs( listIsBad ) do
-        local list = pack.lists[ listID ]
-
-        if listID and list then
-            local cache = listCache[ scriptID ] or {}
-            local values = listValue[ scriptID ] or {}
-
-            cache[ t ] = cache[ t ] or scripts:CheckScript( scriptID )
-            values[ t ] = values[ t ] or scripts:GetConditionsAndValues( scriptID )
-
-            if self.ActiveDebug then self:Debug( "The conditions for a previously-run action list ( %s ) would %s at +%.2f.\n - %s", listID, cache[ t ] and "PASS" or "FAIL", state.delay, values[ t ] ) end
-
-            listCache[ scriptID ] = cache
-            listValue[ scriptID ] = value
-
-            if cache[ t ] then
-                if self.ActiveDebug then self:Debug( "Action unavailable as we would not have reached this entry at +%.2f.", state.delay ) end
-                return false
-            end
-        end
-    end
-
-    for listID, caller in pairs( listStack ) do
-        local list = pack.lists[ listID ]   
-
-        if caller and caller ~= 0 and list and scripts:IsTimeSensitive( caller ) then
-            local cache = listCache[ caller ] or {}
-            local values = listValue[ caller ] or {}
-
-            cache[ t ] = cache[ t ] or scripts:CheckScript( caller )
-            values[ t ] = values[ t ] or scripts:GetConditionsAndValues( caller )
-
-            if self.ActiveDebug then self:Debug( "The conditions for %s, called from %s, would %s at +%.2f.\n - %s", listID, caller, cache[ t ] and "PASS" or "FAIL", state.delay, values[ t ] ) end
-
-            listCache[ caller ] = cache
-            listValue[ caller ] = values
-
-            if not cache[ t ] then return false end
-        end
     end
 
     return true
@@ -997,7 +942,6 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     wipe( InUse )
 
     wipe( listStack )    
-    wipe( listIsBad )    
     wipe( waitBlock )
 
     for k, v in pairs( listCache ) do wipe( v ) end
