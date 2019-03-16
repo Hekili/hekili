@@ -805,11 +805,15 @@ do
         local resolution = resolutions[ GetCurrentResolution() ] or GetCVar( "gxWindowedResolution" )
         local width, height = resolution:match( "(%d+)x(%d+)" )       
 
-        tab.args.x.min = -1 * width * 0.5
-        tab.args.x.max = width * 0.5
+        tab.args.x.min = -1 * width
+        tab.args.x.max = width
+        tab.args.x.softMin = -1 * width * 0.5
+        tab.args.x.softMax = width * 0.5
 
-        tab.args.y.min = -1 * height * 0.5
-        tab.args.y.max = height * 0.5
+        tab.args.y.min = -1 * height
+        tab.args.y.max = height
+        tab.args.y.softMin = -1 * height * 0.5
+        tab.args.y.softMax = height * 0.5
     end
 
 
