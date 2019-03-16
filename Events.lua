@@ -1146,9 +1146,13 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
     function Hekili:GetBindingForAction( key, caps )
         if not key then return "" end
 
+        local ability = class.abilities[ key ]
+
         local override = state.spec.id
+        local overrideType = ability and ability.item and "items" or "abilities"
+
         override = override and self.DB.profile.specs[ override ]
-        override = override and override.abilities[ key ]
+        override = override and override[ overrideType ][ key ]
         override = override and override.keybind
 
         if override and override ~= "" then
@@ -1179,9 +1183,13 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
     function Hekili:GetBindingForAction( key, caps )
         if not key then return "" end
 
+        local ability = class.abilities[ key ]
+
         local override = state.spec.id
+        local overrideType = ability and ability.item and "items" or "abilities"
+
         override = override and self.DB.profile.specs[ override ]
-        override = override and override.abilities[ key ]
+        override = override and override[ overrideType ][ key ]
         override = override and override.keybind
 
         if override and override ~= "" then
@@ -1204,9 +1212,13 @@ else
     function Hekili:GetBindingForAction( key, caps )
         if not key then return "" end
 
+        local ability = class.abilities[ key ]
+
         local override = state.spec.id
+        local overrideType = ability and ability.item and "items" or "abilities"
+
         override = override and self.DB.profile.specs[ override ]
-        override = override and override.abilities[ key ]
+        override = override and override[ overrideType ][ key ]
         override = override and override.keybind
 
         if override and override ~= "" then
