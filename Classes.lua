@@ -1854,6 +1854,24 @@ all:RegisterAuras( {
 -- BFA TRINKETS
 -- ON USE
 
+-- Kezan Stamped Bijou
+all:RegisterAbility( "kezan_stamped_bijou", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+    
+    item = 165662,
+    toggle = "cooldowns",
+
+    handler = function () applyBuff( "kajamite_surge" ) end
+} )
+
+all:RegisterAura( "kajamite_surge", {
+    id = 285475,
+    duration = 12,
+    max_stack = 1,
+} )
+
 
 -- Sea Giant's Tidestone
 all:RegisterAbility( "sea_giants_tidestone", {
