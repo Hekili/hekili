@@ -20,7 +20,6 @@ local trim = string.trim
 local string_format = string.format
 
 local mt_resource = ns.metatables.mt_resource
-local ToggleDropDownMenu = L_ToggleDropDownMenu
 
 local GetItemInfo = ns.CachedGetItemInfo
 
@@ -99,10 +98,10 @@ function Hekili:OnInitialize()
                 if button == "RightButton" then ns.StartConfiguration()
                 else
                     if not hookOnce then 
-                        hooksecurefunc("L_UIDropDownMenu_InitializeHelper", function(frame)
-                            for i = 1, L_UIDROPDOWNMENU_MAXLEVELS do
-                                if _G["L_DropDownList"..i.."Backdrop"].SetTemplate then _G["L_DropDownList"..i.."Backdrop"]:SetTemplate( "Transparent" ) end
-                                if _G["L_DropDownList"..i.."MenuBackdrop"].SetTemplate then _G["L_DropDownList"..i.."MenuBackdrop"]:SetTemplate( "Transparent" ) end
+                        hooksecurefunc("UIDropDownMenu_InitializeHelper", function(frame)
+                            for i = 1, UIDROPDOWNMENU_MAXLEVELS do
+                                if _G["DropDownList"..i.."Backdrop"].SetTemplate then _G["DropDownList"..i.."Backdrop"]:SetTemplate( "Transparent" ) end
+                                if _G["DropDownList"..i.."MenuBackdrop"].SetTemplate then _G["DropDownList"..i.."MenuBackdrop"]:SetTemplate( "Transparent" ) end
                             end
                         end )
                         hookOnce = true

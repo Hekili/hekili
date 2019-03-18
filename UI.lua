@@ -18,10 +18,6 @@ local format = string.format
 
 local Masque, MasqueGroup
 
-local UIDropDownMenuTemplate = L_UIDropDownMenuTemplate
-local UIDropDownMenu_AddButton = L_UIDropDownMenu_AddButton
-local UIDropDownMenu_AddSeparator = L_UIDropDownMenu_AddSeparator
-
 
 function Hekili:GetScale()
     return PixelUtil.GetNearestPixelSize( 1, PixelUtil.GetPixelToUIUnitFactor(), 1 )
