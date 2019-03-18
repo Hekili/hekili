@@ -309,6 +309,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if spellID == 115191 or spellID == 1784 then
                     stealth_dropped = GetTime()
                 end
+
             elseif snapshots[ spellID ] and ( subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' ) then
                 ns.saveDebuffModifier( spellID, calculate_multiplier( spellID ) )
                 ns.trackDebuff( spellID, destGUID, GetTime(), true )
@@ -401,6 +402,24 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return debuff.garrote.up and ssG[ target.unit ]
     end )
 
+    spec:RegisterStateExpr( "non_ss_buffed_targets", function ()
+        local count = active_enemies
+        for units, buffed in pairs( ssG ) do
+            count = count - 1
+            if count == 0 then return 0 end
+        end
+
+        return count
+    end )
+
+    spec:RegisterStateExpr( "ss_buffed_targets_above_pandemic", function ()
+        if not debuff.garrote.refreshable and debuff.garrote.ss_buffed then
+            return 1
+        end
+        return 0 -- we aren't really tracking this right now...
+    end )
+
+    
     -- Count of bleeds on all poisoned (Deadly/Wound) targets.
     spec:RegisterStateExpr( 'poisoned_bleeds', function ()
         return ns.conditionalDebuffCount( "deadly_poison_dot", "wound_poison_dot", "garrote", "internal_bleeding", "rupture" )
