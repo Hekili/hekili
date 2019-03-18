@@ -1846,7 +1846,7 @@ function Hekili:BuildUI()
     -- End Notification Panel
 
     -- Dropdown Menu.
-    ns.UI.Menu = ns.UI.Menu or CreateFrame("Frame", "Hekili_Menu", UIParent, "L_UIDropDownMenuTemplate")
+    ns.UI.Menu = ns.UI.Menu or CreateFrame("Frame", "Hekili_Menu", UIParent, "UIDropDownMenuTemplate")
 
 
     -- Displays
