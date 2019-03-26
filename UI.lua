@@ -2007,9 +2007,12 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     -- Grab the default backdrop and copy it with a solid background.
     local backdrop = GameTooltip:GetBackdrop()
-    backdrop.bgFile = [[Interface\Buttons\WHITE8X8]]
-    tt:SetBackdrop(backdrop)
-    tt:SetBackdropColor(0, 0, 0, 1)
+
+    if backdrop then
+        backdrop.bgFile = [[Interface\Buttons\WHITE8X8]]
+        tt:SetBackdrop(backdrop)
+        tt:SetBackdropColor(0, 0, 0, 1)
+    end
 
     tt:SetOwner(UIParent, "ANCHOR_CURSOR")
     tt:SetText(class.abilities[q.actionName].name)
