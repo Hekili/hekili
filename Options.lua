@@ -157,6 +157,19 @@ local oneTimeFixes = {
         -- Clears the flag if Arcane wasn't actually enabled.
         p.runOnce.enabledArcaneMageOnce_20190309 = nil
     end,
+
+    autoconvertGlowsForCustomGlow_20190326 = function( p )
+        for k, v in pairs( p.displays ) do
+            if v.glow and v.glow.shine ~= nil then
+                if v.glow.shine then
+                    v.glow.mode = "autocast"
+                else
+                    v.glow.mode = "standard"
+                end
+                v.glow.shine = nil
+            end
+        end
+    end,        
 }
 
 
@@ -254,7 +267,9 @@ local displayTemplate = {
     glow = {
         enabled = false,
         queued = false,
-        shine = false,
+        mode = "autocast",
+        coloring = "default",
+        color = { 0.95, 0.95, 0.32, 1 },
     },
 
     flash = {
@@ -509,7 +524,7 @@ function Hekili:GetDefaults()
 
                     glow = {
                         enabled = true,
-                        shine = true
+                        mode = "autocast"
                     },
                 },
 
@@ -531,7 +546,7 @@ function Hekili:GetDefaults()
 
                     glow = {
                         enabled = true,
-                        shine = true,
+                        shine = "autocast",
                     },
                 },
 
@@ -1414,17 +1429,43 @@ do
                                 disabled = function() return data.glow.enabled == false end,
                             },
 
-                            shine = {
-                                type = "toggle",
-                                name = "Use Shine Effect",
-                                desc = "If enabled, the addon will use the 'shine' effect for a less visually intrusive glow.",
+                            mode = {
+                                type = "select",
+                                name = "Glow Style",
+                                desc = "Select the glow style for your display.",
                                 width = "full",
                                 order = 3,
-                                disabled = function () return data.glow.enabled == false end,
-                            }
+                                values = {
+                                    default = "Default Button Glow",
+                                    autocast = "AutoCast Shine",
+                                    pixel = "Pixel Glow",
+                                },
+                                disabled = function() return data.glow.enabled == false end,
+                            },
 
+                            coloring = {
+                                type = "select",
+                                name = "Coloring Mode",
+                                desc = "Select the coloring mode for this glow effect.",
+                                width = "full",
+                                order = 4,
+                                values = {
+                                    default = "Use Default Color",
+                                    class = "Use Class Color",
+                                    custom = "Specify a Custom Color"
+                                },
+                                disabled = function() return data.glow.enabled == false end,
+                            },
 
-                        }
+                            color = {
+                                type = "color",
+                                name = "Glow Color",
+                                desc = "Select the custom glow color for your display.",
+                                width = "full",
+                                order = 5,
+                                hidden = function() return data.glow.coloring ~= "custom" end,
+                            },
+                        },
                     },
 
                     flash = {

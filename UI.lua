@@ -664,6 +664,7 @@ do
     local LRC = LibStub("LibRangeCheck-2.0")
     local LSF = SpellFlashCore
     local LSR = LibStub("SpellRange-1.0")
+    local Glower = LibStub("LibCustomGlow-1.0")
 
     local function Display_OnUpdate( self, elapsed )
         if not self.Recommendations or not Hekili.PLAYER_ENTERING_WORLD then
@@ -742,12 +743,30 @@ do
                     end
 
                     if conf.glow.enabled and ( i == 1 or conf.glow.queued ) and IsSpellOverlayed( ability.id ) then
-                        if conf.glow.shine then AutoCastShine_AutoCastStart( b.Shine )
-                        else ActionButton_ShowOverlayGlow( b ) end
+                        b.glowColor = b.glowColor or {}
+
+                        if conf.glow.coloring == "class" then
+                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
+                        elseif conf.glow.coloring == "custom" then
+                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
+                        else
+                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
+                        end
+
+                        if conf.glow.mode == "default" then
+                            Glower.ButtonGlow_Start( b, b.glowColor )
+                            b.glowStop = Glower.ButtonGlow_Stop
+                        elseif conf.glow.mode == "autocast" then
+                            Glower.AutoCastGlow_Start( b, b.glowColor )
+                            b.glowStop = Glower.AutoCastGlow_Stop
+                        elseif conf.glow.mode == "pixel" then
+                            Glower.PixelGlow_Start( b, b.glowColor )
+                            b.glowStop = Glower.PixelGlow_Stop
+                        end
+                        
                         b.glowing = true
                     elseif b.glowing then
-                        if conf.glow.shine then AutoCastShine_AutoCastStop( b.Shine )
-                        else ActionButton_HideOverlayGlow( b ) end
+                        b:glowStop()
                         b.glowing = false
                     end
                 else
@@ -799,18 +818,35 @@ do
                         local glowing = not a.item and IsSpellOverlayed( a.id )
 
                         if glowing and not b.glowing then
-                            if conf.glow.shine then AutoCastShine_AutoCastStart( b.Shine )
-                            else ActionButton_ShowOverlayGlow( b ) end
+                            b.glowColor = b.glowColor or {}
+
+                            if conf.glow.coloring == "class" then
+                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
+                            elseif conf.glow.coloring == "custom" then
+                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
+                            else
+                                b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
+                            end
+    
+                            if conf.glow.mode == "default" then
+                                Glower.ButtonGlow_Start( b, b.glowColor )
+                                b.glowStop = Glower.ButtonGlow_Stop
+                            elseif conf.glow.mode == "autocast" then
+                                Glower.AutoCastGlow_Start( b, b.glowColor )
+                                b.glowStop = Glower.AutoCastGlow_Stop
+                            elseif conf.glow.mode == "pixel" then
+                                Glower.PixelGlow_Start( b, b.glowColor )
+                                b.glowStop = Glower.PixelGlow_Stop
+                            end
+                            
                             b.glowing = true
                         elseif not glowing and b.glowing then
-                            if conf.glow.shine then AutoCastShine_AutoCastStop( b.Shine )
-                            else ActionButton_HideOverlayGlow( b ) end
+                            b:glowStop()
                             b.glowing = false
                         end
                     else
                         if b.glowing then
-                            AutoCastShine_AutoCastStop( b.Shine )
-                            ActionButton_HideOverlayGlow( b )
+                            b:glowStop()
                             b.glowing = false
                         end
                     end
@@ -1141,8 +1177,27 @@ do
                     local a = class.abilities[ r.actionName ]
 
                     if not b.glowing and a and not a.item and IsSpellOverlayed( a.id ) then
-                        if conf.glow.shine then AutoCastShine_AutoCastStart( b.Shine )
-                        else ActionButton_ShowOverlayGlow( b ) end
+                        b.glowColor = b.glowColor or {}
+
+                        if conf.glow.coloring == "class" then
+                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = RAID_CLASS_COLORS[ class.file ]:GetRGBA()
+                        elseif conf.glow.coloring == "custom" then
+                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = unpack(conf.glow.color)
+                        else
+                            b.glowColor[1], b.glowColor[2], b.glowColor[3], b.glowColor[4] = 0.95, 0.95, 0.32, 1
+                        end
+
+                        if conf.glow.mode == "default" then
+                            Glower.ButtonGlow_Start( b, b.glowColor )
+                            b.glowStop = Glower.ButtonGlow_Stop
+                        elseif conf.glow.mode == "autocast" then
+                            Glower.AutoCastGlow_Start( b, b.glowColor )
+                            b.glowStop = Glower.AutoCastGlow_Stop
+                        elseif conf.glow.mode == "pixel" then
+                            Glower.PixelGlow_Start( b, b.glowColor )
+                            b.glowStop = Glower.PixelGlow_Stop
+                        end
+                        
                         b.glowing = true
                     end
                 end
@@ -1162,8 +1217,7 @@ do
                     local a = class.abilities[ r.actionName ]
 
                     if b.glowing and ( not a or a.item or not IsSpellOverlayed( a.id ) ) then
-                        if conf.glow.shine then AutoCastShine_AutoCastStop( b.Shine )
-                        else ActionButton_HideOverlayGlow( b ) end
+                        b:glowStop()
                         b.glowing = false
                     end
                 end
@@ -1533,13 +1587,13 @@ do
 
 
         -- Shine
-        b.Shine = b.Shine or CreateFrame( "Frame", bName .. "_Shine", b, "AutoCastShineTemplate" )
-        b.Shine:Show()
-        b.Shine:SetAllPoints()
+        -- b.Shine = b.Shine or CreateFrame( "Frame", bName .. "_Shine", b, "AutoCastShineTemplate" )
+        -- b.Shine:Show()
+        -- b.Shine:SetAllPoints()
 
 
         -- Indicator Icons.
-        b.Icon = b.Icon or b.Shine:CreateTexture( nil, "OVERLAY" )
+        b.Icon = b.Icon or b:CreateTexture( nil, "OVERLAY" )
         b.Icon: SetSize( max( 10, b:GetWidth() / 3 ), max( 10, b:GetHeight() / 3 ) )
         
         if conf.keepAspectRatio and b.Icon:GetHeight() ~= b.Icon:GetWidth() then
@@ -1555,19 +1609,19 @@ do
         local iconAnchor = conf.indicators.anchor or "RIGHT"
         
         b.Icon:ClearAllPoints()
-        b.Icon:SetPoint( iconAnchor, b.Shine, iconAnchor, conf.indicators.x or 0, conf.indicators.y or 0 )
+        b.Icon:SetPoint( iconAnchor, b, iconAnchor, conf.indicators.x or 0, conf.indicators.y or 0 )
         b.Icon:Hide()
 
 
         -- Caption Text.
-        b.Caption = b.Caption or b.Shine:CreateFontString( bName .. "_Caption", "OVERLAY" )
+        b.Caption = b.Caption or b:CreateFontString( bName .. "_Caption", "OVERLAY" )
 
         local captionFont = conf.captions.font or conf.font
         b.Caption:SetFont( LSM:Fetch("font", captionFont), conf.captions.fontSize or 12, conf.captions.fontStyle or "OUTLINE" )
 
         local capAnchor = conf.captions.anchor or "BOTTOM"
         b.Caption:ClearAllPoints()
-        b.Caption:SetPoint( capAnchor, b.Shine, capAnchor, conf.captions.x or 0, conf.captions.y or 0 )
+        b.Caption:SetPoint( capAnchor, b, capAnchor, conf.captions.x or 0, conf.captions.y or 0 )
         b.Caption:SetSize( b:GetWidth(), max( 12, b:GetHeight() / 2 ) )
         b.Caption:SetJustifyV( capAnchor )
         b.Caption:SetJustifyH( conf.captions.align or "CENTER" )
@@ -1579,13 +1633,13 @@ do
 
 
         -- Keybinding Text
-        b.Keybinding = b.Keybinding or b.Shine:CreateFontString(bName .. "_KB", "OVERLAY")
+        b.Keybinding = b.Keybinding or b:CreateFontString(bName .. "_KB", "OVERLAY")
         local kbFont = conf.keybindings.font or conf.font
         b.Keybinding:SetFont( LSM:Fetch("font", kbFont), conf.keybindings.fontSize or 12, conf.keybindings.fontStyle or "OUTLINE" )
 
         local kbAnchor = conf.keybindings.anchor or "TOPRIGHT"
         b.Keybinding:ClearAllPoints()
-        b.Keybinding:SetPoint( kbAnchor, b.Shine, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
+        b.Keybinding:SetPoint( kbAnchor, b, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
         b.Keybinding:SetSize( b:GetWidth(), b:GetHeight() / 2 )
         b.Keybinding:SetJustifyH( kbAnchor:match("RIGHT") and "RIGHT" or ( kbAnchor:match("LEFT") and "LEFT" or "CENTER" ) )
         b.Keybinding:SetJustifyV( kbAnchor:match("TOP") and "TOP" or ( kbAnchor:match("BOTTOM") and "BOTTOM" or "MIDDLE" ) )
@@ -1647,14 +1701,14 @@ do
             b:SetPoint( "CENTER", d, "CENTER" )
 
             -- Target Counter
-            b.Targets = b.Targets or b.Shine:CreateFontString( bName .. "_Targets", "OVERLAY" )
+            b.Targets = b.Targets or b:CreateFontString( bName .. "_Targets", "OVERLAY" )
 
             local tarFont = conf.targets.font or conf.font
             b.Targets:SetFont( LSM:Fetch( "font", tarFont ), conf.targets.fontSize or 12, conf.targets.fontStyle or "OUTLINE" )
 
             local tarAnchor = conf.targets.anchor or "BOTTOM"
             b.Targets:ClearAllPoints()
-            b.Targets:SetPoint( tarAnchor, b.Shine, tarAnchor, conf.targets.x or 0, conf.targets.y or 0 )
+            b.Targets:SetPoint( tarAnchor, b, tarAnchor, conf.targets.x or 0, conf.targets.y or 0 )
             b.Targets:SetSize( b:GetWidth(), b:GetHeight() / 2 )
             b.Targets:SetJustifyH( tarAnchor:match("RIGHT") and "RIGHT" or ( tarAnchor:match( "LEFT" ) and "LEFT" or "CENTER" ) )
             b.Targets:SetJustifyV( tarAnchor:match("TOP") and "TOP" or ( tarAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" ) )
@@ -1686,14 +1740,14 @@ do
 
 
             -- Delay Counter
-            b.DelayText = b.DelayText or b.Shine:CreateFontString( bName .. "_DelayText", "OVERLAY" )
+            b.DelayText = b.DelayText or b:CreateFontString( bName .. "_DelayText", "OVERLAY" )
 
             local delayFont = conf.delays.font or conf.font
             b.DelayText:SetFont( LSM:Fetch("font", delayFont), conf.delays.fontSize or 12, conf.delays.fontStyle or "OUTLINE" )
 
             local delayAnchor = conf.delays.anchor or "TOPLEFT"
             b.DelayText:ClearAllPoints()
-            b.DelayText:SetPoint( delayAnchor, b.Shine, delayAnchor, conf.delays.x, conf.delays.y or 0 )
+            b.DelayText:SetPoint( delayAnchor, b, delayAnchor, conf.delays.x, conf.delays.y or 0 )
             b.DelayText:SetSize( b:GetWidth(), b:GetHeight() / 2 )
 
             b.DelayText:SetJustifyH( delayAnchor:match( "RIGHT" ) and "RIGHT" or ( delayAnchor:match( "LEFT" ) and "LEFT" or "CENTER") )
@@ -1706,18 +1760,18 @@ do
             
 
             -- Delay Icon
-            b.DelayIcon = b.DelayIcon or b.Shine:CreateTexture( bName .. "_DelayIcon", "OVERLAY" )
+            b.DelayIcon = b.DelayIcon or b:CreateTexture( bName .. "_DelayIcon", "OVERLAY" )
             b.DelayIcon:SetSize( min( 20, max( 10, b:GetSize() / 3 ) ), min( 20, max( 10, b:GetSize() / 3 ) ) )
             b.DelayIcon:SetTexture( "Interface\\FriendsFrame\\StatusIcon-Online" )
             b.DelayIcon:SetDesaturated( true )
             b.DelayIcon:SetVertexColor( 1, 0, 0, 1 )
 
             b.DelayIcon:ClearAllPoints()
-            b.DelayIcon:SetPoint( delayAnchor, b.Shine, delayAnchor, conf.delays.x or 0, conf.delays.y or 0 )
+            b.DelayIcon:SetPoint( delayAnchor, b, delayAnchor, conf.delays.x or 0, conf.delays.y or 0 )
             b.DelayIcon:Hide()
 
             -- Overlay (for Pause)
-            b.Overlay = b.Overlay or b.Shine:CreateTexture( nil, "OVERLAY" )
+            b.Overlay = b.Overlay or b:CreateTexture( nil, "OVERLAY" )
             b.Overlay:SetAllPoints( b )
             b.Overlay:SetTexture( "Interface\\Addons\\Hekili\\Textures\\Pause.blp" )
             b.Overlay:SetTexCoord( unpack( b.texCoords ) )

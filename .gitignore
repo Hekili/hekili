@@ -80,3 +80,12 @@ Textures/LOGO-ORANGE.png
 Textures/LOGO-WHITE.png
 UI.lua
 TODO.txt
+Libs/LibCustomGlow-1.0/LibCustomGlow-1.0.lua
+Libs/LibCustomGlow-1.0/LibCustomGlow-1.0.toc
+Libs/LibCustomGlow-1.0/LibCustomGlow-1.0.xml
+Libs/LibCustomGlow-1.0/LibStub/LibStub.lua
+Libs/LibCustomGlow-1.0/LibStub/LibStub.toc
+Libs/LibCustomGlow-1.0/LibStub/tests/test.lua
+Libs/LibCustomGlow-1.0/LibStub/tests/test2.lua
+Libs/LibCustomGlow-1.0/LibStub/tests/test3.lua
+Libs/LibCustomGlow-1.0/LibStub/tests/test4.lua
