@@ -1685,7 +1685,11 @@ do
                 edgeSize = 1,
                 insets = { left = -1, right = -1, top = -1, bottom = -1 }
             } )
-            b.Backdrop:SetBackdropBorderColor( unpack( conf.border.color ) )
+            if conf.border.coloring == 'custom' then
+                b.Backdrop:SetBackdropBorderColor( unpack( conf.border.color ) )
+            else
+                b.Backdrop:SetBackdropBorderColor( RAID_CLASS_COLORS[ class.file ]:GetRGBA() )
+            end
             b.Backdrop:Show()
         else
             b.Backdrop:SetBackdrop( nil )

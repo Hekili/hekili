@@ -29,6 +29,9 @@ local LDB = LibStub( "LibDataBroker-1.1", true )
 local LDBIcon = LibStub( "LibDBIcon-1.0", true )
 
 
+local NewFeature = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
+
+
 -- Interrupts
 do
     local db = {}
@@ -256,6 +259,7 @@ local displayTemplate = {
 
     border = {
         enabled = true,
+        coloring = 'custom',
         color = { 0, 0, 0, 1 },
     },
 
@@ -874,7 +878,7 @@ do
                     if data.builtIn then return '|cFF00B4FF' .. name .. '|r' end
                     return name
                 end,
-                childGroups = "tab",
+                childGroups = "select",
                 desc = data.desc,
                 order = 100 + pos,
                 args = {
@@ -1339,7 +1343,7 @@ do
 
                     border = {
                         type = "group",
-                        name = "Border",
+                        name = NewFeature .. "Border",
                         desc = "Enable/disable or set the color for icon borders.\n\n" ..
                             "You may want to disable this if you use Masque or other tools to skin your Hekili icons.",
                         order = 4,
@@ -1361,13 +1365,27 @@ do
                                 width = "full",
                             },
 
+                            coloring = {
+                                type = "select",
+                                name = "Coloring Mode",
+                                desc = "Specify whether to use class-colored borders or to specify a color.",
+                                width = "full",
+                                order = 3,
+                                values = {
+                                    class = "Use Class Color",
+                                    custom = "Specify a Custom Color"
+                                },
+                                disabled = function() return data.border.enabled == false end,
+                            },
+
                             color = {
                                 type = "color",
                                 name = "Border Color",
                                 desc = "When borders are enabled, the border will use this color.",
-                                order = 3,
+                                order = 4,
                                 width = "full",
                                 disabled = function () return data.border.enabled == false end,
+                                hidden = function () return data.border.coloring ~= 'custom' end,
                             }
                         }
                     },
@@ -1407,7 +1425,7 @@ do
 
                     glow = {
                         type = "group",
-                        name = "Glows",
+                        name = NewFeature .. "Glows",
                         desc = "Preferences for glows or overlays.",
                         order = 6,
                         args = {
@@ -5073,7 +5091,7 @@ do
             if val == "AutoSingle" and not ( toggle.value == "automatic" or toggle.value == "single" ) then toggle.value = "automatic" end
             if val == "AutoDual" and not ( toggle.value == "automatic" or toggle.value == "dual" ) then toggle.value = "automatic" end
             if val == "SingleAOE" and not ( toggle.value == "single" or toggle.value == "aoe" ) then toggle.value = "single" end
-            if val == "ReactiveDual" and not toggle.value == "reactive" then toggle.value = "reactive" end
+            if val == "ReactiveDual" and toggle.value ~= "reactive" then toggle.value = "reactive" end
 
         elseif option == 'key' then
             for t, data in pairs( p.toggles ) do
@@ -5403,7 +5421,7 @@ do
                                     desc = desc,
                                     order = 5 + i,
                                     func = function ()
-                                        ACD:SelectGroup( "Hekili", "specs", sName )
+                                        ACD:SelectGroup( "Hekili", sName )
                                     end,
                                 }
                                 hide = false
