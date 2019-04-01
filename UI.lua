@@ -710,7 +710,7 @@ do
                     if ( conf.flash.enabled and conf.flash.suppress ) then b:Hide()
                     else b:Show() end
 
-                    if action ~= b.lastAction then
+                    if action ~= b.lastAction or self.NewRecommendations then
                         b.Texture:SetTexture( rec.texture or ability.texture or GetSpellTexture( ability.id ) )
                         b.Texture:SetTexCoord( unpack( b.texCoords ) )
                         b.lastAction = action
@@ -780,10 +780,10 @@ do
             self.flashTimer = -1
             self.delayTimer = -1
 
-            self:RefreshCooldowns()
-
-            self.NewRecommendations = false
             self.recTimer = 1
+
+            self:RefreshCooldowns()
+            self.NewRecommendations = false
         end
 
 
@@ -936,10 +936,10 @@ do
         end
 
         
-        self.flashTimer = self.flashTimer - elapsed
+        if conf.flash.enabled and LSF then
+            self.flashTimer = self.flashTimer - elapsed
 
-        if self.flashTimer < 0 then
-            if conf.flash.enabled and LSF then
+            if self.flashTimer < 0 then
                 local a = self.Recommendations and self.Recommendations[ 1 ] and self.Recommendations[ 1 ].actionName
 
                 if a then
@@ -948,18 +948,26 @@ do
                     self.flashColor = self.flashColor or {}
                     self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
 
-                    if ability.item then
-                        local iname = LSF.ItemName( ability.item )
-                        LSF.FlashItem( iname, self.flashColor )
-                    else
-                        local id = ability.known
-                        
-                        if id == nil or type( id ) ~= "number" then
-                            id = ability.id
+                    if self.lastFlash ~= a or now - self.lastFlashTime > 0.5 then
+                        if ability.item then
+                            local iname = LSF.ItemName( ability.item )
+                            LSF.FlashItem( iname, self.flashColor )
+                        else
+                            if ability.flash then
+                                LSF.FlashAction( ability.flash, self.flashColor )
+                            else
+                                local id = ability.known
+                                
+                                if id == nil or type( id ) ~= "number" then
+                                    id = ability.id
+                                end
+
+                                local sname = LSF.SpellName( id )
+                                LSF.FlashAction( sname, self.flashColor )
+                            end
                         end
-                        
-                        local sname = LSF.SpellName( id )
-                        LSF.FlashAction( sname, self.flashColor )
+                        self.lastFlash = a
+                        self.lastFlashTime = now
                     end
                 end
             end
@@ -1228,6 +1236,12 @@ do
         elseif alphaUpdateEvents[ event ] then
             self:UpdateAlpha()
 
+        elseif event == "SPELLS_CHANGED" then
+            for i, rec in ipairs( self.Recommendations ) do                
+                rec.texture = nil
+            end
+            self.NewRecommendations = true
+
         end
     end
     ns.cpuProfile.Display_OnEvent = Display_OnEvent
@@ -1243,6 +1257,7 @@ do
             self.auraTimer = 0
             self.delayTimer = 0
             self.flashTimer = 0
+            self.lastFlashTime = 0
             self.glowTimer = 0
             self.rangeTimer = 0
             self.recTimer = 0
@@ -1269,6 +1284,9 @@ do
                 for e in pairs( alphaUpdateEvents ) do
                     self:RegisterEvent( e )
                 end
+
+                -- Recheck spell displays if spells have changed.
+                self:RegisterEvent( "SPELLS_CHANGED" )
 
                 -- Update keybindings.
                 for k in pairs( kbEvents ) do

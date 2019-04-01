@@ -884,7 +884,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
 
         pheromone_bomb = {
-            id = 270323,            
+            -- id = 270323,            
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
@@ -982,7 +982,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
 
         shrapnel_bomb = {
-            id = 270335,
+            -- id = 270335,
             known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
@@ -1056,7 +1056,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
 
         volatile_bomb = {
-            id = 271045,
+            -- id = 271045,
             known = 259495,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
             cast = 0,
@@ -1080,7 +1080,21 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
 
         wildfire_bomb = {
-            id = 259495,
+            id = function ()
+                if current_wildfire_bomb == "wildfire_bomb" then return 259495
+                elseif current_wildfire_bomb == "pheromone_bomb" then return 270323
+                elseif current_wildfire_bomb == "shrapnel_bomb" then return 270335
+                elseif current_wildfire_bomb == "volatile_bomb" then return 271045 end 
+                return 259495
+            end,
+            --[[ flash = function () 
+                if IsActiveSpell( 270335 ) then return 270335 end
+                if IsActiveSpell( 270323 ) then return 270323 end
+                if IsActiveSpell( 271045 ) then return 271045 end
+                return 259495
+            end, ]]
+            flash = { 270335, 270323, 271045, 259495 },
+            known = 259495,
             cast = 0,
             charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
             cooldown = 18,
@@ -1107,6 +1121,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 end
                 applyDebuff( "target", "wildfire_bomb_dot" )
             end,
+
+            copy = { 271045, 270335, 270323, 259495 }
         },
 
 
