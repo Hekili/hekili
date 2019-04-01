@@ -1503,6 +1503,46 @@ local mt_state = {
             table.insert( t.purge, k )
             return t[ k ]
 
+        elseif type(k) == 'string' and k:sub(1, 18) == 'incoming_physical_' then
+            local remains = k:sub(17)
+            local time = remains:match("^(%d+)[m]?s")
+
+            if not time then
+                return 0
+                -- Error("ERR: " .. remains )
+            end
+
+            time = tonumber( time )
+
+            if time > 100 then
+                t[k] = ns.damageInLast( time / 1000, true )
+            else
+                t[k] = ns.damageInLast( min( 15, time ), true )
+            end
+
+            table.insert( t.purge, k )
+            return t[ k ]
+
+        elseif type(k) == 'string' and k:sub(1, 15) == 'incoming_magic_' then
+            local remains = k:sub(17)
+            local time = remains:match("^(%d+)[m]?s")
+
+            if not time then
+                return 0
+                -- Error("ERR: " .. remains )
+            end
+
+            time = tonumber( time )
+
+            if time > 100 then
+                t[k] = ns.damageInLast( time / 1000, false )
+            else
+                t[k] = ns.damageInLast( min( 15, time ), false )
+            end
+
+            table.insert( t.purge, k )
+            return t[ k ]
+
         elseif type(k) == 'string' and k:sub(1, 14) == 'incoming_heal_' then
             local remains = k:sub(15)
             local time = remains:match("^(%d+)[m]?s")
@@ -3843,8 +3883,9 @@ do
         end
     end
 
-    Hekili.ScrapeUnitAuras = state.ScrapeUnitAuras    
-    ns.cpuProfile.ScrapeUnitAuras = state.ScrapeUnitAuras
+    Hekili.ScrapeUnitAuras = state.ScrapeUnitAuras
+    Hekili:ProfileCPU( "ScrapeUnitAuras", state.ScrapeUnitAuras )
+
     Hekili.AuraDB = ns.auras
 end
 local ScrapeUnitAuras = state.ScrapeUnitAuras

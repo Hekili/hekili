@@ -212,11 +212,13 @@ function Hekili:OnEnable()
     ns.Audit()    
 end
 
-ns.cpuProfile.StartEventHandler = ns.StartEventHandler
-ns.cpuProfile.BuildUI = Hekili.BuildUI
-ns.cpuProfile.SpecializationChanged = Hekili.SpecializationChanged
-ns.cpuProfile.OverrideBinds = Hekili.OverrideBinds
-ns.cpuProfile.TotalRefresh = Hekili.TotalRefresh
+
+Hekili:ProfileCPU( "StartEventHandler", ns.StartEventHandler )
+Hekili:ProfileCPU( "BuildUI", Hekili.BuildUI )
+Hekili:ProfileCPU( "SpecializationChanged", Hekili.SpecializationChanged )
+Hekili:ProfileCPU( "OverrideBinds", Hekili.OverrideBinds )
+Hekili:ProfileCPU( "TotalRefresh", Hekili.TotalRefresh )
+
 
 function Hekili:OnDisable()
     self:UpdateDisplayVisibility()
@@ -1292,7 +1294,8 @@ function Hekili:ProcessHooks( dispName, packName )
     UI.RecommendationsStr = checkstr
     Hekili.freshFrame     = false
 end
-ns.cpuProfile.ProcessHooks = Hekili.ProcessHooks
+
+Hekili:ProfileCPU( "ProcessHooks", Hekili.ProcessHooks )
 
 
 function Hekili_GetRecommendedAbility( display, entry )

@@ -107,8 +107,15 @@ table.sort( ns.Patrons, function( a, b ) return upper( a ) < upper( b ) end  )
 
 
 
+do
+    local cpuProfileDB = {}
 
-ns.cpuProfile = {}
+    function Hekili:ProfileCPU( name, func )
+        cpuProfileDB[ name ] = func
+    end
+
+    ns.cpuProfile = cpuProfileDB
+end
 
 
 ns.lib = {

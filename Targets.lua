@@ -351,24 +351,22 @@ end
 local incomingDamage = {}
 local incomingHealing = {}
 
-ns.storeDamage = function( time, damage, damageType ) table.insert( incomingDamage, { t = time, damage = damage, damageType = damageType } ) end
+ns.storeDamage = function( time, damage, physical ) table.insert( incomingDamage, { t = time, damage = damage, physical = physical } ) end
 ns.storeHealing = function( time, healing ) table.insert( incomingHealing, { t = time, healing = healing } ) end
 
-ns.damageInLast = function( t )
+ns.damageInLast = function( t, physical )
+    local dmg = 0
+    local start = GetTime() - min( t, 15 )
 
-  local dmg = 0
-  local start = GetTime() - min( t, 15 )
+    for k, v in pairs( incomingDamage ) do
 
-  for k, v in pairs( incomingDamage ) do
-
-    if v.t > start then
-      dmg = dmg + v.damage
+    if v.t > start and ( physical == nil or v.physical == physical ) then
+        dmg = dmg + v.damage
     end
 
-  end
+    end
 
-  return dmg
-
+    return dmg
 end
 
 
