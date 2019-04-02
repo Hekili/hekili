@@ -766,7 +766,7 @@ do
                         
                         b.glowing = true
                     elseif b.glowing then
-                        b:glowStop()
+                        if b.glowStop then b:glowStop() end
                         b.glowing = false
                     end
                 else
