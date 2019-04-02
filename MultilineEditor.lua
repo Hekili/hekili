@@ -634,7 +634,31 @@ local function Constructor()
   end
   button.obj, editBox.obj, scrollFrame.obj = widget, widget, widget
 
-  return AceGUI:RegisterAsWidget(widget)
+  local hcv = AceGUI:RegisterAsWidget(widget)
+
+  if ElvUI then
+    local E = ElvUI[1]
+
+    if E.private.skins.ace3.enable then
+      local S = E:GetModule('Skins')
+
+      local frame = hcv.frame
+
+      if not hcv.scrollBG.template then
+        hcv.scrollBG:SetTemplate()
+      end
+
+      S:HandleButton(hcv.button)
+      S:HandleScrollBar(hcv.scrollBar)
+      hcv.scrollBar:Point('RIGHT', frame, 'RIGHT', 0 -4)
+      hcv.scrollBG:Point('TOPRIGHT', hcv.scrollBar, 'TOPLEFT', -2, 19)
+      hcv.scrollBG:Point('BOTTOMLEFT', hcv.button, 'TOPLEFT')
+      hcv.scrollFrame:Point('BOTTOMRIGHT', hcv.scrollBG, 'BOTTOMRIGHT', -4, 8)
+    end
+  end
+
+  return hcv
 end
+
 
 AceGUI:RegisterWidgetType(Type, Constructor, Version)
