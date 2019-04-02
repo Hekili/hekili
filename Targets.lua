@@ -75,8 +75,10 @@ function ns.getNumberTargets()
             nameplates[ guid ] = true
         end
 
-        for unit, guid in pairs( unitIDs ) do
-            if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+        for _, unit in ipairs( unitIDs ) do
+            local guid = UnitGUID( unit )
+
+            if guid and not nameplates[ guid ] and UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                 local _, range = RC:GetRange( unit )
 
                 local rate, n = Hekili:GetTTD( unit )
@@ -85,9 +87,9 @@ function ns.getNumberTargets()
                 if range and range <= spec.nameplateRange then
                     fullCount = fullCount + 1
                 end
+    
+                nameplates[ guid ] = true
             end
-
-            nameplates[ guid ] = true
         end
     end
 
