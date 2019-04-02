@@ -1604,10 +1604,9 @@ do
         end
 
 
-        -- Shine
-        -- b.Shine = b.Shine or CreateFrame( "Frame", bName .. "_Shine", b, "AutoCastShineTemplate" )
-        -- b.Shine:Show()
-        -- b.Shine:SetAllPoints()
+        -- Initialize glow/noop if button has not yet been glowed.
+        b.glowing = b.glowing or false
+        b.glowStop = b.glowStop or function () end
 
 
         -- Indicator Icons.
