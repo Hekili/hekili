@@ -1087,12 +1087,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 elseif current_wildfire_bomb == "volatile_bomb" then return 271045 end 
                 return 259495
             end,
-            --[[ flash = function () 
-                if IsActiveSpell( 270335 ) then return 270335 end
-                if IsActiveSpell( 270323 ) then return 270323 end
-                if IsActiveSpell( 271045 ) then return 271045 end
-                return 259495
-            end, ]]
             flash = { 270335, 270323, 271045, 259495 },
             known = 259495,
             cast = 0,
