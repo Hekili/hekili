@@ -550,7 +550,7 @@ function Hekili:GetDefaults()
 
                     glow = {
                         enabled = true,
-                        shine = "autocast",
+                        mode = "autocast",
                     },
                 },
 
@@ -570,6 +570,11 @@ function Hekili:GetDefaults()
                     flash = {
                         color = { 0, 0, 1, 1 },
                     },
+
+                    glow = {
+                        enabled = true,
+                        mode = "autocast",
+                    },
                 },
 
                 Interrupts = {
@@ -587,6 +592,11 @@ function Hekili:GetDefaults()
 
                     flash = {
                         color = { 1, 1, 1, 1 },
+                    },
+
+                    glow = {
+                        enabled = true,
+                        mode = "autocast",
                     },
                 },
 
