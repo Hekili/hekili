@@ -5010,7 +5010,7 @@ do
                                 exportString = {
                                     type = "input",
                                     name = "Export String",
-                                    multiline = 5,
+                                    multiline = 20,
                                     get = function( info )
                                         return self:SerializeActionPack( pack )
                                     end,
