@@ -710,6 +710,9 @@ end
 RegisterUnitEvent( "UNIT_SPELLCAST_START", HandleCasts )
 RegisterUnitEvent( "UNIT_SPELLCAST_INTERRUPTED", HandleCasts )
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", HandleCasts )
+RegisterUnitEvent( "UNIT_SPELLCAST_STOP", HandleCasts )
+RegisterUnitEvent( "UNIT_SPELLCAST_FAILED", HandleCasts )
+RegisterUnitEvent( "UNIT_SPELLCAST_FAILED_QUIET", HandleCasts )
 
 
 local cast_events = {

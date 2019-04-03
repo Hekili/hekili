@@ -536,18 +536,24 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     end )
 
 
-    spec:RegisterStateExpr( "ap_check", function ()
-        local a = this_action
-        a = a and action[ this_action ]
-        a = a and a.ap_check
+    local check_for_ap_overcap = setfenv( function( ability )
+        local a = ability or this_action
+        if not a then return true end
 
-        return a == true
-    end )
+        a = action[ a ]
+        if not a then return true end
 
+        local cost = 0
+        if a.spendType == "astral_power" then cost = a.cost end
 
+        return astral_power.current - cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
+    end, state )
+
+    spec:RegisterStateExpr( "ap_check", function() return check_for_ap_overcap() end )
+    
     -- Simplify lookups for AP abilities consistent with SimC.
     local ap_checks = { 
-        "force_of_nature", "full_moon", "half_moon", "lunar_strike", "moonfire", "new_moon", "solar_wrath", "starfall", "starsurge", "sunfire"
+        "force_of_nature", "full_moon", "half_moon", "incarnation", "lunar_strike", "moonfire", "new_moon", "solar_wrath", "starfall", "starsurge", "sunfire"
     }
 
     for i, lookup in ipairs( ap_checks ) do
@@ -555,6 +561,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             return action[ lookup ]
         end )
     end
+    
 
     spec:RegisterStateExpr( "active_moon", function ()
         return "new_moon"
@@ -859,9 +866,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             talent = "force_of_nature",
 
-            ap_check = function()
-                return astral_power.current - action.force_of_nature.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,
+            ap_check = function() return check_for_ap_overcap( "force_of_nature" ) end,
 
             handler = function ()
                 summonPet( "treants", 10 )
@@ -911,9 +916,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             talent = "new_moon",
             bind = "half_moon",
 
-            ap_check = function()
-                return astral_power.current - action.full_moon.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,            
+            ap_check = function() return check_for_ap_overcap( "full_moon" ) end,
 
             usable = function () return active_moon == "full_moon" end,
             handler = function ()
@@ -979,9 +982,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             talent = "new_moon",
             bind = "new_moon",
 
-            ap_check = function()
-                return astral_power.current - action.half_moon.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,
+            ap_check = function() return check_for_ap_overcap( "half_moon" ) end,
 
             usable = function () return active_moon == 'half_moon' end,
             handler = function ()
@@ -1017,6 +1018,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 180,
             gcd = "spell",
 
+            spend = -40,
+            spendType = "astral_power",
+
             toggle = "cooldowns",
 
             startsCombat = false,
@@ -1028,7 +1032,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 shift( "moonkin_form" )
                 
                 applyBuff( "incarnation" )
-                gain( 40, "astral_power" )
 
                 if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
             end,
@@ -1088,9 +1091,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 135753,            
 
-            ap_check = function()
-                return astral_power.current - action.lunar_strike.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,            
+            ap_check = function() return check_for_ap_overcap( "lunar_strike" ) end,
 
             handler = function ()
                 if not buff.moonkin_form.up then unshift() end
@@ -1169,22 +1170,19 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.06,
-            spendType = "mana",
+            spend = -3,
+            spendType = "astral_power",
 
             startsCombat = true,
             texture = 136096,
 
             cycle = "moonfire",
 
-            ap_check = function()
-                return astral_power.current + 3 + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,                        
+            ap_check = function() return check_for_ap_overcap( "moonfire" ) end,
 
             handler = function ()
                 if not buff.moonkin_form.up and not buff.bear_form.up then unshift() end
                 applyDebuff( "target", "moonfire" )
-                gain( 3, "astral_power" )
             end,
         },
 
@@ -1224,9 +1222,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             talent = "new_moon",
             bind = "full_moon",
 
-            ap_check = function()
-                return astral_power.current - action.new_moon.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,            
+            ap_check = function() return check_for_ap_overcap( "new_moon" ) end,
 
             usable = function () return active_moon == "new_moon" end,
             handler = function ()
@@ -1468,9 +1464,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 535045,
 
-            ap_check = function()
-                return astral_power.current - action.solar_wrath.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,            
+            ap_check = function() return check_for_ap_overcap( "solar_wrath" ) end,
 
             handler = function ()
                 if not buff.moonkin_form.up then unshift() end
@@ -1532,9 +1526,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 236168,
 
-            ap_check = function()
-                return astral_power.current - action.starfall.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,            
+            ap_check = function() return check_for_ap_overcap( "starfall" ) end,
 
             handler = function ()
                 addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
@@ -1561,9 +1553,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 135730,
 
-            ap_check = function()
-                return astral_power.current - action.starsurge.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,            
+            ap_check = function() return check_for_ap_overcap( "starsurge" ) end,   
 
             handler = function ()
                 addStack( "lunar_empowerment", nil, 1 )
@@ -1599,9 +1589,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             talent = "stellar_flare",
 
-            ap_check = function()
-                return astral_power.current - action.stellar_flare.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,            
+            ap_check = function() return check_for_ap_overcap( "stellar_flare" ) end,
 
             handler = function ()
                 applyDebuff( "target", "stellar_flare" )
