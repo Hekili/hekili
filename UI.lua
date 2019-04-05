@@ -556,6 +556,7 @@ do
 
         PLAYER_GAINS_VEHICLE_DATA = 1,
         PLAYER_LOSES_VEHICLE_DATA = 1,        
+        UNIT_ENTERING_VEHICLE = 1,
         UNIT_ENTERED_VEHICLE = 1,
         UNIT_EXITED_VEHICLE = 1,
         UNIT_EXITING_VEHICLE = 1,
@@ -585,7 +586,7 @@ do
 
 
     local function CalculateAlpha( id )
-        if C_PetBattles.IsInBattle() or UnitOnTaxi("player") or Hekili.Barber or HasVehicleActionBar() or not Hekili:IsDisplayActive( id ) then
+        if C_PetBattles.IsInBattle() or UnitOnTaxi("player") or Hekili.Barber or HasOverrideActionBar() or HasVehicleActionBar() or not Hekili:IsDisplayActive( id ) then
             return 0
         end
 
