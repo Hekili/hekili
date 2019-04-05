@@ -910,7 +910,7 @@ Hekili:ProfileCPU( "CLEU_HANDLER", CLEU_HANDLER )
 RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ( event ) CLEU_HANDLER( event, CombatLogGetCurrentEventInfo() ) end )
 
 
-local function UNIT_COMBAT( event, unit, _, _, damage, damageType )
+local function UNIT_COMBAT( event, unit, action, _, damage, damageType )
     if unit ~= 'player' then return end
 
     if damage > 0 then
