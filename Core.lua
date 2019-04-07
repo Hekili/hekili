@@ -1167,7 +1167,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
             checkstr = checkstr and ( checkstr .. ':' .. action ) or action
 
-            slot.keybind = self:GetBindingForAction( action, not display.keybindings.lowercase == true )
+            slot.keybind = self:GetBindingForAction( action, display )
             slot.resource_type = state.GetResourceType( action )
 
             for k,v in pairs( class.resources ) do

@@ -342,6 +342,9 @@ local displayTemplate = {
         anchor = "TOPRIGHT",
         x = 1,
         y = -1,
+
+        cPortOverride = true,
+        cPortZoom = 0.6,
     },
 
 }
@@ -1282,7 +1285,7 @@ do
 
                     keybindings = {
                         type = "group",
-                        name = "Keybinds",
+                        name = NewFeature .. "Keybinds",
                         desc = "Options for keybinding text on displayed icons.",
                         order = 7,
 
@@ -1345,9 +1348,38 @@ do
                                 type = "group",
                                 inline = true,
                                 name = "Text",
-                                order = 4,
+                                order = 5,
                                 args = fontElements,
-                            },                            
+                            },
+
+                            cPort = {
+                                name = NewFeature.."ConsolePort",
+                                type = "group",
+                                inline = true,
+                                order = 10,
+                                args = {
+                                    cPortOverride = {
+                                        type = "toggle",
+                                        name = "Use ConsolePort Buttons",
+                                        order = 6,
+                                        width = "full",
+                                    },
+        
+                                    cPortZoom = {
+                                        type = "range",
+                                        name = "ConsolePort Button Zoom",
+                                        desc = "The ConsolePort button textures generally have a significant amount of blank padding around them. " ..
+                                            "Zooming in removes some of this padding to help the buttons fit on the icon.  The default is |cFFFFD1000.6|r.",
+                                        order = 7,
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        width = "full"
+                                    },
+                                },
+                                hidden = function() return ConsolePort == nil end,
+                            },
+
                         }
                     },
 

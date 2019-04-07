@@ -636,16 +636,18 @@ do
         local conf = Hekili.DB.profile.displays[ self.id ]
 
         if conf.keybindings and conf.keybindings.enabled then
+            local cPort = conf.keybindings.cPortOverride and ConsolePort ~= nil
+
             for i, b in ipairs( self.Buttons ) do
                 local r = self.Recommendations[i]
                 if r then
                     local a = r.actionName
 
-                    if a then
-                        r.keybind = Hekili:GetBindingForAction( r.actionName, not conf.keybindings.lowercase == true )
+                    if a then                        
+                        r.keybind = Hekili:GetBindingForAction( r.actionName, conf )
                     end
 
-                    if i == 1 or conf.keybindings.queued then
+                    if i == 1 or ( conf.keybindings.queued and not cPort ) then
                         b.Keybinding:SetText( r.keybind )
                     else
                         b.Keybinding:SetText( nil )
@@ -740,7 +742,7 @@ do
                         b.Caption:SetText(nil)
                     end
 
-                    if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
+                    if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued and not ( conf.keybindings.cPortOverride and ConsolePort ~= nil ) ) then
                         b.Keybinding:SetText( keybind )
                     else
                         b.Keybinding:SetText(nil)
@@ -1661,16 +1663,14 @@ do
         local kbAnchor = conf.keybindings.anchor or "TOPRIGHT"
         b.Keybinding:ClearAllPoints()
         b.Keybinding:SetPoint( kbAnchor, b, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
-        b.Keybinding:SetSize( b:GetWidth(), b:GetHeight() / 2 )
-        b.Keybinding:SetJustifyH( kbAnchor:match("RIGHT") and "RIGHT" or ( kbAnchor:match("LEFT") and "LEFT" or "CENTER" ) )
-        b.Keybinding:SetJustifyV( kbAnchor:match("TOP") and "TOP" or ( kbAnchor:match("BOTTOM") and "BOTTOM" or "MIDDLE" ) )
+        b.Keybinding:SetSize( 0, 0 )
         b.Keybinding:SetTextColor( 1, 1, 1, 1 )
 
         local kbText = b.Keybinding:GetText()
         b.Keybinding:SetText( nil )
         b.Keybinding:SetText( kbText )
 
-
+        
         -- Cooldown Wheel
         b.Cooldown = b.Cooldown or CreateFrame( "Cooldown", bName .. "_Cooldown", b, "CooldownFrameTemplate" )
         b.Cooldown:ClearAllPoints()

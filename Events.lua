@@ -954,7 +954,7 @@ local function improvedGetBindingText( binding )
 end
 
 
-local function StoreKeybindInfo( page, key, aType, id )
+local function StoreKeybindInfo( page, key, aType, id, console )
 
     if not key then return end
 
@@ -985,10 +985,17 @@ local function StoreKeybindInfo( page, key, aType, id )
     if ability then
         keys[ ability ] = keys[ ability ] or {
             lower = {},
-            upper = {}
+            upper = {},
+            console = {}
         }
-        keys[ ability ].lower[ page ] = lower( improvedGetBindingText( key ) )
-        keys[ ability ].upper[ page ] = upper( keys[ ability ].lower[ page ] )
+
+        if console == "cPort" then
+            local newKey = key:gsub( ":%d+:%d+:0:0", ":0:0:0:0" )
+            keys[ ability ].console[ page ] = newKey
+        else
+            keys[ ability ].lower[ page ] = lower( improvedGetBindingText( key ) )
+            keys[ ability ].upper[ page ] = upper( keys[ ability ].lower[ page ] )
+        end
         updatedKeys[ ability ] = true
 
         if ability.bind then
@@ -996,11 +1003,13 @@ local function StoreKeybindInfo( page, key, aType, id )
 
             keys[ bind ] = keys[ bind ] or {
                 lower = {},
-                upper = {}
+                upper = {},
+                console = {}
             }
 
             keys[ bind ].lower[ page ] = keys[ ability ].lower[ page ]
             keys[ bind ].upper[ page ] = keys[ ability ].upper[ page ]
+            keys[ bind ].console[ page ] = keys[ ability ].console[ page ]
 
             updatedKeys[ bind ] = true
         end
@@ -1095,27 +1104,31 @@ local function ReadKeybindings()
         end
     end
 
-    --[[ for k in pairs( keys ) do
-        if not updatedKeys[ k ] then
-            for key in pairs( keys[ k ].lower ) do
-                keys[ k ].lower[ key ] = nil
-                keys[ k ].upper[ key ] = nil
-                keys[ k ].empty = true
+    if _G.ConsolePort then
+        for i = 1, 120 do
+            local bind = ConsolePort:GetActionBinding(i)
+
+            if bind then
+                local action, id = GetActionInfo( i )
+                local key, mod = ConsolePort:GetCurrentBindingOwner(bind)
+                StoreKeybindInfo( math.ceil( i / 12 ), ConsolePort:GetFormattedButtonCombination( key, mod ), action, id, "cPort" )
             end
         end
-    end ]]
+    end 
 
     for k in pairs( keys ) do
         local ability = class.abilities[ k ]
 
         if ability and ability.bind then
-            for key, value in pairs( keys[ k ].lower ) do
+            for page, value in pairs( keys[ k ].lower ) do
                 keys[ ability.bind ] = keys[ ability.bind ] or {
                     lower = {},
-                    upper = {}
+                    upper = {},
+                    console = {}
                 }
-                keys[ ability.bind ].lower[ key ] = value
-                keys[ ability.bind ].upper[ key ] = keys[ k ].upper[ key ]
+                keys[ ability.bind ].lower[ page ] = value
+                keys[ ability.bind ].upper[ page ] = keys[ k ].upper[ page ]
+                keys[ ability.bind ].console[ page ] = keys[ k ].console[ page ]
             end
         end
     end
@@ -1143,7 +1156,7 @@ end )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
-    function Hekili:GetBindingForAction( key, caps )
+    function Hekili:GetBindingForAction( key, display )
         if not key then return "" end
 
         local ability = class.abilities[ key ]
@@ -1161,26 +1174,46 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
 
         if not keys[ key ] then return "" end
 
-        local db = caps and keys[ key ].upper or keys[ key ].lower
+        local caps, console = true, false
+        if display then
+            caps = not display.keybindings.lowercase
+            console = ConsolePort ~= nil and display.keybindings.cPortOverride
+        end
+
+        local db = console and keys[ key ].console or ( caps and keys[ key ].upper or keys[ key ].lower )
+
+        local output
 
         if state.prowling then
-            return db[ 8 ] or db[ 7 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or db[ 1 ] or ""
+            output = db[ 8 ] or db[ 7 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or db[ 1 ] or ""
 
         elseif state.buff.cat_form.up then
-            return db[ 7 ] or db[ 8 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or db[ 1 ] or ""
+            output = db[ 7 ] or db[ 8 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or db[ 1 ] or ""
 
         elseif state.buff.bear_form.up then
-            return db[ 9 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 2 ] or db [ 7 ] or db[ 8 ] or db[ 10 ] or db[ 1 ] or ""
+            output = db[ 9 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 2 ] or db [ 7 ] or db[ 8 ] or db[ 10 ] or db[ 1 ] or ""
 
         elseif state.buff.moonkin_form.up then
-            return db[ 10 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 1 ] or ""
+            output = db[ 10 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 1 ] or ""
 
+        else
+            output = db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
         end
 
-        return db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+        if output ~= "" and console then
+            local size = output:match( "Icons(%d%d)" )
+            size = tonumber(size)
+    
+            if size then
+                local margin = floor( size * display.keybindings.confPortZoom * 0.5 )
+                output = output:gsub( ":0|t", ":0:" .. size .. ":" .. size .. ":" .. margin .. ":" .. ( size - margin ) .. ":" .. margin .. ":" .. ( size - margin ) .. "|t" )
+            end
+        end
+
+        return output
     end
 elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
-    function Hekili:GetBindingForAction( key, caps )
+    function Hekili:GetBindingForAction( key, display )
         if not key then return "" end
 
         local ability = class.abilities[ key ]
@@ -1198,18 +1231,39 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
 
         if not keys[ key ] then return "" end
 
-        local db = caps and keys[ key ].upper or keys[ key ].lower
-
-        if state.stealthed.all then
-            return db[ 7 ] or db[ 8 ] or db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or ""
-
+        local caps, console = true, false
+        if display then
+            caps = not display.keybindings.lowercase
+            console = ConsolePort ~= nil and display.keybindings.cPortOverride
         end
 
-        return db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+        local db = console and keys[ key ].console or ( caps and keys[ key ].upper or keys[ key ].lower )
+
+        local output
+
+        if state.stealthed.all then
+            output = db[ 7 ] or db[ 8 ] or db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 9 ] or db[ 10 ] or ""
+
+        else
+            output = db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+        
+        end
+
+        if output ~= "" and console then
+            local size = output:match( "Icons(%d%d)" )
+            size = tonumber(size)
+    
+            if size then
+                local margin = floor( size * display.keybindings.confPortZoom * 0.5 )
+                output = output:gsub( ":0|t", ":0:" .. size .. ":" .. size .. ":" .. margin .. ":" .. ( size - margin ) .. ":" .. margin .. ":" .. ( size - margin ) .. "|t" )
+            end
+        end
+
+        return output
     end
 
 else
-    function Hekili:GetBindingForAction( key, caps )
+    function Hekili:GetBindingForAction( key, display )
         if not key then return "" end
 
         local ability = class.abilities[ key ]
@@ -1227,9 +1281,27 @@ else
 
         if not keys[ key ] then return "" end
 
-        local db = caps and keys[ key ].upper or keys[ key ].lower
+        local caps, console = true, false
+        if display then
+            caps = not display.keybindings.lowercase
+            console = ConsolePort ~= nil and display.keybindings.cPortOverride
+        end
+        
+        local db = console and keys[ key ].console or ( caps and keys[ key ].upper or keys[ key ].lower )
 
-        return db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+        local output = db[ 1 ] or db[ 2 ] or db[ 3 ] or db[ 4 ] or db[ 5 ] or db[ 6 ] or db[ 7 ] or db[ 8 ] or db[ 9 ] or db[ 10 ] or ""
+
+        if output ~= "" and console then
+            local size = output:match( "Icons(%d%d)" )
+            size = tonumber(size)
+    
+            if size then
+                local margin = floor( size * display.keybindings.cPortZoom * 0.5 )
+                output = output:gsub( ":0:0:0:0|t", ":0:0:0:0:" .. size .. ":" .. size .. ":" .. margin .. ":" .. ( size - margin ) .. ":" .. margin .. ":" .. ( size - margin ) .. "|t" )
+            end
+        end
+
+        return output        
     end
 
 end
