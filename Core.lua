@@ -365,6 +365,13 @@ function Hekili:CheckStack()
 end
 
 
+local default_modifiers = {
+    early_chain_if = false,
+    chain = false,
+    interrupt_if = false,
+    interrupt = false
+}
+
 function Hekili:CheckChannel( ability, prio )
     if not state.channeling then return true end
 
@@ -373,7 +380,7 @@ function Hekili:CheckChannel( ability, prio )
     if not aura or not aura.tick_time then return true end
 
     local modifiers = scripts.Channels[ state.system.packName ]
-    modifiers = modifiers and modifiers[ channel ]
+    modifiers = modifiers and modifiers[ channel ] or default_modifiers
 
     local tick_time = aura.tick_time
     local remains = state.channel_remains
