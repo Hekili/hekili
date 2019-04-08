@@ -607,18 +607,19 @@ end
 
 
 -- Help handle target cycling.
-function state.isCyclingTargets()
+function state.isCyclingTargets( action, auraName )
     if not state.args.cycle_targets or state.active_enemies == 1 then return false end
 
-    local ability = state.this_action and class.abilities[ this_action ]    
+    action = action or state.this_action
+    local ability = class.abilities[ action ]
     if not ability then return false end
 
-    local aura_name = ability.aura or t.this_action
-    if not aura or not class.auras[ aura_name ] then return false end
+    auraName = auraName or ability.aura or action
+    if not auraName or not class.auras[ auraName ] then return false end
 
     -- We *could be* cycling targets, but may not have more targets to cycle.
-    if state.active_dot[ aura_name ] >= ( state.args.max_cycle_targets or state.active_enemies ) then return false end
-    if state.debuff[ aura_name ].down then return false end
+    if state.active_dot[ auraName ] >= ( state.args.max_cycle_targets or state.active_enemies ) then return false end
+    if state.debuff[ auraName ].down then return false end
 
     return true
 end
@@ -1643,12 +1644,12 @@ local mt_state = {
 
         elseif k == 'refreshable' then
             -- When cycling targets, we want to consider that there may be a valid other target.
-            if t.isCyclingTargets() then return true end
+            if t.isCyclingTargets( action, aura_name ) then return true end
             if app then return app.remains < 0.3 * duration end
             return true
 
         elseif k == 'time_to_refresh' then
-            if t.isCyclingTargets() then return 0 end
+            if t.isCyclingTargets( action, aura_name ) then return 0 end
             if app then return max( 0, app.remains - ( 0.3 * app.duration ) ) end
             return 0
 
@@ -3319,11 +3320,11 @@ local mt_default_debuff = {
             return max( 0, t.expires - state.query_time - ( state.settings.debuffPadding or 0 ) )
 
         elseif k == 'refreshable' then
-            if state.isCyclingTargets() then return true end
+            if state.isCyclingTargets( nil, t.key ) then return true end
             return t.remains < 0.3 * ( class_aura and class_aura.duration or t.duration or 30 )
 
         elseif k == 'time_to_refresh' then
-            if state.isCyclingTargets() then return 0 end
+            if state.isCyclingTargets( nil, t.key ) then return 0 end
             return t.up and ( max( 0, state.query_time - ( 0.3 * ( class_aura and class_aura.duration or t.duration or 30 ) ) ) ) or 0
 
         elseif k == 'stack' then
