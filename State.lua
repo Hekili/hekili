@@ -2994,7 +2994,7 @@ ns.metatables.mt_talents = mt_talents
 
 local mt_default_pvptalent = {
     __index = function( t, k )
-        local enlisted = state.buff.enlisted.up
+        local enlisted = state.bg or state.arena or state.buff.enlisted.up
 
         if k == 'enabled' then return enlisted and t._enabled or false
         elseif k == "_enabled" then return false
