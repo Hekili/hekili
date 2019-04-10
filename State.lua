@@ -608,6 +608,7 @@ end
 
 -- Help handle target cycling.
 function state.isCyclingTargets( action, auraName )
+    if not state.settings.cycle then return false end
     if not state.args.cycle_targets or state.active_enemies == 1 then return false end
 
     action = action or state.this_action
