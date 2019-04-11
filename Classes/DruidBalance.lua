@@ -26,6 +26,20 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             interval = 0.5,
             value = 2.5
+        },
+
+        natures_balance = {
+            talent = "natures_balance",
+
+            last = function ()
+                local app = state.combat
+                local t = state.query_time
+
+                return app + floor( ( t - app ) / 1.5 ) * 1.5
+            end,
+
+            interval = 1.5, -- actually 0.5 AP every 0.75s, but...
+            value = 1,
         }
     } )
 
@@ -474,6 +488,12 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
 
         -- Azerite Powers
+        arcanic_pulsar = {
+            id = 287790,
+            duration = 3600,
+            max_stack = 9,
+        },
+
         dawning_sun = {
             id = 276153,
             duration = 8,
@@ -1569,6 +1589,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 if level < 116 and set_bonus.tier21_4pc == 1 then
                     applyBuff( "solar_solstice" )
                 end
+
+                if azerite.arcanic_pulsar.enabled then
+                    addStack( "arcanic_pulsar" )
+                    if buff.arcanic_pulsar.stack == 9 then
+                        removeBuff( "arcanic_pulsar" )
+                        applyBuff( talent.incarnation.enabled and "incarnation" or "celestial_alignment" )
+                    end
+                end
+
                 if ( level < 116 and equipped.the_emerald_dreamcatcher ) then addStack( "the_emerald_dreamcatcher", 5, 1 ) end
             end,
         },
