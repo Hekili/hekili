@@ -865,7 +865,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         lunar_strike = {
             id = 197628,
-            cast = 2.5,
+            cast = function() return 2.5 * haste * ( buff.lunar_empowerment.up and 0.85 or 1 ) end,
             cooldown = 0,
             gcd = "spell",
 
@@ -879,7 +879,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             talent = "balance_affinity",
 
             handler = function ()
-                removeBuff( "lunar_empowerment" )
+                removeStack( "lunar_empowerment" )
             end,
         },
 
@@ -1333,6 +1333,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             toggle = "interrupts",
 
+            form = function () return buff.bear_form.up and "bear_form" or "cat_form" end,
+
             debuff = "casting",
             readyTime = state.timeToInterrupt,
 
@@ -1350,7 +1352,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         solar_wrath = {
             id = 197629,
-            cast = 1.5,
+            cast = function () return 1.5 * haste * ( buff.solar_empowerment.up and 0.85 or 1 ) end,
             cooldown = 0,
             gcd = "spell",
 
@@ -1364,7 +1366,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             talent = "balance_affinity",
 
             handler = function ()
-                removeBuff( "solar_empowerment" )
+                removeStack( "solar_empowerment" )
             end,
         },
 
@@ -1423,8 +1425,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             talent = "balance_affinity",
 
             handler = function ()
-                applyBuff( "solar_empowerment" )
-                applyBuff( "lunar_empowerment" )
+                addStack( "solar_empowerment", nil, 1 )
+                addStack( "lunar_empowerment", nil, 1 )
             end,
         },
 
@@ -1446,6 +1448,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 applyDebuff( "target", "sunfire" )
+                active_dot.sunfire = min( active_enemies, active_dot.sunfire )
             end,
         },
 
