@@ -401,7 +401,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             elseif k == 'percent' or k == 'pct' then
                 -- stagger tick dmg / current hp
-                return ceil( 100 * t.tick / health.current )
+                return ceil( 100 * t.amount / health.current )
 
             elseif k == 'tick' then
                 if bt then
