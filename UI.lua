@@ -689,7 +689,13 @@ do
         local profile = Hekili.DB.profile
         local conf = profile.displays[ self.id ]
 
+        self.alphaCheck = self.alphaCheck - elapsed
+
         if self.alpha == 0 then
+            if self.alphaCheck <= 0 then
+                self.alphaCheck = 0.5
+                self:UpdateAlpha()
+            end
             return
         end
 
@@ -796,6 +802,7 @@ do
             self.delayTimer = -1
 
             self.recTimer = 1
+            self.alphaCheck = 0.5
 
             self:RefreshCooldowns()
             self.NewRecommendations = false
@@ -1129,6 +1136,7 @@ do
         if preAlpha > 0 and newAlpha == 0 then
             -- self:Deactivate()
             self:SetAlpha( 0 )
+            self.alphaCheck = 0.5
         else
             if preAlpha == 0 and newAlpha > 0 then                
                 Hekili:ForceUpdate( "DISPLAY_ALPHA_CHANGED" )
@@ -1269,6 +1277,7 @@ do
             self.Recommendations = self.Recommendations or ( ns.queue and ns.queue[ self.id ] )
             self.NewRecommendations = true
 
+            self.alphaCheck = 0
             self.auraTimer = 0
             self.delayTimer = 0
             self.flashTimer = 0
