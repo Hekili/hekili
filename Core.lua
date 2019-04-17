@@ -900,7 +900,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         if not state.settings.cycle then
                                                             if debug then self:Debug( "This entry would cycle through targets but target cycling is disabled." ) end
                                                         else
-                                                            if ability and ability.cycle and state.dot[ ability.cycle ].up and state.active_dot[ ability.cycle ] < ( entry.max_cycle_targets or state.active_enemies ) then
+                                                            local cycleAura = ability and ability.cycle or state.this_action
+                                                            if cycleAura and class.auras[ cycleAura ] and state.dot[ cycleAura ].up and state.active_dot[ cycleAura ] < ( entry.max_cycle_targets or state.active_enemies ) then
                                                                 slot.indicator = 'cycle'
                                                             elseif module and module.cycle then
                                                                 slot.indicator = module.cycle()
