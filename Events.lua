@@ -755,6 +755,14 @@ local dmg_filtered = {
 }
 
 
+local function IsActuallyFriend( unit )
+    if not IsInGroup() then return false end
+    if not UnitIsPlayer( unit ) then return false end
+    if UnitInRaid( unit ) or UnitInParty( unit ) then return true end
+    return false
+end
+
+
 -- Use dots/debuffs to count active targets.
 -- Track dot power (until 6.0) for snapshotting.
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
@@ -778,7 +786,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         return
     end
 
-    local hostile = ( bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 )
+    local hostile = ( bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 ) and not IsActuallyFriend( destName )
 
     if sourceGUID ~= state.GUID and not ( state.role.tank and destGUID == state.GUID ) and not ns.isMinion( sourceGUID ) then
         return
@@ -809,7 +817,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
     end
 
-    if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' then
+    if state.role.tank and state.GUID == destGUID and subtype:sub(1,5) == 'SWING' and not IsActuallyFriend( sourceName ) then
         ns.updateTarget( sourceGUID, time, true )
 
     elseif subtype:sub( 1, 5 ) == 'SWING' and not multistrike then
@@ -862,7 +870,6 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 end
 
             elseif sourceGUID == state.GUID and aura.friendly then -- friendly effects
-
                 if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
 
