@@ -1164,7 +1164,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             texture = 136200,
 
             essential = true,
-            nobuff = 'shadowform',
+            nobuff = function () return buff.voidform.up and 'voidform' or 'shadowform' end,
 
             handler = function ()
                 applyBuff( "shadowform" )
