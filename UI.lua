@@ -575,6 +575,7 @@ do
         VEHICLE_ANGLE_SHOW = 1,
         VEHICLE_UPDATE = 1,
         UPDATE_VEHICLE_ACTIONBAR = 1,
+        UNIT_FLAGS = 1,
 
         PLAYER_TARGET_CHANGED = 1,
 
