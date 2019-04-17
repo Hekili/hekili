@@ -200,9 +200,19 @@ function ns.StartConfiguration( external )
 
             v.Backdrop = v.Backdrop or CreateFrame( "Frame", v:GetName().. "_Backdrop", v )
             v.Backdrop:ClearAllPoints()
-            v.Backdrop:SetWidth( v:GetWidth() + 2 )
-            v.Backdrop:SetHeight( v:GetHeight() + 2 )
-    
+            
+            local left, right, top, bottom = v:GetPerimeterButtons()
+            if left and right and top and bottom then
+                v.Backdrop:SetPoint( "LEFT", left, "LEFT", -2, 0 )
+                v.Backdrop:SetPoint( "RIGHT", right, "RIGHT", 2, 0 )
+                v.Backdrop:SetPoint( "TOP", top, "TOP", 0, 2 )
+                v.Backdrop:SetPoint( "BOTTOM", bottom, "BOTTOM", 0, -2 )
+            else
+                v.Backdrop:SetWidth( v:GetWidth() + 2 )
+                v.Backdrop:SetHeight( v:GetHeight() + 2 )
+                v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
+            end
+
             local framelevel = v:GetFrameLevel()
             if framelevel > 0 then
                 v.Backdrop:SetFrameStrata("MEDIUM")
@@ -211,7 +221,6 @@ function ns.StartConfiguration( external )
                 v.Backdrop:SetFrameStrata("LOW")
             end
     
-            v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
             v.Backdrop:Show()            
 
             v.Backdrop:SetBackdrop( {
@@ -220,7 +229,7 @@ function ns.StartConfiguration( external )
                 tile = false,
                 tileSize = 0,
                 edgeSize = 1,
-                insets = { left = -1, right = -1, top = -1, bottom = -1 }
+                insets = { left = 0, right = 0, top = 0, bottom = 0 }
             } )
 
             local ccolor = RAID_CLASS_COLORS[ select(2, UnitClass("player")) ]
@@ -1318,6 +1327,50 @@ do
     end
 
 
+    function Display_GetPerimeterButtons( self )
+        local left, right, top, bottom
+        local lPos, rPos, tPos, bPos
+
+        for i = 1, self.numIcons do
+            local button = self.Buttons[ i ]
+
+            if i == 1 then
+                lPos = button:GetLeft()
+                rPos = button:GetRight()
+                tPos = button:GetTop()
+                bPos = button:GetBottom()
+
+                left = button
+                right = button
+                top = button
+                bottom = button
+            else
+                if button:GetLeft() < lPos then
+                    lPos = button:GetLeft()
+                    left = button
+                end
+
+                if button:GetRight() > rPos then
+                    rPos = button:GetRight()
+                    right = button
+                end
+
+                if button:GetTop() > tPos then
+                    tPos = button:GetTop()
+                    top = button
+                end
+
+                if button:GetBottom() < bPos then
+                    bPos = button:GetBottom()
+                    bottom = button
+                end
+            end
+        end
+
+        return left, right, top, bottom
+    end    
+
+
     function Hekili:CreateDisplay( id )
         local conf = rawget( self.DB.profile.displays, id )
         if not conf then return end
@@ -1327,6 +1380,7 @@ do
 
         d.id = id
         d.alpha = 0
+        d.numIcons = conf.numIcons
 
         local scale = self:GetScale()
         local border = 2
@@ -1340,6 +1394,7 @@ do
 
         d.Activate = Display_Activate
         d.Deactivate = Display_Deactivate
+        d.GetPerimeterButtons = Display_GetPerimeterButtons
         d.RefreshCooldowns = Display_RefreshCooldowns
         d.UpdateAlpha = Display_UpdateAlpha
         d.UpdateKeybindings = Display_UpdateKeybindings
