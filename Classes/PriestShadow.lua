@@ -1238,7 +1238,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             startsCombat = true,
             texture = 135978,
 
-            cycle = 'vampiric_touch',
+            cycle = function () return talent.misery.enabled and 'shadow_word_pain' or 'vampiric_touch' end,
 
             handler = function ()
                 applyDebuff( "target", "vampiric_touch" )
