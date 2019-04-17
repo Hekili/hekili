@@ -480,9 +480,18 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 return
             end
         end
-
+        
         local hasTotemAura = FindUnitBuffByID( "player", 210652 ) ~= nil
         if hasTotemAura ~= hadTotemAura then ScrapeUnitAuras( "player" ) end
+
+        if query_time - action.totem_mastery.lastCast < 3 then
+            local dur = action.totem_mastery.lastCast + 120 - query_time
+            applyBuff( "resonance_totem", dur )
+            applyBuff( "tailwind_totem", dur )
+            applyBuff( "storm_totem", dur )
+            applyBuff( "ember_totem", dur )
+            applyBuff( "totem_mastery", dur )
+        end
     end )
 
 
@@ -1143,7 +1152,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 511726,
 
             readyTime = function () return buff.totem_mastery.remains - 15 end,
-
+            usable = function () return query_time - action.totem_mastery.lastCast > 3 end,
             handler = function ()
                 applyBuff( 'resonance_totem', 120 )
                 applyBuff( 'storm_totem', 120 )
