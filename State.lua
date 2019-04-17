@@ -1411,6 +1411,9 @@ local mt_state = {
         elseif k == 'group_members' then
             return max( 1, GetNumGroupMembers() )
 
+        elseif k == 'raid' then
+            return IsInRaid() and t.group_members > 5
+
         elseif k == 'level' then
             return ( UnitLevel('player') or MAX_PLAYER_LEVEL )
 
