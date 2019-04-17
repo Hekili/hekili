@@ -3329,7 +3329,7 @@ do
 
             if not id then break end
 
-            if role ~= "HEALER" and class.specs[ id ] then
+            if class.specs[ id ] then
                 local sName = lower( name )
                 specNameByID[ id ] = sName
                 specIDByName[ sName ] = id
