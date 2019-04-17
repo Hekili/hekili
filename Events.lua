@@ -703,7 +703,7 @@ RegisterEvent( "PLAYER_STARTED_MOVING", function( event ) Hekili:ForceUpdate( ev
 RegisterEvent( "PLAYER_STOPPED_MOVING", function( event ) Hekili:ForceUpdate( event ) end )
 
 
-local function HandleCasts( event, unit )
+--[[ local function HandleCasts( event, unit )
     Hekili:ForceUpdate( event, unit )
 end 
 
@@ -712,7 +712,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_INTERRUPTED", HandleCasts )
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", HandleCasts )
 RegisterUnitEvent( "UNIT_SPELLCAST_STOP", HandleCasts )
 RegisterUnitEvent( "UNIT_SPELLCAST_FAILED", HandleCasts )
-RegisterUnitEvent( "UNIT_SPELLCAST_FAILED_QUIET", HandleCasts )
+RegisterUnitEvent( "UNIT_SPELLCAST_FAILED_QUIET", HandleCasts ) ]]
 
 
 local cast_events = {
