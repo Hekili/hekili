@@ -403,22 +403,22 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 -- stagger tick dmg / current hp
                 return ceil( 100 * t.tick / health.current )
 
-            elseif k == 'tick' or k == 'amount' then
+            elseif k == 'tick' then
                 if bt then
-                    return t.amount_remains / 20
+                    return t.amount / 20
                 end
-                return t.amount_remains / t.ticks_remain
+                return t.amount / t.ticks_remain
 
             elseif k == 'ticks_remain' then
                 return floor( stagger.remains / 0.5 )
 
-            elseif k == 'amount_remains' then
+            elseif k == 'amount' or k == 'amount_remains' then
                 if bt then
-                    t.amount_remains = bt.GetNormalStagger()
+                    t.amount = bt.GetNormalStagger()
                 else
-                    t.amount_remains = UnitStagger( 'player' )
+                    t.amount = UnitStagger( 'player' )
                 end
-                return t.amount_remains
+                return t.amount
 
             elseif k:sub( 1, 17 ) == "last_tick_damage_" then
                 local ticks = k:match( "(%d+)$" )
@@ -750,10 +750,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
         ironskin_brew = {
             id = 115308,
             cast = 0,
-            charges = 3,
-            cooldown = 15,
-            recharge = 15,
-            hasteCD = true,
+            charges = function () return 3 + ( talent.light_brewing.enabled and 1 ) end,
+            cooldown = function () return ( 15 - ( talent.light_brewing.enabled and 3 or 0 ) ) * haste end,
+            recharge = function () return ( 15 - ( talent.light_brewing.enabled and 3 or 0 ) ) * haste end,
             gcd = "off",
 
             toggle = "defensives",
@@ -865,10 +864,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
         purifying_brew = {
             id = 119582,
             cast = 0,
-            charges = 3,
-            cooldown = 15,
-            recharge = 15,
-            hasteCD = true,
+            charges = function () return 3 + ( talent.light_brewing.enabled and 1 ) end,
+            cooldown = function () return ( 15 - ( talent.light_brewing.enabled and 3 or 0 ) ) * haste end,
+            recharge = function () return ( 15 - ( talent.light_brewing.enabled and 3 or 0 ) ) * haste end,
             gcd = "off",
 
             toggle = "defensives",
@@ -888,7 +886,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     removeBuff( 'blackout_combo' )
                 end
 
-                local reduction = 0.4
+                local reduction = 0.5
                 stagger.amount = stagger.amount * ( 1 - reduction )
                 stagger.tick = stagger.tick * ( 1 - reduction )
 
