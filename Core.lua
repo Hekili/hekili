@@ -896,6 +896,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     end
 
                                                     if entry.cycle_targets == 1 and state.active_enemies > 1 then
+                                                        self:Debug( "This entry cycles targets and there are %d enemies.", state.active_enemies )
                                                         if not state.settings.cycle then
                                                             if debug then self:Debug( "This entry would cycle through targets but target cycling is disabled." ) end
                                                         else
