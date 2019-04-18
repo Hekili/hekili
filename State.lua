@@ -2310,6 +2310,26 @@ local mt_default_cooldown = {
         elseif k == 'up' or k == 'ready' then
             return ( t.remains == 0 )
 
+        -- Hunters
+        elseif k == 'remains_guess' then
+            if t.remains == t.duration then return t.remains end
+            
+            local lastCast = state.action[ t.key ].lastCast or 0
+            if lastCast == 0 then return t.remains end
+
+            local reduction = ( query_time - lastCast ) / ( t.duration - t.remains )
+            return t.remains * reduction
+
+        elseif k == 'duration_guess' then
+            if t.remains == t.duration then return t.duration end
+
+            -- not actually the same as simc here, which tracks when CDs charge.            
+            local lastCast = state.action[ t.key ].lastCast or 0
+            if lastCast == 0 then return t.duration end
+
+            local reduction = ( query_time - lastCast ) / ( t.duration - t.remains )
+            return t.duration * reduction
+
         end
 
         Error( "UNK: cooldown." .. t.key .. "." .. k )
