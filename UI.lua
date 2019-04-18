@@ -886,7 +886,7 @@ do
                 local a = class.abilities[ r.actionName ]
 
                 if a and a.id then
-                    local outOfRange
+                    local outOfRange = false
 
                     if conf.range.enabled then
                         if conf.range.type == "melee" and UnitExists( "target" ) then
@@ -1067,7 +1067,7 @@ do
                 if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
             end
 
-            if conf.delays.type ~= "NONE" and conf.delays.type ~= "FADE" then
+            if conf.delays.type ~= "__NA" then
                 if conf.delays.type == "TEXT" then
                     if self.delayIconShown then
                         b.DelayIcon:Hide()

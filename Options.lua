@@ -172,7 +172,16 @@ local oneTimeFixes = {
                 v.glow.shine = nil
             end
         end
-    end,        
+    end,
+
+    autoconvertDelayFadeToCheckbox_20190418 = function( p )
+        for k, v in pairs( p.displays ) do
+            if v.delays.type == "FADE" then
+                v.delays.type = "__NA"
+                v.delays.fade = true
+            end
+        end
+    end,
 }
 
 
@@ -319,6 +328,7 @@ local displayTemplate = {
 
     delays = {
         type = "TEXT",
+        fade = false,
 
         font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
         fontSize = 12,
@@ -1734,7 +1744,6 @@ do
                                     __NA = "No Indicator",
                                     ICON = "Show Icon (Color)",
                                     TEXT = "Show Text (Countdown)",
-                                    FADE = "Fade Icon"
                                 },                        
                                 width = "full",
                                 order = 1,
