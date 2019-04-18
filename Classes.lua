@@ -1142,24 +1142,22 @@ all:RegisterAuras( {
         generate = function ()
             local dm = debuff.dispellable_curse
 
-            if UnitCanAttack( "player", "target" ) then
-                local i = 1
-                local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
+            local i = 1
+            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "pLAYER", i )
 
-                while( name ) do
-                    if debuffType == "Curse" and canDispel then break end
+            while( name ) do
+                if debuffType == "Curse" and canDispel then break end
 
-                    i = i + 1
-                    name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
-                end
+                i = i + 1
+                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+            end
 
-                if canDispel then
-                    dm.count = count > 0 and count or 1
-                    dm.expires = expirationTime > 0 and expirationTime or query_time + 5
-                    dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
-                    dm.caster = "nobody"
-                    return
-                end
+            if canDispel then
+                dm.count = count > 0 and count or 1
+                dm.expires = expirationTime > 0 and expirationTime or query_time + 5
+                dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                dm.caster = "nobody"
+                return
             end
 
             dm.count = 0
@@ -1174,13 +1172,13 @@ all:RegisterAuras( {
             local dm = debuff.dispellable_poison
 
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "player", i )
+            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
 
             while( name ) do
                 if debuffType == "Poison" and canDispel then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "player", i )
+                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
             end
 
             if canDispel then
@@ -1203,13 +1201,13 @@ all:RegisterAuras( {
             local dm = debuff.dispellable_disease
 
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "player", i )
+            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
 
             while( name ) do
                 if debuffType == "Disease" and canDispel then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "player", i )
+                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
             end
 
             if canDispel then
