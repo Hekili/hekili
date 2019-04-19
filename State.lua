@@ -2317,7 +2317,7 @@ local mt_default_cooldown = {
             local lastCast = state.action[ t.key ].lastCast or 0
             if lastCast == 0 then return t.remains end
 
-            local reduction = ( query_time - lastCast ) / ( t.duration - t.remains )
+            local reduction = ( state.query_time - lastCast ) / ( t.duration - t.remains )
             return t.remains * reduction
 
         elseif k == 'duration_guess' then
@@ -2327,7 +2327,7 @@ local mt_default_cooldown = {
             local lastCast = state.action[ t.key ].lastCast or 0
             if lastCast == 0 then return t.duration end
 
-            local reduction = ( query_time - lastCast ) / ( t.duration - t.remains )
+            local reduction = ( state.query_time - lastCast ) / ( t.duration - t.remains )
             return t.duration * reduction
 
         end
