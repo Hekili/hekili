@@ -1212,7 +1212,7 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
             size = tonumber(size)
     
             if size then
-                local margin = floor( size * display.keybindings.confPortZoom * 0.5 )
+                local margin = floor( size * display.keybindings.cPortZoom * 0.5 )
                 output = output:gsub( ":0|t", ":0:" .. size .. ":" .. size .. ":" .. margin .. ":" .. ( size - margin ) .. ":" .. margin .. ":" .. ( size - margin ) .. "|t" )
             end
         end
@@ -1261,7 +1261,7 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
             size = tonumber(size)
     
             if size then
-                local margin = floor( size * display.keybindings.confPortZoom * 0.5 )
+                local margin = floor( size * display.keybindings.cPortZoom * 0.5 )
                 output = output:gsub( ":0|t", ":0:" .. size .. ":" .. size .. ":" .. margin .. ":" .. ( size - margin ) .. ":" .. margin .. ":" .. ( size - margin ) .. "|t" )
             end
         end
