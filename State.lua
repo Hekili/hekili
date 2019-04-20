@@ -618,8 +618,17 @@ function state.isCyclingTargets( action, auraName )
     auraName = auraName or ability.aura or action
     if not auraName or not class.auras[ auraName ] then return false end
 
+    -- Ability options.
+    -- cycleMinTime, num: the target must live this long to be worth applying the debuff (Doom).
+    -- cycleMaxTime, num: the target should not live longer than this to be worth applying the debuff (Nemesis).
+    -- cycleLowest, bool: should be applied to the target with the least health (Nemesis).
+
+    local targets = min( state.active_enemies, state.args.max_cycle_targets )
+    if ability.cycleMinTime then targets = min( targets, Hekili:GetNumTTDsAfter( ability.cycleMinTime ) ) end
+    if ability.cycleMaxTime then targets = min( targets, Hekili:GetNumTTDsBefore( ability.cycleMaxTime ) ) end
+
     -- We *could be* cycling targets, but may not have more targets to cycle.
-    if state.active_dot[ auraName ] >= min( state.active_enemies, state.args.max_cycle_targets ) then return false end
+    if state.active_dot[ auraName ] >= targets then return false end
     if state.debuff[ auraName ].down then return false end
 
     return true

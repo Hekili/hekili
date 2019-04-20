@@ -1028,6 +1028,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
 
             talent = 'doom',
+            
+            cycleMinTime = function () return 1 + debuff.doom.duration end,
 
             readyTime = function () return isCyclingTargets() and 0 or debuff.doom.remains end,
             usable = function () return isCyclingTargets() or target.time_to_die > debuff.doom.duration end,

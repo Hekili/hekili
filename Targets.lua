@@ -454,7 +454,7 @@ do
     end
 
 
-    local function UpdateEnemy( guid, healthPct, time )
+    local function UpdateEnemy( guid, healthPct, unit, time )
         local enemy = db[ guid ]
         time = time or GetTime()
 
@@ -467,6 +467,8 @@ do
             enemy.firstHealth = healthPct
             enemy.lastSeen = time
             enemy.lastHealth = healthPct
+
+            enemy.unit = unit
 
             enemy.rate = 0
             enemy.n = 0
@@ -492,6 +494,7 @@ do
             end
         end
 
+        enemy.unit = unit
         enemy.lastHealth = healthPct
         enemy.lastSeen = time
     end
@@ -536,6 +539,31 @@ do
         if not validUnit then return FOREVER end
 
         return time
+    end
+
+
+    function Hekili:GetNumTTDsWithin( x )
+        local count = 0
+
+        for k, v in pairs( db ) do
+            if v.n > 3 then
+                if ceil( v.lastHealth / v.rate ) <= x then count = count + 1 end
+            end
+        end
+
+        return count
+    end
+
+
+    function Hekili:GetNumTTDsAfter( x )
+        local count = 0
+        for k, v in pairs( db ) do
+            if v.n > 3 then
+                if ceil( v.lastHealth / v.rate ) > x then count = count + 1 end
+            end
+        end
+
+        return count
     end
 
 
@@ -589,7 +617,7 @@ do
                     EliminateEnemy( guid )
                 else
                     local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
-                    UpdateEnemy( guid, health / healthMax, now )
+                    UpdateEnemy( guid, health / healthMax, unit, now )
                 end
                 seen[ guid ] = true
             end
@@ -600,7 +628,7 @@ do
                 EliminateEnemy( guid )
             elseif not seen[ guid ] then
                 local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
-                UpdateEnemy( guid, health / healthMax, now )
+                UpdateEnemy( guid, health / healthMax, unit, now )
             end
             seen[ guid ] = true
         end
