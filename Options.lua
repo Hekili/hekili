@@ -182,6 +182,14 @@ local oneTimeFixes = {
             end
         end
     end,
+
+    autoconvertDelayTextToSweep_20190420 = function( p )
+        for k, v in pairs( p.displays ) do
+            if v.delays.type == "TEXT" then
+                v.delays.type = "CDSW"
+            end
+        end
+    end,
 }
 
 
@@ -327,7 +335,7 @@ local displayTemplate = {
     },
 
     delays = {
-        type = "TEXT",
+        type = "CDSW",
         fade = false,
 
         font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
@@ -1742,6 +1750,7 @@ do
                                 desc = "Specify the type of indicator to use when you should wait before casting the ability.",                                
                                 values = {
                                     __NA = "No Indicator",
+                                    CDSW = "Cooldown Sweep",
                                     ICON = "Show Icon (Color)",
                                     TEXT = "Show Text (Countdown)",
                                 },                        

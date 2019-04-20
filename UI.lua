@@ -1067,45 +1067,43 @@ do
                 if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
             end
 
-            if conf.delays.type ~= "__NA" then
-                if conf.delays.type == "TEXT" then
-                    if self.delayIconShown then
-                        b.DelayIcon:Hide()
-                        self.delayIconShown = false
-                    end
+            if conf.delays.type == "TEXT" then
+                if self.delayIconShown then
+                    b.DelayIcon:Hide()
+                    self.delayIconShown = false
+                end
 
-                    if delay > moment + 0.05 then
-                        b.DelayText:SetText( format( "%.1f", delay ) )
-                        self.delayTextShown = true
+                if delay > moment + 0.05 then
+                    b.DelayText:SetText( format( "%.1f", delay ) )
+                    self.delayTextShown = true
+                else
+                    b.DelayText:SetText( nil )
+                    self.delayTextShown = false
+                end
+
+            elseif conf.delays.type == "ICON" then
+                if self.delayTextShown then
+                    b.DelayText:SetText(nil)
+                    self.delayTextShown = false
+                end
+
+                if delay > moment + 0.05 then
+                    b.DelayIcon:Show()
+                    b.DelayIcon:SetAlpha( self.alpha )
+
+                    self.delayIconShown = true
+
+                    if delay < 0.5 then
+                        b.DelayIcon:SetVertexColor( 0.0, 1.0, 0.0, 1.0 )
+                    elseif delay < 1.5 then
+                        b.DelayIcon:SetVertexColor( 1.0, 1.0, 0.0, 1.0 )
                     else
-                        b.DelayText:SetText( nil )
-                        self.delayTextShown = false
-                    end
+                        b.DelayIcon:SetVertexColor( 1.0, 0.0, 0.0, 1.0)
+                    end                       
+                else
+                    b.DelayIcon:Hide()
+                    b.delayIconShown = false
 
-                elseif conf.delays.type == "ICON" then
-                    if self.delayTextShown then
-                        b.DelayText:SetText(nil)
-                        self.delayTextShown = false
-                    end
-
-                    if delay > moment + 0.05 then
-                        b.DelayIcon:Show()
-                        b.DelayIcon:SetAlpha( self.alpha )
-
-                        self.delayIconShown = true
-
-                        if delay < 0.5 then
-                            b.DelayIcon:SetVertexColor( 0.0, 1.0, 0.0, 1.0 )
-                        elseif delay < 1.5 then
-                            b.DelayIcon:SetVertexColor( 1.0, 1.0, 0.0, 1.0 )
-                        else
-                            b.DelayIcon:SetVertexColor( 1.0, 0.0, 0.0, 1.0)
-                        end                       
-                    else
-                        b.DelayIcon:Hide()
-                        b.delayIconShown = false
-
-                    end
                 end
             else
                 if self.delayTextShown then
@@ -1153,6 +1151,9 @@ do
         local gStart, gDuration = GetSpellCooldown( 61304 )
         local gExpires = gStart + gDuration
 
+        local now = GetTime()
+        local conf = Hekili.DB.profile.displays[ self.id ]
+
         for i, rec in ipairs( self.Recommendations ) do
             if not rec.actionName then
                 break
@@ -1174,6 +1175,10 @@ do
 
                 if ability.gcd ~= "off" and ( expires < gExpires ) then
                     start, duration = gStart, gDuration
+                end
+
+                if i == 1 and conf.delays.type == "CDSW" and rec.exact_time and rec.exact_time > now and start + duration < rec.exact_time then
+                    duration = rec.exact_time - start
                 end
 
                 if cd.lastStart ~= start or cd.lastDuration ~= duration then
