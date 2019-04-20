@@ -190,6 +190,15 @@ local oneTimeFixes = {
             end
         end
     end,
+
+    autoconvertDelayTextToSweep_20190420_1 = function( p )
+        for k, v in pairs( p.displays ) do
+            if v.delays.type == "CDSW" then
+                v.delays.extend = true
+                v.delays.type = "__NA"
+            end
+        end
+    end,
 }
 
 
@@ -335,8 +344,9 @@ local displayTemplate = {
     },
 
     delays = {
-        type = "CDSW",
+        type = "__NA",
         fade = false,
+        extend = true,
 
         font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
         fontSize = 12,
@@ -1750,12 +1760,19 @@ do
                                 desc = "Specify the type of indicator to use when you should wait before casting the ability.",                                
                                 values = {
                                     __NA = "No Indicator",
-                                    CDSW = "Cooldown Sweep",
                                     ICON = "Show Icon (Color)",
                                     TEXT = "Show Text (Countdown)",
                                 },                        
                                 width = "full",
                                 order = 1,
+                            },
+
+                            extend = {
+                                type = "toggle",
+                                name = "Extend Cooldown Sweep",
+                                desc = "If checked, the primary icon's cooldown sweep will continue until the ability should be used.",
+                                width = "full",
+                                order = 1.4,
                             },
 
                             fade = {

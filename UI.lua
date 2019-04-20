@@ -1177,7 +1177,10 @@ do
                     start, duration = gStart, gDuration
                 end
 
-                if i == 1 and conf.delays.type == "CDSW" and rec.exact_time and rec.exact_time > now and start + duration < rec.exact_time then
+                if i == 1 and conf.delays.extend and rec.exact_time and rec.exact_time > now and start + duration < rec.exact_time then
+                    if start == 0 then
+                        start = rec.exact_time - max( state.gcd.max, ability.cooldown )
+                    end
                     duration = rec.exact_time - start
                 end
 
