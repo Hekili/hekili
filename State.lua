@@ -1518,7 +1518,7 @@ local mt_state = {
             return t[ k ]
 
         elseif type(k) == 'string' and k:sub(1, 18) == 'incoming_physical_' then
-            local remains = k:sub(17)
+            local remains = k:sub(19)
             local time = remains:match("^(%d+)[m]?s")
 
             if not time then
@@ -1538,7 +1538,7 @@ local mt_state = {
             return t[ k ]
 
         elseif type(k) == 'string' and k:sub(1, 15) == 'incoming_magic_' then
-            local remains = k:sub(17)
+            local remains = k:sub(16)
             local time = remains:match("^(%d+)[m]?s")
 
             if not time then
