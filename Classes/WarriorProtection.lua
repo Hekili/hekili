@@ -433,7 +433,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         ignore_pain = {
             id = 190456,
             cast = 0,
-            cooldown = 0,
+            cooldown = 1,
             gcd = "off",
 
             spend = function () return ( buff.vengeance_ignore_pain.up and 0.67 or 1 ) * 40 end,
@@ -444,7 +444,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             toggle = "defensives",
 
-            ready = function () return action.ignore_pain.lastCast + 1 - query_time end,
+            -- ready = function () return max( buff.ignore_pain.remains, action.ignore_pain.lastCast + 1 - query_time ) end,
             handler = function ()
                 if talent.vengeance.enabled then applyBuff( "vengeance_revenge" ) end
                 removeBuff( "vengeance_ignore_pain" )
@@ -638,6 +638,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = false,
             texture = 132110,
 
+            readyTime = function () return buff.shield_block.remains end,
             handler = function ()
                 applyBuff( "shield_block" )
             end,
