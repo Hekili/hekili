@@ -619,7 +619,7 @@ function state.isCyclingTargets( action, auraName )
     if not auraName or not class.auras[ auraName ] then return false end
 
     -- We *could be* cycling targets, but may not have more targets to cycle.
-    if state.active_dot[ auraName ] >= ( state.args.max_cycle_targets or state.active_enemies ) then return false end
+    if state.active_dot[ auraName ] >= min( state.active_enemies, state.args.max_cycle_targets ) then return false end
     if state.debuff[ auraName ].down then return false end
 
     return true
