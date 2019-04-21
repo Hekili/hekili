@@ -353,7 +353,7 @@ end
 local incomingDamage = {}
 local incomingHealing = {}
 
-ns.storeDamage = function( time, damage, physical ) table.insert( incomingDamage, { t = time, damage = damage, physical = physical } ) end
+ns.storeDamage = function( time, damage, physical ) if damage and damage > 0 then table.insert( incomingDamage, { t = time, damage = damage, physical = physical } ) end end
 ns.storeHealing = function( time, healing ) table.insert( incomingHealing, { t = time, healing = healing } ) end
 
 ns.damageInLast = function( t, physical )
