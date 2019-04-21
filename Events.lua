@@ -958,18 +958,20 @@ Hekili.KeybindInfo = keys
 local updatedKeys = {}
 
 local bindingSubs = {
-    ["CTRL%-"] = "c",
-    ["ALT%-"] = "a",
-    ["SHIFT%-"] = "s",
-    ["STRG%-"] = "st",
+    ["CTRL%-"] = "C",
+    ["ALT%-"] = "A",
+    ["SHIFT%-"] = "S",
+    ["STRG%-"] = "ST",
     ["%s+"] = "",
-    ["NUMPAD"] = "n",
+    ["NUMPAD"] = "N",
     ["PLUS"] = "+",
     ["MINUS"] = "-",
     ["MULTIPLY"] = "*",
     ["DIVIDE"] = "/",
-    ["BUTTON"] = "m",
-    ["MOUSEWHEEL"] = "mw"
+    ["BUTTON"] = "M",
+    ["MOUSEWHEEL"] = "Mw",
+    ["DOWN"] = "D",
+    ["UP"] = "U",
 }
 
 local function improvedGetBindingText( binding )
@@ -1022,8 +1024,8 @@ local function StoreKeybindInfo( page, key, aType, id, console )
             local newKey = key:gsub( ":%d+:%d+:0:0", ":0:0:0:0" )
             keys[ ability ].console[ page ] = newKey
         else
-            keys[ ability ].lower[ page ] = lower( improvedGetBindingText( key ) )
-            keys[ ability ].upper[ page ] = upper( keys[ ability ].lower[ page ] )
+            keys[ ability ].upper[ page ] = improvedGetBindingText( key )
+            keys[ ability ].lower[ page ] = lower( keys[ ability ].upper[ page ] )
         end
         updatedKeys[ ability ] = true
 
