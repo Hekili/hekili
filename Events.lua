@@ -736,9 +736,11 @@ local aura_events = {
 
 local dmg_events = {
     SPELL_DAMAGE            = true,
+    SPELL_MISSED            = true,
     SPELL_PERIODIC_DAMAGE   = true,
     SPELL_PERIODIC_MISSED   = true,
-    SWING_DAMAGE            = true
+    SWING_DAMAGE            = true,
+    SWING_MISSED            = true,
 }
 
 
@@ -766,7 +768,7 @@ end
 -- Use dots/debuffs to count active targets.
 -- Track dot power (until 6.0) for snapshotting.
 -- Note that this was ported from an unreleased version of Hekili, and is currently only counting damaged enemies.
-local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
+local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, school, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
 
     if death_events[ subtype ] then
         if ns.isTarget( destGUID ) then
@@ -787,6 +789,29 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     end
 
     local hostile = ( bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 ) and not IsActuallyFriend( destName )
+
+    if dmg_events[ subtype ] and destGUID == state.GUID then
+        local damage, damageType = amount, school
+
+        if subtype == "SWING_DAMAGE" then
+            damage = spellID
+            damageType = 1
+        elseif subtype == "SWING_MISSED" then
+            damage = school
+            damageType = 1
+        elseif subtype == "SPELL_MISSED" or subtype == "SPELL_PERIODIC_MISSED" then
+            if amount == "ABSORB" then
+                damage = a
+                damageType = school or 1
+            else
+                damage = 0
+            end
+        end
+
+        if damage and damage > 0 then
+            ns.storeDamage( time, damage, bit.band( damageType, 0x1 ) == 1 )
+        end
+    end
 
     if sourceGUID ~= state.GUID and not ( state.role.tank and destGUID == state.GUID ) and not ns.isMinion( sourceGUID ) then
         return
@@ -893,7 +918,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
         if hostile and dmg_events[ subtype ] and not dmg_filtered[ spellID ] then
             -- Don't wipe overkill targets in rested areas (it is likely a dummy).
-            if not IsResting( "player" ) and subtype == "SPELL_DAMAGE" and interrupt > 0 and ns.isTarget( destGUID ) then
+            if not IsResting( "player" ) and ( ( ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and interrupt > 0 ) or ( subtype == "SWING_DAMAGE" and spellName > 0 ) ) and ns.isTarget( destGUID ) then
                 -- Interrupt is actually overkill.
                 ns.eliminateUnit( destGUID, true )
                 ns.forceRecount()
@@ -917,15 +942,11 @@ Hekili:ProfileCPU( "CLEU_HANDLER", CLEU_HANDLER )
 RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ( event ) CLEU_HANDLER( event, CombatLogGetCurrentEventInfo() ) end )
 
 
-local function UNIT_COMBAT( event, unit, action, _, damage, damageType )
+local function UNIT_COMBAT( event, unit, action, _, amount )
     if unit ~= 'player' then return end
 
-    if damage > 0 then
-        if action == 'WOUND' then
-            ns.storeDamage( GetTime(), damage, damageType == 1 )
-        elseif action == 'HEAL' then
-            ns.storeHealing( GetTime(), damage )
-        end
+    if amount > 0 and action == 'HEAL' then
+        ns.storeHealing( GetTime(), amount )
     end
 end
 Hekili:ProfileCPU( "UNIT_COMBAT", UNIT_COMBAT )
