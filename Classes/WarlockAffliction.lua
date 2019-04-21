@@ -831,12 +831,12 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             toggle = "interrupts",
 
             usable = function ()
-                if debuff.dispellable_magic.down then return false, "no dispellable magic aura" end
+                if buff.dispellable_magic.down then return false, "no dispellable magic aura" end
                 return true
             end,
 
             handler = function()
-                removeDebuff( "dispellable_magic" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 

@@ -1385,9 +1385,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = false,
             texture = 132163,
 
-            usable = function () return debuff.dispellable_enrage.up end,
+            usable = function () return buff.dispellable_enrage.up end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
+                removeBuff( "dispellable_enrage" )
             end,
         },
 

@@ -595,9 +595,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             startsCombat = true,
             texture = 136066,
 
-            usable = function () return debuff.dispellable_magic.up end,
+            usable = function () return buff.dispellable_magic.up end,
             handler = function ()
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_magic" )
                 gain( 6, "insanity" )
             end,
         },
@@ -685,9 +685,10 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             startsCombat = true,
             texture = 135739,
 
-            usable = function () return debuff.dispellable_magic.up end,
+            usable = function () return buff.dispellable_magic.up or debuff.dispellable_magic.up end,
             handler = function ()
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_magic" )
+                removeDebuff( "player", "dispellable_magic" )
                 gain( 6, "insanity" )
             end,
         },
@@ -975,7 +976,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
 
 
-        --[[ purify_disease = {
+         purify_disease = {
             id = 213634,
             cast = 0,
             charges = 1,
@@ -989,13 +990,14 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             startsCombat = true,
             texture = 135935,
 
+            usable = function () return debuff.dispellable_disease.up end,
             handler = function ()
-                gain( 6, "insanity" )
+                removeBuff( "player", "dispellable_disease" )
             end,
         },
 
 
-        resurrection = {
+        --[[ resurrection = {
             id = 2006,
             cast = 10,
             cooldown = 0,

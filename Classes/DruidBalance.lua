@@ -1507,10 +1507,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 132163,
 
-            usable = function () return debuff.dispellable_enrage.up end,
+            usable = function () return buff.dispellable_enrage.up end,
             handler = function ()
                 if buff.moonkin_form.down then unshift() end
-                removeDebuff( "target", "dispellable_enrage" )
+                removeBuff( "dispellable_enrage" )
             end,
         },
 

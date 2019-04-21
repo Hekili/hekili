@@ -1064,10 +1064,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = false,
             texture = 135952,
 
-            usable = function () return debuff.dispellable_poison.up or debuff.dispellable_curse.up end,
+            usable = function () return buff.dispellable_poison.up or buff.dispellable_curse.up end,
             handler = function ()
-                removeDebuff( "player", "dispellable_poison" )
-                removeDebuff( "player", "dispellable_curse" )
+                removeBuff( "dispellable_poison" )
+                removeBuff( "dispellable_curse" )
             end,
         },
 

@@ -803,9 +803,9 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             toggle = "interrupts",
             interrupt = true,
 
-            usable = function () return debuff.dispellable_magic.up, "requires dispellable magic aura" end,
+            usable = function () return buff.dispellable_magic.up, "requires dispellable magic aura" end,
             handler = function ()
-                removeDebuff( "dispellable_magic" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 

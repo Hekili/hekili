@@ -370,9 +370,9 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             toggle = "interrupts",
 
-            usable = function () return debuff.dispellable_magic.up end,
+            usable = function () return buff.dispellable_magic.up end,
             handler = function ()
-                removeDebuff( "dispellable_magic" )
+                removeBuff( "dispellable_magic" )
                 gain( buff.solitude.up and 22 or 20, "pain" )
             end,
         },

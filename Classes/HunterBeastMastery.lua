@@ -1163,11 +1163,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function ()
                 if not pet.alive then return false, "requires a living pet" end
-                return debuff.dispellable_enrage.up or debuff.dispellable_magic.up, "requires enrage or magic debuff"
+                return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic debuff"
             end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 
@@ -1185,11 +1185,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function ()
                 if not pet.alive then return false, "requires a living pet" end
-                return debuff.dispellable_enrage.up or debuff.dispellable_magic.up, "requires enrage or magic debuff"
+                return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic debuff"
             end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 
@@ -1207,11 +1207,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function ()
                 if not pet.alive then return false, "requires a living pet" end
-                return debuff.dispellable_enrage.up or debuff.dispellable_magic.up, "requires enrage or magic debuff"
+                return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic debuff"
             end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 
@@ -1229,11 +1229,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function ()
                 if not pet.alive then return false, "requires a living pet" end
-                return debuff.dispellable_enrage.up or debuff.dispellable_magic.up, "requires enrage or magic debuff"
+                return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic debuff"
             end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 
@@ -1251,11 +1251,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function ()
                 if not pet.alive then return false, "requires a living pet" end
-                return debuff.dispellable_enrage.up or debuff.dispellable_magic.up, "requires enrage or magic debuff"
+                return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic debuff"
             end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 
@@ -1273,11 +1273,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function ()
                 if not pet.alive then return false, "requires a living pet" end
-                return debuff.dispellable_enrage.up or debuff.dispellable_magic.up, "requires enrage or magic debuff"
+                return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic debuff"
             end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 
@@ -1295,11 +1295,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function ()
                 if not pet.alive then return false, "requires a living pet" end
-                return debuff.dispellable_enrage.up or debuff.dispellable_magic.up, "requires enrage or magic debuff"
+                return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic debuff"
             end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 
@@ -1317,11 +1317,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function ()
                 if not pet.alive then return false, "requires a living pet" end
-                return debuff.dispellable_enrage.up or debuff.dispellable_magic.up, "requires enrage or magic debuff"
+                return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic debuff"
             end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
             end,
         },
 
