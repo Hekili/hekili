@@ -1139,97 +1139,89 @@ all:RegisterAuras( {
     },
 
     dispellable_curse = {
-        generate = function ()
-            local dm = debuff.dispellable_curse
-
+        generate = function( t )
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "pLAYER", i )
+            local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
             while( name ) do
-                if debuffType == "Curse" and canDispel then break end
+                if debuffType == "Curse" then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+                name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
             end
 
-            if canDispel then
-                dm.count = count > 0 and count or 1
-                dm.expires = expirationTime > 0 and expirationTime or query_time + 5
-                dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
-                dm.caster = "nobody"
+            if name then
+                t.count = count > 0 and count or 1
+                t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                t.caster = "nobody"
                 return
             end
 
-            dm.count = 0
-            dm.expires = 0
-            dm.applied = 0
-            dm.caster = "nobody"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
         end,
     },
 
     dispellable_poison = {
-        generate = function ()
-            local dm = debuff.dispellable_poison
-
+        generate = function( t )
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+            local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
             while( name ) do
-                if debuffType == "Poison" and canDispel then break end
+                if debuffType == "Poison" then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+                name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
             end
 
-            if canDispel then
-                dm.count = count > 0 and count or 1
-                dm.expires = expirationTime > 0 and expirationTime or query_time + 5
-                dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
-                dm.caster = "nobody"
+            if name then
+                t.count = count > 0 and count or 1
+                t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                t.caster = "nobody"
                 return
             end
 
-            dm.count = 0
-            dm.expires = 0
-            dm.applied = 0
-            dm.caster = "nobody"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
         end,
     },
 
     dispellable_disease = {
-        generate = function ()
-            local dm = debuff.dispellable_disease
-
+        generate = function( t )
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+            local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
             while( name ) do
-                if debuffType == "Disease" and canDispel then break end
+                if debuffType == "Disease" then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+                name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
             end
 
-            if canDispel then
-                dm.count = count > 0 and count or 1
-                dm.expires = expirationTime > 0 and expirationTime or query_time + 5
-                dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
-                dm.caster = "nobody"
+            if name then
+                t.count = count > 0 and count or 1
+                t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                t.caster = "nobody"
                 return
             end
 
-            dm.count = 0
-            dm.expires = 0
-            dm.applied = 0
-            dm.caster = "nobody"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
         end,
     },
 
     dispellable_magic = {
-        generate = function ()
-            local dm = debuff.dispellable_magic
-
-            if UnitCanAttack( "player", "target" ) then
+        generate = function( t, auraType )
+            if auraType == "buff" then
                 local i = 1
                 local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
 
@@ -1241,25 +1233,43 @@ all:RegisterAuras( {
                 end
 
                 if canDispel then
-                    dm.count = count > 0 and count or 1
-                    dm.expires = expirationTime > 0 and expirationTime or query_time + 5
-                    dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
-                    dm.caster = "nobody"
+                    t.count = count > 0 and count or 1
+                    t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    t.caster = "nobody"
                     return
                 end
+            
+            else
+                local i = 1
+                local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
+    
+                while( name ) do
+                    if debuffType == "Magic" then break end
+    
+                    i = i + 1
+                    name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
+                end
+    
+                if name then
+                    t.count = count > 0 and count or 1
+                    t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    t.caster = "nobody"
+                    return
+                end
+            
             end
 
-            dm.count = 0
-            dm.expires = 0
-            dm.applied = 0
-            dm.caster = "nobody"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
         end,
     },
 
     stealable_magic = {
-        generate = function ()
-            local dm = debuff.stealable_magic
-
+        generate = function( t )
             if UnitCanAttack( "player", "target" ) then
                 local i = 1
                 local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
@@ -1280,46 +1290,42 @@ all:RegisterAuras( {
                 end
             end
 
-            dm.count = 0
-            dm.expires = 0
-            dm.applied = 0
-            dm.caster = "nobody"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
         end,
     },
 
     reversible_magic = {
-        generate = function ()
-            local dm = debuff.reversible_magic
-
+        generate = function( t )
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+            local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
             while( name ) do
-                if debuffType == "Magic" and canDispel then break end
+                if debuffType == "Magic" then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitDebuff( "player", i )
+                name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
             end
 
-            if canDispel then
-                dm.count = count > 0 and count or 1
-                dm.expires = expirationTime > 0 and expirationTime or query_time + 5
-                dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
-                dm.caster = "nobody"
+            if name then
+                t.count = count > 0 and count or 1
+                t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                t.caster = "nobody"
                 return
             end
 
-            dm.count = 0
-            dm.expires = 0
-            dm.applied = 0
-            dm.caster = "nobody"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
         end,
     },
 
     dispellable_enrage = {
-        generate = function ()
-            local dm = debuff.dispellable_enrage
-
+        generate = function( t )
             if UnitCanAttack( "player", "target" ) then
                 local i = 1
                 local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
@@ -1332,18 +1338,18 @@ all:RegisterAuras( {
                 end
 
                 if canDispel then
-                    dm.count = count > 0 and count or 1
-                    dm.expires = expirationTime > 0 and expirationTime or query_time + 5
-                    dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
-                    dm.caster = "nobody"
+                    t.count = count > 0 and count or 1
+                    t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    t.caster = "nobody"
                     return
                 end
             end
 
-            dm.count = 0
-            dm.expires = 0
-            dm.applied = 0
-            dm.caster = "nobody"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
         end,
     }
 } )
@@ -1551,7 +1557,7 @@ all:RegisterAbilities( {
             elseif class.file == "WARRIOR" then gain( 15, "rage" )
             elseif class.file == "DEMONHUNTER" then gain( 15, "fury" ) end
 
-            removeDebuff( "target", "dispellable_magic" )
+            removeBuff( "dispellable_magic" )
         end,
     },
 
