@@ -623,7 +623,9 @@ function state.isCyclingTargets( action, auraName )
     -- cycleMaxTime, num: the target should not live longer than this to be worth applying the debuff (Nemesis).
     -- cycleLowest, bool: should be applied to the target with the least health (Nemesis).
 
-    local targets = min( state.active_enemies, state.args.max_cycle_targets )
+    local targets = state.active_enemies
+    if state.args.max_cycle_targets then targets = min( targets, state.args.max_cycle_targets ) end
+
     if ability.cycleMinTime then targets = min( targets, Hekili:GetNumTTDsAfter( ability.cycleMinTime ) ) end
     if ability.cycleMaxTime then targets = min( targets, Hekili:GetNumTTDsBefore( ability.cycleMaxTime ) ) end
 
@@ -637,7 +639,6 @@ end
 
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value )
-
     local auraInfo = class.auras[ aura ]
 
     if not auraInfo then

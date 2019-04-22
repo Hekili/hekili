@@ -902,7 +902,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         else
                                                             local cycleAura = ability and ability.cycle or state.this_action
 
-                                                            if cycleAura and class.auras[ cycleAura ] and state.dot[ cycleAura ].up and state.active_dot[ cycleAura ] < ( state.args.max_cycle_targets or state.active_enemies ) then
+                                                            local targets = state.active_enemies
+                                                            if state.args.max_cycle_targets then targets = min( targets, state.args.max_cycle_targets ) end
+
+                                                            if cycleAura and class.auras[ cycleAura ] and state.dot[ cycleAura ].up and state.active_dot[ cycleAura ] < targets then
                                                                 slot.indicator = 'cycle'
                                                             elseif module and module.cycle then
                                                                 slot.indicator = module.cycle()
