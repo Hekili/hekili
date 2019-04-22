@@ -1252,12 +1252,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             talent = "whirling_dragon_punch",
 
-            usable = function ()
-                if index == 1 then
-                    return IsUsableSpell( 152175 )
-                end
-                return cooldown.fists_of_fury.remains > 0 and cooldown.rising_sun_kick.remains > 0
-            end,
+            usable = function () return ( index > 1 or IsUsableSpell( 152175 ) ) and cooldown.fists_of_fury.remains > 0 and cooldown.rising_sun_kick.remains > 0 end,
 
             handler = function ()
             end,
