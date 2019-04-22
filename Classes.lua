@@ -2166,8 +2166,7 @@ all:RegisterAbility( "variable_intensity_gigavolt_oscillating_reactor", {
     toggle = "cooldowns",
 
     buff = "vigor_engaged",
-    readyTime = function () return max( 0, buff.vigor_engaged.applied + 12 - query_time ) end,
-
+    usable = function () return buff.vigor_engaged.stack > 5 end,
     handler = function() applyBuff( "oscillating_overload" ) end
 } )
 
