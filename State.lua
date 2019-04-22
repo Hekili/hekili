@@ -4416,6 +4416,7 @@ end
 function state.reset( dispName )
 
     state.now = GetTime()
+    state.index = 0
     state.offset = 0
     state.delay = 0
     state.cast_start = 0

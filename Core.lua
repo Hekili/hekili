@@ -1086,6 +1086,7 @@ function Hekili:ProcessHooks( dispName, packName )
         Queue[ i ] = Queue[ i ] or {}        
         local slot = Queue[ i ]
         slot.index = i
+        state.index = i
 
         local attempts = 0
         local iterated = false
