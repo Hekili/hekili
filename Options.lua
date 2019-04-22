@@ -199,6 +199,15 @@ local oneTimeFixes = {
             end
         end
     end,
+
+    autoconvertDelayBackToText_20190422 = function( p )
+        for k, v in pairs( p.displays ) do
+            if v.delays.type == "__NA" and v.delays.extend then
+                v.delays.extend = false
+                v.delays.type = "TEXT"
+            end
+        end
+    end,
 }
 
 
