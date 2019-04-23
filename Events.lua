@@ -715,6 +715,13 @@ RegisterUnitEvent( "UNIT_SPELLCAST_FAILED", HandleCasts )
 RegisterUnitEvent( "UNIT_SPELLCAST_FAILED_QUIET", HandleCasts ) ]]
 
 
+RegisterEvent( "SPELL_UPDATE_COOLDOWN", function()
+    local gcdStart = GetSpellCooldown( 61304 )
+
+    state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
+end )
+
+
 local cast_events = {
     SPELL_CAST_START        = true,
     SPELL_CAST_FAILED       = true,

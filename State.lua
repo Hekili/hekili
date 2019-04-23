@@ -2427,6 +2427,10 @@ local mt_gcd = {
             end
 
             return max( 1.5 * state.haste, state.buff.voidform.up and 0.67 or 0.75 )
+        
+        elseif k == "lastStart" then
+            return 0
+        
         end
 
         return
