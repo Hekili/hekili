@@ -2209,6 +2209,10 @@ local mt_default_cooldown = {
             local start, duration = 0, 0
 
             if id > 0 then start, duration = GetCooldown( id ) end
+
+            local gcdStart, gcdDuration = GetSpellCooldown( 61304 )
+            if gcdStart == start and gcdDuration == duration then start, duration = 0, 0 end
+
             local true_duration = duration
 
             if t.key == 'ascendance' and state.buff.ascendance.up then
