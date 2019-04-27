@@ -769,6 +769,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.listName = listName
                                                         slot.action = actID
                                                         slot.actionName = state.this_action
+                                                        slot.actionID = -1 * potion.item
 
                                                         slot.texture = select( 10, GetItemInfo( potion.item ) )
                                                         slot.caption = entry.caption
@@ -876,6 +877,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     slot.listName = listName
                                                     slot.action = actID
                                                     slot.actionName = state.this_action
+                                                    slot.actionID = ability.id
 
                                                     slot.caption = entry.caption
                                                     slot.texture = ability.texture
@@ -1313,7 +1315,6 @@ Hekili:ProfileCPU( "ProcessHooks", Hekili.ProcessHooks )
 
 
 function Hekili_GetRecommendedAbility( display, entry )
-
     entry = entry or 1
 
     if not rawget( Hekili.DB.profile.displays, display ) then
@@ -1324,12 +1325,13 @@ function Hekili_GetRecommendedAbility( display, entry )
         return nil, "No queue for that display."
     end
 
-    if not ns.queue[ display ][ entry ] or not ns.queue[ display ][ entry ].actionName then
+    local slot = ns.queue[ display ][ entry ]
+
+    if not slot or not slot.actionID then
         return nil, "No entry #" .. entry .. " for that display."
     end
 
-    return class.abilities[ ns.queue[ display ][ entry ].actionName ].id
-
+    return slot.actionID
 end
 
 
