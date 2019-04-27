@@ -1830,11 +1830,17 @@ local mt_stat = {
         elseif k == 'mastery_value' then
             return GetMasteryEffect()
 
-        elseif k == 'multistrike_rating' then
-            return GetCombatRating(CR_MULTISTRIKE)
+        elseif k == 'versatility_atk_rating' then
+            return GetCombatRating(CR_VERSATILITY_DAMAGE_DONE)
 
-        elseif k == 'multistrike_pct' then
-            return GetMultistrike()
+        elseif k == 'versatility_atk_mod' then
+            return GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE)
+
+        elseif k == 'versatility_def_rating' then
+            return GetCombatRating(CR_VERSATILITY_DAMAGE_TAKEN)
+
+        elseif k == 'versatility_def_mod' then
+            return GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN)
 
         elseif k == 'mod_haste_pct' then
             return 0
@@ -2034,6 +2040,8 @@ local mt_target = {
             return UnitGUID( 'target' ) or 'unknown'
 
         elseif k == 'time_to_die' then
+            local ttd = Hekili:GetTTD( 'target' )
+            if ttd == 3600 then return ttd end
             return max( 1, Hekili:GetTTD( 'target' ) - ( state.offset + state.delay ) )
 
         elseif k == 'health_current' then
