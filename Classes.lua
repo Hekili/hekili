@@ -562,14 +562,34 @@ local HekiliSpecMixin = {
     end,
 
 
-    -- info should be an AceOption table.
-    RegisterPref = function( self, info )
-        table.insert( self.prefs, info )
+    GetSetting = function( info )
+        local setting = info[ #info ]
+        return Hekili.DB.profile.specs[ self.id ].settings[ setting ]
     end,
 
-    RegisterPrefs = function( self, prefs )
-        for k, v in pairs( prefs ) do
-            self:RegisterPref( info )
+    SetSetting = function( info, val )
+        local setting = info[ #info ]
+        Hekili.DB.profile.specs[ self.id ].settings[ setting ] = val
+    end,
+
+    -- option should be an AceOption table.
+    RegisterSetting = function( self, key, value, option )        
+        table.insert( self.settings, {
+            name = key,
+            default = value,
+            info = option
+        } )
+
+        option.order = 100 + #self.settings
+        
+        option.get = option.get or function( info )
+            local setting = info[ #info ]
+            return Hekili.DB.profile.specs[ self.id ].settings[ setting ] or value
+        end
+
+        option.set = option.set or function( info, val )
+            local setting = info[ #info ]
+            Hekili.DB.profile.specs[ self.id ].settings[ setting ] = val
         end
     end,
 }
@@ -682,8 +702,7 @@ function Hekili:NewSpecialization( specID, isRanged )
 
         potions = {},
 
-        prefs = {},
-        numPrefs = 0,
+        settings = {},
 
         stateExprs = {}, -- expressions are returned as values and take no args.
         stateFuncs = {}, -- functions can take arguments and can be used as helper functions in handlers.
@@ -1282,10 +1301,10 @@ all:RegisterAuras( {
                 end
 
                 if canDispel then
-                    dm.count = count > 0 and count or 1
-                    dm.expires = expirationTime > 0 and expirationTime or query_time + 5
-                    dm.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
-                    dm.caster = "nobody"
+                    t.count = count > 0 and count or 1
+                    t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    t.caster = "nobody"
                     return
                 end
             end
@@ -4142,6 +4161,10 @@ function Hekili:SpecializationChanged()
 
             for k, v in pairs( spec.options ) do
                 if s[ k ] == nil then s[ k ] = v end
+            end
+
+            for k, v in pairs( spec.settings ) do
+                if s.settings[ k ] == nil then s[ k ] = v.default end
             end
         end
     end
