@@ -4476,7 +4476,7 @@ do
                                                             elseif entry.op == "set" or entry.op == "setif" then
                                                                 desc = format( "set |cff00ccff%s|r = |cffffd100%s|r", entry.var_name or "unassigned", entry.value or "nothing" )
                                                             else
-                                                                desc = format( "%s |cff00ccff%s|r (|cffffd100%s|r)", entry.op, entry.var_name or "unassigned", entry.value or "nothing" )
+                                                                desc = format( "%s |cff00ccff%s|r (|cffffd100%s|r)", entry.op or "set", entry.var_name or "unassigned", entry.value or "nothing" )
                                                             end
 
                                                             if entry.criteria and entry.criteria:len() > 0 then
