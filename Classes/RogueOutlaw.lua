@@ -620,7 +620,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132294,
 
             handler = function ()
-                applyBuff( 'feint', 5)
+                applyBuff( 'feint', 5 )
             end,
         },
 
@@ -1046,16 +1046,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         handler = function ()
             applyBuff( "shadowmeld" )
         end,
-    } )
-
-
-    spec:RegisterPref( {
-        key = "no_ooc_reroll",
-        name = "Don't Reroll the Bones Out of Combat",
-        description = "If any Roll the Bones buff is applied, do not reroll out of combat until it expires.",
-        type = "toggle",
-        default = false,
-        order = 1,
     } )
 
 
