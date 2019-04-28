@@ -853,7 +853,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cycle = "crimson_tempest",            
 
             usable = function () return combo_points.current > 0 end,
-            recheck = function () return debuff.crimson_tempest.remains - ( 2 + ( spell_targets.crimson_tempest > 4 and 1 or 0 ) ) end,
+
             handler = function ()
                 applyDebuff( "target", "crimson_tempest", 2 + ( combo_points.current * 2 ) )
                 debuff.crimson_tempest.pmultiplier = persistent_multiplier
@@ -951,7 +951,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132287,
 
             usable = function () return combo_points.current > 0 end,
-            recheck = function () return energy[ "time_to_" .. ( energy.max - ( 25 + ( variable.energy_regen_combined or 0 ) ) ) ], energy[ "time_to_" .. ( energy.max - 25 ) ] end,
+
             handler = function ()
                 if pvptalent.system_shock.enabled then
                     if combo_points.current >= 5 and debuff.garrote.up and debuff.rupture.up and ( debuff.deadly_poison_dot.up or debuff.wound_poison_dot.up ) then
@@ -1077,7 +1077,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             aura = "garrote",
             cycle = "garrote",
 
-            recheck = function () return remains - ( duration * 0.3 ), remains - tick_time, remains - tick_time * 2, remains - 10 end,
             handler = function ()
                 applyDebuff( "target", "garrote" )
                 debuff.garrote.pmultiplier = persistent_multiplier
@@ -1403,7 +1402,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132331,
 
             usable = function () return boss end,
-            recheck = function () return master_assassin_remains, cooldown.exsanguinate.remains - 1, cooldown.exsanguinate.remains, debuff.garrote.remains - ( debuff.garrote.duration * 0.3 ) end,
+
             handler = function ()
                 applyBuff( "vanish" )
                 applyBuff( "stealth" )
