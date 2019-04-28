@@ -1115,7 +1115,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             talent = 'stormkeeper',
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 839977,
 
             handler = function ()
