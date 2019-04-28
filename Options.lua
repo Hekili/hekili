@@ -4709,7 +4709,6 @@ do
                                                             width = "single",
                                                         },
 
-
                                                         value = {
                                                             type = "input",
                                                             name = "Value",
@@ -4750,6 +4749,51 @@ do
                                                             end,
                                                             hidden = function ()
                                                                 local e = GetListEntry( pack )
+                                                                return e.action ~= "variable" or e.op == "reset" or e.op == "ceil" or e.op == "floor"
+                                                            end,
+                                                        },
+
+                                                        value_else = {
+                                                            type = "input",
+                                                            name = "Value Else",
+                                                            desc = "Provide the value to store (or calculate) if this variable's conditions are not met.",
+                                                            order = 6.1,
+                                                            width = "full",
+                                                            multiline = 3,
+                                                            dialogControl = "HekiliCustomEditor",
+                                                            arg = function( info )
+                                                                local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )        
+                                                                local results = {}
+
+                                                                state.reset()
+
+                                                                local apack = rawget( self.DB.profile.packs, pack )
+
+                                                                -- Let's load variables, just in case.
+                                                                for name, alist in pairs( apack.lists ) do
+                                                                    for i, entry in ipairs( alist ) do
+                                                                        if name ~= list or i ~= action then
+                                                                            if entry.action == "variable" and entry.var_name then
+                                                                                state:RegisterVariable( entry.var_name, pack .. ":" .. name .. ":" .. i )
+                                                                            end
+                                                                        end
+                                                                    end
+                                                                end
+
+                                                                local entry = apack and apack.lists[ list ]
+                                                                entry = entry and entry[ action ]        
+
+                                                                state.this_action = entry.action
+
+                                                                local scriptID = pack .. ":" .. list .. ":" .. action
+                                                                state.scriptID = scriptID
+                                                                scripts:StoreValues( results, scriptID, "value_else" )
+
+                                                                return results, list, action
+                                                            end,
+                                                            hidden = function ()
+                                                                local e = GetListEntry( pack )
+                                                                if not e.criteria or e.criteria:trim() == "" then return true end
                                                                 return e.action ~= "variable" or e.op == "reset" or e.op == "ceil" or e.op == "floor"
                                                             end,
                                                         },

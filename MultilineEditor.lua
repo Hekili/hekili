@@ -239,7 +239,7 @@ local function GenerateDiagnosticTooltip( widget, event )
     local appName = user.appName
 
     local name    = GetOptionsMemberValue( "name",  opt, options, path, appName )
-    local arg, listName, actID = GetOptionsMemberValue( "arg",   opt, options, path, appName )
+    local arg, listName, actID = GetOptionsMemberValue( "arg", opt, options, path, appName )
     local desc    = GetOptionsMemberValue( "desc",  opt, options, path, appName )
     local usage   = GetOptionsMemberValue( "usage", opt, options, path, appName )
     local descStyle = opt.descStyle
@@ -285,7 +285,9 @@ local function GenerateDiagnosticTooltip( widget, event )
         tested = true
     end
 
-    if arg then -- and #arg > 0 then        
+    local has_args = arg and ( next(arg) ~= nil )
+
+    if has_args then
         if tested then GameTooltip:AddLine(" ") end
 
         GameTooltip:AddLine( "Values" )

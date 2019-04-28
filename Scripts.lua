@@ -734,7 +734,9 @@ function scripts:StoreValues( tbl, node, mod )
     if type( node ) == 'string' then node = self.DB[ node ] end
     if not node then return end
 
-    local elems = mod and node.ModElements[ mod ] or node.Elements
+    local elems
+    if mod then elems = node.ModElements[ mod ]
+    else elems = node.Elements end
 
     if not elems then return end
 
@@ -1010,7 +1012,7 @@ function scripts:CheckScript( scriptID, action, elem )
     else
         if not script.Modifiers[ elem ] then
             state.this_action = prev_action
-            return nil, "No such modifier: " .. elem
+            return nil, elem .. " not set."
 
         else
             local success, value = pcall( script.Modifiers[ elem ] )
