@@ -271,12 +271,18 @@ do
         { "!(dot%.[a-z0-9_]+)%.react",          "%1.remains" },
         { "!(d?e?buff%.[a-z0-9_]+)%.ticking",   "%1.remains" },
         { "!(dot%.[a-z0-9_]+)%.ticking",        "%1.remains" },
-        { "!ticking",                           "remains" },        
+        { "!?(d?e?buff%.[a-z0-9_]+)%.remains",  "%1.remains" },
+        { "!ticking",                           "remains" },
+        { "^!?remains$",                          "remains" },
         { "^refreshable",                       "time_to_refresh" },
+        
         { "^(.-)%.deficit<=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
-        { "^(.-)%.deficit>=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
-        { "^cooldown%.([a-z0-9_]+)%.ready$",    "cooldown.%1.remains" },
-        { "^cooldown%.([a-z0-9_]+)%.up$",       "cooldown.%1.remains" },
+        { "^(.-)%.deficit>=?(.-)$",             "%1.timeTo(%1.max-(%2))" },        
+        
+        { "^cooldown%.([a-z0-9_]+)%.ready$",        "cooldown.%1.remains" },
+        { "^cooldown%.([a-z0-9_]+)%.up$",           "cooldown.%1.remains" },
+        { "^!?cooldown%.([a-z0-9_]+)%.remains$",    "cooldown.%1.remains" },
+        
         { "^charges_fractional[>=]+(.-)$",      "(%1-charges_fractional)*recharge" },
         { "^charges>=?(.-)$",                   "(1+%1-charges_fractional)*recharge" },
         { "^(cooldown%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$",
@@ -287,13 +293,16 @@ do
                                                 "(%2-%1.charges_fractional)*%1.recharge" },
         { "^(action%.[a-z0-9_]+)%.charges>=?(.-)$",
                                                 "(1+%2-%1.charges_fractional)*%1.recharge" },
+        
         { "^!(action%.[a-z0-9]+)%.executing$", "%1.execute_remains" },
         { "^(.-time_to_die)<=?(.-)$",           "%1 - %2" },
         { "^(.-)%.time_to_(.-)<=?(.-)$",        "%1.time_to_%2-%3" },
+
         { "^debuff%.festering_wound%.stack[>=]=?(.-)$", -- UH DK helper during Unholy Frenzy.
                                                 "time_to_wounds(%1)" },
         { "^dot%.festering_wound%.stack[>=]=?(.-)$",    -- UH DK helper during Unholy Frenzy.
                                                 "time_to_wounds(%1)" },
+
         { "^exsanguinated",                      "remains" }, -- Assassination
         { "^(debuff%.[a-z0-9_]+)%.exsanguinated",
                                                 "%1.remains" }, -- Assassination
@@ -302,6 +311,7 @@ do
         { "^(debuff%.[a-z0-9_]+)%.ss_buffed",
                                                 "%1.remains" }, -- Assassination
         { "^(dot%.[a-z0-9_]+)%.ss_buffed",      "%1.remains" }, -- Assassination
+
     }
 
     -- Things that tick down.
@@ -341,7 +351,7 @@ do
 
     -- Given an expression, can we assess whether it is time-based and progressing in a meaningful way?
     -- 1.  Cooldowns
-    local function ConvertTimeComparison( expr )
+    local function ConvertTimeComparison( expr, verbose )
         for k, v in pairs( removals ) do
             expr = expr:gsub( k, v )
         end
@@ -395,6 +405,8 @@ do
 
         return false, nil
     end
+
+    scripts.CTC = ConvertTimeComparison
 
     function scripts:RecheckExpr( expr )
         return ConvertTimeComparison( expr )
@@ -765,39 +777,34 @@ local function GetScriptElements( script )
 end
 
 
-local specialModifiers = {
-    CycleTargets = true,
-    MaximumTargets = true,
-    CheckMovement = true,
-    Movement = true,
-    ModName = false,
-    WaitSeconds = true,
-    PoolTime = true,
-    PoolForNext = true
-}
-
-
+-- newModifiers, key is the name of the element, value is whether to babyproof it or not.
 local newModifiers = {
-    cycle_targets = true,
-    for_next = true,
-    max_cycle_targets = true,
-    moving = true,
-    sec = true,
-    set = true,
-    setif = true,
-    sync = true,
-    target_if = true,
-    value = true,
-    value_else = true,
-    wait = true,
-    interrupt = true,
-    interrupt_immediate = true,
-    interrupt_global = true,
-    interrupt_if = true,
-    chain = true,
-    early_chain_if = true,
-    line_cd = true,
-    use_off_gcd = true
+    chain = 'bool',
+    cycle_targets = 'bool',
+    early_chain_if = 'bool',
+    for_next = 'bool',
+    interrupt = 'bool',
+    interrupt_global = 'bool',
+    interrupt_if = 'bool',
+    interrupt_immediate = 'bool',
+    moving = 'bool',
+    target_if = 'bool',
+    use_off_gcd = 'bool',
+    wait = 'bool',
+
+    -- Not necessarily a number, but not baby-proofed.
+    line_cd = 'raw',
+    max_cycle_targets = 'raw',
+    sec = 'raw',
+    value = 'raw',
+    value_else = 'raw',
+
+    sync = 'string', -- should be an ability's name.
+    buff_name = 'string',
+    list_name = 'string',
+    op = 'string',
+    potion = 'string',
+    var_name = 'string',
 }
 
 
@@ -810,12 +817,17 @@ local valueModifiers = {
 }
 
 
-local nameMap = {
+--[[ local nameMap = {
     call_action_list = "list_name",
     run_action_list = "list_name",
     variable = "var_name",
     potion = "potion",
     cancel_buff = "buff_name",
+} ]]
+
+
+local isString = {
+    op = true,
 }
 
 
@@ -848,7 +860,7 @@ local function ConvertScript( node, hasModifiers, header )
         for k, v in pairs( se ) do
             if k:sub( 1, 8 ) == "variable" then
                 varPool = varPool or {}
-                table.insert( varPool, "_" .. ( k:sub( 10 ) ) )
+                table.insert( varPool, k:sub( 10 ) )
             end
         end
     end
@@ -891,47 +903,44 @@ local function ConvertScript( node, hasModifiers, header )
     if hasModifiers then
         for m, value in pairs( newModifiers ) do
             if node[ m ] then
-                local emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
+                local emulated
                 local o = SimToLua( node[ m ] )
                 output.SpecialMods = output.SpecialMods .. " - " .. m .. " : " .. o
 
-                if valueModifiers[ m ] then
-                    -- For these values, we need to avoid wrapping the whole thing in safenum/safebool and trust that it's written properly.
-                    if emulated:sub( 1, 7 ) == "safenum" then
-                        emulated = emulated:sub( 8 )
-                    elseif emulated:sub( 1, 8 ) == "safebool" then
-                        emulated = emulated:sub( 9 )
-
-                    end
-
-                    if node.action == "variable" then
-                        local var_val, var_recheck, var_err
-                        var_val = scripts:BuildRecheck( node[m] )
-                        if var_val then
-                            var_val = SimToLua( var_val )
-                            var_recheck, var_err = loadstring( "-- val " ..header .. " recheck\n" .. var_val )
-                            if var_recheck then setfenv( var_recheck, state ) end
-
-                            if type( var_recheck ) ~= "function" then
-                                Hekili:Error( "Variable recheck function for " .. node.criteria .. " ( " .. ( var_recheck or "nil" ) .. " ) was unsuccessful somehow." )
-                                var_recheck = nil
-                            end
-
-                            output.VarRecheck = var_recheck
-                            output.VarRecheckScript = var_val
-                            output.VarRecheckError = var_err
-                        end
-                    end
-
-                end
-
                 local sf, e
-                if value then
-                    sf, e = loadstring( "return " .. emulated )
-                else
+
+                if value == 'bool' then
+                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ] ) )
+                
+                elseif value == 'raw' then
+                    emulated = SimToLua( scripts:EmulateSyntax( node[ m ], true ) )
+
+                else -- string
                     o = "'" .. o .. "'"
-                    sf, e = loadstring( "return " .. emulated )
+                    emulated = o
+
                 end
+
+                if node.action == "variable" then
+                    local var_val, var_recheck, var_err
+                    var_val = scripts:BuildRecheck( node[m] )
+                    if var_val then
+                        var_val = SimToLua( var_val )
+                        var_recheck, var_err = loadstring( "-- val " ..header .. " recheck\n" .. var_val )
+                        if var_recheck then setfenv( var_recheck, state ) end
+
+                        if type( var_recheck ) ~= "function" then
+                            Hekili:Error( "Variable recheck function for " .. node.criteria .. " ( " .. ( var_recheck or "nil" ) .. " ) was unsuccessful somehow." )
+                            var_recheck = nil
+                        end
+
+                        output.VarRecheck = var_recheck
+                        output.VarRecheckScript = var_val
+                        output.VarRecheckError = var_err
+                    end
+                end
+
+                sf, e = loadstring( "return " .. emulated )
 
                 if sf then
                     setfenv( sf, state )
@@ -944,7 +953,7 @@ local function ConvertScript( node, hasModifiers, header )
             end
         end
 
-        local name = nameMap[ node.action ]
+        --[[ local name = nameMap[ node.action ]
         if name and node[ name ] then
             -- local bitwrapped = SimToLua( scripts:EmulateSyntax( node[ name ] ) )
             local o = tostring( node[ name ] )
@@ -961,7 +970,7 @@ local function ConvertScript( node, hasModifiers, header )
             else
                 output.Modifiers[ name ] = e
             end
-        end
+        end ]]
     end
 
     return output
@@ -1040,44 +1049,11 @@ function scripts:CheckVariable( scriptID )
 end
 
 
-
--- Attaches modifiers for the current entry to the state.args table.
-function scripts:ImportModifiers( scriptID )
-    for k in pairs( state.args ) do
-        state.args[ k ] = nil
-    end
-
-    local script = self.DB[ scriptID ]
-    if not script or not script.Modifiers then return end
-
-    for k, v in pairs( script.Modifiers ) do
-        local s, val = pcall( v )
-        if s then state.args[ k ] = val end
-    end
-end
-
-
 function scripts:IsTimeSensitive( scriptID )
     local s = self.DB[ scriptID ]
 
     return s and s.TimeSensitive
 end
-
-
---[[ function ns.checkTimeScript( entry, wait, spend, spendType )
-
-    local script = scripts.A[ entry ]
-
-    if not entry or not script or not script.Ready then return delay end
-
-    local out = script.Ready( wait, spend, spendType )
-
-    out = out or 0
-
-    out = out > 0 and roundUp( out, 2 ) or out
-
-    return out
-end ]]
 
 
 function scripts:GetModifiers( scriptID, out )
@@ -1093,22 +1069,6 @@ function scripts:GetModifiers( scriptID, out )
     end
 
     return out
-end
-
-
--- Attaches modifiers for the current entry to the state.args table.
-function scripts:ImportModifiers( scriptID )
-    for k in pairs( state.args ) do
-        state.args[ k ] = nil
-    end
-
-    local script = self.DB[ scriptID ]
-    if not script or not script.Modifiers then return end
-
-    for k, v in pairs( script.Modifiers ) do
-        local s, val = pcall( v )
-        if s then state.args[ k ] = val end
-    end
 end
 
 

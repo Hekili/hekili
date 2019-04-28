@@ -531,10 +531,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                 if ability and known and enabled then
                     local scriptID = packName .. ":" .. listName .. ":" .. actID
+                    state.scriptID = scriptID
 
-                    -- Used to notify timeToReady() about an artificial delay for this ability.
-                    -- state.script.entry = entry.whenReady == 'script' and scriptID or nil
-                    scripts:ImportModifiers( scriptID )
                     local script = scripts:GetScript( scriptID )
 
                     wait_time = state:TimeToReady()
@@ -610,17 +608,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             elseif entry.action == 'variable' then
                                 local name = state.args.var_name
 
-                                if name ~= nil then -- and aScriptValue ~= nil then
-                                    local aScriptPass = scripts:CheckScript( scriptID )
-
-                                    if aScriptPass then
-                                        if debug then self:Debug( " - variable.%s will reference this script entry (%s).", name or "MISSING", scriptID ) end
-
-                                        -- We just store the scriptID so that the variable actually gets tested at time of comparison.
-                                        state.variable[ "_" .. name ] = scriptID
-                                    else
-                                        if debug then self:Debug( " - conditions were NOT MET, ignoring (%s).", name ) end
-                                    end
+                                if name ~= nil then
+                                    if debug then self:Debug( " - variable.%s will check this script entry (%s).", name, scriptID ) end                                    
+                                    state:RegisterVariable( name, scriptID, Stack, Block )
+                                else
+                                    if debug then self:Debug( " - variable name not provided, skipping." ) end
                                 end
 
                             elseif state.buff.casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ entry.action ] then
@@ -964,6 +956,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     for k, v in pairs( listValue ) do wipe( v ) end
 
     self:ResetSpellCaches()
+    state:ResetVariables()
 
     local display = rawget( self.DB.profile.displays, dispName )
     local pack = rawget( self.DB.profile.packs, packName )

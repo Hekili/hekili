@@ -85,7 +85,6 @@ state.history = {
 }
 
 state.items = {}
-state.perk = {}
 state.pet = {
     fake_pet = {
         name = "Mary-Kate Olsen",
@@ -1224,12 +1223,13 @@ do
 
             if script.Variables then
                 for i, var in ipairs( script.Variables ) do
-                    local key = rawget( state.variable, var )
+                    local varIDs = state:GetVariableIDs( var )
 
-                    if key then
-                        local vr = Hekili.Scripts.DB[ key ].VarRecheck
-
-                        if vr then recheckHelper( times, vr() ) end
+                    if varIDs then
+                        for _, sID in ipairs( varIDs ) do
+                            local vr = scripts.DB[ sID ].VarRecheck
+                            if vr then recheckHelper( times, vr() ) end
+                        end
                     end
                 end
             end
@@ -1619,7 +1619,7 @@ local mt_state = {
         elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
             return t.cooldown[ action ].full_recharge_time
 
-        elseif k == 'max_charges' then
+        elseif k == 'max_charges' or k == 'charges_max' then
             return ability and ability.charges or 1
 
         elseif k == 'recharge' then
@@ -2368,7 +2368,6 @@ ns.metatables.mt_default_cooldown = mt_default_cooldown
 local mt_cooldowns = {
     -- The action doesn't exist in our table so check the real game state, -- and copy it so we don't have to use the API next time.
     __index = function(t, k)
-
         local entry = class.abilities[ k ]
 
         if not entry then
@@ -3099,12 +3098,32 @@ state.artifact = state.azerite
 -- rawset( state.artifact, no_trait, setmetatable( {}, mt_default_trait ) )
 
 
-local mt_perks = {
-    __index = function(t, k)
-        return ( null_talent )
-    end
-}
-ns.metatables.mt_perks = mt_perks
+do
+    local db = scripts.DB
+
+    -- Args table, make it nicer.
+    setmetatable( state.args, {
+        __index = function( t, k )
+            -- No script selected.
+            if not state.scriptID then return end
+
+            local script = db[ state.scriptID ]
+
+            -- No script by that name.
+            if not script then return end
+
+            -- Script has no modifiers.
+            if not script.Modifiers then return end
+
+            local mod = script.Modifiers[ k ]
+
+            if mod then
+                local s, val = pcall( mod )
+                if s then return val end
+            end
+        end,
+    } )
+end
 
 
 -- Table for counting active dots.
@@ -3198,21 +3217,189 @@ local mt_totem = {
 ns.metatables.mt_totem = mt_totem
 
 
-local mt_variable = {
-    __index = function( t, k )
-        local id = rawget( t, "_" .. k )
+do
+    local db = {}
+    local cache = {}
 
-        if id then
-            local value, m = scripts:CheckVariable( id )
-            return value
+    local required = {}
+    local forbidden = {}   
+    local pathCache = {}
+
+    
+    function state:RegisterVariable( key, scriptID, preconditions, preclusions )
+        local data = db[ key ] or {}
+        insert( data, scriptID )
+        db[ key ] = data
+
+        cache[ key ] = cache[ key ] or {}
+        
+        required[ scriptID ] = required[ scriptID ] or {}
+        if preconditions then
+            for i, prereq in ipairs( preconditions ) do
+                if prereq.script ~= 0 then
+                    insert( required[ scriptID ], prereq.script )
+                end
+            end
         end
 
-        return
-    end
-}
-ns.metatables.mt_variable = mt_variable
+        forbidden[ scriptID ] = forbidden[ scriptID ] or {}
+        if preclusions then
+            for i, block in ipairs( preclusions ) do
+                if block.script ~= 0 then                
+                    insert( forbidden[ scriptID ], block.script )
+                end
+            end
+        end
 
-state.variable = setmetatable( {}, mt_variable )
+        pathCache[ scriptID ] = pathCache[ scriptID ] or {}
+    end
+
+
+    function state:ResetVariables()
+        for k, v in pairs( db ) do
+            wipe( v )
+            wipe( cache[ k ] )
+        end
+
+        for k, v in pairs( pathCache ) do
+            wipe( v )
+            wipe( required[ k ] )
+            wipe( forbidden[ k ] )
+        end
+    end
+
+
+    function state:GetVariableIDs( key )
+        return db[ key ]
+    end
+
+
+    state.variable = setmetatable( {}, {
+        __index = function( t, var )
+            -- local debug = Hekili.ActiveDebug
+
+            local data = db[ var ]
+            if not data then
+                -- if debug then Hekili:Debug( "var[%s] :: no data.\n%s", var, debugstack()  ) end
+                return 0
+            end
+
+            local value = cache[ var ][ state.query_time ]
+            if value ~= nil then
+                -- if debug then Hekili:Debug( "var[%s] :: using cached value at %.2f (%s).", var, state.query_time, value ) end
+                return value
+            end
+
+            local parent = state.scriptID
+
+            -- If we're checking variable with no script loaded, don't bother.
+            if not parent then return 0 end
+
+            local default = 0
+            local value = 0
+            local now = state.query_time
+
+            for i, scriptID in ipairs( data ) do
+                local path = pathCache[ scriptID ]
+
+                -- Check the requirements/exclusions in the APL stack.
+                if path[ now ] == nil then
+                    path[ now ] = true
+
+                    for r, prereq in ipairs( required[ scriptID ] ) do
+                        state.scriptID = prereq
+                        path[ now ] = scripts:CheckScript( prereq )
+                        if not path[ now ] then break end
+
+                        for e, excl in ipairs( forbidden[ scriptID ] ) do
+                            state.scriptID = excl
+                            path[ now ] = not scripts:CheckScript( excl )
+
+                            if path[ now ] then break end
+                        end
+                    end
+                end
+
+                if path[ now ] then
+                    state.scriptID = scriptID
+                    local op = state.args.op or "set"
+
+                    local passed = scripts:CheckScript( scriptID )
+
+                    --[[    add = "Add Value",
+                            ceil
+                            x default = "Set Default Value",
+                            div = "Divide Value",
+                            floor
+                            max = "Maximum Value",
+                            min = "Minimum Value",
+                            mod = "Modulo Value",
+                            mul = "Multiply Value",
+                            pow = "Raise Value to X Power",
+                            x reset = "Reset to Default",
+                            x set = "Set Value",
+                            x setif = "Set Value If...",
+                            sub = "Subtract Value",]]
+
+                    if op == "set" or op == "setif" then
+                        if passed then value = state.args.value
+                        else value = state.args.value_else end
+                    elseif op == "reset" then
+                        value = passed and 0 or value
+                    elseif op == "default" and passed then
+                        default = state.args.value
+                    else
+                        -- Math Ops.
+                        local currType = type( value )
+
+                        if currType == 'number' then
+                            -- Operations on existing value.
+                            if op == "floor" then
+                                value = floor( value )
+                            elseif op == "ceil" then
+                                value = ceil( value )
+                            else
+                                -- Operations with two values.
+                                local newVal = state.args.value
+                                local valType = type( newVal )
+                                
+                                if valType == 'number' then
+                                    if op == "add" then
+                                        value = value + newVal
+                                    elseif op == "div" then
+                                        if newVal == 0 then value = 0
+                                        else value = value / newVal end
+                                    elseif op == "max" then
+                                        value = max( value, newVal )
+                                    elseif op == "min" then
+                                        value = min( value, newVal )
+                                    elseif op == "mod" then
+                                        if newVal == 0 then value = 0
+                                        else value = value % newVal end
+                                    elseif op == "mul" then
+                                        value = value * newVal
+                                    elseif op == "pow" then
+                                        value = value ^ pow
+                                    elseif op == "sub" then
+                                        value = value - sub
+                                    end
+                                end
+                            end
+                        end
+                    end
+
+                    -- if debug then Hekili:Debug( "var[%s] [%02d/%s] :: op: %s, conditions: %s [%s]; value: %s", var, i, scriptID, state.args.op or "autoset", scripts:GetConditionsAndValues( scriptID ), tostring( passed ), tostring( value ) ) end
+                end
+            end
+
+            cache[ var ][ now ] = value
+
+            state.scriptID = parent
+            return value
+        end
+    } )
+end
+
 
 
 -- Table of set bonuses. Some string manipulation to honor the SimC syntax.
@@ -3731,7 +3918,6 @@ setmetatable( state.debuff, mt_debuffs )
 setmetatable( state.dot, mt_dot )
 setmetatable( state.equipped, mt_equipped )
 -- setmetatable( state.health, mt_resource )
-setmetatable( state.perk, mt_perks )
 setmetatable( state.pet, mt_pets )
 setmetatable( state.pet.fake_pet, mt_default_pet )
 setmetatable( state.prev, mt_prev )
@@ -4434,6 +4620,7 @@ function state.reset( dispName )
 
     state.now = GetTime()
     state.index = 0
+    state.scriptID = nil
     state.offset = 0
     state.delay = 0
     state.cast_start = 0
@@ -4490,13 +4677,7 @@ function state.reset( dispName )
         table.remove( state.purge, i )
     end
 
-    for k in pairs( state.args ) do
-        state.args[ k ] = nil
-    end
-
-    for k in pairs( state.variable ) do
-        state.variable[ k ] = nil
-    end
+    state:ResetVariables()
 
     for k in pairs( state.active_dot ) do
         state.active_dot[ k ] = nil

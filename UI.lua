@@ -1415,7 +1415,6 @@ do
         d.UpdateAlpha = Display_UpdateAlpha
         d.UpdateKeybindings = Display_UpdateKeybindings
 
-        
         ns.queue[id] = ns.queue[id] or {}
         d.Recommendations = ns.queue[id]
 

@@ -3373,19 +3373,24 @@ do
 
             if not id then break end
 
-            if class.specs[ id ] then
+            local spec = class.specs[ id ]
+
+            if spec then
                 local sName = lower( name )
                 specNameByID[ id ] = sName
                 specIDByName[ sName ] = id
 
                 specs[ id ] = '|T' .. texture .. ':0|t ' .. name
 
-                db.plugins.specializations[ sName ] = {
+                local options = {
                     type = "group",
-                    name = specs[ id ],
+                    -- name = specs[ id ],
+                    name = name,
+                    icon = texture,
+                    -- iconCoords = { 0.1, 0.9, 0.1, 0.9 },
                     desc = description,
                     order = 50 + i,
-                    childGroups = "tree",
+                    childGroups = "tab",
                     get = "GetSpecOption",
                     set = "SetSpecOption",
 
@@ -3393,133 +3398,95 @@ do
                         enabled = {
                             type = "toggle",
                             name = "Enabled",
-                            desc = "If checked, the addon will provide priority recommendations for " .. name .. ".",
+                            desc = "If checked, the addon will provide priority recommendations for " .. name .. " based on the selected priority list.",
                             order = 0,
                             width = "full",
                         },
 
-                        packInfo = {
-                            type = 'group',
-                            name = "",
-                            inline = true,
-                            order = 10,
+                        core = {
+                            type = "group",
+                            name = "Core",
+                            desc = "Core features and specialization options for " .. specs[ id ] .. ".",
+                            order = 1,
                             args = {
-                                package = {
+                                packInfo = {
+                                    type = 'group',
+                                    name = "",
+                                    inline = true,
+                                    order = 1,
+                                    args = {
+                                        package = {
+                                            type = "select",
+                                            name = "Priority",
+                                            desc = "The addon will use the selected package when making its priority recommendations.",
+                                            order = 1,
+                                            width = "full",
+                                            values = function( info, val )
+                                                wipe( packs )
+        
+                                                for key, pkg in pairs( self.DB.profile.packs ) do
+                                                    local pname = pkg.builtIn and "|cFF00B4FF" .. key .. "|r" or key
+                                                    if pkg.spec == id then
+                                                        packs[ key ] = '|T' .. texture .. ':0|t ' .. pname
+                                                    end
+                                                end
+        
+                                                packs[ '(none)' ] = '(none)'
+        
+                                                return packs
+                                            end,
+                                        },
+        
+                                        openPackage = {
+                                            type = 'execute',
+                                            name = "View Priority",
+                                            desc = "Open and view this priority pack and its action lists.",
+                                            order = 2,
+                                            width = "single",
+                                            disabled = function( info, val )
+                                                local pack = self.DB.profile.specs[ id ].package
+                                                return rawget( self.DB.profile.packs, pack ) == nil
+                                            end,
+                                            func = function ()
+                                                ACD:SelectGroup( "Hekili", "packs", self.DB.profile.specs[ id ].package )
+                                            end,
+                                        }
+                                    }
+                                },
+        
+                                potion = {
                                     type = "select",
-                                    name = "Priority",
-                                    desc = "The addon will use the selected package when making its priority recommendations.",
-                                    order = 1,
-                                    width = "full",
-                                    values = function( info, val )
-                                        wipe( packs )
-
-                                        for key, pkg in pairs( self.DB.profile.packs ) do
-                                            local pname = pkg.builtIn and "|cFF00B4FF" .. key .. "|r" or key
-                                            if pkg.spec == id then
-                                                packs[ key ] = '|T' .. texture .. ':0|t ' .. pname
-                                            end
-                                        end
-
-                                        packs[ '(none)' ] = '(none)'
-
-                                        return packs
-                                    end,
-                                },
-
-                                openPackage = {
-                                    type = 'execute',
-                                    name = "View Priority",
-                                    desc = "Open and view this priority pack and its action lists.",
+                                    name = "Default Potion",
+                                    desc = "When recommending a potion, the addon will suggest this potion unless unless the action list specifies otherwise.",
                                     order = 2,
-                                    width = "single",
-                                    disabled = function( info, val )
-                                        local pack = self.DB.profile.specs[ id ].package
-                                        return rawget( self.DB.profile.packs, pack ) == nil
-                                    end,
-                                    func = function ()
-                                        ACD:SelectGroup( "Hekili", "packs", self.DB.profile.specs[ id ].package )
-                                    end,
-                                }
-                            }
-                        },
-
-                        potion = {
-                            type = "select",
-                            name = "Default Potion",
-                            desc = "When recommending a potion, the addon will suggest this potion unless unless the action list specifies otherwise.",
-                            order = 11,
-                            width = "full",
-                            values = function ()
-                                local v = {}
-
-                                for k, p in pairs( class.potionList ) do
-                                    if k ~= "default" then v[ k ] = p end
-                                end
-
-                                return v
-                            end,
-                        },
-
-                        spacing3 = {
-                            type = "description",
-                            name = " ",
-                            order = 11.01,
-                            width = "full",
-                        },
-
-                        padding = {
-                            type = "group",
-                            inline = true,
-                            name = "Aura Padding",
-                            order = 11.1,
-                            args = {
-                                buffPadding = {
-                                    type = "range",
-                                    name = "Buff Padding",
-                                    desc = "This setting will cause the addon to treat your buffs as though they are going to fall off earlier than they " ..
-                                        "actually will.  For instance, if set to |cFFFFD1000.25|r seconds, then a buff that will expire in |cFFFFD1004|r seconds will " ..
-                                        "be treated as though it would fall off in |cFFFFD1003.75|r seconds.  Depending on your spec's priority, this may lead you to " ..
-                                        "refresh your buffs more frequently, which is helpful when trying to chain a buff or maintain stacks without the buff falling off.",
-                                    order = 1,
                                     width = "full",
-                                    min = 0,
-                                    max = 1,
-                                    step = 0.01
+                                    values = function ()
+                                        local v = {}
+        
+                                        for k, p in pairs( class.potionList ) do
+                                            if k ~= "default" then v[ k ] = p end
+                                        end
+        
+                                        return v
+                                    end,
                                 },
-                                debuffPadding = {
-                                    type = "range",
-                                    name = "Debuff Padding",
-                                    desc = "This setting will cause the addon to treat your debuffs (or DoT effects) as though they are going to fall off earlier than they " ..
-                                        "actually will.  For instance, if set to |cFFFFD1000.25|r seconds, then a debuff that will expire in |cFFFFD1004|r seconds will " ..
-                                        "be treated as though it will expire in |cFFFFD1003.75|r seconds.  Depending on your spec's priority, this may lead you to " ..
-                                        "refresh your debuffs more frequently, which is helpful when trying to chain a debuff or maintain stacks without the debuff falling off.",
-                                    order = 1,
-                                    width = "full",
-                                    min = 0,
-                                    max = 1,
-                                    step = 0.01
-                                },                                
-                            }
+                            },
+                            plugins = {
+                                settings = {}
+                            },
                         },
 
-                        spacing4 = {
-                            type = "description",
-                            name = " ",
-                            order = 13,
-                            width = "full",
-                        },
-
-                        targetDetection = {
+                        targets = {
                             type = "group",
-                            name = "Target Handling",
-                            inline = true,
-                            order = 15,
+                            name = "Targeting",
+                            order = 2,
                             args = {
+                                -- Nameplate Quasi-Group
                                 nameplates = {
                                     type = "toggle",
                                     name = "Use Nameplate Detection",
                                     desc = "If checked, the addon will count any enemies with visible nameplates within a small radius of your character.  " ..
-                                        "This is typically desirable for melee character specializations.",
+                                        "This is typically desirable for |cFFFF0000melee|r specializations.",
                                     width = "full",
                                     order = 1,
                                 },
@@ -3529,73 +3496,84 @@ do
                                     name = "Nameplate Detection Range",
                                     desc = "When |cFFFFD100Use Nameplate Detection|r is checked, the addon will count any enemies with visible nameplates within this radius of your character.",
                                     width = "full",
-                                    disabled = function( info, val )
+                                    hidden = function()
                                         return self.DB.profile.specs[ id ].nameplates == false
                                     end,
                                     order = 2,
                                 },
 
-                                aoe = {
-                                    type = "range",
-                                    name = "AOE Target Count",
-                                    desc = "When the AOE Display is shown, it will assume that there are at least this many active targets.",
+                                nameplateSpace = {
+                                    type = "description",
+                                    name = " ",
                                     width = "full",
-                                    min = 2,
-                                    max = 5,
-                                    step = 1,
+                                    hidden = function()
+                                        return self.DB.profile.specs[ id ].nameplates == false
+                                    end,
                                     order = 3,
                                 },
 
-                                cycle = {
-                                    type = "toggle",
-                                    name = "Recommend Target Cycling",
-                                    desc = "When target cycling is enabled, the addon may show an icon (|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t) when you should use an ability on a different target.  " ..
-                                        "This works well for some specs, that simply want to apply a debuff to another target (like Windwalker), but can be less-effective for specializations that are concerned with " ..
-                                        "maintaining dots/debuffs based on their durations (like Affliction).  This feature is targeted for improvement in a future update.",
-                                    width = "full",
-                                    order = 3.1
-                                },
 
-                                gcdSync = {
-                                    type = "toggle",
-                                    name = "Sync First Recommendation with GCD",
-                                    desc = "If checked (default), the addon's first recommendation will be delayed to the start of the GCD in your Primary and AOE displays.",
-                                    width = "full",
-                                    order = 3.2,
-                                },
-
+                                -- Damage Detection Quasi-Group
                                 damage = {
                                     type = "toggle",
-                                    name = "Detect Enemies by Damage",
+                                    name = "Detect Damaged Enemies",
                                     desc = "If checked, the addon will count any enemies that you've hit (or hit you) within the past several seconds as active enemies.  " ..
-                                        "This is typically desirable for ranged character specializations.",
+                                        "This is typically desirable for |cFFFF0000ranged|r specializations.",
                                     width = "full",
                                     order = 4,                                    
                                 },
 
                                 damageDots = {
                                     type = "toggle",
-                                    name = "Detect Enemies by Damage over Time",
-                                    desc = "When checked, the addon will continue to count enemies who are taking damage from your damage over time effects (bleeds, etc.), even if they are not nearby or taking other damage from you.  " ..
-                                        "This may not be ideal for melee specializations, if you are no longer near the enemy that is taking damage over time.  For ranged specializations with damage over time effects, this should be enabled.",
+                                    name = "Detect Dotted Enemies",
+                                    desc = "When checked, the addon will continue to count enemies who are taking damage from your damage over time effects (bleeds, etc.), even if they are not nearby or taking other damage from you.\n\n" ..
+                                        "This may not be ideal for melee specializations, as enemies may wander away after you've applied your dots/bleeds.  If used with |cFFFFD100Use Nameplate Detection|r, dotted enemies that are no longer in melee range will be filtered.\n\n" ..
+                                        "For ranged specializations with damage over time effects, this should be enabled.",
                                     width = "full",
-                                    disabled = function () return self.DB.profile.specs[ id ].damage == false end,
+                                    hidden = function () return self.DB.profile.specs[ id ].damage == false end,
                                     order = 5,
                                 },
 
                                 damageExpiration = {
                                     type = "range",
                                     name = "Damage Detection Timeout",
-                                    desc = "When |cFFFFD100Detect Enemies by Damage|r is checked, the addon will count enemies for up to this many seconds before forgetting about them.  " ..
+                                    desc = "When |cFFFFD100Detect Damaged Enemies|r is checked, the addon will remember enemies until they have been ignored/undamaged for this amount of time.  " ..
                                         "Enemies will also be forgotten if they die or despawn.  This is helpful when enemies spread out or move out of range.",
                                     width = "full",
                                     min = 3,
                                     max = 10,
                                     step = 0.1,
-                                    disabled = function( info, val )
-                                        return self.DB.profile.specs[ id ].damage == false
-                                    end,
+                                    hidden = function() return self.DB.profile.specs[ id ].damage == false end,
                                     order = 6,
+                                },
+
+                                damageSpace = {
+                                    type = "description",
+                                    name = " ",
+                                    width = "full",
+                                    hidden = function() return self.DB.profile.specs[ id ].damage == false end,
+                                    order = 7,
+                                },
+
+                                cycle = {
+                                    type = "toggle",
+                                    name = "Recommend Target Swaps",
+                                    desc = "When target swapping is enabled, the addon may show an icon (|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t) when you should use an ability on a different target.  " ..
+                                        "This works well for some specs that simply want to apply a debuff to another target (like Windwalker), but can be less-effective for specializations that are concerned with " ..
+                                        "maintaining dots/debuffs based on their durations (like Affliction).  This feature is targeted for improvement in a future update.",
+                                    width = "full",
+                                    order = 8
+                                },
+
+                                aoe = {
+                                    type = "range",
+                                    name = "AOE Display:  Minimum Targets",
+                                    desc = "When the AOE Display is shown, its recommendations will be made assuming this many targets are available.",
+                                    width = "full",
+                                    min = 2,
+                                    max = 5,
+                                    step = 1,
+                                    order = 9,
                                 },
                             }
                         },
@@ -3603,8 +3581,7 @@ do
                         performance = {
                             type = "group",
                             name = "Performance",
-                            inline = true,
-                            order = 20,
+                            order = 10,
                             args = {
                                 throttleRefresh = {
                                     type = "toggle",
@@ -3628,20 +3605,53 @@ do
                                     min = 4,
                                     max = 20,
                                     step = 1,
-                                    disabled = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
+                                    hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
                                 },
+
+                                throttleSpace = {
+                                    type = "description",
+                                    name = " ",
+                                    order = 3,
+                                    width = "full",
+                                    hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
+                                },
+
+                                gcdSync = {
+                                    type = "toggle",
+                                    name = "Start after Global Cooldown",
+                                    desc = "If checked, the addon's first recommendation will be delayed to the start of the GCD in your Primary and AOE displays.  This can reduce flickering if trinkets or off-GCD abilities are appearing briefly during the global cooldown.",
+                                    width = "full",
+                                    order = 4,
+                                },
+
                             }
                         }
                     },
-
-                    plugins = {
-                        prefs = {}
-                    }
                 }
 
-                local userPrefs = class.specs[ id ] and class.specs[ id ].prefs
+                local specCfg = class.specs[ id ] and class.specs[ id ].settings
 
+                if #specCfg > 0 then
+                    options.args.core.plugins.settings.prefSpacer = {
+                        type = "description",
+                        name = " ",
+                        order = 100,
+                        width = "full"
+                    }
 
+                    options.args.core.plugins.settings.prefHeader = {
+                        type = "header",
+                        name = "Preferences",
+                        order = 100.1,
+                    }
+
+                    for i, option in ipairs( specCfg ) do
+                        options.args.core.plugins.settings[ option.name ] = option.info
+                        self.DB.profile.specs[ id ].settings[ option.name ] = self.DB.profile.specs[ id ].settings[ option.name ] or option.default
+                    end
+                end
+
+                db.plugins.specializations[ sName ] = options
             end
 
             i = i + 1
@@ -3675,6 +3685,7 @@ do
         run_action_list = "list_name",
         potion = "potion",
         variable = "var_name",
+        op = "op"
     }
 
 
@@ -3720,6 +3731,8 @@ do
             option = nameMap[ data.action ]
             if not data[ option ] then data[ option ] = defaultNames[ option ] end
         end
+
+        if option == "op" and not data.op then return "set" end
 
         if toggleToNumber[ option ] then return data[ option ] == 1 end
         return data[ option ]
@@ -4456,7 +4469,15 @@ do
                                                             desc = entry.caption
 
                                                         elseif entry.action == "variable" then
-                                                            desc = format( "|cff00ccff%s|r = |cffffd100%s|r", entry.var_name or "unassigned", entry.value or "nothing" )
+                                                            if entry.op == "reset" then
+                                                                desc = format( "reset |cff00ccff%s|r", entry.var_name or "unassigned" )
+                                                            elseif entry.op == "default" then
+                                                                desc = format( "|cff00ccff%s|r default = |cffffd100%s|r", entry.var_name or "unassigned", entry.value or "0" )
+                                                            elseif entry.op == "set" or entry.op == "setif" then
+                                                                desc = format( "set |cff00ccff%s|r = |cffffd100%s|r", entry.var_name or "unassigned", entry.value or "nothing" )
+                                                            else
+                                                                desc = format( "%s |cff00ccff%s|r (|cffffd100%s|r)", entry.op, entry.var_name or "unassigned", entry.value or "nothing" )
+                                                            end
 
                                                             if entry.criteria and entry.criteria:len() > 0 then
                                                                 desc = format( "%s, if |cffffd100%s|r", desc, entry.criteria )
@@ -4649,21 +4670,6 @@ do
                                                     name = "Variable",
                                                     order = 5,
                                                     args = {
-                                                        op = {
-                                                            type = "select",
-                                                            name = "Operation",
-                                                            values = {
-                                                                set = "Set Value",
-                                                                max = "Maximum Value",
-                                                                setif = "Set Value If...",
-                                                                add = "Add Value",
-                                                                sub = "Subtract Value",
-                                                                min = "Minimum Value"
-                                                            },
-                                                            order = 1,
-                                                            width = "single",
-                                                        },
-
                                                         var_name = {
                                                             type = "input",
                                                             name = "Name",
@@ -4676,9 +4682,33 @@ do
 
                                                                 return true
                                                             end,
-                                                            order = 2,
+                                                            order = 1,
                                                             width = "double",
                                                         },
+                                                        
+                                                        op = {
+                                                            type = "select",
+                                                            name = "Operation",
+                                                            values = {
+                                                                add = "Add Value",
+                                                                ceil = "Ceiling of Value",
+                                                                default = "Set Default Value",
+                                                                div = "Divide Value",
+                                                                floor = "Floor of Value",
+                                                                max = "Maximum of Values",
+                                                                min = "Minimum of Values",
+                                                                mod = "Modulo of Value",
+                                                                mul = "Multiply Value",
+                                                                pow = "Raise Value to X Power",
+                                                                reset = "Reset to Default",
+                                                                set = "Set Value",
+                                                                setif = "Set Value If...",
+                                                                sub = "Subtract Value",
+                                                            },
+                                                            order = 2,
+                                                            width = "single",
+                                                        },
+
 
                                                         value = {
                                                             type = "input",
@@ -4700,12 +4730,8 @@ do
                                                                 for name, alist in pairs( apack.lists ) do
                                                                     for i, entry in ipairs( alist ) do
                                                                         if name ~= list or i ~= action then
-                                                                            if entry.action == "variable" then
-                                                                                local scriptID = pack .. ":" .. name .. ":" .. i
-                                                                                scripts:ImportModifiers( scriptID )
-                                                                                local vname = state.args.var_name
-
-                                                                                if vname then state.variable[ "_" .. vname ] = scriptID end
+                                                                            if entry.action == "variable" and entry.var_name then
+                                                                                state:RegisterVariable( entry.var_name, pack .. ":" .. name .. ":" .. i )
                                                                             end
                                                                         end
                                                                     end
@@ -4717,15 +4743,14 @@ do
                                                                 state.this_action = entry.action
 
                                                                 local scriptID = pack .. ":" .. list .. ":" .. action
-
-                                                                scripts:ImportModifiers( scriptID )
+                                                                state.scriptID = scriptID
                                                                 scripts:StoreValues( results, scriptID, "value" )
 
                                                                 return results, list, action
                                                             end,
                                                             hidden = function ()
                                                                 local e = GetListEntry( pack )
-                                                                return e.action ~= "variable"
+                                                                return e.action ~= "variable" or e.op == "reset" or e.op == "ceil" or e.op == "floor"
                                                             end,
                                                         },
                                                     },
@@ -4812,12 +4837,8 @@ do
                                                         for name, alist in pairs( apack.lists ) do
                                                             for i, entry in ipairs( alist ) do
                                                                 if name ~= list or i ~= action then
-                                                                    if entry.action == "variable" then
-                                                                        local scriptID = pack .. ":" .. name .. ":" .. i
-                                                                        scripts:ImportModifiers( scriptID )
-                                                                        local vname = state.args.var_name
-
-                                                                        if vname then state.variable[ "_" .. vname ] = scriptID end
+                                                                    if entry.action == "variable" and entry.var_name then
+                                                                        state:RegisterVariable( entry.var_name, pack .. ":" .. name .. ":" .. i )
                                                                     end
                                                                 end
                                                             end
@@ -4829,34 +4850,11 @@ do
                                                         state.this_action = entry.action
 
                                                         local scriptID = pack .. ":" .. list .. ":" .. action
-
-                                                        scripts:ImportModifiers( scriptID )
+                                                        state.scriptID = scriptID
                                                         scripts:StoreValues( results, scriptID )
 
                                                         return results, list, action
                                                     end,                                      
-                                                        --[[ local pack, list, action = info[ 2 ], packControl.listName, tonumber( packControl.actionID )
-
-                                                        local entry = rawget( self.DB.profile.packs, pack )
-                                                        entry = entry and entry.lists[ list ]
-                                                        entry = entry and entry[ action ]
-
-                                                        local results = {}
-
-                                                        state.reset()
-                                                        state.this_action = entry.action
-
-                                                        local scriptID = pack .. ":" .. list .. ":" .. action
-
-                                                        scripts:ImportModifiers( scriptID )
-                                                        scripts:StoreValues( results, scriptID )
-
-                                                        return results, list, action
-                                                    end,
-                                                    hidden = function ()
-                                                        local e = GetListEntry( pack )
-                                                        return e.action == "use_items"
-                                                    end, ]]
                                                 },
 
                                                 showModifiers = {
@@ -8131,6 +8129,7 @@ do
         potion = "potion",
         variable = "var_name",
         cancel_buff = "buff_name",
+        op = "op",
     }
 
     function Hekili:ParseActionList( list )
@@ -8274,6 +8273,10 @@ do
 
             if result.action == 'use_item' and result.name and class.abilities[ result.name ] then
                 result.action = result.name
+            end
+
+            if result.action == 'variable' and not result.op then
+                result.op = 'set'
             end
 
             --[[ if result.criteria then
