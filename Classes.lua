@@ -2185,7 +2185,10 @@ all:RegisterAbility( "variable_intensity_gigavolt_oscillating_reactor", {
     toggle = "cooldowns",
 
     buff = "vigor_engaged",
-    usable = function () return buff.vigor_engaged.stack > 5 end,
+    usable = function ()
+        if buff.vigor_engaged.stack < 6 then return false, "has fewer than 6 stacks" end
+        return true
+    end,
     handler = function() applyBuff( "oscillating_overload" ) end
 } )
 
