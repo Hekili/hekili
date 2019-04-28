@@ -3280,13 +3280,13 @@ do
 
             local data = db[ var ]
             if not data then
-                -- if debug then Hekili:Debug( "var[%s] :: no data.\n%s", var, debugstack()  ) end
+                -- if debug then Hekili:Debug( "var[%s] :: no data.\n%s", var, debugstack() ) end
                 return 0
             end
 
             local value = cache[ var ][ state.query_time ]
             if value ~= nil then
-                -- if debug then Hekili:Debug( "var[%s] :: using cached value at %.2f (%s).", var, state.query_time, value ) end
+                -- if debug then Hekili:Debug( "var[%s] :: using cached value at %.2f (%s).", var, state.query_time, tostring( value ) ) end
                 return value
             end
 
@@ -3343,7 +3343,10 @@ do
 
                     if op == "set" or op == "setif" then
                         if passed then value = state.args.value
-                        else value = state.args.value_else end
+                        else
+                            local v2 = state.args.value_else
+                            if v2 ~= nil then value = state.args.value_else end
+                        end
                     elseif op == "reset" then
                         value = passed and 0 or value
                     elseif op == "default" and passed then
@@ -3388,7 +3391,7 @@ do
                         end
                     end
 
-                    -- if debug then Hekili:Debug( "var[%s] [%02d/%s] :: op: %s, conditions: %s [%s]; value: %s", var, i, scriptID, state.args.op or "autoset", scripts:GetConditionsAndValues( scriptID ), tostring( passed ), tostring( value ) ) end
+                    -- if debug then Hekili:Debug( "var[%s] [%02d/%s] :: op: %s, conditions: %s -- [%s]; value: %s", var, i, scriptID, state.args.op or "autoset", scripts:GetConditionsAndValues( scriptID ), tostring( passed ), tostring( value ) ) end
                 end
             end
 
