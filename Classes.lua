@@ -2300,13 +2300,14 @@ all:RegisterAbility( "ramping_amplitude_gigavolt_engine", {
     item = 165580,
     toggle = "cooldowns",
 
-    handler = function() applyBuff( "rage" ) end
+    handler = function() applyBuff( "r_a_g_e" ) end
 } )
 
 all:RegisterAura( "rage", {
     id = 288156,
     duration = 18,
-    max_stack = 15
+    max_stack = 15,
+    copy = "r_a_g_e"
 } )
 
 
