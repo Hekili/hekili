@@ -513,7 +513,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 local entry = list[ actID ]
 
                 state.this_action = entry.action
-                state.this_args = nil
                 state.delay = nil
 
                 rDepth = rDepth + 1
@@ -548,6 +547,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         if state.channeling then
                             if debug then self:Debug( "NOTE:  We are channeling ( %s ) until %.2f.", state.player.channelSpell, state.player.channelEnd - state.query_time ) end
                         end
+
                         -- APL checks.
                         if precombatFilter and not ability.essential then
                             if debug then self:Debug( "We are already in-combat and this pre-combat action is not essential.  Skipping." ) end
@@ -618,7 +618,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             elseif state.buff.casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ entry.action ] then
                                 if debug then self:Debug( "Player is casting and cannot use " .. entry.action .. " while casting." ) end
 
-                            else                                
+                            else
+                                -- Target Cycling.
+                                -- We have to determine *here* whether the ability would be used on the current target or a different target.
+                                if state.args.cycle_targets == 1 and state.settings.cycle and state.active_enemies > 1 then
+                                    state.SetupCycle( ability )
+                                end
+
                                 local usable, why = state:IsUsable()
                                 if debug then
                                     if usable then
@@ -889,25 +895,14 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
                                                     end
 
-                                                    if entry.cycle_targets == 1 and state.active_enemies > 1 then
-                                                        self:Debug( "This entry cycles targets and there are %d enemies.", state.active_enemies )
-                                                        if not state.settings.cycle then
-                                                            if debug then self:Debug( "This entry would cycle through targets but target cycling is disabled." ) end
-                                                        else
-                                                            local cycleAura = ability and ability.cycle or state.this_action
-
-                                                            local targets = state.active_enemies
-                                                            if state.args.max_cycle_targets then targets = min( targets, state.args.max_cycle_targets ) end
-
-                                                            if cycleAura and class.auras[ cycleAura ] and state.dot[ cycleAura ].up and state.active_dot[ cycleAura ] < targets then
-                                                                slot.indicator = 'cycle'
-                                                            elseif module and module.cycle then
-                                                                slot.indicator = module.cycle()
-                                                            end
-                                                        end
+                                                    if state.IsCycling() then
+                                                        slot.indicator = 'cycle'
+                                                    elseif module and module.cycle then
+                                                        slot.indicator = module.cycle()
                                                     end
                                                 end
-                                            end                                                    
+                                            end
+                                            state.ClearCycle()
                                         end
                                     end
                                 end

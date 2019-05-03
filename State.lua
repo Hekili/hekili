@@ -48,7 +48,9 @@ state.delayMax = 60
 
 state.false_start = 0
 state.latency = 0
+
 state.filter = "none"
+state.cycle_aura = 'no_aura'
 
 state.arena = false
 state.bg = false
@@ -605,34 +607,58 @@ function state.reduceCooldown( action, time )
 end
 
 
--- Help handle target cycling.
-function state.isCyclingTargets( action, auraName )
-    if not state.settings.cycle then return false end
-    if not state.args.cycle_targets or state.active_enemies == 1 then return false end
+-- Cycling System...
+do
+    local cycle = {}
+    local debug = function( ... ) if Hekili.ActiveDebug then Hekili:Debug( ... ) end end
 
-    action = action or state.this_action
-    local ability = class.abilities[ action ]
-    if not ability then return false end
+    function state.SetupCycle( ability )
+        wipe( cycle )
 
-    auraName = auraName or ability.aura or action
-    if not auraName or not class.auras[ auraName ] then return false end
+        if not ability then
+            debug( " - no ability provided to SetupCycle." )
+            return
+        end
 
-    -- Ability options.
-    -- cycleMinTime, num: the target must live this long to be worth applying the debuff (Doom).
-    -- cycleMaxTime, num: the target should not live longer than this to be worth applying the debuff (Nemesis).
-    -- cycleLowest, bool: should be applied to the target with the least health (Nemesis).
+        local aura = ability.cycle
 
-    local targets = state.active_enemies
-    if state.args.max_cycle_targets then targets = min( targets, state.args.max_cycle_targets ) end
+        if not aura then
+            debug( " - no aura flagged for cycling targets in ability / spec module." )
+            return
+        end
 
-    if ability.cycleMinTime then targets = min( targets, Hekili:GetNumTTDsAfter( ability.cycleMinTime ) ) end
-    if ability.cycleMaxTime then targets = min( targets, Hekili:GetNumTTDsBefore( ability.cycleMaxTime ) ) end
+        local cDebuff = rawget( state.debuff, aura )
 
-    -- We *could be* cycling targets, but may not have more targets to cycle.
-    if state.active_dot[ auraName ] >= targets then return false end
-    if state.debuff[ auraName ].down then return false end
+        if not cDebuff then
+            debug( " - the debuff '%s' was not found in our database.", aura )
+            return
+        end
 
-    return true
+        cycle.expires = cDebuff.expires
+        cycle.minTTD = ability.cycleMinTime
+        cycle.maxTTD = ability.cycleMaxTime
+
+        cycle.aura = aura
+        debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
+    end
+
+    function state.IsCycling( aura )
+        if not cycle.aura then return false end
+        if aura and cycle.aura ~= aura then return false end
+        if cycle.expires < state.query_time then return false end
+
+        local targets = state.active_enemies
+        if cycle.minTTD then targets = min( targets, Hekili:GetNumTTDsAfter( cycle.minTTD + state.delay + state.offset ) ) end
+        if cycle.maxTTD then targets = min( targets, Hekili:GetNumTTDsBefore( cycle.maxTTD + state.delay + state.offset ) ) end
+
+        return state.active_dot[ cycle.aura ] < targets
+    end
+
+    function state.ClearCycle()
+        wipe( cycle )
+    end
+
+    state.cycleInfo = cycle
 end
 
 
@@ -943,16 +969,20 @@ end
 
 
 -- Spell Targets, so I don't have to convert it in APLs any more.
+-- This will also factor in target caps and TTD restrictions.
 state.spell_targets = setmetatable( {}, {
     __index = function( t, k )
         local ability = class.abilities[ k ]
 
-        if ability and ability.max_targets then
-            return min( ability.max_targets, state.active_enemies )
+        if not ability then return state.active_enemies end
+        
+        local n = state.active_enemies
 
-        end
+        if ability.max_targets then n = min( n, ability.max_targets ) end
+        if ability.max_ttd then n = min( n, Hekili:GetNumTTDsBefore( ability.max_ttd + state.offset + state.delay ) ) end
+        if ability.min_ttd then n = min( n, Hekili:GetNumTTDsAfter( ability.min_ttd + state.offset + state.delay ) ) end
 
-        return state.active_enemies
+        return n
     end 
 } )
 
@@ -1658,12 +1688,12 @@ local mt_state = {
 
         elseif k == 'refreshable' then
             -- When cycling targets, we want to consider that there may be a valid other target.
-            if t.isCyclingTargets( action, aura_name ) then return true end
+            -- if t.isCyclingTargets( action, aura_name ) then return true end
             if app then return app.remains < 0.3 * duration end
             return true
 
         elseif k == 'time_to_refresh' then
-            if t.isCyclingTargets( action, aura_name ) then return 0 end
+            -- if t.isCyclingTargets( action, aura_name ) then return 0 end
             if app then return max( 0, app.remains - ( 0.3 * app.duration ) ) end
             return 0
 
@@ -1710,11 +1740,11 @@ local mt_state = {
         if t.settings[k] ~= nil then return t.settings[k] end
         if t.toggle[k] ~= nil then return t.toggle[k] end
 
-        local stack = debugstack()
+        --[[ local stack = debugstack()
         -- if stack then stack = stack:match( "^(.-\n?.-\n?.-)\n" ) end
 
         Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable." .. ( stack and ( "\n" .. stack ) or "" ) )
-        return nil
+        return nil ]]
     end,
     __newindex = function(t, k, v)
         rawset(t, k, v)
@@ -3498,6 +3528,38 @@ local default_debuff_values = {
     unit = 'target'
 }
 
+local cycle_debuff = {
+    name = "cycle",
+    count = 0,
+    lastCount = 0,
+    lastApplied = 0,
+    expires = 0,
+    applied = 0,
+    duration = 0,
+    caster = 'nobody',
+    timeMod = 1,
+    v1 = 0,
+    v2 = 0,
+    v3 = 0,
+    unit = 'target',
+
+    down = true,
+    i_up = 0,
+    rank = 0,
+    react = 0,
+    refreshable = true,
+    remains = 0,
+    stack = 0,
+    stack_pct = 0,
+    tick_time_remains = 0,
+    ticking = false,
+    ticks = 0,
+    ticks_remains = 0,
+    time_to_refresh = 0,
+    up = false,
+}
+
+
 -- Table of default handlers for debuffs.
 -- Needs review.
 local mt_default_debuff = {
@@ -3505,6 +3567,11 @@ local mt_default_debuff = {
 
     __index = function( t, k )
         local class_aura = class.auras[ t.key ]
+
+        -- The aura is flagged to get info from a different target.
+        if state.IsCycling( t.key ) and cycle_debuff[ k ] ~= nil then
+            return cycle_debuff[ k ]
+        end
 
         if class_aura and rawget( class_aura, "meta" ) and class_aura.meta[ k ] then
             return class_aura.meta[ k ]( t, "debuff" )
@@ -3554,20 +3621,22 @@ local mt_default_debuff = {
             return not t.up
 
         elseif k == 'remains' then
+            -- if state.isCyclingTargets( nil, t.key ) then return 0 end
             if class_aura and class_aura.strictTiming then
                 return max( 0, t.expires - state.query_time )
             end
             return max( 0, t.expires - state.query_time - ( state.settings.debuffPadding or 0 ) )
 
         elseif k == 'refreshable' then
-            if state.isCyclingTargets( nil, t.key ) then return true end
+            -- if state.isCyclingTargets( nil, t.key ) then return true end
             return t.remains < 0.3 * ( class_aura and class_aura.duration or t.duration or 30 )
 
         elseif k == 'time_to_refresh' then
-            if state.isCyclingTargets( nil, t.key ) then return 0 end
+            -- if state.isCyclingTargets( nil, t.key ) then return 0 end
             return t.up and ( max( 0, state.query_time - ( 0.3 * ( class_aura and class_aura.duration or t.duration or 30 ) ) ) ) or 0
 
         elseif k == 'stack' then
+            -- if state.isCyclingTargets( nil, t.key ) then return 0 end
             if t.up then return ( t.count ) else return 0 end
 
         elseif k == 'react' then
@@ -4628,6 +4697,8 @@ function state.reset( dispName )
     state.delay = 0
     state.cast_start = 0
     state.false_start = 0
+
+    state.ClearCycle()
 
     state.selectionTime = 60
     state.selectedAction = nil
