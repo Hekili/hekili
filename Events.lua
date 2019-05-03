@@ -582,6 +582,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, 
             lowLevelWarned = true
         end
     end
+    -- Hekili:ForceUpdate( event )
 end )
 
 
@@ -687,6 +688,7 @@ RegisterUnitEvent( "UNIT_AURA", function( event, unit )
     elseif UnitIsUnit( unit, "target" ) and state.target.updated then
         Hekili.ScrapeUnitAuras( "target" )
         state.target.updated = false
+    
     end
 end )
 
@@ -717,8 +719,10 @@ RegisterUnitEvent( "UNIT_SPELLCAST_FAILED_QUIET", HandleCasts ) ]]
 
 RegisterEvent( "SPELL_UPDATE_COOLDOWN", function()
     local gcdStart = GetSpellCooldown( 61304 )
-
-    state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
+    if state.gcd.lastStart ~= gcdStart then
+        state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
+        Hekili:ForceUpdate()
+    end
 end )
 
 
