@@ -859,7 +859,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 if azerite.chaotic_transformation.enabled then
                     setCooldown( "eye_beam", 0 )
                     setCooldown( "blade_dance", 0 )
-                    setCooldown( "annihilation", 0 )
+                    setCooldown( "death_sweep", 0 )
                 end
             end,
 
