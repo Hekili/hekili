@@ -621,7 +621,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             else
                                 -- Target Cycling.
                                 -- We have to determine *here* whether the ability would be used on the current target or a different target.
-                                if state.args.cycle_targets == 1 and state.settings.cycle and state.active_enemies > 1 then
+                                if state.args.cycle_targets == 1 and state.settings.cycle and state.spell_targets[ entry.action ] > 1 then
                                     state.SetupCycle( ability )
                                 end
 
