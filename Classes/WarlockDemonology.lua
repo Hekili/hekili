@@ -1029,10 +1029,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             talent = 'doom',
             
-            cycleMinTime = function () return 1 + debuff.doom.duration end,
+            cycle = "doom",
+            min_ttd = function () return 3 + debuff.doom.duration end,
 
-            readyTime = function () return isCyclingTargets() and 0 or debuff.doom.remains end,
-            usable = function () return isCyclingTargets() or ( target.time_to_die < 3600 and target.time_to_die > debuff.doom.duration ) end,
+            -- readyTime = function () return IsCycling() and 0 or debuff.doom.remains end,
+            -- usable = function () return IsCycling() or ( target.time_to_die < 3600 and target.time_to_die > debuff.doom.duration ) end,
             handler = function ()
                 applyDebuff( 'target', 'doom' )
             end,
@@ -1461,6 +1462,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         nameplates = false,
         nameplateRange = 8,
+
+        cycle = true,
 
         damage = true,
         damageExpiration = 6,
