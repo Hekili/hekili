@@ -1731,7 +1731,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         gcd = "off",
 
         recheck = function () return energy[ "time_to_" .. action.rake.cost ], energy[ "time_to_" .. ( action.rake.cost + 1 ) ], buff.incarnation.remains - 0.1, buff.incarnation.remains end,
-        usable = function () return boss and race.night_elf end,
+        usable = function () return boss end, -- race.night_elf removed to fix non-english clients
         handler = function ()
             applyBuff( "shadowmeld" )
         end,
