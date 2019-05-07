@@ -948,7 +948,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cycle = function ()
                 if dot.festering_wound.stack >= 2 and active_dot.festering_wound < active_enemies then return "festering_wound" end
             end,
-            cycleMin = 8, -- don't try to cycle onto targets that will die too fast to get consumed.
+            min_ttd = 8, -- don't try to cycle onto targets that will die too fast to get consumed.
 
             handler = function ()
                 applyDebuff( "target", "festering_wound", 24, debuff.festering_wound.stack + 2 )
