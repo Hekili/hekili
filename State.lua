@@ -635,8 +635,8 @@ do
         end
 
         cycle.expires = cDebuff.expires
-        cycle.minTTD = ability.cycleMinTime
-        cycle.maxTTD = ability.cycleMaxTime
+        cycle.minTTD  = ability.min_ttd
+        cycle.maxTTD  = ability.max_ttd
 
         cycle.aura = aura
         debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
@@ -645,9 +645,11 @@ do
     function state.IsCycling( aura )
         if not cycle.aura then return false end
         if aura and cycle.aura ~= aura then return false end
-        if cycle.expires < state.query_time then return false end
+        if state.active_enemies == 1 then return false end
+        if cycle.expires < state.query_time then return false end        
 
         local targets = state.active_enemies
+
         if cycle.minTTD then targets = min( targets, Hekili:GetNumTTDsAfter( cycle.minTTD + state.delay + state.offset ) ) end
         if cycle.maxTTD then targets = min( targets, Hekili:GetNumTTDsBefore( cycle.maxTTD + state.delay + state.offset ) ) end
 
@@ -974,7 +976,7 @@ state.spell_targets = setmetatable( {}, {
     __index = function( t, k )
         local ability = class.abilities[ k ]
 
-        if not ability then return state.active_enemies end
+        if not ability or state.active_enemies == 1 then return state.active_enemies end
         
         local n = state.active_enemies
 
@@ -2065,7 +2067,7 @@ local mt_target = {
             return UnitLevel('target') or UnitLevel('player')
 
         elseif k == 'unit' then
-            if state.args.cycle_target then return UnitGUID( 'target' ) .. 'c' or 'cycle'
+            if state.args.cycle_target == 1 then return UnitGUID( 'target' ) .. 'c' or 'cycle'
             elseif state.args.target then return UnitGUID( 'target' ) .. '+' .. state.args.target or 'unknown' end
             return UnitGUID( 'target' ) or 'unknown'
 
