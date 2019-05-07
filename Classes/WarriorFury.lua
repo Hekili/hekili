@@ -602,20 +602,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
 
-        -- override this to account for recheck.
-        lights_judgment = {
-            id = 255647,
-            cast = 0,
-            cooldown = 150,
-            gcd = "spell",
-
-            toggle = 'cooldowns',
-
-            usable = function () return race.lightforged_draenei end,
-            recheck = function () return cooldown.recklessness.remains - 3, cooldown.recklessness.remains end,   
-        },
-
-
         piercing_howl = {
             id = 12323,
             cast = 0,

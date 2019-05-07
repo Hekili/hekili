@@ -1723,21 +1723,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     } )
 
 
-    -- Override this for rechecking.
-    spec:RegisterAbility( "shadowmeld", {
-        id = 58984,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-
-        recheck = function () return energy[ "time_to_" .. action.rake.cost ], energy[ "time_to_" .. ( action.rake.cost + 1 ) ], buff.incarnation.remains - 0.1, buff.incarnation.remains end,
-        usable = function () return boss and race.night_elf end,
-        handler = function ()
-            applyBuff( "shadowmeld" )
-        end,
-    } )
-
-
     spec:RegisterOptions( {
         enabled = true,
 

@@ -1586,7 +1586,7 @@ all:RegisterAbilities( {
         cooldown = 120,
         gcd = "off",
 
-        -- usable = function () return boss and race.night_elf end,
+        usable = function () return boss and group end,
         handler = function ()
             applyBuff( "shadowmeld" )
         end,

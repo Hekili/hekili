@@ -1116,7 +1116,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 132331,
 
-            usable = function () return boss end,
+            usable = function () return boss and group end,
             handler = function ()
                 applyBuff( 'vanish', 3 )
                 applyBuff( "stealth" )
@@ -1147,7 +1147,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         cooldown = 120,
         gcd = "off",
 
-        usable = function () return boss and race.night_elf end,
+        usable = function () return boss and group end,
         handler = function ()
             applyBuff( "shadowmeld" )
         end,
