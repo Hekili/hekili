@@ -510,6 +510,7 @@ end )
 
 RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
     state.combat = GetTime() - 0.01
+    Hekili:ForceUpdate() -- Force update on entering combat since OOC refresh can be very slow (0.5s).
 end )
 
 
