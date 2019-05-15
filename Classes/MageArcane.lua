@@ -1037,17 +1037,17 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     } )
 
 
-    spec:RegisterPrefs( {
-        arcane_info = {
-            type = "description",
-            name = "The Arcane Mage module treats combat as one of two phases.  The 'Burn' phase begins when you have used Arcane Power and begun aggressively burning mana.  The 'Conserve' phase starts when you've completed a burn phase and used Evocation to refill your mana bar.  This phase is less " ..
-                "aggressive with mana expenditure, so that you will be ready when it is time to start another burn phase.",
+    spec:RegisterSetting( "arcane_info", nil, {
+        type = "description",
+        name = "The Arcane Mage module treats combat as one of two phases.  The 'Burn' phase begins when you have used Arcane Power and begun aggressively burning mana.  The 'Conserve' phase starts when you've completed a burn phase and used Evocation to refill your mana bar.  This phase is less " ..
+            "aggressive with mana expenditure, so that you will be ready when it is time to start another burn phase.",
 
-            width = "full",
-            order = 1,
-        },
+        width = "full",
+        order = 1,
+    } )
 
-        conserve_mana = {
+    
+    --[[ spec:RegisterSetting( "conserve_mana", 75, { -- NYI
             type = "range",
             name = "Minimum Mana (Conserve Phase)",
             desc = "Specify the amount of mana (%) that should be conserved when conserving mana before a burn phase.",
@@ -1059,7 +1059,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             width = "full",
             order = 2,
         }
-    } )
+    } ) ]]
 
 
     spec:RegisterOptions( {
