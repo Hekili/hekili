@@ -989,9 +989,10 @@ local bindingSubs = {
     ["MULTIPLY"] = "*",
     ["DIVIDE"] = "/",
     ["BUTTON"] = "M",
+    ["DOWN"] = "Dn",
+    ["UP"] = "Up",
     ["MOUSEWHEEL"] = "Mw",
-    ["DOWN"] = "D",
-    ["UP"] = "U",
+    ["BACKSPACE"] = "BkSp"
 }
 
 local function improvedGetBindingText( binding )
