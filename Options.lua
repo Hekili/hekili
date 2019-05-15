@@ -243,9 +243,9 @@ local displayTemplate = {
     keepAspectRatio = true,
     zoom = 30,
 
-    font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+    --[[ font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
     fontSize = 12,
-    fontStyle = "OUTLINE",
+    fontStyle = "OUTLINE", ]]
 
     queue = {
         anchor = 'RIGHT',
@@ -261,9 +261,9 @@ local displayTemplate = {
         offsetY = 0,
         spacing = 5,
 
-        font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
+        --[[ font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
         fontSize = 12,
-        fontStyle = "OUTLINE"
+        fontStyle = "OUTLINE" ]]
     },
 
     visibility = {
@@ -2045,6 +2045,86 @@ do
                             args = fontElements,
                         },
                     }                    
+                },
+
+                fontHeader = {
+                    type = "header",
+                    name = "Fonts",
+                    order = 960,
+                },
+            
+                font = {
+                    type = "select",
+                    name = "Font",
+                    order = 960.1,
+                    width = "double",
+                    dialogControl = 'LSM30_Font',
+                    values = LSM:HashTable("font"),
+                    get = function( info )
+                        -- Display the information from Primary, Keybinds.
+                        return Hekili.DB.profile.displays.Primary.keybindings.font
+                    end,
+                    set = function( info, val )
+                        -- Set all fonts in all displays.
+                        for name, display in pairs( Hekili.DB.profile.displays ) do
+                            display.captions.font = val
+                            display.delays.font = val
+                            display.keybindings.font = val
+                            display.targets.font = val
+                        end
+                        Hekili:BuildUI()
+                    end,
+                },
+        
+                fontSize = {
+                    type = "range",
+                    name = "Size",
+                    order = 960.2,
+                    min = 8,
+                    max = 64,
+                    step = 1,
+                    get = function( info )
+                        -- Display the information from Primary, Keybinds.
+                        return Hekili.DB.profile.displays.Primary.keybindings.fontSize
+                    end,
+                    set = function( info, val )
+                        -- Set all fonts in all displays.
+                        for name, display in pairs( Hekili.DB.profile.displays ) do
+                            display.captions.fontSize = val
+                            display.delays.fontSize = val
+                            display.keybindings.fontSize = val
+                            display.targets.fontSize = val
+                        end
+                        Hekili:BuildUI()
+                    end,
+                },
+        
+                fontStyle = {
+                    type = "select",
+                    name = "Style",
+                    order = 960.3,
+                    values = {
+                        ["MONOCHROME"] = "Monochrome",
+                        ["MONOCHROME,OUTLINE"] = "Monochrome, Outline",
+                        ["MONOCHROME,THICKOUTLINE"] = "Monochrome, Thick Outline",
+                        ["NONE"] = "None",
+                        ["OUTLINE"] = "Outline",
+                        ["THICKOUTLINE"] = "Thick Outline"
+                    },
+                    get = function( info )
+                        -- Display the information from Primary, Keybinds.
+                        return Hekili.DB.profile.displays.Primary.keybindings.fontStyle
+                    end,
+                    set = function( info, val )
+                        -- Set all fonts in all displays.
+                        for name, display in pairs( Hekili.DB.profile.displays ) do
+                            display.captions.fontStyle = val
+                            display.delays.fontStyle = val
+                            display.keybindings.fontStyle = val
+                            display.targets.fontStyle = val
+                        end
+                        Hekili:BuildUI()
+                    end,
                 },
 
                 shareHeader = {
