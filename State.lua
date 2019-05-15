@@ -51,6 +51,7 @@ state.latency = 0
 
 state.filter = "none"
 state.cycle_aura = 'no_aura'
+state.cast_target = 'nobody'
 
 state.arena = false
 state.bg = false
@@ -1391,6 +1392,9 @@ local mt_state = {
         -- First, any values that don't reference an ability or aura.
         elseif k == 'this_action' or k == 'current_action' then
             return 'wait'
+
+        elseif k == 'cast_target' then
+            return 'nobody'
 
         elseif k == 'delay' then
             return 0
