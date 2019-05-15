@@ -1982,7 +1982,7 @@ all:RegisterAbility( "malformed_heralds_legwraps", {
     toggle = "cooldowns",
 
     usable = function () return buff.movement.down end,
-    handler = function () applybuff( "void_embrace" ) end,
+    handler = function () applyBuff( "void_embrace" ) end,
 } )
 
 all:RegisterAura( "void_embrace", {
