@@ -503,10 +503,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             id = 121411,
             duration = 14,
             max_stack = 1,
-            tick_time = function () return debuff.crimson_tempest.exsanguinated and haste or ( 2 * haste ) end,
             meta = {
-                exsanguinated = function () return debuff.crimson_tempest.up and crimson_tempests[ target.unit ] end,                
-                last_tick = function () return ltCT[ target.unit ] or debuff.crimson_tempest.applied end,
+                exsanguinated = function ( t ) return t.up and crimson_tempests[ target.unit ] end,                
+                last_tick = function ( t ) return ltCT[ target.unit ] or t.applied end,
+                tick_time = function( t ) return t.exsanguinated and haste or ( 2 * haste ) end,
             },                    
         },
         crimson_vial = {
@@ -562,11 +562,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             id = 703,
             duration = 18,
             max_stack = 1,
-            tick_time = function () return debuff.garrote.exsanguinated and haste or ( 2 * haste ) end,
             meta = {
-                exsanguinated = function () return debuff.garrote.up and garrotes[ target.unit ] end,
-                last_tick = function () return ltG[ target.unit ] or debuff.garrote.applied end,
-                ss_buffed = function () return debuff.garrote.up and ssG[ target.unit ] end,
+                exsanguinated = function ( t ) return t.up and garrotes[ target.unit ] end,
+                last_tick = function ( t ) return ltG[ target.unit ] or t.applied end,
+                ss_buffed = function ( t ) return t.up and ssG[ target.unit ] end,
+                tick_time = function ( t )
+                    --if not talent.exsanguinate.enabled then return 2 * haste end
+                    return t.exsanguinated and haste or ( 2 * haste ) end,
             },                    
         },
         garrote_silence = {
@@ -583,10 +585,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             id = 154953,
             duration = 6,
             max_stack = 1,
-            tick_time = function () return debuff.internal_bleeding.exsanguinated and ( 0.5 * haste ) or haste end,
             meta = {
-                exsanguinated = function () return debuff.internal_bleeding.up and internal_bleedings[ target.unit ] end,
-                last_tick = function () return ltIB[ target.unit ] or debuff.internal_bleeding.applied end,
+                exsanguinated = function ( t ) return t.up and internal_bleedings[ target.unit ] end,
+                last_tick = function ( t ) return ltIB[ target.unit ] or t.applied end,
+                tick_time = function ( t )
+                    --if not talent.exsanguinate.enabled then return haste end
+                    return t.exsanguinated and ( 0.5 * haste ) or haste end,
             },                    
         },
         kidney_shot = {
@@ -623,10 +627,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             id = 1943,
             duration = function () return talent.deeper_stratagem.enabled and 28 or 24 end,
             max_stack = 1,
-            tick_time = function () return debuff.rupture.exsanguinated and haste or ( 2 * haste ) end,
             meta = {
-                exsanguinated = function () return debuff.rupture.up and ruptures[ target.unit ] end,
-                last_tick = function () return ltR[ target.unit ] or debuff.rupture.applied end,
+                last_tick = function ( t ) return ltR[ target.unit ] or t.applied end,
+                tick_time = function ( t )
+                    --if not talent.exsanguinate.enabled then return 2 * haste end
+                    return t.exsanguinated and haste or ( 2 * haste ) end,
             },                    
         },
         seal_fate = {
