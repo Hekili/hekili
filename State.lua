@@ -1259,8 +1259,8 @@ do
                     local varIDs = state:GetVariableIDs( var )
 
                     if varIDs then
-                        for _, sID in ipairs( varIDs ) do
-                            local vr = scripts.DB[ sID ].VarRecheck
+                        for _, entry in ipairs( varIDs ) do
+                            local vr = scripts.DB[ entry.id ].VarRecheck
                             if vr then recheckHelper( times, vr() ) end
                         end
                     end
@@ -3255,53 +3255,53 @@ ns.metatables.mt_totem = mt_totem
 
 do
     local db = {}
-    local cache = {}
+    local pathState = {}
 
-    local required = {}
-    local forbidden = {}   
-    local pathCache = {}
-
-    
     function state:RegisterVariable( key, scriptID, preconditions, preclusions )
         local data = db[ key ] or {}
-        insert( data, scriptID )
         db[ key ] = data
 
-        cache[ key ] = cache[ key ] or {}
-        
-        required[ scriptID ] = required[ scriptID ] or {}
+        local fullPath = scriptID
+
+        local entry = {
+            id = scriptID,
+            mustPass = {},
+            mustFail = {}
+        }
+
         if preconditions then
             for i, prereq in ipairs( preconditions ) do
-                if prereq.script ~= 0 then
-                    insert( required[ scriptID ], prereq.script )
+                local script = prereq.script
+                if script ~= 0 then
+                    insert( entry.mustPass, script )
+                    fullPath = fullPath .. "+" .. script
                 end
             end
         end
 
-        forbidden[ scriptID ] = forbidden[ scriptID ] or {}
         if preclusions then
             for i, block in ipairs( preclusions ) do
-                if block.script ~= 0 then                
-                    insert( forbidden[ scriptID ], block.script )
+                local script = block.script
+                if script ~= 0 then                
+                    insert( entry.mustFail, script )
+                    fullPath = fullPath .. "-" .. script
                 end
             end
         end
 
-        pathCache[ scriptID ] = pathCache[ scriptID ] or {}
+        entry.fullPath = fullPath
+        insert( data, entry )
     end
 
+
+    local pathState = {}
 
     function state:ResetVariables()
         for k, v in pairs( db ) do
             wipe( v )
-            wipe( cache[ k ] )
         end
 
-        for k, v in pairs( pathCache ) do
-            wipe( v )
-            wipe( required[ k ] )
-            wipe( forbidden[ k ] )
-        end
+        wipe( pathState )
     end
 
 
@@ -3320,12 +3320,6 @@ do
                 return 0
             end
 
-            local value = cache[ var ][ state.query_time ]
-            if value ~= nil then
-                -- if debug then Hekili:Debug( "var[%s] :: using cached value at %.2f (%s).", var, state.query_time, tostring( value ) ) end
-                return value
-            end
-
             local parent = state.scriptID
 
             -- If we're checking variable with no script loaded, don't bother.
@@ -3335,32 +3329,44 @@ do
             local value = 0
             local now = state.query_time
 
-            for i, scriptID in ipairs( data ) do
-                local path = pathCache[ scriptID ]
+            for i, entry in ipairs( data ) do
+                local scriptID = entry.id
+                local currPath = entry.fullPath .. ":" .. now
+
+                -- if debug then Hekili:Debug(" - %d of %d (%s) - %s", i, #data, currPath, tostring(pathState[ currPath ])) end
 
                 -- Check the requirements/exclusions in the APL stack.
-                if path[ now ] == nil then
-                    path[ now ] = true
+                if pathState[ currPath ] == nil then
+                    pathState[ currPath ] = true
 
-                    for r, prereq in ipairs( required[ scriptID ] ) do
+                    for r, prereq in ipairs( entry.mustPass ) do
                         state.scriptID = prereq
-                        path[ now ] = scripts:CheckScript( prereq )
-                        if not path[ now ] then break end
+                        if not scripts:CheckScript( prereq ) then
+                            pathState[ currPath ] = false
+                            -- if debug then Hekili:Debug( " - path to variable is blocked by prereq %s.", prereq ) end
+                            break
+                        end
+                    end
 
+                    if pathState[ currPath ] then
                         for e, excl in ipairs( forbidden[ scriptID ] ) do
                             state.scriptID = excl
-                            path[ now ] = not scripts:CheckScript( excl )
-
-                            if path[ now ] then break end
+                            if scripts:CheckScript( excl ) then
+                                pathState[ currPath ] = false
+                                -- if debug then Hekili:Debug( " - path to variable not reached due to forbidden %s.", prereq ) end
+                                break
+                            end
                         end
                     end
                 end
 
-                if path[ now ] then
+                if pathState[ currPath ] then
                     state.scriptID = scriptID
                     local op = state.args.op or "set"
 
                     local passed = scripts:CheckScript( scriptID )
+
+                    -- if debug then Hekili:Debug( " - %s, %s, value: %s, value_else: %s", op, tostring(passed), tostring(state.args.value), tostring(state.args.value_else)) end
 
                     --[[    add = "Add Value",
                             ceil
@@ -3430,8 +3436,6 @@ do
                     -- if debug then Hekili:Debug( "var[%s] [%02d/%s] :: op: %s, conditions: %s -- [%s]; value: %s", var, i, scriptID, state.args.op or "autoset", scripts:GetConditionsAndValues( scriptID ), tostring( passed ), tostring( value ) ) end
                 end
             end
-
-            cache[ var ][ now ] = value
 
             state.scriptID = parent
             return value
