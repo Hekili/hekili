@@ -3349,7 +3349,7 @@ do
                     end
 
                     if pathState[ currPath ] then
-                        for e, excl in ipairs( forbidden[ scriptID ] ) do
+                        for e, excl in ipairs( entry.mustFail ) do
                             state.scriptID = excl
                             if scripts:CheckScript( excl ) then
                                 pathState[ currPath ] = false
