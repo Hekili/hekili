@@ -140,7 +140,9 @@ Hekili.Class = {
     pvptalents = {},
     auras = {},
     powers = {},
-    gear = {},
+	gear = {},
+	
+	knownAuraAttributes = {},
 
     stateExprs = {},
     stateFuncs = {},

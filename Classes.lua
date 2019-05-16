@@ -189,6 +189,8 @@ local HekiliSpecMixin = {
             else
                 a[ element ] = value
             end
+
+            class.knownAuraAttributes[ element ] = true
         end
 
         self.auras[ aura ] = a
@@ -219,6 +221,7 @@ local HekiliSpecMixin = {
         if data.meta then
             for k, v in pairs( data.meta ) do
                 if type( v ) == 'function' then data.meta[ k ] = setfenv( v, state ) end
+                class.knownAuraAttributes[ k ] = true
             end
         end
 

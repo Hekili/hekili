@@ -1185,7 +1185,6 @@ local function forecastResources( resource )
             r.fcount = idx
         end
     end
-
 end
 ns.forecastResources = forecastResources
 state.forecastResources = forecastResources
@@ -1376,6 +1375,48 @@ local mt_false = {
 ns.metatables.mt_false = mt_false
 
 
+do
+    local a = class.knownAuraAttributes
+
+    -- Populate table of known aura attributes so we know if we should bother looking in buffs/debuffs for this information.
+
+    a.applied = true
+    a.caster = true
+    a.cooldown_remains = true
+    a.count = true
+    a.down = true
+    a.duration = true
+    a.expires = true
+    a.i_up = true
+    a.id = true
+    a.key = true
+    a.lastApplied = true
+    a.lastCount = true
+    a.max_stack = true
+    a.max_stacks = true
+    a.mine = true
+    a.name = true
+    a.rank = true
+    a.react = true
+    a.refreshable = true
+    a.remains = true
+    a.stack = true
+    a.stack_pct = true
+    a.stacks = true
+    a.tick_time_remains = true
+    a.ticking = true
+    a.ticks = true
+    a.ticks_remain = true
+    a.time_to_refresh = true
+    a.timeMod = true
+    a.unit = true
+    a.up = true
+    a.v1 = true
+    a.v2 = true
+    a.v3 = true
+end    
+
+
 -- Gives calculated values for some state options in order to emulate SimC syntax.
 local mt_state = {
     __index = function( t, k )
@@ -1388,6 +1429,9 @@ local mt_state = {
 
         elseif k == "display" then
             return "Primary"
+
+        elseif k == "scriptID" then
+            return nil 
 
         -- First, any values that don't reference an ability or aura.
         elseif k == 'this_action' or k == 'current_action' then
@@ -1678,59 +1722,65 @@ local mt_state = {
         end
 
 
-        -- Buffs, debuffs...
-        local aura_name = ability and ability.aura or t.this_action
-        local aura = class.auras[ aura_name ]
+        if class.knownAuraAttributes[ k ] then
+            -- Buffs, debuffs...
+            local aura_name = ability and ability.aura or t.this_action
+            local aura = class.auras[ aura_name ]
 
-        local app = aura and ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) or nil
+            local app = aura and ( t.buff[ aura_name ].up and t.buff[ aura_name ] ) or ( t.debuff[ aura_name ].up and t.debuff[ aura_name ] ) or nil
 
-        -- This uses the default aura duration (if available) to keep pandemic windows accurate.
-        local duration = aura and aura.duration or 15
-        -- This allows for overridden tick times on a particular application of an aura (i.e., Exsanguinate).
-        local tick_time = app and app.tick_time or ( aura and aura.tick_time ) or ( 3 * t.haste )
+            -- This uses the default aura duration (if available) to keep pandemic windows accurate.
+            local duration = aura and aura.duration or 15
+            
+            -- This allows for overridden tick times on a particular application of an aura (i.e., Exsanguinate).
+            local tick_time = app and app.tick_time or ( aura and aura.tick_time ) or ( 3 * t.haste )
 
-        if k == 'duration' then            
-            return duration
+            if k == 'duration' then            
+                return duration
 
-        elseif k == 'refreshable' then
-            -- When cycling targets, we want to consider that there may be a valid other target.
-            -- if t.isCyclingTargets( action, aura_name ) then return true end
-            if app then return app.remains < 0.3 * duration end
-            return true
+            elseif k == 'refreshable' then
+                -- When cycling targets, we want to consider that there may be a valid other target.
+                -- if t.isCyclingTargets( action, aura_name ) then return true end
+                if app then return app.remains < 0.3 * duration end
+                return true
 
-        elseif k == 'time_to_refresh' then
-            -- if t.isCyclingTargets( action, aura_name ) then return 0 end
-            if app then return max( 0, app.remains - ( 0.3 * app.duration ) ) end
-            return 0
+            elseif k == 'time_to_refresh' then
+                -- if t.isCyclingTargets( action, aura_name ) then return 0 end
+                if app then return max( 0, app.remains - ( 0.3 * app.duration ) ) end
+                return 0
 
-        elseif k == 'ticking' or k == "up" then
-            if app then return app.up end
-            return false
+            elseif k == 'ticking' or k == "up" then
+                if app then return app.up end
+                return false
 
-        elseif k == "down" then
-            if app then return app.down end
-            return true
+            elseif k == "down" then
+                if app then return app.down end
+                return true
 
-        elseif k == 'ticks' then
-            if app then return 1 + floor( duration / tick_time ) - t.ticks_remain end
-            return 0
+            elseif k == 'ticks' then
+                if app then return 1 + floor( duration / tick_time ) - t.ticks_remain end
+                return 0
 
-        elseif k == 'ticks_remain' then
-            if app then return 1 + floor( app.remains / tick_time ) end
-            return 0
+            elseif k == 'ticks_remain' then
+                if app then return 1 + floor( app.remains / tick_time ) end
+                return 0
 
-        elseif k == 'tick_time_remains' then
-            if app then return ( app.remains % tick_time ) end
-            return 0
+            elseif k == 'tick_time_remains' then
+                if app then return ( app.remains % tick_time ) end
+                return 0
 
-        elseif k == 'remains' then
-            if app then return app.remains end
-            return 0
+            elseif k == 'remains' then
+                if app then return app.remains end
+                return 0
 
-        elseif k == 'tick_time' then
-            if app then return tick_time end
-            return 0
+            elseif k == 'tick_time' then
+                if app then return tick_time end
+                return 0
 
+            else
+                if app and app[ k ] ~= nil then return app[ k ] end
+
+            end
         end
 
 
@@ -2931,6 +2981,7 @@ local mt_default_buff = {
         if t.meta and t.meta[ k ] then
             return
         end
+        class.knownAuraAttributes[ k ] = true
         t[ k ] = v
     end
 }
@@ -3564,7 +3615,7 @@ local cycle_debuff = {
     tick_time_remains = 0,
     ticking = false,
     ticks = 0,
-    ticks_remains = 0,
+    ticks_remain = 0,
     time_to_refresh = 0,
     up = false,
 }
@@ -3576,22 +3627,22 @@ local mt_default_debuff = {
     mtID = "default_debuff",
 
     __index = function( t, k )
-        local class_aura = class.auras[ t.key ]
+        local aura = class.auras[ t.key ]
 
         -- The aura is flagged to get info from a different target.
         if state.IsCycling( t.key ) and cycle_debuff[ k ] ~= nil then
             return cycle_debuff[ k ]
         end
 
-        if class_aura and rawget( class_aura, "meta" ) and class_aura.meta[ k ] then
-            return class_aura.meta[ k ]( t, "debuff" )
+        if aura and rawget( aura, "meta" ) and aura.meta[ k ] then
+            return aura.meta[ k ]( t, "debuff" )
 
         elseif requiresLookup[ k ] then
-            if class_aura and class_aura.generate then
+            if aura and aura.generate then
                 for attr, a_val in pairs( default_debuff_values ) do
                     t[ attr ] = rawget( t, attr ) or a_val
                 end
-                class_aura.generate( t, "debuff" )
+                aura.generate( t, "debuff" )
                 return t[ k ]
             end
 
@@ -3631,19 +3682,18 @@ local mt_default_debuff = {
             return not t.up
 
         elseif k == 'remains' then
-            -- if state.isCyclingTargets( nil, t.key ) then return 0 end
-            if class_aura and class_aura.strictTiming then
+            if aura and aura.strictTiming then
                 return max( 0, t.expires - state.query_time )
             end
             return max( 0, t.expires - state.query_time - ( state.settings.debuffPadding or 0 ) )
 
         elseif k == 'refreshable' then
             -- if state.isCyclingTargets( nil, t.key ) then return true end
-            return t.remains < 0.3 * ( class_aura and class_aura.duration or t.duration or 30 )
+            return t.remains < 0.3 * ( aura and aura.duration or t.duration or 30 )
 
         elseif k == 'time_to_refresh' then
             -- if state.isCyclingTargets( nil, t.key ) then return 0 end
-            return t.up and ( max( 0, state.query_time - ( 0.3 * ( class_aura and class_aura.duration or t.duration or 30 ) ) ) ) or 0
+            return t.up and ( max( 0, state.query_time - ( 0.3 * ( aura and aura.duration or t.duration or 30 ) ) ) ) or 0
 
         elseif k == 'stack' then
             -- if state.isCyclingTargets( nil, t.key ) then return 0 end
@@ -3661,35 +3711,35 @@ local mt_default_debuff = {
             return state.query_time > t.lastApplied and t.lastCount or 0
 
         elseif k == 'max_stack' or k == 'max_stacks' then
-            return class_aura and class_aura.max_stack or 1
+            return aura and aura.max_stack or 1
 
         elseif k == 'stack_pct' then
             if t.up then
-                if class_aura then class_aura.max_stack = max( class_aura.max_stack or 1, t.count ) end
-                return ( 100 * t.count / class_aura and class_aura.max_stack or t.count )
+                if aura then aura.max_stack = max( aura.max_stack or 1, t.count ) end
+                return ( 100 * t.count / aura and aura.max_stack or t.count )
             end 
 
             return 0
 
         elseif k == 'pmultiplier' then
             -- Persistent modifier, used by Druids.
-            return ns.getModifier( class_aura.id, state.target.unit )
+            return ns.getModifier( aura.id, state.target.unit )
 
         elseif k == 'ticks' then
-            if t.up then return floor( 1 + ( ( class_aura.duration or ( 30 * state.haste ) ) / ( class_aura.tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain ) end
+            if t.up then return floor( 1 + ( ( aura.duration or ( 30 * state.haste ) ) / ( aura.tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain ) end
             return 0
 
         elseif k == 'ticks_remain' then
-            if not class_aura.tick_time then return t.remains end
-            return floor( t.remains / class_aura.tick_time )       
+            if not aura.tick_time then return t.remains end
+            return floor( t.remains / aura.tick_time )       
 
         elseif k == 'tick_time_remains' then
-            if not class_aura.tick_time then return t.remains end
-            return t.remains % class_aura.tick_time
+            if not aura.tick_time then return t.remains end
+            return t.remains % aura.tick_time
 
         else
-            if class_aura and class_aura[ k ] ~= nil then
-                return class_aura[ k ]
+            if aura and aura[ k ] ~= nil then
+                return aura[ k ]
             end
         end
 
@@ -4699,7 +4749,6 @@ end
 
 
 function state.reset( dispName )
-
     state.now = GetTime()
     state.index = 0
     state.scriptID = nil
