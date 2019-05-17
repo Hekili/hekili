@@ -862,6 +862,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             startsCombat = true,
             texture = 135813,
 
+            cycle = "flame_shock",
+
             handler = function ()
                 applyDebuff( 'target', 'flame_shock' )
                 if buff.surge_of_power.up then
