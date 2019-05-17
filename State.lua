@@ -622,9 +622,14 @@ do
         end
 
         local aura = ability.cycle
+        
+        if not aura then
+            -- Fallback check, is there an aura with the same name as the ability?
+            aura = class.auras[ ability.key ] and ability.key
+        end
 
         if not aura then
-            debug( " - no aura flagged for cycling targets in ability / spec module." )
+            debug( " - no aura identified for target-cycling and no aura matching " .. ability.key .. " found in ability / spec module; target cycling disabled." )
             return
         end
 
