@@ -126,7 +126,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
         ironskin_brew = {
             id = 215479,
-            duration = 7,
+            duration = 21,
             max_stack = 1,
         },
         keg_smash = {
