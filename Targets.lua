@@ -556,6 +556,7 @@ do
 
         return count
     end
+    Hekili.GetNumTTDsBefore = Hekili.GetNumTTDsWithin
 
 
     function Hekili:GetNumTTDsAfter( x )
