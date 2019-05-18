@@ -863,6 +863,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 135813,
 
             cycle = "flame_shock",
+            min_ttd = function () return debuff.flame_shock.duration / 3 end,
 
             handler = function ()
                 applyDebuff( 'target', 'flame_shock' )
