@@ -773,8 +773,13 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 1360979,
 
             nobuff = "ironskin_brew_icd", -- implements 1s self-cooldown
-            readyTime = function () return max( ( 2 - charges_fractional ) * recharge, 0.01 + buff.ironskin_brew.remains - gcd.max ) end, -- should reserve 1 charge for purifying.
-            usable = function () return ( tanking or incoming_damage_3s > 0 ) end,
+            readyTime = function ()
+                if full_recharge_time < 3 then return 0 end
+                return max( ( 2 - charges_fractional ) * recharge, 0.01 + buff.ironskin_brew.remains - settings.isb_overlap ) end, -- should reserve 1 charge for purifying.
+            usable = function ()
+                if not tanking and incoming_damage_3s == 0 then return false, "player is not tanking or has not taken damage in 3s" end
+                return true
+            end,
 
             handler = function ()
                 applyBuff( "ironskin_brew_icd" )
@@ -1207,6 +1212,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
         min = 0,
         max = 100,
         step = 1,
+        width = "full",
+    } )
+
+    spec:RegisterSetting( "isb_overlap", 1, {
+        name = "|T1360979:0|t Ironskin Brew: Overlap Duration",
+        desc = "If set above zero, the addon will not recommend |T1360979:0|t Ironskin Brew until the buff has less than this number of seconds remaining, unless you are about to cap Ironskin Brew charges.",
+        type = "range",
+        min = 0,
+        max = 7,
+        step = 0.1,
         width = "full",
     } )
 
