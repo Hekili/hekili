@@ -887,7 +887,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     elseif sourceGUID == state.GUID or ns.isMinion( sourceGUID ) or ( sourceGUID == destGUID and sourceGUID == UnitGUID( 'target' ) ) then
 
         if aura_events[ subtype ] then
-            if state.GUID == destGUID then 
+            if subtype == "SPELL_CAST_SUCCESS" or state.GUID == destGUID then 
                 state.player.updated = true
                 if class.auras[ spellID ] then Hekili:ForceUpdate( subtype ) end
             end
