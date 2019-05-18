@@ -447,6 +447,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
 
     spec:RegisterStateExpr( "spreading_wounds", function ()
+        if talent.infected_claws.enabled and buff.dark_transformation.up then return false end -- Ghoul is dumping wounds for us, don't bother.
         return azerite.festermight.enabled and settings.cycle and settings.festermight_cycle and cooldown.death_and_decay.remains < 9 and active_dot.festering_wound < spell_targets.festering_strike
     end )
 
