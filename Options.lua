@@ -4873,7 +4873,7 @@ do
                                                             end,
                                                             hidden = function ()
                                                                 local e = GetListEntry( pack )
-                                                                if not e.criteria or e.criteria:trim() == "" then return true end
+                                                                -- if not e.criteria or e.criteria:trim() == "" then return true end
                                                                 return e.action ~= "variable" or e.op == "reset" or e.op == "ceil" or e.op == "floor"
                                                             end,
                                                         },
@@ -8359,7 +8359,7 @@ do
                     local key, value = str:match( "^(.-)=(.-)$" )
 
                     if key and value then
-                        if key == 'if' then key = 'criteria' end
+                        if key == 'if' or key == 'condition' then key = 'criteria' end
 
                         if key == 'criteria' or key == 'target_if' or key == 'value' or key == 'value_else' or key == 'sec' or key == 'wait' then
                             value = Sanitize( 'c', value, line, warnings )
