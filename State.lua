@@ -5340,7 +5340,7 @@ do
     }
 
     -- If an ability has been manually disabled, don't consider it.    
-    function state:IsDisabled( spell )
+    function state:IsDisabled( spell, strict )
         spell = spell or self.this_action
 
         local ability = class.abilities[ spell ]
@@ -5355,31 +5355,20 @@ do
 
         if option.disabled then return true end
 
-        local toggle = option.toggle
-        if not toggle or toggle == 'default' then toggle = ability.toggle end
+        if not strict then
+            local toggle = option.toggle
+            if not toggle or toggle == 'default' then toggle = ability.toggle end
 
-        if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
-            if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then
-                return true
-            else
-                if toggle and toggle ~= 'none' then
-                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true end
+            if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
+                if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then
+                    return true
+                else
+                    if toggle and toggle ~= 'none' then
+                        if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true end
+                    end
                 end
             end
         end
-
-        --[[ if ability.defensive and not profile.toggles.defensives.value then
-            return true
-        end ]]
-
-
-        --[[ if toggle and toggle ~= 'none' and not state.toggle[ toggle ] then
-            return true
-        end
-
-        if state.filter ~= 'none' and state.filter ~= toggle then
-            return true
-        end ]]
 
         return false
     end
