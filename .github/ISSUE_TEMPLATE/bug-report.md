@@ -1,9 +1,9 @@
 ---
 name: BUG REPORT
-about: For error messages or issues with addon recommendations.
+about: IF THE REQUIRED INFORMATION ISN'T PROVIDED, YOUR TICKET IS LIKELY TO BE DISCARDED
 title: ''
 labels: ''
-assignees: ''
+assignees: Hekili
 
 ---
 
