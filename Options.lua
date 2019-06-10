@@ -4045,6 +4045,16 @@ do
                     }
 
                     for i, option in ipairs( specCfg ) do
+                        if i > 1 and i % 2 == 1 then
+                            -- Insert line break.
+                            options.args.core.plugins.settings[ sName .. "LB" .. i ] = {
+                                type = "description",
+                                name = "",
+                                width = "full",
+                                order = option.info.order - 0.01
+                            }
+                        end
+
                         options.args.core.plugins.settings[ option.name ] = option.info
                         self.DB.profile.specs[ id ].settings[ option.name ] = self.DB.profile.specs[ id ].settings[ option.name ] or option.default
                     end
