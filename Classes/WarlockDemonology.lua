@@ -441,14 +441,19 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
     spec:RegisterStateTable( "imps_spawned_during", setmetatable( {}, {
         __index = function( t, k, v )
-            if not class.abilities[ k ] then k = "summon_demonic_tyrant" end
+            local cap = query_time
+            
+            if type(k) == 'number' then cap = cap + ( k / 1000 )
+            else
+                if not class.abilities[ k ] then k = "summon_demonic_tyrant" end
+                cap = cap + action[ k ].cast
+            end
 
             -- In SimC, k would be a numeric value to be interpreted but I don't see the point.
             -- We're only using it for SDT now, and I don't know what else we'd really use it for.
             
             -- So imps_spawned_during.summon_demonic_tyrant would be the syntax I'll use here.
 
-            local cap = query_time + action[ k ].cast
             local n = 0
 
             for i, spawn in ipairs( guldan_v ) do
