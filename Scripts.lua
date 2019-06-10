@@ -141,6 +141,10 @@ local function SimcWithResources( str )
 end
 
 
+local function space_killer(s)
+    return s:gsub("%s", "")
+end
+
 -- Convert SimC syntax to Lua conditionals.
 local function SimToLua( str, modifier )
     -- If no conditions were provided, function should return true.
@@ -191,9 +195,12 @@ local function SimToLua( str, modifier )
     str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
     str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
     str = str:gsub("%.in$", "['in']" )
+    str = str:gsub("imps_spawned_during%.([^!=<>&|]+)", "imps_spawned_during[%1] ")
+    str = str:gsub("time_to_imps%.(%b()).remains", "time_to_imps[%1].remains")
+    str = str:gsub("time_to_imps%.(%d+).remains", "time_to_imps[%1].remains")
 
-    str = str:gsub("time_to_imps%.(%b()).remains", "time_to_imps[%1].remains" )
-    str = str:gsub("time_to_imps%.(%d+).remains", "time_to_imps[%1].remains" )
+    -- Condense bracketed expressions.
+    str = str:gsub("%b[]", space_killer)
 
     str = str:gsub("prev%.(%d+)", "prev[%1]")
     str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
@@ -596,7 +603,7 @@ do
                                 Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-n)." )
                             else if val == nil or type( val ) == "boolean" then piece.s = "safenum(" .. piece.s .. ")" end end
                         else
-                            Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. warn .. " (loadstring-n)." )
+                            Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-n)." )
                         end
                     end
                     piece.r = nil
@@ -616,7 +623,7 @@ do
                                 Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-b)." )
                             else if val == nil or type( val ) == "number" then piece.s = "safebool(" .. piece.s .. ")" end end
                         else
-                            Hekili:Error( "Unable to compile '" .. piece.s .. "' - " .. warn .. " (loadstring-b)." )
+                            Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-b)." )
                         end                        
                     end
                     piece.r = nil
@@ -690,6 +697,8 @@ local function SimCToSnapshot( str, modifier )
     str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
     str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
     str = str:gsub("%.in$", "['in']" )
+
+    str = str:gsub("imps_spawned_during%.([^<>=!&|]+)", "imps_spawned_during[%1]")
 
     str = str:gsub("prev%.(%d+)", "prev[%1]")
     str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
@@ -1089,6 +1098,13 @@ local channelModifiers = {
     chain = 1,
     early_chain_if = 1,
 }
+
+
+function scripts:SwapScripts( s1, s2 )
+    local swap = scripts.DB[ s1 ]
+    scripts.DB[ s1 ] = scripts.DB[ s2 ]
+    scripts.DB[ s2 ] = swap
+end
 
 
 function scripts:LoadScripts()
