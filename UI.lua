@@ -9,6 +9,9 @@ local state = Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 
+-- Atlas/Textures
+local AddTexString, GetTexString, AtlasToString, GetAtlasFile, GetAtlasCoords = ns.AddTexString, ns.GetTexString, ns.AtlasToString, ns.GetAtlasFile, ns.GetAtlasCoords
+
 local getInverseDirection = ns.getInverseDirection
 local multiUnpack = ns.multiUnpack
 local orderedPairs = ns.orderedPairs
@@ -70,11 +73,13 @@ local function stopScreenMovement(frame)
 end
 
 local function Mover_OnMouseUp(self, btn)
-    if (btn == "LeftButton" and self.Moving) then
-        stopScreenMovement(self)
+    local obj = self.moveObj or self
+
+    if (btn == "LeftButton" and obj.Moving) then
+        stopScreenMovement(obj)
     elseif (btn == "RightButton" and not Hekili.Config) then
-        if self.Moving then
-            stopScreenMovement(self)
+        if obj.Moving then
+            stopScreenMovement(obj)
         end
         local mouseInteract = Hekili.Pause or Hekili.Config
         for i = 1, #ns.UI.Buttons do
@@ -89,8 +94,10 @@ local function Mover_OnMouseUp(self, btn)
 end
 
 local function Mover_OnMouseDown( self, btn )
-    if Hekili.Config and btn == "LeftButton" and not self.Moving then
-        startScreenMovement(self)
+    local obj = self.moveObj or self
+
+    if Hekili.Config and btn == "LeftButton" and not obj.Moving then
+        startScreenMovement(obj)
     end
 end
 
@@ -140,7 +147,7 @@ function ns.StartConfiguration( external )
     -- Notification Panel
     ns.UI.Notification:EnableMouse( true )
     ns.UI.Notification:SetMovable( true )
-    ns.UI.Notification.Mover = ns.UI.Notification.Mover or CreateFrame("Frame", "HekiliNotificationMover", ns.UI.Notification)
+    ns.UI.Notification.Mover = ns.UI.Notification.Mover or CreateFrame( "Frame", "HekiliNotificationMover", ns.UI.Notification )
     ns.UI.Notification.Mover:SetAllPoints(HekiliNotification)
     ns.UI.Notification.Mover:SetBackdrop( {
         bgFile = "Interface/Buttons/WHITE8X8",
@@ -151,12 +158,16 @@ function ns.StartConfiguration( external )
         insets = { left = 0, right = 0, top = 0, bottom = 0 }
     } )
 
-    ns.UI.Notification.Mover:SetBackdropColor( .1, .1, .1, .8 )
+    ns.UI.Notification.Mover:SetBackdropColor( 0, 0, 0, .8 )
     ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
     ns.UI.Notification.Mover:Show()
 
     f = ns.UI.Notification.Mover
-    f.Header = f.Header or f:CreateFontString( "HekiliNotificationHeader", "OVERLAY", "GameFontNormal" )
+    if not f.Header then
+        f.Header = f:CreateFontString( "HekiliNotificationHeader", "OVERLAY", "GameFontNormal" )
+        local path, size = f.Header:GetFont()
+        f.Header:SetFont( path, size, "OUTLINE" )
+    end
     f.Header:SetAllPoints( HekiliNotificationMover )
     f.Header:SetText( "Notifications" )
     f.Header:SetJustifyH( "CENTER" )
@@ -184,8 +195,8 @@ function ns.StartConfiguration( external )
     end )
 
     for i, v in pairs( ns.UI.Displays ) do
-        if v.Mover then
-            v.Mover:Hide()
+        if v.Backdrop then
+            v.Backdrop:Hide()
         end
 
         if v.Header then
@@ -198,7 +209,7 @@ function ns.StartConfiguration( external )
             v:EnableMouse( true )
             v:SetMovable( true )
 
-            v.Backdrop = v.Backdrop or CreateFrame( "Frame", v:GetName().. "_Backdrop", v )
+            v.Backdrop = v.Backdrop or CreateFrame( "Frame", v:GetName().. "_Backdrop", UIParent ) --, v )
             v.Backdrop:ClearAllPoints()
             
             local left, right, top, bottom = v:GetPerimeterButtons()
@@ -213,18 +224,13 @@ function ns.StartConfiguration( external )
                 v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
             end
 
-            local framelevel = v:GetFrameLevel()
-            if framelevel > 0 then
-                v.Backdrop:SetFrameStrata("MEDIUM")
-                v.Backdrop:SetFrameLevel( framelevel - 1 )
-            else
-                v.Backdrop:SetFrameStrata("LOW")
-            end
-    
-            v.Backdrop:Show()            
+            v.Backdrop:SetFrameStrata("MEDIUM")
+            v.Backdrop:SetFrameLevel( 5 )
 
+            v.Backdrop.moveObj = v
+    
             v.Backdrop:SetBackdrop( {
-                bgFile = nil,
+                bgFile = "Interface/Buttons/WHITE8X8",
                 edgeFile = "Interface/Buttons/WHITE8X8",
                 tile = false,
                 tileSize = 0,
@@ -233,13 +239,13 @@ function ns.StartConfiguration( external )
             } )
 
             local ccolor = RAID_CLASS_COLORS[ select(2, UnitClass("player")) ]
-
             v.Backdrop:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
             v.Backdrop:SetBackdropColor( 0, 0, 0, 0.8 )
+            v.Backdrop:Show()
 
-            v:SetScript( "OnMouseDown", Mover_OnMouseDown )
-            v:SetScript( "OnMouseUp", Mover_OnMouseUp )
-            v:SetScript( "OnEnter", function( self )
+            v.Backdrop:SetScript( "OnMouseDown", Mover_OnMouseDown )
+            v.Backdrop:SetScript( "OnMouseUp", Mover_OnMouseUp )
+            v.Backdrop:SetScript( "OnEnter", function( self )
                 local H = Hekili
         
                 if not H.Pause and H.Config then
@@ -249,9 +255,6 @@ function ns.StartConfiguration( external )
                     GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
                     GameTooltip:Show()
         
-                elseif ( H.Pause and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
-                    H:ShowDiagnosticTooltip( ns.queue[ dispID ][ id ] )
-        
                 end
             end )
             v:SetScript( "OnLeave", function(self)
@@ -259,12 +262,18 @@ function ns.StartConfiguration( external )
             end )
             v:Show()
 
-            v.Header = v.Header or v:CreateFontString( "HekiliDisplay" .. i .. "Header", "OVERLAY", "GameFontNormal" )
-            local path, size, flags = v.Header:GetFont()
-            v.Header:SetFont( path, size, "OUTLINE" )
+            if not v.Header then
+                v.Header = v.Backdrop:CreateFontString( "HekiliDisplay" .. i .. "Header", "OVERLAY", "GameFontNormal" )            
+                local path, size = v.Header:GetFont()
+                v.Header:SetFont( path, size, "OUTLINE" )
+            end
             v.Header:ClearAllPoints()
-            v.Header:SetPoint( "BOTTOM", v, "TOP", 0, 2 )
-            v.Header:SetText( i )
+            v.Header:SetAllPoints( v.Backdrop )
+
+            if i == "Defensives" then v.Header:SetText( AtlasToString( "nameplates-InterruptShield", 20, 20 ) )
+            elseif i == "Interrupts" then v.Header:SetText( AtlasToString( "communities-icon-redx", 20, 20 ) )
+            else v.Header:SetText( i ) end
+            
             v.Header:SetJustifyH("CENTER")
             v.Header:Show()
         else
@@ -278,8 +287,12 @@ function ns.StartConfiguration( external )
         local ACD = LibStub( "AceConfigDialog-3.0" )
         ACD:SetDefaultSize( "Hekili", 800, 600 )
         ACD:Open( "Hekili" )
-        ns.OnHideFrame = ns.OnHideFrame or CreateFrame( "Frame", nil )
-        ns.OnHideFrame:SetParent( ACD.OpenFrames["Hekili"].frame )
+
+        local oFrame = ACD.OpenFrames["Hekili"].frame
+        oFrame:SetMinResize(800,600)
+
+        ns.OnHideFrame = ns.OnHideFrame or CreateFrame( "Frame" )
+        ns.OnHideFrame:SetParent( oFrame )
         ns.OnHideFrame:SetScript( "OnHide", function(self)
             ns.StopConfiguration()
             self:SetScript( "OnHide", nil )
