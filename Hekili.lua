@@ -138,7 +138,8 @@ Hekili.Class = {
 	resources = {},
     talents = {},
     pvptalents = {},
-    auras = {},
+	auras = {},
+	auraList = {},
     powers = {},
 	gear = {},
 	
@@ -182,13 +183,9 @@ Hekili.Scripts = {
 Hekili.State = {}
 
 ns.hotkeys = {}
-
 ns.keys = {}
-
 ns.queue = {}
-
 ns.targets = {}
-
 ns.TTD = {}
 
 ns.UI = {
@@ -197,7 +194,6 @@ ns.UI = {
 }
 
 ns.debug = {}
-
 ns.snapshots = {}
 
 
