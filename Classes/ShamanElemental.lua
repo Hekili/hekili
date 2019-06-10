@@ -492,6 +492,10 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             applyBuff( "ember_totem", dur )
             applyBuff( "totem_mastery", dur )
         end
+
+        if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
+            applyBuff( "master_of_the_elements" )
+        end
     end )
 
 
@@ -1258,7 +1262,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             gcd = "off",
 
             startsCombat = true,
-            -- texture = ,
+            texture = 1033911,
 
             talent = "primal_elementalist",
 
