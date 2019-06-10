@@ -24,7 +24,7 @@ local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
 local FeignEvent = ns.FeignEvent
 
-local tinsert, tremove, twipe = table.insert, table.remove, table.wipe
+local insert, remove, wipe = table.insert, table.remove, table.wipe
 
 
 local unitIDs = { "target", "targettarget", "focus", "focustarget", "boss1", "boss2", "boss3", "boss4", "boss5" }
@@ -50,9 +50,14 @@ local RC = LibStub( "LibRangeCheck-2.0" )
 
 -- New Nameplate Proximity System
 function ns.getNumberTargets()
+    --[[ local ability = state.this_action and class.abilities[ state.this_action ]
+    if ability and ability.cluster then
+        return GetClusterCount( state.this_action )
+    end ]]
+
     local showNPs = GetCVar( 'nameplateShowEnemies' ) == "1"
 
-    twipe( nameplates )
+    wipe( nameplates )
     fullCount = 0
     Hekili.TargetDebug = ""
 
@@ -450,8 +455,8 @@ do
         if not enemy then return end
 
         db[ guid ] = nil
-        twipe( enemy )
-        tinsert( recycle, enemy )
+        wipe( enemy )
+        insert( recycle, enemy )
     end
 
 
@@ -461,7 +466,7 @@ do
 
         if not enemy then
             -- This is the first time we've seen the enemy.
-            enemy = tremove( recycle, 1 ) or {}
+            enemy = remove( recycle, 1 ) or {}
             db[ guid ] = enemy
 
             enemy.firstSeen = time
@@ -543,6 +548,22 @@ do
     end
 
 
+    function Hekili:GetLowestTTD()
+        local time, validUnit = 3600, false
+
+        for k, v in pairs( db ) do
+            if v.n > 3 then
+                time = min( time, ceil( v.lastHealth / v.rate ) )
+                validUnit = true
+            end
+        end
+
+        if not validUnit then return FOREVER end
+
+        return time
+    end
+
+
     function Hekili:GetNumTTDsWithin( x )
         if x <= 3 then return 1 end
 
@@ -577,7 +598,7 @@ do
     function Hekili:GetAddWaveTTD()
         if not UnitExists( "boss1" ) then return self:GetGreatestTTD() end
 
-        twipe( bosses )
+        wipe( bosses )
 
         for i = 1, 5 do
             local unit = "boss" .. i
@@ -610,7 +631,7 @@ do
     local UpdateTTDs
 
     UpdateTTDs = function()
-        twipe( seen )
+        wipe( seen )
 
         local now = GetTime()
 
