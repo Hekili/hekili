@@ -348,6 +348,13 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         end
     end )
 
+    spec:RegisterCycle( function ()
+        if active_enemies == 1 then return end
+
+        -- For Nemesis, we want to cast it on the lowest health enemy.
+        if this_action == "nemesis" and Hekili:GetNumTTDsWithin( tagret.time_to_die ) > 1 then return "cycle" end
+    end )
+
 
     -- Gear Sets
     spec:RegisterGear( 'tier19', 138375, 138376, 138377, 138378, 138379, 138380 )
@@ -710,7 +717,10 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             startsCombat = true,
             texture = 1247261,
 
-            usable = function () return not prev_gcd[1].fel_rush end,            
+            usable = function ()
+                if settings.recommend_movement ~= true then return false, "fel_rush movement is disabled" end
+                return not prev_gcd[1].fel_rush
+            end,            
             handler = function ()
                 if talent.momentum.enabled then applyBuff( "momentum" ) end
                 if cooldown.vengeful_retreat.remains < 1 then setCooldown( 'vengeful_retreat', 1 ) end
@@ -1006,6 +1016,11 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             startsCombat = true,
             texture = 1348401,
 
+            usable = function ()
+                if settings.recommend_movement ~= true then return false, "vengeful_retreat movement is disabled" end
+                return true
+            end,
+
             handler = function ()
                 if target.within8 then
                     applyDebuff( "target", "vengeful_retreat" )
@@ -1032,6 +1047,16 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         potion = "battle_potion_of_agility",
 
         package = "Havoc",
+    } )
+
+
+    spec:RegisterSetting( "recommend_movement", false, {
+        name = "Recommend |T1247261:0|t Fel Rush / |T1348401:0|t Vengeful Retreat",
+        desc = "If checked, the addon will recommend |T1247261:0|t Fel Rush / |T1348401:0|t Vengeful Retreat when it is a potential DPS gain.\n\n" ..
+            "These abilities are critical for DPS when using the Momentum talent.\n\n" ..
+            "If not using Momentum, you may want to leave this disabled to avoid unnecessary movement in combat.",
+        type = "toggle",
+        width = "full"
     } )
 
 
