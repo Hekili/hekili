@@ -4178,7 +4178,7 @@ function Hekili:SpecializationChanged()
             end
 
             for k, v in pairs( spec.settings ) do
-                if s.settings[ k ] == nil then s[ k ] = v.default end
+                if s.settings[ v.name ] == nil then s.settings[ v.name ] = v.default end
             end
         end
     end
