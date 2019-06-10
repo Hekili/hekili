@@ -51,7 +51,12 @@ local specTemplate = {
 
     throttleRefresh = false,
     maxRefresh = 10,
+
+    -- Toggles
+    custom1Name = "Custom 1",
+    custom2Name = "Custom 2"
 }
+ns.specTemplate = specTemplate -- for options.
 
 
 local function Aura_DetectSharedAura( t, type )
@@ -206,6 +211,8 @@ local HekiliSpecMixin = {
                         if not a.funcs.texture then
                             a.texture = a.texture or GetSpellTexture( a.id )
                         end
+
+                        class.auraList[ a.key ] = "|T" .. a.texture .. ":0|t " .. a.name
 
                         self.auras[ a.name ] = a
                         if GetSpecializationInfo( GetSpecialization() or 0 ) == self.id then
@@ -1885,7 +1892,7 @@ all:RegisterAbility( "pillar_of_the_drowned_cabal", {
     cooldown = 30,
     gcd = "spell", -- ???
 
-    item = 167853,
+    item = 167863,
     toggle = "defensives", -- ???
 
     handler = function () applyBuff( "mariners_ward" ) end
@@ -3617,7 +3624,7 @@ all:RegisterAbility( "buff_sephuzs_secret", {
     cooldown = 30,
     gcd = "off",
 
-    hidden = true,
+    unlisted = true,
     usable = function () return false end,
 } )
 
