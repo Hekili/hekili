@@ -1745,7 +1745,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 45,
             gcd = "spell",
 
-            pvptalent = "thorns",
+            pvptalent = function ()
+                if essence.conflict_and_strife.enabled then return end
+                return "thorns"
+            end,
 
             spend = 0.12,
             spendType = "mana",

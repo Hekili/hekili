@@ -7274,3 +7274,88 @@ all:RegisterPowers( {
         },
     }
 } )
+
+
+
+-- Essence Abilities
+
+-- Blood of the Enemy
+all:RegisterAbility( "blood_of_the_enemy", {
+    id = 297108,
+    cast = 0,
+    cooldown = function () return essence.blood_of_the_enemy.rank > 1 and 90 or 120 end,
+
+    toggle = "cooldowns",
+
+    handler = function()
+        if essence.blood_of_the_enemy.rank > 2 then applyBuff( "seething_rage" ) end        
+    end
+} )
+
+all:RegisterAuras( {
+    seething_rage = {
+        id = 297126,
+        duration = 15,
+        max_stack = 1,
+    },
+    blood_soaked = {
+        id = 297162,
+        duration = 3600,
+        max_stack = 40
+    }
+} )
+
+
+-- Condensed Life-Force
+all:RegisterAbility( "guardian_of_azeroth", {
+    id = 295840,
+    cast = 0,
+    cooldown = 180,
+
+    toggle = "cooldowns",
+
+    handler = function()
+        -- summonPet( "guardian_of_azeroth" )
+    end
+} )
+
+all:RegisterAuras( {
+    guardian_of_azeroth = {
+        id = 295855,
+        duration = 30,
+        max_stack = 5
+    },
+    condensed_lifeforce = {
+        id = 295838,
+        duration = 6,
+        max_stack = 1
+    }
+} )
+
+
+-- Conflict and Strife
+-- No direct ability; enable PvP talents for each spec.
+all:RegisterAura( "strife", {
+    id = 304056,
+    duration = 14,
+    max_stack = 8
+} )
+
+
+-- Essence of the Focusing Iris
+all:RegisterAbility( "focused_azerite_beam",{
+    id = 295258,
+    cast = function () return 2.5 + essence.essence_of_the_focusing_iris.rank > 1 and 1.1 or 1.7 end,
+    channeled = true,
+    cooldown = 90,
+
+    toggle = "cooldowns",
+} )
+
+all:RegisterAura( "focused_energy", {
+    id = 295248,
+    duration = 4,
+    max_stack = 10
+} )
+
+

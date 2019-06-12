@@ -851,7 +851,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             form = "bear_form",
 
             handler = function ()
-                if pvptalent.sharpened_claws.enabled then applyBuff( "sharpened_claws" ) end
+                if pvptalent.sharpened_claws.enabled or essence.conflict_and_strife.major then applyBuff( "sharpened_claws" ) end
             end,
         },
 

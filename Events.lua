@@ -379,6 +379,68 @@ do
     end
 
     Hekili:ProfileCPU( "updatePowers", ns.updatePowers )
+
+
+    -- Essences
+    if GetBuildInfo() == "8.2.0" then
+        local AE = C_AzeriteEssence
+        local GetMilestoneEssence, GetEssenceInfo = AE.GetMilestoneEssence, AE.GetEssenceInfo
+        local milestones = { 115, 116, 117 }
+
+        local essenceKeys = {
+            [2]  = "azeroths_undying_gift",
+            [3]  = "sphere_of_suppression",
+            [4]  = "worldvein_resonance",
+            [5]  = "essence_of_the_focusing_iris",
+            [6]  = "purification_protocol",
+            [7]  = "anima_of_life_and_death",
+            [12] = "crucible_of_flame",
+            [13] = "nullification_dynamo",
+            [14] = "condensed_lifeforce",
+            [15] = "ripple_in_space",
+            [17] = "everrising_tide",
+            [18] = "artifice_of_time",
+            [19] = "well_of_existence",
+            [20] = "lifebinders_invocation",
+            [21] = "vitality_conduit",
+            [22] = "vision_of_perfection",
+            [23] = "blood_of_the_enemy",
+            [25] = "aegis_of_the_deep",
+            [27] = "memory_of_lucid_dreams",
+            [28] = "unbound_force",
+            [32] = "conflict_and_strife"
+        }
+
+        for _, key in pairs( essenceKeys ) do
+            state.essence[ key ] = { rank = 0, major = false }
+        end
+
+
+        function ns.updateEssences()
+            local e = state.essence
+
+            for k, v in pairs( e ) do
+                v.rank = 0
+            end
+
+            for i, ms in ipairs( milestones ) do
+                local essence = GetMilestoneEssence( ms )
+
+                if essence then
+                    local info = GetEssenceInfo( essence )
+
+                    if info then
+                        local key = essenceKeys[ info.ID ]
+                        
+                        e[ key ].rank = info.rank
+                        e[ key ].major = i == 1
+                    end
+                end
+            end
+        end
+
+        ns.updateEssences()
+    end
 end
 
 
@@ -476,6 +538,7 @@ do
         end
 
         ns.updatePowers()
+        ns.updateEssences()
         ns.updateTalents()
 
         local sameItems = #wasWearing == #state.items

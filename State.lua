@@ -66,6 +66,7 @@ state.action = {}
 state.active_dot = {}
 state.args = {}
 state.azerite = {}
+state.essence = {}
 state.aura = {}
 state.buff = {}
 state.auras = auras
@@ -3187,7 +3188,11 @@ local mt_artifact_traits = {
 setmetatable( state.azerite, mt_artifact_traits )
 state.azerite.no_trait = { rank = 0 }
 state.artifact = state.azerite
--- rawset( state.artifact, no_trait, setmetatable( {}, mt_default_trait ) )
+
+
+-- Essences
+setmetatable( state.essence, mt_artifact_traits )
+state.essence.no_trait = { rank = 0, major = false }
 
 
 do
