@@ -842,7 +842,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 45,
+            spend = 40,
             spendType = "rage",
 
             startsCombat = true,
