@@ -3771,9 +3771,9 @@ do
             local a1, a2, a3, a4, a5 = class.hooks[ hook ] ( ... )
             inProgress[ hook ] = nil
             return a1, a2, a3, a4, a5
-    end
+        end
 
-    return ...
+        return ...
     end
 end
 
@@ -7348,7 +7348,7 @@ all:RegisterAura( "strife", {
 
 
 -- Essence of the Focusing Iris
-all:RegisterAbility( "focused_azerite_beam",{
+all:RegisterAbility( "focused_azerite_beam", {
     id = 295258,
     cast = function () return 2.5 + essence.essence_of_the_focusing_iris.rank > 1 and 1.1 or 1.7 end,
     channeled = true,
@@ -7364,3 +7364,162 @@ all:RegisterAura( "focused_energy", {
 } )
 
 
+-- Memory of Lucid Dreams
+all:RegisterAbility( "memory_of_lucid_dreams", {
+    id = 298357,
+    cast = 0,
+    cooldown = 180,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "memory_of_lucid_dreams" )
+    end
+} )
+
+all:RegisterAuras( {
+    memory_of_lucid_dreams = {
+        id = 298357,
+        duration = function () return 10 + essence.memory_of_lucid_dreams.rank > 1 and 2 or 0 end,
+        max_stack = 1
+    },
+    lucid_dreams = {
+        id = 298343,
+        duration = 8,
+        max_stack = 1
+    }
+} )
+
+
+-- Purification Protocol
+all:RegisterAbility( "purifying_blast", {
+    id = 295337,
+    cast = 0,
+    cooldown = 60,
+
+    handler = function ()
+        -- Reticle-based, no debuff on target.
+    end
+} )
+
+
+-- Ripple in Space
+all:RegisterAbility( "ripple_in_space", {
+    id = 302731,
+    cast = 0,
+    cooldown = 90,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "ripple_in_space_blink" )
+        if essence.ripple_in_space.rank > 2 then applyBuff( "ripple_in_space", buff.ripple_in_space_blink.duration + buff.ripple_in_space.duration ) end
+    end
+} )
+
+all:RegisterAuras( {
+    ripple_in_space_blink = {
+        id = 302731,
+        duration = function () return essence.ripple_in_space.rank > 1 and 2 or 4 end,
+        max_stack = 1
+    },
+    ripple_in_space = { -- defensive
+        id = 302864,
+        duration = 10,
+        max_stack = 1
+    },
+    reality_shift = {
+        id = 302952,
+        duration = function () return essence.ripple_in_space.rank > 1 and 20 or 15 end,
+        max_stack = 1
+    }
+} )
+
+
+-- The Crucible of Flame
+all:RegisterAbility( "concentrated_flame", {
+    id = 295373,
+    cast = 0,
+    charges = function () return essence.crucible_of_flame.rank > 2 and 2 or nil end,
+    cooldown = 30,
+    recharge = function () return essence.crucible_of_flame.rank > 2 and 30 or nil end,
+
+    handler = function ()
+        if buff.concentrated_flame.stack == 2 then removeBuff( "concentrated_flame" )
+        else addStack( "concentrated_flame" ) end
+
+        if essence.crucible_of_flame.rank > 1 then applyDebuff( "target", "concentrated_flame_dot" ) end
+    end,
+} )
+
+all:RegisterAuras( {
+    concentrated_flame = {
+        id = 295378,
+        duration = 180,
+        max_stack = 2
+    },
+    concentrated_flame_dot = {
+        id = 295368,
+        duration = 6,
+        max_stack = 1,
+    }
+} )
+
+
+-- The Unbound Force
+all:RegisterAbility( "unbound_force", {
+    id = 298452,
+    cast = 0,
+    cooldown = function () return essence.unbound_force.rank > 1 and 45 or 60 end,
+
+    handler = function ()
+        applyDebuff( "target", "unbound_force" )
+    end
+} )
+
+all:RegisterAuras( {
+    unbound_force = {
+        id = 298452,
+        duration = 2,
+        max_stack = 1
+    },
+    reckless_force = {
+        id = 302917,
+        duration = 3600,
+        max_stack = 20
+    },
+    reckless_force_crit = {
+        id = 302932,
+        duration = function () return essence.unbound_force.rank > 2 and 5 or 4 end,
+        max_stack = 1
+    }
+} )
+
+
+-- Vision of Perfection
+-- ...is passive.  Can proc spec cooldown at 25% (2+ 35%).
+-- ...procs haste buff when this happens.
+-- Need to set up passive in *every spec.*
+all:RegisterAura( "vision_of_perfection", {
+    id = 303344,
+    duration = 10,
+    max_stack = 1
+} )
+
+
+-- Worldvein Resonance
+all:RegisterAbility( "worldvein_resonance", {
+    id = 295186,
+    cast = 0,
+    cooldown = 60,
+
+    handler = function()
+        addStack( "lifeblood", nil, essence.worldvein_resonance.rank > 1 and 3 or 2 )
+    end,
+} )
+
+all:RegisterAura( "lifeblood", {
+    id = 295137,
+    duration = function () return essence.worldvein_resonance.rank > 1 and 18 or 12 end,
+    max_stack = 4,
+} )

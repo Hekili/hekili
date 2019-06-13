@@ -851,7 +851,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         icy_veins = {
             id = 12472,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.835 or 1 ) * 180 end,
             gcd = "spell",
 
             toggle = "cooldowns",

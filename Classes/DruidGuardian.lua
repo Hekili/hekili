@@ -1235,8 +1235,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 61336,
             cast = 0,
             charges = function () return ( ( level < 116 and equipped.dual_determination ) and 3 or 2 ) end,
-            cooldown = function () return ( ( level < 116 and equipped.dual_determination ) and 0.85 or 1 ) * 240 end,
-            recharge = function () return ( ( level < 116 and equipped.dual_determination ) and 0.85 or 1 ) * 240 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * ( ( level < 116 and equipped.dual_determination ) and 0.85 or 1 ) * 240 end,
+            recharge = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * ( ( level < 116 and equipped.dual_determination ) and 0.85 or 1 ) * 240 end,
             gcd = "off",
 
             startsCombat = false,

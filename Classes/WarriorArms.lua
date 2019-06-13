@@ -400,7 +400,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         bladestorm = {
             id = 227847,
             cast = 0,
-            cooldown = 90,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 90 end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -776,7 +776,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         ravager = {
             id = 152277,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 60 end,
             gcd = "spell",
 
             spend = -7,

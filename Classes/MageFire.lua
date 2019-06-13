@@ -381,7 +381,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         combustion = {
             id = 190319,
             cast = 0,
-            cooldown = 120,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 120 end,
             gcd = "off",
             castableWhileCasting = true,
 

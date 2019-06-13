@@ -372,7 +372,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         adrenaline_rush = {
             id = 13750,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
             gcd = "off",
 
             startsCombat = false,

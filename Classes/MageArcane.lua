@@ -572,7 +572,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         arcane_power = {
             id = 12042,
             cast = 0,
-            cooldown = 90,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.835 or 1 ) * 90 end,
             gcd = "spell",
 
             toggle = "cooldowns",

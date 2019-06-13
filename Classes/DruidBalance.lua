@@ -49,6 +49,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     spec:RegisterResource( Enum.PowerType.ComboPoints )
     spec:RegisterResource( Enum.PowerType.Rage )
 
+
     -- Talents
     spec:RegisterTalents( {
         natures_balance = 22385, -- 202430
@@ -555,6 +556,26 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         end 
     end )
 
+    spec:RegisterHook( "gain_preforecast", function( amt, resource )
+        if buff.memory_of_lucid_dreams.up then
+            if amt > 0 and resource == "astral_power" then
+                print( resource, "gain", GetTime() )
+                gain( amt, resource, true )
+                return false
+            end
+        end
+    end )
+
+    spec:RegisterHook( "spend_preforecast", function( amt, resource, overcap )
+        if buff.memory_of_lucid_dreams.up then
+            if amt < 0 and resource == "astral_power" then
+                print( resource, "spend", GetTime() )
+                spend( amt, resource, overcap, true )
+                return false
+            end
+        end
+    end )
+
 
     local check_for_ap_overcap = setfenv( function( ability )
         local a = ability or this_action
@@ -717,7 +738,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         celestial_alignment = {
             id = 194223,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 180 end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -1035,7 +1056,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         incarnation = {
             id = 102560,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 180 end,
             gcd = "spell",
 
             spend = -40,

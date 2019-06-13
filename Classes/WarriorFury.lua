@@ -718,7 +718,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         recklessness = {
             id = 1719,
             cast = 0,
-            cooldown = 90,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 90 end,
             gcd = "spell",
 
             toggle = "cooldowns",

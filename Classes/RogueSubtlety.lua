@@ -874,7 +874,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         shadow_blades = {
             id = 121471,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
             gcd = "off",
 
             toggle = "cooldowns",

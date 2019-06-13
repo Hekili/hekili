@@ -841,8 +841,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             id = 198067,
             cast = 0,
             charges = 1,
-            cooldown = 150,
-            recharge = 150,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 150 end,
+            recharge = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 150 end,
             gcd = "spell",
 
             toggle = 'cooldowns',
@@ -1098,8 +1098,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             id = 192249,
             cast = 0,
             charges = 1,
-            cooldown = 150,
-            recharge = 150,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 150 end,
+            recharge = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 150 end,
             gcd = "spell",
 
             toggle = 'cooldowns',

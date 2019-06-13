@@ -611,7 +611,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         feral_spirit = {
             id = 51533,
             cast = 0,
-            cooldown = function () return 120 - ( talent.elemental_spirits.enabled and 30 or 0 ) end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * ( 120 - ( talent.elemental_spirits.enabled and 30 or 0 ) ) end,
             gcd = "spell",
 
             startsCombat = false,

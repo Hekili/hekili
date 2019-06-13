@@ -749,8 +749,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 47568,
             cast = 0,
             charges = function () return ( level < 116 and equipped.seal_of_necrofantasia ) and 2 or nil end,
-            cooldown = function () return 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
-            recharge = function () return 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
+            recharge = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
             gcd = "spell",
 
             toggle = "cooldowns",
