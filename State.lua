@@ -1222,7 +1222,7 @@ local function spend( amount, resource, noHook )
     end
 
     local forecasted = false
-    if not noHook then forecasted = ns.callHook( "spend_preforecast", amount, resource, true ) end
+    if not noHook then _, _, _, forecasted = ns.callHook( "spend_preforecast", amount, resource, true, forecasted ) end
     if amount ~= 0 and resource ~= "health" and not forecasted then forecastResources( resource ) end    
     if not noHook then ns.callHook( "spend", amount, resource, true ) end
 end
