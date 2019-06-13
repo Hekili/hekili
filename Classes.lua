@@ -3762,14 +3762,19 @@ ns.addHook = function( hook, func )
 end
 
 
-ns.callHook = function( hook, ... )
+do
+    local inProgress = {}
 
-    if class.hooks[ hook ] then
-        return class.hooks[ hook ] ( ... )
+    ns.callHook = function( hook, ... )
+        if class.hooks[ hook ] and not inProgress[ hook ] then
+            inProgress[ hook ] = true
+            local a1, a2, a3, a4, a5 = class.hooks[ hook ] ( ... )
+            inProgress[ hook ] = nil
+            return a1, a2, a3, a4, a5
     end
 
     return ...
-
+    end
 end
 
 
