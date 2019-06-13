@@ -1196,7 +1196,7 @@ ns.forecastResources = forecastResources
 state.forecastResources = forecastResources
 
 
-local function gain( amount, resource, overcap )
+local function gain( amount, resource, overcap, noHook )
     if state[ resource ].gain then
         state[ resource ].gain( amount, resource, overcap )
     else
@@ -1204,8 +1204,11 @@ local function gain( amount, resource, overcap )
         if overcap then state[ resource ].actual = state[ resource ].current + amount
         else state[ resource ].actual = min( state[ resource ].max, state[ resource ].current + amount ) end
     end
-    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end
-    ns.callHook( 'gain', amount, resource, overcap )
+
+    local forecasted = false
+    if not noHook then forecasted = ns.callHook( "gain_preforecast", amount, resource, overcap, true ) end
+    if amount ~= 0 and resource ~= "health" and not forecasted then forecastResources( resource ) end
+    if not noHook then ns.callHook( "gain", amount, resource, overcap, true ) end
 end
 state.gain = gain
 
@@ -1217,8 +1220,11 @@ local function spend( amount, resource, noHook )
         -- 080217:  Update actual value to reflect current value + change, this means the forecasted values are used (and then need updated).
         state[ resource ].actual = max( 0, state[ resource ].actual - amount )
     end
-    if amount ~= 0 and resource ~= "health" then forecastResources( resource ) end    
-    if not noHook then ns.callHook( 'spend', amount, resource ) end
+
+    local forecasted = false
+    if not noHook then forecasted = ns.callHook( "spend_preforecast", amount, resource, true ) end
+    if amount ~= 0 and resource ~= "health" and not forecasted then forecastResources( resource ) end    
+    if not noHook then ns.callHook( "spend", amount, resource, true ) end
 end
 state.spend = spend
 

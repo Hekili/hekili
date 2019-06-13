@@ -433,7 +433,7 @@ do
                         local key = essenceKeys[ info.ID ]
                         
                         e[ key ].rank = info.rank
-                        e[ key ].major = i == 1
+                        e[ key ].major = info.slot == 0
                     end
                 end
             end
