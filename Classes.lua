@@ -7282,8 +7282,7 @@ all:RegisterPowers( {
 
 
 
--- Essence Abilities
-
+-- DPS Essences
 -- Blood of the Enemy
 all:RegisterAbility( "blood_of_the_enemy", {
     id = 297108,
@@ -7522,4 +7521,142 @@ all:RegisterAura( "lifeblood", {
     id = 295137,
     duration = function () return essence.worldvein_resonance.rank > 1 and 18 or 12 end,
     max_stack = 4,
+} )
+
+
+
+-- Tanking Essences
+-- Azeroth's Undying Gift
+all:RegisterAbility( "azeroths_undying_gift", {
+    id = 293019,
+    cast = 0,
+    cooldown = function () return essence.azeroths_undying_gift.rank > 1 and 45 or 60 end,
+
+    toggle = "defensives",
+
+    function ()
+        applyBuff( "azeroths_undying_gift" )
+    end,
+} )
+
+all:RegisterAuras( {
+    azeroths_undying_gift = {
+        id = 293019,
+        duration = 4,
+        max_stack = 1
+    },
+    hardened_azerite = {
+        id = 294685,
+        duration = 8,
+        max_stack = 1
+    }
+} )
+
+
+-- Anima of Life and Death
+all:RegisterAbility( "anima_of_death", {
+    id = 294926,
+    cast = 0,
+    cooldown = function () return essence.anima_of_life_and_death.rank > 1 and 120 or 150 end,
+
+    toggle = "defensives",
+
+    handler = function ()
+        gain( health.max * min( 0.25, 0.05 * active_enemies ) * ( essence.anima_of_life_and_death.rank > 2 and 2 or 1 ), "health" )
+    end,
+} )
+
+all:RegisterAuras( "anima_of_life", {
+    id = 294966,
+    duration = 3600,
+    max_stack = 10
+} )
+
+
+-- Aegis of the Deep
+all:RegisterAbility( "aegis_of_the_deep", {
+    id = 298168,
+    cast = 0,
+    cooldown = function () return essence.aegis_of_the_deep.rank > 1 and 67.5 or 90 end,
+
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "aegis_of_the_deep" )
+    end
+} )
+
+all:RegisterAuras( {
+    aegis_of_the_deep = {
+        id = 298168,
+        duration = 15,
+        max_stack = 1
+    },
+    aegis_of_the_deep_avoidance = {
+        id = 304693,
+        duration = 6,
+        max_stack = 1,
+    },
+    stand_your_ground = {
+        id = 299274,
+        duration = 3600,
+        max_stack = 10
+    }
+} )
+
+
+-- Nullification Dynamo
+all:RegisterAbility( "empowered_null_barrier", {
+    id = 295746,
+    cast = 0,
+    cooldown = function () return essence.nullification_dynamo.rank > 1 and 135 or 180 end,
+
+    toggle = "defensives",
+
+    handler = function ()
+        removeBuff( "dispellable_magic" )
+        removeBuff( "dispellable_curse" )
+        removeBuff( "dispellable_poison" )
+        removeBuff( "dispellable_disease" )
+    end
+} )
+
+all:RegisterAura( "null_barrier", {
+    id = 295842,
+    duration = 10,
+    max_stack = 1,
+} )
+
+
+-- Sphere of Suppression
+all:RegisterAbility( "suppressing_pulse", {
+    id = 293031,
+    cast = 0,
+    cooldown = function () return essence.sphere_of_suppression.rank > 1 and 45 or 60 end,
+
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyDebuff( "target", "suppressing_pulse" )
+        active_dot.suppressing_pulse = active_enemies
+        applyBuff( "sphere_of_suppression" )
+    end,
+} )
+
+all:RegisterAuras( {
+    suppressing_pulse = {
+        id = 293031,
+        duration = 8,
+        max_stack = 1
+    },
+    sphere_of_suppression = {
+        id = 294912,
+        duration = 7,
+        max_stack = 1
+    },
+    sphere_of_suppression_debuff = {
+        id = 294909,
+        duration = 7,
+        max_stack = 1
+    }
 } )
