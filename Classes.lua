@@ -120,6 +120,12 @@ local HekiliSpecMixin = {
             inactive_regen = 0,
             last_tick = 0,
 
+            add = function( amt, overcap )
+                -- Bypasses forecast, useful in hooks.
+                if overcap then r.state.amount = r.state.amount + amt
+                else r.state.amount = max( 0, min( r.state.amount + amt, r.state.max ) ) end
+            end,
+
             timeTo = function( x )
                 return state:TimeToResource( r.state, x )
             end,
@@ -7292,6 +7298,8 @@ all:RegisterAbility( "blood_of_the_enemy", {
     toggle = "cooldowns",
 
     handler = function()
+        applyDebuff( "target", "blood_of_the_enemy" )
+        active_dot.blood_of_the_enemy = active_enemies
         if essence.blood_of_the_enemy.rank > 2 then applyBuff( "seething_rage" ) end        
     end
 } )
@@ -7299,13 +7307,18 @@ all:RegisterAbility( "blood_of_the_enemy", {
 all:RegisterAuras( {
     seething_rage = {
         id = 297126,
-        duration = 15,
+        duration = 10,
         max_stack = 1,
     },
-    blood_soaked = {
+    bloodsoaked = {
         id = 297162,
         duration = 3600,
         max_stack = 40
+    },
+    blood_of_the_enemy ={
+        id = 297108,
+        duration = 10,
+        max_stack = 1,
     }
 } )
 
@@ -7341,7 +7354,7 @@ all:RegisterAuras( {
 -- No direct ability; enable PvP talents for each spec.
 all:RegisterAura( "strife", {
     id = 304056,
-    duration = 14,
+    duration = function () return essence.conflict_and_strife.rank > 1 and 14 or 8 end,
     max_stack = 8
 } )
 
@@ -7489,7 +7502,7 @@ all:RegisterAuras( {
     },
     reckless_force_crit = {
         id = 302932,
-        duration = function () return essence.unbound_force.rank > 2 and 5 or 4 end,
+        duration = function () return essence.unbound_force.rank > 2 and 4 or 3 end,
         max_stack = 1
     }
 } )
@@ -7566,7 +7579,7 @@ all:RegisterAbility( "anima_of_death", {
     end,
 } )
 
-all:RegisterAuras( "anima_of_life", {
+all:RegisterAura( "anima_of_life", {
     id = 294966,
     duration = 3600,
     max_stack = 10
