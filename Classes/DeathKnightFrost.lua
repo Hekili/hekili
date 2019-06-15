@@ -560,7 +560,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             gcd = "spell",
 
             spend = 16,
-            readySpend = function () return settings.bof_rp end,
+            readySpend = function () return settings.bos_rp end,
             spendType = "runic_power",
 
             toggle = "cooldowns",
@@ -1100,7 +1100,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     } )
 
 
-    spec:RegisterSetting( "bof_rp", 50, {
+    spec:RegisterSetting( "bos_rp", 50, {
         name = "Runic Power for |T1029007:0|t Breath of Sindragosa",
         desc = "The addon will not recommend |T1029007:0|t Breath of Sindragosa only if you have this much Runic Power (or more).",
         icon = 1029007,
