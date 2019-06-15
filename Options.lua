@@ -3841,7 +3841,7 @@ do
                                     type = 'description',
                                     name = '',
                                     order = 2.1, 
-                                    width = 'full/wa'
+                                    width = 'full'
                                 }
 
                             },
