@@ -1161,7 +1161,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         vampiric_blood = {
             id = 55233,
             cast = 0,
-            cooldown = function () return 90 * ( essence.vision_of_perfection.enabled and 0.85 or 1 ) end,
+            cooldown = function () return 90 * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) end,
             gcd = "spell",
 
             toggle = "defensives",

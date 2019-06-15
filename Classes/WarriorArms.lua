@@ -776,7 +776,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         ravager = {
             id = 152277,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 60 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 60 end,
             gcd = "spell",
 
             spend = -7,

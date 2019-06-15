@@ -530,7 +530,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_wild = {
             id = 193530,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 120 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
             gcd = "spell",
 
             toggle = 'cooldowns',

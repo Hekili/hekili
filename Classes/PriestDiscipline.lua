@@ -806,7 +806,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         shadowfiend = {
             id = 34433,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.rank > 1 and 0.87 or 1 ) * 180 end,
             gcd = "spell",
             
             toggle = "cooldowns",

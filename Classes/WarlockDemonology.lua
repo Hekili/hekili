@@ -1347,7 +1347,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         summon_demonic_tyrant = {
             id = 265187,
             cast = function () return 2 * haste end,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 90 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
             gcd = "spell",
 
             spend = 0.02,

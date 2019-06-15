@@ -1200,7 +1200,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         summon_darkglare = {
             id = 205180,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 180 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
             gcd = "spell",
 
             spend = 0.02,

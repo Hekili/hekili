@@ -852,7 +852,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         metamorphosis = {
             id = 191427,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * ( pvptalent.demonic_origins.up and 120 or 240 ) end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( pvptalent.demonic_origins.up and 120 or 240 ) end,
             gcd = "spell",
 
             toggle = "cooldowns",
