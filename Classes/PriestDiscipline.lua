@@ -388,7 +388,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         luminous_barrier = {
             id = 271466,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return pvptalent.dome_of_light.enabled and 90 or 180 end,
             gcd = "spell",
             
             spend = 0.04,
