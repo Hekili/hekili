@@ -536,6 +536,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
+            spend = -25,
+            spendType = "rage",
+
             startsCombat = false,
             texture = 132276,
 
@@ -921,7 +924,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 6,
             gcd = "spell",
 
-            spend = -8,
+            spend = -10,
             spendType = "rage",
 
             startsCombat = true,
