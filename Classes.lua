@@ -7380,7 +7380,7 @@ all:RegisterAura( "focused_energy", {
 all:RegisterAbility( "memory_of_lucid_dreams", {
     id = 298357,
     cast = 0,
-    cooldown = 180,
+    cooldown = 120,
 
     toggle = "cooldowns",
 
@@ -7392,7 +7392,7 @@ all:RegisterAbility( "memory_of_lucid_dreams", {
 all:RegisterAuras( {
     memory_of_lucid_dreams = {
         id = 298357,
-        duration = function () return 10 + essence.memory_of_lucid_dreams.rank > 1 and 2 or 0 end,
+        duration = function () return essence.memory_of_lucid_dreams.rank > 1 and 15 or 12 end,
         max_stack = 1
     },
     lucid_dreams = {
@@ -7419,7 +7419,7 @@ all:RegisterAbility( "purifying_blast", {
 all:RegisterAbility( "ripple_in_space", {
     id = 302731,
     cast = 0,
-    cooldown = 90,
+    cooldown = 60,
 
     toggle = "cooldowns",
 
