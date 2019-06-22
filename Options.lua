@@ -88,7 +88,7 @@ local oneTimeFixes = {
         p.actionLists = nil
     end,
 
-    reviseDisplayModes_20180709 = function( p )
+    --[[ reviseDisplayModes_20180709 = function( p )
         if p.toggles.mode.type ~= "AutoDual" and p.toggles.mode.type ~= "AutoSingle" and p.toggles.mode.type ~= "SingleAOE" then
             p.toggles.mode.type = "AutoDual"
         end
@@ -96,7 +96,7 @@ local oneTimeFixes = {
         if p.toggles.mode.value ~= "automatic" and p.toggles.mode.value ~= "single" and p.toggles.mode.value ~= "aoe" and p.toggles.mode.value ~= "dual" then
             p.toggles.mode.value = "automatic"
         end
-    end,
+    end, ]]
 
     reviseDisplayQueueAnchors_20180718 = function( p )
         for name, display in pairs( p.displays ) do
@@ -192,6 +192,42 @@ local oneTimeFixes = {
             end
         end
     end,
+
+    autoconvertDisplayToggle_20190621_1 = function( p )
+        local m = p.toggles.mode
+        local types = m.type
+
+        if types then
+            m.automatic = nil
+            m.single = nil
+            m.aoe = nil
+            m.dual = nil
+            m.reactive = nil
+            m.type = nil
+            
+            if types == "AutoSingle" then
+                m.automatic = true
+                m.single = true
+            elseif types == "SingleAOE" then
+                m.single = true
+                m.aoe = true
+            elseif types == "AutoDual" then
+                m.automatic = true
+                m.dual = true
+            elseif types == "ReactiveDual" then
+                m.reactive = true
+            end
+        
+            if not m[ m.value ] then
+                if     m.automatic then m.value = "automatic"
+                elseif m.single    then m.value = "single"
+                elseif m.aoe       then m.value = "aoe"
+                elseif m.dual      then m.value = "dual"
+                elseif m.reactive  then m.value = "reactive" end
+            end
+        end
+    end,
+
 }
 
 
@@ -464,7 +500,9 @@ function Hekili:GetDefaults()
 
                 mode = {
                     key = "ALT-SHIFT-N",
-                    type = "AutoSingle",
+                    -- type = "AutoSingle",
+                    auto = true,
+                    single = true,
                     value = "automatic",
                 },
 
@@ -490,6 +528,12 @@ function Hekili:GetDefaults()
                     value = false,
                     separate = false,
                 },
+
+                essences = {
+                    key = "ALT-SHIFT-G",
+                    value = true,
+                    override = true,
+                }
             },
 
             specs = {
@@ -500,7 +544,8 @@ function Hekili:GetDefaults()
                             toggle = "default",
                             clash = 0,
                             targetMin = 0,
-                            targetMax = 0
+                            targetMax = 0,
+                            boss = false
                         }
                     },
                     items = {
@@ -3052,7 +3097,9 @@ local config = {
         [99999] = " "
     },
 
-    collapsed = {},
+    expanded = {
+        cooldowns = true
+    },
     adding = {},
 }
 
@@ -3252,13 +3299,21 @@ do
                         name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
                         desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
                             "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
-                        width = "full",
+                        width = 1.5,
                         order = 1,
                     },
 
+                    boss = {
+                        type = "toggle",
+                        name = "Boss Encounter Only",
+                        desc = "If checked, the addon will not recommend " .. k .. " unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
+                        width = 1.5,
+                        order = 1.1,
+                    },                    
+
                     keybind = {
                         type = "input",
-                        name = "Keybinding",
+                        name = "Override Keybind Text",
                         desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
                             "This can be helpful if the addon incorrectly detects your keybindings.",
                         validate = function( info, val )
@@ -3266,7 +3321,7 @@ do
                             if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
                             return true
                         end,
-                        width = "single",
+                        width = 1.5,
                         order = 2,
                     },
 
@@ -3275,7 +3330,7 @@ do
                         name = "Require Toggle",
                         desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
                             "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
-                        width = "full",
+                        width = 1.5,
                         order = 3,
                         values = function ()
                             table.wipe( toggles )
@@ -3283,6 +3338,7 @@ do
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
                             toggles.defensives = "Defensives"
+                            toggles.essences = "Azerite Essences"
                             toggles.cooldowns = "Cooldowns"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
@@ -3297,7 +3353,7 @@ do
                         type = "range",
                         name = "Minimum Targets",
                         desc = "If set above zero, the addon will only allow " .. k .. " to be recommended, if there are at least this many detected enemies.  All other action list conditions must also be met.\nSet to zero to ignore.",
-                        width = "full",
+                        width = 1.5,
                         min = 0,
                         max = 15,
                         step = 1,
@@ -3308,7 +3364,7 @@ do
                         type = "range",
                         name = "Maximum Targets",
                         desc = "If set above zero, the addon will only allow " .. k .. " to be recommended if there are this many detected enemies (or fewer).  All other action list conditions must also be met.\nSet to zero to ignore.",
-                        width = "full",
+                        width = 1.5,
                         min = 0,
                         max = 15,
                         step = 1,
@@ -3320,7 +3376,7 @@ do
                         name = "Clash",
                         desc = "If set above zero, the addon will pretend " .. k .. " has come off cooldown this much sooner than it actually has.  " ..
                             "This can be helpful when an ability is very high priority and you want the addon to prefer it over abilities that are available sooner.",
-                        width = "full",
+                        width = 3,
                         min = -1.5,
                         max = 1.5,
                         step = 0.05,
@@ -3361,13 +3417,21 @@ do
                         name = function () return "Disable " .. ( ability.item and ability.link or k ) end,
                         desc = function () return "If checked, this ability will |cffff0000NEVER|r be recommended by the addon.  This can cause " ..
                             "issues for some specializations, if other abilities depend on you using " .. ( ability.item and ability.link or k ) .. "." end,
-                        width = "full",
+                        width = 1.5,
                         order = 1,
+                    },
+
+                    boss = {
+                        type = "toggle",
+                        name = "Boss Encounter Only",
+                        desc = "If checked, the addon will not recommend " .. k .. " via [Use Items] unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
+                        width = 1.5,
+                        order = 1.1,
                     },
 
                     keybind = {
                         type = "input",
-                        name = "Keybinding",
+                        name = "Override Keybind Text",
                         desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
                             "This can be helpful if the addon incorrectly detects your keybindings.",
                         validate = function( info, val )
@@ -3375,7 +3439,7 @@ do
                             if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
                             return true
                         end,
-                        width = "single",
+                        width = 1.5,
                         order = 2,
                     },
 
@@ -3384,7 +3448,7 @@ do
                         name = "Require Toggle",
                         desc = "Specify a required toggle for this action to be used in the addon action list.  When toggled off, abilities are treated " ..
                             "as unusable and the addon will pretend they are on cooldown (unless specified otherwise).",
-                        width = "full",
+                        width = 1.5,
                         order = 3,
                         values = function ()
                             table.wipe( toggles )
@@ -3392,9 +3456,12 @@ do
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
                             toggles.defensives = "Defensives"
+                            toggles.essences = "Azerite Essences"
                             toggles.cooldowns = "Cooldowns"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
+                            toggles.custom1 = "Custom 1"
+                            toggles.custom2 = "Custom 2"
 
                             return toggles
                         end,
@@ -3416,7 +3483,7 @@ do
                         type = "range",
                         name = "Minimum Targets",
                         desc = "If set above zero, the addon will only allow " .. k .. " to be recommended via [Use Items] if there are at least this many detected enemies.\nSet to zero to ignore.",
-                        width = "full",
+                        width = 1.5,
                         min = 0,
                         max = 15,
                         step = 1,
@@ -3427,20 +3494,12 @@ do
                         type = "range",
                         name = "Maximum Targets",
                         desc = "If set above zero, the addon will only allow " .. k .. " to be recommended via [Use Items] if there are this many detected enemies (or fewer).\nSet to zero to ignore.",
-                        width = "full",
+                        width = 1.5,
                         min = 0,
                         max = 15,
                         step = 1,
                         order = 6,
                     },
-
-                    boss = {
-                        type = "toggle",
-                        name = "Boss Encounter Only",
-                        desc = "If checked, the addon will not recommend " .. k .. " via [Use Items] unless you are in a boss fight (or encounter).  If left unchecked, " .. k .. " can be recommended in any type of fight.",
-                        width = "full",
-                        order = 7
-                    }
                 }
             }
 
@@ -3476,7 +3535,7 @@ do
         nToggles = nToggles + 1
 
         local hider = function()
-            return config.collapsed[ section ]
+            return not config.expanded[ section ]
         end
 
         local settings = Hekili.DB.profile.specs[ specID ]
@@ -3505,13 +3564,13 @@ do
         e.order = nToggles + 0.01
         e.width = 0.15
         e.image = function ()
-            if config.collapsed[ section ] then return "Interface\\AddOns\\Hekili\\Textures\\WhiteRight" end
+            if not config.expanded[ section ] then return "Interface\\AddOns\\Hekili\\Textures\\WhiteRight" end
             return "Interface\\AddOns\\Hekili\\Textures\\WhiteDown"
         end
         e.imageWidth = 20
         e.imageHeight = 20
         e.func = function( info )
-            config.collapsed[ section ] = not config.collapsed[ section ]
+            config.expanded[ section ] = not config.expanded[ section ]
         end
 
         
@@ -3522,33 +3581,14 @@ do
         e.width = 2.85
         e.fontSize = "large"
 
-
         if description then
-            e = tlEntry( section .. "DescLB" )
-            e.type = "description"
-            e.name = ""
-            e.order = nToggles + 0.05
-            e.width = "full"
-            e.hidden = hider
-
-            
-            e = tlEntry( section .. "DescIndent" )
-            e.type = "description"
-            e.name = ""
-            e.order = nToggles + 0.06
-            e.width = 0.15
-            e.hidden = hider
-
-
             e = tlEntry( section .. "Description" )
             e.type = "description"
             e.name = description
-            e.order = nToggles + 0.07
-            e.width = 2.85
+            e.order = nToggles + 0.05
+            e.width = "full"
             e.hidden = hider
         else
-            if db[ section .. "DescLB" ] then db[ section .. "DescLB" ].hidden = true end
-            if db[ section .. "DescIndent" ] then db[ section .. "DescIndent" ].hidden = true end
             if db[ section .. "Description" ] then db[ section .. "Description" ].hidden = true end
         end
 
@@ -3566,21 +3606,21 @@ do
                     e.hidden = hider
                   
                     offset = offset + 0.001
-
-
-                    e = tlEntry( section .. ability .. "Indent" )
-                    e.type = "description"
-                    e.name = ""
-                    e.order = nToggles + 0.1 + offset
-                    e.width = 0.15
-                    e.hidden = hider
-
-                    offset = offset + 0.001
                 end
 
                 e = tlEntry( section .. "Remove" .. ability )
                 e.type = "execute"
                 e.name = ""
+                e.desc = function ()
+                    local a = class.abilities[ ability ]
+                    local desc
+                    if a then
+                        if a.item then desc = a.link or a.name
+                        else desc = a.name end
+                    end
+                    desc = desc or ability
+                    return "Remove " .. desc .. " from " .. useName .. " toggle."
+                end
                 e.image = RedX
                 e.imageHeight = 16
                 e.imageWidth = 16
@@ -3588,6 +3628,7 @@ do
                 e.width = 0.15
                 e.func = function ()
                     settings.abilities[ ability ].toggle = 'none'
+                    -- e.hidden = true
                     Hekili:EmbedSpecOptions()
                 end
                 e.hidden = hider
@@ -3607,15 +3648,38 @@ do
                 end
                 e.order = nToggles + 0.1 + offset
                 e.fontSize = "medium"
-                e.width = 1.2
+                e.width = 1.35
                 e.hidden = hider
 
                 offset = offset + 0.001
 
+                --[[ e = tlEntry( section .. "Toggle" .. ability )
+                e.type = "toggle"
+                e.icon = RedX
+                e.name = function ()
+                    local a = class.abilities[ ability ]
+                    if a then
+                        if a.item then return a.link or a.name end
+                        return a.name
+                    end
+                    return ability
+                end
+                e.desc = "Remove this from " .. ( useName or section ) .. "?"
+                e.order = nToggles + 0.1 + offset
+                e.width = 1.5
+                e.hidden = hider
+                e.get = function() return true end
+                e.set = function()
+                    settings.abilities[ ability ].toggle = 'none'
+                    Hekili:EmbedSpecOptions()
+                end
+
+                offset = offset + 0.001 ]]
 
                 count = count + 1
             end
         end
+
 
         e = tlEntry( section .. "FinalLB" )
         e.type = "description"
@@ -3623,15 +3687,6 @@ do
         e.order = nToggles + 0.993
         e.width = "full"
         e.hidden = hider
-
-        
-        e = tlEntry( section .. "AddIndent" )
-        e.type = "description"
-        e.name = ""
-        e.order = nToggles + 0.994
-        e.width = 0.15
-        e.hidden = hider
-
         
         e = tlEntry( section .. "AddBtn" )
         e.type = "execute"
@@ -3651,7 +3706,7 @@ do
         e.type = "description"
         e.name = "Add Ability"
         e.fontSize = "medium"
-        e.width = 1.2
+        e.width = 1.35
         e.order = nToggles + 0.996
         e.hidden = function ()
             return hider() or config.adding[ section ]
@@ -3663,7 +3718,7 @@ do
         e.name = ""
         e.values = class.abilityList
         e.order = nToggles + 0.997
-        e.width = 1.2
+        e.width = 1.35
         e.get = function () end
         e.set = function ( info, val )
             local a = class.abilities[ val ]
@@ -3706,12 +3761,12 @@ do
         e.name = "Reload Defaults"
         e.fontSize = "medium"
         e.order = nToggles + 0.999
-        e.width = 1.2
+        e.width = 1.35
         e.hidden = hider
         
 
         options.args.toggles.plugins[ section ] = db
-    end
+    end   
 
 
     -- Options table constructors.
@@ -3748,21 +3803,22 @@ do
                     set = "SetSpecOption",
 
                     args = {
-                        enabled = {
-                            type = "toggle",
-                            name = "Enabled",
-                            desc = "If checked, the addon will provide priority recommendations for " .. name .. " based on the selected priority list.",
-                            order = 0,
-                            width = "full",
-                        },
-
                         core = {
                             type = "group",
                             name = "Core",
                             desc = "Core features and specialization options for " .. specs[ id ] .. ".",
                             order = 1,
                             args = {
-                                packInfo = {
+                                enabled = {
+                                    type = "toggle",
+                                    name = "Enabled",
+                                    desc = "If checked, the addon will provide priority recommendations for " .. name .. " based on the selected priority list.",
+                                    order = 0,
+                                    width = "full",
+                                },
+        
+        
+                                --[[ packInfo = {
                                     type = 'group',
                                     name = "",
                                     inline = true,
@@ -3770,7 +3826,7 @@ do
                                     args = {
                                         
                                     }
-                                },
+                                }, ]]
 
                                 package = {
                                     type = "select",
@@ -3969,6 +4025,7 @@ do
                             },
                             plugins = {
                                 cooldowns = {},
+                                essences = {},
                                 defensives = {},
                                 utility = {},
                                 custom1 = {},
@@ -4062,7 +4119,8 @@ do
 
                 -- Toggles
                 BuildToggleList( options, id, "cooldowns", "Cooldowns" )
-                BuildToggleList( options, id, "utility", "Utility / Interrupts" )
+                BuildToggleList( options, id, "essences", "Azerite Essences" )
+                BuildToggleList( options, id, "interrupts", "Utility / Interrupts" )
                 BuildToggleList( options, id, "defensives", "Defensives",   "The defensive toggle is generally intended for tanking specializations, " ..
                                                                             "as you may want to turn on/off recommendations for damage mitigation abilities " ..
                                                                             "for any number of reasons during a fight.  DPS players may want to add their own " ..
@@ -6038,146 +6096,11 @@ do
                     fontSize = "medium",
                 },
 
-                pause = {
-                    type = "group",
-                    name = "",
-                    inline = true,
-                    order = 1,
-                    args = {
-                        key = {
-                            type = 'keybinding',
-                            name = function () return Hekili.Pause and "Unpause" or "Pause" end,
-                            desc = "Set a key to pause processing of your action lists. Your current display(s) will freeze, and you can mouseover each icon to see information about the displayed action.",
-                            order = 1,
-                        },
-                        value = {
-                            type = 'toggle',
-                            name = 'Pause',
-                            order = 2,
-                        },
-                    }
-                },
-
-                snapshot = {
-                    type = "group",
-                    name = "",
-                    inline = true,
-                    order = 2,
-                    args = {
-                        key = {
-                            type = 'keybinding',
-                            name = 'Snapshot',
-                            desc = "Set a key to make a snapshot (without pausing) that can be viewed on the Snapshots tab.  This can be useful information for testing and debugging.",
-                            order = 1,
-                        },
-                    }
-                },
-
-                mode = {
-                    type = "group",
-                    inline = true,
-                    name = "",
-                    order = 3,
-                    args = {
-                        key = {
-                            type = 'keybinding',
-                            name = 'Display Mode',
-                            desc = "Pressing this key will force the addon to switch between one or two displays.  You can specify the modes available as well.\n" ..
-                            "|cFFFFD100Automatic|r:  In this mode, the addon will show one display that automatically adjusts to the number of enemies detected.\n" ..
-                            "|cFFFFD100Dual Display|r:  In this mode, the addon will show two displays; the Primary display will show single-target recommendations and the AOE display will show recommendations for more enemies.",
-                            order = 1,
-                        },
-
-                        type = {
-                            type = "select",
-                            name = "Modes",
-                            desc = "Select the Display Modes that can be cycled using your Display Mode key.\n\n" ..
-                                "|cFFFFD100Auto vs. Single|r - Using only the Primary display, toggle between automatic target counting and single-target recommendations.\n\n" .. 
-                                "|cFFFFD100Single vs. AOE|r - Using only the Primary display, toggle between single-target recommendations and AOE (multi-target) recommendations.\n\n" ..
-                                "|cFFFFD100Auto vs. Dual|r - Toggle between one display using automatic target counting and two displays, with one showing single-target recommendations and the other showing AOE recommendations.  This will use additional CPU.\n\n" ..
-                                "|cFFFFD100Reactive AOE|r - Use the Primary display for single-target recommendations, and when additional enemies are detected, show the AOE display.  (Disables Mode Toggle)",
-                            values = {
-                                AutoSingle = "Auto vs. Single",
-                                SingleAOE = "Single vs. AOE",
-                                AutoDual = "Auto vs. Dual",
-                                ReactiveDual = "Reactive AOE",
-                            },
-                            order = 2,
-                        },
-
-                        value = {
-                            type = "select",
-                            name = "Mode",
-                            desc = function( info, val )
-                                local mType = self.DB.profile.toggles.mode.type
-
-                                local output = "Select your Display Mode."
-
-                                if mType == "AutoSingle" or mType == "AutoDual" then
-                                    output = output .. "\n\n|cffffd100Automatic|r - Recommendations are based on the number of detected enemies."
-                                end
-
-                                if mType == "AutoSingle" or mType == "SingleAOE" then
-                                    output = output .. "\n\n|cffffd100Single|r - Recommendations are generated assuming a single target is active."
-                                end
-
-                                if mType == "SingleAOE" then
-                                    output = output .. "\n\n|cffffd100AOE|r - Recommendations are generated assuming multiple enemies are active."
-                                end
-
-                                if mType == "AutoDual" then
-                                    output = output .. "\n\n|cffffd100Dual|r - The Primary display shows single-target recommendations and the AOE display shows multi-target recommendations."
-                                end
-
-                                if mType == "ReactiveDual" then
-                                    output = output .."\n\n|cffffd100Reactive|r - The mode toggle is disabled; the addon will also display the AOE display when more enemies are detected."
-                                end
-
-                                return output
-                            end,
-                            values = function( info, val )
-                                local mType = self.DB.profile.toggles.mode.type
-
-                                local v = {
-                                    automatic = "Automatic",
-                                    single = "Single",
-                                    aoe = "AOE",
-                                    dual = "Dual",
-                                    reactive = "Reactive"
-                                }
-
-                                if mType == "AutoSingle" then
-                                    v.aoe = nil
-                                    v.dual = nil
-                                    v.reactive = nil
-                                elseif mType == "SingleAOE" then
-                                    v.automatic = nil
-                                    v.dual = nil
-                                    v.reactive = nil
-                                elseif mType == "AutoDual" then
-                                    v.single = nil
-                                    v.aoe = nil
-                                    v.reactive = nil
-                                elseif mType == "ReactiveDual" then
-                                    v.automatic = nil
-                                    v.single = nil
-                                    v.aoe = nil
-                                    v.dual = nil
-                                end
-
-                                return v
-                            end,
-                            width = "single",
-                            order = 3,
-                        }
-                    },
-                },
-
                 cooldowns = {
                     type = "group",
                     name = "",
                     inline = true,
-                    order = 4,
+                    order = 2,
                     args = {
                         key = {
                             type = "keybinding",
@@ -6193,14 +6116,43 @@ do
                             order = 2,                            
                         },
 
-                        bloodlust = {
+                        override = {
                             type = "toggle",
                             name = "Bloodlust Override",
-                            desc = "If checked, when Bloodlust (or similar haste effects) are active, the addon will recommend cooldown abilities even if Show Cooldowns is not checked.",
+                            desc = "If checked, when Bloodlust (or similar effects) are active, the addon will recommend cooldown abilities even if Show Cooldowns is not checked.",
                             order = 3,
                         },
                     }
                 },
+
+                essences = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 2.1,
+                    args = {
+                        key = {
+                            type = "keybinding",
+                            name = "Essences",
+                            desc = "Set a key to toggle Azerite Essence recommendations on/off.",
+                            order = 1,
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Show Essences",
+                            desc = "If checked, abilities from Azerite Essences can be recommended.",
+                            order = 2,                            
+                        },
+
+                        override = {
+                            type = "toggle",
+                            name = "Cooldowns Override",
+                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Azerite Essences even if Show Essences is not checked.",
+                            order = 3,
+                        },
+                    }
+                },                
 
                 defensives = {
                     type = "group",
@@ -6238,7 +6190,7 @@ do
                     type = "group",
                     name = "",
                     inline = true,
-                    order = 6,
+                    order = 4,
                     args = {
                         key = {
                             type = "keybinding",
@@ -6267,7 +6219,7 @@ do
                     type = "group",
                     name = "",
                     inline = true,
-                    order = 7,
+                    order = 6,
                     args = {
                         key = {
                             type = "keybinding",
@@ -6285,7 +6237,163 @@ do
                     }
                 },
 
-                specLinks = {
+                displayModes = {
+                    type = "header",
+                    name = "Display Modes",
+                    order = 10,
+                },
+
+                mode = {
+                    type = "group",
+                    inline = true,
+                    name = "",
+                    order = 10.1,
+                    args = {
+                        key = {
+                            type = 'keybinding',
+                            name = 'Display Mode',
+                            desc = "Pressing this binding will cycle your Display Mode through the options checked below.",
+                            order = 1,
+                        },
+
+                        modeLB = {
+                            type = "description",
+                            name = "",
+                            width = "full",
+                            order = 1.01
+                        },
+
+                        value = {
+                            type = "select",
+                            name = "Current Display Mode",
+                            desc = "Select the your current Display Mode.",
+                            values = {
+                                automatic = "Automatic",
+                                single = "Single-Target",
+                                aoe = "AOE (Multi-Target)",
+                                dual = "Fixed Dual Display",
+                                reactive = "Reactive Dual Display"
+                            },
+                            width = 1.5,
+                            order = 1.02,
+                        },
+
+                        modeLB2 = {
+                            type = "description",
+                            name = "",
+                            width = "full",
+                            order = 1.03
+                        },
+
+                        automatic = {
+                            type = "toggle",
+                            name = "Automatic",
+                            desc = "If checked, the Display Mode toggle can select Automatic mode.\n\nThe Primary display shows recommendations based upon the detected number of enemies (based on your specialization's options).",
+                            width = 1.5,
+                            order = 1.1,
+                        },
+
+                        single = {
+                            type = "toggle",
+                            name = "Single-Target",
+                            desc = "If checked, the Display Mode toggle can select Single-Target mode.\n\nThe Primary display shows recommendations as though you have one target (even if more targets are detected).",
+                            width = 1.5,
+                            order = 1.2,
+                        },
+
+                        aoe = {
+                            type = "toggle",
+                            name = "AOE (Multi-Target)",
+                            desc = function ()
+                                return format( "If checked, the Display Mode toggle can select AOE mode.\n\nThe Primary display shows recommendations as though you have multiple (%d) targets (even if fewer are detected).\n\n" ..
+                                                "The number of targets is set in your specialization's options.", self.DB.profile.specs[ state.spec.id ].aoe or 3 )
+                            end,
+                            width = 1.5,
+                            order = 1.3,
+                        },
+
+                        dual = {
+                            type = "toggle",
+                            name = "Fixed Dual Display",
+                            desc = function ()
+                                return format( "If checked, the Display Mode toggle can select Dual Display mode.\n\nThe Primary display shows single-target recommendations and the AOE display shows recommendations for multiple (%d) targets (even if fewer are detected).\n\n" ..
+                                                "The number of AOE targets is set in your specialization's options.", self.DB.profile.specs[ state.spec.id ].aoe or 3 )
+                            end,
+                            width = 1.5,
+                            order = 1.4,
+                        },
+
+                        reactive = {
+                            type = "toggle",
+                            name = "Reactive Dual Display",
+                            desc = "If checked, the Display Mode toggle can select Reactive mode.\n\nThe Primary display shows single-target recommendations, while the AOE display remains hidden until/unless additional targets are detected.",
+                            width = 1.5,
+                            order = 1.5,
+                        },
+
+                        --[[ type = {
+                            type = "select",
+                            name = "Modes",
+                            desc = "Select the Display Modes that can be cycled using your Display Mode key.\n\n" ..
+                                "|cFFFFD100Auto vs. Single|r - Using only the Primary display, toggle between automatic target counting and single-target recommendations.\n\n" .. 
+                                "|cFFFFD100Single vs. AOE|r - Using only the Primary display, toggle between single-target recommendations and AOE (multi-target) recommendations.\n\n" ..
+                                "|cFFFFD100Auto vs. Dual|r - Toggle between one display using automatic target counting and two displays, with one showing single-target recommendations and the other showing AOE recommendations.  This will use additional CPU.\n\n" ..
+                                "|cFFFFD100Reactive AOE|r - Use the Primary display for single-target recommendations, and when additional enemies are detected, show the AOE display.  (Disables Mode Toggle)",
+                            values = {
+                                AutoSingle = "Auto vs. Single",
+                                SingleAOE = "Single vs. AOE",
+                                AutoDual = "Auto vs. Dual",
+                                ReactiveDual = "Reactive AOE",
+                            },
+                            order = 2,
+                        }, ]]
+                    },
+                },
+
+                troubleshooting = {
+                    type = "header",
+                    name = "Troubleshooting",
+                    order = 20,                    
+                },
+
+                pause = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 20.1,
+                    args = {
+                        key = {
+                            type = 'keybinding',
+                            name = function () return Hekili.Pause and "Unpause" or "Pause" end,
+                            desc =  "Set a key to pause processing of your action lists. Your current display(s) will freeze, " ..
+                                    "and you can mouseover each icon to see information about the displayed action.\n\n" ..
+                                    "This will also create a Snapshot that can be used for troubleshooting and error reporting.",
+                            order = 1,
+                        },
+                        value = {
+                            type = 'toggle',
+                            name = 'Pause',
+                            order = 2,
+                        },
+                    }
+                },
+
+                snapshot = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 20.2,
+                    args = {
+                        key = {
+                            type = 'keybinding',
+                            name = 'Snapshot',
+                            desc = "Set a key to make a snapshot (without pausing) that can be viewed on the Snapshots tab.  This can be useful information for testing and debugging.",
+                            order = 1,
+                        },
+                    }
+                },                
+
+                --[[ specLinks = {
                     type = "group",
                     inline = true,
                     name = "",
@@ -6329,7 +6437,7 @@ do
 
                         return hide
                     end,
-                }
+                } ]]
             }
         }
     end
@@ -6900,12 +7008,26 @@ function Hekili:GenerateProfile()
     end
 
     local traits
-    for k, v in orderedPairs( s.artifact ) do
+    for k, v in orderedPairs( s.azerite ) do
         if v.rank > 0 then
             if traits then traits = format( "%s\n    %s=%d", traits, k, v.rank )
             else traits = format( "%s=%d", k, v.rank ) end
         end
     end
+
+    local essences
+    local major, minors
+
+    for k, v in orderedPairs( s.essence ) do
+        if v.rank > 0 then
+            if v.major then major = format( "[%s]=%d", k, v.rank )
+            else
+                if minors then minors = format( "%s, %s=%d", minors, k, v.rank )
+                else minors = format( "%s=%d", k, v.rank ) end
+            end
+        end
+    end
+    essences = format( "%s, %s", major or "none*", minors or "none" )
 
     local sets
     for k, v in orderedPairs( class.gear ) do
@@ -6915,30 +7037,39 @@ function Hekili:GenerateProfile()
         end
     end
 
-    local gear
-    for k, v in pairs( state.set_bonus ) do
-        if type(k) == 'string' and v > 0 then
+    local gear, items
+    for k, v in orderedPairs( state.set_bonus ) do
+        if v > 0 then
+            if type(k) == 'string' then
             if gear then gear = format( "%s\n    %s=%d", gear, k, v )
             else gear = format( "    %s=%d", k, v ) end
+            elseif type(k) == 'number' then
+                if items then items = format( "%s, %d", items, k )
+                else items = tostring(k) end
+            end
         end
     end
 
     return format( "build: %s\n" ..
-        "level: %d\n" ..
+        "level: %d (%d)\n" ..
         "class: %s\n" ..
         "spec: %s\n\n" ..
         "talents: %s\n\n" ..
-        "traits: %s\n\n" ..
+        "azerite: %s\n\n" ..
+        "essences: %s\n\n" ..
         "sets/legendaries/artifacts: %s\n\n" ..
-        "gear: %s",
+        "gear: %s\n\n" ..
+        "itemIDs: %s",
         Hekili.Version or "no info",
-        UnitLevel( 'player' ) or 0,
+        UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
         class.file or "NONE",
         spec or "none",
         talents or "none",
         traits or "none",
+        essences or "none",
         sets or "none",
-        gear or "none" )
+        gear or "none",
+        items or "none" )
 end
 
 
@@ -9192,34 +9323,48 @@ function Hekili:Notify( str, duration )
 end
 
 
+local modes = {
+    "automatic", "single", "aoe", "dual", "reactive"
+}
+
+local modeIndex = {
+    automatic = { 1, "Automatic" },
+    single = { 2, "Single-Target" },
+    aoe = { 3, "AOE (Multi-Target)" },
+    dual = { 4, "Fixed Dual" },
+    reactive = { 5, "Reactive Dual" },
+}
+
+
 function Hekili:FireToggle( name )
     local toggle = name and self.DB.profile.toggles[ name ]
 
     if not toggle then return end
 
     if name == 'mode' then
-        if toggle.type == "AutoSingle" then
-            if toggle.value == "automatic" then toggle.value = "single" else toggle.value = "automatic" end
-        elseif toggle.type == "SingleAOE" then
-            if toggle.value == "single" then toggle.value = "aoe" else toggle.value = "single" end
-        elseif toggle.type == "AutoDual" then
-            if toggle.value == "automatic" then toggle.value = "dual" else toggle.value = "automatic" end
+        local current = toggle.value
+        local c_index = modeIndex[ current ][ 1 ]
+
+        local i = c_index + 1
+
+        while true do
+            if i > #modes then i = i % #modes end
+            if i == c_index then break end
+
+            local newMode = modes[ i ]
+
+            if toggle[ newMode ] then
+                toggle.value = newMode
+                break
+            end
+
+            i = i + 1
         end
 
-        if toggle.type == "ReactiveDual" then       
-            toggle.value = "reactive"
+        if self.DB.profile.notifications.enabled then
+            self:Notify( "Mode: " .. modeIndex[ toggle.value ][2] )
         else
-            local mode = "Unknown"
-            if toggle.value == "automatic" then mode = "Automatic"
-            elseif toggle.value == "single" then mode = "Single-Target"
-            elseif toggle.value == "aoe" then mode = "AOE"
-            elseif toggle.value == "dual" then mode = "Dual Display" end
-
-            if self.DB.profile.notifications.enabled then
-                self:Notify( "Mode: " .. mode )
-            else
-                self:Print( mode .. " mode activated." )
-            end
+            self:Print( modeIndex[ toggle.value ][2] .. " mode activated." )
         end
 
     elseif name == 'pause' then
