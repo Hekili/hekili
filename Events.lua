@@ -571,6 +571,27 @@ RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", function()
 end )
 
 
+-- Update Azerite Essence Data.
+do
+    local azeriteEvents = {
+        "AZERITE_ESSENCE_UPDATE",
+        "AZERITE_ESSENCE_MILESTONE_UNLOCKED",
+        "AZERITE_ESSENCE_FORGE_CLOSE",
+        "AZERITE_ESSENCE_CHANGED",
+        "AZERITE_ESSENCE_ACTIVATED",
+        "AZERITE_ESSENCE_ACTIVATION_FAILED"
+    }
+
+    local azeriteFunc = function( e )
+        ns.updateEssences()
+    end
+
+    for i, event in pairs( azeriteEvents ) do
+        RegisterEvent( event, azeriteFunc )
+    end
+end
+
+
 RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
     state.combat = GetTime() - 0.01
     Hekili:ForceUpdate() -- Force update on entering combat since OOC refresh can be very slow (0.5s).
