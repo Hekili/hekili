@@ -7295,7 +7295,7 @@ all:RegisterAbility( "blood_of_the_enemy", {
     cast = 0,
     cooldown = function () return essence.blood_of_the_enemy.rank > 1 and 90 or 120 end,
 
-    toggle = "cooldowns",
+    toggle = "essences",
 
     handler = function()
         applyDebuff( "target", "blood_of_the_enemy" )
@@ -7329,7 +7329,7 @@ all:RegisterAbility( "guardian_of_azeroth", {
     cast = 0,
     cooldown = 180,
 
-    toggle = "cooldowns",
+    toggle = "essences",
 
     handler = function()
         -- summonPet( "guardian_of_azeroth" )
@@ -7366,7 +7366,7 @@ all:RegisterAbility( "focused_azerite_beam", {
     channeled = true,
     cooldown = 90,
 
-    toggle = "cooldowns",
+    toggle = "essences",
 } )
 
 all:RegisterAura( "focused_energy", {
@@ -7382,7 +7382,7 @@ all:RegisterAbility( "memory_of_lucid_dreams", {
     cast = 0,
     cooldown = 120,
 
-    toggle = "cooldowns",
+    toggle = "essences",
 
     handler = function ()
         applyBuff( "memory_of_lucid_dreams" )
@@ -7421,7 +7421,7 @@ all:RegisterAbility( "ripple_in_space", {
     cast = 0,
     cooldown = 60,
 
-    toggle = "cooldowns",
+    toggle = "essences",
 
     handler = function ()
         applyBuff( "ripple_in_space_blink" )
@@ -7647,7 +7647,7 @@ all:RegisterAbility( "suppressing_pulse", {
     cast = 0,
     cooldown = function () return essence.sphere_of_suppression.rank > 1 and 45 or 60 end,
 
-    toggle = "cooldowns",
+    toggle = "essences",
 
     handler = function ()
         applyDebuff( "target", "suppressing_pulse" )

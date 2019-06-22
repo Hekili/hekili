@@ -380,12 +380,10 @@ local function menu_Single()
 
     p.toggles.mode.value = 'single'
 
-    if not p.toggles.mode.type:find("Single") then p.toggles.mode.type = "AutoSingle" end
-    
     if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-    Hekili:UpdateDisplayVisibility()
 
+    Hekili:UpdateDisplayVisibility()
     Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
 end
 
@@ -393,10 +391,10 @@ local function menu_AOE()
     local p = Hekili.DB.profile
 
     p.toggles.mode.value = "aoe"
-    p.toggles.mode.type = "SingleAOE"
 
     if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+
     Hekili:UpdateDisplayVisibility()
     Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
 end
@@ -405,29 +403,33 @@ local function menu_Dual()
     local p = Hekili.DB.profile
 
     p.toggles.mode.value = "dual"
-    p.toggles.mode.type = "AutoDual"
     
     if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-    Hekili:UpdateDisplayVisibility()
 
+    Hekili:UpdateDisplayVisibility()
     Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
 end
 
 local function menu_Reactive()
     local p = Hekili.DB.profile
+
     p.toggles.mode.value = "reactive"
-    p.toggles.mode.type = "ReactiveDual"
 
     if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-    Hekili:UpdateDisplayVisibility()
 
+    Hekili:UpdateDisplayVisibility()
     Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
 end
 
 local function menu_Cooldowns()
     Hekili:FireToggle( "cooldowns" )
+    ns.UI.Minimap:RefreshDataText()
+end
+
+local function menu_Essences()
+    Hekili:FireToggle( "essences" )
     ns.UI.Minimap:RefreshDataText()
 end
 
@@ -533,6 +535,11 @@ Hekili_Menu.initialize = function(self, level)
         i.text = "Cooldowns"
         i.func = menu_Cooldowns
         i.checked = p.toggles.cooldowns.value
+        UIDropDownMenu_AddButton(i, level)
+
+        i.text = "Essences"
+        i.func = menu_Essences
+        i.checked = p.toggles.essences.value
         UIDropDownMenu_AddButton(i, level)
 
         i.text = "Interrupts"

@@ -2103,6 +2103,10 @@ local mt_toggle = {
         if not db then return end
 
         local toggle = db.profile.toggles[ k ]
+
+        if k == "cooldowns" and toggle.override and state.buff.bloodlust.up then return true end
+        if k == "essences" and toggle.override and state.toggle.cooldowns then return true end
+
         if toggle then return toggle.value end
     end
 }
@@ -5373,6 +5377,7 @@ do
         local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
 
         if option.disabled then return true end
+        if option.boss and not state.boss then return true end
 
         if not strict then
             local toggle = option.toggle
