@@ -6237,6 +6237,56 @@ do
                     }
                 },
 
+                customHeader = {
+                    type = "header",
+                    name = "Custom",
+                    order = 7,
+                },
+
+                custom1 = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 7.1,
+                    args = {
+                        key = {
+                            type = "keybinding",
+                            name = "Custom #1",
+                            desc = "Set a key to toggle your first custom set.",
+                            order = 1,
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Show Custom #1",
+                            desc = "If checked, abilities linked to Custom #1 can be recommended.",
+                            order = 2,
+                        },
+                    }
+                },
+
+                custom2 = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 7.2,
+                    args = {
+                        key = {
+                            type = "keybinding",
+                            name = "Custom #2",
+                            desc = "Set a key to toggle your second custom set.",
+                            order = 1,
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Show Custom #2",
+                            desc = "If checked, abilities linked to Custom #2 can be recommended.",
+                            order = 2,
+                        },
+                    }
+                },
+
                 displayModes = {
                     type = "header",
                     name = "Display Modes",
