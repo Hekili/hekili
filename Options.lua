@@ -533,6 +533,16 @@ function Hekili:GetDefaults()
                     key = "ALT-SHIFT-G",
                     value = true,
                     override = true,
+                },
+
+                custom1 = {
+                    key = "",
+                    value = false,
+                },
+
+                custom2 = {
+                    key = "",
+                    value = false,
                 }
             },
 
@@ -9373,78 +9383,91 @@ function Hekili:Notify( str, duration )
 end
 
 
-local modes = {
-    "automatic", "single", "aoe", "dual", "reactive"
-}
+do
+    local modes = {
+        "automatic", "single", "aoe", "dual", "reactive"
+    }
 
-local modeIndex = {
-    automatic = { 1, "Automatic" },
-    single = { 2, "Single-Target" },
-    aoe = { 3, "AOE (Multi-Target)" },
-    dual = { 4, "Fixed Dual" },
-    reactive = { 5, "Reactive Dual" },
-}
+    local modeIndex = {
+        automatic = { 1, "Automatic" },
+        single = { 2, "Single-Target" },
+        aoe = { 3, "AOE (Multi-Target)" },
+        dual = { 4, "Fixed Dual" },
+        reactive = { 5, "Reactive Dual" },
+    }
+
+    local toggles = setmetatable( {
+        custom1 = "Custom #1",
+        custom2 = "Custom #2",
+    }, {
+        __index = function( t, k )
+            local name = k:gsub( "^(.)", strupper )
+            t[k] = name
+            return name
+        end,
+    } )
 
 
-function Hekili:FireToggle( name )
-    local toggle = name and self.DB.profile.toggles[ name ]
+    function Hekili:FireToggle( name )
+        local toggle = name and self.DB.profile.toggles[ name ]
 
-    if not toggle then return end
+        if not toggle then return end
 
-    if name == 'mode' then
-        local current = toggle.value
-        local c_index = modeIndex[ current ][ 1 ]
+        if name == 'mode' then
+            local current = toggle.value
+            local c_index = modeIndex[ current ][ 1 ]
 
-        local i = c_index + 1
+            local i = c_index + 1
 
-        while true do
-            if i > #modes then i = i % #modes end
-            if i == c_index then break end
+            while true do
+                if i > #modes then i = i % #modes end
+                if i == c_index then break end
 
-            local newMode = modes[ i ]
+                local newMode = modes[ i ]
 
-            if toggle[ newMode ] then
-                toggle.value = newMode
-                break
+                if toggle[ newMode ] then
+                    toggle.value = newMode
+                    break
+                end
+
+                i = i + 1
             end
 
-            i = i + 1
-        end
+            if self.DB.profile.notifications.enabled then
+                self:Notify( "Mode: " .. modeIndex[ toggle.value ][2] )
+            else
+                self:Print( modeIndex[ toggle.value ][2] .. " mode activated." )
+            end
 
-        if self.DB.profile.notifications.enabled then
-            self:Notify( "Mode: " .. modeIndex[ toggle.value ][2] )
+        elseif name == 'pause' then
+            self:TogglePause()
+            return
+
+        elseif name == 'snapshot' then
+            self:MakeSnapshot()
+            return
+
         else
-            self:Print( modeIndex[ toggle.value ][2] .. " mode activated." )
+            toggle.value = not toggle.value
+
+            if self.DB.profile.notifications.enabled then
+                self:Notify( toggles[ name ] .. ": " .. ( toggle.value and "ON" or "OFF" ) )
+            else
+                self:Print( toggles[ name ].. ( toggle.value and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+            end
         end
 
-    elseif name == 'pause' then
-        self:TogglePause()
-        return
+        if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", name, toggle.value ) end
+        if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+        self:UpdateDisplayVisibility()
 
-    elseif name == 'snapshot' then
-        self:MakeSnapshot()
-        return
-
-    else
-        toggle.value = not toggle.value
-
-        if self.DB.profile.notifications.enabled then
-            self:Notify( name:gsub( "^(.)", strupper ) .. ": " .. ( toggle.value and "ON" or "OFF" ) )
-        else
-            self:Print( name:gsub( "^(.)", strupper ) .. ( toggle.value and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
-        end
+        self:ForceUpdate( "HEKILI_TOGGLE", true )
     end
 
-    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", name, toggle.value ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-    self:UpdateDisplayVisibility()
 
-    self:ForceUpdate( "HEKILI_TOGGLE", true )
-end
+    function Hekili:GetToggleState( name, class )
+        local t = name and self.DB.profile.toggles[ name ]
 
-
-function Hekili:GetToggleState( name, class )
-    local t = name and self.DB.profile.toggles[ name ]
-
-    return t and t.value
+        return t and t.value
+    end
 end
