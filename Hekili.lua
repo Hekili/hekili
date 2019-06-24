@@ -149,7 +149,8 @@ Hekili.Class = {
     stateFuncs = {},
     stateTables = {},
 
-    abilities = {},
+	abilities = {},
+	abilityByName = {},
     abilityList = {},
     itemList = {},
     itemMap = {},
