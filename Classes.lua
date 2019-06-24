@@ -404,11 +404,10 @@ local HekiliSpecMixin = {
                         if a == entry then
                             class.abilities[ key ] = nil
                             class.abilityList[ key ] = nil
+                            class.abilityByName[ key ] = nil
                             class.itemList[ key ] = nil
 
                             self.abilities[ key ] = nil
-                            self.abilityList[ key ] = nil
-                            self.itemList[ key ] = nil
                         end
                     end
 
@@ -435,6 +434,8 @@ local HekiliSpecMixin = {
                     if not a.unlisted then
                         class.abilityList[ ability ] = "|T" .. texture .. ":0|t " .. link
                         class.itemList[ data.item ] = "|T" .. texture .. ":0|t " .. link
+
+                        class.abilityByName[ a.name ] = a
                     end
 
                     class.abilities[ ability ] = a
@@ -505,9 +506,12 @@ local HekiliSpecMixin = {
                     local texture = a.texture or GetSpellTexture( a.id )
 
                     self.abilities[ a.name ] = self.abilities[ a.name ] or a
-
                     class.abilities[ a.name ] = class.abilities[ a.name ] or a
-                    if not a.unlisted then class.abilityList[ ability ] = a.listName or ( "|T" .. texture .. ":0|t " .. a.name ) end
+
+                    if not a.unlisted then
+                        class.abilityList[ ability ] = a.listName or ( "|T" .. texture .. ":0|t " .. a.name )
+                        class.abilityByName[ a.name ] = class.abilities[ a.name ] or a
+                    end
                 end )
             end
         end
@@ -7452,15 +7456,15 @@ all:RegisterAuras( {
 all:RegisterAbility( "concentrated_flame", {
     id = 295373,
     cast = 0,
-    charges = function () return essence.crucible_of_flame.rank > 2 and 2 or nil end,
+    charges = function () return essence.the_crucible_of_flame.rank > 2 and 2 or nil end,
     cooldown = 30,
-    recharge = function () return essence.crucible_of_flame.rank > 2 and 30 or nil end,
+    recharge = function () return essence.the_crucible_of_flame.rank > 2 and 30 or nil end,
 
     handler = function ()
         if buff.concentrated_flame.stack == 2 then removeBuff( "concentrated_flame" )
         else addStack( "concentrated_flame" ) end
 
-        if essence.crucible_of_flame.rank > 1 then applyDebuff( "target", "concentrated_flame_dot" ) end
+        if essence.the_crucible_of_flame.rank > 1 then applyDebuff( "target", "concentrated_flame_dot" ) end
     end,
 } )
 
@@ -7479,18 +7483,18 @@ all:RegisterAuras( {
 
 
 -- The Unbound Force
-all:RegisterAbility( "unbound_force", {
+all:RegisterAbility( "the_unbound_force", {
     id = 298452,
     cast = 0,
-    cooldown = function () return essence.unbound_force.rank > 1 and 45 or 60 end,
+    cooldown = function () return essence.the_unbound_force.rank > 1 and 45 or 60 end,
 
     handler = function ()
-        applyDebuff( "target", "unbound_force" )
+        applyDebuff( "target", "the_unbound_force" )
     end
 } )
 
 all:RegisterAuras( {
-    unbound_force = {
+    the_unbound_force = {
         id = 298452,
         duration = 2,
         max_stack = 1
@@ -7502,7 +7506,7 @@ all:RegisterAuras( {
     },
     reckless_force_crit = {
         id = 302932,
-        duration = function () return essence.unbound_force.rank > 2 and 4 or 3 end,
+        duration = function () return essence.the_unbound_force.rank > 2 and 4 or 3 end,
         max_stack = 1
     }
 } )
