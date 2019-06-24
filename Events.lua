@@ -382,7 +382,7 @@ do
 
 
     -- Essences
-    if GetBuildInfo() == "8.2.0" then
+    if select(4, GetBuildInfo()) >= 80200 then
         local AE = C_AzeriteEssence
         local GetMilestoneEssence, GetEssenceInfo = AE.GetMilestoneEssence, AE.GetEssenceInfo
         local milestones = { 115, 116, 117 }
@@ -394,7 +394,7 @@ do
             [5]  = "essence_of_the_focusing_iris",
             [6]  = "purification_protocol",
             [7]  = "anima_of_life_and_death",
-            [12] = "crucible_of_flame",
+            [12] = "the_crucible_of_flame",
             [13] = "nullification_dynamo",
             [14] = "condensed_lifeforce",
             [15] = "ripple_in_space",
@@ -407,7 +407,7 @@ do
             [23] = "blood_of_the_enemy",
             [25] = "aegis_of_the_deep",
             [27] = "memory_of_lucid_dreams",
-            [28] = "unbound_force",
+            [28] = "the_unbound_force",
             [32] = "conflict_and_strife"
         }
 
@@ -433,6 +433,7 @@ do
                         local key = essenceKeys[ info.ID ]
                         
                         e[ key ].rank = info.rank
+                        e[ key ].minor = true
                         e[ key ].major = i == 1
                     end
                 end
@@ -604,6 +605,8 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
 
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
+
+    Hekili:ReleaseHolds( true )
 end )
 
 
@@ -660,11 +663,17 @@ end
 local lowLevelWarned = false
 
 -- Need to make caching system.
-RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, _, spellID )
     if UnitIsUnit( unit, "player" ) then
         if lowLevelWarned == false and UnitLevel( "player" ) < 100 then
             Hekili:Notify( "Hekili is designed for current content.\nUse below level 100 at your own risk.", 5 )
             lowLevelWarned = true
+        end
+
+        local ability = class.abilities[ spellID ]
+
+        if ability and state.holds[ ability.key ] then
+            Hekili:RemoveHold( ability.key, true )
         end
     end
     -- Hekili:ForceUpdate( event )
