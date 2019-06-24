@@ -7460,6 +7460,8 @@ all:RegisterAbility( "concentrated_flame", {
     cooldown = 30,
     recharge = function () return essence.the_crucible_of_flame.rank > 2 and 30 or nil end,
 
+    toggle = "essences",
+
     handler = function ()
         if buff.concentrated_flame.stack == 2 then removeBuff( "concentrated_flame" )
         else addStack( "concentrated_flame" ) end
@@ -7487,6 +7489,8 @@ all:RegisterAbility( "the_unbound_force", {
     id = 298452,
     cast = 0,
     cooldown = function () return essence.the_unbound_force.rank > 1 and 45 or 60 end,
+
+    toggle = "essences",
 
     handler = function ()
         applyDebuff( "target", "the_unbound_force" )
@@ -7528,6 +7532,8 @@ all:RegisterAbility( "worldvein_resonance", {
     id = 295186,
     cast = 0,
     cooldown = 60,
+
+    toggle = "essences",
 
     handler = function()
         addStack( "lifeblood", nil, essence.worldvein_resonance.rank > 1 and 3 or 2 )
