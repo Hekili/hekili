@@ -741,7 +741,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         celestial_alignment = {
             id = 194223,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -1059,7 +1059,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         incarnation = {
             id = 102560,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
             gcd = "spell",
 
             spend = -40,
@@ -1080,7 +1080,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
             end,
 
-            copy = "incarnation_chosen_of_elune"
+            copy = { "incarnation_chosen_of_elune", "Incarnation" },
         },
 
 

@@ -722,7 +722,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 applyBuff( "incarnation" )
             end,
 
-            copy = "incarnation_guardian_of_ursoc"            
+            copy = { "incarnation_guardian_of_ursoc", "Incarnation" }
         },
 
 

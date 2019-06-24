@@ -550,7 +550,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         berserk = {
             id = 106951,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
             gcd = "spell",
 
             startsCombat = false,
@@ -832,7 +832,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         incarnation = {
             id = 102543,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
             gcd = "spell",
 
             startsCombat = false,
@@ -846,6 +846,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 applyBuff( "jungle_stalker" )
                 energy.max = energy.max + 50 
             end,
+
+            copy = { "incarnation_king_of_the_jungle", "Incarnation" }
         },
 
 
