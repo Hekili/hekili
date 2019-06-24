@@ -12,6 +12,7 @@ local ResourceRegenerates = ns.ResourceRegenerates
 
 local Error = ns.Error
 
+local orderedPairs = ns.orderedPairs
 local round, roundUp, roundDown = ns.round, ns.roundUp, ns.roundDown
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 
@@ -87,6 +88,8 @@ state.history = {
     casts = {},
     units = {}
 }
+
+state.holds = {}
 
 state.items = {}
 state.pet = {
@@ -508,24 +511,30 @@ state.setCooldown = setCooldown
 
 
 local function spendCharges( action, charges )
-    if class.abilities[ action ].charges and charges > 0 then
-        state.cooldown[ action ] = state.cooldown[ action ] or {}
+    local ability = class.abilities[ action ]
 
-        if state.cooldown[ action ].next_charge <= state.query_time then
-            state.cooldown[ action ].recharge_began = state.query_time
-            state.cooldown[ action ].next_charge = state.query_time + class.abilities[ action ].recharge
-            state.cooldown[ action ].recharge = class.abilities[ action ].recharge
-        end
+    if not ability.charges or ability.charges == 1 then
+        setCooldown( action, ability.cooldown )
+        return
+    end
 
-        state.cooldown[ action ].charge = max( 0, state.cooldown[ action ].charge - charges )
+    if not state.cooldown[ action ] then state.cooldown[ action ] = {} end
+    local cd = state.cooldown[ action ]
 
-        if state.cooldown[ action ].charge == 0 then
-            state.cooldown[ action ].duration = class.abilities[ action ].recharge
-            state.cooldown[ action ].expires = state.cooldown[ action ].next_charge
-        else
-            state.cooldown[ action ].duration = 0
-            state.cooldown[ action ].expires = 0
-        end
+    if cd.next_charge <= state.query_time then
+        cd.recharge_began = state.query_time
+        cd.next_charge = state.query_time + ( ability.recharge or ability.cooldown )
+        cd.recharge = ability.recharge
+    end
+
+    cd.charge = max( 0, cd.charge - charges )
+
+    if cd.charge == 0 then
+        cd.duration = ability.recharge or ability.cooldown
+        cd.expires = cd.next_charge
+    else
+        cd.duration = 0
+        cd.expires = 0
     end
 end
 state.spendCharges = spendCharges
@@ -3210,7 +3219,7 @@ state.artifact = state.azerite
 
 -- Essences
 setmetatable( state.essence, mt_artifact_traits )
-state.essence.no_trait = { rank = 0, major = false }
+state.essence.no_trait = { rank = 0, major = false, minor = false }
 
 
 do
@@ -5284,6 +5293,107 @@ ns.spendResources = function( ability )
 end
 
 
+do
+    local HOLD_PERMANENT = 1
+    local HOLD_COMBAT    = 2
+    
+    function Hekili:PlaceHold( action, combat, verbose )
+        if not action then return end
+
+        action = action:trim()    
+        local ability = class.abilities[ action ]
+
+        if not ability then
+            action = action:lower()
+            -- Try to auto-complete.
+            for k, v in orderedPairs( class.abilities ) do
+                if type(k) == 'string' and k:sub( 1, action:len() ):lower() == action then
+                    action = v.key
+                    ability = class.abilities[ action ]
+                    break
+                end
+            end
+        end
+
+        if ability then
+            state.holds[ ability.key ] = combat and HOLD_COMBAT or HOLD_PERMANENT
+            if verbose then Hekili:Print( class.abilities[ ability.key ].name .. " placed on hold" .. ( combat and " until end of combat." or "." ) ) end
+            Hekili:ForceUpdate( "HEKILI_HOLD_APPLIED" )
+        end
+    end
+
+    function Hekili:RemoveHold( action, verbose )
+        if not action then return end
+
+        action = action:trim()
+        local ability = class.abilities[ action ]
+
+        if not ability then
+            action = action:lower()
+            -- Try to auto-complete.
+            for k, v in orderedPairs( class.abilities ) do
+                if type(k) == 'string' and k:sub( 1, action:len() ):lower() == action then
+                    action = v.key
+                    ability = class.abilities[ action ]
+                    break
+                end
+            end
+        end
+
+        if ability and state.holds[ ability.key ] then
+            state.holds[ ability.key ] = nil
+            if verbose then Hekili:Print( class.abilities[ ability.key ].name .. " hold removed." ) end
+            Hekili:ForceUpdate( "HEKILI_HOLD_REMOVED" )
+        end
+    end
+
+    function Hekili:ToggleHold( action, combat, verbose )
+        if self:IsHeld( action ) then
+            self:RemoveHold( action, verbose )
+            return
+        end
+
+        self:PlaceHold( action, combat, verbose )
+    end
+
+    function Hekili:IsHeld( action )
+        action = action and action:trim()
+        local ability = class.abilities[ action ]
+
+        if not ability then
+            action = action:lower()
+            -- Try to auto-complete.
+            for k, v in orderedPairs( class.abilities ) do
+                if type(k) == 'string' and k:sub( 1, action:len() ):lower() == action then
+                    action = v.key
+                    ability = class.abilities[ action ]
+                    break
+                end
+            end
+        end
+
+        if ability and state.holds[ ability.key ] then
+            return true, state.holds[ ability.key ]
+        end
+
+        return false
+    end
+
+    function Hekili:ReleaseHolds( combat )
+        local holdRemoved = false
+
+        for k, v in pairs( state.holds ) do
+            if not combat or v == HOLD_COMBAT then
+                state.holds[ k ] = nil
+                holdRemoved = true
+            end
+        end
+
+        if holdRemoved then Hekili:ForceUpdate( "HEKILI_COMBAT_HOLD_REMOVED" ) end
+    end
+end
+
+
 function state:IsKnown( sID, notoggle )
 
     if type(sID) ~= 'number' then sID = class.abilities[ sID ] and class.abilities[ sID ].id or nil end
@@ -5370,6 +5480,8 @@ do
         if not ability then return false end
 
         spell = ability.key
+
+        if self.holds[ spell ] then return true end
 
         local profile = Hekili.DB.profile
         local spec = profile.specs[ state.spec.id ]
