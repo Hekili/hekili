@@ -411,6 +411,30 @@ do
             [32] = "conflict_and_strife"
         }
 
+        local essenceMajors = {
+            aegis_of_the_deep = "aegis_of_the_deep",
+            anima_of_life_and_death = "anima_of_death",
+            -- artifice_of_time = "",
+            azeroths_undying_gift = "azeroths_undying_gift",
+            blood_of_the_enemy = "blood_of_the_enemy",
+            condensed_lifeforce = "guardian_of_azeroth",
+            --conflict_and_strife = "",
+            essence_of_the_focusing_iris = "focused_azerite_beam",
+            -- everrising_tide = "",
+            -- lifebinders_invocation = "",
+            memory_of_lucid_dreams = "memory_of_lucid_dreams",
+            nullification_dynamo = "empowered_null_barrier",
+            purification_protocol = "purifying_blast",
+            ripple_in_space = "ripple_in_space",
+            sphere_of_suppression = "suppressing_pulse",
+            the_crucible_of_flame = "concentrated_flame",
+            the_unbound_force = "the_unbound_force",
+            -- vision_of_perfection = "",
+            -- vitality_conduit = "",
+            -- well_of_existence = "",
+            worldvein_resonance = "worldvein_resonance",
+        }
+
         for _, key in pairs( essenceKeys ) do
             state.essence[ key ] = { rank = 0, major = false }
         end
@@ -434,7 +458,11 @@ do
                         
                         e[ key ].rank = info.rank
                         e[ key ].minor = true
-                        e[ key ].major = i == 1
+                        
+                        if i == 1 then                            
+                            e[ key ].major = true
+                            class.abilities.heart_essence = class.abilities[ essenceMajors[ key ] ]
+                        end
                     end
                 end
             end
