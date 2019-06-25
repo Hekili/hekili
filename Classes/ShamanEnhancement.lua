@@ -19,7 +19,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         mainhand = {
             last = function ()
                 local swing = state.swings.mainhand
+                local speed = state.swings.mainhand_speed
                 local t = state.query_time
+
+                if speed == 0 then return swing end
 
                 return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
             end,
@@ -32,7 +35,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         offhand = {
             last = function ()
                 local swing = state.swings.offhand
+                local speed = state.swings.offhand_speed
                 local t = state.query_time
+
+                if speed == 0 then return swing end
 
                 return swing + ( floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed )
             end,
