@@ -6068,6 +6068,10 @@ do
             toggle.key = val
             self:OverrideBinds()
 
+        elseif option == 'override' then
+            toggle[ option ] = val
+            ns.UI.Minimap:RefreshDataText()
+
         else
             toggle[ option ] = val
 
