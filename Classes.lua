@@ -7301,6 +7301,7 @@ all:RegisterAbility( "blood_of_the_enemy", {
 
     startsCombat = true,
     toggle = "essences",
+    essence = true,
 
     handler = function()
         applyDebuff( "target", "blood_of_the_enemy" )
@@ -7336,6 +7337,7 @@ all:RegisterAbility( "guardian_of_azeroth", {
 
     startsCombat = true,
     toggle = "essences",
+    essence = true,
 
     handler = function()
         -- summonPet( "guardian_of_azeroth" )
@@ -7374,6 +7376,7 @@ all:RegisterAbility( "focused_azerite_beam", {
 
     startsCombat = true,
     toggle = "essences",
+    essence = true,
 } )
 
 all:RegisterAura( "focused_energy", {
@@ -7391,6 +7394,7 @@ all:RegisterAbility( "memory_of_lucid_dreams", {
 
     startsCombat = true,
     toggle = "essences",
+    essence = true,
 
     handler = function ()
         applyBuff( "memory_of_lucid_dreams" )
@@ -7417,6 +7421,9 @@ all:RegisterAbility( "purifying_blast", {
     cast = 0,
     cooldown = 60,
 
+    toggle = "essences",
+    essence = true,
+
     startsCombat = true,
     handler = function ()
         -- Reticle-based, no debuff on target.
@@ -7431,6 +7438,7 @@ all:RegisterAbility( "ripple_in_space", {
     cooldown = 60,
 
     toggle = "essences",
+    essence = true,
 
     handler = function ()
         applyBuff( "ripple_in_space_blink" )
@@ -7467,6 +7475,7 @@ all:RegisterAbility( "concentrated_flame", {
 
     startsCombat = true,
     toggle = "essences",
+    essence = true,
 
     handler = function ()
         if buff.concentrated_flame.stack == 2 then removeBuff( "concentrated_flame" )
@@ -7498,6 +7507,7 @@ all:RegisterAbility( "the_unbound_force", {
 
     startsCombat = true,
     toggle = "essences",
+    essence = true,
 
     handler = function ()
         applyDebuff( "target", "the_unbound_force" )
@@ -7541,6 +7551,7 @@ all:RegisterAbility( "worldvein_resonance", {
     cooldown = 60,
 
     toggle = "essences",
+    essence = true,
 
     handler = function()
         addStack( "lifeblood", nil, essence.worldvein_resonance.rank > 1 and 3 or 2 )
@@ -7563,6 +7574,7 @@ all:RegisterAbility( "azeroths_undying_gift", {
     cooldown = function () return essence.azeroths_undying_gift.rank > 1 and 45 or 60 end,
 
     toggle = "defensives",
+    essence = true,
 
     function ()
         applyBuff( "azeroths_undying_gift" )
@@ -7590,6 +7602,7 @@ all:RegisterAbility( "anima_of_death", {
     cooldown = function () return essence.anima_of_life_and_death.rank > 1 and 120 or 150 end,
 
     toggle = "defensives",
+    essence = true,
 
     handler = function ()
         gain( health.max * min( 0.25, 0.05 * active_enemies ) * ( essence.anima_of_life_and_death.rank > 2 and 2 or 1 ), "health" )
@@ -7610,6 +7623,7 @@ all:RegisterAbility( "aegis_of_the_deep", {
     cooldown = function () return essence.aegis_of_the_deep.rank > 1 and 67.5 or 90 end,
 
     toggle = "defensives",
+    essence = true,
 
     handler = function ()
         applyBuff( "aegis_of_the_deep" )
@@ -7642,6 +7656,7 @@ all:RegisterAbility( "empowered_null_barrier", {
     cooldown = function () return essence.nullification_dynamo.rank > 1 and 135 or 180 end,
 
     toggle = "defensives",
+    essence = true,
 
     usable = function ()
         if buff.dispellable_curse.up or buff.dispellable_magic.up or buff.dispellable_poison.up or buff.dispellable_disease.up then return true end
@@ -7670,6 +7685,7 @@ all:RegisterAbility( "suppressing_pulse", {
 
     startsCombat = true,
     toggle = "essences",
+    essence = true,
 
     handler = function ()
         applyDebuff( "target", "suppressing_pulse" )

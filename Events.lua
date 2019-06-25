@@ -447,6 +447,8 @@ do
                 v.rank = 0
             end
 
+            class.active_essence = nil
+
             for i, ms in ipairs( milestones ) do
                 local essence = GetMilestoneEssence( ms )
 
@@ -461,7 +463,7 @@ do
                         
                         if i == 1 then                            
                             e[ key ].major = true
-                            class.abilities.heart_essence = class.abilities[ essenceMajors[ key ] ]
+                            class.active_essence = essenceMajors[ key ]
                         end
                     end
                 end
@@ -492,9 +494,21 @@ do
                     } )
                 end
             end
-
-            self:LoadItemScripts()
         end
+            
+        if class.active_essence then
+            if not self:IsEssenceScripted( essence ) then
+                insert( itemList, 1, {
+                    action = class.active_essence,
+                    enabled = true,
+                    criteria = "( ! settings.boss || boss ) & " ..
+                        "( settings.targetMin = 0 || active_enemies >= settings.targetMin ) & " ..
+                        "( settings.targetMax = 0 || active_enemies <= settings.targetMax )"
+                } )
+            end
+        end
+
+        self:LoadItemScripts()
     end
 
 
@@ -567,8 +581,8 @@ do
         end
 
         ns.updatePowers()
-        ns.updateEssences()
         ns.updateTalents()
+        ns.updateEssences()
 
         local sameItems = #wasWearing == #state.items
 
@@ -611,12 +625,8 @@ do
         "AZERITE_ESSENCE_ACTIVATION_FAILED"
     }
 
-    local azeriteFunc = function( e )
-        ns.updateEssences()
-    end
-
     for i, event in pairs( azeriteEvents ) do
-        RegisterEvent( event, azeriteFunc )
+        RegisterEvent( event, ns.updateGear )
     end
 end
 
