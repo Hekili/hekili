@@ -7299,6 +7299,7 @@ all:RegisterAbility( "blood_of_the_enemy", {
     cast = 0,
     cooldown = function () return essence.blood_of_the_enemy.rank > 1 and 90 or 120 end,
 
+    startsCombat = true,
     toggle = "essences",
 
     handler = function()
@@ -7333,6 +7334,7 @@ all:RegisterAbility( "guardian_of_azeroth", {
     cast = 0,
     cooldown = 180,
 
+    startsCombat = true,
     toggle = "essences",
 
     handler = function()
@@ -7370,6 +7372,7 @@ all:RegisterAbility( "focused_azerite_beam", {
     channeled = true,
     cooldown = 90,
 
+    startsCombat = true,
     toggle = "essences",
 } )
 
@@ -7386,6 +7389,7 @@ all:RegisterAbility( "memory_of_lucid_dreams", {
     cast = 0,
     cooldown = 120,
 
+    startsCombat = true,
     toggle = "essences",
 
     handler = function ()
@@ -7413,6 +7417,7 @@ all:RegisterAbility( "purifying_blast", {
     cast = 0,
     cooldown = 60,
 
+    startsCombat = true,
     handler = function ()
         -- Reticle-based, no debuff on target.
     end
@@ -7460,6 +7465,7 @@ all:RegisterAbility( "concentrated_flame", {
     cooldown = 30,
     recharge = function () return essence.the_crucible_of_flame.rank > 2 and 30 or nil end,
 
+    startsCombat = true,
     toggle = "essences",
 
     handler = function ()
@@ -7490,6 +7496,7 @@ all:RegisterAbility( "the_unbound_force", {
     cast = 0,
     cooldown = function () return essence.the_unbound_force.rank > 1 and 45 or 60 end,
 
+    startsCombat = true,
     toggle = "essences",
 
     handler = function ()
@@ -7636,6 +7643,10 @@ all:RegisterAbility( "empowered_null_barrier", {
 
     toggle = "defensives",
 
+    usable = function ()
+        if buff.dispellable_curse.up or buff.dispellable_magic.up or buff.dispellable_poison.up or buff.dispellable_disease.up then return true end
+        return false, "no dispellable effects active"
+    end,
     handler = function ()
         removeBuff( "dispellable_magic" )
         removeBuff( "dispellable_curse" )
@@ -7657,6 +7668,7 @@ all:RegisterAbility( "suppressing_pulse", {
     cast = 0,
     cooldown = function () return essence.sphere_of_suppression.rank > 1 and 45 or 60 end,
 
+    startsCombat = true,
     toggle = "essences",
 
     handler = function ()
