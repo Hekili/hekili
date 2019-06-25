@@ -582,6 +582,8 @@ do
 
         ns.updatePowers()
         ns.updateTalents()
+
+        local lastEssence = class.active_essence
         ns.updateEssences()
 
         local sameItems = #wasWearing == #state.items
@@ -595,7 +597,7 @@ do
             end
         end
 
-        if not sameItems then
+        if not sameItems or class.active_essence ~= lastEssence then
             Hekili:UpdateUseItems()
         end
 
