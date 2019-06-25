@@ -536,6 +536,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
+            spend = -25,
+            spendType = "rage",
+
             startsCombat = false,
             texture = 132276,
 
@@ -547,7 +550,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         berserk = {
             id = 106951,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
             gcd = "spell",
 
             startsCombat = false,
@@ -829,7 +832,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         incarnation = {
             id = 102543,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
             gcd = "spell",
 
             startsCombat = false,
@@ -843,6 +846,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 applyBuff( "jungle_stalker" )
                 energy.max = energy.max + 50 
             end,
+
+            copy = { "incarnation_king_of_the_jungle", "Incarnation" }
         },
 
 
@@ -921,7 +926,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 6,
             gcd = "spell",
 
-            spend = -8,
+            spend = -10,
             spendType = "rage",
 
             startsCombat = true,
@@ -1548,7 +1553,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 45,
             gcd = "spell",
 
-            pvptalent = "thorns",
+            pvptalent = function ()
+                if essence.conflict_and_strife.enabled then return end
+                return "thorns"
+            end,
 
             spend = 0.12,
             spendType = "mana",

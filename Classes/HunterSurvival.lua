@@ -587,7 +587,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         coordinated_assault = {
             id = 266779,
             cast = 0,
-            cooldown = 120,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
             gcd = "spell",
 
             toggle = "cooldowns",

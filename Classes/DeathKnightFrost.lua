@@ -136,6 +136,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             elseif k == 'time_to_max' then
                 return t.current == 6 and 0 or max( 0, t.expiry[6] - state.query_time )
 
+            elseif k == 'add' then
+                return t.gain
+
             else
                 local amount = k:match( "time_to_(%d+)" )
                 amount = amount and tonumber( amount )
@@ -154,10 +157,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 return state.buff.breath_of_sindragosa.applied + floor( state.query_time - state.buff.breath_of_sindragosa.applied )
             end,
 
-            stop = function ( x ) return x < 15 end,
+            stop = function ( x ) return x < 16 end,
 
             interval = 1,
-            value = -15
+            value = -16
         },
 
         empower_rp = {
@@ -175,21 +178,21 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     local virtual_rp_spent_since_pof = 0
 
-    local spendHook = function( amt, resource )
-        if amt > 0 and resource == "runes" then
-            gain( amt * 10, "runic_power" )
+    local spendHook = function( amt, resource, noHook )
+        if amt > 0 then
+            if resource == "runes" then
+                gain( amt * 10, "runic_power" )
 
-            if talent.gathering_storm.enabled and buff.remorseless_winter.up then
-                buff.remorseless_winter.expires = buff.remorseless_winter.expires + ( 0.5 * amt )
+                if talent.gathering_storm.enabled and buff.remorseless_winter.up then
+                    buff.remorseless_winter.expires = buff.remorseless_winter.expires + ( 0.5 * amt )
+                end
+
+            elseif resource == "runic_power" and buff.breath_of_sindragosa.up then
+                if runic_power.current < 16 then
+                    removeBuff( "breath_of_sindragosa" )
+                    gain( 2, "runes" )
+                end
             end
-
-        --[[ elseif amt > 0 and resource == "runic_power" then
-            if set_bonus.tier20_2pc == 1 and buff.pillar_of_frost.up then
-                virtual_rp_spent_since_pof = virtual_rp_spent_since_pof + amt
-
-                applyBuff( "pillar_of_frost", buff.pillar_of_frost.remains + floor( virtual_rp_spent_since_pof / 60 ) )
-                virtual_rp_spent_since_pof = virtual_rp_spent_since_pof % 60
-            end ]]
         end
     end
 
@@ -235,7 +238,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
         antimagic_zone = 3435, -- 51052
         cadaverous_pallor = 3515, -- 201995
-        chill_streak = 706, -- 204160
+        chill_streak = 706, -- 305392
         dark_simulacrum = 3512, -- 77606
         dead_of_winter = 3743, -- 287250
         deathchill = 701, -- 204080
@@ -556,8 +559,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 120,
             gcd = "spell",
 
-            spend = 15,
-            readySpend = 50,
+            spend = 16,
+            readySpend = function () return settings.bos_rp end,
             spendType = "runic_power",
 
             toggle = "cooldowns",
@@ -566,6 +569,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 1029007,
 
             handler = function ()
+                gain( 2, "runes" )
                 applyBuff( "breath_of_sindragosa" )
                 if talent.icy_talons.enabled then addStack( "icy_talons", 6, 1 ) end
             end,
@@ -592,6 +596,20 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 --[[ if pvptalent.deathchill.enabled and debuff.chains_of_ice.up then
                     applyDebuff( "target", "deathchill" )
                 end ]]
+            end,
+        },
+
+
+        chill_streak = {
+            id = 305392,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            pvptalent = "chill_streak",
+
+            handler = function ()
+                applyDebuff( "target", "chilled" )
             end,
         },
 
@@ -749,8 +767,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 47568,
             cast = 0,
             charges = function () return ( level < 116 and equipped.seal_of_necrofantasia ) and 2 or nil end,
-            cooldown = function () return 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
-            recharge = function () return 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
+            recharge = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -1079,6 +1097,19 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         potion = "battle_potion_of_strength",
 
         package = "Frost DK",
+    } )
+
+
+    spec:RegisterSetting( "bos_rp", 50, {
+        name = "Runic Power for |T1029007:0|t Breath of Sindragosa",
+        desc = "The addon will not recommend |T1029007:0|t Breath of Sindragosa only if you have this much Runic Power (or more).",
+        icon = 1029007,
+        iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+        type = "range",
+        min = 16,
+        max = 100,
+        step = 1,
+        width = 1.5
     } )
 
 

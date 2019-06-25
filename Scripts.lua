@@ -1125,7 +1125,8 @@ function scripts:LoadScripts()
 
         if specData then
             self.PackInfo[ pack ] = {
-                items = {},                        
+                items = {},
+                essences = {}
             }
 
             for list, lData in pairs( pData.lists ) do
@@ -1186,6 +1187,10 @@ function scripts:LoadScripts()
                         if ability.item and data.enabled then
                             self.PackInfo[ pack ].items[ data.action ] = true
                         end
+
+                        if ability.essence and data.enabled then
+                            self.PackInfo[ pack ].essences[ data.action ] = true
+                        end
                     end
 
                     self.DB[ scriptID ] = script
@@ -1202,6 +1207,16 @@ function Hekili:LoadScripts()
     self.Scripts:LoadScripts()
     self:UpdateUseItems()
     self:UpdateDisplayVisibility()
+end
+
+
+function Hekili:IsEssenceScripted( token )
+    local pack = self:GetActivePack()
+    pack = pack and self.Scripts.PackInfo[ pack ]
+
+    if not pack then return false end
+
+    return pack.essences[ token ] or false
 end
 
 

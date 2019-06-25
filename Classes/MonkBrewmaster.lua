@@ -680,7 +680,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         fortifying_brew = {
             id = 115203,
             cast = 0,
-            cooldown = 420,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 420 end,
             gcd = "spell",
 
             toggle = "defensives",

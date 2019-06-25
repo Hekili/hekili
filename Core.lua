@@ -13,19 +13,14 @@ local clashOffset = ns.clashOffset
 local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
 local getResourceName = ns.getResourceName
+local orderedPairs = ns.orderedPairs
 local tableCopy = ns.tableCopy
 local timeToReady = ns.timeToReady
-local trim = string.trim
-
-local string_format = string.format
-
-local mt_resource = ns.metatables.mt_resource
 
 local GetItemInfo = ns.CachedGetItemInfo
 
-local updatedDisplays = {}
-local recommendChecks = {}
-local recommendChange = {}
+local trim = string.trim
+
 
 
 -- checkImports()
@@ -122,12 +117,21 @@ function Hekili:OnInitialize()
             local m = p.toggles.mode.value
             local color = "FFFFD100"
 
-            self.text = format( "|c%s%s|r %sCD|r %sInt|r %sPot|r",
-            color,
-            m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "rAOE" or "Auto" ) ) ),
-            p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
-            p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
-            p.toggles.potions.value  and "|cFF00FF00" or "|cFFFF0000" )
+            if p.toggles.essences.override then
+                -- Don't show Essences here if it's overridden by CDs anyway?
+                self.text = format( "|c%s%s|r %sCD|r %sInt|r %sDef|r", color,
+                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "rAOE" or "Auto" ) ) ),
+                    p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000",
+                    p.toggles.defensives.value and "|cFF00FF00" or "|cFFFF0000" )
+            else
+                self.text = format( "|c%s%s|r %sCD|r %sAzE|r %sInt|r",
+                    color,
+                    m == "single" and "ST" or ( m == "aoe" and "AOE" or ( m == "dual" and "Dual" or ( m == "reactive" and "rAOE" or "Auto" ) ) ),
+                    p.toggles.cooldowns.value and "|cFF00FF00" or "|cFFFF0000",
+                    p.toggles.essences.value and "|cFF00FF00" or "|cFFFF0000",
+                    p.toggles.interrupts.value and "|cFF00FF00" or "|cFFFF0000" )
+            end
         end
 
         ns.UI.Minimap:RefreshDataText()
@@ -165,15 +169,12 @@ end
 
 
 function Hekili:ReInitialize()
-    -- ns.initializeClassModule()
     self:OverrideBinds()
     self:RestoreDefaults()
 
     checkImports()
     self:RunOneTimeFixes()
 
-    -- self:RefreshOptions()
-    -- self:LoadScripts()
     self:SpecializationChanged()
 
     ns.updateTalents()
@@ -188,17 +189,6 @@ function Hekili:ReInitialize()
         self.DB.profile.enabled = true
         self:Enable()
     end
-
-    --[[ if class.file == 'NONE' then
-        self.DB.profile.enabled = false
-        self.DB.profile.AutoDisabled = true
-        for i, buttons in ipairs( ns.UI.Buttons ) do
-            for j, _ in ipairs( buttons ) do
-                buttons[j]:Hide()
-            end
-        end
-    end ]]
-
 end 
 
 
@@ -285,16 +275,33 @@ local Stack = {}
 local Block = {}
 local InUse = {}
 
+local RecycleBin = {}
 
 function Hekili:AddToStack( script, list, parent, run )
-    if self.ActiveDebug then self:Debug( "Adding " .. list .. " to stack, parent is " .. ( parent or "(none)" ) .. " (RAL = " .. tostring( run ) .. ".") end
+    local entry = table.remove( RecycleBin, 1 ) or {}
 
-    table.insert( Stack, {
-        script = script,
-        list   = list,
-        parent = parent,
-        run    = run
-    } )
+    entry.script = script
+    entry.list   = list
+    entry.parent = parent
+    entry.run    = run
+
+    table.insert( Stack, entry )
+
+    if self.ActiveDebug then
+        local path = "+"
+        
+        for n, entry in ipairs( Stack ) do
+            if entry.run then
+                path = format( "%s%s [%s]", path, ( n > 1 and "," or "" ), entry.list )
+            else
+                path = format( "%s%s %s", path,( n > 1 and "," or "" ), entry.list )
+            end
+        end
+
+        self:Debug( path )
+    end
+
+    -- if self.ActiveDebug then self:Debug( "Adding " .. list .. " to stack, parent is " .. ( parent or "(none)" ) .. " (RAL = " .. tostring( run ) .. ".") end
 
     InUse[ list ] = true
 end
@@ -303,7 +310,15 @@ end
 function Hekili:PopStack()
     local x = table.remove( Stack, #Stack )
 
-    if self.ActiveDebug then self:Debug( "Removed " .. x.list .. " from stack." ) end
+    if self.ActiveDebug then
+        if x.run then
+            self:Debug( "- [%s]", x.list )
+        else
+            self:Debug( "- %s", x.list )
+        end
+    end
+
+    -- if self.ActiveDebug then self:Debug( "Removed " .. x.list .. " from stack." ) end
 
     for i = #Block, 1, -1 do
         if Block[i].parent == x.script then
@@ -516,7 +531,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 state.delay = nil
 
                 rDepth = rDepth + 1
-                if debug then self:Debug( "\n[%3d]  Checking %s (%s - %s - %d )...", rDepth, entry.action, packName, listName, actID ) end
+                -- if debug then self:Debug( "\n[%03d] %s ( %s - %d )", rDepth, entry.action, listName, actID ) end
 
                 local ability = class.abilities[ state.this_action ]
 
@@ -526,7 +541,14 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 local known = self:IsSpellKnown( state.this_action )
                 local enabled = self:IsSpellEnabled( state.this_action )
 
-                if debug then self:Debug( "%s is %sknown and %senabled.", entry.action, known and "" or "NOT ", enabled and "" or "NOT " ) end
+                if debug then
+                    local d = format( "\n[%03d] %s ( %s - %d )", rDepth, entry.action, listName, actID )
+                    if not known then d = d .. " - ability unknown"
+                    elseif not enabled then d = d .. " - ability disabled." end
+                    self:Debug( d )
+                end
+
+                -- if debug then self:Debug( "%s is %sknown and %senabled.", entry.action, known and "" or "NOT ", enabled and "" or "NOT " ) end
 
                 if ability and known and enabled then
                     local scriptID = packName .. ":" .. listName .. ":" .. actID
@@ -575,7 +597,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         -- self:AddToStack( scriptID, "items", caller, entry.action == "run_action_list" )
                                         local pAction, pWait = rAction, rWait
                                         rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rDepth, scriptID )
-                                        if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NoAction", rWait ) end
+                                        if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NO ACTION", rWait ) end
                                         -- self:PopStack()
                                     else
                                         name = state.args.list_name
@@ -588,7 +610,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             self:AddToStack( scriptID, name, caller, entry.action == "run_action_list" )
 
                                             rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rDepth, scriptID )
-                                            if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NoAction", rWait ) end
+                                            if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NO ACTION", rWait ) end
 
                                             self:PopStack()
 
@@ -1060,7 +1082,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
     if debug then
         self:SetupDebug( dispName )
-        self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
+        -- self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
     end
 
     state.reset( dispName )
@@ -1084,7 +1106,7 @@ function Hekili:ProcessHooks( dispName, packName )
         local attempts = 0
         local iterated = false
 
-        if debug then self:Debug( "\n[ ** ] Checking for recommendation #%d ( time offset: %.2f, remaining GCD: %.2f ).", i, state.offset, state.cooldown.global_cooldown.remains ) end
+        if debug then self:Debug( "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f ).", i, state.offset, state.cooldown.global_cooldown.remains ) end
 
         --[[ if debug then
             for k in pairs( class.resources ) do
@@ -1109,9 +1131,10 @@ function Hekili:ProcessHooks( dispName, packName )
 
         while( event ) do
             if debug then
-                for k in pairs( class.resources ) do
-                    self:Debug( "[ ** ] %s, %d / %d", k, state[ k ].current, state[ k ].max )
+                for k in orderedPairs( class.resources ) do
+                    self:Debug( " - %s, %d / %d", k, state[ k ].current, state[ k ].max )
                 end
+
                 if state.channeling then
                     self:Debug( "[ ** ] Currently channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
                 end
@@ -1142,11 +1165,12 @@ function Hekili:ProcessHooks( dispName, packName )
             if hadProj and debug then self:Debug( "\n[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.delayMin ) end
 
             if debug then
-                for k in pairs( class.resources ) do
-                    self:Debug( "[ ** ] %s, %d / %d", k, state[ k ].current, state[ k ].max )
+                for k in orderedPairs( class.resources ) do
+                    self:Debug( " - %s, %d / %d", k, state[ k ].current, state[ k ].max )
                 end
+                
                 if state.channeling then
-                    self:Debug( "[ ** ] Currently channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
+                    self:Debug( " - Channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
                 end
             end    
 

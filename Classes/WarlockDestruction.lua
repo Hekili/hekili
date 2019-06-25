@@ -1061,7 +1061,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         summon_infernal = {
             id = 1122,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 - ( azerite.crashing_chaos.enabled and 15 or 0 ) end,
             gcd = "spell",
 
             spend = 0.02,

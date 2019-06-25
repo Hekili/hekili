@@ -276,7 +276,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         avatar = {
             id = 107574,
             cast = 0,
-            cooldown = 90,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
             gcd = "spell",
 
             spend = -20,

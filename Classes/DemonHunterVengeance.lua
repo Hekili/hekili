@@ -517,11 +517,14 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             hasteCD = true,
             gcd = "spell",
 
+            spend = function () return ( buff.solitude.up and -27 or -25 ) + ( buff.metamorphosis.up and -20 or 0 ) end,
+            spendType = "pain",            
+
             startsCombat = true,
             texture = 1388065,
 
             handler = function ()
-                gain( buff.solitude.up and 27 or 25, "pain" )
+                -- gain( buff.solitude.up and 27 or 25, "pain" )
                 addStack( "soul_fragments", nil, 2 )
             end,
         },
@@ -631,7 +634,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         metamorphosis = {
             id = 187827,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
             gcd = "off",
 
             toggle = "cooldowns",
@@ -680,7 +683,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.solitude.up and -11 or -10 end,
+            spend = function () return ( buff.solitude.up and -11 or -10 ) + ( buff.metamorphosis.up and -20 or 0 ) end,
             spendType = "pain",
 
             startsCombat = true,

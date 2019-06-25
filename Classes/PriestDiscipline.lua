@@ -388,7 +388,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         luminous_barrier = {
             id = 271466,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return pvptalent.dome_of_light.enabled and 90 or 180 end,
             gcd = "spell",
             
             spend = 0.04,
@@ -682,7 +682,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         rapture = {
             id = 47536,
             cast = 0,
-            cooldown = 90,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 90 end,
             gcd = "spell",
             
             startsCombat = false,
@@ -806,7 +806,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         shadowfiend = {
             id = 34433,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return ( essence.vision_of_perfection.rank > 1 and 0.87 or 1 ) * 180 end,
             gcd = "spell",
             
             toggle = "cooldowns",

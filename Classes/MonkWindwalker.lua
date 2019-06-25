@@ -1000,7 +1000,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         serenity = {
             id = 152173,
             cast = 0,
-            cooldown = 90,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -1063,8 +1063,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = function () return buff.storm_earth_and_fire.up and 221771 or 137639 end,
             cast = 0,
             charges = 2,
-            cooldown = 90,
-            recharge = 90,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 90 end,
+            recharge = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 90 end,
             gcd = "spell",
 
             toggle = "cooldowns",

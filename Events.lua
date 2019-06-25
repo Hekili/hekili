@@ -379,6 +379,99 @@ do
     end
 
     Hekili:ProfileCPU( "updatePowers", ns.updatePowers )
+
+
+    -- Essences
+    if select(4, GetBuildInfo()) >= 80200 then
+        local AE = C_AzeriteEssence
+        local GetMilestoneEssence, GetEssenceInfo = AE.GetMilestoneEssence, AE.GetEssenceInfo
+        local milestones = { 115, 116, 117 }
+
+        local essenceKeys = {
+            [2]  = "azeroths_undying_gift",
+            [3]  = "sphere_of_suppression",
+            [4]  = "worldvein_resonance",
+            [5]  = "essence_of_the_focusing_iris",
+            [6]  = "purification_protocol",
+            [7]  = "anima_of_life_and_death",
+            [12] = "the_crucible_of_flame",
+            [13] = "nullification_dynamo",
+            [14] = "condensed_lifeforce",
+            [15] = "ripple_in_space",
+            [17] = "everrising_tide",
+            [18] = "artifice_of_time",
+            [19] = "well_of_existence",
+            [20] = "lifebinders_invocation",
+            [21] = "vitality_conduit",
+            [22] = "vision_of_perfection",
+            [23] = "blood_of_the_enemy",
+            [25] = "aegis_of_the_deep",
+            [27] = "memory_of_lucid_dreams",
+            [28] = "the_unbound_force",
+            [32] = "conflict_and_strife"
+        }
+
+        local essenceMajors = {
+            aegis_of_the_deep = "aegis_of_the_deep",
+            anima_of_life_and_death = "anima_of_death",
+            -- artifice_of_time = "",
+            azeroths_undying_gift = "azeroths_undying_gift",
+            blood_of_the_enemy = "blood_of_the_enemy",
+            condensed_lifeforce = "guardian_of_azeroth",
+            --conflict_and_strife = "",
+            essence_of_the_focusing_iris = "focused_azerite_beam",
+            -- everrising_tide = "",
+            -- lifebinders_invocation = "",
+            memory_of_lucid_dreams = "memory_of_lucid_dreams",
+            nullification_dynamo = "empowered_null_barrier",
+            purification_protocol = "purifying_blast",
+            ripple_in_space = "ripple_in_space",
+            sphere_of_suppression = "suppressing_pulse",
+            the_crucible_of_flame = "concentrated_flame",
+            the_unbound_force = "the_unbound_force",
+            -- vision_of_perfection = "",
+            -- vitality_conduit = "",
+            -- well_of_existence = "",
+            worldvein_resonance = "worldvein_resonance",
+        }
+
+        for _, key in pairs( essenceKeys ) do
+            state.essence[ key ] = { rank = 0, major = false }
+        end
+
+
+        function ns.updateEssences()
+            local e = state.essence
+
+            for k, v in pairs( e ) do
+                v.rank = 0
+            end
+
+            class.active_essence = nil
+
+            for i, ms in ipairs( milestones ) do
+                local essence = GetMilestoneEssence( ms )
+
+                if essence then
+                    local info = GetEssenceInfo( essence )
+
+                    if info then
+                        local key = essenceKeys[ info.ID ]
+                        
+                        e[ key ].rank = info.rank
+                        e[ key ].minor = true
+                        
+                        if i == 1 then                            
+                            e[ key ].major = true
+                            class.active_essence = essenceMajors[ key ]
+                        end
+                    end
+                end
+            end
+        end
+
+        ns.updateEssences()
+    end
 end
 
 
@@ -401,9 +494,21 @@ do
                     } )
                 end
             end
-
-            self:LoadItemScripts()
         end
+            
+        if class.active_essence then
+            if not self:IsEssenceScripted( essence ) then
+                insert( itemList, 1, {
+                    action = class.active_essence,
+                    enabled = true,
+                    criteria = "( ! settings.boss || boss ) & " ..
+                        "( settings.targetMin = 0 || active_enemies >= settings.targetMin ) & " ..
+                        "( settings.targetMax = 0 || active_enemies <= settings.targetMax )"
+                } )
+            end
+        end
+
+        self:LoadItemScripts()
     end
 
 
@@ -478,6 +583,9 @@ do
         ns.updatePowers()
         ns.updateTalents()
 
+        local lastEssence = class.active_essence
+        ns.updateEssences()
+
         local sameItems = #wasWearing == #state.items
 
         if sameItems then
@@ -489,7 +597,7 @@ do
             end
         end
 
-        if not sameItems then
+        if not sameItems or class.active_essence ~= lastEssence then
             Hekili:UpdateUseItems()
         end
 
@@ -508,6 +616,23 @@ RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", function()
 end )
 
 
+-- Update Azerite Essence Data.
+do
+    local azeriteEvents = {
+        "AZERITE_ESSENCE_UPDATE",
+        "AZERITE_ESSENCE_MILESTONE_UNLOCKED",
+        "AZERITE_ESSENCE_FORGE_CLOSE",
+        "AZERITE_ESSENCE_CHANGED",
+        "AZERITE_ESSENCE_ACTIVATED",
+        "AZERITE_ESSENCE_ACTIVATION_FAILED"
+    }
+
+    for i, event in pairs( azeriteEvents ) do
+        RegisterEvent( event, ns.updateGear )
+    end
+end
+
+
 RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
     state.combat = GetTime() - 0.01
     Hekili:ForceUpdate() -- Force update on entering combat since OOC refresh can be very slow (0.5s).
@@ -520,6 +645,8 @@ RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
 
     state.swings.mh_actual = 0
     state.swings.oh_actual = 0
+
+    Hekili:ReleaseHolds( true )
 end )
 
 
@@ -576,11 +703,17 @@ end
 local lowLevelWarned = false
 
 -- Need to make caching system.
-RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, spell, _, _, spellID )
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, _, spellID )
     if UnitIsUnit( unit, "player" ) then
         if lowLevelWarned == false and UnitLevel( "player" ) < 100 then
             Hekili:Notify( "Hekili is designed for current content.\nUse below level 100 at your own risk.", 5 )
             lowLevelWarned = true
+        end
+
+        local ability = class.abilities[ spellID ]
+
+        if ability and state.holds[ ability.key ] then
+            Hekili:RemoveHold( ability.key, true )
         end
     end
     -- Hekili:ForceUpdate( event )

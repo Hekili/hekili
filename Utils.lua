@@ -166,6 +166,13 @@ end
 
 local orderedIndex = {}
 
+local sortHelper = function( a, b )
+    local a1, b1 = tostring(a), tostring(b)
+
+    return a1 < b1
+end
+
+
 local function __genOrderedIndex( t )
 
     for i = #orderedIndex, 1, -1 do
@@ -175,7 +182,7 @@ local function __genOrderedIndex( t )
     for key in pairs( t ) do
         table.insert( orderedIndex, key )
     end
-    table.sort( orderedIndex )
+    table.sort( orderedIndex, sortHelper )
     return orderedIndex
 end
 
