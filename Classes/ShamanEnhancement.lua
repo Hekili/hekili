@@ -364,13 +364,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         roiling_storm = {
             id = 278719,
             duration = 3600,
-            max_stack = 15,
-            meta = {
-                stack = function ( t )
-                    if t.down then return 0 end
-                    return min( 15, t.count + floor( ( query_time - t.applied ) / 2 ) )
-                end,
-            }
+            max_stack = 1,
         },
 
         strength_of_earth = {
@@ -857,7 +851,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             spend = function()
                 if buff.stormbringer.up then return 0 end
-                return max( 0, ( buff.roiling_storm.stack * -2 ) + ( buff.ascendance.up and 10 or 30 ) )
+                return max( 0,  buff.ascendance.up and 10 or 30 )
             end,
 
             spendType = 'maelstrom',
@@ -882,8 +876,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
                 if buff.stormbringer.up then
                     removeBuff( 'stormbringer' )
-                elseif azerite.roiling_storm.enabled then
-                    applyBuff( "roiling_storm", nil, 0 )
                 end
 
                 removeBuff( "gathering_storms" )
@@ -998,8 +990,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
                 if buff.stormbringer.up then
                     removeBuff( 'stormbringer' )
-                elseif azerite.roiling_storm.enabled then
-                    applyBuff( "roiling_storm", nil, 0 ) -- apply at 0 stacks, will stack over time.
                 end
 
                 removeBuff( "gathering_storms" )
