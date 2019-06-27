@@ -279,7 +279,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             meta = {
                 stack = function ( t )
                     if t.down then return 0 end
-                    return min( 40, t.count + floor( query_time - t.applied ) )
+                    local appliedBuffer = ( now - t.applied ) % 1
+                    return min( 40, t.count + floor( offset + delay + appliedBuffer ) )
                 end,
             }
         }
