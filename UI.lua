@@ -1541,7 +1541,7 @@ do
                         elseif i == 'Interrupts' then
                             dispActive[i] = profile.toggles.interrupts.value and profile.toggles.interrupts.separate
                         elseif i == 'Defensives' then
-                            dispActive[i] = state.role.tank and profile.toggles.defensives.value and profile.toggles.defensives.separate
+                            dispActive[i] = profile.toggles.defensives.value and profile.toggles.defensives.separate
                         else
                             dispActive[i] = true 
                         end
