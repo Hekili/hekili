@@ -365,8 +365,6 @@ local function menu_Auto()
 
     p.toggles.mode.value = 'automatic'
 
-    if p.toggles.mode.type:sub(4) ~= "Auto" then p.toggles.mode.type = "AutoDual" end
-    
     if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
     if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
     Hekili:UpdateDisplayVisibility()

@@ -497,7 +497,7 @@ do
         end
             
         if class.active_essence then
-            if not self:IsEssenceScripted( essence ) then
+            if not self:IsEssenceScripted( class.active_essence ) then
                 insert( itemList, 1, {
                     action = class.active_essence,
                     enabled = true,
