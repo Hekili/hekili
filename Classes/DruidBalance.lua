@@ -556,22 +556,18 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         end 
     end )
 
-    spec:RegisterHook( "gain_preforecast", function( amt, resource )
+    spec:RegisterHook( "pregain", function( amt, resource, overcap, clean )
         if buff.memory_of_lucid_dreams.up then
             if amt > 0 and resource == "astral_power" then
-                print( resource, "gain", GetTime() )
-                gain( amt, resource, true )
-                return false
+                return amt * 2, resource, overcap, true
             end
         end
     end )
 
-    spec:RegisterHook( "spend_preforecast", function( amt, resource, overcap )
+    spec:RegisterHook( "prespend", function( amt, resource, clean )
         if buff.memory_of_lucid_dreams.up then
             if amt < 0 and resource == "astral_power" then
-                print( resource, "spend", GetTime() )
-                spend( amt, resource, overcap, true )
-                return false
+                return amt * 2, resource, overcap, true
             end
         end
     end )
@@ -1656,8 +1652,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.12,
-            spendType = "mana",
+            spend = -3,
+            spendType = "astral_power",
 
             startsCombat = true,
             texture = 236216,
@@ -1668,8 +1664,12 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 return astral_power.current - action.sunfire.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
             end,            
 
+            readyTime = function()
+                return mana[ "time_to_" .. ( 0.12 * mana.max ) ]
+            end,
+
             handler = function ()
-                gain( 3, "astral_power" )
+                spend( 0.12 * mana.max, "mana" ) -- I want to see AP in mouseovers.
                 applyDebuff( "target", "sunfire" )
             end,
         },

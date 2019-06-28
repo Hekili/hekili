@@ -1217,33 +1217,45 @@ local resourceChange = function( amount, resource, overcap )
         if not overcap then r.actual = min( r.max, r.actual ) end
     end
 
-    return r.actual ~= pre
+    return true
 end
 
 
-local gain = function( amount, resource, overcap, clean )
-    if resourceChange( amount, resource, overcap ) then
-        local forecasted = false
-        if not clean then _, _, _, _, forecasted = ns.callHook( "gain_preforecast", amount, resource, overcap, true ) end
-        if resource ~= "health" and not forecasted then forecastResources( resource ) end
-        if not clean then ns.callHook( "gain", amount, resource, overcap, true ) end
-    end
+-- Noteworthy hooks for gain/spend:
+-- pregain - the hook is expected to return modified values for the resource (i.e., special cost reduction or refunds).
+-- gain    - the hook can do whatever it wants, but if it changes the same resource again it will cause another forecast.
+
+local gain = function( amount, resource, overcap )
+    amount, resource, overcap = ns.callHook( "pregain", amount, resource, overcap )
+    resourceChange( amount, resource, overcap )
+    forecastResources( resource )
+    ns.callHook( "gain", amount, resource, overcap )
+end
+
+local rawGain = function( amount, resource, overcap )
+    resourceChange( amount, resource, overcap )
+    forecastResources( resource )
 end
 
 
 local spend = function( amount, resource, clean )
-    amount = -amount
-    if resourceChange( amount, resource, false ) then
-        local forecasted = false
-        if not clean then _, _, _, _, forecasted = ns.callHook( "spend_preforecast", amount, resource, true ) end
-        if resource ~= "health" and not forecasted then forecastResources( resource ) end
-        if not clean then ns.callHook( "spend", amount, resource, false, true ) end
-    end
+    amount, resource, overcap = ns.callHook( "prespend", amount, resource, overcap )
+    resourceChange( -amount, resource, overcap )
+    forecastResources( resource )
+    ns.callHook( "spend", amount, resource, overcap, true )
 end
 
-state.gain = gain
-state.spend = spend
+local rawSpend = function( amount, resource )
+    resourceChange( -amount, resource, overcap )
+    forecastResources( resource )
+end
 
+
+state.gain = gain
+state.rawGain = rawGain
+
+state.spend = spend
+state.rawSpend = rawSpend
 
 
 do

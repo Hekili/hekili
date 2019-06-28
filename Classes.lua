@@ -3780,7 +3780,11 @@ do
             inProgress[ hook ] = true
             local a1, a2, a3, a4, a5 = class.hooks[ hook ] ( ... )
             inProgress[ hook ] = nil
-            return a1, a2, a3, a4, a5
+            if a1 ~= nil then
+                return a1, a2, a3, a4, a5
+            else
+                return ...
+            end
         end
 
         return ...
