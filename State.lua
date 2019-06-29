@@ -3524,9 +3524,9 @@ do
                                     elseif op == "mul" then
                                         value = value * newVal
                                     elseif op == "pow" then
-                                        value = value ^ pow
+                                        value = value ^ newVal
                                     elseif op == "sub" then
-                                        value = value - sub
+                                        value = value - newVal
                                     end
                                 end
                             end
