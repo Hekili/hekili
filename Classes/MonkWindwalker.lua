@@ -900,6 +900,24 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 627486,
 
+            indicator = function ()
+                if health.current > 0.92 * health.max then return "cycle" end
+            end,
+
+            usable = function ()
+                if health.current < 0.92 * health.max then return true end
+
+                if not group then return false, "solo and player health_pct > 92" end
+
+                -- Try party members.
+                for i = 1, 4 do
+                    local unit = "party" .. i                        
+                    if UnitExists( unit ) and UnitHealth( unit ) < UnitHealthMax( unit ) * 0.92 then return true end
+                end
+
+                return false, "grouped but no ally's health_pct < 92"
+            end,
+
             handler = function ()
                 health.actual = min( health.max, health.current + 0.08 * health.max )
                 gain( 2, "chi" )
