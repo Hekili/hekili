@@ -8539,10 +8539,11 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Converted 'pet.X.Y.Z...' to 'Z...' (" .. times .. "x)." )
     end
 
+    --[[ Reverting; this should be a warning and not an autoconversion.
     i, times = i:gsub( "target%.?1?%.?time_to_die", "time_to_die" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'target[.1].time_to_die' to 'time_to_die' (" .. times .."x)." )
-    end
+    end ]]
 
     i, times = i:gsub( "min:[a-z0-9_%.]+(,?$?)", "%1" )
     if times > 0 then
