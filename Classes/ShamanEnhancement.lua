@@ -378,6 +378,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 6,
             max_stack = 1,
         },
+
+        -- PvP Talents
+        earth_shield = {
+            id = 204288,
+            duration = 600,
+            max_stack = 4,
+        }
     } )
 
 
@@ -585,6 +592,22 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             handler = function ()
                 summonPet( "greater_earth_elemental", 60 )
+            end,
+        },
+
+        earth_shield = {
+            id = 204288,
+            cast = 0,
+            cooldown = 6,
+            gcd = "spell",
+
+            startsCombat = false,
+            -- texture = ,
+
+            pvptalent = "earth_shield",
+
+            handler = function ()
+                applyBuff( "earth_shield" )
             end,
         },
 
