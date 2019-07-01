@@ -909,7 +909,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
                 if not group then return false, "solo and player health_pct > 92" end
 
-                if UnitExists( "targettarget" ) and UnitIsFriend( "targettarget" ) and UnitHealth( "targettarget" ) < UnitHealthMax( "targettarget" ) * 0.92 then return true end
+                if UnitExists( "focus" ) and UnitIsFriend( "player", "focus" ) and UnitHealth( "focus" ) < UnitHealthMax( "focus" ) * 0.92 then return true end
+                if UnitExists( "targettarget" ) and UnitIsFriend( "player", "targettarget" ) and UnitHealth( "targettarget" ) < UnitHealthMax( "targettarget" ) * 0.92 then return true end
 
                 -- Try party members.
                 for i = 1, 4 do
