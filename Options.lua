@@ -4006,6 +4006,20 @@ do
                                     order = 8
                                 },
 
+                                cycle_min = {
+                                    type = "range",
+                                    name = "Minimum Target Time-to-Die",
+                                    desc = "When |cffffd100Recommend Target Swaps|r is checked, this value determines which targets are counted for target swapping purposes.  If set to 5, the addon will " ..
+                                            "not recommend swapping to a target that will die in fewer than 5 seconds.  This can be beneficial to avoid applying damage-over-time effects to a target that will die " ..
+                                            "too quickly to be damaged by them.\n\nSet to 0 to count all detected targets.",
+                                    width = "full",
+                                    min = 0,
+                                    max = 15,
+                                    step = 1,
+                                    hidden = function() return not self.DB.profile.specs[ id ].cycle end,
+                                    order = 9
+                                },
+
                                 aoe = {
                                     type = "range",
                                     name = "AOE Display:  Minimum Targets",
@@ -4014,7 +4028,7 @@ do
                                     min = 2,
                                     max = 5,
                                     step = 1,
-                                    order = 9,
+                                    order = 10,
                                 },
                             }
                         },

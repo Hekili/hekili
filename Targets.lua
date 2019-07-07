@@ -524,6 +524,7 @@ do
         if enemy.n < 3 or enemy.rate == 0 then return default, enemy.n end
 
         local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+        health = health + UnitGetTotalAbsorbs( unit )
         local healthPct = health / healthMax
 
         if healthPct == 0 then return 0, enemy.n end
@@ -643,6 +644,7 @@ do
                     EliminateEnemy( guid )
                 else
                     local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+                    health = health + UnitGetTotalAbsorbs( unit )
                     UpdateEnemy( guid, health / healthMax, unit, now )
                 end
                 seen[ guid ] = true
