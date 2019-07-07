@@ -1010,7 +1010,7 @@ all:RegisterAuras( {
 
                 spell, _, _, startCast, endCast, _, notInterruptible, spellID = UnitChannelInfo( unit )
 
-                if spell then
+                if spell and spellID ~= 293491 then -- don't count cyclotronic blast...
                     startCast = startCast / 1000
                     endCast = endCast / 1000
 
@@ -1896,8 +1896,49 @@ all:RegisterAuras( {
 
 
 -- BFA TRINKETS/ITEMS
--- Crucible
+-- Mechagon
+do
+    all:RegisterAbility( "pocketsized_computation_device", {
+        cast = 1.5,
+        cooldown = 120,
+        gcd = "spell",
 
+        item = 167555,
+        toggle = "cooldowns",
+
+        usable = function ()
+            --[[ Should cache this at some point, but apparently not right now.
+            local slot = 13
+            if GetInventoryItemID( "player", slot ) ~= 167555 then slot = 14 end
+            local itemLink = GetInventoryItemLink( "player", slot )
+            local redCard = itemLink:match("item:%d+:%d-:(%d+):" )
+
+            if redCard ~= "167672" then return false, "cyclotronic_blast not installed" end ]]
+            local redCard = GetItemGem( class.abilities.pocketsized_computation_device.name, 1 )
+            if redCard ~= class.abilities.cyclotronic_blast.name then return false, "cyclotronic_blast not installed (" .. redCard .. ")" end
+            return true
+        end,
+
+        handler = function ()
+            applyDebuff( "target", "cyclotronic_blast" )
+        end,
+    } )
+
+    all:RegisterAura( "cyclotronic_blast", {
+        id = 293491,
+        duration = 2.5,
+        max_stack = 1
+    } )
+
+    all:RegisterAbility( "cyclotronic_blast", {
+        id = 293491,
+        cast = 1.5,
+        gcd = "spell",
+        hidden = true,
+    } ) 
+end
+
+-- Crucible
 all:RegisterAbility( "pillar_of_the_drowned_cabal", {
     cast = 0,
     cooldown = 30,

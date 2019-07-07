@@ -435,6 +435,7 @@ state.Enum = Enum
 state.FindUnitBuffByID = ns.FindUnitBuffByID
 state.FindUnitDebuffByID = ns.FindUnitDebuffByID
 state.GetItemCount = GetItemCount
+state.GetItemGem = GetItemGem
 state.GetShapeshiftForm = GetShapeshiftForm
 state.GetShapeshiftFormInfo = GetShapeshiftFormInfo
 state.GetSpellCount = GetSpellCount
