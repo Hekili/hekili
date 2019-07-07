@@ -1283,7 +1283,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 6,
             gcd = "spell",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 514640,
 
             usable = function () return time == 0 end,

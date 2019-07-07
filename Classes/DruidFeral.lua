@@ -1083,7 +1083,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 if buff.prowl.up then return 0 end
                 return 6
             end,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = false,
             texture = 514640,
@@ -1091,8 +1091,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             nobuff = "prowl",
 
             usable = function () return time == 0 or ( boss and buff.jungle_stalker.up ) end,
-
-            readyTime = function () return buff.jungle_stalker.remains - 0.5 end,
 
             handler = function ()
                 shift( "cat_form" )
