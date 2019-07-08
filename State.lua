@@ -5672,6 +5672,9 @@ function state:TimeToReady( action, pool )
     local wait = self.cooldown[ action ].remains
     local ability = class.abilities[ action ]
 
+    -- Using a channeled spell interrupts Cyclotronic Blast.
+    if ability.channeled and self.debuff.cyclotronic_blast.up then wait = max( wait, self.debuff.cyclotronic_blast.remains ) end
+
     if ability.gcd ~= 'off' and not self.args.use_off_gcd then
         wait = max( wait, self.cooldown.global_cooldown.remains )
     end
