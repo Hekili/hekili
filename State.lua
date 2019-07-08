@@ -5652,16 +5652,6 @@ end
 local power_tick_rate = 0.115
 
 
-local cacheTTR = {}
-local TTRtime = 0
-
-
-local flowControl = {
-    call_action_list = true,
-    run_action_list = true,
-    variable = true,
-}
-
 
 -- Needs to be expanded to handle energy regen before Rogue, Monk, Druid will work.
 function state:TimeToReady( action, pool )
@@ -5730,7 +5720,6 @@ function state:TimeToReady( action, pool )
         wait = max( wait, ability.readyTime )
     end
 
-    -- cacheTTR[ action ] = wait
     return max( wait, self.delayMin )
 end
 
