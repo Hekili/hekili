@@ -467,6 +467,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
 
         -- Azerite Powers
+        dance_of_death = {
+            id = 274443,
+            duration = 8,
+            max_stack = 1
+        },
+        
         primal_instincts = {
             id = 279810,
             duration = 20,

@@ -1010,7 +1010,7 @@ all:RegisterAuras( {
 
                 spell, _, _, startCast, endCast, _, notInterruptible, spellID = UnitChannelInfo( unit )
 
-                if spell and spellID ~= 293491 then -- don't count cyclotronic blast...
+                if spell then
                     startCast = startCast / 1000
                     endCast = endCast / 1000
 
@@ -1102,6 +1102,12 @@ all:RegisterAuras( {
             m.applied = 0
             m.caster = "nobody"
         end,
+
+        repeat_performance = {
+            id = 304409,
+            duration = 30,
+            max_stack = 1,
+        }
     },
 
     -- Why do we have this, again?
@@ -1899,7 +1905,9 @@ all:RegisterAuras( {
 -- Mechagon
 do
     all:RegisterAbility( "pocketsized_computation_device", {
-        cast = 1.5,
+        cast = function () return cooldown.pocketsized_computation_device.remains > 0 and 2.5 or 1.5 end,
+        channeled = function () return cooldown.pocketsized_computation_device.remains > 0 end,
+        prechannel = true,
         cooldown = 120,
         gcd = "spell",
 
@@ -1907,32 +1915,27 @@ do
         toggle = "cooldowns",
 
         usable = function ()
-            --[[ Should cache this at some point, but apparently not right now.
-            local slot = 13
-            if GetInventoryItemID( "player", slot ) ~= 167555 then slot = 14 end
-            local itemLink = GetInventoryItemLink( "player", slot )
-            local redCard = itemLink:match("item:%d+:%d-:(%d+):" )
-
-            if redCard ~= "167672" then return false, "cyclotronic_blast not installed" end ]]
             local redCard = GetItemGem( class.abilities.pocketsized_computation_device.name, 1 )
             if redCard ~= class.abilities.cyclotronic_blast.name then return false, "cyclotronic_blast not installed (" .. redCard .. ")" end
             return true
         end,
 
         handler = function ()
-            applyDebuff( "target", "cyclotronic_blast" )
+            setCooldown( "global_cooldown", 2.5 * haste )
         end,
     } )
 
     all:RegisterAura( "cyclotronic_blast", {
         id = 293491,
-        duration = 2.5,
+        duration = function () return 2.5 * haste end,
         max_stack = 1
     } )
 
     all:RegisterAbility( "cyclotronic_blast", {
         id = 293491,
-        cast = 1.5,
+        cast = function () return cooldown.cyclotronic_blast.remains > 0 and 2.5 or 1.5 end,
+        channeled = function () return cooldown.cyclotronic_blast.remains > 0 end,
+        cooldown = 120,
         gcd = "spell",
         hidden = true,
     } ) 
@@ -7566,12 +7569,12 @@ all:RegisterAuras( {
         duration = 2,
         max_stack = 1
     },
-    reckless_force = {
+    reckless_force_counter = {
         id = 302917,
         duration = 3600,
         max_stack = 20
     },
-    reckless_force_crit = {
+    reckless_force = {
         id = 302932,
         duration = function () return essence.the_unbound_force.rank > 2 and 4 or 3 end,
         max_stack = 1

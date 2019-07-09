@@ -5077,6 +5077,19 @@ function state.reset( dispName )
         ability = class.abilities[ castID ]
 
         casting = ability and ability.key or formatKey( state.buff.casting.name )
+
+        if castID == class.abilities.cyclotronic_blast.id then
+            -- Set up Pocket-Sized Computation Device.
+            if state.buff.casting.v3 then
+                -- We are in the channeled part of the cast.
+                setCooldown( "pocketsized_computation_device", state.buff.casting.applied + 120 - state.now )
+                setCooldown( "global_cooldown", cast_time )
+            else
+                -- This is the casting portion.
+                casting = class.abilities.pocketsized_computation_device.key
+                state.buff.casting.v1 = class.abilities.pocketsized_computation_device.id
+            end
+        end
     end
 
     ns.callHook( "reset_precast" )
@@ -5662,9 +5675,6 @@ function state:TimeToReady( action, pool )
     local wait = self.cooldown[ action ].remains
     local ability = class.abilities[ action ]
 
-    -- Using a channeled spell interrupts Cyclotronic Blast.
-    if ability.channeled and self.debuff.cyclotronic_blast.up then wait = max( wait, self.debuff.cyclotronic_blast.remains ) end
-
     if ability.gcd ~= 'off' and not self.args.use_off_gcd then
         wait = max( wait, self.cooldown.global_cooldown.remains )
     end
@@ -5712,6 +5722,11 @@ function state:TimeToReady( action, pool )
 
     if ability.nobuff and self.buff[ ability.nobuff ].up then
         wait = max( wait, self.buff[ ability.nobuff ].remains )
+    end
+
+    -- Need to house this in an encounter module, really.
+    if self.debuff.repeat_performance.up and self.prev[1][ action ] then
+        wait = max( wait, self.debuff.repeat_performance.remains )
     end
 
     -- If ready is a function, it returns time.
