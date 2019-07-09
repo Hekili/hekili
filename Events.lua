@@ -1036,7 +1036,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         if aura then            
             if hostile and sourceGUID ~= destGUID and not aura.friendly then
                 -- Aura Tracking
-                if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
+                if subtype == 'SPELL_AURA_APPLIED' or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, true )
                     ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
 
@@ -1072,12 +1072,12 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
         if hostile and dmg_events[ subtype ] and not dmg_filtered[ spellID ] then
             -- Don't wipe overkill targets in rested areas (it is likely a dummy).
+            -- Interrupt is actually overkill.
             if not IsResting( "player" ) and ( ( ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and interrupt > 0 ) or ( subtype == "SWING_DAMAGE" and spellName > 0 ) ) and ns.isTarget( destGUID ) then
-                -- Interrupt is actually overkill.
                 ns.eliminateUnit( destGUID, true )
                 ns.forceRecount()
                 Hekili:ForceUpdate( "SPELL_DAMAGE_OVERKILL" )
-            else
+            elseif not ( subtype == "SPELL_MISSED" and amount == "IMMUNE" ) then
                 ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
             end
 
