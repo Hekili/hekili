@@ -1902,6 +1902,150 @@ all:RegisterAuras( {
 
 
 -- BFA TRINKETS/ITEMS
+-- Azshara's EP
+all:RegisterAbility( "azsharas_font_of_power", {
+    cast = 4,
+    channeled = true,
+    cooldown = 120,
+    gcd = "spell",
+
+    item = 169314,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "latent_arcana" )
+    end,
+} )
+
+all:RegisterAura( "latent_arcana", {
+    id = 296962,
+    duration = 30,
+    max_stack = 5
+} )
+
+
+all:RegisterAbility( "shiver_venom_relic", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "spell",
+
+    item = 168905,
+    toggle = "cooldowns",
+
+    usable = function () return debuff.shiver_venom.up end,
+
+    handler = function()
+        removeDebuff( "target", "shiver_venom" )
+    end,
+} )
+
+all:RegisterAura( "shiver_venom", {
+    id = 301576,
+    duration = 20,
+    max_stack = 5
+} )
+
+
+-- Ashvane's Razor Coral, 169311
+all:RegisterAbility( "ashvanes_razor_coral", {
+    cast = 0,
+    cooldown = 20,
+    gcd = "off",
+
+    item = 169311,
+    toggle = "cooldowns",
+
+    handler = function ()
+        if debuff.razor_coral.up then
+            removeDebuff( "target", "razor_coral" )
+            applyBuff( "razor_coral_crit" )
+            setCooldown( "ashvanes_razor_coral", 20 )
+        else
+            applyDebuff( "target", "razor_coral" )
+        end
+    end
+} )
+
+all:RegisterAuras( {
+    razor_coral = {
+        id = 303568,
+        duration = 120,
+        max_stack = 10 -- ???
+    },
+
+    razor_coral_crit = {
+        id = 303570,
+        duration = 20,
+        max_stack = 1,
+    }
+} )
+
+
+-- Edicts of the Faithless, 169315
+
+-- Vision of Demise, 169307
+all:RegisterAbility( "vision_of_demise", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 169307,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "vision_of_demise" )
+    end
+} )
+
+all:RegisterAura( "vision_of_demise", {
+    id = 303431,
+    duration = 10,
+    max_stack = 1
+} )
+
+
+-- Aquipotent Nautilus, 169305
+all:RegisterAbility( "aquipotent_nautilus", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 169305,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyDebuff( "target", "surging_flood" )
+    end
+} )
+
+all:RegisterAura( "surging_flood", {
+    id = 302580,
+    duration = 4,
+    max_stack = 1
+} )
+
+
+-- Chain of Suffering, 169308
+all:RegisterAbility( "chain_of_suffering", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 169308,
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "chain_of_suffering" )
+    end,
+} )
+
+all:RegisterAura( "chain_of_suffering", {
+    id = 297036,
+    duration = 25,
+    max_stack = 1
+} )
+
+
 -- Mechagon
 do
     all:RegisterAbility( "pocketsized_computation_device", {
@@ -1940,6 +2084,39 @@ do
         hidden = true,
     } ) 
 end
+
+
+-- Remote Guidance Device, 169769
+all:RegisterAbility( "remote_guidance_device", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 169769,
+    toggle = "cooldowns",    
+} )
+
+
+-- Modular Platinum Plating, 168965
+all:RegisterAbility( "modular_platinum_plating", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 168965,
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "platinum_plating", nil, 4 )
+    end
+} )
+
+all:RegisterAura( "platinum_plating", {
+    id = 299869,
+    duration = 30,
+    max_stack = 4
+} )
+
 
 -- Crucible
 all:RegisterAbility( "pillar_of_the_drowned_cabal", {
