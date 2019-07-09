@@ -480,9 +480,18 @@ do
      }
 
 
-     -- This is hideous.     
+     -- This is hideous.
+
+     local esDepth = 0
+     local esString
+
      function scripts:EmulateSyntax( p, numeric )
         if not p or type( p ) ~= "string" then return p end
+
+        if esDepth == 0 then
+            esString = p
+        end
+        esDepth = esDepth + 1
 
         local results = {}
 
@@ -581,6 +590,7 @@ do
                         if bracketed then orig = "(" .. orig .. ")" end
                         if ands then orig = orig:gsub( "&", " and " ) end
                         if ors then orig = orig:gsub( "|", " or " ) end
+                        esDepth = esDepth - 1
                         return orig 
                     end
                     piece.s = scripts:EmulateSyntax( piece.s, numeric )
@@ -600,10 +610,10 @@ do
                             local pass, val = pcall( func )
                             if not pass and not piece.s:match("variable") then
                                 local safepiece = piece.s:gsub( "%%", "%%%%" )
-                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-n)." )
+                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-n)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
                             else if val == nil or type( val ) == "boolean" then piece.s = "safenum(" .. piece.s .. ")" end end
                         else
-                            Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-n)." )
+                            Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-n)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
                         end
                     end
                     piece.r = nil
@@ -620,7 +630,7 @@ do
                             local pass, val = pcall( func )                            
                             if not pass and not piece.s:match("variable") then
                                 local safepiece = piece.s:gsub( "%%", "%%%%" )
-                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-b)." )
+                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-b)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
                             else if val == nil or type( val ) == "number" then piece.s = "safebool(" .. piece.s .. ")" end end
                         else
                             Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-b)." )
@@ -644,6 +654,7 @@ do
         output = output:gsub( "!safenum(%b())", "safenum(!%1)" )
         output = output:gsub( "!%((%b())%)", "!%1" )
 
+        esDepth = esDepth - 1
         return output
      end
 end
