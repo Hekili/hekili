@@ -896,7 +896,7 @@ local dmg_events = {
 local death_events = {
     UNIT_DIED               = true,
     UNIT_DESTROYED          = true,
-    UNIT_DISSSIPATES        = true,
+    UNIT_DISSIPATES        = true,
     PARTY_KILL              = true,
     SPELL_INSTAKILL         = true,
 }
