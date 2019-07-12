@@ -934,8 +934,8 @@ do
                     if not b.outOfRange then
                         local unusable
 
-                        if a.item then
-                            unusable = not IsUsableItem(a.item)
+                        if a.itemCd or a.item then
+                            unusable = not IsUsableItem(a.itemCd or a.item)
                         else
                             _, unusable = IsUsableSpell(a.actualName or a.name)
                         end
@@ -2213,7 +2213,9 @@ function Hekili:ShowDiagnosticTooltip( q )
                     tt:AddLine("Values")
                     applied = true
                 end
-                tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
+                if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) then
+                    tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
+                end
             end
         end
     end
@@ -2227,7 +2229,9 @@ function Hekili:ShowDiagnosticTooltip( q )
         if q.ReadyElements then
             tt:AddLine("Values")
             for k, v in orderedPairs(q.ReadyElements) do
-                tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
+                if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) then
+                    tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
+                end
             end
         end
     end
@@ -2241,7 +2245,9 @@ function Hekili:ShowDiagnosticTooltip( q )
         if q.ActElements then
             tt:AddLine("Values")
             for k, v in orderedPairs(q.ActElements) do
-                tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
+                if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) then
+                    tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
+                end
             end
         end
     end

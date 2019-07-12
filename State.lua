@@ -2338,7 +2338,7 @@ local mt_default_cooldown = {
 
         if ability and rawget( ability, "item" ) then
             GetCooldown = _G.GetItemCooldown
-            id = ability.item
+            id = ability.itemCd or ability.item
         end
 
         local raw = false
@@ -3419,7 +3419,7 @@ do
 
     state.variable = setmetatable( {}, {
         __index = function( t, var )
-            -- local debug = Hekili.ActiveDebug
+            local debug = Hekili.ActiveDebug
 
             local data = db[ var ]
             if not data then
@@ -3540,7 +3540,7 @@ do
                         end
                     end
 
-                    -- if debug then Hekili:Debug( "var[%s] [%02d/%s] :: op: %s, conditions: %s -- [%s]; value: %s", var, i, scriptID, state.args.op or "autoset", scripts:GetConditionsAndValues( scriptID ), tostring( passed ), tostring( value ) ) end
+                    if debug then Hekili:Debug( "var[%s] [%02d/%s] :: op: %s, conditions: %s -- [%s]; value: %s", var, i, scriptID, state.args.op or "autoset", scripts:GetConditionsAndValues( scriptID ), tostring( passed ), tostring( value ) ) end
                 end
             end
 

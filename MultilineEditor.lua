@@ -292,7 +292,9 @@ local function GenerateDiagnosticTooltip( widget, event )
 
         GameTooltip:AddLine( "Values" )
         for k, v in orderedPairs( arg ) do
+          if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) then
             GameTooltip:AddDoubleLine( key_cache[ k ], ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
+          end
         end
     end
 

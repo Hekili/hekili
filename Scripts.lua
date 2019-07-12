@@ -99,6 +99,94 @@ local function forgetMeNots( str )
 end
 
 
+local mathBreak = {
+    ["<"] = true,
+    [">"] = true,
+    ["="] = true,
+    ["&"] = true,
+    ["|"] = true,
+    --[[ ["*"] = true,
+    ["/"] = true,
+    ["%"] = true,
+    ["+"] = true,
+    ["-"] = true ]]
+}
+
+local function HandleDeprecatedOperators( str, opStr, prefix  )
+    --str = str:gsub("%s", "")
+    for left, op, right in str:gmatch("(.+)(" .. opStr .. ")(.+)") do
+        local leftLen, rightLen = left:len(), right:len()
+        local val1, val2, len1, len2, b1, b2
+
+        if left:sub(-1) == ")" then
+            val1 = left:match("(%b())$")
+            len1 = val1:len()
+            val1 = val1:sub( 2, -2 )
+        else
+            -- We need to traverse the left side, backwards.
+            local parens = 0
+            local eos = -1
+
+            for i = 1, leftLen do
+                local char = left:sub(-i, -i)
+
+                if char == ")" then
+                    -- Grab the full bracketed pair and move on.
+                    i = i + left:sub( 1, 1 + leftLen - i ):match( "(%b())$" ):len()
+                elseif mathBreak[ char ] then
+                    eos = i - 1
+                    break
+                end
+            end
+
+            if eos == -1 then
+                val1 = left
+                len1 = leftLen
+            else
+                val1 = left:sub( 1 + leftLen - eos, leftLen):trim()
+                len1 = eos
+            end
+        end
+
+        val1 = val1:trim()
+
+        if right:sub(1, 1) == "(" then
+            val2 = right:match("^(%b())")
+            len2 = val2:len()
+            val2 = val2:sub( 2, -2 )
+        else
+            local parens = 0
+            local eos = -1
+
+            for i = 1, right:len() do
+                local char = right:sub(i, i)
+
+                if char == "(" then
+                    i = i + right:sub( i ):match("^(%b())" ):len()
+                elseif mathBreak[char] then
+                    eos = i - 1
+                    break
+                end
+            end
+
+            if eos == -1 then
+                val2 = right
+                len2 = rightLen
+            else
+                val2 = right:sub(1, eos)
+                len2 = eos
+            end
+        end
+
+        val2 = val2:trim()
+
+        str = left:sub( 1, leftLen - len1 ) .. " " .. prefix .. "(safenum(" .. val1 .. "),safenum(" .. val2 .. ")) " .. right:sub( 1 + len2 )
+    end
+
+    return str
+end
+
+
 local invalid = "([^a-zA-Z0-9_.[])"
 
 
@@ -159,7 +247,11 @@ local function SimToLua( str, modifier )
     str = str:gsub("^%-%-.-\n", "")
 
     -- Replace '!' with ' not '.
-    str = forgetMeNots( str )
+    if str:find("!") then str = forgetMeNots( str ) end
+
+    -- Replace '>?' and '<?' with max/min.
+    if str:find(">%?") then str = HandleDeprecatedOperators( str, ">%?", "max" ) end
+    if str:find("<%?") then str = HandleDeprecatedOperators( str, "<%?", "min" ) end
 
     str = SimcWithResources( str )
 
@@ -452,6 +544,7 @@ do
         ["&"] = true,
         ["<"] = true,
         [">"] = true,
+        ["?"] = true,
         ["="] = true,
         ["!"] = true,
      }
@@ -471,6 +564,7 @@ do
         ["<"] = true,
         [">"] = true,
         ["="] = true,
+        ["?"] = true,
      }
 
      local bool_ops = {
@@ -511,8 +605,8 @@ do
         if ors then p = p:gsub( " or ", "|" ) end
         if nots then p = p:gsub( " not ", "!" ) end
 
-        p = p:gsub( "([!%|&%-%+%*=%%/<>]) ", "%1" )
-        p = p:gsub( " ([!%|&%-%+%*=%%/<>])", "%1" )
+        p = p:gsub( "([!%|&%-%+%*=%%/<>%?]) ", "%1" )
+        p = p:gsub( " ([!%|&%-%+%*=%%/<>%?])", "%1" )
 
         local orig = p
 
@@ -551,7 +645,7 @@ do
                  if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
               end
 
-              c = p:sub( i ):match( "^([&%|%-%+*%%/><=!]+)" )
+              c = p:sub( i ):match( "^([&%|%-%+*%%/><=!%?]+)" )
 
               table.insert( results, {
                     s = c,
