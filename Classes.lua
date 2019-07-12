@@ -420,7 +420,7 @@ local HekiliSpecMixin = {
                 if name then
                     a.name = name
                     a.link = link
-                    a.texture = texture
+                    a.texture = a.texture or texture
 
                     if a.suffix then
                         a.actualName = name
@@ -433,8 +433,8 @@ local HekiliSpecMixin = {
                     self.abilities[ a.id ] = self.abilities[ a.link ] or a
 
                     if not a.unlisted then
-                        class.abilityList[ ability ] = "|T" .. texture .. ":0|t " .. link
-                        class.itemList[ data.item ] = "|T" .. texture .. ":0|t " .. link
+                        class.abilityList[ ability ] = "|T" .. a.texture .. ":0|t " .. link
+                        class.itemList[ data.item ] = "|T" .. a.texture .. ":0|t " .. link
 
                         class.abilityByName[ a.name ] = a
                     end
@@ -2048,41 +2048,73 @@ all:RegisterAura( "chain_of_suffering", {
 
 -- Mechagon
 do
-    all:RegisterAbility( "pocketsized_computation_device", {
-        cast = function () return cooldown.pocketsized_computation_device.remains > 0 and 2.5 or 1.5 end,
-        channeled = function () return cooldown.pocketsized_computation_device.remains > 0 end,
-        prechannel = true,
-        cooldown = 120,
-        gcd = "spell",
-
-        item = 167555,
-        toggle = "cooldowns",
-
-        usable = function ()
-            local redCard = GetItemGem( class.abilities.pocketsized_computation_device.name, 1 )
-            if redCard ~= class.abilities.cyclotronic_blast.name then return false, "cyclotronic_blast not installed (" .. redCard .. ")" end
-            return true
-        end,
-
-        handler = function ()
-            setCooldown( "global_cooldown", 2.5 * haste )
-        end,
-    } )
-
+    all:RegisterGear( "pocketsized_computation_device", 167555 )
+    all:RegisterGear( "cyclotronic_blast", 167672 )
+    all:RegisterGear( "harmonic_dematerializer", 167677 )
+    
     all:RegisterAura( "cyclotronic_blast", {
         id = 293491,
         duration = function () return 2.5 * haste end,
         max_stack = 1
     } )
 
+    all:RegisterAbility( "pocketsized_computation_device", {
+        cast = 0,
+        cooldown = 120,
+        gcd = "spell",
+
+        item = 167555,
+        texture = 2115322,
+    } )
+
     all:RegisterAbility( "cyclotronic_blast", {
         id = 293491,
+        key = "pocketsized_computation_device",
         cast = function () return cooldown.cyclotronic_blast.remains > 0 and 2.5 or 1.5 end,
         channeled = function () return cooldown.cyclotronic_blast.remains > 0 end,
         cooldown = 120,
         gcd = "spell",
-        hidden = true,
-    } ) 
+
+        item = 167672,
+        itemCd = 167555,
+        texture = 2115322,
+
+        toggle = "cooldowns",
+
+        usable = function ()
+            return equipped.cyclotronic_blast
+        end,
+
+        handler = function()
+            setCooldown( "global_cooldown", 2.5 * haste )
+        end
+    } )
+
+    all:RegisterAura( "harmonic_dematerializer", {
+        id = 293512,
+        duration = 300,
+        max_stack = 99
+    } )
+
+    all:RegisterAbility( "harmonic_dematerializer", {
+        id = 293512,
+        key = "pocketsized_computation_device",
+        cast = 0,
+        cooldown = 15,
+        gcd = "off",
+
+        item = 167677,
+        itemCd = 167555,
+        texture = 2115322,
+
+        usable = function ()
+            return equipped.harmonic_dematerializer
+        end,
+
+        handler = function ()
+            addStack( "harmonic_dematerializer", nil, 1 )
+        end
+    } )
 end
 
 
@@ -2707,27 +2739,6 @@ all:RegisterAbility( "tzanes_barkspines", {
 all:RegisterAura( "barkspines", {
     id = 278227,
     duration = 10,
-    max_stack = 1,
-} )
-
-
-all:RegisterAbility( "knot_of_spiritual_fury", {
-    cast = 0,
-    cooldown = 60,
-    gcd = "off",
-
-    item = 161413,
-
-    toggle = "cooldowns",
-
-    handler = function ()
-        applyBuff( "spiritual_fury" )
-    end,
-} )
-
-all:RegisterAura( "spiritual_fury", {
-    id = 278231,
-    duration = 12,
     max_stack = 1,
 } )
 
