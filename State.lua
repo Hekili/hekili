@@ -458,6 +458,7 @@ state.UnitDebuff = UnitDebuff
 state.UnitExists = UnitExists
 state.UnitHealth = UnitHealth
 state.UnitHealthMax = UnitHealthMax
+state.UnitName = UnitName
 state.UnitIsFriend = UnitIsFriend
 state.UnitIsUnit = UnitIsUnit
 state.UnitIsPlayer = UnitIsPlayer
@@ -4813,6 +4814,8 @@ function state.reset( dispName )
     state.cast_start = 0
     state.false_start = 0
 
+    state.resetting = true
+
     state.ClearCycle()
 
     state.selectionTime = 60
@@ -5159,6 +5162,8 @@ function state.reset( dispName )
             state.advance( delay )
         end
     end
+
+    state.resetting = nil
 end
 
 
@@ -5184,7 +5189,7 @@ function state.advance( time )
     if Hekili.ActiveDebug then Hekili:Debug( "Advancing clock by %.2f...", time ) end
 
     time = ns.callHook( 'advance', time ) or time
-    time = roundUp( time, 2 )
+    if not state.resetting then time = roundUp( time, 2 ) end
 
     state.delay = 0
 
