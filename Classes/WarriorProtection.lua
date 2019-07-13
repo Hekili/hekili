@@ -609,6 +609,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132353,
 
+            usable = function ()
+                if settings.free_revenge and action.revenge.cost ~= 0 then return false, "free_revenge is checked and revenge is not free" end
+                return true
+            end,
+
             handler = function ()
                 if talent.vengeance.enabled then applyBuff( "vengeance_ignore_pain" ) end
 
@@ -819,6 +824,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         potion = "potion_of_bursting_blood",
 
         package = "Protection Warrior",
+    } )
+
+
+    spec:RegisterSetting( "free_revenge", true, {
+        name = "Use Free |T132353:0|t Revenge Only",
+        desc = "If checked, the Revenge ability will only be recommended when it costs 0 Rage to use.",
+        type = "toggle",
+        width = 1.5
     } )
 
 
