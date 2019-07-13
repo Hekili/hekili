@@ -792,7 +792,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.actionID = -1 * potion.item
 
                                                         slot.texture = select( 10, GetItemInfo( potion.item ) )
-                                                        slot.caption = entry.caption
+                                                        slot.caption = ability.caption or entry.caption
                                                         slot.item = potion.item
 
                                                         slot.wait = state.delay
@@ -899,7 +899,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     slot.actionName = state.this_action
                                                     slot.actionID = ability.id
 
-                                                    slot.caption = entry.caption
+                                                    slot.caption = ability.caption or entry.caption
                                                     slot.texture = ability.texture
                                                     slot.indicator = ability.indicator
 
