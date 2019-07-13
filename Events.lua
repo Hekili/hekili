@@ -696,7 +696,7 @@ function state:AddToHistory( spellID, destGUID )
     player.lastcast = key
     player.casttime = now
 
-    if ability then
+    if ability and not ability.essence then
         local history = self.prev.history
         insert( history, 1, key )
         history[6] = nil
