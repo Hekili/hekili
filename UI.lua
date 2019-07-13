@@ -769,7 +769,7 @@ do
                         b.Icon:Hide()
                     end
 
-                    if conf.captions.enabled and ( i == 1 or conf.captions.queued ) then
+                    if ( conf.captions.enabled or ability.caption ) and ( i == 1 or conf.captions.queued ) then
                         b.Caption:SetText( caption )
                     else
                         b.Caption:SetText(nil)
