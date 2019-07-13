@@ -314,6 +314,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
             max_stack = 1,
         },
 
+        recently_challenged = {
+            id = 290512,
+            duration = 30,
+            max_stack = 1
+        },
+
         sunrise_technique = {
             id = 273298,
             duration = 15,
@@ -367,10 +373,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterStateExpr( "last_combo", function () return virtual_combo or actual_combo end )
 
 
-    local tigers_palmed = {}
-    local tigers_palmed_v = {}
-
-
     -- If a Tiger Palm missed, pretend we never cast it.
     -- Use RegisterEvent since we're looking outside the state table.
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
@@ -391,9 +393,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             elseif subtype == "SPELL_CAST_SUCCESS" and state.combos[ ability ] then
                 prev_combo = actual_combo
                 actual_combo = ability
-
-                -- For Alpha Tiger.
-                if ability == "tiger_palm" and not tigers_palmed[ destGUID ] then tigers_palmed[ destGUID ] = GetTime() end
 
             elseif subtype == "SPELL_DAMAGE" and spellID == 148187 then
                 -- track the last tick.
@@ -432,6 +431,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
         end
     end )
 
+    local reverse_harm_target
+
     spec:RegisterHook( "reset_precast", function ()
         chiSpent = 0
         if prev_gcd[1].tiger_palm and ( class.abilities.tiger_palm.lastCast == 0 or combat == 0 or class.abilities.tiger_palm.lastCast < combat - 0.05 ) then
@@ -441,14 +442,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         if buff.rushing_jade_wind.up then setCooldown( "rushing_jade_wind", 0 ) end
 
-        table.wipe( tigers_palmed_v )
-        for k, v in pairs( tigers_palmed ) do
-            if now - v > 30 then tigers_palmed[ k ] = nil
-            else tigers_palmed_v[ k ] = v end
-        end
-
         spinning_crane_kick.count = nil
         virtual_combo = nil
+        reverse_harm_target = nil
     end )
 
 
@@ -471,24 +467,31 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterStateExpr( "alpha_tiger_ready", function ()
         if not pvptalent.alpha_tiger.enabled then
             return false
-        elseif not tigers_palmed_v[ target.unit ] or query_time - tigers_palmed_v[ target.unit ] > 30 then
+        elseif debuff.recently_challenged.down then
             return true
-        elseif cycle then
-            local count = 0
-            for k, v in pairs( tigers_palmed_v ) do
-                if query_time - v < 30 then count = count + 1 end
-            end
-            return count < active_enemies
+        elseif cycle then return
+            active_dot.recently_challenged < active_enemies
         end
         return false
     end )
 
     spec:RegisterStateExpr( "alpha_tiger_ready_in", function ()
         if not pvptalent.alpha_tiger.enabled then return 3600 end
-        if not tigers_palmed_v[ target.unit ] then return 0 end
-        if query_time - tigers_palmed_v[ target.unit ] > 30 then return 0 end
-        return 30 - tigers_palmed_v[ target.unit ] - query_time
+        if active_dot.recently_challenged < active_enemies then return 0 end
+        return debuff.recently_challenged.remains
     end )
+
+
+    local reverse_harm_units = {
+        "player",
+        "target",
+        "targettarget",
+        "focus",
+        "party1",
+        "party2",
+        "party3",
+        "party4"
+    }
 
 
     -- Abilities
@@ -895,30 +898,66 @@ if UnitClassBase( 'player' ) == 'MONK' then
             spend = 40,
             spendType = "energy",
 
-            pvptalent = "reverse_harm",
+            pvptalent = function ()
+                if essence.conflict_and_strife.major then return end
+                return "reverse_harm"
+            end,
 
             startsCombat = true,
             texture = 627486,
 
             indicator = function ()
-                if health.current > 0.92 * health.max then return "cycle" end
+                local caption = class.abilities.reverse_harm.caption
+                if caption and caption ~= UnitName( "player" ) then return "cycle" end
+            end,
+
+            caption = function ()
+                if not group or not settings.optimize_reverse_harm then return end
+                if reverse_harm_target then return reverse_harm_target end
+
+                local targetName, dmg = UnitName( "player "), -1
+
+                if raid then
+                    for i = 1, 5 do                        
+                        local unit = "raid" .. i
+
+                        if UnitExists( unit ) and UnitIsFriend( unit ) then
+                            local h, m = UnitHealth( unit ), UnitHealthMax( unit )
+                            local deficit = min( m - h, m * 0.08 )
+
+                            if deficit > dmg then
+                                targetName = i < 5 and UnitName( "target" ) or nil
+                                dmg = deficit
+                            end
+                        end
+                    end
+
+                elseif group then
+                    for i = 1, 5 do                        
+                        local unit = i < 5 and ( "party" .. i ) or "player"
+
+                        if UnitExists( unit ) and UnitIsFriend( unit ) then
+                            local h, m = UnitHealth( unit ), UnitHealthMax( unit )
+                            local deficit = min( m - h, m * 0.08 )
+
+                            if deficit > dmg then
+                                targetName = not UnitIsUnit( "player", unit ) and UnitName( unit ) or nil
+                                dmg = deficit
+                            end
+                        end
+                    end
+
+                end
+
+                -- Consider using LibGetFrame to highlight a raid frame.
+
+                reverse_harm_target = targetName
+                return reverse_harm_target
             end,
 
             usable = function ()
-                if health.current < 0.92 * health.max then return true end
-
-                if not group then return false, "solo and player health_pct > 92" end
-
-                if UnitExists( "focus" ) and UnitIsFriend( "player", "focus" ) and UnitHealth( "focus" ) < UnitHealthMax( "focus" ) * 0.92 then return true end
-                if UnitExists( "targettarget" ) and UnitIsFriend( "player", "targettarget" ) and UnitHealth( "targettarget" ) < UnitHealthMax( "targettarget" ) * 0.92 then return true end
-
-                -- Try party members.
-                for i = 1, 4 do
-                    local unit = "party" .. i                        
-                    if UnitExists( unit ) and UnitHealth( unit ) < UnitHealthMax( unit ) * 0.92 then return true end
-                end
-
-                return false, "grouped but no ally's health_pct < 92"
+                if not group and health.deficit / health.max < 0.02 then return false, "solo and health deficit is too low" end
+                return true
             end,
 
             handler = function ()
@@ -1126,10 +1165,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     applyBuff( "eye_of_the_tiger" )
                 end
 
-                if pvptalent.alpha_tiger.enabled and ( not tigers_palmed_v[ target.unit ] or ( query_time - tigers_palmed_v[ target.unit ] ) > 30 ) then
+                if pvptalent.alpha_tiger.enabled and debuff.recently_challenged.down then
                     if buff.alpha_tiger.down then stat.haste = stat.haste + 0.10 end
                     applyBuff( "alpha_tiger" )
-                    tigers_palmed_v[ target.unit ] = query_time
+                    applyDebuff( "target", "recently_challenged" )
                 end
 
                 applyDebuff( "target", "mark_of_the_crane" )
@@ -1300,6 +1339,13 @@ if UnitClassBase( 'player' ) == 'MONK' then
         strict = false
     } )
 
+    spec:RegisterSetting( "optimize_reverse_harm", false, {
+        name = "Optimize |T627486:0|t Reverse Harm Target",
+        desc = "If checked, the |T627486:0|t Reverse Harm's caption will show the recommended target's name.",
+        type = "toggle",
+        width = 1.5
+    } ) 
+    
     spec:RegisterPack( "Windwalker", 20190710.0905, [[dO0qYaqisv5riP6sKQk0Mqs(KsrsnksvofPsVcPywGQULQQAxQYVuknmLchJKAzujEMQsMgskDnKsTnKs8nLIyCkfPoNQQyDiLuZJkP7rvTpsfhejfwiOYdvkkxuPOYgrkjFuPijJKuvjNuvvkRKK8svvP6MKQkANkvgQsrILIKIEQOMQsvxLuvP(Qsrv7vL)s0GHCyjlwepgyYGCzuBMeFMugnv50uwnPQQxJeZwj3Mk2Tu)gQHdkhNuvblhXZjmDHRlsBxvX3vvz8Qk15rQwVQQK5tLA)k(uF7Vmuf8TZLnu)Nn2e1B824pBqlU4YLd6W4ldRaukn(YD5WxEZBn0VArHjxgwrFHlOB)Lf4ucGVSxeWe06TB1SWln5bWoBfMt6Qcd3asPeBfMdyBYcNSnrP(hI)SfgbRylwSDtHWuZYGeB3uOMs9tCtrU5Tg6xTOWKNWCaxoj1wXFRVKldvbF7Czd1)zJnr9gVn(Zg0IAAFzbmgC7CHw(ZL9miiUVKldXcWLP(G28wd9RwuyYG0pXnLrf1hKxeWe06TB1SWln5bWoBfMt6Qcd3asPeBfMdy7OI6dsv6I(GuVb8dYLnu)Nb9)G24p06nO9OAur9bTzEvRXcA9OI6d6)brnzh8hEqzyCrgK(v1qdkheJcpiaUHcd3IbPNx1qlgAqj0hubbHBDFJkQpO)he1KDWF4brRY)9brya2XHBOkmCpi9(zR1Gsya2Hhuniyewr33OI6d6)bTzEvRXdkkIghstzqbEqa6GflJIOXH4nQO(G(Fqut2b)Hhe3mrJ(GafSbb8yaLbPGjdIwzIqmiSYGOvPe6dspH5miitrHjCd4bzIb1S2Y0SKfd)GssJbbBv0heKPOWeUb8GmXGeMwBkgO6q33OI6d6)brnGGyObPFl4b93c2rmi9cI1u4qa)G4a809D5LjcXT)YSqWnGf3(BN6B)Llqy4(YaCd4oivWqsLv5WxM7kzXqhCxC7C52F5cegUVCYcJHKyfz4XsUzh6xM7kzXqhCxC7(62F5cegUVSwArGSQLyfz9xmbhExM7kzXqhCxC7O2B)Llqy4(YkyqQGHK1FXelyzcxoxM7kzXqhCxC7O9T)YfimCFzyPetHU1AYKvjIlZDLSyOdUlUD0YT)YfimCF5WJLPDcoTHKkycGVm3vYIHo4U42Tj3(lxGWW9LjgmylwATuaRa8L5Uswm0b3f3Un9T)YfimCF5FyYc6dBTKWcCxnGVm3vYIHo4U429NB)L5Uswm0b3LbelyIvxMBMOrFqUoiQDJbr1GssvuEIatCKCrcpz1qsfJWVuyxUaHH7l7WoycDjwrUsbgKeIWLJ4IlUma62F7uF7VCbcd3x26pykS87uUVm3vYIHo4U425YT)YCxjlg6G7YD5Wx(trSkzXsRdUfwqxQzA1h8kKybWwRkSwts4ceyYLlqy4(YFkIvjlwADWTWc6sntR(GxHela2AvH1AscxGatU4291T)YfimCF5ublTGDexM7kzXqhCxC7O2B)Llqy4(YjlmgsQKsOFzURKfdDWDXTJ23(lxGWW9LtyIGjuSw7YCxjlg6G7IBhTC7Vm3vYIHo4UmGybtS6Yap75uFpO)heWZgKo(ds9GOAqCZen6VWCyzGLo13dsh)bTXJ2xUaHH7lxeq1SmWec3Xf3Un52F5cegUV8Y08cHu)tH0C4oUm3vYIHo4U42TPV9xUaHH7lRyeozHXqxM7kzXqhCxC7(ZT)YfimCF5QbSii1scQ16YCxjlg6G7IBN6nU9xM7kzXqhCxgqSGjwD5OiAC8cZHLbwcz8G0zq)5YfimCF5aNc8KyfjexH3f3o1QV9xM7kzXqhCxgqSGjwDzagVGW)6NiWehjxKWtwnKuXi8d4venwmi)b5YGC7Eq6niagVGW)6NIjcHeRivsj0Fe2PSwmix9heTmiQgeWZgKo(d6Rbr1Gay8cc)RFetyTMuK2skgGYJWoL1Ib5Q)GupiDhKB3dkkIghVWCyzGLqgpix9hKAAF5cegUVSiWehjxKWtwnKuXi8f3o1UC7Vm3vYIHo4UmGybtS6YamEbH)1pIjSwtksBjfdq5ryNYAXGC1FqUmi3UhuuenoEH5WYalHmEqU6pi1UC5cegUVSGjCBb9lUDQ)62FzURKfdDWD5cegUVmOwlzbcd3YLjIlVmri7YHVmleCdyXfxCzyegGDsQ42F7uF7Vm3vYIHo4U425YT)YCxjlg6G7IB3x3(lZDLSyOdUlUDu7T)YCxjlg6G7IBhTV9xUaHH7lddhgUVm3vYIHo4U42rl3(lZDLSyOdUldiwWeRUSEdsFdkQf3XtWeUTG(J7kzXqdYT7bPVbf1I74PyIqIvKHhl)5zbldtJjpURKfdniDVCbcd3xg4zYKuIiU42Tj3(lxGWW9LbEM8x9HVm3vYIHo4U4Illyc3wq)2F7uF7Vm3vYIHo4UCbcd3xMycR1KI0wsXauUmGybtS6YfiSpSKB2XyXGCDqFni3Uhemc)rQbGEQFcyw3wRjbKQzjfdq5Ya6GflJIOXH42P(IBNl3(lZDLSyOdUldiwWeRUSEdkjvr5LSWyOvQiEPWgevdcgH)i1aqp1pIjSwtksBjfdqzq6oi3UhusQIYtWeUTG(JWoL1Ib56Gupi3UhKEdQaH9HLCZoglgKods9GOAqfiSpSKB2XyXGCDq0Eq6E5cegUVSIjcHeRivsj0V4291T)YCxjlg6G7YaIfmXQlRVbbJWFKAaON6NaM1T1AsaPAwsXaugevdsVbvGW(WsUzhJfdsh)b91GC7Eq6nOce2hwYn7ySyq(dYLbr1GGr4psna0t9lzvak40qsXaugKUds3lxGWW9LfWSUTwtcivZskgGYf3oQ92FzURKfdDWD5cegUVCYQauWPHKIbOCzaDWILrr04qC7uFXfxgIvQ0vC7VDQV9xUaHH7llGXfr6vnKueeJcFzURKfdDWDXTZLB)LToyYNAD5)SXLHbcPhxRW7YB8O9Llqy4(Ybof4jXkskfXPUm3vYIHo4U4291T)YCxjlg6G7YaIfmXQlNKQO8emHBlO)sHni3UhusQIYteyIJKls4jRgsQye(LcBqUDpi9gK(guulUJNGjCBb9h3vYIHgevdkiwtHJhmcg8knBzb9hHlqmiDhKB3dkjvr5LSWyOvQiEeUaXGC7Eqrr044fMdldSeY4b5Q)GOLnUCbcd3xggomCFXTJAV9xM7kzXqhCxgqSGjwD5KufLNGjCBb9xkSlxGWW9Lb1Ajlqy4wUmrC5Ljczxo8LfmHBlOFXTJ23(lZDLSyOdUldiwWeRUSEdIBMOr)fMdldS0P(EqUoi1dYT7bP3GIAXD8emHBlO)4Uswm0GOAqamEbH)1pbt42c6pc7uwlgKRdYLbP7G0DquniGN9CQVh0)dc4zdsh)b91Llqy4(YkMiKyfz4XYFEwWYW0yYf3oA52FzURKfdDWD5cegUVCyAmrcRwoxgqSGjwDz9ge3mrJ(lmhwgyPt99GCDqQhKB3dsVbf1I74jyc3wq)XDLSyObr1Gay8cc)RFcMWTf0Fe2PSwmixhKlds3bP7GOAqap75uFpO)heWZgKo(dYLbr1G03GGr4psna0t9lmnMiHvlNldOdwSmkIghIBN6lUDBYT)YCxjlg6G7YfimCFzqTwYcegULltexEzIq2LdFza0f3Un9T)YCxjlg6G7YaIfmXQlxGW(WsUzhJfdY1b91Llqy4(YGATKfimClxMiU8YeHSlh(YI4IB3FU9xM7kzXqhCxgqSGjwD5ce2hwYn7ySyq64pOVUCbcd3xguRLSaHHB5YeXLxMiKD5WxUW8fxCzrC7VDQV9xUaHH7l)ZZilR1KqKsd3syPnW7YCxjlg6G7IBNl3(lZDLSyOdUlxGWW9LjMWAnPiTLumaLldiwWeRUmWZgKo(dI2xgqhSyzuenoe3o1xC7(62F5cegUVSIjcHeRivsj0Vm3vYIHo4U42rT3(lZDLSyOdUlxGWW9LjMWAnPiTLumaLldOdwSmkIghIBN6lUD0(2FzURKfdDWDzaXcMy1L13GGr4psna0t9taZ62AnjGunlPyakdIQbLKQO8GQgWsSIe4z6V9sHD5cegUVSaM1T1AsaPAwsXauU42rl3(lZDLSyOdUldiwWeRUCsQIYJKk8SwtQ)fel)zn0dc)RhevdQaH9HLCZoglgKods9Llqy4(YKuHN1As9VGy5pRHU42Tj3(lZDLSyOdUldiwWeRUmWZEo13d6)bb8SbPJ)GC5YfimCFzc)Hjcw6veNlUDB6B)L5Uswm0b3LbelyIvxg4zdYv)b5YLlqy4(YkMiKyfz4XYFEwWYW0yYf3U)C7Vm3vYIHo4UmGybtS6YapBqU6pOVgevdIBMOrFqUoiAVXLlqy4(YCZen7VSwtYl7BJCXTt9g3(lZDLSyOdUlxGWW9LtwfGconKumaLldiwWeRUS(gemc)rQbGEQFjRcqbNgskgGYGOAq6niagVGW)6hXewRjfPTKIbO8iStzTyq6mOVgKB3dc4zdsh)b91G0Dquni9geaJxq4F9tXeHqIvKkPe6pc7uwlgKodIAhKB3dc4zdsh)brTdYT7bP3GaE2G8hKldIQbbJWFKAaON6xyAmrcRwods3bP7Lb0blwgfrJdXTt9f3o1QV9xUaHH7ld8m5V6dFzURKfdDWDXTtTl3(lZDLSyOdUldiwWeRUmWZEo13d6)bb8SbPJ)GupiQgubc7dl5MDmwmi)bPEqUDpiGN9CQVh0)dc4zdsh)b5YLlqy4(YaptMKseXf3o1FD7Vm3vYIHo4UCbcd3xomnMiHvlNldiwWeRUS(gemc)rQbGEQFHPXejSA5miQgeWZEo13d6)bb8SbPJ)GC5Ya6GflJIOXH42P(IlUCH5B)Tt9T)YCxjlg6G7YfimCFzIjSwtksBjfdq5YaIfmXQlR3GIAXD8(5zKL1AsisPHBjS0g494Uswm0GOAqamEbH)1VFEgzzTMeIuA4wclTbEpc7uwlgKRdI2ds3br1Gay8cc)RFkMiesSIujLq)ryNYAXG0zqFDzaDWILrr04qC7uFXTZLB)Llqy4(Y)8mYYAnjeP0WTewAd8Um3vYIHo4U4291T)YCxjlg6G7YaIfmXQlRVbbJWFKAaON6xyAmrcRwodIQbb8Sb5Q)GupiQge3mrJ(GCDq0EJlxGWW9L5MjA2FzTMKx23g5IBh1E7VCbcd3xwXeHqIvKkPe6xM7kzXqhCxC7O9T)YCxjlg6G7YaIfmXQlNKQO8iPcpR1K6FbXYFwd9GW)6lxGWW9LjPcpR1K6FbXYFwdDXTJwU9xM7kzXqhCxgqSGjwDz9niye(Juda9u)eWSUTwtcivZskgGYGOAq6ni9gKEdc4zdsNb91GC7EqamEbH)1pftecjwrQKsO)iStzTyq6miAzq6oiQgKEdc4zdsh)br7b529Gay8cc)RFkMiesSIujLq)ryNYAXG0zqUmiDhKUdYT7bXnt0O)cZHLbw6uFpix9h0xds3lxGWW9LfWSUTwtcivZskgGYf3Un52FzURKfdDWDzaXcMy1LbE2ZP(Eq)piGNniD8hKlxUaHH7lt4pmrWsVI4CXTBtF7Vm3vYIHo4UmGybtS6YapBqU6pOVUCbcd3xg4zYKuIiU429NB)L5Uswm0b3LbelyIvxg4zpN67b9)GaE2G0XFqFD5cegUVSIjcjwrgES8NNfSmmnMCXTt9g3(lZDLSyOdUlxGWW9LdtJjsy1Y5YaIfmXQld8SNt99G(FqapBq64pixgevdsVbPVbf1I745zHeGDsWpURKfdni3UhK(gemc)rQbGEQFHPXejSA5miDVmGoyXYOiACiUDQV42Pw9T)YfimCFzGNj)vF4lZDLSyOdUlUDQD52FzURKfdDWD5cegUVCYQauWPHKIbOCzaXcMy1L13GGr4psna0t9lzvak40qsXaugevdsVbLKQO8sWuKWiyWlf2GC7Eq6nOOwChpplKaStc(XDLSyObr1GGr4psna0t9lmnMiHvlNbr1GaE2GCDqu7G0Dq6EzaDWILrr04qC7uFXfxC5pmry4(25YgQ)ZgBYgBYZLV(IAV8VI0wRjU8FZbgMem0G2KbvGWW9GwMieVr1LHrWk2IVm1h0M3AOF1IctgK(jUPmQO(G8IaMGwVDRMfEPjpa2zRWCsxvy4gqkLyRWCaBhvuFqQsx0hK6nGFqUSH6)mO)h0g)HwVbThvJkQpOnZRAnwqRhvuFq)piQj7G)WdkdJlYG0VQgAq5Gyu4bbWnuy4wmi98QgAXqdkH(GkiiCR7Bur9b9)GOMSd(dpiAv(VpicdWooCdvHH7bP3pBTgucdWo8GQbbJWk6(gvuFq)pOnZRAnEqrr04qAkdkWdcqhSyzuenoeVrf1h0)dIAYo4p8G4MjA0heOGniGhdOmifmzq0kteIbHvgeTkLqFq6jmNbbzkkmHBapitmOM1wMMLSy4husAmiyRI(GGmffMWnGhKjgKW0AtXavh6(gvuFq)piQbeedni9BbpO)wWoIbPxqSMchc4hehGNUVr1OI6dAZ9ndsdgAqjScMWdcGDsQyqjSM1I3GOgaadledQX9)EfXrjDnOcegUfdc3l6Vrvbcd3IhmcdWojv4RSkbLrvbcd3IhmcdWojvqJ)wfmgAuvGWWT4bJWaStsf04VTs1C4oQWW9OI6dk3fmHhogePmObLKQOWqdsevigucRGj8GayNKkgucRzTyqvdniye(Fy4iSwBqMyqq4MFJQcegUfpyegGDsQGg)TIUGj8WHuevigvfimClEWima7Kubn(BHHdd3JQcegUfpyegGDsQGg)TaptMKseb8MIVE6lQf3XtWeUTG(J7kzXqUDRVOwChpftesSIm8y5pplyzyAm5XDLSyiDhvfimClEWima7Kubn(BbEM8x9HhvJkQpOn33minyObXFyc9bfMdpOWJhubcmzqMyq1NYwvYIFJkQpOcegUf(vAGLvefGYOQaHHBbn(BfW4Ii9QgskcIrHhvuFq7XPaVbHvg0FVio1GW9Gay8cc)RHFqMYG2uHXqd6VxeNAqMyqCxjlgAqS(H0AnOapi1BSH(XbHvgKt9T5K6mipUwH3OQaHHBbn(BdCkWtIvKukItbV1bt(ul))Sb8WaH0JRv45VXJ2JkQpOnfCy4EqMYGYmHBlOpimzq5atCGFqBUIeEWpOQHgeTYi8GkcpOuydctgeDC6GkcpisA3wRnibt42c6dQAObvdYPSEqIOIbfeRPWXGGrWab8dctgeDC6GkcpO0gIjdk84bXkkmigewzqjlmgALkc4heMmOOiACmOWC4bf4bbz8GmXG0iCfmzqyYGy9dP1AqbEq0YgJQcegUf04VfgomCdVP4NKQO8emHBlO)sH52DsQIYteyIJKls4jRgsQye(LcZTB90xulUJNGjCBb9h3vYIHOkiwtHJhmcg8knBzb9hHlqORB3jPkkVKfgdTsfXJWfiC7okIghVWCyzGLqg7QpTSXOQaHHBbn(Bb1Ajlqy4wUmraFxoSVGjCBbD4nf)KufLNGjCBb9xkSrvbcd3cA83QyIqIvKHhl)5zbldtJjWBk(6Xnt0O)cZHLbw6uF7QA3U1lQf3XtWeUTG(J7kzXqubW4fe(x)emHBlO)iStzTWvx0vxQaE2ZP((FGNPJ)xJQcegUf04VnmnMiHvlh4b0blwgfrJdHVA4nfF94MjA0FH5WYalDQVDvTB36f1I74jyc3wq)XDLSyiQay8cc)RFcMWTf0Fe2PSw4Ql6Qlvap75uF)pWZ0X3fQ0hmc)rQbGEQFHPXejSA5mQkqy4wqJ)wqTwYcegULlteW3Ld7dGgvuFqBwTwdk84bL3pOcegUh0YeXGmLbfEmHhur4b5YGWKbTyHyqCZoglgvfimClOXFlOwlzbcd3YLjc47YH9fb8MIFbc7dl5MDmw46xJkQpOnRwRbfE8GOg4n3Gkqy4EqltedYugu4XeEqfHh0xdctgKdMWdIB2XyXOQaHHBbn(Bb1Ajlqy4wUmraFxoSFHz4nf)ce2hwYn7ySqh)VgvJkQpiQbimClEud8MBqMyqwhCdXqdsbtguQGh0pl8gK(fdcdiPgqqYnBX1hEqvdniqkHWDSOpOMziXGc8Gs4bHHfMJ9xm0OQaHHBXRWSpXewRjfPTKIbOapGoyXYOiACi8vdVP4RxulUJ3ppJSSwtcrknClHL2aVh3vYIHOcGXli8V(9ZZilR1KqKsd3syPnW7ryNYAHR0wxQay8cc)RFkMiesSIujLq)ryNYAHoFnQkqy4w8kmtJ)2FEgzzTMeIuA4wclTbEJQcegUfVcZ04VLBMOz)L1AsEzFBe4nfF9bJWFKAaON6xyAmrcRwoub8mx9vtf3mrJUR0EJrvbcd3IxHzA83QyIqiXksLuc9rvbcd3IxHzA83ssfEwRj1)cIL)SgcEtXpjvr5rsfEwRj1)cIL)Sg6bH)1JQcegUfVcZ04VvaZ62AnjGunlPyakWBk(6dgH)i1aqp1pbmRBR1Kas1SKIbOqLE6PhWZ05l3Uby8cc)RFkMiesSIujLq)ryNYAHo0IUuPhWZ0XN2UDdW4fe(x)umriKyfPskH(JWoL1cDCrxDD7MBMOr)fMdldS0P(2v)V0DuvGWWT4vyMg)Te(dteS0RioWBk(ap75uF)pWZ0X3Lrvbcd3IxHzA83c8mzskreWBk(apZv)VgvfimClEfMPXFRIjcjwrgES8NNfSmmnMaVP4d8SNt99)apth)VgvfimClEfMPXFByAmrcRwoWdOdwSmkIghcF1WBk(ap75uF)pWZ0X3fQ0tFrT4oEEwibyNe8J7kzXqUDRpye(Juda9u)ctJjsy1Yr3rvbcd3IxHzA83c8m5V6dpQO(Gkqy4w8kmtJ)wLfDR1KcMaJ7qsXauG3u8tsvuEjyksyem4bH)1WBDWeskSWx9OQaHHBXRWmn(BtwfGconKumaf4b0blwgfrJdHVA4nfF9bJWFKAaON6xYQauWPHKIbOqLEjPkkVemfjmcg8sH52TErT4oEEwibyNe8J7kzXqubJWFKAaON6xyAmrcRwoub8mxPwD1DunQO(G2mmEbH)1Irvbcd3IhaY36pykS87uULHhl)5zbldtJjJQcegUfpaen(BtfS0c2b(UCy)pfXQKflTo4wybDPMPvFWRqIfaBTQWAnjHlqGjJQcegUfpaen(BtfS0c2rmQkqy4w8aq04VnzHXqsLuc9rvbcd3IhaIg)TjmrWekwRnQO(G0Vf8GOgeq18G2JjeUJbzkdIooDqfHhKJjewRnOkg0Ilrmi1dAZ8Sbvn0G(H7n1XGafSbXnt0OpOFw4z9G24r7bjyaUHeJQcegUfpaen(BlcOAwgycH7aEtXh4zpN67)bEMo(QPIBMOr)fMdldS0P(wh)nE0EuvGWWT4bGOXF7Y08cHu)tH0C4ogvfimClEaiA83QyeozHXqJQcegUfpaen(BRgWIGuljOwRrvbcd3IhaIg)Tbof4jXksiUcp4nf)OiAC8cZHLbwczSo)zuvGWWT4bGOXFRiWehjxKWtwnKuXim8MIpaJxq4F9teyIJKls4jRgsQye(b8kIgl8DXTB9ay8cc)RFkMiesSIujLq)ryNYAHR(0cvapth)VOcGXli8V(rmH1AsrAlPyakpc7uwlC1xTUUDhfrJJxyoSmWsiJD1xnThvfimClEaiA83kyc3wqhEtXhGXli8V(rmH1AsrAlPyakpc7uwlC13f3UJIOXXlmhwgyjKXU6R2Lrvbcd3IhaIg)TGATKfimClxMiGVlh2NfcUbSyunQkqy4w8yHGBal8b4gWDqQGHKkRYHhvfimClESqWnGf04VnzHXqsSIm8yj3Sd9rvbcd3IhleCdybn(B1slcKvTeRiR)Ij4WBuvGWWT4Xcb3awqJ)wfmivWqY6VyIfSmHlNrvbcd3IhleCdybn(BHLsmf6wRjtwLigvfimClESqWnGf04Vn8yzANGtBiPcMa4rvbcd3IhleCdybn(BjgmylwATuaRa8OQaHHBXJfcUbSGg)T)WKf0h2AjHf4UAapQkqy4w8yHGBalOXFRd7Gj0Lyf5kfyqsicxoc4nfFUzIgDxP2nOkjvr5jcmXrYfj8Kvdjvmc)sHnQgvuFqzMWTf0hemIHjwqFuvGWWT4jyc3wq3NycR1KI0wsXauGhqhSyzuenoe(QH3u8lqyFyj3SJXcx)YTBye(Juda9u)eWSUTwtcivZskgGYOQaHHBXtWeUTGon(BvmriKyfPskHo8MIVEjPkkVKfgdTsfXlfgvWi8hPga6P(rmH1AsrAlPyak662DsQIYtWeUTG(JWoL1cxv72TEfiSpSKB2XyHoQPQaH9HLCZoglCL26oQkqy4w8emHBlOtJ)wbmRBR1Kas1SKIbOaVP4Rpye(Juda9u)eWSUTwtcivZskgGcv6vGW(WsUzhJf64)LB36vGW(WsUzhJf(Uqfmc)rQbGEQFjRcqbNgskgGIU6oQkqy4w8emHBlOtJ)2KvbOGtdjfdqbEaDWILrr04q4REunQkqy4w8eH)ppJSSwtcrknClHL2aVrvbcd3INiOXFlXewRjfPTKIbOapGoyXYOiACi8vdVP4d8mD8P9OQaHHBXte04VvXeHqIvKkPe6JQcegUfprqJ)wIjSwtksBjfdqbEaDWILrr04q4REuvGWWT4jcA83kGzDBTMeqQMLumaf4nfF9bJWFKAaON6NaM1T1AsaPAwsXauOkjvr5bvnGLyfjWZ0F7LcBuvGWWT4jcA83ssfEwRj1)cIL)SgcEtXpjvr5rsfEwRj1)cIL)Sg6bH)1uvGW(WsUzhJf6OEuvGWWT4jcA83s4pmrWsVI4aVP4d8SNt99)apthFxgvfimClEIGg)TkMiKyfz4XYFEwWYW0yc8MIpWZC13Lrvbcd3INiOXFl3mrZ(lR1K8Y(2iWBk(apZv)VOIBMOr3vAVXOQaHHBXte04Vnzvak40qsXauGhqhSyzuenoe(QH3u81hmc)rQbGEQFjRcqbNgskgGcv6bW4fe(x)iMWAnPiTLumaLhHDkRf68LB3apth)V0Lk9ay8cc)RFkMiesSIujLq)ryNYAHouRB3apthFQ1TB9aEMVlubJWFKAaON6xyAmrcRwo6Q7OQaHHBXte04Vf4zYF1hEuvGWWT4jcA83c8mzskreWBk(ap75uF)pWZ0XxnvfiSpSKB2XyHVA3UbE2ZP((FGNPJVlJQcegUfprqJ)2W0yIewTCGhqhSyzuenoe(QH3u81hmc)rQbGEQFHPXejSA5qfWZEo13)d8mD8D5YvA4HjxoBoB2fxCha]] )
 
 end
