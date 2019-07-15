@@ -425,7 +425,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     end )    
 
     spec:RegisterStateExpr( "opener_done", function ()
-        return rip_applied or not boss or time_to_die < 10
+        return rip_applied
     end )
 
 
