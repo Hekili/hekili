@@ -2070,7 +2070,7 @@ do
     all:RegisterAbility( "cyclotronic_blast", {
         id = 293491,
         key = "pocketsized_computation_device",
-        cast = function () return cooldown.cyclotronic_blast.remains > 0 and 2.5 or 1.5 end,
+        cast = function () return 1.5 * haste end,
         channeled = function () return cooldown.cyclotronic_blast.remains > 0 end,
         cooldown = 120,
         gcd = "spell",
