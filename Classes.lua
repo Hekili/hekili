@@ -1940,7 +1940,7 @@ all:RegisterAbility( "shiver_venom_relic", {
 } )
 
 all:RegisterAura( "shiver_venom", {
-    id = 301576,
+    id = 301624,
     duration = 20,
     max_stack = 5
 } )
@@ -2764,7 +2764,7 @@ all:RegisterAura( "secrets_of_the_sands", {
 } )
 
 
-all:RegisterAbility( "dunewalkers_survival_kit", {
+all:RegisterAbility( "deployable_vibro_enhancer", {
     cast = 0,
     cooldown = 105,
     gcd = "off",
@@ -2774,11 +2774,11 @@ all:RegisterAbility( "dunewalkers_survival_kit", {
     toggle = "cooldowns",
 
     handler = function ()
-        applyBuff( "dune_survival_kit" )
+        applyBuff( "vibro_enhanced" )
     end,
 } )
 
-all:RegisterAura( "dune_survival_kit", {
+all:RegisterAura( "vibro_enhanced", {
     id = 278260,
     duration = 12,
     max_stack = 4,
