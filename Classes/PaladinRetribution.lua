@@ -905,6 +905,11 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             startsCombat = true,
             texture = 1112939,
 
+            usable = function ()
+                if settings.check_wake_range and not target.within12 then return false, "target is outside of 12 yards" end
+                return true
+            end,
+
             handler = function ()
                 if target.is_undead or target.is_demon then applyDebuff( 'target', 'wake_of_ashes' ) end
                 if level < 115 and equipped.ashes_to_dust then
@@ -977,4 +982,14 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
         package = "Retribution",
     } )
+
+
+    spec:RegisterSetting( "check_wake_range", false, {
+        name = "Check |T1112939:0|t Wake of Ashes Range",
+        desc = "If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended.",
+        type = "toggle",
+        width = 1.5
+    } ) 
+
+
 end
