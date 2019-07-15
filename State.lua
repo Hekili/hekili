@@ -607,7 +607,7 @@ function state.gainChargeTime( action, time, debug )
         else
             cooldown.recharge_began = cooldown.next_charge
             cooldown.next_charge = cooldown.next_charge + ability.recharge
-            cooldown.recharge = cooldown.next_charge - ( state.time + time )
+            cooldown.recharge = cooldown.next_charge - ( state.query_time + time )
         end    
     end
 end
@@ -1720,12 +1720,6 @@ local mt_state = {
             local start = t.combat > 0 and t.combat or ( t.false_start > 0 and t.false_start or t.query_time )
             return t.query_time - start
 
-            --[[ if ability and ability.passive then return 0 end
-                return t.offset
-            end
-            return t.now + ( t.offset or 0 ) - ( t.combat > 0 and t.combat or t.false_start ) + ( ( t.combat > 0 or t.false_start ) and t.delay or 0 ) ]]
-
-            -- These are all action-related keywords, use 'this_action' to reference the relevant action.
         elseif k == 'cast_time' then
             return ability and ability.cast or 0
 
