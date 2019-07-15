@@ -2087,6 +2087,7 @@ do
 
         handler = function()
             setCooldown( "global_cooldown", 2.5 * haste )
+            applyBuff( "casting", 2.5 * haste )
         end
     } )
 
@@ -7607,13 +7608,18 @@ all:RegisterAura( "strife", {
 -- Essence of the Focusing Iris
 all:RegisterAbility( "focused_azerite_beam", {
     id = 295258,
-    cast = function () return 2.5 + essence.essence_of_the_focusing_iris.rank > 1 and 1.1 or 1.7 end,
-    channeled = true,
+    cast = function () return essence.essence_of_the_focusing_iris.rank > 1 and 1.1 or 1.7 end,
+    channeled = function () return cooldown.focused_azerite_beam.remains > 0 end,
     cooldown = 90,
 
     startsCombat = true,
     toggle = "essences",
     essence = true,
+
+    handler = function()
+        setCooldown( "global_cooldown", 2.5 * haste )
+        applyBuff( "casting", 2.5 * haste )
+    end
 } )
 
 all:RegisterAura( "focused_energy", {
