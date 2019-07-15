@@ -394,7 +394,7 @@ local HekiliSpecMixin = {
 
             a.name = name or ability
             a.link = link or ability
-            a.texture = texture or "Interface\\ICONS\\Spell_Nature_BloodLust"
+            -- a.texture = texture or "Interface\\ICONS\\Spell_Nature_BloodLust"
 
             class.itemMap[ data.item ] = ability
 
