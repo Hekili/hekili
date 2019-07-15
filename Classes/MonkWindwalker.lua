@@ -909,7 +909,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     for i = 1, 5 do                        
                         local unit = "raid" .. i
 
-                        if UnitExists( unit ) and UnitIsFriend( unit ) then
+                        if UnitExists( unit ) and UnitIsFriend( "player", unit ) then
                             local h, m = UnitHealth( unit ), UnitHealthMax( unit )
                             local deficit = min( m - h, m * 0.08 )
 
@@ -924,7 +924,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     for i = 1, 5 do                        
                         local unit = i < 5 and ( "party" .. i ) or "player"
 
-                        if UnitExists( unit ) and UnitIsFriend( unit ) then
+                        if UnitExists( unit ) and UnitIsFriend( "player", unit ) then
                             local h, m = UnitHealth( unit ), UnitHealthMax( unit )
                             local deficit = min( m - h, m * 0.08 )
 
