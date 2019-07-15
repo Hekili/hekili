@@ -482,18 +482,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
     end )
 
 
-    local reverse_harm_units = {
-        "player",
-        "target",
-        "targettarget",
-        "focus",
-        "party1",
-        "party2",
-        "party3",
-        "party4"
-    }
-
-
     -- Abilities
     spec:RegisterAbilities( {
         blackout_kick = {
