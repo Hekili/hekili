@@ -596,7 +596,10 @@ do
                     class.abilities[ tName ] = class.abilities[ action ]
                     insert( state.items, "pocketsized_computation_device" )
                 end
-            end            
+            else
+                class.abilities.pocketsized_computation_device = class.abilities.inactive_red_punchcard
+                class.abilities[ tName ] = class.abilities.inactive_red_punchcard
+            end
         end
 
         ns.updatePowers()

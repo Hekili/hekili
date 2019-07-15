@@ -2056,7 +2056,7 @@ do
         id = 293491,
         duration = function () return 2.5 * haste end,
         max_stack = 1
-    } )
+    } )    
 
     all:RegisterAbility( "pocketsized_computation_device", {
         cast = 0,
@@ -2065,6 +2065,9 @@ do
 
         item = 167555,
         texture = 2115322,
+
+        usable = function() return false, "no supported red punchcard installed" end,
+        copy = "inactive_red_punchcard"
     } )
 
     all:RegisterAbility( "cyclotronic_blast", {
