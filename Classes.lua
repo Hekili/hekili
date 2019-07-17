@@ -1932,7 +1932,10 @@ all:RegisterAbility( "shiver_venom_relic", {
     item = 168905,
     toggle = "cooldowns",
 
-    usable = function () return debuff.shiver_venom.up end,
+    usable = function ()
+        if debuff.shiver_venom.stack < 5 then return false, "shiver_venom is not at max stacks" end
+        return true
+    end,
 
     handler = function()
         removeDebuff( "target", "shiver_venom" )
