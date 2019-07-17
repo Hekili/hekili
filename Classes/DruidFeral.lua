@@ -751,7 +751,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             form = "cat_form",
             indicator = function ()
-                if talent.sabertooth.enabled and dot.rip.down and active_dot.rip > 0 then return "cycle" end
+                if settings.cycle and talent.sabertooth.enabled and dot.rip.down and active_dot.rip > 0 then return "cycle" end
             end,
 
             usable = function () return buff.apex_predator.up or combo_points.current > 0 end,
@@ -1177,7 +1177,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 if buff.bloodtalons.up then return false end
                 -- Try without out-of-combat time == 0 check.
                 if buff.prowl.up then return false, "prowling" end
-                if buff.cat_form.up and buff.predatory_swiftness.down then return false, "predatory_swiftness is down" end
+                if buff.cat_form.up and time > 0 and buff.predatory_swiftness.down then return false, "predatory_swiftness is down" end
                 return true
             end,
 
