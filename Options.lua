@@ -4249,7 +4249,12 @@ do
 
         if option == "op" and not data.op then return "set" end
 
-        if option == "potion" and not data.potion then return "default" end
+        if option == "potion" then
+            if not data.potion then return "default" end
+            if not class.potionList[ data.potion ] then
+                return class.potions[ data.potion ] and class.potions[ data.potion ].key or data.potion
+            end
+        end
 
         if toggleToNumber[ option ] then return data[ option ] == 1 end
         return data[ option ]
@@ -8864,8 +8869,12 @@ do
                 result.target_if = nil
             end
 
-            if result.action == 'use_item' and result.name and class.abilities[ result.name ] then
-                result.action = result.name
+            if result.action == 'use_item' then
+                if result.effect_name and class.abilities[ result.effect_name ] then
+                    result.action = class.abilities[ result.effect_name ].key
+                elseif result.name and class.abilities[ result.name ] then
+                    result.action = result.name
+                end
             end
 
             if result.action == 'variable' and not result.op then

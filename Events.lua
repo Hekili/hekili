@@ -1209,17 +1209,33 @@ local function StoreKeybindInfo( page, key, aType, id, console )
         if ability.bind then
             local bind = ability.bind
 
-            keys[ bind ] = keys[ bind ] or {
-                lower = {},
-                upper = {},
-                console = {}
-            }
+            if type( bind ) == 'table' then
+                for _, b in ipairs( bind ) do
+                    keys[ b ] = keys[ b ] or {
+                        lower = {},
+                        upper = {},
+                        console = {}
+                    }
 
-            keys[ bind ].lower[ page ] = keys[ ability ].lower[ page ]
-            keys[ bind ].upper[ page ] = keys[ ability ].upper[ page ]
-            keys[ bind ].console[ page ] = keys[ ability ].console[ page ]
+                    keys[ b ].lower[ page ] = keys[ ability ].lower[ page ]
+                    keys[ b ].upper[ page ] = keys[ ability ].upper[ page ]
+                    keys[ b ].console[ page ] = keys[ ability ].console[ page ]
+        
+                    updatedKeys[ b ] = true
+                end
+            else
+                keys[ bind ] = keys[ bind ] or {
+                    lower = {},
+                    upper = {},
+                    console = {}
+                }
 
-            updatedKeys[ bind ] = true
+                keys[ bind ].lower[ page ] = keys[ ability ].lower[ page ]
+                keys[ bind ].upper[ page ] = keys[ ability ].upper[ page ]
+                keys[ bind ].console[ page ] = keys[ ability ].console[ page ]
+
+                updatedKeys[ bind ] = true
+            end
         end
     end
 end        
@@ -1324,19 +1340,34 @@ local function ReadKeybindings()
         end
     end 
 
-    for k in pairs( keys ) do
+    for k, v in pairs( keys ) do
         local ability = class.abilities[ k ]
 
         if ability and ability.bind then
-            for page, value in pairs( keys[ k ].lower ) do
-                keys[ ability.bind ] = keys[ ability.bind ] or {
-                    lower = {},
-                    upper = {},
-                    console = {}
-                }
-                keys[ ability.bind ].lower[ page ] = value
-                keys[ ability.bind ].upper[ page ] = keys[ k ].upper[ page ]
-                keys[ ability.bind ].console[ page ] = keys[ k ].console[ page ]
+            if type( ability.bind ) == 'table' then
+                for _, b in ipairs( ability.bind ) do
+                    for page, value in pairs( v.lower ) do
+                        keys[ b ] = keys[ b ] or {
+                            lower = {},
+                            upper = {},
+                            console = {}
+                        }
+                        keys[ b ].lower[ page ] = value
+                        keys[ b ].upper[ page ] = v.upper[ page ]
+                        keys[ b ].console[ page ] = v.console[ page ]
+                    end
+                end
+            else
+                for page, value in pairs( v.lower ) do
+                    keys[ ability.bind ] = keys[ ability.bind ] or {
+                        lower = {},
+                        upper = {},
+                        console = {}
+                    }
+                    keys[ ability.bind ].lower[ page ] = value
+                    keys[ ability.bind ].upper[ page ] = v.upper[ page ]
+                    keys[ ability.bind ].console[ page ] = v.console[ page ]
+                end
             end
         end
     end

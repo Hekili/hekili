@@ -2153,6 +2153,8 @@ do
 
         item = 167555,
         texture = 2115322,
+        bind = { "cyclotronic_blast", "harmonic_dematerializer" },
+        startsCombat = true,
 
         usable = function() return false, "no supported red punchcard installed" end,
         copy = "inactive_red_punchcard"
@@ -2169,6 +2171,8 @@ do
         item = 167672,
         itemCd = 167555,
         texture = 2115322,
+        bind = { "cyclotronic_blast", "harmonic_dematerializer" },
+        startsCombat = true,
 
         toggle = "cooldowns",
 
@@ -2198,6 +2202,8 @@ do
         item = 167677,
         itemCd = 167555,
         texture = 2115322,
+        bind = { "cyclotronic_blast", "harmonic_dematerializer" },
+        startsCombat = true,
 
         usable = function ()
             return equipped.harmonic_dematerializer
