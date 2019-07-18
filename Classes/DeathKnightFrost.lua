@@ -1094,7 +1094,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         damageDots = false,
         damageExpiration = 8,
 
-        potion = "battle_potion_of_strength",
+        potion = "superior_battle_potion_of_strength",
 
         package = "Frost DK",
     } )

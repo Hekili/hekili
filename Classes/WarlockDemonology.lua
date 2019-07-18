@@ -1473,7 +1473,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         damage = true,
         damageExpiration = 6,
 
-        potion = "battle_potion_of_intellect",
+        potion = "unbridled_fury",
 
         package = "Demonology",
     } )

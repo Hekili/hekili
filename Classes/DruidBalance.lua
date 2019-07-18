@@ -1926,7 +1926,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         damageDots = false,
         damageExpiration = 6,
 
-        potion = "potion_of_rising_death",
+        potion = "unbridled_fury",
 
         package = "Balance",        
     } )

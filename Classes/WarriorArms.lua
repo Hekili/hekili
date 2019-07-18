@@ -997,7 +997,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         damageDots = false,
         damageExpiration = 8,
 
-        potion = "potion_of_bursting_blood",
+        potion = "potion_of_unbridled_fury",
 
         package = "Arms",
     } )

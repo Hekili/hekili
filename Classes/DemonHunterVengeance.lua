@@ -958,7 +958,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         damage = true,
         damageExpiration = 8,
 
-        potion = "steelskin_potion",
+        potion = "superior_steelskin_potion",
 
         package = "Vengeance",
     } )

@@ -1118,7 +1118,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         damage = true,
         damageExpiration = 6,
 
-        potion = "potion_of_rising_death",
+        potion = "potion_of_unbridled_fury",
 
         package = "Frost Mage",
     } )

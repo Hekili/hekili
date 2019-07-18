@@ -1320,7 +1320,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         damage = true,
         damageExpiration = 8,
 
-        potion = "potion_of_bursting_blood",
+        potion = "unbridled_fury",
 
         package = "Windwalker",
 

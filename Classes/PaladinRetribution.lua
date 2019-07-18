@@ -978,7 +978,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         damage = true,
         damageExpiration = 8,
 
-        potion = "battle_potion_of_strength",
+        potion = "potion_of_focused_resolve",
 
         package = "Retribution",
     } )

@@ -1292,7 +1292,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
         cycle = true,
 
-        potion = "battle_potion_of_strength",
+        potion = "superior_battle_potion_of_strength",
 
         package = "Unholy",
     } )

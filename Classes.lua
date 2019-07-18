@@ -327,6 +327,8 @@ local HekiliSpecMixin = {
     RegisterPotion = function( self, potion, data )
         self.potions[ potion ] = data
 
+        data.key = potion
+
         if data.copy then
             if type( data.copy ) == "table" then
                 for _, key in ipairs( data.copy ) do
@@ -1401,19 +1403,45 @@ all:RegisterAuras( {
 } )
 
 
-all:RegisterPotions( {
-    old_war = {
-        item = 127844,
-        buff = 'old_war'
+all:RegisterPotions( {    
+    -- 8.2
+    potion_of_empowered_proximity = {
+        item = 168529,
+        buff = 'potion_of_empowered_proximity',
+        copy = 'empowered_proximity'
     },
-    deadly_grace = {
-        item = 127843,
-        buff = 'deadly_grace'
+    potion_of_focused_resolve = {
+        item = 168506,
+        buff = 'potion_of_focused_resolve',
+        copy = 'focused_resolve'
     },
-    prolonged_power = {
-        item = 142117,
-        buff = 'prolonged_power'
+    potion_of_unbridled_fury = {
+        item = 169299,
+        buff = 'potion_of_unbridled_fury',
+        copy = 'unbridled_fury'
     },
+    superior_battle_potion_of_agility = {
+        item = 168489,
+        buff = 'superior_battle_potion_of_agility',
+    },
+    superior_battle_potion_of_intellect = {
+        item = 168498,
+        buff = 'superior_battle_potion_of_intellect',
+    },
+    superior_battle_potion_of_stamina = {
+        item = 168499,
+        buff = 'superior_battle_potion_of_stamina',
+    },
+    superior_battle_potion_of_strength = {
+        item = 168500,
+        buff = 'superior_battle_potion_of_strength',
+    },
+    superior_steelskin_potion = {
+        item = 168501,
+        buff = 'superior_steelskin_potion',        
+    },
+    
+    -- 8.0
     battle_potion_of_agility = {
         item = 163223,
         buff = 'battle_potion_of_agility',
@@ -1430,7 +1458,7 @@ all:RegisterPotions( {
         item = 163224,
         buff = 'battle_potion_of_strength',
     },
-    potion_of_bursting_blood = {
+    bursting_blood = {
         item = 152560,
         buff = 'potion_of_bursting_blood',
         copy = "bursting_blood",
@@ -1444,10 +1472,67 @@ all:RegisterPotions( {
         item = 152557,
         buff = 'steelskin_potion',
     },
+
+    -- Legion
+    old_war = {
+        item = 127844,
+        buff = 'old_war'
+    },
+    deadly_grace = {
+        item = 127843,
+        buff = 'deadly_grace'
+    },
+    prolonged_power = {
+        item = 142117,
+        buff = 'prolonged_power'
+    },
 } )
 
 
 all:RegisterAuras( {
+    -- 8.2
+    potion_of_empowered_proximity = {
+        id = 298225,
+        duration = 25,
+        max_stack = 1
+    },
+    potion_of_focused_resolve = {
+        id = 298317,
+        duration = 25,
+        max_stack = 1
+    },
+    potion_of_unbridled_fury = {
+        id = 300714,
+        duration = 60,
+        max_stack = 1
+    },
+    superior_battle_potion_of_agility = {
+        id = 298146,
+        duration = 25,
+        max_stack = 1
+    },
+    superior_battle_potion_of_intellect = {
+        id = 298152,
+        duration = 25,
+        max_stack = 1
+    },
+    superior_battle_potion_of_stamina = {
+        id = 298153,
+        duration = 25,
+        max_stack = 1
+    },
+    superior_battle_potion_of_strength = {
+        id = 298154,
+        duration = 25,
+        max_stack = 1
+    },
+    superior_steelskin_potion = {
+        id = 298155,
+        duration = 25,
+        max_stack = 1
+    },
+
+    -- 8.0
     battle_potion_of_agility = {
         id = 279152,
         duration = 25,

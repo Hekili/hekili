@@ -821,7 +821,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         damage = true,
         damageExpiration = 8,
 
-        potion = "potion_of_bursting_blood",
+        potion = "superior_battle_potion_of_strength",
 
         package = "Protection Warrior",
     } )

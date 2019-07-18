@@ -1045,7 +1045,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         damage = true,
         damageExpiration = 8,
 
-        potion = "battle_potion_of_agility",
+        potion = "potion_of_focused_resolve",
 
         package = "Havoc",
     } )

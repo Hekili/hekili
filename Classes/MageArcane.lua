@@ -1073,7 +1073,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         damage = true,
         damageExpiration = 6,
 
-        potion = "battle_potion_of_intellect",
+        potion = "potion_of_focused_resolve",
 
         package = "Arcane",
     } )

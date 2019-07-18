@@ -1058,7 +1058,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         damage = true,
         damageExpiration = 8,
 
-        potion = "battle_potion_of_agility",
+        potion = "superior_battle_potion_of_agility",
 
         package = "Enhancement",
     } )

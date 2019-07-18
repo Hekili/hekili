@@ -228,6 +228,12 @@ local oneTimeFixes = {
         end
     end,
 
+    resetPotionsToDefaults_20190717 = function( p )
+        for _, v in pairs( p.specs ) do
+            v.potion = nil
+        end
+    end,
+
 }
 
 
@@ -3230,6 +3236,15 @@ do
         if not spec then return end
 
         self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
+
+        if option == "potion" then
+            local p = self.DB.profile.specs[ spec ].potion
+
+            if not class.potionList[ p ] then
+                return class.potions[ p ] and class.potions[ p ].key or p
+            end
+        end 
+
         return self.DB.profile.specs[ spec ][ option ]
     end
 
