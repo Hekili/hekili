@@ -363,7 +363,7 @@ ns.eliminateUnit = function(id, force)
 
     lastCycle = 0
 
-    guidRanges[ guid ] = nil
+    guidRanges[id] = nil
 
     if force then
         for k, v in pairs(debuffs) do
