@@ -32,10 +32,8 @@ local handlers = {}
 local unitEvents = CreateFrame( "Frame" )
 local unitHandlers = {}
 local itemCallbacks = {}
-
-local timerRecount = 0
-
 local activeDisplays = {}
+
 
 function Hekili:GetActiveDisplays()
     return activeDisplays
@@ -65,13 +63,6 @@ function ns.StartEventHandler()
 
     events:SetScript( "OnUpdate", function( self, elapsed )
         Hekili.freshFrame = true
-        timerRecount = timerRecount - elapsed
-
-        if timerRecount < 0 then
-            ns.recountTargets()
-            if ns.targetsChanged() then Hekili:ForceUpdate( "TARGET_COUNT_CHANGED" ) end
-            timerRecount = 0.1
-        end
     end )
 
     Hekili:RunItemCallbacks()
@@ -944,7 +935,6 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     if death_events[ subtype ] then
         if ns.isTarget( destGUID ) then
             ns.eliminateUnit( destGUID, true )
-            ns.forceRecount()
             Hekili:ForceUpdate( subtype )
         elseif ns.isMinion( destGUID ) then
             ns.updateMinion( destGUID )
@@ -1097,7 +1087,6 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             -- Interrupt is actually overkill.
             if not IsResting( "player" ) and ( ( ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and interrupt > 0 ) or ( subtype == "SWING_DAMAGE" and spellName > 0 ) ) and ns.isTarget( destGUID ) then
                 ns.eliminateUnit( destGUID, true )
-                ns.forceRecount()
                 Hekili:ForceUpdate( "SPELL_DAMAGE_OVERKILL" )
             elseif not ( subtype == "SPELL_MISSED" and amount == "IMMUNE" ) then
                 ns.updateTarget( destGUID, time, sourceGUID == state.GUID )

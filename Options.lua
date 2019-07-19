@@ -3955,6 +3955,9 @@ do
                                     hidden = function()
                                         return self.DB.profile.specs[ id ].nameplates == false
                                     end,
+                                    min = 5,
+                                    max = 100,
+                                    step = 1,
                                     order = 2,
                                 },
 
@@ -3988,6 +3991,18 @@ do
                                     width = "full",
                                     hidden = function () return self.DB.profile.specs[ id ].damage == false end,
                                     order = 5,
+                                },
+
+                                damageRange = {
+                                    type = "range",
+                                    name = "Filter Damaged Enemies by Range",
+                                    desc = "If set above 0, the addon will attempt to avoid counting targets that have were out of range when last seen.  This is based on cached data and may be inaccurate.",
+                                    width = "full",
+                                    hidden = function () return self.DB.profile.specs[ id ].damage == false end,
+                                    min = 0,
+                                    max = 100,
+                                    step = 1,
+                                    order = 5.1,
                                 },
 
                                 damageExpiration = {

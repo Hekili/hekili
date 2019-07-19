@@ -4835,8 +4835,6 @@ function state.reset( dispName )
     -- Projectiles
     state:ResetQueueData()
 
-    if ns.recountRequired() then ns.recountTargets() end
-
     local p = Hekili.DB.profile
 
     local display = dispName and p.displays[ dispName ]

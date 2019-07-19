@@ -1053,7 +1053,7 @@ function Hekili:ProcessHooks( dispName, packName )
     end
 
     if dispName == "AOE" and self:GetToggleState( "mode" ) == "reactive" then
-        if self:GetNumTargets() < ( spec and spec.aoe or 3 ) then
+        if ns.getNumberTargets() < ( spec and spec.aoe or 3 ) then
             UI.RecommendationsStr = nil
             UI.NewRecommendations = true
             return

@@ -49,6 +49,7 @@ local specTemplate = {
     damage = true,
     damageExpiration = 8,
     damageDots = false,
+    damageRange = 0,
 
     throttleRefresh = false,
     maxRefresh = 10,

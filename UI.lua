@@ -1033,7 +1033,7 @@ do
                     elseif mode == 'aoe' then tMin = spec and spec.aoe or 3 end
                 elseif self.id == 'AOE' then tMin = spec and spec.aoe or 3 end
 
-                local detected = max( 1, ns.getNumberTargets() )
+                local detected = ns.getNumberTargets()
                 local shown = detected
 
                 if tMin > 0 then
