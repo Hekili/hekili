@@ -1036,6 +1036,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 132481,
 
             pvptalent = "necrotic_strike",
+            debuff = "festering_wound",
 
             handler = function ()
                 if debuff.festering_wound.up then
