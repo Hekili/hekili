@@ -538,12 +538,12 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 local wait_time = 60
                 local clash = 0
 
-                local known = self:IsSpellKnown( state.this_action )
+                local known, reason = self:IsSpellKnown( state.this_action )
                 local enabled = self:IsSpellEnabled( state.this_action )
 
                 if debug then
                     local d = format( "\n[%03d] %s ( %s - %d )", rDepth, entry.action, listName, actID )
-                    if not known then d = d .. " - ability unknown"
+                    if not known then d = d .. " - " .. ( reason or "ability unknown" )
                     elseif not enabled then d = d .. " - ability disabled." end
                     self:Debug( d )
                 end
