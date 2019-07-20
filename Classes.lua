@@ -2059,7 +2059,8 @@ all:RegisterAuras( {
     razor_coral = {
         id = 303568,
         duration = 120,
-        max_stack = 10 -- ???
+        max_stack = 10, -- ???
+        copy = "razor_coral_debuff"
     },
 
     razor_coral_crit = {
@@ -2067,6 +2068,15 @@ all:RegisterAuras( {
         duration = 20,
         max_stack = 1,
     }
+} )
+
+
+-- Dribbling Inkpod
+all:RegisterAura( "conductive_ink", {
+    id = 302565,
+    duration = 60,
+    max_stack = 999, -- ???
+    copy = "conductive_ink_debuff"
 } )
 
 
@@ -2215,6 +2225,25 @@ do
         end
     } )
 end
+
+
+-- Shockbiter's Fang
+all:RegisterAbility( "shockbiters_fang", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 169318,
+    toggle = "cooldowns",
+
+    handler = function () applyBuff( "shockbitten" ) end
+} )
+
+all:RegisterAura( "shockbitten", {
+    id = 303953,
+    duration = 12,
+    max_stack = 1
+} )
 
 
 -- Remote Guidance Device, 169769
