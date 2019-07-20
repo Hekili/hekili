@@ -1107,7 +1107,7 @@ all:RegisterAuras( {
         end,
 
         repeat_performance = {
-            id = 304409,
+            id = 304410,
             duration = 30,
             max_stack = 1,
         }
