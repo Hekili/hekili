@@ -137,12 +137,26 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             duration = 12,
             max_stack = 1,
             generate = function( c, type )
-                if type == "buff" and last_consecration + 12 > query_time and FindUnitBuffByID( "player", 188370 ) then
-                    c.expires = last_consecration + 12
-                    c.applied = last_consecration
+                if type == "buff" and FindUnitBuffByID( "player", 188370 ) then
+                    local dropped, expires
+                    
+                    for i = 1, 5 do
+                        local up, name, start, duration = GetTotemInfo( i )
+
+                        if up and name == class.abilities.consecration.name then
+                            dropped = start
+                            expires = dropped + duration
+                            break
+                        end
+                    end
+
+                    if dropped and expires > query_time then
+                        c.expires = expires
+                        c.applied = dropped
                     c.count = 1
                     c.caster = "player"
                     return
+                end
                 end
 
                 c.count = 0
