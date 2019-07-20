@@ -903,6 +903,10 @@ local dmg_events = {
     SPELL_PERIODIC_MISSED   = true,
     SWING_DAMAGE            = true,
     SWING_MISSED            = true,
+    RANGE_DAMAGE            = true,
+    RANGE_MISSED            = true,
+    ENVIRONMENTAL_DAMAGE    = true,
+    ENVIRONMENTAL_MISSED    = true
 }
 
 
@@ -952,22 +956,47 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     local hostile = ( bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 ) and not IsActuallyFriend( destName )
 
     if dmg_events[ subtype ] and destGUID == state.GUID then
-        local damage, damageType = amount, school
+        local damage, damageType
 
-        if subtype == "SWING_DAMAGE" then
-            damage = spellID
+        if subtype:sub( 1, 13 ) == "ENVIRONMENTAL" then
             damageType = 1
-        elseif subtype == "SWING_MISSED" then
-            damage = school
-            damageType = 1
-        elseif subtype == "SPELL_MISSED" or subtype == "SPELL_PERIODIC_MISSED" then
-            if amount == "ABSORB" then
-                damage = a
-                damageType = school or 1
-            else
-                damage = 0
+
+            if subtype:sub(-7) == "_DAMAGE" then
+                damage = spellName
+            
+            elseif spellName == "ABSORB" then
+                damage = amount
+            
             end
+        
+        elseif subtype:sub( 1, 5 ) == "SWING" then
+            damageType = 1
+
+            if subtype == "SWING_DAMAGE" then
+                damage = spellID
+
+            else
+                if spellID == "ABSORB" then
+                    damage = interrupt
+                end
+            
+            end
+
+        else -- SPELL_x
+            if subtype:find( "_MISSED" ) then
+                if amount == "ABSORB" then
+                    damage = a
+                    damageType = school or 1
+                end
+
+            else
+                damage = amount
+                damageType = school
+
+            end
+
         end
+
 
         if damage and damage > 0 then
             ns.storeDamage( time, damage, bit.band( damageType, 0x1 ) == 1 )
