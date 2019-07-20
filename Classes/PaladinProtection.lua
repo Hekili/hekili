@@ -137,10 +137,10 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             duration = 12,
             max_stack = 1,
             generate = function( c, type )
-                if type == "buff" and FindUnitBuffByID( "player", 188370 ) then
-                    c.count = 1
+                if type == "buff" and last_consecration + 12 > query_time and FindUnitBuffByID( "player", 188370 ) then
                     c.expires = last_consecration + 12
                     c.applied = last_consecration
+                    c.count = 1
                     c.caster = "player"
                     return
                 end
