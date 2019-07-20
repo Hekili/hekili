@@ -4,7 +4,7 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local Type, Version = "HekiliCustomEditor", 1
+local Type, Version = "HekiliCustomEditor", 2
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -321,6 +321,7 @@ local function OnLeave(self)                                                    
   self = self.obj
   if self.entered then
     self.entered = nil
+    GameTooltip:Hide()
     self:Fire("OnLeave")
   end
 end
