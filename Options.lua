@@ -4419,7 +4419,6 @@ do
                     end,
                 },
 
-
                 shareHeader = {
                     type = "header",
                     name = "Sharing",
@@ -4948,7 +4947,6 @@ do
                                     name = "",
                                     order = 0.3,
                                     width = "full",
-                                    hidden = data.builtIn
                                 },
 
                                 spec = {
