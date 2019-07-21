@@ -446,9 +446,11 @@ local function menu_Potions()
     ns.UI.Minimap:RefreshDataText()
 end
 
-Hekili_Menu = CreateFrame( "Frame", "HekiliMenu" )
-Hekili_Menu.displayMode = "MENU"
-Hekili_Menu.initialize = function(self, level)
+ns.UI.Menu = CreateFrame( "Frame", "HekiliMenu", UIParent, "UIDropDownMenuTemplate" )
+
+local menu = ns.UI.Menu
+menu.displayMode = "MENU"
+menu.initialize = function(self, level)
     if not level then
         return
     end
@@ -932,7 +934,7 @@ do
                     end
 
                     if not b.outOfRange then
-                        local unusable
+                        local _, unusable
 
                         if a.itemCd or a.item then
                             unusable = not IsUsableItem(a.itemCd or a.item)
@@ -1362,7 +1364,7 @@ do
     end
 
 
-    function Display_GetPerimeterButtons( self )
+    local function Display_GetPerimeterButtons( self )
         local left, right, top, bottom
         local lPos, rPos, tPos, bPos
 
@@ -2018,8 +2020,7 @@ function Hekili:BuildUI()
     -- End Notification Panel
 
     -- Dropdown Menu.
-    ns.UI.Menu = ns.UI.Menu or CreateFrame("Frame", "Hekili_Menu", UIParent, "UIDropDownMenuTemplate")
-
+    ns.UI.Menu = ns.UI.Menu or CreateFrame("Frame", "HekiliMenu", UIParent, "UIDropDownMenuTemplate")
 
     -- Displays
     for disp in pairs( self.DB.profile.displays ) do

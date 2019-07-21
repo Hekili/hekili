@@ -70,8 +70,6 @@ function Hekili:OnInitialize()
     self.DB.RegisterCallback( self, "OnProfileCopied", "TotalRefresh" )
     self.DB.RegisterCallback( self, "OnProfileReset", "TotalRefresh" )
 
-    _G.onInitStart = self.DB.profile.enabled
-
     local AceConfig = LibStub( "AceConfig-3.0" )
     AceConfig:RegisterOptionsTable( "Hekili", self.Options )
 
@@ -101,7 +99,7 @@ function Hekili:OnInitialize()
                         end )
                         hookOnce = true
                     end
-                    ToggleDropDownMenu( 1, nil, Hekili_Menu, "cursor", 0, 0 )
+                    ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 0, 0 )
                 end
                 GameTooltip:Hide()
             end,

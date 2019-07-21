@@ -8209,7 +8209,7 @@ local B64tobyte = {
 -- Credit goes to Galmok (galmok@gmail.com)
 local encodeB64Table = {};
 
-function encodeB64(str)
+local function encodeB64(str)
     local B64 = encodeB64Table;
     local remainder = 0;
     local remainder_length = 0;
@@ -8236,7 +8236,7 @@ end
 
 local decodeB64Table = {}
 
-function decodeB64(str)
+local function decodeB64(str)
     local bit8 = decodeB64Table;
     local decoded_size = 0;
     local ch;
@@ -8267,7 +8267,7 @@ local Encoder = Compresser:GetChatEncodeTable()
 local Serializer = LibStub:GetLibrary("AceSerializer-3.0");
 
 
-function TableToString(inTable, forChat)
+local function TableToString(inTable, forChat)
     local serialized = Serializer:Serialize(inTable);
     local compressed = Compresser:CompressHuffman(serialized);
     if(forChat) then
@@ -8278,7 +8278,7 @@ function TableToString(inTable, forChat)
 end
 
 
-function StringToTable(inString, fromChat)
+local function StringToTable(inString, fromChat)
     local decoded;
     if(fromChat) then
         decoded = decodeB64(inString);

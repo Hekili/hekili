@@ -688,11 +688,12 @@ end
 
 function Hekili:NewSpecialization( specID, isRanged )
 
-    local id = specID
+    if not specID or specID < 0 then return end
 
-    if specID > 0 then
-        id, name, _, texture, role, pClass = GetSpecializationInfoByID( specID )
-    end
+    local id, name, _, texture, role, pClass
+    
+    if specID > 0 then id, name, _, texture, role, pClass = GetSpecializationInfoByID( specID )
+    else id = specID end
 
     if not id then
         Hekili:Error( "Unable to generate specialization DB for spec ID #" .. specID .. "." )
@@ -4216,7 +4217,7 @@ end
 -- For Trinket Settings.
 class.itemSettings = {}
 
-function addItemSettings( key, itemID, options )
+local function addItemSettings( key, itemID, options )
 
     options = options or {}
 
