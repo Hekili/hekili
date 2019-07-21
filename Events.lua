@@ -314,8 +314,17 @@ end ) ]]
 
 
 -- TBD:  Consider making `boss' a check to see whether the current unit is a boss# unit instead.
-RegisterEvent( "ENCOUNTER_START", function () state.inEncounter = true end )
-RegisterEvent( "ENCOUNTER_END", function () state.inEncounter = false end )
+RegisterEvent( "ENCOUNTER_START", function ( id, name, difficulty )
+    state.encounterID = id
+    state.encounterName = name
+    state.encounterDifficulty = difficulty
+end )
+
+RegisterEvent( "ENCOUNTER_END", function ()
+    state.encounterID = 0
+    state.encounterName = "None"
+    state.encounterDifficulty = 0
+end )
 
 
 do

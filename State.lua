@@ -43,6 +43,10 @@ state.ptr = PTR and 1 or 0
 state.now = 0
 state.offset = 0
 
+state.encounterID = 0
+state.encounterName = "None"
+state.encounterDifficulty = 0
+
 state.delay = 0
 state.delayMin = 0
 state.delayMax = 60
@@ -491,7 +495,6 @@ state.safebool = function( val )
     return val ~= 0 and true or false
 end
 
-state.inEncounter = false
 state.combat = 0
 state.faction = UnitFactionGroup( 'player' )
 state.race[ formatKey( UnitRace('player') ) ] = true
@@ -1504,8 +1507,11 @@ local mt_state = {
         elseif k == 'desired_targets' then
             return 1
 
+        elseif k == 'inEncounter' or k == 'encounter' then
+            return t.encounterID > 0
+
         elseif k == 'boss' then
-            return ( t.inEncounter or ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) ) ) == true
+            return ( t.encounterID > 0 or ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) ) ) == true
 
         elseif k == 'cycle' then
             return false
@@ -2227,6 +2233,9 @@ local mt_target = {
 
         elseif k == 'is_player' then
             return UnitIsPlayer( 'target' )
+
+        elseif k == 'is_boss' then
+            return ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) )
 
         elseif k:sub(1, 6) == 'within' then
             local maxR = k:match( "^within(%d+)$" )
