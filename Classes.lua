@@ -2208,7 +2208,7 @@ do
         key = "pocketsized_computation_device",
         cast = 0,
         cooldown = 15,
-        gcd = "off",
+        gcd = "spell",
 
         item = 167677,
         itemCd = 167555,
