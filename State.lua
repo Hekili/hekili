@@ -1247,7 +1247,7 @@ end
 
 
 local spend = function( amount, resource, clean )
-    amount, resource, overcap = ns.callHook( "prespend", amount, resource, overcap )
+    amount, resource = ns.callHook( "prespend", amount, resource )
     resourceChange( -amount, resource, overcap )
     if resource ~= "health" then forecastResources( resource ) end
     ns.callHook( "spend", amount, resource, overcap, true )
