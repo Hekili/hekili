@@ -598,7 +598,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NO ACTION", rWait ) end
                                         -- self:PopStack()
                                     else
-                                        name = state.args.list_name
+                                        local name = state.args.list_name
 
                                         if InUse[ name ] then
                                             if debug then self:Debug( "Action list (%s) was found, but would cause a loop.", name ) end
