@@ -392,16 +392,22 @@ local HekiliSpecMixin = {
             end
         end
 
-        if data.item then
-            local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( data.item )
+        local item = data.item
+        if item and type( item ) == 'function' then
+            setfenv( item, state )
+            item = item()
+        end
+
+        if item then
+            local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( item )
 
             a.name = name or ability
             a.link = link or ability
             -- a.texture = texture or "Interface\\ICONS\\Spell_Nature_BloodLust"
 
-            class.itemMap[ data.item ] = ability
+            class.itemMap[ item ] = ability
 
-            Hekili:ContinueOnItemLoad( data.item, function( success )
+            Hekili:ContinueOnItemLoad( item, function( success )
                 if not success then
                     -- Assume the item is not presently in-game.
                     for key, entry in pairs( class.abilities ) do
@@ -418,7 +424,7 @@ local HekiliSpecMixin = {
                     return
                 end
 
-                local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( data.item )
+                local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( item )
 
                 if name then
                     a.name = name
@@ -437,9 +443,19 @@ local HekiliSpecMixin = {
 
                     if not a.unlisted then
                         class.abilityList[ ability ] = "|T" .. a.texture .. ":0|t " .. link
-                        class.itemList[ data.item ] = "|T" .. a.texture .. ":0|t " .. link
+                        class.itemList[ item ] = "|T" .. a.texture .. ":0|t " .. link
 
                         class.abilityByName[ a.name ] = a
+                    end
+
+                    if data.copy then
+                        if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
+                            self.abilities[ data.copy ] = a
+                        elseif type( data.copy ) == 'table' then
+                            for _, key in ipairs( data.copy ) do
+                                self.abilities[ key ] = a
+                            end
+                        end
                     end
 
                     class.abilities[ ability ] = a
@@ -526,11 +542,13 @@ local HekiliSpecMixin = {
 
             if not a.unlisted then class.abilityList[ ability ] = class.abilityList[ ability ] or a.listName or a.name end
 
-            if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
-                self.abilities[ data.copy ] = a
-            elseif type( data.copy ) == 'table' then
-                for _, key in ipairs( data.copy ) do
-                    self.abilities[ key ] = a
+            if data.copy then
+                if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
+                    self.abilities[ data.copy ] = a
+                elseif type( data.copy ) == 'table' then
+                    for _, key in ipairs( data.copy ) do
+                        self.abilities[ key ] = a
+                    end
                 end
             end
         end
@@ -2002,6 +2020,8 @@ all:RegisterAbility( "azsharas_font_of_power", {
     handler = function ()
         applyBuff( "latent_arcana" )
     end,
+
+    copy = "latent_arcana"
 } )
 
 all:RegisterAura( "latent_arcana", {
@@ -2872,6 +2892,7 @@ all:RegisterAura( "barkspines", {
 } )
 
 
+--[[ Redundant Ancient Knot of Wisdom???
 all:RegisterAbility( "sandscoured_idol", {
     cast = 0,
     cooldown = 60,
@@ -2890,7 +2911,7 @@ all:RegisterAura( "secrets_of_the_sands", {
     id = 278267,
     duration = 20,
     max_stack = 1,
-} )
+} ) ]]
 
 
 all:RegisterAbility( "deployable_vibro_enhancer", {
@@ -3583,12 +3604,17 @@ all:RegisterAbility( "dread_aspirants_badge", {
 } )
 
 
-all:RegisterAbility( "knot_of_ancient_wisdom", {
+all:RegisterGear( "ancient_knot_of_wisdom", 161417, 166793 )
+
+all:RegisterAbility( "ancient_knot_of_wisdom", {
     cast = 0,
     cooldown = 60,
     gcd = "off",
 
-    item = 166793,
+    item = function ()
+        if equipped[161417] then return 161417 end
+        return 166793
+    end,
     toggle = "cooldowns",
 
     handler = function ()
@@ -3623,15 +3649,23 @@ all:RegisterAura( "fury_of_the_forest_lord", {
 } )
 
 
-all:RegisterAbility( "sinister_gladiators_medallion", {
+all:RegisterGear( "notorious_gladiators_medallion", 167377 )
+all:RegisterGear( "sinister_gladiators_medallion", 165055 )
+
+all:RegisterAbility( "gladiators_medallion", {
     cast = 0,
     cooldown = 120,
     gcd = "off",
 
-    item = 165055,
+    item = function ()
+        if equipped.sinister_gladiators_medallion then return 165055 end
+        return 167377
+    end,
     toggle = "cooldowns",
 
-    handler = function() applyBuff( "gladiators_medallion" ) end
+    handler = function() applyBuff( "gladiators_medallion" ) end,
+
+    copy = { "notorious_gladiators_medallion", "sinister_gladiators_medallion" }
 } )
 
 all:RegisterAura( "gladiators_medallion", {
@@ -3641,15 +3675,23 @@ all:RegisterAura( "gladiators_medallion", {
 } )
 
 
-all:RegisterAbility( "sinister_gladiators_emblem", {
+all:RegisterGear( "notorious_gladiators_emblem", 167378 )
+all:RegisterGear( "sinister_gladiators_emblem", 165056 )
+
+all:RegisterAbility( "gladiators_emblem", {
     cast = 0,
     cooldown = 90,
     gcd = "off",
 
-    item = 165056,
+    item = function ()
+        if equipped.sinister_gladiators_emblem then return 165056 end
+        return 167378
+    end,
     toggle = "cooldowns",
 
-    handler = function() applyBuff( "gladiators_emblem" ) end
+    handler = function() applyBuff( "gladiators_emblem" ) end,
+
+    copy = { "notorious_gladiators_emblem", "sinister_gladiators_emblem" }
 } )
 
 all:RegisterAura( "gladiators_emblem", {
@@ -3667,15 +3709,23 @@ all:RegisterAura( "gladiators_insignia", {
 } )
 
 
-all:RegisterAbility( "sinister_gladiators_badge", {
+all:RegisterGear( "sinister_gladiators_badge", 165058 )
+all:RegisterGear( "notorious_gladiators_badge", 167380 )
+
+all:RegisterAbility( "gladiators_badge", {
     cast = 0,
     cooldown = 120,
     gcd = "off",
 
-    item = 165058,
+    item = function ()
+        if equipped.sinister_gladiators_badge then return 165058 end
+        return 167380
+    end,
     toggle = "cooldowns",
 
-    handler = function() applyBuff( "gladiators_badge" ) end
+    handler = function() applyBuff( "gladiators_badge" ) end,
+
+    copy = { "sinister_gladiators_badge", "notorious_gladiators_badge" }
 } )
 
 all:RegisterAura( "gladiators_badge", {
