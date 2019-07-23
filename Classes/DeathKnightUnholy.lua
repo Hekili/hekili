@@ -1036,7 +1036,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 132481,
 
             pvptalent = function ()
-                if essence.conflict_and_strike.major then return end
+                if essence.conflict_and_strife.major then return end
                 return "necrotic_strike"
             end,
             debuff = "festering_wound",
