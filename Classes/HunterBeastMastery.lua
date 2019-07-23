@@ -20,7 +20,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
     spec:RegisterResource( Enum.PowerType.Focus, {
         aspect_of_the_wild = {
             resource = 'focus',
-            aura = 'spect_of_the_wild',
+            aura = 'aspect_of_the_wild',
 
             last = function ()
                 local app = state.buff.aspect_oF_the_wild.applied
