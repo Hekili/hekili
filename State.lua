@@ -693,19 +693,23 @@ end
 
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value )
+    if not aura then
+        Error( "Attempted to apply/remove a nameless aura '%s'.\n%s", aura or "nil", debugstack(2) )
+        return
+    end
+
     local auraInfo = class.auras[ aura ]
 
     if not auraInfo then
-        Error( "Attempted to apply/remove unknown aura '%s'.", aura )
         local spec = class.specs[ state.spec.id ]
         if spec then
             spec:RegisterAura( aura, { duration = duration } )
             class.auras[ aura ] = spec.auras[ aura ]
             -- Hekili:SpecializationChanged()
         end
-
-        if not class.auras[ aura ] then return end
+        
         auraInfo = class.auras[ aura ]
+        if not auraInfo then return end
     end
 
     if auraInfo.alias then
