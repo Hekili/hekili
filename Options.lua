@@ -544,11 +544,13 @@ function Hekili:GetDefaults()
                 custom1 = {
                     key = "",
                     value = false,
+                    name = "Custom #1"
                 },
 
                 custom2 = {
                     key = "",
                     value = false,
+                    name = "Custom #2"
                 }
             },
 
@@ -928,7 +930,15 @@ do
         local width, height = resolution:match( "(%d+)x(%d+)" )
 
         width = tonumber( width )
-        height = tonumber( height ) 
+        height = tonumber( height )
+
+        for i, str in ipairs( resolutions ) do
+            local w, h = str:match( "(%d+)x(%d+)" )
+            w, h = tonumber( w ), tonumber( h )
+
+            if w > width then width = w end
+            if h > height then height = h end
+        end
 
         tab.args.x.min = -1 * width
         tab.args.x.max = width
@@ -6096,7 +6106,8 @@ do
         if not toggle then return end
 
         if option == 'value' then
-            if bind == 'pause' then self:TogglePause()            
+            if bind == 'pause' then self:TogglePause()
+            elseif bind == 'mode' then toggle.value = val
             else self:FireToggle( bind ) end
 
         elseif option == 'type' then
@@ -6323,6 +6334,13 @@ do
                             desc = "If checked, abilities linked to Custom #1 can be recommended.",
                             order = 2,
                         },
+
+                        name = {
+                            type = "input",
+                            name = "Custom #1 Name",
+                            desc = "Specify a descriptive name for this custom toggle.",
+                            order = 3
+                        }
                     }
                 },
 
@@ -6345,6 +6363,13 @@ do
                             desc = "If checked, abilities linked to Custom #2 can be recommended.",
                             order = 2,
                         },
+
+                        name = {
+                            type = "input",
+                            name = "Custom #1 Name",
+                            desc = "Specify a descriptive name for this custom toggle.",
+                            order = 3
+                        }
                     }
                 },
 
@@ -6377,7 +6402,7 @@ do
                         value = {
                             type = "select",
                             name = "Current Display Mode",
-                            desc = "Select the your current Display Mode.",
+                            desc = "Select your current Display Mode.",
                             values = {
                                 automatic = "Automatic",
                                 single = "Single-Target",
@@ -9057,6 +9082,8 @@ do
 
         else
             toggle.value = not toggle.value
+
+            if toggle.name then toggles[ name ] = toggle.name end
 
             if self.DB.profile.notifications.enabled then
                 self:Notify( toggles[ name ] .. ": " .. ( toggle.value and "ON" or "OFF" ) )
