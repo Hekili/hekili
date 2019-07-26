@@ -140,15 +140,21 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             duration = 10,
             max_stack = 1,
 
-            generate = function ()
-                local ah = buff.active_havoc
-
-                if active_enemies > 1 and active_dot.havoc > 0 and query_time - last_havoc < 10 then
-                    ah.count = 1
-                    ah.applied = last_havoc
-                    ah.expires = last_havoc + 10
-                    ah.caster = "player"
-                    return
+            generate = function( ah )
+                if active_enemies > 1 then
+                    if pvptalent.bane_of_havoc.enabled and debuff.bane_of_havoc.up and query_time - last_havoc < 10 then
+                        ah.count = 1
+                        ah.applied = last_havoc
+                        ah.expires = last_havoc + 10
+                        ah.caster = "player"
+                        return
+                    elseif not pvptalent.bane_of_havoc.enabled and active_dot.havoc > 0 and query_time - last_havoc < 10 then
+                        ah.count = 1
+                        ah.applied = last_havoc
+                        ah.expires = last_havoc + 10
+                        ah.caster = "player"
+                        return
+                    end
                 end
 
                 ah.count = 0
@@ -162,6 +168,17 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             duration = 10,
             type = "Magic",
             max_stack = function () return talent.flashover.enabled and 4 or 2 end,
+        },
+
+        -- Going to need to keep an eye on this.  active_dot.bane_of_havoc won't work due to no SPELL_AURA_APPLIED event.
+        bane_of_havoc = {
+            id = 200548,
+            duration = 10,
+            max_stack = 1,
+            generate = function( boh )
+                boh.applied = action.bane_of_havoc.lastCast
+                boh.expires = boh.applied > 0 and ( boh.applied + 10 ) or 0
+            end,
         },
         blood_pact = {
             id = 6307,
@@ -356,7 +373,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
 
     spec:RegisterStateExpr( "last_havoc", function ()
-        return action.havoc.lastCast
+        return pvptalent.bane_of_havoc.enabled and action.bane_of_havoc.lastCast or action.havoc.lastCast
     end )
 
     spec:RegisterStateExpr( "havoc_remains", function ()
@@ -399,6 +416,12 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 break
             end
         end
+
+        if pvptalent.bane_of_havoc.enabled then
+            class.abilities.havoc = class.abilities.bane_of_havoc
+        else
+            class.abilities.havoc = class.abilities.real_havoc
+        end
     end )
 
 
@@ -406,7 +429,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         if active_enemies == 1 then return end
 
         -- For Havoc, we want to cast it on a different target.
-        if this_action == "havoc" then return "cycle" end
+        if this_action == "havoc" and class.abilities.havoc.key == "havoc" then return "cycle" end
 
         if debuff.havoc.up or FindUnitDebuffByID( "target", 80240, "PLAYER" ) then
             return "cycle"
@@ -502,7 +525,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cycle = function () return talent.eradication.enabled and "eradication" or nil end,
 
             handler = function ()
-                if talent.eradication.enabled then applyDebuff( "target", "eradication" ) end
+                if talent.eradication.enabled then
+                    applyDebuff( "target", "eradication" )
+                    active_dot.eradication = max( active_dot.eradication, active_dot.bane_of_havoc )
+                end
                 if talent.internal_combustion.enabled and debuff.immolate.up then
                     if debuff.immolate.remains <= 5 then removeDebuff( "target", "immolate" )
                     else debuff.immolate.expires = debuff.immolate.expires - 5 end
@@ -545,7 +571,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 gain( 0.5, "soul_shards" )
                 addStack( "backdraft", nil, talent.flashover.enabled and 4 or 2 )
-                if talent.roaring_blaze.enabled then applyDebuff( "target", "conflagrate" ) end
+                if talent.roaring_blaze.enabled then
+                    applyDebuff( "target", "conflagrate" )
+                    active_dot.conflagrate = max( active_dot.conflagrate, active_dot.bane_of_havoc )
+                end
             end,
         },
 
@@ -778,7 +807,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             indicator = function () return ( lastTarget == "lastTarget" or target.unit == lastTarget ) and "cycle" or nil end,
             cycle = "havoc",
 
-            usable = function () return active_enemies > 1 end,
+            bind = "bane_of_havoc",
+
+            usable = function () return not pvptalent.bane_of_havoc.enabled and active_enemies > 1 end,
             handler = function ()
                 if class.abilities.havoc.indicator == "cycle" then
                     active_dot.havoc = active_dot.havoc + 1
@@ -787,7 +818,32 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 end
                 applyBuff( "active_havoc" )
             end,
+
+            copy = "real_havoc"
         },
+
+
+        bane_of_havoc = {
+            id = 200546,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 1380866,
+            cycle = "DoNotCycle",
+
+            bind = "havoc",
+
+            pvptalent = "bane_of_havoc",
+            usable = function () return active_enemies > 1 end,
+            
+            handler = function ()
+                applyDebuff( "target", "bane_of_havoc" )
+                active_dot.bane_of_havoc = active_enemies
+                applyBuff( "active_havoc" )
+            end,
+        },        
 
 
         health_funnel = {
@@ -821,6 +877,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             handler = function ()
                 applyDebuff( "target", "immolate" )
+                active_dot.immolate = max( active_dot.immolate, active_dot.bane_of_havoc )
             end,
         },
 
@@ -862,6 +919,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             handler = function ()
                 applyDebuff( "target", "mortal_coil" )
+                active_dot.mortal_coil = max( active_dot.mortal_coil, active_dot.bane_of_havoc )
                 gain( 0.2 * health.max, "health" )
             end,
         },
@@ -885,24 +943,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
 
 
-        --[[ ritual_of_summoning = {
-            id = 698,
-            cast = 0,
-            cooldown = 120,
-            gcd = "spell",
-
-            spend = 0,
-            spendType = "mana",
-
-            toggle = "cooldowns",
-
-            startsCombat = true,
-
-            handler = function ()
-            end,
-        }, ]]
-
-
         shadowburn = {
             id = 17877,
             cast = 0,
@@ -921,6 +961,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 gain( 0.3, "soul_shards" )
                 applyDebuff( "target", "shadowburn" )
+                active_dot.shadowburn = max( active_dot.shadowburn, active_dot.bane_of_havoc )
             end,
         },
 
