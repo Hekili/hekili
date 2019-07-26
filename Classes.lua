@@ -7703,6 +7703,32 @@ all:RegisterPowers( {
         triggers = {
             wracking_brilliance = { 272893, 272891 },
         },
+    },
+
+
+    -- 8.2
+    -- Arcane Heart
+    arcane_heart = {
+        id = 303006,
+        triggers = {
+            arcane_heart = { 303211, 303209, 303210 },
+        }
+    },
+    
+    -- Loyal to the End
+    loyal_to_the_end = {
+        id = 303007,
+        triggers = {
+            loyal_to_the_end = { 303250, 303365 },
+        }
+    },
+
+    -- Undulating Tides
+    undulating_tides = {
+        id = 303008,
+        triggers = {
+            undulating_tides = { 303438, 303390 }
+        }
     }
 } )
 
