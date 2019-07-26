@@ -599,11 +599,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 132141,
 
             form = "cat_form",
-
-            readyTime = function ()
-                if settings.brutal_charges > 0 and active_enemies < 2 then return ( 1 + settings.brutal_charges - charges_fractional ) * recharge end
-                return 0
-            end,
+            talent = "brutal_slash",
 
             handler = function ()
                 gain( 1, "combo_points" )
@@ -1638,7 +1634,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cycle = "thrash_cat",
 
             form = "cat_form",
-            recheck = function () return dot.thrash_cat.remains - dot.thrash_cat.duration * 0.3, dot.thrash_cat.remains end,
             handler = function ()
                 applyDebuff( "target", "thrash_cat" )
                 active_dot.thrash_cat = max( active_dot.thrash, true_active_enemies )
