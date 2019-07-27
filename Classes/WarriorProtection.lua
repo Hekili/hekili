@@ -518,7 +518,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         last_stand = {
             id = 12975,
             cast = 0,
-            cooldown = function () return talent.bolster.enabled and 120 and 180 end,
+            cooldown = function () return talent.bolster.enabled and 120 or 180 end,
             gcd = "spell",
 
             toggle = "defensives",

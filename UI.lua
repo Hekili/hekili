@@ -21,8 +21,8 @@ local format = string.format
 
 local HasVehicleActionBar, HasOverrideActionBar, IsInPetBattle, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, C_PetBattles.IsInBattle, UnitHasVehicleUI, UnitOnTaxi
 
-
 local Masque, MasqueGroup
+local _
 
 
 function Hekili:GetScale()
@@ -162,7 +162,8 @@ function ns.StartConfiguration( external )
     ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
     ns.UI.Notification.Mover:Show()
 
-    f = ns.UI.Notification.Mover
+    local f = ns.UI.Notification.Mover
+
     if not f.Header then
         f.Header = f:CreateFontString( "HekiliNotificationHeader", "OVERLAY", "GameFontNormal" )
         local path, size = f.Header:GetFont()

@@ -1174,7 +1174,6 @@ all:RegisterAuras( {
         duration = 15,
         alias = { "ferocity_of_the_frostwolf", "might_of_the_blackrock", "zeal_of_the_burning_blade", "rictus_of_the_laughing_skull" },
         aliasMode = "first",
-        duration = 15,
     },
 
     arcane_pulse = {

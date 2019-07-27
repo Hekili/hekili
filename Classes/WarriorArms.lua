@@ -536,8 +536,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 180,
             gcd = "spell",
 
-            toggle = "cooldowns",
-
             startsCombat = false,
             texture = 132336,
 

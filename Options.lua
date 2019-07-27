@@ -7068,7 +7068,7 @@ do
                         append( "spec:RegisterAbilities( {" )
                         increaseIndent()
 
-                        count = 1
+                        local count = 1
                         for k, a in orderedPairs( abilities ) do
                             if count > 1 then append( "\n" ) end
                             count = count + 1

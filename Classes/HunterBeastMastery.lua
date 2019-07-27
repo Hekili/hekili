@@ -408,12 +408,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
 
         -- PvP Talents
-        dire_beast_hawk = {
-            id = 208684,
-            duration = 3600,
-            max_stack = 1,
-        },
-
         hiexplosive_trap = {
             id = 236777,
             duration = 0.1,
@@ -981,8 +975,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-
-            velocity = 50,
 
             spend = 40,
             spendType = "focus",

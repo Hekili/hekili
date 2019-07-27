@@ -305,7 +305,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
     spec:RegisterStateFunction( "summon_demon", function( name, duration, count )
         local db = other_demon_v
-        delay = delay or 0
 
         if name == 'dreadstalkers' then db = dreadstalkers_v
         elseif name == 'vilefiend' then db = vilefiend_v

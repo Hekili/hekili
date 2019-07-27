@@ -1058,9 +1058,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         volatile_bomb = {
             -- id = 271045,
             known = 259495,
-            charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
             cast = 0,
-            charges = 2,
+            charges = function () return talent.guerrilla_tactics.enabled and 2 or nil end,
             cooldown = 18,
             recharge = 18,
             hasteCD = true,
