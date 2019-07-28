@@ -626,7 +626,10 @@ local HekiliSpecMixin = {
         
         option.get = option.get or function( info )
             local setting = info[ #info ]
-            return Hekili.DB.profile.specs[ self.id ].settings[ setting ] or value
+            local val = Hekili.DB.profile.specs[ self.id ].settings[ setting ]
+
+            if val ~= nil then return val end
+            return value
         end
 
         option.set = option.set or function( info, val )
