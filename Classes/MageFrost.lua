@@ -231,6 +231,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 3600,
             max_stack = 5,
             meta = {
+                stack = function() return state.incanters_flow_stacks end,
+                stacks = function() return state.incanters_flow_stacks end,
             }
         },
         preinvisibility = {
@@ -353,58 +355,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         } )
     } )
 
-
-    spec:RegisterStateTable( "incanters_flow", {
-        changed = 0,
-        count = 0,
-        direction = 0,
-    } )
-
-
-    spec:RegisterStateTable( "rotation", setmetatable( {},
-    {
-        __index = function( t, k )
-            if k == "standard" and state.settings.rotation == "standard" then return true
-            elseif k == "no_ice_lance" and state.settings.rotation == "no_ice_lance" then return true
-            elseif k == "frozen_orb" and state.settings.rotation == "frozen_orb" then return true end
-        
-            return false
-        end,
-    } ) )
-
-
-
-
-    local FindUnitBuffByID = ns.FindUnitBuffByID
-
-
-    spec:RegisterEvent( "UNIT_AURA", function( event, unit )
-        if UnitIsUnit( unit, "player" ) and state.talent.incanters_flow.enabled then
-            -- Check to see if IF changed.
-            local name, _, count = FindUnitBuffByID( "player", 116267, "PLAYER" )
-
-            if name and count ~= state.incanters_flow.count and state.combat > 0 then
-                if count == 1 then
-                    if state.incanters_flow.direction == -1 then
-                        state.incanters_flow.direction = 0
-                    elseif state.incanters_flow.direction == 0 then
-                        state.incanters_flow.direction = 1
-                    end
-                elseif count == 5 then
-                    if state.incanters_flow.direction == 1 then
-                        state.incanters_flow.direction = 0
-                    elseif state.incanters_flow.direction == 0 then
-                        state.incanters_flow.direction = -1
-                    end
-                end
-
-                state.incanters_flow.count = count
-                state.incanters_flow.changed = GetTime()
-            end
-        end
-    end )
-
-
     spec:RegisterStateTable( "frost_info", {
         last_target_actual = "nobody",
         last_target_virtual = "nobody",
@@ -431,7 +381,120 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     end )
 
 
-    spec:RegisterTotem( "rune_of_power", 609815 )
+    spec:RegisterStateTable( "rotation", setmetatable( {},
+    {
+        __index = function( t, k )
+            if k == "standard" and state.settings.rotation == "standard" then return true
+            elseif k == "no_ice_lance" and state.settings.rotation == "no_ice_lance" then return true
+            elseif k == "frozen_orb" and state.settings.rotation == "frozen_orb" then return true end
+        
+            return false
+        end,
+    } ) )
+
+
+    spec:RegisterStateTable( "incanters_flow", {
+        changed = 0,
+        count = 0,
+        direction = 0,
+        
+        startCount = 0,
+        startTime = 0,
+        startIndex = 0,
+
+        values = {
+            [0] = { 0, 1 },
+            { 1, 1 },
+            { 2, 1 },
+            { 3, 1 },
+            { 4, 1 },
+            { 5, 0 },
+            { 5, -1 },
+            { 4, -1 },
+            { 3, -1 },
+            { 2, -1 },
+            { 1, 0 }
+        }        
+    } )
+
+    spec:RegisterStateExpr( "incanters_flow_stacks", function ()
+        local index = incanters_flow.startIndex + floor( query_time - incanters_flow.startTime )
+        if index > 10 then index = index % 10 end
+        
+        return incanters_flow.values[ index ][ 1 ]
+    end )
+
+    spec:RegisterStateExpr( "incanters_flow_dir", function()
+        local index = incanters_flow.startIndex + floor( query_time - incanters_flow.startTime )
+        if index > 10 then index = index % 10 end
+
+        return incanters_flow.values[ index ][ 2 ]
+    end )
+
+    -- Seemingly, a very silly way to track Incanter's Flow...
+    local incanters_flow_time_obj = setmetatable( { __stack = 0 }, {
+        __index = function( t, k )
+            if not state.talent.incanters_flow.enabled then return 0 end
+
+            local stack = t.__stack
+            local ticks = #state.incanters_flow.values
+
+            local start = state.incanters_flow.startIndex + floor( state.offset + state.delay )
+
+            local low_pos, high_pos
+
+            if k == "up" then low_pos = 5
+            elseif k == "down" then high_pos = 6 end
+
+            local time_since = ( state.query_time - state.incanters_flow.changed ) % 1
+
+            for i = 0, 10 do
+                local index = ( start + i )
+                if index > 10 then index = index % 10 end
+
+                local values = state.incanters_flow.values[ index ]
+
+                if values[ 1 ] == stack and ( not low_pos or index <= low_pos ) and ( not high_pos or index >= high_pos ) then
+                    return max( 0, i - time_since )
+                end
+            end
+
+            return 0
+        end
+    } )
+
+    spec:RegisterStateTable( "incanters_flow_time_to", setmetatable( {}, {
+        __index = function( t, k )
+            incanters_flow_time_obj.__stack = tonumber( k ) or 0
+            return incanters_flow_time_obj
+        end
+    } ) )
+
+    spec:RegisterEvent( "UNIT_AURA", function( event, unit )
+        if UnitIsUnit( unit, "player" ) and state.talent.incanters_flow.enabled then
+            -- Check to see if IF changed.
+            if state.talent.incanters_flow.enabled then
+                local flow = state.incanters_flow
+                local name, _, count = FindUnitBuffByID( "player", 116267, "PLAYER" )
+                local now = GetTime()
+    
+                if name then
+                    if count ~= flow.count then
+                        if count == 1 then flow.direction = 0
+                        elseif count == 5 then flow.direction = 0
+                        else flow.direction = ( count > flow.count ) and 1 or -1 end
+
+                        flow.changed = GetTime()
+                        flow.count = count
+                    end
+                else
+                    flow.count = 0
+                    flow.changed = GetTime()
+                    flow.direction = 0
+                end
+            end
+        end
+    end )
 
     spec:RegisterHook( "reset_precast", function ()
         if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
@@ -439,8 +502,36 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
         frost_info.last_target_virtual = frost_info.last_target_actual
         frost_info.virtual_brain_freeze = frost_info.real_brain_freeze
+
+        if talent.incanters_flow.enabled then
+            if now - incanters_flow.changed >= 1 then
+                if incanters_flow.count == 1 and incanters_flow.direction == 0 then
+                    incanters_flow.direction = 1
+                    incanters_flow.changed = incanters_flow.changed + 1
+                elseif incanters_flow.count == 5 and incanters_flow.direction == 0 then
+                    incanters_flow.direction = -1
+                    incanters_flow.changed = incanters_flow.changed + 1
+                end
+            end
+
+            if incanters_flow.count == 0 then
+                incanters_flow.startCount = 0
+                incanters_flow.startTime = incanters_flow.changed + floor( now - incanters_flow.changed )
+                incanters_flow.startIndex = 0
+            else
+                incanters_flow.startCount = incanters_flow.count
+                incanters_flow.startTime = incanters_flow.changed + floor( now - incanters_flow.changed )
+                incanters_flow.startIndex = 0
+                
+                for i, val in ipairs( incanters_flow.values ) do
+                    if val[1] == incanters_flow.count and val[2] == incanters_flow.direction then incanters_flow.startIndex = i; break end
+                end
+            end
+        end
     end )
 
+
+    spec:RegisterTotem( "rune_of_power", 609815 )
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -619,6 +710,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 1392551,
 
+            velocity = 30,
+
             handler = function ()
                 applyBuff( "brain_freeze" )
             end,
@@ -746,6 +839,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 1698699,
 
             talent = "glacial_spike",
+
+            velocity = 40,
 
             usable = function () return buff.icicles.stack >= 5 end,
             handler = function ()

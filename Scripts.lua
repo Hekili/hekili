@@ -283,6 +283,7 @@ local function SimToLua( str, modifier )
     str = str:gsub("[(][%s+]", "("):gsub("[%s+][)]", ")")
 
     -- Address equipped.number => equipped[number]
+    str = str:gsub("%.(%d+)%.", "[%1].")
     str = str:gsub("equipped%.(%d+)", "equipped[%1]")
     str = str:gsub("lowest_vuln_within%.(%d+)", "lowest_vuln_within[%1]")
     str = str:gsub("%.in([^a-zA-Z0-9_])", "['in']%1" )
