@@ -5133,7 +5133,7 @@ do
                                             if Hekili.Scripts and Hekili.Scripts.DB then
                                                 local scriptHead = "^" .. pack .. ":" .. k .. ":"
                                                 for k, v in pairs( Hekili.Scripts.DB ) do                                                            
-                                                    if k:sub( 1, scriptHead:len() ) == scriptHead and v.Error then err = true; break end
+                                                    if k:match( scriptHead ) and v.Error then err = true; break end
                                                 end
                                             end
 
