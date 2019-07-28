@@ -286,63 +286,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     spec:RegisterTotem( "rune_of_power", 609815 )
 
 
-    local FindUnitBuffByID = ns.FindUnitBuffByID
-
-    spec:RegisterEvent( "UNIT_AURA", function( event, unit )
-        if UnitIsUnit( unit, "player" ) and state.talent.incanters_flow.enabled then
-            -- Check to see if IF changed.
-            if state.talent.incanters_flow.enabled then
-                local flow = state.incanters_flow
-                local name, _, count = FindUnitBuffByID( "player", 116267, "PLAYER" )
-                local now = GetTime()
-    
-                if name then
-                    if count ~= flow.count then
-                        if count == 1 then flow.direction = 0
-                        elseif count == 5 then flow.direction = 0
-                        else flow.direction = ( count > flow.count ) and 1 or -1 end
-
-                        flow.changed = GetTime()
-                        flow.count = count
-                    end
-                else
-                    flow.count = 0
-                    flow.changed = GetTime()
-                    flow.direction = 0
-                end
-            end
-        end
-    end )
-    
     spec:RegisterHook( "reset_precast", function ()
         if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
         else removeBuff( "rune_of_power" ) end
 
-        if talent.incanters_flow.enabled then
-            if now - incanters_flow.changed >= 1 then
-                if incanters_flow.count == 1 and incanters_flow.direction == 0 then
-                    incanters_flow.direction = 1
-                    incanters_flow.changed = incanters_flow.changed + 1
-                elseif incanters_flow.count == 5 and incanters_flow.direction == 0 then
-                    incanters_flow.direction = -1
-                    incanters_flow.changed = incanters_flow.changed + 1
-                end
-            end
-
-            if incanters_flow.count == 0 then
-                incanters_flow.startCount = 0
-                incanters_flow.startTime = incanters_flow.changed + floor( now - incanters_flow.changed )
-                incanters_flow.startIndex = 0
-            else
-                incanters_flow.startCount = incanters_flow.count
-                incanters_flow.startTime = incanters_flow.changed + floor( now - incanters_flow.changed )
-                incanters_flow.startIndex = 0
-                
-                for i, val in ipairs( incanters_flow.values ) do
-                    if val[1] == incanters_flow.count and val[2] == incanters_flow.direction then incanters_flow.startIndex = i; break end
-                end
-            end
-        end
+        incanters_flow.reset()
     end )
 
 
