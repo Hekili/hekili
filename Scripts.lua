@@ -90,7 +90,7 @@ local function forgetMeNots( str )
       str = format( "%s not ( %s ) %s", str:sub( 1, start - 1 ) or "", substring, str:sub( finish + 1, str:len() ) or "" )
 
       i = i + 1
-      if i >= 100 then self:Debug( "Was unable to convert '!' to 'not' in string [%s].", str ); break end
+      if i >= 100 then Hekili:Debug( "Was unable to convert '!' to 'not' in string [%s].", str ); break end
    end
 
    str = str:gsub( "%s%s", " " )
@@ -1005,7 +1005,7 @@ local function ConvertScript( node, hasModifiers, header )
         Error = e,
         Recheck = rc,
         RecheckScript = rs,
-        RecheckError = rce,
+        RecheckError = erc,
         Elements = se,
         Modifiers = {},
         ModElements = {},

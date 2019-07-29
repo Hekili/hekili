@@ -604,12 +604,12 @@ local HekiliSpecMixin = {
     end,
 
 
-    GetSetting = function( info )
+    GetSetting = function( self, info )
         local setting = info[ #info ]
         return Hekili.DB.profile.specs[ self.id ].settings[ setting ]
     end,
 
-    SetSetting = function( info, val )
+    SetSetting = function( self, info, val )
         local setting = info[ #info ]
         Hekili.DB.profile.specs[ self.id ].settings[ setting ] = val
     end,
@@ -4679,7 +4679,7 @@ do
                 local buff = GetSpellInfo( buffs )
                 if buff then
                     all:RegisterAura( ns.formatKey( buff ), {
-                        id = i,
+                        id = buff,
                         stat = v.stat,
                         duration = v.duration
                     } )

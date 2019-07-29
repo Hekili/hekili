@@ -90,7 +90,7 @@ end
 
 
 ns.fsub = function( s, pattern, repl )
-    return s:gsub( "%f[%w]" .. k .. "%f[%W]", repl )
+    return s:gsub( "%f[%w]" .. s .. "%f[%W]", repl )
 end
 
 

@@ -135,7 +135,7 @@ function ns.getNumberTargets()
             local npcid = guid:match("(%d+)-%x-$")
 
             if not nameplates[guid] and not enemyExclusions[npcid] and ( spec.damageRange == 0 or ( not guidRanges[guid] or guidRanges[ guid ] <= spec.damageRange ) ) then
-                Hekili.TargetDebug = format("%s%12s - %2d - %s\n", Hekili.TargetDebug, "dmg", range or 0, guid)
+                Hekili.TargetDebug = format("%s%12s - %2d - %s\n", Hekili.TargetDebug, "dmg", guidRanges[guid]  or 0, guid)
                 count = count + 1
                 nameplates[guid] = true
             end
@@ -313,11 +313,14 @@ ns.numDebuffs = function(spell)
     return debuffCount[spell] or 0
 end
 
-ns.compositeDebuffCount = function(...)
+ns.compositeDebuffCount = function( ... )
     local n = 0
 
-    for i = 1, select("#", ...) do
-        local debuff = debuffs[spell]
+    for i = 1, select("#", ...) do  
+        local debuff = select( i, ... )
+        debuff = class.auras[ debuff ] and class.auras[ debuff ].id
+        debuff = debuff and debuffs[ debuff ]
+
         if debuff then
             for unit in pairs(debuff) do
                 n = n + 1
@@ -351,6 +354,36 @@ ns.conditionalDebuffCount = function(req1, req2, ...)
     end
 
     return n
+end
+
+do
+    local counted = {}
+
+    -- Useful for "count number of enemies with at least one of these debuffs applied".
+    -- i.e., poisoned_enemies for Assassination Rogue.
+    
+    ns.countUnitsWithDebuffs = function( ... )
+        wipe( counted )
+        
+        local n = 0
+
+        for i = 1, select("#", ...) do
+            local debuff = select( i, ... )
+            debuff = class.auras[ debuff ] and class.auras[ debuff ].id
+            debuff = debuff and debuffs[ debuff ]
+
+            if debuff then
+                for unit in pairs( debuff ) do
+                    if not counted[ unit ] then
+                        n = n + 1
+                        counted[ unit ] = true
+                    end
+                end
+            end
+        end
+
+        return n
+    end
 end
 
 ns.isWatchedDebuff = function(spell)

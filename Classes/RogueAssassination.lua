@@ -386,18 +386,30 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
     -- Enemies with either Deadly Poison or Wound Poison applied.
     spec:RegisterStateExpr( 'poisoned_enemies', function ()
-        return max( active_dot.deadly_poison_dot, active_dot.wound_poison_dot, 0 )
+        return ns.countUnitsWithDebuffs( "deadly_poison_dot", "wound_poison_dot", "crippling_poison_dot" )
     end )
 
     spec:RegisterStateExpr( 'poison_remains', function ()
         return debuff.lethal_poison.remains
     end )
 
-    -- Count of bleeds on all active targets.
+    -- Count of bleeds on targets.
     spec:RegisterStateExpr( 'bleeds', function ()
-        return ns.compositeDebuffCount( "garrote", "internal_bleeding", "rupture", "crimson_tempest" )
+        local n = 0
+        if debuff.garrote.up then n = n + 1 end
+        if debuff.internal_bleeding.up then n = n + 1 end
+        if debuff.rupture.up then n = n + 1 end
+        if debuff.crimson_tempest.up then n = n + 1 end
+        
+        return n
     end )
-
+    
+    -- Count of bleeds on all poisoned (Deadly/Wound) targets.
+    spec:RegisterStateExpr( 'poisoned_bleeds', function ()
+        return ns.conditionalDebuffCount( "deadly_poison_dot", "wound_poison_dot", "garrote", "internal_bleeding", "rupture" )
+    end )
+    
+    
     spec:RegisterStateExpr( "ss_buffed", function ()
         return debuff.garrote.up and ssG[ target.unit ]
     end )
@@ -419,11 +431,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return 0 -- we aren't really tracking this right now...
     end )
 
-    
-    -- Count of bleeds on all poisoned (Deadly/Wound) targets.
-    spec:RegisterStateExpr( 'poisoned_bleeds', function ()
-        return ns.conditionalDebuffCount( "deadly_poison_dot", "wound_poison_dot", "garrote", "internal_bleeding", "rupture" )
-    end )
+
 
     spec:RegisterStateExpr( "pmultiplier", function ()
         -- Hm, maybe this should be current pmultiplier, not pmultiplier on current application.
@@ -1191,7 +1199,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 gain( 2, "combo_points" )
 
-                if talent.venom_rush.enabled and ( debuff.deadly_poison.up or debuff.wound_poison.up or debuff.crippling_poison.up ) then
+                if talent.venom_rush.enabled and ( debuff.deadly_poison_dot.up or debuff.wound_poison_dot.up or debuff.crippling_poison_dot.up ) then
                     gain( 5, "energy" )
                 end
             end,

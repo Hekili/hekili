@@ -198,7 +198,7 @@ local function GetOptionsMemberValue(membername, option, options, path, appName,
     info.option = option
     info.type = option.type
     info.uiType = "dialog"
-    info.uiName = MAJOR
+    info.uiName = appName
 
     local a, b, c ,d
     --using 4 returns for the get of a color type, increase if a type needs more

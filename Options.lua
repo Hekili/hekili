@@ -6789,10 +6789,6 @@ do
 
                                 if talent then a.talent = token end
 
-                                if talents[ sKey ] then
-                                    a.talent = sKey
-                                end
-
                                 a.startsCombat = not helpful
 
                                 a.cooldown = cooldown
@@ -6835,7 +6831,7 @@ do
                                 for k, v in pairs( costs ) do
                                     if not v.hasRequiredAura or IsPlayerSpell( v.requiredAuraID ) then
                                         cost = v.costPercent > 0 and v.costPercent / 100 or v.cost
-                                        cost_per_sec = v.costPerSecond
+                                        spendPerSec = v.costPerSecond
                                         resource = key( v.name )
                                         break
                                     end
@@ -6871,17 +6867,13 @@ do
                                 a.id = spellID
                                 a.spend = cost
                                 a.spendType = resource
-                                a.spendPerSec = cost_per_sec
+                                a.spendPerSec = spendPerSec
                                 a.cast = castTime
                                 a.gcd = "spell"
 
                                 a.texture = texture
 
                                 if talent then a.talent = token end
-
-                                if talents[ sKey ] then
-                                    a.talent = sKey
-                                end
 
                                 a.startsCombat = not helpful
 
@@ -6982,9 +6974,6 @@ do
         skeletonHandler( listener, "SPELLS_CHANGED" )
     end
 
-    local SpecInfo = ""
-
-
 
     function Hekili:EmbedSkeletonOptions( db )
         db = db or self.Options
@@ -7001,7 +6990,7 @@ do
                     desc = "A rough skeleton of your current spec, for development purposes only.",
                     order = 1,
                     get = function( info )
-                        return skeleton or ""
+                        return Hekili.Skeleton or ""
                     end,
                     multiline = 25,
                     width = "full"
@@ -7125,7 +7114,7 @@ do
                         decreaseIndent()
                         append( "} )\n" )
 
-                        skeleton = table.concat( output, "\n" )
+                        Hekili.Skeleton = table.concat( output, "\n" )
                     end,
                 }
             },
@@ -7688,7 +7677,7 @@ end
 
 function Hekili:SetOption( info, input, ... )
     local category, depth, option, subcategory = info[1], #info, info[#info], nil
-    local Rebuild, RebuildUI, RebuiltScripts, RebuildOptions, RebuildCache, Select
+    local Rebuild, RebuildUI, RebuildScripts, RebuildOptions, RebuildCache, Select
     local profile = Hekili.DB.profile
 
     if category == 'general' then
@@ -7729,52 +7718,6 @@ function Hekili:SetOption( info, input, ... )
 
         -- General options do not need add'l handling.
         return
-
-    --[[ elseif category == 'class' then
-        subcategory = info[2]
-
-        if subcategory == 'toggles' then
-            if option:match("State:") then
-                Hekili:ClassToggle( option:match("State: (.-)$") )
-            else
-                profile[ 'Toggle ' .. option ] = input
-                Hekili:OverrideBinds()
-            end
-
-        elseif subcategory == 'settings' then
-            profile[ 'Class Option: '..option] = input
-
-        end ]]
-
-    --[[ elseif category == 'abilities' then
-        local ability = info[2]
-
-        if option == 'exclude' then profile.blacklist[ ability ] = input
-        elseif option == 'clash' then profile.clashes[ ability ] = tonumber( input ) or 0
-        elseif option == 'toggle' then profile.toggles[ ability ] = input or 'default'
-        elseif option:match( "^(%d+):(%d+)$" ) then
-            local list, action = option:match( "^(%d+):(%d+)$" )
-
-            list = tonumber( list )
-            action = tonumber( action )
-
-            profile.actionLists[ list ].Actions[ action ].Enabled = not input
-            Hekili:UpdateDisplayVisibility()
-        elseif profile.trinkets[ ability ] ~= nil then
-            profile.trinkets[ ability ][ option ] = input
-        end
-
-        Hekili:ForceUpdate()
-        return ]]
-
-    --[[ elseif category == 'notifs' then
-        profile[ option ] = input
-
-        if option == 'Notification X' or option == 'Notification Y' then
-            profile[ option ] = tonumber( input )
-        end
-
-        RebuildUI = true ]]
 
     elseif category == 'bindings' then
 
@@ -7849,13 +7792,13 @@ function Hekili:SetOption( info, input, ... )
         -- Bindings do not need add'l handling.
         return
 
-    elseif category == 'displays' then
+    --[[ elseif category == 'displays' then
 
         -- This is a generic display option/function.
         if depth == 2 then
 
             if option == 'newDisplay' then
-                self.DB.profile.displays[ key ] = {}
+                self.DB.profile.displays[ input ] = {}
                 self:EmbedDisplayOptions()
 
                 C_Timer.After( 0.25, self[ 'ProcessDisplay'..index ] )
@@ -7991,7 +7934,7 @@ function Hekili:SetOption( info, input, ... )
                 end
 
             end
-        end
+        end ]]
 
     elseif category == 'actionLists' then
 
@@ -8185,7 +8128,7 @@ function Hekili:CmdLine( input )
             self:StartListeningForSkeleton()
             self:Print( "Addon will now gather specialization information.  Select all talents and use all abilities for best results." )
             self:Print( "See the Skeleton tab for more information. ")
-            Hekili.Skeleton = true
+            Hekili.Skeleton = ""
         end
         ns.StartConfiguration()
 
@@ -8470,7 +8413,6 @@ local ignore_actions = {
 
 
 local function make_substitutions( i, swaps, prefixes, postfixes ) 
-
     if not i then return nil end
 
     for k,v in pairs( swaps ) do
@@ -8518,7 +8460,6 @@ local function make_substitutions( i, swaps, prefixes, postfixes )
     return i
 
 end
-ns.accomm = accommodate_targets
 
 
 local function accommodate_targets( targets, ability, i, line, warnings )
@@ -8545,6 +8486,7 @@ local function accommodate_targets( targets, ability, i, line, warnings )
 
     return make_substitutions( i, swaps )
 end
+ns.accomm = accommodate_targets
 
 
 local function Sanitize( segment, i, line, warnings )

@@ -62,13 +62,9 @@ local function stopScreenMovement(frame)
     frame:StopMovingOrSizing()
     frame.Moving = false
     frame:ClearAllPoints()
-    frame:SetPoint(
-        "CENTER",
-        Screen,
-        "CENTER",
+    frame:SetPoint( "CENTER", nil, "CENTER",
         max(-limitX, min(limitX, movementData.origX + (movementData.toX - movementData.fromX))),
-        max(-limitY, min(limitY, movementData.origY + (movementData.toY - movementData.fromY)))
-    )
+        max(-limitY, min(limitY, movementData.origY + (movementData.toY - movementData.fromY))) )
     Hekili:SaveCoordinates()
 end
 
@@ -185,10 +181,6 @@ function ns.StartConfiguration( external )
             GameTooltip:SetText( "Hekili: Notifications" )
             GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
             GameTooltip:Show()
-
-        elseif ( H.Pause and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
-            H:ShowDiagnosticTooltip( ns.queue[ dispID ][ id ] )
-
         end
     end )
     HekiliNotification:SetScript( "OnLeave", function(self)
@@ -1425,7 +1417,7 @@ do
         local border = 2
 
         d:SetSize( scale * ( border + ( conf.primaryWidth or 50 ) ), scale * ( border + ( conf.primaryHeight or 50 ) ) )
-        d:SetPoint( "CENTER", Screen, "CENTER", conf.x or 0, conf.y or -225 )
+        d:SetPoint( "CENTER", nil, "CENTER", conf.x or 0, conf.y or -225 )
         d:SetFrameStrata( "MEDIUM" )
         d:SetClampedToScreen( true )
         d:EnableMouse( false )
@@ -1474,7 +1466,7 @@ do
         local border = 2
 
         d:SetSize( scale * ( border + conf.primaryWidth ), scale * (border + conf.primaryHeight ) )
-        d:SetPoint( "CENTER", Screen, "CENTER", conf.x, conf.y )
+        d:SetPoint( "CENTER", nil, "CENTER", conf.x, conf.y )
         d:SetFrameStrata( "MEDIUM" )
         d:SetClampedToScreen( true )
         d:EnableMouse( false )
@@ -2005,7 +1997,7 @@ function Hekili:BuildUI()
     f:SetSize( notif.width * scaleFactor, notif.height * scaleFactor )
     f:SetClampedToScreen( true )
     f:ClearAllPoints()
-    f:SetPoint("CENTER", Screen, "CENTER", notif.x, notif.y )
+    f:SetPoint("CENTER", nil, "CENTER", notif.x, notif.y )
 
     f.Text = f.Text or f:CreateFontString( "HekiliNotificationText", "OVERLAY" )
     f.Text:SetAllPoints( f )
