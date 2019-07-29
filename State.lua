@@ -2344,7 +2344,7 @@ local mt_default_cooldown = {
         local profile = Hekili.DB.profile
         local id = ability.id
 
-        if ability and rawget( ability, "item" ) then
+        if ability and ability.item then
             GetCooldown = _G.GetItemCooldown
             id = ability.itemCd or ability.item
         end
