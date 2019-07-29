@@ -105,11 +105,7 @@ local mathBreak = {
     ["="] = true,
     ["&"] = true,
     ["|"] = true,
-    --[[ ["*"] = true,
-    ["/"] = true,
-    ["%"] = true,
-    ["+"] = true,
-    ["-"] = true ]]
+    [","] = true
 }
 
 local function HandleDeprecatedOperators( str, opStr, prefix  )
@@ -133,7 +129,7 @@ local function HandleDeprecatedOperators( str, opStr, prefix  )
                 if char == ")" then
                     -- Grab the full bracketed pair and move on.
                     i = i + left:sub( 1, 1 + leftLen - i ):match( "(%b())$" ):len()
-                elseif mathBreak[ char ] then
+                elseif mathBreak[ char ] or char == "(" then
                     eos = i - 1
                     break
                 end
@@ -163,7 +159,7 @@ local function HandleDeprecatedOperators( str, opStr, prefix  )
 
                 if char == "(" then
                     i = i + right:sub( i ):match("^(%b())" ):len()
-                elseif mathBreak[char] then
+                elseif mathBreak[char] or char == ")" then
                     eos = i - 1
                     break
                 end
@@ -185,6 +181,7 @@ local function HandleDeprecatedOperators( str, opStr, prefix  )
 
     return str
 end
+scripts.HandleDeprecatedOperators = HandleDeprecatedOperators
 
 
 local invalid = "([^a-zA-Z0-9_.[])"
@@ -824,6 +821,9 @@ local function stripScript( str, thorough )
   -- Remove the 'return ' that was added during conversion.
   str = str:gsub("^return ", "")
 
+  -- Remove min/max/safenum/safebool.
+  str = str:gsub("%Amin ?%(?", " "):gsub("%Amax ?%(?", " "):gsub("%Asafebool ?%(?", " "):gsub("%Asafenum ?%(?", " ")
+
   -- Remove comments and parentheses.
   str = str:gsub("%-%-.-\n", ""):gsub("[()]", "")
 
@@ -834,7 +834,7 @@ local function stripScript( str, thorough )
     -- Collapse whitespace around comparison operators.
     str = str:gsub("[%s-]==[%s-]", "=="):gsub("[%s-]>=[%s-]", ">="):gsub("[%s-]<=[%s-]", "<="):gsub("[%s-]~=[%s-]", "~="):gsub("[%s-]<[%s-]", "<"):gsub("[%s-]>[%s-]", ">")
   else
-    str = str:gsub("[=+]", " "):gsub("[><~]", " "):gsub("[%*//%-%+]", " ")
+    str = str:gsub("[=+]", " "):gsub("[><~]%??", " "):gsub("[%*//%-%+]", " ")
   end
 
   -- Collapse the rest of the whitespace.
@@ -893,6 +893,7 @@ local function GetScriptElements( script )
 
     return e
 end
+scripts.GetScriptElements = GetScriptElements
 
 
 -- newModifiers, key is the name of the element, value is whether to babyproof it or not.
