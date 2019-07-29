@@ -158,41 +158,6 @@ local oneTimeFixes = {
         end
     end,
 
-    autoconvertDelayFadeToCheckbox_20190418 = function( p )
-        for k, v in pairs( p.displays ) do
-            if v.delays.type == "FADE" then
-                v.delays.type = "__NA"
-                v.delays.fade = true
-            end
-        end
-    end,
-
-    autoconvertDelayTextToSweep_20190420 = function( p )
-        for k, v in pairs( p.displays ) do
-            if v.delays.type == "TEXT" then
-                v.delays.type = "CDSW"
-            end
-        end
-    end,
-
-    autoconvertDelayTextToSweep_20190420_1 = function( p )
-        for k, v in pairs( p.displays ) do
-            if v.delays.type == "CDSW" then
-                v.delays.extend = true
-                v.delays.type = "__NA"
-            end
-        end
-    end,
-
-    autoconvertDelayBackToText_20190422 = function( p )
-        for k, v in pairs( p.displays ) do
-            if v.delays.type == "__NA" and v.delays.extend then
-                v.delays.extend = false
-                v.delays.type = "TEXT"
-            end
-        end
-    end,
-
     autoconvertDisplayToggle_20190621_1 = function( p )
         local m = p.toggles.mode
         local types = m.type
@@ -240,6 +205,14 @@ local oneTimeFixes = {
             if type( v.version ) == 'string' then v.date = tonumber( v.date ) or 0 end
             if v.date then while( v.date > 21000000 ) do v.date = v.date / 10 end end
             if v.version then while( v.version > 21000000 ) do v.version = v.version / 10 end end
+        end
+    end,
+
+    autoconvertDelaySweepToExtend_20190729 = function( p )
+        for k, v in pairs( p.displays ) do
+            if v.delays.type == "CDSW" then
+                v.delays.type = "__NA"
+            end
         end
     end,
 }
