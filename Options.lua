@@ -234,6 +234,14 @@ local oneTimeFixes = {
         end
     end,
 
+    resetAberrantPackageDates_20190728_1 = function( p )
+        for _, v in pairs( p.packs ) do
+            if type( v.date ) == 'string' then v.date = tonumber( v.date ) or 0 end
+            if type( v.version ) == 'string' then v.date = tonumber( v.date ) or 0 end
+            if v.date then while( v.date > 21000000 ) do v.date = v.date / 10 end end
+            if v.version then while( v.version > 21000000 ) do v.version = v.version / 10 end end
+        end
+    end,
 }
 
 
