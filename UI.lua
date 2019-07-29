@@ -2205,7 +2205,7 @@ function Hekili:ShowDiagnosticTooltip( q )
 
         if q.HookScript and q.HookScript ~= "" then
             local Text = Format(q.HookScript)
-            tt:AddLine(fmt:ColorString(Text, SyntaxColors), 1, 1, 1, 1)
+            tt:AddLine(fmt.FormatCode(Text, 0, SyntaxColors), 1, 1, 1, 1)
         end
 
         if q.HookElements then
@@ -2226,7 +2226,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         tt:AddLine("\nTime Script")
 
         local Text = Format(q.ReadyScript)
-        tt:AddLine(fmt:ColorString(Text, SyntaxColors), 1, 1, 1, 1)
+        tt:AddLine(fmt.FormatCode(Text, 0, SyntaxColors), 1, 1, 1, 1)
 
         if q.ReadyElements then
             tt:AddLine("Values")
@@ -2242,7 +2242,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         tt:AddLine("\nAction Criteria")
 
         local Text = Format(q.ActScript)
-        tt:AddLine(fmt:ColorString(Text, SyntaxColors), 1, 1, 1, 1)
+        tt:AddLine(fmt.FormatCode(Text, 0, SyntaxColors), 1, 1, 1, 1)
 
         if q.ActElements then
             tt:AddLine("Values")

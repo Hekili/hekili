@@ -763,63 +763,13 @@ function lib:FormatCode ( TabWidth, ColorTable, CursorOld )
 end
 
 
-function lib:ColorString ( String, ColorTable )
-
-  if not String then return nil end
-
-  wipe( Buffer );
-  local BufferLen = 0;
-  local ColorLast;
-  local TokenType, PosNext, Pos = TK_UNKNOWN, 1;
-  while ( TokenType ) do
-    Pos, TokenType, PosNext = PosNext, NextToken( String, PosNext );
-
-    if ( TokenType
-      and ( PassedIndent or not TabWidth or TokenType ~= TK_WHITESPACE )
-      ) then
-      PassedIndent = true; -- Passed leading whitespace
-      local Token = strsub( String, Pos, PosNext - 1 )
-      local Token = strsub( String, Pos, PosNext - 1 );
-
-      local ColorCode;
-      if ( ColorTable ) then -- Add coloring
-        local Color = ColorTable[ Keywords[ Token ] and TK_KEYWORD or Token ]
-          or ColorTable[ TokenType ];
-      ColorCode = ( ColorLast and not Color and TERMINATOR ) -- End color
-        or ( Color ~= ColorLast and Color ); -- Change color
-      if ( ColorCode ) then
-        Buffer[ #Buffer + 1 ], BufferLen = ColorCode, BufferLen + #ColorCode;
-        end
-        ColorLast = Color;
-      end
-
-      Buffer[ #Buffer + 1 ], BufferLen = Token, BufferLen + #Token;
-
-      local Indent = TabWidth and (
-        ( TokenType == TK_IDENTIFIER and Indents[ Token ] )
-        or Indents[ TokenType ] );
-      if ( Indent ) then -- Apply token indent-modifier
-        if ( DepthNext > 0 ) then
-          DepthNext = DepthNext + Indent[ 1 ];
-      else
-        Depth = Depth + Indent[ 1 ];
-      end
-      DepthNext = DepthNext + Indent[ 2 ];
-      end
-
-    end
-
-  end
-
-  return table.concat( Buffer )
-end
-
 local COLOR_NUMBERS = '|cFFFFD100'
 local COLOR_TRUE = '|cFF00FF00'
 local COLOR_FALSE = '|cFFFF0000'
 local COLOR_STRING = '|cFF008888'
 local COLOR_DEFAULT = '|cFFFFFFFF'
 local COLOR_NORMAL = '|r'
+
 
 function ns.formatValue( value )
 
