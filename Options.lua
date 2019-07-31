@@ -3414,8 +3414,8 @@ do
         local toggles = {}
 
         for k, v in pairs( class.abilities ) do
-            if v.item and not abilities[ v.key ] and class.itemList[ v.item ] then
-                abilities[ class.itemList[ v.item ] ] = v.key
+            if v.item and not abilities[ v.itemKey or v.key ] and class.itemList[ v.item ] then
+                abilities[ class.itemList[ v.item ] ] = v.itemKey or v.key
             end
         end
 

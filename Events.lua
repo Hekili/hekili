@@ -585,7 +585,7 @@ do
             local tName = GetItemInfo( 167555 )
             local redName, redLink = GetItemGem( tName, 1 )
             
-            if redName and redLink then
+            if redName and redLink then                
                 local redID = tonumber( redLink:match("item:(%d+)") )
                 local action = class.itemMap[ redID ]
 
@@ -594,7 +594,7 @@ do
                     state.set_bonus[ redID ] = 1
                     class.abilities.pocketsized_computation_device = class.abilities[ action ]
                     class.abilities[ tName ] = class.abilities[ action ]
-                    insert( state.items, "pocketsized_computation_device" )
+                    insert( state.items, action )
                 end
             else
                 class.abilities.pocketsized_computation_device = class.abilities.inactive_red_punchcard

@@ -472,6 +472,31 @@ local HekiliSpecMixin = {
             end )
         end
 
+        --[[ if a.id and a.id > 0 then
+            local spell = Spell:CreateFromSpellID( a.id )
+            if not spell:IsSpellEmpty() then
+                spell:ContinueOnSpellLoad( function ()
+                    a.name = spell:GetSpellName()
+                    a.desc = GetSpellDescription( a.id ) -- spell:GetSpellDescription() was returning raw tooltip data.
+
+                    if a.suffix then
+                        a.actualName = a.name
+                        a.name = a.name .. " " .. a.suffix
+                    end
+
+                    local texture = a.texture or GetSpellTexture( a.id )
+
+                    self.abilities[ a.name ] = self.abilities[ a.name ] or a
+                    class.abilities[ a.name ] = class.abilities[ a.name ] or a
+
+                    if not a.unlisted then
+                        class.abilityList[ ability ] = a.listName or ( "|T" .. texture .. ":0|t " .. a.name )
+                        class.abilityByName[ a.name ] = class.abilities[ a.name ] or a
+                    end
+                end )
+            end
+        end ]]
+
         if data.meta then
             for k, v in pairs( data.meta ) do
                 if type( v ) == 'function' then data.meta[ k ] = setfenv( v, state ) end
@@ -479,7 +504,6 @@ local HekiliSpecMixin = {
         end
 
         -- default values.
-        -- none.
         if not data.cooldown then data.cooldown = 0 end
         if not data.recharge then data.recharge = data.cooldown end
         if not data.charges  then data.charges = 1 end
@@ -2181,14 +2205,17 @@ do
     } )    
 
     all:RegisterAbility( "pocketsized_computation_device", {
+        -- key = "pocketsized_computation_device",
         cast = 0,
         cooldown = 120,
         gcd = "spell",
 
         item = 167555,
         texture = 2115322,
-        bind = { "cyclotronic_blast", "harmonic_dematerializer" },
+        bind = { "cyclotronic_blast", "harmonic_dematerializer", "inactive_red_punchcard" },
         startsCombat = true,
+
+        unlisted = true,
 
         usable = function() return false, "no supported red punchcard installed" end,
         copy = "inactive_red_punchcard"
@@ -2196,7 +2223,7 @@ do
 
     all:RegisterAbility( "cyclotronic_blast", {
         id = 293491,
-        key = "pocketsized_computation_device",
+        -- key = "pocketsized_computation_device",
         cast = function () return 1.5 * haste end,
         channeled = function () return cooldown.cyclotronic_blast.remains > 0 end,
         cooldown = 120,
@@ -2204,8 +2231,10 @@ do
 
         item = 167672,
         itemCd = 167555,
+        itemKey = "cyclotronic_blast",
+
         texture = 2115322,
-        bind = { "cyclotronic_blast", "harmonic_dematerializer" },
+        bind = { "pocketsized_computation_device", "inactive_red_punchcard", "harmonic_dematerializer" },
         startsCombat = true,
 
         toggle = "cooldowns",
@@ -2217,7 +2246,9 @@ do
         handler = function()
             setCooldown( "global_cooldown", 2.5 * haste )
             applyBuff( "casting", 2.5 * haste )
-        end
+        end,
+
+        copy = "pocketsized_computation_device"
     } )
 
     all:RegisterAura( "harmonic_dematerializer", {
@@ -2228,15 +2259,19 @@ do
 
     all:RegisterAbility( "harmonic_dematerializer", {
         id = 293512,
-        key = "pocketsized_computation_device",
+        -- key = "pocketsized_computation_device",
         cast = 0,
         cooldown = 15,
         gcd = "spell",
 
         item = 167677,
         itemCd = 167555,
+        itemKey = "harmonic_dematerializer",
+
         texture = 2115322,
-        bind = { "cyclotronic_blast", "harmonic_dematerializer" },
+
+        bind = { "pocketsized_computation_device", "cyclotronic_blast", "inactive_red_punchcard" },
+        
         startsCombat = true,
 
         usable = function ()
@@ -2780,7 +2815,7 @@ all:RegisterAura( "potency", {
 } )
 
 
-all:RegisterAbility( "void_portal_stone", {
+all:RegisterAbility( "clockwork_resharpener", {
     cast = 0,
     cooldown = 60, -- no CD reported in-game yet.
     gcd = "off",
@@ -2790,11 +2825,11 @@ all:RegisterAbility( "void_portal_stone", {
     toggle = "cooldowns",
 
     handler = function ()
-        applyBuff( "syphon_from_the_abyss" )
+        applyBuff( "resharpened" )
     end,
 } )
 
-all:RegisterAura( "syphon_from_the_abyss", {
+all:RegisterAura( "resharpened", {
     id = 278376,
     duration = 14,
     max_stack = 7,
