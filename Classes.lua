@@ -472,31 +472,6 @@ local HekiliSpecMixin = {
             end )
         end
 
-        --[[ if a.id and a.id > 0 then
-            local spell = Spell:CreateFromSpellID( a.id )
-            if not spell:IsSpellEmpty() then
-                spell:ContinueOnSpellLoad( function ()
-                    a.name = spell:GetSpellName()
-                    a.desc = GetSpellDescription( a.id ) -- spell:GetSpellDescription() was returning raw tooltip data.
-
-                    if a.suffix then
-                        a.actualName = a.name
-                        a.name = a.name .. " " .. a.suffix
-                    end
-
-                    local texture = a.texture or GetSpellTexture( a.id )
-
-                    self.abilities[ a.name ] = self.abilities[ a.name ] or a
-                    class.abilities[ a.name ] = class.abilities[ a.name ] or a
-
-                    if not a.unlisted then
-                        class.abilityList[ ability ] = a.listName or ( "|T" .. texture .. ":0|t " .. a.name )
-                        class.abilityByName[ a.name ] = class.abilities[ a.name ] or a
-                    end
-                end )
-            end
-        end ]]
-
         if data.meta then
             for k, v in pairs( data.meta ) do
                 if type( v ) == 'function' then data.meta[ k ] = setfenv( v, state ) end
