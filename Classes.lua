@@ -1128,7 +1128,7 @@ all:RegisterAuras( {
         end,
 
         repeat_performance = {
-            id = 304410,
+            id = 304409,
             duration = 30,
             max_stack = 1,
         }
@@ -7954,6 +7954,7 @@ all:RegisterAuras( {
         id = 295368,
         duration = 6,
         max_stack = 1,
+        copy = "concentrated_flame_burn"
     }
 } )
 
