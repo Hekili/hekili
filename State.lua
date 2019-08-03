@@ -2598,62 +2598,42 @@ local mt_prev_lookup = {
         if state.time == 0 then return false end
 
         local idx = t.index
+        local preds, prev
+        local action
+        
+        if t.meta == 'castsAll' then preds, prev = state.predictions, state.prev
+        elseif t.meta == 'castsOn' then preds, prev = state.predictionsOn, state.prev_gcd
+        elseif t.meta == 'castsOff' then preds, prev = state.predictionsOff, state.prev_off_gcd end
 
-        if t.meta == 'castsAll' then
-            -- Check predictions first.
-            if state.predictions[ idx ] then return state.predictions[ idx ] == k end
+        if k == 'spell' then
+            -- Return the actual spell for the slot, for lookups.
+            if preds[ idx ] then return preds[ idx ] end
 
-            -- There isn't a prediction for that entry yet, go back to actual collected data.
             if state.player.queued_ability then
-                if idx == #state.predictions + 1 then
-                    return state.player.queued_ability
-                end
-                return state.prev.history[ idx - #state.predictions + 1 ]
+                if idx == #preds + 1 then return state.player.queued_ability end
+                return prev.history[ idx - #preds + 1 ]
             end
-
-            if idx == 1 and state.prev.override then
-                return state.prev.override == k
+    
+            if idx == 1 and prev.override then
+                return prev.override
             end
-
-            return state.prev.history[ idx - #state.predictions ] == k
-
-        elseif t.meta == 'castsOn' then
-            -- Check predictions first.
-            if state.predictionsOn[ idx ] then return state.predictionsOn[ idx ] == k end
-
-            -- There isn't a prediction for that entry yet, go back to actual collected data.
-            if state.player.queued_ability and state.player.queued_gcd then
-                if idx == #state.predictionsOn + 1 then
-                    return state.player.queued_ability
-                end
-                return state.prev_gcd.history[ idx - #state.predictionsOn + 1 ]
-            end
-
-            if idx == 1 and state.prev_gcd.override then
-                return state.prev_gcd.override == k
-            end
-
-            return state.prev_gcd.history[ idx - #state.predictionsOn ] == k
-
+    
+            return prev.history[ idx - #preds ]
         end
 
-        -- castsOff
-        if state.predictionsOff[ idx ] then return state.predictionsOff[ idx ] == k end
+        if preds[ idx ] then return preds[ idx ] == k end
 
-        if state.player.queued_ability and state.player.queued_off then
-            if idx == #state.predictionsOff + 1 then
-                return state.player.queued_ability
-            end
-            return state.prev_off_gcd.history[ idx - #state.predictionsOff + 1 ]
+        if state.player.queued_ability then
+            if idx == #preds + 1 then return state.player.queued_ability == k end
+            return prev.history[ idx - #preds + 1 ] == k
         end
 
-        if idx == 1 and state.prev_off_gcd.override then
-            return state.prev_off_gcd.override == k
+        if idx == 1 and prev.override then
+            return prev.override == k
         end
 
-        return state.prev_off_gcd.history[ idx - #state.predictionsOff ] == k
-
-    end
+        return prev.history[ idx - #preds ] == k
+    end,
 }
 
 local prev_lookup = setmetatable( {

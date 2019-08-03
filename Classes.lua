@@ -2257,6 +2257,29 @@ do
             addStack( "harmonic_dematerializer", nil, 1 )
         end
     } )
+
+
+    -- Hyperthread Wristwraps
+    all:RegisterAbility( "hyperthread_wristwraps", {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 168989,
+
+        handler = function ()
+            -- Gain 5 seconds of CD for the last 3 spells.            
+            for i = 1, 3 do
+                local ability = prev[i].spell
+
+                if ability and ability ~= "no_action" then
+                    gainChargeTime( ability, 5 )
+                end
+            end
+        end,
+
+        copy = "hyperthread_wristwraps_300142"
+    } )
 end
 
 
