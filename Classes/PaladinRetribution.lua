@@ -281,7 +281,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             startsCombat = true,
             texture = 135875,
 
-            usable = function () return not buff.avenging_wrath.up end,
+            nobuff = 'avenging_wrath',
+
             handler = function ()
                 applyBuff( 'avenging_wrath' )
                 if PTR then applyBuff( "avenging_wrath_crit" ) end
@@ -423,6 +424,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             startsCombat = false,
             texture = 236262,
+
+            nobuff = 'crusade',
 
             usable = function () return not buff.crusade.up end,
             handler = function ()
