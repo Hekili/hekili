@@ -1624,6 +1624,7 @@ do
         for i, d in pairs( ns.UI.Displays ) do        
             d.criticalUpdate = true
             if d.firstForce == 0 then d.firstForce = GetTime() end
+            self.freshFrame = false
         end
     end    
 

@@ -13,8 +13,8 @@ local targets = {}
 local myTargetCount = 0
 local myTargets = {}
 
-local nameplates = {}
 local addMissingTargets = true
+local counted = {}
 
 local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
@@ -52,106 +52,107 @@ local lastCycle = 0
 local guidRanges = {}
 
 
--- New Nameplate Proximity System
-function ns.getNumberTargets()
-    local now = GetTime()
+do
+    function ns.iterateTargets()
+        return next, counted, nil
+    end
 
-    if now - lastCycle < 0. then return lastCount end
-    lastCycle = now
+    -- New Nameplate Proximity System
+    function ns.getNumberTargets()
+        local now = GetTime()
 
-    local showNPs = GetCVar( "nameplateShowEnemies" ) == "1"
+        if now - lastCycle < 0.1 then return lastCount end
+        lastCycle = now
 
-    wipe(nameplates)
+        local showNPs = GetCVar( "nameplateShowEnemies" ) == "1"
 
-    local count = 0
+        wipe(counted)
 
-    Hekili.TargetDebug = ""
+        local count = 0
 
-    local spec = state.spec.id
-    spec = spec and rawget(Hekili.DB.profile.specs, spec)
+        Hekili.TargetDebug = ""
 
-    if spec and spec.nameplates and showNPs then
-        for unit, guid in pairs(npGUIDs) do
-            if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitInPhase(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
-                local npcid = guid:match("(%d+)-%x-$")
+        local spec = state.spec.id
+        spec = spec and rawget(Hekili.DB.profile.specs, spec)
 
-                if not enemyExclusions[npcid] then
-                    local _, range = RC:GetRange(unit)
+        if spec and spec.nameplates and showNPs then
+            for unit, guid in pairs(npGUIDs) do
+                if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitInPhase(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
+                    local npcid = guid:match("(%d+)-%x-$")
 
-                    guidRanges[ guid ] = range
+                    if not enemyExclusions[npcid] then
+                        local _, range = RC:GetRange(unit)
 
-                    local rate, n = Hekili:GetTTD(unit)
-                    Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n",
-                        Hekili.TargetDebug,
-                        unit,
-                        range or 0,
-                        guid,
-                        rate or 0,
-                        n or 0 )
+                        guidRanges[ guid ] = range
 
-                    if range and range <= spec.nameplateRange then
-                        count = count + 1
+                        local rate, n = Hekili:GetTTD(unit)
+                        Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
+
+                        if range and range <= spec.nameplateRange then
+                            count = count + 1
+                            counted[ guid ] = true
+                        end
                     end
                 end
-            end
 
-            nameplates[guid] = true
+                counted[ guid ] = counted[ guid ] or false
+            end
         end
 
         for _, unit in ipairs(unitIDs) do
             local guid = UnitGUID(unit)
 
-            if guid and not nameplates[guid] and UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitInPhase(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
+            if guid and counted[ guid ] == nil then
+                if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitInPhase(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
+                    local npcid = guid:match("(%d+)-%x-$")
+
+                    if not enemyExclusions[npcid] then
+                        local _, range = RC:GetRange(unit)
+
+                        guidRanges[ guid ] = range
+
+                        local rate, n = Hekili:GetTTD(unit)
+                        Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
+
+                        if range and range <= spec.nameplateRange then
+                            count = count + 1
+                            counted[ guid ] = true
+                        end
+                    end
+
+                    counted[ guid ] = counted[ guid ] or false
+                end
+            end
+        end
+
+        if not showNPs or not spec or (spec.damage or not spec.nameplates) then
+            local db = spec and (spec.myTargetsOnly and myTargets or targets) or targets
+
+            for guid, seen in pairs(db) do
                 local npcid = guid:match("(%d+)-%x-$")
 
-                if not enemyExclusions[npcid] then
-                    local _, range = RC:GetRange(unit)
-
-                    guidRanges[ guid ] = range
-
-                    local rate, n = Hekili:GetTTD(unit)
-                    Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n",
-                        Hekili.TargetDebug,
-                        unit,
-                        range or 0,
-                        guid,
-                        rate or 0,
-                        n or 0 )
-
-                    if range and range <= spec.nameplateRange then
-                        count = count + 1
+                if counted[ guid ] == nil then
+                    if not enemyExclusions[npcid] and ( spec.damageRange == 0 or ( not guidRanges[ guid ] or guidRanges[ guid ] <= spec.damageRange ) ) then
+                        Hekili.TargetDebug = format("%s%12s - %2d - %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid)
+                        count = count + 1                    
+                        counted[ guid ] = true
+                    else
+                        counted[ guid ] = false
                     end
                 end
-
-                nameplates[guid] = true
             end
         end
-    end
 
-    if not showNPs or not spec or (spec.damage or not spec.nameplates) then
-        local db = spec and (spec.myTargetsOnly and myTargets or targets) or targets
+        count = max( 1, count )
 
-        for guid, seen in pairs(db) do
-            local npcid = guid:match("(%d+)-%x-$")
-
-            if not nameplates[guid] and not enemyExclusions[npcid] and ( spec.damageRange == 0 or ( not guidRanges[guid] or guidRanges[ guid ] <= spec.damageRange ) ) then
-                Hekili.TargetDebug = format("%s%12s - %2d - %s\n", Hekili.TargetDebug, "dmg", guidRanges[guid]  or 0, guid)
-                count = count + 1
-                nameplates[guid] = true
-            end
+        if count ~= lastCount then
+            lastCount = count
+            Hekili:ForceUpdate( "TARGET_COUNT_CHANGED" )
         end
+
+        return count
     end
-
-    count = max( 1, count )
-
-    if count ~= lastCount then
-        lastCount = count
-        Hekili:ForceUpdate( "TARGET_COUNT_CHANGED" )
-    end
-
-    return count
 end
-
 
 function Hekili:GetNumTargets()
     return ns.getNumberTargets()
@@ -159,7 +160,7 @@ end
 
 
 function ns.dumpNameplateInfo()
-    return nameplates
+    return counted
 end
 
 
@@ -264,6 +265,10 @@ ns.wipeDebuffs = function()
         table.wipe(debuffs[k])
         debuffCount[k] = 0
     end
+end
+
+ns.actorHasDebuff = function( target, spell )
+    return ( debuffs[ spell ] and debuffs[ spell ][ target ] ~= nil ) or false
 end
 
 ns.trackDebuff = function(spell, target, time, application)
@@ -403,6 +408,8 @@ ns.eliminateUnit = function(id, force)
             ns.trackDebuff(k, id)
         end
     end
+
+    ns.callHook( "UNIT_ELIMINATED", id )
 end
 
 local incomingDamage = {}
