@@ -1854,11 +1854,11 @@ local mt_state = {
         if t.settings[k] ~= nil then return t.settings[k] end
         if t.toggle[k] ~= nil then return t.toggle[k] end
 
-        --[[ local stack = debugstack()
-        -- if stack then stack = stack:match( "^(.-\n?.-\n?.-)\n" ) end
+        local stack = debugstack()
+        if stack then stack = stack:match( "^(.-\n?.-\n?.-)\n" ) end
 
         Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable." .. ( stack and ( "\n" .. stack ) or "" ) )
-        return nil ]]
+        return nil
     end,
     __newindex = function(t, k, v)
         rawset(t, k, v)
