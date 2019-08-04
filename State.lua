@@ -1772,7 +1772,7 @@ local mt_state = {
         elseif k == 'cast_regen' then
             return ( max( state.gcd.execute, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen ) -- - ( ability and ability.spend or 0 )
 
-        elseif k == 'crit_pct_current' or 'crit_percent_current' then
+        elseif k == 'crit_pct_current' or k == 'crit_percent_current' then
             -- This is the crit % of the current ability.
             -- Pulse from the ability's 'critical' value or uses current character sheet crit.
             return ability and ability.critical or t.stat.crit
