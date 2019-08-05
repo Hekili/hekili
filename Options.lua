@@ -8463,8 +8463,7 @@ ns.accomm = accommodate_targets
 
 
 local function Sanitize( segment, i, line, warnings )
-
-    if i == nil then return i end
+    if i == nil then return end
 
     local operators = {
         [">"] = true,
@@ -8484,14 +8483,8 @@ local function Sanitize( segment, i, line, warnings )
         ['%%'] = true
     }
 
-    local times = 0
-
-
     for token in i:gmatch( "stealthed" ) do
-
-        local times = 0
-        while (i:find(token)) do
-
+        while( i:find(token) ) do
             local strpos, strend = i:find(token)
 
             local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
@@ -8509,11 +8502,29 @@ local function Sanitize( segment, i, line, warnings )
 
         i = i:gsub( '\v', token )
         i = i:gsub( '\a', token..'.rogue' )
+    end
 
-    end 
+    for token in i:gmatch( "cooldown" ) do
+        while( i:find(token) ) do
+            local strpos, strend = i:find(token)
+
+            local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
+            local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
+            local start = strpos > 1 and i:sub( 1, strpos - 1 ) or ''
+            local finish = strend < i:len() and i:sub( strend + 1 ) or ''
+
+            if pre ~= '.' and pre ~= '_' and not pre:match('%a') and post ~= '.' and post ~= '_' and not post:match('%a') then
+                i = start .. '\a' .. finish
+            else
+                i = start .. '\v' .. finish
+            end
+        end
+
+        i = i:gsub( '\v', token )
+        i = i:gsub( '\a', 'action_cooldown' )
+    end
 
     for token in i:gmatch( "equipped%.[0-9]+" ) do
-
         local itemID = tonumber( token:match( "([0-9]+)" ) )
         local itemName = GetItemInfo( itemID )
         local itemKey = formatKey( itemName )
@@ -8523,6 +8534,8 @@ local function Sanitize( segment, i, line, warnings )
         end
 
     end   
+
+    local times = 0
 
     i, times = i:gsub( "pet%.[%w_]+%.([%w_]+)%.", "%1." )
     if times > 0 then
