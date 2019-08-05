@@ -1546,6 +1546,10 @@ local mt_state = {
         elseif k == 'time_to_die' then
             if not t.boss then return 3600 end
             return max( 1, Hekili:GetGreatestTTD() - ( t.offset + t.delay ) )
+        
+        elseif k:sub(1, 12) == "time_to_pct_" then
+            local percent = tonumber( k:sub( 13 ) ) or 0
+            return Hekili:GetGreatestTimeToPct( percent ) - ( t.offset + t.delay )
 
         elseif k == "expected_combat_length" then
             if not t.boss then return 3600 end
@@ -1745,6 +1749,9 @@ local mt_state = {
                 return t.target.maxR / v
             end
             return 0
+        
+        elseif k == 'action_cooldown' then
+            return ability and ability.cooldown or 0
 
         elseif k == 'charges' then
             return t.cooldown[ action ].charges
@@ -2245,6 +2252,10 @@ local mt_target = {
 
         elseif k == 'is_boss' then
             return ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) )
+
+        elseif k:sub(1, 12) == 'time_to_pct_' then
+            local percent = tonumber( k:sub( 13 ) ) or 0
+            return Hekili:GetTimeToPct( "target", percent )
 
         elseif k:sub(1, 6) == 'within' then
             local maxR = k:match( "^within(%d+)$" )
