@@ -594,6 +594,29 @@ do
         return ceil(healthPct / enemy.rate), enemy.n
     end
 
+    function Hekili:GetTimeToPct( unit, percent )
+        local default = 0.7 * ( UnitIsTrivial( unit ) and TRIVIAL or FOREVER )
+        local guid = UnitExists( unit ) and UnitCanAttack( "player", unit ) and UnitGUID( unit )
+
+        if not guid then return default end
+
+        local enemy = db[ guid ]
+        if not enemy then return default end
+
+        if enemy.n < 3 or enemy.rate == 0 then
+            return default, enemy.n
+        end
+
+        local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+        health = health + UnitGetTotalAbsorbs( unit )
+
+        local healthPct = health / healthMax
+
+        if healthPct <= percent then return 0, enemy.n end
+
+        return ceil( ( healthPct - percent ) / enemy.rate ), n
+    end
+
     function Hekili:GetGreatestTTD()
         local time, validUnit = 0, false
 
@@ -604,9 +627,22 @@ do
             end
         end
 
-        if not validUnit then
-            return FOREVER
+        if not validUnit then return 0 end
+
+        return time
+    end
+
+    function Hekili:GetGreatestTimeToPct( percent )
+        local time, validUnit = 0, false
+
+        for k, v in pairs(db) do
+            if v.n > 3 and v.lastHealth > percent then
+                time = max( time, ( v.lastHealth - percent ) / v.rate )
+                validUnit = true
+            end
         end
+
+        if not validUnit then return FOREVER end
 
         return time
     end
