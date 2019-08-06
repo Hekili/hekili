@@ -218,7 +218,7 @@ local oneTimeFixes = {
 
     autoconvertPSCDsToCBs_20190805 = function( p )
         for _, pack in pairs( p.packs ) do
-            for _, list in pairs( pack ) do
+            for _, list in pairs( pack.lists ) do
                 for i, entry in ipairs( list ) do
                     if entry.action == "pocketsized_computation_device" then
                         entry.action = "cyclotronic_blast"
@@ -226,6 +226,8 @@ local oneTimeFixes = {
                 end
             end
         end
+
+        p.runOnce.autoconvertPSCDsToCBs_20190805 = nil -- repeat as needed.
     end,
 }
 
@@ -4170,7 +4172,9 @@ do
                         end
 
                         options.args.core.plugins.settings[ option.name ] = option.info
-                        self.DB.profile.specs[ id ].settings[ option.name ] = self.DB.profile.specs[ id ].settings[ option.name ] or option.default
+                        if self.DB.profile.specs[ id ].settings[ option.name ] == nil then
+                            self.DB.profile.specs[ id ].settings[ option.name ] = option.default
+                        end
                     end
                 end
 
@@ -7494,8 +7498,6 @@ function Hekili:RefreshOptions()
     self:EmbedSpecOptions()
     self:EmbedAbilityOptions()
     self:EmbedItemOptions()
-
-    self.Options.args.class = ns.ClassSettings()
 
     -- Until I feel like making this better at managing memory.
     collectgarbage()

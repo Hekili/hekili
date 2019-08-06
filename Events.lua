@@ -216,7 +216,6 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
 
     ns.checkImports()
     ns.updateGear()
-    ns.restoreDefaults( nil, true )
 
     if state.combat == 0 and InCombatLockdown() then
         state.combat = GetTime() - 0.01
