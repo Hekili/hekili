@@ -2179,13 +2179,13 @@ do
         max_stack = 1
     } )    
 
-    all:RegisterAbility( "pocketsized_computation_device", {
+    --[[ all:RegisterAbility( "pocketsized_computation_device", {
         -- key = "pocketsized_computation_device",
         cast = 0,
         cooldown = 120,
         gcd = "spell",
 
-        item = 167555,
+        -- item = 167555,
         texture = 2115322,
         bind = { "cyclotronic_blast", "harmonic_dematerializer", "inactive_red_punchcard" },
         startsCombat = true,
@@ -2194,7 +2194,7 @@ do
 
         usable = function() return false, "no supported red punchcard installed" end,
         copy = "inactive_red_punchcard"
-    } )
+    } ) ]]
 
     all:RegisterAbility( "cyclotronic_blast", {
         id = 293491,

@@ -215,6 +215,18 @@ local oneTimeFixes = {
             end
         end
     end,
+
+    autoconvertPSCDsToCBs_20190805 = function( p )
+        for _, pack in pairs( p.packs ) do
+            for _, list in pairs( pack ) do
+                for i, entry in ipairs( list ) do
+                    if entry.action == "pocketsized_computation_device" then
+                        entry.action = "cyclotronic_blast"
+                    end
+                end
+            end
+        end
+    end,
 }
 
 
@@ -8796,7 +8808,8 @@ do
                 if a == 1 then
                     local ability = str:trim()
 
-                    if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then                   
+                    if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then
+                        if ability == "pocketsized_computation_device" then ability = "cyclotronic_blast" end
                         result.action = class.abilities[ ability ] and class.abilities[ ability ].key or ability
                     elseif not ignore_actions[ ability ] then
                         table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
