@@ -1867,8 +1867,11 @@ do
         cast = 0,
         cooldown = 0,
         gcd = 'off',
-
+        
         item = 158075,
+        essence = true,
+        
+        usable = function () return false, "your equipped major essence is supported elsewhere in the priority or is not an active ability" end
     } )
 end
 
