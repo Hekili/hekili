@@ -525,11 +525,18 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 -- Check for commands before checking actual actions.
                 local entry = list[ actID ]
 
-                state.this_action = entry.action
+                local action = entry.action
+                local entryReplaced = false
+                if action == "heart_essence" and class.essence_unscripted and class.active_essence then
+                    action = class.active_essence
+                    entryReplaced = true
+                end
+
+                state.this_action = action
                 state.delay = nil
 
                 rDepth = rDepth + 1
-                -- if debug then self:Debug( "\n[%03d] %s ( %s - %d )", rDepth, entry.action, listName, actID ) end
+                -- if debug then self:Debug( "\n[%03d] %s ( %s - %d )", rDepth, action, listName, actID ) end
 
                 local ability = class.abilities[ state.this_action ]
 
@@ -540,13 +547,16 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 local enabled = self:IsSpellEnabled( state.this_action )
 
                 if debug then
-                    local d = format( "\n[%03d] %s ( %s - %d )", rDepth, entry.action, listName, actID )
+                    local d = "\n"                    
+                    if entryReplaced then d = d .. format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.", class.active_essence ) end
+                    
+                    d = d .. format( "\n[%03d] %s ( %s - %d )", rDepth, action, listName, actID )
                     if not known then d = d .. " - " .. ( reason or "ability unknown" )
                     elseif not enabled then d = d .. " - ability disabled." end
                     self:Debug( d )
                 end
 
-                -- if debug then self:Debug( "%s is %sknown and %senabled.", entry.action, known and "" or "NOT ", enabled and "" or "NOT " ) end
+                -- if debug then self:Debug( "%s is %sknown and %senabled.", action, known and "" or "NOT ", enabled and "" or "NOT " ) end
 
                 if ability and known and enabled then
                     local scriptID = packName .. ":" .. listName .. ":" .. actID
@@ -572,13 +582,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         if precombatFilter and not ability.essential then
                             if debug then self:Debug( "We are already in-combat and this pre-combat action is not essential.  Skipping." ) end
                         else
-                            if entry.action == 'call_action_list' or entry.action == 'run_action_list' or entry.action == 'use_items' then
+                            if action == 'call_action_list' or action == 'run_action_list' or action == 'use_items' then
                                 -- We handle these here to avoid early forking between starkly different APLs.
                                 local aScriptPass = true
                                 local ts = not strict and scripts:IsTimeSensitive( scriptID )
 
                                 if not entry.criteria or entry.criteria == "" then
-                                    if debug then self:Debug( "There is no criteria for %s.", entry.action == 'use_items' and "Use Items" or "this action list." ) end
+                                    if debug then self:Debug( "There is no criteria for %s.", action == 'use_items' and "Use Items" or "this action list." ) end
                                     -- aScriptPass = ts or self:CheckStack()
                                 else
                                     aScriptPass = ts or scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
@@ -591,8 +601,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 end
 
                                 if aScriptPass then
-                                    if entry.action == "use_items" then
-                                        -- self:AddToStack( scriptID, "items", caller, entry.action == "run_action_list" )
+                                    if action == "use_items" then
+                                        -- self:AddToStack( scriptID, "items", caller, action == "run_action_list" )
                                         local pAction, pWait = rAction, rWait
                                         rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rDepth, scriptID )
                                         if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NO ACTION", rWait ) end
@@ -605,7 +615,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                         elseif name and pack.lists[ name ] then
                                             if debug then self:Debug( "Action list (%s) was found.", name ) end
-                                            self:AddToStack( scriptID, name, caller, entry.action == "run_action_list" )
+                                            self:AddToStack( scriptID, name, caller, action == "run_action_list" )
 
                                             rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rDepth, scriptID )
                                             if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NO ACTION", rWait ) end
@@ -613,7 +623,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             self:PopStack()
 
                                             -- REVISIT THIS:  IF A RUN_ACTION_LIST CALLER IS NOT TIME SENSITIVE, DON'T BOTHER LOOPING THROUGH IT IF ITS CONDITIONS DON'T PASS.
-                                            -- if entry.action == 'run_action_list' and not ts then
+                                            -- if action == 'run_action_list' and not ts then
                                             --    if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
                                             --    break
                                             -- end
@@ -625,7 +635,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     end
                                 end
 
-                            elseif entry.action == 'variable' then
+                            elseif action == 'variable' then
                                 local name = state.args.var_name
 
                                 if name ~= nil then
@@ -635,22 +645,22 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     if debug then self:Debug( " - variable name not provided, skipping." ) end
                                 end
 
-                            elseif state.buff.casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ entry.action ] then
-                                if debug then self:Debug( "Player is casting and cannot use " .. entry.action .. " while casting." ) end
+                            elseif state.buff.casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ action ] then
+                                if debug then self:Debug( "Player is casting and cannot use " .. action .. " while casting." ) end
 
                             else
                                 -- Target Cycling.
                                 -- We have to determine *here* whether the ability would be used on the current target or a different target.
-                                if state.args.cycle_targets == 1 and state.settings.cycle and state.spell_targets[ entry.action ] > 1 then
+                                if state.args.cycle_targets == 1 and state.settings.cycle and state.spell_targets[ action ] > 1 then
                                     state.SetupCycle( ability )
                                 end
 
                                 local usable, why = state:IsUsable()
                                 if debug then
                                     if usable then
-                                        self:Debug( "The action (%s) is usable at (%.2f + %.2f) with cost of %d.", entry.action, state.offset, state.delay, state.action[ entry.action ].cost or 0 )
+                                        self:Debug( "The action (%s) is usable at (%.2f + %.2f) with cost of %d.", action, state.offset, state.delay, state.action[ action ].cost or 0 )
                                     else
-                                        self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", entry.action, state.offset, state.delay, why or "IsUsable returned false" )
+                                        self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", action, state.offset, state.delay, why or "IsUsable returned false" )
                                     end
                                 end
 
@@ -665,7 +675,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                         if hasResources then
                                             local aScriptPass = self:CheckStack()
-                                            local channelPass = not state.channeling or self:CheckChannel( entry.action, rWait )
+                                            local channelPass = not state.channeling or self:CheckChannel( action, rWait )
 
                                             if not aScriptPass then
                                                 if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
@@ -690,7 +700,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                             -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.                                        
                                             if not aScriptPass then
-                                                state.recheck( entry.action, script, Stack )
+                                                state.recheck( action, script, Stack )
 
                                                 if #state.recheckTimes == 0 then
                                                     if debug then self:Debug( "There were no recheck events to check." ) end
@@ -707,7 +717,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         if new_wait >= 10 then
                                                             if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 10s ).", i, new_wait ) end
                                                             break
-                                                        elseif ( entry.action ~= state.channel ) and waitValue <= base_delay + step + 0.05 then
+                                                        elseif ( action ~= state.channel ) and waitValue <= base_delay + step + 0.05 then
                                                             if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f <= %.2f + 0.05 ).", i, waitValue, new_wait ) end
                                                             break
                                                         end
@@ -717,7 +727,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         local usable, why = state:IsUsable()
                                                         if debug then
                                                             if not usable then
-                                                                self:Debug( "The action (%s) is no longer usable at (%.2f + %.2f) because %s.", entry.action, state.offset, state.delay, why or "IsUsable returned false" )
+                                                                self:Debug( "The action (%s) is no longer usable at (%.2f + %.2f) because %s.", action, state.offset, state.delay, why or "IsUsable returned false" )
                                                                 state.delay = base_delay
                                                                 break
                                                             end
@@ -725,7 +735,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                         if self:CheckStack() then
                                                             aScriptPass = scripts:CheckScript( scriptID )
-                                                            channelPass = self:CheckChannel( entry.action, rWait )
+                                                            channelPass = self:CheckChannel( action, rWait )
 
                                                             if debug then
                                                                 self:Debug( "Recheck #%d ( +%.2f ) %s: %s", i, state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( scriptID ) )
@@ -738,7 +748,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         end
 
                                                         if aScriptPass then
-                                                            if first_rechannel == 0 and state.channel and entry.action == state.channel then
+                                                            if first_rechannel == 0 and state.channel and action == state.channel then
                                                                 first_rechannel = state.delay
                                                                 if debug then self:Debug( "This is the currently channeled spell; it would be rechanneled at this time, will check end of channel.  " .. state.channel_remains ) end
                                                             elseif first_rechannel > 0 and ( not state.channel or state.channel_remains < 0.05 ) then
@@ -753,7 +763,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             end
 
                                             -- Need to revisit this, make sure that lower priority abilities are only tested after the channel is over.
-                                            if entry.action == state.channel then
+                                            if action == state.channel then
                                                 if ( state.now + state.offset + rWait <= state.player.channelEnd + 0.05 ) then 
                                                     -- If a higher priority ability is selected, we should stop here.
                                                     if debug then self:Debug( "Our prior recommendation ( " .. rAction .. " ) can break or finish our channel; stopping." ) end
@@ -766,7 +776,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             end
 
                                             if aScriptPass then
-                                                if entry.action == 'potion' then
+                                                if action == 'potion' then
                                                     local potionName = state.args.potion or state.args.name
                                                     if not potionName or potionName == "default" then potionName = class.potion end
                                                     local potion = class.potions[ potionName ]
@@ -805,7 +815,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         state.selectedAction = rAction
                                                     end
 
-                                                elseif entry.action == 'wait' then
+                                                elseif action == 'wait' then
                                                     -- local args = scripts:GetModifiers()
                                                     -- local args = ns.getModifiers( listID, actID )
                                                     local sec = state.args.sec or 0.5
@@ -822,11 +832,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         end
                                                     end
 
-                                                elseif entry.action == 'pool_resource' then
+                                                elseif action == 'pool_resource' then
                                                     if state.args.for_next == 1 and false then
                                                         -- Pooling for the next entry in the list.
                                                         local next_entry  = list[ actID + 1 ]
-                                                        local next_action = next_entry and next_entry.action
+                                                        local next_action = next_entry and next_action
                                                         local next_id     = next_action and class.abilities[ next_action ] and class.abilities[ next_action ].id
 
                                                         local extra_amt   = state.args.extra_amount or 0

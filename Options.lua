@@ -4313,7 +4313,11 @@ do
             data.line_cd = nil
         end
 
-        self:LoadScript( pack, packControl.listName, actionID )
+        if option == "action" then
+            self:LoadScripts()
+        else
+            self:LoadScript( pack, packControl.listName, actionID )
+        end
     end
 
 

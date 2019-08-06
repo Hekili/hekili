@@ -381,73 +381,73 @@ do
 
 
     -- Essences
-    if select(4, GetBuildInfo()) >= 80200 then
-        local AE = C_AzeriteEssence
-        local GetMilestoneEssence, GetEssenceInfo = AE.GetMilestoneEssence, AE.GetEssenceInfo
-        local milestones = { 115, 116, 117 }
+    local AE = C_AzeriteEssence
+    local GetMilestoneEssence, GetEssenceInfo = AE.GetMilestoneEssence, AE.GetEssenceInfo
+    local milestones = { 115, 116, 117 }
 
-        local essenceKeys = {
-            [2]  = "azeroths_undying_gift",
-            [3]  = "sphere_of_suppression",
-            [4]  = "worldvein_resonance",
-            [5]  = "essence_of_the_focusing_iris",
-            [6]  = "purification_protocol",
-            [7]  = "anima_of_life_and_death",
-            [12] = "the_crucible_of_flame",
-            [13] = "nullification_dynamo",
-            [14] = "condensed_lifeforce",
-            [15] = "ripple_in_space",
-            [17] = "everrising_tide",
-            [18] = "artifice_of_time",
-            [19] = "well_of_existence",
-            [20] = "lifebinders_invocation",
-            [21] = "vitality_conduit",
-            [22] = "vision_of_perfection",
-            [23] = "blood_of_the_enemy",
-            [25] = "aegis_of_the_deep",
-            [27] = "memory_of_lucid_dreams",
-            [28] = "the_unbound_force",
-            [32] = "conflict_and_strife"
-        }
+    local essenceKeys = {
+        [2]  = "azeroths_undying_gift",
+        [3]  = "sphere_of_suppression",
+        [4]  = "worldvein_resonance",
+        [5]  = "essence_of_the_focusing_iris",
+        [6]  = "purification_protocol",
+        [7]  = "anima_of_life_and_death",
+        [12] = "the_crucible_of_flame",
+        [13] = "nullification_dynamo",
+        [14] = "condensed_lifeforce",
+        [15] = "ripple_in_space",
+        [17] = "everrising_tide",
+        [18] = "artifice_of_time",
+        [19] = "well_of_existence",
+        [20] = "lifebinders_invocation",
+        [21] = "vitality_conduit",
+        [22] = "vision_of_perfection",
+        [23] = "blood_of_the_enemy",
+        [25] = "aegis_of_the_deep",
+        [27] = "memory_of_lucid_dreams",
+        [28] = "the_unbound_force",
+        [32] = "conflict_and_strife"
+    }
 
-        local essenceMajors = {
-            aegis_of_the_deep = "aegis_of_the_deep",
-            anima_of_life_and_death = "anima_of_death",
-            -- artifice_of_time = "",
-            azeroths_undying_gift = "azeroths_undying_gift",
-            blood_of_the_enemy = "blood_of_the_enemy",
-            condensed_lifeforce = "guardian_of_azeroth",
-            --conflict_and_strife = "",
-            essence_of_the_focusing_iris = "focused_azerite_beam",
-            -- everrising_tide = "",
-            -- lifebinders_invocation = "",
-            memory_of_lucid_dreams = "memory_of_lucid_dreams",
-            nullification_dynamo = "empowered_null_barrier",
-            purification_protocol = "purifying_blast",
-            ripple_in_space = "ripple_in_space",
-            sphere_of_suppression = "suppressing_pulse",
-            the_crucible_of_flame = "concentrated_flame",
-            the_unbound_force = "the_unbound_force",
-            -- vision_of_perfection = "",
-            -- vitality_conduit = "",
-            -- well_of_existence = "",
-            worldvein_resonance = "worldvein_resonance",
-        }
+    local essenceMajors = {
+        aegis_of_the_deep = "aegis_of_the_deep",
+        anima_of_life_and_death = "anima_of_death",
+        -- artifice_of_time = "",
+        azeroths_undying_gift = "azeroths_undying_gift",
+        blood_of_the_enemy = "blood_of_the_enemy",
+        condensed_lifeforce = "guardian_of_azeroth",
+        --conflict_and_strife = "",
+        essence_of_the_focusing_iris = "focused_azerite_beam",
+        -- everrising_tide = "",
+        -- lifebinders_invocation = "",
+        memory_of_lucid_dreams = "memory_of_lucid_dreams",
+        nullification_dynamo = "empowered_null_barrier",
+        purification_protocol = "purifying_blast",
+        ripple_in_space = "ripple_in_space",
+        sphere_of_suppression = "suppressing_pulse",
+        the_crucible_of_flame = "concentrated_flame",
+        the_unbound_force = "the_unbound_force",
+        -- vision_of_perfection = "",
+        -- vitality_conduit = "",
+        -- well_of_existence = "",
+        worldvein_resonance = "worldvein_resonance",
+    }
 
-        for _, key in pairs( essenceKeys ) do
-            state.essence[ key ] = { rank = 0, major = false }
+    for _, key in pairs( essenceKeys ) do
+        state.essence[ key ] = { rank = 0, major = false }
+    end
+
+
+    function ns.updateEssences()
+        local e = state.essence
+
+        for k, v in pairs( e ) do
+            v.rank = 0
         end
 
+        class.active_essence = nil
 
-        function ns.updateEssences()
-            local e = state.essence
-
-            for k, v in pairs( e ) do
-                v.rank = 0
-            end
-
-            class.active_essence = nil
-
+        if state.equipped[ 158075 ] then
             for i, ms in ipairs( milestones ) do
                 local essence = GetMilestoneEssence( ms )
 
@@ -468,9 +468,9 @@ do
                 end
             end
         end
-
-        ns.updateEssences()
     end
+
+    ns.updateEssences()
 end
 
 
@@ -494,18 +494,8 @@ do
                 end
             end
         end
-            
-        if class.active_essence then
-            if not self:IsEssenceScripted( class.active_essence ) then
-                insert( itemList, 1, {
-                    action = class.active_essence,
-                    enabled = true,
-                    criteria = "( ! settings.boss || boss ) & " ..
-                        "( settings.targetMin = 0 || active_enemies >= settings.targetMin ) & " ..
-                        "( settings.targetMax = 0 || active_enemies <= settings.targetMax )"
-                } )
-            end
-        end
+                
+        class.essence_unscripted = ( class.active_essence and not self:IsEssenceScripted( class.azerite_essence ) ) or false
 
         self:LoadItemScripts()
     end

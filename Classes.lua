@@ -1860,6 +1860,16 @@ do
         cooldown = 120,
         gcd = 'off',
     } )
+
+
+    all:RegisterAbility( "heart_essence", {
+        name = "|cff00ccff[Heart Essence]|r",
+        cast = 0,
+        cooldown = 0,
+        gcd = 'off',
+
+        item = 158075,
+    } )
 end
 
 
@@ -2201,7 +2211,7 @@ do
         -- key = "pocketsized_computation_device",
         cast = function () return 1.5 * haste end,
         channeled = function () return cooldown.cyclotronic_blast.remains > 0 end,
-        cooldown = 120,
+        cooldown = function () return equipped.cyclotronic_blast and 120 or 0 end,
         gcd = "spell",
 
         item = 167672,

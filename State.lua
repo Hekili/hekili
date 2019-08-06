@@ -4349,9 +4349,8 @@ end
 function state.putTrinketsOnCD( val )
     val = val or 10
 
-    setCooldown( "use_items", max( val, state.cooldown.use_items.remains ) )
     for i, item in ipairs( state.items ) do
-        setCooldown( item, max( val, state.cooldown.use_items.remains ) )
+        if not class.abilities[ item ].essence then setCooldown( item, val ) end
     end
 end
 
