@@ -588,7 +588,7 @@ do
         local healthPct = health / healthMax
 
         if healthPct == 0 then
-            return 0, enemy.n
+            return 1, enemy.n
         end
 
         return ceil(healthPct / enemy.rate), enemy.n
@@ -620,14 +620,16 @@ do
     function Hekili:GetGreatestTTD()
         local time, validUnit = 0, false
 
-        for k, v in pairs(db) do
+        for k, v in pairs( db ) do
             if v.n > 3 then
-                time = max(time, ceil(v.lastHealth / v.rate))
+                time = max( time, ceil(v.lastHealth / v.rate ) )
                 validUnit = true
             end
         end
 
-        if not validUnit then return 0 end
+        if not validUnit then
+            return FOREVER
+        end
 
         return time
     end
