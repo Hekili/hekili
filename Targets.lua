@@ -627,9 +627,7 @@ do
             end
         end
 
-        if not validUnit then
-            return FOREVER
-        end
+        if not validUnit then return FOREVER end
 
         return time
     end
