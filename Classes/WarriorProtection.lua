@@ -828,7 +828,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
     spec:RegisterSetting( "free_revenge", true, {
-        name = "Use Free |T132353:0|t Revenge Only",
+        name = "Free |T132353:0|t Revenge",
         desc = "If checked, the Revenge ability will only be recommended when it costs 0 Rage to use.",
         type = "toggle",
         width = 1.5
