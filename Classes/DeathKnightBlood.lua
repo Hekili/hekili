@@ -1222,14 +1222,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         damage = true,
         damageExpiration = 8,
 
-        potion = "superior_battle_potion_of_strength",
+        potion = "potion_of_unbridled_fury",
 
         package = "Blood",        
     } )
 
 
     spec:RegisterSetting( "save_blood_shield", true, {
-        name = "Save |T237517:0|t Blood Shield Absorb",
+        name = "Save |T237517:0|t Blood Shield",
         desc = "If checked, the default priority (or any priority checking |cFFFFD100save_blood_shield|r) will try to avoid letting your |T237517:0|t Blood Shield fall off during lulls in damage.",
         type = "toggle",
         width = 1.5
