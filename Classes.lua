@@ -4658,6 +4658,22 @@ function Hekili:SpecializationChanged()
         end
     end
 
+    for k in pairs( class.abilityList ) do
+        local ability = class.abilities[ k ]
+        
+        if ability and ability.id > 0 then
+            if not ability.texture then
+                local _, _, tex = GetSpellInfo( ability.id )
+
+                if tex then
+                    ability.texture = tex
+                    class.abilityList[ k ] = "|T" .. ability.texture .. ":0|t " .. ability.name
+                end
+            else
+                class.abilityList[ k ] = "|T" .. ability.texture .. ":0|t " .. ability.name
+            end
+        end
+    end
 
     state.GUID = UnitGUID( 'player' )
     state.player.unit = UnitGUID( 'player' )
