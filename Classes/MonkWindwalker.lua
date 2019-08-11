@@ -1328,7 +1328,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     } )
 
     spec:RegisterSetting( "optimize_reverse_harm", false, {
-        name = "Optimize |T627486:0|t Reverse Harm Target",
+        name = "Optimize |T627486:0|t Reverse Harm",
         desc = "If checked, the |T627486:0|t Reverse Harm's caption will show the recommended target's name.",
         type = "toggle",
         width = 1.5
