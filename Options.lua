@@ -5215,7 +5215,7 @@ do
                                                 local action = entry.action
                                                 local desc
 
-                                                local warning = false
+                                                local warning, color = false
 
                                                 if not action then
                                                     action = "Unassigned"
@@ -5272,13 +5272,13 @@ do
 
                                                 if not entry.enabled then
                                                     warning = true
+                                                    color = "|cFF808080"
                                                 end
 
                                                 if desc then desc = desc:gsub( "[\r\n]", "" ) end
 
-                                                local color = "|cFFFFD100"
-                                                if warning then
-                                                    color = "|cFFFF0000"
+                                                if not color then
+                                                    color = warning and "|cFFFF0000" or "|cFFFFD100"
                                                 end
 
                                                 if desc then
