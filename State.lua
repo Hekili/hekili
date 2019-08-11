@@ -3017,6 +3017,9 @@ local mt_default_buff = {
         elseif k == 'ticks' then
             if t.up then return 1 + ( ( class.auras[ t.key ].duration or ( 30 * state.haste ) ) / ( class.auras[ t.key ].tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
             return 0
+        
+        elseif k == 'tick_time' then
+            return nil
 
         elseif k == 'ticks_remain' then
             if t.up then return math.floor( t.remains / t.tick_time ) end
@@ -3028,7 +3031,7 @@ local mt_default_buff = {
             end
         end
 
-        Error( "UNK: buff." .. t.key .. "." .. k )
+        Error( "UNK: buff." .. t.key .. "." .. k .. "\n" .. debugstack(2) )
 
     end,
 
@@ -3440,6 +3443,8 @@ do
             local value = 0
             local now = state.query_time
 
+            local which_mod = "value"
+
             for i, entry in ipairs( data ) do
                 local scriptID = entry.id
                 local currPath = entry.fullPath .. ":" .. now
@@ -3495,13 +3500,17 @@ do
                             sub = "Subtract Value",]]
 
                     if op == "set" or op == "setif" then
-                        if passed then value = state.args.value
+                        if passed then
+                            value = state.args.value
                         else
                             local v2 = state.args.value_else
-                            if v2 ~= nil then value = state.args.value_else end
+                            if v2 ~= nil then
+                                value = state.args.value_else
+                                which_mod = "value_else"
+                            end
                         end
                     elseif op == "reset" then
-                        value = passed and 0 or value
+                        value = passed and 0 or value                        
                     elseif op == "default" and passed then
                         default = state.args.value
                     else
@@ -3544,7 +3553,10 @@ do
                         end
                     end
 
-                    if debug then Hekili:Debug( "var[%s] [%02d/%s] :: op: %s, conditions: %s -- [%s]; value: %s", var, i, scriptID, state.args.op or "autoset", scripts:GetConditionsAndValues( scriptID ), tostring( passed ), tostring( value ) ) end
+                    if debug then
+                        Hekili:Debug( "variable.%s [%02d/%s] :: op: %s, conditions: %s -- [%s]", var, i, scriptID, state.args.op or "autoset", scripts:GetConditionsAndValues( scriptID ), tostring( passed ) )
+                        if passed then Hekili:Debug( " - %s: %s, result: %s", which_mod, scripts:GetModifierValues( which_mod, scriptID ), tostring( value ) ) end
+                    end
                 end
             end
 

@@ -14,6 +14,7 @@ local eIndex = {}
 
 ns.Error = function( ... )
     local output = format( ... )
+    output = output .. "\n" .. debugstack(3)
 
     if not errors[ output ] then
         errors[ output ] = {

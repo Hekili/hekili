@@ -73,7 +73,7 @@ do
         Hekili.TargetDebug = ""
 
         local spec = state.spec.id
-        spec = spec and rawget(Hekili.DB.profile.specs, spec)
+        spec = spec and rawget( Hekili.DB.profile.specs, spec ) or nil
 
         if spec and spec.nameplates and showNPs then
             for unit, guid in pairs(npGUIDs) do
@@ -125,7 +125,7 @@ do
             end            
         end
 
-        if spec.damage or not showNPs or not spec.nameplates then
+        if not spec or spec.damage or not spec.nameplates or not showNPs then
             local db = spec and (spec.myTargetsOnly and myTargets or targets) or targets
 
             for guid, seen in pairs(db) do

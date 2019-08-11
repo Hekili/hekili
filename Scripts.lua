@@ -822,7 +822,7 @@ local function stripScript( str, thorough )
   str = str:gsub("^return ", "")
 
   -- Remove min/max/safenum/safebool.
-  str = str:gsub("%Amin ?%(?", " "):gsub("%Amax ?%(?", " "):gsub("%Asafebool ?%(?", " "):gsub("%Asafenum ?%(?", " ")
+  str = str:gsub("([^%a%w_])min([^%a%w_)]?)%s?%(?", "%1%2 "):gsub("([^%a%w_])max([^%a%w_)]?)%s?%(?", "%1%2 "):gsub("([^%a%w_])safebool([^%a%w_)]?)%s?%(?", "%1%2 "):gsub("([^%a%w_])safenum([^%a%w_)]?)%s?%(?", "%1%2 ")
 
   -- Remove comments and parentheses.
   str = str:gsub("%-%-.-\n", ""):gsub("[()]", "")
@@ -836,6 +836,9 @@ local function stripScript( str, thorough )
   else
     str = str:gsub("[=+]", " "):gsub("[><~]%??", " "):gsub("[%*//%-%+]", " ")
   end
+
+  str = str:gsub( "([%a%w_])%.(%d+)", "%1[%2]" )
+  str = str:gsub( "%.in([ %.])", "['in']%1")
 
   -- Collapse the rest of the whitespace.
   str = str:gsub("[%s+]", " ")
@@ -1010,6 +1013,7 @@ local function ConvertScript( node, hasModifiers, header )
         Modifiers = {},
         ModElements = {},
         ModEmulates = {},
+        ModSimC = {},
         SpecialMods = "",
 
         Variables = varPool,
@@ -1066,6 +1070,7 @@ local function ConvertScript( node, hasModifiers, header )
                     output.Modifiers[ m ] = sf
                     output.ModElements[ m ] = GetScriptElements( o )
                     output.ModEmulates[ m ] = emulated
+                    if type( node[ m ] ) == 'string' then output.ModSimC[ m ] = SimcWithResources( node[ m ]:trim() ) end
                 else
                     output.Modifiers[ m ] = e
                 end
@@ -1474,8 +1479,8 @@ end
 
 
 local key_cache = setmetatable( {}, {
-    __index = function( t, k )
-        t[k] = k:gsub( "(%S+)%[(%d+)]", "%1.%2" )
+    __index = function( t, k )        
+        t[k] = k:gsub( "(%S+)%[(%d+)]", "%1.%2" ):gsub( "(%S+)%['([%a%w_]+)']", "%1.%2" )
         return t[k]
     end
 })
@@ -1523,6 +1528,54 @@ function scripts:GetConditionsAndValues( scriptID, listName, actID )
 
                     checked[ k ] = true
                 end
+            end
+        end
+
+        return output
+    end
+
+    return "NONE"
+end
+
+
+function scripts:GetModifierValues( modifier, scriptID, listName, actID )
+    if listName and actID then
+        scriptID = scriptID .. ":" .. listName .. ":" .. actID
+    end
+
+    local script = self.DB[ scriptID ]
+
+    if script and script.ModSimC[ modifier ] and script.ModSimC[ modifier ].SimC ~= "" then
+        local output = script.ModSimC[ modifier ]
+
+        wipe( checked )
+
+        for k, v in pairs( script.ModElements[ modifier ] ) do
+            if not checked[ k ] then
+                local key = key_cache[ k ]
+                local success, value = pcall( v )
+
+                -- if emsg then value = emsg end
+                if type( value ) == 'number' then
+                    if output == key then
+                        output = output .. "[" .. tostring( value ) .. "]"
+                    else
+                        output = output:gsub( "([^a-z0-9_.[])("..key..")([^a-z0-9_.[])", format( "%%1%%2[%.2f]%%3", value ) )
+                        output = output:gsub( "^("..key..")([^a-z0-9_.[])", format( "%%1[%.2f]%%2", value ) )
+                        output = output:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%.2f]", value ) )
+                    end
+                    -- output = output:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
+                else
+                    if output == key then
+                        output = output .. "[" .. tostring( value ) .. "]"
+                    else
+                        output = output:gsub( "([^a-z0-9_.[])("..key..")([^a-z0-9_.[])", format( "%%1%%2[%s]%%3", tostring( value ) ) )
+                        output = output:gsub( "^("..key..")([^a-z0-9_.[])", format( "%%1[%s]%%2", tostring( value ) ) )
+                        output = output:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%s]", tostring( value ) ) )
+                    end
+                end
+
+                checked[ k ] = true
             end
         end
 
