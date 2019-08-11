@@ -17,7 +17,7 @@ local multiUnpack = ns.multiUnpack
 local orderedPairs = ns.orderedPairs
 local round = ns.round
 
-local format = string.format
+local format, insert = string.format, table.insert
 
 local HasVehicleActionBar, HasOverrideActionBar, IsInPetBattle, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, C_PetBattles.IsInBattle, UnitHasVehicleUI, UnitOnTaxi
 
@@ -342,229 +342,188 @@ local function MasqueUpdate( Addon, Group, SkinID, Gloss, Backdrop, Colors, Disa
 end
 
 
--- Dropdown Menu
-local menuInfo = {}
+do
+    ns.UI.Menu = ns.UI.Menu or CreateFrame( "Frame", "HekiliMenu", UIParent, "UIDropDownMenuTemplate" )
+    local menu = ns.UI.Menu
 
-local function menu_Enabled()
-    Hekili:Toggle()
-end
+    menu.info = {}
 
-local function menu_Paused()
-    Hekili:TogglePause()
-end
+    menu.AddButton = UIDropDownMenu_AddButton
+    menu.AddSeparator = UIDropDownMenu_AddSeparator
 
-local function menu_Auto()
-    local p = Hekili.DB.profile
+    local function SetDisplayMode( mode )
+        Hekili.DB.profile.toggles.mode.value = mode
+        if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", mode ) end
+        if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+        Hekili:UpdateDisplayVisibility()
+        Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
+    end
 
-    p.toggles.mode.value = 'automatic'
+    local function IsDisplayMode( p, mode )
+        return Hekili.DB.profile.toggles.mode.value == mode
+    end
 
-    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-    Hekili:UpdateDisplayVisibility()
+    local menuData = {
+        {
+            isTitle = 1,
+            text = "Hekili",
+            notCheckable = 1,
+        },
 
-    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
-end
+        {
+            text = "Enable",
+            func = function () Hekili:Toggle() end,
+            checked = function () return Hekili.DB.profile.enabled end,
+        },
 
+        {
+            text = "Pause",
+            func = function () return Hekili:TogglePause() end,
+            checked = function () return Hekili.Pause end,
+        },
+        
+        {
+            isSeparator = 1,
+        },
 
-local function menu_Single()
-    local p = Hekili.DB.profile
+        {
+            isTitle = 1,
+            text = "Display Mode",
+            notCheckable = 1,
+        },
 
-    p.toggles.mode.value = 'single'
+        {
+            text = "Auto",
+            func = function () SetDisplayMode( "automatic" ) end,
+            checked = function () return IsDisplayMode( p, "automatic" ) end,
+        },
 
-    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+        {
+            text = "Single",
+            func = function () SetDisplayMode( "single" ) end,
+            checked = function () return IsDisplayMode( p, "single" ) end,
+        },
 
-    Hekili:UpdateDisplayVisibility()
-    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
-end
+        {
+            text = "AOE",
+            func = function () SetDisplayMode( "aoe" ) end,
+            checked = function () return IsDisplayMode( p, "aoe" ) end,
+        },
 
-local function menu_AOE()
-    local p = Hekili.DB.profile
+        {
+            text = "Dual",
+            func = function () SetDisplayMode( "dual" ) end,
+            checked = function () return IsDisplayMode( p, "dual" ) end,
+        },
 
-    p.toggles.mode.value = "aoe"
+        {
+            text = "Reactive",
+            func = function () SetDisplayMode( "reactive" ) end,
+            checked = function () return IsDisplayMode( p, "reactive" ) end,
+        },
 
-    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+        {
+            isSeparator = 1,
+        },
 
-    Hekili:UpdateDisplayVisibility()
-    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
-end
+        {
+            isTitle = 1,
+            text = "Toggles",
+            notCheckable = 1,
+        },
 
-local function menu_Dual()
-    local p = Hekili.DB.profile
+        {
+            text = "Cooldowns",
+            func = function() Hekili:FireToggle( "cooldowns" ); ns.UI.Minimap:RefreshDataText() end,
+            checked = function () return Hekili.DB.profile.toggles.cooldowns.value end,
+        },
 
-    p.toggles.mode.value = "dual"
+        {
+            text = "Essences",
+            func = function() Hekili:FireToggle( "essences" ); ns.UI.Minimap:RefreshDataText() end,
+            checked = function () return Hekili.DB.profile.toggles.essences.value end,
+        },
+
+        {
+            text = "Interrupts",
+            func = function() Hekili:FireToggle( "interrupts" ); ns.UI.Minimap:RefreshDataText() end,
+            checked = function () return Hekili.DB.profile.toggles.interrupts.value end,
+        },
+
+        {
+            text = "Defensives",
+            func = function() Hekili:FireToggle( "defensives" ); ns.UI.Minimap:RefreshDataText() end,
+            checked = function () return Hekili.DB.profile.toggles.defensives.value end,
+        },
+
+        {
+            text = "Potions",
+            func = function() Hekili:FireToggle( "potions" ); ns.UI.Minimap:RefreshDataText() end,
+            checked = function () return Hekili.DB.profile.toggles.potions.value end,
+        },
+
+    }
+
+    local specsParsed = false
+    menu.args = {}
+
+    function menu:initialize( level )
+        if not level then return end
+
+        if level == 1 then
+            if not specsParsed then
+                -- Add specialization toggles where applicable.
+                for i, spec in pairs( Hekili.Class.specs ) do
+                    if i > 0 then
+                        local titled = false
     
-    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+                        -- Check for Toggles.
+                        for n, setting in pairs( spec.settings ) do
+                            if setting.info.type == "toggle" then
+                                if not titled then
+                                    insert( menuData, { isSeparator = 1 } )
+                                    insert( menuData, {
+                                        isTitle = 1,
+                                        text = spec.name,
+                                        notCheckable = 1,
+                                    } )
+                                    titled = true
+                                end
 
-    Hekili:UpdateDisplayVisibility()
-    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
-end
+                                insert( menuData, {
+                                    text = setting.info.name,
+                                    func = function ()
+                                        menu.args[1] = setting.name
+                                        setting.info.set( menu.args, not Hekili.DB.profile.specs[ i ].settings[ setting.name ] )
 
-local function menu_Reactive()
-    local p = Hekili.DB.profile
-
-    p.toggles.mode.value = "reactive"
-
-    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", p.toggles.mode.value ) end
-    if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
-
-    Hekili:UpdateDisplayVisibility()
-    Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
-end
-
-local function menu_Cooldowns()
-    Hekili:FireToggle( "cooldowns" )
-    ns.UI.Minimap:RefreshDataText()
-end
-
-local function menu_Essences()
-    Hekili:FireToggle( "essences" )
-    ns.UI.Minimap:RefreshDataText()
-end
-
-local function menu_Interrupts()
-    Hekili:FireToggle( "interrupts" )
-    ns.UI.Minimap:RefreshDataText()
-end
-
-local function menu_Defensives()
-    Hekili:FireToggle( "defensives" )
-    ns.UI.Minimap:RefreshDataText()
-end
-
-local function menu_Potions()
-    Hekili:FireToggle( "potions" )
-    ns.UI.Minimap:RefreshDataText()
-end
-
-ns.UI.Menu = CreateFrame( "Frame", "HekiliMenu", UIParent, "UIDropDownMenuTemplate" )
-
-local menu = ns.UI.Menu
-menu.displayMode = "MENU"
-menu.initialize = function(self, level)
-    if not level then
-        return
-    end
-
-    wipe(menuInfo)
-    local p = Hekili.DB.profile
-    local i = menuInfo
-
-    if level == 1 then
-        i.isTitle = 1
-        i.text = "Hekili"
-        i.notCheckable = 1
-        UIDropDownMenu_AddButton(i, level)
-
-        i.isTitle = nil
-        i.disabled = nil
-        i.notCheckable = nil
-
-        i.text = "Enable"
-        i.func = menu_Enabled
-        i.checked = p.enabled
-        UIDropDownMenu_AddButton(i, level)
-
-        UIDropDownMenu_AddSeparator(level)
-
-        i.notCheckable = nil
-        i.disabled = nil
-
-        i.isTitle = 1
-        i.text = "Display Mode"
-        i.notCheckable = 1
-        UIDropDownMenu_AddButton(i, level)
-
-        i.isTitle = nil
-        i.notCheckable = nil
-        i.disabled = nil
-
-        i.text = "Auto"
-        i.func = menu_Auto
-        i.checked = p.toggles.mode.value == 'automatic'
-        UIDropDownMenu_AddButton(i, level)
-
-        i.text = "Single"
-        i.func = menu_Single
-        i.checked = p.toggles.mode.value == 'single'
-        UIDropDownMenu_AddButton(i, level)
-
-        i.text = "AOE"
-        i.func = menu_AOE
-        i.checked = p.toggles.mode.value == 'aoe'
-        UIDropDownMenu_AddButton(i, level)
-
-        i.text = "Dual"
-        i.func = menu_Dual
-        i.checked = p.toggles.mode.value == 'dual'
-        UIDropDownMenu_AddButton(i, level)
-
-        i.text = "Reactive"
-        i.func = menu_Reactive
-        i.checked = p.toggles.mode.value == "reactive"
-        UIDropDownMenu_AddButton(i, level)
-
-        i.notCheckable = nil
-        i.tooltipText = nil
-        i.tooltipTitle = nil
-        i.tooltipOnButton = nil
-
-        UIDropDownMenu_AddSeparator(level)
-
-        i.notCheckable = nil
-        i.disabled = nil
-
-        i.isTitle = 1
-        i.text = "Toggles"
-        i.notCheckable = 1
-        UIDropDownMenu_AddButton(i, level)
-
-        i.isTitle = nil
-        i.notCheckable = nil
-        i.disabled = nil
-
-        i.text = "Cooldowns"
-        i.func = menu_Cooldowns
-        i.checked = p.toggles.cooldowns.value
-        UIDropDownMenu_AddButton(i, level)
-
-        i.text = "Essences"
-        i.func = menu_Essences
-        i.checked = p.toggles.essences.value
-        UIDropDownMenu_AddButton(i, level)
-
-        i.text = "Interrupts"
-        i.func = menu_Interrupts
-        i.checked = p.toggles.interrupts.value
-        UIDropDownMenu_AddButton(i, level)
-
-        i.text = "Defensives"
-        i.func = menu_Defensives
-        i.checked = p.toggles.defensives.value
-        UIDropDownMenu_AddButton(i, level)
-
-        i.text = "Potions"
-        i.func = menu_Potions
-        i.checked = p.toggles.potions.value
-        UIDropDownMenu_AddButton(i, level)
-
-        i.notCheckable = nil
-        i.hasArrow = nil
-        i.value = nil
-
-        UIDropDownMenu_AddSeparator(level)
-
-        i.notCheckable = nil
-        i.disabled = nil
-
-        i.text = "Pause"
-        i.func = menu_Paused
-        i.checked = Hekili.Pause
-        UIDropDownMenu_AddButton(i, level)
+                                        if Hekili.DB.profile.notifications.enabled then
+                                            Hekili:Notify( setting.info.name .. ": " .. ( Hekili.DB.profile.specs[ i ].settings[ setting.name ] and "ON" or "OFF" ) )
+                                        else
+                                            self:Print( setting.info.name .. ": " .. ( Hekili.DB.profile.specs[ i ].settings[ setting.name ] and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                        end
+                                    end,
+                                    checked = function () return Hekili.DB.profile.specs[ i ].settings[ setting.name ] end,
+                                } )
+                            end
+                        end
+                    end
+                end
+                specsParsed = true
+            end
+            
+            for i, data in ipairs( menuData ) do
+                if data.isSeparator then
+                    menu.AddSeparator( level )
+                else
+                    menu.AddButton( data, level )
+                end
+            end
+        end
     end
 end
+
+
+ 
 
 
 do
