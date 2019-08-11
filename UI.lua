@@ -481,11 +481,15 @@ do
                         for n, setting in pairs( spec.settings ) do
                             if setting.info.type == "toggle" then
                                 if not titled then
-                                    insert( menuData, { isSeparator = 1 } )
+                                    insert( menuData, { 
+                                        isSeparator = 1,
+                                        hidden = function () return Hekili.State.spec.id ~= i end,
+                                    } )
                                     insert( menuData, {
                                         isTitle = 1,
                                         text = spec.name,
                                         notCheckable = 1,
+                                        hidden = function () return Hekili.State.spec.id ~= i end,
                                     } )
                                     titled = true
                                 end
@@ -503,6 +507,7 @@ do
                                         end
                                     end,
                                     checked = function () return Hekili.DB.profile.specs[ i ].settings[ setting.name ] end,
+                                    hidden = function () return Hekili.State.spec.id ~= i end,
                                 } )
                             end
                         end
@@ -512,10 +517,12 @@ do
             end
             
             for i, data in ipairs( menuData ) do
-                if data.isSeparator then
-                    menu.AddSeparator( level )
-                else
-                    menu.AddButton( data, level )
+                if not data.hidden or ( type( data.hidden ) == 'function' and not data.hidden() ) then
+                    if data.isSeparator then
+                        menu.AddSeparator( level )
+                    else
+                        menu.AddButton( data, level )
+                    end
                 end
             end
         end
