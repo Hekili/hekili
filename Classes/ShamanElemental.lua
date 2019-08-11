@@ -1324,10 +1324,10 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     } )
 
 
-    spec:RegisterSetting( "funnel_targets", 0, {
-        name = "Funnel |T237582:0|t Lava Burst Targets",
+    spec:RegisterSetting( "funnel_damage", false, {
+        name = "Funnel AOE -> Target",
         desc = function ()
-            local s = "If set above 0, the addon will recommend spreading |T135813:0|t Flame Shock on up to 5 targets, and funnel |T237582:0|t Lava Bursts into your current target."
+            local s = "If checked, the addon's default priority will encourage you to spread |T135813:0|t Flame Shock but will focus damage on your current target, using |T136026:0|t Earth Shock rather than |T451165:0|t Earthquake."
 
             if not Hekili.DB.profile.specs[ spec.id ].cycle then
                 s = s .. "\n\n|cFFFF0000Requires 'Recommend Target Swaps' on Targeting tab.|r"
@@ -1335,16 +1335,13 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             return s
         end, 
-        type = "range",
-        min = 0,
-        max = 10,
-        step = 1,
+        type = "toggle",
         width = 1.5
     } )
 
 
     spec:RegisterStateExpr( "funneling", function ()
-        return active_enemies > 1 and settings.cycle and settings.funnel_targets > 0 and active_enemies <= settings.funnel_targets
+        return active_enemies > 1 and settings.cycle and settings.funnel_damage
     end )
 
 
@@ -1360,6 +1357,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         nameplateRange = 8,
 
         damage = true,
+        damageDots = true,
         damageExpiration = 6,
 
         potion = "potion_of_unbridled_fury",
