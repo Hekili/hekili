@@ -97,35 +97,35 @@ do
 
                 counted[ guid ] = counted[ guid ] or false
             end
-        end
 
-        for _, unit in ipairs(unitIDs) do
-            local guid = UnitGUID(unit)
-
-            if guid and counted[ guid ] == nil then
-                if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitInPhase(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
-                    local npcid = guid:match("(%d+)-%x-$")
-
-                    if not enemyExclusions[npcid] then
-                        local _, range = RC:GetRange(unit)
-
-                        guidRanges[ guid ] = range
-
-                        local rate, n = Hekili:GetTTD(unit)
-                        Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
-
-                        if range and range <= spec.nameplateRange then
-                            count = count + 1
-                            counted[ guid ] = true
+            for _, unit in ipairs(unitIDs) do
+                local guid = UnitGUID(unit)
+    
+                if guid and counted[ guid ] == nil then
+                    if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitInPhase(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
+                        local npcid = guid:match("(%d+)-%x-$")
+    
+                        if not enemyExclusions[npcid] then
+                            local _, range = RC:GetRange(unit)
+    
+                            guidRanges[ guid ] = range
+    
+                            local rate, n = Hekili:GetTTD(unit)
+                            Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
+    
+                            if range and range <= spec.nameplateRange then
+                                count = count + 1
+                                counted[ guid ] = true
+                            end
                         end
+    
+                        counted[ guid ] = counted[ guid ] or false
                     end
-
-                    counted[ guid ] = counted[ guid ] or false
                 end
-            end
+            end            
         end
 
-        if not showNPs or not spec or (spec.damage or not spec.nameplates) then
+        if spec.damage or not showNPs or not spec.nameplates then
             local db = spec and (spec.myTargetsOnly and myTargets or targets) or targets
 
             for guid, seen in pairs(db) do
@@ -140,6 +140,17 @@ do
                         counted[ guid ] = false
                     end
                 end
+            end
+        end
+
+        local targetGUID = UnitGUID( "target" )
+        if targetGUID then
+            if counted[ targetGUID ] == nil and UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") and UnitInPhase("target") and (UnitIsPVP("player") or not UnitIsPlayer("target")) then
+                Hekili.TargetDebug = format("%s%12s - %2d - %s\n", Hekili.TargetDebug, "target", 0, targetGUID)
+                count = count + 1
+                counted[ targetGUID ] = true
+            else
+                counted[ targetGUID ] = false
             end
         end
 
