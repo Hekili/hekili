@@ -1296,14 +1296,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
         cycle = true,
 
-        potion = "superior_battle_potion_of_strength",
+        potion = "potion_of_unbridled_fury",
 
         package = "Unholy",
     } )
 
 
     spec:RegisterSetting( "festermight_cycle", false, {
-        name = "Festermight:  Spread |T237530:0|t Festering Wounds before |T136144:0|t Death and Decay",
+        name = "Festermight: Spread |T237530:0|t Wounds",
         desc = function ()
             return  "If checked, the addon will encourage you to spread Festering Wounds to multiple targets before |T136144:0|t Death and Decay.\n\n" ..
                     "Requires |cFF" .. ( state.azerite.festermight.enabled and "00FF00" or "FF0000" ) .. "Festermight|r (Azerite)\n" .. 
