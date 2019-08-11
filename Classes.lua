@@ -4616,12 +4616,8 @@ function Hekili:SpecializationChanged()
 
             for name, func in pairs( spec.stateExprs ) do
                 if not class.stateExprs[ name ] then
-                    if rawget( state, name ) then
-                        Hekili:Error( "Cannot RegisterStateExpr for an existing expression ( " .. spec.name .. " - " .. name .. " ) -- " .. tostring( rawget( state, name ) ) .. "." )
-                    else
-                        class.stateExprs[ name ] = func
-                        -- Hekili:Error( "Not real error, registered " .. name .. " for " .. spec.name .. " (RSE)." )
-                    end
+                    if rawget( state, name ) then state[ name ] = nil end
+                    class.stateExprs[ name ] = func
                 end
             end
 
