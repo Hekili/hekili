@@ -1534,14 +1534,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         damage = true,
         damageExpiration = 6,
 
-        potion = "potion_of_focused_resolve",
+        potion = "potion_of_unbridled_fury",
 
         package = "Assassination",
     } )
 
 
     spec:RegisterSetting( "priority_rotation", false, {
-        name = "Use Priority Rotation",
+        name = "Funnel AOE -> Target",
         desc = "If checked, the addon's default priority list will focus on funneling damage into your primary target when multiple enemies are present.",
         type = "toggle",
         width = 1.5
