@@ -6310,70 +6310,6 @@ do
                     }
                 },
 
-                customHeader = {
-                    type = "header",
-                    name = "Custom",
-                    order = 7,
-                },
-
-                custom1 = {
-                    type = "group",
-                    name = "",
-                    inline = true,
-                    order = 7.1,
-                    args = {
-                        key = {
-                            type = "keybinding",
-                            name = "Custom #1",
-                            desc = "Set a key to toggle your first custom set.",
-                            order = 1,
-                        },
-
-                        value = {
-                            type = "toggle",
-                            name = "Show Custom #1",
-                            desc = "If checked, abilities linked to Custom #1 can be recommended.",
-                            order = 2,
-                        },
-
-                        name = {
-                            type = "input",
-                            name = "Custom #1 Name",
-                            desc = "Specify a descriptive name for this custom toggle.",
-                            order = 3
-                        }
-                    }
-                },
-
-                custom2 = {
-                    type = "group",
-                    name = "",
-                    inline = true,
-                    order = 7.2,
-                    args = {
-                        key = {
-                            type = "keybinding",
-                            name = "Custom #2",
-                            desc = "Set a key to toggle your second custom set.",
-                            order = 1,
-                        },
-
-                        value = {
-                            type = "toggle",
-                            name = "Show Custom #2",
-                            desc = "If checked, abilities linked to Custom #2 can be recommended.",
-                            order = 2,
-                        },
-
-                        name = {
-                            type = "input",
-                            name = "Custom #1 Name",
-                            desc = "Specify a descriptive name for this custom toggle.",
-                            order = 3
-                        }
-                    }
-                },
-
                 displayModes = {
                     type = "header",
                     name = "Display Modes",
@@ -6391,13 +6327,7 @@ do
                             name = 'Display Mode',
                             desc = "Pressing this binding will cycle your Display Mode through the options checked below.",
                             order = 1,
-                        },
-
-                        modeLB = {
-                            type = "description",
-                            name = "",
-                            width = "full",
-                            order = 1.01
+                            width = 1,
                         },
 
                         value = {
@@ -6411,13 +6341,14 @@ do
                                 dual = "Fixed Dual Display",
                                 reactive = "Reactive Dual Display"
                             },
-                            width = 1.5,
+                            width = 2,
                             order = 1.02,
                         },
 
                         modeLB2 = {
                             type = "description",
-                            name = "",
+                            name = "Select the |cFFFFD100Display Modes|r that you wish to use.  Each time you press your |cFFFFD100Display Mode|r keybinding, the addon will switch to the next checked mode.",
+                            fontSize = "medium",
                             width = "full",
                             order = 1.03
                         },
@@ -6527,6 +6458,70 @@ do
                             desc = "Set a key to make a snapshot (without pausing) that can be viewed on the Snapshots tab.  This can be useful information for testing and debugging.",
                             order = 1,
                         },
+                    }
+                },
+
+                customHeader = {
+                    type = "header",
+                    name = "Custom",
+                    order = 30,
+                },
+
+                custom1 = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 30.1,
+                    args = {
+                        key = {
+                            type = "keybinding",
+                            name = "Custom #1",
+                            desc = "Set a key to toggle your first custom set.",
+                            order = 1,
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Show Custom #1",
+                            desc = "If checked, abilities linked to Custom #1 can be recommended.",
+                            order = 2,
+                        },
+
+                        name = {
+                            type = "input",
+                            name = "Custom #1 Name",
+                            desc = "Specify a descriptive name for this custom toggle.",
+                            order = 3
+                        }
+                    }
+                },
+
+                custom2 = {
+                    type = "group",
+                    name = "",
+                    inline = true,
+                    order = 30.2,
+                    args = {
+                        key = {
+                            type = "keybinding",
+                            name = "Custom #2",
+                            desc = "Set a key to toggle your second custom set.",
+                            order = 1,
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Show Custom #2",
+                            desc = "If checked, abilities linked to Custom #2 can be recommended.",
+                            order = 2,
+                        },
+
+                        name = {
+                            type = "input",
+                            name = "Custom #1 Name",
+                            desc = "Specify a descriptive name for this custom toggle.",
+                            order = 3
+                        }
                     }
                 },                
 

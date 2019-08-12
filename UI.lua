@@ -73,20 +73,18 @@ local function Mover_OnMouseUp(self, btn)
 
     if (btn == "LeftButton" and obj.Moving) then
         stopScreenMovement(obj)
-    elseif (btn == "RightButton" and not Hekili.Config) then
-        if obj.Moving then
-            stopScreenMovement(obj)
+        Hekili:SaveCoordinates()
+    elseif btn == "RightButton" then
+        if obj:GetName() == "HekiliNotification" then
+            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", "nPanel" )
+            return
+        elseif obj and obj.id then
+            LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", obj.id, obj.id )
+            return
+        else
+            print( obj, obj:GetName(), obj.id )
         end
-        local mouseInteract = Hekili.Pause or Hekili.Config
-        for i = 1, #ns.UI.Buttons do
-            for j = 1, #ns.UI.Buttons[i] do
-                ns.UI.Buttons[i][j]:EnableMouse(mouseInteract)
-            end
-        end
-        ns.UI.Notification:EnableMouse( Hekili.Config )
-        GameTooltip:Hide()
     end
-    Hekili:SaveCoordinates()
 end
 
 local function Mover_OnMouseDown( self, btn )
@@ -104,7 +102,7 @@ local function Button_OnMouseUp( self, btn )
     if (btn == "LeftButton" and mover.Moving) then
         stopScreenMovement(mover)
 
-    elseif (btn == "RightButton" and not Hekili.Config) then
+    elseif (btn == "RightButton") then
         if mover.Moving then
             stopScreenMovement(mover)
         end
@@ -180,6 +178,7 @@ function ns.StartConfiguration( external )
         
             GameTooltip:SetText( "Hekili: Notifications" )
             GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+            GameTooltip:AddLine( "Right-click to open Notification panel settings.", 1, 1, 1 )
             GameTooltip:Show()
         end
     end )
@@ -232,7 +231,12 @@ function ns.StartConfiguration( external )
             } )
 
             local ccolor = RAID_CLASS_COLORS[ select(2, UnitClass("player")) ]
-            v.Backdrop:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
+
+            if Hekili:IsDisplayActive( v.id, true ) then
+                v.Backdrop:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
+            else
+                v.Backdrop:SetBackdropBorderColor( 0.5, 0.5, 0.5, 0.5 )
+            end
             v.Backdrop:SetBackdropColor( 0, 0, 0, 0.8 )
             v.Backdrop:Show()
 
@@ -246,8 +250,9 @@ function ns.StartConfiguration( external )
         
                     GameTooltip:SetText( "Hekili: " .. i )
                     GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+                    GameTooltip:AddLine( "Right-click to open " .. i .. " display settings.", 1, 1, 1 )
+                    if not H:IsDisplayActive( i, true, "OnEnter" ) then GameTooltip:AddLine( "This display is not currently active.", 0.5, 0.5, 0.5 ) end
                     GameTooltip:Show()
-        
                 end
             end )
             v:SetScript( "OnLeave", function(self)
@@ -1102,6 +1107,13 @@ do
     ns.cpuProfile.Display_OnUpdate = Display_OnUpdate
 
     local function Display_UpdateAlpha( self )
+        if self.Backdrop then
+            if not Hekili:IsDisplayActive( self.id, true ) then self.Backdrop:SetBackdropBorderColor( 0.5, 0.5, 0.5, 0.5 )
+            else
+                self.Backdrop:SetBackdropBorderColor( RAID_CLASS_COLORS[ class.file ]:GetRGBA() )
+            end
+        end
+
         if not self.Active then
             self:SetAlpha(0)
             self:Hide()
@@ -1494,18 +1506,18 @@ do
         if profile.enabled and specEnabled then
             for i, display in pairs( profile.displays ) do
                 if display.enabled then
-                    if self.Config then
-                        dispActive[i] = true
+                    if i == 'AOE' then
+                        dispActive[i] = ( profile.toggles.mode.value == 'dual' or profile.toggles.mode.value == "reactive" ) and 1 or nil
+                    elseif i == 'Interrupts' then
+                        dispActive[i] = ( profile.toggles.interrupts.value and profile.toggles.interrupts.separate ) and 1 or nil
+                    elseif i == 'Defensives' then
+                        dispActive[i] = ( profile.toggles.defensives.value and profile.toggles.defensives.separate ) and 1 or nil
                     else
-                        if i == 'AOE' then
-                            dispActive[i] = profile.toggles.mode.value == 'dual' or profile.toggles.mode.value == "reactive"
-                        elseif i == 'Interrupts' then
-                            dispActive[i] = profile.toggles.interrupts.value and profile.toggles.interrupts.separate
-                        elseif i == 'Defensives' then
-                            dispActive[i] = profile.toggles.defensives.value and profile.toggles.defensives.separate
-                        else
-                            dispActive[i] = true 
-                        end
+                        dispActive[i] = 1
+                    end
+
+                    if dispActive[i] == nil and self.Config then
+                        dispActive[i] = 2
                     end
                     
                     if dispActive[i] and displays[i] then
@@ -1567,8 +1579,11 @@ do
         end
     end
 
-    function Hekili:IsDisplayActive( display )
-        return dispActive[display] == true
+    function Hekili:IsDisplayActive( display, config )
+        if config then
+            return dispActive[ display ] == 1
+        end
+        return dispActive[display] ~= nil
     end
 
     function Hekili:IsListActive( pack, list )
@@ -1902,18 +1917,18 @@ do
         b:SetScript( "OnEnter", function( self )
             local H = Hekili
 
-            if not H.Pause and H.Config then
+            --[[ if H.Config then
                 GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
-                GameTooltip:SetBackdropColor( 0, 0, 0, 1 )
+                GameTooltip:SetBackdropColor( 0, 0, 0, 0.8 )
 
                 GameTooltip:SetText( "Hekili: " .. dispID  )
                 GameTooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
                 GameTooltip:Show()
                 self:SetMovable( true )
 
-            elseif ( H.Pause and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
+            else ]]
+            if ( H.Pause and ns.queue[ dispID ] and ns.queue[ dispID ][ id ] ) then
                 H:ShowDiagnosticTooltip( ns.queue[ dispID ][ id ] )
-
             end
         end )
 
