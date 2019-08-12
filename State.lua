@@ -3019,7 +3019,7 @@ local mt_default_buff = {
             return 0
         
         elseif k == 'tick_time' then
-            return nil
+            return aura and aura.tick_time or 3 -- Default tick time will be 3 because why not?
 
         elseif k == 'ticks_remain' then
             if t.up then return math.floor( t.remains / t.tick_time ) end
