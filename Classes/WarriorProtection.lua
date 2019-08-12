@@ -444,14 +444,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             toggle = "defensives",
 
-            ready = function ()
+            readyTime = function ()
                 if buff.ignore_pain.up and buff.ignore_pain.v1 > 0.3 * stat.attack_power * 3.5 * ( 1 + stat.versatility_atk_mod / 100 ) then
-                    return buff.ignore_pain.remains
+                    return buff.ignore_pain.remains - gcd.max
                 end
                 return 0
             end,
 
-            -- ready = function () return max( buff.ignore_pain.remains, action.ignore_pain.lastCast + 1 - query_time ) end,
             handler = function ()
                 if talent.vengeance.enabled then applyBuff( "vengeance_revenge" ) end
                 removeBuff( "vengeance_ignore_pain" )
