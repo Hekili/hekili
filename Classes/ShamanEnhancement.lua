@@ -390,7 +390,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 204288,
             duration = 600,
             max_stack = 4,
-        }
+        },
+
+        thundercharge = {
+            id = 204366,
+            duration = 10,
+            max_stack = 1,
+        },
     } )
 
 
@@ -956,6 +962,23 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 end
 
                 if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
+            end,
+        },
+
+
+        thundercharge = {
+            id = 204366,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 1385916,
+
+            pvptalent = function () return not essence.conflict_and_strife.major and "thundercharge" or nil end,
+            
+            handler = function ()
+                applyBuff( "thundercharge" )
             end,
         },
 
