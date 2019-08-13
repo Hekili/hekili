@@ -353,7 +353,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         if active_enemies == 1 then return end
 
         -- For Nemesis, we want to cast it on the lowest health enemy.
-        if this_action == "nemesis" and Hekili:GetNumTTDsWithin( tagret.time_to_die ) > 1 then return "cycle" end
+        if this_action == "nemesis" and Hekili:GetNumTTDsWithin( target.time_to_die ) > 1 then return "cycle" end
     end )
 
 
