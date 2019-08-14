@@ -216,11 +216,9 @@ local HekiliSpecMixin = {
                         a.name = spell:GetSpellName()
                         a.desc = GetSpellDescription( a.id )
 
-                        if not a.funcs.texture then
-                            a.texture = a.texture or GetSpellTexture( a.id )
-                        end
+                        local texture = a.texture or GetSpellTexture( a.id )
 
-                        class.auraList[ a.key ] = "|T" .. a.texture .. ":0|t " .. a.name
+                        class.auraList[ a.key ] = "|T" .. texture .. ":0|t " .. a.name
 
                         self.auras[ a.name ] = a
                         if GetSpecializationInfo( GetSpecialization() or 0 ) == self.id then
@@ -555,7 +553,11 @@ local HekiliSpecMixin = {
         if a.castableWhileCasting then
             self.canCastWhileCasting = true
             self.castableWhileCasting[ a.key ] = true
-        end            
+        end
+
+        if a.id > 0 and not rawget( a, "texture" ) and not a.funcs.texture then
+            a.autoTexture = true
+        end
     end,
 
     RegisterAbilities = function( self, abilities )

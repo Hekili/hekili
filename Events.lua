@@ -226,6 +226,15 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
 end )
 
 
+RegisterEvent( "SPELLS_CHANGED", function ()
+    for k, v in pairs( class.abilities ) do
+        if v.autoTexture then
+            v.texture = GetSpellTexture( v.id )
+        end
+    end
+end )
+
+
 RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event, unit )
     if unit == 'player' then
         Hekili:SpecializationChanged()
