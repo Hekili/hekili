@@ -609,6 +609,10 @@ do
         local default = 0.7 * ( UnitIsTrivial( unit ) and TRIVIAL or FOREVER )
         local guid = UnitExists( unit ) and UnitCanAttack( "player", unit ) and UnitGUID( unit )
 
+        if percent >= 1 then
+            percent = percent * 100
+        end
+
         if not guid then return default end
 
         local enemy = db[ guid ]
@@ -625,7 +629,7 @@ do
 
         if healthPct <= percent then return 0, enemy.n end
 
-        return ceil( ( healthPct - percent ) / enemy.rate ), n
+        return ceil( ( healthPct - percent ) / enemy.rate ), enemy.n
     end
 
     function Hekili:GetGreatestTTD()
