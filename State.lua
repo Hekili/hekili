@@ -902,7 +902,6 @@ state.timeToInterrupt = timeToInterrupt
 
 -- Pet stuff.
 local function summonPet( name, duration, spec )
-
     state.pet[ name ] = rawget( state.pet, name ) or {}
     state.pet[ name ].name = name
     state.pet[ name ].expires = state.query_time + ( duration or 3600 )
@@ -2107,8 +2106,25 @@ local mt_pets = {
 
         end
 
-        return t.fake_pet
+        local model = class.pets[ k ]
 
+        if model then
+            t[ k ] = {
+                id = model.id,
+                name = k,
+                duration = model.duration,
+                expires = nil,
+                spec = model.spec,
+            }
+
+            if model.spec then
+                t[ model.spec ] = t[ k ]
+            end
+
+            return t[ k ]
+        end
+
+        return t.fake_pet
     end,
 
     __newindex = function(t, k, v)
@@ -4941,7 +4957,9 @@ function state.reset( dispName )
 
     state.pet.exists = nil
     for k, v in pairs( state.pet ) do
-        if type(v) == 'table' and k ~= 'fake_pet' then v.expires = nil end
+        if type(v) == 'table' and k ~= 'fake_pet' then
+            v.expires = nil
+        end
     end
     -- rawset( state.pet, 'exists', UnitExists( 'pet' ) )
 
@@ -4988,6 +5006,17 @@ function state.reset( dispName )
             summonPet( class.totems[ icon ], start + duration - state.now )
         end
     end
+
+    for k, v in pairs( state.pet ) do
+        if type(v) == 'table' and k ~= 'fake_pet' and v.summonTime and v.summonTime > 0 and v.duration then
+            local remains = ( v.summonTime + v.duration ) - state.now
+            if remains > 0 then
+                summonPet( k, remains )
+            else
+                v.summonTime = 0
+            end
+        end
+    end    
 
     state.target.health.actual = nil
     state.target.health.current = nil

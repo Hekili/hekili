@@ -7845,9 +7845,11 @@ all:RegisterAbility( "guardian_of_azeroth", {
     essence = true,
 
     handler = function()
-        -- summonPet( "guardian_of_azeroth" )
+        summonPet( "guardian_of_azeroth", 30 )
     end
 } )
+
+all:RegisterPet( "guardian_of_azeroth", 152396, 300091, 31 )
 
 all:RegisterAuras( {
     guardian_of_azeroth = {

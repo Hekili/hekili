@@ -920,7 +920,7 @@ local dmg_events = {
 local death_events = {
     UNIT_DIED               = true,
     UNIT_DESTROYED          = true,
-    UNIT_DISSIPATES        = true,
+    UNIT_DISSIPATES         = true,
     PARTY_KILL              = true,
     SPELL_INSTAKILL         = true,
 }
@@ -948,6 +948,12 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             ns.eliminateUnit( destGUID, true )
             Hekili:ForceUpdate( subtype )
         elseif ns.isMinion( destGUID ) then
+            local npcid = destGUID:match("(%d+)-%x-$")
+            npcid = npcid and tonumber( npcid )
+    
+            if npcid == state.pet.guardian_of_azeroth.id then
+                state.pet.guardian_of_azeroth.summonTime = 0
+            end
             ns.updateMinion( destGUID )
         end
         return
@@ -956,6 +962,15 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     local time = GetTime()
 
     if subtype == 'SPELL_SUMMON' and sourceGUID == state.GUID then
+        -- Guardian of Azeroth check.
+        -- ID is 152396.
+        local npcid = destGUID:match("(%d+)-%x-$")
+        npcid = npcid and tonumber( npcid )
+
+        if npcid == state.pet.guardian_of_azeroth.id then
+            state.pet.guardian_of_azeroth.summonTime = time
+        end
+            
         ns.updateMinion( destGUID, time )
         return
     end
