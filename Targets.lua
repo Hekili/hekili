@@ -66,6 +66,7 @@ do
 
         if now - Hekili.lastAudit > 1 then
             -- Kick start the damage-based target detection filter.
+            Hekili.AuditorStalled = true
             ns.Audit()
         end
 
