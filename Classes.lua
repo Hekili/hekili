@@ -4664,11 +4664,12 @@ function Hekili:SpecializationChanged()
         local ability = class.abilities[ k ]
         
         if ability and ability.id > 0 then
-            if not ability.texture then
-                local _, _, tex = GetSpellInfo( ability.id )
+            if not ability.texture or not ability.name then
+                local name, _, tex = GetSpellInfo( ability.id )
 
-                if tex then
-                    ability.texture = tex
+                if name and tex then
+                    ability.texture = ability.texture or tex
+                    ability.name = ability.name or name
                     class.abilityList[ k ] = "|T" .. ability.texture .. ":0|t " .. ability.name
                 end
             else
