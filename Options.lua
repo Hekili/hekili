@@ -7268,7 +7268,7 @@ function Hekili:GetOptions()
                                 type = 'input',
                                 name = "Twitch / Curse",
                                 order = 3,
-                                get = function () return "https://www.curse.com/addons/wow/hekili/" end,
+                                get = function () return "https://www.curseforge.com/wow/addons/hekili" end,
                                 set = function () end,
                                 width = "full",
                             },
