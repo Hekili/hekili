@@ -2066,7 +2066,7 @@ local mt_default_pet = {
             return ( t.expires < ( state.query_time ) )
 
         elseif k == 'id' then
-            return t.exists and UnitGUID( "pet" ):match( "(%d-)%-(.-)$") or nil
+            return t.exists and UnitGUID( "pet" ) and tonumber( UnitGUID( "pet" ):match("(%d+)-%x-$" ) ) or nil
 
         end
 
