@@ -408,7 +408,8 @@ do
         { "^(debuff%.[a-z0-9_]+)%.ss_buffed",
                                                 "%1.remains" }, -- Assassination
         { "^(dot%.[a-z0-9_]+)%.ss_buffed",      "%1.remains" }, -- Assassination
-        { "^consecration.up",                   "consecration.remains" } -- Prot Paladin
+        { "^consecration.up",                   "consecration.remains" }, -- Prot Paladin
+        { "^contagion<=?(.-)",                  "contagion-%1" }, -- Affliction Warlock
 
     }
 
