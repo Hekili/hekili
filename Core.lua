@@ -527,6 +527,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                 local action = entry.action
                 local entryReplaced = false
+                
                 if action == "heart_essence" and class.essence_unscripted and class.active_essence then
                     action = class.active_essence
                     entryReplaced = true

@@ -1387,7 +1387,7 @@ function Hekili.Scripts:LoadItemScripts()
             local ability
 
             if data.action then
-                ability = class.abilities[ data.action ] or class.specs[0].abilities[ data.action ]
+                ability = class.abilities[ data.action ] or class.specs[ 0 ].abilities[ data.action ]
             end
 
             if ability then
