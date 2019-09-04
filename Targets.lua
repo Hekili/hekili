@@ -317,6 +317,13 @@ ns.trackDebuff = function(spell, target, time, application)
     end
 end
 
+
+ns.GetDebuffApplicationTime = function( spell, target )
+    if not debuffCount[ spell ] or debuffCount[ spell ] == 0 then return 0 end
+    return debuffs[ spell ] and debuffs[ spell ][ target ] and ( debuffs[ spell ][ target ].applied or debuffs[ spell ][ target ].last_seen ) or 0
+end
+
+
 function ns.getModifier(id, target)
     local debuff = debuffs[id]
     if not debuff then
@@ -588,7 +595,23 @@ do
     local FOREVER = 3600
     local TRIVIAL = 5
 
-    function Hekili:GetTTD(unit)
+
+    function Hekili:GetDeathClockByGUID( guid )
+        local time, validUnit = 0, false
+
+        local enemy = db[ guid ]
+
+        if enemy and enemy.n > 3 then
+            time = max( time, ceil( enemy.lastHealth / enemy.rate ) )
+            validUnit = true
+        end
+
+        if not validUnit then return FOREVER end
+
+        return time
+    end
+
+    function Hekili:GetTTD( unit, isGUID )
         local default = UnitIsTrivial(unit) and TRIVIAL or FOREVER
 
         local guid = UnitExists(unit) and UnitCanAttack("player", unit) and UnitGUID(unit)
@@ -622,7 +645,7 @@ do
         local guid = UnitExists( unit ) and UnitCanAttack( "player", unit ) and UnitGUID( unit )
 
         if percent >= 1 then
-            percent = percent * 100
+            percent = percent / 100
         end
 
         if not guid then return default end

@@ -2092,21 +2092,72 @@ all:RegisterAbility( "ashvanes_razor_coral", {
     end
 } )
 
-all:RegisterAuras( {
-    razor_coral = {
-        id = 303568,
-        duration = 120,
-        max_stack = 10, -- ???
-        copy = "razor_coral_debuff"
-    },
+do
+    local coralGUID, coralApplied, coralStacks = 0, 0, 0
 
-    razor_coral_crit = {
-        id = 303570,
-        duration = 20,
-        max_stack = 1,
-    }
-} )
+    local f = CreateFrame("Frame")
 
+    f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+
+    f:SetScript("OnEvent", function( event )
+        local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+
+        if sourceGUID == state.GUID and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) and spellID == 303568 then
+            coralGUID = destGUID
+            coralApplied = GetTime()
+            coralStacks = 1
+        end
+    end )
+
+    all:RegisterAuras( {
+        razor_coral = {
+            id = 303568,
+            duration = 120,
+            max_stack = 100, -- ???
+            copy = "razor_coral_debuff",
+            generate = function( t, auraType )
+                local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = FindUnitDebuffByID( "target", 303568, "PLAYER" )
+
+                if name then
+                    -- It's on our actual target, trust it.
+                    t.name = name
+                    t.count = count > 0 and count or 1
+                    t.expires = expirationTime
+                    t.applied = expirationTime - duration
+                    t.caster = "player"
+
+                    coralGUID = state.target.unit
+                    coralApplied = expirationTime - duration
+                    coralStacks = count > 0 and count or 1
+
+                    return
+
+                elseif state.active_dot.razor_coral > 0 then
+                    t.name = class.auras.razor_coral.name
+                    t.count = coralStacks > 0 and coralStacks or 1
+                    t.applied = coralApplied > 0 and coralApplied or state.query_time
+                    t.expires = coralApplied > 0 and ( coralApplied + 120 ) or ( state.query_time + Hekili:GetDeathClockByGUID( coralGUID ) )
+                    t.caster = "player"
+
+                    return
+                end
+
+                t.name = class.auras.razor_coral.name
+                t.count = 0
+                t.applied = 0
+                t.expires = 0
+
+                t.caster = "nobody"
+            end,
+        },
+
+        razor_coral_crit = {
+            id = 303570,
+            duration = 20,
+            max_stack = 1,
+        }
+    } )
+end
 
 -- Dribbling Inkpod
 all:RegisterAura( "conductive_ink", {
