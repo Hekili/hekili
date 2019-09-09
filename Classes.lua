@@ -2024,6 +2024,25 @@ all:RegisterAuras( {
 
 -- BFA TRINKETS/ITEMS
 -- Azshara's EP
+all:RegisterAbility( "orgozoas_paralytic_barb", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 168899,
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "paralytic_spines" )
+    end,
+} )
+
+all:RegisterAura( "paralytic_spines", {
+    id = 303350,
+    duration = 15,
+    max_stack = 1
+} )
+
 all:RegisterAbility( "azsharas_font_of_power", {
     cast = 4,
     channeled = true,
