@@ -2215,6 +2215,10 @@ local mt_target = {
             if ttd == 3600 then return ttd end
             return max( 1, Hekili:GetTTD( 'target' ) - ( state.offset + state.delay ) )
 
+        elseif k:sub(1, 12) == 'time_to_pct_' then
+            local percent = tonumber( k:sub( 13 ) ) or 0
+            return Hekili:GetTimeToPct( "target", percent ) - ( offset + delay )
+
         elseif k == 'health_current' then
             return ( UnitHealth('target') > 0 and UnitHealth('target') or 50000 )
 
