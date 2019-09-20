@@ -667,6 +667,28 @@ do
         return ceil( ( healthPct - percent ) / enemy.rate ), enemy.n
     end
 
+    function Hekili:GetTimeToPctByGUID( guid, percent )
+        local default = 0.7 * FOREVER
+
+        if percent >= 1 then
+            percent = percent / 100
+        end
+
+        if not guid then return default end
+
+        local enemy = db[ guid ]
+        if not enemy then return default end
+
+        if enemy.n < 3 or enemy.rate == 0 then
+            return default, enemy.n
+        end
+
+        local healthPct = enemy.lastHealth
+        if healthPct <= percent then return 0, enemy.n end
+
+        return ceil( ( healthPct - percent ) / enemy.rate ), enemy.n
+    end
+
     function Hekili:GetGreatestTTD()
         local time, validUnit = 0, false
 
