@@ -2079,6 +2079,9 @@ all:RegisterAbility( "shiver_venom_relic", {
         return true
     end,
 
+    aura = "shiver_venom",
+    cycle = "shiver_venom",
+
     handler = function()
         removeDebuff( "target", "shiver_venom" )
     end,
@@ -2126,6 +2129,11 @@ do
             coralApplied = GetTime()
             coralStacks = ( subtype == "SPELL_AURA_APPLIED_DOSE" ) and ( coralStacks + 1 ) or 1
         end
+    end )
+
+    all:RegisterStateExpr( "coral_time_to_30", function() 
+        if coralGUID == 0 then return 3600 end
+        return Hekili:GetTimeToPctByGUID( coralGUID, 30 ) - ( offset + delay )
     end )
 
     all:RegisterAuras( {
