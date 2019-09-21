@@ -2217,7 +2217,7 @@ local mt_target = {
 
         elseif k:sub(1, 12) == 'time_to_pct_' then
             local percent = tonumber( k:sub( 13 ) ) or 0
-            return Hekili:GetTimeToPct( "target", percent ) - ( offset + delay )
+            return Hekili:GetTimeToPct( "target", percent ) - ( state.offset + state.delay )
 
         elseif k == 'health_current' then
             return ( UnitHealth('target') > 0 and UnitHealth('target') or 50000 )
