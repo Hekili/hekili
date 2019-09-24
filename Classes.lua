@@ -7924,7 +7924,9 @@ all:RegisterAbility( "guardian_of_azeroth", {
 
     handler = function()
         summonPet( "guardian_of_azeroth", 30 )
-    end
+    end,
+
+    copy = "condensed_lifeforce"
 } )
 
 all:RegisterPet( "guardian_of_azeroth", 152396, 300091, 31 )
