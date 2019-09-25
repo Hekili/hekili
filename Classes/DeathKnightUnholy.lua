@@ -49,6 +49,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             for i = 1, 6 do
                 local start, duration, ready = GetRuneCooldown( i )
+
+                start = start or 0
+                duration = duration or ( 10 * state.haste )
+                
                 start = roundUp( start, 2 )
 
                 t.expiry[ i ] = ready and 0 or start + duration
