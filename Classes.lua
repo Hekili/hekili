@@ -2094,31 +2094,40 @@ all:RegisterAura( "shiver_venom", {
 } )
 
 
--- Ashvane's Razor Coral, 169311
-all:RegisterAbility( "ashvanes_razor_coral", {
-    cast = 0,
-    cooldown = 20,
-    gcd = "off",
-
-    item = 169311,
-    toggle = "cooldowns",
-
-    handler = function ()
-        if debuff.razor_coral.up then
-            removeDebuff( "target", "razor_coral" )
-            applyBuff( "razor_coral_crit" )
-            setCooldown( "ashvanes_razor_coral", 20 )
-        else
-            applyDebuff( "target", "razor_coral" )
-        end
-    end
-} )
-
 do
     local coralGUID, coralApplied, coralStacks = 0, 0, 0
 
-    local f = CreateFrame("Frame")
+    -- Ashvane's Razor Coral, 169311
+    all:RegisterAbility( "ashvanes_razor_coral", {
+        cast = 0,
+        cooldown = 20,
+        gcd = "off",
 
+        item = 169311,
+        toggle = "cooldowns",
+
+        usable = function ()
+            if active_dot.razor_coral > 0 and target.unit ~= coralGUID then
+                return false, "current target does not have razor_coral applied"
+            end
+            return true
+        end,
+
+        handler = function ()
+            if active_dot.razor_coral > 0 then
+                removeDebuff( "target", "razor_coral" )
+                active_dot.razor_coral = 0
+
+                applyBuff( "razor_coral_crit" )
+                setCooldown( "ashvanes_razor_coral", 20 )
+            else
+                applyDebuff( "target", "razor_coral" )
+            end
+        end
+    } )    
+
+
+    local f = CreateFrame("Frame")
     f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 
     f:SetScript("OnEvent", function( event )
