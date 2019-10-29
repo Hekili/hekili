@@ -582,7 +582,7 @@ do
 
     
     local function CalculateAlpha( id )
-        if IsInPetBattle() or Hekili.Barber or UnitHasVehicleUI("player") or HasVehicleActionBar() or HasOverrideActionBar() or UnitOnTaxi("player") or not Hekili:IsDisplayActive( id ) then
+        if IsInPetBattle() or Hekili.Barber or UnitHasVehicleUI("player") or HasVehicleActionBar() or HasOverrideActionBar() or UnitOnTaxi("player") or not Hekili:IsDisplayActive( id ) or ( not Hekili.CombatDisplay and (not UnitCanAttack("player", "target") and not InCombatLockdown()) ) then
             return 0
         end
 
@@ -590,7 +590,7 @@ do
         local conf, mode = prof.displays[ id ], prof.toggles.mode.value
 
         local _, zoneType = IsInInstance()
-    
+
         -- Switch Type:
         --   0 = Auto - AOE
         --   1 = ST - AOE

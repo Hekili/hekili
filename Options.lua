@@ -507,6 +507,10 @@ function Hekili:GetDefaults()
                     value = "automatic",
                 },
 
+                combatdisplay = {
+                    value = false,
+                },
+
                 cooldowns = {
                     key = "ALT-SHIFT-R",
                     value = false,
@@ -6108,6 +6112,9 @@ do
 
         if option == 'value' then
             if bind == 'pause' then self:TogglePause()
+            elseif bind == 'combatdisplay' then
+                toggle.value = val
+                self:ToggleCombatDisplay()
             elseif bind == 'mode' then toggle.value = val
             else self:FireToggle( bind ) end
 
@@ -6415,6 +6422,35 @@ do
                             },
                             order = 2,
                         }, ]]
+                    },
+                },
+
+                combatdisplay_header = {
+                    type = "header",
+                    name = "Combat Display Mode",
+                    order = 15,
+                },
+
+                combatdisplay = {
+                    type = "group",
+                    inline = true,
+                    name = "",
+                    order = 15.1,
+                    args = {
+                        desc = {
+                            type = "description",
+                            name = "|cFFFFD100Combat Display Mode|r will force the addon to hide unless you are in combat.",
+                            fontSize = "medium",
+                            width = "full",
+                            order = 1
+                        },
+
+                        value = {
+                            type = "toggle",
+                            name = "Enabled",
+                            desc = "If checked, Hekili will not show until you are in combat with an attackable target.",
+                            order = 2,
+                        },
                     },
                 },
 
@@ -8937,6 +8973,13 @@ function Hekili:TogglePause( ... )
 
 end
 
+function Hekili:ToggleCombatDisplay( ... )
+    if not self.CombatDisplay then
+        self.CombatDisplay = true
+    else
+        self.CombatDisplay = false
+    end
+end
 
 -- Key Bindings
 function Hekili:MakeSnapshot( ... )
