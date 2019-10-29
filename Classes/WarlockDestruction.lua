@@ -513,7 +513,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         chaos_bolt = {
             id = 116858,
-            cast = function () return ( buff.backdraft.up and 2.1 or 3 ) * haste end,
+            cast = function () return ( buff.backdraft.up and 0.7 or 1 ) * 3 * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -523,6 +523,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
 
             cycle = function () return talent.eradication.enabled and "eradication" or nil end,
+
+            velocity = 16,
 
             handler = function ()
                 if talent.eradication.enabled then
@@ -646,7 +648,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             talent = "dark_soul_instability",
 
             handler = function ()
-                applyBuff( "drain_soul_instability" )
+                applyBuff( "dark_soul_instability" )
             end,
         },
 
@@ -886,7 +888,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             id = 29722,
             cast = function ()
                 if buff.chaotic_inferno.up then return 0 end
-                return 2 * haste
+                return ( buff.backdraft.up and 0.7 or 1 ) * 2 * haste
             end,
             cooldown = 0,
             gcd = "spell",
@@ -896,8 +898,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             startsCombat = true,
 
+            velocity = 25,
+
             handler = function ()
                 removeBuff( "chaotic_inferno" )
+                removeStack( "backdraft" )
                 -- Using true_active_enemies for resource predictions' sake.
                 gain( 0.2 + ( talent.fire_and_brimstone.enabled and ( ( true_active_enemies - 1 ) * 0.1 ) or 0 ), "soul_shards" )
             end,
