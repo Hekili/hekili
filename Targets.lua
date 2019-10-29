@@ -28,7 +28,8 @@ local npGUIDs = {}
 Hekili.npGUIDs = npGUIDs
 
 local enemyExclusions = {
-    ["120651"] = true -- Explosives
+    ["120651"] = true, -- Explosives
+    ["23775"] = true,  -- Head of the Horseman
 }
 
 local f = CreateFrame("Frame")
@@ -544,6 +545,10 @@ do
         db[guid] = nil
         wipe(enemy)
         insert(recycle, enemy)
+
+        for k, _ in pairs(debuffs) do
+            ns.trackDebuff(k, guid)
+        end
     end
 
     local function UpdateEnemy(guid, healthPct, unit, time)
