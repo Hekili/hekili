@@ -477,11 +477,11 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             max_stack = 30
         },
 
-        harvested_thoughts = {
+        --[[ harvested_thoughts = {
             id = 273321,
             duration = 15,
             max_stack = 1,
-        },
+        }, ]]
 
         searing_dialogue = {
             id = 288371,
@@ -492,7 +492,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         thought_harvester = {
             id = 288343,
             duration = 20,
-            max_stack = 1
+            max_stack = 1,
+            copy = "harvested_thoughts" -- SimC uses this name (carryover from Legion?)
         },
 
     } )
@@ -838,6 +839,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 channelSpell( "mind_sear" )
 
                 if azerite.searing_dialogue.enabled then applyDebuff( "target", "searing_dialogue" ) end
+                removeBuff( "thought_harvester" )
                 forecastResources( "insanity" )
             end,
         },
@@ -1252,7 +1254,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 if talent.misery.enabled then
                     applyDebuff( "target", "shadow_word_pain" )
                 end
-                if azerite.thought_harvester.enabled then applyBuff( "harvested_thoughts" ) end
+                -- Thought Harvester is a 20% chance to proc, consumed by Mind Sear.
+                -- if azerite.thought_harvester.enabled then applyBuff( "harvested_thoughts" ) end
             end,
         },
 
