@@ -48,6 +48,26 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         inquisition = 22634, -- 84963
     } )
 
+
+    -- PvP Talents
+    spec:RegisterPvpTalents( { 
+        relentless = 3446, -- 196029
+        adaptation = 3445, -- 214027
+        gladiators_medallion = 3444, -- 208683
+        
+        blessing_of_sanctuary = 752, -- 210256
+        cleansing_light = 3055, -- 236186
+        divine_punisher = 755, -- 204914
+        hammer_of_reckoning = 756, -- 247675
+        jurisdiction = 757, -- 204979
+        law_and_order = 858, -- 204934
+        lawbringer = 754, -- 246806
+        luminescence = 81, -- 199428
+        ultimate_retribution = 753, -- 287947
+        unbound_freedom = 641, -- 305394
+        vengeance_aura = 751, -- 210323
+    } )
+
     -- Auras
     spec:RegisterAuras( {
         avenging_wrath = {
@@ -213,6 +233,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             max_stack = 1
         },
 
+        -- PvP
+        reckoning = {
+            id = 247677,
+            max_stack = 30,
+            duration = 30
+        },
     } )
 
     spec:RegisterGear( 'tier19', 138350, 138353, 138356, 138359, 138362, 138369 )
@@ -640,6 +666,25 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 if equipped.justice_gaze and target.health.percent > 75 then
                     gain( 1, 'holy_power' )
                 end
+            end,
+        },
+
+
+        hammer_of_reckoning = {
+            id = 247675,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            startsCombat = true,
+            -- texture = ???,
+
+            pvptalent = "hammer_of_reckoning",
+
+            usable = function () return buff.reckoning.stack >= 50 end,
+            handler = function ()
+                removeStack( "reckoning", 50 )
+                applyBuff( "avenging_wrath", 6 )
             end,
         },
 
