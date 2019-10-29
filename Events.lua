@@ -504,7 +504,7 @@ do
             end
         end
                 
-        class.essence_unscripted = ( class.active_essence and not self:IsEssenceScripted( class.azerite_essence ) ) or false
+        class.essence_unscripted = ( class.active_essence and not self:IsEssenceScripted( class.active_essence ) ) or false
 
         self:LoadItemScripts()
     end
