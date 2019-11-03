@@ -90,6 +90,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 106951,
             duration = 20,
             max_stack = 1,
+            copy = 279526,
         },
         bear_form = {
             id = 5487,
