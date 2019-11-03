@@ -94,6 +94,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 table.sort( t.expiry )
             end
 
+            state.gain( amount * 10, "runic_power" )
+
+            if state.talent.gathering_storm.enabled and state.buff.remorseless_winter.up then
+                state.buff.remorseless_winter.expires = state.buff.remorseless_winter.expires + ( 0.5 * amount )
+            end
+
             t.actual = nil
         end,
     }, {
@@ -183,20 +189,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     local virtual_rp_spent_since_pof = 0
 
     local spendHook = function( amt, resource, noHook )
-        if amt > 0 then
-            if resource == "runes" then
-                gain( amt * 10, "runic_power" )
-
-                if talent.gathering_storm.enabled and buff.remorseless_winter.up then
-                    buff.remorseless_winter.expires = buff.remorseless_winter.expires + ( 0.5 * amt )
-                end
-
-            elseif resource == "runic_power" and buff.breath_of_sindragosa.up then
-                if runic_power.current < 16 then
-                    removeBuff( "breath_of_sindragosa" )
-                    gain( 2, "runes" )
-                end
-            end
+        if amt > 0 and resource == "runic_power" and buff.breath_of_sindragosa.up and runic_power.current < 16 then
+            removeBuff( "breath_of_sindragosa" )
+            gain( 2, "runes" )
         end
     end
 

@@ -79,6 +79,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 table.sort( t.expiry )
             end
 
+            state.gain( amount * 10, "runic_power" )
+
+            if state.talent.rune_strike.enabled then state.gainChargeTime( "rune_strike", amount ) end
+
+            if state.azerite.eternal_rune_weapon.enabled and state.buff.dancing_rune_weapon.up then
+                if state.buff.dancing_rune_weapon.expires - state.buff.dancing_rune_weapon.applied < state.buff.dancing_rune_weapon.duration + 5 then
+                    state.buff.dancing_rune_weapon.expires = min( state.buff.dancing_rune_weapon.applied + state.buff.dancing_rune_weapon.duration + 5, state.buff.dancing_rune_weapon.expires + ( 0.5 * amount ) )
+                    state.buff.eternal_rune_weapon.expires = min( state.buff.dancing_rune_weapon.applied + state.buff.dancing_rune_weapon.duration + 5, state.buff.dancing_rune_weapon.expires + ( 0.5 * amount ) )
+                end
+            end            
+
             t.actual = nil
         end,
     }, {
@@ -137,24 +148,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterResource( Enum.PowerType.RunicPower )
 
     local spendHook = function( amt, resource )
-        if amt > 0 then
-            if resource == "runes" then
-                gain( amt * 10, "runic_power" )
-
-                if talent.rune_strike.enabled then gainChargeTime( "rune_strike", amt ) end
-
-                if azerite.eternal_rune_weapon.enabled and buff.dancing_rune_weapon.up then
-                    if buff.dancing_rune_weapon.expires - buff.dancing_rune_weapon.applied < buff.dancing_rune_weapon.duration + 5 then
-                        buff.dancing_rune_weapon.expires = min( buff.dancing_rune_weapon.applied + buff.dancing_rune_weapon.duration + 5, buff.dancing_rune_weapon.expires + ( 0.5 * amt ) )
-                        buff.eternal_rune_weapon.expires = min( buff.dancing_rune_weapon.applied + buff.dancing_rune_weapon.duration + 5, buff.dancing_rune_weapon.expires + ( 0.5 * amt ) )
-                    end
-                end
-
-            elseif resource == "runic_power" then
-                local rp = runic_power
-
-                if talent.red_thirst.enabled then cooldown.vampiric_blood.expires = max( 0, cooldown.vampiric_blood.expires - amt / 10 ) end
-            end
+        if amt > 0 and resource == "runic_power" and talent.red_thirst.enabled then
+            cooldown.vampiric_blood.expires = max( 0, cooldown.vampiric_blood.expires - amt / 10 )
         end
     end
 

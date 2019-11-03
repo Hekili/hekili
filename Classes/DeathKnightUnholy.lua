@@ -83,6 +83,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 table.sort( t.expiry )
             end
 
+            if amount > 0 then
+                state.gain( amount * 10, "runic_power" )
+
+                if state.set_bonus.tier20_4pc == 1 then
+                    state.cooldown.army_of_the_dead.expires = max( 0, state.cooldown.army_of_the_dead.expires - 1 )
+                end
+            end
+
             t.actual = nil
         end,
     }, {
@@ -139,19 +147,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     } ) )
 
     spec:RegisterResource( Enum.PowerType.RunicPower )
-
-
-    local spendHook = function( amt, resource )
-        if amt > 0 and resource == "runes" then
-            gain( amt * 10, "runic_power" )
-
-            if set_bonus.tier20_4pc == 1 then
-                cooldown.army_of_the_dead.expires = max( 0, cooldown.army_of_the_dead.expires - 1 )
-            end
-        end
-    end
-
-    spec:RegisterHook( "spend", spendHook )
 
 
     spec:RegisterStateFunction( "apply_festermight", function( n )
@@ -954,6 +949,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             talent = "epidemic",
 
+            targets = {
+                count = function () return active_dot.virulent_plague end,
+            },
+
             usable = function () return active_dot.virulent_plague > 0 end,
             handler = function ()
             end,
@@ -1079,8 +1078,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = -10,
-            spendType = "runic_power",
+            spend = 1,
+            spendType = "runes",
 
             startsCombat = true,
             texture = 348565,
