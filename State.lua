@@ -2436,7 +2436,7 @@ local mt_default_cooldown = {
             t.true_duration = true_duration
             t.true_expires = start and ( start + true_duration ) or 0
 
-            if ability.charges > 1 then
+            if ability.charges and ability.charges > 1 then
                 local charges, maxCharges, start, duration = GetSpellCharges( t.id )
 
                 --[[ if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
