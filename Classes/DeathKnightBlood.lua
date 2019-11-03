@@ -564,6 +564,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             charges = 2,
             cooldown = 7.5,
             recharge = 7.5,
+            hasteCD = true,
             gcd = "spell",
 
             startsCombat = true,
