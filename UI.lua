@@ -1163,14 +1163,11 @@ do
                     start, duration = GetSpellCooldown( ability.id )
                 end
 
-                local expires = start + duration
-
-                if ability.gcd ~= "off" and ( expires < gExpires ) then
+                if ability.gcd ~= "off" and ( start + duration < gExpires ) then
                     start, duration = gStart, gDuration
                 end
 
                 if i == 1 and conf.delays.extend and rec.exact_time and rec.exact_time > now then
-                    start = state.gcd.lastStart
                     duration = rec.exact_time - start
                 end
 
