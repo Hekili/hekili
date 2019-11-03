@@ -2401,8 +2401,10 @@ local mt_default_cooldown = {
 
             if id > 0 then start, duration = GetCooldown( id ) end
 
+            if t.key ~= 'global_cooldown' then
             local gcdStart, gcdDuration = GetSpellCooldown( 61304 )
             if gcdStart == start and gcdDuration == duration then start, duration = 0, 0 end
+            end
 
             local true_duration = duration
 
@@ -2434,7 +2436,7 @@ local mt_default_cooldown = {
             t.true_duration = true_duration
             t.true_expires = start and ( start + true_duration ) or 0
 
-            if class.abilities[ t.key ].charges then
+            if ability.charges > 1 then
                 local charges, maxCharges, start, duration = GetSpellCharges( t.id )
 
                 --[[ if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
@@ -2445,7 +2447,7 @@ local mt_default_cooldown = {
                 end ]]
 
                 t.charge = charges or 1
-                t.recharge = duration or class.abilities[ t.key ].recharge
+                t.recharge = duration or ability.recharge
 
                 if charges and charges < maxCharges then
                     t.next_charge = start + duration
@@ -5307,13 +5309,14 @@ function state.advance( time )
                 cd.true_expires = max( 0, cd.expires - bonus_cdr )
             end
 
-            while class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset do 
+            while class.abilities[ k ].charges > 1 and cd.next_charge > 0 and cd.next_charge < state.now + state.offset do
                 -- if class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset then
                 cd.charge = cd.charge + 1
                 if cd.charge < class.abilities[ k ].charges then
                     cd.recharge_began = cd.next_charge
                     cd.next_charge = cd.next_charge + class.abilities[ k ].recharge
                 else 
+                    cd.recharge_began = 0
                     cd.next_charge = 0
                 end
             end

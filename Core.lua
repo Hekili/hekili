@@ -1238,7 +1238,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                     -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
                     -- if ability.charges and ability.charges > 1 and ability.recharge > 0 then
-                    if ability.charges and ability.recharge > 0 then
+                    if ability.charges > 1 and ability.recharge > 0 then
                         state.spendCharges( action, 1 )
 
                     elseif action ~= 'global_cooldown' then
