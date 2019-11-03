@@ -1225,7 +1225,8 @@ local resourceChange = function( amount, resource, overcap )
     local r = state[ resource ]
     local pre = r.current
 
-    if r.gain then r.gain( amount, resource, overcap, clean )
+    if amount < 0 and r.spend then r.spend( -amount, resource, overcap )
+    elseif amount > 0 and r.gain then r.gain( amount, resource, overcap )
     else
         r.actual = max( 0, r.current + amount )
         if not overcap then r.actual = min( r.max, r.actual ) end
