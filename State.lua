@@ -5309,7 +5309,9 @@ function state.advance( time )
                 cd.true_expires = max( 0, cd.expires - bonus_cdr )
             end
 
-            while class.abilities[ k ].charges > 1 and cd.next_charge > 0 and cd.next_charge < state.now + state.offset do
+            local ability = class.abilities[ k ]
+
+            while ability.charges and ability.charges > 1 and cd.next_charge > 0 and cd.next_charge < state.now + state.offset do
                 -- if class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset then
                 cd.charge = cd.charge + 1
                 if cd.charge < class.abilities[ k ].charges then
