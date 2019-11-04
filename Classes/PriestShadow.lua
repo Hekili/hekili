@@ -193,11 +193,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
     spec:RegisterHook( "reset_precast", function ()
         if time > 0 then
-            if not hadShadowform then
-                hadShadowform = buff.voidform.up or buff.shadowform.up
-            end
-
-            if hadShadowform then applyBuff( "shadowform" ) end
+            applyBuff( "shadowform" )
         end
 
         if pet.mindbender.active then
