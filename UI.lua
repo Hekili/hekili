@@ -1168,13 +1168,15 @@ do
                 end
 
                 if i == 1 and conf.delays.extend and rec.exact_time and rec.exact_time > now then
+                    start = state.gcd.lastStart
                     duration = rec.exact_time - start
                 end
 
-                if cd.lastStart ~= start or cd.lastDuration ~= duration then
+                if cd.lastStart ~= start or cd.lastDuration ~= duration or cd.lastGCD ~= ability.gcdType then
                     cd:SetCooldown( start, duration )
                     cd.lastStart = start
                     cd.lastDuration = duration
+                    cd.lastGCD = ability.gcdType
                 end
             end
         end
