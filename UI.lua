@@ -1163,20 +1163,20 @@ do
                     start, duration = GetSpellCooldown( ability.id )
                 end
 
-                if ability.gcd ~= "off" and ( start + duration < gExpires ) then
-                    start, duration = gStart, gDuration
+                if ability.gcd ~= "off" and start + duration < gExpires then
+                    start = gStart
+                    duration = gDuration
                 end
 
-                if i == 1 and conf.delays.extend and rec.exact_time and rec.exact_time > now then
-                    start = state.gcd.lastStart
+                if i == 1 and conf.delays.extend and rec.delay and rec.delay > 0 and rec.exact_time > max( now, start + duration ) then
+                    start = start > 0 and start or state.gcd.lastStart
                     duration = rec.exact_time - start
                 end
 
-                if cd.lastStart ~= start or cd.lastDuration ~= duration or cd.lastGCD ~= ability.gcdType then
+                if cd.lastStart ~= start or cd.lastDuration ~= duration then
                     cd:SetCooldown( start, duration )
                     cd.lastStart = start
                     cd.lastDuration = duration
-                    cd.lastGCD = ability.gcdType
                 end
             end
         end
