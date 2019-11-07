@@ -322,12 +322,12 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     end
                 end
 
-                local up = buff.resonance_totem.up and remains > 0
+                local up = PlayerBuffUp( "resonance_totem" ) and remains > 0
 
                 local tm = buff.totem_mastery
                 tm.name = class.abilities.totem_mastery.name
 
-                if remains > 0 and up then
+                if up then
                     tm.count = 4
                     tm.expires = expires
                     tm.applied = expires - 120
@@ -344,6 +344,11 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 tm.expires = 0
                 tm.applied = 0
                 tm.caster = "nobody"
+
+                removeBuff( "resonance_totem" )
+                removeBuff( "tailwind_totem" )
+                removeBuff( "storm_totem" )
+                removeBuff( "ember_totem" )
             end,
         },
 
@@ -426,21 +431,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     } ) )
 
 
-    local hadTotem = false
-    local hadTotemAura = false
-
     spec:RegisterHook( "reset_precast", function ()
-        for i = 1, 5 do
-            local hasTotem, name = GetTotemInfo( i )
-
-            if name == class.abilities.totem_mastery.name and hasTotem ~= up then
-                ScrapeUnitAuras( "player" )
-                return
-            end
-        end
-
-        local hasTotemAura = FindUnitBuffByID( "player", 262417 ) ~= nil
-        if hasTotemAura ~= hadTotemAura then ScrapeUnitAuras( "player" ) end
+        class.auras.totem_mastery.generate()
     end )
 
 

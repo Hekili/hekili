@@ -317,7 +317,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     end
                 end
 
-                local up = buff.resonance_totem.up and remains > 0
+                local up = PlayerBuffUp( "resonance_totem" ) and remains > 0
 
                 local tm = buff.totem_mastery
                 tm.name = class.abilities.totem_mastery.name
@@ -339,6 +339,11 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 tm.expires = 0
                 tm.applied = 0
                 tm.caster = "nobody"
+
+                removeBuff( 'resonance_totem' )
+                removeBuff( 'storm_totem' )
+                removeBuff( 'ember_totem' )
+                removeBuff( 'tailwind_totem' )
             end,
         },
 
@@ -487,26 +492,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     local hadTotemAura = false
 
     spec:RegisterHook( "reset_precast", function ()
-        for i = 1, 5 do
-            local hasTotem, name = GetTotemInfo( i )
-
-            if name == class.abilities.totem_mastery.name and hasTotem ~= up then
-                ScrapeUnitAuras( "player" )
-                return
-            end
-        end
-        
-        local hasTotemAura = FindUnitBuffByID( "player", 210652 ) ~= nil
-        if hasTotemAura ~= hadTotemAura then ScrapeUnitAuras( "player" ) end
-
-        if query_time - action.totem_mastery.lastCast < 3 then
-            local dur = action.totem_mastery.lastCast + 120 - query_time
-            applyBuff( "resonance_totem", dur )
-            applyBuff( "tailwind_totem", dur )
-            applyBuff( "storm_totem", dur )
-            applyBuff( "ember_totem", dur )
-            applyBuff( "totem_mastery", dur )
-        end
+        class.auras.totem_mastery.generate()
 
         if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
             applyBuff( "master_of_the_elements" )
