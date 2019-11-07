@@ -839,9 +839,8 @@ local autoAuraKey = setmetatable( {}, {
 
 
 RegisterUnitEvent( "UNIT_AURA", function( event, unit )
-    if UnitIsUnit( unit, 'player' ) and state.player.updated then
+    if UnitIsUnit( unit, 'player' ) then
         Hekili.ScrapeUnitAuras( "player" )
-        state.player.updated = false
 
     elseif UnitIsUnit( unit, "target" ) and state.target.updated then
         Hekili.ScrapeUnitAuras( "target" )
@@ -859,8 +858,12 @@ RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
 end )
 
 
-RegisterEvent( "PLAYER_STARTED_MOVING", function( event ) Hekili:ForceUpdate( event ) end )
-RegisterEvent( "PLAYER_STOPPED_MOVING", function( event ) Hekili:ForceUpdate( event ) end )
+RegisterEvent( "PLAYER_STARTED_MOVING", function( event )
+    Hekili:ForceUpdate( event )
+end )
+RegisterEvent( "PLAYER_STOPPED_MOVING", function( event )
+    Hekili:ForceUpdate( event )
+end )
 
 
 --[[ local function HandleCasts( event, unit )
