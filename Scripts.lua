@@ -605,8 +605,8 @@ do
         if ors then p = p:gsub( " or ", "|" ) end
         if nots then p = p:gsub( " not ", "!" ) end
 
-        p = p:gsub( "([!%|&%-%+%*=%%/<>%?]) ", "%1" )
-        p = p:gsub( " ([!%|&%-%+%*=%%/<>%?])", "%1" )
+        p = p:gsub( "([!%|&%-%+%*=%%/<>%?]) +", "%1" )
+        p = p:gsub( " +([!%|&%-%+%*=%%/<>%?])", "%1" )
 
         local orig = p
 
@@ -661,6 +661,8 @@ do
 
            i = i + 1
         end
+
+        p = p:trim()
 
         if p:len() > 0 then
            table.insert( results, {
@@ -721,7 +723,7 @@ do
                         local func, warn = loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
                         if func  then
                             setfenv( func, state )
-                            local pass, val = pcall( func )                            
+                            local pass, val = pcall( func )
                             if not pass and not piece.s:match("variable") then
                                 local safepiece = piece.s:gsub( "%%", "%%%%" )
                                 Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-b)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
@@ -731,7 +733,7 @@ do
                         end                        
                     end
                     piece.r = nil
-                end
+                end 
             end
 
            output = output .. piece.s
@@ -966,7 +968,7 @@ local function ConvertScript( node, hasModifiers, header )
 
     local sf, e
 
-    if t then sf, e = loadstring( "-- " .. header .. "\nreturn " .. t ) end
+    if t then sf, e = loadstring( "-- " .. header .. "\nreturn safebool( " .. t .. " )" ) end
     if sf then setfenv( sf, state ) end
 
     --[[ if sf and not e then
