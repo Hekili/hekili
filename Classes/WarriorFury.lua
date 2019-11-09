@@ -64,6 +64,21 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             interval = function () return 1 * state.haste end,
 
             value = 5,
+        },
+
+        battle_trance = {
+            aura = "battle_trance",
+
+            last = function ()
+                local app = state.buff.battle_trance.applied
+                local t = state.query_time
+
+                return app + ( floor( ( t - app ) / state.haste ) * state.haste )
+            end,
+
+            interval = 3,
+
+            value = 5,
         }
     } )
 
@@ -274,6 +289,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 12,
             max_stack = 1,
         },
+
+
+        -- PvP Talents
+        battle_trance = {
+            id = 213858,
+            duration = 18,
+            max_stack = 1
+        }
     } )
 
 
