@@ -3241,7 +3241,7 @@ local mt_pvptalents = {
 
 local mt_default_trait = {
     __index = function( t, k )
-        if k == 'enabled' then
+        if k == 'enabled' or k == 'minor' then
             return t.rank and t.rank > 0
         elseif k == 'disabled' then
             return not t.rank or t.rank == 0
