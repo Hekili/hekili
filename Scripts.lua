@@ -344,12 +344,12 @@ do
                 if meat:find( "[|&]" ) then
                     local subExpr = scripts:SplitExpr( meat )
 
-                for _, v in ipairs( subExpr ) do
-                    table.insert( output, v )
+                    for _, v in ipairs( subExpr ) do
+                        table.insert( output, v )
+                    end
+                else
+                    table.insert( output, expr )
                 end
-            else
-                table.insert( output, expr )
-            end
             else
                 table.insert( output, expr )
             end
@@ -460,7 +460,7 @@ do
             expr = expr:sub( 2, -2 )
         end
 
-        local lhs, comp, rhs = expr:match( "^(.-)([<>=]+)(.-)$" )
+        local lhs, comp, rhs = expr:match( "^(.-)([<>=]^?+)(.-)$" )
 
         if lhs and comp and rhs then
             -- We are looking at a mathematic comparison.
