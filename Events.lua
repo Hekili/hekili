@@ -1195,7 +1195,8 @@ local bindingSubs = {
     ["UP"] = "Up",
     ["MOUSEWHEEL"] = "Mw",
     ["BACKSPACE"] = "BkSp",
-    ["DECIMAL"] = "."
+    ["DECIMAL"] = ".",
+    ["CAPSLOCK"] = "CAPS",
 }
 
 local function improvedGetBindingText( binding )
