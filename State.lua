@@ -4889,6 +4889,7 @@ function state.reset( dispName )
 
     state.display = dispName
     state.filter = 'none'
+    state.rangefilter = false
 
     if display then
         if dispName == 'Primary' then
@@ -4899,7 +4900,7 @@ function state.reset( dispName )
         elseif dispName == 'Defensives' then state.filter = 'defensives'
         end
 
-        state.rangefilter = display.range.type == 'xclude'
+        state.rangefilter = display.range.enabled and display.range.type == 'xclude'
     end
 
     for i = #state.purge, 1, -1 do
