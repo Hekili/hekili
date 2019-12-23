@@ -1128,12 +1128,12 @@ all:RegisterAuras( {
             m.applied = 0
             m.caster = "nobody"
         end,
+    },
 
-        repeat_performance = {
-            id = 304409,
-            duration = 30,
-            max_stack = 1,
-        }
+    repeat_performance = {
+        id = 304409,
+        duration = 30,
+        max_stack = 1,
     },
 
     -- Why do we have this, again?
