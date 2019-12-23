@@ -712,6 +712,10 @@ do
     function Hekili:GetGreatestTimeToPct( percent )
         local time, validUnit = 0, false
 
+        if percent >= 1 then
+            percent = percent / 100
+        end        
+
         for k, v in pairs(db) do
             if v.n > 3 and v.lastHealth > percent then
                 time = max( time, ( v.lastHealth - percent ) / v.rate )
