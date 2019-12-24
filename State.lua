@@ -3760,8 +3760,12 @@ local mt_default_debuff = {
 
                 t.unit = real.unit
             else
+                if aura then
                 for attr, a_val in pairs( default_debuff_values ) do
-                    t[ attr ] = class.auras[ t.key ] and class.auras[ t.key ][ attr ] or a_val
+                        t[ attr ] = aura[ attr ] or a_val
+                    end
+
+                    t.id = aura.id
                 end
             end
 
@@ -4314,7 +4318,7 @@ do
 
         i = 1
         while ( true ) do
-            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, "PLAYER" )
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, unit ~= "player" and "PLAYER" or nil )
             if not name then break end
 
             local key = class.auras[ spellID ] and class.auras[ spellID ].key
