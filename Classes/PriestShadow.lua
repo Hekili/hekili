@@ -413,7 +413,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 t.v1 = 0
                 t.v2 = 0
                 t.v3 = 0
-                t.unit = unit                
+                t.unit = 'player'
             end,
             meta = {
                 up = function ()

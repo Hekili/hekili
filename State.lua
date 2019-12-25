@@ -3761,7 +3761,7 @@ local mt_default_debuff = {
                 t.unit = real.unit
             else
                 if aura then
-                for attr, a_val in pairs( default_debuff_values ) do
+                    for attr, a_val in pairs( default_debuff_values ) do
                         t[ attr ] = aura[ attr ] or a_val
                     end
 
