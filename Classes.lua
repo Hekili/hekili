@@ -7883,6 +7883,121 @@ all:RegisterPowers( {
 } )
 
 
+-- 8.3 Essences
+-- Breath of the Dying
+all:RegisterAbility( "reaping_flames", {
+    id = 310690,
+    cast = 0,
+    cooldown = function () return 45 - ( target.health_pct < ( essence.breath_of_the_dying.rank > 1 and 80 or 20 ) and 30 or 0 ) end,
+
+    startsCombat = true,
+    toggle = "essences",
+    essence = true,
+} )
+
+
+-- Spark of Inspiration
+all:RegisterAbility( "moment_of_glory", {
+    id = 311203,
+    cast = 1.5,
+    cooldown = 60,
+
+    startsCombat = false,
+    toggle = "essences",
+    essence = true,
+
+    handler = function ()
+        applyBuff( "moment_of_glory" )
+    end,
+} )
+
+all:RegisterAura( "moment_of_glory", {
+    id = 311203,
+    duration = function () return essence.spark_of_inspiration.rank > 1 and 20 or 10 end,
+    max_stack = 1,
+} )
+
+
+-- The Formless Void
+all:RegisterAbility( "replica_of_knowledge", {
+    id = 312725,
+    cast = 1.5,
+    cooldown = 15,
+
+    startsCombat = false,
+    toggle = "essences",
+    essence = true,
+} )
+
+all:RegisterAura( "symbiotic_presence", {
+    id = 312915,
+    duration = 20,
+    max_stack = 1,
+    copy = 313918,
+} )
+
+
+-- Touch of the Everlasting
+all:RegisterAuras( {
+    touch_of_the_everlasting = {
+        id = 295048,
+        duration = 3,
+        max_stack = 1
+    },
+
+    touch_of_the_everlasting_icd = {
+        id = 295047,
+        duration = 600,
+        max_stack = 1
+    },
+
+    will_to_survive =  {
+        id = 295343,
+        duration = 15,
+        max_stack = 1
+    },
+    
+    will_to_survive_am = {
+        id = 312922,
+        duration = 15,
+        max_stack = 1,
+    },
+
+    will_to_survive_icd = {
+        id = 295339,
+        duration = function () return essence.touch_of_the_everlasting.rank > 1 and 60 or 90 end,
+        max_stack = 1
+    },
+} )
+
+
+-- Strength of the Warden
+all:RegisterAbility( "vigilant_protector", {
+    id = 310592,
+    cast = 0,
+    cooldown = 120,
+    
+    startsCombat = true,
+    toggle = "essences",
+    essence = true,
+
+    function ()
+        applyDebuff( "target", "vigilant_protector" )
+    end,
+} )
+
+all:RegisterAura( "vigilant_protector", {
+    id = 310592,
+    duration = 6,
+    max_stack = 1
+} )
+
+all:RegisterAura( "endurance", {
+    id = 312107,
+    duration = 3600,
+    max_stack = 1,
+} )
+
 
 -- DPS Essences
 -- Blood of the Enemy
