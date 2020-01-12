@@ -2272,6 +2272,12 @@ local mt_target = {
             return UnitIsPlayer( 'target' )
 
         elseif k == 'is_boss' then
+            if UnitExists( "boss1" ) and UnitIsUnit( "target", "boss1" ) or
+                UnitExists( "boss2" ) and UnitIsUnit( "target", "boss2" ) or
+                UnitExists( "boss3" ) and UnitIsUnit( "target", "boss3" ) or
+                UnitExists( "boss4" ) and UnitIsUnit( "target", "boss4" ) or
+                UnitExists( "boss5" ) and UnitIsUnit( "target", "boss5" ) then return true
+            end
             return ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) )
 
         elseif k:sub(1, 12) == 'time_to_pct_' then
@@ -3152,7 +3158,7 @@ local mt_buffs = {
             buff.expires = 0
             buff.applied = 0
             buff.caster = 'nobody'
-            buff.id = nil
+            -- buff.id = nil
             buff.timeMod = 1
             buff.v1 = 0
             buff.v2 = 0
@@ -3749,7 +3755,7 @@ local mt_default_debuff = {
                 t.lastCount = real.lastCount or 0
                 t.lastApplied = real.lastApplied or 0
                 t.duration = real.duration
-                t.expires = real.expires
+                t.expires = real.expires or 0
                 t.applied = max( 0, real.expires - real.duration )
                 t.caster = real.caster
                 t.id = real.id
@@ -3760,13 +3766,11 @@ local mt_default_debuff = {
 
                 t.unit = real.unit
             else
-                if aura then
-                    for attr, a_val in pairs( default_debuff_values ) do
-                        t[ attr ] = aura[ attr ] or a_val
-                    end
-
-                    t.id = aura.id
+                for attr, a_val in pairs( default_debuff_values ) do
+                    t[ attr ] = aura and aura[ attr ] or a_val
                 end
+
+                t.id = aura and aura.id or t.id
             end
 
             return t[ k ]
@@ -3890,7 +3894,8 @@ local mt_debuffs = {
         else
             t[ k ] = {
                 key = k,
-                name = k
+                name = k,
+                id = k
             }
 
         end
@@ -3924,7 +3929,7 @@ local mt_debuffs = {
             debuff.expires = 0
             debuff.applied = 0
             debuff.caster = 'nobody'
-            debuff.id = nil
+            -- debuff.id = nil
             debuff.timeMod = 1
             debuff.v1 = 0
             debuff.v2 = 0

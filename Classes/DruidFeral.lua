@@ -1057,6 +1057,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             gcd = "spell",
 
             talent = "primal_wrath",
+            aura = "rip",
 
             spend = 20,
             spendType = "energy",
