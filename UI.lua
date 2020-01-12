@@ -12,6 +12,7 @@ local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDeb
 -- Atlas/Textures
 local AddTexString, GetTexString, AtlasToString, GetAtlasFile, GetAtlasCoords = ns.AddTexString, ns.GetTexString, ns.AtlasToString, ns.GetAtlasFile, ns.GetAtlasCoords
 
+local frameStratas = ns.FrameStratas
 local getInverseDirection = ns.getInverseDirection
 local multiUnpack = ns.multiUnpack
 local orderedPairs = ns.orderedPairs
@@ -1375,14 +1376,20 @@ do
         end
 
         return left, right, top, bottom
-    end    
+    end
 
+
+    local numDisplays = 0
 
     function Hekili:CreateDisplay( id )
         local conf = rawget( self.DB.profile.displays, id )
         if not conf then return end
 
-        dPool[ id ] = dPool[ id ] or CreateFrame( "Frame", "HekiliDisplay" .. id, UIParent )
+        if not dPool[ id ] then
+            numDisplays = numDisplays + 1
+            dPool[ id ] = CreateFrame( "Frame", "HekiliDisplay" .. id, UIParent )
+            dPool[ id ].index = numDisplays
+        end
         local d = dPool[ id ]
 
         d.id = id
@@ -1395,7 +1402,8 @@ do
 
         d:SetSize( scale * ( border + ( conf.primaryWidth or 50 ) ), scale * ( border + ( conf.primaryHeight or 50 ) ) )
         d:SetPoint( "CENTER", nil, "CENTER", conf.x or 0, conf.y or -225 )
-        d:SetFrameStrata( "MEDIUM" )
+        d:SetFrameStrata( conf.frameStrata or "MEDIUM" )
+        d:SetFrameLevel( conf.frameLevel or ( 10 + d.index ) )
         d:SetClampedToScreen( true )
         d:EnableMouse( false )
         d:SetMovable( true )
@@ -1757,10 +1765,12 @@ do
 
         local framelevel = b:GetFrameLevel()
         if framelevel > 0 then
-            b.Backdrop:SetFrameStrata( "MEDIUM" )
+            -- b.Backdrop:SetFrameStrata( "MEDIUM" )
             b.Backdrop:SetFrameLevel( framelevel - 1 )
         else
-            b.Backdrop:SetFrameStrata("LOW")
+            local lowerStrata = frameStratas[ b:GetFrameStrata() ]
+            lowerStrata = frameStratas[ lowerStrata - 1 ]
+            b.Backdrop:SetFrameStrata( lowerStrata or "LOW" )
         end
 
         b.Backdrop:SetPoint( "CENTER", b, "CENTER" )

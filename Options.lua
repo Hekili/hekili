@@ -264,6 +264,9 @@ local displayTemplate = {
     keepAspectRatio = true,
     zoom = 30,
 
+    frameStrata = "MEDIUM",
+    frameLevel = 10,
+
     --[[ font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
     fontSize = 12,
     fontStyle = "OUTLINE", ]]
@@ -765,6 +768,10 @@ do
         shareDB.export = ""
     end
 
+
+
+    local frameStratas = ns.FrameStratas
+
     -- Display Config.
     function Hekili:GetDisplayOption( info )
         local n = #info
@@ -780,9 +787,12 @@ do
         end
 
         if option == 'color' then return unpack( conf.color ) end
+        if option == 'frameStrata' then return frameStratas[ conf.frameStrata ] or 3 end
         if option == 'name' then return display end
+
         return conf[ option ]
     end
+
 
     function Hekili:SetDisplayOption( info, val, v2, v3, v4 )
         local n = #info
@@ -799,6 +809,9 @@ do
 
         if option == 'color' then
             conf.color = { val, v2, v3, v4 }
+            set = true
+        elseif option == 'frameStrata' then
+            conf.frameStrata = frameStratas[ val ] or "MEDIUM"
             set = true
         end
 
@@ -1100,6 +1113,45 @@ do
                                         order = 2,                                            
                                     },
                                 },
+                            },
+
+                            advancedFrame = {
+                                type = "group",
+                                name = "Frame Layer",
+                                inline = true,
+                                order = 16,
+                                args = {
+                                    frameStrata = {
+                                        type = "select",
+                                        name = "Strata",
+                                        desc =  "Frame Strata determines which graphical layer that this display is drawn on.\n" ..
+                                                "The default layer is MEDIUM.",
+                                        values = {
+                                            "BACKGROUND",
+                                            "LOW",
+                                            "MEDIUM",
+                                            "HIGH",
+                                            "DIALOG",
+                                            "FULLSCREEN",
+                                            "FULLSCREEN_DIALOG",
+                                            "TOOLTIP"
+                                        },
+                                        width = 1.49,
+                                        order = 1,
+                                    },
+
+                                    frameLevel = {
+                                        type = "range",
+                                        name = "Level",
+                                        desc = "Frame Level determines the display's position within its current layer.\n\n" ..
+                                                "Default value is |cFFFFD10010|r.",
+                                        min = 1,
+                                        max = 10000,
+                                        step = 1,
+                                        width = 1.49,
+                                        order = 2,
+                                    }
+                                }
                             },
 
                             zoom = {
@@ -2118,6 +2170,13 @@ do
                     type = "header",
                     name = "Fonts",
                     order = 960,
+                },
+
+                fontWarn = {
+                    type = "description",
+                    name = "Changing the font below will modify |cFFFF0000ALL|r text on all displays.\n" ..
+                            "To modify one bit of text individually, select the Display (at left) and select the appropriate text.",
+                    order = 960.01,
                 },
             
                 font = {
