@@ -1190,6 +1190,7 @@ all:RegisterAuras( {
         duration = 8,
     },
 
+
     out_of_range = {
         generate = function ()
             local oor = buff.out_of_range
@@ -1597,6 +1598,36 @@ all:RegisterAuras( {
 all:SetPotion( "prolonged_power" )
 
 
+local gotn_classes = {
+    WARRIOR = 28880,
+    MONK = 121093,
+    DEATHKNIGHT = 59545,
+    SHAMAN = 59547,
+    HUNTER = 59543,
+    PRIEST = 59544,
+    MAGE = 59548,
+    PALADIN = 59542
+}
+
+all:RegisterAura( "gift_of_the_naaru", {
+    id = gotn_classes[ UnitClassBase( "player" ) or "WARRIOR" ],
+    duration = 5,
+    max_stack = 1,
+    copy = { 28800, 121093, 59545, 59547, 59543, 59544, 59548, 59542 }
+} )
+
+all:RegisterAbility( "gift_of_the_naaru", {
+    id = 59544,
+    cast = 0,
+    cooldown = 180,
+    gcd = "off",
+
+    handler = function ()
+        applyBuff( "gift_of_the_naaru" )
+    end,
+} )
+
+
 all:RegisterAbilities( {
     global_cooldown = {
         id = 61304,
@@ -1648,7 +1679,7 @@ all:RegisterAbilities( {
         handler = function ()
             applyBuff( 'berserking' )
         end,
-    }
+    },
 } )
 
 
