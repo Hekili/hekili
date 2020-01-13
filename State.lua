@@ -2969,8 +2969,11 @@ local mt_default_buff = {
                 for attr, a_val in pairs( default_buff_values ) do
                     t[ attr ] = rawget( t, attr ) or a_val
                 end
+
                 aura.generate( t, "buff" )
-                return t[ k ]
+                t.id = aura and aura.id or t.key
+
+                return rawget( t, k )
             end
 
             local real = auras.player.buff[ t.key ] or auras.target.buff[ t.key ]
@@ -2999,7 +3002,7 @@ local mt_default_buff = {
                 t.id = rawget( t, id ) or ( aura and aura.id ) or t.key
             end
 
-            return t[k]
+            return rawget( t, k )
 
         elseif k == 'up' or k == 'ticking' then
             return t.remains > 0            
@@ -3745,8 +3748,11 @@ local mt_default_debuff = {
                 for attr, a_val in pairs( default_debuff_values ) do
                     t[ attr ] = rawget( t, attr ) or a_val
                 end
+
                 aura.generate( t, "debuff" )
-                return t[ k ]
+                t.id = aura and aura.id or t.key
+
+                return rawget( t, k )
             end
 
             local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
@@ -3775,7 +3781,7 @@ local mt_default_debuff = {
                 t.id = aura and aura.id or t.id
             end
 
-            return t[ k ]
+            return rawget( t, k )
 
         elseif k == 'up' or k == 'ticking' then
             return t.remains > 0
