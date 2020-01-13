@@ -177,10 +177,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             max_stack = 1,
         },
         clearcasting = {
-            id = 263725,
+            id = function () return pvptalent.arcane_empowerment.enabled and 276743 or 263725 end,
             duration = 15,
             type = "Magic",
-            max_stack = 1,
+            max_stack = function () return pvptalent.arcane_empowerment.enabled and 3 or 1 end,
+            copy = { 263725, 276743 }
         },
         displacement = {
             id = 212801,
@@ -473,7 +474,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.clearcasting.up and 0 or 0.1 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
+            spend = function ()
+                if not pvptalent.arcane_empowerment.enabled and buff.clearcasting.up then return 0 end
+                return 0.1 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 )
+            end,
             spendType = "mana",
 
             startsCombat = true,
@@ -481,7 +485,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             usable = function () return target.distance < 10 end,
             handler = function ()
-                removeBuff( "clearcasting" )
+                removeStack( "clearcasting" )
                 gain( 1, "arcane_charges" )
             end,
         },
@@ -545,7 +549,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 removeBuff( "rule_of_threes" )
-                removeBuff( "clearcasting" )
+                removeStack( "clearcasting" )
             end,
         },
 
