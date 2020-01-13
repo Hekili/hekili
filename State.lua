@@ -2995,6 +2995,8 @@ local mt_default_buff = {
                 for attr, a_val in pairs( default_buff_values ) do
                     t[ attr ] = aura and aura[ attr ] or a_val
                 end
+
+                t.id = rawget( t, id ) or ( aura and aura.id ) or t.key
             end
 
             return t[k]
