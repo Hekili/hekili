@@ -602,7 +602,8 @@ do
         elseif zoneType == "pvp" or zoneType == "arena" then
             if not conf.visibility.advanced then return conf.visibility.pvp.alpha end
 
-            if conf.visibility.pvp.combat > 0 and state.combat > 0 then return conf.visibility.pvp.combat
+            if conf.visibility.pvp.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.combatTarget
+            elseif conf.visibility.pvp.combat > 0 and state.combat > 0 then return conf.visibility.pvp.combat
             elseif conf.visibility.pvp.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.target
             elseif conf.visibility.pvp.always > 0 then return conf.visibility.pvp.always end
 
@@ -611,7 +612,8 @@ do
 
         if not conf.visibility.advanced then return conf.visibility.pve.alpha end
         
-        if conf.visibility.pve.combat > 0 and state.combat > 0 then return conf.visibility.pve.combat
+        if conf.visibility.pvp.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.combatTarget
+        elseif conf.visibility.pve.combat > 0 and state.combat > 0 then return conf.visibility.pve.combat
         elseif conf.visibility.pve.target > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.target
         elseif conf.visibility.pve.always > 0 then return conf.visibility.pve.always end
 

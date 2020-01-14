@@ -306,6 +306,7 @@ local displayTemplate = {
             always = 1,
             target = 1,
             combat = 1,
+            combatTarget = 1,
         },
 
         pvp = {
@@ -313,6 +314,7 @@ local displayTemplate = {
             always = 1,
             target = 1,
             combat = 1,
+            combatTarget = 1,
         },
     },
 
@@ -1382,6 +1384,16 @@ do
                                         step = 0.01,
                                         width = "full",
                                     },
+
+                                    combatTarget = {
+                                        type = "range",
+                                        name = "Combat w/ Target",
+                                        desc = "If non-zero, this is always shown when you are in combat and have an attackable PvE target.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        width = "full"
+                                    }
                                 },
                             },
 
@@ -1434,6 +1446,16 @@ do
                                         step = 0.01,
                                         width = "full",
                                     },
+
+                                    combatTarget = {
+                                        type = "range",
+                                        name = "Combat w/ Target",
+                                        desc = "If non-zero, this is always shown when you are in combat and have an attackable PvP target.",
+                                        min = 0,
+                                        max = 1,
+                                        step = 0.01,
+                                        width = "full"
+                                    }
                                 },
                             },
                         },
