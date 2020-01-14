@@ -1854,6 +1854,23 @@ all:RegisterAbilities( {
         end,
     },
 
+    healthstone = {
+        name = "|cff00ccff[Healthstone]|r",
+        cast = 0,
+        cooldown = function () return time > 0 and 3600 or 60 end,
+        gcd = "off",
+
+        startsCombat = false,
+
+        usable = function ()
+            return GetItemCount( 5512 ) > 0, "requires healthstone in bags"
+        end,
+
+        handler = function ()
+            health.current = min( health.max, health.current + health.max * 0.25 )
+        end,
+    },
+
     cancel_buff = {
         name = '|cff00ccff[Cancel Buff]|r',
         cast = 0,
