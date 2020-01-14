@@ -438,6 +438,7 @@ state.print = print
 state.Enum = Enum
 state.FindUnitBuffByID = ns.FindUnitBuffByID
 state.FindUnitDebuffByID = ns.FindUnitDebuffByID
+state.GetItemCooldown = GetItemCooldown
 state.GetItemCount = GetItemCount
 state.GetItemGem = GetItemGem
 state.GetShapeshiftForm = GetShapeshiftForm
@@ -452,6 +453,7 @@ state.IsActiveSpell = ns.IsActiveSpell
 state.IsPlayerSpell = IsPlayerSpell
 state.IsSpellKnown = IsSpellKnown
 state.IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
+state.IsUsableItem = IsUsableItem
 state.IsUsableSpell = IsUsableSpell
 state.UnitBuff = UnitBuff
 state.UnitCanAttack = UnitCanAttack
@@ -2068,6 +2070,9 @@ local mt_default_pet = {
 
         elseif k == 'id' then
             return t.exists and UnitGUID( "pet" ) and tonumber( UnitGUID( "pet" ):match("(%d+)-%x-$" ) ) or nil
+
+        elseif k == 'spec' then
+            return t.exists and GetSpecialization( false, true )
 
         end
 
@@ -5118,6 +5123,7 @@ function state.reset( dispName )
     end
 
     state.health = rawget( state, "health" ) or setmetatable( { resource = "health" }, mt_resource )
+    state.health.current = nil
     state.health.actual = UnitHealth( 'player' ) or 10000
     state.health.max = UnitHealthMax( 'player' ) or 10000
     state.health.regen = 0
@@ -5525,19 +5531,19 @@ function state:IsKnown( sID, notoggle )
     local profile = Hekili.DB.profile
 
     if ability.spec and not state.spec[ ability.spec ] then
-        return false
+        return false, "wrong specialization"
     end
 
     if ability.nospec and state.spec[ ability.nospec ] then
-        return false
+        return false, "spec disallowed"
     end
 
     if ability.talent and not state.talent[ ability.talent ].enabled then
-        return false
+        return false, "talent missing"
     end
 
     if ability.notalent and state.talent[ ability.notalent ].enabled then
-        return false
+        return false, "talent disallowed"
     end
 
     if ability.pvptalent and not state.pvptalent[ ability.pvptalent ].enabled then
@@ -5549,20 +5555,20 @@ function state:IsKnown( sID, notoggle )
     end
 
     if ability.trait and not state.artifact[ ability.trait ].enabled then
-        return false
+        return false, "trait missing"
     end
 
     if ability.equipped and not state.equipped[ ability.equipped ] then
-        return false
+        return false, "equipment missing"
     end
 
     if ability.item and not state.equipped[ ability.item ] then
-        return false
+        return false, "item missing"
     end
 
     if ability.known ~= nil then
         if type( ability.known ) == 'number' then
-            return IsPlayerSpell( ability.known )
+            return IsPlayerSpell( ability.known ), "IsPlayerSpell"
         end
         return ability.known
     end

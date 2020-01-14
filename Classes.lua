@@ -1861,13 +1861,22 @@ all:RegisterAbilities( {
         gcd = "off",
 
         startsCombat = false,
+        texture = 538745,
 
         usable = function ()
-            return GetItemCount( 5512 ) > 0, "requires healthstone in bags"
+            if GetItemCount( 5512 ) == 0 then return false, "requires healthstone in bags"
+            elseif not IsUsableItem( 5512 ) then return false, "healthstone on CD"
+            elseif health.current >= health.max then return false, "must be damaged" end
+            return true
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 5512 )            
+            return max( 0, start + duration - query_time )
         end,
 
         handler = function ()
-            health.current = min( health.max, health.current + health.max * 0.25 )
+            gain( 0.25 * health.max, "health" )
         end,
     },
 
