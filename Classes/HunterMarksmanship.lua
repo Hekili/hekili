@@ -749,21 +749,27 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
 
         survival_of_the_fittest = {
-            id = 281195,
+            id = function () return pet.exists and 264735 or 281195 end,
             cast = 0,
             cooldown = 180,
-            gcd = "spell",
+            gcd = "off",
+            known = function ()
+                if not pet.exists then return 155228 end
+            end,
 
             toggle = "defensives",
 
             startsCombat = false,
-            texture = 136094,
 
-            usable = function () return not pet.alive end,
+            usable = function ()
+                return not pet.exists or pet.alive, "requires either no pet or a living pet"
+            end,
             handler = function ()
                 applyBuff( "survival_of_the_fittest" )
             end,
-        },
+
+            copy = { 264735, 281195, 155228 }
+        },        
 
 
         tar_trap = {

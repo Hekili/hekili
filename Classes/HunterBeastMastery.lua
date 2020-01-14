@@ -1307,6 +1307,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 if not pet.alive then return false, "requires a living pet" end
                 return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic debuff"
             end,
+
             handler = function ()
                 removeBuff( "dispellable_enrage" )
                 removeBuff( "dispellable_magic" )
