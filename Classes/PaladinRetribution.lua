@@ -684,7 +684,11 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             usable = function () return buff.reckoning.stack >= 50 end,
             handler = function ()
                 removeStack( "reckoning", 50 )
-                applyBuff( "avenging_wrath", 6 )
+                if talent.crusade.enabled then
+                    applyBuff( "crusade", 12 )
+                else
+                    applyBuff( "avenging_wrath", 6 )
+                end
             end,
         },
 
