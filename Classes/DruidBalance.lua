@@ -1911,6 +1911,35 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 applyBuff( "wild_growth" )
             end,
         },
+
+        -- starlord_cancel override.
+        cancel_buff = {
+            name = '|cff00ccff[Cancel Buff]|r',
+            cast = 0,
+            gcd = 'off',
+    
+            startsCombat = false,
+    
+            buff = function () return args.buff_name or nil end,
+    
+            indicator = "cancel",
+            texture = function ()
+                local a = class.auras[ args.buff_name ]            
+                if a.texture then return a.texture end
+    
+                a = a and a.id
+                a = a and GetSpellTexture( a )
+                return a or 134400
+            end,
+    
+            usable = function ()
+                if not settings.starlord_cancel and args.buff_name == "starlord" then return false, "starlord cancel option disabled" end
+                return args.buff_name ~= nil, "no buff name detected"
+            end,
+            handler = function ()
+                removeBuff( args.buff_name )
+            end,
+        }        
     } )
 
 
@@ -1929,6 +1958,20 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         potion = "unbridled_fury",
 
         package = "Balance",        
+    } )
+
+    
+    spec:RegisterSetting( "starlord_cancel", false, {
+        name = "Cancel |T462651:0|t Starlord",
+        desc = "If checked, the addon will recommend cancelling your Starlord buff before starting to build stacks with Starsurge again.\n\n" ..
+            "You will likely want a |cFFFFD100/cancelaura Starlord|r macro to manage this during combat.",
+        icon = 462651,
+        iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+        type = "range",
+        min = 0,
+        max = 4,
+        step = 0.1,
+        width = 1.5
     } )
 
 
