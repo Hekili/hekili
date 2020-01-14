@@ -307,6 +307,7 @@ local displayTemplate = {
             target = 1,
             combat = 1,
             combatTarget = 1,
+            hideMounted = false,
         },
 
         pvp = {
@@ -315,6 +316,7 @@ local displayTemplate = {
             target = 1,
             combat = 1,
             combatTarget = 1,
+            hideMounted = false,
         },
     },
 
@@ -1388,11 +1390,18 @@ do
                                     combatTarget = {
                                         type = "range",
                                         name = "Combat w/ Target",
-                                        desc = "If non-zero, this is always shown when you are in combat and have an attackable PvE target.",
+                                        desc = "If non-zero, this display is always shown when you are in combat and have an attackable PvE target.",
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
                                         width = "full"
+                                    },
+
+                                    hideMounted = {
+                                        type = "toggle",
+                                        name = "Hide When Mounted",
+                                        desc = "If checked, the display will not be visible when you are mounted (unless you are in combat).",
+                                        width = "full",
                                     }
                                 },
                             },
@@ -1455,6 +1464,13 @@ do
                                         max = 1,
                                         step = 0.01,
                                         width = "full"
+                                    },
+
+                                    hideMounted = {
+                                        type = "toggle",
+                                        name = "Hide When Mounted",
+                                        desc = "If checked, the display will not be visible when you are mounted (unless you are in combat).",
+                                        width = "full",
                                     }
                                 },
                             },
