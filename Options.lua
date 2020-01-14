@@ -1375,6 +1375,7 @@ do
                                         max = 1,
                                         step = 0.01,
                                         width = "full",
+                                        order = 2,
                                     },
 
                                     target = {
@@ -1385,6 +1386,7 @@ do
                                         max = 1,
                                         step = 0.01,
                                         width = "full",
+                                        order = 3,
                                     },
 
                                     combatTarget = {
@@ -1394,7 +1396,8 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full"
+                                        width = "full",
+                                        order = 4,
                                     },
 
                                     hideMounted = {
@@ -1402,6 +1405,7 @@ do
                                         name = "Hide When Mounted",
                                         desc = "If checked, the display will not be visible when you are mounted (unless you are in combat).",
                                         width = "full",
+                                        order = 1.1,
                                     }
                                 },
                             },
@@ -1444,6 +1448,7 @@ do
                                         max = 1,
                                         step = 0.01,
                                         width = "full",
+                                        order = 2,
                                     },
 
                                     target = {
@@ -1454,6 +1459,7 @@ do
                                         max = 1,
                                         step = 0.01,
                                         width = "full",
+                                        order = 3,
                                     },
 
                                     combatTarget = {
@@ -1463,7 +1469,8 @@ do
                                         min = 0,
                                         max = 1,
                                         step = 0.01,
-                                        width = "full"
+                                        width = "full",
+                                        order = 4,
                                     },
 
                                     hideMounted = {
@@ -1471,6 +1478,7 @@ do
                                         name = "Hide When Mounted",
                                         desc = "If checked, the display will not be visible when you are mounted (unless you are in combat).",
                                         width = "full",
+                                        order = 1.1,
                                     }
                                 },
                             },
