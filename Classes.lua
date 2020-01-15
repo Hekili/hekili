@@ -232,14 +232,14 @@ local HekiliSpecMixin = {
                             if type( items ) == 'table' then
                                 for i, item in ipairs( items ) do
                                     local ability = self.abilities[ item ]
-                                    ability.itemSpellKey = a.key .. "_" .. a.itemSpellID
+                                    ability.itemSpellKey = a.key .. "_" .. ability.itemSpellID
     
                                     self.abilities[ ability.itemSpellKey ] = a
                                     class.abilities[ ability.itemSpellKey ] = a
                                 end
                             else
                                 local ability = self.abilities[ items ]
-                                ability.itemSpellKey = a.key .. "_" .. a.itemSpellID
+                                ability.itemSpellKey = a.key .. "_" .. ability.itemSpellID
     
                                 self.abilities[ ability.itemSpellKey ] = a
                                 class.abilities[ ability.itemSpellKey ] = a
