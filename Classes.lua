@@ -56,7 +56,7 @@ local specTemplate = {
 
     -- Toggles
     custom1Name = "Custom 1",
-    custom2Name = "Custom 2"
+    custom2Name = "Custom 2",
 }
 ns.specTemplate = specTemplate -- for options.
 
@@ -224,6 +224,29 @@ local HekiliSpecMixin = {
                         if GetSpecializationInfo( GetSpecialization() or 0 ) == self.id then
                             -- Copy to class table as well.
                             class.auras[ a.name ] = a
+                        end
+                        
+                        if self.pendingItemSpells[ a.name ] then
+                            local items = self.pendingItemSpells[ a.name ]
+    
+                            if type( items ) == 'table' then
+                                for i, item in ipairs( items ) do
+                                    local ability = self.abilities[ item ]
+                                    ability.itemSpellKey = a.key .. "_" .. a.itemSpellID
+    
+                                    self.abilities[ ability.itemSpellKey ] = a
+                                    class.abilities[ ability.itemSpellKey ] = a
+                                end
+                            else
+                                local ability = self.abilities[ items ]
+                                ability.itemSpellKey = a.key .. "_" .. a.itemSpellID
+    
+                                self.abilities[ ability.itemSpellKey ] = a
+                                class.abilities[ ability.itemSpellKey ] = a
+                            end
+    
+                            self.pendingItemSpells[ a.name ] = nil
+                            self.itemPended = nil
                         end
                     end )
                 end
@@ -422,7 +445,7 @@ local HekiliSpecMixin = {
                     return
                 end
 
-                local name, link, _, _, _, _, _, _, _, texture = GetItemInfo( item )
+                local name, link, _, _, _, _, _, _, slot, texture = GetItemInfo( item )
 
                 if name then
                     a.name = name
@@ -438,6 +461,38 @@ local HekiliSpecMixin = {
                     self.abilities[ a.name ] = self.abilities[ a.name ] or a
                     self.abilities[ a.link ] = self.abilities[ a.link ] or a
                     self.abilities[ a.id ] = self.abilities[ a.link ] or a
+
+                    a.itemLoaded = GetTime()
+
+                    if a.item and a.item ~= 158075 then
+                        a.itemSpellName, a.itemSpellID = GetItemSpell( a.item )
+
+                        if a.itemSpellName == a.name then                    
+                            a.itemSpellKey = a.key .. "_" .. a.itemSpellID
+                        elseif a.itemSpellName then
+                            local itemAura = self.auras[ a.itemSpellName ]
+
+                            if itemAura then
+                                a.itemSpellKey = itemAura.key .. "_" .. a.itemSpellID
+                                self.abilities[ a.itemSpellKey ] = a
+                            else
+                                if self.pendingItemSpells[ a.itemSpellName ] then
+                                    if type( self.pendingItemSpells[ a.itemSpellName ] ) == 'table' then
+                                        table.insert( self.pendingItemSpells[ a.itemSpellName ], ability )
+                                    else
+                                        local first = self.pendingItemSpells[ a.itemSpellName ]
+                                        self.pendingItemSpells[ a.itemSpellName ] = {
+                                            first,
+                                            ability
+                                        }
+                                    end
+                                else
+                                    self.pendingItemSpells[ a.itemSpellName ] = ability
+                                    a.itemPended = GetTime()
+                                end
+                            end
+                        end
+                    end
 
                     if not a.unlisted then
                         class.abilityList[ ability ] = "|T" .. a.texture .. ":0|t " .. link
@@ -743,6 +798,7 @@ function Hekili:NewSpecialization( specID, isRanged )
         abilities = {},
         pseudoAbilities = 0,
         itemAbilities = 0,
+        pendingItemSpells = {},
 
         pets = {},
         totems = {},
@@ -2113,7 +2169,7 @@ all:RegisterAbility( "azsharas_font_of_power", {
         applyBuff( "latent_arcana" )
     end,
 
-    copy = "latent_arcana"
+    copy = { "latent_arcana" }
 } )
 
 all:RegisterAura( "latent_arcana", {
@@ -4860,6 +4916,7 @@ end
 } )
 
 
+-- LibItemBuffs is out of date.
 -- Initialize trinket stuff.
 do
     local LIB = LibStub( "LibItemBuffs-1.0", true )
