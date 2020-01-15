@@ -169,9 +169,9 @@ state.trinket = {
         cooldown = {
             slot = 't1'
         },
-        has_cooldown = {
+        --[[ has_cooldown = {
             slot = 't1'
-        },
+        }, ]]
 
         stacking_stat = {
             slot = 't1'
@@ -194,9 +194,10 @@ state.trinket = {
         cooldown = {
             slot = 't2',
         },
-        has_cooldown = {
+        
+        --[[ has_cooldown = {
             slot = 't2',
-        },
+        }, ]]
 
         stacking_stat = {
             slot = 't2'
@@ -236,6 +237,8 @@ state.trinket = {
     }
 }
 state.trinket.proc = state.trinket.stat
+state.trinket[1] = state.trinket.t1
+state.trinket[2] = state.trinket.t2
 
 state.using_apl = setmetatable( {}, {
     __index = function( t, k )
@@ -325,6 +328,8 @@ local mt_trinket = {
             return class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ][k] or 0
         elseif k == 'remains' then
             return class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ].remains or 0
+        elseif k == 'has_cooldown' then
+            return GetItemSpell( t.id ) ~= nil
         end
         return false
     end
@@ -5611,12 +5616,10 @@ do
             if not toggle or toggle == 'default' then toggle = ability.toggle end
 
             if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
-                if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then
-                    return true
-                else
-                    if toggle and toggle ~= 'none' then
-                        if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true end
-                    end
+                if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then return true
+                elseif ability.item and not state.equipped[ ability.item ] then return false
+                elseif toggle and toggle ~= 'none' then
+                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true end
                 end
             end
         end
