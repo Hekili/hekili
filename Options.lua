@@ -5191,7 +5191,9 @@ do
                                     order = 5,
                                     func = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
-                                        local result, warnings = Hekili:ImportSimcAPL( nil, nil, p.profile )
+                                        local profile = p.profile:gsub( '"', '' )
+
+                                        local result, warnings = Hekili:ImportSimcAPL( nil, nil, profile )
 
                                         wipe( p.lists )
 
@@ -8674,6 +8676,11 @@ local function Sanitize( segment, i, line, warnings )
     i, times = i:gsub( "target%.1%.time_to_die", "time_to_die" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'target.1.time_to_die' to 'time_to_die' (" .. times .."x)." )
+    end
+
+    i, times = i:gsub( "trinket%.([%w_]+)%.cooldown", "cooldown.%1" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'trinket.X.cooldown' to 'cooldown.X' (" .. times .. "x)." )
     end
 
     i, times = i:gsub( "min:[a-z0-9_%.]+(,?$?)", "%1" )
