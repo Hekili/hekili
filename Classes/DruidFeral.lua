@@ -1609,7 +1609,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
 
         thorns = {
-            id = 236696,
+            id = 305497,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
