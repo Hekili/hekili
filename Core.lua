@@ -442,10 +442,12 @@ end
 
 do
     local knownCache = {}
+    local reasonCache = {}
 
     function Hekili:IsSpellKnown( spell )
-        knownCache[ spell ] = knownCache[ spell ] or state:IsKnown( spell )
-        return knownCache[ spell ]
+        if knownCache[ spell ] ~= nil then return knownCache[ spell ], reasonCache[ spell ] end
+        knownCache[ spell ], reasonCache[ spell ] = state:IsKnown( spell )
+        return knownCache[ spell ], reasonCache[ spell ]
     end
 
 
@@ -461,6 +463,7 @@ do
 
     function Hekili:ResetSpellCaches()
         table_wipe( knownCache )
+        table_wipe( reasonCache )
         table_wipe( disabledCache )
     end
 end
