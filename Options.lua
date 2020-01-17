@@ -509,7 +509,7 @@ function Hekili:GetDefaults()
                 mode = {
                     key = "ALT-SHIFT-N",
                     -- type = "AutoSingle",
-                    auto = true,
+                    automatic = true,
                     single = true,
                     value = "automatic",
                 },
@@ -4166,7 +4166,7 @@ do
                                     desc = "When the AOE Display is shown, its recommendations will be made assuming this many targets are available.",
                                     width = "full",
                                     min = 2,
-                                    max = 5,
+                                    max = 10,
                                     step = 1,
                                     order = 10,
                                 },
