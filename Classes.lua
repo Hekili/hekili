@@ -1200,6 +1200,11 @@ all:RegisterAuras( {
         duration = 10,
     },
 
+    hyper_organic_light_originator = {
+        id = 312924,
+        duration = 6,
+    },
+
     blood_fury = {
         id = 20572,
         duration = 15,
@@ -1736,6 +1741,28 @@ all:RegisterAbilities( {
             applyBuff( 'berserking' )
         end,
     },
+
+    hyper_organic_light_originator = {
+        id = 312924,
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        toggle = "defensives",
+
+        handler = function ()
+            applyBuff( "hyper_organic_light_originator" )
+        end
+    },
+
+    bag_of_tricks = {
+        id = 312411,
+        cast = 0,
+        cooldown = 90,
+        gcd = "spell",
+
+        toggle = "cooldowns",
+    }
 } )
 
 
