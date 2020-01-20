@@ -2054,8 +2054,9 @@ local mt_default_pet = {
 
             for i = 1, 5 do
                 present, name, start, duration = GetTotemInfo( i )
+                if duration == 0 then duration = 3600 end
 
-                if present and name == class.abilities[ t.key ].name then
+                if present and class.abilities[ t.key ] and name == class.abilities[ t.key ].name then
                     t.expires = start + duration
                     return t.expires
                 end
@@ -2082,8 +2083,7 @@ local mt_default_pet = {
         end
 
         return -- Error("UNK: " .. k)
-
-    end
+    end,
 }
 ns.metatables.mt_default_pet = mt_default_pet
 
@@ -2140,6 +2140,7 @@ local mt_pets = {
 
     __newindex = function(t, k, v)
         if type(v) == 'table' then
+            if not v.key then v.key = k end
             rawset( t, k, setmetatable( v, mt_default_pet ) )
         else
             rawset( t, k, v )
@@ -5012,7 +5013,11 @@ function state.reset( dispName )
 
     for k, v in pairs( state.pet ) do
         if type(v) == 'table' then
-            state.pet[ k ].expires = 0
+            v.expires = 0
+            
+            if not rawget( v, "key" ) then
+                v.key = k
+            end
         end
     end
 
