@@ -8678,6 +8678,12 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Converted 'target.1.time_to_die' to 'time_to_die' (" .. times .."x)." )
     end
 
+    -- target.time_to_pct_XX.remains is redundant, Monks.
+    i, times = i:gsub( "time_to_pct_(%d+)%.remains", "time_to_pct_%1" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'time_to_pct_XX.remains' to 'time_to_pct_XX' (" .. times .. "x)." )
+    end
+
     i, times = i:gsub( "trinket%.([%w_]+)%.cooldown", "cooldown.%1" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'trinket.X.cooldown' to 'cooldown.X' (" .. times .. "x)." )
