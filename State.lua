@@ -2906,7 +2906,7 @@ function state:AddBuffMetaFunction( aura, key, func )
     local a = class.auras[ aura ]
     if not a then return end
 
-    if a.meta then a.meta = {} end
+    if not a.meta then a.meta = {} end
     a.meta[ key ] = setfenv( func, self )
 end
 
