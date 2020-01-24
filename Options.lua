@@ -229,6 +229,15 @@ local oneTimeFixes = {
 
         p.runOnce.autoconvertPSCDsToCBs_20190805 = nil -- repeat as needed.
     end,
+
+    cleanupAnyPriorityVersionTypoes_20200124 = function ( p )
+        for _, pack in pairs( p.packs ) do
+            if pack.date    > 99999999 then pack.date    = 0 end
+            if pack.version > 99999999 then pack.version = 0 end
+        end
+
+        p.runOnce.cleanupAnyPriorityVersionTypoes_20200124 = nil -- repeat as needed.
+    end,
 }
 
 
