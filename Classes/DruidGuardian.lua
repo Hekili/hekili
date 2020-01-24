@@ -382,6 +382,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 6,
             max_stack = 1,
         },
+
+        -- Azerite
+        masterful_instincts = {
+            id = 273349,
+            duration = 30,
+            max_stack = 1,
+        }
     } )
 
 
@@ -437,6 +444,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
 
     spec:RegisterGear( 'soul_of_the_archdruid', 151636 )
+
+
+    spec:RegisterHook( "reset_precast", function ()
+        if azerite.masterful_instincts.enabled and buff.survival_instincts.up and buff.masterful_instincts.down then
+            applyBuff( "masterful_instincts", buff.survival_instincts.remains + 30 )
+        end
+    end )
 
 
     -- Abilities
@@ -1305,6 +1319,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 applyBuff( "survival_instincts" )
+
+                if azerite.masterful_instincts.enabled and buff.survival_instincts.up and buff.masterful_instincts.down then
+                    applyBuff( "masterful_instincts", buff.survival_instincts.remains + 30 )
+                end
             end,
         },
 
