@@ -602,7 +602,7 @@ do
         elseif zoneType == "pvp" or zoneType == "arena" then
             if not conf.visibility.advanced then return conf.visibility.pvp.alpha end
 
-            if conf.visibility.pvp.hideMounted and IsMounted() and not InCombatLockdown() then return 0 end
+            if conf.visibility.pvp.hideMounted and IsMounted() then return 0 end
 
             if conf.visibility.pvp.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pvp.combatTarget
             elseif conf.visibility.pvp.combat > 0 and state.combat > 0 then return conf.visibility.pvp.combat
@@ -614,7 +614,7 @@ do
 
         if not conf.visibility.advanced then return conf.visibility.pve.alpha end
         
-        if conf.visibility.pve.hideMounted and IsMounted() and not InCombatLockdown() then return 0 end
+        if conf.visibility.pve.hideMounted and IsMounted() then return 0 end
 
         if conf.visibility.pve.combatTarget > 0 and state.combat > 0 and UnitExists( "target" ) and not UnitIsDead( "target" ) and UnitCanAttack( "player", "target" ) then return conf.visibility.pve.combatTarget
         elseif conf.visibility.pve.combat > 0 and state.combat > 0 then return conf.visibility.pve.combat
