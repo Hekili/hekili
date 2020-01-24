@@ -8412,14 +8412,22 @@ all:RegisterAbility( "worldvein_resonance", {
     essence = true,
 
     handler = function()
+        applyBuff( "worldvein_resonance" )
         addStack( "lifeblood", nil, essence.worldvein_resonance.rank > 1 and 3 or 2 )
     end,
 } )
 
-all:RegisterAura( "lifeblood", {
-    id = 295137,
-    duration = function () return essence.worldvein_resonance.rank > 1 and 18 or 12 end,
-    max_stack = 4,
+all:RegisterAuras( {
+    lifeblood = {
+        id = 295137,
+        duration = function () return essence.worldvein_resonance.rank > 1 and 18 or 12 end,
+        max_stack = 4,
+    },
+    worldvein_resonance = {
+        id = 313310,
+        duration = 18,
+        max_stack = 1
+    }
 } )
 
 
