@@ -765,7 +765,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             talent = "hand_of_the_protector",
 
             handler = function ()
-                if PTR and buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
+                if buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
                 gain( 0.1 * health.max, "health" )
             end,
         },
@@ -838,7 +838,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             notalent = "hand_of_the_protector",
 
             handler = function ()
-                if PTR and buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
+                if buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
                 gain( 0.1 * health.max, "health" )
             end,
         },

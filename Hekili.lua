@@ -13,7 +13,7 @@ local format = string.format
 local upper  = string.upper
 
 
-ns.PTR = select( 4, GetBuildInfo() ) > 80205
+ns.PTR = select( 4, GetBuildInfo() ) > 80300
 
 
 ns.Patrons = {

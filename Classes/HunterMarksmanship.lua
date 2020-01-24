@@ -256,8 +256,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 19434,
             cast = function () return buff.lock_and_load.up and 0 or ( 2.5 * haste ) end,
             charges = 2,
-            cooldown = function () return haste * ( ( PTR and buff.trueshot.up ) and 4.8 or 12 ) end,
-            recharge = function () return haste * ( ( PTR and buff.trueshot.up ) and 4.8 or 12 ) end,
+            cooldown = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
+            recharge = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
             gcd = "spell",
 
             spend = function () return buff.lock_and_load.up and 0 or 30 end,
@@ -517,21 +517,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 removeBuff( "steady_focus" )
             end,
         },
-
-
-        explosive_shot_detonate = not PTR and {
-            id = 212679,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            startsCombat = true,
-            texture = 1044088,
-
-            usable = function () return prev_gcd[1].explosive_shot end,
-            handler = function ()
-            end,
-        } or nil,
 
 
         feign_death = {
