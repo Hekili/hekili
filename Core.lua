@@ -649,8 +649,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     if debug then self:Debug( " - variable name not provided, skipping." ) end
                                 end
 
-                            elseif state.buff.casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ action ] then
-                                if debug then self:Debug( "Player is casting and cannot use " .. action .. " while casting." ) end
+                            --[[ elseif state.buff.casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ action ] then
+                                if debug then self:Debug( "Player is casting and cannot use " .. action .. " while casting (" .. state.buff.casting.remains .. ")." ) end ]]
 
                             else
                                 -- Target Cycling.
@@ -1262,7 +1262,7 @@ function Hekili:ProcessHooks( dispName, packName )
                         state:RunHandler( action )
                     end
 
-                    if ability.item then
+                    if ability.item and not ability.essence then
                         state.putTrinketsOnCD( cooldown / 6 )
                     end
 
@@ -1305,7 +1305,7 @@ function Hekili:ProcessHooks( dispName, packName )
                             else state:RunHandler( action ) end
                         end
 
-                        if ability.item then state.putTrinketsOnCD( cooldown / 6 ) end
+                        if ability.item and not ability.essence then state.putTrinketsOnCD( cooldown / 6 ) end
 
                         if ability.cast > 0 and ( ability.channeled and not ability.breakable ) then
                             state.advance( cast )
