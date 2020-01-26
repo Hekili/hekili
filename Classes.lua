@@ -2163,6 +2163,58 @@ all:RegisterAuras( {
 
 
 -- BFA TRINKETS/ITEMS
+-- Ny'alotha
+
+all:RegisterAbility( "manifesto_of_madness", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 174103,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "manifesto_of_madness_chapter_one" )
+    end,
+} )
+
+all:RegisterAuras( {
+    manifesto_of_madness_chapter_one = {
+        id = 313948,
+        duration = 10,
+        max_stack = 1
+    },
+
+    manifesto_of_madness_chapter_two = {
+        id = 314040,
+        duration = 10,
+        max_stack = 1
+    }
+} )
+
+
+all:RegisterAbility( "forbidden_obsidian_claw", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 173944,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyDebuff( "target", "obsidian_claw" )
+    end,
+} )
+
+all:RegisterAura( "obsidian_claw", {
+    id = 313148,
+    duration = 8.5,
+    max_stack = 1
+} )
+
+
+
+
 -- Azshara's EP
 all:RegisterAbility( "orgozoas_paralytic_barb", {
     cast = 0,
@@ -2521,6 +2573,27 @@ do
         end,
 
         copy = "hyperthread_wristwraps_300142"
+    } )
+
+    
+    all:RegisterAbility( "neural_synapse_enhancer", {
+        cast = 0,
+        cooldown = 45,
+        gcd = "off",
+
+        item = 168973,
+
+        handler = function ()
+            applyBuff( "enhance_synapses" )            
+        end,
+
+        copy = "enhance_synapses_300612"
+    } )
+
+    all:RegisterAura( "enhance_synapses", {
+        id = 300612,
+        duration = 15,
+        max_stack = 1
     } )
 end
 
