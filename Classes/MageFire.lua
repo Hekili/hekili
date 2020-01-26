@@ -799,7 +799,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             end,
 
             usable = function () 
-                if action.pyroblast.cast > 0 and not boss then return false, "hardcasts only allowed on bosses" end
+                if combat > 0 and action.pyroblast.cast > 0 and not boss then return false, "hardcasts only allowed on bosses" end
                 return true
             end,
 
@@ -892,7 +892,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             handler = function ()
                 if talent.frenetic_speed.enabled then applyBuff( "frenetic_speed" ) end
 
-                if buff.combustion.up or stat.crit >= 100 then
+                if buff.combustion.up or stat.crit >= 100 or ( talent.searing_touch.enabled and target.health_pct < 30 ) then
                     if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
                     else applyBuff( "heating_up" ) end
                 end
@@ -964,6 +964,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
         aoe = 3,
         gcdSync = false,
+        canCastWhileCasting = true,
 
         nameplates = false,
         nameplateRange = 8,
