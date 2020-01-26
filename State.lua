@@ -5826,6 +5826,10 @@ function state:TimeToReady( action, pool )
         wait = max( wait, ability.readyTime )
     end
 
+    if state.spec.fire and state.buff.casting.up and not ability.castableWhileCasting then
+        wait = max( wait, state.buff.casting.remains )
+    end
+
     return max( wait, self.delayMin )
 end
 
