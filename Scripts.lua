@@ -825,7 +825,7 @@ local function stripScript( str, thorough )
   str = str:gsub("^return ", "")
 
   -- Remove min/max/safenum/safebool.
-  str = str:gsub("([^%a%w_%.])min([^%a%w_)]?)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])max([^%a%w_)]?)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safebool([^%a%w_)]?)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safenum([^%a%w_)]?)%s?%(?", "%1%2 ")
+  str = str:gsub("([^%a%w_%.])min([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])max([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safebool([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safenum([^%a%w_)]+)%s?%(?", "%1%2 ")
 
   -- Remove comments and parentheses.
   str = str:gsub("%-%-.-\n", ""):gsub("[()]", "")
