@@ -1394,12 +1394,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 106839,
             cast = 0,
             cooldown = 15,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = true,
             texture = 236946,
 
             toggle = "interrupts",
+            interrupt = true,
 
             form = function () return buff.bear_form.up and "bear_form" or "cat_form" end,
 

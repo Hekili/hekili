@@ -410,6 +410,10 @@ do
         { "^(dot%.[a-z0-9_]+)%.ss_buffed",      "%1.remains" }, -- Assassination
         { "^consecration.up",                   "consecration.remains" }, -- Prot Paladin
         { "^contagion<=?(.-)",                  "contagion-%1" }, -- Affliction Warlock
+        
+        { "^!?action%.([a-z0-9_]+)%.in_flight$",    "action.%1.in_flight_remains" }, -- Fire Mage, but others too, potentially.
+        { "^action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$",
+                                                    "action.%1.in_flight_remains-%2" }, -- Fire Mage, but others too, potentially.
 
     }
 
@@ -514,7 +518,7 @@ do
     function scripts:BuildRecheck( conditions )
         local recheck
 
-        conditions = conditions:gsub( " ", "" )
+        conditions = conditions:gsub( " +", "" )
         conditions = self:EmulateSyntax( conditions, true )
 
         local exprs = self:SplitExpr( conditions )
@@ -915,6 +919,7 @@ local newModifiers = {
     moving = 'bool',
     target_if = 'bool',
     use_off_gcd = 'bool',
+    use_while_casting = 'bool',
     wait = 'bool',
 
     -- Not necessarily a number, but not baby-proofed.
@@ -1507,7 +1512,7 @@ function scripts:GetConditionsAndValues( scriptID, listName, actID )
             for k, v in pairs( script.Elements ) do
                 if not checked[ k ] then
                     local key = key_cache[ k ]
-                    local success, value = pcall( v )
+                    local success, value = pcall( v, true )
 
                     -- if emsg then value = emsg end
                     if type( value ) == 'number' then

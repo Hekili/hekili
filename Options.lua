@@ -447,6 +447,9 @@ local actionTemplate = {
     moving = 0,
     sync = "",
 
+    use_while_casting = 0,
+    use_off_gcd = 0,
+
     wait_on_ready = 0, -- NYI
 
     -- Call/Run Action List
@@ -4349,7 +4352,9 @@ do
 
     local toggleToNumber = {
         for_next = true,
-        cycle_targets = true,        
+        cycle_targets = true,
+        use_off_gcd = true,
+        use_while_casting = true,
     }
 
 
@@ -4425,6 +4430,14 @@ do
 
         if option == "line_cd" and not val then
             data.line_cd = nil
+        end
+
+        if option == "use_off_gcd" and not val then
+            data.use_off_gcd = nil
+        end
+
+        if option == "use_while_casting" and not val then
+            data.use_while_casting = nil
         end
 
         if option == "action" then
@@ -5976,6 +5989,35 @@ do
 
                                                         return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
                                                     end,
+                                                },
+
+                                                modAsyncUsage = {
+                                                    type = "group",
+                                                    inline = true,
+                                                    name = "",
+                                                    order = 22.1,
+                                                    args = {
+                                                        use_off_gcd = {
+                                                            type = "toggle",
+                                                            name = "Use Off Global Cooldown",
+                                                            desc = "If checked, this entry can be checked even if the global cooldown (GCD) is active.",
+                                                            order = 1,
+                                                            width = 1.5,
+                                                        },
+                                                        use_while_casting = {
+                                                            type = "toggle",
+                                                            name = "Use While Casting",
+                                                            desc = "If checked, this entry can be checked even if the global cooldown (GCD) is active.",
+                                                            order = 2,
+                                                            width = 1.5
+                                                        }
+                                                    },
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        local ability = e.action and class.abilities[ e.action ]
+
+                                                        return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
+                                                    end,                                                    
                                                 },
 
                                                 modCooldown = {
@@ -7539,10 +7581,10 @@ function Hekili:GetOptions()
                             local display = snapshots.display
                             local snap = display and snapshots.snap[ display ]
 
-                            return snap and ns.snapshots[ display ][ snap ]
+                            return snap and ( "Click here and press CTRL+A, CTRL+C to copy the snapshot.\n\n" .. ns.snapshots[ display ][ snap ] )
                         end,
                         disabled = false,
-                        multiline = 25,
+                        -- multiline = 25,
                         width = "full",
                     }
                 }
@@ -8983,6 +9025,9 @@ do
 
             if result.for_next then result.for_next = tonumber( result.for_next ) end
             if result.cycle_targets then result.cycle_targets = tonumber( result.cycle_targets ) end
+
+            if result.use_off_gcd then result.use_off_gcd = tonumber( result.use_off_gcd ) end
+            if result.use_while_casting then result.use_while_casting = tonumber( result.use_while_casting ) end
 
             if result.target_if and not result.criteria then
                 result.criteria = result.target_if

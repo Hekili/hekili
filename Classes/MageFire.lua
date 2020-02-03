@@ -237,6 +237,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 15,
             max_stack = 2,
         },
+        rune_of_power = {
+            id = 116014,
+            duration = 10,
+            max_stack = 1,
+        },
         shimmer = {
             id = 212653,
         },
@@ -277,7 +282,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             if k == "active" then return talent.firestarter.enabled and target.health.pct > 90
             elseif k == "remains" then
                 if not talent.firestarter.enabled or target.health.pct <= 90 then return 0 end
-                return max( 0, floor( target.time_to_die * 90 / target.health.pct ) )
+                return target.time_to_pct_90
             end
         end, state )
     } ) )
@@ -293,10 +298,29 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         incanters_flow.reset()
     end )
 
+    spec:RegisterHook( "advance", function ( time )
+        if Hekili.ActiveDebug then Hekili:Debug( "STREAK DATA:  Heating Up ( %.2f ), Hot Streak ( %.2f ).", state.buff.heating_up.remains, state.buff.hot_streak.remains ) end
+    end )
 
-    spec:RegisterStateExpr( "auto_advance", function () return false end )
+    spec:RegisterStateFunction( "hot_streak", function( willCrit )
+        willCrit = willCrit or buff.combustion.up or stat.crit >= 100
 
+        if Hekili.ActiveDebug then Hekili:Debug( "HOT STREAK START:\nHeating Up: %s, %.2f\nHot Streak: %s, %.2f\nCrit: %s, %.2f", buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains, willCrit and "Yes" or "No", stat.crit ) end
 
+        if willCrit then
+            if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
+            elseif buff.hot_streak.down then applyBuff( "heating_up" ) end
+            
+            if Hekili.ActiveDebug then Hekili:Debug( "HOT STREAK END:\nHeating Up: %s, %.2f\nHot Streak: %s, %.2f", buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains ) end
+            return true
+        end
+        
+        -- Apparently it's safe to not crit within 0.2 seconds.
+        if buff.heating_up.up and query_time - buff.heating_up.applied > 0.2 then removeBuff( "heating_up" ) end
+        if Hekili.ActiveDebug then Hekili:Debug( "HOT STREAK END:\nHeating Up: %s, %.2f\nHot Streak: %s, %.2f", buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains ) end
+    end )
+
+    
     -- Abilities
     spec:RegisterAbilities( {
         arcane_intellect = {
@@ -459,13 +483,14 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 134153,
 
             usable = function () return target.within12 end,
+            
             handler = function ()
-                if talent.alexstraszas_fury.enabled then
-                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-                    else applyBuff( "heating_up" ) end
-                end
-
+                hot_streak( talent.alexstraszas_fury.enabled )
                 applyDebuff( "target", "dragons_breath" )
+            end,
+
+            impact = function ()
+                hot_streak( talent.alexstraszas_fury.enabled )
             end,
         },
 
@@ -473,9 +498,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         fire_blast = {
             id = 108853,
             cast = 0,
-            charges = function () return talent.flame_on.enabled and 3 or 2 end,
-            cooldown = function () return talent.flame_on.enabled and 10 or 12 end,
-            recharge = function () return talent.flame_on.enabled and 10 or 12 end,
+            charges = function () return ( talent.flame_on.enabled and 3 or 2 ) end,
+            cooldown = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) end,
+            recharge = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) end,
             gcd = "off",
             castableWhileCasting = true,
 
@@ -487,14 +512,17 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             nobuff = "fire_blasting", -- horrible.
 
+            usable = function ()
+                return time > 0
+            end,
+
             handler = function ()
-                if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-                else applyBuff( "heating_up" ) end
+                hot_streak( true )
 
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 if azerite.blaster_master.enabled then addStack( "blaster_master", nil, 1 ) end
 
-                applyBuff( "fire_blasting" )
+                applyBuff( "fire_blasting" ) -- Causes 1 second ICD on Fire Blast; addon only.
             end,
         },
 
@@ -512,53 +540,27 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 135812,
 
             velocity = 45,
-
-            -- Used by the real event handler, must use *real* data.
-            -- Only purpose is to add any needed flags to the data table for onImpact.
-            onRealCastFinish = function( data )
-                if PlayerBuffUp( "combustion" ) then
-                    data.willCrit = true
-                end
+            usable = function ()
+                if moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
+                return true
             end,
 
-            onCastFinish = function( data )
-                if buff.combustion.up then
-                    data.willCrit = true
-                end
-            end,
-
-            onImpact = function( data )
-                if data.willCrit or ( talent.firestarter.enabled and target.health.pct > 90 ) or ( stat.crit + ( buff.enhanced_pyrotechnics.stack * 10 ) >= 100 ) then
-                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-                    else applyBuff( "heating_up" ) end
-
-                    removeBuff( "enhanced_pyrotechnics" )
-
-                    if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
-                else
-                    removeBuff( "heating_up" )
-                    addStack( "enhanced_pyrotechnics", nil, buff.enhanced_pyrotechnics.stack + 1 )
-                end
-
-                applyDebuff( "target", "ignite" )
-                if talent.conflagration.enabled then applyDebuff( "target", "conflagration" ) end
-            end,
-
-            --[[ Old handler.
             handler = function ()
-                if buff.combustion.up or ( talent.firestarter.enabled and target.health.pct > 90 ) or ( stat.crit + ( buff.enhanced_pyrotechnics.stack * 10 ) >= 100 ) then
-                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-                    else applyBuff( "heating_up" ) end
+                if talent.kindling.enabled and firestarter.active or stat.crit + buff.enhanced_pyrotechnics.stack * 10 >= 100 then
+                    setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) )
+                end
+            end,
 
-                    if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
+            impact = function ()
+                if hot_streak( firestarter.active or stat.crit + buff.enhanced_pyrotechnics.stack * 10 >= 100 ) then
+                    removeBuff( "enhanced_pyrotechnics" )
                 else
                     addStack( "enhanced_pyrotechnics", nil, 1 )
-                    removeBuff( "heating_up" )
                 end
 
                 applyDebuff( "target", "ignite" )
                 if talent.conflagration.enabled then applyDebuff( "target", "conflagration" ) end
-            end, ]]
+            end,
         },
 
 
@@ -575,9 +577,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 135826,
 
             handler = function ()
-                removeBuff( "hot_streak" )
-                if buff.combustion.up then applyBuff( "heating_up" ) end
-
+                if not hardcast then removeBuff( "hot_streak" ) end
                 applyDebuff( "target", "ignite" )
                 applyDebuff( "target", "flamestrike" )
             end,
@@ -677,11 +677,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 1033911,
 
-            velocity = function ()
-                return target.maxR / 1.5
-            end,
+            flightTime = 1,
 
-            onImpact = function ()
+            --[[ handler = function ()
+                applyDebuff( "target", "meteor_burn" )
+            end, ]]
+
+            impact = function ()
                 applyDebuff( "target", "meteor_burn" )
             end,
         },
@@ -724,11 +726,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             velocity = 50,
 
-            onImpact = function ()
-                if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-                else applyBuff( "heating_up" ) end
-
+            handler = function ()
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
+            end,
+
+            impact = function ()
+                hot_streak( true )
             end,
         },
 
@@ -763,61 +766,29 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 135808,
 
-            velocity = 35,
-
-            -- Used by the real event handler, must use *real* data.
-            -- Only purpose is to add any needed flags to the data table for onImpact.
-            onRealCastFinish = function( data )
-                if PlayerBuffUp( "combustion" ) or ( talent.firestarter.enabled and target.health.pct > 90 ) then
-                    data.willCrit = true
+            usable = function ()
+                if action.pyroblast.cast > 0 then
+                    if moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
+                    if not boss or not settings.pyroblast_pull and combat == 0 then return false, "opener pyroblast disabled and/or target is not a boss" end
                 end
-            end,
-
-            onCastFinish = function( data )
-                if buff.combustion.up or ( talent.firestarter.enabled and target.health.pct > 90 ) then
-                    data.willCrit = true
-                end
-
-                removeBuff( "hot_streak" )
-                removeStack( "pyroclasm" )
-            end,
-
-            onImpact = function( data )
-                if Hekili.ActiveDebug then Hekili:Debug( "willCrit: %d, heating_up: %d, hot_streak: %d, ignite: %d", willCrit and 1 or 0, buff.heating_up.up and 1 or 0, buff.hot_streak.up and 1 or 0, debuff.ignite.up and 1 or 0 ) end
-
-                if data.willCrit then
-                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-                    else applyBuff( "heating_up" ) end
-
-                    if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
-                else
-                    removeBuff( "heating_up" )
-                end
-
-                applyDebuff( "target", "ignite" )
-                if Hekili.ActiveDebug then Hekili:Debug( "willCrit: %d, heating_up: %d, hot_streak: %d, ignite: %d", willCrit and 1 or 0, buff.heating_up.up and 1 or 0, buff.hot_streak.up and 1 or 0, debuff.ignite.up and 1 or 0 ) end
-            end,
-
-            usable = function () 
-                if combat > 0 and action.pyroblast.cast > 0 and not boss then return false, "hardcasts only allowed on bosses" end
                 return true
             end,
 
-            --[[ handler = function ()
-                if buff.combustion.up or ( talent.firestarter.enabled and target.health.pct > 90 ) then
-                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-                    else applyBuff( "heating_up" ) end
-
-                    if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
-                end
-
-                if buff.hot_streak.up then
+            handler = function ()
+                if not hardcast then
                     removeBuff( "hot_streak" )
                     removeStack( "pyroclasm" )
                 end
+            end,
 
+            velocity = 35,
+
+            impact = function ()
+                if hot_streak( firestarter.active ) then
+                    if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
+                end
                 applyDebuff( "target", "ignite" )
-            end, ]]
+            end,
         },
 
 
@@ -871,6 +842,15 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             nobuff = "rune_of_power",
             talent = "rune_of_power",
 
+            readyTime = function ()
+                if settings.reserve_runes > 0 and buff.combustion.down then
+                    local cremains = cooldown.combustion.true_remains
+                    local runes_by_then = min( 2, charges_fractional - 1 + ( cremains / action.rune_of_power.recharge ) )
+
+                    return max( 0, action.rune_of_power.recharge * ( settings.reserve_runes - runes_by_then ) )
+                end
+            end,
+
             handler = function ()
                 applyBuff( "rune_of_power" )
             end,
@@ -891,12 +871,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 if talent.frenetic_speed.enabled then applyBuff( "frenetic_speed" ) end
-
-                if buff.combustion.up or stat.crit >= 100 or ( talent.searing_touch.enabled and target.health_pct < 30 ) then
-                    if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-                    else applyBuff( "heating_up" ) end
-                end
-
+                hot_streak( talent.searing_touch.enabled and target.health_pct < 30 or firestarter.active )
                 applyDebuff( "target", "ignite" )
             end,
         },
@@ -964,7 +939,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
         aoe = 3,
         gcdSync = false,
-        canCastWhileCasting = true,
+        -- canCastWhileCasting = true,
 
         nameplates = false,
         nameplateRange = 8,
@@ -975,6 +950,33 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         potion = "potion_of_unbridled_fury",
 
         package = "Fire",
+    } )
+
+
+    spec:RegisterSetting( "prevent_hardcasts", false, {
+        name = "Prevent |T135808:0|t Pyroblast and |T135812:0|t Fireball Hardcasts While Moving",
+        desc = "If checked, the addon will not recommend |T135808:0|t Pyroblast or |T135812:0|t Fireball if they have a cast time and you are moving.\n\n" ..
+            "Instant |T135808:0|t Pyroblasts will not be affected.",
+        type = "toggle",
+        width = 3
+    } )
+
+    spec:RegisterSetting( "pyroblast_pull", false, {
+        name = "Allow |T135808:0|t Pyroblast Hardcast Pre-Pull",
+        desc = "If checked, the addon will recommend an opener |T135808:0|t Pyroblast against bosses, if included in the current priority.",
+        type = "toggle",
+        width = 3,
+    } )
+    
+    spec:RegisterSetting( "reserve_runes", 1, {
+        name = "Reserve |T609815:0|t Rune of Power Charges for Combustion",
+        desc = "While |T609815:0|t Rune of Power is not considered a Cooldown by default, saving charge(s) to line up with |T135824:0|t Combustion is generally a good idea.\n\n" ..
+            "The addon will reserve this many charges to line up with |T135824:0|t Combustion, regardless of whether Cooldowns are toggled on/off.",
+        type = "range",
+        min = 0,
+        max = 1.75,
+        step = 0.01,
+        width = 3
     } )
 
 

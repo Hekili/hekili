@@ -661,12 +661,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 461115,
 
-            handler = function ()
+            start = function ()
                 applyBuff( "rapid_fire" )
                 removeBuff( "lethal_shots" )
                 removeBuff( "trick_shots" )
             end,
-            postchannel = function () removeBuff( "double_tap" ) end,
+
+            finish = function () removeBuff( "double_tap" ) end,
         },
 
 

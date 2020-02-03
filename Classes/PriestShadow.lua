@@ -214,6 +214,15 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     end )
 
 
+    spec:RegisterHook( 'pregain', function( amount, resource, overcap )
+        if amount > 0 and resource == "insanity" and state.buff.memory_of_lucid_dreams.up then
+            amount = amount * 2
+        end
+
+        return amount, resource, overcap
+    end )
+
+
     spec:RegisterHook( 'runHandler', function( ability )
         -- Make sure only the correct debuff is applied for channels to help resource forecasting.
         if ability == "mind_sear" then
@@ -785,7 +794,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             aura = 'mind_flay',
 
-            handler = function ()
+            start = function ()
                 applyDebuff( "target", "mind_flay" )
                 channelSpell( "mind_flay" )
 
@@ -822,7 +831,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             breakable = true,
             breakchannel = function ()
                 removeDebuff( "target", "mind_sear" )
-            end,
+            end,            
             prechannel = true,
 
             startsCombat = true,
@@ -830,11 +839,12 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             aura = 'mind_sear',
 
-            handler = function ()
+            start = function ()
                 applyDebuff( "target", "mind_sear" )
                 channelSpell( "mind_sear" )
 
                 if azerite.searing_dialogue.enabled then applyDebuff( "target", "searing_dialogue" ) end
+                
                 removeBuff( "thought_harvester" )
                 forecastResources( "insanity" )
             end,

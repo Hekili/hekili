@@ -22,10 +22,30 @@ local FeignEvent = ns.FeignEvent
 
 local insert, remove, wipe = table.insert, table.remove, table.wipe
 
-local unitIDs = {"target", "targettarget", "focus", "focustarget", "boss1", "boss2", "boss3", "boss4", "boss5"}
+local unitIDs = { "target", "targettarget", "focus", "focustarget", "boss1", "boss2", "boss3", "boss4", "boss5" }
 
 local npGUIDs = {}
+local npUnits = {}
+
+Hekili.unitIDs = unitIDs
 Hekili.npGUIDs = npGUIDs
+Hekili.npUnits = npUnits
+
+
+function Hekili:GetNameplateUnitForGUID( id )
+    return npUnits[ id ]
+end
+
+function Hekili:GetGUIDForNameplateUnit( unit )
+    return npGUIDs[ unit ]
+end
+
+function Hekili:GetUnitByGUID( id )
+    for _, unit in ipairs( unitIDs ) do
+        if UnitGUID( unit ) == id then return unit end
+    end
+end
+
 
 local enemyExclusions = {
     ["120651"] = true, -- Explosives
@@ -38,11 +58,21 @@ f:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
 
 f:SetScript( "OnEvent", function(self, event, unit)
     if event == "NAME_PLATE_UNIT_ADDED" then
-        npGUIDs[unit] = UnitGUID(unit)
+        local id = UnitGUID( unit )
+        npGUIDs[unit] = id
+        npUnits[id]   = unit
+    
     elseif event == "NAME_PLATE_UNIT_REMOVED" then
+        local id = npGUIDs[ unit ]
         npGUIDs[unit] = nil
+        npUnits[id]   = nil
+
     end
 end )
+
+
+
+
 
 
 local RC = LibStub("LibRangeCheck-2.0")
@@ -667,7 +697,7 @@ do
 
         local healthPct = health / healthMax
 
-        if healthPct <= percent then return 0, enemy.n end
+        if healthPct <= percent then return FOREVER, enemy.n end
 
         return ceil( ( healthPct - percent ) / enemy.rate ), enemy.n
     end
@@ -689,7 +719,7 @@ do
         end
 
         local healthPct = enemy.lastHealth
-        if healthPct <= percent then return 0, enemy.n end
+        if healthPct <= percent then return FOREVER, enemy.n end
 
         return ceil( ( healthPct - percent ) / enemy.rate ), enemy.n
     end
@@ -699,12 +729,12 @@ do
 
         for k, v in pairs( db ) do
             if v.n > 3 then
-                time = max( time, ceil(v.lastHealth / v.rate ) )
+                time = max( time, ceil( v.lastHealth / v.rate ) )
                 validUnit = true
             end
         end
 
-        if not validUnit then return FOREVER end
+        if not validUnit then return state.boss and FOREVER or DEFAULT_TTD end
 
         return time
     end

@@ -509,7 +509,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
         while actID <= #list do
             -- if not state.channel or rWait >= state.channel_remains then
-            if rWait <= state.cooldown.global_cooldown.remains then
+            -- Watch this section, may impact usage of off-GCD abilities.
+            if rWait <= state.cooldown.global_cooldown.remains and not state.spec.canCastWhileCasting then
                 if debug then self:Debug( "The recommended action (%s) would be ready before the next GCD (%.2f < %.2f); exiting list (%s).", rAction, rWait, state.cooldown.global_cooldown.remains, listName ) end
                 break
 
@@ -522,275 +523,390 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 break
 
             end
-            -- end            
+            -- end
 
             if self:IsActionActive( packName, listName, actID ) then
                 -- Check for commands before checking actual actions.
                 local entry = list[ actID ]
 
                 local action = entry.action
-                local entryReplaced = false
-                
-                if action == "heart_essence" and class.essence_unscripted and class.active_essence then
-                    action = class.active_essence
-                    entryReplaced = true
-                end
 
                 state.this_action = action
                 state.delay = nil
 
-                rDepth = rDepth + 1
-                -- if debug then self:Debug( "\n[%03d] %s ( %s - %d )", rDepth, action, listName, actID ) end
+                local ability = class.abilities[ action ]
 
-                local ability = class.abilities[ state.this_action ]
+                if Hekili.ActiveDebug then Hekili:Debug( "%s %s %d %d %s", action, ( ( state.whitelist and state.whitelist[ action ] ) and "whitelisted" or "not whitelisted" ), ability.id, ability.item, ability.gcd or "missing" ) end
 
-                local wait_time = 60
-                local clash = 0
+                if state.whitelist and not state.whitelist[ action ] and ( ability.id < -99 or ability.id > 0 ) then
+                    if debug then self:Debug( "\n[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
 
-                local known, reason = self:IsSpellKnown( state.this_action )
-                local enabled = self:IsSpellEnabled( state.this_action )
-
-                if debug then
-                    local d = "\n"                    
-                    if entryReplaced then d = d .. format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.", class.active_essence ) end
+                else
+                    local entryReplaced = false
                     
-                    d = d .. format( "\n[%03d] %s ( %s - %d )", rDepth, action, listName, actID )
-                    if not known then d = d .. " - " .. ( reason or "ability unknown" )
-                    elseif not enabled then d = d .. " - ability disabled." end
-                    self:Debug( d )
-                end
+                    if action == "heart_essence" and class.essence_unscripted and class.active_essence then
+                        action = class.active_essence
+                        ability = class.abilities[ action ]
+                        state.this_action = action
+                        entryReplaced = true
+                    end
 
-                -- if debug then self:Debug( "%s is %sknown and %senabled.", action, known and "" or "NOT ", enabled and "" or "NOT " ) end
+                    rDepth = rDepth + 1
+                    -- if debug then self:Debug( "\n[%03d] %s ( %s - %d )", rDepth, action, listName, actID ) end
 
-                if ability and known and enabled then
-                    local scriptID = packName .. ":" .. listName .. ":" .. actID
-                    state.scriptID = scriptID
+                    local wait_time = 60
+                    local clash = 0
 
-                    local script = scripts:GetScript( scriptID )
+                    local known, reason = self:IsSpellKnown( action )
+                    local enabled = self:IsSpellEnabled( action )
 
-                    wait_time = state:TimeToReady()
-                    clash = state.ClashOffset()
+                    if debug then
+                        local d = "\n"                    
+                        if entryReplaced then d = d .. format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.", action ) end
+                        
+                        d = d .. format( "\n[%03d] %s ( %s - %d )", rDepth, action, listName, actID )                        
 
-                    state.delay = wait_time
+                        if not known then d = d .. " - " .. ( reason or "ability unknown" )
+                        elseif not enabled then d = d .. " - ability disabled." end
+                        self:Debug( d )
+                    end
 
-                    if wait_time > state.delayMax then
-                        if debug then self:Debug( "The action is not ready before our maximum delay window (%.2f) for this query.", state.delayMax ) end
-                    elseif ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
-                        if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
-                    else
-                        if state.channeling then
-                            if debug then self:Debug( "NOTE:  We are channeling ( %s ) until %.2f.", state.player.channelSpell, state.player.channelEnd - state.query_time ) end
-                        end
+                    -- if debug then self:Debug( "%s is %sknown and %senabled.", action, known and "" or "NOT ", enabled and "" or "NOT " ) end
 
-                        -- APL checks.
-                        if precombatFilter and not ability.essential then
-                            if debug then self:Debug( "We are already in-combat and this pre-combat action is not essential.  Skipping." ) end
+                    if ability and known and enabled then
+                        local scriptID = packName .. ":" .. listName .. ":" .. actID
+                        state.scriptID = scriptID
+
+                        local script = scripts:GetScript( scriptID )
+
+                        wait_time = state:TimeToReady()
+                        clash = state.ClashOffset()
+
+                        state.delay = wait_time
+
+                        if wait_time > state.delayMax then
+                            if debug then self:Debug( "The action is not ready before our maximum delay window (%.2f) for this query.", state.delayMax ) end
+                        elseif ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
+                            if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
                         else
-                            if action == 'call_action_list' or action == 'run_action_list' or action == 'use_items' then
-                                -- We handle these here to avoid early forking between starkly different APLs.
-                                local aScriptPass = true
-                                local ts = not strict and scripts:IsTimeSensitive( scriptID )
+                            if state.channeling then
+                                if debug then self:Debug( "NOTE:  We are channeling ( %s ) until %.2f.", state.player.channelSpell, state.player.channelEnd - state.query_time ) end
+                            end
 
-                                if not entry.criteria or entry.criteria == "" then
-                                    if debug then self:Debug( "There is no criteria for %s.", action == 'use_items' and "Use Items" or "this action list." ) end
-                                    -- aScriptPass = ts or self:CheckStack()
-                                else
-                                    aScriptPass = ts or scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
-
-                                    if debug then 
-                                        self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", ts and "deferred" or ( aScriptPass and "PASS" or "FAIL" ), state.offset, scripts:GetConditionsAndValues( scriptID ) )
-                                    end
-
-                                    -- aScriptPass = ts or aScriptPass
-                                end
-
-                                if aScriptPass then
-                                    if action == "use_items" then
-                                        -- self:AddToStack( scriptID, "items", caller, action == "run_action_list" )
-                                        local pAction, pWait = rAction, rWait
-                                        rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rDepth, scriptID )
-                                        if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NO ACTION", rWait ) end
-                                        -- self:PopStack()
-                                    else
-                                        local name = state.args.list_name
-
-                                        if InUse[ name ] then
-                                            if debug then self:Debug( "Action list (%s) was found, but would cause a loop.", name ) end
-
-                                        elseif name and pack.lists[ name ] then
-                                            if debug then self:Debug( "Action list (%s) was found.", name ) end
-                                            self:AddToStack( scriptID, name, caller, action == "run_action_list" )
-
-                                            rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rDepth, scriptID )
-                                            if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NO ACTION", rWait ) end
-
-                                            self:PopStack()
-
-                                            -- REVISIT THIS:  IF A RUN_ACTION_LIST CALLER IS NOT TIME SENSITIVE, DON'T BOTHER LOOPING THROUGH IT IF ITS CONDITIONS DON'T PASS.
-                                            -- if action == 'run_action_list' and not ts then
-                                            --    if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
-                                            --    break
-                                            -- end
-
-                                        else
-                                            if debug then self:Debug( "Action list (%s) not found.  Skipping.", name or "no name" ) end
-
-                                        end
-                                    end
-                                end
-
-                            elseif action == 'variable' then
-                                local name = state.args.var_name
-
-                                if name ~= nil then
-                                    if debug then self:Debug( " - variable.%s will check this script entry (%s).", name, scriptID ) end                                    
-                                    state:RegisterVariable( name, scriptID, Stack, Block )
-                                else
-                                    if debug then self:Debug( " - variable name not provided, skipping." ) end
-                                end
-
-                            --[[ elseif state.buff.casting.up and not state.channeling and state.spec.canCastWhileCasting and not state.spec.castableWhileCasting[ action ] then
-                                if debug then self:Debug( "Player is casting and cannot use " .. action .. " while casting (" .. state.buff.casting.remains .. ")." ) end ]]
-
+                            -- APL checks.
+                            if precombatFilter and not ability.essential then
+                                if debug then self:Debug( "We are already in-combat and this pre-combat action is not essential.  Skipping." ) end
                             else
-                                -- Target Cycling.
-                                -- We have to determine *here* whether the ability would be used on the current target or a different target.
-                                if state.args.cycle_targets == 1 and state.settings.cycle and state.spell_targets[ action ] > 1 then
-                                    state.SetupCycle( ability )
-                                end
+                                if action == 'call_action_list' or action == 'run_action_list' or action == 'use_items' then
+                                    -- We handle these here to avoid early forking between starkly different APLs.
+                                    local aScriptPass = true
+                                    local ts = not strict and scripts:IsTimeSensitive( scriptID )
 
-                                local usable, why = state:IsUsable()
-                                if debug then
-                                    if usable then
-                                        self:Debug( "The action (%s) is usable at (%.2f + %.2f) with cost of %d.", action, state.offset, state.delay, state.action[ action ].cost or 0 )
+                                    if not entry.criteria or entry.criteria == "" then
+                                        if debug then self:Debug( "There is no criteria for %s.", action == 'use_items' and "Use Items" or "this action list." ) end
+                                        -- aScriptPass = ts or self:CheckStack()
                                     else
-                                        self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", action, state.offset, state.delay, why or "IsUsable returned false" )
+                                        aScriptPass = ts or scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
+
+                                        if debug then 
+                                            self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", ts and "deferred" or ( aScriptPass and "PASS" or "FAIL" ), state.offset, scripts:GetConditionsAndValues( scriptID ) )
+                                        end
+
+                                        -- aScriptPass = ts or aScriptPass
                                     end
-                                end
 
-                                if usable then
-                                    local waitValue = max( 0, rWait - state:ClashOffset( rAction ) )
-                                    local readyFirst = state.delay - clash < waitValue
+                                    if aScriptPass then
+                                        if action == "use_items" then
+                                            -- self:AddToStack( scriptID, "items", caller, action == "run_action_list" )
+                                            local pAction, pWait = rAction, rWait
+                                            rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rDepth, scriptID )
+                                            if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NO ACTION", rWait ) end
+                                            -- self:PopStack()
+                                        else
+                                            local name = state.args.list_name
 
-                                    if debug then self:Debug( " - the action is %sready before the current recommendation (at +%.2f vs. +%.2f).", readyFirst and "" or "NOT ", state.delay, waitValue ) end
+                                            if InUse[ name ] then
+                                                if debug then self:Debug( "Action list (%s) was found, but would cause a loop.", name ) end
 
-                                    if readyFirst then
-                                        local hasResources = true
+                                            elseif name and pack.lists[ name ] then
+                                                if debug then self:Debug( "Action list (%s) was found.", name ) end
+                                                self:AddToStack( scriptID, name, caller, action == "run_action_list" )
 
-                                        if hasResources then
-                                            local aScriptPass = self:CheckStack()
-                                            local channelPass = not state.channeling or self:CheckChannel( action, rWait )
+                                                rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rDepth, scriptID )
+                                                if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NO ACTION", rWait ) end
 
-                                            if not aScriptPass then
-                                                if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
+                                                self:PopStack()
+
+                                                -- REVISIT THIS:  IF A RUN_ACTION_LIST CALLER IS NOT TIME SENSITIVE, DON'T BOTHER LOOPING THROUGH IT IF ITS CONDITIONS DON'T PASS.
+                                                -- if action == 'run_action_list' and not ts then
+                                                --    if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
+                                                --    break
+                                                -- end
 
                                             else
-                                                if not entry.criteria or entry.criteria == '' then 
-                                                    if debug then
-                                                        self:Debug( " - this entry has no criteria to test." ) 
-                                                        if not channelPass then self:Debug( "   - however, criteria not met to break current channeled spell." )  end
-                                                    end
-                                                else 
-                                                    aScriptPass = scripts:CheckScript( scriptID )
-
-                                                    if debug then
-                                                        self:Debug( " - this entry's criteria %s: %s", aScriptPass and "PASSES" or "FAILS", scripts:GetConditionsAndValues( scriptID ) )
-                                                        if not channelPass then self:Debug( "   - however, criteria not met to break current channeled spell." )  end
-                                                    end
-                                                end
-                                                aScriptPass = aScriptPass and channelPass
+                                                if debug then self:Debug( "Action list (%s) not found.  Skipping.", name or "no name" ) end
 
                                             end
+                                        end
+                                    end
 
-                                            -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.                                        
-                                            if not aScriptPass then
-                                                state.recheck( action, script, Stack )
+                                elseif action == 'variable' then
+                                    local name = state.args.var_name
 
-                                                if #state.recheckTimes == 0 then
-                                                    if debug then self:Debug( "There were no recheck events to check." ) end
+                                    if name ~= nil then
+                                        if debug then self:Debug( " - variable.%s will check this script entry (%s).", name, scriptID ) end                                    
+                                        state:RegisterVariable( name, scriptID, Stack, Block )
+                                    else
+                                        if debug then self:Debug( " - variable name not provided, skipping." ) end
+                                    end
+
+                                else
+                                    -- Target Cycling.
+                                    -- We have to determine *here* whether the ability would be used on the current target or a different target.
+                                    if state.args.cycle_targets == 1 and state.settings.cycle and state.spell_targets[ action ] > 1 then
+                                        state.SetupCycle( ability )
+                                    end
+
+                                    local usable, why = state:IsUsable()
+                                    if debug then
+                                        if usable then
+                                            self:Debug( "The action (%s) is usable at (%.2f + %.2f) with cost of %d.", action, state.offset, state.delay, state.action[ action ].cost or 0 )
+                                        else
+                                            self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", action, state.offset, state.delay, why or "IsUsable returned false" )
+                                        end
+                                    end
+
+                                    if usable then
+                                        local waitValue = max( 0, rWait - state:ClashOffset( rAction ) )
+                                        local readyFirst = state.delay - clash < waitValue
+
+                                        if debug then self:Debug( " - the action is %sready before the current recommendation (at +%.2f vs. +%.2f).", readyFirst and "" or "NOT ", state.delay, waitValue ) end
+
+                                        if readyFirst then
+                                            local hasResources = true
+
+                                            if hasResources then
+                                                local aScriptPass = self:CheckStack()
+                                                local channelPass = not state.channeling or self:CheckChannel( action, rWait )
+
+                                                if not aScriptPass then
+                                                    if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
+
                                                 else
-                                                    local base_delay = state.delay
-
-                                                    if debug then self:Debug( "There are " .. #state.recheckTimes .. " recheck events." ) end
-
-                                                    local first_rechannel = 0
-
-                                                    for i, step in pairs( state.recheckTimes ) do
-                                                        local new_wait = base_delay + step
-
-                                                        if new_wait >= 10 then
-                                                            if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 10s ).", i, new_wait ) end
-                                                            break
-                                                        elseif ( action ~= state.channel ) and waitValue <= base_delay + step + 0.05 then
-                                                            if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f <= %.2f + 0.05 ).", i, waitValue, new_wait ) end
-                                                            break
-                                                        end
-
-                                                        state.delay = base_delay + step
-
-                                                        local usable, why = state:IsUsable()
+                                                    if not entry.criteria or entry.criteria == '' then 
                                                         if debug then
-                                                            if not usable then
-                                                                self:Debug( "The action (%s) is no longer usable at (%.2f + %.2f) because %s.", action, state.offset, state.delay, why or "IsUsable returned false" )
-                                                                state.delay = base_delay
+                                                            self:Debug( " - this entry has no criteria to test." ) 
+                                                            if not channelPass then self:Debug( "   - however, criteria not met to break current channeled spell." )  end
+                                                        end
+                                                    else 
+                                                        aScriptPass = scripts:CheckScript( scriptID )
+
+                                                        if debug then
+                                                            self:Debug( " - this entry's criteria %s: %s", aScriptPass and "PASSES" or "FAILS", scripts:GetConditionsAndValues( scriptID ) )
+                                                            if not channelPass then self:Debug( "   - however, criteria not met to break current channeled spell." )  end
+                                                        end
+                                                    end
+                                                    aScriptPass = aScriptPass and channelPass
+
+                                                end
+
+                                                -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.                                        
+                                                if not aScriptPass then
+                                                    state.recheck( action, script, Stack )
+
+                                                    if #state.recheckTimes == 0 then
+                                                        if debug then self:Debug( "There were no recheck events to check." ) end
+                                                    else
+                                                        local base_delay = state.delay
+
+                                                        if debug then self:Debug( "There are " .. #state.recheckTimes .. " recheck events." ) end
+
+                                                        local first_rechannel = 0
+
+                                                        for i, step in pairs( state.recheckTimes ) do
+                                                            local new_wait = base_delay + step
+
+                                                            if new_wait >= 10 then
+                                                                if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 10s ).", i, new_wait ) end
+                                                                break
+                                                            elseif ( action ~= state.channel ) and waitValue <= base_delay + step + 0.05 then
+                                                                if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f <= %.2f + 0.05 ).", i, waitValue, new_wait ) end
                                                                 break
                                                             end
-                                                        end
 
-                                                        if self:CheckStack() then
-                                                            aScriptPass = scripts:CheckScript( scriptID )
-                                                            channelPass = self:CheckChannel( action, rWait )
+                                                            state.delay = base_delay + step
 
+                                                            local usable, why = state:IsUsable()
                                                             if debug then
-                                                                self:Debug( "Recheck #%d ( +%.2f ) %s: %s", i, state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( scriptID ) )
-                                                                if not channelPass then self:Debug( " - however, criteria not met to break current channeled spell." ) end
+                                                                if not usable then
+                                                                    self:Debug( "The action (%s) is no longer usable at (%.2f + %.2f) because %s.", action, state.offset, state.delay, why or "IsUsable returned false" )
+                                                                    state.delay = base_delay
+                                                                    break
+                                                                end
                                                             end
 
-                                                            aScriptPass = aScriptPass and channelPass
-                                                        else
-                                                            if debug then self:Debug( "Unable to recheck #%d at %.2f, as APL conditions would not pass.", i, state.delay ) end
+                                                            if self:CheckStack() then
+                                                                aScriptPass = scripts:CheckScript( scriptID )
+                                                                channelPass = self:CheckChannel( action, rWait )
+
+                                                                if debug then
+                                                                    self:Debug( "Recheck #%d ( +%.2f ) %s: %s", i, state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( scriptID ) )
+                                                                    if not channelPass then self:Debug( " - however, criteria not met to break current channeled spell." ) end
+                                                                end
+
+                                                                aScriptPass = aScriptPass and channelPass
+                                                            else
+                                                                if debug then self:Debug( "Unable to recheck #%d at %.2f, as APL conditions would not pass.", i, state.delay ) end
+                                                            end
+
+                                                            if aScriptPass then
+                                                                if first_rechannel == 0 and state.channel and action == state.channel then
+                                                                    first_rechannel = state.delay
+                                                                    if debug then self:Debug( "This is the currently channeled spell; it would be rechanneled at this time, will check end of channel.  " .. state.channel_remains ) end
+                                                                elseif first_rechannel > 0 and ( not state.channel or state.channel_remains < 0.05 ) then
+                                                                    if debug then self:Debug( "Appears that the ability would be cast again at the end of the channel, stepping back to first rechannel point.  " .. state.channel_remains ) end
+                                                                    state.delay = first_rechannel
+                                                                    waitValue = first_rechannel
+                                                                    break
+                                                                else break end
+                                                            else state.delay = base_delay end
+                                                        end
+                                                    end
+                                                end
+
+                                                -- Need to revisit this, make sure that lower priority abilities are only tested after the channel is over.
+                                                if action == state.channel then
+                                                    if ( state.now + state.offset + rWait <= state.player.channelEnd + 0.05 ) then 
+                                                        -- If a higher priority ability is selected, we should stop here.
+                                                        if debug then self:Debug( "Our prior recommendation ( " .. rAction .. " ) can break or finish our channel; stopping." ) end
+                                                        aScriptPass = false
+                                                        stop = true
+                                                    elseif aScriptPass and ( state.now + state.offset + waitValue <= state.player.channelEnd + 0.05 ) then
+                                                        if debug then self:Debug( "Rechanneling " .. state.channel .. " criteria passed; stop here." ) end
+                                                        stop = true
+                                                    end
+                                                end
+
+                                                if aScriptPass then
+                                                    if action == 'potion' then
+                                                        local potionName = state.args.potion or state.args.name
+                                                        if not potionName or potionName == "default" then potionName = class.potion end
+                                                        local potion = class.potions[ potionName ]
+
+                                                        if debug then
+                                                            if not potionName then self:Debug( "No potion name set." )
+                                                            elseif not potion then self:Debug( "Unable to find potion '" .. potionName .. "'." ) end
                                                         end
 
-                                                        if aScriptPass then
-                                                            if first_rechannel == 0 and state.channel and action == state.channel then
-                                                                first_rechannel = state.delay
-                                                                if debug then self:Debug( "This is the currently channeled spell; it would be rechanneled at this time, will check end of channel.  " .. state.channel_remains ) end
-                                                            elseif first_rechannel > 0 and ( not state.channel or state.channel_remains < 0.05 ) then
-                                                                if debug then self:Debug( "Appears that the ability would be cast again at the end of the channel, stepping back to first rechannel point.  " .. state.channel_remains ) end
-                                                                state.delay = first_rechannel
-                                                                waitValue = first_rechannel
-                                                                break
-                                                            else break end
-                                                        else state.delay = base_delay end
-                                                    end
-                                                end
-                                            end
+                                                        if potion then
+                                                            slot.scriptType = 'simc'
+                                                            slot.script = scriptID
+                                                            slot.hook = caller
 
-                                            -- Need to revisit this, make sure that lower priority abilities are only tested after the channel is over.
-                                            if action == state.channel then
-                                                if ( state.now + state.offset + rWait <= state.player.channelEnd + 0.05 ) then 
-                                                    -- If a higher priority ability is selected, we should stop here.
-                                                    if debug then self:Debug( "Our prior recommendation ( " .. rAction .. " ) can break or finish our channel; stopping." ) end
-                                                    aScriptPass = false
-                                                    stop = true
-                                                elseif aScriptPass and ( state.now + state.offset + waitValue <= state.player.channelEnd + 0.05 ) then
-                                                    if debug then self:Debug( "Rechanneling " .. state.channel .. " criteria passed; stop here." ) end
-                                                    stop = true
-                                                end
-                                            end
+                                                            slot.display = dispName
+                                                            slot.pack = packName
+                                                            slot.list = listName
+                                                            slot.listName = listName
+                                                            slot.action = actID
+                                                            slot.actionName = state.this_action
+                                                            slot.actionID = -1 * potion.item
 
-                                            if aScriptPass then
-                                                if action == 'potion' then
-                                                    local potionName = state.args.potion or state.args.name
-                                                    if not potionName or potionName == "default" then potionName = class.potion end
-                                                    local potion = class.potions[ potionName ]
+                                                            slot.texture = select( 10, GetItemInfo( potion.item ) )
+                                                            slot.caption = ability.caption or entry.caption
+                                                            slot.item = potion.item
 
-                                                    if debug then
-                                                        if not potionName then self:Debug( "No potion name set." )
-                                                        elseif not potion then self:Debug( "Unable to find potion '" .. potionName .. "'." ) end
-                                                    end
+                                                            slot.wait = state.delay
+                                                            slot.resource = state.GetResourceType( rAction )
 
-                                                    if potion then
+                                                            -- slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
+
+                                                            rAction = state.this_action
+                                                            rWait = state.delay
+
+                                                            state.selectionTime = state.delay
+                                                            state.selectedAction = rAction
+                                                        end
+
+                                                    elseif action == 'wait' then
+                                                        -- local args = scripts:GetModifiers()
+                                                        -- local args = ns.getModifiers( listID, actID )
+                                                        local sec = state.args.sec or 0.5
+
+                                                        if sec > 0 then
+                                                            if waitBlock[ scriptID ] then
+                                                                if debug then self:Debug( "Criteria for Wait action (" .. scriptID .. ") were met, but would be a loop.  Skipping." ) end
+                                                            else
+                                                                if debug then self:Debug( "Criteria for Wait action were met, advancing by %.2f and restarting this list.", sec ) end
+                                                                -- NOTE, WE NEED TO TELL OUR INCREMENT FUNCTION ABOUT THIS...
+                                                                waitBlock[ scriptID ] = true
+                                                                state.advance( sec )
+                                                                actID = 0
+                                                            end
+                                                        end
+
+                                                    elseif action == 'pool_resource' then
+                                                        if state.args.for_next == 1 and false then
+                                                            -- Pooling for the next entry in the list.
+                                                            local next_entry  = list[ actID + 1 ]
+                                                            local next_action = next_entry and next_action
+                                                            local next_id     = next_action and class.abilities[ next_action ] and class.abilities[ next_action ].id
+
+                                                            local extra_amt   = state.args.extra_amount or 0
+
+                                                            local next_known  = next_action and state:IsKnown( next_action )
+                                                            local next_usable, next_why = next_action and state:IsUsable( next_action )
+                                                            local next_cost   = next_action and state.action[ next_action ].cost or 0
+                                                            local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource                                                    
+
+                                                            if not next_entry then
+                                                                if debug then self:Debug( "Attempted to Pool Resources for non-existent next entry in the APL.  Skipping." ) end
+                                                            elseif not next_action or not next_id or next_id < 0 then
+                                                                if debug then self:Debug( "Attempted to Pool Resources for invalid next entry in the APL.  Skipping." ) end
+                                                            elseif not next_known then
+                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not known.  Skipping.", next_action ) end
+                                                            elseif not next_usable then
+                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable because %s.  Skipping.", next_action, next_why ) end
+                                                            else
+                                                                local next_wait = max( state:TimeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
+
+                                                                if next_wait <= 0 then
+                                                                    if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
+                                                                elseif next_wait >= rWait then
+                                                                    if debug then self:Debug( "The currently chosen action ( %s ) is ready at or before the next action ( %.2fs <= %.2fs ).  Skipping.", ( rAction or "???" ), rWait, next_wait ) end
+                                                                elseif state.delayMax and next_wait >= state.delayMax then
+                                                                    if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we would exceed our time ceiling in %.2fs.  Skipping.", next_action, next_wait ) end
+                                                                elseif next_wait >= 10 then
+                                                                    if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we'd have to wait much too long ( %.2f ).  Skipping.", next_action, next_wait ) end
+                                                                else
+                                                                    -- Pad the wait value slightly, to make sure the resource is actually generated.
+                                                                    next_wait = next_wait + 0.01
+                                                                    state.offset = state.offset + next_wait
+
+                                                                    aScriptPass = not next_entry.criteria or next_entry.criteria == '' or scripts:CheckScript( packName .. ':' .. listName .. ':' .. ( actID + 1 ) )
+
+                                                                    if not aScriptPass then
+                                                                        if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but its conditions would not be met.  Skipping.", next_action ) end
+                                                                        state.offset = state.offset - next_wait
+                                                                    else
+                                                                        if debug then self:Debug( "Pooling Resources for Next Entry ( %s ), delaying by %.2f ( extra %d ).", next_action, next_wait, extra_amt ) end
+                                                                        state.offset = state.offset - next_wait
+                                                                        state.advance( next_wait )
+                                                                    end
+                                                                end
+                                                            end
+
+                                                        else
+                                                            -- Pooling for a Wait Value.
+                                                            -- NYI.
+                                                            -- if debug then self:Debug( "Pooling for a specified period of time is not supported yet.  Skipping." ) end
+                                                            if debug then self:Debug( "pool_resource is disabled as pooling is automatically accounted for by the forecasting engine." ) end
+                                                        end
+
+                                                        -- if entry.PoolForNext or state.args.for_next == 1 then
+                                                        --    if debug then self:Debug( "Pool Resource is not used in the Predictive Engine; ignored." ) end
+                                                        -- end
+
+                                                    else
                                                         slot.scriptType = 'simc'
                                                         slot.script = scriptID
                                                         slot.hook = caller
@@ -801,148 +917,41 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.listName = listName
                                                         slot.action = actID
                                                         slot.actionName = state.this_action
-                                                        slot.actionID = -1 * potion.item
+                                                        slot.actionID = ability.id
 
-                                                        slot.texture = select( 10, GetItemInfo( potion.item ) )
                                                         slot.caption = ability.caption or entry.caption
-                                                        slot.item = potion.item
+                                                        slot.texture = ability.texture
+                                                        slot.indicator = ability.indicator
 
                                                         slot.wait = state.delay
-                                                        slot.resource = state.GetResourceType( rAction )
 
-                                                        -- slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
+                                                        slot.resource = state.GetResourceType( rAction )
 
                                                         rAction = state.this_action
                                                         rWait = state.delay
 
                                                         state.selectionTime = state.delay
                                                         state.selectedAction = rAction
-                                                    end
 
-                                                elseif action == 'wait' then
-                                                    -- local args = scripts:GetModifiers()
-                                                    -- local args = ns.getModifiers( listID, actID )
-                                                    local sec = state.args.sec or 0.5
-
-                                                    if sec > 0 then
-                                                        if waitBlock[ scriptID ] then
-                                                            if debug then self:Debug( "Criteria for Wait action (" .. scriptID .. ") were met, but would be a loop.  Skipping." ) end
-                                                        else
-                                                            if debug then self:Debug( "Criteria for Wait action were met, advancing by %.2f and restarting this list.", sec ) end
-                                                            -- NOTE, WE NEED TO TELL OUR INCREMENT FUNCTION ABOUT THIS...
-                                                            waitBlock[ scriptID ] = true
-                                                            state.advance( sec )
-                                                            actID = 0
-                                                        end
-                                                    end
-
-                                                elseif action == 'pool_resource' then
-                                                    if state.args.for_next == 1 and false then
-                                                        -- Pooling for the next entry in the list.
-                                                        local next_entry  = list[ actID + 1 ]
-                                                        local next_action = next_entry and next_action
-                                                        local next_id     = next_action and class.abilities[ next_action ] and class.abilities[ next_action ].id
-
-                                                        local extra_amt   = state.args.extra_amount or 0
-
-                                                        local next_known  = next_action and state:IsKnown( next_action )
-                                                        local next_usable, next_why = next_action and state:IsUsable( next_action )
-                                                        local next_cost   = next_action and state.action[ next_action ].cost or 0
-                                                        local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource                                                    
-
-                                                        if not next_entry then
-                                                            if debug then self:Debug( "Attempted to Pool Resources for non-existent next entry in the APL.  Skipping." ) end
-                                                        elseif not next_action or not next_id or next_id < 0 then
-                                                            if debug then self:Debug( "Attempted to Pool Resources for invalid next entry in the APL.  Skipping." ) end
-                                                        elseif not next_known then
-                                                            if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not known.  Skipping.", next_action ) end
-                                                        elseif not next_usable then
-                                                            if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable because %s.  Skipping.", next_action, next_why ) end
-                                                        else
-                                                            local next_wait = max( state:TimeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
-
-                                                            if next_wait <= 0 then
-                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
-                                                            elseif next_wait >= rWait then
-                                                                if debug then self:Debug( "The currently chosen action ( %s ) is ready at or before the next action ( %.2fs <= %.2fs ).  Skipping.", ( rAction or "???" ), rWait, next_wait ) end
-                                                            elseif state.delayMax and next_wait >= state.delayMax then
-                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we would exceed our time ceiling in %.2fs.  Skipping.", next_action, next_wait ) end
-                                                            elseif next_wait >= 10 then
-                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we'd have to wait much too long ( %.2f ).  Skipping.", next_action, next_wait ) end
-                                                            else
-                                                                -- Pad the wait value slightly, to make sure the resource is actually generated.
-                                                                next_wait = next_wait + 0.01
-                                                                state.offset = state.offset + next_wait
-
-                                                                aScriptPass = not next_entry.criteria or next_entry.criteria == '' or scripts:CheckScript( packName .. ':' .. listName .. ':' .. ( actID + 1 ) )
-
-                                                                if not aScriptPass then
-                                                                    if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but its conditions would not be met.  Skipping.", next_action ) end
-                                                                    state.offset = state.offset - next_wait
-                                                                else
-                                                                    if debug then self:Debug( "Pooling Resources for Next Entry ( %s ), delaying by %.2f ( extra %d ).", next_action, next_wait, extra_amt ) end
-                                                                    state.offset = state.offset - next_wait
-                                                                    state.advance( next_wait )
-                                                                end
-                                                            end
+                                                        if debug then
+                                                            self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
                                                         end
 
-                                                    else
-                                                        -- Pooling for a Wait Value.
-                                                        -- NYI.
-                                                        -- if debug then self:Debug( "Pooling for a specified period of time is not supported yet.  Skipping." ) end
-                                                        if debug then self:Debug( "pool_resource is disabled as pooling is automatically accounted for by the forecasting engine." ) end
-                                                    end
-
-                                                    -- if entry.PoolForNext or state.args.for_next == 1 then
-                                                    --    if debug then self:Debug( "Pool Resource is not used in the Predictive Engine; ignored." ) end
-                                                    -- end
-
-                                                else
-                                                    slot.scriptType = 'simc'
-                                                    slot.script = scriptID
-                                                    slot.hook = caller
-
-                                                    slot.display = dispName
-                                                    slot.pack = packName
-                                                    slot.list = listName
-                                                    slot.listName = listName
-                                                    slot.action = actID
-                                                    slot.actionName = state.this_action
-                                                    slot.actionID = ability.id
-
-                                                    slot.caption = ability.caption or entry.caption
-                                                    slot.texture = ability.texture
-                                                    slot.indicator = ability.indicator
-
-                                                    slot.wait = state.delay
-
-                                                    slot.resource = state.GetResourceType( rAction )
-
-                                                    rAction = state.this_action
-                                                    rWait = state.delay
-
-                                                    state.selectionTime = state.delay
-                                                    state.selectedAction = rAction
-
-                                                    if debug then
-                                                        self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
-                                                    end
-
-                                                    if state.IsCycling() then
-                                                        slot.indicator = 'cycle'
-                                                    elseif module and module.cycle then
-                                                        slot.indicator = module.cycle()
+                                                        if state.IsCycling() then
+                                                            slot.indicator = 'cycle'
+                                                        elseif module and module.cycle then
+                                                            slot.indicator = module.cycle()
+                                                        end
                                                     end
                                                 end
+                                                state.ClearCycle()
                                             end
-                                            state.ClearCycle()
                                         end
                                     end
+
+                                    if rWait == 0 or force_channel then break end
+
                                 end
-
-                                if rWait == 0 or force_channel then break end
-
                             end
                         end
                     end
@@ -996,6 +1005,12 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     state.selectionTime = 60
     state.selectedAction = nil
+
+    if state.buff.casting.up and state.spec.canCastWhileCasting then
+        state:SetWhitelist( state.spec.castableWhileCasting )
+    else
+        state:SetWhitelist( nil )
+    end
 
     if pack.lists.precombat then
         local list = pack.lists.precombat
@@ -1138,7 +1153,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
         local hadProj = false
 
-        local events = state:GetQueue( true )        
+        local events = state:GetQueue()
         local event = events[ 1 ]
         local n = 1
 
@@ -1154,20 +1169,64 @@ function Hekili:ProcessHooks( dispName, packName )
             end
 
             local t = event.time - state.now - state.offset
-            state:SetConstraint( 0, t - 0.01 )
 
-            hadProj = true
+            local casting, shouldCheck = state:IsCasting(), true
 
-            if debug then self:Debug( "\n[ ** ] Queued event #%d (%s %s) due at %.2f; checking pre-event recommendations.", n, event.action, event.type, t ) end
-            action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
+            if casting then
+                if not state.spec.canCastWhileCasting then
+                    if debug then self:Debug( "\n[ ** ] Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and cannot cast.", n, event.type, event.action, t ) end
+                    if t > 0 then state.advance( t ) end
+                    event = events[ 1 ]
+                    n = n + 1
+                    shouldCheck = false
+                else
+                    shouldCheck = false
 
-            if not action then
-                if debug then self:Debug( "\n[ ** ] No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).", n, event.action, event.type, t, state.offset + state.delay ) end
-                state.advance( t )
+                    if state.spec.castableWhileCasting then
+                        for _, spell in ipairs( state.spec.castableWhileCasting ) do
+                            if state:IsKnown( spell ) and state:IsUsable( spell ) and state:TimeToReady( spell ) <= t then shouldCheck = true; break end
+                        end
+                    end
 
-                event = events[ 1 ]
-                n = n + 1
-            else
+                    if not shouldCheck then
+                        if debug then self:Debug( "\n[ ** ] Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and castable spells are not ready.", n, event.type, event.action, t ) end
+                        state.advance( t )
+                        event = events[ 1 ]
+                        n = n + 1
+                    end
+                end
+            end
+
+            if shouldCheck then
+                state:SetConstraint( 0, t - 0.01 )
+
+                hadProj = true
+
+                if debug then self:Debug( "\n[ ** ] Queued event #%d (%s %s) due at %.2f; checking pre-event recommendations.", n, event.action, event.type, t ) end
+                
+                if state:IsCasting() then
+                    state:ApplyCastingAuraFromQueue()
+                    if debug then self:Debug( "\n       Player is casting for %.2f seconds.", state:QueuedCastRemains() ) end
+                else
+                    state.removeBuff( "casting" )
+                end
+
+                action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
+
+                if not action then
+                    if debug then self:Debug( "\n[ ** ] No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).", n, event.action, event.type, t, state.offset + state.delay ) end
+                    
+                    state.advance( t )
+
+                    event = events[ 1 ]
+                    n = n + 1
+                else
+                    break
+                end
+            end
+
+            if n > 10 then
+                if debug then Hekili:Debug( "WARNING:  Attempted to process 10+ events; breaking to avoid CPU wastage." ) end
                 break
             end
         end
@@ -1175,7 +1234,7 @@ function Hekili:ProcessHooks( dispName, packName )
         if not action then
             state:SetConstraint( 0, 15 )
 
-            if hadProj and debug then self:Debug( "\n[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.delayMin ) end
+            if hadProj and debug then self:Debug( "\n[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end
 
             if debug then
                 for k in orderedPairs( class.resources ) do
@@ -1219,103 +1278,66 @@ function Hekili:ProcessHooks( dispName, packName )
                 -- Advance through the wait time.
                 if state.delay > 0 then state.advance( state.delay ) end
 
+                state.cycle = slot.indicator == 'cycle'
+
                 local ability = class.abilities[ action ]
                 local cast = ability.cast
 
                 if not state.spec.canCastWhileCasting then state.stopChanneling() end
 
-                if cast == 0 or ability.channeled or not state.spec.canCastWhileCasting then                   
-                    -- Start the GCD.
-                    if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
-                        state.setCooldown( 'global_cooldown', state.gcd.execute )
-                    end
+                if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
+                    state.setCooldown( 'global_cooldown', state.gcd.execute )
+                end
 
-                    state.stopChanneling()
+                state.stopChanneling()
 
-                    -- Advance the clock by cast_time.
-                    if cast > 0 and not ability.channeled then
-                        state.advance( cast )                        
-                    end
+                if ability.charges and ability.charges > 1 and ability.recharge > 0 then
+                    state.spendCharges( action, 1 )
+                
+                elseif action ~= 'global_cooldown' and ability.cooldown > 0 then
+                    state.setCooldown( action, ability.cooldown )
+                
+                end
 
-                    local cooldown = ability.cooldown
 
-                    -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
-                    -- if ability.charges and ability.charges > 1 and ability.recharge > 0 then
-                    if ability.charges and ability.charges > 1 and ability.recharge > 0 then
-                        state.spendCharges( action, 1 )
-
-                    elseif action ~= 'global_cooldown' then
-                        state.setCooldown( action, cooldown )
-                    end
-
-                    state.cycle = slot.indicator == 'cycle'
-
-                    -- Spend resources.
+                if ability.channeled then
                     ns.spendResources( action )
                     state.history.casts[ action ] = state.query_time
 
-                    -- Perform the action.
-                    -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
-                    if ability.isProjectile then
-                        state:QueueEvent( action, "projectile", true )
-                    else
-                        state:RunHandler( action )
+                    if ability.start then ability.start() end
+
+                    if debug then Hekili:Debug( "Queueing %s channel finish at %.2f.", action, state.query_time + cast ) end
+                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH" )
+
+                    if ability.tick and ability.tick_time then
+                        local ticks = floor( cast / ability.tick_time )
+    
+                        for i = 1, ticks do
+                            if debug then Hekili:Debug( "Queueing %s channel tick (%d of %d) at %.2f.", action, i, ticks, state.query_time + ( i * ability.tick_time ) ) end
+                            state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK" )
+                        end
                     end
 
-                    if ability.item and not ability.essence then
-                        state.putTrinketsOnCD( cooldown / 6 )
-                    end
-
-                    -- Complete the channel.
-                    if cast > 0 and ( ability.channeled and not ability.breakable ) then -- class.resetCastExclusions[ ability ] then
-                        state.advance( cast )
-                    end
+                elseif ability.cast > 0 then
+                    if debug then Hekili:Debug( "Queueing %s cast finish at %.2f.", action, state.query_time + cast ) end
+                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH" )
+                
                 else
-                    -- We can cast while casting; queue it up.
-                    state.cycle = slot.indicator == 'cycle'
+                    ns.spendResources( action )
+                    state.history.casts[ action ] = state.query_time
 
-                    if cast > 0 and not ability.channeled then
-                        state:QueueEvent( action, "hardcast", true, nil, cast )
+                    state:RunHandler( action )
+                
+                end
 
-                    else
-                        -- Instant cast, no need to delay.
-                        local cooldown = ability.cooldown
+                -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+                if ability.isProjectile then
+                    state:QueueEvent( action, state.query_time, nil, "PROJECTILE_IMPACT", state.target.GUID )
+                    -- state:QueueEvent( action, "projectile", true )
+                end
 
-                        if not state.spec.canCastWhileCasting then state.stopChanneling() end
-
-                        -- Start the GCD.
-                        if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
-                            state.setCooldown( 'global_cooldown', state.gcd.execute )
-                        end
-
-                        if ability.charges and ability.recharge > 0 then
-                            state.spendCharges( action, 1 )
-
-                        elseif action ~= 'global_cooldown' then
-                            state.setCooldown( action, cooldown )
-                        end
-
-                        ns.spendResources( action )
-                        state.history.casts[ action ] = state.query_time
-
-                        if ability.isProjectile then
-                            state:QueueEvent( action, "projectile", true )
-                        else
-                            if ability.onCastFinish then ability.onCastFinish()
-                            else state:RunHandler( action ) end
-                        end
-
-                        if ability.item and not ability.essence then state.putTrinketsOnCD( cooldown / 6 ) end
-
-                        if ability.cast > 0 and ( ability.channeled and not ability.breakable ) then
-                            state.advance( cast )
-                        end
-
-                        -- Move the clock forward if the GCD hasn't expired.
-                        if state.cooldown.global_cooldown.remains > 0 then
-                            state.advance( state.cooldown.global_cooldown.remains )
-                        end
-                    end
+                if ability.item and not ability.essence then
+                    state.putTrinketsOnCD( ability.cooldown / 6 )
                 end
             end
 

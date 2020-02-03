@@ -652,7 +652,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = false,
             texture = 132110,
 
-            readyTime = function () return buff.shield_block.remains end,
+            readyTime = function () return max( talent.bolster.enabled and buff.last_stand.remains or 0, buff.shield_block.remains ) end,
             handler = function ()
                 applyBuff( "shield_block" )
             end,

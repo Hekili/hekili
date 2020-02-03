@@ -84,15 +84,14 @@ end
 
 
 local protectedFunctions = {
-    onCastStart = true, -- virtual handler for spellcast start.
-    onCastFinish = true, -- virtual handler for spellcast finish.
+    -- Channels.
+    start = true,
+    tick = true,
+    finish = true,
 
-    onImpact = true, -- real and virtual handler for spell impact.
-
-    onRealCastStart = true, -- real handler for spellcast start.
-    onRealCastFinish = true, -- real handler for spellcast finish.
-
-    handler = true, -- generic handler for abilities that do not require queueing.
+    -- Casts
+    handler = true, -- Cast finish.
+    impact = true,  -- Projectile impact.
 }
 
 
@@ -382,6 +381,10 @@ local HekiliSpecMixin = {
         self.potion = potion
     end,
 
+    RegisterRecheck = function( self, func )
+        self.recheck = func
+    end,
+    
     RegisterHook = function( self, hook, func )
         self.hooks[ hook ] = self.hooks[ hook ] or {}
         self.hooks[ hook ] = setfenv( func, state )
@@ -557,7 +560,7 @@ local HekiliSpecMixin = {
             end
         end
 
-        if a.velocity and a.onImpact then
+        if ( a.velocity or a.flightTime ) and a.impact then
             a.isProjectile = true
         end
 
@@ -2017,6 +2020,14 @@ do
     } )
 end
 
+-- 8.3 - WORLD
+-- Corruption Curse that impacts resource costs.
+
+all:RegisterAura( "hysteria", {
+    id = 312677,
+    duration = 30,
+    max_stack = 99
+} )
 
 
 -- BFA TRINKETS

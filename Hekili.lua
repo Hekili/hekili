@@ -274,7 +274,7 @@ function Hekili:SaveDebugSnapshot()
             v.log[ i ] = nil
         end
 
-        table.insert( v.log, 1, self:GenerateProfile() )
+		table.insert( v.log, 1, self:GenerateProfile() )
         table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
 
     end

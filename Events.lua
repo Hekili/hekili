@@ -19,8 +19,8 @@ local lower, match, upper = string.lower, string.match, string.upper
 local string_format = string.format
 local insert, remove, sort, unpack, wipe = table.insert, table.remove, table.sort, table.unpack, table.wipe
 
-
 local GetItemInfo = ns.CachedGetItemInfo
+local RC = LibStub( "LibRangeCheck-2.0" )
 
 
 -- Abandoning AceEvent in favor of darkend's solution from:
@@ -739,8 +739,8 @@ local lowLevelWarned = false
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, _, spellID )
     if UnitIsUnit( unit, "player" ) then
-        if lowLevelWarned == false and UnitLevel( "player" ) < 100 then
-            Hekili:Notify( "Hekili is designed for current content.\nUse below level 100 at your own risk.", 5 )
+        if lowLevelWarned == false and UnitLevel( "player" ) < 110 then
+            Hekili:Notify( "Hekili is designed for current content.\nUse below level 110 at your own risk.", 5 )
             lowLevelWarned = true
         end
 
@@ -751,6 +751,43 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, _, spellID
         end
     end
     -- Hekili:ForceUpdate( event )
+end )
+
+RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", function( event, unit, _, spellID )
+    if UnitIsUnit( unit, "player" ) then
+        local ability = class.abilities[ spellID ]
+        
+        if ability then
+            local action = ability.key
+
+            local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) )
+
+            state:RemoveSpellEvents( action, true )
+
+            local _, _, _, start, finish = UnitCastingInfo( "player" )
+            state:QueueEvent( action, start / 1000, finish / 1000, "CAST_FINISH", target, true )
+
+            if ability.isProjectile then
+                local travel
+
+                if ability.flightTime then
+                    travel = flightTime
+                
+                elseif target then
+                    local unit = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
+
+                    if unit then
+                        local minR, maxR = RC:GetRange( unit )
+                        travel = 0.5 * ( minR + maxR ) / ability.velocity
+                    end
+                end
+
+                if not travel then travel = state.target.distance / ability.velocity end
+
+                state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", target, true )
+            end
+        end
+    end
 end )
 
 
@@ -904,7 +941,8 @@ end ) ]]
 local cast_events = {
     SPELL_CAST_START        = true,
     SPELL_CAST_FAILED       = true,
-    SPELL_CAST_SUCCESS      = true
+    SPELL_CAST_SUCCESS      = true,
+    SPELL_DAMAGE            = true,
 }
 
 
@@ -953,6 +991,7 @@ local function IsActuallyFriend( unit )
     if UnitInRaid( unit ) or UnitInParty( unit ) then return true end
     return false
 end
+
 
 
 -- Use dots/debuffs to count active targets.
@@ -1047,23 +1086,65 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
     end
 
     if sourceGUID == state.GUID then
-        -- Started a spellcast.
         if cast_events[ subtype ] then
             local ability = class.abilities[ spellID ]
 
-            if subtype == "SPELL_CAST_START" then
-                state:QueueEvent( spellID, "hardcast" )
+            if ability then
+                if subtype == "SPELL_CAST_START" then
+                    local _, _, _, start, finish = UnitCastingInfo( "player" )
 
-            elseif subtype == "SPELL_CAST_FAILED" then
-                state:CancelCastEvent( spellID )
+                    if start then
+                        state:QueueEvent( ability.key, start / 1000, finish / 1000, "CAST_FINISH", destGUID, true )
+                    end
 
-            elseif subtype == "SPELL_CAST_SUCCESS" then
-                -- We completed a spellcast, it may have been queued and have data available to us.
-                local event = state:RemoveQueuedSpell( spellID )                
+                    if ability.isProjectile then
+                        local travel
 
-                if ability then
-                    if ability.isProjectile then state:QueueEvent( spellID, "projectile", event ) end
+                        if ability.flightTime then
+                            travel = flightTime
+                        
+                        elseif destGUID then
+                            local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
+
+                            if unit then
+                                local minR, maxR = RC:GetRange( unit )
+                                travel = 0.5 * ( minR + maxR ) / ability.velocity
+                            end
+                        end
+
+                        if not travel then travel = state.target.distance / ability.velocity end
+
+                        state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", destGUID, true )
+                    end
+
+                elseif subtype == "SPELL_CAST_FAILED" then
+                    state:RemoveSpellEvents( ability.key, true )
+
+                elseif subtype == "SPELL_CAST_SUCCESS" then
+                    state:RemoveSpellEvents( ability.key, true )
+
+                    if ability.isProjectile then
+                        local travel
+
+                        if ability.flightTime then
+                            travel = ability.flightTime
+                        
+                        elseif destGUID then
+                            local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
+
+                            if unit then
+                                local minR, maxR = RC:GetRange( unit )
+                                travel = 0.5 * ( minR + maxR ) / ability.velocity
+                            end
+                        end
+
+                        if not travel then travel = state.target.distance / ability.velocity end
+
+                        state:QueueEvent( ability.key, time, travel, "PROJECTILE_IMPACT", destGUID, true )
+                    end
+
                     state:AddToHistory( ability.key, destGUID )
+
                 end
             end
 
@@ -1071,6 +1152,16 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             if state.gcd.lastStart ~= gcdStart then
                 state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
             end            
+
+            Hekili:ForceUpdate( subtype )
+
+        elseif subtype == "SPELL_DAMAGE" then
+            -- Could be an impact.
+            local ability = class.abilities[ spellID ]
+
+            if ability then
+                state:RemoveSpellEvents( ability.key, true )
+            end
 
             Hekili:ForceUpdate( subtype )
         end
@@ -1148,10 +1239,6 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
 
         local action = class.abilities[ spellID ]
-
-        if subtype ~= 'SPELL_CAST_SUCCESS' and action and action.velocity then
-            state:Unqueue( action.key )
-        end
 
         if hostile and dmg_events[ subtype ] and not dmg_filtered[ spellID ] then
             -- Don't wipe overkill targets in rested areas (it is likely a dummy).
