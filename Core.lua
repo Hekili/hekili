@@ -347,7 +347,8 @@ function Hekili:CheckStack()
         if self.ActiveDebug then
             local values = listValue[ b.script ] or {}
             values[ t ] = values[ t ] or scripts:GetConditionsAndValues( b.script )
-            self:Debug( "Blocking list ( %s ) called from ( %s ) would %s at %.2f.\n - %s", b.list, b.script, cache[ t ] and "BLOCK" or "NOT BLOCK", state.delay, values[ t ] )
+            self:Debug( "Blocking list ( %s ) called from ( %s ) would %s at %.2f.", b.list, b.script, cache[ t ] and "BLOCK" or "NOT BLOCK", state.delay )
+            self:Debug( values[ t ] )
             listValue[ b.script ] = values
         end
 
@@ -365,7 +366,8 @@ function Hekili:CheckStack()
         if self.ActiveDebug then
             local values = listValue[ s.script ] or {}
             values[ t ] = values[ t ] or scripts:GetConditionsAndValues( s.script )
-            self:Debug( "List ( %s ) called from ( %s ) would %s at %.2f.\n - %s", s.list, s.script, cache[ t ] and "PASS" or "FAIL", state.delay, values[ t ] )
+            self:Debug( "List ( %s ) called from ( %s ) would %s at %.2f.", s.list, s.script, cache[ t ] and "PASS" or "FAIL", state.delay )
+            self:Debug( values[ t ] )
             listValue[ s.script ] = values
         end
 
@@ -536,10 +538,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                 local ability = class.abilities[ action ]
 
-                if Hekili.ActiveDebug then Hekili:Debug( "%s %s %d %d %s", action, ( ( state.whitelist and state.whitelist[ action ] ) and "whitelisted" or "not whitelisted" ), ability.id, ability.item, ability.gcd or "missing" ) end
-
                 if state.whitelist and not state.whitelist[ action ] and ( ability.id < -99 or ability.id > 0 ) then
-                    if debug then self:Debug( "\n[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
+                    if debug then self:Debug( "[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
 
                 else
                     local entryReplaced = false
@@ -552,7 +552,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     end
 
                     rDepth = rDepth + 1
-                    -- if debug then self:Debug( "\n[%03d] %s ( %s - %d )", rDepth, action, listName, actID ) end
+                    -- if debug then self:Debug( "[%03d] %s ( %s - %d )", rDepth, action, listName, actID ) end
 
                     local wait_time = 60
                     local clash = 0
@@ -561,10 +561,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     local enabled = self:IsSpellEnabled( action )
 
                     if debug then
-                        local d = "\n"                    
+                        local d = ""
                         if entryReplaced then d = d .. format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.", action ) end
                         
-                        d = d .. format( "\n[%03d] %s ( %s - %d )", rDepth, action, listName, actID )                        
+                        d = d .. format( "[%03d] %s ( %s - %d )", rDepth, action, listName, actID )                        
 
                         if not known then d = d .. " - " .. ( reason or "ability unknown" )
                         elseif not enabled then d = d .. " - ability disabled." end
@@ -1016,9 +1016,9 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         local list = pack.lists.precombat
         local listName = "precombat"
 
-        if debug then self:Debug( "\nProcessing precombat action list [ %s - %s ].", packName, listName ) end        
+        if debug then self:Debug( 1, "\nProcessing precombat action list [ %s - %s ].", packName, listName ); self:Debug( 2, "" ) end        
         action, wait, depth = self:GetPredictionFromAPL( dispName, packName, "precombat", slot, action, wait, depth )
-        if debug then self:Debug( "Completed precombat action list [ %s - %s ].", packName, listName ) end
+        if debug then self:Debug( 1, "\nCompleted precombat action list [ %s - %s ].", packName, listName ) end
     else
         if debug then
             if state.time > 0 then
@@ -1031,9 +1031,9 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         local list = pack.lists.default
         local listName = "default"
 
-        if debug then self:Debug("\nProcessing default action list [ %s - %s ].", packName, listName ) end
+        if debug then self:Debug( 1, "\nProcessing default action list [ %s - %s ].", packName, listName ); self:Debug( 2, "" ) end
         action, wait, depth = self:GetPredictionFromAPL( dispName, packName, "default", slot, action, wait, depth )
-        if debug then self:Debug( "Completed default action list [ %s - %s ].", packName, listName ) end
+        if debug then self:Debug( 1, "\nCompleted default action list [ %s - %s ].", packName, listName ) end
     end
 
     if debug then self:Debug( "Recommendation is %s at %.2f + %.2f.", action or "NO ACTION", state.offset, wait ) end
@@ -1134,7 +1134,7 @@ function Hekili:ProcessHooks( dispName, packName )
         local attempts = 0
         local iterated = false
 
-        if debug then self:Debug( "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f ).", i, state.offset, state.cooldown.global_cooldown.remains ) end
+        if debug then self:Debug( "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f, Casting: %.2f%s ).\n", i, state.offset, state.cooldown.global_cooldown.remains, state.buff.casting.remains, ( state.buff.casting.v3 and "*" or "" ) ) end
 
         --[[ if debug then
             for k in pairs( class.resources ) do
@@ -1159,12 +1159,15 @@ function Hekili:ProcessHooks( dispName, packName )
 
         while( event ) do
             if debug then
+                local resources
+
                 for k in orderedPairs( class.resources ) do
-                    self:Debug( " - %s, %d / %d", k, state[ k ].current, state[ k ].max )
+                    resources = ( resources and ( resources .. ", " ) or "" ) .. k .. "[ " .. state[ k ].current .. " / " .. state[ k ].max .. " ]"
                 end
+                self:Debug( 1, "Resources: %s\n", resources )
 
                 if state.channeling then
-                    self:Debug( "[ ** ] Currently channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
+                    self:Debug( 1, "Currently channeling ( %s ) until ( %.2f ).\n", state.player.channelSpell, state.player.channelEnd - state.query_time )
                 end
             end
 
@@ -1174,7 +1177,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
             if casting then
                 if not state.spec.canCastWhileCasting then
-                    if debug then self:Debug( "\n[ ** ] Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and cannot cast.", n, event.type, event.action, t ) end
+                    if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and cannot cast.\n", n, event.type, event.action, t ) end
                     if t > 0 then state.advance( t ) end
                     event = events[ 1 ]
                     n = n + 1
@@ -1189,7 +1192,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     end
 
                     if not shouldCheck then
-                        if debug then self:Debug( "\n[ ** ] Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and castable spells are not ready.", n, event.type, event.action, t ) end
+                        if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and castable spells are not ready.\n", n, event.type, event.action, t ) end
                         state.advance( t )
                         event = events[ 1 ]
                         n = n + 1
@@ -1202,11 +1205,11 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 hadProj = true
 
-                if debug then self:Debug( "\n[ ** ] Queued event #%d (%s %s) due at %.2f; checking pre-event recommendations.", n, event.action, event.type, t ) end
+                if debug then self:Debug( 1, "Queued event #%d (%s %s) due at %.2f; checking pre-event recommendations.\n", n, event.action, event.type, t ) end
                 
                 if state:IsCasting() then
                     state:ApplyCastingAuraFromQueue()
-                    if debug then self:Debug( "\n       Player is casting for %.2f seconds.", state:QueuedCastRemains() ) end
+                    if debug then self:Debug( 2, "Player is casting for %.2f seconds.", state:QueuedCastRemains() ) end
                 else
                     state.removeBuff( "casting" )
                 end
@@ -1214,7 +1217,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
 
                 if not action then
-                    if debug then self:Debug( "\n[ ** ] No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).", n, event.action, event.type, t, state.offset + state.delay ) end
+                    if debug then self:Debug( 1, "No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).\n", n, event.action, event.type, t, state.offset + state.delay ) end
                     
                     state.advance( t )
 
@@ -1234,12 +1237,15 @@ function Hekili:ProcessHooks( dispName, packName )
         if not action then
             state:SetConstraint( 0, 15 )
 
-            if hadProj and debug then self:Debug( "\n[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end
+            if hadProj and debug then self:Debug( "[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end
 
             if debug then
+                local resources
+
                 for k in orderedPairs( class.resources ) do
-                    self:Debug( " - %s, %d / %d", k, state[ k ].current, state[ k ].max )
+                    resources = ( resources and ( resources .. ", " ) or "" ) .. k .. "[ " .. state[ k ].current .. " / " .. state[ k ].max .. " ]"
                 end
+                self:Debug( 1, "Resources: %s", resources )
                 
                 if state.channeling then
                     self:Debug( " - Channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
