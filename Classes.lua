@@ -548,6 +548,10 @@ local HekiliSpecMixin = {
             data.cast = loadstring( "return " .. data.cast .. " * haste" )
         end
 
+        if data.toggle == "interrupts" and data.gcd == "off" and data.readyTime == state.timeToInterrupt and data.interrupt == nil then
+            data.interrupt = true
+        end
+
         for key, value in pairs( data ) do
             if type( value ) == 'function' then
                 setfenv( value, state )
@@ -4995,7 +4999,6 @@ function Hekili:SpecializationChanged()
 
     ns.callHook( 'specializationChanged' )
 
-    ns.updateGear()
     ns.updateTalents()
 
     self:UpdateDisplayVisibility()
@@ -6561,6 +6564,14 @@ all:RegisterPowers( {
         id = 273142,
         triggers = {
             healing_hammer = { 273142 },
+        },
+    },
+
+    -- Heart of Darkness
+    heart_of_darkness = {
+        id = 316101,
+        triggers = {
+            heart_of_darkness = { 317137, 316101 }
         },
     },
 
