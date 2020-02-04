@@ -5155,8 +5155,6 @@ end
 
 function state.advance( time )
 
-    if Hekili.ActiveDebug then Hekili:Debug( "ADVANCE:  " .. debugstack(2) ) end
-
     if time <= 0 then
         return
     end
@@ -5453,35 +5451,35 @@ function state:IsKnown( sID, notoggle )
     end
 
     if ability.nospec and state.spec[ ability.nospec ] then
-        return false, "spec disallowed"
+        return false, "spec [ " .. ability.nospec .. " ] disallowed"
     end
 
     if ability.talent and not state.talent[ ability.talent ].enabled then
-        return false, "talent missing"
+        return false, "talent [ " .. ability.talent .. " ] missing"
     end
 
     if ability.notalent and state.talent[ ability.notalent ].enabled then
-        return false, "talent disallowed"
+        return false, "talent [ " .. ability.notalent .. " ] disallowed"
     end
 
     if ability.pvptalent and not state.pvptalent[ ability.pvptalent ].enabled then
-        return false, "PvP talent ( " .. ability.pvptalent .. " ) not enabled"
+        return false, "PvP talent [ " .. ability.pvptalent .. " ] missing"
     end
 
     if ability.nopvptalent and state.pvptalent[ ability.nopvptalent ].enabled then
-        return false, "PvP talent ( " ..ability.nopvptalent .. " ) enabled"
+        return false, "PvP talent [ " ..ability.nopvptalent .. " ] disallowed"
     end
 
     if ability.trait and not state.artifact[ ability.trait ].enabled then
-        return false, "trait missing"
+        return false, "trait [ " .. ability.trait .. " ] missing"
     end
 
     if ability.equipped and not state.equipped[ ability.equipped ] then
-        return false, "equipment missing"
+        return false, "equipment [ " .. ability.equipped .. " ] missing"
     end
 
     if ability.item and not state.equipped[ ability.item ] then
-        return false, "item missing"
+        return false, "item [ " .. ability.item .. " ] missing"
     end
 
     if ability.known ~= nil then
