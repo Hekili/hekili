@@ -7289,8 +7289,8 @@ function Hekili:GenerateProfile()
     local traits
     for k, v in orderedPairs( s.azerite ) do
         if v.rank > 0 then
-            if traits then traits = format( "%s\n    %s=%d", traits, k, v.rank )
-            else traits = format( "%s=%d", k, v.rank ) end
+            if traits then traits = format( "%s\n    %s = %d", traits, k, v.rank )
+            else traits = format( "%s = %d", k, v.rank ) end
         end
     end
 
@@ -7299,10 +7299,10 @@ function Hekili:GenerateProfile()
 
     for k, v in orderedPairs( s.essence ) do
         if v.rank > 0 then
-            if v.major then major = format( "[%s]=%d", k, v.rank )
+            if v.major then major = format( "[%s] = %d", k, v.rank )
             else
-                if minors then minors = format( "%s, %s=%d", minors, k, v.rank )
-                else minors = format( "%s=%d", k, v.rank ) end
+                if minors then minors = format( "%s, %s = %d", minors, k, v.rank )
+                else minors = format( "%s = %d", k, v.rank ) end
             end
         end
     end
@@ -7311,8 +7311,8 @@ function Hekili:GenerateProfile()
     local sets
     for k, v in orderedPairs( class.gear ) do
         if s.set_bonus[ k ] > 0 then
-            if sets then sets = format( "%s\n    %s=%d", sets, k, s.set_bonus[k] )
-            else sets = format( "%s=%d", k, s.set_bonus[k] ) end
+            if sets then sets = format( "%s\n    %s = %d", sets, k, s.set_bonus[k] )
+            else sets = format( "%s = %d", k, s.set_bonus[k] ) end
         end
     end
 
@@ -7320,12 +7320,34 @@ function Hekili:GenerateProfile()
     for k, v in orderedPairs( state.set_bonus ) do
         if v > 0 then
             if type(k) == 'string' then
-            if gear then gear = format( "%s\n    %s=%d", gear, k, v )
-            else gear = format( "    %s=%d", k, v ) end
+            if gear then gear = format( "%s\n    %s = %d", gear, k, v )
+            else gear = format( "%s = %d", k, v ) end
             elseif type(k) == 'number' then
                 if items then items = format( "%s, %d", items, k )
                 else items = tostring(k) end
             end
+        end
+    end
+
+    local settings
+    for k, v in orderedPairs( state.settings.spec ) do        
+        if type( v ) ~= "table" then
+            if settings then settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
+            else settings = format( "%s = %s", k, tostring( v ) ) end
+        end
+    end
+    for k, v in orderedPairs( state.settings.spec.settings ) do
+        if type( v ) ~= "table" then
+            if settings then settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
+            else settings = format( "%s = %s", k, tostring( v ) ) end
+        end
+    end
+
+    local toggles
+    for k, v in orderedPairs( self.DB.profile.toggles ) do
+        if type( v ) == "table" and rawget( v, "value" ) ~= nil then
+            if toggles then toggles = format( "%s\n    %s = %s", toggles, k, tostring( v.value ) )
+            else toggles = format( "%s = %s", k, tostring( v.value ) ) end
         end
     end
 
@@ -7338,7 +7360,9 @@ function Hekili:GenerateProfile()
         "essences: %s\n\n" ..
         "sets/legendaries/artifacts: %s\n\n" ..
         "gear: %s\n\n" ..
-        "itemIDs: %s",
+        "itemIDs: %s\n\n" ..
+        "settings: %s\n\n" ..
+        "toggles: %s\n",
         Hekili.Version or "no info",
         UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
         class.file or "NONE",
@@ -7348,7 +7372,9 @@ function Hekili:GenerateProfile()
         essences or "none",
         sets or "none",
         gear or "none",
-        items or "none" )
+        items or "none",
+        settings or "none",
+        toggles or "none" )
 end
 
 
