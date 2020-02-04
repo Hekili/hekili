@@ -88,7 +88,7 @@ end
 local RegisterEvent = ns.RegisterEvent
 
 
-function ns.UnregisterEvent( event, handler )
+ns.UnregisterEvent = function( event, handler )
     local hands = handlers[ event ]
 
     if not hands then return end
@@ -98,7 +98,10 @@ function ns.UnregisterEvent( event, handler )
             remove( hands, i )
         end
     end
+
+    if #hands == 0 then events:UnregisterEvent( event ) end
 end
+local UnregisterEvent = ns.UnregisterEvent
 
 
 -- For our purposes, all UnitEvents are player/target oriented.
@@ -209,7 +212,8 @@ do
 end
 
 
-RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
+local OnFirstEntrance
+OnFirstEntrance = function ()
     Hekili.PLAYER_ENTERING_WORLD = true
     Hekili:SpecializationChanged()
     Hekili:RestoreDefaults()
@@ -223,7 +227,9 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
     end
 
     Hekili:BuildUI()
-end )
+    UnregisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance )
+end
+RegisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance )
 
 
 RegisterEvent( "SPELLS_CHANGED", function ()
@@ -524,11 +530,107 @@ do
     end
 
 
+--[[ Corruption Effects:
+    bonus_id={ 6537 }, stats={ 100% Cor [25.0000] }, effects={ Twilight Devastation (id=318276, index=2, type=equip) }
+    bonus_id={ 6538 }, stats={ 100% Cor [50.0000] }, effects={ Twilight Devastation (id=318477, index=2, type=equip) }
+    bonus_id={ 6539 }, stats={ 100% Cor [75.0000] }, effects={ Twilight Devastation (id=318478, index=2, type=equip) }
+    bonus_id={ 6540 }, stats={ 100% Cor [15.0000] }, effects={ Void Ritual (id=318286, index=2, type=equip) }
+    bonus_id={ 6541 }, stats={ 100% Cor [35.0000] }, effects={ Void Ritual (id=318479, index=2, type=equip) }
+    bonus_id={ 6542 }, stats={ 100% Cor [66.0000] }, effects={ Void Ritual (id=318480, index=2, type=equip) }
+    bonus_id={ 6543 }, stats={ 100% Cor [10.0000] }, effects={ Twisted Appendage (id=318481, index=2, type=equip) }
+    bonus_id={ 6544 }, stats={ 100% Cor [35.0000] }, effects={ Twisted Appendage (id=318482, index=2, type=equip) }
+    bonus_id={ 6545 }, stats={ 100% Cor [66.0000] }, effects={ Twisted Appendage (id=318483, index=2, type=equip) }
+    bonus_id={ 6546 }, stats={ 100% Cor [15.0000] }, effects={ Glimpse of Clarity (id=318239, index=2, type=equip) }
+    bonus_id={ 6547 }, stats={ 100% Cor [12.0000] }, effects={ Ineffable Truth (id=318303, index=2, type=equip) }
+    bonus_id={ 6548 }, stats={ 100% Cor [30.0000] }, effects={ Ineffable Truth (id=318484, index=2, type=equip) }
+    bonus_id={ 6549 }, stats={ 100% Cor [25.0000] }, effects={ Echoing Void (id=318280, index=2, type=equip) }
+    bonus_id={ 6550 }, stats={ 100% Cor [35.0000] }, effects={ Echoing Void (id=318485, index=2, type=equip) }
+    bonus_id={ 6551 }, stats={ 100% Cor [60.0000] }, effects={ Echoing Void (id=318486, index=2, type=equip) }
+    bonus_id={ 6552 }, stats={ 100% Cor [20.0000] }, effects={ Infinite Stars (id=318274, index=2, type=equip) }
+    bonus_id={ 6553 }, stats={ 100% Cor [50.0000] }, effects={ Infinite Stars (id=318487, index=2, type=equip) }
+    bonus_id={ 6554 }, stats={ 100% Cor [75.0000] }, effects={ Infinite Stars (id=318488, index=2, type=equip) }
+    bonus_id={ 6555 }, stats={ 100% Cor [15.0000] }, effects={ Racing Pulse (id=318266, index=2, type=equip) }
+    bonus_id={ 6556 }, stats={ 100% Cor [15.0000] }, effects={ Deadly Momentum (id=318268, index=2, type=equip) }
+    bonus_id={ 6557 }, stats={ 100% Cor [15.0000] }, effects={ Honed Mind (id=318269, index=2, type=equip) }
+    bonus_id={ 6558 }, stats={ 100% Cor [15.0000] }, effects={ Surging Vitality (id=318270, index=2, type=equip) }
+    bonus_id={ 6559 }, stats={ 100% Cor [20.0000] }, effects={ Racing Pulse (id=318492, index=2, type=equip) }
+    bonus_id={ 6560 }, stats={ 100% Cor [35.0000] }, effects={ Racing Pulse (id=318496, index=2, type=equip) }
+    bonus_id={ 6561 }, stats={ 100% Cor [20.0000] }, effects={ Deadly Momentum (id=318493, index=2, type=equip) }
+    bonus_id={ 6562 }, stats={ 100% Cor [35.0000] }, effects={ Deadly Momentum (id=318497, index=2, type=equip) }
+    bonus_id={ 6563 }, stats={ 100% Cor [20.0000] }, effects={ Honed Mind (id=318494, index=2, type=equip) }
+    bonus_id={ 6564 }, stats={ 100% Cor [35.0000] }, effects={ Honed Mind (id=318498, index=2, type=equip) }
+    bonus_id={ 6565 }, stats={ 100% Cor [20.0000] }, effects={ Surging Vitality (id=318495, index=2, type=equip) }
+    bonus_id={ 6566 }, stats={ 100% Cor [35.0000] }, effects={ Surging Vitality (id=318499, index=2, type=equip) }
+    bonus_id={ 6567 }, stats={ 100% Cor [35.0000] }, effects={ Devour Vitality (id=318294, index=2, type=equip) }
+    bonus_id={ 6568 }, stats={ 100% Cor [25.0000] }, effects={ Whispered Truths (id=316780, index=2, type=equip) }
+    bonus_id={ 6569 }, stats={ 100% Cor [25.0000] }, effects={ Lash of the Void (id=317290, index=2, type=equip) }
+    bonus_id={ 6570 }, stats={ 100% Cor [20.0000] }, effects={ Flash of Insight (id=318299, index=2, type=equip) }
+    bonus_id={ 6571 }, stats={ 100% Cor [30.0000] }, effects={ Searing Flames (id=318293, index=2, type=equip) }
+    bonus_id={ 6572 }, stats={ 100% Cor [50.0000] }, effects={ Obsidian Skin (id=316651, index=2, type=equip) }
+    bonus_id={ 6573 }, stats={ 100% Cor [15.0000] }, effects={ Gushing Wound (id=318272, index=2, type=equip) } ]]
+
+    local corruptions = {
+        [6537] = { "twilight_devastation", 1 },
+        [6538] = { "twilight_devastation", 2 },
+        [6539] = { "twilight_devastation", 3 },
+
+        [6540] = { "void_ritual", 1 },
+        [6541] = { "void_ritual", 2 },
+        [6542] = { "void_ritual", 3 },
+
+        [6543] = { "twisted_appendage", 1 },
+        [6544] = { "twisted_appendage", 2 },
+        [6545] = { "twisted_appendage", 3 },
+
+        [6546] = { "glimpse_of_clarity", 1 },
+
+        [6547] = { "ineffable_truth", 1 },
+        [6548] = { "ineffable_truth", 2 },
+
+        [6549] = { "echoing_void", 1 },
+        [6550] = { "echoing_void", 2 },
+        [6551] = { "echoing_void", 3 },
+
+        [6552] = { "infinite_stars", 1 },
+        [6553] = { "infinite_stars", 2 },
+        [6554] = { "infinite_stars", 3 },
+
+        [6555] = { "racing_pulse", 1 },
+        [6559] = { "racing_pulse", 2 },
+        [6560] = { "racing_pulse", 3 },
+
+        [6556] = { "deadly_momentum", 1 },
+        [6561] = { "deadly_momentum", 2 },
+        [6562] = { "deadly_momentum", 3 },
+
+        [6557] = { "honed_mind", 1 },
+        [6563] = { "honed_mind", 2 },
+        [6564] = { "honed_mind", 3 },
+
+        [6558] = { "surging_vitality", 1 },
+        [6565] = { "surging_vitality", 2 },
+        [6566] = { "surging_vitality", 3 },
+
+        [6567] = { "devour_vitality", 1 },                            
+        [6568] = { "whispered_truths", 1 },
+        [6569] = { "lash_of_the_void", 1 },
+        [6570] = { "flash_of_insight", 1 },
+        [6571] = { "searing_flames", 1 },
+        [6572] = { "obsidian_skin", 1 },
+        [6573] = { "gushing_wound", 1 }
+    }    
+
     local wasWearing = {}
 
     function ns.updateGear()
+        if not Hekili.PLAYER_ENTERING_WORLD then return end
+
         for thing in pairs( state.set_bonus ) do
             state.set_bonus[ thing ] = 0
+        end
+
+        for thing in pairs( state.corruptions ) do
+            state.corruptions[ thing ].rank = 0
         end
 
         wipe( wasWearing )
@@ -585,6 +687,24 @@ do
                     key = formatKey( key )
                     state.set_bonus[ key ] = 1
                     gearInitialized = true
+                end
+
+                local link = GetInventoryItemLink( "player", i )
+                local numBonuses = select( 14, string.split( ":", link ) )
+
+                numBonuses = tonumber( numBonuses )
+                if numBonuses and numBonuses > 0 then
+                    for i = 15, 14 + numBonuses do
+                        local bonusID = select( i, string.split( ":", link ) )
+                        bonusID = tonumber( bonusID )
+
+                        if corruptions[ bonusID ] then
+                            local name, rank = corruptions[ bonusID ][ 1 ], corruptions[ bonusID ][ 2 ]
+
+                            state.corruptions[ name ] = rawget( state.corruptions, name ) or { rank = 0 }
+                            state.corruptions[ name ].rank = state.corruptions[ name ].rank + rank
+                        end
+                    end
                 end
 
                 local usable = class.itemMap[ item ]
@@ -661,8 +781,17 @@ do
         "AZERITE_ESSENCE_ACTIVATION_FAILED"
     }
 
+    local function UpdateEssences()
+        local lastEssence = class.active_essence
+        ns.updateEssences()
+
+        if class.active_essence ~= lastEssence then
+            Hekili:UpdateUseItems()
+        end
+    end
+
     for i, event in pairs( azeriteEvents ) do
-        RegisterEvent( event, ns.updateGear )
+        RegisterEvent( event, UpdateEssences )
     end
 end
 
