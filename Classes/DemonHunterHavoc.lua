@@ -630,7 +630,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             startsCombat = true,
             texture = 1305156,
 
-            handler = function ()
+            start = function ()
                 -- not sure if we need to model blind_fury gains.
                 -- if talent.blind_fury.enabled then gain( 120, "fury" ) end
 
