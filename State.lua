@@ -77,6 +77,7 @@ state.buff = {}
 state.auras = auras
 state.consumable = {}
 state.cooldown = {}
+state.corruptions = {}
 --[[ state.health = {
     resource = "health",
     actual = 10000,
@@ -3290,6 +3291,8 @@ setmetatable( state.azerite, mt_artifact_traits )
 state.azerite.no_trait = { rank = 0 }
 state.artifact = state.azerite
 
+setmetatable( state.corruptions, mt_artifact_traits )
+state.corruptions.no_trait = { rank = 0 }
 
 -- Essences
 setmetatable( state.essence, mt_artifact_traits )
@@ -3651,7 +3654,7 @@ ns.metatables.mt_set_bonuses = mt_set_bonuses
 local mt_equipped = {
     __index = function(t, k)
         -- if not class.artifacts[ k ] and ( state.bg or state.arena ) then return false end
-        return state.set_bonus[k] > 0
+        return state.set_bonus[k] > 0 or state.corruptions[k].rank > 0
     end
 }
 ns.metatables.mt_equipped = mt_equipped
