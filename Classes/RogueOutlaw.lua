@@ -119,6 +119,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 6,
             max_stack = 1,
         },
+        detection = {
+            id = 56814,
+            duration = 30,
+            max_stack = 1,
+        },
         feint = {
             id = 1966,
             duration = 5,
@@ -569,6 +574,20 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             end,
         },
 
+
+        detection = {
+            id = 56814,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 132319,
+            
+            handler = function ()
+                applyBuff( "detection" )
+            end,
+        },
 
         dispatch = {
             id = 2098,
