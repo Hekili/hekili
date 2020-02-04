@@ -1125,6 +1125,7 @@ all:RegisterAuras( {
             t.applied = 0
             t.v1 = 0
             t.v2 = false
+            t.v3 = false
             t.caster = unit
         end,
     },
