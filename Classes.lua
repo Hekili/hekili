@@ -2229,6 +2229,56 @@ all:RegisterAura( "obsidian_claw", {
 } )
 
 
+all:RegisterAbility( "sigil_of_warding", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+    
+    item = 173940,
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "stoneskin", 8 )
+    end,
+} )
+
+all:RegisterAura( "stoneskin", {
+    id = 313060,
+    duration = 16,
+    max_stack = 1,
+} )
+
+
+all:RegisterAbility( "writhing_segment_of_drestagath", {
+    cast = 0,
+    cooldown = 80,
+    gcd = "off",
+
+    item = 173946,
+    toggle = "cooldowns",
+} )
+
+
+all:RegisterAbility( "lingering_psychic_shell", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 174277,
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "" )
+    end,
+} )
+
+all:RegisterAura( "psychic_shell", {
+    id = 314585,
+    duration = 8,
+    max_stack = 1
+} )
+
+
 
 
 -- Azshara's EP
