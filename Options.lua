@@ -7329,6 +7329,14 @@ function Hekili:GenerateProfile()
         end
     end
 
+    local corruptions
+    for k, v in orderedPairs( state.corruptions ) do
+        if k ~= "no_trait" and v.rank > 0 then
+            if corruptions then corruptions = format( "%s\n    %s = %d", corruptions, k, v.rank )
+            else corruptions = format( "%s = %d", k, v.rank ) end
+        end
+    end
+
     local settings
     for k, v in orderedPairs( state.settings.spec ) do        
         if type( v ) ~= "table" then
@@ -7360,6 +7368,7 @@ function Hekili:GenerateProfile()
         "essences: %s\n\n" ..
         "sets/legendaries/artifacts: %s\n\n" ..
         "gear: %s\n\n" ..
+        "corruptions: %s\n\n" ..
         "itemIDs: %s\n\n" ..
         "settings: %s\n\n" ..
         "toggles: %s\n",
@@ -7372,6 +7381,7 @@ function Hekili:GenerateProfile()
         essences or "none",
         sets or "none",
         gear or "none",
+        corruptions or "none",
         items or "none",
         settings or "none",
         toggles or "none" )
