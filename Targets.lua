@@ -49,7 +49,8 @@ end
 
 local enemyExclusions = {
     ["120651"] = true, -- Explosives
-    ["23775"] = true,  -- Head of the Horseman
+    ["23775"] = true,  -- Head of the Horseman,
+    ["156227"] = true, -- Neferset Denizen
 }
 
 local f = CreateFrame("Frame")
