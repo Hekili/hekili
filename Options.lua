@@ -3534,6 +3534,8 @@ do
 
             db.args.abilities.plugins.actions[ v ] = option
         end
+
+        self.NewSpellInfo = false
     end
 
 
@@ -3652,6 +3654,8 @@ do
 
             db.args.items.plugins.equipment[ v ] = option
         end
+
+        self.NewItemInfo = false
     end
 
 
