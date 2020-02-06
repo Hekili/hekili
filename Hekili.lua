@@ -247,7 +247,7 @@ function Hekili:SetupDebug( display )
 	
 	lastIndent = 0
 
-    self:Debug( "\nNew Recommendations for [ %s ] requested at %s ( %.2f ).", display, date( "%H:%M:%S"), GetTime() )
+	self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ); using ( %s ) priority.", display, date( "%H:%M:%S"), GetTime(), state.system.packName )
 end
 
 
