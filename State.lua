@@ -5602,8 +5602,8 @@ do
             return false
         end ]] 
 
-        local hook = ns.callHook( "IsUsable", spell )
-        if hook == false then return false end
+        local hook, reason = ns.callHook( "IsUsable", spell )
+        if hook == false then return false, reason end
 
         if ability.usable ~= nil then
             if type( ability.usable ) == 'number' then
