@@ -247,6 +247,8 @@ local HekiliSpecMixin = {
                             self.pendingItemSpells[ a.name ] = nil
                             self.itemPended = nil
                         end
+
+                        Hekili.NewSpellInfo = true
                     end )
                 end
             end
@@ -367,6 +369,8 @@ local HekiliSpecMixin = {
             data.link = link
 
             class.potionList[ potion ] = link
+
+            Hekili.NewItemInfo = true
         end )
     end,
 
@@ -449,6 +453,7 @@ local HekiliSpecMixin = {
                 end
 
                 local name, link, _, _, _, _, _, _, slot, texture = GetItemInfo( item )
+                Hekili.NewItemInfo = true
 
                 if name then
                     a.name = name
@@ -591,6 +596,8 @@ local HekiliSpecMixin = {
                         class.abilityList[ ability ] = a.listName or ( "|T" .. texture .. ":0|t " .. a.name )
                         class.abilityByName[ a.name ] = class.abilities[ a.name ] or a
                     end
+
+                    Hekili.NewSpellInfo = true
                 end )
             end
         end

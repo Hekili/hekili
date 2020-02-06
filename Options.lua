@@ -5001,6 +5001,7 @@ do
                                         
                                         local newPack = tableCopy( p )
                                         newPack.builtIn = false
+                                        newPack.basedOn = pack
 
                                         local newPackName, num = pack:match("^(.+) %((%d+)%)$")
 
@@ -8300,11 +8301,9 @@ function Hekili:CmdLine( input )
         end ]]
         if input:trim() == 'makedefaults' then
             Hekili.MakeDefaults = true
-        end
-        if input:trim() == 'import' then
+        elseif input:trim() == 'import' then
             Hekili.AllowSimCImports = true
-        end
-        if input:trim() == 'skeleton' then
+        elseif input:trim() == 'skeleton' then
             self:StartListeningForSkeleton()
             self:Print( "Addon will now gather specialization information.  Select all talents and use all abilities for best results." )
             self:Print( "See the Skeleton tab for more information. ")

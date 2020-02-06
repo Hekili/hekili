@@ -134,6 +134,9 @@ end
 
 
 function ns.StartConfiguration( external )
+    if Hekili.NewSpellInfo then Hekili:EmbedAbilityOptions() end
+    if Hekili.NewItemInfo  then Hekili:EmbedItemOptions()    end
+
     Hekili.Config = true
 
     local scaleFactor = Hekili:GetScale()

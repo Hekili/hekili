@@ -158,7 +158,7 @@ function Hekili:ContinueOnItemLoad( itemID, func )
     insert( callbacks, func )
     itemCallbacks[ itemID ] = callbacks
 
-    C_Item.RequestLoadItemDataByID( itemID )        
+    C_Item.RequestLoadItemDataByID( itemID )
 end
 
 function Hekili:RunItemCallbacks()
