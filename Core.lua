@@ -564,7 +564,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         local d = ""
                         if entryReplaced then d = d .. format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.", action ) end
                         
-                        d = d .. format( "[%03d] %s ( %s - %d )", rDepth, action, listName, actID )                        
+                        d = d .. format( "%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )                        
 
                         if not known then d = d .. " - " .. ( reason or "ability unknown" )
                         elseif not enabled then d = d .. " - ability disabled." end
@@ -584,10 +584,12 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                         state.delay = wait_time
 
-                        if wait_time > state.delayMax then
-                            if debug then self:Debug( "The action is not ready before our maximum delay window (%.2f) for this query.", state.delayMax ) end
+                        if script.Error then
+                            if debug then self:Debug( "The conditions for this entry contain an error.  Skipping.\n" ) end
+                        elseif wait_time > state.delayMax then
+                            if debug then self:Debug( "The action is not ready before our maximum delay window (%.2f) for this query.\n", state.delayMax ) end
                         elseif ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
-                            if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
+                            if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.\n", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
                         else
                             if state.channeling then
                                 if debug then self:Debug( "NOTE:  We are channeling ( %s ) until %.2f.", state.player.channelSpell, state.player.channelEnd - state.query_time ) end

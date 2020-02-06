@@ -1256,6 +1256,10 @@ function scripts:LoadScripts()
 
                     local script = ConvertScript( data, true, scriptID )
 
+                    if script.Error then
+                        Hekili:Error( "Error in " .. scriptID .. " conditions:  " .. script.Error )
+                    end
+
                     if data.action == "call_action_list" or data.action == "run_action_list" then
                         -- Check for Time Sensitive conditions.
                         script.TimeSensitive = false
@@ -1432,6 +1436,10 @@ function Hekili:LoadScript( pack, list, id )
     local scriptID = pack .. ":" .. list .. ":" .. id
 
     local script = ConvertScript( data, true, scriptID )
+
+    if script.Error then
+        Hekili:Error( "Error in " .. scriptID .. " conditions:  " .. script.SimC .. "\n    " .. script.Error )
+    end    
 
     if data.action == "call_action_list" or data.action == "run_action_list" then
         -- Check for Time Sensitive conditions.

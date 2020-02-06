@@ -246,8 +246,10 @@ function Hekili:SetupDebug( display )
 	active_debug.index = 1
 	
 	lastIndent = 0
+	
+	local pack = self.State.system.packName
 
-	self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ); using ( %s ) priority.", display, date( "%H:%M:%S"), GetTime(), state.system.packName )
+	self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ); using %s( %s ) priority.", display, date( "%H:%M:%S"), GetTime(), self.DB.profile.packs[ pack ].builtIn and "built-in " or "", pack )
 end
 
 
