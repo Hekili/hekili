@@ -505,7 +505,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             talent = "channel_demonfire",
 
             usable = function () return active_dot.immolate > 0 end,
-            handler = function ()
+            start = function ()
                 -- applies channel_demonfire (196447)
             end,
         },
@@ -716,7 +716,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             startsCombat = true,
 
-            handler = function ()
+            start = function ()
                 applyDebuff( "target", "drain_life" )
             end,
         },
@@ -859,7 +859,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
 
             usable = function () return pet.active end,
-            handler = function ()
+            start = function ()
                 applyBuff( "health_funnel" )
             end,
         },

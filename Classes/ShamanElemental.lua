@@ -1079,7 +1079,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 return "lightning_lasso"
             end,
 
-            handler = function ()
+            start = function ()
                 applyDebuff( "target", "lightning_lasso" )
             end,
         },

@@ -346,7 +346,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             talent = "barrage",
 
-            handler = function ()
+            start = function ()
             end,
         },
 

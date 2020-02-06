@@ -587,7 +587,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 606542,
 
-            handler = function ()
+            start = function ()
                 applyDebuff( "target", "crackling_jade_lightning" )
                 removeBuff( "the_emperors_capacitor" )   
             end,
@@ -725,7 +725,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 627606,
 
-            handler = function ()
+            start = function ()
                 if level < 116 and set_bonus.tier20_4pc == 1 then applyBuff( "pressure_point", 5 + action.fists_of_fury.cast ) end
                 if buff.fury_of_xuen.stack >= 50 then
                     applyBuff( "fury_of_xuen_haste" )
@@ -1105,7 +1105,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 606543,
 
-            handler = function ()
+            start = function ()
                 removeBuff( "dance_of_chiji" )
             end,
         },

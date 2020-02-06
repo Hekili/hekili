@@ -1056,7 +1056,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             startsCombat = true,
 
-            handler = function ()
+            start = function ()
                 applyDebuff( 'drain_life' )
             end,
         },
@@ -1167,7 +1167,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             channeled = true,            
             startsCombat = false,
 
-            handler = function ()
+            start = function ()
                 applyBuff( 'health_funnel' )
             end,
         },

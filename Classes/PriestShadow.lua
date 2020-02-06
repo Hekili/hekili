@@ -1340,7 +1340,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             talent = "void_torrent",
             buff = "voidform",
 
-            handler = function ()
+            start = function ()
                 applyDebuff( "target", "void_torrent" )
             end,
         },

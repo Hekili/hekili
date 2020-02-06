@@ -727,7 +727,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = false,
             texture = 136075,
 
-            handler = function ()
+            start = function ()
                 stop_burn_phase()
                 applyBuff( "evocation" )
                 if azerite.brain_storm.enabled then

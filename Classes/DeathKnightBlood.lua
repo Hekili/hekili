@@ -624,7 +624,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             talent = "blooddrinker",
 
-            handler = function ()
+            start = function ()
                 applyDebuff( "target", "blooddrinker" )
             end,
         },
@@ -1204,7 +1204,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 1100041,
 
-            handler = function ()
+            start = function ()
                 applyBuff( "wraith_walk" )
             end,
         },

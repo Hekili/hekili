@@ -4742,7 +4742,8 @@ function state:RunHandler( key, noStart )
 
     if state.channeling then state.stopChanneling() end
 
-    if ability.handler then ability.handler() end
+    if ability.channeled and ability.start then ability.start()
+    elseif ability.handler then ability.handler() end
 
     state.hardcast = nil
 

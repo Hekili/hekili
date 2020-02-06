@@ -508,7 +508,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             talent = "fel_devastation",
 
-            handler = function ()
+            start = function ()
                 applyBuff( "fel_devastation" )
             end,
         },
@@ -602,7 +602,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             startsCombat = true,
             texture = function () return buff.illidans_grasp.up and 252175 or 1380367 end,
 
-            handler = function ()
+            start = function ()
                 if buff.illidans_grasp.up then removeBuff( "illidans_grasp" )
                 else applyBuff( "illidans_grasp" ) end
             end,

@@ -681,7 +681,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             talent = "fel_barrage",
 
-            handler = function ()
+            start = function ()
                 applyBuff( "fel_barrage", 2 )
             end,
         },

@@ -854,7 +854,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             startsCombat = true,
 
-            handler = function ()
+            start = function ()
                 removeBuff( "inevitable_demise" )
             end,
         },
@@ -878,7 +878,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             talent = "drain_soul",
 
-            handler = function ()
+            start = function ()
                 applyDebuff( "target", "drain_soul" )
                 applyBuff( "casting", 5 * haste )
                 channelSpell( "drain_soul" )
@@ -979,7 +979,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             startsCombat = false,
 
-            handler = function ()
+            start = function ()
             end,
         },
 

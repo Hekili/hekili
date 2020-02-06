@@ -1082,7 +1082,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             talent = "ray_of_frost",
 
-            handler = function ()
+            start = function ()
                 applyDebuff( "target", "ray_of_frost" )
             end,
         },

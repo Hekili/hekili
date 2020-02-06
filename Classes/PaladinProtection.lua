@@ -327,7 +327,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             startsCombat = false,
             texture = 135909,
 
-            handler = function ()
+            start = function ()
                 applyBuff( "aegis_of_light" )
             end,
         },

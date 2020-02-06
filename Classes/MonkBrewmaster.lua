@@ -600,7 +600,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 606542,
 
-            handler = function ()
+            start = function ()
                 removeBuff( "the_emperors_capacitor" )
                 applyDebuff( "target", "crackling_jade_lightning" )
                 -- applies crackling_jade_lightning (117952)
@@ -1160,7 +1160,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = false,
             texture = 642417,
 
-            handler = function ()
+            start = function ()
                 applyBuff( "zen_meditation" )
             end,
         },

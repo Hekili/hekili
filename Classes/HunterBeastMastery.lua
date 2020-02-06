@@ -533,7 +533,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = false,
             texture = 132199,
 
-            handler = function ()
+            start = function ()
                 applyBuff( 'aspect_of_the_turtle' )
             end,
         },
@@ -602,7 +602,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 236201,
 
-            handler = function ()
+            start = function ()
             end,
         },
 
