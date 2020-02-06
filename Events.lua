@@ -740,7 +740,7 @@ do
         local lastEssence = class.active_essence
         ns.updateEssences()
 
-        local sameItems = #wasWearing == #state.items
+        local sameItems = true
 
         if sameItems then
             for i = 1, #state.items do

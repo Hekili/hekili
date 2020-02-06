@@ -1284,7 +1284,7 @@ function scripts:LoadScripts()
                     local ability
 
                     if data.action then
-                        ability = specData.abilities[ data.action ] or class.specs[0].abilities[ data.action ]
+                        ability = specData.abilities[ data.action ] or class.abilities[ data.action ]
                     end
 
                     if ability then

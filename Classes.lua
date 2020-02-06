@@ -595,19 +595,17 @@ local HekiliSpecMixin = {
             end
         end
 
-        if not a.item then
-            self.abilities[ ability ] = a
-            self.abilities[ a.id ] = a
+        self.abilities[ ability ] = a
+        self.abilities[ a.id ] = a
 
-            if not a.unlisted then class.abilityList[ ability ] = class.abilityList[ ability ] or a.listName or a.name end
+        if not a.unlisted then class.abilityList[ ability ] = class.abilityList[ ability ] or a.listName or a.name end
 
-            if data.copy then
-                if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
-                    self.abilities[ data.copy ] = a
-                elseif type( data.copy ) == 'table' then
-                    for _, key in ipairs( data.copy ) do
-                        self.abilities[ key ] = a
-                    end
+        if data.copy then
+            if type( data.copy ) == 'string' or type( data.copy ) == 'number' then
+                self.abilities[ data.copy ] = a
+            elseif type( data.copy ) == 'table' then
+                for _, key in ipairs( data.copy ) do
+                    self.abilities[ key ] = a
                 end
             end
         end
@@ -5050,10 +5048,11 @@ function Hekili:SpecializationChanged()
     ns.callHook( 'specializationChanged' )
 
     ns.updateTalents()
+    -- ns.updateGear()
 
     self:UpdateDisplayVisibility()
 
-    self:RefreshOptions()    
+    self:RefreshOptions()
     self:LoadScripts()
 end
 
