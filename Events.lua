@@ -140,18 +140,34 @@ ns.FeignEvent = function( event, ... )
 end
 
 
-RegisterEvent( "GET_ITEM_INFO_RECEIVED", function( event, itemID, success )
-    local callbacks = itemCallbacks[ itemID ]
+do
+    local updatedEquippedItem = false
 
-    if callbacks then
-        for i, func in ipairs( callbacks ) do
-            func( success )
-            callbacks[ i ] = nil
+    local function CheckForEquipmentUpdates()
+        if updatedEquippedItem then
+            updatedEquippedItem = false
+            ns.updateGear()
         end
-
-        itemCallbacks[ itemID ] = nil
     end
-end )
+
+    RegisterEvent( "GET_ITEM_INFO_RECEIVED", function( event, itemID, success )
+        local callbacks = itemCallbacks[ itemID ]
+
+        if callbacks then
+            for i, func in ipairs( callbacks ) do
+                func( success )
+                callbacks[ i ] = nil
+            end
+
+            if state.set_bonus[ itemID ] > 0 then
+                updatedEquippedItem = true
+                C_Timer.After( 0.5, CheckForEquipmentUpdates )
+            end
+
+            itemCallbacks[ itemID ] = nil
+        end
+    end )
+end
 
 function Hekili:ContinueOnItemLoad( itemID, func )
     local callbacks = itemCallbacks[ itemID ] or {}
@@ -206,6 +222,7 @@ do
             C_Timer.After( 1, ns.auditItemNames )
         else
             ns.ReadKeybindings()
+            -- ns.updateGear()
             itemAuditComplete = true
         end
     end
@@ -803,7 +820,6 @@ end )
 
 
 RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
-    -- ns.updateGear()
     state.combat = 0
 
     state.swings.mh_actual = 0

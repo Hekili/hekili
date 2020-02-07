@@ -83,7 +83,7 @@ function Hekili:OnInitialize()
     local LDB = LibStub( "LibDataBroker-1.1", true )
     local LDBIcon = LDB and LibStub( "LibDBIcon-1.0", true )
     if LDB then
-        ns.UI.Minimap = LDB:NewDataObject( "Hekili", {
+        ns.UI.Minimap = ns.UI.Minimap or LDB:NewDataObject( "Hekili", {
             type = "launcher",
             text = "Hekili",
             icon = "Interface\\ICONS\\spell_nature_bloodlust",
@@ -153,10 +153,8 @@ function Hekili:OnInitialize()
     checkImports()
 
     self:RefreshOptions()
-    -- self:LoadScripts()
 
     ns.updateTalents()
-    ns.updateGear()
 
     ns.primeTooltipColors()
 
@@ -176,7 +174,6 @@ function Hekili:ReInitialize()
     self:SpecializationChanged()
 
     ns.updateTalents()
-    ns.updateGear()
 
     self:UpdateDisplayVisibility()
 
