@@ -559,7 +559,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                     if debug then
                         local d = ""
-                        if entryReplaced then d = d .. format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.", action ) end
+                        if entryReplaced then d = d .. format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.\n", action ) end
                         
                         d = d .. format( "%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )                        
 
