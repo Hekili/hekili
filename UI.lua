@@ -221,7 +221,7 @@ function ns.StartConfiguration( external )
             end
 
             v.Backdrop:SetFrameStrata("MEDIUM")
-            v.Backdrop:SetFrameLevel( 5 )
+            -- v.Backdrop:SetFrameLevel( v:GetFrameLevel() + 1 )
 
             v.Backdrop.moveObj = v
     
@@ -1412,7 +1412,7 @@ do
         d:SetSize( scale * ( border + ( conf.primaryWidth or 50 ) ), scale * ( border + ( conf.primaryHeight or 50 ) ) )
         d:SetPoint( "CENTER", nil, "CENTER", conf.x or 0, conf.y or -225 )
         d:SetFrameStrata( conf.frameStrata or "MEDIUM" )
-        d:SetFrameLevel( conf.frameLevel or ( 10 + d.index ) )
+        d:SetFrameLevel( conf.frameLevel or ( 10 * d.index ) )
         d:SetClampedToScreen( true )
         d:EnableMouse( false )
         d:SetMovable( true )
