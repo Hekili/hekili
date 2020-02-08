@@ -220,8 +220,8 @@ function ns.StartConfiguration( external )
                 v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
             end
 
-            v.Backdrop:SetFrameStrata("MEDIUM")
-            -- v.Backdrop:SetFrameLevel( v:GetFrameLevel() + 1 )
+            v.Backdrop:SetFrameStrata( v:GetFrameStrata() )
+            v.Backdrop:SetFrameLevel( v:GetFrameLevel() + 1 )
 
             v.Backdrop.moveObj = v
     
@@ -259,7 +259,7 @@ function ns.StartConfiguration( external )
                     GameTooltip:Show()
                 end
             end )
-            v:SetScript( "OnLeave", function(self)
+            v.Backdrop:SetScript( "OnLeave", function( self )
                 GameTooltip:Hide()
             end )
             v:Show()
