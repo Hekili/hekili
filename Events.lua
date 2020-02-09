@@ -222,7 +222,7 @@ do
             C_Timer.After( 1, ns.auditItemNames )
         else
             ns.ReadKeybindings()
-            -- ns.updateGear()
+            ns.updateGear()
             itemAuditComplete = true
         end
     end
@@ -757,7 +757,7 @@ do
         local lastEssence = class.active_essence
         ns.updateEssences()
 
-        local sameItems = true
+        local sameItems = #wasWearing == #state.items
 
         if sameItems then
             for i = 1, #state.items do

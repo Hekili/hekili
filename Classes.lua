@@ -2025,6 +2025,8 @@ do
         
         item = 158075,
         essence = true,
+
+        toggle = "essences",
         
         usable = function () return false, "your equipped major essence is supported elsewhere in the priority or is not an active ability" end
     } )
