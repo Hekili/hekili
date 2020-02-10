@@ -1570,7 +1570,7 @@ local mt_state = {
             return ( GetUnitSpeed('player') > 0 )
 
         elseif k == 'group' then
-            return IsInGroup()
+            return GetNumGroupMembers() > 1
 
         elseif k == 'group_members' then
             return max( 1, GetNumGroupMembers() )
