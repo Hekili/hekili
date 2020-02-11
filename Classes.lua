@@ -625,6 +625,10 @@ local HekiliSpecMixin = {
         if a.id > 0 and not rawget( a, "texture" ) and not a.funcs.texture then
             a.autoTexture = true
         end
+
+        if a.auras then
+            self:RegisterAuras( a.aura )
+        end
     end,
 
     RegisterAbilities = function( self, abilities )
@@ -3820,6 +3824,132 @@ all:RegisterAbility( "dread_gladiators_badge", {
     handler = function ()
         applyBuff( "dig_deep" )
     end,
+} )
+
+
+all:RegisterAbility( "corrupted_gladiators_badge", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 172669,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "dig_deep" )
+    end
+} )
+
+-- NYI, because potentially you have no enemies w/ Corruption w/in range.
+--[[
+all:RegisterAbility( "corrupted_gladiators_breach", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 174276,
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "void_jaunt" )
+        -- +Debuff?
+    end,
+
+    auras = {
+        void_jaunt = {
+            id = 314517,
+            duration = 6,
+            max_stack = 1,
+        }
+    }
+} ) ]]
+
+all:RegisterAbility( "corrupted_gladiators_spite", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 174472,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyDebuff( "target", "gladiators_spite" )
+        applyDebuff( "target", "lingering_spite" )
+    end,
+
+    auras = {
+        gladiators_spite = {
+            id = 315391,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        lingering_spite = {
+            id = 320297,
+            duration = 3600,
+            max_stack = 1,
+        }
+    }
+} )
+
+all:RegisterAbility( "corrupted_gladiators_medallion", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 172666,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "gladiators_medallion" )
+    end,
+} )
+
+all:RegisterAbility( "corrupted_gladiators_emblem", {
+    cast = 0,
+    cooldown = 90,
+    gcd = "off",
+
+    item = 172667,
+    toggle = "defensives",
+
+    handler = function ()
+        applyBuff( "gladiators_emblem" )
+    end,
+} )
+
+all:RegisterAbility( "corrupted_gladiators_badge", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 172669,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "gladiators_badge" )
+    end,
+} )
+
+all:RegisterAbility( "corrupted_gladiators_maledict", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off", -- ???
+
+    item = 172672,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyDebuff( "target", "gladiators_maledict" )
+    end,
+
+    auras = {
+        gladiators_maledict = {
+            id = 305252,
+            duration = 6,
+            max_stack = 1
+        }
+    }
 } )
 
 
