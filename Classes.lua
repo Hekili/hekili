@@ -627,7 +627,7 @@ local HekiliSpecMixin = {
         end
 
         if a.auras then
-            self:RegisterAuras( a.aura )
+            self:RegisterAuras( a.auras )
         end
     end,
 
