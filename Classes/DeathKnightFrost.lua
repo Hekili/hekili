@@ -826,6 +826,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             talent = "frostscythe",
 
+            range = 7,
+
             handler = function ()
                 removeBuff( "killing_machine" )
             end,

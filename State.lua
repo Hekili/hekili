@@ -5543,6 +5543,8 @@ do
     end
 
 
+    local LRC = LibStub( "LibRangeCheck-2.0" )
+
     -- Filter out non-resource driven issues with abilities.
     -- Unusable abilities are treated as on CD unless overridden.
     function state:IsUsable( spell )        
@@ -5553,8 +5555,18 @@ do
 
         local profile = Hekili.DB.profile
 
-        if self.rangefilter and UnitExists( 'target' ) and LSR.IsSpellInRange( ability.id, 'target' ) == 0 then
-            return false, "filtered out of range"
+        if self.rangefilter and UnitExists( 'target' ) then
+            if LSR.IsSpellInRange( ability.id, 'target' ) == 0 then
+                return false, "filtered out of range"
+            end
+
+            if ability.range then
+                local _, dist = LRC:GetRange( "target", true )
+
+                if dist and dist > ability.range then
+                    return false, "not within ability-specified range (" .. ability.range .. ")"
+                end
+            end
         end
 
         if ability.item then
