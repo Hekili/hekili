@@ -2295,10 +2295,6 @@ local mt_target = {
             end
             return ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) )
 
-        elseif k:sub(1, 12) == 'time_to_pct_' then
-            local percent = tonumber( k:sub( 13 ) ) or 0
-            return Hekili:GetTimeToPct( "target", percent )
-
         elseif k:sub(1, 6) == 'within' then
             local maxR = k:match( "^within(%d+)$" )
 
