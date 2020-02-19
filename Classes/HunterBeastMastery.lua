@@ -550,6 +550,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = false,
             texture = 136074,
 
+            nobuff = function ()
+                if settings.aspect_vop_overlap then return end
+                return "aspect_of_the_wild"
+            end,
+
             handler = function ()
                 applyBuff( 'aspect_of_the_wild' )
 
@@ -1391,4 +1396,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
     } )    
 
 
+    spec:RegisterSetting( "aspect_vop_overlap", false, {
+        name = "|T136074:0|t Aspect of the Wild Overlap (Vision of Perfection)",
+        desc = "If checked, the addon will recommend |T136074:0|t Aspect of the Wild even if the buff is already applied due to a Vision of Perfection proc.\n" ..
+            "This may be preferred when delaying Aspect of the Wild would cost you one or more uses of Aspect of the Wild in a given fight.",
+        type = "toggle",
+        width = 1.5
+    } )    
 end
