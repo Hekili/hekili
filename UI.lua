@@ -1734,7 +1734,7 @@ do
         b.Caption:SetSize( b:GetWidth(), max( 12, b:GetHeight() / 2 ) )
         b.Caption:SetJustifyV( capAnchor )
         b.Caption:SetJustifyH( conf.captions.align or "CENTER" )
-        b.Caption:SetTextColor( 1, 1, 1, 1 )
+        b.Caption:SetTextColor( unpack( conf.captions.color ) )
 
         local capText = b.Caption:GetText()
         b.Caption:SetText( nil )
@@ -1750,7 +1750,7 @@ do
         b.Keybinding:ClearAllPoints()
         b.Keybinding:SetPoint( kbAnchor, b, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
         b.Keybinding:SetSize( 0, 0 )
-        b.Keybinding:SetTextColor( 1, 1, 1, 1 )
+        b.Keybinding:SetTextColor( unpack( conf.keybindings.color ) )
 
         local kbText = b.Keybinding:GetText()
         b.Keybinding:SetText( nil )
@@ -1825,7 +1825,7 @@ do
             b.Targets:SetSize( b:GetWidth(), b:GetHeight() / 2 )
             b.Targets:SetJustifyH( tarAnchor:match("RIGHT") and "RIGHT" or ( tarAnchor:match( "LEFT" ) and "LEFT" or "CENTER" ) )
             b.Targets:SetJustifyV( tarAnchor:match("TOP") and "TOP" or ( tarAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" ) )
-            b.Targets:SetTextColor( 1, 1, 1, 1 )
+            b.Targets:SetTextColor( unpack( conf.targets.color ) )
 
             local tText = b.Targets:GetText()
             b.Targets:SetText( nil )
@@ -1865,7 +1865,7 @@ do
 
             b.DelayText:SetJustifyH( delayAnchor:match( "RIGHT" ) and "RIGHT" or ( delayAnchor:match( "LEFT" ) and "LEFT" or "CENTER") )
             b.DelayText:SetJustifyV( delayAnchor:match( "TOP" ) and "TOP" or ( delayAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE") )
-            b.DelayText:SetTextColor( 1, 1, 1, 1 )
+            b.DelayText:SetTextColor( unpack( conf.delays.color ) )
 
             local dText = b.DelayText:GetText()
             b.DelayText:SetText( nil )
