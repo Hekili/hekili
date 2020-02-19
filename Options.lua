@@ -365,7 +365,9 @@ local displayTemplate = {
 
         font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
         fontSize = 12,
-        fontStyle = "OUTLINE"
+        fontStyle = "OUTLINE",
+
+        color = { 1, 1, 1, 1 },
     },
 
     indicators = {
@@ -387,6 +389,8 @@ local displayTemplate = {
         anchor = "BOTTOMRIGHT",
         x = 0,
         y = 0,
+
+        color = { 1, 1, 1, 1 },
     },
 
     delays = {
@@ -401,6 +405,8 @@ local displayTemplate = {
         anchor = "TOPLEFT",
         x = 0,
         y = 0,
+
+        color = { 1, 1, 1, 1 },
     },
 
     keybindings = {
@@ -419,6 +425,8 @@ local displayTemplate = {
 
         cPortOverride = true,
         cPortZoom = 0.6,
+
+        color = { 1, 1, 1, 1 },
     },
 
 }
@@ -877,7 +885,7 @@ do
             type = "select",
             name = "Font",
             order = 1,
-            width = "double",
+            width = 1.5,
             dialogControl = 'LSM30_Font',
             values = LSM:HashTable("font"),
         },
@@ -889,6 +897,7 @@ do
             min = 8,
             max = 64,
             step = 1,
+            width = 1.5
         },
 
         fontStyle = {
@@ -896,6 +905,14 @@ do
             name = "Style",
             order = 3,
             values = fontStyles,
+            width = 1.5
+        },
+
+        color = {
+            type = "color",
+            name = "Color",
+            order = 4, 
+            width = 1.5           
         }
     }
 
@@ -2241,7 +2258,7 @@ do
                     type = "select",
                     name = "Font",
                     order = 960.1,
-                    width = "double",
+                    width = 1.5,
                     dialogControl = 'LSM30_Font',
                     values = LSM:HashTable("font"),
                     get = function( info )
@@ -2281,6 +2298,7 @@ do
                         end
                         Hekili:BuildUI()
                     end,
+                    width = 1.5,
                 },
         
                 fontStyle = {
@@ -2309,6 +2327,26 @@ do
                         end
                         Hekili:BuildUI()
                     end,
+                    width = 1.5,
+                },
+
+                color = {
+                    type = "color",
+                    name = "Color",
+                    order = 960.4,
+                    get = function( info )
+                        return unpack( Hekili.DB.profile.displays.Primary.keybindings.color )
+                    end,
+                    set = function( info, ... )
+                        for name, display in pairs( Hekili.DB.profile.displays ) do
+                            display.captions.color = { ... }
+                            display.delays.color = { ... }
+                            display.keybindings.color = { ... }
+                            display.targets.color = { ... }
+                        end
+                        Hekili:BuildUI()
+                    end,
+                    width = 1.5
                 },
 
                 shareHeader = {
@@ -4137,7 +4175,8 @@ do
                                     desc = "When |cFFFFD100Detect Damaged Enemies|r is checked, the addon will remember enemies until they have been ignored/undamaged for this amount of time.  " ..
                                         "Enemies will also be forgotten if they die or despawn.  This is helpful when enemies spread out or move out of range.",
                                     width = "full",
-                                    min = 3,
+                                    softMin = 3,
+                                    min = 1,
                                     max = 10,
                                     step = 0.1,
                                     hidden = function() return self.DB.profile.specs[ id ].damage == false end,
