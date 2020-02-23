@@ -757,6 +757,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 236364,
 
+            usable = function ()
+                return settings.mfd_waste or combo_points.current == 0, "combo_point (" .. combo_points.current .. ") waste not allowed"
+            end,
+
             handler = function ()
                 gain( 5, 'combo_points')
             end,
@@ -1086,4 +1090,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         package = "Outlaw",
     } )
 
+    spec:RegisterSetting( "mfd_waste", false, {
+        name = "Allow |T236364:0|t Marked for Death Combo Waste",
+        desc = "If checked, the addon will not recommend |T236364:0|t Marked for Death if it will waste combo points.",
+        type = "toggle",
+        width = 1.5
+    } )  
 end

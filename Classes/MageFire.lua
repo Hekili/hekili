@@ -299,7 +299,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     end )
 
     spec:RegisterHook( "advance", function ( time )
-        if Hekili.ActiveDebug then Hekili:Debug( "STREAK DATA:  Heating Up ( %.2f ), Hot Streak ( %.2f ).", state.buff.heating_up.remains, state.buff.hot_streak.remains ) end
+        if Hekili.ActiveDebug then Hekili:Debug( "\n*** Hot Streak:\n    Heating Up:  %.2f\n    Hot Streak:  %.2f\n", state.buff.heating_up.remains, state.buff.hot_streak.remains ) end
     end )
 
     spec:RegisterStateFunction( "hot_streak", function( willCrit )
