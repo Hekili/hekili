@@ -2321,17 +2321,35 @@ all:RegisterAbility( "azsharas_font_of_power", {
     item = 169314,
     toggle = "cooldowns",
 
-    handler = function ()
+    start = function ()
+        applyBuff( "latent_arcana_channel" )
+    end,
+
+    breakchannel = function ()
+        removeBuff( "latent_arcana_channel" )
+        applyBuff( "latent_arcana" )
+    end,
+
+    finish = function ()
+        removeBuff( "latent_arcana_channel" )
         applyBuff( "latent_arcana" )
     end,
 
     copy = { "latent_arcana" }
 } )
 
-all:RegisterAura( "latent_arcana", {
-    id = 296962,
-    duration = 30,
-    max_stack = 5
+all:RegisterAuras( {
+    latent_arcana = {
+        id = 296962,
+        duration = 30,
+        max_stack = 5
+    },
+
+    latent_arcana_channel = {
+        id = 296971,
+        duration = 4,
+        max_stack = 1
+    }
 } )
 
 

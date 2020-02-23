@@ -561,7 +561,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         local d = ""
                         if entryReplaced then d = d .. format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.\n", action ) end
                         
-                        d = d .. format( "%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )                        
+                        d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )                        
 
                         if not known then d = d .. " - " .. ( reason or "ability unknown" )
                         elseif not enabled then d = d .. " - ability disabled." end
@@ -1172,7 +1172,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
             local t = event.time - state.now - state.offset
 
-            local casting, shouldCheck = state:IsCasting(), true
+            local casting, shouldCheck = ( state:IsCasting() or state:IsChanneling() ), true
 
             if casting then
                 if not state.spec.canCastWhileCasting then
@@ -1205,7 +1205,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 hadProj = true
 
                 if debug then self:Debug( 1, "Queued event #%d (%s %s) due at %.2f; checking pre-event recommendations.\n", n, event.action, event.type, t ) end
-                
+
                 if state:IsCasting() then
                     state:ApplyCastingAuraFromQueue()
                     if debug then self:Debug( 2, "Player is casting for %.2f seconds.", state:QueuedCastRemains() ) end
@@ -1306,8 +1306,22 @@ function Hekili:ProcessHooks( dispName, packName )
 
 
                 if ability.cast > 0 then
-                    if debug then Hekili:Debug( "Queueing %s cast finish at %.2f.", action, state.query_time + cast ) end
-                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH" )
+                    if ability.channeled then
+                        if debug then Hekili:Debug( "Queueing %s channel finish at %.2f.", action, state.query_time + cast ) end
+                        state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH" )
+    
+                        if ability.tick and ability.tick_time then
+                            local ticks = floor( cast / ability.tick_time )
+    
+                            for i = 1, ticks do
+                                if debug then Hekili:Debug( "Queueing %s channel tick (%d of %d) at %.2f.", action, i, ticks, state.query_time + ( i * ability.tick_time ) ) end
+                                state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK" )
+                            end
+                        end
+                    else                    
+                        if debug then Hekili:Debug( "Queueing %s cast finish at %.2f.", action, state.query_time + cast ) end
+                        state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH" )
+                    end
                 
                 else
                     ns.spendResources( action )
@@ -1317,23 +1331,9 @@ function Hekili:ProcessHooks( dispName, packName )
                 
                 end
 
-                if ability.channeled then
-                    if debug then Hekili:Debug( "Queueing %s channel finish at %.2f.", action, state.query_time + cast ) end
-                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH" )
-
-                    if ability.tick and ability.tick_time then
-                        local ticks = floor( cast / ability.tick_time )
-
-                        for i = 1, ticks do
-                            if debug then Hekili:Debug( "Queueing %s channel tick (%d of %d) at %.2f.", action, i, ticks, state.query_time + ( i * ability.tick_time ) ) end
-                            state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK" )
-                        end
-                    end
-                end
-
                 -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
                 if ability.isProjectile then
-                    state:QueueEvent( action, state.query_time, nil, "PROJECTILE_IMPACT", state.target.GUID )
+                    state:QueueEvent( action, state.query_time + cast, nil, "PROJECTILE_IMPACT", state.target.GUID )
                     -- state:QueueEvent( action, "projectile", true )
                 end
 
