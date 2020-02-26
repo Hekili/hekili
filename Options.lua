@@ -3762,6 +3762,9 @@ do
             config.expanded[ section ] = not config.expanded[ section ]
         end
 
+        if type( useName ) == "function" then
+            useName = useName()
+        end
         
         e = tlEntry( section .. "Label" )
         e.type = "description"
