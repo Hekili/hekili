@@ -238,6 +238,15 @@ local oneTimeFixes = {
 
         p.runOnce.cleanupAnyPriorityVersionTypoes_20200124 = nil -- repeat as needed.
     end,
+
+    resetRogueMfDOption_20200226 = function( p )
+        if class.file == "ROGUE" then
+            p.specs[ 259 ].settings.mfd_waste = nil
+            p.specs[ 260 ].settings.mfd_waste = nil
+            p.specs[ 261 ].settings.mfd_waste = nil
+        end
+    end,
+            
 }
 
 
@@ -3811,7 +3820,9 @@ do
                         else desc = a.name end
                     end
                     desc = desc or ability
-                    return "Remove " .. desc .. " from " .. useName .. " toggle."
+
+                    print( type(desc), type(useName), type(section) )
+                    return "Remove " .. desc .. " from " .. ( useName or section ) .. " toggle."
                 end
                 e.image = RedX
                 e.imageHeight = 16

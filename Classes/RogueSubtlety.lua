@@ -1175,11 +1175,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     } )
 
 
-    spec:RegisterSetting( "mfd_waste", false, {
+    spec:RegisterSetting( "mfd_waste", true, {
         name = "Allow |T236364:0|t Marked for Death Combo Waste",
-        desc = "If checked, the addon will not recommend |T236364:0|t Marked for Death if it will waste combo points.",
+        desc = "If unchecked, the addon will not recommend |T236364:0|t Marked for Death if it will waste combo points.",
         type = "toggle",
-        width = 1.5
+        width = "full"
     } )  
 
 
