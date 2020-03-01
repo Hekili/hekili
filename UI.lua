@@ -190,6 +190,8 @@ function ns.StartConfiguration( external )
         GameTooltip:Hide()
     end )
 
+    Hekili:ProfileFrame( "NotificationFrame", HekiliNotification )    
+
     for i, v in pairs( ns.UI.Displays ) do
         if v.Backdrop then
             v.Backdrop:Hide()
@@ -301,6 +303,8 @@ function ns.StartConfiguration( external )
             collectgarbage()
             Hekili:UpdateDisplayVisibility()
         end )
+
+        Hekili:ProfileFrame( "CloseOptionsFrame", ns.OnHideFrame )
     end
 
     Hekili:UpdateDisplayVisibility()
@@ -668,7 +672,12 @@ do
     local pulseFlash = 0.5
 
     local oocRefresh = 0.5
-    local icRefresh = 0.25
+    local icRefresh = {
+        Primary = 0.25,
+        AOE = 0.25,
+        Interrupts = 0.5,
+        Defensives = 0.67
+    }
 
     local LRC = LibStub("LibRangeCheck-2.0")
     local LSF = SpellFlashCore
@@ -807,8 +816,8 @@ do
 
         if not Hekili.Pause then
             local spec = Hekili.DB.profile.specs[ state.spec.id ]
-            local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or ( 1 / 60 )
-            local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh )
+            local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or ( 1 / 20 )
+            local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
 
             if self.refreshTimer < 0 or ( Hekili.freshFrame and self.criticalUpdate and ( now - self.lastUpdate > throttle ) ) then
                 Hekili:ProcessHooks( self.id )
@@ -1398,6 +1407,8 @@ do
             numDisplays = numDisplays + 1
             dPool[ id ] = CreateFrame( "Frame", "HekiliDisplay" .. id, UIParent )
             dPool[ id ].index = numDisplays
+
+            Hekili:ProfileFrame( "HekiliDisplay" .. id, dPool[ id ] )            
         end
         local d = dPool[ id ]
 
@@ -1621,7 +1632,6 @@ do
         for i, d in pairs( ns.UI.Displays ) do        
             d.criticalUpdate = true
             if d.firstForce == 0 then d.firstForce = GetTime() end
-            self.freshFrame = false
         end
     end    
 
@@ -1954,6 +1964,8 @@ do
             GameTooltip:Hide()
         end )
 
+        Hekili:ProfileFrame( bName, b )
+
         b:EnableMouse( false )
         b:SetMovable( false )
 
@@ -1985,6 +1997,8 @@ function Hekili:BuildUI()
     ns.UI.Keyhandler:SetScript( "OnClick", function( self, button, down )
         Hekili:FireToggle( button )
     end )
+
+    Hekili:ProfileFrame( "KeyhandlerFrame", ns.UI.Keyhandler )
 
     local scaleFactor = self:GetScale()
     local mouseInteract = self.Pause

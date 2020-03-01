@@ -108,7 +108,16 @@ do
         cpuProfileDB[ name ] = func
     end
 
-    ns.cpuProfile = cpuProfileDB
+	ns.cpuProfile = cpuProfileDB
+	
+
+	local frameProfileDB = {}
+
+	function Hekili:ProfileFrame( name, f )
+		frameProfileDB[ name ] = f
+	end
+
+	ns.frameProfile = frameProfileDB
 end
 
 
@@ -279,20 +288,22 @@ end
 
 local snapshots = ns.snapshots
 
-function Hekili:SaveDebugSnapshot()
+function Hekili:SaveDebugSnapshot( dispName )
 
-    for k, v in pairs( debug ) do
+	for k, v in pairs( debug ) do
+		
+		if dispName == nil or dispName == k then
+			if not snapshots[ k ] then
+				snapshots[ k ] = {}
+			end
 
-        if not snapshots[ k ] then
-            snapshots[ k ] = {}
-        end
+			for i = #v.log, v.index, -1 do
+				v.log[ i ] = nil
+			end
 
-        for i = #v.log, v.index, -1 do
-            v.log[ i ] = nil
-        end
-
-		table.insert( v.log, 1, self:GenerateProfile() )
-        table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
+			table.insert( v.log, 1, self:GenerateProfile() )
+			table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
+		end
 
     end
 

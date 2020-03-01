@@ -28,8 +28,12 @@ local RC = LibStub( "LibRangeCheck-2.0" )
 -- This should be a bit friendlier for our modules.
 
 local events = CreateFrame( "Frame" )
+Hekili:ProfileFrame( "GeneralEvents", events )
+
 local handlers = {}
 local unitEvents = CreateFrame( "Frame" )
+Hekili:ProfileFrame( "UnitEvents", unitEvents )
+
 local unitHandlers = {}
 local itemCallbacks = {}
 local activeDisplays = {}
@@ -40,6 +44,9 @@ function Hekili:GetActiveDisplays()
 end
 
 
+local handlerCount = {}
+Hekili.ECount = handlerCount
+
 function ns.StartEventHandler()
     events:SetScript( "OnEvent", function( self, event, ... )
         local eventHandlers = handlers[ event ]
@@ -48,6 +55,7 @@ function ns.StartEventHandler()
 
         for i, handler in pairs( eventHandlers ) do
             handler( event, ... )
+            handlerCount[ event .. "_" .. i ] = ( handlerCount[ event .. "_" .. i ] or 0 ) + 1
         end
     end )
 
@@ -58,6 +66,7 @@ function ns.StartEventHandler()
 
         for i, handler in pairs( eventHandlers ) do
             handler( event, ... )
+            handlerCount[ event .. "_U" .. i ] = ( handlerCount[ event .. "_U" .. i ] or 0 ) + 1
         end
     end )
 
@@ -83,6 +92,8 @@ ns.RegisterEvent = function( event, handler )
     insert( handlers[ event ], handler )
 
     events:RegisterEvent( event )
+
+    Hekili:ProfileCPU( event .. "_" .. #handlers[event], handler )
 
 end
 local RegisterEvent = ns.RegisterEvent
@@ -111,6 +122,8 @@ ns.RegisterUnitEvent = function( event, handler )
     insert( unitHandlers[ event ], handler )
 
     unitEvents:RegisterUnitEvent( event, 'player', 'target' )
+
+    Hekili:ProfileCPU( event .. "_U" .. #unitHandlers[event], handler )
 
 end
 local RegisterUnitEvent = ns.RegisterUnitEvent
@@ -249,13 +262,32 @@ end
 RegisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance )
 
 
-RegisterEvent( "SPELLS_CHANGED", function ()
-    for k, v in pairs( class.abilities ) do
-        if v.autoTexture then
-            v.texture = GetSpellTexture( v.id )
+do
+    local pendingChange = false
+
+    local updateSpells
+    
+    updateSpells = function()
+        if InCombatLockdown() then
+            C_Timer.After( 10, updateSpells )
+            return
+        end
+
+        if pendingChange then
+            for k, v in pairs( class.abilities ) do
+                if v.autoTexture then
+                    v.texture = GetSpellTexture( v.id )
+                end
+            end
+            pendingChange = false
         end
     end
-end )
+
+    RegisterEvent( "SPELLS_CHANGED", function ()
+        pendingChange = true
+        updateSpells()
+    end )
+end
 
 
 RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event, unit )

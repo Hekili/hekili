@@ -1226,6 +1226,8 @@ end
 ns.forecastResources = forecastResources
 state.forecastResources = forecastResources
 
+Hekili:ProfileCPU( "forecastResources", forecastResources )
+
 
 local resourceChange = function( amount, resource, overcap )
     if amount == 0 then return false end
@@ -3232,9 +3234,14 @@ local mt_talents = {
 ns.metatables.mt_talents = mt_talents
 
 
+local function IslandPvP()
+    local _, instanceType, difficulty = GetInstanceInfo()
+    return instanceType == "scenario" and difficulty == 45
+end
+
 local mt_default_pvptalent = {
     __index = function( t, k )
-        local enlisted = state.bg or state.arena or state.buff.enlisted.up
+        local enlisted = state.bg or state.arena or state.buff.enlisted.up or IslandPvP()
 
         if k == 'enabled' then return enlisted and t._enabled or false
         elseif k == "_enabled" then return false
@@ -4742,8 +4749,6 @@ function state:RunHandler( key, noStart )
     if ability.channeled and ability.start then ability.start()
     elseif ability.handler then ability.handler() end
 
-    state.hardcast = nil
-
     state.prev.last = key
     state[ ability.gcd == 'off' and 'prev_off_gcd' or 'prev_gcd' ].last = key
 
@@ -5134,6 +5139,9 @@ function state.reset( dispName )
 
     state.resetting = nil
 end
+
+
+Hekili:ProfileCPU( "state.reset", state.reset )
 
 
 function state:SetConstraint( min, max )
@@ -5680,7 +5688,6 @@ local debug_actions = {
     -- skull_bash = true,
 }
 
-local function noop() end
 
 -- Needs to be expanded to handle energy regen before Rogue, Monk, Druid will work.
 function state:TimeToReady( action, pool )
@@ -5758,6 +5765,7 @@ function state:TimeToReady( action, pool )
         if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 10, wait ) end
     end
 
+    if debug_actions[ action ] then Hekili:Debug( "%d %s prewait %.2f", 11, ability.nobuff, wait ) end
     if ability.nobuff and self.buff[ ability.nobuff ].up then
         wait = max( wait, self.buff[ ability.nobuff ].remains )
         if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 11, wait ) end

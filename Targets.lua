@@ -72,6 +72,7 @@ f:SetScript( "OnEvent", function(self, event, unit)
     end
 end )
 
+Hekili:ProfileFrame( "NamePlateWatcherFrame", f )
 
 
 
@@ -94,7 +95,7 @@ do
     function ns.getNumberTargets()
         local now = GetTime()
 
-        if now - lastCycle < 0.1 then return lastCount end
+        if now - lastCycle < 0.2 then return lastCount end
         lastCycle = now
 
         if now - Hekili.lastAudit > 1 then

@@ -770,14 +770,16 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if action.pyroblast.cast > 0 then
                     if moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
                     if not boss or not settings.pyroblast_pull and combat == 0 then return false, "opener pyroblast disabled and/or target is not a boss" end
+                    return time > 0 or not prev_gcd[1].pyroblast, "time is " .. time .. " or prev cast was pyro: " .. tostring( prev_gcd[1].pyroblast )
                 end
                 return true
             end,
 
             handler = function ()
-                if not hardcast then
-                    removeBuff( "hot_streak" )
+                if hardcast then
                     removeStack( "pyroclasm" )
+                else
+                    removeBuff( "hot_streak" )
                 end
             end,
 

@@ -47,6 +47,8 @@ local function EmbedBlizOptions()
         ns.StartConfiguration()
     end )
 
+    Hekili:ProfileFrame( "OptionsEmbedFrame", open )
+
     InterfaceOptions_AddCategory( panel )
 end
 
@@ -536,7 +538,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 local ability = class.abilities[ action ]
 
                 if state.whitelist and not state.whitelist[ action ] and ( ability.id < -99 or ability.id > 0 ) then
-                    if debug then self:Debug( "[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
+                    -- if debug then self:Debug( "[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
 
                 else
                     local entryReplaced = false
@@ -1120,7 +1122,25 @@ function Hekili:ProcessHooks( dispName, packName )
         numRecs = 1
     end
 
+    local actualStartTime = debugprofilestop()
+    local maxTime
+
+    if state.settings.throttleTime then
+        maxTime = state.settings.maxTime or 50
+    end
+
     for i = 1, numRecs do
+
+        if i > 1 and actualStartTime and maxTime then
+            local usedTime = debugprofilestop() - actualStartTime
+
+            if usedTime > maxTime then
+                if debug then self:Debug( -100, "Addon used %.2fms CPU time (of %.2fms softcap) before recommendation #%d; stopping early.", usedTime, maxTime, i-1 ) end
+                break
+            end
+            
+            if debug then self:Debug( "Used %.2fms of CPU on %d prediction(s).", usedTime, i-1 ) end
+        end
 
         local chosen_action
         local chosen_depth = 0
@@ -1156,6 +1176,7 @@ function Hekili:ProcessHooks( dispName, packName )
         local event = events[ 1 ]
         local n = 1
 
+
         while( event ) do
             if debug then
                 local resources
@@ -1184,10 +1205,8 @@ function Hekili:ProcessHooks( dispName, packName )
                 else
                     shouldCheck = false
 
-                    if state.spec.castableWhileCasting then
-                        for _, spell in ipairs( state.spec.castableWhileCasting ) do
-                            if state:IsKnown( spell ) and state:IsUsable( spell ) and state:TimeToReady( spell ) <= t then shouldCheck = true; break end
-                        end
+                    for spell in pairs( state.spec.castableWhileCasting ) do
+                        if state:IsKnown( spell ) and state:IsUsable( spell ) and state:TimeToReady( spell ) <= t then shouldCheck = true; break end
                     end
 
                     if not shouldCheck then
@@ -1208,7 +1227,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 if state:IsCasting() then
                     state:ApplyCastingAuraFromQueue()
-                    if debug then self:Debug( 2, "Player is casting for %.2f seconds.", state:QueuedCastRemains() ) end
+                    if debug then self:Debug( 2, "Player is casting for %.2f seconds.  Only abilities that can be cast while casting will be tested.", state:QueuedCastRemains() ) end
                 else
                     state.removeBuff( "casting" )
                 end
@@ -1305,7 +1324,16 @@ function Hekili:ProcessHooks( dispName, packName )
                 end
 
 
-                if ability.cast > 0 then
+                if ability.cast > 0 and not ability.channeled then
+                    if debug then Hekili:Debug( "Queueing %s cast finish at %.2f.", action, state.query_time + cast ) end
+                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH" )
+
+                else
+                    ns.spendResources( action )
+                    state.history.casts[ action ] = state.query_time
+
+                    state:RunHandler( action )
+
                     if ability.channeled then
                         if debug then Hekili:Debug( "Queueing %s channel finish at %.2f.", action, state.query_time + cast ) end
                         state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH" )
@@ -1318,17 +1346,7 @@ function Hekili:ProcessHooks( dispName, packName )
                                 state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK" )
                             end
                         end
-                    else                    
-                        if debug then Hekili:Debug( "Queueing %s cast finish at %.2f.", action, state.query_time + cast ) end
-                        state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH" )
                     end
-                
-                else
-                    ns.spendResources( action )
-                    state.history.casts[ action ] = state.query_time
-
-                    state:RunHandler( action )
-                
                 end
 
                 -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
@@ -1352,6 +1370,10 @@ function Hekili:ProcessHooks( dispName, packName )
             break
         end
 
+    end
+
+    if debug then
+        self:Debug( "Time spent generating recommendations:  %.3fms",  debugprofilestop() - actualStartTime )
     end
 
     UI.NewRecommendations = true
@@ -1386,15 +1408,42 @@ end
 function Hekili:DumpProfileInfo()
     local output = ""
 
-    for k, v in pairs( ns.cpuProfile ) do
+    for k, v in orderedPairs( ns.cpuProfile ) do
         local usage, calls = GetFunctionCPUUsage( v, true )
 
+        calls = self.ECount[ k ] or calls
+
         if usage then
-            usage = usage / 1000
+            -- usage = usage / 1000
             output = format(    "%s\n" ..
-                                " [ %5d ] %-20s %12.2f %12.2f", output, calls, k, usage, usage / ( calls == 0 and 1 or calls ) )
+                                "%d %s %.3f %.3f", output, calls, k, usage, usage / ( calls == 0 and 1 or calls ) )
         else
             output = output(    "%s\nNo information for function `%s'.", output, k )
+        end
+    end
+
+    print( output )
+end
+
+
+function Hekili:DumpFrameInfo()
+    local output
+
+    local cpu = GetAddOnCPUUsage( "Hekili" )
+
+    output = format( "Hekili %.3f", cpu )
+
+    for k, v in orderedPairs( ns.frameProfile ) do
+        local usage, calls = GetFrameCPUUsage( v, true )
+
+        -- calls = self.ECount[ k ] or calls
+
+        if usage then
+            -- usage = usage / 1000
+            output = format(    "%s\n" ..
+                                "%d %s %.3f %.3f", output, calls, k, usage, usage / ( calls == 0 and 1 or calls ) )
+        else
+            output = output(    "%s\nNo information for frame `%s'.", output, k )
         end
     end
 

@@ -54,6 +54,9 @@ local specTemplate = {
     throttleRefresh = false,
     maxRefresh = 10,
 
+    throttleTime = false,
+    maxTime = 33,
+
     -- Toggles
     custom1Name = "Custom 1",
     custom2Name = "Custom 2",
@@ -3758,21 +3761,21 @@ all:RegisterAura( "gryphons_pride", {
 -- Medallions
 do
     local pvp_medallions = {
-        dread_combatants_medallion = 161811,
-        dread_aspirants_medallion = 162897,
-        dread_gladiators_medallion = 161674,
-        sinister_aspirants_medallion = 165220,
-        sinister_gladiators_medallion = 165055,
-        notorious_gladiators_medallion = 167377,
-        notorious_aspirants_medallion = 167525,
-        corrupted_gladiators_medallion = 172666,
-        corrupted_aspirants_medallion = 172846
+        { "dread_aspirants_medallion", 162897 },
+        { "dread_gladiators_medallion", 161674 },
+        { "sinister_aspirants_medallion", 165220 },
+        { "sinister_gladiators_medallion", 165055 },
+        { "notorious_aspirants_medallion", 167525 },
+        { "notorious_gladiators_medallion", 167377 },
+        { "corrupted_aspirants_medallion", 172846 },
+        { "corrupted_gladiators_medallion", 172666 },
     }
 
     local pvp_medallions_copy = {}
 
-    for k in pairs( pvp_medallions ) do
-        insert( pvp_medallions_copy, k )
+    for _, v in ipairs( pvp_medallions ) do
+        insert( pvp_medallions_copy, v[1] )
+        all:RegisterGear( v[1], v[2] )
     end
 
     all:RegisterAbility( "gladiators_medallion", {
@@ -3781,10 +3784,12 @@ do
         gcd = "off",
 
         item = function ()
-            for _, medallion in pairs( pvp_medallions ) do
-                if equipped[ medallion ] then return medallion end
+            local m
+            for _, medallion in ipairs( pvp_medallions ) do
+                m = medallion[ 2 ]
+                if equipped[ m ] then return m end
             end            
-            return 161811
+            return m
         end,
         
         toggle = "cooldowns",
@@ -3806,21 +3811,22 @@ end
 -- Badges
 do
     local pvp_badges = {
-        dread_combatants_insignia = 161813,
-        dread_aspirants_badge = 162966,
-        dread_gladiators_badge = 161902,
-        sinister_aspirants_badge = 165223,
-        sinister_gladiators_badge = 165058,
-        notorious_gladiators_badge = 167380,
-        notorious_aspirants_badge = 167528,
-        corrupted_gladiators_badge = 172669,
-        corrupted_aspirants_badge = 172849
+        { "dread_aspirants_badge", 162966 },
+        { "dread_gladiators_badge", 161902 },
+        { "sinister_aspirants_badge", 165223 },
+        { "sinister_gladiators_badge", 165058 },
+        { "notorious_aspirants_badge", 167528 },
+        { "notorious_gladiators_badge", 167380 },
+        { "corrupted_aspirants_badge", 172849 },
+        { "corrupted_gladiators_badge", 172669 },
     }
 
     local pvp_badges_copy = {}
 
-    for k in pairs( pvp_badges ) do
-        insert( pvp_badges_copy, k )
+    for _, v in ipairs( pvp_badges ) do
+        insert( pvp_badges_copy, v[1] )
+
+        all:RegisterGear( v[1], v[2] )
     end
 
     all:RegisterAbility( "gladiators_badge", {
@@ -3829,10 +3835,12 @@ do
         gcd = "off",
 
         item = function ()
-            for _, badge in pairs( pvp_badges ) do
-                if equipped[ badge ] then return badge end
+            local b
+            for _, badge in ipairs( pvp_badges ) do
+                b = badge[ 2 ]
+                if equipped[ b ] then return b end
             end
-            return 161813
+            return b
         end,
             
         toggle = "cooldowns",
@@ -3853,52 +3861,11 @@ end
 
 
 -- Insignias -- N/A, not on-use.
-do
-    --[[ local pvp_insignias = {
-        dread_combatants_badge = 161903,
-        dread_aspirants_insigna = 162899,
-        dread_gladiators_insignia = 161676,
-        sinister_aspirants_insignia = 165222,
-        sinister_gladiators_insignia = 165057,
-        notorious_gladiators_insignia = 167379,
-        notorious_aspirants_insignia = 167527,
-        corrupted_gladiators_insignia = 172668,
-        corrupted_aspirants_insignia = 172848
-    }
-
-    local pvp_insignias_copy = {}
-
-    for k in pairs( pvp_insignias ) do
-        insert( pvp_insignias_copy, k )
-    end
-
-    all:RegisterAbility( "gladiators_insignia", {
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-
-        item = function ()
-            for _, insignia in pairs( pvp_insignias ) do
-                if equipped[ insignia ] then return insignia end
-            end
-            return 161903
-        end,
-            
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "gladiators_insignia" )
-        end,
-
-        copy = pvp_badges_copy
-    } ) ]]
-    
-    all:RegisterAura( "gladiators_insignia", {
-        id = 277181,
-        duration = 20,
-        max_stack = 1
-    } )    
-end
+all:RegisterAura( "gladiators_insignia", {
+    id = 277181,
+    duration = 20,
+    max_stack = 1
+} )    
 
 
 -- Safeguard (equipped, not on-use)
@@ -3936,10 +3903,12 @@ do
         gcd = "off",
 
         item = function ()
+            local e
             for _, emblem in pairs( pvp_emblems ) do
-                if equipped[ emblem ] then return emblem end
+                e = emblem
+                if equipped[ e ] then return e end
             end
-            return 161812
+            return e
         end,
 
         toggle = "cooldowns",
@@ -4036,6 +4005,23 @@ all:RegisterAbility( "corrupted_gladiators_maledict", {
         }
     }
 } )
+
+
+--[[ WiP: Timewarped Trinkets
+do
+    local timewarped_trinkets = {
+        { "runed_fungalcap",                127184, "shell_of_deterrence",              31771,  20,     1 },
+        { "icon_of_the_silver_crescent",    129850, "blessing_of_the_silver_crescent",  194645, 20,     1 },
+        { "essence_of_the_martyr",          129851, "essence_of_the_martyr",            194637, 20,     1 },
+        { "gnomeregan_autoblocker_601",     129849, "gnome_ingenuity",                  194543, 40,     1 },
+        { "emblem_of_fury",                 129937, "lust_for_battle_str",              194638, 20,     1 },
+        { "bloodlust_brooch",               129848, "lust_for_battle_agi",              194632, 20,     1 },
+        {}
+
+    }
+
+    { "vial_of_the_sunwell",            133462, "vessel_of_the_naaru",              45059,  3600,   1 }, -- vessel_of_the_naaru on-use 45064, 120 sec CD.
+end ]]
 
 
 -- Galewind Chimes
