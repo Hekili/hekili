@@ -2418,6 +2418,8 @@ do
     f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 
     f:SetScript("OnEvent", function( event )
+        if not state.equipped.ashvanes_razor_coral then return end
+
         local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
         if sourceGUID == state.GUID and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) and spellID == 303568 then
@@ -2426,6 +2428,8 @@ do
             coralStacks = ( subtype == "SPELL_AURA_APPLIED_DOSE" ) and ( coralStacks + 1 ) or 1
         end
     end )
+
+    Hekili:ProfileFrame( "RazorCoralFrame", f )
 
     all:RegisterStateExpr( "coral_time_to_30", function() 
         if coralGUID == 0 then return 3600 end
