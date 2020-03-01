@@ -288,6 +288,7 @@ local function SimToLua( str, modifier )
     str = str:gsub("imps_spawned_during%.([^!=<>&|]+)", "imps_spawned_during[%1] ")
     str = str:gsub("time_to_imps%.(%b()).remains", "time_to_imps[%1].remains")
     str = str:gsub("time_to_imps%.(%d+).remains", "time_to_imps[%1].remains")
+    -- str = str:gsub("incanters_flow_time_to%.(%d+)[.any]?", "incanters_flow_time_to[%1]")
 
     -- Condense bracketed expressions.
     str = str:gsub("%b[]", space_killer)
@@ -414,6 +415,8 @@ do
         { "^!?action%.([a-z0-9_]+)%.in_flight$",    "action.%1.in_flight_remains" }, -- Fire Mage, but others too, potentially.
         { "^action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$",
                                                     "action.%1.in_flight_remains-%2" }, -- Fire Mage, but others too, potentially.
+        { "^(pet%.[a-z0-9_]+)%.up",             "%1.remains" },
+        { "^(pet%.[a-z0-9_]+)%.active",         "%1.remains" },
 
     }
 
