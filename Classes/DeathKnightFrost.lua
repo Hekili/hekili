@@ -1060,6 +1060,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = false,
             texture = 538770,
 
+            range = 7,
+
             handler = function ()
                 applyBuff( "remorseless_winter" )
                 -- if pvptalent.deathchill.enabled then applyDebuff( "target", "deathchill" ) end
