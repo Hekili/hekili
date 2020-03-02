@@ -776,11 +776,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             end,
 
             handler = function ()
-                if hardcast then
-                    removeStack( "pyroclasm" )
-                else
-                    removeBuff( "hot_streak" )
-                end
+                if hardcast then removeStack( "pyroclasm" ) end
             end,
 
             velocity = 35,
