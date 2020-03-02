@@ -8867,12 +8867,17 @@ local function Sanitize( segment, i, line, warnings )
 
     i, times = i:gsub( "min:[a-z0-9_%.]+(,?$?)", "%1" )
     if times > 0 then
-        table.insert( warnings, "Line " .. line .. ": Removed min:X check (not available in emulation) -- (" .. times .. "x)." )
+        table.insert( warnings, "Line " .. line .. ": Removed min:X check (not available in emulation) (" .. times .. "x)." )
     end
 
     i, times = i:gsub( "max:[a-z0-9_%.]+(,?$?)", "%1" )
     if times > 0 then
-        table.insert( warnings, "Line " .. line .. ": Removed max:X check (not available in emulation) -- (" .. times .. "x)." )
+        table.insert( warnings, "Line " .. line .. ": Removed max:X check (not available in emulation) (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "(incanters_flow_time_to%.%d+)(^%.)", "%1.any%2")
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted directionless 'incanters_flow_time_to.X' to 'incanters_flow_time_to.X.any' (" .. times .. "x)." )
     end
 
     if segment == 'c' then
