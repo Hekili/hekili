@@ -305,7 +305,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     spec:RegisterStateFunction( "hot_streak", function( willCrit )
         willCrit = willCrit or buff.combustion.up or stat.crit >= 100
 
-        if Hekili.ActiveDebug then Hekili:Debug( "*** HOT STREAK (Cast/Impact) ***\nHeating Up: %s, %.2f\nHot Streak: %s, %.2f\nCrit: %s, %.2f\n*** HOT STREAK (Cast/Impact) ***\n", buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains, willCrit and "Yes" or "No", stat.crit ) end
+        if Hekili.ActiveDebug then Hekili:Debug( "*** HOT STREAK (Cast/Impact) ***\n    Heating Up: %s, %.2f\n    Hot Streak: %s, %.2f\n    Crit: %s, %.2f\n*** HOT STREAK (Cast/Impact) ***\n", buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains, willCrit and "Yes" or "No", stat.crit ) end
 
         if willCrit then
             if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
@@ -316,8 +316,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         end
         
         -- Apparently it's safe to not crit within 0.2 seconds.
-        if buff.hot_streak.up then removeBuff( "hot_streak" )
-        elseif buff.heating_up.up then
+        if buff.heating_up.up then
             if query_time - buff.heating_up.applied > 0.2 then
                 if Hekili.ActiveDebug then Hekili:Debug( "May not crit; Heating Up was applied %.2f ago, so removing Heating Up.." ) end
                 removeBuff( "heating_up" )
@@ -785,7 +784,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             end,
 
             handler = function ()
-                if hardcast then removeStack( "pyroclasm" ) end
+                if hardcast then removeStack( "pyroclasm" )
+                else removeBuff( "hot_streak" ) end
             end,
 
             velocity = 35,
