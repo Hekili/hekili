@@ -368,14 +368,6 @@ function ns.updateTalents()
 end
 
 
---[[ RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function ( event )
-    ns.updateTalents()
-
-    Hekili:ForceUpdate( event )
-end ) ]]
-
-
-
 -- TBD:  Consider making `boss' a check to see whether the current unit is a boss# unit instead.
 RegisterEvent( "ENCOUNTER_START", function ( _, id, name, difficulty )
     state.encounterID = id
@@ -447,7 +439,7 @@ do
     -- Essences
     local AE = C_AzeriteEssence
     local GetMilestoneEssence, GetEssenceInfo = AE.GetMilestoneEssence, AE.GetEssenceInfo
-    local milestones = { 115, 116, 117 }
+    local milestones = { 115, 116, 117, 119 }
 
     local essenceKeys = {
         [2]  = "azeroths_undying_gift",
@@ -1093,26 +1085,6 @@ RegisterEvent( "PLAYER_STOPPED_MOVING", function( event )
     Hekili:ForceUpdate( event )
 end )
 
-
---[[ local function HandleCasts( event, unit )
-    Hekili:ForceUpdate( event, unit )
-end 
-
-RegisterUnitEvent( "UNIT_SPELLCAST_START", HandleCasts )
-RegisterUnitEvent( "UNIT_SPELLCAST_INTERRUPTED", HandleCasts )
-RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", HandleCasts )
-RegisterUnitEvent( "UNIT_SPELLCAST_STOP", HandleCasts )
-RegisterUnitEvent( "UNIT_SPELLCAST_FAILED", HandleCasts )
-RegisterUnitEvent( "UNIT_SPELLCAST_FAILED_QUIET", HandleCasts ) ]]
-
-
---[[ RegisterEvent( "SPELL_UPDATE_COOLDOWN", function()
-    local gcdStart = GetSpellCooldown( 61304 )
-    if state.gcd.lastStart ~= gcdStart then
-        state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
-        Hekili:ForceUpdate()
-    end
-end ) ]]
 
 
 local cast_events = {
