@@ -8246,11 +8246,24 @@ all:RegisterPowers( {
 all:RegisterAbility( "reaping_flames", {
     id = 310690,
     cast = 0,
-    cooldown = function () return 45 - ( target.health_pct < ( essence.breath_of_the_dying.rank > 1 and 80 or 20 ) and 30 or 0 ) end,
-
+    cooldown = function ()
+        if target.health.pct < 20 then return 15 end
+        if essence.breath_of_the_dying.rank > 1 and target.health.pct > 80 then return 15 end
+        return 45
+    end,
     startsCombat = true,
     toggle = "essences",
     essence = true,
+
+    handler = function ()
+        removeBuff( "reaping_flames" )
+    end,
+} )
+
+all:RegisterAura( "reaping_flames", {
+    id = 311202,
+    duration = 30,
+    max_stack = 1
 } )
 
 
