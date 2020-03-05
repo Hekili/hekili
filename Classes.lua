@@ -8368,6 +8368,8 @@ all:RegisterAbility( "blood_of_the_enemy", {
     toggle = "essences",
     essence = true,
 
+    range = 11,
+
     handler = function()
         applyDebuff( "target", "blood_of_the_enemy" )
         active_dot.blood_of_the_enemy = active_enemies
