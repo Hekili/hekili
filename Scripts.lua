@@ -920,6 +920,7 @@ local newModifiers = {
     interrupt_if = 'bool',
     interrupt_immediate = 'bool',
     moving = 'bool',
+    strict = 'bool',
     target_if = 'bool',
     use_off_gcd = 'bool',
     use_while_casting = 'bool',

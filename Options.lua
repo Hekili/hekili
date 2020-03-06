@@ -471,6 +471,7 @@ local actionTemplate = {
 
     -- Call/Run Action List
     list_name = "default",
+    strict = nil,
 
     -- Pool Resource
     wait = "0.5",
@@ -4439,8 +4440,9 @@ do
 
 
     local toggleToNumber = {
-        for_next = true,
         cycle_targets = true,
+        for_next = true,
+        strict = true,
         use_off_gcd = true,
         use_while_casting = true,
     }
@@ -4522,6 +4524,10 @@ do
 
         if option == "use_off_gcd" and not val then
             data.use_off_gcd = nil
+        end
+
+        if option == "strict" and not val then
+            data.strict = nil
         end
 
         if option == "use_while_casting" and not val then
@@ -6005,7 +6011,7 @@ do
                                                         local e = GetListEntry( pack )
                                                         local ability = e.action and class.abilities[ e.action ]
 
-                                                        return not ability or ( ability.id < 0 and ability.id > -100 )
+                                                        return not ability -- or ( ability.id < 0 and ability.id > -100 )
                                                     end,
                                                 },
 
@@ -6139,6 +6145,28 @@ do
                                                         local ability = e.action and class.abilities[ e.action ]
 
                                                         return not packControl.showModifiers or ( not ability or ( ability.id < 0 and ability.id > -100 ) )
+                                                    end,
+                                                },
+
+                                                modAPL = {
+                                                    type = "group",
+                                                    inline = true,
+                                                    name = "",
+                                                    order = 24,
+                                                    args = {
+                                                        strict = {
+                                                            type = "toggle",
+                                                            name = "Strict / Time Insensitive",
+                                                            desc = "If checked, the addon will assume this entry is not time-sensitive and will not test actions in the linked priority list if criteria are not presently met.",
+                                                            order = 1,
+                                                            width = "full",                                                            
+                                                        }                                                    
+                                                    },
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        local ability = e.action and class.abilities[ e.action ]
+
+                                                        return not packControl.showModifiers or ( not ability or not ( ability.key == "call_action_list" or ability.key == "run_action_list" ) )
                                                     end,
                                                 },
 
