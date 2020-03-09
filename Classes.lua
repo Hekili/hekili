@@ -1083,7 +1083,7 @@ all:RegisterAuras( {
 
     casting = {
         name = "Casting",
-        strictTiming = true, -- Ignore buffPadding.
+        strictTiming = true,
         generate = function( t, auraType )
             local unit = auraType == "debuff" and "target" or "player"
 

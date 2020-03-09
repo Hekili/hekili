@@ -1369,7 +1369,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         potion = "unbridled_fury",
 
-        buffPadding = 0.25,
+        buffPadding = 0,
 
         nameplates = false,
         nameplateRange = 8,

@@ -2499,7 +2499,7 @@ local mt_default_cooldown = {
         elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
             return ( ( ability.charges or 1 ) - t.charges_fractional ) * ( ability.recharge or ability.cooldown )
 
-        elseif k == 'remains' then            
+        elseif k == 'remains' or k == 'recharge_time' then            
             if t.key == 'global_cooldown' then
                 return max( 0, t.expires - state.query_time )
             end
@@ -2529,9 +2529,10 @@ local mt_default_cooldown = {
 
             return t.remains > 0 and 0 or 1
 
+        --[[ 'recharge_time' appears to function the same as 'remains' inside simc.  2019-03-09.
         elseif k == 'recharge_time' then
             if not ability.charges then return t.duration or 0 end
-            return t.recharge
+            return t.recharge ]]
 
         elseif k == 'up' or k == 'ready' then
             return ( t.remains == 0 )
@@ -2980,7 +2981,7 @@ local mt_default_buff = {
         elseif requiresLookup[ k ] then
             if aura and aura.generate then
                 for attr, a_val in pairs( default_buff_values ) do
-                    t[ attr ] = rawget( t, attr ) or a_val
+                    t[ attr ] = rawget( t, attr ) or rawget( aura, attr ) or a_val
                 end
 
                 aura.generate( t, "buff" )
@@ -3038,7 +3039,7 @@ local mt_default_buff = {
             if aura and aura.strictTiming then
                 return max( 0, t.expires - state.query_time )
             end
-            return max( 0, t.expires - state.query_time - ( state.settings.buffPadding or 0 ) )
+            return max( 0, t.expires - state.query_time )
 
         elseif k == 'refreshable' then
             return t.remains < 0.3 * ( aura.duration or 30 )
@@ -3766,7 +3767,7 @@ local mt_default_debuff = {
         elseif requiresLookup[ k ] then
             if aura and aura.generate then
                 for attr, a_val in pairs( default_debuff_values ) do
-                    t[ attr ] = rawget( t, attr ) or a_val
+                    t[ attr ] = rawget( t, attr ) or rawget( aura, attr ) or  a_val
                 end
 
                 aura.generate( t, "debuff" )
@@ -3816,7 +3817,7 @@ local mt_default_debuff = {
             if aura and aura.strictTiming then
                 return max( 0, t.expires - state.query_time )
             end
-            return max( 0, t.expires - state.query_time - ( state.settings.debuffPadding or 0 ) )
+            return max( 0, t.expires - state.query_time )
 
         elseif k == 'refreshable' then
             -- if state.isCyclingTargets( nil, t.key ) then return true end
@@ -5701,12 +5702,12 @@ function state:TimeToReady( action, pool )
     if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 1, wait ) end
 
     if ability.id < -99 or ability.id > 0 then
-        if self.args.use_off_gcd ~= 1 and ( ability.gcd ~= 'off' or ( ability.item and not ability.essence ) or not ability.interrupt ) then
+        if not ability.castableWhileCasting and self.args.use_off_gcd ~= 1 and ( ability.gcd ~= 'off' or ( ability.item and not ability.essence ) or not ability.interrupt ) then
             wait = max( wait, self.cooldown.global_cooldown.remains )
             if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f (%d %s %s)", 2, wait, self.args.use_off_gcd or 0, self.settings.gcdSync and "sync" or "nosync", ability.gcd ) end
         end
 
-        if self.args.use_while_casting ~= 1 and self.buff.casting.remains > 0 then
+        if not ability.castableWhileCasting and self.args.use_while_casting ~= 1 and self.buff.casting.remains > 0 then
             wait = max( wait, self.buff.casting.remains )
             if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 3, wait ) end
         end
