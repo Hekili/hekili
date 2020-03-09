@@ -2499,7 +2499,7 @@ local mt_default_cooldown = {
         elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
             return ( ( ability.charges or 1 ) - t.charges_fractional ) * ( ability.recharge or ability.cooldown )
 
-        elseif k == 'remains' or k == 'recharge_time' then            
+        elseif k == 'remains' then            
             if t.key == 'global_cooldown' then
                 return max( 0, t.expires - state.query_time )
             end
@@ -2529,10 +2529,10 @@ local mt_default_cooldown = {
 
             return t.remains > 0 and 0 or 1
 
-        --[[ 'recharge_time' appears to function the same as 'remains' inside simc.  2019-03-09.
+        --
         elseif k == 'recharge_time' then
             if not ability.charges then return t.duration or 0 end
-            return t.recharge ]]
+            return t.recharge
 
         elseif k == 'up' or k == 'ready' then
             return ( t.remains == 0 )
@@ -4020,7 +4020,7 @@ local mt_default_action = {
             return state.cooldown[ t.action ].charges_fractional
 
         elseif k == 'recharge_time' then
-            return ability.recharge or 0
+            return state.cooldown[ t.action ].recharge_time
 
         elseif k == 'max_charges' then
             return ability.charges or 0
