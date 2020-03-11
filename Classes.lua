@@ -3476,6 +3476,24 @@ all:RegisterAura( "lions_strength", {
     max_stack = 1,
 } )
 
+all:RegisterAbility( "mr_munchykins", {
+    cast = 0,
+    cooldown = 120,
+    gcd = "off",
+
+    item = 155567,
+    toggle = "cooldowns",
+
+    handler = function ()
+        applyBuff( "tea_time" )
+    end,
+} )
+
+all:RegisterAura( "tea_time", {
+    id = 268504,
+    duration = 15,
+    max_stack = 1,
+} ) 
 
 all:RegisterAbility( "bygone_bee_almanac", {
     cast = 0,
