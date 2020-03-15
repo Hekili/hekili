@@ -79,7 +79,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         avenging_wrath_autocrit = {
             id = 294027,
             duration = 20,
-            max_stack = 1
+            max_stack = 1,
+            copy = "avenging_wrath_crit"
         },
 
         blade_of_wrath = {
@@ -909,7 +910,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             startsCombat = true,
             texture = 236264,
 
-            usable = function () return incoming_damage_3s > 0.2 * health.max end,
+            usable = function () return incoming_damage_3s > 0.2 * health.max, "incoming damage over 3s is less than 20% of max health" end,
             handler = function ()
                 applyBuff( 'shield_of_vengeance' )
             end,
