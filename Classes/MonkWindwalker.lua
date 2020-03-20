@@ -1331,9 +1331,20 @@ if UnitClassBase( 'player' ) == 'MONK' then
         strict = false
     } )
 
+    spec:RegisterSetting( "allow_fsk", true, {
+        name = "Use |T606545:0|t Flying Serpent Kick",
+        desc = "If unchecked, |T606545:0|t Flying Serpent Kick will not be recommended (this is the same as disabling the ability via Windwalker > Abilities > Flying Serpent Kick > Disable).",
+        type = "toggle",
+        width = 1.5,
+        get = function () return not Hekili.DB.profile.specs[ 269 ].abilities.flying_serpent_kick.disabled end,
+        set = function ( _, val )
+            local a = Hekili.DB.profile.specs[ 269 ].abilities
+            Hekili.DB.profile.specs[ 269 ].abilities.flying_serpent_kick.disabled = not val end,
+    } ) 
+    
     spec:RegisterSetting( "optimize_reverse_harm", false, {
         name = "Optimize |T627486:0|t Reverse Harm",
-        desc = "If checked, the |T627486:0|t Reverse Harm's caption will show the recommended target's name.",
+        desc = "If checked, |T627486:0|t Reverse Harm's caption will show the recommended target's name.",
         type = "toggle",
         width = 1.5
     } ) 
