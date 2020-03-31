@@ -735,12 +735,15 @@ local function applyBuff( aura, duration, stacks, value )
     if not duration then duration = class.auras[ aura ].duration or 15 end
 
     if duration == 0 then
+        b.last_expire = b.expires or 0
         b.expires = 0
 
         b.lastCount = b.count
-        b.lastApplied = b.applied
-
         b.count = 0
+
+        b.lastApplied = b.applied
+        b.last_trigger = b.applied or 0
+
         b.v1 = 0
         b.applied = 0
         b.caster = 'unknown'
@@ -755,7 +758,11 @@ local function applyBuff( aura, duration, stacks, value )
 
         -- state.buff[ aura ] = state.buff[ aura ] or {}
         b.expires = state.query_time + duration
+        b.last_expire = b.expires
+
         b.applied = state.query_time
+        b.last_trigger = b.applied or 0
+
         b.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
         b.v1 = value or 0
         b.caster = 'player'
@@ -1458,6 +1465,8 @@ do
     a.key = true
     a.lastApplied = true
     a.lastCount = true
+    a.last_trigger = true
+    a.last_expire = true
     a.max_stack = true
     a.max_stacks = true
     a.mine = true
@@ -2901,6 +2910,10 @@ local default_buff_values = {
     v1 = 0,
     v2 = 0,
     v3 = 0,
+
+    last_trigger = 0,
+    last_expire = 0,
+
     unit = 'player'
 }
 
@@ -2964,6 +2977,10 @@ local requiresLookup = {
     v1 = true,
     v2 = true,
     v3 = true,
+
+    last_trigger = true,
+    last_expire = true,
+
     unit = true
 }
 
@@ -3006,6 +3023,9 @@ local mt_default_buff = {
                 t.v1 = real.v1
                 t.v2 = real.v2
                 t.v3 = real.v3
+
+                t.last_trigger = real.last_trigger or 0
+                t.last_expire  = real.last_expire  or 0
 
                 t.unit = real.unit
             else
@@ -4278,6 +4298,10 @@ do
                 v.name = nil
                 v.lastCount = newTarget and 0 or v.count
                 v.lastApplied = newTarget and 0 or v.applied
+
+                v.last_trigger = max( 0, v.applied, v.last_trigger )
+                v.last_expire  = max( 0, v.expires, v.last_expire )
+
                 v.count = 0
                 v.expires = 0
                 v.applied = 0
@@ -4343,6 +4367,9 @@ do
                 buff.v1 = v1
                 buff.v2 = v2
                 buff.v3 = v3
+                
+                buff.last_trigger = buff.last_trigger or 0
+                buff.last_expire  = buff.last_expire or 0
 
                 buff.unit = unit
             end
