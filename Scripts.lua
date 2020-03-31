@@ -432,8 +432,8 @@ do
     -- Things that tick up.
     local increases = {
         ["^time$"] = true,
-        -- ["charges$"] = true,
-        -- ["charges_fractional$"] = true,        
+        ["charges"] = true,
+        ["charges_fractional"] = true,        
     }
 
     local removals = {
@@ -467,7 +467,11 @@ do
             expr = expr:sub( 2, -2 )
         end
 
-        local lhs, comp, rhs = expr:match( "^(.-)([<>=]^?+)(.-)$" )
+        local lhs, comp, rhs = expr:match( "^(.-)([<>=?]+)(.-)$" )
+
+        if comp and comp:match( "?" ) then
+            comp = nil
+        end
 
         if lhs and comp and rhs then
             -- We are looking at a mathematic comparison.

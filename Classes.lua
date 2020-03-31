@@ -712,6 +712,11 @@ local HekiliSpecMixin = {
             Hekili.DB.profile.specs[ self.id ].settings[ setting ] = val
         end
     end,
+
+    -- For faster variables.
+    RegisterVariable = function( self, key, func )
+        self.variables[ key ] = setfenv( func, state )
+    end,
 }
 
 
@@ -841,6 +846,8 @@ function Hekili:NewSpecialization( specID, isRanged )
 
         packs = {},
         options = {},
+
+        variables = {}
     }
 
     class.num = class.num + 1
@@ -4998,6 +5005,8 @@ function Hekili:SpecializationChanged()
                     class.hooks[ name ] = func
                 end
 
+                class.variables = spec.variables
+
                 class.potionList.default = "|cFFFFD100Default|r"
             end
 
@@ -6690,7 +6699,7 @@ all:RegisterPowers( {
 
     -- Heart of Darkness
     heart_of_darkness = {
-        id = 316101,
+        id = 317137,
         triggers = {
             heart_of_darkness = { 317137, 316101 }
         },

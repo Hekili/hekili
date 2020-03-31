@@ -181,7 +181,8 @@ Hekili.Class = {
     range = 8,
 	settings = {},
     stances = {},
-	toggles = {}
+	toggles = {},
+	variables = {},
 }
 
 Hekili.Scripts = {

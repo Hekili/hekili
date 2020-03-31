@@ -1130,11 +1130,10 @@ function Hekili:ProcessHooks( dispName, packName )
     end
 
     for i = 1, numRecs do
-
-        if i > 1 and actualStartTime and maxTime then
+        if i > 1 and actualStartTime then
             local usedTime = debugprofilestop() - actualStartTime
 
-            if usedTime > maxTime then
+            if maxTime and usedTime > maxTime then
                 if debug then self:Debug( -100, "Addon used %.2fms CPU time (of %.2fms softcap) before recommendation #%d; stopping early.", usedTime, maxTime, i-1 ) end
                 break
             end
@@ -1153,7 +1152,7 @@ function Hekili:ProcessHooks( dispName, packName )
         local attempts = 0
         local iterated = false
 
-        if debug then self:Debug( "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f, Casting: %.2f%s ).\n", i, state.offset, state.cooldown.global_cooldown.remains, state.buff.casting.remains, ( state.buff.casting.v3 and "*" or "" ) ) end
+        if debug then self:Debug( "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f, %s: %.2f ).\n", i, state.offset, state.cooldown.global_cooldown.remains, ( state.buff.casting.v3 and "Channeling" or "Casting" ), state.buff.casting.remains ) end
 
         --[[ if debug then
             for k in pairs( class.resources ) do
@@ -1237,6 +1236,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
 
                 if not action then
+                    if debug then self:Debug( "Time spent on event #%d PREADVANCE: %.2fms...", n - 1, debugprofilestop() - actualStartTime ) end
                     if debug then self:Debug( 1, "No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).\n", n, event.action, event.type, t, state.offset + state.delay ) end
                     
                     state.advance( t )
@@ -1252,7 +1252,11 @@ function Hekili:ProcessHooks( dispName, packName )
                 if debug then Hekili:Debug( "WARNING:  Attempted to process 10+ events; breaking to avoid CPU wastage." ) end
                 break
             end
+
+            if debug then self:Debug( "Time spent on event #%d: %.2fms...", n - 1, debugprofilestop() - actualStartTime ) end
         end
+
+        if debug then self:Debug( "Time spent generating recommendations: %.2fms...", debugprofilestop() - actualStartTime ) end
 
         if not action then
             state:SetConstraint( 0, 15 )

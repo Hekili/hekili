@@ -735,14 +735,14 @@ local function applyBuff( aura, duration, stacks, value )
     if not duration then duration = class.auras[ aura ].duration or 15 end
 
     if duration == 0 then
-        b.last_expire = b.expires or 0
+        b.last_expiry = b.expires or 0
         b.expires = 0
 
         b.lastCount = b.count
         b.count = 0
 
         b.lastApplied = b.applied
-        b.last_trigger = b.applied or 0
+        b.last_application = b.applied or 0
 
         b.v1 = 0
         b.applied = 0
@@ -758,10 +758,10 @@ local function applyBuff( aura, duration, stacks, value )
 
         -- state.buff[ aura ] = state.buff[ aura ] or {}
         b.expires = state.query_time + duration
-        b.last_expire = b.expires
+        b.last_expiry = b.expires
 
         b.applied = state.query_time
-        b.last_trigger = b.applied or 0
+        b.last_application = b.applied or 0
 
         b.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
         b.v1 = value or 0
@@ -1465,8 +1465,8 @@ do
     a.key = true
     a.lastApplied = true
     a.lastCount = true
-    a.last_trigger = true
-    a.last_expire = true
+    a.last_application = true
+    a.last_expiry = true
     a.max_stack = true
     a.max_stacks = true
     a.mine = true
@@ -2019,7 +2019,7 @@ local mt_stat = {
             return 0
 
         elseif k == 'spell_haste' then
-            return ( UnitSpellHaste('player') + ( t.mod_haste_pct or 0 ) ) / 100
+            return ( UnitSpellHaste( 'player' ) + ( t.mod_haste_pct or 0 ) ) / 100
 
         elseif k == 'melee_haste' then
             return ( GetMeleeHaste('player') + ( t.mod_haste_pct or 0 ) ) / 100
@@ -2911,8 +2911,8 @@ local default_buff_values = {
     v2 = 0,
     v3 = 0,
 
-    last_trigger = 0,
-    last_expire = 0,
+    last_application = 0,
+    last_expiry = 0,
 
     unit = 'player'
 }
@@ -2978,8 +2978,8 @@ local requiresLookup = {
     v2 = true,
     v3 = true,
 
-    last_trigger = true,
-    last_expire = true,
+    last_application = true,
+    last_expiry = true,
 
     unit = true
 }
@@ -3024,8 +3024,8 @@ local mt_default_buff = {
                 t.v2 = real.v2
                 t.v3 = real.v3
 
-                t.last_trigger = real.last_trigger or 0
-                t.last_expire  = real.last_expire  or 0
+                t.last_application = real.last_application or 0
+                t.last_expiry = real.last_expiry or 0
 
                 t.unit = real.unit
             else
@@ -3092,6 +3092,12 @@ local mt_default_buff = {
         elseif k == 'ticks_remain' then
             if t.up then return math.floor( t.remains / t.tick_time ) end
             return 0
+        
+        elseif k == 'last_trigger' then
+            return max( 0, t.last_application - state.now )
+        
+        elseif k == 'last_expire' then
+            return max( 0, t.last_expiry - state.now )
 
         else
             if class.auras[ t.key ] and class.auras[ t.key ][ k ] ~= nil then
@@ -3503,6 +3509,13 @@ do
         __index = function( t, var )
             local debug = Hekili.ActiveDebug
 
+            if class.variables[ var ] then
+                -- We have a hardcoded shortcut.
+                return class.variables[ var ]()
+            end
+
+            local varStart = debugprofilestop()
+
             local data = db[ var ]
             if not data then
                 -- if debug then Hekili:Debug( "var[%s] :: no data.\n%s", var, debugstack() ) end
@@ -3629,8 +3642,7 @@ do
                     end
 
                     if debug then
-                        -- Hekili:Debug( "variable.%s [%02d/%s] :: op: %s, conditions: %s -- [%s]", var, i, scriptID, state.args.op or "autoset", scripts:GetConditionsAndValues( scriptID ), tostring( passed ) )
-                        -- if passed then Hekili:Debug( " - %s: %s, result: %s", which_mod, scripts:GetModifierValues( which_mod, scriptID ), tostring( value ) ) end
+                        Hekili:Debug( "Spent %.2fms calculating value of %s -- %s.", debugprofilestop() - varStart, var, tostring( value ) )
                     end
                 end
             end
@@ -4299,8 +4311,8 @@ do
                 v.lastCount = newTarget and 0 or v.count
                 v.lastApplied = newTarget and 0 or v.applied
 
-                v.last_trigger = max( 0, v.applied, v.last_trigger )
-                v.last_expire  = max( 0, v.expires, v.last_expire )
+                v.last_application = max( 0, v.applied, v.last_application )
+                v.last_expiry  = max( 0, v.expires, v.last_expiry )
 
                 v.count = 0
                 v.expires = 0
@@ -4368,8 +4380,8 @@ do
                 buff.v2 = v2
                 buff.v3 = v3
                 
-                buff.last_trigger = buff.last_trigger or 0
-                buff.last_expire  = buff.last_expire or 0
+                buff.last_application = buff.last_application or 0
+                buff.last_expiry      = buff.last_expiry or 0
 
                 buff.unit = unit
             end
