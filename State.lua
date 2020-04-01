@@ -3495,15 +3495,12 @@ do
     end
 
     
-    local checking = {}
-
     function state:ResetVariables()
         for k, v in pairs( db ) do
             wipe( v )
         end
 
         wipe( pathState )
-        wipe( checking )
     end
 
     function state:GetVariableIDs( key )
@@ -3524,13 +3521,7 @@ do
                 return 0
             end
 
-            if checking[ var ] then
-                -- Let's prevent a busted loop.
-                Hekili:Error( "It seems that " .. var .. " calculation for " .. ( state.scriptID or "IDK" ) .. " can cause a nearly endless loop." )
-                return nil
-            end
-
-            checking[ var ] = true
+            state.variable[ var ] = 0
 
             local varStart = debugprofilestop()
 
@@ -3677,7 +3668,6 @@ do
 
             -- Clear cache and clear the flag that we are checking this variable already.
             state.variable[ var ] = nil
-            checking[ var ] = nil
 
             --[[ if debug then
                 Hekili:Debug( "Spent %.2fms calculating value of %s -- %s [%s].", debugprofilestop() - varStart, var, tostring( value ), parent )
