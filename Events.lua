@@ -1340,7 +1340,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         if aura_events[ subtype ] then
             if subtype == "SPELL_CAST_SUCCESS" or state.GUID == destGUID then 
                 state.player.updated = true
-                if class.abilities[ spellID ] or class.auras[ spellID ] then Hekili:ForceUpdate( subtype ) end
+                if class.abilities[ spellID ] or class.auras[ spellID ] then Hekili:ForceUpdate( subtype, true ) end
             end
 
             if UnitGUID( 'target' ) == destGUID then
@@ -1357,6 +1357,10 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 if subtype == 'SPELL_AURA_APPLIED' or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, true )
                     ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+
+                    if spellID == 48108 or spellID == 48107 then
+                        Hekili:ForceUpdate( "SPELL_AURA_SUPER", true )
+                    end
 
                 elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
                     ns.trackDebuff( spellID, destGUID, time )

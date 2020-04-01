@@ -819,10 +819,11 @@ do
             local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or ( 1 / 20 )
             local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
 
-            if self.refreshTimer < 0 or ( Hekili.freshFrame and self.criticalUpdate and ( now - self.lastUpdate > throttle ) ) then
+            if self.refreshTimer < 0 or ( self.id == "Primary" or self.id == "AOE" ) and self.superUpdate or ( Hekili.freshFrame and self.criticalUpdate and ( now - self.lastUpdate > throttle ) ) then
                 Hekili:ProcessHooks( self.id )
                 self.lastUpdate = now
                 self.criticalUpdate = false
+                self.superUpdate = false
                 self.refreshTimer = refreshRate
             end
         end
@@ -1628,9 +1629,10 @@ do
 
     local firstForceRequest = 0
 
-    function Hekili:ForceUpdate( event, ... )
+    function Hekili:ForceUpdate( event, super )
         for i, d in pairs( ns.UI.Displays ) do        
             d.criticalUpdate = true
+            if super then d.superUpdate = true end
             if d.firstForce == 0 then d.firstForce = GetTime() end
         end
     end    
