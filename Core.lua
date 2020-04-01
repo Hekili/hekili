@@ -1256,8 +1256,6 @@ function Hekili:ProcessHooks( dispName, packName )
             if debug then self:Debug( "Time spent on event #%d: %.2fms...", n - 1, debugprofilestop() - actualStartTime ) end
         end
 
-        if debug then self:Debug( "Time spent generating recommendations: %.2fms...", debugprofilestop() - actualStartTime ) end
-
         if not action then
             state:SetConstraint( 0, 15 )
 

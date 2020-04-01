@@ -51,7 +51,8 @@ local enemyExclusions = {
     ["120651"] = true, -- Explosives
     ["23775"] = true,  -- Head of the Horseman,
     ["156227"] = true, -- Neferset Denizen,
-    ["160966"] = true, -- Thing from Beyond
+    ["160966"] = true, -- Thing from Beyond?
+    ["161895"] = true, -- Thing from Beyond?
 }
 
 local f = CreateFrame("Frame")

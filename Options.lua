@@ -484,6 +484,7 @@ local actionTemplate = {
     -- Variable
     op = "set",
     condition = "",
+    default = "",
     value = "",
     value_else = "",
     var_name = "unnamed",

@@ -1506,7 +1506,10 @@ local mt_state = {
             return "Primary"
 
         elseif k == "scriptID" then
-            return nil 
+            return "NilScriptID"
+        
+        elseif k == "resetting" then
+            return false
 
         -- First, any values that don't reference an ability or aura.
         elseif k == 'this_action' then
@@ -1879,14 +1882,15 @@ local mt_state = {
         end
 
 
-        if t.variable[k] ~= nil then return t.variable[k] end
-        if t.settings[k] ~= nil then return t.settings[k] end
-        if t.toggle[k] ~= nil then return t.toggle[k] end
+        if state:GetVariableIDs( k ) then return t.variable[ k ] end
+
+        if t.settings[ k ] ~= nil then return t.settings[ k ] end
+        if t.toggle[ k ]   ~= nil then return t.toggle[ k ]   end
 
         local stack = debugstack()
         if stack then stack = stack:match( "^(.-\n?.-\n?.-)\n" ) end
 
-        Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable." .. ( stack and ( "\n" .. stack ) or "" ) )
+        Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable [" .. state.scriptID .. "]." .. ( stack and ( "\n" .. stack ) or "" ) )
         return nil
     end,
     __newindex = function(t, k, v)
@@ -3094,10 +3098,12 @@ local mt_default_buff = {
             return 0
         
         elseif k == 'last_trigger' then
-            return max( 0, t.last_application - state.now )
+            if state.combat > 0 then return max( 0, t.last_application - state.combat ) end
+            return 0
         
         elseif k == 'last_expire' then
-            return max( 0, t.last_expiry - state.now )
+            if state.combat > 0 then return max( 0, t.last_expiry - state.combat ) end
+            return 0
 
         else
             if class.auras[ t.key ] and class.auras[ t.key ][ k ] ~= nil then
@@ -3488,8 +3494,8 @@ do
         insert( data, entry )
     end
 
-
-    local pathState = {}
+    
+    local checking = {}
 
     function state:ResetVariables()
         for k, v in pairs( db ) do
@@ -3497,8 +3503,8 @@ do
         end
 
         wipe( pathState )
+        wipe( checking )
     end
-
 
     function state:GetVariableIDs( key )
         return db[ key ]
@@ -3514,18 +3520,30 @@ do
                 return class.variables[ var ]()
             end
 
+            if Hekili.LoadingScripts then
+                return 0
+            end
+
+            if checking[ var ] then
+                -- Let's prevent a busted loop.
+                Hekili:Error( "It seems that " .. var .. " calculation for " .. ( state.scriptID or "IDK" ) .. " can cause a nearly endless loop." )
+                return nil
+            end
+
+            checking[ var ] = true
+
             local varStart = debugprofilestop()
 
-            local data = db[ var ]
-            if not data then
+            if not db[ var ] then
                 -- if debug then Hekili:Debug( "var[%s] :: no data.\n%s", var, debugstack() ) end
                 return 0
             end
 
+            local data = table_copy( db[ var ] )
             local parent = state.scriptID
 
             -- If we're checking variable with no script loaded, don't bother.
-            if not parent then return 0 end
+            if not parent or parent == "NilScriptID" then return 0 end
 
             local default = 0
             local value = 0
@@ -3537,7 +3555,7 @@ do
                 local scriptID = entry.id
                 local currPath = entry.fullPath .. ":" .. now
 
-                -- if debug then Hekili:Debug(" - %d of %d (%s) - %s", i, #data, currPath, tostring(pathState[ currPath ])) end
+                -- if debug then Hekili:Debug(" [%s] - %d of %d (%s) - %s", var, i, #data, currPath, tostring(pathState[ currPath ])) end
 
                 -- Check the requirements/exclusions in the APL stack.
                 if pathState[ currPath ] == nil then
@@ -3568,9 +3586,13 @@ do
                     state.scriptID = scriptID
                     local op = state.args.op or "set"
 
+                    -- if debug then Hekili:Debug( 1, "Checking script for %s [%d]", scriptID, invocations ) end
+
                     local passed = scripts:CheckScript( scriptID )
 
-                    -- if debug then Hekili:Debug( " - %s, %s, value: %s, value_else: %s", op, tostring(passed), tostring(state.args.value), tostring(state.args.value_else)) end
+                    -- if debug then Hekili:Debug( -1, "Check DONE for script %s [%d]", scriptID, invocations ) end
+
+                    -- if debug then Hekili:Debug( " - %s, %s, value: %s, value_else: %s, default: %s", op, tostring(passed), tostring(state.args.value), tostring(state.args.value_else), tostring(state.args.default) ) end
 
                     --[[    add = "Add Value",
                             ceil
@@ -3585,22 +3607,29 @@ do
                             x reset = "Reset to Default",
                             x set = "Set Value",
                             x setif = "Set Value If...",
-                            sub = "Subtract Value",]]
+                            sub = "Subtract Value" ]]
 
                     if op == "set" or op == "setif" then
                         if passed then
-                            value = state.args.value
+                            local v1 = state.args.value
+                            if v1 ~= nil then value = v1
+                            else value = state.args.default end
                         else
                             local v2 = state.args.value_else
                             if v2 ~= nil then
-                                value = state.args.value_else
+                                value = v2
                                 which_mod = "value_else"
                             end
                         end
+
                     elseif op == "reset" then
-                        value = passed and 0 or value                        
-                    elseif op == "default" and passed then
-                        default = state.args.value
+                        if passed then
+                            local v = state.args.value
+                            if v == nil then v = state.args.default end
+                            if v == nil then v = 0 end
+                            value = v
+                        end
+
                     elseif passed then
                         -- Math Ops.
                         local currType = type( value )
@@ -3641,13 +3670,21 @@ do
                         end
                     end
 
-                    if debug then
-                        Hekili:Debug( "Spent %.2fms calculating value of %s -- %s.", debugprofilestop() - varStart, var, tostring( value ) )
-                    end
+                    -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).
+                    state.variable[ var ] = value
                 end
             end
 
+            -- Clear cache and clear the flag that we are checking this variable already.
+            state.variable[ var ] = nil
+            checking[ var ] = nil
+
+            --[[ if debug then
+                Hekili:Debug( "Spent %.2fms calculating value of %s -- %s [%s].", debugprofilestop() - varStart, var, tostring( value ), parent )
+            end ]]
+
             state.scriptID = parent
+
             return value
         end
     } )
@@ -4573,16 +4610,21 @@ do
         end
     end
 
-    function state:RemoveSpellEvents( action, real )
+    function state:RemoveSpellEvents( action, real, eType )
         local queue = real and realQueue or virtualQueue
+
+        local success = false
 
         for i = #queue, 1, -1 do
             local e = queue[ i ]
 
-            if e.action == action then
+            if e.action == action and ( eType == nil or e.type == eType ) then
                 RecycleEvent( queue, i )
+                success = true
             end
         end
+
+        return success
     end
 
     function state:ResetQueues()
@@ -5177,7 +5219,7 @@ function state.reset( dispName )
         end
     end
 
-    state.resetting = nil
+    state.resetting = false
 end
 
 

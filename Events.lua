@@ -1256,8 +1256,8 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                             local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
 
                             if unit then
-                                local minR, maxR = RC:GetRange( unit )
-                                travel = 0.5 * ( minR + maxR ) / ability.velocity
+                                local _, maxR = RC:GetRange( unit )
+                                travel = maxR / ability.velocity
                             end
                         end
 
@@ -1282,8 +1282,8 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                             local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
 
                             if unit then
-                                local minR, maxR = RC:GetRange( unit )
-                                travel = 0.5 * ( minR + maxR ) / ability.velocity
+                                local _, maxR = RC:GetRange( unit )
+                                travel = maxR / ability.velocity
                             end
                         end
 
@@ -1309,10 +1309,8 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             local ability = class.abilities[ spellID ]
 
             if ability then
-                state:RemoveSpellEvents( ability.key, true )
+                state:RemoveSpellEvents( ability.key, true, "PROJECTILE_IMPACT" )
             end
-
-            Hekili:ForceUpdate( subtype )
         end
     end
 

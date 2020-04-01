@@ -931,6 +931,7 @@ local newModifiers = {
     wait = 'bool',
 
     -- Not necessarily a number, but not baby-proofed.
+    default = 'raw',
     line_cd = 'raw',
     max_cycle_targets = 'raw',
     sec = 'raw',
@@ -971,6 +972,9 @@ local isString = {
 
 -- Need to convert all the appropriate scripts and store them safely...
 local function ConvertScript( node, hasModifiers, header )
+    local previousScript = state.scriptID
+    state.scriptID = header
+
     state.this_action = node.action
 
     local t = node.criteria and node.criteria ~= "" and node.criteria
@@ -1113,6 +1117,7 @@ local function ConvertScript( node, hasModifiers, header )
         end ]]
     end
 
+    state.scriptID = previousScript
     return output
 end
 scripts.ConvertScript = ConvertScript
@@ -1247,6 +1252,8 @@ function scripts:LoadScripts()
     wipe( self.Channels )
     wipe( self.PackInfo )
 
+    Hekili.LoadingScripts = true
+
     state.reset()
 
     for pack, pData in pairs( profile.packs ) do
@@ -1332,6 +1339,7 @@ function scripts:LoadScripts()
         end
     end
 
+    Hekili.LoadingScripts = false
     scriptsLoaded = true
 end
 
@@ -1522,6 +1530,9 @@ function scripts:GetConditionsAndValues( scriptID, listName, actID )
     if script and script.SimC and script.SimC ~= "" then        
         local output = script.SimC
 
+        local wasDebugging = Hekili.ActiveDebug
+        Hekili.ActiveDebug = false
+
         if script.Elements then
             wipe( checked )
 
@@ -1553,8 +1564,10 @@ function scripts:GetConditionsAndValues( scriptID, listName, actID )
                     checked[ k ] = true
                 end
             end
-        end
 
+        end
+        
+        if wasDebugging then Hekili.ActiveDebug = true end
         return output
     end
 
