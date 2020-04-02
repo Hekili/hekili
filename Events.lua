@@ -934,27 +934,31 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", function( event, unit, _, spellID )
             state:RemoveSpellEvents( action, true )
 
             local _, _, _, start, finish = UnitCastingInfo( "player" )
-            state:QueueEvent( action, start / 1000, finish / 1000, "CAST_FINISH", target, true )
+            if start and finish then
+                state:QueueEvent( action, start / 1000, finish / 1000, "CAST_FINISH", target, true )
 
-            if ability.isProjectile then
-                local travel
+                if ability.isProjectile then
+                    local travel
 
-                if ability.flightTime then
-                    travel = flightTime
-                
-                elseif target then
-                    local unit = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
+                    if ability.flightTime then
+                        travel = flightTime
+ 
+                    elseif target then
+                        local unit = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
 
-                    if unit then
-                        local minR, maxR = RC:GetRange( unit )
-                        travel = 0.5 * ( minR + maxR ) / ability.velocity
+                        if unit then
+                            local minR, maxR = RC:GetRange( unit )
+                            travel = 0.5 * ( minR + maxR ) / ability.velocity
+                        end
                     end
+
+                    if not travel then travel = state.target.distance / ability.velocity end
+
+                    state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", target, true )
                 end
-
-                if not travel then travel = state.target.distance / ability.velocity end
-
-                state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", target, true )
             end
+
+            Hekili:ForceUpdate( event )
         end
     end
 end )
