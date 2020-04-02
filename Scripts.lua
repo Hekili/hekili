@@ -371,7 +371,7 @@ do
         { "!(dot%.[a-z0-9_]+)%.ticking",        "%1.remains" },
         { "!?(d?e?buff%.[a-z0-9_]+)%.remains",  "%1.remains" },
         { "!ticking",                           "remains" },
-        { "^!?remains$",                          "remains" },
+        { "^!?remains$",                        "remains" },
         { "^refreshable",                       "time_to_refresh" },
         
         { "^(.-)%.deficit<=?(.-)$",             "%1.timeTo(%1.max-(%2))" },
@@ -401,27 +401,26 @@ do
         { "^dot%.festering_wound%.stack[>=]=?(.-)$",    -- UH DK helper during Unholy Frenzy.
                                                 "time_to_wounds(%1)" },
 
-        { "^exsanguinated",                      "remains" }, -- Assassination
-        { "^(debuff%.[a-z0-9_]+)%.exsanguinated",
+        { "^exsanguinated$",                      "remains" }, -- Assassination
+        { "^!?(debuff%.[a-z0-9_]+)%.exsanguinated$",
                                                 "%1.remains" }, -- Assassination
-        { "^(dot%.[a-z0-9_]+)%.exsanguinated",  "%1.remains" }, -- Assassination
+        { "^!?(dot%.[a-z0-9_]+)%.exsanguinated$",  "%1.remains" }, -- Assassination
         { "^ss_buffed",                         "remains" }, -- Assassination
-        { "^(debuff%.[a-z0-9_]+)%.ss_buffed",
+        { "^!?(debuff%.[a-z0-9_]+)%.ss_buffed$",
                                                 "%1.remains" }, -- Assassination
-        { "^(dot%.[a-z0-9_]+)%.ss_buffed",      "%1.remains" }, -- Assassination
-        { "^consecration.up",                   "consecration.remains" }, -- Prot Paladin
-        { "^contagion<=?(.-)",                  "contagion-%1" }, -- Affliction Warlock
+        { "^!?(dot%.[a-z0-9_]+)%.ss_buffed$",      "%1.remains" }, -- Assassination
+        { "^!?consecration.up",                   "consecration.remains" }, -- Prot Paladin
+        { "^!?contagion<=?(.-)",                  "contagion-%1" }, -- Affliction Warlock
         
         { "^!?action%.([a-z0-9_]+)%.in_flight$",    "action.%1.in_flight_remains" }, -- Fire Mage, but others too, potentially.
-        { "^action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$",
+        { "^!?action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$",
                                                     "action.%1.in_flight_remains-%2" }, -- Fire Mage, but others too, potentially.
-        { "^variable.time_to_combustion$",      "variable.time_to_combustion" },
-        { "^variable.time_to_combustion<=?(.-)$",
+        { "^!?variable.time_to_combustion$",      "variable.time_to_combustion" },
+        { "^!?variable.time_to_combustion<=?(.-)$",
                                                 "variable.time_to_combustion-%1" },
 
-        { "^(pet%.[a-z0-9_]+)%.up",             "%1.remains" },
-        { "^(pet%.[a-z0-9_]+)%.active",         "%1.remains" },
-
+        { "^!?(pet%.[a-z0-9_]+)%.up",             "%1.remains" },
+        { "^!?(pet%.[a-z0-9_]+)%.active",         "%1.remains" },
     }
 
     -- Things that tick down.

@@ -1650,7 +1650,7 @@ local mt_state = {
                 return data.lastCast + data.flightTime - query_time > 0
             end
 
-            return state:IsInFlight( t.this_action, true )
+            return state:IsInFlight( t.this_action )
 
         elseif k == 'in_flight_remains' then
             local data = t.action[ t.this_action ]
@@ -1658,13 +1658,13 @@ local mt_state = {
                 return max( 0, data.lastCast + data.flightTime - query_time )
             end
 
-            return state:InFlightRemains( t.this_action, true )
+            return state:InFlightRemains( t.this_action )
 
         elseif k == 'executing' then
-            return state:IsCasting( t.this_action, true ) or ( state.prev[1][ t.this_action ] and state.gcd.remains > 0 )
+            return state:IsCasting( t.this_action ) or ( state.prev[1][ t.this_action ] and state.gcd.remains > 0 )
 
         elseif k == 'execute_remains' then
-            return ( state:IsCasting( t.this_action, true ) and max( state:QueuedCastRemains( t.this_action, true ), state.gcd.remains ) ) or ( state.prev[1][ t.this_action ] and state.gcd.remains ) or 0
+            return ( state:IsCasting( t.this_action ) and max( state:QueuedCastRemains( t.this_action ), state.gcd.remains ) ) or ( state.prev[1][ t.this_action ] and state.gcd.remains ) or 0
 
         elseif k == 'prowling' then
             return t.buff.prowl.up or ( t.buff.cat_form.up and t.buff.shadowform.up )        
