@@ -1181,7 +1181,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 local resources
 
                 for k in orderedPairs( class.resources ) do
-                    resources = ( resources and ( resources .. ", " ) or "" ) .. k .. "[ " .. state[ k ].current .. " / " .. state[ k ].max .. " ]"
+                    resources = ( resources and ( resources .. ", " ) or "" ) .. string.format( "%s[ %.2f / %.2f ]", k, state[ k ].current, state[ k ].max )
                 end
                 self:Debug( 1, "Resources: %s\n", resources )
 

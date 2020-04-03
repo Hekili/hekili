@@ -372,9 +372,13 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     spec:RegisterStateExpr( "last_combo", function () return virtual_combo or actual_combo end )
 
-    spec:RegisterStateExpr( "combo_break", function () return this_action == virtual_combo and combos[ virtual_combo ] end )
+    spec:RegisterStateExpr( "combo_break", function ()
+        return this_action == virtual_combo and combos[ virtual_combo ]
+    end )
 
-    spec:RegisterStateExpr( "combo_strike", function () return not combos[ this_action ] or this_action ~= virtual_combo end )
+    spec:RegisterStateExpr( "combo_strike", function ()
+        return not combos[ this_action ] or this_action ~= virtual_combo 
+    end )
 
 
     -- If a Tiger Palm missed, pretend we never cast it.
@@ -439,14 +443,15 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     spec:RegisterHook( "reset_precast", function ()
         chiSpent = 0
-        if prev_gcd[1].tiger_palm and ( class.abilities.tiger_palm.lastCast == 0 or combat == 0 or class.abilities.tiger_palm.lastCast < combat - 0.05 ) then
-            prev_gcd.override = "none"
-            prev.override = "none"
+
+        if actual_combo == "tiger_palm" and chi.current < 2 then
+            actual_combo = "none"
         end
 
         if buff.rushing_jade_wind.up then setCooldown( "rushing_jade_wind", 0 ) end
 
         spinning_crane_kick.count = nil
+
         virtual_combo = actual_combo or "no_action"
         reverse_harm_target = nil
     end )
@@ -1244,7 +1249,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             talent = "good_karma",
 
             usable = function ()                
-                return incoming_damage_3s >= health.max * 0.2
+                return incoming_damage_3s >= health.max * 0.2, "incoming damage not sufficient (20% / 3sec) to use"
             end,
 
             handler = function ()
