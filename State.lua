@@ -692,7 +692,7 @@ do
     end
 
     function state.ClearCycle()
-        wipe( cycle )
+        if cycle.aura then wipe( cycle ) end
     end
 
     state.cycleInfo = cycle
