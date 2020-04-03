@@ -666,6 +666,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     -- We have to determine *here* whether the ability would be used on the current target or a different target.
                                     if state.args.cycle_targets == 1 and state.settings.cycle and state.spell_targets[ action ] > 1 then
                                         state.SetupCycle( ability )
+                                    else
+                                        state.ClearCycle()
                                     end
 
                                     local usable, why = state:IsUsable()
@@ -945,6 +947,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         end
                                                     end
                                                 end
+
                                                 state.ClearCycle()
                                             end
                                         end
