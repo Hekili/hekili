@@ -511,15 +511,18 @@ do
                                     text = setting.info.name,
                                     func = function ()
                                         menu.args[1] = setting.name
-                                        setting.info.set( menu.args, not Hekili.DB.profile.specs[ i ].settings[ setting.name ] )
+                                        setting.info.set( menu.args, not setting.info.get( menu.args ) )
 
                                         if Hekili.DB.profile.notifications.enabled then
-                                            Hekili:Notify( setting.info.name .. ": " .. ( Hekili.DB.profile.specs[ i ].settings[ setting.name ] and "ON" or "OFF" ) )
+                                            Hekili:Notify( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and "ON" or "OFF" ) )
                                         else
-                                            self:Print( setting.info.name .. ": " .. ( Hekili.DB.profile.specs[ i ].settings[ setting.name ] and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                            self:Print( setting.info.name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
                                         end
                                     end,
-                                    checked = function () return Hekili.DB.profile.specs[ i ].settings[ setting.name ] end,
+                                    checked = function ()
+                                        menu.args[1] = setting.name
+                                        return setting.info.get( menu.args )
+                                    end,
                                     hidden = function () return Hekili.State.spec.id ~= i end,
                                 } )
                             end

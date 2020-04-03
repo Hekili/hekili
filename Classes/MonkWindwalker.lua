@@ -1365,8 +1365,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
         width = 1.5,
         get = function () return not Hekili.DB.profile.specs[ 269 ].abilities.flying_serpent_kick.disabled end,
         set = function ( _, val )
-            local a = Hekili.DB.profile.specs[ 269 ].abilities
-            Hekili.DB.profile.specs[ 269 ].abilities.flying_serpent_kick.disabled = not val end,
+            Hekili.DB.profile.specs[ 269 ].abilities.flying_serpent_kick.disabled = not val
+        end,
     } ) 
     
     spec:RegisterSetting( "optimize_reverse_harm", false, {
