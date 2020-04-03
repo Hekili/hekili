@@ -444,7 +444,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterHook( "reset_precast", function ()
         chiSpent = 0
 
-        if actual_combo == "tiger_palm" and chi.current < 2 then
+        if actual_combo == "tiger_palm" and chi.current < 2 and now - action.tiger_palm.lastCast > 0.2 then
             actual_combo = "none"
         end
 
