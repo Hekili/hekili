@@ -381,6 +381,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
     end )
 
 
+    local tp_chi_pending = false
+
     -- If a Tiger Palm missed, pretend we never cast it.
     -- Use RegisterEvent since we're looking outside the state table.
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
@@ -402,11 +404,21 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 prev_combo = actual_combo
                 actual_combo = ability
 
+                if ability == "tiger_palm" then
+                    tp_chi_pending = true
+                end
+
             elseif subtype == "SPELL_DAMAGE" and spellID == 148187 then
                 -- track the last tick.
                 state.buff.rushing_jade_wind.last_tick = GetTime()
 
             end
+        end
+    end )
+
+    spec:RegisterEvent( "UNIT_POWER_UPDATE", function( event, unit, power )
+        if unit == "player" and power == "CHI" and state.player.lastcast == "tiger_palm" and GetTime() - state.action.tiger_palm.lastCast < 0.2 then
+            tp_chi_pending = false
         end
     end )
 
@@ -446,6 +458,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         if actual_combo == "tiger_palm" and chi.current < 2 and now - action.tiger_palm.lastCast > 0.2 then
             actual_combo = "none"
+        end
+
+        if tp_chi_pending then
+            gain( 2, "chi" )
         end
 
         if buff.rushing_jade_wind.up then setCooldown( "rushing_jade_wind", 0 ) end
