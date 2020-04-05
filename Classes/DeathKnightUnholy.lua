@@ -541,7 +541,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown.raise_abomination = cooldown.army_of_the_dead
         end
 
-
+        if debuff.outbreak.up and debuff.virulent_plague.down then
+            applyDebuff( "target", "virulent_plague" )
+        end
     end )
 
 
@@ -1085,6 +1087,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 348565,
 
             cycle = 'virulent_plague',
+
+            nodebuff = "outbreak",
 
             handler = function ()
                 applyDebuff( "target", "outbreak" )
