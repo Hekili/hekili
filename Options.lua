@@ -3823,7 +3823,6 @@ do
                     end
                     desc = desc or ability
 
-                    print( type(desc), type(useName), type(section) )
                     return "Remove " .. desc .. " from " .. ( useName or section ) .. " toggle."
                 end
                 e.image = RedX
