@@ -1313,7 +1313,9 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             local ability = class.abilities[ spellID ]
 
             if ability then
-                state:RemoveSpellEvents( ability.key, true, "PROJECTILE_IMPACT" )
+                if state:RemoveSpellEvents( ability.key, true, "PROJECTILE_IMPACT" ) then
+                    Hekili:ForceUpdate( "PROJECTILE_IMPACT", true )
+                end
             end
         end
     end
