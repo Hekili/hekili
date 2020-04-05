@@ -913,8 +913,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             recharge = 40,
             gcd = "spell",
 
-            -- toggle = "cooldowns",
-
             startsCombat = false,
             texture = 609815,
 
