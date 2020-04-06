@@ -65,7 +65,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         barbed_shot_3 = {
             resource = 'focus',
-            aura = 'barbed_shot',
+            aura = 'barbed_shot_3',
 
             last = function ()
                 local app = state.buff.barbed_shot_3.applied
@@ -80,7 +80,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         barbed_shot_4 = {
             resource = 'focus',
-            aura = 'barbed_shot',
+            aura = 'barbed_shot_4',
 
             last = function ()
                 local app = state.buff.barbed_shot_4.applied
@@ -95,7 +95,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         barbed_shot_5 = {
             resource = 'focus',
-            aura = 'barbed_shot',
+            aura = 'barbed_shot_5',
 
             last = function ()
                 local app = state.buff.barbed_shot_5.applied
@@ -110,10 +110,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         barbed_shot_6 = {
             resource = 'focus',
-            aura = 'barbed_shot',
+            aura = 'barbed_shot_6',
 
             last = function ()
-                local app = state.buff.barbed_shot_5.applied
+                local app = state.buff.barbed_shot_6.applied
                 local t = state.query_time
 
                 return app + floor( t - app )
@@ -125,10 +125,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         
         barbed_shot_7 = {
             resource = 'focus',
-            aura = 'barbed_shot',
+            aura = 'barbed_shot_7',
 
             last = function ()
-                local app = state.buff.barbed_shot_5.applied
+                local app = state.buff.barbed_shot_7.applied
                 local t = state.query_time
 
                 return app + floor( t - app )
@@ -140,10 +140,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         
         barbed_shot_8 = {
             resource = 'focus',
-            aura = 'barbed_shot',
+            aura = 'barbed_shot_8',
 
             last = function ()
-                local app = state.buff.barbed_shot_5.applied
+                local app = state.buff.barbed_shot_8.applied
                 local t = state.query_time
 
                 return app + floor( t - app )
