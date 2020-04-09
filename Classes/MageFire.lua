@@ -920,11 +920,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             talent = "rune_of_power",
 
             readyTime = function ()
-                if settings.reserve_runes > 0 and buff.combustion.down then
-                    local cremains = cooldown.combustion.true_remains
-                    local runes_by_then = min( 2, charges_fractional - 1 + ( cremains / action.rune_of_power.recharge ) )
+                local cremains = cooldown.combustion.true_remains
+                local runes_by_then = min( 2, charges_fractional - 1 + ( cremains / action.rune_of_power.recharge ) )
 
-                    return max( 0, action.rune_of_power.recharge * ( settings.reserve_runes - runes_by_then ) )
+                if cremains > 0 and settings.reserve_runes > 0 and buff.combustion.down then
+                    return min( cremains, max( 0, action.rune_of_power.recharge * ( settings.reserve_runes - runes_by_then ) ) )
                 end
             end,
 
