@@ -965,7 +965,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             texture = 1112939,
 
             usable = function ()
-                if settings.check_wake_range and not target.within12 then return false, "target is outside of 12 yards" end
+                if settings.check_wake_range and not ( target.exists and target.within12 ) then return false, "target is outside of 12 yards" end
                 return true
             end,
 
