@@ -919,13 +919,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             nobuff = "rune_of_power",
             talent = "rune_of_power",
 
-            readyTime = function ()
-                local cremains = cooldown.combustion.true_remains
-                local runes_by_then = min( 2, charges_fractional - 1 + ( cremains / action.rune_of_power.recharge ) )
-
-                if cremains > 0 and settings.reserve_runes > 0 and buff.combustion.down then
-                    return min( cremains, max( 0, action.rune_of_power.recharge * ( settings.reserve_runes - runes_by_then ) ) )
+            usable = function ()
+                if settings.save_2_runes then
+                    local combustime = max( variable.time_to_combustion, cooldown.combustion.remains )
+                    if combustime > 0 and ( charges <= 1 or cooldown.combustion.true_remains < action.rune_of_power.recharge ) then return false, "saving rune_of_power charges for combustion" end
                 end
+                return true
             end,
 
             handler = function ()
@@ -1053,14 +1052,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         width = 3
     } )
 
-    spec:RegisterSetting( "reserve_runes", 1, {
+    spec:RegisterSetting( "save_2_runes", true, {
         name = "Reserve |T609815:0|t Rune of Power Charges for Combustion",
-        desc = "While |T609815:0|t Rune of Power is not considered a Cooldown by default, saving charge(s) to line up with |T135824:0|t Combustion is generally a good idea.\n\n" ..
+        desc = "While |T609815:0|t Rune of Power is not considered a Cooldown by default, saving 2 charges to line up with |T135824:0|t Combustion is generally a good idea.\n\n" ..
             "The addon will reserve this many charges to line up with |T135824:0|t Combustion, regardless of whether Cooldowns are toggled on/off.",
-        type = "range",
-        min = 0,
-        max = 1.75,
-        step = 0.01,
+        type = "toggle",
         width = 3
     } )
 
