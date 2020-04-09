@@ -291,6 +291,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             duration = 3600,
             max_stack = 3
         } )
+    
+    spec:RegisterHook( 'spend', function( amt, resource )
+        if amt > 0 and resource == "holy_power" and talent.crusade.enabled and buff.crusade.up then
+            addStack( "crusade", buff.crusade.remains, amt )
+        end
+    end )
 
 
 
