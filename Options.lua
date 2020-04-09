@@ -4539,6 +4539,10 @@ do
         else
             self:LoadScript( pack, packControl.listName, actionID )
         end
+
+        if option == "enabled" then
+            Hekili:UpdateDisplayVisibility()
+        end
     end
 
 
