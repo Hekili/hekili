@@ -1336,7 +1336,6 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 else
                     ns.spendResources( action )
-                    state.history.casts[ action ] = state.query_time
 
                     state:RunHandler( action )
 

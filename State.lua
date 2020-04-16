@@ -4821,27 +4821,29 @@ function state:RunHandler( key, noStart )
     if ability.channeled and ability.start then ability.start()
     elseif ability.handler then ability.handler() end
 
-    state.prev.last = key
-    state[ ability.gcd == 'off' and 'prev_off_gcd' or 'prev_gcd' ].last = key
+    self.prev.last = key
+    self[ ability.gcd == 'off' and 'prev_off_gcd' or 'prev_gcd' ].last = key
 
-    table.insert( state.predictions, 1, key )
-    table.insert( state[ ability.gcd == 'off' and 'predictionsOff' or 'predictionsOn' ], 1, key )
+    table.insert( self.predictions, 1, key )
+    table.insert( self[ ability.gcd == 'off' and 'predictionsOff' or 'predictionsOn' ], 1, key )
 
-    state.predictions[6] = nil
-    state.predictionsOn[6] = nil
-    state.predictionsOff[6] = nil
+    self.history.casts[ key ] = self.query_time
 
-    state.prev.override = nil
-    state.prev_gcd.override = nil
-    state.prev_off_gcd.override = nil
+    self.predictions[6] = nil
+    self.predictionsOn[6] = nil
+    self.predictionsOff[6] = nil
 
-    if state.time == 0 and ability.startsCombat and not noStart then
-        state.false_start = state.query_time - 0.01
+    self.prev.override = nil
+    self.prev_gcd.override = nil
+    self.prev_off_gcd.override = nil
+
+    if self.time == 0 and ability.startsCombat and not noStart then
+        self.false_start = self.query_time - 0.01
 
         -- Assume MH swing at combat start and OH swing half a swing later?
-        if state.target.distance < 8 then
-            if state.swings.mainhand_speed > 0 and state.nextMH == 0 then state.swings.mh_pseudo = state.false_start end
-            if state.swings.offhand_speed > 0 and state.nextOH == 0 then state.swings.oh_pseudo = state.false_start + ( state.offhand_speed / 2 ) end
+        if self.target.distance < 8 then
+            if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = self.false_start end
+            if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = self.false_start + ( self.offhand_speed / 2 ) end
         end
     end
 

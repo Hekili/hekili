@@ -1321,7 +1321,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
 
             startsCombat = true,
-            nobuff = "felstorm",
+            -- nobuff = "felstorm", -- Does not appear to prevent Soul Strike any longer.
 
             usable = function () return pet.exists end,
             handler = function ()
