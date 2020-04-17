@@ -163,6 +163,21 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 elseif spellID == 264130 then
                     if wild_imps[1] then table.remove( wild_imps, 1 ) end
                     if wild_imps[1] then table.remove( wild_imps, 1 ) end
+                    
+                    for i = 1, 2 do
+                        local lowest
+
+                        for id, imp in pairs( imps ) do
+                            if not lowest then lowest = id
+                            elseif imp.expires < imps[ lowest ].expires then
+                                lowest = id
+                            end
+                        end
+
+                        if lowest then
+                            imps[ lowest ] = nil
+                        end
+                    end
 
                 elseif spellID == 105174 then
                     -- Hand of Guldan; queue imps.
@@ -222,10 +237,18 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         wipe( vilefiend_v )
         for n, t in ipairs( vilefiend ) do vilefiend_v[ n ] = t end
 
-
         for id, imp in pairs( imps ) do
             if imp.expires < now then
                 imps[ id ] = nil
+            end
+        end
+
+        i = 1
+        while( wild_imps[ i ] ) do
+            if wild_imps[ i ] < now then
+                table.remove( wild_imps, i )
+            else
+                i = i + 1
             end
         end
 
@@ -1323,7 +1346,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             startsCombat = true,
             -- nobuff = "felstorm", -- Does not appear to prevent Soul Strike any longer.
 
-            usable = function () return pet.exists end,
+            usable = function () return pet.alive end,
             handler = function ()
                 gain( 1, "soul_shards" )
             end,
