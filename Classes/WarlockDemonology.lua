@@ -237,6 +237,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         wipe( vilefiend_v )
         for n, t in ipairs( vilefiend ) do vilefiend_v[ n ] = t end
 
+        
         for id, imp in pairs( imps ) do
             if imp.expires < now then
                 imps[ id ] = nil
@@ -256,7 +257,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         for n, t in pairs( imps ) do table.insert( wild_imps_v, t.expires ) end
         table.sort( wild_imps_v )
 
+        local difference = #wild_imps_v - GetSpellCount( 196277 )
 
+        while difference > 0 do
+            table.remove( wild_imps_v, 1 )
+            difference = difference - 1
+        end
+
+        
         wipe( guldan_v )
         for n, t in ipairs( guldan ) do guldan_v[ n ] = t end
 
