@@ -601,7 +601,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 if action == 'call_action_list' or action == 'run_action_list' or action == 'use_items' then
                                     -- We handle these here to avoid early forking between starkly different APLs.
                                     local aScriptPass = true
-                                    local ts = not strict and not entry.strict == 1 and scripts:IsTimeSensitive( scriptID )
+                                    local ts = not strict and entry.strict ~= 1 and scripts:IsTimeSensitive( scriptID )
 
                                     if not entry.criteria or entry.criteria == "" then
                                         if debug then self:Debug( "There is no criteria for %s.", action == 'use_items' and "Use Items" or "this action list." ) end
