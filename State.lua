@@ -3507,7 +3507,7 @@ do
         return db[ key ]
     end
 
-
+    
     state.variable = setmetatable( {}, {
         __index = function( t, var )
             local debug = Hekili.ActiveDebug
@@ -3523,14 +3523,12 @@ do
 
             state.variable[ var ] = 0
 
-            local varStart = debugprofilestop()
-
             if not db[ var ] then
                 -- if debug then Hekili:Debug( "var[%s] :: no data.\n%s", var, debugstack() ) end
                 return 0
             end
 
-            local data = table_copy( db[ var ] )
+            local data = db[ var ]
             local parent = state.scriptID
 
             -- If we're checking variable with no script loaded, don't bother.
