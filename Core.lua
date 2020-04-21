@@ -265,17 +265,22 @@ local z_PVP = {
 
 
 local listStack = {}    -- listStack for a given index returns the scriptID of its caller (or 0 if called by a display).
+
 local listCache = {}    -- listCache is a table of return values for a given scriptID at various times.
 local listValue = {}    -- listValue shows the cached values from the listCache.
+
+local lcPool = {}
+local lvPool = {}
 
 local Stack = {}
 local Block = {}
 local InUse = {}
 
-local RecycleBin = {}
+local StackPool = {}
+
 
 function Hekili:AddToStack( script, list, parent, run )
-    local entry = table.remove( RecycleBin, 1 ) or {}
+    local entry = table.remove( StackPool ) or {}
 
     entry.script = script
     entry.list   = list
@@ -318,9 +323,9 @@ function Hekili:PopStack()
     -- if self.ActiveDebug then self:Debug( "Removed " .. x.list .. " from stack." ) end
 
     for i = #Block, 1, -1 do
-        if Block[i].parent == x.script then
-            if self.ActiveDebug then self:Debug( "Removed " .. Block[i].list .. " from blocklist as " .. x.list .. " was its parent." ) end
-            table.remove( Block, i )
+        if Block[ i ].parent == x.script then
+            if self.ActiveDebug then self:Debug( "Removed " .. Block[ i ].list .. " from blocklist as " .. x.list .. " was its parent." ) end
+            table.insert( StackPool, table.remove( Block, i ) )
         end
     end
 
@@ -331,24 +336,26 @@ function Hekili:PopStack()
     end
 
     InUse[ x.list ] = nil
+    table.insert( StackPool, x )
 end
 
 
 function Hekili:CheckStack()
     local t = state.query_time
-    local p = self.ActivePack
 
     for i, b in ipairs( Block ) do
-        local cache = listCache[ b.script ] or {}
+        listCache[ b.script ] = listCache[ b.script ] or table.remove( lcPool ) or {}
+        local cache = listCache[ b.script ]
 
-        cache[ t ] = cache[ t ] or scripts:CheckScript( b.script )
+        if cache[ t ] == nil then cache[ t ] = scripts:CheckScript( b.script ) end
 
         if self.ActiveDebug then
-            local values = listValue[ b.script ] or {}
+            listValue[ b.script ] = listValue[ b.script ] or table.remove( lvPool ) or {}
+            local values = listValue[ b.script ]
+
             values[ t ] = values[ t ] or scripts:GetConditionsAndValues( b.script )
             self:Debug( "Blocking list ( %s ) called from ( %s ) would %s at %.2f.", b.list, b.script, cache[ t ] and "BLOCK" or "NOT BLOCK", state.delay )
             self:Debug( values[ t ] )
-            listValue[ b.script ] = values
         end
 
         if cache[ t ] then
@@ -358,21 +365,23 @@ function Hekili:CheckStack()
 
 
     for i, s in ipairs( Stack ) do        
-        local cache = listCache[ s.script ] or {}
+        listCache[ s.script ] = listCache[ s.script ] or table.remove( lcPool ) or {}
+        local cache = listCache[ s.script ]
 
-        cache[ t ] = cache[ t ] or scripts:CheckScript( s.script )
+        if cache[ t ] == nil then cache[ t ] = scripts:CheckScript( s.script ) end
 
         if self.ActiveDebug then
-            local values = listValue[ s.script ] or {}
+            listValue[ s.script ] = listValue[ s.script ] or table.remove( lvPool ) or {}
+            local values = listValue[ s.script ]
+
             values[ t ] = values[ t ] or scripts:GetConditionsAndValues( s.script )
             self:Debug( "List ( %s ) called from ( %s ) would %s at %.2f.", s.list, s.script, cache[ t ] and "PASS" or "FAIL", state.delay )
             self:Debug( values[ t ] )
-            listValue[ s.script ] = values
         end
 
-        listCache[ s.script ] = cache
-
-        if not cache[ t ] then return false end
+        if not cache[ t ] then
+            return false
+        end
     end
 
     return true
@@ -618,11 +627,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                     if aScriptPass then
                                         if action == "use_items" then
-                                            -- self:AddToStack( scriptID, "items", caller, action == "run_action_list" )
-                                            local pAction, pWait = rAction, rWait
+                                            self:AddToStack( scriptID, "items", caller )
                                             rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rDepth, scriptID )
                                             if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NO ACTION", rWait ) end
-                                            -- self:PopStack()
+
+                                            self:PopStack()
                                         else
                                             local name = state.args.list_name
 
@@ -974,6 +983,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
     local scriptID = listStack[ listName ]
     listStack[ listName ] = nil
+
     if listCache[ scriptID ] then wipe( listCache[ scriptID ] ) end
     if listValue[ scriptID ] then wipe( listValue[ scriptID ] ) end
 
@@ -994,8 +1004,8 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     wipe( listStack )    
     wipe( waitBlock )
 
-    for k, v in pairs( listCache ) do wipe( v ) end
-    for k, v in pairs( listValue ) do wipe( v ) end
+    for k, v in pairs( listCache ) do table.insert( lcPool, v ); listCache[ k ] = nil end
+    for k, v in pairs( listValue ) do table.insert( lvPool, v ); listValue[ k ] = nil end
 
     self:ResetSpellCaches()
     state:ResetVariables()
@@ -1268,7 +1278,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 local resources
 
                 for k in orderedPairs( class.resources ) do
-                    resources = ( resources and ( resources .. ", " ) or "" ) .. k .. "[ " .. state[ k ].current .. " / " .. state[ k ].max .. " ]"
+                    resources = ( resources and ( resources .. ", " ) or "" ) .. string.format( "%s[ %.2f / %.2f ]", k, state[ k ].current, state[ k ].max )
                 end
                 self:Debug( 1, "Resources: %s", resources )
                 
