@@ -22,6 +22,9 @@ local GetItemInfo = ns.CachedGetItemInfo
 local trim = string.trim
 
 
+local tcopy = ns.tableCopy
+local tinsert, tremove, twipe = table.insert, table.remove, table.wipe
+
 
 -- checkImports()
 -- Remove any displays or action lists that were unsuccessfully imported.
@@ -280,14 +283,14 @@ local StackPool = {}
 
 
 function Hekili:AddToStack( script, list, parent, run )
-    local entry = table.remove( StackPool ) or {}
+    local entry = tremove( StackPool ) or {}
 
     entry.script = script
     entry.list   = list
     entry.parent = parent
     entry.run    = run
 
-    table.insert( Stack, entry )
+    tinsert( Stack, entry )
 
     if self.ActiveDebug then
         local path = "+"
@@ -310,7 +313,7 @@ end
 
 
 function Hekili:PopStack()
-    local x = table.remove( Stack, #Stack )
+    local x = tremove( Stack, #Stack )
 
     if self.ActiveDebug then
         if x.run then
@@ -325,18 +328,18 @@ function Hekili:PopStack()
     for i = #Block, 1, -1 do
         if Block[ i ].parent == x.script then
             if self.ActiveDebug then self:Debug( "Removed " .. Block[ i ].list .. " from blocklist as " .. x.list .. " was its parent." ) end
-            table.insert( StackPool, table.remove( Block, i ) )
+            tinsert( StackPool, tremove( Block, i ) )
         end
     end
 
     if x.run then
         -- This was called via Run Action List; we have to make sure it DOESN'T PASS until we exit this list.
         if self.ActiveDebug then self:Debug( "Added " .. x.list .. " to blocklist as it was called via RAL." ) end
-        table.insert( Block, x )
+        tinsert( Block, x )
     end
 
     InUse[ x.list ] = nil
-    table.insert( StackPool, x )
+    tinsert( StackPool, x )
 end
 
 
@@ -344,13 +347,13 @@ function Hekili:CheckStack()
     local t = state.query_time
 
     for i, b in ipairs( Block ) do
-        listCache[ b.script ] = listCache[ b.script ] or table.remove( lcPool ) or {}
+        listCache[ b.script ] = listCache[ b.script ] or tremove( lcPool ) or {}
         local cache = listCache[ b.script ]
 
         if cache[ t ] == nil then cache[ t ] = scripts:CheckScript( b.script ) end
 
         if self.ActiveDebug then
-            listValue[ b.script ] = listValue[ b.script ] or table.remove( lvPool ) or {}
+            listValue[ b.script ] = listValue[ b.script ] or tremove( lvPool ) or {}
             local values = listValue[ b.script ]
 
             values[ t ] = values[ t ] or scripts:GetConditionsAndValues( b.script )
@@ -365,13 +368,13 @@ function Hekili:CheckStack()
 
 
     for i, s in ipairs( Stack ) do        
-        listCache[ s.script ] = listCache[ s.script ] or table.remove( lcPool ) or {}
+        listCache[ s.script ] = listCache[ s.script ] or tremove( lcPool ) or {}
         local cache = listCache[ s.script ]
 
         if cache[ t ] == nil then cache[ t ] = scripts:CheckScript( s.script ) end
 
         if self.ActiveDebug then
-            listValue[ s.script ] = listValue[ s.script ] or table.remove( lvPool ) or {}
+            listValue[ s.script ] = listValue[ s.script ] or tremove( lvPool ) or {}
             local values = listValue[ s.script ]
 
             values[ t ] = values[ t ] or scripts:GetConditionsAndValues( s.script )
@@ -469,12 +472,10 @@ do
     end
 
 
-    local table_wipe = table.wipe
-
     function Hekili:ResetSpellCaches()
-        table_wipe( knownCache )
-        table_wipe( reasonCache )
-        table_wipe( disabledCache )
+        twipe( knownCache )
+        twipe( reasonCache )
+        twipe( disabledCache )
     end
 end
 
@@ -984,8 +985,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local scriptID = listStack[ listName ]
     listStack[ listName ] = nil
 
-    if listCache[ scriptID ] then wipe( listCache[ scriptID ] ) end
-    if listValue[ scriptID ] then wipe( listValue[ scriptID ] ) end
+    if listCache[ scriptID ] then twipe( listCache[ scriptID ] ) end
+    if listValue[ scriptID ] then twipe( listValue[ scriptID ] ) end
 
     return rAction, rWait, rDepth
 end
@@ -997,15 +998,15 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     -- This is the entry point for the prediction engine.
     -- Any cache-wiping should happen here.
-    wipe( Stack )
-    wipe( Block )
-    wipe( InUse )
+    twipe( Stack )
+    twipe( Block )
+    twipe( InUse )
 
-    wipe( listStack )    
-    wipe( waitBlock )
+    twipe( listStack )    
+    twipe( waitBlock )
 
-    for k, v in pairs( listCache ) do table.insert( lcPool, v ); listCache[ k ] = nil end
-    for k, v in pairs( listValue ) do table.insert( lvPool, v ); listValue[ k ] = nil end
+    for k, v in pairs( listCache ) do tinsert( lcPool, v ); listCache[ k ] = nil end
+    for k, v in pairs( listValue ) do tinsert( lvPool, v ); listValue[ k ] = nil end
 
     self:ResetSpellCaches()
     state:ResetVariables()
