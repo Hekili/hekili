@@ -573,8 +573,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             id = 108853,
             cast = 0,
             charges = function () return ( talent.flame_on.enabled and 3 or 2 ) end,
-            cooldown = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) end,
-            recharge = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) end,
+            cooldown = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) * haste end,
+            recharge = function () return ( talent.flame_on.enabled and 10 or 12 ) * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) * haste end,
             gcd = "off",
             castableWhileCasting = true,
 
