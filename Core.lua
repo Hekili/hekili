@@ -631,7 +631,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             self:AddToStack( scriptID, "items", caller )
                                             rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, "UseItems", "items", slot, rAction, rWait, rDepth, scriptID )
                                             if debug then self:Debug( "Returned from Use Items; current recommendation is %s (+%.2f).", rAction or "NO ACTION", rWait ) end
-
                                             self:PopStack()
                                         else
                                             local name = state.args.list_name
@@ -698,6 +697,17 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         if readyFirst then
                                             local hasResources = true
 
+                                            for i, v in ipairs( Block ) do
+                                                for key, value in pairs( v ) do
+                                                    self:Debug( "Block[ %d ]: %s, %s", i, key, tostring(value) )
+                                                end
+                                            end
+                                            for i, v in ipairs( Stack ) do
+                                                for key, value in pairs( v ) do
+                                                    self:Debug( "Stack[ %d ]: %s, %s", i, key, tostring(value) )
+                                                end
+                                            end   
+        
                                             if hasResources then
                                                 local aScriptPass = self:CheckStack()
                                                 local channelPass = not state.channeling or self:CheckChannel( action, rWait )
@@ -1010,6 +1020,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     self:ResetSpellCaches()
     state:ResetVariables()
+    scripts:ResetCache()
 
     local display = rawget( self.DB.profile.displays, dispName )
     local pack = rawget( self.DB.profile.packs, packName )
@@ -1191,7 +1202,11 @@ function Hekili:ProcessHooks( dispName, packName )
 
 
         while( event ) do
+            local eStart
+            
             if debug then
+                eStart = debugprofilestop()
+                
                 local resources
 
                 for k in orderedPairs( class.resources ) do
@@ -1250,10 +1265,11 @@ function Hekili:ProcessHooks( dispName, packName )
                 action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
 
                 if not action then
-                    if debug then self:Debug( "Time spent on event #%d PREADVANCE: %.2fms...", n - 1, debugprofilestop() - actualStartTime ) end
+                    if debug then self:Debug( "Time spent on event #%d PREADVANCE: %.2fms...", n, debugprofilestop() - eStart ) end
                     if debug then self:Debug( 1, "No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).\n", n, event.action, event.type, t, state.offset + state.delay ) end
                     
                     state.advance( t )
+                    if debug then self:Debug( "Time spent on event #%d POSTADVANCE: %.2fms...", n, debugprofilestop() - eStart ) end
 
                     event = events[ 1 ]
                     n = n + 1
@@ -1267,7 +1283,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 break
             end
 
-            if debug then self:Debug( "Time spent on event #%d: %.2fms...", n - 1, debugprofilestop() - actualStartTime ) end
+            if debug then self:Debug( "Time spent on event #%d: %.2fms...", n - 1, debugprofilestop() - eStart ) end
         end
 
         if not action then
