@@ -9195,6 +9195,8 @@ do
 
             if result.use_off_gcd then result.use_off_gcd = tonumber( result.use_off_gcd ) end
             if result.use_while_casting then result.use_while_casting = tonumber( result.use_while_casting ) end
+            if result.strict then result.strict = tonumber( result.strict ) end
+            if result.moving then result.enable_moving = true; result.moving = tonumber( result.moving ) end
 
             if result.target_if and not result.criteria then
                 result.criteria = result.target_if
