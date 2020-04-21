@@ -1005,8 +1005,8 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     twipe( listStack )    
     twipe( waitBlock )
 
-    for k, v in pairs( listCache ) do tinsert( lcPool, v ); listCache[ k ] = nil end
-    for k, v in pairs( listValue ) do tinsert( lvPool, v ); listValue[ k ] = nil end
+    for k, v in pairs( listCache ) do tinsert( lcPool, v ); twipe( v ); listCache[ k ] = nil end
+    for k, v in pairs( listValue ) do tinsert( lvPool, v ); twipe( v ); listValue[ k ] = nil end
 
     self:ResetSpellCaches()
     state:ResetVariables()
