@@ -18,6 +18,8 @@ local safeMax = ns.safeMax
 
 local trim = string.trim
 
+local twipe = table.wipe
+
 
 -- Forgive the name, but this should properly replace ! characters with not, accounting for appropriate bracketing.
 -- Why so complex?  Because "! 0 > 1" converted to Lua is "not 0 > 1" which evaluates to "false > 1" -- not the goal.
@@ -1126,52 +1128,77 @@ end
 scripts.ConvertScript = ConvertScript
 
 
-function scripts:CheckScript( scriptID, action, elem )
-    local prev_action = state.this_action
-    if action then state.this_action = action end
+do
+    local cacheTime = 0
+    local cache = {}
 
-    local script = self.DB[ scriptID ]
+    function scripts:CheckScript( scriptID, action, elem )
+        local moment = state.now + state.offset
 
-    if not script then
+        if moment ~= cacheTime then
+            if Hekili.ActiveDebug then Hekili:Debug( "Resetting CheckScript cache as time changed from %.2f to %.2f ( %.2f ).", cacheTime, moment, moment - cacheTime ) end
+            cacheTime = moment
+            twipe( cache )
+        end
+
+        local uniqueID = scriptID .. "-" .. state.query_time
+        if cache[ uniqueID ] ~= nil then return cache[ uniqueID ] end
+
+        local prev_action = state.this_action
+        if action then state.this_action = action end
+
+        local script = self.DB[ scriptID ]
+
+        if not script then
+            state.this_action = prev_action
+            cache[ uniqueID ] = false
+            return false
+        end
+
+        if not elem then
+            if script.Error then
+                state.this_action = prev_action
+                cache[ uniqueID ] = false
+                return false, script.Error
+
+            elseif not script.Conditions then
+                state.this_action = prev_action
+                cache[ uniqueID ] = true
+                return true
+
+            else
+                local success, value = pcall( script.Conditions )
+
+                if success then
+                    state.this_action = prev_action
+                    cache[ uniqueID ] = value
+                    return value
+                end
+            end
+
+        else
+            if not script.Modifiers[ elem ] then
+                state.this_action = prev_action
+                return nil, elem .. " not set."
+
+            else
+                local success, value = pcall( script.Modifiers[ elem ] )
+
+                if success then
+                    state.this_action = prev_action
+                    return value
+                end
+            end
+        end
+
         state.this_action = prev_action
+        cache[ uniqueID ] = false
         return false
     end
 
-    if not elem then
-        if script.Error then
-            state.this_action = prev_action
-            return false, script.Error
-
-        elseif not script.Conditions then
-            state.this_action = prev_action
-            return true
-
-        else
-            local success, value = pcall( script.Conditions )
-
-            if success then
-                state.this_action = prev_action
-                return value
-            end
-        end
-
-    else
-        if not script.Modifiers[ elem ] then
-            state.this_action = prev_action
-            return nil, elem .. " not set."
-
-        else
-            local success, value = pcall( script.Modifiers[ elem ] )
-
-            if success then
-                state.this_action = prev_action
-                return value
-            end
-        end
+    function scripts:ResetCache()
+        twipe( cache )
     end
-
-    state.this_action = prev_action
-    return false
 end
 
 

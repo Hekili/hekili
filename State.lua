@@ -4730,6 +4730,8 @@ do
         
         end
 
+        scripts:ResetCache()
+
         state.this_action = curr_action
         state:RemoveEvent( e )
     end
