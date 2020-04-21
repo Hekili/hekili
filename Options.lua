@@ -5578,7 +5578,7 @@ do
                                     end,
                                     disabled = function()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
-                                        return tonumber( packControl.actionID ) == #p.lists[ packControl.listName ]
+                                        return not p.lists[ packControl.listName ] or tonumber( packControl.actionID ) == #p.lists[ packControl.listName ]
                                     end,
                                     hidden = function () return packControl.makingNew end,
                                 },                                                                                
