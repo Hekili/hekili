@@ -16,10 +16,7 @@ local orderedPairs = ns.orderedPairs
 local round, roundUp, roundDown = ns.round, ns.roundUp, ns.roundDown
 local safeMin, safeMax = ns.safeMin, ns.safeMax
 
-local table_insert = table.insert
-local table_sort = table.sort
-local table_wipe = table.wipe
-local table_copy = ns.tableCopy
+local tcopy = ns.tableCopy
 
 -- Clean up table_x later.
 local insert, remove, sort, unpack, wipe = table.insert, table.remove, table.sort, table.unpack, table.wipe
@@ -486,7 +483,7 @@ state.pairs = pairs
 state.rawget = rawget
 state.rawset = rawset
 state.select = select
-state.table_insert = table.insert
+state.tinsert = table.insert
 state.insert = table.insert
 state.remove = table.remove
 state.tonumber = tonumber
@@ -1141,7 +1138,7 @@ local function forecastResources( resource )
         end
     end
 
-    table_sort( events, resourceModelSort )
+    sort( events, resourceModelSort )
 
     local finish = now + timeout
 
@@ -1214,7 +1211,7 @@ local function forecastResources( resource )
             end
         end
 
-        if #events > 1 then table_sort( events, resourceModelSort ) end
+        if #events > 1 then sort( events, resourceModelSort ) end
     end
 
     if r.regen > 0 and r.forecast[ r.fcount ].v < r.max then
@@ -1317,7 +1314,7 @@ do
 
     function state.recheck( ability, script, stack )
         local times = state.recheckTimes
-        table_wipe( times )
+        wipe( times )
 
         local debug = Hekili.ActiveDebug
 
@@ -1389,7 +1386,7 @@ do
             table.insert( times, remains )
         end
 
-        table_sort( times )
+        sort( times )
     end
 end
 
@@ -3456,19 +3453,30 @@ ns.metatables.mt_totem = mt_totem
 
 do
     local db = {}
+    local cache = {}
     local pathState = {}
 
+    state.varDB = db
+    -- state.varCache = cache
+    state.varPaths = pathState
+
+
+    local entryPool = {}
+
     function state:RegisterVariable( key, scriptID, preconditions, preclusions )
-        local data = db[ key ] or {}
-        db[ key ] = data
+        db[ key ] = db[ key ] or {}
+        local data = db[ key ]
+        
+        cache[ key ] = cache[ key ] or {}
 
         local fullPath = scriptID
 
-        local entry = {
-            id = scriptID,
+        local entry = remove( entryPool ) or {
             mustPass = {},
             mustFail = {}
         }
+
+        entry.id = scriptID
 
         if preconditions then
             for i, prereq in ipairs( preconditions ) do
@@ -3497,11 +3505,19 @@ do
     
     function state:ResetVariables()
         for k, v in pairs( db ) do
-            wipe( v )
+            for i = #v, 1, -1 do
+                local x = remove( v, i )
+                wipe( x.mustPass )
+                wipe( x.mustFail )
+                insert( entryPool, x )
+            end
+            wipe( cache[ k ] )
+            wipe( self.variable )
         end
 
         wipe( pathState )
     end
+
 
     function state:GetVariableIDs( key )
         return db[ key ]
@@ -3511,6 +3527,8 @@ do
     state.variable = setmetatable( {}, {
         __index = function( t, var )
             local debug = Hekili.ActiveDebug
+
+            local now = state.query_time
 
             if class.variables[ var ] then
                 -- We have a hardcoded shortcut.
@@ -3524,7 +3542,6 @@ do
             state.variable[ var ] = 0
 
             if not db[ var ] then
-                -- if debug then Hekili:Debug( "var[%s] :: no data.\n%s", var, debugstack() ) end
                 return 0
             end
 
@@ -3536,15 +3553,12 @@ do
 
             local default = 0
             local value = 0
-            local now = state.query_time
 
             local which_mod = "value"
 
             for i, entry in ipairs( data ) do
                 local scriptID = entry.id
                 local currPath = entry.fullPath .. ":" .. now
-
-                -- if debug then Hekili:Debug(" [%s] - %d of %d (%s) - %s", var, i, #data, currPath, tostring(pathState[ currPath ])) end
 
                 -- Check the requirements/exclusions in the APL stack.
                 if pathState[ currPath ] == nil then
@@ -3554,7 +3568,6 @@ do
                         state.scriptID = prereq
                         if not scripts:CheckScript( prereq ) then
                             pathState[ currPath ] = false
-                            -- if debug then Hekili:Debug( " - path to variable is blocked by prereq %s.", prereq ) end
                             break
                         end
                     end
@@ -3564,103 +3577,104 @@ do
                             state.scriptID = excl
                             if scripts:CheckScript( excl ) then
                                 pathState[ currPath ] = false
-                                -- if debug then Hekili:Debug( " - path to variable not reached due to forbidden %s.", prereq ) end
                                 break
                             end
                         end
                     end
                 end
 
-                if pathState[ currPath ] then
-                    state.scriptID = scriptID
-                    local op = state.args.op or "set"
+                if pathState[ currPath ] then                    
+                    local pathKey = currPath .. "-" .. i
 
-                    -- if debug then Hekili:Debug( 1, "Checking script for %s [%d]", scriptID, invocations ) end
+                    if cache[ var ][ pathKey ] ~= nil then
+                        value = cache[ var ][ pathKey ]
 
-                    local passed = scripts:CheckScript( scriptID )
+                    else
+                        state.scriptID = scriptID
+                        local op = state.args.op or "set"
 
-                    -- if debug then Hekili:Debug( -1, "Check DONE for script %s [%d]", scriptID, invocations ) end
+                        local passed = scripts:CheckScript( scriptID )
 
-                    -- if debug then Hekili:Debug( " - %s, %s, value: %s, value_else: %s, default: %s", op, tostring(passed), tostring(state.args.value), tostring(state.args.value_else), tostring(state.args.default) ) end
+                        --[[    add = "Add Value",
+                                ceil
+                                x default = "Set Default Value",
+                                div = "Divide Value",
+                                floor
+                                max = "Maximum Value",
+                                min = "Minimum Value",
+                                mod = "Modulo Value",
+                                mul = "Multiply Value",
+                                pow = "Raise Value to X Power",
+                                x reset = "Reset to Default",
+                                x set = "Set Value",
+                                x setif = "Set Value If...",
+                                sub = "Subtract Value" ]]
 
-                    --[[    add = "Add Value",
-                            ceil
-                            x default = "Set Default Value",
-                            div = "Divide Value",
-                            floor
-                            max = "Maximum Value",
-                            min = "Minimum Value",
-                            mod = "Modulo Value",
-                            mul = "Multiply Value",
-                            pow = "Raise Value to X Power",
-                            x reset = "Reset to Default",
-                            x set = "Set Value",
-                            x setif = "Set Value If...",
-                            sub = "Subtract Value" ]]
-
-                    if op == "set" or op == "setif" then
-                        if passed then
-                            local v1 = state.args.value
-                            if v1 ~= nil then value = v1
-                            else value = state.args.default end
-                        else
-                            local v2 = state.args.value_else
-                            if v2 ~= nil then
-                                value = v2
-                                which_mod = "value_else"
-                            end
-                        end
-
-                    elseif op == "reset" then
-                        if passed then
-                            local v = state.args.value
-                            if v == nil then v = state.args.default end
-                            if v == nil then v = 0 end
-                            value = v
-                        end
-
-                    elseif passed then
-                        -- Math Ops.
-                        local currType = type( value )
-
-                        if currType == 'number' then
-                            -- Operations on existing value.
-                            if op == "floor" then
-                                value = floor( value )
-                            elseif op == "ceil" then
-                                value = ceil( value )
+                        if op == "set" or op == "setif" then
+                            if passed then
+                                local v1 = state.args.value
+                                if v1 ~= nil then value = v1
+                                else value = state.args.default end
                             else
-                                -- Operations with two values.
-                                local newVal = state.args.value
-                                local valType = type( newVal )
-                                
-                                if valType == 'number' then
-                                    if op == "add" then
-                                        value = value + newVal
-                                    elseif op == "div" then
-                                        if newVal == 0 then value = 0
-                                        else value = value / newVal end
-                                    elseif op == "max" then
-                                        value = max( value, newVal )
-                                    elseif op == "min" then
-                                        value = min( value, newVal )
-                                    elseif op == "mod" then
-                                        if newVal == 0 then value = 0
-                                        else value = value % newVal end
-                                    elseif op == "mul" then
-                                        value = value * newVal
-                                    elseif op == "pow" then
-                                        value = value ^ newVal
-                                    elseif op == "sub" then
-                                        value = value - newVal
+                                local v2 = state.args.value_else
+                                if v2 ~= nil then
+                                    value = v2
+                                    which_mod = "value_else"
+                                end
+                            end
+
+                        elseif op == "reset" then
+                            if passed then
+                                local v = state.args.value
+                                if v == nil then v = state.args.default end
+                                if v == nil then v = 0 end
+                                value = v
+                            end
+
+                        elseif passed then
+                            -- Math Ops.
+                            local currType = type( value )
+
+                            if currType == 'number' then
+                                -- Operations on existing value.
+                                if op == "floor" then
+                                    value = floor( value )
+                                elseif op == "ceil" then
+                                    value = ceil( value )
+                                else
+                                    -- Operations with two values.
+                                    local newVal = state.args.value
+                                    local valType = type( newVal )
+                                    
+                                    if valType == 'number' then
+                                        if op == "add" then
+                                            value = value + newVal
+                                        elseif op == "div" then
+                                            if newVal == 0 then value = 0
+                                            else value = value / newVal end
+                                        elseif op == "max" then
+                                            value = max( value, newVal )
+                                        elseif op == "min" then
+                                            value = min( value, newVal )
+                                        elseif op == "mod" then
+                                            if newVal == 0 then value = 0
+                                            else value = value % newVal end
+                                        elseif op == "mul" then
+                                            value = value * newVal
+                                        elseif op == "pow" then
+                                            value = value ^ newVal
+                                        elseif op == "sub" then
+                                            value = value - newVal
+                                        end
                                     end
                                 end
                             end
                         end
-                    end
 
-                    -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).
-                    state.variable[ var ] = value
+                        -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).                        
+                        state.variable[ var ] = value
+                        cache[ var ][ pathKey ] = value
+                    end
                 end
             end
 
@@ -4865,6 +4879,7 @@ function state.reset( dispName )
     state.resetting = true
 
     state.ClearCycle()
+    state:ResetVariables()    
 
     state.selectionTime = 60
     state.selectedAction = nil
@@ -4915,8 +4930,6 @@ function state.reset( dispName )
         state[ state.purge[ i ] ] = nil
         table.remove( state.purge, i )
     end
-
-    state:ResetVariables()
 
     for k in pairs( state.active_dot ) do
         state.active_dot[ k ] = nil
