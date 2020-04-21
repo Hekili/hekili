@@ -4170,10 +4170,10 @@ local mt_default_action = {
             return state:InFlightRemains( t.action )
 
         elseif k == "executing" then
-            return state:IsCasting( t.action, true ) or ( state.prev[1][ t.action ] and state.gcd.remains > 0 )
+            return state:IsCasting( t.action ) or ( state.prev[ 1 ][ t.action ] and state.gcd.remains > 0 )
 
         elseif k == 'execute_remains' then
-            return ( state:IsCasting( t.action, true ) and max( state:QueuedCastRemains( t.action, true ), state.gcd.remains ) ) or ( state.prev[1][ t.action ] and state.gcd.remains ) or 0
+            return ( state:IsCasting( t.action ) and max( state:QueuedCastRemains( t.action ), state.gcd.remains ) ) or ( state.prev[1][ t.action ] and state.gcd.remains ) or 0
 
         else
             local val = ability[ k ]
