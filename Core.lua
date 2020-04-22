@@ -339,7 +339,6 @@ function Hekili:PopStack()
     end
 
     InUse[ x.list ] = nil
-    tinsert( StackPool, x )
 end
 
 
@@ -367,7 +366,7 @@ function Hekili:CheckStack()
     end
 
 
-    for i, s in ipairs( Stack ) do        
+    for i, s in ipairs( Stack ) do
         listCache[ s.script ] = listCache[ s.script ] or tremove( lcPool ) or {}
         local cache = listCache[ s.script ]
 
@@ -467,7 +466,8 @@ do
     local disabledCache = {}
 
     function Hekili:IsSpellEnabled( spell )
-        disabledCache[ spell ] = disabledCache[ spell ] or ( not state:IsDisabled( spell ) )
+        if disabledCache[ spell ] ~= nil then return disabledCache[ spell ] end
+        disabledCache[ spell ] = not state:IsDisabled( spell )
         return disabledCache[ spell ]
     end
 
