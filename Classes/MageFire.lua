@@ -586,11 +586,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             nobuff = "fire_blasting", -- horrible.
 
-            readyTime = function ()
+            --[[ readyTime = function ()
                 if settings.no_scorch_blast and action.scorch.executing and ( ( talent.searing_touch.enabled and target.health_pct < 30 ) or ( buff.combustion.up and buff.combustion.remains >= buff.casting.remains ) ) then
                     return buff.casting.remains
                 end
-            end,
+            end, ]]
 
             usable = function ()
                 if time == 0 then return false, "no fire_blast out of combat" end
