@@ -417,7 +417,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     end )
 
     spec:RegisterEvent( "UNIT_POWER_UPDATE", function( event, unit, power )
-        if unit == "player" and power == "CHI" and state.player.lastcast == "tiger_palm" and GetTime() - state.action.tiger_palm.lastCast < 0.2 then
+        if unit == "player" and power == "CHI" then
             tp_chi_pending = false
         end
     end )
@@ -461,6 +461,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         end
 
         if tp_chi_pending then
+            if Hekili.ActiveDebug then Hekili:Debug( "Generating 2 additional Chi as Tiger Palm was cast but Chi did not appear to be gained yet." ) end
             gain( 2, "chi" )
         end
 
