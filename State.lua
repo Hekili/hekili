@@ -4882,6 +4882,7 @@ function state.reset( dispName )
 
     state.ClearCycle()
     state:ResetVariables()    
+    scripts:ResetCache()
 
     state.selectionTime = 60
     state.selectedAction = nil
