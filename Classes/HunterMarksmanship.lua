@@ -273,6 +273,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 removeBuff( "steady_focus" )
                 removeBuff( "lethal_shots" )
                 removeBuff( "double_tap" )
+                removeBuff( "trick_shots" )
             end,
         },
 
