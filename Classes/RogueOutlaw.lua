@@ -1053,7 +1053,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 132331,
 
-            usable = function () return boss and group end,
+            disabled = function ()
+                return not ( boss and group )
+            end,
 
             handler = function ()
                 applyBuff( 'vanish', 3 )
