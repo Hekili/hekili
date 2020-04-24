@@ -1958,7 +1958,7 @@ all:RegisterAbilities( {
             if not pName or pName == "default" then pName = class.potion end
 
             local potion = class.potions[ pName ]            
-            if not potion or GetItemCount( potion.item ) == 0 then return false end
+            if not potion or GetItemCount( potion.item ) == 0 then return false, "no potion found" end
 
             return true
         end,
@@ -2618,7 +2618,7 @@ do
         toggle = "cooldowns",
 
         usable = function ()
-            return equipped.cyclotronic_blast
+            return equipped.cyclotronic_blast, "punchcard not equipped"
         end,
 
         handler = function()
@@ -2653,7 +2653,7 @@ do
         startsCombat = true,
 
         usable = function ()
-            return equipped.harmonic_dematerializer
+            return equipped.harmonic_dematerializer, "punchcard not equipped"
         end,
 
         handler = function ()
