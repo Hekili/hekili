@@ -655,7 +655,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 538558,
 
+            toggle = "interrupts",
+
             talent = "asphyxiate",
+
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,            
 
             handler = function ()
                 applyDebuff( "target", "asphyxiate" )

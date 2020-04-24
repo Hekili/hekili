@@ -526,7 +526,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 538558,
 
+            toggle = "interrupts",
+
             talent = "asphyxiate",
+
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,            
 
             handler = function ()
                 applyDebuff( "target", "asphyxiate" )
@@ -629,7 +634,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 237273,
 
-            usable = function () return target.is_undead and target.level <= level + 1 end,
+            usable = function () return target.is_undead and target.level <= level + 1, "requires undead target up to 1 level above player" end,
             handler = function ()
                 summonPet( "controlled_undead", 300 )
             end,
@@ -778,8 +783,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = false,
             texture = 135372,
 
-            usable = function () return not buff.empower_rune_weapon.up end,
-            readyTime = function () return buff.empower_rune_weapon.remains end,
+            nobuff = "empower_rune_weapon",
+
             handler = function ()
                 stat.haste = state.haste + 0.15
                 gain( 1, "runes" )

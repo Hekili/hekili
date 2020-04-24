@@ -549,8 +549,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             toggle = "interrupts",
 
-            usable = function () return target.casting end,
-            readyTime = function () return debuff.casting.up and ( debuff.casting.remains - 0.5 ) or 3600 end,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,            
+
             handler = function ()
                 interrupt()
                 applyDebuff( "target", "asphyxiate" )
@@ -740,6 +741,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if not target.is_player then return false, "target is not a player" end
                 return true
             end,
+            
             handler = function ()
                 applyDebuff( "target", "dark_simulacrum" )
             end,
