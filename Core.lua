@@ -1334,6 +1334,8 @@ function Hekili:ProcessHooks( dispName, packName )
 
             if i < display.numIcons then
                 -- Advance through the wait time.
+                state.this_action = action
+
                 if state.delay > 0 then state.advance( state.delay ) end
 
                 state.cycle = slot.indicator == 'cycle'
