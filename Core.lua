@@ -596,7 +596,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         if script.Error then
                             if debug then self:Debug( "The conditions for this entry contain an error.  Skipping.\n" ) end
                         elseif wait_time > state.delayMax then
-                            if debug then self:Debug( "The action is not ready before our maximum delay window (%.2f) for this query.\n", state.delayMax ) end
+                            if debug then self:Debug( "The action is not ready ( %.2f ) before our maximum delay window ( %.2f ) for this query.\n", wait_time, state.delayMax ) end
                         elseif ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
                             if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.\n", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
                         else
@@ -1287,7 +1287,11 @@ function Hekili:ProcessHooks( dispName, packName )
         end
 
         if not action then
-            state:SetConstraint( 0, 15 )
+            if class.file == "DEATHKNIGHT" then
+                state:SetConstraint( 0, max( state.rune.cooldown * 2, 15 ) )
+            else
+                state:SetConstraint( 0, 15 )
+            end
 
             if hadProj and debug then self:Debug( "[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end
 
