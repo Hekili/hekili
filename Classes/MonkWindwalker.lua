@@ -404,9 +404,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 prev_combo = actual_combo
                 actual_combo = ability
 
-                if ability == "tiger_palm" then
+                --[[ if ability == "tiger_palm" then
                     tp_chi_pending = true
-                end
+                end ]]
 
             elseif subtype == "SPELL_DAMAGE" and spellID == 148187 then
                 -- track the last tick.
@@ -416,11 +416,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
         end
     end )
 
-    spec:RegisterEvent( "UNIT_POWER_UPDATE", function( event, unit, power )
+    --[[ spec:RegisterEvent( "UNIT_POWER_UPDATE", function( event, unit, power )
         if unit == "player" and power == "CHI" then
             tp_chi_pending = false
         end
-    end )
+    end ) ]]
 
 
     spec:RegisterHook( "runHandler", function( key, noStart )
@@ -460,10 +460,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
             actual_combo = "none"
         end
 
-        if tp_chi_pending then
+        --[[ if tp_chi_pending then
             if Hekili.ActiveDebug then Hekili:Debug( "Generating 2 additional Chi as Tiger Palm was cast but Chi did not appear to be gained yet." ) end
             gain( 2, "chi" )
-        end
+        end ]]
 
         if buff.rushing_jade_wind.up then setCooldown( "rushing_jade_wind", 0 ) end
 
