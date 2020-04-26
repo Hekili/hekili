@@ -41,6 +41,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         fcount = 0,
         times = {},
         values = {},
+        resource = "runes",
 
         reset = function()
             local t = state.runes

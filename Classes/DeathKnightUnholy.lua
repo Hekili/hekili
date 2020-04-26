@@ -43,6 +43,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         fcount = 0,
         times = {},
         values = {},
+        resource = "runes",
 
         reset = function()
             local t = state.runes
@@ -138,10 +139,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 return t.current == 6 and 0 or max( 0, t.expiry[6] - state.query_time )
 
             else
-                local amount = k:match( "time_to_(%d+)" )
+                local amount = k:sub(9)
                 amount = amount and tonumber( amount )
 
-                if amount then return state:TimeToResource( t, amount ) end
+
+                if amount then 
+                    return state:TimeToResource( t, amount ) 
+                end
+                return 3600
             end
         end
     } ) )
@@ -277,8 +282,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             meta = {
                 stack = function ()
                     -- Designed to work with Unholy Frenzy, time until 4th Festering Wound would be applied.
-                    local actual = debuff.festering_wound.count
-                    if buff.unholy_frenzy.down then return actual end
+                    local actual = debuff.festering_wound.up and debuff.festering_wound.count or 0
+                    if buff.unholy_frenzy.down or debuff.festering_wound.down then 
+                        return actual
+                    end
 
                     local slot_time = query_time
                     local swing, speed = state.swings.mainhand, state.swings.mainhand_speed
