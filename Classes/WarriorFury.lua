@@ -132,28 +132,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     } )
 
 
-    local rageSpent = 0
-
-    spec:RegisterHook( "spend", function( amt, resource )
-        if talent.recklessness.enabled and resource == "rage" then
-            rageSpent = rageSpent + amt
-            cooldown.recklessness.expires = cooldown.recklessness.expires - floor( rageSpent / 20 )
-            rageSpent = rageSpent % 20
-        end
-    end )
-
-    spec:RegisterHook( "reset_precast", function ()
-        rageSpent = 0
-        if buff.bladestorm.up then
-            setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) )
-            if buff.gathering_storm.up then
-                applyBuff( "gathering_storm", buff.bladestorm.remains + 6, 5 )
-            end
-        end
-
-    end )
-
-
     -- Auras
     spec:RegisterAuras( {
         battle_shout = {
@@ -357,6 +335,67 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     end
 
     state.IsActiveSpell = IsActiveSpell
+
+    local whirlwind_consumers = {
+        bloodthirst = 1,
+        execute = 1,
+        furious_slash = 1,
+        impending_victory = 1,
+        raging_blow = 1,
+        rampage = 1,
+        siegebreaker = 1,
+        storm_bolt = 1,
+        victory_rush = 1
+    }
+
+    local whirlwind_gained = 0
+    local whirlwind_stacks = 0
+
+    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
+        local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+
+        if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" then
+            local ability = class.abilities[ spellID ]
+
+            if ability and ability.key == "whirlwind" then
+                whirlwind_gained = GetTime()
+                whirlwind_stacks = 2
+            
+            elseif whirlwind_consumers[ ability.key ] and whirlwind_stacks > 0 then
+                whirlwind_stacks = whirlwind_stacks - 1
+
+            end
+        end
+    end )
+
+
+    local rageSpent = 0
+
+    spec:RegisterHook( "spend", function( amt, resource )
+        if talent.recklessness.enabled and resource == "rage" then
+            rageSpent = rageSpent + amt
+            cooldown.recklessness.expires = cooldown.recklessness.expires - floor( rageSpent / 20 )
+            rageSpent = rageSpent % 20
+        end
+    end )
+
+
+    spec:RegisterHook( "reset_precast", function ()
+        rageSpent = 0
+        if buff.bladestorm.up then
+            setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) )
+            if buff.gathering_storm.up then
+                applyBuff( "gathering_storm", buff.bladestorm.remains + 6, 5 )
+            end
+        end
+
+        if buff.whirlwind.up then
+            if whirlwind_stacks == 0 then removeBuff( "whirlwind" )
+            elseif whirlwind_stacks < buff.whirlwind.stack then
+                applyBuff( "whirlwind", buff.whirlwind.remains, whirlwind_stacks )
+            end
+        end
+    end )    
 
 
     -- Abilities
@@ -732,7 +771,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     if buff.frothing_berserker.down then stat.haste = stat.haste + 0.05 end
                     applyBuff( "frothing_berserker" )
                 end
-                removeStack( "whirlwind" )
+                removeStack( "whirlwind" )  
             end,
         },
 
