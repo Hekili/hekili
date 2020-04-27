@@ -357,7 +357,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" then
             local ability = class.abilities[ spellID ]
 
-            if ability and ability.key == "whirlwind" then
+            if not ability then return end
+
+            if ability.key == "whirlwind" then
                 whirlwind_gained = GetTime()
                 whirlwind_stacks = 2
             
