@@ -94,6 +94,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             t.actual = nil
         end,
+
+        timeTo = function( x )
+            return state:TimeToResource( state.runes, x )
+        end,
     }, {
         __index = function( t, k, v )
             if k == 'actual' then
