@@ -80,7 +80,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             local t = state.runes
 
             for i = 1, amount do
-                t.expiry[ 1 ] = ( t.expiry[ 4 ] > 0 and t.expiry[ 4 ] or state.query_time ) + t.cooldown
+                if t.expiry[ 4 ] > state.query_time then
+                    t.expiry[ 1 ] = t.expiry[ 4 ] + t.cooldown
+                else
+                    t.expiry[ 1 ] = state.query_time + t.cooldown
+                end
                 table.sort( t.expiry )
             end
 
@@ -104,7 +108,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 local amount = 0
 
                 for i = 1, 6 do
-                    amount = amount + ( t.expiry[ i ] <= state.query_time and 1 or 0 )
+                    if t.expiry[ i ] <= state.query_time then
+                        amount = amount + 1
+                    end
                 end
 
                 return amount
@@ -146,10 +152,12 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 local amount = k:sub(9)
                 amount = amount and tonumber( amount )
 
-
                 if amount then 
                     return state:TimeToResource( t, amount ) 
+                else
+                    if Hekili.ActiveDebug then Hekili:Debug( "runes %s %d\n%s", k, amount or -1, debugstack() ) end
                 end
+
                 return 3600
             end
         end

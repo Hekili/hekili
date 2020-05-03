@@ -1288,7 +1288,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
         if not action then
             if class.file == "DEATHKNIGHT" then
-                state:SetConstraint( 0, max( state.rune.cooldown * 2, 15 ) )
+                state:SetConstraint( 0, max( 0.01 + state.rune.cooldown * 2, 15 ) )
             else
                 state:SetConstraint( 0, 15 )
             end

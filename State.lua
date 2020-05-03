@@ -1090,11 +1090,11 @@ local function forecastResources( resource )
     wipe( events )
     wipe( remains )
 
-    local now = roundDown( state.now + state.offset, 2 )
+    local now = state.now + state.offset -- roundDown( state.now + state.offset, 2 )
 
-    local timeout = roundDown( FORECAST_DURATION * state.haste, 2 )
+    local timeout = FORECAST_DURATION * state.haste -- roundDown( FORECAST_DURATION * state.haste, 2 )
     if state.class.file == "DEATHKNIGHT" and state.runes then
-        timeout = max( timeout, 1 + state.runes.cooldown )
+        timeout = max( timeout, 0.01 + 2 * state.runes.cooldown )
     end       
 
     local r = state[ resource ]
@@ -1126,7 +1126,8 @@ local function forecastResources( resource )
                 local r = state[ v.resource ]
 
                 local l = v.last()
-                local i = roundDown( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ), 2 )
+                local i = type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) )
+                -- local i = roundDown( type( v.interval ) == 'number' and v.interval or ( type( v.interval ) == 'function' and v.interval( now, r.actual ) or ( type( v.interval ) == 'string' and state[ v.interval ] or 0 ) ), 2 )
 
                 v.next = l + i
                 v.name = k
@@ -5779,6 +5780,8 @@ local debug_actions = {
     -- rune_of_power = true,
     -- fire_blast = true,
     -- skull_bash = true,
+    -- festering_strike = true,
+    -- scourge_strike = true
 }
 
 
@@ -5855,10 +5858,10 @@ function state:TimeToReady( action, pool )
     if spend and resource and spend > self[ resource ].current then
         wait = max( wait, self[ resource ][ 'time_to_' .. spend ] or 0 )        
         wait = ceil( wait * 100 ) / 100 -- round to the hundredth.
-        if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 10, wait ) end
+        if debug_actions[ action ] then Hekili:Debug( "%d wait ( %s.current = %.2f, time_to ( %.2f ) = %.2f ) %.2f", 10, resource, self[ resource ].current, spend, self[ resource ][ 'time_to_' .. spend ] or 0, wait ) end
     end
 
-    if debug_actions[ action ] then Hekili:Debug( "%d %s prewait %.2f", 11, ability.nobuff, wait ) end
+    if debug_actions[ action ] then Hekili:Debug( "%d %s prewait %.2f", 11, ability.nobuff or "n/a", wait ) end
     if ability.nobuff and self.buff[ ability.nobuff ].up then
         wait = max( wait, self.buff[ ability.nobuff ].remains )
         if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 11, wait ) end
