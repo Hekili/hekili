@@ -103,7 +103,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 local amount = 0
 
                 for i = 1, 6 do
-                    amount = amount + ( t.expiry[ i ] <= state.query_time and 1 or 0 )
+                    if t.expiry[ i ] <= state.query_time then
+                        amount = amount + 1
+                    end
                 end
 
                 return amount
@@ -140,6 +142,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             elseif k == 'time_to_max' then
                 return t.current == 6 and 0 or max( 0, t.expiry[6] - state.query_time )
+
+            elseif k == 'add' then
+                return t.gain
 
             else
                 local amount = k:match( "time_to_(%d+)" )
