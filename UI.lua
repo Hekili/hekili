@@ -134,7 +134,7 @@ end
 
 
 function ns.StartConfiguration( external )
-    if Hekili.NewSpellInfo then Hekili:EmbedAbilityOptions() end
+    if Hekili.NewSpellInfo then Hekili:EmbedAbilityOptions(); Hekili:EmbedSpecOptions() end
     if Hekili.NewItemInfo  then Hekili:EmbedItemOptions()    end
 
     Hekili.Config = true
@@ -577,7 +577,6 @@ do
         PLAYER_REGEN_ENABLED = 1,
         PLAYER_REGEN_DISABLED = 1,
 
-        PLAYER_SPECIALIZATION_CHANGED = 1,
         ACTIVE_TALENT_GROUP_CHANGED = 1,
 
         ZONE_CHANGED = 1,
@@ -674,12 +673,12 @@ do
     local pulseRange = TOOLTIP_UPDATE_TIME
     local pulseFlash = 0.5
 
-    local oocRefresh = 0.5
+    local oocRefresh = 1
     local icRefresh = {
-        Primary = 0.25,
-        AOE = 0.25,
-        Interrupts = 0.5,
-        Defensives = 0.67
+        Primary = 0.5,
+        AOE = 0.5,
+        Interrupts = 1,
+        Defensives = 1
     }
 
     local LRC = LibStub("LibRangeCheck-2.0")
@@ -828,6 +827,7 @@ do
                 self.criticalUpdate = false
                 self.superUpdate = false
                 self.refreshTimer = refreshRate
+                table.wipe( self.eventsTriggered )
             end
         end
 
@@ -1400,6 +1400,65 @@ do
         return left, right, top, bottom
     end
 
+    function Display_UpdatePerformance( self, now, used )
+        if self.combatTime.samples == 0 then
+            self.combatTime.fastest = used
+            self.combatTime.slowest = used
+            self.combatTime.average = used
+
+            self.combatTime.samples = 1
+        else
+            if used < self.combatTime.fastest then self.combatTime.fastest = used end
+            if used > self.combatTime.slowest then self.combatTime.slowest = used end
+
+            self.combatTime.average = ( ( self.combatTime.average * self.combatTime.samples ) + used ) / ( self.combatTime.samples + 1 )
+            self.combatTime.samples = self.combatTime.samples + 1
+        end
+
+        if self.combatUpdates.samples == 0 then
+            if self.combatUpdates.last == 0 then
+                self.combatUpdates.last = now
+            else
+                local interval = now - self.combatUpdates.last
+                self.combatUpdates.last = now
+
+                self.combatUpdates.shortest = interval
+                self.combatUpdates.longest = interval
+                self.combatUpdates.average = interval
+
+                self.combatUpdates.samples = 1
+            end
+        else
+            local interval = now - self.combatUpdates.last
+            self.combatUpdates.last = now
+            
+            if interval < self.combatUpdates.shortest then
+                self.combatUpdates.shortest = interval
+                self.combatUpdates.shortEvents = nil
+                
+                local e = 0
+                for k in pairs( self.eventsTriggered ) do
+                    if e == 0 then self.combatUpdates.shortEvents = k; e = 1
+                    else self.combatUpdates.shortEvents = self.combatUpdates.shortEvents .. "|" .. k end
+                end
+            end
+
+            if interval > self.combatUpdates.longest  then
+                self.combatUpdates.longest = interval
+                self.combatUpdates.longEvents = nil
+                
+                local e = 0
+                for k in pairs( self.eventsTriggered ) do
+                    if e == 0 then self.combatUpdates.longEvents = k; e = 1
+                    else self.combatUpdates.longEvents = self.combatUpdates.longEvents .. "|" .. k end
+                end
+            end
+
+            self.combatUpdates.average = ( ( self.combatUpdates.average * self.combatUpdates.samples ) + interval ) / ( self.combatUpdates.samples + 1 )
+            self.combatUpdates.samples = self.combatUpdates.samples + 1
+        end
+    end
+
 
     local numDisplays = 0
 
@@ -1435,6 +1494,9 @@ do
         d.Activate = Display_Activate
         d.Deactivate = Display_Deactivate
         d.GetPerimeterButtons = Display_GetPerimeterButtons
+        
+        d.UpdatePerformance = Display_UpdatePerformance
+        
         d.RefreshCooldowns = Display_RefreshCooldowns
         d.UpdateAlpha = Display_UpdateAlpha
         d.UpdateKeybindings = Display_UpdateKeybindings
@@ -1459,6 +1521,29 @@ do
                 MasqueGroup:AddButton( d.Buttons[i], { Icon = d.Buttons[ i ].Texture, Cooldown = d.Buttons[ i ].Cooldown } )
             end
         end
+
+        -- Performance Information
+        -- Time Spent
+        d.combatTime = {
+            fastest = 0,
+            slowest = 0,
+            average = 0,
+
+            samples = 0
+        }
+
+        -- Time Between Updates
+        d.combatUpdates = {
+            last = 0,
+            
+            longest = 0,
+            shortest = 0,
+            average = 0,
+
+            samples = 0,
+        }
+
+        d.eventsTriggered = {}
     end
     
     
@@ -1639,6 +1724,7 @@ do
             d.criticalUpdate = true
             if super then d.superUpdate = true end
             if d.firstForce == 0 then d.firstForce = GetTime() end
+            if event then d.eventsTriggered[ event ] = true end
         end
     end    
 

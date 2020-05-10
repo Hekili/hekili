@@ -157,7 +157,7 @@ function Hekili:OnInitialize()
     self:RunOneTimeFixes()
     checkImports()
 
-    self:RefreshOptions()
+    -- self:RefreshOptions()
 
     ns.updateTalents()
 
@@ -664,8 +664,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     local name = state.args.var_name
 
                                     if name ~= nil then
-                                        if debug then self:Debug( " - variable.%s will check this script entry (%s).", name, scriptID ) end                                    
                                         state:RegisterVariable( name, scriptID, Stack, Block )
+                                        if debug then self:Debug( " - variable.%s will check this script entry ( %s ).", name, scriptID ) end
                                     else
                                         if debug then self:Debug( " - variable name not provided, skipping." ) end
                                     end
@@ -697,16 +697,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         if readyFirst then
                                             local hasResources = true
 
-                                            for i, v in ipairs( Block ) do
-                                                for key, value in pairs( v ) do
-                                                    self:Debug( "Block[ %d ]: %s, %s", i, key, tostring(value) )
-                                                end
-                                            end
-                                            for i, v in ipairs( Stack ) do
-                                                for key, value in pairs( v ) do
-                                                    self:Debug( "Stack[ %d ]: %s, %s", i, key, tostring(value) )
-                                                end
-                                            end   
         
                                             if hasResources then
                                                 local aScriptPass = self:CheckStack()
@@ -1317,6 +1307,12 @@ function Hekili:ProcessHooks( dispName, packName )
         -- if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs (%.2fs).\n", action or "NO ACTION", wait or 60, state.offset + state.delay ) end
         if debug then self:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay ) end
 
+        if not debug and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and Hekili.DB.profile.autoSnapshot then
+            Hekili:MakeSnapshot( dispName )
+            Hekili.HasSnapped = true
+            return
+        end
+
         if action then
             if debug then scripts:ImplantDebugData( slot ) end
 
@@ -1404,14 +1400,17 @@ function Hekili:ProcessHooks( dispName, packName )
                 checkstr = checkstr and ( checkstr .. ':' .. action ) or action
                 slot[n] = nil
             end
-            -- if i == 1 and not self.ActiveDebug then self:TogglePause() end -- use for disappearing display debugging.
             break
         end
 
     end
 
     if debug then
-        self:Debug( "Time spent generating recommendations:  %.3fms",  debugprofilestop() - actualStartTime )
+        self:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )
+    elseif InCombatLockdown() then
+        -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
+        -- We don't track out of combat because who cares?
+        UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime )
     end
 
     UI.NewRecommendations = true

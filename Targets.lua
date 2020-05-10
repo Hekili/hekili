@@ -707,11 +707,11 @@ do
     end
 
     function Hekili:GetTimeToPctByGUID( guid, percent )
-        local default = 0.7 * FOREVER
-
         if percent >= 1 then
             percent = percent / 100
         end
+
+        local default = percent * FOREVER
 
         if not guid then return default end
 

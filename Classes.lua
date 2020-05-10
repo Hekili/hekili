@@ -2432,10 +2432,17 @@ do
 
         local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
-        if sourceGUID == state.GUID and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) and spellID == 303568 then
-            coralGUID = destGUID
-            coralApplied = GetTime()
-            coralStacks = ( subtype == "SPELL_AURA_APPLIED_DOSE" ) and ( coralStacks + 1 ) or 1
+        if sourceGUID == state.GUID and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
+            if spellID == 303568 then
+                coralGUID = destGUID
+                coralApplied = GetTime()
+                coralStacks = ( subtype == "SPELL_AURA_APPLIED_DOSE" ) and ( coralStacks + 1 ) or 1
+            elseif spellID == 303570 then
+                -- Coral was removed.
+                coralGUID = 0
+                coralApplied = 0
+                coralStacks = 0
+            end
         end
     end )
 
@@ -2469,7 +2476,7 @@ do
 
                     return
 
-                elseif state.active_dot.razor_coral > 0 then
+                elseif coralGUID > 0 then
                     t.name = class.auras.razor_coral.name
                     t.count = coralStacks > 0 and coralStacks or 1
                     t.applied = coralApplied > 0 and coralApplied or state.query_time

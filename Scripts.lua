@@ -1021,7 +1021,12 @@ local function ConvertScript( node, hasModifiers, header )
         local pass, val = pcall( sf )
         if not pass then e = val end
     end ]]
-    if e then e = e:match( ":(%d+: .*)" ) end
+
+    if sf and not e then
+        local success, msg = pcall( sf )
+        if not success then e = msg end
+    end
+    if e then e = e:match( ":(%d+: .*)" ) or e end
 
     local se = clean and GetScriptElements( clean )
 
@@ -1191,7 +1196,8 @@ do
                 return true
 
             else
-                local success, value = pcall( script.Conditions )
+                -- local success, value = pcall( script.Conditions )
+                local success, value = true, script.Conditions()
 
                 if success then
                     state.this_action = prev_action

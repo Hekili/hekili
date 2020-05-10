@@ -527,6 +527,7 @@ function Hekili:GetDefaults()
         profile = {
             enabled = true,
             minimapIcon = false,
+            autoSnapshot = true,
 
             toggles = {
                 pause = {
@@ -760,14 +761,6 @@ function Hekili:GetDefaults()
     }
 
     return defaults
-end
-
-
--- Instead of repetitive nested tables, moving config categories to the main panel and having you pick which spec you're modifying at a given time.
-local optionSpec = "current"
-
-local function GetContext( info )
-
 end
 
 
@@ -3722,7 +3715,6 @@ do
             db[ key ] = {}
             return db[ key ]
         end
-    
 
         if db then
             for k, v in pairs( db ) do
@@ -3750,13 +3742,11 @@ do
             end
         end
 
-
         e = tlEntry( section .. "Spacer" )
         e.type = "description"
         e.name = ""
         e.order = nToggles
         e.width = "full"
-
 
         e = tlEntry( section .. "Expander" )
         e.type = "execute"
@@ -7677,7 +7667,7 @@ function Hekili:GetOptions()
                         width = "full",
                         get = function() return "http://github.com/Hekili/hekili/issues" end,
                         set = function() return end,
-                    }
+                    },
                 }
             },
 
@@ -7685,12 +7675,44 @@ function Hekili:GetOptions()
                 type = "group",
                 name = "Snapshots",
                 order = 86,
-                args = {                    
+                args = {
+                    autoSnapshot = {
+                        type = "toggle",
+                        name = "Automatically Snapshot When Unable to Make a Recommendation",
+                        desc = "If checked, the addon will automatically create a snapshot whenever it failed to generate a recommendation.\n\n" ..
+                            "This automatic snapshot can only occur once per episode of combat.",
+                        order = 1,
+                        width = "full"
+                    },
+
+                    prefHeader = {
+                        type = "header",
+                        name = "Snapshots / Troubleshooting",
+                        order = 2,
+                        width = "full"
+                    },
+
+                    header = {
+                        type = "description",
+                        name = function()
+                            return "Snapshots are logs of the addon's decision-making process for a set of recommendations.  If you have questions about -- or disagree with -- the addon's recommendations, " ..
+                            "reviewing a snapshot can help identify what factors led to the specific recommendations that you saw.\n\n" ..                            
+                            "Snapshots only capture a specific point in time, so snapshots have to be taken at the time you saw the specific recommendations that you are concerned about.  You can generate " ..
+                            "snapshots by using the |cffffd100Snapshot|r binding ( |cffffd100" .. ( Hekili.DB.profile.toggles.snapshot.key or "NOT BOUND" ) .. "|r ) from the Toggles section.\n\n" ..
+                            "You can also freeze the addon's recommendations using the |cffffd100Pause|r binding ( |cffffd100" .. ( Hekili.DB.profile.toggles.pause.key or "NOT BOUND" ) .. "|r ).  Doing so will freeze the addon's recommendations, allowing you to mouseover the display " ..
+                            "and see which conditions were met to display those recommendations.  Press Pause again to unfreeze the addon.\n\n" ..
+                            "Finally, using the settings at the bottom of this panel, you can ask the addon to automatically generate a snapshot for you when no recommendations were able to be made.\n"
+                        end,
+                        fontSize = "medium",
+                        order = 10,
+                        width = "full",
+                    },
+
                     Display = {
                         type = "select",
                         name = "Display",
                         desc = "Select the display to show (if any snapshots have been taken).",
-                        order = 1,
+                        order = 11,
                         values = function( info )
                             local displays = snapshots.displays
 
@@ -7706,19 +7728,20 @@ function Hekili:GetOptions()
                         get = function( info )
                             return snapshots.display
                         end,
-                        width = "double"
+                        width = 2.6
                     },
+
                     SnapID = {
                         type = "select",
-                        name = "Snapshot",
-                        desc = "Select the display to show (if any snapshots have been taken).",
-                        order = 2,
+                        name = "#",
+                        desc = "Select which snapshot to show for the selected display.",
+                        order = 12,
                         values = function( info )
                             for k, v in pairs( ns.snapshots ) do
-                                snapshots.snaps[k] = snapshots.snaps[k] or {}
+                                snapshots.snaps[ k ] = snapshots.snaps[ k ] or {}
 
                                 for idx in pairs( v ) do
-                                    snapshots.snaps[k][idx] = idx
+                                    snapshots.snaps[ k ][ idx ] = idx
                                 end
                             end
 
@@ -7729,23 +7752,24 @@ function Hekili:GetOptions()
                         end,
                         get = function( info )
                             return snapshots.snap[ snapshots.display ]
-                        end
+                        end,
+                        width = 0.7
                     },
+                    
                     Snapshot = {
                         type = 'input',
-                        name = "Log",
-                        desc = "Any available debug information is available here.",
-                        order = 3,
+                        name = "Snapshot",
+                        desc = "Copy this text and paste into a text editor or into Pastebin to review.",
+                        order = 13,
                         get = function( info )
                             local display = snapshots.display
                             local snap = display and snapshots.snap[ display ]
 
                             return snap and ( "Click here and press CTRL+A, CTRL+C to copy the snapshot.\n\n" .. ns.snapshots[ display ][ snap ] )
                         end,
-                        disabled = false,
-                        -- multiline = 25,
-                        width = "full",
-                    }
+                        set = function() end,
+                        width = "full"
+                    },
                 }
             },
         },
@@ -7826,39 +7850,6 @@ function Hekili:GetOption( info, input )
 
     if category == 'general' then
         return profile[ option ]
-
-    --[[ elseif category == 'class' then
-        if info[2] == 'toggles' then
-            return profile['Toggle '..option]
-
-        elseif info[2] == 'settings' then
-            return profile['Class Option: '..option]
-
-        end ]]
-
-    --[[ elseif category == 'abilities' then
-        local ability = info[2]
-
-        if option == 'exclude' then return profile.blacklist[ ability ]
-        elseif option == 'clash' then return profile.clashes[ ability ] or 0
-        elseif option == 'toggle' then return profile.toggles[ ability ] or 'default'
-        elseif option:match( "^(%d+):(%d+)$" ) then
-            local list, action = option:match( "^(%d+):(%d+)$" )
-            list = tonumber( list )
-            action = tonumber( action )
-
-            return not profile.actionLists[ list ].Actions[ action ].Enabled
-        end
-
-        if profile.trinkets[ ability ] ~= nil then return profile.trinkets[ ability ][ option ] end
-
-        return ]]
-
-    --[[ elseif category == 'notifs' then
-        if option == 'Notification X' or option == 'Notification Y' then
-            return tostring( profile[ option ] )
-        end
-        return profile[option] ]]
 
     elseif category == 'bindings' then
 
@@ -7952,6 +7943,8 @@ function Hekili:GetOption( info, input )
 
         end
 
+    elseif category == "snapshots" then
+        return profile[ option ]
     end
 
     ns.Error( "GetOption() - should never see." )
@@ -8095,149 +8088,7 @@ function Hekili:SetOption( info, input, ... )
         -- Bindings do not need add'l handling.
         return
 
-    --[[ elseif category == 'displays' then
-
-        -- This is a generic display option/function.
-        if depth == 2 then
-
-            if option == 'newDisplay' then
-                self.DB.profile.displays[ input ] = {}
-                self:EmbedDisplayOptions()
-
-                C_Timer.After( 0.25, self[ 'ProcessDisplay'..index ] )
-
-            elseif option == 'importDisplay' then
-                local import = ns.deserializeDisplay( input )
-
-                if not import then
-                    Hekili:Print("Unable to import from given input string.")
-                    return
-                end
-
-                import.Name = getUniqueName( profile.displays, import.Name )
-                table.insert( profile.displays, import )
-
-            end
-
-            Rebuild = true
-
-            -- This is a display (or a hook).
-        else
-            local dispKey, dispID = info[2], info[2] and tonumber( match( info[2], "^D(%d+)" ) )
-            local hookKey, hookID = info[3], info[3] and tonumber( match( info[3], "^P(%d+)" ) )
-            local display = dispID and profile.displays[ dispID ]
-
-            -- This is a specific display's settings.
-            if depth == 3 or not hookID then
-                local revert = display[option]
-                display[option] = input
-
-                if option == 'x' or option == 'y' then
-                    display[option] = tonumber( input )
-                    RebuildUI = true
-
-                elseif option == 'Name' then
-                    Hekili.Options.args.displays.args[ dispKey ].name = input
-                    if input ~= revert and display.Default then display.Default = false end
-
-                elseif option == 'enabled' then
-                    -- Might want to replace this with RebuildUI = true
-                    for i, button in ipairs( ns.UI.Buttons[ dispID ] ) do
-                        if not input then
-                            button:Hide()
-                        else
-                            button:Show()
-                        end
-                    end
-                    RebuildUI = true
-
-                elseif option == 'minST' or option == 'maxST' or option == 'minAE' or option == 'maxAE' then
-                    -- do nothing, it's already set.
-
-                elseif option == 'spellFlash' then
-
-                elseif option == 'spellFlashColor' or option == 'iconBorderColor' then
-                    if type( display[ option ] ~= 'table' ) then display[ option ] = {} end
-                    display[ option ].r = input
-                    display[ option ].g = select( 1, ... )
-                    display[ option ].b = select( 2, ... )
-                    display[ option ].a = select( 3, ... )
-
-                elseif option == 'Script' then
-                    display[option] = input:trim()
-                    RebuildScripts = true
-
-                elseif option == 'Copy To' then
-                    local index = #profile.displays + 1
-
-                    profile.displays[ index ] = tableCopy( display )
-                    profile.displays[ index ].Name = input
-                    profile.displays[ index ].Default = false
-
-                    Rebuild = true
-
-                elseif option == 'Import' then
-                    local import = ns.deserializeDisplay( input )
-
-                    if not import then
-                        Hekili:Print("Unable to import from given input string.")
-                        return
-                    end
-
-                    local name = display.Name
-
-                    local validSpecs = { [0] = 1 }
-
-                    for i = 1, GetNumSpecializations() do
-                        validSpecs[ GetSpecializationInfo( i ) ] = 1
-                    end
-
-                    if not validSpecs[ import.Specialization ] then import.Specialization = profile.displays[ dispID ].Specialization end
-
-                    profile.displays[ dispID ] = import
-                    profile.displays[ dispID ].Name = name
-
-                    Rebuild = true
-
-                elseif option == 'Icons Shown' then
-                    if ns.queue[ dispID ] then
-                        for i = input + 1, #ns.queue[ dispID ] do
-                            ns.queue[ dispID ][ i ] = nil
-                        end
-                    end
-
-                end
-
-                RebuildUI = true
-
-                -- This is a priority hook.
-            else
-                local hook = display.Queues[ hookID ]
-
-                if option == 'Move' then
-                    local placeholder = table.remove( display.Queues, hookID )
-                    table.insert( display.Queues, input, placeholder )
-                    Rebuild, Select = true, 'P'..input
-
-                elseif option == 'Script' then
-                    hook[ option ] = input:trim()
-                    RebuildScripts = true
-
-                elseif option == 'Name' then
-                    Hekili.Options.args.displays.args[ dispKey ].args[ hookKey ].name = '|cFFFFD100' .. hookID .. '.|r ' .. input
-                    hook[ option ] = input
-
-                elseif option == 'Action List' or option == 'Enabled' then
-                    hook[ option ] = input
-                    RebuildCache = true
-
-                else
-                    hook[ option ] = input
-
-                end
-
-            end
-        end ]]
+  
 
     elseif category == 'actionLists' then
 
@@ -8393,6 +8244,8 @@ function Hekili:SetOption( info, input, ... )
 
             end
         end
+    elseif category == "snapshots" then
+        profile[ option ] = input
     end
 
     if Rebuild then
