@@ -1536,6 +1536,9 @@ local mt_state = {
 
         elseif k == 'inEncounter' or k == 'encounter' then
             return t.encounterID > 0
+        
+        elseif k == 'mounted' or k == 'is_mounted' then
+            return IsMounted()
 
         elseif k == 'boss' then
             return ( t.encounterID > 0 or ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) ) ) == true
@@ -5024,7 +5027,9 @@ function state.reset( dispName )
         petID = tonumber( petID:match( "%-(%d+)%-[0-9A-F]+$" ) )
 
         for k, v in pairs( class.pets ) do
-            if v.id == petID then
+            local id = v.id and ( type( v.id ) == 'function' and v.id() ) or v.id
+
+            if id == petID then
                 local lastCast = v.spell and class.abilities[ v.spell ] and class.abilities[ v.spell ].lastCast or 0
                 local duration = v.duration and ( ( type( v.duration ) == 'function' and v.duration() ) or v.duration ) or 3600
 
@@ -5684,6 +5689,10 @@ do
             return false, "ability.disabled returned true"
         end
 
+        if ability.nomounted and IsMounted() then
+            return false, "not recommended while mounted"
+        end
+
         if ability.form and not state.buff[ ability.form ].up then
             return false, "required form (" .. ability.form .. ") not active"
         end
@@ -5736,7 +5745,6 @@ do
 end
 
 ns.hasRequiredResources = function( ability )
-
     local action = class.abilities[ ability ]
 
     if not action then return end
@@ -5871,6 +5879,10 @@ function state:TimeToReady( action, pool )
     if self.debuff.repeat_performance.up and self.prev[1][ action ] then
         wait = max( wait, self.debuff.repeat_performance.remains )
         if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 12, wait ) end
+    end
+
+    if ability.icd and self.query_time - ability.lastCast < ability.icd then
+        wait = max( wait, ability.lastCast + ability.icd - self.query_time )
     end
 
     -- If ready is a function, it returns time.
