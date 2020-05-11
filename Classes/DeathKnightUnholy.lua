@@ -1001,7 +1001,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 879926,
 
             cycle = function ()
-                if settings.cycle and settings.festermight_cycle and dot.festering_wound.stack >= 2 and active_dot.festering_wound < spell_targets.festering_strike then return "festering_wound" end
+                if settings.cycle and azerite.festermight.enabled and settings.festermight_cycle and dot.festering_wound.stack >= 2 and active_dot.festering_wound < spell_targets.festering_strike then return "festering_wound" end
             end,
             min_ttd = function () return min( cooldown.death_and_decay.remains + 4, 8 ) end, -- don't try to cycle onto targets that will die too fast to get consumed.
 
@@ -1105,6 +1105,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 77575,
             cast = 0,
             cooldown = 0,
+            icd = 3,
             gcd = "spell",
 
             spend = 1,
@@ -1116,6 +1117,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cycle = 'virulent_plague',
 
             nodebuff = "outbreak",
+            usable = function () return target.exists or active_dot.outbreak == 0, "requires real target or no other outbreaks up" end,
 
             handler = function ()
                 applyDebuff( "target", "outbreak" )
@@ -1170,6 +1172,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 1100170,
 
             essential = true, -- new flag, will allow recasting even in precombat APL.
+            nomounted = true,
 
             usable = function () return not pet.alive end,
             handler = function ()
