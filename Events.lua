@@ -290,12 +290,20 @@ do
 end
 
 
-RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ( event )
-    if unit == 'player' then
-        Hekili:SpecializationChanged()
-        Hekili:ForceUpdate( event )
-    end
-end )
+
+-- ACTIVE_TALENT_GROUP_CHANGED fires 2x on talent swap.  Uggh, why?
+do
+    local lastChange = 0
+
+    RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ( event, from, to )
+        local now = GetTime()
+        if now - lastChange > 4 then
+            Hekili:SpecializationChanged()
+            Hekili:ForceUpdate( event )
+            lastChange = now
+        end
+    end )
+end
 
 
 -- Hide when going into the barbershop.
