@@ -437,6 +437,45 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     end )
 
 
+    local Glyphed = IsSpellKnownOrOverridesKnown
+
+    -- Fel Imp          58959
+    spec:RegisterPet( "imp",
+        function() return Glyphed( 112866 ) and 58959 or 416 end,
+        "summon_imp",
+        3600 )
+
+    -- Voidlord         58960
+    spec:RegisterPet( "voidwalker",
+        function() return Glyphed( 112867 ) and 58960 or 1860 end,
+        "summon_voidwalker",
+        3600 )
+
+    -- Observer         58964
+    spec:RegisterPet( "felhunter",
+        function() return Glyphed( 112869 ) and 58964 or 417 end,
+        "summon_felhunter",
+        3600 )
+
+    -- Fel Succubus     120526
+    -- Shadow Succubus  120527
+    -- Shivarra         58963
+    spec:RegisterPet( "succubus", 
+        function()
+            if Glyphed( 240263 ) then return 120526
+            elseif Glyphed( 240266 ) then return 120527
+            elseif Glyphed( 112868 ) then return 58963 end
+            return 1863
+        end,
+        3600 )
+
+    -- Wrathguard       58965
+    spec:RegisterPet( "felguard",
+        function() return Glyphed( 112870 ) and 58965 or 17252 end,
+        "summon_felguard",
+        3600 )
+        
+    
     -- Abilities
     spec:RegisterAbilities( {
         banish = {
@@ -1093,6 +1132,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             essential = true,
             bind = "summon_pet",
+            nomounted = true,
 
             usable = function ()
                 if pet.alive then return false, "pet is alive"
