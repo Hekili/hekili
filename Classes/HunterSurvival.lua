@@ -1037,6 +1037,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 'Interface\\ICONS\\Ability_Hunter_BeastCall',
 
             essential = true,
+            nomounted = true,
 
             usable = function () return not pet.exists end,
             handler = function ()

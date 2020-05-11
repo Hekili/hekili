@@ -666,7 +666,7 @@ local HekiliSpecMixin = {
 
     RegisterPet = function( self, token, id, spell, duration )
         self.pets[ token ] = {
-            id = id,
+            id = type( id ) == 'function' and setfenv( id, state ) or id,
             token = token,
             spell = spell,
             duration = type( duration ) == 'function' and setfenv( duration, state ) or duration

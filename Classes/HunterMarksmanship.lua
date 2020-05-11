@@ -726,7 +726,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             startsCombat = false,
             essential = true,
+
             texture = function () return GetStablePetInfo(1) or 'Interface\\ICONS\\Ability_Hunter_BeastCall' end,
+            nomounted = true,
 
             usable = function () return false and not pet.exists end, -- turn this into a pref!
             handler = function ()

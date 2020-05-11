@@ -1192,6 +1192,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = 135862,
 
             notalent = "lonely_winter",
+            nomounted = true,
 
             usable = function () return not pet.alive end,
             handler = function ()
