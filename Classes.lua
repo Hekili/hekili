@@ -2392,7 +2392,7 @@ all:RegisterAura( "shiver_venom", {
 
 
 do
-    local coralGUID, coralApplied, coralStacks = 0, 0, 0
+    local coralGUID, coralApplied, coralStacks = "none", 0, 0
 
     -- Ashvane's Razor Coral, 169311
     all:RegisterAbility( "ashvanes_razor_coral", {
@@ -2425,24 +2425,31 @@ do
 
 
     local f = CreateFrame("Frame")
-    f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    f:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
+    f:RegisterEvent( "PLAYER_REGEN_ENABLED" )
 
     f:SetScript("OnEvent", function( event )
         if not state.equipped.ashvanes_razor_coral then return end
 
-        local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+        if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+            local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
-        if sourceGUID == state.GUID and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
-            if spellID == 303568 then
-                coralGUID = destGUID
-                coralApplied = GetTime()
-                coralStacks = ( subtype == "SPELL_AURA_APPLIED_DOSE" ) and ( coralStacks + 1 ) or 1
-            elseif spellID == 303570 then
-                -- Coral was removed.
-                coralGUID = 0
-                coralApplied = 0
-                coralStacks = 0
+            if sourceGUID == state.GUID and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
+                if spellID == 303568 and destGUID then
+                    coralGUID = destGUID
+                    coralApplied = GetTime()
+                    coralStacks = ( subtype == "SPELL_AURA_APPLIED_DOSE" ) and ( coralStacks + 1 ) or 1
+                elseif spellID == 303570 then
+                    -- Coral was removed.
+                    coralGUID = "none"
+                    coralApplied = 0
+                    coralStacks = 0
+                end
             end
+        else
+            coralGUID = "none"
+            coralApplied = 0
+            coralStacks = 0
         end
     end )
 
@@ -2476,7 +2483,7 @@ do
 
                     return
 
-                elseif coralGUID > 0 then
+                elseif coralGUID ~= "none" then
                     t.name = class.auras.razor_coral.name
                     t.count = coralStacks > 0 and coralStacks or 1
                     t.applied = coralApplied > 0 and coralApplied or state.query_time
