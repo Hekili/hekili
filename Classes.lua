@@ -4924,7 +4924,10 @@ function Hekili:SpecializationChanged()
     local currentSpec = GetSpecialization()
     local currentID = GetSpecializationInfo( currentSpec )
 
-    if currentID == nil then return end
+    if currentID == nil then
+        C_Timer.After( 0.25, function () Hekili:SpecializationChanged() end )
+        return
+    end
 
     for k, _ in pairs( state.spec ) do
         state.spec[ k ] = nil
