@@ -4921,6 +4921,11 @@ end
 
 
 function Hekili:SpecializationChanged()
+    local currentSpec = GetSpecialization()
+    local currentID = GetSpecializationInfo( currentSpec )
+
+    if currentID == nil then return end
+
     for k, _ in pairs( state.spec ) do
         state.spec[ k ] = nil
     end
@@ -4950,8 +4955,6 @@ function Hekili:SpecializationChanged()
     class.potion = nil
 
     local specs = { 0 }
-    local currentSpec = GetSpecialization()
-    local currentID = GetSpecializationInfo( currentSpec )
 
     for i = 1, 4 do
         local id, name, _, _, role = GetSpecializationInfo( i )
