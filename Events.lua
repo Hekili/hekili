@@ -819,6 +819,11 @@ RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", function()
 end )
 
 
+RegisterEvent( "PLAYER_TALENT_UPDATE", function()
+    ns.updateTalents()
+end )
+
+
 -- Update Azerite Essence Data.
 do
     local azeriteEvents = {
