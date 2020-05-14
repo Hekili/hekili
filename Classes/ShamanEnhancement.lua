@@ -733,7 +733,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
 
         heroism = {
-            id = 32182,
+            id = function () return pvptalent.shamanism.enabled and 204362 or 32182 end,
             cast = 0,
             cooldown = 300,
             gcd = "spell", -- Ugh.
@@ -748,6 +748,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 applyBuff( 'heroism' )
                 applyDebuff( 'player', 'exhaustion', 600 )
             end,
+
+            copy = { 204362, 32182 }
         },
 
 
