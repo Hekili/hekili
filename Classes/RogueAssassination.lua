@@ -458,12 +458,19 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
 
     spec:RegisterStateExpr( "pmultiplier", function ()
-        -- Hm, maybe this should be current pmultiplier, not pmultiplier on current application.
-        return persistent_multiplier
+        if not this_action then return 0 end
 
-        --[[if not this_action then return false end
-        local aura = this_action == "kidney_shot" and "internal_bleeding" or this_action
-        return debuff[ aura ].pmultiplier]]
+        local a = class.abilities[ this_action ]
+        if not a then return 0 end
+
+        local aura = a.aura or this_action
+        if not aura then return 0 end
+
+        if debuff[ aura ] and debuff[ aura ].up then
+            return debuff[ aura ].pmultiplier or 1
+        end
+
+        return 0
     end )
 
     spec:RegisterStateExpr( "priority_rotation", function ()
