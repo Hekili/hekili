@@ -620,7 +620,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         },
 
 
-        bloodlust = {
+        --[[ bloodlust = {
             id = 2825,
             cast = 0,
             cooldown = 300,
@@ -636,7 +636,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 applyBuff( 'bloodlust' )
                 applyDebuff( 'player', 'sated' )
             end,
-        },
+        }, ]]
 
 
         capacitor_totem = {
