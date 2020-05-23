@@ -34,6 +34,7 @@ Classes\MageArcane.lua
 Classes\MageFire.lua
 Classes\MageFrost.lua
 Classes\MonkBrewmaster.lua
+Classes\MonkMistweaver.lua
 Classes\MonkWindwalker.lua
 Classes\PaladinProtection.lua
 Classes\PaladinRetribution.lua
