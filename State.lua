@@ -699,7 +699,7 @@ end
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value )
     if not aura then
-        Error( "Attempted to apply/remove a nameless aura '%s'.\n%s", aura or "nil", debugstack(2) )
+        Error( "Attempted to apply/remove a nameless aura '%s'.", aura or "nil" )
         return
     end
 
@@ -1888,10 +1888,7 @@ local mt_state = {
         if t.settings[ k ] ~= nil then return t.settings[ k ] end
         if t.toggle[ k ]   ~= nil then return t.toggle[ k ]   end
 
-        local stack = debugstack()
-        if stack then stack = stack:match( "^(.-\n?.-\n?.-)\n" ) end
-
-        Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable [" .. state.scriptID .. "]." .. ( stack and ( "\n" .. stack ) or "" ) )
+        Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable [" .. state.scriptID .. "]." )
         return nil
     end,
     __newindex = function(t, k, v)
@@ -3113,7 +3110,7 @@ local mt_default_buff = {
             end
         end
 
-        Error( "UNK: buff." .. t.key .. "." .. k .. "\n" .. debugstack(2) )
+        Error( "UNK: buff." .. t.key .. "." .. k )
 
     end,
 
