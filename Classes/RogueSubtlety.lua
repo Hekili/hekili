@@ -553,6 +553,15 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = true,
             texture = 132092,
 
+            cycle = function ()
+                if talent.prey_on_the_weak.enabled then return "prey_on_the_weak" end
+            end,
+
+            usable = function ()
+                if boss then return false, "cheap_shot assumed unusable in boss fights" end
+                return stealthed.all or buff.subterfuge.up, "not stealthed"
+            end,
+
             handler = function ()
             	if talent.find_weakness.enabled then
             		applyDebuff( 'target', 'find_weakness' )

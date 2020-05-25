@@ -536,6 +536,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if talent.prey_on_the_weak.enabled then return "prey_on_the_weak" end
             end,
 
+            usable = function ()
+                if boss then return false, "cheap_shot assumed unusable in boss fights" end
+                return stealthed.all or buff.subterfuge.up, "not stealthed"
+            end,
+
             handler = function ()
                 applyDebuff( 'target', 'cheap_shot', 4)
                 if talent.prey_on_the_weak.enabled then
