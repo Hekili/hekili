@@ -7386,6 +7386,62 @@ do
 end
 
 
+do
+    local selectedError = nil
+    local errList = {}
+
+    function Hekili:EmbedErrorOptions( db )
+        db = db or self.Options
+        if not db then return end
+
+        db.args.errors = {
+            type = "group",
+            name = "Errors",
+            order = 99,
+            args = {
+                errName = {
+                    type = "select",
+                    name = "Error Identifier",
+                    width = "full",
+                    order = 1,
+
+                    values = function()
+                        wipe( errList )
+
+                        for i, err in ipairs( self.ErrorKeys ) do
+                            local eInfo = self.ErrorDB[ err ]
+
+                            errList[ i ] = "[" .. eInfo.last .. " (" .. eInfo.n .. "x)] " .. err
+                        end
+
+                        return errList
+                    end,
+
+                    get = function() return selectedError end,
+                    set = function( info, val ) selectedError = val end,
+                },
+
+                errorInfo = {
+                    type = "input",
+                    name = "Error Information",
+                    width = "full",
+                    multiline = 10,
+                    order = 2,
+
+                    get = function ()
+                        if selectedError == nil then return "" end
+                        return Hekili.ErrorKeys[ selectedError ]
+                    end,
+
+                    dialogControl = "HekiliCustomEditor",
+                }
+            },
+            hidden = function() return #self.ErrorKeys == 0 end,
+        }
+    end
+end
+
+
 function Hekili:GenerateProfile()
     local s = state
 
@@ -7792,6 +7848,8 @@ function Hekili:GetOptions()
     self:EmbedSpecOptions( Options )
 
     self:EmbedSkeletonOptions( Options )
+
+    self:EmbedErrorOptions( Options )
 
     return Options
 end
