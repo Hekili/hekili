@@ -409,6 +409,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 236303,
 
             notalent = "ravager",
+            range = 8,
 
             handler = function ()
                 applyBuff( "bladestorm" )

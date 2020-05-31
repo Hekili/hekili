@@ -450,6 +450,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 236303,
 
+            range = 8,
+
             handler = function ()
                 applyBuff( "bladestorm" )
                 gain( 5, "rage" )
@@ -523,6 +525,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 642418,
 
             talent = "dragon_roar",
+            range = 12,
 
             handler = function ()
                 applyDebuff( "target", "dragon_roar" )                

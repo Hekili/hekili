@@ -388,6 +388,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 642418,
 
             talent = "dragon_roar",
+            range = 12,
 
             handler = function ()
                 applyDebuff( "target", "dragon_roar" )
