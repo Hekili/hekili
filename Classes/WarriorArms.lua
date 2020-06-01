@@ -266,11 +266,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
         local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
-        if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" and spellName == class.abilities.colossus_smash.name then
+        if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" and ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
             last_cs_target = destGUID
         end
     end )
 
+
+    local cs_actual
 
     spec:RegisterHook( "reset_precast", function ()
         rageSpent = 0
@@ -279,8 +281,19 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             if buff.gathering_storm.up then applyBuff( "gathering_storm", buff.bladestorm.remains + 6, 4 ) end
         end
 
+        if not cs_actual then cs_actual = cooldown.colossus_smash end
+
+        if talent.warbreaker.enabled and cs_actual then
+            cooldown.colossus_smash = cooldown.warbreaker
+        else
+            cooldown.colossus_smash = cs_actual
+        end
+
+
         if prev_gcd[1].colossus_smash and time - action.colossus_smash.lastCast < 1 and last_cs_target == target.unit and debuff.colossus_smash.down then
             -- Apply Colossus Smash early because its application is delayed for some reason.
+            applyDebuff( "target", "colossus_smash", 10 )
+        elseif prev_gcd[1].warbreaker and time - action.warbreaker.lastCast < 1 and last_cs_target == target.unit and debuff.colossus_smash.down then
             applyDebuff( "target", "colossus_smash", 10 )
         end
     end )
