@@ -29,7 +29,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             end,
 
             interval = 1,
-            value = -3,
+            value = 20,
         },
 
         garrote_vim = {
@@ -739,13 +739,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             max_stack = 1,
             generate = function ()
                 local cast = rawget( class.abilities.vendetta, "lastCast" ) or 0
-                local up = cast + 3 > query_time
+                local up = cast + 3 < query_time
 
                 local vr = buff.vendetta_regen
 
                 if up then
                     vr.count = 1
-                    vr.expires = cast + 15
+                    vr.expires = cast + 3
                     vr.applied = cast
                     vr.caster = "player"
                     return
