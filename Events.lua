@@ -1604,29 +1604,40 @@ local function ReadKeybindings()
         wipe( v.lower )
     end
 
-    -- Bartender4 support from tanichan.
+    -- Bartender4 support (Originally from tanichan, improved by konstantinkoeppe)
     if _G["Bartender4"] then
-        -- Bartender
-        local bt4Button
-        local bt4Key
-        local bt4Page
+        local playerIsRogue = select( 2, UnitClass( "player" ) ) == "ROGUE"
 
-        for i = 1, 12 do
-            StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
+		-- Action Bar 1
+        for keyNumber = 1, 12 do
+            StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. keyNumber ), GetActionInfo( keyNumber ) )
         end
 
-        for i = 13, 120 do 
-            bt4Key = GetBindingKey( "CLICK BT4Button" .. i .. ":LeftButton" )
-            bt4Button = _G[ "BT4Button" .. i ]
+		-- Action Bar 2 to 10
+		for actionBarNumber = 2, 10 do
+		
+			-- Keys 1 to 12
+			for keyNumber = 1, 12 do
+			
+				-- Calculate action bar button id
+				local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
+				
+				if playerIsRogue and actionBarNumber == 7 then
+					-- Rogue Stealth (Page 7 uses keybinds of bar 1)
+					StoreKeybindInfo( 7, GetBindingKey( "ACTIONBUTTON" .. keyNumber ), GetActionInfo( actionBarButtonId ) )
+				else
+					-- Default (previous logic)
+					local bt4Key = GetBindingKey( "CLICK BT4Button" .. actionBarButtonId .. ":LeftButton" )
+					local bt4Button = _G[ "BT4Button" .. actionBarButtonId ]
 
-            local bt4Page = 1 + math.floor( ( i - 1 ) / 12 )
-
-            if bt4Button then
-                local buttonActionType, buttonActionId = GetActionInfo( i )
-                StoreKeybindInfo( bt4Page, bt4Key, buttonActionType, buttonActionId )
-            end
-        end
-
+					if bt4Button then
+						local buttonActionType, buttonActionId = GetActionInfo( actionBarButtonId )
+						StoreKeybindInfo( actionBarNumber, bt4Key, buttonActionType, buttonActionId )
+					end
+				end
+			end
+		end
+        
     else
         for i = 1, 12 do
             StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
