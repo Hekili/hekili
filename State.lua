@@ -1569,7 +1569,7 @@ local mt_state = {
         elseif k == 'query_time' then
             return t.now + t.offset + t.delay
 
-        elseif k == 'time_to_die' then
+        elseif k == 'time_to_die' or k == 'fight_remains' then
             if not t.boss then return 3600 end
             return max( 1, Hekili:GetGreatestTTD() - ( t.offset + t.delay ) )
         
@@ -1627,6 +1627,9 @@ local mt_state = {
         elseif k == 'true_my_enemies' then
             t[k] = max( 1, ns.numTargets() )
             return t[k]
+
+        elseif k == 'crit' or k == 'spell_crit' or k == 'attack_crit' then
+            return ( t.stat.crit / 100 )
 
         elseif k == 'haste' or k == 'spell_haste' then
             return ( 1 / ( 1 + t.stat.spell_haste ) )
