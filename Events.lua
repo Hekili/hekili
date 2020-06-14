@@ -1606,29 +1606,21 @@ local function ReadKeybindings()
         wipe( v.lower )
     end
 
-    -- Bartender4 support from tanichan.
+    -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
     if _G["Bartender4"] then
-        -- Bartender
-        local bt4Button
-        local bt4Key
-        local bt4Page
+        for actionBarNumber = 1, 10 do
+            for keyNumber = 1, 12 do
+                local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
+                local bindingKeyName = "ACTIONBUTTON" .. keyNumber
 
-        for i = 1, 12 do
-            StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
-        end
+                -- Action bar 1 and 7+ use bindings of action bar 1
+                if actionBarNumber > 1 and actionBarNumber <= 6 then
+                    bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":LeftButton"
+                end
 
-        for i = 13, 120 do 
-            bt4Key = GetBindingKey( "CLICK BT4Button" .. i .. ":LeftButton" )
-            bt4Button = _G[ "BT4Button" .. i ]
-
-            local bt4Page = 1 + math.floor( ( i - 1 ) / 12 )
-
-            if bt4Button then
-                local buttonActionType, buttonActionId = GetActionInfo( i )
-                StoreKeybindInfo( bt4Page, bt4Key, buttonActionType, buttonActionId )
+                StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
             end
         end
-
     else
         for i = 1, 12 do
             StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
