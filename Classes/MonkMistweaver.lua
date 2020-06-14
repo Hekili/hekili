@@ -221,6 +221,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
     -- 2.  How many HOTs can be extended?
     -- 3.  How many HOTs refreshable HOTs can be gained from casting Essence Font?
 
+    --[[ 
+
     do
         
         local hotPool = {}
@@ -321,11 +323,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 
             elseif subtype == "SPELL_AURA_APPLIED" then
                 if spellID == 119611 then
-                    newHOT( "__renewing_mist", destGUID, GetTime() + 20 )
+                    NewHOT( "__renewing_mist", destGUID, GetTime() + 20 )
                 elseif spellID == 124682 then
-                    newHOT( "__enveloping_mist", destGUID, GetTime() + ( talent.mist_wrap.enabled and 7 or 6 ) )
+                    NewHOT( "__enveloping_mist", destGUID, GetTime() + ( talent.mist_wrap.enabled and 7 or 6 ) )
                 elseif spellID == 191840 then
-                    newHOT( "__essence_font", destGUID, GetTime() + 8 )
+                    NewHOT( "__essence_font", destGUID, GetTime() + 8 )
                 end
             end
         end
@@ -338,7 +340,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     spec:RegisterStateTable( "mistweaver", setmetatable( {}, {
         __index = function( t, k )
         end,
-    } ) )
+    } ) ) ]]
 
 
     spec:RegisterHook( "reset_precast", function ()
