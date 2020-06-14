@@ -4618,6 +4618,34 @@ do
         end
     end
 
+    function state:RemoveSpellEvent( action, real, eType, reverse )
+        local queue = real and realQueue or virtualQueue
+
+        local success = false
+
+        if reverse then
+            for i = #queue, 1, -1 do
+                local e = queue[ i ]
+
+                if e.action == action and ( eType == nil or e.type == eType ) then
+                    RecycleEvent( queue, i )
+                    return true
+                end
+            end
+        else
+            for i = 1, #queue do
+                local e = queue[ i ]
+
+                if e.action == action and ( eType == nil or e.type == eType ) then
+                    RecycleEvent( queue, i )
+                    return true
+                end
+            end
+        end
+
+        return false
+    end
+
     function state:RemoveSpellEvents( action, real, eType )
         local queue = real and realQueue or virtualQueue
 

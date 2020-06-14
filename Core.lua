@@ -1220,6 +1220,12 @@ function Hekili:ProcessHooks( dispName, packName )
                     event = events[ 1 ]
                     n = n + 1
                     shouldCheck = false
+                elseif t > 0 and t < 0.1 then
+                    if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.1 seconds.\n", n, event.type, event.action, t ) end
+                    if t > 0 then state.advance( t ) end
+                    event = events[ 1 ]
+                    n = n + 1
+                    shouldCheck = false
                 else
                     shouldCheck = false
 

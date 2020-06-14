@@ -947,7 +947,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", function( event, unit, _, spellID )
 
             local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) )
 
-            state:RemoveSpellEvents( action, true )
+            state:RemoveSpellEvent( action, true, "CAST_FINISH" )
+            state:RemoveSpellEvent( action, true, "PROJECTILE_IMPACT", true )
 
             local _, _, _, start, finish = UnitCastingInfo( "player" )
             if start and finish then
@@ -1287,10 +1288,11 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                     end
 
                 elseif subtype == "SPELL_CAST_FAILED" then
-                    state:RemoveSpellEvents( ability.key, true )
+                    state:RemoveSpellEvent( ability.key, true, "CAST_FINISH" ) -- remove next cast finish.
+                    state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT", true ) -- remove last impact.
 
                 elseif subtype == "SPELL_CAST_SUCCESS" then
-                    state:RemoveSpellEvents( ability.key, true )
+                    state:RemoveSpellEvent( ability.key, true, "CAST_FINISH" ) -- remove next cast finish.
 
                     if ability.isProjectile then
                         local travel
@@ -1329,7 +1331,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             local ability = class.abilities[ spellID ]
 
             if ability then
-                if state:RemoveSpellEvents( ability.key, true, "PROJECTILE_IMPACT" ) then
+                if state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT" ) then
                     Hekili:ForceUpdate( "PROJECTILE_IMPACT", true )
                 end
             end
