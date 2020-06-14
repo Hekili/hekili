@@ -136,6 +136,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 end
 
                 return t.actual
+            
+            elseif k == 'deficit' then
+                return t.max - t.current            
 
             elseif k == 'time_to_next' then
                 return t[ 'time_to_' .. t.current + 1 ]
