@@ -4,7 +4,7 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local Type, Version = "HekiliCustomEditor", 2
+local Type, Version = "HekiliCustomEditor", 3
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -644,7 +644,7 @@ local function Constructor()
   if ElvUI then
     local E = ElvUI[1]
 
-    if E.private.skins.ace3.enable then
+    if E.private.skins.ace3Enable or ( E.private.skins.ace3 and E.private.skins.ace3.enable ) then -- ElvUI options changed 7/2020.
       local S = E:GetModule('Skins')
 
       local frame = hcv.frame
