@@ -645,6 +645,10 @@ function Hekili:GetDefaults()
 
                     name = "Primary",
 
+                    relativeTo = "SCREEN",
+                    displayPoint = "TOP",
+                    anchorPoint = "BOTTOM",
+
                     x = -82,
                     y = -225,
 
@@ -997,6 +1001,17 @@ do
     end
 
 
+    local function setWidth( info, field, condition, if_true, if_false )
+        local tab = getOptionTable( info )
+
+        if condition then
+            tab.args[ field ].width = if_true or "full"
+        else
+            tab.args[ field ].width = if_false or "full"
+        end
+    end
+
+
     local function rangeIcon( info )
         local tab = getOptionTable( info )
 
@@ -1092,6 +1107,46 @@ do
                                 order = 10,
 
                                 args = {
+                                    relativeTo = {
+                                        type = "select",
+                                        name = "Anchored To",
+                                        values = {
+                                            SCREEN = "Screen",
+                                            PERSONAL = "Personal Resource Display",
+                                            CUSTOM = "Custom"
+                                        },
+                                        order = 1,
+                                        width = 1.49,
+                                    },
+
+                                    customFrame = {
+                                        type = "input",
+                                        name = "Custom Frame",
+                                        desc = "Specify the name of the frame to which this display will be anchored.\n" ..
+                                                "If the frame does not exist, the display will not be shown.",
+                                        order = 1.1,
+                                        width = 1.49,
+                                        hidden = function() return data.relativeTo ~= "CUSTOM" end,
+                                    },
+
+
+                                    setParent = {
+                                        type = "toggle",
+                                        name = "Set Parent to Anchor",
+                                        desc = "If checked, the display will be shown/hidden when the anchor is shown/hidden.",
+                                        order = 3.9,
+                                        width = 1.49,
+                                        hidden = function() return data.relativeTo == "SCREEN" end,
+                                    },
+
+
+                                    preXY = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 97
+                                    },
+
                                     x = {
                                         type = "range",
                                         name = "X",
@@ -1101,8 +1156,8 @@ do
                                         max = 512,
                                         step = 1,
 
-                                        order = 1,
-                                        width = "full",
+                                        order = 98,
+                                        width = 1.49,
                                     },
 
                                     y = {
@@ -1114,8 +1169,8 @@ do
                                         max = 384,
                                         step = 1,
 
-                                        order = 2,
-                                        width = "full",
+                                        order = 99,
+                                        width = 1.49,
                                     },
                                 },
                             },
@@ -1134,7 +1189,7 @@ do
                                         max = 500,
                                         step = 1,
 
-                                        width = "full",
+                                        width = 1.49,
                                         order = 1,
                                     },
 
@@ -1146,7 +1201,7 @@ do
                                         max = 500,
                                         step = 1,
 
-                                        width = "full",
+                                        width = 1.49,
                                         order = 2,                                            
                                     },
                                 },
@@ -1199,7 +1254,7 @@ do
                                 max = 100,
                                 step = 1,
 
-                                width = "full",
+                                width = 1.49,
                                 order = 20,
                             },
 
@@ -1211,7 +1266,7 @@ do
                                 disabled = function( info, val )
                                     return not ( data.primaryHeight ~= data.primaryWidth or ( data.numIcons > 1 and data.queue.height ~= data.queue.width ) )
                                 end,
-                                width = "full",
+                                width = 1.49,
                                 order = 25,
                             },
                         },
@@ -6987,7 +7042,9 @@ do
             for i = 1, GetNumSpellTabs() do
                 local tab, _, offset, n = GetSpellTabInfo( i )
 
-                if tab == spec then
+                print( tab, offset, n )
+
+                if i == 2 or tab == spec then
                     for j = offset, offset + n do
                         local name, _, texture, castTime, minRange, maxRange, spellID = GetSpellInfo( j, "spell" )
 
@@ -7498,11 +7555,11 @@ function Hekili:GenerateProfile()
         end
     end
 
-    local corruptions
-    for k, v in orderedPairs( state.corruptions ) do
+    local legendaries
+    for k, v in orderedPairs( state.legendary ) do
         if k ~= "no_trait" and v.rank > 0 then
-            if corruptions then corruptions = format( "%s\n    %s = %d", corruptions, k, v.rank )
-            else corruptions = format( "%s = %d", k, v.rank ) end
+            if legendaries then legendaries = format( "%s\n    %s = %d", legendaries, k, v.rank )
+            else legendaries = format( "%s = %d", k, v.rank ) end
         end
     end
 
@@ -7537,7 +7594,7 @@ function Hekili:GenerateProfile()
         "essences: %s\n\n" ..
         "sets/legendaries/artifacts: %s\n\n" ..
         "gear: %s\n\n" ..
-        "corruptions: %s\n\n" ..
+        "legendaries: %s\n\n" ..
         "itemIDs: %s\n\n" ..
         "settings: %s\n\n" ..
         "toggles: %s\n",
@@ -7550,7 +7607,7 @@ function Hekili:GenerateProfile()
         essences or "none",
         sets or "none",
         gear or "none",
-        corruptions or "none",
+        legendaries or "none",
         items or "none",
         settings or "none",
         toggles or "none" )

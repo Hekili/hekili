@@ -530,7 +530,7 @@ local function Constructor()
   text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -5, 1)
   text:SetJustifyV("MIDDLE")
 
-  local scrollBG = CreateFrame("Frame", nil, frame)
+  local scrollBG = Mixin(CreateFrame("Frame", nil, frame),BackdropTemplateMixin)
   scrollBG:SetBackdrop(backdrop)
   scrollBG:SetBackdropColor(0, 0, 0)
   scrollBG:SetBackdropBorderColor(0.4, 0.4, 0.4)

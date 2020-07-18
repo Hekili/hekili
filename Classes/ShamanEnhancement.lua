@@ -9,129 +9,63 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
+-- Globals
+local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 
 -- Generate the Enhancement spec database only if you're actually a Shaman.
 if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     local spec = Hekili:NewSpecialization( 263 )
 
     spec:RegisterResource( Enum.PowerType.Mana )   
-    spec:RegisterResource( Enum.PowerType.Maelstrom, {
-        mainhand = {
-            last = function ()
-                local swing = state.swings.mainhand
-                local speed = state.swings.mainhand_speed
-                local t = state.query_time
 
-                if speed == 0 then return swing end
-
-                return swing + ( floor( ( t - swing ) / state.swings.mainhand_speed ) * state.swings.mainhand_speed )
-            end,
-
-            stop = function () return state.time == 0 or state.swings.mainhand == 0 end,
-            interval = 'mainhand_speed',
-            value = 5
-        },
-
-        offhand = {
-            last = function ()
-                local swing = state.swings.offhand
-                local speed = state.swings.offhand_speed
-                local t = state.query_time
-
-                if speed == 0 then return swing end
-
-                return swing + ( floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed )
-            end,
-
-            stop = function () return state.time == 0 or state.swings.offhand == 0 end,
-            interval = 'offhand_speed',
-            value = 5
-        },
-
-        fury_of_air = {
-            aura = 'fury_of_air',
-
-            last = function ()
-                local app = state.buff.fury_of_air.applied
-                local t = state.query_time
-
-                return app + floor( t - app )
-            end,
-
-            stop = function( x )
-                return x < 3
-            end,
-
-            interval = 1,
-            value = -3,
-        },
-
-        resonance_totem = {
-            aura = 'resonance_totem',
-
-            last = function ()
-                local app = state.buff.resonance_totem.applied
-                local t = state.query_time
-
-                return app + floor( t - app )
-            end,
-
-            interval = 1,
-            value = 1,
-        },
-    } )
-
-
-    -- TALENTS
+    -- Talents
     spec:RegisterTalents( {
-        boulderfist = 22354,
-        hot_hand = 22355,
-        lightning_shield = 22353,
+        lashing_flames = 22354, -- 334046
+        forceful_winds = 22355, -- 262647
+        elemental_blast = 22353, -- 117014
 
-        landslide = 22636,
-        forceful_winds = 22150,
-        totem_mastery = 23109,
+        stormfury = 22636, -- 334175
+        hot_hand = 23462, -- 201900
+        totem_mastery = 23109, -- 333925
 
-        spirit_wolf = 23165,
-        earth_shield = 19260,
-        static_charge = 23166,
+        spirit_wolf = 23165, -- 260878
+        earth_shield = 19260, -- 974
+        static_charge = 23166, -- 265046
 
-        searing_assault = 23089,
-        hailstorm = 23090,
-        overcharge = 22171,
+        cycle_of_the_elements = 23089, -- 210853
+        hailstorm = 23090, -- 334195
+        fire_nova = 22171, -- 333974
 
-        natures_guardian = 22144,
-        feral_lunge = 22149,
-        wind_rush_totem = 21966,
+        natures_guardian = 22144, -- 30884
+        feral_lunge = 22149, -- 196884
+        wind_rush_totem = 21966, -- 192077
 
-        crashing_storm = 21973,
-        fury_of_air = 22352,
-        sundering = 22351,
+        crashing_storm = 21973, -- 192246
+        stormkeeper = 22352, -- 320137
+        sundering = 22351, -- 197214
 
-        elemental_spirits = 21970,
-        earthen_spike = 22977,
-        ascendance = 21972
+        elemental_spirits = 21970, -- 262624
+        earthen_spike = 22977, -- 188089
+        ascendance = 21972, -- 114051
     } )
 
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
         relentless = 3553, -- 196029
-        adaptation = 3552, -- 214027
         gladiators_medallion = 3551, -- 208683
+        adaptation = 3552, -- 214027
 
-        forked_lightning = 719, -- 204349
-        static_cling = 720, -- 211062
-        thundercharge = 725, -- 204366
-        shamanism = 722, -- 193876
-        spectral_recovery = 3519, -- 204261
-        ride_the_lightning = 721, -- 204357
-        grounding_totem = 3622, -- 204336
-        swelling_waves = 3623, -- 204264
-        ethereal_form = 1944, -- 210918
-        skyfury_totem = 3487, -- 204330
         counterstrike_totem = 3489, -- 204331
+        ethereal_form = 1944, -- 210918
+        grounding_totem = 3622, -- 204336
         purifying_waters = 3492, -- 204247
+        ride_the_lightning = 721, -- 289874
+        shamanism = 722, -- 193876
+        skyfury_totem = 3487, -- 204330
+        spectral_recovery = 3519, -- 204261
+        swelling_waves = 3623, -- 204264
+        thundercharge = 725, -- 204366
     } )
 
 
@@ -139,16 +73,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         ascendance = {
             id = 114051,
             duration = 15,
+            max_stack = 1,
         },
 
-        astral_shift = { 
+        astral_shift = {
             id = 108271,
             duration = 8,
-        },
-
-        boulderfist = {
-            id = 218825,
-            duration = 10,
+            max_stack = 1,
         },
 
         chill_of_the_twisting_nether = {
@@ -158,12 +89,20 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
         crackling_surge = {
             id = 224127,
-            duration = 15,
+            duration = 3600,
+            max_stack = 1,
         },
 
         crash_lightning = {
             id = 187878,
             duration = 10,
+            max_stack = 1,
+        },
+
+        crash_lightning_cl = {
+            id = 333964,
+            duration = 15,
+            max_stack = 3
         },
 
         crashing_lightning = {
@@ -172,10 +111,45 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             max_stack = 15,
         },
 
+        earth_shield = {
+            id = 974,
+            duration = 600,
+            type = "Magic",
+            max_stack = 9,
+        },
+
+        earthbind = {
+            id = 3600,
+            duration = 5,
+            type = "Magic",
+            max_stack = 1,
+        },
+
         earthen_spike = {
             id = 188089,
             duration = 10,
         },
+
+        elemental_blast_critical_strike = {
+            id = 118522,
+            duration = 10,
+            type = "Magic",
+            max_stack = 1,
+        },
+
+        elemental_blast_haste = {
+            id = 173183,
+            duration = 10,
+            type = "Magic",
+            max_stack = 1,
+        },
+
+        elemental_blast_mastery = {
+            id = 173184,
+            duration = 10,
+            type = "Magic",
+            max_stack = 1,
+        },        
 
         ember_totem = {
             id = 262399,
@@ -183,6 +157,14 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             max_stack =1 ,
         },
 
+        -- Used to proc Maelstrom Weapon stacks.
+        feral_spirit = {
+            id = 333957,
+            duration = 15,
+            max_stack = 1,
+        },
+        
+        --[[ BfA
         feral_spirit = {            
             name = "Feral Spirit",
             duration = 15,
@@ -205,27 +187,44 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 fs.applied = 0
                 fs.caster = "nobody"
             end,
-        },
+        }, ]]
 
         fire_of_the_twisting_nether = {
             id = 207995,
             duration = 8,
         },
 
+        flame_shock = {
+            id = 188389,
+            duration = 18,
+            type = "Magic",
+            max_stack = 1,
+        },        
+
+        --[[ BfA - need to revise weapon enchant parsing?
         flametongue = {
             id = 194084,
             duration = 16,
-        },
+        }, ]]
 
+        forceful_winds = {
+            id = 262652,
+            duration = 15,
+            max_stack = 5,
+        },        
+
+        --[[ BfA
         frostbrand = {
             id = 196834,
             duration = 16,
-        },
+        }, ]]
 
-        fury_of_air = {
-            id = 197211,
-            duration = 3600,
-        },
+        frost_shock = {
+            id = 196840,
+            duration = 6,
+            type = "Magic",
+            max_stack = 1,
+        },        
 
         gathering_storms = {
             id = 198300,
@@ -233,26 +232,35 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             max_stack = 1,
         },
 
+        ghost_wolf = {
+            id = 2645,
+            duration = 3600,
+            type = "Magic",
+            max_stack = 1,
+        },
+
+        hailstorm = {
+            id = 334196,
+            duration = 20,
+            max_stack = 5,
+        },        
+
         hot_hand = {
             id = 215785,
-            duration = 15,
+            duration = 8,
+            max_stack = 1,
         },
 
         icy_edge = {
             id = 224126,
-            duration = 15,
+            duration = 3600,
             max_stack = 1,
         },
 
-        landslide = {
-            id = 202004,
-            duration = 10,
-        },
-
         lashing_flames = {
-            id = 240842,
-            duration = 10,
-            max_stack = 99,
+            id = 334168,
+            duration = 12,
+            max_stack = 1,
         },
 
         lightning_crash = {
@@ -262,8 +270,9 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
         lightning_shield = {
             id = 192106,
-            duration = 3600,
-            max_stack = 20,
+            duration = 1800,
+            type = "Magic",
+            max_stack = 1,
         },
 
         lightning_shield_overcharge = {
@@ -272,10 +281,20 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             max_stack = 1,
         },
 
+        maelstrom_weapon = {
+            id = 187881,
+            duration = 30,
+            max_stack = 10,
+        },        
+
         molten_weapon = {
             id = 271924,
             duration = 4,
         },
+
+        reincarnation = {
+            id = 20608,
+        },        
 
         resonance_totem = {
             id = 262417,
@@ -288,15 +307,46 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 8,
         },
 
+        spirit_walk = {
+            id = 58875,
+            duration = 8,
+            max_stack = 1,
+        },        
+
+        spirit_wolf = {
+            id = 260881,
+            duration = 3600,
+            max_stack = 1,
+        },        
+
         storm_totem = {
             id = 262397,
             duration = 120,
             max_stack =1 ,
         },
 
+        static_charge = {
+            id = 118905,
+            duration = 3,
+            type = "Magic",
+            max_stack = 1,
+        },        
+
         stormbringer = {
-            id = 201846,
+            id = 201845,
             duration = 12,
+            max_stack = 1,
+        },
+
+        stormkeeper = {
+            id = 320137,
+            duration = 15,
+            max_stack = 2,
+        },
+
+        sundering = {
+            id = 197214,
+            duration = 2,
             max_stack = 1,
         },
 
@@ -306,7 +356,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             max_stack =1 ,
         },
 
-        totem_mastery = {
+        --[[ totem_mastery = {
             duration = 120,
             generate = function ()
                 local expires, remains = 0, 0
@@ -350,10 +400,28 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 removeBuff( "storm_totem" )
                 removeBuff( "ember_totem" )
             end,
+        }, ]]
+
+        water_walking = {
+            id = 546,
+            duration = 600,
+            max_stack = 1,
+        },    
+
+        wind_rush = {
+            id = 192082,
+            duration = 5,
+            max_stack = 1,
         },
 
+        windfury_totem = {
+            id = 327942,
+            duration = 120,
+            max_stack = 1,
+        },        
 
-        -- Azerite Powers
+
+        --[[ Azerite Powers
         ancestral_resonance = {
             id = 277943,
             duration = 15,
@@ -388,36 +456,38 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 287802,
             duration = 6,
             max_stack = 1,
+        }, ]]
+        -- Legendaries
+        legacy_oF_the_frost_witch = {
+            id = 335901,
+            duration = 10,
+            max_stack = 1,
         },
+
 
         -- PvP Talents
-        earth_shield = {
-            id = 204288,
-            duration = 600,
-            max_stack = 4,
-        },
-
         thundercharge = {
             id = 204366,
             duration = 10,
             max_stack = 1,
         },
+
+        windfury_weapon = {
+            duration = 1800,
+            max_stack = 1,
+        },
+
+        flametongue_weapon = {
+            duration = 1800,
+            max_stack = 1,
+        }
     } )
 
 
-    spec:RegisterStateTable( 'feral_spirit', setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
+    spec:RegisterStateTable( 'feral_spirit', setmetatable( {}, {
         __index = function( t, k )
-            if k == 'cast_time' then
-                t.cast_time = class.abilities.feral_spirit.lastCast or 0
-                return t.cast_time
-            elseif k == 'active' or k == 'up' then
-                return query_time < t.cast_time + 15
-            elseif k == 'remains' then
-                return max( 0, t.cast_time + 15 - query_time )
-            end
-
-            return false
-        end 
+            return buff.feral_spirit[ k ]
+        end
     } ) )
 
     spec:RegisterStateTable( 'twisting_nether', setmetatable( { onReset = function( self ) end }, { 
@@ -432,7 +502,15 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
 
     spec:RegisterHook( "reset_precast", function ()
-        class.auras.totem_mastery.generate()
+        -- class.auras.totem_mastery.generate()
+        local mh, _, _, mh_enchant, oh, _, _, oh_enchant = GetWeaponEnchantInfo()
+
+        if mh and mh_enchant == 5401 then applyBuff( "windfury_weapon" ) end
+        if oh and oh_enchant == 5400 then applyBuff( "flametongue_weapon" ) end
+
+        if buff.windfury_totem.down and ( now - action.windfury_totem.lastCast < 1 ) then applyBuff( "windfury_totem" ) end
+        if buff.windfury_weapon.down and ( now - action.windfury_weapon.lastCast < 1 ) then applyBuff( "windfury_weapon" ) end
+        if buff.flametongue_weapon.down and ( now - action.flametongue_weapon.lastCast < 1 ) then applyBuff( "flametongue_weapon" ) end
     end )
 
 
@@ -487,6 +565,28 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     spec:RegisterGear( 'storm_tempests', 137103 )
     spec:RegisterGear( 'uncertain_reminder', 143732 )
 
+
+    spec:RegisterStateFunction( "consume_maelstrom", function( cap )
+        local stacks = min( buff.maelstrom_weapon.stack, cap or 5 )
+
+        if talent.hailstorm.enabled and buff.maelstrom_weapon.stack > buff.hailstorm.stack then
+            applyBuff( "hailstorm", stacks )
+        end
+
+        removeStack( "maelstrom_weapon", stacks ) 
+
+        if legendary.legacy_oF_the_frost_witch.enabled and stacks == 5 then
+            setCooldown( "stormstrike", 0 )
+            setCooldown( "windstrike", 0 )
+            applyBuff( "legacy_of_the_frost_witch" )
+        end
+    end )
+
+    spec:RegisterStateFunction( "maelstrom_mod", function( amount )
+        local mod = max( 0, 1 - ( 0.2 * buff.maelstrom_weapon.stack ) )
+        return mod * amount
+    end )
+
     spec:RegisterAbilities( {
         ascendance = {
             id = 114051,
@@ -495,16 +595,16 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             gcd = 'off',
 
             readyTime = function() return buff.ascendance.remains end,
-            recheck = function () return buff.ascendance.remains end,
 
-            nobuff = 'ascendance',
-            talent = 'ascendance',
             toggle = 'cooldowns',
 
             startsCombat = false,
 
+            talent = 'ascendance',
+            nobuff = 'ascendance',
+
             handler = function ()
-                applyBuff( 'ascendance', 15 )
+                applyBuff( 'ascendance' )
                 setCooldown( 'stormstrike', 0 )
                 setCooldown( 'windstrike', 0 )
             end,
@@ -519,7 +619,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             startsCombat = false,
 
             handler = function ()
-                applyBuff( 'astral_shift', 8 )
+                applyBuff( "astral_shift" )
             end,
         },
 
@@ -528,7 +628,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             known = 2825,
             cast = 0,
             cooldown = 300,
-            gcd = 'spell', -- Ugh.
+            gcd = 'off', -- Ugh.
 
             spend = 0.215,
             spendType = 'mana',
@@ -542,16 +642,92 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             copy = { 204361, 2825 }
         },
 
+        capacitor_totem = {
+            id = 192058,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 0.1,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136013,
+            
+            handler = function ()
+            end,
+        },
+
+        chain_heal = {
+            id = 1064,
+            cast = function () return maelstrom_mod( 2.5 ) * haste end,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = function () return maelstrom_mod( 0.3 ) end,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136042,
+            
+            handler = function ()
+                consume_maelstrom( 5 )
+            end,
+        },
+
+        chain_lightning = {
+            id = 188443,
+            cast = function ()
+                if buff.stormkeeper.up then return 0 end
+                return maelstrom_mod( 2 ) * haste
+            end,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = function () return maelstrom_mod( 0.01 ) end,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136015,
+            
+            handler = function ()
+                if active_enemies > 1 then
+                    applyBuff( "crash_lightning_cl", nil, min( 3, active_enemies ) )
+                end
+
+                if buff.stormkeeper.up then
+                    removeBuff( "stormkeeper" )
+                    return
+                end
+
+                consume_maelstrom( 5 )
+            end,
+        },        
+
+        cleanse_spirit = {
+            id = 51886,
+            cast = 0,
+            cooldown = 8,
+            gcd = "spell",
+            
+            spend = 0.06,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 236288,
+
+            buff = "dispellable_curse",
+            
+            handler = function ()
+                removeBuff( "dispellable_curse" )
+            end,
+        },        
+
         crash_lightning = {
             id = 187874,
             cast = 0,
-            cooldown = function () return 6 * haste end,
+            cooldown = function () return 9 * haste end,
             gcd = 'spell',
-
-            spend = 20,
-            spendType = 'maelstrom',
-
-            recheck = function () return buff.crash_lightning.remains end,
 
             startsCombat = true,
 
@@ -561,9 +737,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     applyBuff( "gathering_storms" )
                 end
 
-                removeBuff( 'crashing_lightning' )
+                removeBuff( "crashing_lightning" )
+                removeBuff( "crash_lightning_cl" )
 
-                if level < 116 then 
+                --[[ if level < 116 then 
                     if equipped.emalons_charged_core and spell_targets.crash_lightning >= 3 then
                         applyBuff( 'emalons_charged_core', 10 )
                     end
@@ -579,7 +756,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
                     if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
                     if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
-                end
+                end ]]
             end,
         },
 
@@ -605,13 +782,16 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cooldown = 6,
             gcd = "spell",
 
-            startsCombat = false,
-            -- texture = ,
+            spend = 0.1,
+            spendType = "mana",            
 
-            pvptalent = "earth_shield",
+            startsCombat = false,
+
+            talent = "earth_shield",
 
             handler = function ()
                 applyBuff( "earth_shield" )
+                removeBuff( "lightning_shield" )
             end,
         },
 
@@ -621,10 +801,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cooldown = function () return 20 * haste end,
             gcd = 'spell',
 
-            spend = 20,
-            spendType = 'maelstrom',
-
             startsCombat = true,
+            texture = 1016245,            
 
             handler = function ()
                 applyDebuff( 'target', 'earthen_spike' )
@@ -632,8 +810,45 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
                 if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
                 if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
-        end,
+            end,
         },
+
+        earthbind_totem = {
+            id = 2484,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+            
+            spend = 0.02,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136102,
+            
+            handler = function ()
+                applyDebuff( "target", "earthbind" )
+            end,
+        },
+        
+        elemental_blast = {
+            id = 117014,
+            cast = function () return maelstrom_mod( 2 ) * haste end,
+            cooldown = 12,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 651244,
+            
+            handler = function ()
+                consume_maelstrom( 5 )
+
+                -- applies hailstorm (334196)
+                -- applies elemental_blast_haste (173183)
+                -- applies elemental_blast_mastery (173184)
+                -- applies maelstrom_weapon (187881)
+                -- removes lashing_flames (334168)
+            end,
+        },        
 
         feral_spirit = {
             id = 51533,
@@ -644,91 +859,123 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             startsCombat = false,
             toggle = "cooldowns",
 
-            handler = function () feral_spirit.cast_time = query_time; applyBuff( "feral_spirit" ) end
+            handler = function ()
+                -- instant MW stack?
+                applyBuff( "feral_spirit" )
+            end
         },
 
-        flametongue = {
-            id = 193796,
+        fire_nova = {
+            id = 333974,
             cast = 0,
-            cooldown = function () return 12 * haste end,
-            gcd = 'spell',
-
+            cooldown = 15,
+            gcd = "spell",
+            
             startsCombat = true,
+            texture = 459027,
 
+            talent = "fire_nova",
+            
             handler = function ()
-                applyBuff( 'flametongue', 16 + min( 4.8, buff.flametongue.remains ) )
-
-                if level < 116 and equipped.eye_of_the_twisting_nether then
-                    applyBuff( 'fire_of_the_twisting_nether', 8 )
-                end
-
-                if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
-
-                removeBuff( "strength_of_earth" )
             end,
         },
 
+        flame_shock = {
+            id = 188389,
+            cast = 0,
+            cooldown = 6,
+            gcd = "spell",
+            
+            spend = 0.15,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 135813,
+            
+            handler = function ()
+                applyDebuff( "target", "flame_shock" )
 
-        frostbrand = {
-            id = 196834,
+                setCooldown( "frost_shock", 6 * haste )
+            end,
+        },
+
+        flametongue_weapon = {
+            id = 318038,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
 
-            spend = 20,
-            spendType = 'maelstrom',
-
-            startsCombat = true,
-
+            essential = true,
+            
+            startsCombat = false,
+            texture = 135814,
+            
             handler = function ()
-                applyBuff( 'frostbrand', 16 + min( 4.8, buff.frostbrand.remains ) )
-
-                if level < 116 and equipped.eye_of_the_twisting_nether then
-                    applyBuff( 'chill_of_the_twisting_nether', 8 )
-                end
-
-                if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
-
-                removeBuff( "strength_of_earth" )
+                applyBuff( "flametongue_weapon" )
             end,
         },
 
+        frost_shock = {
+            id = 196840,
+            cast = 0,
+            cooldown = 6,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 135849,
+            
+            handler = function ()
+                applyDebuff( "target", "frost_shock" )
+                removeBuff( "hailstorm" )
 
-        fury_of_air = {
-            id = 197211,
+                setCooldown( "flame_shock", 6 * haste )
+            end,
+        },        
+
+        ghost_wolf = {
+            id = 2645,
             cast = 0,
             cooldown = 0,
-            gcd = function( x )
-                if buff.fury_of_air.up then return 'off' end
-                return "spell"
-            end,
-
-            spend = 3,
-            spendType = "maelstrom",
-
-            talent = 'fury_of_air',
-
-            startsCombat = false,
-
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 136095,
+            
             handler = function ()
-                if buff.fury_of_air.up then removeBuff( 'fury_of_air' )
-                else applyBuff( 'fury_of_air', 3600 ) end
-
-                if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
-        end,
+                applyBuff( "ghost_wolf" )
+            end,
         },
 
+        healing_stream_totem = {
+            id = 5394,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+            
+            spend = 0.09,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 135127,
+            
+            handler = function ()
+            end,
+        },        
 
         healing_surge = {
             id = 188070,
-            cast = function() return maelstrom.current >= 20 and 0 or ( 2 * haste ) end,
+            cast = function () return maelstrom_mod( 1.5 ) * haste end,
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return maelstrom.current >= 20 and 20 or 0 end,
-            spendType = "maelstrom",
+            spend = function () return maelstrom_mod( 0.23 ) end,
+            spendType = "mana",
 
             startsCombat = false,
+
+            handler = function ()
+                consume_maelstrom( 5 )
+            end                
         },
 
 
@@ -756,17 +1003,17 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         lava_lash = {
             id = 60103,
             cast = 0,
-            cooldown = 0,
+            cooldown = 18,
             gcd = "spell",
 
-            spend = function() return buff.hot_hand.up and 0 or 40 end,
-            spendType = "maelstrom",
-
             startsCombat = true,
+            texture = 236289,
 
             handler = function ()
                 removeBuff( 'hot_hand' )
                 removeDebuff( "target", "primal_primer" )
+
+                if talent.lashing_flames.enabled then applyDebuff( "target", "lashing_flames" ) end
 
                 if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'fire_of_the_twisting_nether' )
@@ -779,27 +1026,29 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             end,
         },
 
-
         lightning_bolt = {
-            id = 187837,
-            cast = 0,
-            cooldown = function() return talent.overcharge.enabled and ( 12 * haste ) or 0 end,
+            id = 188196,
+            cast = function () return maelstrom_mod( 2 ) * haste end,
+            cooldown = 0,
             gcd = "spell",
-
-            spend = function() return talent.overcharge.enabled and min( maelstrom.current, 40 ) or 0 end,
-            spendType = 'maelstrom',
 
             startsCombat = true,
 
             handler = function ()
+                if buff.stormkeeper.up then
+                    removeBuff( "stormkeeper" )
+                    return
+                end
+
+                consume_maelstrom( 5 )
+
                 if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'shock_of_the_twisting_nether' )
                 end
 
                 if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
-        end,
+            end,
         },
-
 
         lightning_shield = {
             id = 192106,
@@ -808,14 +1057,14 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             gcd = "spell",
 
             startsCombat = false,
-            talent = 'lightning_shield',
             essential = true,
 
-            readyTime = function () return buff.lightning_shield.remains - 120 end,
-            usable = function () return buff.lightning_shield.remains < 120 and ( time == 0 or buff.lightning_shield.stack == 1 ) end,
-            handler = function () applyBuff( 'lightning_shield', nil, 1 ) end,
+            timeToReady = function () return buff.lightning_shield.remains - 120 end,
+            handler = function ()
+                removeBuff( "earth_shield" )
+                applyBuff( "lightning_shield" )
+            end,
         },
-
 
         purge = {
             id = 370,
@@ -832,74 +1081,60 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             toggle = "interrupts",
             interrupt = true,
 
-            usable = function () return buff.dispellable_magic.up, "requires dispellable magic aura" end,
+            buff = "dispellable_magic",
+
             handler = function ()
                 removeBuff( "dispellable_magic" )
             end,
         },
 
-
-        rockbiter = {
-            id = 193786,
+        spirit_walk = {
+            id = 58875,
             cast = 0,
-            cooldown = function() local x = 6 * haste; return talent.boulderfist.enabled and ( x * 0.85 ) or x end,
-            recharge = function() local x = 6 * haste; return talent.boulderfist.enabled and ( x * 0.85 ) or x end,
-            charges = 2,
+            cooldown = 60,
             gcd = "spell",
-
-            spend = -25,
-            spendType = "maelstrom",
-
-            startsCombat = true,
-
-            recheck = function () return ( 1.7 - charges_fractional ) * recharge end,
-
+            
+            startsCombat = false,
+            texture = 132328,
+            
             handler = function ()
-                if level < 116 and equipped.eye_of_the_twisting_nether then
-                    applyBuff( 'shock_of_the_twisting_nether' )
-                end
-                removeBuff( 'force_of_the_mountain' )
-                if set_bonus.tier21_4pc > 0 then applyDebuff( 'target', 'exposed_elements', 4.5 ) end
-
-                if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
-
-                if azerite.strength_of_earth.enabled then applyBuff( "strength_of_earth" ) end
+                applyBuff( "spirit_walk" )
             end,
         },
 
+        stormkeeper = {
+            id = 320137,
+            cast = function () return maelstrom_mod( 1.5 ) * haste end,
+            cooldown = 60,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 839977,
+
+            talent = "stormkeeper",
+            
+            handler = function ()
+                applyBuff( "stormkeeper", nil, 2 )
+                consume_maelstrom( 5 )              
+            end,
+        },
 
         stormstrike = {
             id = 17364,
             cast = 0,
-            cooldown = function()
-                if buff.stormbringer.up then return 0 end
-                if buff.ascendance.up then return 3 * haste end
-                return 9 * haste
-            end,
+            cooldown = function() return gcd.execute * 6 end,
             gcd = "spell",
-
-            spend = function()
-                if buff.stormbringer.up then return 0 end
-                return max( 0,  buff.ascendance.up and 10 or 30 )
-            end,
-
-            spendType = 'maelstrom',
 
             startsCombat = true,
             texture = 132314,
 
+            bind = "windstrike",
+
             cycle = function () return azerite.lightning_conduit.enabled and "lightning_conduit" or nil end,
 
-            usable = function() return buff.ascendance.down end,
-            handler = function ()
-                if buff.lightning_shield.up then
-                    addStack( "lightning_shield", 3600, 2 )
-                    if buff.lightning_shield.stack >= 20 then
-                        applyBuff( "lightning_shield" )
-                        applyBuff( "lightning_shield_overcharge" )
-                    end
-                end
+            nobuff = "ascendance",
 
+            handler = function ()
                 setCooldown( 'windstrike', action.stormstrike.cooldown )
                 setCooldown( 'strike', action.stormstrike.cooldown )
 
@@ -914,6 +1149,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 end
 
                 removeBuff( "strength_of_earth" )
+
+                if talent.cycle_of_the_elements.enabled then
+                    setCooldown( "flame_shock", 0 )
+                    setCooldown( "frost_shock", 0 )
+                end
+
+                removeBuff( "legacy_of_the_frost_witch" )
 
                 if level < 116 then
                     if equipped.storm_tempests then
@@ -937,28 +1179,22 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             copy = "strike", -- copies this ability to this key or keys (if a table value)
         },
 
-
         sundering = {
             id = 197214,
             cast = 0,
             cooldown = 40,
             gcd = "spell",
 
-            spend = 20,
-            spendType = "maelstrom",
-
-            startsCombat = true,
-            talent = 'sundering',
-
             handler = function ()
                 if level < 116 and equipped.eye_of_the_twisting_nether then
                     applyBuff( 'fire_of_the_twisting_nether' )
                 end
 
+                applyDebuff( "target", "sundering" )
+
                 if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
             end,
         },
-
 
         thundercharge = {
             id = 204366,
@@ -976,29 +1212,83 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             end,
         },
 
-
         totem_mastery = {
-            id = 262395,
+            id = 333925,
             cast = 0,
-            cooldown = 0,
+            cooldown = 60,
             gcd = "spell",
 
             startsCombat = false,
             talent = "totem_mastery",
-            essential = true,
-
-            readyTime = function () return buff.totem_mastery.remains - 15 end,
 
             handler = function ()
-                applyBuff( 'resonance_totem', 120 )
-                applyBuff( 'storm_totem', 120 )
-                applyBuff( 'ember_totem', 120 )
-                if buff.tailwind_totem.down then stat.spell_haste = stat.spell_haste + 0.02 end
-                applyBuff( 'tailwind_totem', 120 )
-                applyBuff( 'totem_mastery', 120 )
+                summonPet( "searing_totem", 15 )
+                summonPet( "healing_stream_totem", 15 )
+                summonPet( "earthbind_totem", 20 )
             end,
         },
 
+        tremor_totem = {
+            id = 8143,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 0.02,
+            spendType = "mana",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 136108,
+            
+            handler = function ()
+            end,
+        },        
+
+        vesper_totem = {
+            id = 324386,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 0.1,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3565451,
+            
+            handler = function ()
+                applyBuff( "vesper_totem" )
+            end,
+        },        
+
+        water_walking = {
+            id = 546,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 135863,
+            
+            handler = function ()
+                applyBuff( "water_walking" )
+            end,
+        },        
+
+        wind_rush_totem = {
+            id = 192077,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 538576,
+            
+            handler = function ()
+            end,
+        },
 
         wind_shear = {
             id = 57994,
@@ -1017,19 +1307,54 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             handler = function () interrupt() end,
         },
 
+        windfury_totem = {
+            id = 8512,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            essential = true,
+            
+            spend = 0.12,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 136114,
+            
+            handler = function ()
+                applyBuff( "windfury_totem" )
+            end,
+        },
+
+        windfury_weapon = {
+            id = 33757,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            essential = true,
+            
+            startsCombat = false,
+            texture = 462329,
+
+            handler = function ()
+                applyBuff( "windfury_weapon" )
+            end,
+        },
+        
         windstrike = {
             id = 115356,
             cast = 0,
-            cooldown = function() return buff.stormbringer.up and 0 or ( 3 * haste ) end,
+            cooldown = function() return gcd.execute * 2 - 0.01 end,
             gcd = "spell",
-
-            spend = function() return buff.stormbringer.up and 0 or 10 end,
-            spendType = "maelstrom",
 
             texture = 1029585,
 
             known = 17364,
-            usable = function () return buff.ascendance.up end,
+            buff = 'ascendance',
+
+            bind = "stormstrike",
+
             handler = function ()
                 setCooldown( 'stormstrike', action.stormstrike.cooldown )
                 setCooldown( 'strike', action.stormstrike.cooldown )
@@ -1041,6 +1366,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 removeBuff( "gathering_storms" )
 
                 removeBuff( "strength_of_earth" )
+
+                if talent.cycle_of_the_elements.enabled then
+                    setCooldown( "flame_shock", 0 )
+                    setCooldown( "frost_shock", 0 )
+                end
+
+                removeBuff( "legacy_of_the_frost_witch" )
 
                 if level < 116 then
                     if equipped.storm_tempests then
@@ -1081,7 +1413,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     } )
 
 
-    spec:RegisterPack( "Enhancement", 20200124, [[dKePDbqiQk5rKuXMOk9jsQknkskNIK0Qqa9kvPMfI4wuvk2fv(fQsdJQIJPkAziqpdvrMMQqDnsQY2ufY3OQunoufvNdvrzDiayEQc6Ekv7tvYbPQuAHikpebnrea5IiaTrsQQgjcaPtssvbRuf1mPQQBIaqTtsIFssLgQQalfbG4PImvePVssvH2lWFf1GP4WelwLEmPMSQ6YqBwjFgHgTs50cRgbq9AvKzd62Ky3k(nkdhv1YL65uA6sUoQSDv47OkmEsQk68ufRNQkZhr1(rAWtaPG0xkeOcb9HG(4Ztc(yNp8m1Z35jEoivE4JGeFrFsiIG0ikiiraNnz0OcofiXx8azYhqkizzCTgbPTQ4BjaWlVeJAJ760mfETHchuQGn6wwfV2qrZliD5cyP(WaUG0xkeOcb9HG(4Ztc(yNp8m1Z35j1dKeUAJ1Guku4GsfSHWwwfiTf)poGli9rRgKuhQHaoBYOrfCkQjTjkYqpRouZwv8Tea4LxIrTXDDAMcV2qHdkvWgDlRIxBOO5LEwDOMZYWjThQHGpjHAiOpe0h6z6z1HAiCtgIOLaa9S6qn(gQX3()4NA43OMPCLIAiLvOc1qaSylS94ONvhQX3qneGyJ6BrnCwKAiGsxBudbeIk4ucKAuZkhi1ef1Syn1WvbmkpQ6ajyyllGuqIXhhSbKcu5jGuqch5cXpGmqs3rHDiGKIGqB1mfQ5HuZt1JA8snvOGuZdPgI6pij6kydi1m9PBuydkqbsksmfoYOraPavEcifKWrUq8didK0Duyhci5lQ5YTwUfuuWIne5qhhFqs0vWgqAbffSydroeuaviiGuqch5cXpGmqs3rHDiGujqCk3MeqBXAfhoYfIFQXl14lQ5YTwUvZS1TL5744tnEPMdPd5cr3IR9q4gQpLv)KbsIUc2asRMzRBlZhuGcKwbeInGuGkpbKcs4ixi(bKbs6okSdbKAj(z8aNYj)V1fd18IAESpGKORGnGKLB(yhdrqbuHGasbjCKle)aYajDhf2HasTe)mEGt5K)36IHAErn8mFOgVuJVOMl3A5eRgNVmA0XXNA8sn(IAUCRLtHblCY8af(SXXXNA8sn(IAUCRLl0EY4Ni644tnEPgFrnxU1YPBrFcgdXSLRjIoo(uJxQXxuZhVCRLdLU2WjB5hNqhhFqs0vWgqAX0Cw8Nf)WokmFrrbuav4jaPGeoYfIFazGKUJc7qaPwIFgpWPCY)BDXqnVOMh5dij6kydiXNRJLNyiMVqXwGcOYJbKcs4ixi(bKbs6okSdbKAj(z8aNYj)V1fd18IAEKpGKORGnGuh85dXCmzlFrJGcOI6bifKeDfSbKQnU5JTEtAIiiHJCH4hqgOaQ8iaPGKORGnGKMnACQwk8NxqrbbjCKle)aYafqfFhqkij6kydi1OWpgI5fuuqliHJCH4hqgOaQWZbKcsIUc2asxHyMTYvh6twqch5cXpGmqbuHNbifKWrUq8didK0DuyhcivceNYTyTgxCWmpI5BD4ixi(PgVuJOR4aZ4GkbAPMxuZtQXl1CiDixi6wCThc3q9PmH(dsIUc2as6wSBzyqCRMyickGkp9bqkiHJCH4hqgiP7OWoeqQeioLZIshdXSyTchSC4ixi(bjrxbBaPfuuWIne5qqbu55taPGeoYfIFazGKUJc7qajFrnIFyhf643HIaZ87qbBhoYfIFQXl1uceNYTXQ8MmFhoYfIFQXl1C5wl3gRYBY8Dnk6cKeDfSbKGYHKHIDduavEsqaPGeoYfIFazGKUJc7qajrxXbMXbvc0snVOMNuJxQ5q6qUq0T4ApeUH6tzc9hKeDfSbK0Ty3YWG4wnXqeuavEYtasbjCKle)aYajDhf2HaskccTvZuOMhsn(UpuJxQXxuZLBTC2QXHyTLzRmkDT544dsIUc2asntF6gf2GcOYZhdifKWrUq8didK0DuyhciPg1uceNYPBXUfdXSTyTIdh5cXp1qo5utjqCk3I1ACXbZ8iMV1HJCH4NAuLA8snhshYfIo1LWhWyWmH(dsIUc2as6wSBzyqCRMyickGkpvpaPGeoYfIFazGKUJc7qaPdPd5crN6s4dymy2F)PgVuZH0HCHOBX1EiCd1NY(7pij6kydibLdjdf7gOaQ88rasbjrxbBajfuH1EYSvgYPJF(3OOybjCKle)aYafqLN(oGuqs0vWgqQz6t3OWgKWrUq8diduavEYZbKcs4ixi(bKbs6okSdbKkbIt52KaAlwR4WrUq8tnEPMl3A5wnZw3wMVRrfjgl18qQ5XoEo18MAiQ)uJxQ5q6qUq0T4ApeUH6tz1pzGKORGnG0Qz262Y8bfqLN8maPGKORGnG0ckkyXgICiiHJCH4hqgOafiTAe9d7lxpznRraPavEcifKWrUq8didKeDfSbKGYHKHIDdK0Duyhcij(HDuOJFhkcmZVdfSDTmNOMx7udbPgVuZhVCRLJFhkcmZVdfSD2s0NOMDQ5PpuJxQ5q6qUq0T4ApeUH6tz)9NA8snhshYfIoc9)bmgm7V)GK2JgI5sAIyzbQ8euaviiGuqch5cXpGmqs3rHDiG0H0HCHOBX1EiCd1NYeWeij6kydiHsxB4KT8JtiOaQWtasbjCKle)aYajrxbBajBXAfB1XjeK0Duyhcij6koWmoOsGwQ5f18KA8snIFyhf6GbXTAIHywZMpxuoCKle)uJxQXxuZhVCRLdge3QjgIznB(Cr544tnEPMdPd5cr3IR9q4gQpLtjqs7rdXCjnrSSavEckGkpgqkiHJCH4hqgiP7OWoeq6YTwoBXALBhdrSDC8PgYjNAuJAeDfhyghujql18IAEsnEPMl3A5ik1g2XqmBlwRyDC8PgVuZH0HCHOBX1EiCd1NYPe1Okij6kydizlwRyRooHGcOI6bifKWrUq8didK0Duyhcij6koWmoOsGwQ51o1WtuJxQ5q6qUq0T4ApeUH6tzc9hKeDfSbK0Ty3YWG4wnXqeuavEeGuqch5cXpGmqs3rHDiGujqCkh7aB9M0erhoYfIFQXl1i6koWmoOsGwQzNAEsnEPMdPd5cr3IR9q4gQpL9NmQXl1Oii0wntHAETtnp2hqs0vWgqcge3QjgI5ldwGcOIVdifKWrUq8didK0Duyhcij(HDuOJFhkcmZVdfSDTmNOMx7udbPgVuZhVCRLJFhkcmZVdfSD2s0NOMxuJVtnEPMdPd5cr3IR9q4gQpL93FQXl1CiDixi6i0)hWyWS)(dsIUc2asq5qYqXUbkGk8CaPGeoYfIFazGKUJc7qaPdPd5crN6s4dymyoLOgVuZH0HCHOBX1EiCd1NYPe14LAoKoKleDe6)dymyoLajrxbBajBXAfB1Xjeuav4zasbjCKle)aYajDhf2HasF8YTwo(DOiWm)ouW2zlrFIA2PMN(qnEPMdPd5cr3IR9q4gQpL93Fqs0vWgqckhsgk2nqbkq6JlHdwasbQ8eqkij6kydiXJy(z7gkniHJCH4hqgOaQqqaPGeoYfIFazGeJpizXcKeDfSbKoKoKlebPdbYHGKAutjqCkNy148LrJoCKle)uJxQrnQ5YTwoXQX5lJgDC8PgYjNA0mg8Z4X4eRgNVmA01OIeJLAErnQNpuJQuJQud5KtnQrn(IAkbIt5eRgNVmA0HJCH4NA8snQrnlSfy2Yp6OCnQiXyPMxuJ6rnKto1Ozm4NXJXTWwGzl)OJY1OIeJLAErnQNpuJQuJQG0H05ruqqsZyWpJht26z0GcOcpbifKWrUq8didKy8bjlwGKORGnG0H0HCHiiDiqoeKueeARMPqnV2Pg1OMsG4uUfx7jZwzjAhoYfIFQHaPg1OMhrnVPgrxbBC2I1k2QJtOtZSf1Ok1OkiDiDEefeKwCThc3q9PCkbkGkpgqkiHJCH4hqgiX4dswSajrxbBaPdPd5crq6qGCiiPii0wntHAETtnQrnLaXPClU2tMTYs0oCKle)udbsnQrnpIAEtnIUc24GYHKHIDZPz2IAuLAufKoKopIccslU2dHBO(u2F)bfqf1dqkiHJCH4hqgiX4dswSajrxbBaPdPd5crq6qGCiiPii0wntHAETtnQrnLaXPClU2tMTYs0oCKle)udbsnQrnpIAEtnIUc240Ty3YWG4wnXq0Pz2IAuLAufKoKopIccslU2dHBO(uMq)bfqLhbifKWrUq8didKy8bjlwGKORGnG0H0HCHiiDiqoeKueeARMPqnV2Pg1OMsG4uUfx7jZwzjAhoYfIFQHaPg1OMhrnVPgrxbBCRMzRBlZ3Pz2IAuLAufKoKopIccslU2dHBO(uw9tgOaQ47asbjCKle)aYajgFqYIfij6kydiDiDixicshcKdbjfbH2QzkuZRDQrnQPeioLBX1EYSvwI2HJCH4NAiqQrnQ5ruZBQr0vWghkDTHt2YpoHonZwuJQuJQG0H05ruqqAX1EiCd1NYeWeOaQWZbKcs4ixi(bKbsm(GKflqs0vWgq6q6qUqeKoeihcskccTvZuOMx7uJAutjqCk3IR9KzRSeTdh5cXp1qGuJAuZJOM3uZJ9HAuLAufKoKopIccslU2dHBO(u2FYafqfEgGuqch5cXpGmqIXhKSybsIUc2ashshYfIG0Ha5qqsnQr0vCGzCqLaTuZlQ5j1qo5uJAuJMXGFgpghmiUvtmeZxgSCnQiXyPMx7udbPgcKAiQ)uJQuJQG0H05ruqqsDj8bmgeuavE6dGuqch5cXpGmqIXhKSybsIUc2ashshYfIG0Ha5qqsnQ5q6qUq0PUe(agdsnKto1Oii0wntHAETtnQrnLaXPCSdS1BsteD4ixi(PgcKAuJAESpuZBQr0vWgNTyTIT64e60mBrnQsnQsnQcshsNhrbbj1LWhWyWCkbkGkpFcifKWrUq8didKy8bjlwGKORGnG0H0HCHiiDiqoeKuJAoKoKleDQlHpGXGud5KtnkccTvZuOMx7uJAutjqCkh7aB9M0erhoYfIFQHaPg1OMh7d18MAeDfSXbLdjdf7MtZSf1Ok1Ok1OkiDiDEefeKuxcFaJbZ(7pOaQ8KGasbjCKle)aYajgFqYIfij6kydiDiDixicshcKdbj1OMdPd5crN6s4dymi1qo5uJIGqB1mfQ51o1Og1uceNYXoWwVjnr0HJCH4NAiqQrnQ5X(qnVPgrxbBC6wSBzyqCRMyi60mBrnQsnQsnQcshsNhrbbj1LWhWyWmH(dkGkp5jaPGeoYfIFazGeJpizXcKeDfSbKoKoKlebPdbYHGKAuZH0HCHOtDj8bmgKAiNCQrrqOTAMc18ANAuJAkbIt5yhyR3KMi6WrUq8tnei1Og18yFOM3uJORGnUvZS1TL570mBrnQsnQsnQcshsNhrbbj1LWhWyWS6Nmqbu55JbKcs4ixi(bKbsm(GKflqs0vWgq6q6qUqeKoeihcsIUIdmJdQeOLA2PMNud5KtnkccTvZuOMx7uJAuJORGnoDl2TmmiUvtmeDAMTOM3uJORGnoOCizOy3CAMTOgvbPdPZJOGGeH()agdM93Fqbu5P6bifKWrUq8didKy8bjlwGKORGnG0H0HCHiiDiqoeKeDfhyghujql1StnpPgYjNAueeARMPqnV2Pg1OgrxbBC6wSBzyqCRMyi60mBrnVPgrxbBC2I1k2QJtOtZSf1OkiDiDEefeKi0)hWyWCkbkGkpFeGuqch5cXpGmqIXhKSybsIUc2ashshYfIG0Ha5qqsnQPeioLBJv5nz(oCKle)uJxQPeioLBtcOTyTIdh5cXp14LAe)Wok0XVdfbM53Hc2oCKle)uJQG0H05ruqqA1i6h2xUEY4ixi(bfqLN(oGuqch5cXpGmqIXhKSybsIUc2ashshYfIG0Ha5qqsnQXxuZH0HCHOB1i6h2xUEY4ixi(PgVuJAutjqCk3LXb)yVcB5WrUq8tnEPMsG4uoOmFlm(Odh5cXp14LAe)Wok0zRghI1wMTYO01Mdh5cXp1Ok1OkiDiDEefeKAM(KfgFmJJCH4huavEYZbKcs4ixi(bKbsIUc2asAbcZIUc2KHHTajyyR8ikiiX4Jd2GcOYtEgGuqch5cXpGmqs3rHDiG0LBTCIvJZxgn644dsIUc2asAbcZIUc2KHHTajyyR8ikiijwnOaQqqFaKcs4ixi(bKbsIUc2asAbcZIUc2KHHTajyyR8ikiiXVdwhLhqbuHGpbKcs4ixi(bKbs6okSdbKeDfhyghujql18qQHNajrxbBajTaHzrxbBYWWwGemSvEefeKuKykCKrJGcOcbjiGuqch5cXpGmqs0vWgqslqyw0vWMmmSfibdBLhrbbj93ckGkeKNaKcs4ixi(bKbs6okSdbKoKoKleDRgr)W(Y1tgh5cXpij6kydiPfiml6kytgg2cKGHTYJOGG0Qr0pSVC9K1Sgbfqfc(yaPGeoYfIFazGKUJc7qajFrnhshYfIUvJOFyF56jJJCH4hKeDfSbK0ceMfDfSjddBbsWWw5ruqq6JlHdwznRrqbuHGQhGuqch5cXpGmqs3rHDiGKOR4aZ4GkbAPMx7udpbsIUc2asAbcZIUc2KHHTajyyR8ikiiPiXu4iJgbfqfc(iaPGeoYfIFazGKORGnGKwGWSORGnzyylqcg2kpIccsRacXguGcK43OMPCLcqkqLNasbjrxbBaPIvOswrSf2EajCKle)aYafqfccifKeDfSbKGbXTAIHy2Ufi8ds4ixi(bKbkGk8eGuqs0vWgqIpRc2as4ixi(bKbkqbs6VfqkqLNasbjCKle)GliP7OWoeqs8d7OqNmA0wTaZnAzJmA0HJCH4hKeDfSbKUqg7d5SfOaQqqaPGKORGnGepyn8FGXKB0Ygz0iiHJCH4hqgOaQWtasbjCKle)aYajDhf2HashshYfIonJb)mEmzRNrdsIUc2asxSTyFkgIGcOYJbKcs4ixi(bKbsJOGGK4NDtAXMxSPYSvMpJhydsIUc2asIF2nPfBEXMkZwz(mEGnOaQOEasbjCKle)aYajDhf2HashshYfIonJb)mEmzRNrdsIUc2asxiJ9ZlU2dOaQ8iaPGeoYfIFazGKUJc7qaPdPd5crNMXGFgpMS1ZObjrxbBaPv04fYyFqbuX3bKcs4ixi(bKbs6okSdbKoKoKleDAgd(z8yYwpJgKeDfSbKKrJ2QfywlqiOaQWZbKcs4ixi(bKbs6okSdbKUCRLtSAC(YOrhhFQHCYPgFrnLaXPCIvJZxgn6WrUq8tnEPMf2cmB5hDuUgvKySuZlQr9OgYjNAkPjILRcfmxS8pqQ5H7uZJ8bKeDfSbK4ZQGnGcOcpdqkij6kydirKt6FitMTYIFyZQnqch5cXpGmqbu5PpasbjrxbBaPf2cmB5hDuGeoYfIFazGcOYZNasbjCKle)aYajDhf2HasTe)mEGt5K)36IHAErn8mFOgYjNAeDfhyghujql18IAEcsIUc2asxiJ9ZSvU2WmoOIhqbu5jbbKcs4ixi(bKbs6okSdbK0mg8Z4X4SvhNqxJksmwQ5f14dij6kydijwnoFz0iOaQ8KNaKcs4ixi(bKbsIUc2asID7qg0MBXpwN1SwGGKUJc7qaPpE5wlxl(X6SM1cm)Xl3A5(mEmud5KtnQrnL0eXYvHcMlw(hi18qQHG(qnEPMpE5wlxl(X6SM1cm)Xl3A5SLOprnVOgcsnQcsJOGGKy3oKbT5w8J1znRfiOaQ88XasbjCKle)aYajrxbBajXUDidAZT4hRZAwlqqs3rHDiG0hVCRLRf)yDwZAbM)4LBTC2s0NOMxudbPgVuZhVCRLtZMpNUIdmhZP8hVCRL7Z4XqnEPg1OMl3A5eRgNVmA01OIeJLAErnp9HAiNCQ5YTwofgSWjZdu4ZgxJksmwQ5f180hQHCYPMl3A50TOpbJHy2Y1erxJksmwQ5f180hQHCYPMl3A5cTNm(jIUgvKySuZlQ5Ppud5KtnF8YTwou6AdNSLFCcDnQiXyPMxuZJOgvbPruqqsSBhYG2Cl(X6SM1ceuavEQEasbjCKle)aYajrxbBajXUDidAZT4hRZAwlqqs3rHDiGKAuZhVCRLtZMpNUIdmhZP8hVCRLJJp1qo5uZLBTCIvJZxgn6AurIXsnVOMN(qnKto1C5wlNcdw4K5bk8zJRrfjgl18IAE6d1qo5uZLBTC6w0NGXqmB5AIORrfjgl18IAE6d1qo5uZLBTCH2tg)erxJksmwQ5f180hQHCYPMpE5wlhkDTHt2YpoHUgvKySuZlQ5ruJQuJxQPKMiwUnuG1MJVUOMhsn80tqAefeKe72HmOn3IFSoRzTabfqLNpcqkij6kydiXzXCuOIfKWrUq8diduGcK43bRJYdGuGkpbKcs4ixi(bKbs6okSdbKeDfhyghujql18ANAuJA45uJVHAuJAkbIt5wSwJloyMhX8ToCKle)udbsn8e1Ok1Ok14LAoKoKleDRgr)W(Y1tgh5cXp14LAoKoKleDlU2dHBO(uMq)bjrxbBajDl2TmmiUvtmebfqfccifKWrUq8didK0DuyhciD5wlxJ6tq0AZlwRrhhFQHCYPMkuqQ5HuJ6bsIUc2as1gM5MlJB(5fR1iOaQWtasbjCKle)aYajDhf2HasIFyhf643HIaZ87qbBxlZjQ51o1qqQXl18Xl3A543HIaZ87qbBNTe9jQzNAE6d14LAeDfhyghujql1StnpPgVuZH0HCHOB1i6h2xUEY4ixi(PgVuZH0HCHOBX1EiCd1NY(7pij6kydibLdjdf7gOaQ8yaPGeoYfIFazGKUJc7qaPdPd5cr3Qr0pSVC9KXrUq8tnEPMl3A5wqrbl2qKdDnQiXyPMhsne1FQXl1i6koWmoOsGwQ5f18eKeDfSbKwqrbl2qKdbfqf1dqkiHJCH4hqgiP7OWoeq6q6qUq0TAe9d7lxpzCKle)uJxQ5YTwUvZS1TL57AurIXsnpKAiQ)uJxQr0vCGzCqLaTuZlQ5jij6kydiTAMTUTmFqbu5rasbjCKle)aYajDhf2Has(IAUCRLt3IDlddIB1edrhhFQXl1i6koWmoOsGwQ5f18KA8snhshYfIUfx7HWnuFktO)GKORGnGKUf7wgge3QjgIGcOIVdifKWrUq8didK0Duyhci5lQ5YTwUfx7jZwzjAhhFQXl1Oii0wntHAETtne0hQXl1y5JqyUKMiww3IR9KzRSeD(lkcrKAETtnQrnpPM3uZH0HCHOB1i6h2xUEY4ixi(PgvbjrxbBaPfx7jZwzjAqbuHNdifKWrUq8didK0DuyhciD5wl3IR9KzRSeTJJp14LAS8rimxstelRBX1EYSvwIo)ffHisnpKAuJAEsnVPMdPd5cr3Qr0pSVC9KXrUq8tnQcsIUc2aslU2tMTYs0GcOcpdqkiHJCH4hqgiP7OWoeq6YTwUgTSrgnMlwHkUgvKySuZd3Pgcsnei1qu)bjrxbBaPIvOswrSf2EafqLN(aifKWrUq8didK0Duyhcij6koWmoOsGwQ51o1WtuJxQrnQXxudAT4Or3fYy)mBLRnmJdQ4XPieGzn1qo5uJAudAT4Or3fYy)mBLRnmJdQ4XPieGzn14LAuJAUCRLZIyTfdXClerhhFQHCYPgnJb)mEmUlKX(z2kxByghuXJRrfjgl18IAESpuJQuJQuJQGKORGnGKLB(yhdrqbu55taPGeoYfIFazGKUJc7qajrxXbMXbvc0snVOMNGKORGnG0IP5S4pl(HDuy(IIcOaQ8KGasbjCKle)aYajDhf2HasIUIdmJdQeOLAErnpbjrxbBaj(CDS8edX8fk2cuavEYtasbjCKle)aYajDhf2HasIUIdmJdQeOLAErnpbjrxbBaPo4ZhI5yYw(IgbfqLNpgqkiHJCH4hqgiP7OWoeqQeioLdkZ3cJp6WrUq8tnEPgFrnxU1YbL5BHXhDC8PgVuJEtAIOnVArxbBei18IAE68Dqs0vWgqQz6t3OWguavEQEasbjCKle)aYajDhf2HasQrnIFyhf6gP4AbM3KwHnEC4ixi(PgVuZLBTCJuCTaZBsRWgp5vZSLRrfjgl18WDQHGudbsne1FQrvQXl1uceNYTjb0wSwXHJCH4NA8snhshYfIUfx7HWnuFkR(jdKeDfSbKwnZw3wMpOaQ88rasbjCKle)aYajDhf2HasQrnIFyhf6gP4AbM3KwHnEC4ixi(PgVuZLBTCJuCTaZBsRWgp5v0ORrfjgl18WDQHGudbsne1FQrvqs0vWgqAbffSydroeuavE67asbjCKle)aYajDhf2HasQrnIFyhf6gP4AbM3KwHnEC4ixi(PgVuZLBTCJuCTaZBsRWgp5rkUgDnQiXyPMhUtneKAiqQHO(tnQsnEPgfbH2QzkuZdPgF3hqs0vWgqQz6t3OWguGcK(4s4GvwZAeqkqLNasbjCKle)aYajDhf2HashshYfIUfx7HWnuFktatGKORGnGekDTHt2YpoHGcOcbbKcs4ixi(bKbsIUc2as2I1k2QJtiiP7OWoeqs0vCGzCqLaTuZlQ5j14LAe)Wok0bdIB1edXSMnFUOC4ixi(PgVuJVOMpE5wlhmiUvtmeZA285IYXXNA8snhshYfIUfx7HWnuFkNsGK2JgI5sAIyzbQ8euav4jaPGeoYfIFazGKUJc7qaPl3A5SfRvUDmeX2XXNAiNCQrnQr0vCGzCqLaTuZlQ5j14LAUCRLJOuByhdXSTyTI1XXNA8snhshYfIUfx7HWnuFkNsuJQGKORGnGKTyTIT64eckGkpgqkiHJCH4hqgiP7OWoeqs0vCGzCqLaTuZRDQHNOgVuZH0HCHOBX1EiCd1NYe6pij6kydiPBXULHbXTAIHiOaQOEasbjCKle)aYajDhf2HasLaXPCSdS1BsteD4ixi(PgVuJOR4aZ4GkbAPMDQ5j14LAoKoKleDlU2dHBO(u2FYOgVuJIGqB1mfQ51o18yFajrxbBajyqCRMyiMVmybkGkpcqkiHJCH4hqgiP7OWoeq6q6qUq0PUe(agdMtjQXl1CiDixi6wCThc3q9PCkbsIUc2as2I1k2QJtiOafijwnGuGkpbKcs4ixi(bKbs6okSdbK8f1C5wlNUf7wgge3QjgIoo(uJxQr0vCGzCqLaTuZlQ5j14LAoKoKleDlU2dHBO(uMq)bjrxbBajDl2TmmiUvtmebfqfccifKWrUq8didK0DuyhcivceNYbL5BHXhD4ixi(PgVuJVOMl3A5GY8TW4Joo(uJxQrVjnr0MxTORGncKAErnpD(oij6kydi1m9PBuydkGk8eGuqs0vWgqIhX8TvhNqqch5cXpGmqbkqbshyBd2auHG(8KN5dp)PpGepKEIHOfKuFqHpRl8tnp9HAeDfSHAGHTSo6zqYYh1avi4J4jqIFZwbebj1HAiGZMmAubNIAsBIIm0ZQd1SvfFlbaE5LyuBCxNMPWRnu4GsfSr3YQ41gkAEPNvhQ5SmCs7HAi4tsOgc6db9HEMEwDOgc3KHiAjaqpRouJVHA8T)p(Pg(nQzkxPOgszfQqneal2cBpo6z1HA8nudbi2O(wudNfPgcO01g1qaHOcoLaPg1SYbsnrrnlwtnCvaJYJQo6z6z1HAiGQprnxHFQ5IlwJuJMPCLIAUiXySoQX3Q1i)YsndB8nBsRS4GuJORGnwQHnqpo6z1HAeDfSX643OMPCLAFbf7j6z1HAeDfSX643OMPCL69oVlg7tpRouJORGnwh)g1mLRuV35v4iQGtjvWg6z1HAsJW3UXkQPL4tnxU1c)uJTKYsnxCXAKA0mLRuuZfjgJLAK5tn8B03WNvvmePMWsnF2Go6z1HAeDfSX643OMPCL69oV2r4B3yv2wszPNfDfSX643OMPCL69oVfRqLSIylS9qpl6kyJ1XVrnt5k17DEHbXTAIHy2Ufi8tpl6kyJ1XVrnt5k17DE5ZQGn0Z0ZQd1qavFIAUc)udEGThQPcfKAQnKAeDXAQjSuJCibuUq0rpl6kyJDNhX8Z2nuA6z1HA8TvHk8lQPyuJ1ZOPMw0HaPgnJb)mEmwQHhrTrn(wRgNVmAKAyn1O(XwGutIF0rzjHAyn1WzrQHnuJMXGFgpgQjwuJvoIHi1uBOc1WJacPMgTCWIAIHASbXjwHwMIA0mg8Z4Xqn8qSfspl6kyJ99oVhshYfIKmIcURzm4NXJjB9mAsoeihURwjqCkNy148LrJoCKle)Ev7YTwoXQX5lJgDC8jNCnJb)mEmoXQX5lJgDnQiXyFPE(OQQKtUA(QeioLtSAC(YOrhoYfIFVQTWwGzl)OJY1OIeJ9L6ro5Agd(z8yClSfy2Yp6OCnQiXyFPE(OQQ0ZQd1qaIrndROgolsnc1Oii0wntX3Oz2kgIuJCdyuEOMyrnrrn8iGqQ52XqKA8W4OMIrn(qnkccTvZuOgz(uJwgncPMfx7HAylQrI2rpl6kyJ99oVhshYfIKmIcUV4ApeUH6t5uIKdbYH7kccTvZuETRwjqCk3IR9KzRSeTdh5cXpbQ2JEl6kyJZwSwXwDCcDAMTuvv6zrxbBSV359q6qUqKKruW9fx7HWnuFk7V)KCiqoCxrqOTAMYRD1kbIt5wCTNmBLLOD4ixi(jq1E0BrxbBCq5qYqXU50mBPQQ0ZIUc2yFVZ7H0HCHijJOG7lU2dHBO(uMq)j5qGC4UIGqB1mLx7QvceNYT4Apz2klr7WrUq8tGQ9O3IUc240Ty3YWG4wnXq0Pz2svvPNfDfSX(EN3dPd5crsgrb3xCThc3q9PS6NmsoeihURii0wnt51UALaXPClU2tMTYs0oCKle)eOAp6TORGnUvZS1TL570mBPQQ0ZIUc2yFVZ7H0HCHijJOG7lU2dHBO(uMaMi5qGC4UIGqB1mLx7QvceNYT4Apz2klr7WrUq8tGQ9O3IUc24qPRnCYw(Xj0Pz2svvPNfDfSX(EN3dPd5crsgrb3xCThc3q9PS)KrYHa5WDfbH2QzkV2vReioLBX1EYSvwI2HJCH4Nav7rVFSpQQk9S6qn(2Qqf(f1umQHpJbPgfbH2QzkuJLrnEyCQVqi1CrQrUqKAkg1OfBrnc1S4Gqp(g(mEGn(PgyqCRMyisnxgSOgXsnwgBOgXsnrP(APg5qcOCHi1WJnCOMvqCRIHi1WgKAkPjILJEw0vWg77DEpKoKlejzefCxDj8bmgKKdbYH7Qj6koWmoOsG2xpjNC10mg8Z4X4GbXTAIHy(YGLRrfjg7RDcsGe1FvvLEw0vWg77DEpKoKlejzefCxDj8bmgmNsKCiqoCxTdPd5crN6s4dymi5KRii0wnt51UALaXPCSdS1BsteD4ixi(jq1ESpVfDfSXzlwRyRooHonZwQQQQ0ZIUc2yFVZ7H0HCHijJOG7QlHpGXGz)9NKdbYH7QDiDixi6uxcFaJbjNCfbH2QzkV2vReioLJDGTEtAIOdh5cXpbQ2J95TORGnoOCizOy3CAMTuvvvPNfDfSX(EN3dPd5crsgrb3vxcFaJbZe6pjhcKd3v7q6qUq0PUe(agdso5kccTvZuETRwjqCkh7aB9M0erhoYfIFcuTh7ZBrxbBC6wSBzyqCRMyi60mBPQQQspl6kyJ99oVhshYfIKmIcURUe(agdMv)KrYHa5WD1oKoKleDQlHpGXGKtUIGqB1mLx7QvceNYXoWwVjnr0HJCH4Nav7X(8w0vWg3Qz262Y8DAMTuvvvPNvhQX3wfQWVOMIrn8zmi1Oii0wntHAwSMAiSf7g14FqCRMyisnXIAu4GvWhIutjnrSSuJ0i1WVrloLJEw0vWg77DEpKoKlejzefCNq)FaJbZ(7pjhcKd3fDfhyghujq7(tYjxrqOTAMYRD1eDfSXPBXULHbXTAIHOtZS1BrxbBCq5qYqXU50mBPk9SORGn2378EiDixisYik4oH()agdMtjsoeihUl6koWmoOsG29NKtUIGqB1mLx7Qj6kyJt3IDlddIB1edrNMzR3IUc24SfRvSvhNqNMzlvPNfDfSX(EN3dPd5crsgrb3xnI(H9LRNmoYfIFsoeihURwjqCk3gRYBY8D4ixi(9wceNYTjb0wSwXHJCH43R4h2rHo(DOiWm)ouW2HJCH4xv6zrxbBSV359q6qUqKKruW9MPpzHXhZ4ixi(j5qGC4UA(6q6qUq0TAe9d7lxpzCKle)EvReioL7Y4GFSxHTC4ixi(9wceNYbL5BHXhD4ixi(9k(HDuOZwnoeRTmBLrPRnhoYfIFvvLEw0vWg77DE1ceMfDfSjddBrYik4oJpoytpl6kyJ99oVAbcZIUc2KHHTizefCxSAsI1(LBTCIvJZxgn644tpl6kyJ99oVAbcZIUc2KHHTizefCNFhSokp0ZIUc2yFVZRwGWSORGnzyylsgrb3vKykCKrJKeRDrxXbMXbvc0(qEIEw0vWg77DE1ceMfDfSjddBrYik4U(BPNfDfSX(ENxTaHzrxbBYWWwKmIcUVAe9d7lxpznRrsI1(H0HCHOB1i6h2xUEY4ixi(PNfDfSX(ENxTaHzrxbBYWWwKmIcU)XLWbRSM1ijXA3xhshYfIUvJOFyF56jJJCH4NEw0vWg77DE1ceMfDfSjddBrYik4UIetHJmAKKyTl6koWmoOsG2x78e9SORGn2378Qfiml6kytgg2IKruW9vaHytptpl6kyJ1jw9UUf7wgge3QjgIKeRDFD5wlNUf7wgge3QjgIoo(EfDfhyghujq7RNEpKoKleDlU2dHBO(uMq)PNfDfSX6eR(9oVntF6gf2KeR9sG4uoOmFlm(Odh5cXVxFD5wlhuMVfgF0XX3REtAIOnVArxbBe4RNoFNEw0vWgRtS6378YJy(2QJti9m9S6qnek2IAidYyFiNTOgfz4ei0d1elQP2qQX36h2rHudPTef14BhnARwGudbqqlBKrJutyPg(nAXPC0ZIUc2yD6VD)czSpKZwKeRDXpSJcDYOrB1cm3OLnYOrhoYfIF6zrxbBSo93(ENxEWA4)aJj3OLnYOr6zrxbBSo93(EN3l2wSpfdrsI1(H0HCHOtZyWpJht26z00ZIUc2yD6V99oVCwmhfQqYik4U4NDtAXMxSPYSvMpJhytpl6kyJ1P)2378EHm2pV4ApKeR9dPd5crNMXGFgpMS1ZOPNfDfSX60F77DExrJxiJ9jjw7hshYfIonJb)mEmzRNrtpl6kyJ1P)2378kJgTvlWSwGqsI1(H0HCHOtZyWpJht26z00ZQd14BRcv4xutXOgRNrtnEyCn1qa6bjQHpRc2qn8iQnQrOgnJb)mEmKqnCdeTwQP2qQPKMiwutyPg5Y4kQPyuZpqh9SORGnwN(BFVZlFwfSHKyTF5wlNy148LrJoo(KtUVkbIt5eRgNVmA0HJCH437cBbMT8JokxJksm2xQh5KxstelxfkyUy5FGpC)r(qpl6kyJ1P)2378sKt6FitMTYIFyZQn6zrxbBSo93(EN3f2cmB5hDu0ZIUc2yD6V99oVxiJ9ZSvU2WmoOIhsI1ElXpJh4uo5)TUyEXZ8HCYfDfhyghujq7RN0ZIUc2yD6V99oVIvJZxgnssS21mg8Z4X4SvhNqxJksm2x(qpl6kyJ1P)2378YzXCuOcjJOG7ID7qg0MBXpwN1SwGKeR9pE5wlxl(X6SM1cm)Xl3A5(mEmKtUAL0eXYvHcMlw(h4djOpE)4LBTCT4hRZAwlW8hVCRLZwI(0lcQk9SORGnwN(BFVZlNfZrHkKmIcUl2TdzqBUf)yDwZAbssS2)4LBTCT4hRZAwlW8hVCRLZwI(0lc69JxU1YPzZNtxXbMJ5u(JxU1Y9z8y8Q2LBTCIvJZxgn6AurIX(6PpKt(LBTCkmyHtMhOWNnUgvKySVE6d5KF5wlNUf9jymeZwUMi6AurIX(6PpKt(LBTCH2tg)erxJksm2xp9HCY)4LBTCO01gozl)4e6AurIX(6rQspl6kyJ1P)2378YzXCuOcjJOG7ID7qg0MBXpwN1SwGKeRD1(4LBTCA2850vCG5yoL)4LBTCC8jN8l3A5eRgNVmA01OIeJ91tFiN8l3A5uyWcNmpqHpBCnQiXyF90hYj)YTwoDl6tWyiMTCnr01OIeJ91tFiN8l3A5cTNm(jIUgvKySVE6d5K)Xl3A5qPRnCYw(Xj01OIeJ91Ju1BjnrSCBOaRnhFD9qE6j9SORGnwN(BFVZlNfZrHkw6z1HAeDfSX60F77DErPRTmcrfCkbsptpl6kyJ19XLWbRSM14okDTHt2YpoHKeR9dPd5cr3IR9q4gQpLjGj6zrxbBSUpUeoyL1SgFVZRTyTIT64esI2JgI5sAIyz3FssS2fDfhyghujq7RNEf)Wok0bdIB1edXSMnFUOC4ixi(96RpE5wlhmiUvtmeZA285IYXX37H0HCHOBX1EiCd1NYPe9SORGnw3hxchSYAwJV351wSwXwDCcjjw7xU1YzlwRC7yiITJJp5KRMOR4aZ4GkbAF907LBTCeLAd7yiMTfRvSoo(EpKoKleDlU2dHBO(uoLuLEw0vWgR7JlHdwznRX378QBXULHbXTAIHijXAx0vCGzCqLaTV25jVhshYfIUfx7HWnuFktO)0ZIUc2yDFCjCWkRzn(ENxyqCRMyiMVmyrsS2lbIt5yhyR3KMi6WrUq87v0vCGzCqLaT7p9EiDixi6wCThc3q9PS)K5vrqOTAMYR9h7d9SORGnw3hxchSYAwJV351wSwXwDCcjjw7hshYfIo1LWhWyWCk59q6qUq0T4ApeUH6t5uIEMEw0vWgRBfqi27wU5JDmejjw7Te)mEGt5K)36I51J9HEw0vWgRBfqi2V35DX0Cw8Nf)WokmFrrHKyT3s8Z4boLt(FRlMx8mF86Rl3A5eRgNVmA0XX3RVUCRLtHblCY8af(SXXX3RVUCRLl0EY4Ni64471xxU1YPBrFcgdXSLRjIoo(E91hVCRLdLU2WjB5hNqhhF6zrxbBSUvaHy)ENx(CDS8edX8fk2IKyT3s8Z4boLt(FRlMxpYh6zrxbBSUvaHy)EN3o4ZhI5yYw(Igjjw7Te)mEGt5K)36I51J8HEw0vWgRBfqi2V35T24Mp26nPjI0ZIUc2yDRacX(9oVA2OXPAPWFEbffKEw0vWgRBfqi2V35TrHFmeZlOOGw6zrxbBSUvaHy)EN3RqmZw5Qd9jl9SORGnw3kGqSFVZRUf7wgge3QjgIKeR9sG4uUfR14IdM5rmFRdh5cXVxrxXbMXbvc0(6P3dPd5cr3IR9q4gQpLj0F6zrxbBSUvaHy)EN3fuuWIne5qsI1EjqCkNfLogIzXAfoy5WrUq8tpl6kyJ1Tcie7378cLdjdf7gjXA3xIFyhf643HIaZ87qbBhoYfIFVLaXPCBSkVjZ3HJCH437LBTCBSkVjZ31OOl6zrxbBSUvaHy)ENxDl2TmmiUvtmejjw7IUIdmJdQeO91tVhshYfIUfx7HWnuFktO)0ZIUc2yDRacX(9oVntF6gf2KeRDfbH2Qzkp039XRVUCRLZwnoeRTmBLrPRnhhF6zrxbBSUvaHy)ENxDl2TmmiUvtmejjw7QvceNYPBXUfdXSTyTIdh5cXp5KxceNYTyTgxCWmpI5BD4ixi(v17H0HCHOtDj8bmgmtO)0ZIUc2yDRacX(9oVq5qYqXUrsS2pKoKleDQlHpGXGz)937H0HCHOBX1EiCd1NY(7p9SORGnw3kGqSFVZRcQWApz2kd50Xp)BuuS0ZIUc2yDRacX(9oVntF6gf20ZIUc2yDRacX(9oVRMzRBlZNKyTxceNYTjb0wSwXHJCH437LBTCRMzRBlZ31OIeJ9Hp2XZFtu)9EiDixi6wCThc3q9PS6Nm6zrxbBSUvaHy)EN3fuuWIne5q6z6zrxbBSUvJOFyF56jRznUdLdjdf7gjApAiMlPjILD)jjXAx8d7Oqh)oueyMFhky7Azo9ANGE)4LBTC87qrGz(DOGTZwI(0(tF8EiDixi6wCThc3q9PS)(79q6qUq0rO)pGXGz)9NEw0vWgRB1i6h2xUEYAwJV35fLU2WjB5hNqsI1(H0HCHOBX1EiCd1NYeWe9SORGnw3Qr0pSVC9K1SgFVZRTyTIT64esI2JgI5sAIyz3FssS2fDfhyghujq7RNEf)Wok0bdIB1edXSMnFUOC4ixi(96RpE5wlhmiUvtmeZA285IYXX37H0HCHOBX1EiCd1NYPe9SORGnw3Qr0pSVC9K1SgFVZRTyTIT64essS2VCRLZwSw52XqeBhhFYjxnrxXbMXbvc0(6P3l3A5ik1g2XqmBlwRyDC89EiDixi6wCThc3q9PCkPk9SORGnw3Qr0pSVC9K1SgFVZRUf7wgge3QjgIKeRDrxXbMXbvc0(ANN8EiDixi6wCThc3q9PmH(tpl6kyJ1TAe9d7lxpznRX378cdIB1edX8LblsI1EjqCkh7aB9M0erhoYfIFVIUIdmJdQeOD)P3dPd5cr3IR9q4gQpL9NmVkccTvZuET)yFONfDfSX6wnI(H9LRNSM147DEHYHKHIDJKyTl(HDuOJFhkcmZVdfSDTmNETtqVF8YTwo(DOiWm)ouW2zlrF6LV79q6qUq0T4ApeUH6tz)937H0HCHOJq)FaJbZ(7p9SORGnw3Qr0pSVC9K1SgFVZRTyTIT64essS2pKoKleDQlHpGXG5uY7H0HCHOBX1EiCd1NYPK3dPd5crhH()agdMtj6zrxbBSUvJOFyF56jRzn(ENxOCizOy3ijw7F8YTwo(DOiWm)ouW2zlrFA)PpEpKoKleDlU2dHBO(u2F)PNPNfDfSX6uKykCKrJ7lOOGfBiYHKeRDFD5wl3ckkyXgICOJJp9SORGnwNIetHJmA89oVRMzRBlZNKyTxceNYTjb0wSwXHJCH43RVUCRLB1mBDBz(oo(EpKoKleDlU2dHBO(uw9tg9m9SORGnwhJpoyV3m9PBuytsS2veeARMP8WNQN3kuWhsu)PNPNfDfSX643bRJYZUUf7wgge3QjgIKeRDrxXbMXbvc0(AxnEUVrTsG4uUfR14IdM5rmFRdh5cXpbYtQQQ3dPd5cr3Qr0pSVC9KXrUq879q6qUq0T4ApeUH6tzc9NEw0vWgRJFhSokpV35T2Wm3CzCZpVyTgjjw7xU1Y1O(eeT28I1A0XXNCYRqbFO6rpl6kyJ1XVdwhLN378cLdjdf7gjXAx8d7Oqh)oueyMFhky7Azo9ANGE)4LBTC87qrGz(DOGTZwI(0(tF8k6koWmoOsG29NEpKoKleDRgr)W(Y1tgh5cXV3dPd5cr3IR9q4gQpL93F6zrxbBSo(DW6O88EN3fuuWIne5qsI1(H0HCHOB1i6h2xUEY4ixi(9E5wl3ckkyXgICORrfjg7djQ)EfDfhyghujq7RN0ZIUc2yD87G1r559oVRMzRBlZNKyTFiDixi6wnI(H9LRNmoYfIFVxU1YTAMTUTmFxJksm2hsu)9k6koWmoOsG2xpPNfDfSX643bRJYZ7DE1Ty3YWG4wnXqKKyT7Rl3A50Ty3YWG4wnXq0XX3ROR4aZ4GkbAF907H0HCHOBX1EiCd1NYe6p9SORGnwh)oyDuEEVZ7IR9KzRSenjXA3xxU1YT4Apz2klr7447vrqOTAMYRDc6JxlFecZL0eXY6wCTNmBLLOZFrriIV2v757dPd5cr3Qr0pSVC9KXrUq8Rk9SORGnwh)oyDuEEVZ7IR9KzRSenjXA)YTwUfx7jZwzjAhhFVw(ieMlPjIL1T4Apz2klrN)IIqeFOApFFiDixi6wnI(H9LRNmoYfIFvPNfDfSX643bRJYZ7DElwHkzfXwy7HKyTF5wlxJw2iJgZfRqfxJksm2hUtqcKO(tpl6kyJ1XVdwhLN378A5Mp2XqKKyTl6koWmoOsG2x78Kx18fAT4Or3fYy)mBLRnmJdQ4XPieGzn5KRgAT4Or3fYy)mBLRnmJdQ4XPieGzTx1UCRLZIyTfdXClerhhFYjxZyWpJhJ7czSFMTY1gMXbv84AurIX(6X(OQQQspl6kyJ1XVdwhLN378UyAol(ZIFyhfMVOOqsS2fDfhyghujq7RN0ZIUc2yD87G1r559oV856y5jgI5luSfjXAx0vCGzCqLaTVEspl6kyJ1XVdwhLN3782bF(qmht2Yx0ijXAx0vCGzCqLaTVEspl6kyJ1XVdwhLN3782m9PBuytsS2lbIt5GY8TW4JoCKle)E91LBTCqz(wy8rhhFV6nPjI28QfDfSrGVE68D6z1HAuFmQnQrfP4AbsneavAf24HeQbH4Hui1uBi1WVdwhLhQHTOgeIk4ucKAKQe9jl1ed1W6p2utXOgfjMsIHAQnKAUCRLLA4XgoutTHEuFBKAKlJROMIrnO6t(rJo6zrxbBSo(DW6O88EN3vZS1TL5tsS2vt8d7Oq3ifxlW8M0kSXJdh5cXV3l3A5gP4AbM3KwHnEYRMzlxJksm2hUtqcKO(RQ3sG4uUnjG2I1koCKle)EpKoKleDlU2dHBO(uw9tg9SORGnwh)oyDuEEVZ7ckkyXgICijXAxnXpSJcDJuCTaZBsRWgpoCKle)EVCRLBKIRfyEtAf24jVIgDnQiXyF4objqI6VQ0ZIUc2yD87G1r559oVntF6gf2KeRD1e)Wok0nsX1cmVjTcB84WrUq879YTwUrkUwG5nPvyJN8ifxJUgvKySpCNGeir9xvVkccTvZuEOV7dOafaa]] )
-
+    spec:RegisterPack( "Enhancement", 20200717, [[d4Z3naqBLAteH2fqBdKI9PI8Bv9xaZwH5Jq15bj)sj6Bss6FiuyNuL2lPDl1(LyuebddHmoIKCArdfKQAWGA4kYfbPIofrIJHGZHqPwOsyPGuLfJOLJ0tjSkek6Xq9CiteKk1uPkMSknDHhbsL8kLuxg11jQdtzAeP2mv2UsYZaP0Sur9zvyEssnsqQW3vuJMQAzerNeHsUfrs5AssCpj1kLeVgehLiPALG6rfxly1RKejjrevvcvfusIKuQisAveqnXQyYWqSdwfTTzvaD2(wJ5n3HkMmOgVDvpQa9YumRcPUCIHuGT(wGHUtAaLkiLZrqSALufxly1RKejjrevvcvfusIKuQicAvbAIXQxjHgOvf(59YTsQIlJWQa69Yh(fyOpnFAgqvGDpTal8T7ppS(IuXirbs9OIl7m5rOEuVeupQWWr(TkMZ(cG8zJQcUnYbF1fAOELu9Ocdh53Qyo7lkOjewfCBKd(Ql0q9cTQhvWTro4RUqfyAgmnnvqk7CGBJhOG(BGz2M(gefggsbU6cmbIuHHJ8Bv4yQnaqtjndnuVsREub3g5GV6cvGPzW00ub()X9NBquqtimiL3w2ivy4i)wfgcZ91AmRH6TkQhvWTro4RUqfyAgmnnvqk7CGBJhOG(BGz2M(gefggsb(ubwAvy4i)wfO4PBimpXunuVqJ6rfCBKd(QlubMMbtttfKYoh424bkO)gyMTPVbrHHHuGpvGLwfgoYVvbp4n3Hnaihgk0q9wv1Jk42ih8vxOcmndMMMkmCKRyaU5DYOc8PcmHcSelWKYohiMAiFGrE4hD2hG3FUvHHJ8BvGPgYhyKh(rN9HgQxPs9OcUnYbF1fQatZGPPPcszNd03YbkE6gefggsbUUaxLcSelWgoYvma38ozub(ubMGkmCKFRch9rbaY)Xq0q9sSvpQGBJCWxDHkmCKFRc3W2maY)XqubMMbtttfu2rzKVroyvGHcpyGWOhCGuVe0q9sGi1Jk42ih8vxOcmndMMMkmCKRyaU5DYOc8Pcmbvy4i)wfi5(Y0Sp0q9sGG6rfCBKd(QlubMMbtttfKYohO)ha(wFbLNuHHJ8BvmSvgWWq(AOEjiP6rfCBKd(QlubMMbtttfgoYvmW9dq3W2maY)XqkWeZcSekWsOaB4ixXaCZ7KrfyPwbMqbwkf4QjgfyOPalLc8PcCvuHHJ8Bv4skd0)ktd1lbOv9OcUnYbF1fQatZGPPPcszNdCB8af0FdmZ203GOWWqkWvxGjqKkmCKFRcu80nkOjewd1lbPvpQGBJCWxDHkW0myAAQWWrUIb4M3jJkWNkWekWsSalHcmPSZbUnEGc6VbMzB6Bquyyif4tfyPlWeN4fyszNdefpDdH5jMckpvGLIkmCKFRcSVLnWip8Jo7dnuVeQI6rfCBKd(QlubMMbtttfgoYvma38ozubUUatOalXcSekWKYoh424bkO)gyMTPVbrHHHuGpvGLUatCIxGjLDoqu80neMNykO8ubwkQWWr(Tkg5HF0zFaq(Jqd1lbOr9Ocdh53Qi(G3aBdfmfkvWTro4RUqd1lHQQEub3g5GV6cvGPzW00uX9dq3W2maY)XqaP82YgvGpvGnCKFdG)FC)5wfgoYVvHJ(Oaa5)yiAOEjivQhvy4i)wfi5(Y0Spub3g5GV6cnuVei2Qhvy4i)wfdBLbmmKVk42ih8vxOHgQyIY4FtAH6r9sq9OcUnYbF1fQatZGPPPcszNdCKh(rN9baYp5XfKYBlBubU6c8b(Qcdh53QyKh(rN9baYp5Xvd1RKQhvWTro4RUqfyAgmnnvqk7CGZzFDYuOaMzB6BqkVTSrf4QlWh4RkmCKFRI5SVozkuaZSn9TgQxOv9OcUnYbF1fQatZGPPPcszNdCo7RtMcfWmBtFds5TLnQaxDb(aFvHHJ8Bv4g2MJVpKzGz2M(wd1R0QhvWTro4RUqfyAgmnnvqk7CGZzFDYuOaIp4n49NBvy4i)wfZzFDYuOaIp4TgAOHkwXuu(T6vsIKKiIiiP0Qy2OD2hivqS2tpn4BbwYcSHJ87c8irbcSurft03LdwfqxfyO3lF4xGH(08Pzavb290cSW3U)8W6lQuPuXWr(ncCIY4FtAr9ip8Jo7daKFYJ750vtk7CGJ8Wp6Spaq(jpUGuEBzJQ(aFlvmCKFJaNOm(3KwSUE5C2xNmfkGz2M((C6QjLDoW5SVozkuaZSn9niL3w2OQpW3sfdh53iWjkJ)nPfRRx6g2MJVpKzGz2M((C6QjLDoW5SVozkuaZSn9niL3w2OQpW3sfdh53iWjkJ)nPfRRxoN91jtHci(G3NtxnPSZboN91jtHci(G3G3FUlvkvmCKFJQNZ(cG8zJwQy4i)gTUE5C2xuqtiCPIHJ8B066LoMAda0usZ4C6QjLDoWTXduq)nWmBtFdIcddPAcevQy4i)gTUEPHWCFTgZNtxn()X9NBquqtimiL3w2Osfdh53O11lrXt3qyEIPNtxnPSZbUnEGc6VbMzB6BquyyiNKUuXWr(nAD9sEWBUdBaqomuCoD1KYoh424bkO)gyMTPVbrHHHCs6sfdh53O11lXud5dmYd)OZ(4C6QnCKRyaU5DYOteKiPSZbIPgYhyKh(rN9b49N7sfdh53O11lD0hfai)hd5C6QjLDoqFlhO4PBquyyi1vrIgoYvma38oz0jcLkgoYVrRRx6g2Mbq(pgYzmu4bdeg9GdunHZPRMYokJ8nYbxQy4i)gTUEjsUVmn7JZPR2WrUIb4M3jJorOuXWr(nAD9YHTYaggY)C6QjLDoq)pa8T(ckpvQy4i)gTUEPlPmq)RSZPR2WrUIbUFa6g2Mbq(pgcXucsWWrUIb4M3jJKAeKs1edOrkNQsPIHJ8B066LO4PBuqti850vtk7CGBJhOG(BGz2M(gefggs1eiQuXWr(nAD9sSVLnWip8Jo7JZPR2WrUIb4M3jJorqIsGu25a3gpqb93aZSn9nikmmKtstCItk7CGO4PBimpXuq5jPuQy4i)gTUE5ip8Jo7daYFeNtxTHJCfdWnVtgvtqIsGu25a3gpqb93aZSn9nikmmKtstCItk7CGO4PBimpXuq5jPuQy4i)gTUEz8bVb2gkykuLkgoYVrRRx6Opkaq(pgY50vF)a0nSndG8FmeqkVTSrNmCKFdG)FC)5UuXWr(nAD9sKCFzA2hLkgoYVrRRxoSvgWWq(QWKd)NQcOdgsosn0qva]] )
 
 end

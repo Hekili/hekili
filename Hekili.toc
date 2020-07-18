@@ -19,38 +19,38 @@ State.lua
 Events.lua
 
 Classes.lua
-Classes\DeathKnightBlood.lua
-Classes\DeathKnightFrost.lua
-Classes\DeathKnightUnholy.lua
-Classes\DemonHunterHavoc.lua
-Classes\DemonHunterVengeance.lua
-Classes\DruidBalance.lua
-Classes\DruidFeral.lua
-Classes\DruidGuardian.lua
-Classes\HunterBeastMastery.lua
-Classes\HunterMarksmanship.lua
-Classes\HunterSurvival.lua
-Classes\MageArcane.lua
-Classes\MageFire.lua
-Classes\MageFrost.lua
-Classes\MonkBrewmaster.lua
-Classes\MonkMistweaver.lua
-Classes\MonkWindwalker.lua
-Classes\PaladinProtection.lua
+# Classes\DeathKnightBlood.lua
+# Classes\DeathKnightFrost.lua
+# Classes\DeathKnightUnholy.lua
+# Classes\DemonHunterHavoc.lua
+# Classes\DemonHunterVengeance.lua
+# Classes\DruidBalance.lua
+# Classes\DruidFeral.lua
+# Classes\DruidGuardian.lua
+# Classes\HunterBeastMastery.lua
+# Classes\HunterMarksmanship.lua
+# Classes\HunterSurvival.lua
+# Classes\MageArcane.lua
+# Classes\MageFire.lua
+# Classes\MageFrost.lua
+# Classes\MonkBrewmaster.lua
+# Classes\MonkMistweaver.lua
+# Classes\MonkWindwalker.lua
+# Classes\PaladinProtection.lua
 Classes\PaladinRetribution.lua
-Classes\PriestDiscipline.lua
-Classes\PriestShadow.lua
-Classes\RogueAssassination.lua
-Classes\RogueOutlaw.lua
-Classes\RogueSubtlety.lua
-Classes\ShamanElemental.lua
+# Classes\PriestDiscipline.lua
+# Classes\PriestShadow.lua
+# Classes\RogueAssassination.lua
+# Classes\RogueOutlaw.lua
+# Classes\RogueSubtlety.lua
+# Classes\ShamanElemental.lua
 Classes\ShamanEnhancement.lua
-Classes\WarlockAffliction.lua
-Classes\WarlockDemonology.lua
-Classes\WarlockDestruction.lua
-Classes\WarriorArms.lua
-Classes\WarriorFury.lua
-Classes\WarriorProtection.lua
+# Classes\WarlockAffliction.lua
+# Classes\WarlockDemonology.lua
+# Classes\WarlockDestruction.lua
+# Classes\WarriorArms.lua
+# Classes\WarriorFury.lua
+# Classes\WarriorProtection.lua
 
 Targets.lua
 Options.lua

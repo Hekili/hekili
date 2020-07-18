@@ -147,7 +147,7 @@ function ns.StartConfiguration( external )
     ns.UI.Notification:SetMovable( true )
     ns.UI.Notification.Mover = ns.UI.Notification.Mover or CreateFrame( "Frame", "HekiliNotificationMover", ns.UI.Notification )
     ns.UI.Notification.Mover:SetAllPoints(HekiliNotification)
-    ns.UI.Notification.Mover:SetBackdrop( {
+    --[[ ns.UI.Notification.Mover:SetBackdrop( {
         bgFile = "Interface/Buttons/WHITE8X8",
         edgeFile = "Interface/Buttons/WHITE8X8",
         tile = false,
@@ -157,7 +157,7 @@ function ns.StartConfiguration( external )
     } )
 
     ns.UI.Notification.Mover:SetBackdropColor( 0, 0, 0, .8 )
-    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
+    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 ) ]]
     ns.UI.Notification.Mover:Show()
 
     local f = ns.UI.Notification.Mover
@@ -207,7 +207,7 @@ function ns.StartConfiguration( external )
             v:EnableMouse( true )
             v:SetMovable( true )
 
-            v.Backdrop = v.Backdrop or CreateFrame( "Frame", v:GetName().. "_Backdrop", UIParent ) --, v )
+            v.Backdrop = v.Backdrop or Mixin( CreateFrame( "Frame", v:GetName().. "_Backdrop", UIParent ), BackdropTemplateMixin )
             v.Backdrop:ClearAllPoints()
             
             local left, right, top, bottom = v:GetPerimeterButtons()
@@ -331,7 +331,7 @@ function ns.StopConfiguration()
     for i, v in pairs( ns.UI.Displays ) do
         v:EnableMouse( false )
         v:SetMovable( true )
-        v:SetBackdrop( nil )
+        -- v:SetBackdrop( nil )
         if v.Header then
             v.Header:Hide()
         end
@@ -1131,10 +1131,10 @@ do
 
     local function Display_UpdateAlpha( self )
         if self.Backdrop then
-            if not Hekili:IsDisplayActive( self.id, true ) then self.Backdrop:SetBackdropBorderColor( 0.5, 0.5, 0.5, 0.5 )
+            --[[ if not Hekili:IsDisplayActive( self.id, true ) then self.Backdrop:SetBackdropBorderColor( 0.5, 0.5, 0.5, 0.5 )
             else
                 self.Backdrop:SetBackdropBorderColor( RAID_CLASS_COLORS[ class.file ]:GetRGBA() )
-            end
+            end ]]
         end
 
         if not self.Active then
@@ -1870,7 +1870,7 @@ do
         b.Cooldown:SetDrawEdge( false )
 
         -- Backdrop (for borders)
-        b.Backdrop = b.Backdrop or CreateFrame("Frame", bName .. "_Backdrop", b )
+        b.Backdrop = b.Backdrop or Mixin( CreateFrame("Frame", bName .. "_Backdrop", b ), BackdropTemplateMixin )
         b.Backdrop:ClearAllPoints()
         b.Backdrop:SetWidth( b:GetWidth() + 2 )
         b.Backdrop:SetHeight( b:GetHeight() + 2 )
@@ -2283,8 +2283,8 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     if backdrop then
         backdrop.bgFile = [[Interface\Buttons\WHITE8X8]]
-        tt:SetBackdrop(backdrop)
-        tt:SetBackdropColor(0, 0, 0, 1)
+        --[[ tt:SetBackdrop(backdrop)
+        tt:SetBackdropColor(0, 0, 0, 1) ]]
     end
 
     tt:SetOwner(UIParent, "ANCHOR_CURSOR")

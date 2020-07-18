@@ -618,56 +618,150 @@ do
     bonus_id={ 6572 }, stats={ 100% Cor [50.0000] }, effects={ Obsidian Skin (id=316651, index=2, type=equip) }
     bonus_id={ 6573 }, stats={ 100% Cor [15.0000] }, effects={ Gushing Wound (id=318272, index=2, type=equip) } ]]
 
-    local corruptions = {
-        [6537] = { "twilight_devastation", 1 },
-        [6538] = { "twilight_devastation", 2 },
-        [6539] = { "twilight_devastation", 3 },
-
-        [6540] = { "void_ritual", 1 },
-        [6541] = { "void_ritual", 2 },
-        [6542] = { "void_ritual", 3 },
-
-        [6543] = { "twisted_appendage", 1 },
-        [6544] = { "twisted_appendage", 2 },
-        [6545] = { "twisted_appendage", 3 },
-
-        [6546] = { "glimpse_of_clarity", 1 },
-
-        [6547] = { "ineffable_truth", 1 },
-        [6548] = { "ineffable_truth", 2 },
-
-        [6549] = { "echoing_void", 1 },
-        [6550] = { "echoing_void", 2 },
-        [6551] = { "echoing_void", 3 },
-
-        [6552] = { "infinite_stars", 1 },
-        [6553] = { "infinite_stars", 2 },
-        [6554] = { "infinite_stars", 3 },
-
-        [6555] = { "racing_pulse", 1 },
-        [6559] = { "racing_pulse", 2 },
-        [6560] = { "racing_pulse", 3 },
-
-        [6556] = { "deadly_momentum", 1 },
-        [6561] = { "deadly_momentum", 2 },
-        [6562] = { "deadly_momentum", 3 },
-
-        [6557] = { "honed_mind", 1 },
-        [6563] = { "honed_mind", 2 },
-        [6564] = { "honed_mind", 3 },
-
-        [6558] = { "surging_vitality", 1 },
-        [6565] = { "surging_vitality", 2 },
-        [6566] = { "surging_vitality", 3 },
-
-        [6567] = { "devour_vitality", 1 },                            
-        [6568] = { "whispered_truths", 1 },
-        [6569] = { "lash_of_the_void", 1 },
-        [6570] = { "flash_of_insight", 1 },
-        [6571] = { "searing_flames", 1 },
-        [6572] = { "obsidian_skin", 1 },
-        [6573] = { "gushing_wound", 1 }
-    }    
+    local shadowlegendaries = {
+        [6823] = { "slick_ice", 1 }, -- 327508
+        [6828] = { "cold_front", 1 }, -- 327284
+        [6829] = { "freezing_winds", 1 }, -- 327364
+        [6830] = { "glacial_fragments", 1 }, -- 327492
+        [6831] = { "expanded_potential", 1 }, -- 327489
+        [6832] = { "disciplinary_command", 1 }, -- 327365
+        [6937] = { "grisly_icicle", 1 }, -- 333393
+        [6834] = { "temporal_warp", 1 }, -- 327351
+        [6931] = { "fevered_incantation", 1 }, -- 333030
+        [6932] = { "firestorm", 1 }, -- 333097
+        [6933] = { "molten_skyfall", 1 }, -- 333167
+        [6934] = { "sun_kings_blessing", 1 }, -- 333313
+        [6926] = { "arcane_infinity", 1 }, -- 332769
+        [6927] = { "arcane_bombardment", 1 }, -- 332892
+        [6928] = { "siphon_storm", 1 }, -- 332928
+        [6936] = { "triune_ward", 1 }, -- 333373
+        [7041] = { "demon_hunter_all_power_01_dnt", 1 }, -- 337504
+        [7042] = { "demon_hunter_all_power_02_dnt", 1 }, -- 337532
+        [7043] = { "demon_hunter_all_power_03_dnt", 1 }, -- 337534
+        [7044] = { "demon_hunter_all_power_04_dnt", 1 }, -- 337539
+        [7049] = { "demon_hunter_havoc_power_01_dnt", 1 }, -- 337548
+        [7050] = { "demon_hunter_havoc_power_02_dnt", 1 }, -- 337551
+        [7051] = { "demon_hunter_havoc_power_03_dnt", 1 }, -- 337685
+        [7052] = { "demon_hunter_havoc_power_04_dnt", 1 }, -- 337775
+        [7045] = { "demon_hunter_vengeance_power_01_dnt", 1 }, -- 337541
+        [7046] = { "demon_hunter_vengeance_power_02_dnt", 1 }, -- 337544
+        [7047] = { "demon_hunter_vengeance_power_03_dnt", 1 }, -- 337545
+        [7048] = { "demon_hunter_vengeance_power_04_dnt", 1 }, -- 337547
+        [6953] = { "superstrain", 1 }, -- 334974
+        [6954] = { "phearomones", 1 }, -- 335177
+        [6947] = { "deaths_embrace", 1 }, -- 334728
+        [6948] = { "grip_of_the_everlasting", 1 }, -- 334724
+        [6940] = { "bryndaors_might", 1 }, -- 334501
+        [6941] = { "crimson_rune_weapon", 1 }, -- 334525
+        [6943] = { "gorefiends_domination", 1 }, -- 334580
+        [6942] = { "vampiric_aura", 1 }, -- 334547
+        [6944] = { "koltiras_favor", 1 }, -- 334583
+        [6945] = { "biting_cold", 1 }, -- 334678
+        [6946] = { "absolute_zero", 1 }, -- 334692
+        [6949] = { "reanimated_shambler", 1 }, -- 334836
+        [6950] = { "frenzied_monstrosity", 1 }, -- 334888
+        [6951] = { "deaths_certainty", 1 }, -- 334898
+        [6952] = { "deadliest_coil", 1 }, -- 334949
+        [7003] = { "call_of_the_wild", 1 }, -- 336742
+        [7004] = { "nessingwarys_trapping_apparatus", 1 }, -- 336743
+        [7005] = { "soulforge_embers", 1 }, -- 336745
+        [7006] = { "craven_strategem", 1 }, -- 336747
+        [7007] = { "dire_command", 1 }, -- 336819
+        [7008] = { "flamewakers_cobra_sting", 1 }, -- 336822
+        [7009] = { "qapla,_eredun_war_order", 1 }, -- 336830
+        [7010] = { "rylakstalkers_piercing_fangs", 1 }, -- 336844
+        [7011] = { "eagletalons_true_focus", 1 }, -- 336849
+        [7012] = { "surging_shots", 1 }, -- 336867
+        [7013] = { "serpentstalkers_trickery", 1 }, -- 336870
+        [7014] = { "secrets_of_the_unblinking_vigil", 1 }, -- 336878
+        [7015] = { "wildfire_cluster", 1 }, -- 336895
+        [7016] = { "rylakstalkers_confounding_strikes", 1 }, -- 336901
+        [7017] = { "latent_poison_injectors", 1 }, -- 336902
+        [7018] = { "butchers_bone_fragments", 1 }, -- 336907
+        [7070] = { "xuens_battlegear", 1 }, -- 337481
+        [7068] = { "rushing_tiger_palm", 1 }, -- 337334
+        [7071] = { "pressure_release", 1 }, -- 337483
+        [7069] = { "the_emperors_capacitor", 1 }, -- 337292
+        [7053] = { "uthers_guard", 1 }, -- 337600
+        [7055] = { "of_dusk_and_dawn", 1 }, -- 337746
+        [7056] = { "the_arbiters_judgment", 1 }, -- 337681
+        [7059] = { "shock_barrier", 1 }, -- 337825
+        [7057] = { "shadowbreaker,_dawn_of_the_sun", 1 }, -- 337812
+        [7058] = { "inflorescence_of_the_sunwell", 1 }, -- 337777
+        [7060] = { "holy_avengers_engraved_sigil", 1 }, -- 337831
+        [7061] = { "the_ardent_protectors_sanctum", 1 }, -- 337838
+        [7062] = { "bulwark_of_righteous_fury", 1 }, -- 337847
+        [7063] = { "reign_of_endless_kings", 1 }, -- 337850
+        [7067] = { "tempest_of_the_lightbringer", 1 }, -- 337257
+        [7066] = { "relentless_inquisitor", 1 }, -- 337297
+        [7065] = { "badge_of_the_mad_paragon", 1 }, -- 337594
+        [7064] = { "final_verdict", 1 }, -- 337247
+        [6985] = { "ancestral_reminder", 1 }, -- 336741
+        [6986] = { "deeptremor_stone", 1 }, -- 336739
+        [6987] = { "deeply_rooted_elements", 1 }, -- 336738
+        [6988] = { "chains_of_devastation", 1 }, -- 336735
+        [6989] = { "skybreakers_fiery_demise", 1 }, -- 336734
+        [6990] = { "elemental_equilibrium", 1 }, -- 336730
+        [6991] = { "echoes_of_great_sundering", 1 }, -- 336215
+        [6992] = { "windspeakers_lava_resurgence", 1 }, -- 336063
+        [6993] = { "doom_winds", 1 }, -- 335902
+        [6994] = { "legacy_of_the_frost_witch", 1 }, -- 335899
+        [6995] = { "witch_doctors_wolf_bones", 1 }, -- 335897
+        [6996] = { "primal_lava_actuators", 1 }, -- 335895
+        [6997] = { "jonats_natural_focus", 1 }, -- 335893
+        [6998] = { "spiritwalkers_tidal_totem", 1 }, -- 335891
+        [6999] = { "primal_tide_core", 1 }, -- 335889
+        [7000] = { "earthen_harmony", 1 }, -- 335886
+        [7002] = { "twins_of_the_sun_priestess", 1 }, -- 336897
+        [6975] = { "cauterizing_shadows", 1 }, -- 336370
+        [6972] = { "archbishops_test_of_faith", 1 }, -- 336470
+        [6976] = { "the_penitent_one", 1 }, -- 336011
+        [6978] = { "crystalline_reflection", 1 }, -- 336507
+        [6979] = { "kiss_of_death", 1 }, -- 336133
+        [6980] = { "clarity_of_mind", 1 }, -- 336067
+        [6984] = { "xanshi,_return_of_archbishop_benedictus", 1 }, -- 337477
+        [6977] = { "harmonious_apparatus", 1 }, -- 336314
+        [6974] = { "flash_concentration", 1 }, -- 336266
+        [6973] = { "divine_image", 1 }, -- 336400
+        [6981] = { "painbreaker_psalm", 1 }, -- 336165
+        [6982] = { "shadowflame_prism", 1 }, -- 336143
+        [6983] = { "eternal_call_to_the_void", 1 }, -- 336214
+        [7025] = { "wilfreds_sigil_of_superior_summoning", 1 }, -- 337020
+        [7026] = { "claw_of_endereth", 1 }, -- 337038
+        [7027] = { "mark_of_borrowed_power", 1 }, -- 337057
+        [7028] = { "pillars_of_the_dark_portal", 1 }, -- 337065
+        [7029] = { "perpetual_agony_of_azjaqir", 1 }, -- 337106
+        [7030] = { "sacrolashs_dark_strike", 1 }, -- 337111
+        [7031] = { "malefic_wrath", 1 }, -- 337122
+        [7032] = { "wrath_of_consumption", 1 }, -- 337128
+        [7033] = { "implosive_potential", 1 }, -- 337135
+        [7034] = { "grim_inquisitors_dread_calling", 1 }, -- 337141
+        [7035] = { "forces_of_the_horned_nightmare", 1 }, -- 337146
+        [7036] = { "balespiders_burning_core", 1 }, -- 337159
+        [7037] = { "odr,_shawl_of_the_ymirjar", 1 }, -- 337163
+        [7038] = { "cinders_of_the_azjaqir", 1 }, -- 337166
+        [7039] = { "madness_of_the_azjaqir", 1 }, -- 337169
+        [7040] = { "embers_of_the_diabolic_raiment", 1 }, -- 337272
+        [6955] = { "leaper", 1 }, -- 335214
+        [6971] = { "seismic_reverberation", 1 }, -- 335758
+        [6958] = { "misshapen_mirror", 1 }, -- 335253
+        [6959] = { "signet_of_tormented_kings", 1 }, -- 335266
+        [6962] = { "enduring_blow", 1 }, -- 335458
+        [6960] = { "battlelord", 1 }, -- 335274
+        [6961] = { "exploiter", 1 }, -- 335451
+        [6970] = { "unhinged", 1 }, -- 335282
+        [6963] = { "cadence_of_fujieda", 1 }, -- 335555
+        [6964] = { "deathmaker", 1 }, -- 335567
+        [6965] = { "reckless_defense", 1 }, -- 335582
+        [6966] = { "will_of_the_berserker", 1 }, -- 335594
+        [6956] = { "thunderlord", 1 }, -- 335229
+        [6957] = { "the_wall", 1 }, -- 335239
+        [6967] = { "unbreakable_will", 1 }, -- 335629
+        [6969] = { "reprisal", 1 }, -- 335718
+        [7054] = { "liadrins_fury_reborn", 1 }, -- 337638
+        [7068] = { "rushing_tiger_palm", 1 }, -- 337334
+        [7069] = { "the_emperors_capacitor", 1 }, -- 337292
+    }
 
     local wasWearing = {}
 
@@ -678,8 +772,8 @@ do
             state.set_bonus[ thing ] = 0
         end
 
-        for thing in pairs( state.corruptions ) do
-            state.corruptions[ thing ].rank = 0
+        for thing in pairs( state.legendary ) do
+            state.legendary[ thing ].rank = 0
         end
 
         wipe( wasWearing )
@@ -747,11 +841,11 @@ do
                         local bonusID = select( i, string.split( ":", link ) )
                         bonusID = tonumber( bonusID )
 
-                        if corruptions[ bonusID ] then
-                            local name, rank = corruptions[ bonusID ][ 1 ], corruptions[ bonusID ][ 2 ]
+                        if shadowlegendaries[ bonusID ] then
+                            local name, rank = shadowlegendaries[ bonusID ][ 1 ], shadowlegendaries[ bonusID ][ 2 ]
 
-                            state.corruptions[ name ] = rawget( state.corruptions, name ) or { rank = 0 }
-                            state.corruptions[ name ].rank = state.corruptions[ name ].rank + rank
+                            state.legendary[ name ] = rawget( state.legendary, name ) or { rank = 0 }
+                            state.legendary[ name ].rank = state.legendary[ name ].rank + rank
                         end
                     end
                 end
@@ -924,8 +1018,8 @@ local lowLevelWarned = false
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, _, spellID )
     if UnitIsUnit( unit, "player" ) then
-        if lowLevelWarned == false and UnitLevel( "player" ) < 110 then
-            Hekili:Notify( "Hekili is designed for current content.\nUse below level 110 at your own risk.", 5 )
+        if lowLevelWarned == false and UnitLevel( "player" ) < 50 then
+            Hekili:Notify( "Hekili is designed for current content.\nUse below level 50 at your own risk.", 5 )
             lowLevelWarned = true
         end
 
@@ -1423,11 +1517,6 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 Hekili:ForceUpdate( "SPELL_DAMAGE_OVERKILL" )
             elseif not ( subtype == "SPELL_MISSED" and amount == "IMMUNE" ) then
                 ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
-            end
-
-            if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
-                state.swings.last_foa_tick = time
-                -- Hekili:ForceUpdate( subtype )
             end
         end
     end
