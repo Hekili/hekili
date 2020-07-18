@@ -569,8 +569,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     spec:RegisterStateFunction( "consume_maelstrom", function( cap )
         local stacks = min( buff.maelstrom_weapon.stack, cap or 5 )
 
-        if talent.hailstorm.enabled and buff.maelstrom_weapon.stack > buff.hailstorm.stack then
-            applyBuff( "hailstorm", stacks )
+        if talent.hailstorm.enabled and stacks > buff.hailstorm.stack then
+            applyBuff( "hailstorm", nil, stacks )
         end
 
         removeStack( "maelstrom_weapon", stacks ) 
