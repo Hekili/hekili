@@ -15,5 +15,4 @@ branches:
     - '**-alpha'
 
 env:
-  - CF_API_KEY=""
-  - WOWI_API_TOKEN=""
+  - CF_API_KEY="" WOWI_API_TOKEN=""
