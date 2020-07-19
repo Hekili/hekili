@@ -943,7 +943,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             handler = function ()
                 removeBuff( "final_verdict" )
 
-                if leendary.badge_of_the_mad_paragon.enabled then
+                if legendary.badge_of_the_mad_paragon.enabled then
                     if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 3 end
                     if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 3 end
                 end
