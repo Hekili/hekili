@@ -10,4 +10,10 @@ script: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/re
 
 branches:
   only:
-  - /^v?\d+\.\d+(\.\d+)?(-\S*)?$/
+    - shadowlands
+  tags:
+    - '**-alpha'
+
+env:
+  - CF_API_KEY=""
+  - WOWI_API_TOKEN=""
