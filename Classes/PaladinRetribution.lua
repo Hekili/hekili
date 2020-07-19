@@ -331,11 +331,36 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
 
         -- Legendaries
+        blessing_of_dawn = {
+            id = 337767,
+            duration = 10,
+            max_stack = 1
+        },
+
+        blessing_of_dusk = {
+            id = 337757,
+            duration = 10,
+            max_stack = 1
+        },
+        
         final_verdict = {
             id = 337228,
             duration = 15,
             type = "Magic",
             max_stack = 1,
+        },
+
+        relentless_inquisitor = {
+            id = 337315,
+            duration = 12,
+            max_stack = 20
+        },
+
+        the_arbiters_judgment = {
+            id = 337682,
+            duration = 15,
+            max_stack = 1,
+            copy = "arbiters_judgment"
         },
     } )
 
@@ -403,8 +428,22 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             if talent.fist_of_justice.enabled then
                 setCooldown( "hammer_of_justice", max( 0, cooldown.hammer_of_justice.remains - 2 * amt ) )
             end
-        elseif amt < 0 and resource == "holy_power" and buff.holy_avenger.up then
-            amt = amt * 3
+            if legendary.uthers_guard.enabled then
+                setCooldown( "blessing_of_freedom", max( 0, cooldown.blessing_of_freedom.remains - 1 ) )
+                setCooldown( "blessing_of_protection", max( 0, cooldown.blessing_of_protection.remains - 1 ) )
+                setCooldown( "blessing_of_sacrifice", max( 0, cooldown.blessing_of_sacrifice.remains - 1 ) )
+                setCooldown( "blessing_of_spellwarding", max( 0, cooldown.blessing_of_spellwarding.remains - 1 ) )
+            end
+            if legendary.relentless_inquisitor.enabled then
+                addStack( "relentless_inquisitor", nil, amt )
+            end                
+            if legendary.of_dusk_and_dawn.enabled and holy_power.current == 0 then applyBuff( "blessing_of_dusk" ) end
+        end        
+    end )
+
+    spec:RegisterHook( "gain", function( amt, resource, overcap )
+        if legendary.of_dusk_and_dawn.enabled and amt > 0 and resource == "holy_power" and holy_power.current == 5 then
+            applyBuff( "blessing_of_dawn" )
         end
     end )
 
@@ -430,6 +469,11 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
     spec:RegisterStateFunction( "foj_cost", function( amt )
         if buff.fires_of_justice.up then return max( 0, amt - 1 ) end
+        return amt
+    end )
+
+    spec:RegisterStateFunction( "arbiters_cost", function( amt )
+        if buff.arbiters_judgment.up then return max( 0, amt - 1 ) end
         return amt
     end )
 
@@ -466,6 +510,10 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             handler = function ()
                 applyBuff( 'avenging_wrath' )
                 applyBuff( "avenging_wrath_crit" )
+
+                if talent.liadrins_fury_reborn.enabled then
+                    gain( 5, "holy_power" )
+                end
             end,
         },
 
@@ -528,6 +576,10 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             handler = function ()
                 applyBuff( 'blessing_of_protection' )
                 applyDebuff( 'player', 'forbearance' )
+
+                if talent.liadrins_fury_reborn.enabled then
+                    gain( 5, "holy_power" )
+                end
             end,
         },
 
@@ -691,6 +743,10 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             handler = function ()
                 applyBuff( 'divine_shield' )
                 applyDebuff( 'player', 'forbearance' )
+
+                if talent.liadrins_fury_reborn.enabled then
+                    gain( 5, "holy_power" )
+                end
             end,
         },
 
@@ -721,7 +777,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
                 if buff.empyrean_power.up then return 0 end
-                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 )
+                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_arbiters_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -775,7 +831,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 )
+                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_arbiters_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -886,6 +942,11 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             usable = function () return target.health_pct < 20 or buff.avenging_wrath.up or buff.crusade.up or buff.final_verdict.up or buff.hammer_of_wrath_hallow.up end,
             handler = function ()
                 removeBuff( "final_verdict" )
+
+                if leendary.badge_of_the_mad_paragon.enabled then
+                    if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 3 end
+                    if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 3 end
+                end
             end,
         },
 
@@ -958,18 +1019,15 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             startsCombat = false,
             texture = 461858,
 
-            usable = function () return buff.fires_of_justice.up or holy_power.current > 0, "requires holy_power or fires_of_justice" end,
+            usable = function () return holy_power.current > 0 or buff.fires_of_justice.up or buff.the_arbiters_judgment.up, "requires holy_power or fires_of_justice or the_arbiters_judgment" end,
             handler = function ()
-                if buff.fires_of_justice.up then
-                    local hopo = min( 2, holy_power.current )
-                    spend( hopo, 'holy_power' )                    
-                    applyBuff( 'inquisition', 15 * ( hopo + 1 ) )
-                    return
-                end
+                local hopo = min( 3, holy_power.current )
+                applyBuff( "inquisition", 15 * hopo )                
 
-                local hopo = min( 3, holy_power.current )                
-                spend( hopo, 'holy_power' )                    
-                applyBuff( 'inquisition', 15 * hopo )
+                spend( hopo - ( buff.fires_of_justice.up and 1 or 0 ) + ( buff.the_arbiters_judgment.up and 1 or 0 ), "holy_power" )
+
+                removeBuff( "fires_of_justice" )
+                removeBuff( "the_arbiters_judgment" )
             end,
         },
 
@@ -1038,9 +1096,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             handler = function ()
                 gain( health.max, "health" )
                 applyDebuff( 'player', 'forbearance', 30 )
-                if azerite.empyreal_ward.enabled then applyBuff( "empyreal_ward" ) end
 
-                -- TODO: Legendary
+                if talent.liadrins_fury_reborn.enabled then
+                    gain( 5, "holy_power" )
+                end
+
+                if azerite.empyreal_ward.enabled then applyBuff( "empyreal_ward" ) end
             end,
         },
 
