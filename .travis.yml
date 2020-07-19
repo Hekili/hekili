@@ -6,14 +6,13 @@ addons:
     packages:
     - pandoc
 
-script: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash
-env:
-  CF_API_KEY:
-  WOWI_API_TOKEN:
-
 branches:
   only:
     - shadowlands
   tags:
     - '**-alpha'
 
+script: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash
+env:
+  CF_API_KEY:
+  WOWI_API_TOKEN:
