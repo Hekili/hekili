@@ -8,9 +8,7 @@ addons:
 
 branches:
   only:
-    - shadowlands
-  tags:
-    - '**-alpha'
+  - /^v?9\.\d+(\.\d+)?(-\S*)?-sl$/
 
 script: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash
 env:
