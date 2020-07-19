@@ -696,6 +696,7 @@ do
         [7066] = { "relentless_inquisitor", 1 }, -- 337297
         [7065] = { "badge_of_the_mad_paragon", 1 }, -- 337594
         [7064] = { "final_verdict", 1 }, -- 337247
+        
         [6985] = { "ancestral_reminder", 1 }, -- 336741
         [6986] = { "deeptremor_stone", 1 }, -- 336739
         [6987] = { "deeply_rooted_elements", 1 }, -- 336738
@@ -703,15 +704,16 @@ do
         [6989] = { "skybreakers_fiery_demise", 1 }, -- 336734
         [6990] = { "elemental_equilibrium", 1 }, -- 336730
         [6991] = { "echoes_of_great_sundering", 1 }, -- 336215
-        [6992] = { "windspeakers_lava_resurgence", 1 }, -- 336063
+        [6992] = { "windspeakers_lava_resurgence", 1 }, -- 336063        
         [6993] = { "doom_winds", 1 }, -- 335902
         [6994] = { "legacy_of_the_frost_witch", 1 }, -- 335899
         [6995] = { "witch_doctors_wolf_bones", 1 }, -- 335897
-        [6996] = { "primal_lava_actuators", 1 }, -- 335895
+        [6996] = { "primal_lava_actuators", 1 }, -- 335895        
         [6997] = { "jonats_natural_focus", 1 }, -- 335893
         [6998] = { "spiritwalkers_tidal_totem", 1 }, -- 335891
         [6999] = { "primal_tide_core", 1 }, -- 335889
         [7000] = { "earthen_harmony", 1 }, -- 335886
+        
         [7002] = { "twins_of_the_sun_priestess", 1 }, -- 336897
         [6975] = { "cauterizing_shadows", 1 }, -- 336370
         [6972] = { "archbishops_test_of_faith", 1 }, -- 336470

@@ -3943,11 +3943,11 @@ local mt_default_debuff = {
             return ns.getModifier( aura.id, state.target.unit )
 
         elseif k == 'ticks' then
-            if t.up then return floor( 1 + ( ( aura.duration or ( 30 * state.haste ) ) / ( aura.tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain ) end
+            if t.up then return floor( 1 + ( ( aura.duration or ( 30 * state.haste ) ) / ( aura.tick_time or ( 3 * state.haste ) ) ) - t.ticks_remain ) end
             return 0
 
         elseif k == 'tick_time' then
-            return aura.tick_time or ( 3 * t.haste )
+            return aura.tick_time or ( 3 * state.haste )
 
         elseif k == 'ticks_remain' then
             if not aura.tick_time then return t.remains end

@@ -388,6 +388,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             duration = 3600,
             max_stack = 3
         } )
+
+    spec:RegisterHook( "prespend", function( amt, resource, overcap )
+        if resource == "holy_power" and amt < 0 and buff.holy_avenger.up then
+            return amt * 3, resource, overcap
+        end
+    end )
     
     spec:RegisterHook( 'spend', function( amt, resource )
         if amt > 0 and resource == "holy_power" then
@@ -652,7 +658,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             texture = 135891,
 
             handler = function ()
-                gain( 1 * ( buff.holy_avenger.up and 3 or 1 ), "holy_power" )
+                gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
             end,
         },
 
@@ -754,7 +760,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
                 local t = min( 5, active_enemies ) - 1
                 if t > 0 then
-                    gain( t, "holy_power" )
+                    gain( t * ( buff.holy_avenger.up and 3 or 1 ), "holy_power" )
                     active_dot.judgment = min( active_enemies, active_dot.judgment + t )
                 end
             end,
@@ -960,8 +966,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                     applyBuff( 'inquisition', 15 * ( hopo + 1 ) )
                     return
                 end
-                local hopo = min( 3, holy_power.current )
-                
+
+                local hopo = min( 3, holy_power.current )                
                 spend( hopo, 'holy_power' )                    
                 applyBuff( 'inquisition', 15 * hopo )
             end,
@@ -1115,6 +1121,9 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cast = 0,
             cooldown = 45,
             gcd = "spell",
+
+            spend = 3,
+            spendType = "holy_power",
 
             talent = 'seraphim',
             toggle = 'cooldowns',
