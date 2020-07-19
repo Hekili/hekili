@@ -81,6 +81,18 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 8,
             max_stack = 1,
         },
+        
+        chains_of_devastation_cl = {
+            id = 336736,
+            duration = 20,
+            max_stack = 1,
+        },
+
+        chains_of_devastation_ch = {
+            id = 336737,
+            duration = 20,
+            max_stack = 1
+        },
 
         chill_of_the_twisting_nether = {
             id = 207998,
@@ -110,6 +122,18 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 16,
             max_stack = 15,
         },
+
+        doom_winds = {
+            id = 335903,
+            duration = 8,
+            max_stack = 1
+        },
+
+        doom_winds_cd = {
+            id = 335904,
+            duration = 60,
+            max_stack = 1,
+        },        
 
         earth_shield = {
             id = 974,
@@ -151,43 +175,12 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             max_stack = 1,
         },        
 
-        ember_totem = {
-            id = 262399,
-            duration = 120,
-            max_stack =1 ,
-        },
-
         -- Used to proc Maelstrom Weapon stacks.
         feral_spirit = {
             id = 333957,
             duration = 15,
             max_stack = 1,
         },
-        
-        --[[ BfA
-        feral_spirit = {            
-            name = "Feral Spirit",
-            duration = 15,
-            generate = function ()
-                local cast = rawget( class.abilities.feral_spirit, "lastCast" ) or 0
-                local up = cast + 15 > query_time
-
-                local fs = buff.feral_spirit
-                fs.name = "Feral Spirit"
-
-                if up then
-                    fs.count = 1
-                    fs.expires = cast + 15
-                    fs.applied = cast
-                    fs.caster = "player"
-                    return
-                end
-                fs.count = 0
-                fs.expires = 0
-                fs.applied = 0
-                fs.caster = "nobody"
-            end,
-        }, ]]
 
         fire_of_the_twisting_nether = {
             id = 207995,
@@ -201,23 +194,11 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             max_stack = 1,
         },        
 
-        --[[ BfA - need to revise weapon enchant parsing?
-        flametongue = {
-            id = 194084,
-            duration = 16,
-        }, ]]
-
         forceful_winds = {
             id = 262652,
             duration = 15,
             max_stack = 5,
         },        
-
-        --[[ BfA
-        frostbrand = {
-            id = 196834,
-            duration = 16,
-        }, ]]
 
         frost_shock = {
             id = 196840,
@@ -243,7 +224,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 334196,
             duration = 20,
             max_stack = 5,
-        },        
+        },
 
         hot_hand = {
             id = 215785,
@@ -260,6 +241,12 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         lashing_flames = {
             id = 334168,
             duration = 12,
+            max_stack = 1,
+        },
+
+        legacy_of_the_frost_witch = {
+            id = 335901,
+            duration = 10,
             max_stack = 1,
         },
 
@@ -292,6 +279,12 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 4,
         },
 
+        primal_lava_actuators = {
+            id = 335896,
+            duration = 15,
+            max_stack = 20,
+        },
+        
         reincarnation = {
             id = 20608,
         },        
@@ -578,6 +571,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         if legendary.legacy_oF_the_frost_witch.enabled and stacks == 5 then
             setCooldown( "stormstrike", 0 )
             setCooldown( "windstrike", 0 )
+            setCooldown( "strike", 0 )
             applyBuff( "legacy_of_the_frost_witch" )
         end
     end )
@@ -660,7 +654,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
         chain_heal = {
             id = 1064,
-            cast = function () return maelstrom_mod( 2.5 ) * haste end,
+            cast = function ()
+                if buff.chains_of_devastation_cl.up then return 0 end
+                return maelstrom_mod( 2.5 ) * haste
+            end,
             cooldown = 0,
             gcd = "spell",
             
@@ -672,13 +669,18 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             
             handler = function ()
                 consume_maelstrom( 5 )
+
+                removeBuff( "chains_of_devastation_ch" )
+                if legendary.chains_of_devastation.enabled then
+                    applyBuff( "chains_of_devastation_cl" )
+                end
             end,
         },
 
         chain_lightning = {
             id = 188443,
             cast = function ()
-                if buff.stormkeeper.up then return 0 end
+                if buff.stormkeeper.up or buff.chains_of_devastation_cl.up then return 0 end
                 return maelstrom_mod( 2 ) * haste
             end,
             cooldown = 0,
@@ -701,6 +703,11 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 end
 
                 consume_maelstrom( 5 )
+
+                removeBuff( "chains_of_devastation_cl" )
+                if legendary.chains_of_devastation.enabled then
+                    applyBuff( "chains_of_devastation_ch" )
+                end
             end,
         },        
 
@@ -1015,10 +1022,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
                 if talent.lashing_flames.enabled then applyDebuff( "target", "lashing_flames" ) end
 
-                if level < 116 and equipped.eye_of_the_twisting_nether then
-                    applyBuff( 'fire_of_the_twisting_nether' )
-                    if buff.crash_lightning.up then applyBuff( 'shock_of_the_twisting_nether' ) end
-                end
+                removeBuff( "primal_lava_actuators" )
 
                 if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
                 if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_fire" ) end
@@ -1323,6 +1327,11 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             
             handler = function ()
                 applyBuff( "windfury_totem" )
+
+                if legendary.doom_winds.enabled and debuff.doom_winds_cd.down then
+                    applyBuff( "doom_winds" )
+                    applyDebuff( "player", "doom_winds_cd" )
+                end
             end,
         },
 
@@ -1364,7 +1373,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 end
 
                 removeBuff( "gathering_storms" )
-
                 removeBuff( "strength_of_earth" )
 
                 if talent.cycle_of_the_elements.enabled then
@@ -1413,6 +1421,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     } )
 
 
-    spec:RegisterPack( "Enhancement", 20200717, [[d4Z3naqBLAteH2fqBdKI9PI8Bv9xaZwH5Jq15bj)sj6Bss6FiuyNuL2lPDl1(LyuebddHmoIKCArdfKQAWGA4kYfbPIofrIJHGZHqPwOsyPGuLfJOLJ0tjSkek6Xq9CiteKk1uPkMSknDHhbsL8kLuxg11jQdtzAeP2mv2UsYZaP0Sur9zvyEssnsqQW3vuJMQAzerNeHsUfrs5AssCpj1kLeVgehLiPALG6rfxly1RKejjrevvcvfusIKuQisAveqnXQyYWqSdwfTTzvaD2(wJ5n3HkMmOgVDvpQa9YumRcPUCIHuGT(wGHUtAaLkiLZrqSALufxly1RKejjrevvcvfusIKuQicAvbAIXQxjHgOvf(59YTsQIlJWQa69Yh(fyOpnFAgqvGDpTal8T7ppS(IuXirbs9OIl7m5rOEuVeupQWWr(TkMZ(cG8zJQcUnYbF1fAOELu9Ocdh53Qyo7lkOjewfCBKd(Ql0q9cTQhvWTro4RUqfyAgmnnvqk7CGBJhOG(BGz2M(gefggsbU6cmbIuHHJ8Bv4yQnaqtjndnuVsREub3g5GV6cvGPzW00ub()X9NBquqtimiL3w2ivy4i)wfgcZ91AmRH6TkQhvWTro4RUqfyAgmnnvqk7CGBJhOG(BGz2M(gefggsb(ubwAvy4i)wfO4PBimpXunuVqJ6rfCBKd(QlubMMbtttfKYoh424bkO)gyMTPVbrHHHuGpvGLwfgoYVvbp4n3Hnaihgk0q9wv1Jk42ih8vxOcmndMMMkmCKRyaU5DYOc8PcmHcSelWKYohiMAiFGrE4hD2hG3FUvHHJ8BvGPgYhyKh(rN9HgQxPs9OcUnYbF1fQatZGPPPcszNd03YbkE6gefggsbUUaxLcSelWgoYvma38ozub(ubMGkmCKFRch9rbaY)Xq0q9sSvpQGBJCWxDHkmCKFRc3W2maY)XqubMMbtttfu2rzKVroyvGHcpyGWOhCGuVe0q9sGi1Jk42ih8vxOcmndMMMkmCKRyaU5DYOc8Pcmbvy4i)wfi5(Y0Sp0q9sGG6rfCBKd(QlubMMbtttfKYohO)ha(wFbLNuHHJ8BvmSvgWWq(AOEjiP6rfCBKd(QlubMMbtttfgoYvmW9dq3W2maY)XqkWeZcSekWsOaB4ixXaCZ7KrfyPwbMqbwkf4QjgfyOPalLc8PcCvuHHJ8Bv4skd0)ktd1lbOv9OcUnYbF1fQatZGPPPcszNdCB8af0FdmZ203GOWWqkWvxGjqKkmCKFRcu80nkOjewd1lbPvpQGBJCWxDHkW0myAAQWWrUIb4M3jJkWNkWekWsSalHcmPSZbUnEGc6VbMzB6Bquyyif4tfyPlWeN4fyszNdefpDdH5jMckpvGLIkmCKFRcSVLnWip8Jo7dnuVeQI6rfCBKd(QlubMMbtttfgoYvma38ozubUUatOalXcSekWKYoh424bkO)gyMTPVbrHHHuGpvGLUatCIxGjLDoqu80neMNykO8ubwkQWWr(Tkg5HF0zFaq(Jqd1lbOr9Ocdh53Qi(G3aBdfmfkvWTro4RUqd1lHQQEub3g5GV6cvGPzW00uX9dq3W2maY)XqaP82YgvGpvGnCKFdG)FC)5wfgoYVvHJ(Oaa5)yiAOEjivQhvy4i)wfi5(Y0Spub3g5GV6cnuVei2Qhvy4i)wfdBLbmmKVk42ih8vxOHgQyIY4FtAH6r9sq9OcUnYbF1fQatZGPPPcszNdCKh(rN9baYp5XfKYBlBubU6c8b(Qcdh53QyKh(rN9baYp5Xvd1RKQhvWTro4RUqfyAgmnnvqk7CGZzFDYuOaMzB6BqkVTSrf4QlWh4RkmCKFRI5SVozkuaZSn9TgQxOv9OcUnYbF1fQatZGPPPcszNdCo7RtMcfWmBtFds5TLnQaxDb(aFvHHJ8Bv4g2MJVpKzGz2M(wd1R0QhvWTro4RUqfyAgmnnvqk7CGZzFDYuOaIp4n49NBvy4i)wfZzFDYuOaIp4TgAOHkwXuu(T6vsIKKiIiiP0Qy2OD2hivqS2tpn4BbwYcSHJ87c8irbcSurft03LdwfqxfyO3lF4xGH(08Pzavb290cSW3U)8W6lQuPuXWr(ncCIY4FtAr9ip8Jo7daKFYJ750vtk7CGJ8Wp6Spaq(jpUGuEBzJQ(aFlvmCKFJaNOm(3KwSUE5C2xNmfkGz2M((C6QjLDoW5SVozkuaZSn9niL3w2OQpW3sfdh53iWjkJ)nPfRRx6g2MJVpKzGz2M((C6QjLDoW5SVozkuaZSn9niL3w2OQpW3sfdh53iWjkJ)nPfRRxoN91jtHci(G3NtxnPSZboN91jtHci(G3G3FUlvkvmCKFJQNZ(cG8zJwQy4i)gTUE5C2xuqtiCPIHJ8B066LoMAda0usZ4C6QjLDoWTXduq)nWmBtFdIcddPAcevQy4i)gTUEPHWCFTgZNtxn()X9NBquqtimiL3w2Osfdh53O11lrXt3qyEIPNtxnPSZbUnEGc6VbMzB6BquyyiNKUuXWr(nAD9sEWBUdBaqomuCoD1KYoh424bkO)gyMTPVbrHHHCs6sfdh53O11lXud5dmYd)OZ(4C6QnCKRyaU5DYOteKiPSZbIPgYhyKh(rN9b49N7sfdh53O11lD0hfai)hd5C6QjLDoqFlhO4PBquyyi1vrIgoYvma38oz0jcLkgoYVrRRx6g2Mbq(pgYzmu4bdeg9GdunHZPRMYokJ8nYbxQy4i)gTUEjsUVmn7JZPR2WrUIb4M3jJorOuXWr(nAD9YHTYaggY)C6QjLDoq)pa8T(ckpvQy4i)gTUEPlPmq)RSZPR2WrUIbUFa6g2Mbq(pgcXucsWWrUIb4M3jJKAeKs1edOrkNQsPIHJ8B066LO4PBuqti850vtk7CGBJhOG(BGz2M(gefggs1eiQuXWr(nAD9sSVLnWip8Jo7JZPR2WrUIb4M3jJorqIsGu25a3gpqb93aZSn9nikmmKtstCItk7CGO4PBimpXuq5jPuQy4i)gTUE5ip8Jo7daYFeNtxTHJCfdWnVtgvtqIsGu25a3gpqb93aZSn9nikmmKtstCItk7CGO4PBimpXuq5jPuQy4i)gTUEz8bVb2gkykuLkgoYVrRRx6Opkaq(pgY50vF)a0nSndG8FmeqkVTSrNmCKFdG)FC)5UuXWr(nAD9sKCFzA2hLkgoYVrRRxoSvgWWq(QWKd)NQcOdgsosn0qva]] )
+    spec:RegisterPack( "Enhancement", 20200718, [[d4ZmvaqBLSjuP2LkTnLQ0(aj)g4PKmBPA(cfNxPu)svX3uk0)uQIANsr7v0UvSFsnkLsgMQkJtPGRrq1qvQImyvmCHCicIokbLYXiW5iiyHkvwkbHwmOwokxgzveuSmqQNdzIeuQMQuyYeA6u9iLQGxPQ0ZiiDDu1FvLdtzZeTDvv9DuXSqLmnHsZtPQgjbL0JHA0c8zqCsLQqxKGsCAj3tqRuO6ukf9AP0PGSrQenNYMq)d6F)2OGnCfSbHdTW3BQ8TJOufz4wdcLQXwuQewMaBW0Igpvr22DGjMnsfcWZWuQe24lCR(yJO(iSxmF7ubZxDFpojCQenNYMq)d6F)2OGnCfSbHdDS7nvOicNnHEVcnvbLOinjCQejeovcrapKa9zpXkaR8T1hjGPpQateWPBJikv9c5OSrQejPX39Sr2uq2ivg2lWKko1i(qbKXsfngCNeZDPNnHoBKkAm4ojM7sfMvoXklvg2R)0JgAvesFGsFeOpCRpW8s5fZmuWRxqc8PgixraNjvg2lWKkmZqbVEbjWNAGKE2uOzJuzyVatQ4uJiYzvlLkAm4ojM7spBgB2iv0yWDsm3LkmRCIvwQG5LY7YOoYzG1JdzrG5ICd3Qp7Rpc(Lkd7fysLKyw)HIkw5PNnfE2iv0yWDsm3LkmRCIvwQWaqxeWzUiNvT0LrlRguQmSxGjvgctJOnyk9S5EZgPYWEbMu9Nqre75aNwPIgdUtI5U0ZMBmBKkAm4ojM7sfMvoXklvW8s5nWQoYbS1f5gUvFc1hHRpCRpW8s5Dzuh5mW6XHSiWCrUHB1hO0NytLH9cmPsYai)Hca420ZMBiBKkAm4ojM7sfMvoXklvW8s5Dzuh5mW6XHSiWCrUHB1hO0NytLH9cmPc5a2QLOiILE2uiKnsfngCNeZDPcZkNyLLkd71F6rdTkcPpH6JGuzyVatQiJ5b08qrvlLE2uWVSrQOXG7KyUlvyw5eRSuzyV(tpAOvri9juFeOpCRpBPpBPpW8s5Dzuh5mW6XHSiWCrUHB1hO0Ny1hU1hyEP8ICaB1sueXU8r6d36dmVuEroGTAjkIyxgTSAq6Z(H6deSO(im6d06ZM6tmXOpW8s5Dzuh5mW6XHSiWCrUHB1Nq9rWp9zZuzyVatQ6fKaFQbYdg090ZMceKnsfngCNeZDPcZkNyLLkd71F6rdTkcPpqPpc0hU1NT0NT0hyEP8UmQJCgy94qweyUi3WT6du6tS6d36dmVuEroGTAjkIyx(i9HB9bMxkVihWwTefrSlJwwni9z)q9bcwuFeg9bA9zt9jMy0hyEP8UmQJCgy94qweyUi3WT6tO(i4N(SzQmSxGjv4aRMxVGe4tnqspBka6SrQOXG7KyUlvyw5eRSubZlL3LrDKZaRhhYIaZf5gUvFGsFInvg2lWKkQtlACR)G7gYtpBkqOzJurJb3jXCxQWSYjwzPcMxkVbw1roGTUi3WT6tO(i8uzyVatQKmaYFOaaUn9SPGyZgPIgdUtI5UuHzLtSYsLH96p9OHwfH0hO0hbPYWEbMuHzgk41lib(udK0ZMceE2iv0yWDsm3LkmRCIvwQmSx)Phn0QiK(aL(iivg2lWKke)isSAGKE2uWEZgPIgdUtI5UuHzLtSYsLqQpIemVuELDBrpuaa3E5JsLH9cmPs2Tf9qbaCB6ztbBmBKkAm4ojM7sfMvoXklvW8s5na4VaBeV8rPYWEbMu1T)2RBOG0ZMc2q2iv0yWDsm3LkmRCIvwQmSx)Phn0QiK(eQpcsLH9cmPImMhqZdfvTu6ztbcHSrQOXG7KyUlvyw5eRSubZlL3LrDKZaRhhYIaZf5gUvF2xFe8lvg2lWKkKdylKZQwk9Sj0)YgPIgdUtI5UuHzLtSYsLH96p9OHwfH0hO0hb6d36Zw6dmVuExg1rodSECilcmxKB4w9bk9jw9jMy0hyEP8ICaB1sueXU8r6ZM6d36Zw6JqQpW8s5fZmuWRxqc8PgipC)YhPpXeJ(aZlL3LrDKZaRhhYIaZf5gUvFGsF2G(SzQmSxGjv4aRMxVGe4tnqspBcTGSrQOXG7KyUlvyw5eRSuzyV(tpAOvri9juFeOpCRpBPpW8s5Dzuh5mW6XHSiWCrUHB1hO0Ny1NyIrFG5LYlYbSvlrre7YhPpBMkd7fysvVGe4tnqEWGUNE2eAOZgPYWEbMu5aNwVLHCITDQOXG7KyUl9Sj0cnBKkAm4ojM7sfMvoXklvg2R)0te4xz3w0dfaWT6JWOpBPpBPpg2R)0JgAvesF2uF2FpRp7vF2uFGsF2yQmSxGjvYIrVb83spBcDSzJurJb3jXCxQmSxGjvYUTOhkaGBtfMvoXklvmsYiuGb3PuH3g3PNBmiKJYMcspBcTWZgPYWEbMurgZdO5HIQwkv0yWDsm3LE2e69MnsLH9cmPcXpIeRgiPIgdUtI5U0ZMqVXSrQmSxGjvD7V96gkiv0yWDsm3LE2e6nKnsLH9cmPcZmuWRxqc8PgiPIgdUtI5U0ZMqleYgPIgdUtI5UuHzLtSYsLqQpU1PXVbw1roGTU0yWDsuF4wFeb(v2Tf9qbaC7LrlRgK(aL(yyVaZddaDraNjvg2lWKkjdG8hkaGBtp9ufXimybBE2iBkiBKkAm4ojM7sfMvoXklvW8s5Txqc8PgipuqrDXlJwwni9zF9rO)(Lkd7fysvVGe4tnqEOGI6IPNnHoBKkAm4ojM7sfMvoXklvW8s5LtnIsE22poKfbMlJwwni9zF9rO)(Lkd7fysfNAeL8STFCilcmPNnfA2iv0yWDsm3LkmRCIvwQG5LYRSBlYbdeE6XHSiWCz0YQbPp7Rpc93VuzyVatQKDBroyGWtpoKfbM0ZMXMnsfngCNeZDPcZkNyLLkyEP8YPgrjpB7NdCADfbCMuzyVatQ4uJOKNT9ZboTsp90t1FIHkWKnH(h0)(TrbBmvCm2udeuQ2JRiaZjr9bA9XWEbg9PxihD1XtvediRoLQ9G(ieb8qc0N9eRaSY3wFKaM(OcmraNUnIiDCDCd7fyq3igHblyZd7fKaFQbYdfuuxKRsgcZlL3EbjWNAG8qbf1fVmAz1G2xO)(PJByVad6gXimybB(3WpCQruYZ2(XHSiWWvjdH5LYlNAeL8STFCilcmxgTSAq7l0F)0XnSxGbDJyegSGn)B4hz3wKdgi80JdzrGHRsgcZlLxz3wKdgi80JdzrG5YOLvdAFH(7NoUH9cmOBeJWGfS5Fd)WPgrjpB7NdCAXvjdH5LYlNAeL8STFoWP1veWz0X1XnSxGbfYPgXhkGmMoUH9cmOVHFWmdf86fKaFQbcxLm0WE9NE0qRIqqjGByEP8Izgk41lib(udKRiGZOJByVad6B4ho1iICw1s64g2lWG(g(rsmR)qrfRCUkzimVuExg1rodSECilcmxKB429f8th3WEbg03WpgctJOnyIRsgIbGUiGZCroRAPlJwwniDCDCd7fyqFd)8Nqre75aNw64g2lWG(g(rYai)Hca4wUkzimVuEdSQJCaBDrUHBdfo3W8s5Dzuh5mW6XHSiWCrUHBHkwDCd7fyqFd)GCaB1sueX4QKHW8s5Dzuh5mW6XHSiWCrUHBHkwDCd7fyqFd)qgZdO5HIQwIRsgAyV(tpAOvrOqb64g2lWG(g(Pxqc8Pgipyq35QKHg2R)0JgAvekua3BTfmVuExg1rodSECilcmxKB4wOILByEP8ICaB1sueXU8rCdZlLxKdyRwIIi2LrlRg0(HqWIcd0BgtmW8s5Dzuh5mW6XHSiWCrUHBdf8BtDCd7fyqFd)GdSAE9csGp1aHRsgAyV(tpAOvriOeW9wBbZlL3LrDKZaRhhYIaZf5gUfQy5gMxkVihWwTefrSlFe3W8s5f5a2QLOiIDz0YQbTFieSOWa9MXedmVuExg1rodSECilcmxKB42qb)2uh3WEbg03WpuNw04w)b3nKZvjdH5LY7YOoYzG1JdzrG5ICd3cvS64g2lWG(g(rYai)Hca4wUkzimVuEdSQJCaBDrUHBdfUoUH9cmOVHFWmdf86fKaFQbcxLm0WE9NE0qRIqqjqh3WEbg03Wpi(rKy1aHRsgAyV(tpAOvriOeOJByVad6B4hz3w0dfaWTCvYqHuKG5LYRSBl6Hca42lFKoUH9cmOVHF62F71nuaxLmeMxkVba)fyJ4Lpsh3WEbg03WpKX8aAEOOQL4QKHg2R)0JgAvekuGoUH9cmOVHFqoGTqoRAjUkzimVuExg1rodSECilcmxKB429f8thxh3WEbg03Wp4aRMxVGe4tnq4QKHg2R)0JgAveckbCVfmVuExg1rodSECilcmxKB4wOInMyG5LYlYbSvlrre7YhTj3BjKW8s5fZmuWRxqc8PgipC)YhftmW8s5Dzuh5mW6XHSiWCrUHBHAdBQJByVad6B4NEbjWNAG8GbDNRsgAyV(tpAOvrOqbCVfmVuExg1rodSECilcmxKB4wOInMyG5LYlYbSvlrre7YhTPoUH9cmOVHFCGtR3YqoX2wh3WEbg03WpYIrVb834QKHg2R)0te4xz3w0dfaWTcZwBzyV(tpAOvrOn3FpV3nHAJ647b9XWEbg03WpYUTOhkaGB5QKHmsYiuGb3jDCd7fyqFd)i72IEOaaULl824o9CJbHCuOaUkziJKmcfyWDsh3WEbg03WpKX8aAEOOQL0XnSxGb9n8dIFejwnq0XnSxGb9n8t3(BVUHc0XnSxGb9n8dMzOGxVGe4tnq0XnSxGb9n8JKbq(dfaWTCvYqH0Ton(nWQoYbS1LgdUtIClc8RSBl6Hca42lJwwniOmSxG5HbGUiGZKkJ3daSujevcRPNEMa]] )
 
 end
