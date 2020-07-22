@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 90000
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
@@ -22,7 +22,7 @@ Classes.lua
 # Classes\DeathKnightBlood.lua
 # Classes\DeathKnightFrost.lua
 # Classes\DeathKnightUnholy.lua
-# Classes\DemonHunterHavoc.lua
+Classes\DemonHunterHavoc.lua
 # Classes\DemonHunterVengeance.lua
 # Classes\DruidBalance.lua
 # Classes\DruidFeral.lua
