@@ -8,7 +8,7 @@ addons:
 
 branches:
   only:
-  - /^v?9\.\d+(\.\d+)?(-\S*)?-sl$/
+  - /^v?9\.\d+(\.\d+)?(-\S*)?$/
 
 script: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash
 env:
