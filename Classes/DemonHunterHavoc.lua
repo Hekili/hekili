@@ -625,7 +625,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.solitude.up and -22 or -20 end,
+            spend = function () return talent.insatiable_hunger.enabled and -25 or -20 end,
             spendType = "fury",
 
             startsCombat = true,
@@ -1026,7 +1026,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
         the_hunt = {
             id = 323639,
-            cast = 0.96,
+            cast = 1,
             cooldown = 180,
             gcd = "spell",
             
@@ -1126,5 +1126,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         type = "toggle",
         width = "full"
     } )
+
+
+    spec:RegisterPack( "Havoc", 20200722, [[diJghaGjrQ2LQY2ejSpviMTGFbQ(gfQDQI2RYUPA)cnmvWVHmyP0WPGJbfNtfslekTyqwUkDBv5PalJs1Zr1RHQAQIQjlvtN0JGk1RaLlJCDr8zkLZlszZsX2HkUMkuZsKOPbvIVdvzKui9yugTQQdtCsOs6zuioTK7jkRKIgNiP)sjpmlFGUO0oTFW(HdgB3(hMJXCumPyannd0ageg(InAaxE0agvWbXgWGKwaj9LpahLCz0adaLubfx9bnqxuAN2py)WbJTB)dZXymIrWmGKO)O7agLWVc1a)vVt(GgOtC2a5)fp2w8yReBnim8fBuSf1eBfMwip2gkUYJTnOBS1Oe(vO(giuCLV8b6uJKe0LVtmlFaHPfYhOx8BIbDaYfOa1h2P70(YhqyAH8byiNN8iRNyRydqUafO(WoDNgz5dimTq(axch6YjRNyRydqUafO(WoDN4YYhqyAH8bAOauq60aKlqbQpSt35XlFaHPfYhq)jR)exhGCbkq9HD6otXYhqyAH8bC6r8Ipa5cuG6d70DA8YhqyAH8bioNCgzbDjb)bixGcuFyNUZux(actlKpWJu5HUg(r8Ipa5cuG6d70DE0LpGW0c5d0qbli5EfB0aKlqbQpSt3jMdlFaHPfYhOtI(BXXJiddqUafO(WoDNyWS8beMwiFaOG0jRU4mAaYfOa1h2P7eJ9LpGW0c5dqPrwqK8gGCbkq9HD6oXyKLpGW0c5diUx)vq0c5dqUafO(WoDNyWLLpGW0c5duVhkiAHClj5kdqUafO(WoDNyoE5dimTq(aSFbXT46TWNgGCbkq9HD6oXKILpa5cuG6d7aSBP0TKbujqU(9qpY1K3h5cuG6X20JTqjnnFp0JCn591r45dimTq(anuW6MW)NUtmgV8bixGcuFyhGDlLULmGkbY1Vh6rUM8(ixGcup2MESvLRns)WR0)Ytn2MESTj5M2xNAkwPX2JeBt9WactlKpaoKBJAscwxsVKOt3jMux(actlKpqNEiNBbvkna5cuG6d70Pdy4sm0ds0LpD6a4qxEH8DA)G9dhm2U9bWtUE524dGRpdORs9ylMyRW0c5X2qXv(x0CaUbITZJn24bmCrnvGga3XwHPfY5FgUed9GenlAgnfMwiNN1l(nXGgnfMwiNdldod58Khz9eBflAkmTqohwg8lHdD5K1tSvSOz0uyAHCoSm4nuakiDkAgnfMwiNdldU(tw)jUgnfMwiNdldUtpIx8OPW0c5CyzWjoNCgzbDjb)OPW0c5CyzWFKkp01WpIx8Oz0e3XwHPfY5WYGZ(fe3Yr4irtHPfY5WYG3qbli5EfBukfMw4qwKtVI4hbt0e3XwHPfY5WYG3qbl6MyqlKhnJMctlKZHLbVtI(BXXJidrtHPfY5WYGdfKoz1fNrrtHPfY5WYGtPrwqK8IMctlKZHLbxCV(RGOfYJMctlKZHLbVEpuq0c5wsYvIMrtHPfY5WYGZ(fe3IR3cFkAI7yRW0c5CyzW1)lcplBbPWHIMrtHPfY5WYG3qbRBc)pLvtMkbY1Vh6rUM8(ixGcupDOKMMVh6rUM8(6i88OPW0c5CyzWXHCButsW6s6LenLvtMkbY1Vh6rUM8(ixGcupDvU2i9dVs)lp10BsUP91PMIv6rs9q0mAkmTqohwg8o9qo3cQuA60na]] )
     
 end
