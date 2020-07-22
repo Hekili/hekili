@@ -52,10 +52,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        relentless = 3553, -- 196029
-        gladiators_medallion = 3551, -- 208683
-        adaptation = 3552, -- 214027
-
         counterstrike_totem = 3489, -- 204331
         ethereal_form = 1944, -- 210918
         grounding_totem = 3622, -- 204336

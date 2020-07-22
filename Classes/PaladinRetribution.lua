@@ -50,20 +50,17 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        gladiators_medallion = 3444, -- 208683
-        adaptation = 3445, -- 214027
-        relentless = 3446, -- 196029
+        blessing_of_sanctuary = 752, -- 210256
         cleansing_light = 3055, -- 236186
-        lawbringer = 754, -- 246806
         divine_punisher = 755, -- 204914
         hammer_of_reckoning = 756, -- 247675
         jurisdiction = 757, -- 204979
-        vengeance_aura = 751, -- 210323
-        blessing_of_sanctuary = 752, -- 210256
+        law_and_order = 858, -- 204934
+        lawbringer = 754, -- 246806
         luminescence = 81, -- 199428
         ultimate_retribution = 753, -- 287947
-        law_and_order = 858, -- 204934
         unbound_freedom = 641, -- 305394
+        vengeance_aura = 751, -- 210323
     } )
 
     -- Auras

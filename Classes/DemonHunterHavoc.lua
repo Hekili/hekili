@@ -112,10 +112,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        gladiators_medallion = 3426, -- 208683
-        relentless = 3427, -- 196029
-        adaptation = 3428, -- 214027
-
         cleansed_by_flame = 805, -- 205625
         cover_of_darkness = 1206, -- 227635
         demonic_origins = 810, -- 235893
