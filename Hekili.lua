@@ -145,6 +145,7 @@ Hekili.Class = {
     file = "NONE",
 
 	resources = {},
+	resourceAuras = {},
     talents = {},
     pvptalents = {},
 	auras = {},

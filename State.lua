@@ -766,6 +766,12 @@ local function applyBuff( aura, duration, stacks, value )
         b.caster = 'player'
     end
 
+    local resource = class.resourceAuras[ aura ]
+
+    if resource then
+        state.forecastResources( resource )
+    end
+
     if aura == 'heroism' or aura == 'time_warp' or aura == 'ancient_hysteria' then
         applyBuff( 'bloodlust', duration, stacks, value )
     elseif aura ~= 'potion' and class.auras.potion and class.auras[ aura ].id == class.auras.potion.id then
@@ -1202,12 +1208,12 @@ local function forecastResources( resource )
                 r.fcount = idx
 
                 -- interval() takes the last tick and the current value to remember the next step.
-                local step = roundUp( type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, v ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) ), 2 )
+                local step = roundDown( type( e.interval ) == 'number' and e.interval or ( type( e.interval ) == 'function' and e.interval( now, v ) or ( type( e.interval ) == 'string' and state[ e.interval ] or 0 ) ), 3 )
 
                 remains[ e.resource ] = finish - e.next
                 e.next = e.next + step
 
-                if e.next > finish or step < 0 then
+                if e.next > finish or step <= 0 or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < e.next ) then
                     table.remove( events, 1 )
                 end
             end

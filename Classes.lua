@@ -144,7 +144,11 @@ local HekiliSpecMixin = {
 
         if r.state.regenModel then
             for _, v in pairs( r.state.regenModel ) do
-                v.resource = v.resoure or resource
+                v.resource = v.resource or resource
+
+                if v.aura then
+                    self.resourceAuras[ v.aura ] = resource
+                end
             end
         end
 
@@ -810,6 +814,7 @@ function Hekili:NewSpecialization( specID, isRanged )
         melee = not isRanged,
 
         resources = {},
+        resourceAuras = {},
         primaryResource = nil,
 
         talents = {},
@@ -4952,6 +4957,7 @@ function Hekili:SpecializationChanged()
     wipe( class.packs )
     wipe( class.hooks )
     wipe( class.resources )
+    wipe( class.resourceAuras )
 
     wipe( class.pets )
 
@@ -4995,6 +5001,11 @@ function Hekili:SpecializationChanged()
         class[ key ] = nil
     end
     if rawget( state, "rune" ) then state.rune = nil; class.rune = nil; end
+    
+    for k in pairs( class.resourceAuras ) do
+        class.resourceAuras[ k ] = nil
+    end
+    
     class.primaryResource = nil
 
     for k in pairs( class.stateTables ) do
@@ -5028,6 +5039,10 @@ function Hekili:SpecializationChanged()
                     state[ res ] = model.state
                 end
                 if rawget( state, "runes" ) then state.rune = state.runes end
+
+                for k,v in pairs( spec.resourceAuras ) do
+                    class.resourceAuras[ k ] = v
+                end
 
                 class.primaryResource = spec.primaryResource
 
