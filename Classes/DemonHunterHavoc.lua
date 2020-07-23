@@ -906,10 +906,12 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyBuff( "metamorphosis" )
                 last_metamorphosis = query_time
-                stat.haste = stat.haste + 25
+                
                 setDistance( 5 )
 
-                if azerite.chaotic_transformation.enabled then
+                if level > 19 then stat.haste = stat.haste + 25 end
+                
+                if level > 51 or azerite.chaotic_transformation.enabled then
                     setCooldown( "eye_beam", 0 )
                     setCooldown( "blade_dance", 0 )
                     setCooldown( "death_sweep", 0 )
