@@ -164,17 +164,17 @@ do
     end
 
     RegisterEvent( "GET_ITEM_INFO_RECEIVED", function( event, itemID, success )
+        if IsEquippedItem( itemID ) then
+            updatedEquippedItem = true
+            C_Timer.After( 0.5, CheckForEquipmentUpdates )
+        end
+
         local callbacks = itemCallbacks[ itemID ]
 
         if callbacks then
             for i, func in ipairs( callbacks ) do
                 func( success )
                 callbacks[ i ] = nil
-            end
-
-            if state.set_bonus[ itemID ] > 0 then
-                updatedEquippedItem = true
-                C_Timer.After( 0.5, CheckForEquipmentUpdates )
             end
 
             itemCallbacks[ itemID ] = nil
