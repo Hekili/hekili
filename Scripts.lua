@@ -394,6 +394,8 @@ do
         { "^(action%.[a-z0-9_]+)%.charges>=?(.-)$",
                                                     "(1+%2-%1.charges_fractional)*%1.recharge" },
         
+        { "^full_recharge_time>=?(.-)$",            "full_recharge_time-%1" },
+        
         { "^!(action%.[a-z0-9]+)%.executing$",      "%1.execute_remains" },
         { "^(.-time_to_die)<=?(.-)$",               "%1 - %2" },
         { "^(.-)%.time_to_(.-)<=?(.-)$",            "%1.time_to_%2-%3" },
