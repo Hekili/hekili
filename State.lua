@@ -3541,6 +3541,7 @@ do
 
             if class.variables[ var ] then
                 -- We have a hardcoded shortcut.
+                if Hekili.ActiveDebug then Hekili:Debug( "Using class var '%s'.", var ) end
                 return class.variables[ var ]()
             end
 
