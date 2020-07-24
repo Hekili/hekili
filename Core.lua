@@ -536,6 +536,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
             end
             -- end
 
+            local startTime
+            
+            if debug then startTime = debugprofilestop() end
+
             if self:IsActionActive( packName, listName, actID ) then
                 -- Check for commands before checking actual actions.
                 local entry = list[ actID ]
@@ -571,12 +575,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                     if debug then
                         local d = ""
-                        if entryReplaced then d = d .. format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.\n", action ) end
+                        if entryReplaced then d = format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.\n", action ) end
                         
                         d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )                        
 
                         if not known then d = d .. " - " .. ( reason or "ability unknown" )
                         elseif not enabled then d = d .. " - ability disabled." end
+
                         self:Debug( d )
                     end
 
@@ -594,11 +599,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         state.delay = wait_time
 
                         if script.Error then
-                            if debug then self:Debug( "The conditions for this entry contain an error.  Skipping.\n" ) end
+                            if debug then self:Debug( "The conditions for this entry contain an error.  Skipping." ) end
                         elseif wait_time > state.delayMax then
-                            if debug then self:Debug( "The action is not ready ( %.2f ) before our maximum delay window ( %.2f ) for this query.\n", wait_time, state.delayMax ) end
+                            if debug then self:Debug( "The action is not ready ( %.2f ) before our maximum delay window ( %.2f ) for this query.", wait_time, state.delayMax ) end
                         elseif ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
-                            if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.\n", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
+                            if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
                         else
                             if state.channeling then
                                 if debug then self:Debug( "NOTE:  We are channeling ( %s ) until %.2f.", state.player.channelSpell, state.player.channelEnd - state.query_time ) end
@@ -969,6 +974,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             end
                         end
                     end
+                
+                    if debug and action ~= "call_action_list" and action ~= "run_action_list" and action ~= "use_items" then
+                        self:Debug( "Time spent on this action:  %.2fms", debugprofilestop() - startTime )
+                    end
                 end
             else
                 if debug then self:Debug( "\nEntry #%d in list ( %s ) is not set or not enabled.  Skipping.", actID, listName ) end
@@ -1097,7 +1106,7 @@ function Hekili:ProcessHooks( dispName, packName )
     end
 
     if dispName == "AOE" and self:GetToggleState( "mode" ) == "reactive" then
-        if ns.getNumberTargets() < ( spec and spec.aoe or 3 ) then
+        if ns.getNumberTargets() < ( spec and spec.aoe or 3 ) and UI.RecommendationsStr then
             UI.RecommendationsStr = nil
             UI.NewRecommendations = true
             return
