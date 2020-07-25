@@ -745,7 +745,7 @@ function Hekili:RestoreDefaults()
         end
     end
 
-    if changed then self:LoadScripts() end
+    if changed then self:LoadScripts(); self:RefreshOptions() end
 end
 
 
