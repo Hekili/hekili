@@ -221,7 +221,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterAuras( {
         antimagic_shell = {
             id = 48707,
-            duration = function () return ( azerite.runic_barrier.enabled and 1 or 0 ) + ( talent.antimagic_barrier.enabled and 7 or 5 ) end,
+            duration = function () return ( legendary.deaths_embrace.enabled and 2 or 1 ) * ( ( azerite.runic_barrier.enabled and 1 or 0 ) + ( talent.antimagic_barrier.enabled and 7 or 5 ) ) end,
             max_stack = 1,
         },
         antimagic_zone = {
@@ -359,6 +359,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 3,
             max_stack = 1,
         },
+        strangulate = {
+            id = 47476,
+            duration = 5,
+            max_stack = 1,                
+        },
         swarming_mist = { -- Venthyr
             id = 311648,
             duration = 8,
@@ -487,11 +492,20 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             max_stack = 1,
         },
 
-        strangulate = {
-            id = 47476,
-            duration = 5,
-            max_stack = 1,                
-        }, 
+
+        -- Legendaries
+        -- TODO:  Model +/- rune regen when applied/removed.
+        crimson_rune_weapon = {
+            id = 334526,
+            duration = 10,
+            max_stack = 1
+        },
+
+        grip_of_the_everlasting = {
+            id = 334722,
+            duration = 3,
+            max_stack = 1
+        }
     } )
 
 
@@ -628,6 +642,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if level < 116 and set_bonus.tier20_2pc == 1 then
                     applyBuff( "gravewarden" )
                 end
+
+                if legendary.superstrain.enabled then
+                    applyDebuff( "target", "frost_fever" )
+                    active_Dot.frost_fever = active_enemies
+
+                    applyDebuff( "target", "virulent_plague" )
+                    active_dot.virulent_plague = active_enemies
+                end
             end,
         },
 
@@ -742,7 +764,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 237273,
 
             usable = function () return target.is_undead, "requires undead target" end,
-            
+
             handler = function ()
                 summonPet( "controlled_undead" )
             end,
@@ -822,8 +844,13 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 136144,
 
             handler = function ()
-                applyBuff( "death_and_decay" )
                 removeBuff( "crimson_scourge" )
+
+                if legendary.phearomones.enabled and buff.death_and_decay.down then
+                    stat.haste = stat.haste + 0.1
+                end
+
+                applyBuff( "death_and_decay" )
             end,
         },
 
@@ -861,7 +888,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyDebuff( "target", "death_grip" )
                 setDistance( 5 )
 
-                -- TODO:  Conduit for 3 second re-application window.
+                if legendary.grip_of_the_everlasting.enabled and buff.grip_of_the_everlasting.down then
+                    applyBuff( "grip_of_the_everlasting" )
+                else
+                    removeBuff( "grip_of_the_everlasting" )
+                end
             end,
         },
 
@@ -883,6 +914,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 gain( 0.075 * health.max * ( 1.2 * buff.haemostasis.stack ) * ( 1.08 * buff.hemostasis.stack ), "health" )
                 removeBuff( "haemostasis" )
                 removeBuff( "hemostasis" )
+
+                -- TODO: Calculate real health gain from Death Strike to trigger Bryndaor's Might legendary.
 
                 if talent.voracious.enabled then applyBuff( "voracious" ) end
             end,
@@ -957,6 +990,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 removeBuff( "blood_for_blood" )
 
                 if azerite.deep_cuts.enabled then applyDebuff( "target", "deep_cuts" ) end
+
+                if legendary.gorefiends_domination.enabled and cooldown.vampiric_blood.remains > 0 then
+                    cooldown.vampiric_blood.expires = cooldown.vampiric_blood.expires - 2
+                end
 
                 if level < 116 and equipped.service_of_gorefiend then cooldown.vampiric_blood.expires = max( 0, cooldown.vampiric_blood.expires - 2 ) end
             end,
@@ -1218,6 +1255,15 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
                 removeStack( "bone_shield", bs )                
                 gain( 6 * bs, "runic_power" )
+
+                -- This is the only predictable Bone Shield consumption that I have noted.
+                if legendary.tombstone.enabled and cooldown.dancing_rune_weapon.remains > 0 then
+                    cooldown.dancing_rune_weapon.expires = cooldown.dancing_rune_weapon.expires - ( 3 * bs )                    
+                end
+
+                if cooldown.blood_tap.charges_fractional < cooldown.blood_tap.max_charges then
+                    gainChargeTime( "blood_tap", 2 * bs )
+                end
 
                 if set_bonus.tier21_2pc == 1 then
                     cooldown.dancing_rune_weapon.expires = max( 0, cooldown.dancing_rune_weapon.expires - ( 3 * bs ) )
