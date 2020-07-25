@@ -2051,6 +2051,28 @@ do
     } )
 end
 
+
+-- 9.0 Covenant Shared Abilities and Effects
+do
+    all:RegisterAbilities( {
+        door_of_shadows = {
+            id = 300728,
+            cast = 1.5,
+            cooldown = 60,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 3586270,
+            
+            handler = function ()
+            end,
+        },
+    } )
+end
+
+
 -- 8.3 - WORLD
 -- Corruption Curse that impacts resource costs.
 
