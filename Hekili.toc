@@ -19,7 +19,7 @@ State.lua
 Events.lua
 
 Classes.lua
-# Classes\DeathKnightBlood.lua
+Classes\DeathKnightBlood.lua
 # Classes\DeathKnightFrost.lua
 # Classes\DeathKnightUnholy.lua
 Classes\DemonHunterHavoc.lua

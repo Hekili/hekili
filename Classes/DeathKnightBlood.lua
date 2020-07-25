@@ -173,7 +173,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterTalents( {
         heartbreaker = 19165, -- 221536
         blooddrinker = 19166, -- 206931
-        rune_strike = 19217, -- 210764
+        tombstone = 23454, -- 219809
 
         rapid_decomposition = 19218, -- 194662
         hemostasis = 19219, -- 273946
@@ -181,19 +181,19 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
         foul_bulwark = 19221, -- 206974
         ossuary = 22134, -- 219786
-        tombstone = 22135, -- 219809
+        relish_in_blood = 22135, -- 317610
 
         will_of_the_necropolis = 22013, -- 206967
         antimagic_barrier = 22014, -- 205727
-        rune_tap = 22015, -- 194679
+        mark_of_blood = 22015, -- 206940
 
         grip_of_the_dead = 19227, -- 273952
         tightening_grasp = 19226, -- 206970
         wraith_walk = 19228, -- 212552
 
         voracious = 19230, -- 273953
-        bloodworms = 19231, -- 195679
-        mark_of_blood = 19232, -- 206940
+        death_pact = 19231, -- 48743
+        bloodworms = 19232, -- 195679
 
         purgatory = 21207, -- 114556
         red_thirst = 21208, -- 205723
@@ -203,16 +203,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        adaptation = 3468, -- 214027
-        gladiators_medallion = 3467, -- 208683
-        relentless = 3466, -- 196029
-
-        antimagic_zone = 3434, -- 51052
         blood_for_blood = 607, -- 233411
         dark_simulacrum = 3511, -- 77606
         death_chain = 609, -- 203173
         decomposing_aura = 3441, -- 199720
-        heartstop_aura = 3438, -- 199719
+        dome_of_ancient_shadow = 5368, -- 328718
         last_dance = 608, -- 233412
         murderous_intent = 841, -- 207018
         necrotic_aura = 3436, -- 199642
@@ -226,28 +221,33 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterAuras( {
         antimagic_shell = {
             id = 48707,
-            duration = function () return ( azerite.runic_barrier.enabled and 1 or 0 ) + ( talent.antimagic_barrier.enabled and 6.5 or 5 ) * ( ( level < 116 and equipped.acherus_drapes ) and 2 or 1 ) end,
+            duration = function () return ( azerite.runic_barrier.enabled and 1 or 0 ) + ( talent.antimagic_barrier.enabled and 7 or 5 ) end,
+            max_stack = 1,
+        },
+        antimagic_zone = {
+            id = 145629,
+            duration = 10,
             max_stack = 1,
         },
         asphyxiate = {
-            id = 108194,
-            duration = 4,
+            id = 221562,
+            duration = 5,
             max_stack = 1,
         },
-        blooddrinker = {
-            id = 206931,
-            duration = 3,
-            max_stack = 1,
-        },        
         blood_plague = {
             id = 55078,
-            duration = 24, -- duration is capable of going to 32s if its reapplied before the first wears off
+            duration = 24,
             type = "Disease",
             max_stack = 1,
         },
         blood_shield = {
             id = 77535,
             duration = 10,
+            max_stack = 1,
+        },
+        blooddrinker = {
+            id = 206931,
+            duration = 3,
             max_stack = 1,
         },
         bone_shield = {
@@ -257,6 +257,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         bonestorm = {
             id = 194844,
+            duration = 10,
+            max_stack = 1,
         },
         crimson_scourge = {
             id = 81141,
@@ -270,12 +272,13 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         dancing_rune_weapon = {
             id = 81256,
-            duration = 8,
+            duration = function () return pvptalent.last_dance.enabled and 4 or 8 end,
             max_stack = 1,
         },
         death_and_decay = {
-            id = 43265,
+            id = 188290,
             duration = 10,
+            max_stack = 1,
         },
         death_grip = {
             id = 51399,
@@ -286,13 +289,23 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 8,
             max_stack = 1,
         },
+        gnaw = {
+            id = 91800,
+            duration = 1,
+            max_stack = 1,
+        },
         grip_of_the_dead = {
+            id = 273977,
+            duration = 3600,
+            max_stack = 1,
+        },        
+        --[[ ?? grip_of_the_dead = {
             id = 273984,
             duration = 10,
             max_stack = 10,
-        },
+        }, ]]
         heart_strike = {
-            id = 206930, -- slow debuff heart strike applies
+            id = 206930,
             duration = 8,
             max_stack = 1,
         },
@@ -307,9 +320,15 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 8,
             max_stack = 1,
         },
+        lichborne = {
+            id = 49039,
+            duration = 10,
+            max_stack = 1,
+        },
         mark_of_blood = {
             id = 206940,
             duration = 15,
+            type = "Magic",
             max_stack = 1,
         },
         on_a_pale_horse = {
@@ -317,7 +336,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         ossuary = {
             id = 219788,
-            duration = 0, -- duration is persistent when boneshield stacks => 5
+            duration = 3600,
             max_stack = 1,
         },
         path_of_frost = {
@@ -325,7 +344,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 600,
             max_stack = 1,
         },
-        perdition = { -- debuff from purgatory getting procced
+        perdition = {
             id = 123981,
             duration = 240,
             max_stack = 1,
@@ -338,6 +357,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         shroud_of_purgatory = {
             id = 116888,
             duration = 3,
+            max_stack = 1,
+        },
+        swarming_mist = { -- Venthyr
+            id = 311648,
+            duration = 8,
             max_stack = 1,
         },
         tombstone = {
@@ -357,7 +381,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         vampiric_blood = {
             id = 55233,
-            duration = 10,
+            duration = 12,
             max_stack = 1,
         },
         veteran_of_the_third_war = {
@@ -368,7 +392,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             duration = 6,
             max_stack = 1,
         },
+        wraith_walk = {
+            id = 212552,
+            duration = 4,
+            type = "Magic",
+            max_stack = 1,
+        },
 
+        
         -- Azerite Powers
         bloody_runeblade = {
             id = 289349,
@@ -518,7 +549,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         antimagic_shell = {
             id = 48707,
             cast = 0,
-            cooldown = function () return talent.antimagic_barrier.enabled and 45 or 60 end,
+            cooldown = function () return talent.antimagic_barrier.enabled and 40 or 60 end,
             gcd = "off",
 
             toggle = "defensives",
@@ -542,8 +573,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             startsCombat = false,
             texture = 237510,
-
-            pvptalent = "antimagic_zone",
 
             handler = function ()
                 applyBuff( "antimagic_zone" )
@@ -653,8 +682,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             spend = 0,
             spendType = "runic_power",
 
-            -- toggle = "cooldowns",
-
             startsCombat = true,
             texture = 342917,
 
@@ -664,6 +691,24 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 local cost = min( runic_power.current, 100 )
                 spend( cost, "runic_power" )
                 applyBuff( "bonestorm", cost / 10 )
+            end,
+        },
+
+
+        chains_of_ice = {
+            id = 45524,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 1,
+            spendType = "runes",
+            
+            startsCombat = true,
+            texture = 135834,
+            
+            handler = function ()
+                applyDebuff( "target", "chains_of_ice" )
             end,
         },
 
@@ -696,7 +741,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 237273,
 
+            usable = function () return target.is_undead, "requires undead target" end,
+            
             handler = function ()
+                summonPet( "controlled_undead" )
             end,
         },
 
@@ -709,7 +757,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             toggle = "cooldowns",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 135277,
 
             handler = function ()
@@ -780,25 +828,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
 
 
-        --[[ death_gate = {
-            id = 50977,
-            cast = 4,
-            cooldown = 60,
-            gcd = "spell",
-
-            spend = -10,
-            spendType = "runic_power",
-
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 135766,
-
-            handler = function ()
-            end,
-        }, ]]
-
-
         death_chain = {
             id = 203173,
             cast = 0,
@@ -831,6 +860,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             handler = function ()
                 applyDebuff( "target", "death_grip" )
                 setDistance( 5 )
+
+                -- TODO:  Conduit for 3 second re-application window.
             end,
         },
 
@@ -952,14 +983,28 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
 
 
+        lichborne = {
+            id = 49039,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 136187,
+            
+            handler = function ()
+                applyBuff( "lichborne" )
+            end,
+        },
+
+
         mark_of_blood = {
             id = 206940,
             cast = 0,
             cooldown = 6,
             gcd = "spell",
-
-            spend = 30,
-            spendType = "runic_power",
 
             startsCombat = true,
             texture = 132205,
@@ -1004,6 +1049,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             texture = 237527,
 
             toggle = "interrupts",
+
             debuff = "casting",
             readyTime = state.timeToInterrupt,
 
@@ -1048,44 +1094,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
 
 
-        --[[ raise_ally = {
-            id = 61999,
-            cast = 0,
-            cooldown = 600,
-            gcd = "spell",
-
-            spend = 30,
-            spendType = "runic_power",
-
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 136143,
-
-            handler = function ()
-            end,
-        }, ]]
-
-
-        rune_strike = {
-            id = 210764,
-            cast = 0,
-            charges = 2,
-            cooldown = 60,
-            recharge = 60,
-            gcd = "spell",
-
-            startsCombat = true,
-            texture = 237518,
-
-            talent = "rune_strike",
-
-            handler = function ()
-                gain( 1, "runes" )
-            end,
-        },
-
-
         rune_tap = {
             id = 194679,
             cast = 0,
@@ -1122,6 +1130,28 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         }, ]]
 
 
+        sacrificial_pact = {
+            id = 327574,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            spend = 20,
+            spendType = "runic_power",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 136133,
+
+            usable = function () return pet.alive, "requires an undead pet" end,
+            
+            handler = function ()
+                gain( 0.25 * health.max, "health" )                
+            end,
+        },        
+
+
         strangulate = {
             id = 47476,
             cast = 0,
@@ -1144,6 +1174,27 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             handler = function ()
                 interrupt()
                 applyDebuff( "target", "strangulate" )
+            end,
+        },
+
+
+        -- Venthyr
+        swarming_mist = {
+            id = 311648,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            spend = 1,
+            spendType = "runes",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 3565716,
+            
+            handler = function ()
+                applyBuff( "swarming_mist" )
             end,
         },
 
