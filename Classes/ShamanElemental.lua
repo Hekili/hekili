@@ -1,5 +1,6 @@
 -- ShamanElemental.lua
--- May 2018
+-- 07.2020
+-- TODO: replace ' with "
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
@@ -90,6 +91,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             duration = 8,
             max_stack = 1,
         },
+
         bloodlust = {
             id = 2825,
             duration = 40,
@@ -112,6 +114,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         },
 
         -- TODO: what's this?
+        -- might be the debuff on targets
         earthquake = {
             id = 61882,
             duration = 3600,
@@ -260,7 +263,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             max_stack = 1,
         },
 
-
         stormkeeper = {
             id = 191634,
             duration = 15,
@@ -304,48 +306,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         },
 
         totem_mastery = {
-            duration = 120,
+            duration = 15,
             generate = function ()
-                local expires, remains = 0, 0
-
-                for i = 1, 5 do
-                    local _, name, cast, duration = GetTotemInfo(i)
-
-                    if name == class.abilities.totem_mastery.name then
-                        if cast + duration > expires then
-                            expires = cast + duration
-                            remains = expires - now
-                        end
-                    end
-                end
-
-                local up = PlayerBuffUp( "resonance_totem" ) and remains > 0
-
-                local tm = buff.totem_mastery
-                tm.name = class.abilities.totem_mastery.name
-
-                if expires > 0 and up then
-                    tm.count = 4
-                    tm.expires = expires
-                    tm.applied = expires - 120
-                    tm.caster = "player"
-
-                    applyBuff( "resonance_totem", remains )
-                    applyBuff( "tailwind_totem", remains )
-                    applyBuff( "storm_totem", remains )
-                    applyBuff( "ember_totem", remains )
-                    return
-                end
-
-                tm.count = 0
-                tm.expires = 0
-                tm.applied = 0
-                tm.caster = "nobody"
-
-                removeBuff( 'resonance_totem' )
-                removeBuff( 'storm_totem' )
-                removeBuff( 'ember_totem' )
-                removeBuff( 'tailwind_totem' )
             end,
         },
 
@@ -489,53 +451,15 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
     setfenv( natural_harmony, state )
 
-
+    -- TODO: What's this?
     local hadTotem = false
     local hadTotemAura = false
 
     spec:RegisterHook( "reset_precast", function ()
-        class.auras.totem_mastery.generate()
-
         if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
             applyBuff( "master_of_the_elements" )
         end
     end )
-
-
-    spec:RegisterGear( "the_deceivers_blood_pact", 137035 ) -- 20% chance; not modeled.
-    spec:RegisterGear( "alakirs_acrimony", 137102 ) -- passive dmg increase.
-    spec:RegisterGear( "echoes_of_the_great_sundering", 137074 )
-        spec:RegisterAura( "echoes_of_the_great_sundering", {
-            id = 208723,
-            duration =  10
-        } )
-
-    spec:RegisterGear( "pristine_protoscale_girdle", 137083 ) -- not modeled.
-    spec:RegisterGear( "eye_of_the_twisting_nether", 137050 )
-        spec:RegisterAura( "fire_of_the_twisting_nether", {
-            id = 207995,
-            duration = 8
-        } )
-        spec:RegisterAura( "chill_of_the_twisting_nether", {
-            id = 207998,
-            duration = 8
-        } )
-        spec:RegisterAura( "shock_of_the_twisting_nether", {
-            id = 207999,
-            duration = 8
-        } )
-
-        spec:RegisterStateTable( "twisting_nether", setmetatable( {}, {
-            __index = function( t, k )
-                if k == 'count' then
-                    return ( buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( buff.shock_of_the_twisting_nether.up and 1 or 0 )
-                end
-
-                return 0
-            end
-        } ) )
-
-    spec:RegisterGear( "uncertain_reminder", 143732 )
 
 
     -- Abilities
@@ -557,7 +481,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         ancestral_spirit = {
             id = 2008,
             cast = 10,
@@ -573,7 +496,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
             end,
         },
-
 
         ascendance = {
             id = 114050,
@@ -593,7 +515,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         astral_recall = {
             id = 556,
             cast = function () return 10 * haste end,
@@ -606,7 +527,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
             end,
         },
-
 
         astral_shift = {
             id = 108271,
@@ -623,7 +543,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 applyBuff( 'astral_shift' )
             end,
         },
-
 
         bloodlust = {
             id = 2825,
@@ -645,7 +564,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         capacitor_totem = {
             id = 192058,
             cast = 0,
@@ -664,7 +582,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
         --[[ chain_harvest = {
             id = 320674,
-            cast = 2.5,
+            cast = function () return 2.5 * haste end,
             cooldown = 90,
             gcd = "spell",
 
@@ -679,7 +597,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
         chain_heal = {
             id = 1064,
-            cast = 2.5,
+            cast = function () return 2.5 * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -699,8 +617,9 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return -4 * ( min( 5, active_enemies ) ) end,
-            spendType = 'maelstrom',
+            -- TODO: add seismic thunder generation
+            -- spend = function () return -4 * ( min( 5, active_enemies ) ) end,
+            -- spendType = 'maelstrom',
 
             nobuff = 'ascendance',
             bind = 'lava_beam',
@@ -712,7 +631,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 removeBuff( "master_of_the_elements" )
 
                 if buff.stormkeeper.up then
-                    gain( 2 * min( 5, active_enemies ), "maelstrom" )
+                    -- TODO: add seismic thunder generation
+                    -- gain( 2 * min( 5, active_enemies ), "maelstrom" )
                     removeStack( "stormkeeper" )
                 else
                     removeBuff( "tectonic_thunder" )
@@ -721,13 +641,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 if pet.storm_elemental.up then
                     addStack( "wind_gust", nil, 1 )
                 end
-
-                natural_harmony( "nature" )
-
-                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
             end,
         },
-
 
         cleanse_spirit = {
             id = 51886,
@@ -747,21 +662,18 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
         door_of_shadows = {
             id = 300728,
-            cast = 1.5,
+            cast = function () return 1.5 * haste end,
             cooldown = 60,
             gcd = "spell",
 
-            toggle = "cooldowns",
+            toggle = "defensives",
 
             startsCombat = true,
             texture = 3586270,
 
             handler = function ()
-                -- removes thrill_seeker (331939)
             end,
         },
-
-
 
         earth_elemental = {
             id = 198103,
@@ -778,7 +690,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 summonPet( talent.primal_elementalist.enabled and "primal_earth_elemental" or "greater_earth_elemental", 60 )
             end,
         },
-
 
         earth_shield = {
             id = 974,
@@ -799,28 +710,23 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         earth_shock = {
             id = 8042,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
 
-            spend = 60,
-            spendType = "maelstrom",
+            -- TODO: spend fulmination
+            --spend = 60,
+            --spendType = "maelstrom",
 
             startsCombat = true,
             texture = 136026,
 
             handler = function ()
-                if talent.exposed_elements.enabled then applyBuff( 'exposed_elements' ) end
-                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
                 if talent.surge_of_power.enabled then applyBuff( "surge_of_power" ) end
-
-                natural_harmony( "nature" )
             end,
         },
-
 
         earthbind_totem = {
             id = 2484,
@@ -838,24 +744,25 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         earthquake = {
             id = 61882,
-            cast = 3,
+            -- TODO: add seismic thunder cast time reduction
+            cast = function () return 3 * haste end,
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.echoes_of_the_great_sundering.up and 0 or 60 end,
-            spendType = "maelstrom",
+            -- TODO: add seismic thunder consumption
+            -- TODO: add echoes of the great sundering legendary buff
+            --spend = function () return buff.echoes_of_the_great_sundering.up and 0 or 60 end,
+            --spendType = "maelstrom",
 
             startsCombat = true,
             texture = 451165,
 
             handler = function ()
-                removeBuff( "echoes_of_the_great_sundering" )
+                -- TODO: recycle buff
+                --removeBuff( "echoes_of_the_great_sundering" )
                 removeBuff( "master_of_the_elements" )
-                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
-                natural_harmony( "nature" )
             end,
         },
 
@@ -869,9 +776,10 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 1603013,
 
             handler = function ()
+                -- TODO: create echoing shock buff
+                applyBuff( "echoing_shock" )
             end,
         },
-
 
         elemental_blast = {
             id = 117014,
@@ -884,17 +792,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             handler = function ()
                 applyBuff( 'elemental_blast' )
-
-                if level < 116 and equipped.eye_of_the_twisting_nether then
-                    applyBuff( "fire_of_the_twisting_nether" )
-                    applyBuff( "chill_of_the_twisting_nether" )
-                    applyBuff( "shock_of_the_twisting_nether" )
-                end
-
-                natural_harmony( "fire", "frost", "nature" )
             end,
         },
-
 
         far_sight = {
             id = 6196,
@@ -908,7 +807,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
             end,
         },
-
 
         fire_elemental = {
             id = 198067,
@@ -929,7 +827,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         flame_shock = {
             id = 188389,
             cast = 0,
@@ -948,11 +845,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     active_dot.surge_of_power = min( active_enemies, active_dot.flame_shock + 1 )
                     removeBuff( "surge_of_power" )
                 end
-                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
-                natural_harmony( "fire" )
             end,
         },
-
 
         frost_shock = {
             id = 196840,
@@ -968,7 +862,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 applyDebuff( 'target', 'frost_shock' )
 
                 if buff.icefury.up then
-                    gain( 8, "maelstrom" )
                     removeStack( "icefury", 1 )
                 end
 
@@ -976,12 +869,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     applyDebuff( "target", "surge_of_power_debuff" )
                     removeBuff( "surge_of_power" )
                 end
-
-                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "chill_of_the_twisting_nether" ) end
-                natural_harmony( "frost" )
             end,
         },
-
 
         ghost_wolf = {
             id = 2645,
@@ -997,7 +886,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 if talent.spirit_wolf.enabled then applyBuff( 'spirit_wolf' ) end
             end,
         },
-
 
         healing_surge = {
             id = 8004,
@@ -1015,7 +903,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         hex = {
             id = 51514,
             cast = function () return 1.7 * haste end,
@@ -1030,7 +917,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         icefury = {
             id = 210714,
             cast = 2,
@@ -1043,10 +929,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
                 removeBuff( 'master_of_the_elements' )
                 applyBuff( 'icefury', 15, 4 )
-                natural_harmony( "frost" )
             end,
         },
-
 
         lava_beam = {
             id = 114074,
@@ -1054,8 +938,9 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return -4 * ( min( 5, active_enemies ) ) end,
-            spendType = 'maelstrom',
+            -- TODO: generate seismic thunder
+            --spend = function () return -4 * ( min( 5, active_enemies ) ) end,
+            --spendType = 'maelstrom',
 
             buff = 'ascendance',
             bind = 'chain_lightning',
@@ -1065,11 +950,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             handler = function ()
                 removeStack( 'stormkeeper' )
-                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
-                natural_harmony( "fire" )
             end,
         },
-
 
         lava_burst = {
             id = 51505,
@@ -1090,11 +972,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     gainChargeTime( "fire_elemental", 6 )
                     removeBuff( "surge_of_power" )
                 end
-                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "fire_of_the_twisting_nether" ) end
-                natural_harmony( "fire" )
             end,
         },
-
 
         lightning_bolt = {
             id = 188196,
@@ -1102,8 +981,9 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = -8,
-            spendType = "maelstrom",
+            -- TODO: generate fulmination
+            --spend = -8,
+            --spendType = "maelstrom",
 
             startsCombat = true,
             texture = 136048,
@@ -1112,28 +992,26 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 removeBuff( "master_of_the_elements" )
 
                 if buff.stormkeeper.up then
-                    gain( 3, "maelstrom" )
-                    removeStack( 'stormkeeper' )
+                    -- TODO: generate fulmination
+                    --gain( 3, "maelstrom" )
+                    --removeStack( 'stormkeeper' )
                 end
 
                 if buff.surge_of_power.up then
-                    gain( 3, "maelstrom" )
-                    removeBuff( "surge_of_power" )
+                    -- TODO: generate fulmination
+                    --gain( 3, "maelstrom" )
+                    --removeBuff( "surge_of_power" )
                 end
 
                 if pet.storm_elemental.up then
                     addStack( "wind_gust", nil, 1 )
                 end
-
-                if level < 116 and equipped.eye_of_the_twisting_nether then applyBuff( "shock_of_the_twisting_nether" ) end
-                natural_harmony( "nature" )
             end,
         },
 
-
         lightning_lasso = {
             id = 305483,
-            cast = 5,
+            cast = function () return 5 * haste end,
             channeled = true,
             cooldown = 30,
             gcd = "spell",
@@ -1151,7 +1029,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         liquid_magma_totem = {
             id = 192222,
             cast = 0,
@@ -1166,7 +1043,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
             end,
         },
-
 
         primal_strike = {
             id = 73899,
@@ -1184,7 +1060,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         purge = {
             id = 370,
             cast = 0,
@@ -1200,7 +1075,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
             end,
         },
-
 
         spiritwalkers_grace = {
             id = 79206,
@@ -1219,7 +1093,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
             end,
         },
-
 
         storm_elemental = {
             id = 192249,
@@ -1240,7 +1113,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         stormkeeper = {
             id = 191634,
             cast = function () return 1.5 * haste end,
@@ -1258,7 +1130,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         thunderstorm = {
             id = 51490,
             cast = 0,
@@ -1273,7 +1144,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         totem_mastery = {
             id = 333925,
             cast = 0,
@@ -1287,18 +1157,12 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             startsCombat = false,
             texture = 511726,
 
+            -- TODO: what is this magic? probably removeable...
             readyTime = function () return buff.totem_mastery.remains - 15 end,
             usable = function () return query_time - action.totem_mastery.lastCast > 3 end,
             handler = function ()
-                applyBuff( 'resonance_totem', 120 )
-                applyBuff( 'storm_totem', 120 )
-                applyBuff( 'ember_totem', 120 )
-                if buff.tailwind_totem.down then stat.spell_haste = stat.spell_haste + 0.02 end
-                applyBuff( 'tailwind_totem', 120 )
-                applyBuff( 'totem_mastery', 120 )
             end,
         },
-
 
         tremor_totem = {
             id = 8143,
@@ -1316,7 +1180,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         --[[ wartime_ability = {
             id = 264739,
             cast = 0,
@@ -1329,7 +1192,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
             end,
         }, ]]
-
 
         water_walking = {
             id = 546,
@@ -1345,7 +1207,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-
         wind_rush_totem = {
             id = 192077,
             cast = 0,
@@ -1360,7 +1221,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
             end,
         },
-
 
         wind_shear = {
             id = 57994,
@@ -1447,7 +1307,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         max = 2,
         step = 0.01,
     } )
-
 
 
     spec:RegisterOptions( {
