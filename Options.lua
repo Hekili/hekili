@@ -7026,14 +7026,12 @@ do
             end
 
             wipe( pvptalents )
-            for i = 1, 2 do
-                local row = C_SpecializationInfo.GetPvpTalentSlotInfo( i )
+            local row = C_SpecializationInfo.GetPvpTalentSlotInfo( 1 )
 
-                for i, tID in ipairs( row.availableTalentIDs ) do
-                    local _, name, _, _, _, sID = GetPvpTalentInfoByID( tID )
-                    name = key( name )
-                    insert( pvptalents, { name = name, talent = tID, spell = sID } )
-                end
+            for i, tID in ipairs( row.availableTalentIDs ) do
+                local _, name, _, _, _, sID = GetPvpTalentInfoByID( tID )
+                name = key( name )
+                insert( pvptalents, { name = name, talent = tID, spell = sID } )
             end
 
             local haste = UnitSpellHaste( "player" )
