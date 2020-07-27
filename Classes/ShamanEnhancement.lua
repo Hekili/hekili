@@ -555,6 +555,9 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     spec:RegisterGear( 'uncertain_reminder', 143732 )
 
 
+    spec:RegisterTotem( "vesper_totem", 3565451 )
+
+
     spec:RegisterStateFunction( "consume_maelstrom", function( cap )
         local stacks = min( buff.maelstrom_weapon.stack, cap or 5 )
 
@@ -1260,6 +1263,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             
             handler = function ()
                 applyBuff( "vesper_totem" )
+                summonPet( "vesper_totem", 30 )
             end,
         },        
 
