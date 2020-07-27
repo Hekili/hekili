@@ -35,7 +35,7 @@ Classes\DruidFeral.lua
 # Classes\MageFrost.lua
 # Classes\MonkBrewmaster.lua
 # Classes\MonkMistweaver.lua
-# Classes\MonkWindwalker.lua
+Classes\MonkWindwalker.lua
 # Classes\PaladinProtection.lua
 Classes\PaladinRetribution.lua
 # Classes\PriestDiscipline.lua
