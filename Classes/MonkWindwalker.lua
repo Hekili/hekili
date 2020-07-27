@@ -590,6 +590,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         virtual_combo = actual_combo or "no_action"
         reverse_harm_target = nil
+
+        if not IsUsableSpell( 322109 ) then setCooldown( "touch_of_death", action.touch_of_death.cooldown ) end
     end )
 
 
@@ -979,8 +981,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             startsCombat = true,
             texture = 620832,
-
-            talent = "invoke_xuen",
 
             handler = function ()
                 summonPet( "xuen", 45 )
@@ -1402,7 +1402,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
 
         touch_of_death = {
-            id = 115080,
+            id = 322109,
             cast = 0,
             cooldown = function () return legendary.fatal_touch.enabled and 120 or 180 end,
             gcd = "spell",
