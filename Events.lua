@@ -1626,6 +1626,12 @@ local function improvedGetBindingText( binding )
 end
 
 
+local itemToAbility = {
+    [5512]   = "healthstone",
+    [177278] = "phial_of_serenity"
+}
+
+
 local function StoreKeybindInfo( page, key, aType, id, console )
 
     if not key then return end
@@ -1644,8 +1650,8 @@ local function StoreKeybindInfo( page, key, aType, id, console )
         ability = class.abilities[ ability ] and class.abilities[ ability ].key
 
         if not ability then
-            if id == 5512 then
-                ability = "healthstone"
+            if itemToAbility[ id ] then
+                ability = itemToAbility[ id ]
             else
                 for k, v in pairs( class.potions ) do
                     if v.item == id then

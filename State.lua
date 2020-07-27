@@ -5650,7 +5650,8 @@ do
 
     local toggleSpells = {
         potion = true,
-        cancel_buff = true
+        cancel_buff = true,
+        phial_of_serenity = true,
     }
 
     -- If an ability has been manually disabled, don't consider it.    

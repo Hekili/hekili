@@ -2069,6 +2069,36 @@ do
             handler = function ()
             end,
         },
+
+        phial_of_serenity = {
+            name = "|cff00ccff[Phial of Serenity]|r",
+            cast = 0,
+            cooldown = function () return time > 0 and 3600 or 60 end,
+            gcd = "off",
+        
+            startsCombat = false,
+            texture = 463534,
+    
+            usable = function ()
+                if GetItemCount( 177278 ) == 0 then return false, "requires phial in bags"
+                elseif not IsUsableItem( 177278 ) then return false, "phial on combat cooldown"
+                elseif health.current == health.max then return false, "requires a health deficit" end
+                return true
+            end,
+    
+            readyTime = function ()
+                local start, duration = GetItemCooldown( 177278 )            
+                return max( 0, start + duration - query_time )
+            end,
+    
+            handler = function ()
+                gain( 0.15 * health.max, "health" )
+                removeBuff( "dispellable_disease" )
+                removeBuff( "dispellable_poison" )
+                removeBuff( "dispellable_curse" )
+                removeBuff( "dispellable_bleed" ) -- TODO: Bleeds?
+            end,
+        },            
     } )
 end
 
