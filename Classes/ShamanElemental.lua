@@ -113,7 +113,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             max_stack = 1,
         },
 
-        -- TODO: what's this?
         -- might be the debuff on targets
         earthquake = {
             id = 61882,
@@ -630,9 +629,14 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             handler = function ()
                 removeBuff( "master_of_the_elements" )
 
+                if active_enemies > 1 then
+                    addStack( "seismic_thunder", nil, 1)
+                end
+
                 if buff.stormkeeper.up then
-                    -- TODO: add seismic thunder generation
-                    -- gain( 2 * min( 5, active_enemies ), "maelstrom" )
+                    if active_enemies > 1 then
+                        addStack( "seismic_thunder", nil, min( 5, active_enemies ))
+                    end
                     removeStack( "stormkeeper" )
                 else
                     removeBuff( "tectonic_thunder" )
@@ -716,15 +720,16 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 0,
             gcd = "spell",
 
-            -- TODO: spend fulmination
-            --spend = 60,
-            --spendType = "maelstrom",
 
             startsCombat = true,
             texture = 136026,
 
             handler = function ()
-                if talent.surge_of_power.enabled then applyBuff( "surge_of_power" ) end
+                if talent.surge_of_power.enabled and buff.fulmination.stack >= 6 then
+                    applyBuff( "surge_of_power" )
+                end
+
+                removeBuff( "fulmination" )
             end,
         },
 
@@ -746,15 +751,14 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
         earthquake = {
             id = 61882,
-            -- TODO: add seismic thunder cast time reduction
-            cast = function () return 3 * haste end,
+            cast = function ()
+                return (1 - 0.2 * buff.seismic_thunder.stack) * 3 * haste
+            end,
             cooldown = 0,
             gcd = "spell",
 
-            -- TODO: add seismic thunder consumption
             -- TODO: add echoes of the great sundering legendary buff
             --spend = function () return buff.echoes_of_the_great_sundering.up and 0 or 60 end,
-            --spendType = "maelstrom",
 
             startsCombat = true,
             texture = 451165,
@@ -763,6 +767,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 -- TODO: recycle buff
                 --removeBuff( "echoes_of_the_great_sundering" )
                 removeBuff( "master_of_the_elements" )
+                removeBuff( "seismic_thunder" )
             end,
         },
 
@@ -792,6 +797,12 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             handler = function ()
                 applyBuff( 'elemental_blast' )
+                if talent.surge_of_power.enabled and buff.fulmination.stack >= 6 then
+                    applyBuff( "surge_of_power" )
+                end
+
+                removeBuff( "fulmination" )
+                removeBuff( "master_of_the_elements" )
             end,
         },
 
@@ -989,18 +1000,18 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 136048,
 
             handler = function ()
+                addStack("fulmination", nil, 1)
+
                 removeBuff( "master_of_the_elements" )
 
                 if buff.stormkeeper.up then
-                    -- TODO: generate fulmination
-                    --gain( 3, "maelstrom" )
-                    --removeStack( 'stormkeeper' )
+                    addStack("fulmination", nil, 1)
+                    removeStack( "stormkeeper" )
                 end
 
                 if buff.surge_of_power.up then
-                    -- TODO: generate fulmination
-                    --gain( 3, "maelstrom" )
-                    --removeBuff( "surge_of_power" )
+                    addStack("fulmination", nil, 1)
+                    removeBuff( "surge_of_power" )
                 end
 
                 if pet.storm_elemental.up then
