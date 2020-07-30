@@ -1,6 +1,12 @@
 -- ShamanElemental.lua
 -- 07.2020
 
+-- TODOs:
+-- Legendaries
+-- Covenant abilities
+-- sould binds (?)
+-- conduits (?)
+
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
