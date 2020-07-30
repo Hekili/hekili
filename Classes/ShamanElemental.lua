@@ -1,6 +1,5 @@
 -- ShamanElemental.lua
 -- 07.2020
--- TODO: replace ' with "
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
@@ -11,7 +10,7 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'SHAMAN' then
+if UnitClassBase( "player" ) == "SHAMAN" then
     local spec = Hekili:NewSpecialization( 262 )
 
     spec:RegisterResource( Enum.PowerType.Maelstrom )
@@ -144,7 +143,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 eb.count = count
                 eb.applied = applied
                 eb.expires = applied + 15
-                eb.caster = count > 0 and 'player' or 'nobody'
+                eb.caster = count > 0 and "player" or "nobody"
             end
         },
 
@@ -367,22 +366,22 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     spec:RegisterTotem( "greater_earth_elemental", 136024 ) -- Texture ID
 
 
-    spec:RegisterStateTable( 'fire_elemental', setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
+    spec:RegisterStateTable( "fire_elemental", setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
         __index = function( t, k )
-            if k == 'cast_time' then
+            if k == "cast_time" then
                 t.cast_time = class.abilities.fire_elemental.lastCast or 0
                 return t.cast_time
             end
 
             local elem = talent.primal_elementalist.enabled and pet.primal_fire_elemental or pet.greater_fire_elemental
 
-            if k == 'active' or k == 'up' then
+            if k == "active" or k == "up" then
                 return elem.up
 
-            elseif k == 'down' then
+            elseif k == "down" then
                 return not elem.up
 
-            elseif k == 'remains' then
+            elseif k == "remains" then
                 return max( 0, elem.remains )
 
             end
@@ -391,22 +390,22 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         end
     } ) )
 
-    spec:RegisterStateTable( 'storm_elemental', setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
+    spec:RegisterStateTable( "storm_elemental", setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
         __index = function( t, k )
-            if k == 'cast_time' then
+            if k == "cast_time" then
                 t.cast_time = class.abilities.storm_elemental.lastCast or 0
                 return t.cast_time
             end
 
             local elem = talent.primal_elementalist.enabled and pet.primal_storm_elemental or pet.greater_storm_elemental
 
-            if k == 'active' or k == 'up' then
+            if k == "active" or k == "up" then
                 return elem.up
 
-            elseif k == 'down' then
+            elseif k == "down" then
                 return not elem.up
 
-            elseif k == 'remains' then
+            elseif k == "remains" then
                 return max( 0, elem.remains )
 
             end
@@ -415,22 +414,22 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         end
     } ) )
 
-    spec:RegisterStateTable( 'earth_elemental', setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
+    spec:RegisterStateTable( "earth_elemental", setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
         __index = function( t, k )
-            if k == 'cast_time' then
+            if k == "cast_time" then
                 t.cast_time = class.abilities.earth_elemental.lastCast or 0
                 return t.cast_time
             end
 
             local elem = talent.primal_elementalist.enabled and pet.primal_earth_elemental or pet.greater_earth_elemental
 
-            if k == 'active' or k == 'up' then
+            if k == "active" or k == "up" then
                 return elem.up
 
-            elseif k == 'down' then
+            elseif k == "down" then
                 return not elem.up
 
-            elseif k == 'remains' then
+            elseif k == "remains" then
                 return max( 0, elem.remains )
 
             end
@@ -450,7 +449,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
     setfenv( natural_harmony, state )
 
-    -- TODO: What's this?
+    -- TODO: What"s this?
     local hadTotem = false
     local hadTotemAura = false
 
@@ -469,14 +468,14 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 120,
             gcd = "spell",
 
-            talent = 'ancestral_guidance',
-            toggle = 'defensives',
+            talent = "ancestral_guidance",
+            toggle = "defensives",
 
             startsCombat = false,
             texture = 538564,
 
             handler = function ()
-                applyBuff( 'ancestral_guidance' )
+                applyBuff( "ancestral_guidance" )
             end,
         },
 
@@ -502,14 +501,14 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 180,
             gcd = "spell",
 
-            talent = 'ascendance',
-            toggle = 'cooldowns',
+            talent = "ascendance",
+            toggle = "cooldowns",
 
             startsCombat = false,
             texture = 135791,
 
             handler = function ()
-                applyBuff( 'ascendance' )
+                applyBuff( "ascendance" )
                 gainCharges( "lava_burst", 2 )
             end,
         },
@@ -539,7 +538,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 538565,
 
             handler = function ()
-                applyBuff( 'astral_shift' )
+                applyBuff( "astral_shift" )
             end,
         },
 
@@ -558,8 +557,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 136012,
 
             handler = function ()
-                applyBuff( 'bloodlust' )
-                applyDebuff( 'player', 'sated' )
+                applyBuff( "bloodlust" )
+                applyDebuff( "player", "sated" )
             end,
         },
 
@@ -618,10 +617,10 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             -- TODO: add seismic thunder generation
             -- spend = function () return -4 * ( min( 5, active_enemies ) ) end,
-            -- spendType = 'maelstrom',
+            -- spendType = "maelstrom",
 
-            nobuff = 'ascendance',
-            bind = 'lava_beam',
+            nobuff = "ascendance",
+            bind = "lava_beam",
 
             startsCombat = true,
             texture = 136015,
@@ -704,13 +703,13 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             spend = 0.1,
             spendType = "mana",
 
-            talent = 'earth_shield',
+            talent = "earth_shield",
 
             startsCombat = false,
             texture = 136089,
 
             handler = function ()
-                applyBuff( 'earth_shield' )
+                applyBuff( "earth_shield" )
             end,
         },
 
@@ -796,7 +795,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 651244,
 
             handler = function ()
-                applyBuff( 'elemental_blast' )
+                applyBuff( "elemental_blast" )
                 if talent.surge_of_power.enabled and buff.fulmination.stack >= 6 then
                     applyBuff( "surge_of_power" )
                 end
@@ -827,8 +826,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             recharge = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 150 end,
             gcd = "spell",
 
-            toggle = 'cooldowns',
-            notalent = 'storm_elemental',
+            toggle = "cooldowns",
+            notalent = "storm_elemental",
 
             startsCombat = false,
             texture = 135790,
@@ -851,7 +850,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             min_ttd = function () return debuff.flame_shock.duration / 3 end,
 
             handler = function ()
-                applyDebuff( 'target', 'flame_shock' )
+                applyDebuff( "target", "flame_shock" )
                 if buff.surge_of_power.up then
                     active_dot.surge_of_power = min( active_enemies, active_dot.flame_shock + 1 )
                     removeBuff( "surge_of_power" )
@@ -869,8 +868,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 135849,
 
             handler = function ()
-                removeBuff( 'master_of_the_elements' )
-                applyDebuff( 'target', 'frost_shock' )
+                removeBuff( "master_of_the_elements" )
+                applyDebuff( "target", "frost_shock" )
 
                 if buff.icefury.up then
                     removeStack( "icefury", 1 )
@@ -893,8 +892,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 136095,
 
             handler = function ()
-                applyBuff( 'ghost_wolf' )
-                if talent.spirit_wolf.enabled then applyBuff( 'spirit_wolf' ) end
+                applyBuff( "ghost_wolf" )
+                if talent.spirit_wolf.enabled then applyBuff( "spirit_wolf" ) end
             end,
         },
 
@@ -924,7 +923,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 237579,
 
             handler = function ()
-                applyDebuff( 'target', 'hex' )
+                applyDebuff( "target", "hex" )
             end,
         },
 
@@ -938,8 +937,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 135855,
 
             handler = function ()
-                removeBuff( 'master_of_the_elements' )
-                applyBuff( 'icefury', 15, 4 )
+                removeBuff( "master_of_the_elements" )
+                applyBuff( "icefury", 15, 4 )
             end,
         },
 
@@ -951,16 +950,16 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             -- TODO: generate seismic thunder
             --spend = function () return -4 * ( min( 5, active_enemies ) ) end,
-            --spendType = 'maelstrom',
+            --spendType = "maelstrom",
 
-            buff = 'ascendance',
-            bind = 'chain_lightning',
+            buff = "ascendance",
+            bind = "chain_lightning",
 
             startsCombat = true,
             texture = 236216,
 
             handler = function ()
-                removeStack( 'stormkeeper' )
+                removeStack( "stormkeeper" )
             end,
         },
 
@@ -1113,8 +1112,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             recharge = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 150 end,
             gcd = "spell",
 
-            toggle = 'cooldowns',
-            talent = 'storm_elemental',
+            toggle = "cooldowns",
+            talent = "storm_elemental",
 
             startsCombat = true,
             texture = 2065626,
@@ -1130,14 +1129,14 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 60,
             gcd = "spell",
 
-            talent = 'stormkeeper',
+            talent = "stormkeeper",
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 839977,
 
             handler = function ()
-                applyBuff( 'stormkeeper', 20, 2 )
+                applyBuff( "stormkeeper", 20, 2 )
             end,
         },
 
@@ -1151,7 +1150,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 237589,
 
             handler = function ()
-                if target.within10 then applyDebuff( 'target', 'thunderstorm' ) end
+                if target.within10 then applyDebuff( "target", "thunderstorm" ) end
             end,
         },
 
@@ -1161,7 +1160,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 60,
             gcd = "spell",
 
-            talent = 'totem_mastery',
+            talent = "totem_mastery",
             toggle = "cooldowns",
             -- essential = true,
 
@@ -1214,7 +1213,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 135863,
 
             handler = function ()
-                applyBuff( 'water_walking' )
+                applyBuff( "water_walking" )
             end,
         },
 
@@ -1224,7 +1223,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             cooldown = 120,
             gcd = "spell",
 
-            talent = 'wind_rush_totem',
+            talent = "wind_rush_totem",
 
             startsCombat = false,
             texture = 538576,
@@ -1242,7 +1241,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             startsCombat = true,
             texture = 136018,
 
-            toggle = 'interrupts',
+            toggle = "interrupts",
 
             debuff = "casting",
             readyTime = state.timeToInterrupt,
