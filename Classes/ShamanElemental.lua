@@ -455,10 +455,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
     setfenv( natural_harmony, state )
 
-    -- TODO: What"s this?
-    local hadTotem = false
-    local hadTotemAura = false
-
     spec:RegisterHook( "reset_precast", function ()
         if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
             applyBuff( "master_of_the_elements" )
@@ -621,10 +617,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cooldown = 0,
             gcd = "spell",
 
-            -- TODO: add seismic thunder generation
-            -- spend = function () return -4 * ( min( 5, active_enemies ) ) end,
-            -- spendType = "maelstrom",
-
             nobuff = "ascendance",
             bind = "lava_beam",
 
@@ -786,7 +778,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 1603013,
 
             handler = function ()
-                -- TODO: create echoing shock buff
                 applyBuff( "echoing_shock" )
             end,
         },
@@ -954,10 +945,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cooldown = 0,
             gcd = "spell",
 
-            -- TODO: generate seismic thunder
-            --spend = function () return -4 * ( min( 5, active_enemies ) ) end,
-            --spendType = "maelstrom",
-
             buff = "ascendance",
             bind = "chain_lightning",
 
@@ -965,7 +952,16 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 236216,
 
             handler = function ()
-                removeStack( "stormkeeper" )
+                if active_enemies > 1 then
+                    addStack( "seismic_thunder", nil, 1)
+                end
+
+                if buff.stormkeeper.up then
+                    if active_enemies > 1 then
+                        addStack( "seismic_thunder", nil, min( 5, active_enemies ))
+                    end
+                    removeStack( "stormkeeper" )
+                end
             end,
         },
 
@@ -996,10 +992,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cast = function () return buff.stormkeeper.up and 0 or ( 2 * haste ) end,
             cooldown = 0,
             gcd = "spell",
-
-            -- TODO: generate fulmination
-            --spend = -8,
-            --spendType = "maelstrom",
 
             startsCombat = true,
             texture = 136048,
@@ -1173,9 +1165,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             startsCombat = false,
             texture = 511726,
 
-            -- TODO: what is this magic? probably removeable...
-            readyTime = function () return buff.totem_mastery.remains - 15 end,
-            usable = function () return query_time - action.totem_mastery.lastCast > 3 end,
             handler = function ()
             end,
         },
