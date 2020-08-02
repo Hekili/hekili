@@ -49,7 +49,7 @@ end
 
 local enemyExclusions = {
     ["120651"] = true, -- Explosives
-    ["23775"]  = true,  -- Head of the Horseman,
+    ["23775"]  = true, -- Head of the Horseman,
     ["156227"] = true, -- Neferset Denizen,
     ["160966"] = true, -- Thing from Beyond?
     ["161895"] = true, -- Thing from Beyond?
@@ -119,7 +119,7 @@ do
 
         if spec and spec.nameplates and showNPs then
             for unit, guid in pairs(npGUIDs) do
-                if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitHealth(unit) > 1 and UnitInPhase(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
+                if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitHealth(unit) > 1 and not UnitPhaseReason(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
                     local npcid = guid:match("(%d+)-%x-$")
 
                     if not enemyExclusions[npcid] then
@@ -128,7 +128,7 @@ do
                         guidRanges[ guid ] = range
 
                         local rate, n = Hekili:GetTTD(unit)
-                        Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
+                        Hekili.TargetDebug = format( "%s%12s - %2d - %s - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, UnitName( unit ) or "-", guid, rate or 0, n or 0 )
 
                         if range and range <= spec.nameplateRange then
                             count = count + 1
@@ -144,7 +144,7 @@ do
                 local guid = UnitGUID(unit)
     
                 if guid and counted[ guid ] == nil then
-                    if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitHealth(unit) > 1 and UnitInPhase(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
+                    if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitHealth(unit) > 1 and not UnitPhaseReason(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
                         local npcid = guid:match("(%d+)-%x-$")
     
                         if not enemyExclusions[npcid] then
@@ -187,7 +187,7 @@ do
 
         local targetGUID = UnitGUID( "target" )
         if targetGUID then
-            if counted[ targetGUID ] == nil and UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") and UnitInPhase("target") and (UnitIsPVP("player") or not UnitIsPlayer("target")) then
+            if counted[ targetGUID ] == nil and UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") and not UnitPhaseReason("target") and (UnitIsPVP("player") or not UnitIsPlayer("target")) then
                 Hekili.TargetDebug = format("%s%12s - %2d - %s\n", Hekili.TargetDebug, "target", 0, targetGUID)
                 count = count + 1
                 counted[ targetGUID ] = true
@@ -870,6 +870,8 @@ do
                 else
                     local health, healthMax = UnitHealth(unit), UnitHealthMax(unit)
                     health = health + UnitGetTotalAbsorbs(unit)
+                    healthMax = max( 1, healthMax )
+
                     UpdateEnemy(guid, health / healthMax, unit, now)
                 end
                 seen[guid] = true
