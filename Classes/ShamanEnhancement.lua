@@ -13,10 +13,10 @@ local PTR = ns.PTR
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 
 -- Generate the Enhancement spec database only if you're actually a Shaman.
-if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
+if UnitClassBase( 'player' ) == 'SHAMAN' then
     local spec = Hekili:NewSpecialization( 263 )
 
-    spec:RegisterResource( Enum.PowerType.Mana )   
+    spec:RegisterResource( Enum.PowerType.Mana )
 
     -- Talents
     spec:RegisterTalents( {
@@ -51,7 +51,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         counterstrike_totem = 3489, -- 204331
         ethereal_form = 1944, -- 210918
         grounding_totem = 3622, -- 204336
@@ -64,7 +64,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         thundercharge = 725, -- 204366
     } )
 
-
+    -- Auras
     spec:RegisterAuras( {
         ascendance = {
             id = 114051,
@@ -77,7 +77,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 8,
             max_stack = 1,
         },
-        
+
         chains_of_devastation_cl = {
             id = 336736,
             duration = 20,
@@ -129,7 +129,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 335904,
             duration = 60,
             max_stack = 1,
-        },        
+        },
 
         earth_shield = {
             id = 974,
@@ -169,7 +169,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 10,
             type = "Magic",
             max_stack = 1,
-        },        
+        },
 
         -- Used to proc Maelstrom Weapon stacks.
         feral_spirit = {
@@ -188,20 +188,20 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 18,
             type = "Magic",
             max_stack = 1,
-        },        
+        },
 
         forceful_winds = {
             id = 262652,
             duration = 15,
             max_stack = 5,
-        },        
+        },
 
         frost_shock = {
             id = 196840,
             duration = 6,
             type = "Magic",
             max_stack = 1,
-        },        
+        },
 
         gathering_storms = {
             id = 198300,
@@ -268,7 +268,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 187881,
             duration = 30,
             max_stack = 10,
-        },        
+        },
 
         molten_weapon = {
             id = 271924,
@@ -280,10 +280,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 15,
             max_stack = 20,
         },
-        
+
         reincarnation = {
             id = 20608,
-        },        
+        },
 
         resonance_totem = {
             id = 262417,
@@ -300,13 +300,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 58875,
             duration = 8,
             max_stack = 1,
-        },        
+        },
 
         spirit_wolf = {
             id = 260881,
             duration = 3600,
             max_stack = 1,
-        },        
+        },
 
         storm_totem = {
             id = 262397,
@@ -319,7 +319,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             duration = 3,
             type = "Magic",
             max_stack = 1,
-        },        
+        },
 
         stormbringer = {
             id = 201845,
@@ -395,7 +395,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 546,
             duration = 600,
             max_stack = 1,
-        },    
+        },
 
         wind_rush = {
             id = 192082,
@@ -407,7 +407,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             id = 327942,
             duration = 120,
             max_stack = 1,
-        },        
+        },
 
 
         --[[ Azerite Powers
@@ -479,14 +479,14 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
         end
     } ) )
 
-    spec:RegisterStateTable( 'twisting_nether', setmetatable( { onReset = function( self ) end }, { 
+    spec:RegisterStateTable( 'twisting_nether', setmetatable( { onReset = function( self ) end }, {
         __index = function( t, k )
             if k == 'count' then
                 return ( buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( buff.shock_of_the_twisting_nether.up and 1 or 0 )
             end
 
             return 0
-        end 
+        end
     } ) )
 
 
@@ -537,15 +537,15 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
     spec:RegisterGear( 'eye_of_the_twisting_nether', 137050 )
         spec:RegisterAura( "fire_of_the_twisting_nether", {
             id = 207995,
-            duration = 8 
+            duration = 8
         } )
         spec:RegisterAura( "chill_of_the_twisting_nether", {
             id = 207998,
-            duration = 8 
+            duration = 8
         } )
         spec:RegisterAura( "shock_of_the_twisting_nether", {
             id = 207999,
-            duration = 8 
+            duration = 8
         } )
 
     spec:RegisterGear( 'smoldering_heart', 151819 )
@@ -565,7 +565,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             applyBuff( "hailstorm", nil, stacks )
         end
 
-        removeStack( "maelstrom_weapon", stacks ) 
+        removeStack( "maelstrom_weapon", stacks )
 
         if legendary.legacy_oF_the_frost_witch.enabled and stacks == 5 then
             setCooldown( "stormstrike", 0 )
@@ -640,13 +640,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 0.1,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136013,
-            
+
             handler = function ()
             end,
         },
@@ -659,13 +659,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             end,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return maelstrom_mod( 0.3 ) end,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136042,
-            
+
             handler = function ()
                 consume_maelstrom( 5 )
 
@@ -684,13 +684,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             end,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return maelstrom_mod( 0.01 ) end,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136015,
-            
+
             handler = function ()
                 if active_enemies > 1 then
                     applyBuff( "crash_lightning_cl", nil, min( 3, active_enemies ) )
@@ -708,26 +708,26 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                     applyBuff( "chains_of_devastation_ch" )
                 end
             end,
-        },        
+        },
 
         cleanse_spirit = {
             id = 51886,
             cast = 0,
             cooldown = 8,
             gcd = "spell",
-            
+
             spend = 0.06,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 236288,
 
             buff = "dispellable_curse",
-            
+
             handler = function ()
                 removeBuff( "dispellable_curse" )
             end,
-        },        
+        },
 
         crash_lightning = {
             id = 187874,
@@ -746,7 +746,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 removeBuff( "crashing_lightning" )
                 removeBuff( "crash_lightning_cl" )
 
-                --[[ if level < 116 then 
+                --[[ if level < 116 then
                     if equipped.emalons_charged_core and spell_targets.crash_lightning >= 3 then
                         applyBuff( 'emalons_charged_core', 10 )
                     end
@@ -775,7 +775,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             startsCombat = false,
             texture = 136024,
 
-            toggle = "defensives",            
+            toggle = "defensives",
 
             handler = function ()
                 summonPet( "greater_earth_elemental", 60 )
@@ -789,7 +789,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             gcd = "spell",
 
             spend = 0.1,
-            spendType = "mana",            
+            spendType = "mana",
 
             startsCombat = false,
 
@@ -808,7 +808,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             gcd = 'spell',
 
             startsCombat = true,
-            texture = 1016245,            
+            texture = 1016245,
 
             handler = function ()
                 applyDebuff( 'target', 'earthen_spike' )
@@ -824,27 +824,27 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136102,
-            
+
             handler = function ()
                 applyDebuff( "target", "earthbind" )
             end,
         },
-        
+
         elemental_blast = {
             id = 117014,
             cast = function () return maelstrom_mod( 2 ) * haste end,
             cooldown = 12,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 651244,
-            
+
             handler = function ()
                 consume_maelstrom( 5 )
 
@@ -854,7 +854,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 -- applies maelstrom_weapon (187881)
                 -- removes lashing_flames (334168)
             end,
-        },        
+        },
 
         feral_spirit = {
             id = 51533,
@@ -876,12 +876,12 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 15,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 459027,
 
             talent = "fire_nova",
-            
+
             handler = function ()
             end,
         },
@@ -891,13 +891,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 6,
             gcd = "spell",
-            
+
             spend = 0.15,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135813,
-            
+
             handler = function ()
                 applyDebuff( "target", "flame_shock" )
 
@@ -912,10 +912,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             gcd = "spell",
 
             essential = true,
-            
+
             startsCombat = false,
             texture = 135814,
-            
+
             handler = function ()
                 applyBuff( "flametongue_weapon" )
             end,
@@ -926,27 +926,27 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 6,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135849,
-            
+
             handler = function ()
                 applyDebuff( "target", "frost_shock" )
                 removeBuff( "hailstorm" )
 
                 setCooldown( "flame_shock", 6 * haste )
             end,
-        },        
+        },
 
         ghost_wolf = {
             id = 2645,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 136095,
-            
+
             handler = function ()
                 applyBuff( "ghost_wolf" )
             end,
@@ -957,16 +957,16 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
             spend = 0.09,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 135127,
-            
+
             handler = function ()
             end,
-        },        
+        },
 
         healing_surge = {
             id = 188070,
@@ -981,7 +981,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             handler = function ()
                 consume_maelstrom( 5 )
-            end                
+            end
         },
 
 
@@ -1096,10 +1096,10 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 132328,
-            
+
             handler = function ()
                 applyBuff( "spirit_walk" )
             end,
@@ -1110,15 +1110,15 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = function () return maelstrom_mod( 1.5 ) * haste end,
             cooldown = 60,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 839977,
 
             talent = "stormkeeper",
-            
+
             handler = function ()
                 applyBuff( "stormkeeper", nil, 2 )
-                consume_maelstrom( 5 )              
+                consume_maelstrom( 5 )
             end,
         },
 
@@ -1179,7 +1179,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
                 if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
                 if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
-            end,                    
+            end,
 
             copy = "strike", -- copies this ability to this key or keys (if a table value)
         },
@@ -1206,12 +1206,12 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 45,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 1385916,
 
             pvptalent = function () return not essence.conflict_and_strife.major and "thundercharge" or nil end,
-            
+
             handler = function ()
                 applyBuff( "thundercharge" )
             end,
@@ -1238,60 +1238,60 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 136108,
-            
+
             handler = function ()
             end,
-        },        
+        },
 
         vesper_totem = {
             id = 324386,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             spend = 0.1,
             spendType = "mana",
 
             startsCombat = true,
             texture = 3565451,
-            
+
             handler = function ()
                 applyBuff( "vesper_totem" )
                 summonPet( "vesper_totem", 30 )
             end,
-        },        
+        },
 
         water_walking = {
             id = 546,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135863,
-            
+
             handler = function ()
                 applyBuff( "water_walking" )
             end,
-        },        
+        },
 
         wind_rush_totem = {
             id = 192077,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 538576,
-            
+
             handler = function ()
             end,
         },
@@ -1320,13 +1320,13 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             gcd = "spell",
 
             essential = true,
-            
+
             spend = 0.12,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 136114,
-            
+
             handler = function ()
                 applyBuff( "windfury_totem" )
 
@@ -1344,7 +1344,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             gcd = "spell",
 
             essential = true,
-            
+
             startsCombat = false,
             texture = 462329,
 
@@ -1352,7 +1352,7 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
                 applyBuff( "windfury_weapon" )
             end,
         },
-        
+
         windstrike = {
             id = 115356,
             cast = 0,
