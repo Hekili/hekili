@@ -1128,6 +1128,8 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
             cooldown = function() return gcd.execute * 6 end,
             gcd = "spell",
 
+            rangeSpell = 73899,
+
             startsCombat = true,
             texture = 132314,
 
@@ -1359,7 +1361,6 @@ if select( 2, UnitClass( 'player' ) ) == 'SHAMAN' then
 
             texture = 1029585,
 
-            known = 17364,
             buff = 'ascendance',
 
             bind = "stormstrike",
