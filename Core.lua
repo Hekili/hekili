@@ -598,7 +598,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                         state.delay = wait_time
 
-                        if script.Error then
+                        if not script then
+                            if debug then self:Debug( "There is no script ( " .. scriptID .. " ).  Skipping." ) end
+                        elseif  script.Error then
                             if debug then self:Debug( "The conditions for this entry contain an error.  Skipping." ) end
                         elseif wait_time > state.delayMax then
                             if debug then self:Debug( "The action is not ready ( %.2f ) before our maximum delay window ( %.2f ) for this query.", wait_time, state.delayMax ) end
