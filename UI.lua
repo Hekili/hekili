@@ -903,9 +903,7 @@ do
                             if a.item then
                                 outOfRange = IsItemInRange( a.itemCd or a.item, "target" ) == false
                             else
-                                local name = a.range and class.abilities[ a.range ] and class.abilities[ a.range ].name
-                                name = name or a.actualName or a.name
-                                outOfRange = LSR.IsSpellInRange( name, "target" ) == 0
+                                outOfRange = LSR.IsSpellInRange( a.rangeSpell or a.actualName or a.name, "target" ) == 0
                             end
                         end
                     end

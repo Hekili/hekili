@@ -76,6 +76,7 @@ state.consumable = {}
 state.cooldown = {}
 state.corruptions = {} -- TODO: REMOVE
 state.legendary = {}
+state.runeforge = state.legendary -- TODO: Assess if we can safely delete state.legendary table to be consistent with SimC.
 --[[ state.health = {
     resource = "health",
     actual = 10000,
@@ -5703,7 +5704,7 @@ do
         local profile = Hekili.DB.profile
 
         if self.rangefilter and UnitExists( 'target' ) then
-            if LSR.IsSpellInRange( ability.id, 'target' ) == 0 then
+            if LSR.IsSpellInRange( ability.rangeSpell or ability.id, 'target' ) == 0 then
                 return false, "filtered out of range"
             end
 

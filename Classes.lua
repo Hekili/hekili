@@ -609,6 +609,15 @@ local HekiliSpecMixin = {
             end
         end
 
+        if a.rangeSpell and type( a.rangeSpell ) == "number" then
+            local spell = Spell:CreateFromSpellID( a.rangeSpell )
+            if not spell:IsSpellEmpty() then
+                spell:ContinueOnSpellLoad( function ()
+                    a.rangeSpell = spell:GetSpellName()
+                end )
+            end
+        end
+
         self.abilities[ ability ] = a
         self.abilities[ a.id ] = a
 
