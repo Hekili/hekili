@@ -1009,14 +1009,13 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         lava_lash = {
             id = 60103,
             cast = 0,
-            cooldown = 18,
+            cooldown = function () return ( buff.hot_hand.up and 4.5 or 18 ) * haste end,
             gcd = "spell",
 
             startsCombat = true,
             texture = 236289,
 
             handler = function ()
-                removeBuff( 'hot_hand' )
                 removeDebuff( "target", "primal_primer" )
 
                 if talent.lashing_flames.enabled then applyDebuff( "target", "lashing_flames" ) end
@@ -1360,6 +1359,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             gcd = "spell",
 
             texture = 1029585,
+            known = 17364,
 
             buff = 'ascendance',
 
