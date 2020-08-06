@@ -61,21 +61,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             interval = function () return 1 * state.haste end,
             value = 40,
         },
-
-        prepared = {
-            talent = "momentum",
-            aura   = "prepared",
-
-            last = function ()
-                local app = state.buff.prepared.applied
-                local t = state.query_time
-
-                return app + floor( t - app )
-            end,
-
-            interval = 1,
-            value = 8
-        }
     } )
 
 
@@ -440,7 +425,19 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
     spec:RegisterGear( "soul_of_the_slayer", 151639 )
     spec:RegisterGear( "chaos_theory", 151798 )
-    spec:RegisterGear( "oblivions_embrace", 151799 )    
+    spec:RegisterGear( "oblivions_embrace", 151799 )
+
+
+    do
+        local wasWarned = false
+
+        spec:RegisterEvent( "PLAYER_REGEN_DISABLED", function ()
+            if state.talent.demon_blades.enabled and not state.settings.demon_blades_acknowledged and not wasWarned then
+                Hekili:Notify( "|cFFFF0000WARNING!|r  Demon Blades cannot be forecasted.\nSee /hekili > Havoc for more information." )
+                wasWarned = true
+            end
+        end )
+    end
 
 
     -- Abilities
@@ -1121,6 +1118,25 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         desc = "If checked, the addon will recommend |T1247261:0|t Fel Rush / |T1348401:0|t Vengeful Retreat when it is a potential DPS gain.\n\n" ..
             "These abilities are critical for DPS when using the Momentum talent.\n\n" ..
             "If not using Momentum, you may want to leave this disabled to avoid unnecessary movement in combat.",
+        type = "toggle",
+        width = "full"
+    } )
+
+    spec:RegisterSetting( "demon_blades_head", nil, {
+        name = "Demon Blades",
+        type = "header",        
+    } )
+
+    spec:RegisterSetting( "demon_blades_text", nil, {
+        name = "|cFFFF0000WARNING!|r  If using the |T237507:0|t Demon Blades talent, the addon will not be able to predict Fury gains from your auto-attacks.  This will result " ..
+            "in recommendations that jump forward in your display(s).",
+        type = "description",
+        width = "full"
+    } )
+
+    spec:RegisterSetting( "demon_blades_acknowledged", false, {
+        name = "I understand that Demon Blades is unpredictable; don't warn me.",
+        desc = "If checked, the addon will not provide a warning about Demon Blades when entering combat.",
         type = "toggle",
         width = "full"
     } )
