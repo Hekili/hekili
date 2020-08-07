@@ -936,7 +936,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             startsCombat = true,
             texture = 613533,
 
-            usable = function () return target.health_pct < 20 or buff.avenging_wrath.up or buff.crusade.up or buff.final_verdict.up or buff.hammer_of_wrath_hallow.up end,
+            usable = function () return target.health_pct < 20 or ( level > 57 and ( buff.avenging_wrath.up or buff.crusade.up ) ) or buff.final_verdict.up or buff.hammer_of_wrath_hallow.up end,
             handler = function ()
                 removeBuff( "final_verdict" )
 
