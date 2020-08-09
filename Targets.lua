@@ -54,6 +54,9 @@ local enemyExclusions = {
     ["160966"] = true, -- Thing from Beyond?
     ["161895"] = true, -- Thing from Beyond?
     ["157452"] = true, -- Nightmare Antigen in Carapace.
+    ["131824"] = true, -- Sister Solena - Waycrest Manor
+    ["131823"] = true, -- Sister Malady - Waycrest Manor
+    ["131825"] = true, -- Sister Briar - Waycrest Manor
 }
 
 local f = CreateFrame("Frame")
