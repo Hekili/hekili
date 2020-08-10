@@ -366,8 +366,10 @@ do
 
     local function SetDisplayMode( mode )
         Hekili.DB.profile.toggles.mode.value = mode
-        if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_TOGGLE", "mode", mode ) end
+        Hekili.NotifyWeakAuras( "HEKILI_TOGGLE", "mode", mode )
+
         if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
+        
         Hekili:UpdateDisplayVisibility()
         Hekili:ForceUpdate( "HEKILI_TOGGLE", true )
     end

@@ -1433,7 +1433,7 @@ function Hekili:ProcessHooks( dispName, packName )
     UI.NewRecommendations = true
     UI.RecommendationsStr = checkstr
 
-    if WeakAuras then WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID ) end
+    Hekili.NotifyWeakAuras( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID )
 
     Hekili.freshFrame     = false
 end

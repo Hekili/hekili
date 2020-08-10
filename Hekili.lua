@@ -313,5 +313,15 @@ end
 Hekili.Snapshots = ns.snapshots
 
 
+if WeakAuras and WeakAuras.IsCorrectVersion() then
+	function Hekili.NotifyWeakAuras( ... )
+		WeakAuras.ScanEvents( ... )
+	end
+else
+	-- NoOp
+	function Hekili.NotifyWeakAuras()
+	end
+end
+
 
 ns.Tooltip = CreateFrame( "GameTooltip", "HekiliTooltip", UIParent, "GameTooltipTemplate" )
