@@ -2721,6 +2721,24 @@ do
 end
 
 
+all:RegisterAbility( "wraps_of_electrostatic_potential", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 169069,
+    toggle = "cooldowns",
+
+    handler = function () applyDebuff( "target", "electrostatic_induction" ) end
+} )
+
+all:RegisterAura( "electrostatic_induction", {
+    id = 300145,
+    duration = 8,
+    max_stack = 1
+} )
+
+
 -- Shockbiter's Fang
 all:RegisterAbility( "shockbiters_fang", {
     cast = 0,
