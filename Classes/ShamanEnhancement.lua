@@ -26,13 +26,13 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
         stormfury = 22636, -- 334175
         hot_hand = 23462, -- 201900
-        totem_mastery = 23109, -- 333925
+        ice_strike = 23109, -- 342240
 
         spirit_wolf = 23165, -- 260878
         earth_shield = 19260, -- 974
         static_charge = 23166, -- 265046
 
-        cycle_of_the_elements = 23089, -- 210853
+        elemental_assault = 23089, -- 210853
         hailstorm = 23090, -- 334195
         fire_nova = 22171, -- 333974
 
@@ -228,6 +228,12 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             max_stack = 1,
         },
 
+        ice_strike = {
+            id = 342240,
+            duration = 6,
+            max_stack = 1,
+        },
+
         icy_edge = {
             id = 224126,
             duration = 3600,
@@ -345,52 +351,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             max_stack =1 ,
         },
 
-        --[[ totem_mastery = {
-            duration = 120,
-            generate = function ()
-                local expires, remains = 0, 0
-
-                for i = 1, 5 do
-                    local _, name, cast, duration = GetTotemInfo(i)
-
-                    if name == class.abilities.totem_mastery.name then
-                        if cast + duration > expires then
-                            expires = cast + duration
-                            remains = expires - now
-                        end
-                    end
-                end
-
-                local up = PlayerBuffUp( "resonance_totem" ) and remains > 0
-
-                local tm = buff.totem_mastery
-                tm.name = class.abilities.totem_mastery.name
-
-                if up then
-                    tm.count = 4
-                    tm.expires = expires
-                    tm.applied = expires - 120
-                    tm.caster = "player"
-
-                    applyBuff( "resonance_totem", remains )
-                    applyBuff( "tailwind_totem", remains )
-                    applyBuff( "storm_totem", remains )
-                    applyBuff( "ember_totem", remains )
-                    return
-                end
-
-                tm.count = 0
-                tm.expires = 0
-                tm.applied = 0
-                tm.caster = "nobody"
-
-                removeBuff( "resonance_totem" )
-                removeBuff( "tailwind_totem" )
-                removeBuff( "storm_totem" )
-                removeBuff( "ember_totem" )
-            end,
-        }, ]]
-
         water_walking = {
             id = 546,
             duration = 600,
@@ -410,7 +370,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         },
 
 
-        --[[ Azerite Powers
+        -- Azerite Powers
         ancestral_resonance = {
             id = 277943,
             duration = 15,
@@ -445,7 +405,9 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             id = 287802,
             duration = 6,
             max_stack = 1,
-        }, ]]
+        },
+
+
         -- Legendaries
         legacy_oF_the_frost_witch = {
             id = 335901,
@@ -491,7 +453,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
 
     spec:RegisterHook( "reset_precast", function ()
-        -- class.auras.totem_mastery.generate()
         local mh, _, _, mh_enchant, oh, _, _, oh_enchant = GetWeaponEnchantInfo()
 
         if mh and mh_enchant == 5401 then applyBuff( "windfury_weapon" ) end
@@ -1005,6 +966,24 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             copy = { 204362, 32182 }
         },
 
+        ice_strike = {
+            id = 342240,
+            cast = 0,
+            cooldown = 15,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 135845,
+
+            talent = "ice_strike",
+            
+            handler = function ()
+                setCooldown( "frost_shock", 0 )
+                setCooldown( "flame_shock", 0 )
+
+                applyDebuff( "ice_strike" )
+            end,
+        },
 
         lava_lash = {
             id = 60103,
@@ -1153,13 +1132,11 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 end
 
                 removeBuff( "strength_of_earth" )
-
-                if talent.cycle_of_the_elements.enabled then
-                    setCooldown( "flame_shock", 0 )
-                    setCooldown( "frost_shock", 0 )
-                end
-
                 removeBuff( "legacy_of_the_frost_witch" )
+
+                if talent.elemental_assault.enabled then
+                    addStack( "maelstrom_weapon", nil, 1 )
+                end
 
                 if level < 116 then
                     if equipped.storm_tempests then
@@ -1213,22 +1190,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             handler = function ()
                 applyBuff( "thundercharge" )
-            end,
-        },
-
-        totem_mastery = {
-            id = 333925,
-            cast = 0,
-            cooldown = 60,
-            gcd = "spell",
-
-            startsCombat = false,
-            talent = "totem_mastery",
-
-            handler = function ()
-                summonPet( "searing_totem", 15 )
-                summonPet( "healing_stream_totem", 15 )
-                summonPet( "earthbind_totem", 20 )
             end,
         },
 
@@ -1375,13 +1336,11 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
                 removeBuff( "gathering_storms" )
                 removeBuff( "strength_of_earth" )
-
-                if talent.cycle_of_the_elements.enabled then
-                    setCooldown( "flame_shock", 0 )
-                    setCooldown( "frost_shock", 0 )
-                end
-
                 removeBuff( "legacy_of_the_frost_witch" )
+
+                if talent.elemental_assault.enabled then
+                    addStack( "maelstrom_weapon", nil, 1 )
+                end
 
                 if level < 116 then
                     if equipped.storm_tempests then
@@ -1422,6 +1381,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     } )
 
 
-    spec:RegisterPack( "Enhancement", 20200718, [[d4ZmvaqBLSjuP2LkTnLQ0(aj)g4PKmBPA(cfNxPu)svX3uk0)uQIANsr7v0UvSFsnkLsgMQkJtPGRrq1qvQImyvmCHCicIokbLYXiW5iiyHkvwkbHwmOwokxgzveuSmqQNdzIeuQMQuyYeA6u9iLQGxPQ0ZiiDDu1FvLdtzZeTDvv9DuXSqLmnHsZtPQgjbL0JHA0c8zqCsLQqxKGsCAj3tqRuO6ukf9AP0PGSrQenNYMq)d6F)2OGnCfSbHdTW3BQ8TJOufz4wdcLQXwuQewMaBW0Igpvr22DGjMnsfcWZWuQe24lCR(yJO(iSxmF7ubZxDFpojCQenNYMq)d6F)2OGnCfSbHdDS7nvOicNnHEVcnvbLOinjCQejeovcrapKa9zpXkaR8T1hjGPpQateWPBJikv9c5OSrQejPX39Sr2uq2ivg2lWKko1i(qbKXsfngCNeZDPNnHoBKkAm4ojM7sfMvoXklvg2R)0JgAvesFGsFeOpCRpW8s5fZmuWRxqc8PgixraNjvg2lWKkmZqbVEbjWNAGKE2uOzJuzyVatQ4uJiYzvlLkAm4ojM7spBgB2iv0yWDsm3LkmRCIvwQG5LY7YOoYzG1JdzrG5ICd3Qp7Rpc(Lkd7fysLKyw)HIkw5PNnfE2iv0yWDsm3LkmRCIvwQWaqxeWzUiNvT0LrlRguQmSxGjvgctJOnyk9S5EZgPYWEbMu9Nqre75aNwPIgdUtI5U0ZMBmBKkAm4ojM7sfMvoXklvW8s5nWQoYbS1f5gUvFc1hHRpCRpW8s5Dzuh5mW6XHSiWCrUHB1hO0NytLH9cmPsYai)Hca420ZMBiBKkAm4ojM7sfMvoXklvW8s5Dzuh5mW6XHSiWCrUHB1hO0NytLH9cmPc5a2QLOiILE2uiKnsfngCNeZDPcZkNyLLkd71F6rdTkcPpH6JGuzyVatQiJ5b08qrvlLE2uWVSrQOXG7KyUlvyw5eRSuzyV(tpAOvri9juFeOpCRpBPpBPpW8s5Dzuh5mW6XHSiWCrUHB1hO0Ny1hU1hyEP8ICaB1sueXU8r6d36dmVuEroGTAjkIyxgTSAq6Z(H6deSO(im6d06ZM6tmXOpW8s5Dzuh5mW6XHSiWCrUHB1Nq9rWp9zZuzyVatQ6fKaFQbYdg090ZMceKnsfngCNeZDPcZkNyLLkd71F6rdTkcPpqPpc0hU1NT0NT0hyEP8UmQJCgy94qweyUi3WT6du6tS6d36dmVuEroGTAjkIyx(i9HB9bMxkVihWwTefrSlJwwni9z)q9bcwuFeg9bA9zt9jMy0hyEP8UmQJCgy94qweyUi3WT6tO(i4N(SzQmSxGjv4aRMxVGe4tnqspBka6SrQOXG7KyUlvyw5eRSubZlL3LrDKZaRhhYIaZf5gUvFGsFInvg2lWKkQtlACR)G7gYtpBkqOzJurJb3jXCxQWSYjwzPcMxkVbw1roGTUi3WT6tO(i8uzyVatQKmaYFOaaUn9SPGyZgPIgdUtI5UuHzLtSYsLH96p9OHwfH0hO0hbPYWEbMuHzgk41lib(udK0ZMceE2iv0yWDsm3LkmRCIvwQmSx)Phn0QiK(aL(iivg2lWKke)isSAGKE2uWEZgPIgdUtI5UuHzLtSYsLqQpIemVuELDBrpuaa3E5JsLH9cmPs2Tf9qbaCB6ztbBmBKkAm4ojM7sfMvoXklvW8s5na4VaBeV8rPYWEbMu1T)2RBOG0ZMc2q2iv0yWDsm3LkmRCIvwQmSx)Phn0QiK(eQpcsLH9cmPImMhqZdfvTu6ztbcHSrQOXG7KyUlvyw5eRSubZlL3LrDKZaRhhYIaZf5gUvF2xFe8lvg2lWKkKdylKZQwk9Sj0)YgPIgdUtI5UuHzLtSYsLH96p9OHwfH0hO0hb6d36Zw6dmVuExg1rodSECilcmxKB4w9bk9jw9jMy0hyEP8ICaB1sueXU8r6ZM6d36Zw6JqQpW8s5fZmuWRxqc8PgipC)YhPpXeJ(aZlL3LrDKZaRhhYIaZf5gUvFGsF2G(SzQmSxGjv4aRMxVGe4tnqspBcTGSrQOXG7KyUlvyw5eRSuzyV(tpAOvri9juFeOpCRpBPpW8s5Dzuh5mW6XHSiWCrUHB1hO0Ny1NyIrFG5LYlYbSvlrre7YhPpBMkd7fysvVGe4tnqEWGUNE2eAOZgPYWEbMu5aNwVLHCITDQOXG7KyUl9Sj0cnBKkAm4ojM7sfMvoXklvg2R)0te4xz3w0dfaWT6JWOpBPpBPpg2R)0JgAvesF2uF2FpRp7vF2uFGsF2yQmSxGjvYIrVb83spBcDSzJurJb3jXCxQmSxGjvYUTOhkaGBtfMvoXklvmsYiuGb3PuH3g3PNBmiKJYMcspBcTWZgPYWEbMurgZdO5HIQwkv0yWDsm3LE2e69MnsLH9cmPcXpIeRgiPIgdUtI5U0ZMqVXSrQmSxGjvD7V96gkiv0yWDsm3LE2e6nKnsLH9cmPcZmuWRxqc8PgiPIgdUtI5U0ZMqleYgPIgdUtI5UuHzLtSYsLqQpU1PXVbw1roGTU0yWDsuF4wFeb(v2Tf9qbaC7LrlRgK(aL(yyVaZddaDraNjvg2lWKkjdG8hkaGBtp9ufXimybBE2iBkiBKkAm4ojM7sfMvoXklvW8s5Txqc8PgipuqrDXlJwwni9zF9rO)(Lkd7fysvVGe4tnqEOGI6IPNnHoBKkAm4ojM7sfMvoXklvW8s5LtnIsE22poKfbMlJwwni9zF9rO)(Lkd7fysfNAeL8STFCilcmPNnfA2iv0yWDsm3LkmRCIvwQG5LYRSBlYbdeE6XHSiWCz0YQbPp7Rpc93VuzyVatQKDBroyGWtpoKfbM0ZMXMnsfngCNeZDPcZkNyLLkyEP8YPgrjpB7NdCADfbCMuzyVatQ4uJOKNT9ZboTsp90t1FIHkWKnH(h0)(TrbBmvCm2udeuQ2JRiaZjr9bA9XWEbg9PxihD1XtvediRoLQ9G(ieb8qc0N9eRaSY3wFKaM(OcmraNUnIiDCDCd7fyq3igHblyZd7fKaFQbYdfuuxKRsgcZlL3EbjWNAG8qbf1fVmAz1G2xO)(PJByVad6gXimybB(3WpCQruYZ2(XHSiWWvjdH5LYlNAeL8STFCilcmxgTSAq7l0F)0XnSxGbDJyegSGn)B4hz3wKdgi80JdzrGHRsgcZlLxz3wKdgi80JdzrG5YOLvdAFH(7NoUH9cmOBeJWGfS5Fd)WPgrjpB7NdCAXvjdH5LYlNAeL8STFoWP1veWz0X1XnSxGbfYPgXhkGmMoUH9cmOVHFWmdf86fKaFQbcxLm0WE9NE0qRIqqjGByEP8Izgk41lib(udKRiGZOJByVad6B4ho1iICw1s64g2lWG(g(rsmR)qrfRCUkzimVuExg1rodSECilcmxKB429f8th3WEbg03WpgctJOnyIRsgIbGUiGZCroRAPlJwwniDCDCd7fyqFd)8Nqre75aNw64g2lWG(g(rYai)Hca4wUkzimVuEdSQJCaBDrUHBdfo3W8s5Dzuh5mW6XHSiWCrUHBHkwDCd7fyqFd)GCaB1sueX4QKHW8s5Dzuh5mW6XHSiWCrUHBHkwDCd7fyqFd)qgZdO5HIQwIRsgAyV(tpAOvrOqb64g2lWG(g(Pxqc8Pgipyq35QKHg2R)0JgAvekua3BTfmVuExg1rodSECilcmxKB4wOILByEP8ICaB1sueXU8rCdZlLxKdyRwIIi2LrlRg0(HqWIcd0BgtmW8s5Dzuh5mW6XHSiWCrUHBdf8BtDCd7fyqFd)GdSAE9csGp1aHRsgAyV(tpAOvriOeW9wBbZlL3LrDKZaRhhYIaZf5gUfQy5gMxkVihWwTefrSlFe3W8s5f5a2QLOiIDz0YQbTFieSOWa9MXedmVuExg1rodSECilcmxKB42qb)2uh3WEbg03WpuNw04w)b3nKZvjdH5LY7YOoYzG1JdzrG5ICd3cvS64g2lWG(g(rYai)Hca4wUkzimVuEdSQJCaBDrUHBdfUoUH9cmOVHFWmdf86fKaFQbcxLm0WE9NE0qRIqqjqh3WEbg03Wpi(rKy1aHRsgAyV(tpAOvriOeOJByVad6B4hz3w0dfaWTCvYqHuKG5LYRSBl6Hca42lFKoUH9cmOVHF62F71nuaxLmeMxkVba)fyJ4Lpsh3WEbg03WpKX8aAEOOQL4QKHg2R)0JgAvekuGoUH9cmOVHFqoGTqoRAjUkzimVuExg1rodSECilcmxKB429f8thxh3WEbg03Wp4aRMxVGe4tnq4QKHg2R)0JgAveckbCVfmVuExg1rodSECilcmxKB4wOInMyG5LYlYbSvlrre7YhTj3BjKW8s5fZmuWRxqc8PgipC)YhftmW8s5Dzuh5mW6XHSiWCrUHBHAdBQJByVad6B4NEbjWNAG8GbDNRsgAyV(tpAOvrOqbCVfmVuExg1rodSECilcmxKB4wOInMyG5LYlYbSvlrre7YhTPoUH9cmOVHFCGtR3YqoX2wh3WEbg03WpYIrVb834QKHg2R)0te4xz3w0dfaWTcZwBzyV(tpAOvrOn3FpV3nHAJ647b9XWEbg03WpYUTOhkaGB5QKHmsYiuGb3jDCd7fyqFd)i72IEOaaULl824o9CJbHCuOaUkziJKmcfyWDsh3WEbg03WpKX8aAEOOQL0XnSxGb9n8dIFejwnq0XnSxGb9n8t3(BVUHc0XnSxGb9n8dMzOGxVGe4tnq0XnSxGb9n8JKbq(dfaWTCvYqH0Ton(nWQoYbS1LgdUtIClc8RSBl6Hca42lJwwniOmSxG5HbGUiGZKkJ3daSujevcRPNEMa]] )
+    spec:RegisterPack( "Enhancement", 20200813, [[d4ZQwaqBLSjcXUuQxlL2hi53apLOzlvZxkY5jK(LQsFdkf)dKQyNIs7vy3k2pPgLkudtf14KIQtlzOGuvgSQmCr1HKIIJkfLQJrOohuQyHQilfkvAXq1Yr6XiwfuQAzqrphYeLIsmvPWKb10P6rsrj9kvfxg11j4IsrPCykBMKTdf(oiMfuY0uHmpqkJeKQQTbLsJweFwv1jbPk9mvqxdKk3tKwPO4uQa)vLoehncjS5CKfZZyE(CZfF4gZdpJnH0fnNdzUrATFoKJT4q2Snj2q4fpEiZnr7adoAeseqGs4q2SluKw9Zgy9RzPOUOHexO6o07e4He2CoYI5zmpFU5IpCJ5HNXwOR5HeLZKilMy7HHmPGH5jWdjmJiHe7ce(t0pOpAbOLlQ(Pau9tMyWaiDBGrHSxihfncjmRmHUhnISIJgH0iEbMqcPg4lkHnAi5XW7mCCk8ilMrJqAeVatiZtkRFbQlIP8uUOHKhdVZWXPWJShgncjpgENHJtHKqlNPLfsJ4fg8LhEvms)Gs)eRFIOF4ck1MqnuYTx)j(uZ)ggazcPr8cmHKqnuYTx)j(uZF4r2JIgH0iEbMqcPgyKtRwoK8y4DgoofEKf6IgHKhdVZWXPqsOLZ0YcjUGsTxg3rofSUqylhmBKBKw9dA6N4ZH0iEbMqQyQ1VO8IwE4rwSnAesEm8odhNcjHwotllKeaOddGmBKtRwEt5LvdkKgXlWesdr4b2gchEKfBIgH0iEbMqIbJYz61boVcjpgENHJtHhzBE0iK8y4DgoofscTCMwwiXfuQDIvDKdORnYnsR(LQFqN(jI(HlOu7LXDKtbRle2YbZg5gPv)Gs)okKgXlWesffG8lkbqAdpYIDIgHKhdVZWXPqsOLZ0YcjUGsTxg3rofSUqylhmBKBKw9dk97OqAeVatiroGUAzoNPHhzfFoAesEm8odhNcjHwotllKgXlm4lp8QyK(LQFIdPr8cmHKnQNWZfLxTC4rwXIJgHKhdVZWXPqsOLZ0YcPr8cd(YdVkgPFP6Ny9te97y97y9dxqP2lJ7iNcwxiSLdMnYnsR(bL(DK(jI(HlOuBKdORwMZz6wix)er)WfuQnYb0vlZ5mDt5Lvds)GwQ(9tG1pSx)Wu)oq)AQj9dxqP2lJ7iNcwxiSLdMnYnsR(LQFIpRFhesJ4fyczV(t8PM)loO7HhzfJz0iK8y4DgoofscTCMwwinIxyWxE4vXi9dk9tS(jI(DS(DS(HlOu7LXDKtbRle2YbZg5gPv)Gs)os)er)WfuQnYb0vlZ5mDlKRFIOF4ck1g5a6QL5CMUP8YQbPFqlv)(jW6h2RFyQFhOFn1K(HlOu7LXDKtbRle2YbZg5gPv)s1pXN1VdcPr8cmHKKy1C71FIp18hEKv8HrJqYJH3z44uij0YzAzHexqP2lJ7iNcwxiSLdMnYnsR(bL(DuinIxGjKCNx84w)I3nKhEKv8rrJqYJH3z44uij0YzAzHexqP2jw1roGU2i3iT6xQ(bDH0iEbMqQOaKFrjasB4rwXqx0iK8y4DgoofscTCMwwinIxyWxE4vXi9dk9tCinIxGjKeQHsU96pXNA(dpYkgBJgHKhdVZWXPqsOLZ0YcPr8cd(YdVkgPFqPFIdPr8cmHejmWmTM)WJSIXMOri5XW7mCCkKeA5mTSq2m6hmJlOuBv3w8fLaiTBH8qAeVativDBXxucG0gEKvCZJgHKhdVZWXPqsOLZ0YcjUGsTta(nXg4TqEinIxGjKDdd72nus4rwXyNOri5XW7mCCkKeA5mTSqAeVWGV8WRIr6xQ(joKgXlWes2OEcpxuE1YHhzX8C0iK8y4DgoofscTCMwwiXfuQ9Y4oYPG1fcB5GzJCJ0QFqt)eFoKgXlWesKdOlKtRwo8ilMIJgHKhdVZWXPqsOLZ0YczN)5b2OIUHbG1fsnWOnpgENH1pr0pygxqP2WaW6cPgy0LaVHbqMqAeVatiHudSsGk61boVcpYIjMrJqYJH3z44uij0YzAzH0iEHbF5HxfJ0pO0pX6Ni63X6hUGsTxg3rofSUqylhmBKBKw9dk97i9RPM0pCbLAJCaD1YCot3c563b6Ni63X6xZOF4ck1MqnuYTx)j(uZ)L03c56xtnPF4ck1EzCh5uW6cHTCWSrUrA1pO0VMRFhesJ4fycjjXQ52R)eFQ5p8ilMhgncjpgENHJtHKqlNPLfsJ4fg8LhEvms)s1pX6Ni63X6hUGsTxg3rofSUqylhmBKBKw9dk97i9RPM0pCbLAJCaD1YCot3c563bH0iEbMq2R)eFQ5)Id6E4rwmpkAesJ4fycPdCEDxgYzQOHKhdVZWXPWJSycDrJqYJH3z44uij0YzAzH0iEHbFHb(w1TfFrjasR(H963X63X6Nr8cd(YdVkgPFhOFqd6r)Ww97a9dk9dBcPr8cmHuvu(oamSWJSyITrJqYJH3z44uinIxGjKQUT4lkbqAdjHwotllKuwrzuIH35qseL05RB0F2rrwXHhzXeBIgH0iEbMqYg1t45IYRwoK8y4DgoofEKfZMhncPr8cmHejmWmTM)qYJH3z44u4rwmXorJqYJH3z44uij0YzAzHKaaDyaKzROaKFrjas7MYlRgK(bL(9tGdPr8cmHSi8f50QLdpYE45OrinIxGjKDdd72nusi5XW7mCCk8i7HIJgH0iEbMqsOgk52R)eFQ5pK8y4DgoofEK9qmJgHKhdVZWXPqsOLZ0YczZOFU15X3jw1roGU28y4Dgw)er)Gb(w1TfFrjas7MYlRgK(bL(zeVaZLaaDyaKjKgXlWesffG8lkbqAdp8qMtzcyHBE0iYkoAesEm8odhNcjHwotllK4ck1Ux)j(uZ)fLuChEt5Lvds)GM(D45ZH0iEbMq2R)eFQ5)IskUdhEKfZOri5XW7mCCkKeA5mTSqIlOuBi1aReOIEHWwoy2uEz1G0pOPFhE(CinIxGjKqQbwjqf9cHTCWeEK9WOri5XW7mCCkKeA5mTSqIlOuBv3wSdMFb(cHTCWSP8YQbPFqt)o885qAeVativDBXoy(f4le2Ybt4r2JIgHKhdVZWXPqsOLZ0YcjUGsTHudSsGk61boV2WaitinIxGjKqQbwjqf96aNxHhE4HedMIkWezX8mMNpJnIBEiHy0PMFuiHEx5aQZW6hM6Nr8cm6xVqoARZeYCkqvDoKnR6h2fi8NOFqF0cqlxu9tbO6NmXGbq62aJ0z0zmIxGbTZPmbSWnpTx)j(uZ)fLuChgRsLIlOu7E9N4tn)xusXD4nLxwniOD45Z6mgXlWG25uMaw4M)j9lKAGvcurVqylhmyvQuCbLAdPgyLav0le2YbZMYlRge0o88zDgJ4fyq7CktalCZ)K(v1Tf7G5xGVqylhmyvQuCbLAR62IDW8lWxiSLdMnLxwniOD45Z6mgXlWG25uMaw4M)j9lKAGvcurVoW5fwLkfxqP2qQbwjqf96aNxByaKrNrNXiEbgukKAGVOe2O6mgXlWG(K(npPS(fOUiMYt5IQZyeVad6t6xc1qj3E9N4tn)yvQuJ4fg8LhEvmckXIGlOuBc1qj3E9N4tn)ByaKrNXiEbg0N0VqQbg50QL1zmIxGb9j9RIPw)IYlA5yvQuCbLAVmUJCkyDHWwoy2i3iTqt8zDgJ4fyqFs)AicpW2qySkvkba6WaiZg50QL3uEz1G0z0zmIxGb9j9lgmkNPxh48sNXiEbg0N0Vkka5xucG0IvPsXfuQDIvDKdORnYnsBk0jcUGsTxg3rofSUqylhmBKBKwOosNXiEbg0N0VihqxTmNZuSkvkUGsTxg3rofSUqylhmBKBKwOosNXiEbg0N0VSr9eEUO8QLXQuPgXlm4lp8QyuQyDgJ4fyqFs)2R)eFQ5)Id6owLk1iEHbF5HxfJsflYXhJlOu7LXDKtbRle2YbZg5gPfQJebxqP2ihqxTmNZ0TqUi4ck1g5a6QL5CMUP8YQbbT0Fcm2J5bn1eUGsTxg3rofSUqylhmBKBK2uXNpqNXiEbg0N0VKeRMBV(t8PMFSkvQr8cd(YdVkgbLyro(yCbLAVmUJCkyDHWwoy2i3iTqDKi4ck1g5a6QL5CMUfYfbxqP2ihqxTmNZ0nLxwniOL(tGXEmpOPMWfuQ9Y4oYPG1fcB5GzJCJ0Mk(8b6mgXlWG(K(L78Ih36x8UHCSkvkUGsTxg3rofSUqylhmBKBKwOosNXiEbg0N0Vkka5xucG0IvPsXfuQDIvDKdORnYnsBk0PZyeVad6t6xc1qj3E9N4tn)yvQuJ4fg8LhEvmckX6mgXlWG(K(fjmWmTMFSkvQr8cd(YdVkgbLyDgJ4fyqFs)Q62IVOeaPfRsL2mWmUGsTvDBXxucG0UfY1zmIxGb9j9B3WWUDdLGvPsXfuQDcWVj2aVfY1zmIxGb9j9lBupHNlkVAzSkvQr8cd(YdVkgLkwNXiEbg0N0VihqxiNwTmwLkfxqP2lJ7iNcwxiSLdMnYnsl0eFwNrNXiEbg0N0VqQbwjqf96aNxyvQ0o)ZdSrfDddaRlKAGrBEm8odlcmJlOuByayDHudm6sG3WaiJoJoJr8cmOpPFjjwn3E9N4tn)yvQuJ4fg8LhEvmckXICmUGsTxg3rofSUqylhmBKBKwOoQPMWfuQnYb0vlZ5mDlKFGih3m4ck1MqnuYTx)j(uZ)L03c5n1eUGsTxg3rofSUqylhmBKBKwOA(b6mgXlWG(K(Tx)j(uZ)fh0DSkvQr8cd(YdVkgLkwKJXfuQ9Y4oYPG1fcB5GzJCJ0c1rn1eUGsTroGUAzoNPBH8d0zmIxGb9j9RdCEDxgYzQO6mgXlWG(K(vvu(oammSkvQr8cd(cd8TQBl(IsaKwS)4JnIxyWxE4vXOdGg0d2EauyJoJr8cmOpPFvDBXxucG0IfrusNVUr)zhLkgRsLszfLrjgEN1zmIxGb9j9lBupHNlkVAzDgJ4fyqFs)IegyMwZVoJr8cmOpPFlcFroTAzSkvkba6WaiZwrbi)IsaK2nLxwniO(jW6mgXlWG(K(TByy3UHs0zmIxGb9j9lHAOKBV(t8PMFDgJ4fyqFs)QOaKFrjaslwLkTzCRZJVtSQJCaDT5XW7mSiWaFR62IVOeaPDt5LvdckJ4fyUeaOddGmH0e8eanKyxj0F4Hhb]] )
 
 end
