@@ -27,7 +27,7 @@ Classes\DemonHunterHavoc.lua
 # Classes\DruidBalance.lua
 Classes\DruidFeral.lua
 # Classes\DruidGuardian.lua
-# Classes\HunterBeastMastery.lua
+Classes\HunterBeastMastery.lua
 # Classes\HunterMarksmanship.lua
 # Classes\HunterSurvival.lua
 # Classes\MageArcane.lua

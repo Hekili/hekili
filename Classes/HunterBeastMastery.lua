@@ -11,7 +11,7 @@ local PTR = ns.PTR
 
 
 -- needed for Frenzy.
-local FindUnitBuffByID = ns.FindUnitBuffByID
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 
 
 if UnitClassBase( 'player' ) == 'HUNTER' then
@@ -45,7 +45,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
 
             interval = 2,
-            value = function () return state.talent.scent_of_blood.enabled and 7 or 5 end,
+            value = 5,
         },
 
         barbed_shot_2 = {
@@ -60,7 +60,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
 
             interval = 2,
-            value = function () return state.talent.scent_of_blood.enabled and 7 or 5 end,
+            value = 5,
         },
 
         barbed_shot_3 = {
@@ -75,7 +75,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
 
             interval = 2,
-            value = function () return state.talent.scent_of_blood.enabled and 7 or 5 end,
+            value = 5,
         },
 
         barbed_shot_4 = {
@@ -90,7 +90,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
 
             interval = 2,
-            value = function () return state.talent.scent_of_blood.enabled and 7 or 5 end,
+            value = 5,
         },
 
         barbed_shot_5 = {
@@ -105,7 +105,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
 
             interval = 2,
-            value = function () return state.talent.scent_of_blood.enabled and 7 or 5 end,
+            value = 5,
         },
 
         barbed_shot_6 = {
@@ -120,7 +120,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
 
             interval = 2,
-            value = function () return state.talent.scent_of_blood.enabled and 7 or 5 end,
+            value = 5,
         },
         
         barbed_shot_7 = {
@@ -135,7 +135,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
 
             interval = 2,
-            value = function () return state.talent.scent_of_blood.enabled and 7 or 5 end,
+            value = 5,
         },
         
         barbed_shot_8 = {
@@ -150,7 +150,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
 
             interval = 2,
-            value = function () return state.talent.scent_of_blood.enabled and 7 or 5 end,
+            value = 5,
         },
     } )
 
@@ -168,7 +168,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         natural_mending = 19348, -- 270581
         camouflage = 23100, -- 199483
 
-        venomous_bite = 22441, -- 257891
+        spitting_cobra = 22441, -- 257891
         thrill_of_the_hunt = 22347, -- 257944
         a_murder_of_crows = 22269, -- 131894
 
@@ -182,28 +182,24 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         aspect_of_the_beast = 22273, -- 191384
         killer_cobra = 21986, -- 199532
-        spitting_cobra = 22295, -- 194407
+        bloodshed = 22295, -- 321530
     } )
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        gladiators_medallion = 3562, -- 208683
-        relentless = 3561, -- 196029
-        adaptation = 3560, -- 214027
-
-        survival_tactics = 3599, -- 202746
-        dragonscale_armor = 3600, -- 202589
-        viper_sting = 3602, -- 202797
-        spider_sting = 3603, -- 202914
-        scorpid_sting = 3604, -- 202900
-        hiexplosive_trap = 3605, -- 236776
-        the_beast_within = 693, -- 212668
-        interlope = 1214, -- 248518
-        hunting_pack = 3730, -- 203235
-        wild_protector = 821, -- 204190
-        dire_beast_hawk = 824, -- 208652
         dire_beast_basilisk = 825, -- 205691
+        dire_beast_hawk = 824, -- 208652
+        dragonscale_armor = 3600, -- 202589
+        hiexplosive_trap = 3605, -- 236776
+        hunting_pack = 3730, -- 203235
+        interlope = 1214, -- 248518
         roar_of_sacrifice = 3612, -- 53480
+        scorpid_sting = 3604, -- 202900
+        spider_sting = 3603, -- 202914
+        survival_tactics = 3599, --  202746
+        the_beast_within = 693, -- 212668
+        viper_sting = 3602, -- 202797
+        wild_protector = 821, -- 204190
     } )
 
     -- Auras
@@ -326,6 +322,36 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
 
+        bloodshed = {
+            id = 321538,
+            duration = 18,
+            max_stack = 1,
+            generate = function ( t )
+                local name, count, duration, expires, caster, _
+
+                for i = 1, 40 do
+                    name, _, count, _, duration, expires, caster = UnitDebuff( "target", 321538 )
+
+                    if not name then break end
+                    if name and UnitIsUnit( caster, "pet" ) then break end
+                end
+
+                if name then
+                    t.name = name
+                    t.count = count
+                    t.expires = expires
+                    t.applied = expires - duration
+                    t.caster = "player"
+                    return
+                end
+
+                fr.count = 0
+                fr.expires = 0
+                fr.applied = 0
+                fr.caster = "nobody"
+            end,            
+        },
+
         camouflage = {
             id = 199483,
             duration = 60,
@@ -337,6 +363,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 6,
             max_stack = 1,
         },
+
+        dire_beast = {
+            id = 281036,
+            duration = 8,
+            max_stack = 1,
+        },        
 
         dire_beast_basilisk = {
             id = 209967,
@@ -402,6 +434,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
 
+        hunters_mark = {
+            id = 257284,
+            duration = 3600,
+            type = "Magic",
+            max_stack = 1,
+        },
+
         intimidation = {
             id = 24394,
             duration = 5,
@@ -437,6 +476,18 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
 
+        predators_thirst = {
+            id = 264663,
+            duration = 3600,
+            max_stack = 1,
+        },
+
+        primal_fury = {
+            id = 264667,
+            duration = 40,
+            max_stack = 1,
+        },
+
         spitting_cobra = {
             id = 194407,
             duration = 20,
@@ -456,7 +507,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         thrill_of_the_hunt = {
             id = 257946,
             duration = 8,
-            max_stack = 2,
+            max_stack = 3,
         },
 
         trailblazer = {
@@ -567,6 +618,23 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 applyDebuff( 'target', 'a_murder_of_crows' )
+            end,
+        },
+
+        
+        arcane_shot = {
+            id = 185358,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 30,
+            spendType = "focus",
+            
+            startsCombat = true,
+            texture = 132218,
+            
+            handler = function ()
             end,
         },
 
@@ -688,6 +756,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 applyBuff( 'bestial_wrath' )
                 if pvptalent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
+                if talent.scent_of_blood.enabled then gainCharges( "barbed_shot", 2 ) end
             end,
         },
 
@@ -705,6 +774,23 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 applyDebuff( 'target', 'binding_shot' )
+            end,
+        },
+
+
+        bloodshed = {
+            id = 321530,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 132176,
+            
+            handler = function ()
+                applyDebuff( "target", "bloodshed" )
             end,
         },
 
@@ -757,8 +843,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 461114,
 
-            handler = function ()                
-                if talent.venomous_bite.enabled then setCooldown( 'bestial_wrath', cooldown.bestial_wrath.remains - 1 ) end
+            handler = function ()
                 if talent.killer_cobra.enabled and buff.bestial_wrath.up then setCooldown( 'kill_command', 0 )
                 else setCooldown( 'kill_command', cooldown.kill_command.remains - 1 ) end
             end,
@@ -873,6 +958,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 132294,
 
             handler = function ()
+                applyBuff( "posthaste" )
             end,
         },
 
@@ -966,6 +1052,22 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
         },
 
+                
+
+        hunters_mark = {
+            id = 257284,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 236188,
+            
+            handler = function ()
+                applyDebuff( "target", "hunters_mark" )
+            end,
+        },
+
 
         interlope = {
             id = 248518,
@@ -1010,7 +1112,28 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 132176,
 
-            recheck = function () return buff.barbed_shot.remains end,
+            handler = function ()
+            end,
+        },
+
+
+        
+
+        kill_shot = {
+            id = 53351,
+            cast = 0,
+            charges = 1,
+            cooldown = 10,
+            recharge = 10,
+            gcd = "spell",
+            
+            spend = 10,
+            spendType = "focus",
+            
+            startsCombat = true,
+            texture = 236174,
+            
+            usable = function () return target.health_pct < 20 end,
             handler = function ()
             end,
         },
@@ -1041,7 +1164,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 132180,
 
-            handler = function ()                
+            handler = function ()
             end,
         },
 
@@ -1063,6 +1186,26 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             recheck = function () return buff.beast_cleave.remains - gcd, buff.beast_cleave.remains end,
             handler = function ()
                 applyBuff( 'beast_cleave' )
+            end,
+        },
+
+
+        primal_rage = {
+            id = 272678,
+            cast = 0,
+            cooldown = 360,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 136224,
+            
+            usable = function () return pet.alive and pet.ferocity, "requires a living ferocity pet" end,
+            handler = function ()
+                applyBuff( "primal_Fury" )
+                applyBuff( "bloodlust" )
+                applyDebuff( "player", "exhaustion" )
             end,
         },
 
@@ -1144,7 +1287,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         stampede = {
             id = 201430,
             cast = 0,
-            cooldown = 180,
+            cooldown = 120,
             gcd = "spell",
 
             toggle = 'cooldowns',
@@ -1194,6 +1337,22 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
         },
 
+
+        tranquilizing_shot = {
+            id = 19801,
+            cast = 0,
+            cooldown = 10,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 136020,
+            
+            usable = function () return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic effect" end,
+            handler = function ()
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
+            end,
+        },
 
         viper_sting = {
             id = 202797,
