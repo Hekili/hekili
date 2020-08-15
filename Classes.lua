@@ -926,6 +926,12 @@ all:RegisterAuras( {
         duration = 40,
     },
 
+    primal_rage = {
+        id = 264667,
+        duration = 40,
+        max_stack = 1,
+    },
+
     bloodlust = {
         id = 2825,
         duration = 40,
@@ -934,7 +940,8 @@ all:RegisterAuras( {
                 [90355] = 'ancient_hysteria',
                 [32182] = 'heroism',
                 [80353] = 'time_warp',
-                [160452] = 'netherwinds'
+                [160452] = 'netherwinds',
+                [264667] = 'primal_rage',
             }
 
             for id, key in pairs( bloodlusts ) do
@@ -949,19 +956,19 @@ all:RegisterAuras( {
             end
 
             local i = 1
-            local name, _, count, _, duration, expires, _, _, _, spellID = UnitBuff( 'player', i )
+            local name, _, count, _, duration, expires, caster, _, _, spellID = UnitBuff( 'player', i )
 
             while( name ) do
                 if spellID == 2525 then break end
                 i = i + 1
-                name, _, count, _, duration, expires, _, _, _, spellID = UnitBuff( 'player', i )
+                name, _, count, _, duration, expires, caster, _, _, spellID = UnitBuff( 'player', i )
             end
 
             if name then
                 buff.bloodlust.count = max( 1, count )
                 buff.bloodlust.expires = expires
                 buff.bloodlust.applied = expires - duration
-                buff.bloodlust.caster = 'unknown'
+                buff.bloodlust.caster = caster
                 return
             end
 
