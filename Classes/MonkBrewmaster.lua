@@ -27,7 +27,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         chi_torpedo = 19818, -- 115008
         tigers_lust = 19302, -- 116841
 
-        light_brewing = 22099, -- 196721
+        light_brewing = 22099, -- 325093
         spitfire = 22097, -- 242580
         black_ox_brew = 19992, -- 115399
 
@@ -41,31 +41,26 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         special_delivery = 19819, -- 196730
         rushing_jade_wind = 20184, -- 116847
-        invoke_niuzao_the_black_ox = 22103, -- 132578
+        exploding_keg = 22103, -- 325153
 
         high_tolerance = 22106, -- 196737
-        guard = 22104, -- 115295
+        celestial_flames = 22104, -- 325177
         blackout_combo = 22108, -- 196736
     } )
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        adaptation = 3569, -- 214027
-        relentless = 3570, -- 196029
-        gladiators_medallion = 3571, -- 208683
         admonishment = 843, -- 207025
-        fast_feet = 3526, -- 201201
-        mighty_ox_kick = 673, -- 202370
-        eerie_fermentation = 765, -- 205147
-        niuzaos_essence = 1958, -- 232876
-        double_barrel = 672, -- 202335
-        incendiary_breath = 671, -- 202272
-        craft_nimble_brew = 670, -- 213658
         avert_harm = 669, -- 202162
-        hot_trub = 667, -- 202126
+        craft_nimble_brew = 670, -- 213658
+        double_barrel = 672, -- 202335
+        eerie_fermentation = 765, -- 205147
         guided_meditation = 668, -- 202200
-        eminence = 3617, -- 216255
+        hot_trub = 667, -- 202126
+        incendiary_breath = 671, -- 202272
         microbrew = 666, -- 202107
+        mighty_ox_kick = 673, -- 202370
+        niuzaos_essence = 1958, -- 232876
     } )
 
     -- Auras
@@ -84,13 +79,28 @@ if UnitClassBase( 'player' ) == 'MONK' then
             max_stack = 1,
             copy = "breath_of_fire"
         },
+        celestial_brew = {
+            id = 322507,
+            duration = 8,
+            max_stack = 1,
+        },
+        celestial_flames = {
+            id = 325190,
+            duration = 6,
+            max_stack = 1,
+        },
         celestial_fortune = {
             id = 216519,
         },
         chi_torpedo = {
-            id = 115008,
+            id = 119085,
             duration = 10,
             max_stack = 2,
+        },
+        clash = {
+            id = 128846,
+            duration = 4,
+            max_stack = 1,
         },
         crackling_jade_lightning = {
             id = 117952,
@@ -106,6 +116,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 195630,
             duration = 10,
             max_stack = 10,
+        },
+        exploding_keg = {
+            id = 325153,
+            duration = 3,
+            max_stack = 1,
         },
         eye_of_the_tiger = {
             id = 196608,
@@ -125,9 +140,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             duration = 8,
             max_stack = 1,
         },
-        ironskin_brew = {
-            id = 215479,
-            duration = 21,
+        invoke_niuzao_the_black_ox = {
+            id = 132578,
+            duration = 25,
             max_stack = 1,
         },
         keg_smash = {
@@ -146,7 +161,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             max_stack = 1,
         },
         mystic_touch = {
-            id = 8647,
+            id = 113746,
+            duration = 3600,
+            max_stack = 1,
         },
         paralysis = {
             id = 115078,
@@ -160,12 +177,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
         rushing_jade_wind = {
             id = 116847,
-            duration = function () return 6 * haste end,
+            duration = function () return 9 * haste end,
             max_stack = 1,
         },
-        sign_of_the_warrior = {
-            id = 225787,
-            duration = 3600,
+        shuffle = {
+            id = 215479,
+            duration = 7.11,
             max_stack = 1,
         },
         tiger_tail_sweep = {
@@ -175,6 +192,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 116841,
             duration = 6,
             max_stack = 1,
+        },
+        touch_of_death = {
+            id = 325095,
         },
         transcendence = {
             id = 101643,
@@ -195,21 +215,21 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
         light_stagger = {
             id = 124275,
-            duration = 10,
+            duration = function () return talent.bob_and_weave.enabled and 13 or 10 end,
             unit = "player",
         },
         moderate_stagger = {
             id = 124274,
-            duration = 10,
+            duration = function () return talent.bob_and_weave.enabled and 13 or 10 end,
             unit = "player",
         },
         heavy_stagger = {
             id = 124273,
-            duration = 10,
+            duration = function () return talent.bob_and_weave.enabled and 13 or 10 end,
             unit = "player",
         },
 
-        ironskin_brew_icd = {
+        --[[ ironskin_brew_icd = {
             duration = 1,
             generate = function ()
                 local icd = buff.ironskin_brew_icd
@@ -229,7 +249,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 icd.expires = 0
                 icd.caster = "nobody"
             end
-        },
+        }, ]]
 
 
         -- Azerite Powers
@@ -483,26 +503,31 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             handler = function ()
                 gain( energy.max, "energy" )
-                gainCharges( "ironskin_brew", class.abilities.ironskin_brew.charges )
+                setCooldown( "celestial_brew", 0 )
                 gainCharges( "purifying_brew", class.abilities.purifying_brew.charges )                
             end,
         },
 
 
-        blackout_strike = {
+        blackout_kick = {
             id = 205523,
             cast = 0,
-            cooldown = 3,
+            charges = 1,
+            cooldown = 4,
+            recharge = 4,
             hasteCD = true,
             gcd = "spell",
 
             startsCombat = true,
-            texture = 1500803,
+            texture = 574575,
 
             handler = function ()
+                applyBuff( "shuffle" )
+
                 if talent.blackout_combo.enabled then
                     applyBuff( "blackout_combo" )
                 end
+
                 addStack( "elusive_brawler", 10, 1 )
             end,
         },
@@ -535,6 +560,22 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
 
 
+        celestial_brew = {
+            id = 322507,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 1360979,
+
+            toggle = "defensives",
+            
+            handler = function ()
+                applyBuff( "celestial_brew" )
+            end,
+        },
+
         chi_burst = {
             id = 123986,
             cast = 1,
@@ -546,7 +587,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             talent = "chi_burst",
 
-            handler = function ()                
+            handler = function ()
             end,
         },
 
@@ -586,6 +627,22 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
 
 
+        clash = {
+            id = 324312,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 628134,
+            
+            handler = function ()
+                setDistance( 5 )
+                applyDebuff( "target", "clash" )
+            end,
+        },
+
+
         crackling_jade_lightning = {
             id = 117952,
             cast = 4,
@@ -603,7 +660,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             start = function ()
                 removeBuff( "the_emperors_capacitor" )
                 applyDebuff( "target", "crackling_jade_lightning" )
-                -- applies crackling_jade_lightning (117952)
             end,
         },
 
@@ -678,6 +734,24 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
 
 
+        exploding_keg = {
+            id = 325153,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+            talent = "exploding_keg",
+
+            startsCombat = true,
+            texture = 644378,
+            
+            handler = function ()
+                applyDebuff( "target", "exploding_keg" )
+            end,
+        },
+
+        
         fortifying_brew = {
             id = 115203,
             cast = 0,
@@ -698,7 +772,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
 
 
-        guard = {
+        --[[ guard = {
             id = 115295,
             cast = 0,
             cooldown = 30,
@@ -715,7 +789,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 applyBuff( "guard" )
             end,
-        },
+        }, ]]
 
 
         healing_elixir = {
@@ -759,7 +833,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
 
 
-        ironskin_brew = {
+        --[[ ironskin_brew = {
             id = 115308,
             cast = 0,
             charges = function () return talent.light_brewing.enabled and 4 or 3 end,
@@ -795,7 +869,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             end,
 
             copy = "brews"
-        },
+        }, ]]
 
 
         keg_smash = {
@@ -816,14 +890,14 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 applyDebuff( "target", "keg_smash" )
                 active_dot.keg_smash = active_enemies
 
-                gainChargeTime( 'ironskin_brew', 4 + ( buff.blackout_combo.up and 2 or 0 ) )
+                applyBuff( "shuffle" )
+
+                setCooldown( "celestial_brew", max( 0, cooldown.celestial_brew.remains - ( 4 + ( buff.blackout_combo.up and 2 or 0 ) ) ) )
                 gainChargeTime( 'purifying_brew', 4 + ( buff.blackout_combo.up and 2 or 0 ) )
                 cooldown.fortifying_brew.expires = max( 0, cooldown.fortifying_brew.expires - 4 + ( buff.blackout_combo.up and 2 or 0 ) )
 
                 removeBuff( "blackout_combo" )
                 addStack( "elusive_brawler", nil, 1 )
-
-                if level < 116 and equipped.salsalabims_lost_tunic then setCooldown( "breath_of_fire", 0 ) end
             end,
         },
 
@@ -906,8 +980,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             end,
 
             handler = function ()
-                spendCharges( 'ironskin_brew', 1 )
-
                 if set_bonus.tier20_2pc == 1 then healing_sphere.count = healing_sphere.count + 1 end
 
                 if buff.blackout_combo.up then
@@ -918,9 +990,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 local reduction = 0.5
                 stagger.amount = stagger.amount * ( 1 - reduction )
                 stagger.tick = stagger.tick * ( 1 - reduction )
-
-                if level < 116 and equipped.gai_plins_soothing_sash then gain( stagger.amount * 0.25, 'health' ) end
             end,
+
+            copy = "brews"
         },
 
 
@@ -1014,6 +1086,29 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
 
 
+        spinning_crane_kick = {
+            id = 322729,
+            cast = 1.5,
+            channeled = true,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 25,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 606543,
+            
+            start = function ()
+                applyBuff( "shuffle" )
+                
+                if talent.celestial_flames.enabled then
+                    applyDebuff( "target", "breath_of_fire_dot" )
+                    active_dot.breath_of_fire_dot = active_enemies
+                end
+            end,
+        },
+        
         summon_black_ox_statue = {
             id = 115315,
             cast = 0,
@@ -1045,12 +1140,14 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             handler = function ()
                 removeBuff( "blackout_combo" )
+
                 if talent.eye_of_the_tiger.enabled then
                     applyDebuff( "target", "eye_of_the_tiger" )
                     applyBuff( "eye_of_the_tiger" )
                 end
-                gainChargeTime( 'ironskin_brew', 1 )
+                gainChargeTime( 'celestial_brew', 1 )
                 gainChargeTime( 'purifying_brew', 1 )
+
                 cooldown.fortifying_brew.expires = max( 0, cooldown.fortifying_brew.expires - 1 )
             end,
         },
@@ -1223,7 +1320,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         width = 1.5
     } )
 
-    spec:RegisterSetting( "isb_overlap", 1, {
+    --[[ spec:RegisterSetting( "isb_overlap", 1, {
         name = "|T1360979:0|t Ironskin Brew: Overlap Duration",
         desc = "If set above zero, the addon will not recommend |T1360979:0|t Ironskin Brew until the buff has less than this number of seconds remaining, unless you are about to cap Ironskin Brew charges.",
         type = "range",
@@ -1241,7 +1338,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         max = 4,
         step = 0.1,
         width = 1.5
-    } )
+    } ) ]]
 
     spec:RegisterSetting( "purify_stagger", 33, {
         name = "|T133701:0|t Purifying Brew: Minimum Stagger %",
@@ -1255,7 +1352,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     } )
 
 
-    spec:RegisterPack( "Brewmaster", 20200124, [[dW0cIaqiOkQhbfAtisFckOgfQQofQkRcQQELqzwKQ6wKkv7sj)siggI4yKQSmHQNrQyAcjUguv2guL6BqvKXrQeDoOaRtiPMNuO7HO2NuWbHcIfkf9qsLGjsQeYffsYhjvkAKKkLojufALOKxsQuyMKkPCtsLuTtOu)KujPHcvblfki9uLAQqrxLujHVsQeQ9c6Vu1GHCyklwQEmjtwvUmXMvvFgvgncNwXQrPQxJQmBb3Mu2Tk)gy4sPJtQKOLJ0ZPY0LCDuSDHuFhQmEOKZJsz9qvY8rPY(fnupiMW9ZkbIDCsItcj6fpklsWGOG36ef4UyRvG7wtXZ4e4(mnbUBsfCAMRekC3ASfa2dIjC7amuLa3ev16I6ir4MIGPVuaTiUrJjy1aof1(ve3OPIa3DMju4Xd2H7Nvce74KeNes0lEuwKGbrbVJJbWTXueakCVhnDb4MyEp5GD4(jofCJXe1Kk40mxj0ePRdoEjlmMiIQADrDKiCtrW0xkGwe3OXeSAaNIA)kIB0urswymrSSJXOSLO46PFIItsCsswjlmMiDbc74exuNSWyI09eHHkbdRefvy1kHePBnQwISe1NALSWyI09eHhyOZNTebUaBjA(jAQeHdCy4krTujA5QeXgGjrFkqlrkcBU54seEC3Cb3HXvoiMW9t(gtOGycXwpiMWTPQbCWTRvmQNWUN3v0HNa3Yz9G8GnHfe74qmHB5SEqEWMWTIoLqhdUjeluejQXeriwOiwAgwjc)jIKfEJp42u1ao4MB(Lh89fH4bybli26aXeULZ6b5bBc3k6ucDm4MqSqrSAvvIAmr4j8List0CkG2CC(NPzCIxhxIAireIfkILMHvIWFI4prKSINOyjI)erYkEIWFI4OaM2eXxI4lrKMOoZ)V(aAnF2MJZ3PcU1dG7GBtvd4G7NP1kNNWOAWcIDuGyc3Yz9G8GnHBfDkHogCtiwOiwTQkrnMi8rsIinrZPaAZX5FMMXjEDCjQHeriwOiwAgwjc)jI)erYkEIILi(tejR4jc)jIJcyAteFjIVerAI4prDM)F9mTw58egvB9a4UeXhCBQAahC)b0A(SnhNVtfCWcIn(Gyc3Yz9G8GnHBtvd4GBZreTDIZtn8cq9ka1cWTIoLqhdUFsN5)xudVauVcqTG)jDM)F9a4UeXo2LON0z()LcCpgvnrl(545FsN5)xmTjI0evgLtQfHyHIy1QQe1yI0rVeXo2LOA0eFb8VrsuJjkojW9zAcCBoIOTtCEQHxaQxbOwawqSXBiMWTPQbCWnJt8tjAo4woRhKhSjSGyJNGyc3MQgWb3TGAahClN1dYd2ewqS1LqmHBtvd4G7EaaE(pdLn4woRhKhSjSGyJbqmHBtvd4G7UqDcL3CCWTCwpipytybXwpsGyc3MQgWb3HHJOCE2Z840KRGB5SEqEWMWcITE6bXeUnvnGdU)dv6ba4b3Yz9G8GnHfeB9IdXeUnvnGdUTtjUIAbVYcb4woRhKhSjSGyRNoqmHB5SEqEWMWTIoLqhdURrt8fW)gjrnKO44dUnvnGdUNlAapXFddEzaybXwVOaXeULZ6b5bBc3k6ucDm4UZ8)REWu8amLxb06G1dG7sePjAofqBoo)Z0moXRhgGbyGMlrnKi(teHyHIyPzyLi8Nisw6LOyjYvghNqxbZv(Au88ptZ4eFuseFjI0e1z()LeyCt0IVtnCbHUCLP4LOgtu8erAIWZjQZ8)RHcohV58DQGBX0c3MQgWb3dfCoEZ57ubhSGyRh(Gyc3Yz9G8GnHBfDkHogCRaGWdG7wDQGZTuegLtC(p1u1aolKOgsKEjI0ePaGWdG7w9GP45by57ub3IkA2CUe1yI0bUnvnGdUhk4C8MZ3PcoybXwp8gIjClN1dYd2eUv0Pe6yWTRmooHUAvvIAir8NO44lr4pr8Ni9suSeXrbmTjIVeXxIinrDM)FnuW54nNVtfClM2erAI4prXtKUNifHr5eN)tnvnGZcjIVeH)erffHr5Ke1yI6m))AOGZXBoFNk4wurZMZb3MQgWb3Tm05Z2CC(ovWbli26HNGyc3Yz9G8GnHBfDkHogC7kJJtOlnWtOwjWTPQbCWnhJrFWcITE6siMWTCwpipyt4wrNsOJb3eIfkIvRQsuJjcFjc)jIqSWCCExlHqLLcWCvIyh7se)jIqSWCCExlHqLLcWCvIAGCI0jrKMicXcfXQvvjQXeHpsseFWTPQbCWTGvRe8egvdwqS1ddGyc3Yz9G8GnHBfDkHogCtiwOiwTQkrnMiD0bUnvnGdUjelmhNxcdwdfwqSJtcet4woRhKhSjCROtj0XGBfaeEaC3QtfCULIWOCIZ)PMQgWzHe1yIizHp42u1ao4UhmfppalFNk4Gfe746bXeULZ6b5bBc3k6ucDm4M)ejNq5ylrXse)jsoHYX2IkCYLi8NifaeEaC3INW5DAMJyrfnBoxI4lr8LOgtuuijrKMOoZ)V6btXdWuEfqRdwpaUlrKMifaeEaC3INW5DAMJyX0c3MQgWb39GP45by57ubhSGyhpoet4woRhKhSjCROtj0XGBxRec(YOCs5sudKtuC42u1ao4MNW5DAMJawqSJRdet42u1ao4(jfal4woRhKhSjSGyhpkqmHB5SEqEWMWTIoLqhdUDTsi4lJYjLlrnqorXtePjQZ8)lkJJyoop7TN4Xn3B9a4o42u1ao4MY4iMJZZE7jECZ9Gfe744dIjClN1dYd2eUv0Pe6yWDzb5QfLXrmhNN92t84M7TKZ6b5ListuN5)x9GP4bykVcO1blM2erAI6m))IY4iMJZZE7jECZ9wmTWTPQbCWDnCc13AbnybXooEdXeULZ6b5bBc3k6ucDm4M)evwqUAnx0aEI)gg8Ya(Iq89GP45byTKZ6b5Li2XUevwqUA5Af1yb)tct0cLTLCwpiVeXxIinrDM)F1dMIhGP8kGwhSyAHBtvd4G7A4eQV1cAWcIDC8eet4woRhKhSjCROtj0XG7oZ)V4MF5bFFriEawlxzkEjQHeff42u1ao4wWQvcEcJQbli2X1LqmHBtvd4G7EWu8amL3v0HNa3Yz9G8GnHfe74yaet42u1ao4MNW5DAMJaULZ6b5bBcli26qcet4woRhKhSjCROtj0XG7hOwkWPKROwjp)pyAYIkA2CUerorKa3MQgWb3kWPKROwjp)pyAcSGyRJEqmHB5SEqEWMWTIoLqhdUXZjsCo5uYQieVIYOMEq8GV)hmnzPzShqHBtvd4GBcXOLxCo5ucSGyRtCiMWTCwpipyt4wrNsOJb3DM)FXn)Yd((Iq8aSwUYu8sudKtKoWTPQbCWTGvRe8egvdwqS1rhiMWTCwpipyt4wrNsOJb3DM)FrzCeZX5zV9epU5ERha3b3MQgWb3ughXCCE2BpXJBUhSGyRtuGyc3Yz9G8GnHBfDkHogC3z()vpykEaMYRaADW6bWDjI0eXFI6m))QhaGxGXvRha3Li2XUeXFI6m))QhaGxGXvlM2erAIEGA1PIveEW3)hQ4FGArLpvCewpijIVeXhCBQAahC3PIveEW3)hQali26GpiMWTPQbCWTIy8DgQRGB5SEqEWMWcITo4net42u1ao4wrmECw0cClN1dYd2ewqS1bpbXeULZ6b5bBc3k6ucDm4UZ8)lU5xEW3xeIhG1YvMIxIAGCIId3MQgWb3cwTsWtyunybXwhDjet4woRhKhSjCROtj0XGB8CIklixT6btXdWuEfqRdwYz9G8sePjsbaHha3T4jCENM5iwurZMZLOgseN6Liste)jsoHYXwIILi(tKCcLJTfv4Klr4pr8NifaeEaC3INW5DAMJyrfnBoxIILio1lr8Li(seFjQbYjcVXhCBQAahCxdNq9TwqdwqS1bdGyc3Yz9G8GnHBfDkHogClNq5ylrnMiD0dUnvnGdUnQYoXxakvUcwqSJcjqmHBtvd4GBkJJyoop7TN4Xn3dULZ6b5bBclyb3Turb06wbXeITEqmHBtvd4G7wqnGdULZ6b5bBcli2XHyc3MQgWb3kIX3zOUcULZ6b5bBcli26aXeUnvnGdUveJhNfTa3Yz9G8GnHfSGfChTqDd4GyhNe9WasWG4Ka34m6nhNdU1fJHGHInEeBDZOorjctcjrJwlGwj6dOjcd)KVXekmCIOIUsMHkVe5aAsImMcOzL8sKIWooXTsw6AZjjkEuNiDfNJPTfql5Litvd4segMB(Lh89fH4byHHxjRKfEuRfql5LO4jYu1aUefgx5wjl421kki2XXBDjC3sb)jiWngtutQGtZCLqtKUo44LSWyIiQQ1f1rIWnfbtFPaArCJgtWQbCkQ9RiUrtfjzHXeXYogJYwIIRN(jkojXjjzLSWyI0fiSJtCrDYcJjs3tegQemSsuuHvResKU1OAjYsuFQvYcJjs3teEGHoF2se4cSLO5NOPseoWHHRe1sLOLRseBaMe9PaTePiS5MJlr4XDZvYkzHXefvyjkMsEjQlFavsKcO1TkrDHBo3kryikL0wUeDGt3jmQ2NjKitvd4CjcCb2wjlmMitvd4CRwQOaADRi)dMJxYcJjYu1ao3QLkkGw3QyKJ8bGxYcJjYu1ao3QLkkGw3QyKJymCAYvwnGlzHXeTpR1raQerT5LOoZ)lVe5kRCjQlFavsKcO1TkrDHBoxIS7LOwQO7TGQMJlrJlrpWjRKfgtKPQbCUvlvuaTUvXihXDwRJauExzLlzzQAaNB1sffqRBvmYrAb1aUKLPQbCUvlvuaTUvXihrrm(od1vjltvd4CRwQOaADRIroIIy84SOLKvYcJjkQWsumL8sKeTqzlr1OjjQiKezQcqt04sKfTnbRhKvYYu1aohzxRyupHDpVROdpjzzQAaNlg5iCZV8GVViepal9NpzcXcfrJeIfkILMHf(jzH34lzzQAaNlg5iptRvopHr10F(KjelueRwv1iEcFKoNcOnhN)zAgN41X1aHyHIyPzyHF(jzfpg)KSIJFokGPLp(iTZ8)RpGwZNT548DQGB9a4UKLPQbCUyKJ8b0A(SnhNVtfC6pFYeIfkIvRQAeFKq6CkG2CC(NPzCIxhxdeIfkILMHf(5NKv8y8tYko(5OaMw(4Ju(7m))6zATY5jmQ26bWD8LSmvnGZfJCegN4Ns00)mnHS5iI2oX5PgEbOEfGAb9Np5N0z()f1Wla1Raul4FsN5)xpaUJDS7jDM)FPa3Jrvt0IFoE(N0z()ftlPLr5KAriwOiwTQQrD0JDSRgnXxa)BKgJtsYYu1aoxmYryCIFkrZLSmvnGZfJCKwqnGlzzQAaNlg5i9aa88FgkBjltvd4CXihPluNq5nhxYYu1aoxmYrcdhr58SN5XPjxLSmvnGZfJCK)qLEaaEjltvd4CXihXoL4kQf8kleswMQgW5IroYCrd4j(ByWld4lcX3dMINhGL(ZNCnAIVa(3inehFjRKfgteEKcohV5sutQGlrT0bqNITeHJqojAHMOPsuba8sKB4U5pk7Qe9mnJtsKDVenuW54nxI6ubxI6m)FIgxI0gNBoUeXV9ypJRsurijIqSqrS0mSsKci))Og5QezkfG(MJlrfirZvY5MITeb(j6zAgNKOY4jhF6Ni7EjQaj6XO1MiblL4CjsryuoXLOU8bujrnbnxjltvd4CXihzOGZXBoFNk40F(K7m))Qhmfpat5vaToy9a4osNtb0MJZ)mnJt86HbyagO5AGFcXcfXsZWc)KS0lMRmooHUcMR81O45FMMXj(OWhPDM)Fjbg3eT47udxqOlxzkEngNu8CN5)xdfCoEZ57ub3IPnzzQAaNlg5idfCoEZ57ubN(ZNScacpaUB1Pco3sryuoX5)utvd4Sqd6rQcacpaUB1dMINhGLVtfClQOzZ5AuNKvYcJjcpWqNpBZXLOUqyrpagAIgxI6MtEjcCj6aunlm4Lvd4se)tuLOIqsuWkjrcwTuX5gWLOIoCCc1LO5NixzCCcnrUbVKenNIkMtEjceTqturijkyUkr6qsIQrXZLianr6HVe5ef4Eo(wjltvd4CXihPLHoF2MJZ3Pco9NpzxzCCcD1QQg4po(Wp)6fJJcyA5Jps7m))AOGZXBoFNk4wmTKYFCDxryuoX5)utvd4SaF4NkkcJYjn2z()1qbNJ3C(ovWTOIMnNlzLSWyI0nzm6lrrsKUvSWCCjkQcdwdnzzQAaNlg5iCmg9P)8j7kJJtOlnWtOwjjltvd4CXihrWQvcEcJQP)8jtiwOiwTQQr8HFcXcZX5DTecvwkaZvSJD8tiwyooVRLqOYsbyUQbY6qkHyHIy1QQgXhj8LSmvnGZfJCecXcZX5LWG1q1F(KjelueRwv1Oo6KSswymrndMIxI0vXkrnPcUenUePyOu5QaBjIXjVevGejtri0erL2GCJJirDQGZLOU5KxIaxIcIZLOIWUeryHFISe1PcUePimkNKilABcwpi6NianrbaUejNq5ylrfirYz9GKiDdHlrBnZrKSmvnGZfJCKEWu88aS8DQGt)5twbaHha3T6ubNBPimkN48FQPQbCwOrsw4lzzQAaNlg5i9GP45by57ubN(ZNm)Yjuo2IXVCcLJTfv4Kd)kai8a4UfpHZ70mhXIkA2Co(4RXOqcPDM)F1dMIhGP8kGwhSEaChPkai8a4UfpHZ70mhXIPnzLSWyI0v)F5Ct0sGn9turijcdbpORLOw6aOtn4L4sKUXorGlrQGyrl6NOMGDIKGt0pr4MIirYjuo2sKRvUNqDjYUxIupxICaAjVe1LaaxYYu1aoxmYr4jCENM5i0F(KDTsi4lJYjLRbYXtwjltvd4CXih5jfaRKLPQbCUyKJqzCeZX5zV9epU5E6pFYUwje8Lr5KY1a54K2z()fLXrmhNN92t84M7TEaCxYkzzQAaNlg5i1WjuFRf00F(KllixTOmoI548S3EIh3CVLCwpips7m))Qhmfpat5vaToyX0sAN5)xughXCCE2BpXJBU3IPnzzQAaNlg5i1WjuFRf00F(K5VSGC1AUOb8e)nm4Lb8fH47btXZdWAjN1dYJDSRSGC1Y1kQXc(NeMOfkBl5SEqE8rAN5)x9GP4bykVcO1blM2KLPQbCUyKJiy1kbpHr10F(K7m))IB(Lh89fH4byTCLP41quswMQgW5IrospykEaMY7k6WtswMQgW5IrocpHZ70mhrYYu1aoxmYruGtjxrTsE(FW0e9Np5hOwkWPKROwjp)pyAYIkA2CoYKKSmvnGZfJCecXOLxCo5uI(ZNmEwCo5uYQieVIYOMEq8GV)hmnzPzShqtwMQgW5IroIGvRe8egvt)5tUZ8)lU5xEW3xeIhG1YvMIxdK1jzzQAaNlg5iughXCCE2BpXJBUN(ZNCN5)xughXCCE2BpXJBU36bWDjltvd4CXihPtfRi8GV)pur)5tUZ8)REWu8amLxb06G1dG7iL)oZ)V6ba4fyC16bWDSJD83z()vpaaVaJRwmTK(a1QtfRi8GV)puX)a1IkFQ4iSEq4JVKLPQbCUyKJOigFNH6QKLPQbCUyKJOigpolAjzHXefvy1kHePBnQwIimxIigocHMiDr4HOcZeve2LimXdjchHCjInatIiSOLezvIcI5QefpraA3TswMQgW5IroIGvRe8egvt)5tUZ8)lU5xEW3xeIhG1YvMIxdKJNSmvnGZfJCKA4eQV1cA6pFY45YcYvREWu8amLxb06GLCwpipsvaq4bWDlEcN3PzoIfv0S5CnWPEKYVCcLJTy8lNq5yBrfo5Wp)kai8a4UfpHZ70mhXIkA2CUyCQhF8XxdKXB8LSmvnGZfJCeJQSt8fGsLR0F(KLtOCS1Oo6LSmvnGZfJCekJJyoop7TN4Xn3dwWccb]] )
+    spec:RegisterPack( "Brewmaster", 20200817.1, [[dSe8FaqiQurpIKQ2esPprsLYOqjofkPvHuXReIzrL4wqvs7cWVuknmOQogjLLjuEgvstdPqxdk02OsL(gufnoOk15qkyDuPknpOG7bv2NqQdssfwOsXdjPsAIKurCrQuvFKKkkJKkvOtcvjSssYlPsfmtsQO6MKuPANqr)KKkXqPsvSusQi9uPmvHQVcvjQ9QQ)svdgYHPSyP6XOAYk5YeBgOptIrJKtRy1iv61OuZwWTPIDRYVbnCLQJdvjYYr8CsnDrxhfBxi57qPXJu15Psz9qvy(ifTFj)Q9X)2Ys5Xmg(XWhF8wn8eqn8gF3fJU(T0TD5B7gNTPiF7mh5BBicwhtNc5B7MBbOT(4FtdziC5BuzURDVB3QmjfthGdD2QhhMGLd84edm3Qhh(2V1zMqIxCF)BllLhZy4hdF8XB1Wta1WB8Xig)MXKuqY3AJJ663OM1sUV)TLO5Ft9fAdrW6y6uifsDhESlvQVqQdgfgDwi1Wtxkum8JH)3cJo1F8VTeqJjKF8ht1(4FZ45aVVP3fJ4PSB51jzylFtoRhK1V5ZhZyF8VjN1dY638nozsHm23OelKua78SqyOq4jgleTfAoo0zof)YCmfX7QUqrxikXcjfGJrFHOtHyPq4deRqrkelfcFGyfIofsHaz2leRfI1crBH6mGGaGqsoGUnNIVteSali27Bgph49TL5SlNNYioF(y66h)BYz9GS(nFJtMuiJ9nkXcjfWoplegkegXVq0wO54qN5u8lZXueVR6cfDHOelKuaog9fIofILcHpqScfPqSui8bIvi6uifcKzVqSwiwleTfILc1zabbwMZUCEkJ4aSGyVcX63mEoW7BGqsoGUnNIVteSF(ysJF8VjN1dY638nJNd8(MPPIYor7jgEajEoKyHVXjtkKX(2s6mGGaedpGephsSGFjDgqqGfe7viAsZcTKodiiahElgEorj(5y7xsNbeeGzVq0wO0ikscqjwiPa25zHWqHCvTcrtAwOCCeFc9Rrkegkum8)2zoY3mnvu2jApXWdiXZHel85Jjg)4FZ45aVVXOf)KIJ(BYz9GS(nF(y6UF8Vz8CG332H5aVVjN1dY6385JjE(X)MXZbEFRhGWLhKH423KZ6bz9B(8XeV)4FZ45aVV1fIwiSNt5BYz9GS(nF(ysdF8Vz8CG33cJcvQ90LzP4ix(n5SEqw)MpFmvd)p(3mEoW7BGdr6biC9n5SEqw)MpFmvtTp(3mEoW7B2XfDsSGNBHW3KZ6bz9B(8XuTyF8VjN1dY638nozsHm23YXr8j0VgPqrxOyy8Bgph49T5IcYw83WGhg8Zht1C9J)n5SEqw)MVXjtkKX(wNbeeOhmoBit65qNoeybXEfI2cnhh6mNIFzoMI4vJgObAWrxOOlelfIsSqsb4y0xi6ui8buRqrkKonffHaemD6ZHZ2Vmhtr80yHyTq0wOodiiGey0tuIVtmSbHaOtJZUqyOqX(MXZbEFJlbrNJf8DIG9Zht1OXp(3KZ6bz9B(gNmPqg7B60uuecWoplu0fILcfdJfIofILcPwHIuifcKzVqSwiwleTfQZaccme4PzpNVteSam7fI2cXsHIvi8AH4ugrr0EqIXZbEwOqSwi6uiIWPmIIuimuOodiiWqGNM9C(orWcqehBo93mEoW7B7mKb0T5u8DIG9Zht1W4h)BYz9GS(nFJtMuiJ9nDAkkcbWbUeILY3mEoW7BCji6CSGVteSF(yQM7(X)MCwpiRFZ34KjfYyFJsSqsbSZZcHHcHXcrNcrjwyofVENsicahYCzHOjnlelfIsSWCkE9oLqeaoK5YcfnUc5AHOTquIfskGDEwimuimIFHy9Bgph49nH(Dj4PmIZNpMQHNF8VjN1dY638nozsHm23OelKua78SqyOqU663mEoW7BuIfMtXlHH(H85JPA49h)BYz9GS(nFJtMuiJ9noegwqShqNiy1aCkJOiApiX45apluimui8bW43mEoW7B9GXz7H077eb7NpMQrdF8VjN1dY638nozsHm23yPqYjef3kuKcXsHKtikUbqef5keDkehcdli2dGTO41oMMcGio2C6cXAHyTqyOq0i(fI2c1zabb6bJZgYKEo0PdbwqSxHOTqCimSGypa2IIx7yAkaM9Vz8CG336bJZ2dP33jc2pFmJH)h)BYz9GS(nFJtMuiJ9n9Uec(0iksQlu04kuSVz8CG33ylkETJPP(8XmMAF8Vz8CG33wscP)BYz9GS(nF(ygl2h)BYz9GS(nFJtMuiJ9n9Uec(0iksQlu04kuScrBH6mGGaegn1CkE6AlXJDUfWcI9(MXZbEFJWOPMtXtxBjESZT(8XmMRF8VjN1dY638nozsHm23slixcqy0uZP4PRTep25waYz9GSkeTfQZacc0dgNnKj9COthcWSxiAluNbeeGWOPMtXtxBjESZTay2)MXZbEFlhfH43TGZNpMXOXp(3KZ6bz9B(gNmPqg7BSuO0cYLaZffKT4VHbpmOpPeFpyC2Ei9aYz9GSkenPzHslixcO3f(yb)sctucXna5SEqwfI1crBH6mGGa9GXzdzsph60Ham7FZ45aVVLJIq87wW5ZhZyy8J)n5SEqw)MVXjtkKX(wNbeeqzatpe0NuIhspGono7cfDHOXVz8CG33e63LGNYioF(ygZD)4FZ45aVV1dgNnKj9Sho7VjN1dY6385Jzm88J)nJNd8(gBrXRDmn13KZ6bz9B(8XmgE)X)MCwpiRFZ34KjfYyFBbtao84YLelLLhmyocarCS50fcxHW)Bgph49no84YLelLLhmyoYNpMXOHp(3KZ6bz9B(gNmPqg7BUZcjATCCbiPepNWWNEq8qqpyWCeahJUqY3mEoW7BuIrsVO1YXLpFmDf)p(3KZ6bz9B(gNmPqg7BDgqqaLbm9qqFsjEi9a604Slu04kKRFZ45aVVj0VlbpLrC(8X0v1(4FtoRhK1V5BCYKczSV1zabbimAQ5u801wIh7ClGfe79nJNd8(gHrtnNINU2s8yNB95JPRX(4FtoRhK1V5BCYKczSV1zabb6bJZgYKEo0PdbwqSxHOTqSuOodiiqpaHRaJobwqSxHOjnlelfQZacc0dq4kWOtaM9crBHwWeOtelP8qqp4qe)cMaebKiAkRhKcXAHy9Bgph49TorSKYdb9Gdr(8X0vx)4FZ45aVVXPgFNHOZVjN1dY6385JPR04h)Bgph49no14XArjFtoRhK1V5ZhtxX4h)BYz9GS(nFJtMuiJ9nJNtuIxoXzeDHIUqQ9nJNd8(MEFUBofpNyN4zpC2F(y6Q7(X)MCwpiRFZ34KjfYyFRZaccOmGPhc6tkXdPhqNgNDHIgxHI9nJNd8(Mq)Ue8ugX5ZhtxXZp(3KZ6bz9B(gNmPqg7BUZcLwqUeOhmoBit65qNoeqoRhKvHOTqCimSGypa2IIx7yAkaI4yZPlu0fsHVkeTfILcjNquCRqrkelfsoHO4garuKRq0PqSuioegwqShaBrXRDmnfarCS50fksHu4RcXAHyTqSwOOXvi3fJFZ45aVVLJIq87wW5ZhtxX7p(3KZ6bz9B(gNmPqg7BYjef3kegkKRQ9nJNd8(Mr42j(esiYLF(y6kn8X)MXZbEFJWOPMtXtxBjESZT(MCwpiRFZNF(TDIWHoDl)4pMQ9X)MXZbEFBhMd8(MCwpiRFZNpMX(4FZ45aVVXPgFNHOZVjN1dY6385JPRF8Vz8CG334uJhRfL8n5SEqw)Mp)8ZVfLq0d8EmJHFm8XhVvdp)gwJCZPO)gEz1H6umXlWuDM7TqfkoLuOXzhsYcbcjfsDBjGgtiv3kerWlXmezvin0rkKXKqhlLvH4u2PiAGsvCkPqGWqaIDoLczmetxiScrkeJwwfAUcLusHmEoWRqHrNfQZKfcRqKcDWSqGqMBvO5kusjfYwl4vOLLw30I7Tuvi8AHgc80SNZ3jc2svPcVWzhsszvOyfY45aVcfgDQbkvFtVl8hZyUlE)TDceCcY3uFH2qeSoMofsHu3Hh7sL6lK6GrHrNfsn80Lcfd)y4xQkvQVqUp9cNjLvH6ciKifIdD6wwOUOmNgOqQdox2tDHo4HxPmIditOqgph4Ple8cUbuQuFHmEoWtdSteo0PBjoWGPzxQuFHmEoWtdSteo0PBzeCBbHWvPs9fY45apnWor4qNULrWT1yuCKlTCGxPs9fQD2UMcMfIyZQqDgqqzviDAPUqDbesKcXHoDlluxuMtxi7wfANi41DyMZPuOrxOf8eGsL6lKXZbEAGDIWHoDlJGBR(SDnfm960sDPY45apnWor4qNULrWTDhMd8kvgph4Pb2jch60TmcUTCQX3zi6Suz8CGNgyNiCOt3Yi42YPgpwlkPuvQuFHCF6fotkRcjrje3kuoosHskPqgpHKcn6czrztW6bbOuz8CGNgNExmINYULxNKHTuQmEoWthb32L5SlNNYioUmG4OelKua78ed4jgPDoo0zof)YCmfX7QoAkXcjfGJrpDybFGyrybFGy0rHaz2zLvA7mGGaGqsoGUnNIVteSali2Ruz8CGNocUTGqsoGUnNIVteSUmG4OelKua78edyeFANJdDMtXVmhtr8UQJMsSqsb4y0thwWhiwewWhigDuiqMDwzLww6mGGalZzxopLrCawqShRLkJNd80rWTLrl(jfhxoZrWzAQOSt0EIHhqINdjwWLbe3s6mGGaedpGephsSGFjDgqqGfe7rtAUKodiiahElgEorj(5y7xsNbeeGzN20ikscqjwiPa25jgCvnAsZCCeFc9RrWqm8lvgph4PJGBlJw8tko6sLXZbE6i42UdZbELkJNd80rWTThGWLhKH4wPY45apDeCB7crle2ZPuQmEoWthb32WOqLApDzwkoYLLkJNd80rWTfCispaHRsLXZbE6i42Ahx0jXcEUfcLkJNd80rWTDUOGSf)nm4Hb9jL47bJZ2dP3LbexooIpH(1irhdJLQsL6lK6QeeDowOqBic2cTtgizs3kewk5KOesHMSqjeYUq6r5gWHBxwOL5yksHSBvOHapn75kuNiyluNbeSqJUqoJwpNsHyXw0LrNfkPKcrjwiPaCm6lehkGGdFKllKX5qYAoLcLWcnxkNEs3keeSqlZXuKcLgB5y1Lcz3QqjSqlgN9cj0ZfTUqCkJOi6c1fqirk0g4gGsLXZbE6i42YLGOZXc(orW6YaIRZacc0dgNnKj9COthcSGypANJdDMtXVmhtr8Qrd0an4OJMfkXcjfGJrpDWhqTi60uuecqW0PphoB)YCmfXtJSsBNbeeqcm6jkX3jg2Gqa0PXzJHyLQsL6lK7HHmGUnNsH6cLf1azifA0fQBAzvi4vOdsCSWGhwoWRqSmUFHskPqblLcj0VteTEGxHsYOOieDHgWcPttrrifsp4HuO54eX0YQqWOesHskPqbtNfYv8luoC26cbjfsnmwiTWH3sZkqPY45apDeCB3zidOBZP47ebRldioDAkkcbyNNrZsmmshwulIcbYSZkR02zabbgc80SNZ3jcwaMDAzjgELtzefr7bjgph4zbwPdr4ugrrWqNbeeyiWtZEoFNiybiIJnNUuvQuFHChflmNsHC)Wq)qkvgph4PJGBlxcIohl47ebRldioDAkkcbWbUeILsPY45apDeCBf63LGNYioUmG4OelKua78edyKouIfMtXR3PeIaWHmxstAYcLyH5u86DkHiaCiZLrJZvAPelKua78edyeFwlvgph4PJGBlLyH5u8syOFiUmG4OelKua78edU6APQuP(cTjyC2fsDH(cTHiyl0OleNHqKldUvigTSkuclKmjLqker2dYnAQc1jcwDH6MwwfcEfkiADHsk7keLfalKvOorWwioLruKczrztW6bXLcbjfkaXwi5eIIBfkHfsoRhKc5oikfQ5yAQsLXZbE6i422dgNThsVVteSUmG44qyybXEaDIGvdWPmIIO9GeJNd8SagWhaJLkJNd80rWTThmoBpKEFNiyDzaXXICcrXTiSiNquCdGikYrhoegwqShaBrXRDmnfarCS50SYkgOr8PTZacc0dgNnKj9COthcSGypA5qyybXEaSffV2X0uam7LQsL6lK6ciOC6jkj4MlfkPKcPoCpQZl0ozGKjh8q0fYDOvi4viEqSOexk0gyRqsqlUuiStsvi5eIIBfsVl3si6cz3Qq8LUqAijLvH6saITuz8CGNocUTSffV2X0uUmG407si4tJOiPoACXkvLkJNd80rWTDjjK(sLXZbE6i42sy0uZP4PRTep25wUmG407si4tJOiPoACXOTZaccqy0uZP4PRTep25wali2RuvQmEoWthb32CueIF3coUmG4slixcqy0uZP4PRTep25waYz9GSOTZacc0dgNnKj9COthcWStBNbeeGWOPMtXtxBjESZTay2lvgph4PJGBBokcXVBbhxgqCSKwqUeyUOGSf)nm4Hb9jL47bJZ2dPhqoRhKfnPzAb5sa9UWhl4xsyIsiUbiN1dYIvA7mGGa9GXzdzsph60Ham7LkJNd80rWTvOFxcEkJ44YaIRZaccOmGPhc6tkXdPhqNgND00yPY45apDeCB7bJZgYKE2dNDPY45apDeCBzlkETJPPkvgph4PJGBlhEC5sILYYdgmhXLbe3cMaC4XLljwklpyWCeaI4yZPXHFPY45apDeCBPeJKErRLJlUmG4CNIwlhxaskXZjm8Phepe0dgmhbWXOlKuQmEoWthb3wH(Dj4PmIJldiUodiiGYaMEiOpPepKEaDAC2rJZ1sLXZbE6i42sy0uZP4PRTep25wUmG46mGGaegn1CkE6AlXJDUfWcI9kvgph4PJGBBNiws5HGEWHiUmG46mGGa9GXzdzsph60Hali2Jww6mGGa9aeUcm6eybXE0KMS0zabb6biCfy0jaZoTlyc0jILuEiOhCiIFbtaIasenL1dcRSwQmEoWthb3wo147meDwQmEoWthb3wo14XArjLkJNd80rWTvVp3nNINtSt8ShoBxgqCgpNOeVCIZi6OvRuP(c5(0VlHc5oAeNcrz6crnkucPqQtCpUF8cLu2vO4UNcHLsUc5gKPquwusHSSqbX0zHIviiPRbkvgph4PJGBRq)Ue8ugXXLbexNbeeqzatpe0NuIhspGono7OXfRuz8CGNocUT5Oie)UfCCzaX5otlixc0dgNnKj9COthciN1dYIwoegwqShaBrXRDmnfarCS50rRWx0YICcrXTiSiNquCdGikYrhw4qyybXEaSffV2X0uaeXXMthrHVyLvwJgN7IXsLXZbE6i42AeUDIpHeICPldio5eIIByWv1kvgph4PJGBlHrtnNINU2s8yNB95N)d]] )
 
 
 end
