@@ -763,7 +763,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 192081,
             cast = 0,
             cooldown = 0.5,
-            gcd = "spell",
+            gcd = "off",
 
             spend = function () return 45 - ( 5 * buff.natural_defenses.stack ) end,
             spendType = "rage",
