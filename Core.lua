@@ -1308,7 +1308,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 for k in orderedPairs( class.resources ) do
                     resources = ( resources and ( resources .. ", " ) or "" ) .. string.format( "%s[ %.2f / %.2f ]", k, state[ k ].current, state[ k ].max )
                 end
-                self:Debug( 1, "Resources: %s", resources )
+                self:Debug( 1, "Resources: %s", resources or "none" )
                 
                 if state.channeling then
                     self:Debug( " - Channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
