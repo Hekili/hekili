@@ -5185,7 +5185,7 @@ function state.reset( dispName )
     state.health = rawget( state, "health" ) or setmetatable( { resource = "health" }, mt_resource )
     state.health.current = nil
     state.health.actual = UnitHealth( 'player' ) or 10000
-    state.health.max = UnitHealthMax( 'player' ) or 10000
+    state.health.max = max( 1, UnitHealthMax( 'player' ) or 10000 )
     state.health.regen = 0
 
     state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( 'player' )
