@@ -2023,13 +2023,13 @@ local mt_stat = {
             return GetCombatRating(CR_VERSATILITY_DAMAGE_DONE)
 
         elseif k == 'versatility_atk_mod' then
-            return GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE)
+            return GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_DONE) / 100
 
         elseif k == 'versatility_def_rating' then
             return GetCombatRating(CR_VERSATILITY_DAMAGE_TAKEN)
 
         elseif k == 'versatility_def_mod' then
-            return GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN)
+            return GetCombatRatingBonus(CR_VERSATILITY_DAMAGE_TAKEN) / 100
 
         elseif k == 'mod_haste_pct' then
             return 0
@@ -5832,14 +5832,6 @@ end
 
 local power_tick_rate = 0.115
 
-local debug_actions = {
-    -- rune_of_power = true,
-    -- fire_blast = true,
-    -- skull_bash = true,
-    -- festering_strike = true,
-    -- scourge_strike = true
-}
-
 
 -- Needs to be expanded to handle energy regen before Rogue, Monk, Druid will work.
 function state:TimeToReady( action, pool )
@@ -5850,17 +5842,13 @@ function state:TimeToReady( action, pool )
     local wait = self.cooldown[ action ].remains
     local ability = class.abilities[ action ]
 
-    if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 1, wait ) end
-
     if ability.id < -99 or ability.id > 0 then
         if not ability.castableWhileCasting and self.args.use_off_gcd ~= 1 and ( ability.gcd ~= 'off' or ( ability.item and not ability.essence ) or not ability.interrupt ) then
             wait = max( wait, self.cooldown.global_cooldown.remains )
-            if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f (%d %s %s)", 2, wait, self.args.use_off_gcd or 0, self.settings.gcdSync and "sync" or "nosync", ability.gcd ) end
         end
 
         if not ability.castableWhileCasting and self.args.use_while_casting ~= 1 and self.buff.casting.remains > 0 then
             wait = max( wait, self.buff.casting.remains )
-            if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 3, wait ) end
         end
     end
 
@@ -5869,14 +5857,11 @@ function state:TimeToReady( action, pool )
         if Hekili.Debug then Hekili:Debug( "Line CD is " .. line_cd .. ", last cast was " .. ability.lastCast .. ", remaining CD: " .. max( 0, ability.lastCast + line_cd - self.query_time ) ) end
         wait = max( wait, ability.lastCast + self.args.line_cd - self.query_time )
     end
-    if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 4, wait ) end
 
     local synced = state.args.sync and class.abilities[ state.args.sync ]
     if synced then wait = max( wait, state.cooldown[ state.args.sync ].remains ) end
-    if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 5, wait ) end
 
     wait = ns.callHook( "TimeToReady", wait, action )
-    if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 6, wait ) end
 
     local spend, resource
 
@@ -5897,36 +5882,28 @@ function state:TimeToReady( action, pool )
         end
     end
 
-    if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 7, wait ) end
-
     -- For special cases where we want to pool more of a resource than is required for usage.
     if not pool and ability.readySpend then
         spend = ability.readySpend
-        if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 8, wait ) end
     end
 
     if spend and resource and spend > 0 and spend < 1 then
         spend = spend * self[ resource ].modmax
-        if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 9, wait ) end
     end
 
     -- Okay, so we don't have enough of the resource.
     if spend and resource and spend > self[ resource ].current then
         wait = max( wait, self[ resource ][ 'time_to_' .. spend ] or 0 )        
         wait = ceil( wait * 100 ) / 100 -- round to the hundredth.
-        if debug_actions[ action ] then Hekili:Debug( "%d wait ( %s.current = %.2f, time_to ( %.2f ) = %.2f ) %.2f", 10, resource, self[ resource ].current, spend, self[ resource ][ 'time_to_' .. spend ] or 0, wait ) end
     end
 
-    if debug_actions[ action ] then Hekili:Debug( "%d %s prewait %.2f", 11, ability.nobuff or "n/a", wait ) end
     if ability.nobuff and self.buff[ ability.nobuff ].up then
         wait = max( wait, self.buff[ ability.nobuff ].remains )
-        if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 11, wait ) end
     end
 
     -- Need to house this in an encounter module, really.
     if self.debuff.repeat_performance.up and self.prev[1][ action ] then
         wait = max( wait, self.debuff.repeat_performance.remains )
-        if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 12, wait ) end
     end
 
     if ability.icd and self.query_time - ability.lastCast < ability.icd then
@@ -5937,16 +5914,13 @@ function state:TimeToReady( action, pool )
     -- Ignore this if we are just checking pool_resources.
     if not pool and ability.readyTime then
         wait = max( wait, ability.readyTime )
-        if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 13, wait ) end
     end
 
     if state.spec.fire and state.buff.casting.up and ( ability.id > 0 or ability.id < -99 ) and ability.gcd ~= "off" and not ability.castableWhileCasting then
         wait = max( wait, state.buff.casting.remains )
-        if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 14, wait ) end
     end
 
     wait = max( wait, self.delayMin )
-    if debug_actions[ action ] then Hekili:Debug( "%d wait %.2f", 15, wait ) end
     return max( wait, self.delayMin )
 end
 
