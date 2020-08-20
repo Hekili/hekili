@@ -263,7 +263,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterAuras( {
         antimagic_shell = {
             id = 48707,
-            duration = function () return 5 + ( ( level < 116 and equipped.acherus_drapes ) and 5 or 0 ) end,
+            duration = 5,
             max_stack = 1,
         },
         asphyxiate = {
@@ -783,9 +783,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         empower_rune_weapon = {
             id = 47568,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.seal_of_necrofantasia ) and 2 or nil end,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
-            recharge = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 / ( ( level < 116 and equipped.seal_of_necrofantasia ) and 1.10 or 1 ) end,
+            charges = 1,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
+            recharge = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -852,7 +852,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         frostwyrms_fury = {
             id = 279302,
             cast = 0,
-            cooldown = function () return 180 - ( ( level < 116 and equipped.consorts_cold_core ) and 90 or 0 ) end,
+            cooldown = 180,
             gcd = "spell",
 
             toggle = "cooldowns",
