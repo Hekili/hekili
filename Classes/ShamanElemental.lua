@@ -17,7 +17,7 @@ local PTR = ns.PTR
 
 
 if UnitClassBase( "player" ) == "SHAMAN" then
-    local spec = Hekili:NewSpecialization( 262 )
+    local spec = Hekili:NewSpecialization( 262, true )
 
     spec:RegisterResource( Enum.PowerType.Maelstrom )
     spec:RegisterResource( Enum.PowerType.Mana )
