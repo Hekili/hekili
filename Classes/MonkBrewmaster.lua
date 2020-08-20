@@ -134,6 +134,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
         gift_of_the_ox = {
             id = 124502,
+            duration = 3600,
+            max_stack = 10,
         },
         guard = {
             id = 115295,
@@ -298,6 +300,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     spec:RegisterHook( "reset_precast", function ()
         rawset( healing_sphere, "count", nil )
+        if healing_sphere.count > 0 then
+            applyBuff( "gift_of_the_ox", nil, healing_sphere.count )
+        end
         stagger.amount = nil
     end )
 
@@ -712,7 +717,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
 
         expel_harm = {
-            id = 115072,
+            id = 322101,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
@@ -724,13 +729,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 627486,
 
             usable = function ()
-                if healing_sphere.count == 0 then return false, "no healing spheres"
-                elseif ( settings.eh_percent > 0 and health.pct > settings.eh_percent ) then return false, "health is above " .. settings.eh_percent .. "%" end
+                if ( settings.eh_percent > 0 and health.pct > settings.eh_percent ) then return false, "health is above " .. settings.eh_percent .. "%" end
                 return true
             end,
             handler = function ()
-                if level < 116 and set_bonus.tier20_4pc == 1 then stagger.amount = stagger.amount * ( 1 - ( 0.05 * healing_sphere.count ) ) end
-                gain( healing_sphere.count * stat.attack_power * 2, "health" )
+                gain( ( healing_sphere.count * stat.attack_power ) + stat.spell_power * ( 1 + stat.versatility_atk_mod ), "health" )
+                removeBuff( "gift_of_the_ox" )
                 healing_sphere.count = 0
             end,
         },
@@ -978,8 +982,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             end,
 
             handler = function ()
-                if set_bonus.tier20_2pc == 1 then healing_sphere.count = healing_sphere.count + 1 end
-
                 if buff.blackout_combo.up then
                     addStack( 'elusive_brawler', 10, 1 )
                     removeBuff( 'blackout_combo' )
