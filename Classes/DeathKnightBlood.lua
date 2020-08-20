@@ -660,14 +660,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                     applyBuff( "hemostasis", 15, min( 5, active_enemies) )
                 end
 
-                if level < 116 and equipped.skullflowers_haemostasis then
-                    applyBuff( "haemostasis" )
-                end
-
-                if level < 116 and set_bonus.tier20_2pc == 1 then
-                    applyBuff( "gravewarden" )
-                end
-
                 if legendary.superstrain.enabled then
                     applyDebuff( "target", "frost_fever" )
                     active_Dot.frost_fever = active_enemies
@@ -1036,8 +1028,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if legendary.gorefiends_domination.enabled and cooldown.vampiric_blood.remains > 0 then
                     cooldown.vampiric_blood.expires = cooldown.vampiric_blood.expires - 2
                 end
-
-                if level < 116 and equipped.service_of_gorefiend then cooldown.vampiric_blood.expires = max( 0, cooldown.vampiric_blood.expires - 2 ) end
             end,
         },
 
