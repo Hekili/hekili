@@ -4509,7 +4509,6 @@ all:RegisterAbility( "kiljaedens_burning_wish", {
     texture = 1357805,
 
     toggle = 'cooldowns',
-    usable = function () return level < 116 end,
 } )
 
 
