@@ -398,7 +398,10 @@ local default_modifiers = {
 }
 
 function Hekili:CheckChannel( ability, prio )
-    if not state.channeling then return true end
+    if not state.channeling then
+        if self.ActiveDebug then self:Debug( "We aren't channeling; CheckChannel is true." ) end
+        return true
+    end
 
     local channel = state.channel
     local aura = class.auras[ channel ]
@@ -411,14 +414,20 @@ function Hekili:CheckChannel( ability, prio )
     local remains = state.channel_remains
 
     if channel == ability then
+        if self.ActiveDebug then self:Debug( "CC: We channeling and checking %s...", ability ) end
         if prio <= remains + 0.01 then
+            if self.ActiveDebug then self:Debug( "CC: ...looks like chaining, not breaking channel.", ability ) end
             return false
         end
         if modifiers.early_chain_if then
-            return state.cooldown.global_cooldown.up and ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 ) and modifiers.early_chain_if()
+            local eci = state.cooldown.global_cooldown.up and ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 ) and modifiers.early_chain_if()
+            if self.ActiveDebug then self:Debug( "CC: early_chain_if returns %s...", tostring( eci ) ) end
+            return eci
         end
         if modifiers.chain then
-            return state.cooldown.global_cooldown.up and ( remains < tick_time ) and modifiers.chain()
+            local chain = state.cooldown.global_cooldown.up and ( remains < tick_time ) and modifiers.chain()
+            if self.ActiveDebug then self:Debug( "CC: chain returns %s...", tostring( chain ) ) end
+            return chain
         end
 
     else
@@ -1389,7 +1398,8 @@ function Hekili:ProcessHooks( dispName, packName )
                         if debug then Hekili:Debug( "Queueing %s channel finish at %.2f.", action, state.query_time + cast ) end
                         state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH" )
     
-                        if ability.tick and ability.tick_time then
+                        -- Queue ticks because we may not have an ability.tick function, but may have resources tied to an aura.
+                        if ability.tick_time then
                             local ticks = floor( cast / ability.tick_time )
     
                             for i = 1, ticks do
