@@ -1189,7 +1189,8 @@ do
                     duration = gDuration
                 end
 
-                if i == 1 and conf.delays.extend and rec.delay and rec.delay > 0 and rec.exact_time > max( now, start + duration ) then
+                if i == 1 and conf.delays.extend and rec.time > 0 and rec.exact_time > max( now, start + duration ) then
+                -- if i == 1 and conf.delays.extend and rec.exact_time > max( now, start + duration ) then
                     start = start > 0 and start or state.gcd.lastStart
                     duration = rec.exact_time - start
                 end
