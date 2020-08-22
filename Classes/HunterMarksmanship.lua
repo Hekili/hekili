@@ -74,7 +74,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         aspect_of_the_cheetah = {
-            id = 186257,
+            id = 186258,
             duration = 9,
             max_stack = 1,
         },
@@ -138,7 +138,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         lone_wolf = {
-            id = 155228,
+            id = 164273,
             duration = 3600,
             max_stack = 1,
         },
@@ -153,7 +153,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         posthaste = {
-            id = 109215,
+            id = 118922,
             duration = 4,
             max_stack = 1,
         },
@@ -184,7 +184,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         trailblazer = {
-            id = 199921,
+            id = 231390,
             duration = 3600,
             max_stack = 1,
         },
@@ -524,6 +524,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = false,
             texture = 236178,
 
+            talent = "explosive_shot",
+            
             handler = function ()
                 applyDebuff( "target", "explosive_shot" )
             end,
@@ -697,7 +699,7 @@ lo
 
             handler = function ()
                 if talent.steady_focus.enabled then applyBuff( "steady_focus", 12, min( 2, buff.steady_focus.stack + 1 ) ) end
-                if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 4 end
+                if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 3 end
             end,
         },
 
@@ -751,7 +753,7 @@ lo
         tar_trap = {
             id = 187698,
             cast = 0,
-            cooldown = 30,
+            cooldown = 25,
             gcd = "spell",
 
             startsCombat = true,
@@ -766,7 +768,7 @@ lo
         trueshot = {
             id = 288613,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
+            cooldown = 120,
             gcd = "spell",
 
             toggle = "cooldowns",
