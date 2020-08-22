@@ -22,7 +22,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         a_murder_of_crows = 22289, -- 131894
 
         careful_aim = 22495, -- 260228
-        volley = 22497, -- 260243
+        barrage = 22497, -- 120360
         explosive_shot = 22498, -- 212431
 
         trailblazer = 19347, -- 199921
@@ -31,19 +31,19 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         steady_focus = 22267, -- 193533
         streamline = 22286, -- 260367
-        hunters_mark = 21998, -- 257284
+        chimaera_shot = 21998, -- 342049
 
         born_to_be_wild = 22268, -- 266921
         posthaste = 22276, -- 109215
-        binding_shot = 22499, -- 109248
+        binding_shackles = 22499, -- 321468
 
         lethal_shots = 23063, -- 260393
-        barrage = 23104, -- 120360
+        dead_eye = 23104, -- 321460
         double_tap = 22287, -- 260402
 
         calling_the_shots = 22274, -- 260404
         lock_and_load = 22308, -- 194595
-        piercing_shot = 22288, -- 198670
+        volley = 22288, -- 260243
     } )
 
     -- PvP Talents
@@ -84,8 +84,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         binding_shot = {
-            id = 117405,
-            duration = 3600,
+            id = 109247,
+            duration = 8,
             max_stack = 1,
         },
         bursting_shot = {
@@ -129,9 +129,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         lethal_shots = {
-            id = 260395,
-            duration = 15,
-            max_stack = 1,
+            id = 260393,
+            duration = 3600,
         },
         lock_and_load = {
             id = 194594,
@@ -144,22 +143,17 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         master_marksman = {
-            id = 269576,
-            duration = 12,
-            max_stack = 1,
-        },
-        misdirection = {
-            id = 35079,
-            duration = 8,
-            max_stack = 1,
-        },
-        pathfinding = {
-            id = 264656,
+            id = 260309,
             duration = 3600,
             max_stack = 1,
         },
+        misdirection = {
+            id = 34477,
+            duration = 8,
+            max_stack = 1,
+        },
         posthaste = {
-            id = 118922,
+            id = 109215,
             duration = 4,
             max_stack = 1,
         },
@@ -170,18 +164,18 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         rapid_fire = {
             id = 257044,
-            duration = 2.97,
+            duration = 2,
             max_stack = 1,
         },
         serpent_sting = {
             id = 271788,
-            duration = 12,
+            duration = 18,
             type = "Poison",
             max_stack = 1,
         },
         steady_focus = {
-            id = 193534,
-            duration = 12,
+            id = 193533,
+            duration = 10,
             max_stack = 1,
         },
         survival_of_the_fittest = {
@@ -190,7 +184,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         trailblazer = {
-            id = 231390,
+            id = 199921,
             duration = 3600,
             max_stack = 1,
         },
@@ -260,7 +254,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             recharge = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
             gcd = "spell",
 
-            spend = function () return buff.lock_and_load.up and 0 or 30 end,
+            spend = function () return buff.lock_and_load.up and 0 or 35 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -268,9 +262,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 applyBuff( "precise_shots" )
-                if talent.master_marksman.enabled then applyBuff( "master_marksman" ) end
                 removeBuff( "lock_and_load" )
-                removeBuff( "steady_focus" )
                 removeBuff( "lethal_shots" )
                 removeBuff( "double_tap" )
                 removeBuff( "trick_shots" )
@@ -284,17 +276,17 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.master_marksman.up and 0 or 15 end,
+            spend = 20,
             spendType = "focus",
 
             startsCombat = true,
             texture = 132218,
 
+            notalent = "chimaera_shot",
+
             handler = function ()
                 if talent.calling_the_shots.enabled then cooldown.trueshot.expires = max( 0, cooldown.trueshot.expires - 2.5 ) end
-                removeBuff( "master_marksman" )
                 removeStack( "precise_shots" )
-                removeBuff( "steady_focus" )
             end,
         },
 
@@ -381,7 +373,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 applyDebuff( "target", "bursting_shot" )
-                removeBuff( "steady_focus" )
             end,
         },
 
@@ -413,6 +404,26 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 applyDebuff( "target", "concussive_shot" )
+            end,
+        },
+       
+       
+        chimaera_shot = {
+            id = 342049,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = 20,
+            spendType = "focus",
+
+            startsCombat = true,
+            texture = 236176,
+
+            talent = "chimaera_shot",
+
+            handler = function ()
+                removeStack( "precise_shots" )
             end,
         },
 
@@ -515,7 +526,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 applyDebuff( "target", "explosive_shot" )
-                removeBuff( "steady_focus" )
             end,
         },
 
@@ -540,7 +550,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-
+lo
             startsCombat = true,
             texture = 135815,
 
@@ -572,8 +582,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             startsCombat = false,
             texture = 236188,
-
-            talent = "hunters_mark",
 
             usable = function () return debuff.hunters_mark.down end,
             handler = function ()
@@ -618,7 +626,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.master_marksman.up and 0 or 15 end,
+            spend = 20,
             spendType = "focus",
 
             startsCombat = true,
@@ -627,34 +635,14 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 if talent.calling_the_shots.enabled then cooldown.trueshot.expires = max( 0, cooldown.trueshot.expires - 2.5 ) end
                 if active_enemies > 2 then applyBuff( "trick_shots" ) end
-                removeBuff( "master_marksman" )
                 removeStack( "precise_shots" )
-                removeBuff( "steady_focus" )
-            end,
-        },
-
-
-        piercing_shot = {
-            id = 198670,
-            cast = 0,
-            cooldown = 30,
-            gcd = "spell",
-
-            spend = 35,
-            spendType = "focus",
-
-            startsCombat = true,
-            texture = 132092,
-
-            handler = function ()
-                removeBuff( "steady_focus" )
             end,
         },
 
 
         rapid_fire = {
             id = 257044,
-            cast = function () return ( 3 * haste ) + ( talent.streamline.enabled and 0.6 or 0 ) end,
+            cast = function () return ( 2 * haste ) end,
             channeled = true,
             cooldown = function () return buff.trueshot.up and ( haste * 8 ) or 20 end,
             gcd = "spell",
@@ -691,18 +679,17 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             recheck = function () return remains - ( duration * 0.3 ), remains end,
             handler = function ()
                 applyDebuff( "target", "serpent_sting" )
-                removeBuff( "steady_focus" )
             end,
         },
 
 
         steady_shot = {
             id = 56641,
-            cast = 1.75,
+            cast = 1.8,
             cooldown = 0,
             gcd = "spell",
 
-            spend = -10,
+            spend = -0,
             spendType = "focus",
 
             startsCombat = true,
@@ -804,6 +791,23 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                     return talent.calling_the_shots.enabled and 90 or t.duration
                 end,
             }
+        },
+        volley = {
+            id = 260243,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0,
+            spendType = "focus",
+
+            startsCombat = true,
+            texture = 132205,
+
+            talent = "volley",
+
+            start = function ()
+            end,
         },
     } )
 
