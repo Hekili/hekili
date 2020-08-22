@@ -5238,7 +5238,18 @@ function state.reset( dispName )
 
     if casting and cast_time > 0 then
         if not state:IsCasting( casting ) then
-            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, ability and ability.channeled and "CHANNEL_FINISH" or "CAST_FINISH", state.target.GUID )
+            local channeled = ability and ability.channeled
+
+            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, channeled and "CHANNEL_FINISH" or "CAST_FINISH", state.target.GUID )
+            
+            if channeled and ability.tick_time > 0 then
+                local eoc = state.buff.casting.expires - ability.tick_time
+
+                while ( eoc > state.now ) do
+                    state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", state.target.GUID )
+                    eoc = eoc - ability.tick_time
+                end
+            end
         end
 
         if not state.spec.canCastWhileCasting then
