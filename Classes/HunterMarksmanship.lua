@@ -84,7 +84,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
         binding_shot = {
-            id = 109247,
+            id = 117526,
             duration = 8,
             max_stack = 1,
         },
