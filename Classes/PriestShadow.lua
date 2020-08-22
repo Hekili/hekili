@@ -44,12 +44,13 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             end,
 
             interval = function () return class.auras.mind_sear.tick_time end,
-            value = function () return ( state.talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * 1.25 * state.active_enemies end,
+            value = function () return state.active_enemies end,
         },
 
         -- need to revise the value of this, void decay ticks up and is impacted by void torrent.
         voidform = {
             aura = "voidform",
+            talent = "legacy_of_the_void",
 
             last = function ()
                 local app = state.buff.voidform.applied
@@ -83,23 +84,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             end,
 
             interval = 1,
-            value = 7.5,
-        },
-
-        vamp_touch_t19 = {
-            aura = "vampiric_touch",
-            set_bonus = "tier19_2pc",
-            debuff = true,
-
-            last = function ()
-                local app = state.debuff.vampiric_touch.applied
-                local t = state.query_time
-
-                return app + floor( ( t - app ) / class.auras.vampiric_touch.tick_time ) * class.auras.vampiric_touch.tick_time
-            end,
-
-            interval = function () return state.debuff.vampiric_touch.tick_time end,
-            value = 1
+            value = 12,
         },
 
         mindbender = {
@@ -113,7 +98,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             end,
 
             interval = function () return 1.5 * state.haste end,
-            value = function () return state.debuff.surrendered_to_madness.up and 0 or ( state.buff.surrender_to_madness.up and 12 or 6 ) end,
+            value = function () return ( state.buff.surrender_to_madness.up and 12 or 6 ) end,
         },
 
         shadowfiend = {
@@ -127,7 +112,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             end,
 
             interval = function () return 1.5 * state.haste end,
-            value = function () return state.debuff.surrendered_to_madness.up and 0 or ( state.buff.surrender_to_madness.up and 6 or 3 ) end,
+            value = function () return ( state.buff.surrender_to_madness.up and 6 or 3 ) end,
         },
     } )
     spec:RegisterResource( Enum.PowerType.Mana )
@@ -136,8 +121,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     -- Talents
     spec:RegisterTalents( {
         fortress_of_the_mind = 22328, -- 193195
-        shadowy_insight = 22136, -- 162452
-        shadow_word_void = 22314, -- 205351
+        death_and_madness = 22136, -- 321291
+        unfurling_darkness = 22314, -- 341273
 
         body_and_soul = 22315, -- 64129
         sanlayn = 23374, -- 199855
@@ -145,23 +130,23 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
         twist_of_fate = 23125, -- 109142
         misery = 23126, -- 238558
-        dark_void = 23127, -- 263346
+        searing_nightmare = 23127, -- 341385
 
         last_word = 23137, -- 263716
         mind_bomb = 23375, -- 205369
         psychic_horror = 21752, -- 64044
 
         auspicious_spirits = 22310, -- 155271
-        shadow_word_death = 22311, -- 32379
+        psychic_link = 22311, -- 199484
         shadow_crash = 21755, -- 205385
 
-        lingering_insanity = 21718, -- 199849
+        damnation = 21718, -- 341374
         mindbender = 21719, -- 200174
         void_torrent = 21720, -- 263165
 
-        legacy_of_the_void = 21637, -- 193225
-        dark_ascension = 21978, -- 280711
-        surrender_to_madness = 21979, -- 193223
+        ancient_madness = 21637, -- 341240
+        legacy_of_the_void = 21978, -- 193225
+        surrender_to_madness = 21979, -- 319952
     } )
 
 
@@ -190,12 +175,17 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
 
     local thought_harvester_consumed = 0
+    local unfurling_darkness_triggered = 0
 
     spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-        if sourceGUID == GUID and subtype == "SPELL_AURA_REMOVED" and spellID == 288343 then
-            thought_harvester_consumed = GetTime()
+        if sourceGUID == GUID then
+            if subtype == "SPELL_AURA_REMOVED" and spellID == 288343 then
+                thought_harvester_consumed = GetTime()
+            elseif subtype == "SPELL_AURA_APPLIED" and spellID == 341273 then
+                unfurling_darkness_triggered = GetTime()
+            end
         end
-    end )    
+    end )
 
 
     local hadShadowform = false
@@ -203,6 +193,10 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     spec:RegisterHook( "reset_precast", function ()
         if time > 0 then
             applyBuff( "shadowform" )
+        end
+
+        if unfurling_darkness_triggered > 0 and now - unfurling_darkness_triggered < 15 then
+            applyBuff( "unfurling_darkness_icd", now - unfurling_darkness_triggered )
         end
 
         if pet.mindbender.active then
@@ -275,6 +269,27 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             type = "Magic",
             max_stack = 1,
         },
+        dark_thought = {
+            id = 341207,
+            duration = 6,
+            max_stack = 1,
+        },
+        death_and_madness = {
+            id = 321973,
+            duration = 4,
+            max_stack = 1,
+        },
+        desperate_prayer = {
+            id = 19236,
+            duration = 10,
+            max_stack = 1,
+        },
+        devouring_plague = {
+            id = 335467,
+            duration = 6,
+            type = "Disease",
+            max_stack = 1,
+        },
         dispersion = {
             id = 47585,
             duration = 6,
@@ -296,11 +311,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             type = "Magic",
             max_stack = 1,
         },
-        lingering_insanity = {
-            id = 197937,
-            duration = 60,
-            max_stack = 8,
-        },
         mind_bomb = {
             id = 226943,
             duration = 6,
@@ -309,13 +319,13 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         mind_flay = {
             id = 15407,
-            duration = function () return 3 * haste end,
+            duration = function () return 4.5 * haste end,
             max_stack = 1,
             tick_time = function () return 0.75 * haste end,
         },
         mind_sear = {
             id = 48045,
-            duration = function () return 3 * haste end,
+            duration = function () return 4.5 * haste end,
             max_stack = 1,
             tick_time = function () return 0.75 * haste end,
         },
@@ -331,6 +341,11 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         mindbender = {
             duration = 15,
             max_stack = 1,
+        },
+        power_infusion = {
+            id = 10060,
+            duration = 20,
+            max_stack = 1
         },
         power_word_fortitude = {
             id = 21562,
@@ -382,12 +397,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         shadowy_apparitions = {
             id = 78203,
         },
-        shadowy_insight = {
-            id = 124430,
-            duration = 12,
-            type = "Magic",
-            max_stack = 1,
-        },
         silence = {
             id = 15487,
             duration = 4,
@@ -395,14 +404,23 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             max_stack = 1,
         },
         surrender_to_madness = {
-            id = 193223,
-            duration = 60,
+            id = 319952,
+            duration = 25,
             max_stack = 1,
         },
-        surrendered_to_madness = {
-            id = 263406,
+        twist_of_fate = {
+            id = 123254,
+            duration = 8,
+            max_stack = 1,
+        },
+        unfurling_darkness = {
+            id = 341273,
             duration = 15,
             max_stack = 1,
+        },
+        unfurling_darkness_icd = {
+            duration = 15,
+            max_stack = 1
         },
         vampiric_embrace = {
             id = 15286,
@@ -427,8 +445,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         voidform = {
             id = 194249,
-            duration = 3600,
-            max_stack = 99,
+            duration = function () return talent.legacy_of_the_void.enabled and 3600 or 15 end,
+            max_stack = 1,
             generate = function( t )
                 local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = FindUnitBuffByID( "player", 194249 )
 
@@ -540,13 +558,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
 
     spec:RegisterHook( "advance_end", function ()
-        if buff.voidform.up and insanity.current == 0 then
+        if buff.voidform.up and talent.legacy_of_the_void.enabled and insanity.current == 0 then
             insanity.regen = 0
             removeBuff( "voidform" )
-            if buff.surrender_to_madness.up then
-                removeBuff( "surrender_to_madness" )
-                applyDebuff( "player", "surrendered_to_madness" )
-            end
             applyBuff( "shadowform" )
         end
     end )
@@ -589,42 +603,57 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
     -- Abilities
     spec:RegisterAbilities( {
-        dark_ascension = {
-            id = 280711,
+        damnation = {
+            id = 341374,
             cast = 0,
-            cooldown = 60,
+            cooldown = 45,
             gcd = "spell",
 
-            spend = -50,
-            spendType = "insanity",
-
-            toggle = "cooldowns",
+            talent = "damnation",
+            
+            startsCombat = true,
+            texture = 236295,
+            
+            handler = function ()
+                applyDebuff( "target", "shadow_word_pain" )
+                applyDebuff( "target", "vampiric_touch" )
+                applyDebuff( "target", "devouring_plague" )
+            end,
+        },
+        
+        
+        desperate_prayer = {
+            id = 19236,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+            
+            toggle = "defensives",
 
             startsCombat = true,
-            texture = 1711336,
-
-            talent = "dark_ascension",
-
-            handler = function ()
-                applyBuff( "voidform", nil, ( level < 116 and equipped.mother_shahrazs_seduction ) and 3 or 1 )
+            texture = 237550,
+            
+            handler = function ()                
+                health.max = health.max * 1.25
+                gain( 0.8 * health.max, "health" )
             end,
         },
 
 
-        dark_void = {
-            id = 263346,
-            cast = 2,
-            cooldown = 30,
+        devouring_plague = {
+            id = 335467,
+            cast = 0,
+            cooldown = 0,
             gcd = "spell",
-
+            
+            spend = 50,
+            spendType = "insanity",
+            
             startsCombat = true,
-            texture = 132851,
-
-            talent = "dark_void",
-
+            texture = 252997,
+            
             handler = function ()
-                applyDebuff( "target", "shadow_word_pain" )
-                active_dot.shadow_word_pain = max( active_dot.shadow_word_pain, active_enemies )
+                applyDebuff( "target", "devouring_plague" )
             end,
         },
 
@@ -635,16 +664,16 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.016,
+            spend = 0.02,
             spendType = "mana",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 136066,
 
             usable = function () return buff.dispellable_magic.up end,
             handler = function ()
                 removeBuff( "dispellable_magic" )
-                gain( 6, "insanity" )
+                if time > 0 then gain( 6, "insanity" ) end
             end,
         },
 
@@ -735,42 +764,38 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             handler = function ()
                 removeBuff( "dispellable_magic" )
                 removeDebuff( "player", "dispellable_magic" )
-                gain( 6, "insanity" )
+                if time > 0 then gain( 6, "insanity" ) end
             end,
         },
 
 
-        -- SimulationCraft module for Shadow Word: Void automatically substitutes SW:V for MB when talented.
         mind_blast = {
-            id = function () return talent.shadow_word_void.enabled and 205351 or 8092 end,
-            cast = function () return haste * ( buff.shadowy_insight.up and 0 or 1.5 ) end,
-            charges = function ()
-                local n = 1
-                if talent.shadow_word_void.enabled then n = n + 1 end
-                if level < 116 and equipped.mangazas_madness then n = n + 1 end
-                return n > 1 and n or nil
+            id = 8092,
+            cast = 1.5,
+            charges = function () return 1 + ( buff.voidform.up and 1 or 0 ) + ( buff.dark_thought.up and 1 or 0 ) end,
+            cooldown = function ()
+                if buff.dark_thought.up then return 0 end
+                return 7.5 * haste
             end,
-            cooldown = function () return ( talent.shadow_word_void.enabled and 9 or 7.5 ) * haste end,
-            recharge = function () return ( talent.shadow_word_void.enabled and 9 or 7.5 ) * haste end,
+            recharge = function ()
+                if buff.dark_thought.up then return 0 end
+                return 7.5 * haste
+            end,
             gcd = "spell",
 
             velocity = 15,
 
-            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( ( talent.shadow_word_void.enabled and -15 or -12 ) - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) * ( debuff.surrendered_to_madness.up and 0 or 1 ) end,
+            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -8 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) end,
             spendType = "insanity",
 
             startsCombat = true,
-            texture = function () return talent.shadow_word_void.enabled and 610679 or 136224 end,
-
-            -- notalent = "shadow_word_void",
+            texture = 136224,
 
             handler = function ()
+                removeBuff( "dark_thought" )
                 removeBuff( "harvested_thoughts" )
-                removeBuff( "shadowy_insight" )
                 removeBuff( "empty_mind" )
             end,
-
-            copy = { "shadow_word_void", 205351, 8092 },
         },
 
 
@@ -791,23 +816,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
 
 
-        --[[ mind_control = {
-            id = 605,
-            cast = 1.8,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = 100,
-            spendType = "mana",
-
-            startsCombat = true,
-            texture = 136206,
-
-            handler = function ()
-            end,
-        }, ]]
-
-
         mind_flay = {
             id = 15407,
             cast = 3,
@@ -824,6 +832,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             end,
             prechannel = true,
 
+            tick_time = function () return class.auras.mind_flay.tick_time end,
+
             startsCombat = true,
             texture = 136208,
 
@@ -832,22 +842,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             start = function ()
                 applyDebuff( "target", "mind_flay" )
                 channelSpell( "mind_flay" )
-
-                if level < 116 then
-                    if equipped.the_twins_painful_touch and action.mind_flay.lastCast < max( action.dark_ascension.lastCast, action.void_eruption.lastCast ) then
-                        if debuff.shadow_word_pain.up and active_dot.shadow_word_pain < min( 4, active_enemies ) then
-                            active_dot.shadow_word_pain = min( 4, active_enemies )
-                        end
-                        if debuff.vampiric_touch.up and active_dot.vampiric_touch < min( 4, active_enemies ) then
-                            active_dot.vampiric_touch = min( 4, active_enemies )
-                        end
-                    end
-
-                    if set_bonus.tier20_2pc == 1 then
-                        addStack( "empty_mind", nil, 3 )
-                    end
-                end
-
                 forecastResources( "insanity" )
             end,
         },
@@ -870,6 +864,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             end,            
             prechannel = true,
 
+            tick_time = function () return class.auras.mind_flay.tick_time end,
+
             startsCombat = true,
             texture = 237565,
 
@@ -889,24 +885,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 forecastResources( "insanity" )
             end,
         },
-
-
-        --[[ mind_vision = {
-            id = 2096,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = 0.01,
-            spendType = "mana",
-
-            startsCombat = true,
-            texture = 135934,
-
-            handler = function ()
-                -- applies mind_vision (2096)
-            end,
-        }, ]]
 
 
         -- SimulationCraft module: Mindbender and Shadowfiend are interchangeable.
@@ -931,23 +909,24 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             copy = { "shadowfiend", 200174, 34433, 132603 }
         },
 
-        --[[ shadowfiend = {
-            id = 34433,
+        
+        power_infusion = {
+            id = 10060,
             cast = 0,
-            cooldown = 180,
-            gcd = "spell",
-
+            cooldown = 120,
+            gcd = "off",
+            
             toggle = "cooldowns",
-            notalent = "mindbender",
 
-            startsCombat = true,
-            texture = 136199,
-
+            startsCombat = false,
+            texture = 135939,
+            
             handler = function ()
-                summonPet( "shadowfiend", 15 )
-                applyBuff( "shadowfiend" )
+                applyBuff( "power_infusion" )
+                stat.haste = stat.haste + 0.25
             end,
-        }, ]]                
+        },
+
 
         power_word_fortitude = {
             id = 21562,
@@ -971,8 +950,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         power_word_shield = {
             id = 17,
             cast = 0,
-            cooldown = 6,
-            hasteCD = true,
+            cooldown = 0,
             gcd = "spell",
 
             spend = 0.02,
@@ -987,7 +965,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 applyBuff( "power_word_shield" )
                 applyDebuff( "weakened_soul" )
                 if talent.body_and_soul.enabled then applyBuff( "body_and_soul" ) end
-                gain( 6, "insanity" )
+                if time > 0 then gain( 6, "insanity" ) end
             end,
         },
 
@@ -1015,7 +993,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 60,
             gcd = "spell",
 
-            spend = 0.012,
+            spend = 0.01,
             spendType = "mana",
 
             startsCombat = true,
@@ -1046,34 +1024,41 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             usable = function () return debuff.dispellable_disease.up end,
             handler = function ()
                 removeBuff( "dispellable_disease" )
+                if time > 0 then gain( 6, "insanity" ) end
             end,
         },
 
 
-        --[[ resurrection = {
-            id = 2006,
-            cast = 10,
+        searing_nightmare = {
+            id = 341385,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            castableWhileCasting = true,
+
+            talent = "searing_nightmare",
+            
+            spend = 30,
+            spendType = "insanity",
+            
+            startsCombat = true,
+            texture = 1022950,
+
+            debuff = "mind_sear",
+            
+            handler = function ()
+                applyDebuff( "target", "shadow_word_pain" )
+                active_dot.shadow_word_pain = max( active_enemies, active_dot.shadow_word_pain )
+            end,
+        },
+
+        shackle_undead = {
+            id = 9484,
+            cast = 1.275,
             cooldown = 0,
             gcd = "spell",
 
             spend = 0.01,
-            spendType = "mana",
-
-            startsCombat = true,
-            texture = 135955,
-
-            handler = function ()
-            end,
-        }, ]]
-
-
-        shackle_undead = {
-            id = 9484,
-            cast = 1.5,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = 0.012,
             spendType = "mana",
 
             startsCombat = true,
@@ -1094,6 +1079,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             spend = -20,
             spendType = "insanity",
 
+            velocity = 10,
+
             startsCombat = true,
             texture = 136201,
 
@@ -1108,7 +1095,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.03,
+            spend = 0.04,
             spendType = "mana",
 
             startsCombat = true,
@@ -1123,20 +1110,13 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         shadow_word_death = {
             id = 32379,
             cast = 0,
-            charges = 2,
-            cooldown = 9,
-            recharge = 9,
+            cooldown = 20,
+            hasteCD = true,
             gcd = "spell",
-
-            spend = 15,
-            spendType = "insanity",
 
             startsCombat = true,
             texture = 136149,
 
-            talent = "shadow_word_death",
-
-            usable = function () return buff.zeks_exterminatus.up or target.health.pct < 20 end,
             handler = function ()
                 removeBuff( "zeks_exterminatus" )
             end,
@@ -1161,52 +1141,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 applyDebuff( "target", "shadow_word_pain" )
             end,
         },
-
-
-        --[[ shadow_word_void = {
-            id = 205351,
-            cast = 1.5,
-            charges = 2,
-            cooldown = 9,
-            recharge = 9,
-            hasteCD = true,
-            gcd = "spell",
-
-            velocity = 15,
-
-            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -15 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) * ( debuff.surrendered_to_madness.up and 0 or 1 ) end,
-            spendType = "insanity",
-
-            startsCombat = true,
-            texture = 610679,
-
-            talent = "shadow_word_void",
-
-            handler = function ()
-                -- applies voidform (194249)
-                -- applies mind_flay (15407)
-                -- removes shadow_word_pain (589)
-            end,
-        }, ]]
-
-
-        --[[ shadowfiend = {
-            id = 34433,
-            cast = 0,
-            cooldown = 180,
-            gcd = "spell",
-
-            toggle = "cooldowns",
-            notalent = "mindbender",
-
-            startsCombat = true,
-            texture = 136199,
-
-            handler = function ()
-                summonPet( "shadowfiend", 15 )
-                applyBuff( "shadowfiend" )
-            end,
-        }, ]]
 
 
         shadowform = {
@@ -1250,9 +1184,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
 
         surrender_to_madness = {
-            id = 193223,
+            id = 319952,
             cast = 0,
-            cooldown = 180,
+            cooldown = 90,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -1277,17 +1211,18 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             handler = function ()
                 applyBuff( "vampiric_embrace" )
+                if time > 0 then gain( 6, "insanity" ) end
             end,
         },
 
 
         vampiric_touch = {
             id = 34914,
-            cast = 1.5,
+            cast = function () return buff.unfurling_darkness.up and 0 or 1.5 end,
             cooldown = 0,
             gcd = "spell",
 
-            spend = -6,
+            spend = -5,
             spendType = "insanity",
 
             startsCombat = true,
@@ -1297,8 +1232,16 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             handler = function ()
                 applyDebuff( "target", "vampiric_touch" )
+
                 if talent.misery.enabled then
                     applyDebuff( "target", "shadow_word_pain" )
+                end
+
+                removeBuff( "unfurling_darkness" )
+                
+                if talent.unfurling_darkness.enabled and buff.unfurling_darkness_icd.down then
+                    applyBuff( "unfurling_darkness" )
+                    applyBuff( "unfurling_darkness_icd" )
                 end
                 -- Thought Harvester is a 20% chance to proc, consumed by Mind Sear.
                 -- if azerite.thought_harvester.enabled then applyBuff( "harvested_thoughts" ) end
@@ -1311,13 +1254,11 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             known = 228260,
             cast = 0,
             cooldown = function ()
-                if level < 116 and set_bonus.tier19_4pc > 0 and query_time - buff.voidform.applied < 2.5 then return 0 end
                 return haste * 4.5
             end,
             gcd = "spell",
 
             spend = function ()
-                if debuff.surrendered_to_madness.up then return 0 end
                 return buff.surrender_to_madness.up and -40 or -20
             end,
             spendType = "insanity",
@@ -1332,6 +1273,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             handler = function ()
                 if debuff.shadow_word_pain.up then debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires + 3 end
                 if debuff.vampiric_touch.up then debuff.vampiric_touch.expires = debuff.vampiric_touch.expires + 3 end
+                if debuff.devouring_plague.up then debuff.devouring_plague.expires = debuff.devouring_plague.expires + 3 end
+
                 removeBuff( "anunds_last_breath" )
             end,
         },
@@ -1341,14 +1284,12 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             id = 228260,
             cast = function ()
                 if pvptalent.void_origins.enabled then return 0 end
-                return haste * ( talent.legacy_of_the_void.enabled and 0.6 or 1 ) * 2.5 
+                return haste * 1.5 
             end,
             cooldown = 0,
             gcd = "spell",
 
-            spend = function ()
-                return talent.legacy_of_the_void.enabled and 60 or 90
-            end,
+            spend = 90,
             spendType = "insanity",
 
             startsCombat = true,
@@ -1357,10 +1298,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             nobuff = "voidform",
             bind = "void_bolt",
 
-            -- ready = function () return insanity.current >= ( talent.legacy_of_the_void.enabled and 60 or 90 ) end,
             handler = function ()
-                applyBuff( "voidform", nil, ( level < 116 and equipped.mother_shahrazs_seduction ) and 3 or 1 )
-                gain( talent.legacy_of_the_void.enabled and 60 or 90, "insanity" )
+                applyBuff( "voidform" )
+                if talent.legacy_of_the_void.enabled then gain( 90, "insanity" ) end
             end,
         },
 

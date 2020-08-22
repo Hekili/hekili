@@ -39,7 +39,7 @@ Classes\MonkWindwalker.lua
 # Classes\PaladinProtection.lua
 Classes\PaladinRetribution.lua
 # Classes\PriestDiscipline.lua
-# Classes\PriestShadow.lua
+Classes\PriestShadow.lua
 # Classes\RogueAssassination.lua
 # Classes\RogueOutlaw.lua
 # Classes\RogueSubtlety.lua
