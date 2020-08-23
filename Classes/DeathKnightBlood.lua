@@ -1305,8 +1305,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 removeStack( "bone_shield", bs )                
                 gain( 6 * bs, "runic_power" )
 
-                -- This is the only predictable Bone Shield consumption that I have noted.
-                if legendary.tombstone.enabled and cooldown.dancing_rune_weapon.remains > 0 then
+                if cooldown.dancing_rune_weapon.remains > 0 then
                     cooldown.dancing_rune_weapon.expires = cooldown.dancing_rune_weapon.expires - ( 3 * bs )                    
                 end
 
