@@ -9,6 +9,7 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
+-- TODO:  Heart of the Wild, Covenants, Legendaries, Conduits.
 
 if UnitClassBase( 'player' ) == 'DRUID' then
     local spec = Hekili:NewSpecialization( 102, true )
