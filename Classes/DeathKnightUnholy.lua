@@ -599,7 +599,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         apocalypse = {
             id = 275699,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( pvptalent.necromancers_bargain.enabled and 45 or 90 ) end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( ( pvptalent.necromancers_bargain.enabled and 45 or 90 ) - ( level > 48 and 15 or 0 ) ) end,
             gcd = "spell",
 
             toggle = "cooldowns",

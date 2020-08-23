@@ -396,7 +396,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         vampiric_blood = {
             id = 55233,
-            duration = 12,
+            duration = function () return level > 55 and 12 or 10 end,
             max_stack = 1,
         },
         veteran_of_the_third_war = {

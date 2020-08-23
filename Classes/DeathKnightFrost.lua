@@ -784,8 +784,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 47568,
             cast = 0,
             charges = 1,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
-            recharge = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( level > 55 and 105 or 120 ) end,
+            recharge = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( level > 55 and 105 or 120 ) end,
             gcd = "spell",
 
             toggle = "cooldowns",
