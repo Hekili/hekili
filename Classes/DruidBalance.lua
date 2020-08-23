@@ -148,6 +148,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 16,
             max_stack = 1,
         },
+        elunes_wrath = {
+            id = 64823,
+            duration = 10,
+            max_stack = 1
+        },
         entangling_roots = {
             id = 339,
             duration = 30,
@@ -1525,8 +1530,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         starfire = {
             id = 194153,
             cast = function () 
-                if buff.warrior_of_elune.up then return 0 end
-                return haste * ( buff.eclipse_lunar and 0.8 or 1 ) * 2.25 
+                if buff.warrior_of_elune.up or buff.elunes_wrath.up then return 0 end
+                return haste * ( buff.eclipse_lunar and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 2.25 
             end,
             cooldown = 0,
             gcd = "spell",
@@ -1547,7 +1552,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                     if solar_eclipse == 0 then applyBuff( "eclipse_solar" ) end
                 end
 
-                if buff.warrior_of_elune.up then
+                if level > 53 then
+                    if debuff.moonfire.up then debuff.moonfire.expires = debuff.moonfire.expires + 4 end
+                    if debuff.sunfire.up then debuff.sunfire.expires = debuff.sunfire.expires + 4 end
+                end
+
+                if buff.elunes_wrath.up then
+                    removeBuff( "elunes_wrath" )
+                elseif buff.warrior_of_elune.up then
                     removeStack( "warrior_of_elune" )
                     if buff.warrior_of_elune.down then
                         setCooldown( "warrior_of_elune", 45 ) 
@@ -1579,8 +1591,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 removeBuff( "oneths_intuition" )
                 removeBuff( "sunblaze" )
 
-                if buff.eclipse_solar.up then buff.eclipse_solar.expires = buff.eclipse_solar.expires + 3 end
-                if buff.eclipse_lunar.up then buff.eclipse_lunar.expires = buff.eclipse_lunar.expires + 3 end
+                if buff.eclipse_solar.up then buff.eclipse_solar.expires = buff.eclipse_solar.expires + ( level > 57 and 3 or 2 ) end
+                if buff.eclipse_lunar.up then buff.eclipse_lunar.expires = buff.eclipse_lunar.expires + ( level > 57 and 3 or 2 ) end
 
                 if pvptalent.moonkin_aura.enabled then
                     addStack( "moonkin_aura", nil, 1 )
@@ -1900,7 +1912,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         wrath = {
             id = 190984,
-            cast = function () return haste * ( buff.eclipse_solar.up and 0.80 or 1 ) * 1.5 end,
+            cast = function () return haste * ( buff.eclipse_solar.up and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 1.5 end,
             cooldown = 0,
             gcd = "spell",
 
