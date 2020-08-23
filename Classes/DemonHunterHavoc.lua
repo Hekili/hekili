@@ -76,7 +76,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
         trail_of_ruin = 22909, -- 258881
         unbound_chaos = 22494, -- 275144
-        fel_barrage = 21862, -- 258925
+        glaive_tempest = 21862, -- 342817
 
         soul_rending = 21863, -- 204909
         desperate_instincts = 21864, -- 205411
@@ -92,7 +92,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
         demonic = 21900, -- 213410
         momentum = 21901, -- 206476
-        nemesis = 22547, -- 206491
+        fel_barrage = 22547, -- 258925
     } )
 
     -- PvP Talents
@@ -235,11 +235,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         momentum = {
             id = 208628,
             duration = 6,
-            max_stack = 1,
-        },
-        nemesis = {
-            id = 206491,
-            duration = 60,
             max_stack = 1,
         },
         netherwalk = {
@@ -760,6 +755,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             end,
         },
         
+        
         fel_rush = {
             id = 195072,
             cast = 0,
@@ -817,6 +813,24 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         
         
+        glaive_tempest = {
+            id = 342817,
+            cast = 0,
+            cooldown = 20,
+            hasteCD = true,
+            gcd = "spell",
+            
+            spend = 30,
+            spendType = "fury",
+            
+            startsCombat = true,
+            texture = 1455916,
+            
+            handler = function ()
+            end,
+        },
+
+
         immolation_aura = {
             id = 258920,
             cast = 0,
@@ -1142,6 +1156,5 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     } )
 
 
-    spec:RegisterPack( "Havoc", 20200722.2, [[dmJviaGjLsTlk61sG9rHmBQmFQs9lk4BuLStO0Eb7w0(vyykIFJyWs0WPkogu15uKIfIuTyPA5s52k5Pqwgs55u6YQMkumzjnDIhPiLEfQQNrHY1PQ2gQI68sqBgjBxP40cZsrYNLqFhvPrQivhM0OHkJtPKtIQitdvHRrHQ7POwPs1Jr5VOYaEadGQQCalTj0MmXlA0mPH3yEHhpGKc9Ca5rzfOfpGsDDanDDdHbipAHoIwbmaYs8BSdia19dNWtj0buvLdyPnH2KjErJMjn8gZ48apGuFbhPbOP)ccxaiCrT(e6aQEldqyWf2rzyhL6O0JYkql(rjHAuQmji5O0fwXokPiTr50FbHlmbKlSIfWaO6PuFNayaS4bmaszsqsavdBZ3JaONA39kqhealnadGuMeKeqmsA9xNBPfdgGEQD3RaDqaSgdWaiLjbjbu7BEZEULwmya6P2DVc0bbWYdadGEQD3RaDaXAH8wOasu3tXCrwpf)L5tT7EDuU9OS7trzUiRNI)YSs4nbKYKGKaI6oUMVfhiawJdya0tT7EfOdiwlK3cfqI6EkMlY6P4VmFQD3RJYThLI2kEXK3qWf5wJYThLu(TcnRNkyHmknAuU1eaPmjijG28S4P8DCTlTRciawEgWaiLjbjbKG7C48tbqp1U7vGoiawVamaszsqsaLFDByb0tT7EfOdcGDladGuMeKeqRl6I08GJydlGEQD3RaDqaStdGbqktcscOx456xxa6P2DVc0bbWIFcGbqktcscOyTiovcsYP(nfqp1U7vGoiaw84bmaszsqsaDR9j7C921ca0tT7EfOdcGfpnadGEQD3RaDaXAH8wOasu3tXKkAwHR7iKQ5tT7EDu6T3JsLjXMZ98R42rPrJsAaszsqsa1DA9CvnzhealEJbya0tT7EfOdiwlK3cfqI6EkMurZkCDhHunFQD3RJsV9EuQmj2CUNFf3oknAusdqktcscO6vbhNL3FpGayXZdadGEQD3RaDaXAH8wOaIYVvOz9ublKrPrJsEmbqktcsciQ76oTEqaS4noGbqktcsciQ746ARPfpGEQD3RaDqaS45zadGEQD3RaDaXAH8wOaQ7trzsDhxNS6ARUEkM(EaKYKGKasW1i8Yv0PXMdcGfVxagaPmjijGy4uILZkTOGdONA39kqheal(TamaszsqsaPzg4cNkbjb0tT7EfOdcGf)0ayaKYKGKaQ(fjTC9qoGEQD3RaDqabqEANrwDvamGacG28MnijGL2eAtM4fnAaIxTLrw0ciEA5H0KxhL4hLktcsokDHvSMJDaz9CgG14E5fG80iuH7aAAhLktcsAn90oJS6Qmp2h7ktcsANRHT57rg7ktcsA5pBGrsR)6ClTyWg7ktcsA5pBO9nVzp3slgSX(yxzsqsl)zdu3X18T4MkOMf19umxK1tXFz(u7Ux3U7trzUiRNI)YSs4nh7ktcsA5pByZZINY3X1U0UktfuZI6EkMlY6P4VmFQD3RBlAR4ftEdbxKBTnLFRqZ6PcwigT1KX(yxzsqsl)zdcUZHZpLXUYKGKw(ZgYVUnSJDLjbjT8NnSUOlsZdoInSJ9XUYKGKw(ZgEHNRFDn2vMeK0YF2qSweNkbj5u)Mo2vMeK0YF2WT2NSZ1BxlySRmjiPL)SHUtRNRQj7tfuZI6EkMurZkCDhHunFQD3RE7TYKyZ5E(vCRr0g7ktcsA5pBOEvWXz593Zub1SOUNIjv0Scx3rivZNA39Q3ERmj2CUNFf3AeTXUYKGKw(ZgOUR706NkOMP8BfAwpvWcXiEmzSRmjiPL)SbQ746ARPf)uktInN75xXTgHFSRmjiPL)SbbxJWlxrNgB(ub1C3NIYK6oUoz11wD9um99m2vMeK0YF2adNsSCwPff8XUYKGKw(Zg0mdCHtLGKJ9XUYKGKw(ZgQFrslxpKdciaa]] )
-    
+    spec:RegisterPack( "Havoc", 20200823, [[dWdhjaGjGODrjBtOQSpkKzcKkZwW8Lu8jjb)sOCBf9Be7eq7fA3sTFQ60IgMKQXjj64uOsNxsQbJudhjoifQQRsHkogs6CcvPfsrwkqQAXkz5s8yu9uqlJcwNqv1FrXubyYkmDIhjuf9kkLlR66c5WK(kfQYMrPTtP6JcvHzjP0NPO(UqLrcKY0Oqz0a13asojqONbeCnjHUNs1kvkpNkVwsYiveachQCeOH6gQxVsdGGfvQgQObdiuQMYrifLxLA(iS15riOP2jCesrRoq0bcaHosuHFeIWvugeqSXfchQCeOH6gQxVsdGGfvQgmwDQiuJeWKccbTxvgsecohJ34cHJ74iea405PtNNw90uuEvQ57PjSEALljP90H0jopnlP4PbTxvgslegsN4qaiCCwnkiiaeiveacvUKKgHJ0vIOii8TUcFGMqbbAabGqLljPriN0UO5zMQ5KJW36k8bAcfeiiGaqOYLK0iSC7V4oZunNCe(wxHpqtOGangcaHV1v4d0ec5LuEjvekA4TynjZ3s006TUcF4PbPNEfXYAnjZ3s00AqIRrOYLK0iK9bMsKdmkiWkIaq4BDf(anHqEjLxsfHIgElwtY8TenTERRWhEAq6PfTy(IvCPao7k90G0tZgvQ2AC2KNIN2ipDL1rOYLK0i0(BZNnkWuUuUkOGaJpeacvUKKgHc4ZaoQfe(wxHpqtOGabfcaHV1v4d0ec5LuEjveQCjTFM3FM35PnYttfHkxssJqZbnTFg5tk3jOGaRebGqLljPr48IojfkGjU0HW36k8bAcfey8IaqOYLK0i8vFM11jcFRRWhOjuqGuRJaqOYLK0imNtsqLK0mAurr4BDf(anHccKkveacvUKKgH35EZpZQCTke(wxHpqtOGaPAabGW36k8bAcH8skVKkcfn8wSyZItywbczy9wxHp801uJNw5sA)mV)mVZtBKN2acvUKKgHRGooZqB(rbbsfeqai8TUcFGMqiVKYlPIqrdVfl2S4eMvGqgwV1v4dpDn14PvUK2pZ7pZ780g5PnGqLljPr44QaMXf3pfuqGungcaHV1v4d0ec5LuEjveYgvQ2AC2KNIN2ipTXQJqLljPri7dRGookiqQvebGqLljPri7dmlTuuZhHV1v4d0ekiqQXhcaHV1v4d0ec5LuEjveUIyzTyFGzrMlTmMVfRikiu5ssAekGlK4ymh00(rbbsfuiaeQCjjnc5GvIJXjLSQJW36k8bAcfei1kraiu5ssAeQDNGZGkjPr4BDf(anHccKA8IaqOYLK0iC8jPDmRuocFRRWhOjuqbHukNtMlvqaOGccT)Iljnc0qDd1RdkdgSmGW40sNTzhcnEgFqpqqey8i(90EAaGVNoNuifXtZskE6kmoRgfKk4Pl34gLLp80oY8EAnsitv(WtZbRT57S8BGUSVNguXVN240Uikuif5dpTYLK0E6kyoOP9ZiFs5oPcw(n)gioPqkYhEAQEALljP90H0jol)gcDuohbwrqbkesPqyZWry80tRCjjTZIs5CYCPYUFZVPCjjTBFKUsefXVPCjjTZ2EmoPDrZZmvZj3VPCjjTZ2ESYT)I7mt1CY9B(nLljPD22JX(atjYbU2KDx0WBXAsMVLOP1BDf(aKRiwwRjz(wIMwdsCTFt5ssANT9y2FB(SrbMYLYvP2KDx0WBXAsMVLOP1BDf(aKIwmFXkUuaNDLGKnQuT14SjpfJQSUFZVPCjjTZ2Emb8zah1IFt5ssANT9yMdAA)mYNuUtQnz3vUK2pZ7pZ7mIQFt5ssANT9yZl6KuOaM4sNFZVPCjjTZ2ESx9zwxN(nLljPD22JLZjjOssAgnQO(nLljPD22JDN7n)mRY1Q8Bkxss7SThBf0XzgAZFTj7UOH3IfBwCcZkqidR36k8rn1OCjTFM3FM3zKb)MYLK0oB7XgxfWmU4(PuBYUlA4TyXMfNWSceYW6TUcFutnkxs7N59N5DgzWVPCjjTZ2Em2hwbD8At2D2Os1wJZM8umYy19Bkxss7SThJ9bMLwkQ5xRYL0(zE)zENru9Bkxss7SThtaxiXXyoOP9xBYUVIyzTyFGzrMlTmMVfRik(nLljPD22JXbRehJtkzv3VPCjjTZ2EmT7eCgujjTFZVPCjjTZ2ESXNK2XSs5OGcIa]] )
 end
