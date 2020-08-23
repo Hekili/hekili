@@ -619,199 +619,277 @@ do
     bonus_id={ 6573 }, stats={ 100% Cor [15.0000] }, effects={ Gushing Wound (id=318272, index=2, type=equip) } ]]
 
     local shadowlegendaries = {
-        [6823] = { "slick_ice", 1 }, -- 327508
-        [6828] = { "cold_front", 1 }, -- 327284
-        [6829] = { "freezing_winds", 1 }, -- 327364
-        [6830] = { "glacial_fragments", 1 }, -- 327492
-        [6831] = { "expanded_potential", 1 }, -- 327489
-        [6832] = { "disciplinary_command", 1 }, -- 327365
-        [6937] = { "grisly_icicle", 1 }, -- 333393
-        [6834] = { "temporal_warp", 1 }, -- 327351
-        [6931] = { "fevered_incantation", 1 }, -- 333030
-        [6932] = { "firestorm", 1 }, -- 333097
-        [6933] = { "molten_skyfall", 1 }, -- 333167
-        [6934] = { "sun_kings_blessing", 1 }, -- 333313
-        [6926] = { "arcane_infinity", 1 }, -- 332769
-        [6927] = { "arcane_bombardment", 1 }, -- 332892
-        [6928] = { "siphon_storm", 1 }, -- 332928
-        [6936] = { "triune_ward", 1 }, -- 333373
-        [7041] = { "sigil_of_the_illidari", 1 }, -- 337504
-        [7042] = { "apexis_empowerment", 1 }, -- 337532
-        [7043] = { "darkglare_medallion", 1 }, -- 337534
-        [7044] = { "darkest_hour", 1 }, -- 337539
-        [7049] = { "inner_demons", 1 }, -- 337548
-        [7050] = { "chaos_theory", 1 }, -- 337551
-        [7051] = { "erratic_fel_core", 1 }, -- 337685
-        [7052] = { "fel_bombardment", 1 }, -- 337775
-        [7045] = { "spirit_of_the_darkness_flame", 1 }, -- 337541
-        [7046] = { "razelikhs_defilement", 1 }, -- 337544
-        [7047] = { "cloak_of_fel_flames", 1 }, -- 337545
-        [7048] = { "fiery_soul", 1 }, -- 337547
-        [6953] = { "superstrain", 1 }, -- 334974
-        [6954] = { "phearomones", 1 }, -- 335177
-        [6947] = { "deaths_embrace", 1 }, -- 334728
-        [6948] = { "grip_of_the_everlasting", 1 }, -- 334724
-        [6940] = { "bryndaors_might", 1 }, -- 334501
-        [6941] = { "crimson_rune_weapon", 1 }, -- 334525
-        [6943] = { "gorefiends_domination", 1 }, -- 334580
-        [6942] = { "vampiric_aura", 1 }, -- 334547
-        [6944] = { "koltiras_favor", 1 }, -- 334583
-        [6945] = { "biting_cold", 1 }, -- 334678
-        [6946] = { "absolute_zero", 1 }, -- 334692
-     -- [0] = { "death_knight_frost_power_04_dnt", 1 }, -- 0
-        [6949] = { "reanimated_shambler", 1 }, -- 334836
-        [6950] = { "frenzied_monstrosity", 1 }, -- 334888
-        [6951] = { "deaths_certainty", 1 }, -- 334898
-        [6952] = { "deadliest_coil", 1 }, -- 334949
-        [7086] = { "druid_all_power_04_dnt", 1 }, -- 338658
-        [7085] = { "druid_all_power_03_dnt", 1 }, -- 338657
-     -- [0] = { "druid_all_power_02_dnt", 1 }, -- 0
-        [7084] = { "druid_all_power_01_dnt", 1 }, -- 338608
-        [7087] = { "oneths_clear_vision", 1 }, -- 338661
-        [7088] = { "primordial_arcanic_pulsar", 1 }, -- 338668
-     -- [0] = { "druid_balance_power_03_dnt", 1 }, -- 0
-     -- [0] = { "druid_balance_power_04_dnt", 1 }, -- 0
-     -- [0] = { "druid_feral_power_04_dnt", 1 }, -- 0
-        [7091] = { "apex_predators_craving", 1 }, -- 339139
-        [7090] = { "druid_feral_power_02_dnt", 1 }, -- 339141
-        [7089] = { "druid_feral_power_01_dnt", 1 }, -- 339144
-        [7092] = { "druid_guardian_power_01_dnt", 1 }, -- 339060
-        [7093] = { "druid_guardian_power_02_dnt", 1 }, -- 339063
-        [7094] = { "druid_guardian_power_03_dnt", 1 }, -- 339056
-        [7095] = { "legacy_of_the_sleeper", 1 }, -- 339062
-        [7096] = { "memory_of_the_mother_tree", 1 }, -- 339064
-        [7097] = { "the_dark_titans_lesson", 1 }, -- 338831
-        [7098] = { "druid_restoration_power_03_dnt", 1 }, -- 338829
-        [7099] = { "druid_restoration_power_04_dnt", 1 }, -- 338832
-        [7003] = { "call_of_the_wild", 1 }, -- 336742
-        [7004] = { "nessingwarys_trapping_apparatus", 1 }, -- 336743
-        [7005] = { "soulforge_embers", 1 }, -- 336745
-        [7006] = { "craven_strategem", 1 }, -- 336747
-        [7007] = { "dire_command", 1 }, -- 336819
-        [7008] = { "flamewakers_cobra_sting", 1 }, -- 336822
-        [7009] = { "qapla_eredun_war_order", 1 }, -- 336830
-        [7010] = { "rylakstalkers_piercing_fangs", 1 }, -- 336844
-        [7011] = { "eagletalons_true_focus", 1 }, -- 336849
-        [7012] = { "surging_shots", 1 }, -- 336867
-        [7013] = { "serpentstalkers_trickery", 1 }, -- 336870
-        [7014] = { "secrets_of_the_unblinking_vigil", 1 }, -- 336878
-        [7015] = { "wildfire_cluster", 1 }, -- 336895
-        [7016] = { "rylakstalkers_confounding_strikes", 1 }, -- 336901
-        [7017] = { "latent_poison_injectors", 1 }, -- 336902
-        [7018] = { "butchers_bone_fragments", 1 }, -- 336907
-        [7083] = { "kata", 1 }, -- 0
-        [7082] = { "invokers_delight", 1 }, -- 337298
-        [7080] = { "roll_out", 1 }, -- 337294
-        [7081] = { "fatal_touch", 1 }, -- 337296
-        [7076] = { "flaming_kicks", 1 }, -- 338138
-        [7077] = { "stormstouts_last_gasp", 1 }, -- 337288
-        [7078] = { "mighty_pour", 1 }, -- 337290
-        [7079] = { "face_palm", 1 }, -- 337570
-        [7075] = { "ancient_teachings_of_the_monastery", 1 }, -- 337172
-        [7073] = { "celestial_breath", 1 }, -- 337225
-        [7074] = { "soothing_focus", 1 }, -- 337343
-        [7072] = { "uplifting_mists", 1 }, -- 337473
-        [7070] = { "xuens_battlegear", 1 }, -- 337481
-        [7068] = { "rushing_tiger_palm", 1 }, -- 337334
-        [7071] = { "pressure_release", 1 }, -- 337483
-        [7069] = { "the_emperors_capacitor", 1 }, -- 337292
-        [7053] = { "uthers_guard", 1 }, -- 337600
-        [7055] = { "of_dusk_and_dawn", 1 }, -- 337746
-        [7056] = { "the_arbiters_judgment", 1 }, -- 337681
-     -- [0] = { "paladin_holy_power_04_dnt", 1 }, -- 0
-        [7059] = { "shock_barrier", 1 }, -- 337825
-        [7057] = { "shadowbreaker_dawn_of_the_sun", 1 }, -- 337812
-        [7058] = { "inflorescence_of_the_sunwell", 1 }, -- 337777
-        [7060] = { "holy_avengers_engraved_sigil", 1 }, -- 337831
-        [7061] = { "the_ardent_protectors_sanctum", 1 }, -- 337838
-        [7062] = { "bulwark_of_righteous_fury", 1 }, -- 337847
-        [7063] = { "reign_of_endless_kings", 1 }, -- 337850
-        [7067] = { "tempest_of_the_lightbringer", 1 }, -- 337257
-        [7066] = { "relentless_inquisitor", 1 }, -- 337297
-        [7065] = { "badge_of_the_mad_paragon", 1 }, -- 337594
-        [7064] = { "final_verdict", 1 }, -- 337247
-     -- [0] = { "rogue_all_power_04_dnt", 1 }, -- 0
-     -- [0] = { "rogue_all_power_03_dnt", 1 }, -- 0
-     -- [0] = { "rogue_all_power_02_dnt", 1 }, -- 0
-     -- [0] = { "rogue_all_power_01_dnt", 1 }, -- 0
-     -- [0] = { "rogue_assassination_power_01_dnt", 1 }, -- 0
-     -- [0] = { "rogue_assassination_power_02_dnt", 1 }, -- 0
-     -- [0] = { "rogue_assassination_power_03_dnt", 1 }, -- 0
-     -- [0] = { "rogue_assassination_power_04_dnt", 1 }, -- 0
-     -- [0] = { "rogue_outlaw_power_04_dnt", 1 }, -- 0
-     -- [0] = { "rogue_outlaw_power_03_dnt", 1 }, -- 0
-     -- [0] = { "rogue_outlaw_power_02_dnt", 1 }, -- 0
-     -- [0] = { "rogue_outlaw_power_01_dnt", 1 }, -- 0
-     -- [0] = { "rogue_subtlety_power_01_dnt", 1 }, -- 0
-     -- [0] = { "rogue_subtlety_power_02_dnt", 1 }, -- 0
-     -- [0] = { "rogue_subtlety_power_03_dnt", 1 }, -- 0
-     -- [0] = { "rogue_subtlety_power_04_dnt", 1 }, -- 0
-        [6985] = { "ancestral_reminder", 1 }, -- 336741
-        [6986] = { "deeptremor_stone", 1 }, -- 336739
-        [6987] = { "deeply_rooted_elements", 1 }, -- 336738
-        [6988] = { "chains_of_devastation", 1 }, -- 336735
-        [6989] = { "skybreakers_fiery_demise", 1 }, -- 336734
-        [6990] = { "elemental_equilibrium", 1 }, -- 336730
-        [6991] = { "echoes_of_great_sundering", 1 }, -- 336215
-        [6992] = { "windspeakers_lava_resurgence", 1 }, -- 336063
-        [6993] = { "doom_winds", 1 }, -- 335902
-        [6994] = { "legacy_of_the_frost_witch", 1 }, -- 335899
-        [6995] = { "witch_doctors_wolf_bones", 1 }, -- 335897
-        [6996] = { "primal_lava_actuators", 1 }, -- 335895
-        [6997] = { "jonats_natural_focus", 1 }, -- 335893
-        [6998] = { "spiritwalkers_tidal_totem", 1 }, -- 335891
-        [6999] = { "primal_tide_core", 1 }, -- 335889
-        [7000] = { "earthen_harmony", 1 }, -- 335886
-     -- [0] = { "priest_all_power_04_dnt", 1 }, -- 0
-        [7002] = { "twins_of_the_sun_priestess", 1 }, -- 336897
-        [6975] = { "cauterizing_shadows", 1 }, -- 336370
-        [6972] = { "vault_of_heavens", 1 }, -- 336470
-        [6976] = { "the_penitent_one", 1 }, -- 336011
-        [6978] = { "crystalline_reflection", 1 }, -- 336507
-        [6979] = { "kiss_of_death", 1 }, -- 336133
-        [6980] = { "clarity_of_mind", 1 }, -- 336067
-        [6984] = { "xanshi_return_of_archbishop_benedictus", 1 }, -- 337477
-        [6977] = { "harmonious_apparatus", 1 }, -- 336314
-        [6974] = { "flash_concentration", 1 }, -- 336266
-        [6973] = { "divine_image", 1 }, -- 336400
-        [6981] = { "painbreaker_psalm", 1 }, -- 336165
-        [6982] = { "shadowflame_prism", 1 }, -- 336143
-        [6983] = { "eternal_call_to_the_void", 1 }, -- 336214
-     -- [0] = { "priest_shadow_power_04_dnt", 1 }, -- 0
-        [7025] = { "wilfreds_sigil_of_superior_summoning", 1 }, -- 337020
-        [7026] = { "claw_of_endereth", 1 }, -- 337038
-        [7027] = { "mark_of_borrowed_power", 1 }, -- 337057
-        [7028] = { "pillars_of_the_dark_portal", 1 }, -- 337065
-        [7029] = { "perpetual_agony_of_azjaqir", 1 }, -- 337106
-        [7030] = { "sacrolashs_dark_strike", 1 }, -- 337111
-        [7031] = { "malefic_wrath", 1 }, -- 337122
-        [7032] = { "wrath_of_consumption", 1 }, -- 337128
-        [7033] = { "implosive_potential", 1 }, -- 337135
-        [7034] = { "grim_inquisitors_dread_calling", 1 }, -- 337141
-        [7035] = { "forces_of_the_horned_nightmare", 1 }, -- 337146
-        [7036] = { "balespiders_burning_core", 1 }, -- 337159
-        [7037] = { "odr_shawl_of_the_ymirjar", 1 }, -- 337163
-        [7038] = { "cinders_of_the_azjaqir", 1 }, -- 337166
-        [7039] = { "madness_of_the_azjaqir", 1 }, -- 337169
-        [7040] = { "embers_of_the_diabolic_raiment", 1 }, -- 337272
-        [6955] = { "leaper", 1 }, -- 335214
-        [6971] = { "seismic_reverberation", 1 }, -- 335758
-        [6958] = { "misshapen_mirror", 1 }, -- 335253
-        [6959] = { "signet_of_tormented_kings", 1 }, -- 335266
-        [6962] = { "enduring_blow", 1 }, -- 335458
-        [6960] = { "battlelord", 1 }, -- 335274
-        [6961] = { "exploiter", 1 }, -- 335451
-        [6970] = { "unhinged", 1 }, -- 335282
-        [6963] = { "cadence_of_fujieda", 1 }, -- 335555
-        [6964] = { "deathmaker", 1 }, -- 335567
-        [6965] = { "reckless_defense", 1 }, -- 335582
-        [6966] = { "will_of_the_berserker", 1 }, -- 335594
-        [6956] = { "thunderlord", 1 }, -- 335229
-        [6957] = { "the_wall", 1 }, -- 335239
-        [6967] = { "unbreakable_will", 1 }, -- 335629
-        [6969] = { "reprisal", 1 }, -- 335718
-        [7054] = { "liadrins_fury_reborn", 1 }, -- 337638
+        -- Mage/Arcane
+        [6831] = { "expanded_potential", 1, 62 }, -- 327489
+        [6832] = { "disciplinary_command", 1, 62 }, -- 327365
+        [6834] = { "temporal_warp", 1, 62 }, -- 327351
+        [6926] = { "arcane_infinity", 1, 62 }, -- 332769
+        [6927] = { "arcane_bombardment", 1, 62 }, -- 332892
+        [6928] = { "siphon_storm", 1, 62 }, -- 332928
+        [6936] = { "triune_ward", 1, 62 }, -- 333373
+        [6937] = { "grisly_icicle", 1, 62 }, -- 333393
+        [7100] = { "echo_of_eonar", 1, 62 }, -- 338477
+        [7101] = { "judgment_of_the_arbiter", 1, 62 }, -- 339344
+        [7102] = { "norgannons_sagacity", 1, 62 }, -- 339340
+        [7103] = { "sephuzs_proclamation", 1, 62 }, -- 339348
+        [7104] = { "stable_phantasma_lure", 1, 62 }, -- 339351
+        [7105] = { "third_eye_of_the_jailer", 1, 62 }, -- 339058
+        [7106] = { "vitality_sacrifice", 1, 62 }, -- 338743
+        [7159] = { "maw_rattle", 1, 62 }, -- 340197
 
+        -- Mage/Fire
+        [6931] = { "fevered_incantation", 1, 63 }, -- 333030
+        [6932] = { "firestorm", 1, 63 }, -- 333097
+        [6933] = { "molten_skyfall", 1, 63 }, -- 333167
+        [6934] = { "sun_kings_blessing", 1, 63 }, -- 333313
+
+        -- Mage/Frost
+        [6823] = { "slick_ice", 1, 64 }, -- 327508
+        [6828] = { "cold_front", 1, 64 }, -- 327284
+        [6829] = { "freezing_winds", 1, 64 }, -- 327364
+        [6830] = { "glacial_fragments", 1, 64 }, -- 327492
+
+        -- Paladin/Holy
+        [7053] = { "uthers_guard", 1, 65 }, -- 337600
+        [7054] = { "liadrins_fury_reborn", 1, 65 }, -- 337638
+        [7055] = { "of_dusk_and_dawn", 1, 65 }, -- 337746
+        [7056] = { "the_magistrates_judgment", 1, 65 }, -- 337681
+        [7057] = { "shadowbreaker_dawn_of_the_sun", 1, 65 }, -- 337812
+        [7058] = { "inflorescence_of_the_sunwell", 1, 65 }, -- 337777
+        [7059] = { "shock_barrier", 1, 65 }, -- 337825
+        [7128] = { "maraads_dying_breath", 1, 65 }, -- 234848
+
+        -- Paladin/Protection
+        [7060] = { "holy_avengers_engraved_sigil", 1, 66 }, -- 337831
+        [7061] = { "the_ardent_protectors_sanctum", 1, 66 }, -- 337838
+        [7062] = { "bulwark_of_righteous_fury", 1, 66 }, -- 337847
+        [7063] = { "reign_of_endless_kings", 1, 66 }, -- 337850
+
+        -- Paladin/Retribution
+        [7064] = { "final_verdict", 1, 70 }, -- 337247
+        [7065] = { "badge_of_the_mad_paragon", 1, 70 }, -- 337594
+        [7066] = { "relentless_inquisitor", 1, 70 }, -- 337297
+        [7067] = { "tempest_of_the_lightbringer", 1, 70 }, -- 337257
+
+        -- Warrior/Arms
+        [6960] = { "battlelord", 1, 71 }, -- 335274
+        [6961] = { "exploiter", 1, 71 }, -- 335451
+        [6962] = { "enduring_blow", 1, 71 }, -- 335458
+        [6970] = { "unhinged", 1, 71 }, -- 335282
+
+        -- Warrior/Fury
+        [6955] = { "leaper", 1, 72 }, -- 335214
+        [6958] = { "misshapen_mirror", 1, 72 }, -- 335253
+        [6959] = { "signet_of_tormented_kings", 1, 72 }, -- 335266
+        [6963] = { "cadence_of_fujieda", 1, 72 }, -- 335555
+        [6964] = { "deathmaker", 1, 72 }, -- 335567
+        [6965] = { "reckless_defense", 1, 72 }, -- 335582
+        [6966] = { "will_of_the_berserker", 1, 72 }, -- 335594
+        [6971] = { "seismic_reverberation", 1, 72 }, -- 335758
+
+        -- Warrior/Protection
+        [6956] = { "thunderlord", 1, 73 }, -- 335229
+        [6957] = { "the_wall", 1, 73 }, -- 335239
+        [6967] = { "unbreakable_will", 1, 73 }, -- 335629
+        [6969] = { "reprisal", 1, 73 }, -- 335718
+
+        -- Druid/Balance
+        [7084] = { "oath_of_the_elder_druid", 1, 102 }, -- 338608
+        [7085] = { "circle_of_life_and_death", 1, 102 }, -- 338657
+        [7086] = { "draught_of_deep_focus", 1, 102 }, -- 338658
+        [7087] = { "oneths_clear_vision", 1, 102 }, -- 338661
+        [7088] = { "primordial_arcanic_pulsar", 1, 102 }, -- 338668
+        [7107] = { "balance_of_all_things", 1, 102 }, -- 339942
+        [7108] = { "timeworn_dreambinder", 1, 102 }, -- 339949
+        [7110] = { "lycaras_fleeting_glimpse", 1, 102 }, -- 340059
+
+        -- Druid/Feral
+        [7089] = { "cateye_curio", 1, 103 }, -- 339144
+        [7090] = { "eye_of_fearful_symmetry", 1, 103 }, -- 339141
+        [7091] = { "apex_predators_craving", 1, 103 }, -- 339139
+        [7109] = { "frenzyband", 1, 103 }, -- 340053
+
+        -- Druid/Guardian
+        [7092] = { "luffainfused_embrace", 1, 104 }, -- 339060
+        [7093] = { "the_natural_orders_will", 1, 104 }, -- 339063
+        [7094] = { "ursocs_lingering_spirit", 1, 104 }, -- 339056
+        [7095] = { "legacy_of_the_sleeper", 1, 104 }, -- 339062
+
+        -- Druid/Restoration
+        [7096] = { "memory_of_the_mother_tree", 1, 105 }, -- 339064
+        [7097] = { "the_dark_titans_lesson", 1, 105 }, -- 338831
+        [7098] = { "verdant_infusion", 1, 105 }, -- 338829
+        [7099] = { "vision_of_unending_growth", 1, 105 }, -- 338832
+
+        -- Death Knight/Blood
+        [6940] = { "bryndaors_might", 1, 250 }, -- 334501
+        [6941] = { "crimson_rune_weapon", 1, 250 }, -- 334525
+        [6942] = { "vampiric_aura", 1, 250 }, -- 334547
+        [6943] = { "gorefiends_domination", 1, 250 }, -- 334580
+        [6947] = { "deaths_embrace", 1, 250 }, -- 334728
+        [6948] = { "grip_of_the_everlasting", 1, 250 }, -- 334724
+        [6953] = { "superstrain", 1, 250 }, -- 334974
+        [6954] = { "phearomones", 1, 250 }, -- 335177
+
+        -- Death Knight/Frost
+        [6944] = { "koltiras_favor", 1, 251 }, -- 334583
+        [6945] = { "biting_cold", 1, 251 }, -- 334678
+        [6946] = { "absolute_zero", 1, 251 }, -- 334692
+        [7160] = { "rage_of_the_frozen_champion", 1, 251 }, -- 341724
+
+        -- Death Knight/Unholy
+        [6949] = { "reanimated_shambler", 1, 252 }, -- 334836
+        [6950] = { "frenzied_monstrosity", 1, 252 }, -- 334888
+        [6951] = { "deaths_certainty", 1, 252 }, -- 334898
+        [6952] = { "deadliest_coil", 1, 252 }, -- 334949
+
+        -- Hunter/Beast Mastery
+        [7003] = { "call_of_the_wild", 1, 253 }, -- 336742
+        [7004] = { "nessingwarys_trapping_apparatus", 1, 253 }, -- 336743
+        [7005] = { "soulforge_embers", 1, 253 }, -- 336745
+        [7006] = { "craven_strategem", 1, 253 }, -- 336747
+        [7007] = { "dire_command", 1, 253 }, -- 336819
+        [7008] = { "flamewakers_cobra_sting", 1, 253 }, -- 336822
+        [7009] = { "qapla_eredun_war_order", 1, 253 }, -- 336830
+        [7010] = { "rylakstalkers_piercing_fangs", 1, 253 }, -- 336844
+
+        -- Hunter/Marksmanship
+        [7011] = { "eagletalons_true_focus", 1, 254 }, -- 336849
+        [7012] = { "surging_shots", 1, 254 }, -- 336867
+        [7013] = { "serpentstalkers_trickery", 1, 254 }, -- 336870
+        [7014] = { "secrets_of_the_unblinking_vigil", 1, 254 }, -- 336878
+
+        -- Hunter/Survival
+        [7015] = { "wildfire_cluster", 1, 255 }, -- 336895
+        [7016] = { "rylakstalkers_confounding_strikes", 1, 255 }, -- 336901
+        [7017] = { "latent_poison_injectors", 1, 255 }, -- 336902
+        [7018] = { "butchers_bone_fragments", 1, 255 }, -- 336907
+
+        -- Priest/Discipline
+        [6976] = { "the_penitent_one", 1, 256 }, -- 336011
+        [6978] = { "crystalline_reflection", 1, 256 }, -- 336507
+        [6979] = { "kiss_of_death", 1, 256 }, -- 336133
+        [6980] = { "clarity_of_mind", 1, 256 }, -- 336067
+
+        -- Priest/Holy
+        [6973] = { "divine_image", 1, 257 }, -- 336400
+        [6974] = { "flash_concentration", 1, 257 }, -- 336266
+        [6977] = { "harmonious_apparatus", 1, 257 }, -- 336314
+        [6984] = { "xanshi_return_of_archbishop_benedictus", 1, 257 }, -- 337477
+
+        -- Priest/Shadow
+        [6972] = { "vault_of_heavens", 1, 258 }, -- 336470
+        [6975] = { "cauterizing_shadows", 1, 258 }, -- 336370
+        [6981] = { "painbreaker_psalm", 1, 258 }, -- 336165
+        [6982] = { "shadowflame_prism", 1, 258 }, -- 336143
+        [6983] = { "eternal_call_to_the_void", 1, 258 }, -- 336214
+        [7002] = { "twins_of_the_sun_priestess", 1, 258 }, -- 336897
+        [7161] = { "measured_contemplation", 1, 258 }, -- 341804
+        [7162] = { "talbadars_stratagem", 1, 258 }, -- 342415
+
+        -- Rogue/Assassination
+        [7111] = { "mark_of_the_master_assassin", 1, 259 }, -- 340076
+        [7112] = { "tiny_toxic_blades", 1, 259 }, -- 340078
+        [7113] = { "essence_of_bloodfang", 1, 259 }, -- 340079
+        [7114] = { "invigorating_shadowdust", 1, 259 }, -- 340080
+        [7115] = { "dashing_scoundrel", 1, 259 }, -- 340081
+        [7116] = { "doomblade", 1, 259 }, -- 340082
+        [7117] = { "zoldyck_insignia", 1, 259 }, -- 340083
+        [7118] = { "dustwalkers_patch", 1, 259 }, -- 340084
+
+        -- Rogue/Outlaw
+        [7119] = { "greenskins_wickers", 1, 260 }, -- 340085
+        [7120] = { "guile_charm", 1, 260 }, -- 340086
+        [7121] = { "celerity", 1, 260 }, -- 340087
+        [7122] = { "concealed_blunderbuss", 1, 260 }, -- 340088
+
+        -- Rogue/Subtlety
+        [7123] = { "finality", 1, 261 }, -- 340089
+        [7124] = { "akaaris_soul_fragment", 1, 261 }, -- 340090
+        [7125] = { "the_rotten", 1, 261 }, -- 340091
+        [7126] = { "deathly_shadows", 1, 261 }, -- 340092
+
+        -- Shaman/Elemental
+        [6985] = { "ancestral_reminder", 1, 262 }, -- 336741
+        [6986] = { "deeptremor_stone", 1, 262 }, -- 336739
+        [6987] = { "deeply_rooted_elements", 1, 262 }, -- 336738
+        [6988] = { "chains_of_devastation", 1, 262 }, -- 336735
+        [6989] = { "skybreakers_fiery_demise", 1, 262 }, -- 336734
+        [6990] = { "elemental_equilibrium", 1, 262 }, -- 336730
+        [6991] = { "echoes_of_great_sundering", 1, 262 }, -- 336215
+        [6992] = { "windspeakers_lava_resurgence", 1, 262 }, -- 336063
+
+        -- Shaman/Enhancement
+        [6993] = { "doom_winds", 1, 263 }, -- 335902
+        [6994] = { "legacy_of_the_frost_witch", 1, 263 }, -- 335899
+        [6995] = { "witch_doctors_wolf_bones", 1, 263 }, -- 335897
+        [6996] = { "primal_lava_actuators", 1, 263 }, -- 335895
+
+        -- Shaman/Restoration
+        [6997] = { "jonats_natural_focus", 1, 264 }, -- 335893
+        [6998] = { "spiritwalkers_tidal_totem", 1, 264 }, -- 335891
+        [6999] = { "primal_tide_core", 1, 264 }, -- 335889
+        [7000] = { "earthen_harmony", 1, 264 }, -- 335886
+
+        -- Warlock/Affliction
+        [7025] = { "wilfreds_sigil_of_superior_summoning", 1, 265 }, -- 337020
+        [7026] = { "claw_of_endereth", 1, 265 }, -- 337038
+        [7027] = { "mark_of_borrowed_power", 1, 265 }, -- 337057
+        [7028] = { "pillars_of_the_dark_portal", 1, 265 }, -- 337065
+        [7029] = { "perpetual_agony_of_azjaqir", 1, 265 }, -- 337106
+        [7030] = { "sacrolashs_dark_strike", 1, 265 }, -- 337111
+        [7031] = { "malefic_wrath", 1, 265 }, -- 337122
+        [7032] = { "wrath_of_consumption", 1, 265 }, -- 337128
+
+        -- Warlock/Demonology
+        [7033] = { "implosive_potential", 1, 266 }, -- 337135
+        [7034] = { "grim_inquisitors_dread_calling", 1, 266 }, -- 337141
+        [7035] = { "forces_of_the_horned_nightmare", 1, 266 }, -- 337146
+        [7036] = { "balespiders_burning_core", 1, 266 }, -- 337159
+
+        -- Warlock/Destruction
+        [7037] = { "odr_shawl_of_the_ymirjar", 1, 267 }, -- 337163
+        [7038] = { "cinders_of_the_azjaqir", 1, 267 }, -- 337166
+        [7039] = { "madness_of_the_azjaqir", 1, 267 }, -- 337169
+        [7040] = { "embers_of_the_diabolic_raiment", 1, 267 }, -- 337272
+
+        -- Monk/Brewmaster
+        [7076] = { "charred_passions", 1, 268 }, -- 338138
+        [7077] = { "stormstouts_last_keg", 1, 268 }, -- 337288
+        [7078] = { "celestial_infusion", 1, 268 }, -- 337290
+        [7079] = { "shaohaos_might", 1, 268 }, -- 337570
+        [7080] = { "swiftsure_wraps", 1, 268 }, -- 337294
+        [7081] = { "fatal_touch", 1, 268 }, -- 337296
+        [7082] = { "invokers_delight", 1, 268 }, -- 337298
+        [7184] = { "escape_from_reality", 1, 268 }, -- 0
+
+        -- Monk/Windwalker
+        [7068] = { "keefers_skyreach", 1, 269 }, -- 337334
+        [7069] = { "last_emperors_capacitor", 1, 269 }, -- 337292
+        [7070] = { "xuens_treasure", 1, 269 }, -- 337481
+        [7071] = { "jade_ignition", 1, 269 }, -- 337483
+
+        -- Monk/Mistweaver
+        [7072] = { "tear_of_morning", 1, 270 }, -- 337473
+        [7073] = { "yulons_whisper", 1, 270 }, -- 337225
+        [7074] = { "clouded_focus", 1, 270 }, -- 337343
+        [7075] = { "ancient_teachings_of_the_monastery", 1, 270 }, -- 337172
+
+        -- Demon Hunter/Havoc
+        [7041] = { "sigil_of_the_illidari", 1, 577 }, -- 337504
+        [7042] = { "apexis_empowerment", 1, 577 }, -- 337532
+        [7043] = { "darkglare_medallion", 1, 577 }, -- 337534
+        [7044] = { "darkest_hour", 1, 577 }, -- 337539
+        [7049] = { "inner_demons", 1, 577 }, -- 337548
+        [7050] = { "chaos_theory", 1, 577 }, -- 337551
+        [7051] = { "erratic_fel_core", 1, 577 }, -- 337685
+        [7052] = { "fel_bombardment", 1, 577 }, -- 337775
+
+        -- Demon Hunter/Vengeance
+        [7045] = { "spirit_of_the_darkness_flame", 1, 581 }, -- 337541
+        [7046] = { "razelikhs_defilement", 1, 581 }, -- 337544
+        [7047] = { "cloak_of_fel_flames", 1, 581 }, -- 337545
+        [7048] = { "fiery_soul", 1, 581 }, -- 337547
     }
 
     local wasWearing = {}
