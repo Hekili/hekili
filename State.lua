@@ -5242,14 +5242,16 @@ function state.reset( dispName )
 
             state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, channeled and "CHANNEL_FINISH" or "CAST_FINISH", state.target.GUID )
             
-            local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
+            if channeled then
+                local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
 
-            if channeled and tick_time and tick_time > 0 then
-                local eoc = state.buff.casting.expires - ability.tick_time
+                if tick_time and tick_time > 0 then
+                    local eoc = state.buff.casting.expires - ability.tick_time
 
-                while ( eoc > state.now ) do
-                    state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", state.target.GUID )
-                    eoc = eoc - ability.tick_time
+                    while ( eoc > state.now ) do
+                        state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", state.target.GUID )
+                        eoc = eoc - ability.tick_time
+                    end
                 end
             end
         end
