@@ -11,13 +11,13 @@ local state =  Hekili.State
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'ROGUE' then
+if UnitClassBase( "player" ) == "ROGUE" then
     local spec = Hekili:NewSpecialization( 260 )
 
     spec:RegisterResource( Enum.PowerType.ComboPoints )
     spec:RegisterResource( Enum.PowerType.Energy, {
         blade_rush = {
-            aura = 'blade_rush',
+            aura = "blade_rush",
 
             last = function ()
                 local app = state.buff.blade_rush.applied
@@ -37,7 +37,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         quick_draw = 22119, -- 196938
         ghostly_strike = 22120, -- 196937
 
-        acrobatic_strikes = 19236, -- 196924
+        acrobatic_strikes = 23470, -- 196924
         retractable_hook = 19237, -- 256188
         hit_and_run = 19238, -- 196922
 
@@ -55,13 +55,30 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
         loaded_dice = 21990, -- 256170
         alacrity = 23128, -- 193539
-        slice_and_dice = 19250, -- 5171
+        dreadblades = 19250, -- 343142
 
         dancing_steel = 22125, -- 272026
         blade_rush = 23075, -- 271877
         killing_spree = 23175, -- 51690
     } )
 
+    -- PvP Talents
+    spec:RegisterPvpTalents( { 
+        boarding_party = 853, -- 209752
+        cheap_tricks = 142, -- 212035
+        control_is_king = 138, -- 212217
+        death_from_above = 3619, -- 269513
+        dismantle = 145, -- 207777
+        drink_up_me_hearties = 139, -- 212210
+        honor_among_thieves = 3451, -- 198032
+        maneuverability = 129, -- 197000
+        plunder_armor = 150, -- 198529
+        shiv = 3449, -- 248744
+        smoke_bomb = 3483, -- 212182
+        take_your_cut = 135, -- 198265
+        thick_as_thieves = 1208, -- 221622
+        turn_the_tables = 3421, -- 198020
+    } )
 
 
     local rtb_buff_list = {
@@ -82,13 +99,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             max_stack = 5,
         },
         between_the_eyes = {
-            id = 199804,
-            duration = 5,
-            max_stack = 1
+            id = 315341,
+            duration = 15,
+            max_stack = 1,
         },
         blade_flurry = {
             id = 13877,
-            duration = 15,
+            duration = function () return talent.dancing_steel.enabled and 15 or 12 end,
             max_stack = 1,
         },
         blade_rush = {
@@ -116,12 +133,27 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         crimson_vial = {
             id = 185311,
-            duration = 6,
+            duration = 4,
+            max_stack = 1,
+        },
+        crippling_poison = {
+            id = 3408,
+            duration = 3600,
             max_stack = 1,
         },
         detection = {
             id = 56814,
             duration = 30,
+            max_stack = 1,
+        },
+        dreadblades = {
+            id = 343142,
+            duration = 10,
+            max_stack = 1,
+        },
+        evasion = {
+            id = 5277,
+            duration = 10.001,
             max_stack = 1,
         },
         feint = {
@@ -142,6 +174,16 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 4,
             max_stack = 1,
         },
+        instant_poison = {
+            id = 315584,
+            duration = 3600,
+            max_stack = 1,
+        },
+        kidney_shot = {
+            id = 408,
+            duration = 6,
+            max_stack = 1,
+        },
         killing_spree = {
             id = 51690,
             duration = 2,
@@ -157,6 +199,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 60,
             max_stack = 1,
         },
+        numbing_poison = {
+            id = 5761,
+            duration = 3600,
+            max_stack = 1,
+        },
         opportunity = {
             id = 195627,
             duration = 10,
@@ -164,6 +211,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         pistol_shot = {
             id = 185763,
+            duration = 6,
+            max_stack = 1,
+        },
+        prey_on_the_weak = {
+            id = 255909,
             duration = 6,
             max_stack = 1,
         },
@@ -175,7 +227,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 10,
             max_stack = 1,
         },
-        -- Replaced this with 'alias' for any of the other applied buffs.
+        -- Replaced this with "alias" for any of the other applied buffs.
         -- roll_the_bones = { id = 193316, },
         ruthlessness = {
             id = 14161,
@@ -191,8 +243,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             max_stack = 1,
         },
         slice_and_dice = {
-            id = 5171,
-            duration = 18,
+            id = 315496,
+            duration = function () return talent.deeper_stratagem.enabled and 42 or 36 end,
             max_stack = 1,
         },
         sprint = {
@@ -209,48 +261,51 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 3,
             max_stack = 1,
         },
+        wound_poison = {
+            id = 8679,
+        },
 
         -- Real RtB buffs.
         broadside = {
             id = 193356,
-            duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+            duration = 30,
         },
         buried_treasure = {
             id = 199600,
-            duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+            duration = 30,
         },
         grand_melee = {
             id = 193358,
-            duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+            duration = 30,
         },
         skull_and_crossbones = {
             id = 199603,
-            duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+            duration = 30,
         },        
         true_bearing = {
             id = 193359,
-            duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+            duration = 30,
         },
         ruthless_precision = {
             id = 193357,
-            duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+            duration = 30,
         },
 
 
         -- Fake buffs for forecasting.
         rtb_buff_1 = {
-            duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+            duration = 30,
         },
 
         rtb_buff_2 = {
-            duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+            duration = 30,
         },
 
         roll_the_bones = {
             alias = rtb_buff_list,
             aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
             aliasType = "buff",
-            duration = function () return 36 + ( talent.deeper_strategem.enabled and 6 or 0 ) end,
+            duration = 30,
         },
 
 
@@ -299,19 +354,19 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
 
     local stealth = {
-        rogue   = { "stealth", "vanish", "shadow_dance", "subterfuge" },
+        rogue   = { "stealth", "vanish", "shadow_dance" },
         mantle  = { "stealth", "vanish" },
-        all     = { "stealth", "vanish", "shadow_dance", "subterfuge", "shadowmeld" }
+        all     = { "stealth", "vanish", "shadow_dance", "shadowmeld" }
     }
 
     spec:RegisterStateTable( "stealthed", setmetatable( {}, {
         __index = function( t, k )
             if k == "rogue" then
-                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up
             elseif k == "mantle" then
                 return buff.stealth.up or buff.vanish.up
             elseif k == "all" then
-                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.shadowmeld.up
             end
 
             return false
@@ -327,10 +382,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     } )
 
     spec:RegisterStateExpr( "mantle_duration", function ()
-        if level > 115 then return 0 end
-
-        if stealthed.mantle then return cooldown.global_cooldown.remains + 5
-        elseif buff.master_assassins_initiative.up then return buff.master_assassins_initiative.remains end
         return 0
     end )
 
@@ -339,15 +390,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterHook( "runHandler", function( ability )
         local a = class.abilities[ ability ]
 
-        if stealthed.mantle and ( not a or a.startsCombat ) then
-            if level < 116 and equipped.mantle_of_the_master_assassin then
-                applyBuff( "master_assassins_initiative", 5 )
-            end
-
-            if talent.subterfuge.enabled then
-                applyBuff( "subterfuge" )
-            end
-
+        if stealthed.all and ( not a or a.startsCombat ) then
             if buff.stealth.up then
                 setCooldown( "stealth", 2 )
             end
@@ -367,13 +410,18 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             reduceCooldown( "adrenaline_rush", cdr )
             reduceCooldown( "between_the_eyes", cdr )
-            reduceCooldown( "sprint", cdr )
+            reduceCooldown( "blade_flurry", cdr )
             reduceCooldown( "grappling_hook", cdr )
-            reduceCooldown( "vanish", cdr )
-
+            reduceCooldown( "roll_the_bones", cdr )
+            reduceCooldown( "sprint", cdr )
             reduceCooldown( "blade_rush", cdr )
             reduceCooldown( "killing_spree", cdr )
+            reduceCooldown( "vanish", cdr )
         end
+    end )
+
+    spec:RegisterHook( "reset_precast", function( amt, resource )
+        if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
     end )
 
 
@@ -388,23 +436,20 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 136206,
 
-            toggle = 'cooldowns',
-
+            toggle = "cooldowns",
             nobuff = "stealth",
 
             handler = function ()
-                applyBuff( 'adrenaline_rush', 20 )
+                applyBuff( "adrenaline_rush", 20 )
 
                 energy.regen = energy.regen * 1.6
                 energy.max = energy.max + 50
-                forecastResources( 'energy' )
+
+                forecastResources( "energy" )
 
                 if talent.loaded_dice.enabled then
-                    applyBuff( 'loaded_dice', 45 )
-                    return
-                end
-
-                if azerite.brigands_blitz.enabled then
+                    applyBuff( "loaded_dice", 45 )
+                elseif azerite.brigands_blitz.enabled then
                     applyBuff( "brigands_blitz" )
                 end
             end,
@@ -425,15 +470,19 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             usable = function () return stealthed.all end,            
             handler = function ()
-                gain( buff.broadside.up and 3 or 2, 'combo_points' )
+                if debuff.dreadblades.up then
+                    gain( combo_points.max, "combo_points" )
+                else
+                    gain( buff.broadside.up and 3 or 2, "combo_points" )
+                end
             end,
         },
 
 
         between_the_eyes = {
-            id = 199804,
+            id = 315341,
             cast = 0,
-            cooldown = 30,
+            cooldown = 45,
             gcd = "spell",
 
             spend = 25,
@@ -446,14 +495,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             handler = function ()
                 if talent.prey_on_the_weak.enabled then
-                    applyDebuff( 'target', 'prey_on_the_weak', 6 )
+                    applyDebuff( "target", "prey_on_the_weak", 6 )
                 end
 
                 if talent.alacrity.enabled and combo_points.current > 4 then
                     addStack( "alacrity", 20, 1 )
                 end
 
-                applyDebuff( 'target', 'between_the_eyes', combo_points.current ) 
+                applyDebuff( "target", "between_the_eyes", combo_points.current ) 
 
                 if azerite.deadshot.enabled then
                     applyBuff( "deadshot" )
@@ -467,10 +516,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         blade_flurry = {
             id = 13877,
             cast = 0,
-            charges = 2,
-            cooldown = 25,
-            recharge = 25,
-
+            cooldown = 30,
             gcd = "spell",
 
             spend = 15,
@@ -481,11 +527,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             usable = function () return buff.blade_flurry.remains < gcd.execute end,
             handler = function ()
-                if talent.dancing_steel.enabled then 
-                    applyBuff ( 'blade_flurry', 15 )
-                    return
-                end
-                applyBuff( 'blade_flurry', 12 )
+                applyBuff( "blade_flurry" )
             end,
         },
 
@@ -500,7 +542,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 1016243,
 
             handler = function ()
-                applyBuff( 'blade_rush', 5 )
+                applyBuff( "blade_rush", 5 )
             end,
         },
 
@@ -508,14 +550,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         blind = {
             id = 2094,
             cast = 0,
-            cooldown = function () return 120 - ( talent.blinding_powder.enabled and 30 or 0 ) end,
+            cooldown = function () return talent.blinding_powder.enabled and 90 or 120 end,
             gcd = "spell",
 
             startsCombat = true,
             texture = 136175,
 
             handler = function ()
-              applyDebuff( 'target', 'blind', 60)
+              applyDebuff( "target", "blind", 60 )
             end,
         },
 
@@ -526,7 +568,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return 40 - ( talent.dirty_tricks.enabled and 40 or 0 ) end,
+            spend = function () return talent.dirty_tricks.enabled and 0 or 40 end,
             spendType = "energy",
 
             startsCombat = true,
@@ -542,10 +584,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             end,
 
             handler = function ()
-                applyDebuff( 'target', 'cheap_shot', 4)
+                applyDebuff( "target", "cheap_shot", 4 )
+
                 if talent.prey_on_the_weak.enabled then
-                    applyDebuff( 'target', 'prey_on_the_weak', 6)
-                    return
+                    applyDebuff( "target", "prey_on_the_weak", 6 )
                 end
             end,
         },
@@ -561,7 +603,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 136177,
 
             handler = function ()
-                applyBuff( 'cloak_of_shadows', 5 )
+                applyBuff( "cloak_of_shadows", 5 )
             end,
         },
 
@@ -572,29 +614,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 30,
             gcd = "spell",
 
-            spend = 30,
+            spend = 20,
             spendType = "energy",
 
             startsCombat = false,
             texture = 1373904,
 
             handler = function ()
-                applyBuff( 'crimson_vial', 6 )
-            end,
-        },
-
-
-        detection = {
-            id = 56814,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-            
-            startsCombat = false,
-            texture = 132319,
-            
-            handler = function ()
-                applyBuff( "detection" )
+                applyBuff( "crimson_vial", 6 )
             end,
         },
 
@@ -641,6 +668,45 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
 
 
+        dreadblades = {
+            id = 343142,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+            
+            spend = 30,
+            spendType = "energy",
+
+            toggle = "cooldowns",
+            talent = "dreadblades",
+
+            startsCombat = true,
+            texture = 458731,
+            
+            handler = function ()
+                applyDebuff( "player", "dreadblades" )
+                gain( buff.broadside.up and 2 or 1, "combo_points" )
+            end,
+        },
+
+
+        evasion = {
+            id = 5277,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            toggle = "defensives",
+
+            startsCombat = true,
+            texture = 136205,
+            
+            handler = function ()
+                applyBuff( "evasion" )
+            end,
+        },
+
+
         feint = {
             id = 1966,
             cast = 0,
@@ -654,7 +720,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132294,
 
             handler = function ()
-                applyBuff( 'feint', 5 )
+                applyBuff( "feint", 5 )
             end,
         },
 
@@ -668,13 +734,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             spend = 30,
             spendType = "energy",
 
-            talent = 'ghostly_strike',
+            talent = "ghostly_strike",
 
             startsCombat = true,
             texture = 132094,
 
             handler = function ()
-                applyDebuff( 'target', 'ghostly_strike', 10 )
+                applyDebuff( "target", "ghostly_strike", 10 )
                 gain( buff.broadside.up and 2 or 1, "combo_points" )
             end,
         },
@@ -686,7 +752,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 15,
             gcd = "spell",
 
-            spend = function () return talent.dirty_tricks.enabled and 0 or 0 end,
+            spend = function () return talent.dirty_tricks.enabled and 0 or 25 end,
             spendType = "energy",
 
             startsCombat = true,
@@ -696,7 +762,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return false end,
             handler = function ()
                 gain( buff.broadside.up and 2 or 1, "combo_points" )
-                applyDebuff( 'target', 'gouge', 4 )
+                applyDebuff( "target", "gouge", 4 )
             end,
         },
 
@@ -721,7 +787,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 15,
             gcd = "spell",
 
-            toggle = 'interrupts', 
+            toggle = "interrupts", 
             interrupt = true,
 
             startsCombat = true,
@@ -736,21 +802,41 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
 
 
+        kidney_shot = {
+            id = 408,
+            cast = 0,
+            cooldown = 20,
+            gcd = "spell",
+            
+            spend = 25,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 132298,
+            
+            handler = function ()
+                applyDebuff( "kidney_shot", 1 + combo_points.current )
+                spend( combo_points.current, "combo_points" )
+            end,
+        },
+
+
         killing_spree = {
             id = 51690,
             cast = 0,
             cooldown = 120,
             gcd = "spell",
 
-            talent = 'killing_spree',
+            talent = "killing_spree",
 
             startsCombat = true,
             texture = 236277,
 
-            toggle = 'cooldowns',
+            toggle = "cooldowns",
 
             handler = function ()
-                applyBuff( 'killing_spree', 2 )
+                applyBuff( "killing_spree", 2 )
+                setCooldown( "global_cooldown", 2 )
             end,
         },
 
@@ -761,7 +847,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 60,
             gcd = "spell",
 
-            talent = 'marked_for_death', 
+            talent = "marked_for_death", 
 
             startsCombat = false,
             texture = 236364,
@@ -771,7 +857,22 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             end,
 
             handler = function ()
-                gain( 5, 'combo_points')
+                gain( 5, "combo_points" )
+            end,
+        },
+
+
+        numbing_poison = {
+            id = 5761,
+            cast = 1.5,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 136066,
+            
+            handler = function ()
+                applyBuff( "numbing_poison" )
             end,
         },
 
@@ -817,14 +918,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 1373908,
 
             handler = function ()
-                gain( buff.broadside.up and 2 or 1, 'combo_points' )
-
-                if talent.quick_draw.enabled and buff.opportunity.up then
-                    gain( 1, 'combo_points' )
+                if debuff.dreadblades.up then
+                    gain( combo_points.max, "combo_points" )
+                else
+                    gain( 1 + ( buff.broadside.up and 1 or 0 ) + ( buff.opportunity.up and 1 or 0 ), "combo_points" )
                 end
 
                 removeBuff( "deadshot" )
-                removeBuff( 'opportunity' )
+                removeBuff( "opportunity" )
             end,
         },
 
@@ -839,62 +940,28 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132269,
 
             handler = function ()
-                applyBuff( 'riposte', 10 )
+                applyBuff( "riposte", 10 )
             end,
         },
 
 
         roll_the_bones = {
-            id = 193316,
+            id = 315508,
             cast = 0,
-            cooldown = 0,
+            cooldown = 45,
             gcd = "spell",
 
-            notalent = 'slice_and_dice',
-
-            spend = 25,
+            spend = 50,
             spendType = "energy",
 
             startsCombat = false,
             texture = 1373910,
 
             usable = function ()
-                if combo_points.current == 0 then return false, "no combo points" end
-
-                -- Don't RtB if we've already done a simulated RtB.
-                if buff.rtb_buff_1.up then return false, "we already rerolled and can't know which buffs we'll have" end
-
-                --[[ This was based on 8.2 logic; tweaking APL instead to avoid hardcoding.  2020-03-09
-                
-                if buff.roll_the_bones.down then return true end
-
-                -- Handle reroll checks for pre-combat.
-                if time == 0 then
-                    if combo_points.current < 5 then return false end
-
-                    local reroll = rtb_buffs < 2 and ( buff.loaded_dice.up or not buff.grand_melee.up and not buff.ruthless_precision.up )
-
-                    if azerite.deadshot.enabled or azerite.ace_up_your_sleeve.enabled then
-                        reroll = rtb_buffs < 2 and ( buff.loaded_dice.up or buff.ruthless_precision.remains <= cooldown.between_the_eyes.remains )
-                    end
-
-                    if azerite.snake_eyes.enabled then
-                        reroll = rtb_buffs < 2 or ( azerite.snake_eyes.rank == 3 and rtb_buffs < 5 )
-                    end
-
-                    if azerite.snake_eyes.rank >= 2 and buff.snake_eyes.stack >= ( buff.broadside.up and 1 or 2 ) then return false end
-
-                    return reroll
-                end ]]
-
-                return true
-            end,            
+                return combo_points.current > 0, "requires combo_points"
+            end,
 
             handler = function ()
-                if talent.alacrity.enabled and combo_points.current > 4 then
-                    addStack( "alacrity", 20, 1 )
-                end
-
                 for _, name in pairs( rtb_buff_list ) do
                     removeBuff( name )
                 end
@@ -903,13 +970,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     applyBuff( "snake_eyes", 12, 5 )
                 end
 
-                applyBuff( "rtb_buff_1", 12 + 6 * ( combo_points.current - 1 ) )
+                applyBuff( "rtb_buff_1" )
+
                 if buff.loaded_dice.up then
-                    applyBuff( "rtb_buff_2", 12 + 6 * ( combo_points.current - 1 ) )
+                    applyBuff( "rtb_buff_2"  )
                     removeBuff( "loaded_dice" )
                 end
-
-                spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
 
@@ -927,10 +993,28 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132310,
 
             handler = function ()
-                applyDebuff( 'target', 'sap', 60 )
+                applyDebuff( "target", "sap", 60 )
             end,
         },
+        
 
+        
+        shiv = {
+            id = 5938,
+            cast = 0,
+            cooldown = 25,
+            gcd = "spell",
+            
+            spend = 20,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 135428,
+            
+            handler = function ()
+                gain( buff.broadside.up and 2 or 1, "combo_point" )
+            end,
+        },
 
         shroud_of_concealment = {
             id = 114018,
@@ -942,7 +1026,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 635350,
 
             handler = function ()
-                applyBuff( 'shroud_of_concealment', 15 )
+                applyBuff( "shroud_of_concealment", 15 )
             end,
         },
 
@@ -961,13 +1045,36 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             handler = function ()
                 removeStack( "snake_eyes" )
-                gain( buff.broadside.up and 2 or 1, 'combo_points')
+                if debuff.dreadblades.up then
+                    gain( combo_points.max, "combo_points" )
+                else
+                    gain( buff.broadside.up and 2 or 1, "combo_points" )
+                end
+            end,
+        },
+
+
+        slaughter = {
+            id = 323654,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 50,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 3565724,
+            
+            handler = function ()
+                applyBuff( "slaughter_poison" )
+                gain( 2, "combo_points" )
             end,
         },
 
 
         slice_and_dice = {
-            id = 5171,
+            id = 315496,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
@@ -978,11 +1085,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 132306,
 
-            talent = "slice_and_dice",
-
             usable = function()
-                if combo_points.current == 0 or buff.slice_and_dice.remains > 6 + ( 6 * combo_points.current ) then return false end
-                return true
+                return combo_points.current > 0, "requires combo_points"
             end,
 
             handler = function ()
@@ -991,7 +1095,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 local combo = min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current )
-                applyBuff( "slice_and_dice", 6 + 6 * ( combo - 1 ) )
+                applyBuff( "slice_and_dice", 6 + 6 * combo )
                 spend( combo, "combo_points" )
             end,
         },
@@ -1007,7 +1111,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132307,
 
             handler = function ()
-                applyBuff( 'sprint', 8 )
+                applyBuff( "sprint", 8 )
             end,
         },
 
@@ -1029,7 +1133,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             end,
 
             handler = function ()
-                applyBuff( 'stealth' )
+                applyBuff( "stealth" )
             end,
         },
 
@@ -1063,7 +1167,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             end,
 
             handler = function ()
-                applyBuff( 'vanish', 3 )
+                applyBuff( "vanish", 3 )
                 applyBuff( "stealth" )
             end,
         },
@@ -1084,7 +1188,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     } )
 
 
-    spec:RegisterPack( "Outlaw", 20200614, [[defPubqiPu9iaLnHs6tsjHrbiofaAvaQ4veHzHsClaWUe8lHWWKs5yOuwgq8mIOAAasDnavTnaj(gGk14iQkNdqLSoIO08esUhqTpPeheqslKOYdLssMirv6IsjP2irv4JevryKevrYjjQQyLa0ljQQ0mjQIu3KikStHu)KOkQHkLu5Oevr0sLskpfftvi6QevvTvPKQYxjIIgRusv1zLsQI9s4VKmyvomvlwQEmPMmfxgzZk6ZuIrlfNwPvlLuLEnqA2O62c1Ub9BidNsDCPKOLRQNd10fDDf2oL03rPA8aqNNOSEIiZNiTFjlytePGX4jjIgK2aPT2akSb0b2aHn5Rn2emPmBsWy7AqDlKGb6XKGrEEKCNDbJTlJJCJisbdgnEnjyAY0glzJiclB2m6bnkoc8gp4EUiO(9zgbEJ1riy6JLNYpqrxWy8KerdsBG0wBaf2a6aBGWgWnWd0cgSnPfrdcqPnbtZAmeu0fmgcRfmaRo55rYD2RR1qwgubiWQRjtBSKnIiSSzZOh0O4iWB8G75IG63Nze4nwhrbiWQdWbKQJnGML6aPnqARaSaey11QACOfclzlabwDaqDavJHm1j)UAqRlr1zOPp4zDUoxeSo(IZqbiWQdaQdOAmKPo7N0O4UN1jh3nuDYd(4Fz1bedIWWwrwx)jh06ysY5zdadfGaRoaOo5fbBfzDdmvx(leukX1TW6Wj58SjuacS6aG6KxeSvK1nWuDXluY26VUj6RtYWFqjtDt0xN8sE2uhq2SvGRdIY6WdBB0NKbGHcqGvhauhq1kAn190J48fAPUwlLRoZ4xOL6KJ7gQo5bF8VS6aYaYjmUo2P6qqUS6ACRuDSvx6VfkbyOaey1ba11Ae3bW6KFxoFHwQJX(jkuacS6aG6K)yQUCJjvIuMLQBI(6iOgnGj91rqZcTu37zd91LnoSU0FlugYnMujszwkuacS6aG6K)yQUwlLRUNEeNxhhzz115qtDmq5TUNMpHBQJJSS66wyDzdvN9tAuC3Z6CDUiyD8fNbbJ9JMlNemaRo55rYD2RR1qwgubiWQRjtBSKnIiSSzZOh0O4iWB8G75IG63Nze4nwhrbiWQdWbKQJnGML6aPnqARaSaey11QACOfclzlabwDaqDavJHm1j)UAqRlr1zOPp4zDUoxeSo(IZqbiWQdaQdOAmKPo7N0O4UN1jh3nuDYd(4Fz1bedIWWwrwx)jh06ysY5zdadfGaRoaOo5fbBfzDdmvx(leukX1TW6Wj58SjuacS6aG6KxeSvK1nWuDXluY26VUj6RtYWFqjtDt0xN8sE2uhq2SvGRdIY6WdBB0NKbGHcqGvhauhq1kAn190J48fAPUwlLRoZ4xOL6KJ7gQo5bF8VS6aYaYjmUo2P6qqUS6ACRuDSvx6VfkbyOaey1ba11Ae3bW6KFxoFHwQJX(jkuacS6aG6K)yQUCJjvIuMLQBI(6iOgnGj91rqZcTu37zd91LnoSU0FlugYnMujszwkuacS6aG6K)yQUwlLRUNEeNxhhzz115qtDmq5TUNMpHBQJJSS66wyDzdvN9tAuC3Z6CDUiyD8fNHcWcqGvxRgaj9ijtDDAIEQonkU7zDDYYcXH6aQAnzN46Giia04F8CWRZ15IG46qqUSqbiWQZ15IG4G9tAuC3tWtUJbTaey156CrqCW(jnkU7PeGJWhwIjy65IGfGaRoxNlcId2pPrXDpLaCeteYuacS6yGUnUbL19(AQRpMtYuho9exxNMONQtJI7EwxNSSqCDo0uN9taGnkZfAPUfxNbbPqbiWQZ15IG4G9tAuC3tjahbg624guQWPN4cqxNlcId2pPrXDpLaCew9F9oNyb6XeyKv6vVTs)BQYMNWniUHfRoFqG9mDnOk9VzlTfaAqkaDDUiioy)Kgf39ucWryJYfblaDDUiioy)Kgf39ucWre7pOKrnrVYqE2WI9tAuC3tfM0iObdg4zzNGFFnkYkbZGBm4WcBbOBRa015IG4G9tAuC3tjahbojNNnSStWaPDQvowBBYeSrAqPeVsImknk2EKEUiOYqwxnjvA7AeIBqSddAzAokFeC1Qo3XzWmEpxeuQ03xJISsWmSqRdoKEVZPabGloXaSaey11A0J486MOVoqKOo0xN8eVdn1jzqCIQd911AJSHtyCDTUN0lErWqbORZfbXb7N0O4UNsaocR(VENtSa9yc8ND1tpIZzXQZhe4p7Q(yoXrbcRT3hZzWY7qJkM4efg2S2EFmNHFKnCcJv2pPx8IGHHDbiWQR1OhX51nrFDGirD9XCIRd91j3JCdEnuDSVztDYl5gCdkdfGUoxeehSFsJI7Ekb4iS6)6DoXc0JjWF2vp9ioNfKnymLSStWUKOFtkyi3GBqzGGENtgPsT6)6DofqwPx92k9VPkBEc3G4gwS68bb(ZUQpMtCuGWkq6J5mWrUHmkZQPWWwQ027J5m0FKBWRHcdBawacS6An6rCEDt0xhisuxFmN46qFDT2iB4egxxR7j9IxeSo23SPoGQMQByxNm04RJHtKvIL6gqoHX1Ln0t15pvxm6P6KxYn4guw37qqXHcqxNlcId2pPrXDpLaCew9F9oNyb6Xe4p7QNEeNZcYgmMsw2jyxs0VjfCnPg2kzOXRWCISsbc6Dozy1Le9BsbxtQHTsgA8kmNiRu4DiOTa2Le9Bsbd5gCdkdVdbL12T6)6DofqwPx92k9VPkBEc3G4gwS68bb(ZUQpMtCuGWkq6J5mWrUHmkZQPWWwQ0(yod)iB4egRSFsV4fbdpf7lehfyncXni2HHoLSteuLnKIKr4WtX(cXaSaey1bIe1XaDqP6A1YiSKToGkNDxgUUNEeNx3e91bIe11hZjoua66CrqCW(jnkU7PeGJWQ)R35elqpMa)zx90J4Cwq2GXuYYob7sI(nPag6GsksgHdVdbTfWGWIvNpiWF2v9XCIJcKcqGvhisuhd0bLQRvlJWs26KxuDquw3tpIZRJ9nBQdejQdNUguCDOzDzdvhd0bLQRvlJW11hZzDaHnjQdNUg06yFZM6K7rUbVgQUHnadfGUoxeehSFsJI7Ekb4iS6)6DoXc0JjWF2vp9ioNfKn4NWuYYob7sI(nPag6GsksgHdVdbTfWGWAFmNbm0bLuKmchWPRbTfWGaa9XCg6pYn41qHHDbiWQtYCZM6KJ7gQo5bF8VS6g2Su3AbIEQUFWjCDEhzLQZHM6shuQoYk9YYMfAPUSXZ6wCDGirDabIY60ObmxOL6y8wfaRd91HxOfovNCmSuN8esgSuxR16kaDDUiioy)Kgf39ucWry1)17CIfOhtG)SRE6rColiBWykzzNG7J5m05UHut(4FzHHnlwD(Ga)zx1hZjga6J5mGbDW5khAu6hHXDeKWHHDuGWkq6J5mWrUHmkZQPWWwQ027J5my5DOrftCIcdBwBVpMZWpYgoHXk7N0lErWWWM127J5m0FKBWRHcdBawacS6Km3SPo5PrUHm1jVRMQByZsDp9ioVohkRo8cTWP66J5KL6COS6aPU(yoRJ9nBQtUXVKPUiFYXJNyPo0x3cRZ2HgkE1HcqxNlcId2pPrXDpLaCew9F9oNyb6Xe4p7QNEeNZcYgmMsw2j4(yodCKBiJYSAkmSzXQZheyG8zx1hZjga6J5m0h)sgv(KJhpfg2amkqKkTpMZWJ4Cv2qQocs4WtX(cXrXwBb5tcGWwq(aoPZjygmeztVcNVNUfkoqqVZjdalaDDUiioy)Kgf39ucWr8ioxLnKQJGeMf7N0O4UNkmPrqdgmiSStW9XCgEeNRYgs1rqchEk2xiokWsUuPw9F9oNcF2vp9ioVa015IG4G9tAuC3tjahbMVAs5qJYSAIf7N0O4UNkmPrqdgmiSStW9XCgW8vtkhAuMvtHNI9fIJk3ysLiLzjw7J5mG5RMuo0OmRMcpf7lehfqytcnkUJu2OfMyacCyliFfGUoxeehSFsJI7Ekb4iCZtqNVqs9dCdl2pPrXDpvysJGgmy2yzNGbs7uRCS22KjyJ0GsjELezuAuS9i9CrqLHSUAsQ021ie3Gyhg0Y0Cu(i4QvDUJZGz8EUiOuPVVgfzLGzyHwhCi9ENtbcaxCIbybORZfbXb7N0O4UNsaoIbMuBsXSa9ycSljCJ)ownrWuHMkBe70xa66CrqCW(jnkU7PeGJyGj1Muml0Cs6ub9ycSwMMJYhbxTQZDCYYob3(7RrrwjygwO1bhsV35uGaWfN4cWcqGvxRgaj9ijtDKv6LvxUXuDzdvNRt0x3IRZT6l37CkuacS6AncNKZZM62zD2imE7CQoGar1zDWH07DovhbP4LW1TW60O4UNaSa015IGyWGUAqzzNGBhNKZZgYeEKLbva66CrqmyCsopBkaDDUiiwcWry1)17CIfOhtG94(a3O0iOzZfbzXQZheynkUJu2OfM4GHMREZwadIeGaCas6CcMblniCYLPW5VGsbc6DozyvJqCdIDyWsdcNCzkC(lOu4PyFH4OydGs0hZzO)i3Gxdfg2Ssq6TiRfGsBS2EFmNbmOdox5qJs)imUJGeomSzT9(yodGsKTsgA8k23eR8oAKkzOryyxa66CrqSeGJWQ)R35elqpMa3tsPrqZMlcYIvNpiW9XCg(r2Wjmwz)KEXlcgg2sLcexs0VjfmKBWnOmqqVZjJuPUKOFtk4AsnSvYqJxH5ezLce07CYaqw7J5m8ioxLnKQJGeomSlabwDsMB2ux8GNRnNQl93cLywQlBwCDw9F9oNQBX1PBinOKPUevNH0RHQJ9gkBOVomkMQRvjV46WnOb3uxNQdldQjtDSVztDYXDdvN8Gp(xwbORZfbXsaocR(VENtSa9ycCN7gsn5J)LPWYGAwS68bbgBtCUk93cL4qN7gsn5J)LffiS((AuKvcMb3yWHf2ciTjvAFmNHo3nKAYh)llmSlaDDUiiwcWrODox56CrqfFXjlqpMaJtY5zdl7emojNNnKj4CEbORZfbXsaocTZ5kxNlcQ4lozb6XeyTbxacS6KhlCXn15zDXoaUXJ46AvTUqDmJooFxN1HGuDt0xh56M6K7rUbVgQohAQtE22g95aUPS6yVHG1jp5y1GwN8(o71T46WeN0jzQZHM6KmMYBDlUoikR7j3iRoFM0xx2q1bjamRdtAe0eQdOYz3LHRl2bW6KlB11X(Mn1bIe1bu1uOa015IGyjahXpGkxNlcQ4lozb6Xe45cxCdl7eSgf3rkB0ctClG12QyhavyBcAaaG0hZzO)i3Gxdfg2s0hZzazBJ(Ca3uwyydqGdqsNtWm0khRguL5D2de07CYWkqApDobZqS)Gsg1e9kd5ztGGENtgPs1ie3GyhgI9huYOMOxzipBcpf7le3cBaeGahG4sI(nPGRj1WwjdnEfMtKvk8oe0OarQ021ie3Gyhg6uYorqv2qksgHddBPsBVpMZWJ4Cv2qQocs4WWgGfGUoxeelb4i0oNRCDUiOIV4KfOhtG7JLBkaDDUiiwcWr4V2HKkr)tWKLDcMG0BrwWqZvVzlGzd4LGG0Brw4jleSa015IGyjahH)Ahsk7bhtfGUoxeelb4i4RLMeRA9omwIjywa66CrqSeGJO7wuOPk)vdkUaSaey1j3y5g6XfGaRo5pMQR1T4eXRJPbL1TZ62So2rWwrwN2TRtJI7O6SrlmX15qtDzdvN8STn6ZbCtz11hZzDlUUHDOoGQv0AQBGxOL6yVHG1j)sKDDTEqJVojZnX1HtxdkUo)P6Awln1H(6yVHG1nWl0sDsMKBJGXooPNL6gqoHX1LnuDYl5gCdkRRpMZ6wCDd7qbORZfbXH(y5gW2lorCfUbLSStWajDobZqRCSAqvM3zpqqVZjJuPUKOFtkakr2kzOXRyFtSY7OrQKHgH3HGgfiaK1(yodiBB0Nd4MYcdBwbsFmNbqjYwjdnEf7BIvEhnsLm0iGtxdAuSb0sLsq6TilkGg4bybORZfbXH(y5gjahH9ItexHBqjl7eCFmNbKTn6ZbCtzHHnR9XCgmKBWnOmmSlaDDUiio0hl3ib4iWlCXj9kC(lOubybiWQRvHqCdIDiUa015IG4G2GbRDox56CrqfFXjlqpMatymb1eMLDcUDCsopBitW58cqxNlcIdAdwcWr4MNGoFHK6h4gw2j427J5m4MNGoFHK6h4MWWMvG0o1khRTnzcUKWn(7y1ebtfAQSrStVuPAeIBqSddCpjyQ8x7qp8uSVqClG0galabwDYpZ6CJbxN)uDdBwQddxBQUSHQdbP6yFZM64i2jCwxKrkVH6K)yQo2BiyDgzl0sDthN0xx24W6AvTU6m0C1Bwh6RJ9nBqJSohkRUwvRlua66CrqCqBWsaoIy)bLmQj6vgYZgw0Y0CsL(BHsmy2yzNGFFnkYkbZGBm4WWMvGK(BHYqUXKkrkZsrPrXDKYgTWehm0C1BkvA74KCE2qMWJSmiw1O4oszJwyIdgAU6nBbS2wf7aOcBtqdaWgalabwDYpZ6GO6CJbxh7lNxNzP6yFZMfwx2q1bjamRtYBdZsDdmvNKXuERdbRRJW46yFZg0iRZHYQRv16cfGUoxeeh0gSeGJi2FqjJAIELH8SHLDc(91OiRemdUXGdlSfjVna491OiRemdUXGdMX75IGS2oojNNnKj8ildIvnkUJu2OfM4GHMREZwaRTvXoaQW2e0aaSvacS6KJ7gQo5bF8VS6qW6arI6iifVeouNK5Mn15gdwYwN8ht1TZ6YgswD40Lv3e91jFsuhM0iObxh6RBN1jdn(6GeaM1PB83cvh7lNxxNQ7j3iRUfwxUXuDt0xx2q1bjamRJD3kfkaDDUiioOnyjahrN7gsn5J)LXYobJTjoxL(BHsClGbH127J5m05UHut(4FzHHnRaP93xJISsWm4gdoqa4ItSuPVVgfzLGzWngC4PyFH4wKpPsFFnkYkbZGBm4WcBbiGaaAeIBqSddDUBi1Kp(xwq34VfcRMVRZfbDoaboGa8aSa015IG4G2GLaCewAq4KltHZFbLyzNG1O4oszJwyIdgAU6nBbmBs0hZzO)i3Gxdfg2fGUoxeeh0gSeGJa0LZxOff2(jILDc2Q)R35uOZDdPM8X)YuyzqnRyBIZvP)wOeh6C3qQjF8VSwyJvcsVfzHCJjvIuXoa2cifGUoxeeh0gSeGJOZDdP(bUHLDc2Q)R35uOZDdPM8X)YuyzqnReKElYc5gtQePIDaSfqkabwDYF8cTuxRphU4MiaQX9bUPUfxhcYLvNxNv6LvxUqz1Tq9toMyPomQUfw3toFtzSuNm0Ov8uDEhJ4JK4YQBUqQUev3at1TzDoUoVUrU8nLvh2M48qbORZfbXbTblb4iS6Wf3WYob3oojNNnKj4CoRw9F9oNcECFGBuAe0S5IGfGUoxeeh0gSeGJa34ge7Xe3WYob3oojNNnKj4CoRw9F9oNcECFGBuAe0S5IGfGUoxeeh0gSeGJWgLlcYYob3hZzOZridFGZWtUoLkTpMZGBEc68fsQFGBcd7cqGvN8W58fAPUURbTUevNHM(GN1Tjfx3a7wOcqxNlcIdAdwcWrmWKAtkMfOhtGT6)6DoPwysq8MYuwwlUvepviSE5CpxOf1tUorpl7eCFmNHohHm8bodp56uQ0CJjvIuMLIcmiTjvQgf3rkB0ctCWqZvVzuGbPa015IG4G2GLaCedmP2KIXSStW9XCg6CeYWh4m8KRtPsZnMujszwkkWG0MuPAuChPSrlmXbdnx9MrbgKcqxNlcIdAdwcWr05iKrnhVScqxNlcIdAdwcWr0PhtpOl0sbORZfbXbTblb4iM7tDoczkaDDUiioOnyjahHd1eoFNR0oNxa66CrqCqBWsaoIbMuBsXSqZjPtf0JjWAzAokFeC1Qo3Xjl7eC74KCE2qMGZ5S2hZzWnpbD(cj1pWnbdIDiR9XCgIPy0ltHMk(qVgL5jpghmi2HSsq6TilKBmPsKk2bWwaAw)SR6J5ehfWxa66CrqCqBWsaoIbMuBsXSa9ycSljCJ)ownrWuHMkBe70ZYob3EFmNb38e05lKu)a3eg2S2EFmNHo3nKAYh)llmSzvJqCdIDyWnpbD(cj1pWnHNI9fIJInGVaey116JEz19OHLgUS6(bNQdnRlBgX9DUKPUypBW11joIDjBDYFmv3e91j)ab1gzQt)BYsDOSHE2xmvh7B2uhqT1QZZ6aPnjQdNUguCDOVo2AtI6yFZM6CogvNCCeYu3Woua66CrqCqBWsaoIbMuBsXSa9ycSJBS6qcRExsOxPrVZzzNGnuFmNH3Le6vA07CLH6J5myqSdLk1q9XCg0iOzOZ1kPwiOkd1hZzyyZA6VfkdnKZZMGToJsYbH10FlugAiNNnbBD2cyjVnPsB3q9XCg0iOzOZ1kPwiOkd1hZzyyZkqmuFmNH3Le6vA07CLH6J5mGtxdAlGbPnaGT2aogQpMZqNJqgfAQYgsrqkwwyylv6CT0KQNI9fIJcO0gazTpMZGBEc68fsQFGBcpf7le3cBYxbiWQtEPPp4zDtNZ7Ug06MOVUb27CQUnPyCOa015IG4G2GLaCedmP2KIXSStW9XCg6CeYWh4m8KRtPsNRLMu9uSVqCuGbPnPs1O4oszJwyIdgAU6nJcmifGfGaRUwngtqnHlaDDUiioqymb1egSgb1emFpjJAY9yILDcMG0Brwi3ysLivSdGTWgRT3hZzOZDdPM8X)YcdBwbs7gug0iOMG57jzutUhtQ(4HHC1GUqlS2URZfbdAeutW89KmQj3JPWcvt(APjLkDo4C1t6g)TqQCJPOSOnHyhabybORZfbXbcJjOMWsaoIohHmk0uLnKIGuSmw2jyR(VENtHo3nKAYh)ltHLb1SQriUbXom0PKDIGQSHuKmchg2SA1)17Ck0tsPrqZMlcYkqW2eNRs)Tqjo05UHut(4FzTagePsFFnkYkbZGBm4WcBbObEakv6CT0KQNI9fIJcmBTva66CrqCGWycQjSeGJWYWFZ6qfAQCjrpkBkaDDUiioqymb1ewcWrmr6bMmkxs0VjP6KhZYobJTjoxL(BHsCOZDdPM8X)YAbmisL((AuKvcMb3yWHf2cqPnwBVpMZGBEc68fsQFGBcdBPsNRLMu9uSVqCuS1wbORZfbXbcJjOMWsaoc7XVtzl0IQZDCYYobJTjoxL(BHsCOZDdPM8X)YAbmisL((AuKvcMb3yWHf2cqPnPsNRLMu9uSVqCuS1wbORZfbXbcJjOMWsaoISHudyhnGg1e9AILDcUpMZWtAq5egRMOxtHHTuP9XCgEsdkNWy1e9AsPrdysFaNUg0OyRTcqxNlcIdegtqnHLaCe)ABZj1cvyBxtfGUoxeehimMGAclb4iyh9CJvAHQNWiOd1ubORZfbXbcJjOMWsaoIykg9YuOPIp0RrzEYJXSStWeKElYIcOb(cqGvN8uiUPUwJC7fAPo5b3JjCDt0xhbGKEKuDVdTq1H(6aD5866J5eZsD7SoBegVDofQdOYz3LHRlFz1LO6SqzDzdvhhXoHZ60ie3Gyhwx3XKPoeSo3QVCVZP6iifVeoua66CrqCGWycQjSeGJ4j3EHwutUhtyw0Y0CsL(BHsmy2yzNGt)Tqzi3ysLiLzPOyla8sLceGK(BHYqd58SjyRZwKV2Kkn93cLHgY5ztWwNrbgK2aiRaX15ALueKIxcdMnPst)Tqzi3ysLiLzPwab4cGauQuGK(BHYqUXKkrkBDQaPTwK82yfiUoxRKIGu8syWSjvA6Vfkd5gtQePml1cqd0aeGfGfGaRo5XcxCd94cqGvNCzRUoKv6RR1s5Q7PhX546yFZM6KxYn4gugbqvt1LVVjUo0xxRnYgoHX116EsV4fbdfGUoxeehMlCXnG7uYorqv2qksgHzzNGT6)6Dof6jP0iOzZfblaDDUiiomx4IBKaCey(QjLdnkZQjw2j4(yody(QjLdnkZQPWtX(cXrnxlnP6PyFHyw7J5mG5RMuo0OmRMcpf7lehfqytcnkUJu2OfMyacCyliFfGUoxeehMlCXnsaoIhX5QSHuDeKWSStW9XCgEeNRYgs1rqchEk2xiokWsUuPw9F9oNcF2vp9ioVaey1jx2QRJ9nBQlBO6aQAQo5VDDTEqJVogorwP6qFDYl5gCdkRlFFtCOa015IG4WCHlUrcWr0PKDIGQSHuKmcZYob7sI(nPGRj1WwjdnEfMtKvkqqVZjJuPUKOFtkyi3GBqzGGENtMcqxNlcIdZfU4gjahHzX2EQBkalabwDmj58SPa015IG4aojNNnG1nKBRWnOKfTmnNuP)wOedMnw2j405emd2pjtHGQSHuStoObc6DozyT90FlugwSQJW4cqxNlcId4KCE2ib4i84(a3iySspErqr0G0giT1gqZwBcg29hUqlybJ8tSn6tYuhWDDUoxeSo(ItCOauWWxCIfrkyimMGAclIuenBIifme07CYiKtWO)nPFDbdbP3ISqUXKkrQyhaRRL6yRowRR966J5m05UHut(4FzHHDDSwhqQR96mOmOrqnbZ3tYOMCpMu9Xdd5QbDHwQJ16AVoxNlcg0iOMG57jzutUhtHfQM81stwNuP1nhCU6jDJ)wivUXuDrvNfTje7ayDauW46CrqbJgb1emFpjJAY9ysKIObrePGHGENtgHCcg9Vj9RlyS6)6Dof6C3qQjF8VmfwguxhR1PriUbXom0PKDIGQSHuKmchg21XADw9F9oNc9KuAe0S5IG1XADaPoSnX5Q0FluIdDUBi1Kp(xwDTaUoqQtQ06EFnkYkbZGBm4WcRRL6aAGVoawNuP1nxlnP6PyFH46IcCDS1MGX15IGcMohHmk0uLnKIGuSmrkIwYfrkyCDUiOGXYWFZ6qfAQCjrpkBeme07CYiKtKIObArKcgc6DozeYjy0)M0VUGbBtCUk93cL4qN7gsn5J)LvxlGRdK6KkTU3xJISsWm4gdoSW6APoGsB1XADTxxFmNb38e05lKu)a3eg21jvADZ1stQEk2xiUUOQJT2emUoxeuWmr6bMmkxs0VjP6Khlsr0aVisbdb9oNmc5em6Ft6xxWGTjoxL(BHsCOZDdPM8X)YQRfW1bsDsLw37RrrwjygCJbhwyDTuhqPT6KkTU5APjvpf7lexxu1XwBcgxNlckySh)oLTqlQo3XPifrduerkyiO35KriNGr)Bs)6cM(yodpPbLtySAIEnfg21jvAD9XCgEsdkNWy1e9AsPrdysFaNUg06IQo2AtW46Crqbt2qQbSJgqJAIEnjsr0a3IifmUoxeuW8RTnNuluHTDnjyiO35KriNifrlFIifmUoxeuWWo65gR0cvpHrqhQjbdb9oNmc5ePiAGlrKcgc6DozeYjy0)M0VUGHG0BrwDrvhqd8cgxNlckyIPy0ltHMk(qVgL5jpglsr0S1Misbdb9oNmc5emUoxeuW8KBVqlQj3JjSGr)Bs)6cM0FlugYnMujszwQUOQJTaWxNuP1bK6asDP)wOm0qopBc26SUwQt(ARoPsRl93cLHgY5ztWwN1ff46aPT6ayDSwhqQZ15ALueKIxcxh46yRoPsRl93cLHCJjvIuMLQRL6ab4QoawhaRtQ06asDP)wOmKBmPsKYwNkqARUwQtYBRowRdi156CTskcsXlHRdCDSvNuP1L(BHYqUXKkrkZs11sDanqxhaRdGcgTmnNuP)wOelIMnrksbJHM(GNIifrZMisbdb9oNmc5em6Ft6xxW0ED4KCE2qMWJSmibJRZfbfmGUAqfPiAqerkyCDUiOGbNKZZgbdb9oNmc5ePiAjxePGHGENtgHCcgKTGbtPGX15IGcgR(VENtcgRoFqcgnkUJu2OfM4GHMREZ6AbCDGuNe1bsDaN6asDPZjygS0GWjxMcN)ckfiO35KPowRtJqCdIDyWsdcNCzkC(lOu4PyFH46IQo2QdG1jrD9XCg6pYn41qHHDDSwhbP3IS6APoGsB1XADTxxFmNbmOdox5qJs)imUJGeomSRJ16AVU(yodGsKTsgA8k23eR8oAKkzOryylyS6Vc6XKGXJ7dCJsJGMnxeuKIObArKcgc6DozeYjyq2cgmLcgxNlckyS6)6DojyS68bjy6J5m8JSHtySY(j9IxemmSRtQ06asDUKOFtkyi3GBqzGGENtM6KkToxs0VjfCnPg2kzOXRWCISsbc6DozQdG1XAD9XCgEeNRYgs1rqchg2cgR(RGEmjy6jP0iOzZfbfPiAGxePGHGENtgHCcgKTGbtPGX15IGcgR(VENtcgRoFqcgSnX5Q0FluIdDUBi1Kp(xwDrvhi1XADVVgfzLGzWngCyH11sDG0wDsLwxFmNHo3nKAYh)llmSfmw9xb9ysW05UHut(4FzkSmOwKIObkIifme07CYiKtWO)nPFDbdojNNnKj4CUGX15IGcgTZ5kxNlcQ4lofm8fNkOhtcgCsopBePiAGBrKcgc6DozeYjyCDUiOGr7CUY15IGk(ItbdFXPc6XKGrBWIueT8jIuWqqVZjJqobJ(3K(1fmAuChPSrlmX11c4602QyhavyBcAQdaQdi11hZzO)i3Gxdfg21jrD9XCgq22OphWnLfg21bW6ao1bK6sNtWm0khRguL5D2de07CYuhR1bK6AVU05emdX(dkzut0RmKNnbc6DozQtQ060ie3GyhgI9huYOMOxzipBcpf7lexxl1XwDaSoawhWPoGuNlj63KcUMudBLm04vyorwPW7qqRlQ6aPoPsRR960ie3Gyhg6uYorqv2qksgHdd76KkTU2RRpMZWJ4Cv2qQocs4WWUoakyCDUiOG5hqLRZfbv8fNcg(Itf0JjbZCHlUrKIObUerkyiO35KriNGX15IGcgTZ5kxNlcQ4lofm8fNkOhtcM(y5grkIMT2erkyiO35KriNGr)Bs)6cgcsVfzbdnx9M11c46yd4RtI6ii9wKfEYcbfmUoxeuW4V2HKkr)tWuKIOzJnrKcgxNlcky8x7qszp4ysWqqVZjJqorkIMnqerkyCDUiOGHVwAsSQ17WyjMGPGHGENtgHCIuenBsUisbJRZfbfmD3Icnv5VAqXcgc6DozeYjsrkySFsJI7EkIuenBIifme07CYiKtWGSfmykfmUoxeuWy1)17CsWy15dsW4z6Aqv6FZ6APU2canicgR(RGEmjyqwPx92k9VPkBEc3G4grkIgerKcgxNlckySr5IGcgc6DozeYjsr0sUisbdb9oNmc5emUoxeuWe7pOKrnrVYqE2iy0)M0VUG591OiRemdUXGdlSUwQdOBtWy)Kgf39uHjncAWcgGxKIObArKcgc6DozeYjy0)M0VUGbi11EDuRCS22KjyJ0GsjELezuAuS9i9CrqLHSUAQoPsRR960ie3Gyhg0Y0Cu(i4QvDUJZGz8EUiyDsLw37RrrwjygwO1bhsV35uGaWfN46aOGX15IGcgCsopBePiAGxePGHGENtgHCcgKTGbtPGX15IGcgR(VENtcgRoFqcMp7Q(yoX1fvDGuhR11ED9XCgS8o0OIjorHHDDSwx711hZz4hzdNWyL9t6fViyyylyS6Vc6XKG5ZU6PhX5IuenqrePGHGENtgHCcgKTGbtPGX15IGcgR(VENtcgRoFqcMp7Q(yoX1fvDGuhR1bK66J5mWrUHmkZQPWWUoPsRR966J5m0FKBWRHcd76aOGr)Bs)6cgxs0VjfmKBWnOmqqVZjtDsLwNv)xVZPaYk9Q3wP)nvzZt4ge3iyS6Vc6XKG5ZU6PhX5IuenWTisbdb9oNmc5emiBbdMsbJRZfbfmw9F9oNemwD(GemF2v9XCIRlQ6aPowRdi11hZzGJCdzuMvtHHDDsLwxFmNHFKnCcJv2pPx8IGHNI9fIRlkW1PriUbXom0PKDIGQSHuKmchEk2xiUoaky0)M0VUGXLe9BsbxtQHTsgA8kmNiRuGGENtM6yToxs0VjfCnPg2kzOXRWCISsH3HGwxlGRZLe9Bsbd5gCdkdVdbTowRR96S6)6DofqwPx92k9VPkBEc3G4gbJv)vqpMemF2vp9ioxKIOLprKcgc6DozeYjyq2cgmLcgxNlckyS6)6DojyS68bjy(SR6J5exxu1bIGr)Bs)6cgxs0VjfWqhusrYiC4DiO11c46arWy1Ff0JjbZND1tpIZfPiAGlrKcgc6DozeYjyq2cMNWukyCDUiOGXQ)R35KGXQ)kOhtcMp7QNEeNly0)M0VUGXLe9Bsbm0bLuKmchEhcADTaUoqQJ166J5mGHoOKIKr4aoDnO11c46aPoaOU(yod9h5g8AOWWwKIOzRnrKcgc6DozeYjyq2cgmLcgxNlckyS6)6DojyS68bjy(SR6J5exhauxFmNbmOdox5qJs)imUJGeomSRlQ6aPowRdi11hZzGJCdzuMvtHHDDsLwx711hZzWY7qJkM4efg21XADTxxFmNHFKnCcJv2pPx8IGHHDDSwx711hZzO)i3Gxdfg21bqbJ(3K(1fm9XCg6C3qQjF8VSWWwWy1Ff0JjbZND1tpIZfPiA2ytePGHGENtgHCcgKTGbtPGX15IGcgR(VENtcgRoFqcgGu3NDvFmN46aG66J5m0h)sgv(KJhpfg21bW6IQoqQtQ066J5m8ioxLnKQJGeo8uSVqCDrvhBTfKV6KOoGuhBb5RoGtDPZjygmeztVcNVNUfkoqqVZjtDauWO)nPFDbtFmNboYnKrzwnfg2cgR(RGEmjy(SRE6rCUifrZgiIifme07CYiKtW46CrqbZJ4Cv2qQocsybJ(3K(1fm9XCgEeNRYgs1rqchEk2xiUUOaxNKxNuP1z1)17Ck8zx90J4CbJ9tAuC3tfM0iOblyarKIOztYfrkyiO35KriNGX15IGcgmF1KYHgLz1KGr)Bs)6cM(yody(QjLdnkZQPWtX(cX1fvD5gtQePmlvhR11hZzaZxnPCOrzwnfEk2xiUUOQdi1XwDsuNgf3rkB0ctCDaSoGtDSfKpbJ9tAuC3tfM0iOblyarKIOzdOfrkyiO35KriNGX15IGcg38e05lKu)a3iy0)M0VUGbi11EDuRCS22KjyJ0GsjELezuAuS9i9CrqLHSUAQoPsRR960ie3Gyhg0Y0Cu(i4QvDUJZGz8EUiyDsLw37RrrwjygwO1bhsV35uGaWfN46aOGX(jnkU7PctAe0GfmSjsr0Sb8Iifme07CYiKtWa9ysW4sc34VJvtemvOPYgXo9cgxNlckyCjHB83XQjcMk0uzJyNErkIMnGIisbdb9oNmc5emUoxeuWOLP5O8rWvR6ChNcg9Vj9RlyAVU3xJISsWmSqRdoKEVZPabGloXcgAojDQGEmjy0Y0Cu(i4QvDUJtrksbtFSCJisr0SjIuWqqVZjJqobJ(3K(1fmaPU05emdTYXQbvzEN9ab9oNm1jvADUKOFtkakr2kzOXRyFtSY7OrQKHgH3HGwxu1bsDaSowRRpMZaY2g95aUPSWWUowRdi11hZzauISvYqJxX(MyL3rJujdnc401Gwxu1XgqxNuP1rq6TiRUOQdOb(6aOGX15IGcg7fNiUc3GsrkIgerKcgc6DozeYjy0)M0VUGPpMZaY2g95aUPSWWUowRRpMZGHCdUbLHHTGX15IGcg7fNiUc3GsrkIwYfrkyCDUiOGbVWfN0RW5VGscgc6DozeYjsrkyWj58SrePiA2erkyiO35KriNGX15IGcgDd52kCdkfm6Ft6xxWKoNGzW(jzkeuLnKIDYbnqqVZjtDSwx71L(BHYWIvDegly0Y0CsL(BHsSiA2ePiAqerkyCDUiOGXJ7dCJGHGENtgHCIuKcgTblIuenBIifme07CYiKtWO)nPFDbt71HtY5zdzcoNlyCDUiOGr7CUY15IGk(ItbdFXPc6XKGHWycQjSifrdIisbdb9oNmc5em6Ft6xxW0ED9XCgCZtqNVqs9dCtyyxhR1bK6AVoQvowBBYeCjHB83XQjcMk0uzJyN(6KkToncXni2HbUNemv(RDOhEk2xiUUwQdK2QdGcgxNlckyCZtqNVqs9dCJifrl5Iifme07CYiKtW46CrqbtS)Gsg1e9kd5zJGr)Bs)6cM3xJISsWm4gdomSRJ16asDP)wOmKBmPsKYSuDrvNgf3rkB0ctCWqZvVzDsLwx71HtY5zdzcpYYGQJ160O4oszJwyIdgAU6nRRfW1PTvXoaQW2e0uhauhB1bqbJwMMtQ0FluIfrZMifrd0Iifme07CYiKtWO)nPFDbZ7RrrwjygCJbhwyDTuNK3wDaqDVVgfzLGzWngCWmEpxeSowRR96Wj58SHmHhzzq1XADAuChPSrlmXbdnx9M11c4602QyhavyBcAQdaQJnbJRZfbfmX(dkzut0RmKNnIuenWlIuWqqVZjJqobJ(3K(1fmyBIZvP)wOexxlGRdK6yTU2RRpMZqN7gsn5J)Lfg21XADaPU2R791OiRemdUXGdeaU4exNuP19(AuKvcMb3yWHNI9fIRRL6KV6KkTU3xJISsWm4gdoSW6APoGuhi1ba1PriUbXom05UHut(4FzbDJ)wiSA(Uoxe051bW6ao1bcWxhafmUoxeuW05UHut(4FzIuenqrePGHGENtgHCcg9Vj9Rly0O4oszJwyIdgAU6nRRfW1XwDsuxFmNH(JCdEnuyylyCDUiOGXsdcNCzkC(lOKifrdClIuWqqVZjJqobJ(3K(1fmw9F9oNcDUBi1Kp(xMcldQRJ16W2eNRs)Tqjo05UHut(4Fz11sDSvhR1rq6TilKBmPsKk2bW6APoqemUoxeuWa6Y5l0IcB)ejsr0YNisbdb9oNmc5em6Ft6xxWy1)17Ck05UHut(4FzkSmOUowRJG0Brwi3ysLivSdG11sDGiyCDUiOGPZDdP(bUrKIObUerkyiO35KriNGr)Bs)6cM2RdNKZZgYeCoVowRZQ)R35uWJ7dCJsJGMnxeuW46CrqbJvhU4grkIMT2erkyiO35KriNGr)Bs)6cM2RdNKZZgYeCoVowRZQ)R35uWJ7dCJsJGMnxeuW46CrqbdUXni2JjUrKIOzJnrKcgc6DozeYjy0)M0VUGPpMZqNJqg(aNHNCDwNuP11hZzWnpbD(cj1pWnHHTGX15IGcgBuUiOifrZgiIifme07CYiKtW46CrqbJv)xVZj1ctcI3uMYYAXTI4PcH1lN75cTOEY1j6fm6Ft6xxW0hZzOZridFGZWtUoRtQ06YnMujszwQUOaxhiTvNuP1PrXDKYgTWehm0C1BwxuGRdebd0JjbJv)xVZj1ctcI3uMYYAXTI4PcH1lN75cTOEY1j6fPiA2KCrKcgc6DozeYjy0)M0VUGPpMZqNJqg(aNHNCDwNuP1LBmPsKYSuDrbUoqARoPsRtJI7iLnAHjoyO5Q3SUOaxhicgxNlckygysTjfJfPiA2aArKcgxNlcky6CeYOMJxMGHGENtgHCIuenBaVisbJRZfbfmD6X0d6cTiyiO35KriNifrZgqrePGX15IGcM5(uNJqgbdb9oNmc5ePiA2aUfrkyCDUiOGXHAcNVZvANZfme07CYiKtKIOzt(erkyiO35KriNGX15IGcgTmnhLpcUAvN74uWO)nPFDbt71HtY5zdzcoNxhR11hZzWnpbD(cj1pWnbdIDyDSwxFmNHykg9YuOPIp0RrzEYJXbdIDyDSwhbP3ISqUXKkrQyhaRRL6a66yTUp7Q(yoX1fvDaVGHMtsNkOhtcgTmnhLpcUAvN74uKIOzd4sePGHGENtgHCcgxNlckyCjHB83XQjcMk0uzJyNEbJ(3K(1fmTxxFmNb38e05lKu)a3eg21XADTxxFmNHo3nKAYh)llmSRJ160ie3GyhgCZtqNVqs9dCt4PyFH46IQo2aEbd0JjbJljCJ)ownrWuHMkBe70lsr0G0Misbdb9oNmc5emUoxeuW44gRoKWQ3Le6vA07CbJ(3K(1fmgQpMZW7sc9kn6DUYq9XCgmi2H1jvADgQpMZGgbndDUwj1cbvzO(yodd76yTU0FlugAiNNnbBDwxu1j5GuhR1L(BHYqd58SjyRZ6AbCDsEB1jvADTxNH6J5mOrqZqNRvsTqqvgQpMZWWUowRdi1zO(yodVlj0R0O35kd1hZzaNUg06AbCDG0wDaqDS1wDaN6muFmNHohHmk0uLnKIGuSSWWUoPsRBUwAs1tX(cX1fvDaL2QdG1XAD9XCgCZtqNVqs9dCt4PyFH46APo2Kpbd0JjbJJBS6qcRExsOxPrVZfPiAqytePGHGENtgHCcg9Vj9Rly6J5m05iKHpWz4jxN1jvADZ1stQEk2xiUUOaxhiTvNuP1PrXDKYgTWehm0C1BwxuGRdebJRZfbfmdmP2KIXIuKcM5cxCJisr0SjIuWqqVZjJqobJ(3K(1fmw9F9oNc9KuAe0S5IGcgxNlcky6uYorqv2qksgHfPiAqerkyiO35KriNGr)Bs)6cM(yody(QjLdnkZQPWtX(cX1fvDZ1stQEk2xiUowRRpMZaMVAs5qJYSAk8uSVqCDrvhqQJT6KOonkUJu2OfM46ayDaN6yliFcgxNlckyW8vtkhAuMvtIueTKlIuWqqVZjJqobJ(3K(1fm9XCgEeNRYgs1rqchEk2xiUUOaxNKxNuP1z1)17Ck8zx90J4CbJRZfbfmpIZvzdP6iiHfPiAGwePGHGENtgHCcg9Vj9RlyCjr)MuW1KAyRKHgVcZjYkfiO35KPoPsRZLe9Bsbd5gCdkde07CYiyCDUiOGPtj7ebvzdPizewKIObErKcgxNlckyml22tDJGHGENtgHCIuKIuW4JSb9cgMnUvjsrkea]] )
+    spec:RegisterPack( "Outlaw", 20200823, [[d8uFfbqifPEKIkBcLYNqPQAuksoLIOvPiKxrinlkj3sHs7sOFrjAyuQCmuOLHI6zOuX0uO4AkQQTPiW3uufnokP05Ouv16OKcZtHQ7Hs2hLIdQiOfsiEikvLjsPQCrfvjBeLQyKkQsLtIsvYkviVeLkPBsPQIDsP0prPsmufvHJQOkLwQIq9uqnvkHRsjfTvfvPQVsPQsJfLQuoRIQuSxu9xsnyLoSOfdYJjAYuCzKnRIptqJwbNwQvJsvQEnkYSj52cA3Q63adxGJJsLA5qEoutNQRRsBxr57OGXtPkNNqTEkPA(ey)sMZi3coSjDIBlZ2XSD2zTmZorghZyyhgzMd7IdioCqkzkfsC4pdjom7Y1vjdC4GuScKgUfCym4IKehEW9aS1Wslf2(WfkkbHwI7WRk9g8suEClXDO0som0Tvo71ZH4WM0jUTmBhZ2zN1Ym7ezCmmB)hd7WHXbKKBlZtGDC4H2yONdXHnewYHNRw2LRRsgQDIbcVunAUAhCpaBnS0sHTpCHIsqOL4o8QsVbVeLh3sChkTSgnxTJUpvlJJXQAz2oMTRgvJMRw23q(cjS1OgnxTJT2j0yitTSRTKPADqTg6KxLxBk9g81QAShRrZv7yRDcngYuBaIKGqO0RvevAOAzpQlcjU2Pmac)SFVwieLmvlStPYhMmwJMR2XwR9bE2Vx7ft16O(zICCT9xl2Pu5dXA0C1o2ATpWZ(9AVyQ2W(TgS3Q9aq1A)KiMitThaQw7JsFO2PAN9JR9bET4Bqaa5KzYynAUAhBTt4mqBQfriGs1VWANyxKAnxu)cRvevAOAzpQlcjU2PUVIW4AzGQf8kX1oKZOAzSwprcjFYynAUAhBTtmPs7vl7ARu9lSw4aerXA0C1o2ATMyQwVdjTd0MMQ9aq1sVeCFNq1sVPFH1IsFGq16d5xRNiHKh9oK0oqBAkwJMR2XwR1et1oXUi1IieqPQvbe2YAZ3ul8BF1IOdIWd1QacBzT9xRpq1gGijiek9AtP3GVwvJ9ihoaboTI4WZvl7Y1vjd1oXaHxQgnxTdUhGTgwAPW2hUqrji0sChEvP3GxIYJBjUdLwwJMR2r3NQLXXyvTmBhZ2vJQrZvl7BiFHe2AuJMR2Xw7eAmKPw21wYuToOwdDYRYRnLEd(Avn2J1O5QDS1oHgdzQnarsqiu61kIknuTSh1fHex7ugaHF2VxleIsMQf2Pu5dtgRrZv7yR1(ap73R9IPADu)mroU2(Rf7uQ8HynAUAhBT2h4z)ETxmvBy)wd2B1EaOATFsetKP2davR9rPpu7uTZ(X1(aVw8niaGCYmzSgnxTJT2jCgOn1IieqP6xyTtSlsTMlQFH1kIknuTSh1fHex7u3xryCTmq1cEL4AhYzuTmwRNiHKpzSgnxTJT2jMuP9QLDTvQ(fwlCaIOynAUAhBTwtmvR3HK2bAtt1EaOAPxcUVtOAP30VWArPpqOA9H8R1tKqYJEhsAhOnnfRrZv7yR1AIPANyxKArecOu1QacBzT5BQf(TVAr0br4HAvaHTS2(R1hOAdqKeecLETP0BWxRQXESgvJMR25L9i51jtTq0bGOALGqO0RfIe2pow7ekLuGJR9b)yhsu45QQnLEdECTGxjowJMR2u6n4XXaejbHqPZ6Osmt1O5QnLEdECmarsqiu6IYYY8kmKEp9g81O5QnLEdECmarsqiu6IYYYdayQrZvl8Nb4bGxlkBtTq3ZHm1I90X1crhaIQvccHsVwisy)4AZ3uBaIgBaW9(fwBJR1aEkwJMR2u6n4XXaejbHqPlkllXFgGhaUg7PJRrP0BWJJbisccHsxuwwolrDcPiR(mKybMrinkqlrTR9beHhakJvZs1LyLUNsM0su72yxCmmxJsP3GhhdqKeecLUOSSma4n4RrP0BWJJbisccHsxuwwgMiMiJ(aqAdL(GvbisccHsxJjj4nywZ3Q(WcLTrtZO3JPXGJ9BZySRgLsVbpogGijiekDrzzj2Pu5dw1hwtnnXUVDqazIbajtKJBRtgTeegC90BWRn0SwscemTeaugadFukwQaoc8TudPsShnxu6n4fiaLTrtZO3J9p7QEcLqkks2RXoEYAuk9g84yaIKGqO0fLLLyvljD(gTPLKvbisccHsxJjj4nywSJv9Hf09CIyvljD(gTPLuerHz)4X9oK0oqBAInO75eXQws68nAtlPiIcZ(XJpfJIkbHqaDaOFhp5eXy0ARrP0BWJJbisccHsxuwwMge9PQFsJU4bRcqKeecLUgtsWBWSy0Q(WAQPj29TdcitmaizICCBDYOLGWGRNEdETHM1ssGGPLaGYay4JsXsfWrGVLAivI9O5IsVbVabOSnAAg9ES)zx1tOesrrYEn2XtwJsP3GhhdqKeecLUOSS8IjD7uOvFgsSsRJhsuI1hW7AWrhayGq1Ou6n4XXaejbHqPlkllraLs7dKgc8e2QaejbHqPRXKe8gmlMRrP0BWJJbisccHsxuwwEXKUDk0k6CiPR)mKyjflvahb(wQHuj2TQpSMgLTrtZO3J9p7QEcLqkks2RXoUgvJMR25L9i51jtT0mcjUwVdPA9bQ2u6auTnU2Cw2QesrXA0C1oXe2Pu5d12NAdayCdPOAN6b1o7QEcLqkQw6PWMW12FTsqiu6twJsP3GhZIPwYKv9H10yNsLpqMici8s1Ou6n4XSWoLkFOgLsVbpwuwwolrDcPiR(mKyLHqx8GwcEt7n4TAwQUeljiecOda974OHoTSDByXSOmprt5PIEpkCaGDLyn2rntuK(esrg2KaGYay4JchayxjwJDuZefruy2pECgNuuO75eHqG0GBdfVbSrpHek2MjWo2Mg6EormtxLsNVrlramgc8eoEdyBAO75ezIOaTyWfPzODSoHaxxlgCJ3GAuk9g8yrzz5Se1jKIS6ZqIfKtAj4nT3G3QzP6sSGUNteD9bfHX6aejBCd(4nqGGPsRtO2POHsdEa4r6tifzeiiToHANIPK03aTyWfPXkIMrr6tifzMKnO75eraLs7dKgc8eoEdQrZvR9B7d1gEvEhOOA9ejKCSv16dnU2zjQtifvBJRvoqsMitToOwdjBdvlddKpqOAXGqQw2N9HRfpaUktTquTyXVKm1Yq7d1kIknuTSh1fHexJsP3GhlkllNLOoHuKvFgsSGuPH0h1fHeRXIFPvZs1LyHdiLs7jsi54iKknK(OUiK4XzMnu2gnnJEpMgdo2VnmBNabq3ZjcPsdPpQlcjoEdQrP0BWJfLLLYuP0P0BWRvn2T6ZqIf2Pu5dw1hwyNsLpqMyQu1Ou6n4XIYYszQu6u6n41Qg7w9ziXsAW1O5QL90FJhQn9Adt71H3WAzFZJyTWxiSJsPxl4PApauTukhQveein42q1MVPw2LGaaYVF7IRLHb6RDE7TLmvR9HsgQTX1IjfjDYuB(MATFo2xTnU2h41IO0iU284eQwFGQ9j751Ijj4nXANqfdPyCTHP9QveFEvldTpulZIw7ekPynkLEdESOSSeDFDk9g8AvJDR(mKyD6VXdw1hwsqieqha63X2WsgOdt7PXb0Bg7uq3ZjcHaPb3gkEdef6Eorqqaa53VDXXBWKt0uEQO3JS7BlzsBqjdr6tifzyBQP9urVhdtetKrFaiTHsFisFcPiJabsaqzam8XWeXez0hasBO0hIikm7hBdJto5envADc1oftjPVbAXGlsJvenJIO8zACMfiyAjaOmag(ie5mq0R9bstIjC8giqW0q3ZjIakL2hine4jC8gmznkLEdESOSSuMkLoLEdETQXUvFgsSGUTYuJsP3GhlklltKmFs7aeIE3Q(WIEcjuC0qNw2UnSyC(IspHekoIiH0xJsP3GhlklltKmFshCvyQgLsVbpwuwwQAHdowZE)AegsVxJsP3GhlkllHsHAWr7OwYeUgvJMRwrUTYqiCnAUATMyQ25rJDGQw4bGxBFQT9Aza8SFVwzguReecbQna0VJRnFtT(avl7sqaa53VDX1cDpNABCT3GyTt4mqBQ9I7xyTmmqFTSRefu78gWfvR9B74AXEkzcxBIOAhAHd1cq1YWa91EX9lSw7xkdaFyIDczvT3xryCT(avR9rPbpa8AHUNtTnU2BqSgLsVbpocDBLHvqJDGsJhaUv9H1uEQO3JS7BlzsBqjdr6tifzeiiToHANImruGwm4I0m0owNqGRRfdUru(mnoZtYg09CIGGaaYVF7IJ3a2Mc6EorMikqlgCrAgAhRtiW11Ib3i2tjtJZ4yeiGEcju84Jz(twJsP3GhhHUTYiklldASduA8aWTQpSGUNteeeaq(9BxC8gWg09CIgkn4bGhVb1Ou6n4XrOBRmIYYsC)n2jKg7OMjQgvJMRw2haOmagECnkLEdECuAWSKPsPtP3GxRASB1NHelcJPxsyR6dRPXoLkFGmXuPQrP0BWJJsdwuwwMge9PQFsJU4bR6dRPHUNtmni6tv)KgDXdXBaBtnnXUVDqazIP1XdjkX6d4Dn4OdamqibcKaGYay4JQ0P31jsMFgruy2p2gMTBYA0C1YEDQnngCTjIQ9gyvT4VdOA9bQwWt1Yq7d1QamqyVwlSW(I1AnXuTmmqFTgX9lS2tIDcvRpKFTSV5rTg60Y2RfGQLH2haxV28fxl7BEeRrP0BWJJsdwuwwgMiMiJ(aqAdL(GvsXsfP9ejKCmlgTQpSqzB00m69yAm44nGTP8ejK8O3HK2bAttJlbHqaDaOFhhn0PLTlqW0yNsLpqMici8sSjbHqaDaOFhhn0PLTBdlzGomTNghqVzSmoznAUAzVo1(GAtJbxldTsvRPPAzO9H(R1hOAFYEETSJDyRQ9IPATFo2xTGVwiagxldTpaUET5lUw238iwJsP3GhhLgSOSSmmrmrg9bG0gk9bR6dlu2gnnJEpMgdo2VnSJDJfLTrtZO3JPXGJMlk9g8Snn2Pu5dKjIacVeBsqieqha63XrdDAz72WsgOdt7PXb0BglJ1O5QvevAOAzpQlcjUwWxlZIwl9uyt4yT2VTpuBAmyRrTwtmvBFQ1hiX1I9uCThaQwRv0AXKe8gCTauT9PwXGlQ2NSNxRCircPAzOvQAHOAruAexB)16Div7bGQ1hOAFYEETmKZOynkLEdECuAWIYYsivAi9rDriXw1hw4asP0EIeso2gwmZ20q3ZjcPsdPpQlcjoEdyBQPrzB00m69yAm4izVg7ybcqzB00m69yAm4iIcZ(X2yTceGY2OPz07X0yWX(TzkMhReaugadFesLgsFuxesCuoKiHewFqP0BWNQjNiMN)K1Ou6n4XrPblkllfoaWUsSg7OMjYQ(WsccHa6aq)ooAOtlB3gwmkk09CIqiqAWTHI3GAunkLEdECuAWIYYsMALQFHACaIiR6dRzjQtiffHuPH0h1fHeRXIFjB4asP0EIesoocPsdPpQlcj2ggzJEcjuC07qs7aDyApByUgLsVbpoknyrzzjKknKgDXdw1hwZsuNqkkcPsdPpQlcjwJf)s2ONqcfh9oK0oqhM2ZgMRrP0BWJJsdwuwwIakL2hine4jSv9Hf09CIORpOimwhGizJBWhnagE2GUNtebukTpqAiWt4i2tjtJZCnkLEdECuAWIYYsdIsdKkne2Q(WsccHa6aq)ooAOtlB3g7QrP0BWJJsdwuwwga8g8w1hwq3ZjcPaaJ6I9iIsPlqa09CIPbrFQ6N0OlEiEdQrZvl7jvQ(fwlukzQwhuRHo5v512ofw7fNcPAuk9g84O0GfLLLxmPBNcT6ZqI1Se1jKI0970JBxSwylmNbuUgGLTsLE)c1ikLoazvFybDpNiKcamQl2JikLUabEhsAhOnnnolMTtGajiecOda974OHoTS9XzXCnkLEdECuAWIYYYlM0TtHyR6dlO75eHuaGrDXEerP0fiW7qs7aTPPXzXSDceibHqaDaOFhhn0PLTpolMRrP0BWJJsdwuwwcPaaJ(CrIRrP0BWJJsdwuwwcrimHyQFH1Ou6n4XrPblkllpnIGuaGPgLsVbpoknyrzzz(sc7OuPLPsvJsP3GhhLgSOSS8IjD7uOv05qsx)ziXskwQaoc8TudPsSBvFynn2Pu5dKjMkfBq3ZjMge9PQFsJU4HObWWZg09CIHuiajwdoA1v2gTbrzioAam8SrpHeko6DiPDGomTNnJHnKdPHUNdE85xJsP3GhhLgSOSS8IjD7uOvFgsSsRJhsuI1hW7AWrhayGqw1hwtdDpNyAq0NQ(jn6IhI3a2Mg6EorivAi9rDriXXBaBsaqzam8X0GOpv9tA0fperuy2pECgNFnAUAN3tiX1IaxHdkX1IUkQwWPwF4gc1NMm1gM(aUwisbyWAuR1et1EaOAzVEMcaMALO2TQwGpqigAmvldTpu7eoX1METmBNO1I9uYeUwaQwgTt0AzO9HAtfguRikaWu7niwJsP3GhhLgSOSS8IjD7uOvFgsSs8WS8jSgLwhG0sakvw1hwgc6EoruADaslbOuPne09CIgadVabgc6Eorj4nxP3ZiD)mPne09CI3a28ejK84aLkFigi9XzhMzZtKqYJduQ8HyG0THf7yNabtBiO75eLG3CLEpJ09ZK2qq3ZjEdyBkdbDpNikToaPLauQ0gc6EorSNsMSHfZ2nwgTBIme09CIqkaWObhTpqA6PqXXBGabNw4GRruy2pE8jWUjzd6EoX0GOpv9tA0fperuy2p2ggT2A0C1AF0jVkV2tQuqPKPApauTxCcPOABNcXXAuk9g84O0GfLLLxmPBNcXw1hwq3ZjcPaaJ6I9iIsPlqWPfo4AefM9JhNfZ2jqGeecb0bG(DC0qNw2(4SyUgvJMR25fgtVKW1Ou6n4XrcJPxsywsWlP3rPtg9rLHKv9Hf9esO4O3HK2b6W0E2WiBtdDpNiKknK(OUiK44nGTPM2a8Oe8s6Du6KrFuziPHUOp6TKP(fY20P0BWhLGxsVJsNm6JkdPy)6JQfo4ceCUkLgrYHejK0EhsJluAIHP9MSgLsVbposym9sclkllHuaGrdoAFG00tHITQpSMLOoHuuesLgsFuxesSgl(LSjbaLbWWhHiNbIETpqAsmHJ3a2MLOoHuueYjTe8M2BWZ2u4asP0EIesoocPsdPpQlcj2gwmlqakBJMMrVhtJbh73MXm)jfi40chCnIcZ(XJZIr7QrP0BWJJegtVKWIYYsH3ez681GJoToHa(qnkLEdECKWy6LewuwwEaYlMm606eQDsdrzOv9HfoGukTNiHKJJqQ0q6J6IqITHfZceGY2OPz07X0yWX(TzcSJTPHUNtmni6tv)KgDXdXBGabNw4GRruy2pECgTRgLsVbposym9sclklldUO(iUFHAivIDR6dlCaPuAprcjhhHuPH0h1fHeBdlMfiaLTrtZO3JPXGJ9BZeyNabNw4GRruy2pECgTRgLsVbposym9sclkll9bsFFiW9n6dajjR6dlO75erKKjfHX6dajP4nqGaO75erKKjfHX6dajjTeCFNqrSNsMgNr7QrP0BWJJegtVKWIYYsuheOiD)ACqkPAuk9g84iHX0ljSOSSKbaszMr9Rreg85lPAuk9g84iHX0ljSOSSmKcbiXAWrRUY2OnikdXw1hw0tiHIhFmZVgnxTZ7aktTtmLb9lSw2JkdjCThaQwYEK86uTO8fs1cq1YuRu1cDphSv12NAdayCdPOyTtOIHumUwhjUwhuRqYR1hOAvagiSxReaugadFTqjMm1c(AZzzRsifvl9uyt4ynkLEdECKWy6LewuwwIOmOFH6JkdjSvsXsfP9ejKCmlgTQpS8ejK8O3HK2bAttJZyC(cem1uEIesECGsLpedKUnwRDce4jsi5Xbkv(qmq6JZIz7MKTPsP3Zin9uytywmkqGNiHKh9oK0oqBAYgMT)toPabt5jsi5rVdjTd0bsxZSD2Wo2X2uP07zKMEkSjmlgfiWtKqYJEhsAhOnnzZygZKtwJQrZvl7P)gpqiCnAUAfXNx1cMrOANyxKArecOu4AzO9HATpkn4bGB5ekPADu2oUwaQ2j(6dkcJRDEGizJBWhRrP0BWJJN(B8aliYzGOx7dKMetyR6dRzjQtiffHCslbVP9g81Ou6n4XXt)nEquwwIvTK05B0Mwsw1hwq3ZjIvTK05B0MwsrefM9Jh)0chCnIcZ(XSbDpNiw1ssNVrBAjfruy2pE8PyuujiecOda974jNigJwBnAUAfXNx1Yq7d16duTtOKQ1Agu78gWfvlSIOzuTauT2hLg8aWR1rz74ynkLEdEC80FJheLLLqKZarV2hinjMWw1hwP1ju7umLK(gOfdUinwr0mksFcPiJabP1ju7u0qPbpa8i9jKIm1Ou6n4XXt)nEquwwAACq6YHAunAUAHDkv(qnkLEdECe7uQ8bwYbkd04bGBLuSurAprcjhZIrR6dlpv07XaejwdETpqAgOKPi9jKImSnTNiHKhBSgcGX1Ou6n4XrStPYheLLLzi0fpWHNriCdEUTmBhZ2z3eW4y4WmKOVFHyom7vyaa5KP25zTP0BWxRQXoowJ4W51haiomChY(4WQg7yUfCycJPxsyUfCBzKBbhM(esrgUiCyjQDc1jhMEcjuC07qs7aDyAVATPwgRLTANUwO75eHuPH0h1fHehVb1YwTtv701AaEucEj9okDYOpQmK0qx0h9wYu)cRLTANU2u6n4JsWlP3rPtg9rLHuSF9r1ch8AfiO2ZvP0isoKiHK27qQ2XRvO0edt7v7KC4u6n45WsWlP3rPtg9rLHe352Ym3com9jKImCr4Wsu7eQto8Se1jKIIqQ0q6J6IqI1yXVSw2QvcakdGHpcrode9AFG0KychVb1YwTZsuNqkkc5KwcEt7n4RLTANQwCaPuAprcjhhHuPH0h1fHexRnSQL5AfiOwu2gnnJEpMgdo2FT2u7yMFTtwRab1EAHdUgrHz)4AhNvTmAhhoLEdEomKcamAWr7dKMEkum352YoCl4WP0BWZHfEtKPZxdo606ec4dCy6tifz4IWDUTJHBbhM(esrgUiCyjQDc1jhghqkL2tKqYXrivAi9rDriX1AdRAzUwbcQfLTrtZO3JPXGJ9xRn1ob2vlB1oDTq3ZjMge9PQFsJU4H4nOwbcQ90chCnIcZ(X1oETmAhhoLEdEo8biVyYOtRtO2jneLHCNB785wWHPpHuKHlchwIANqDYHXbKsP9ejKCCesLgsFuxesCT2WQwMRvGGArzB00m69yAm4y)1AtTtGD1kqqTNw4GRruy2pU2XRLr74WP0BWZHdUO(iUFHAivIDUZTDc4wWHPpHuKHlchwIANqDYHHUNtersMuegRpaKKI3GAfiOwO75erKKjfHX6dajjTeCFNqrSNsMQD8Az0ooCk9g8CyFG03hcCFJ(aqsI7CBNNCl4WP0BWZHrDqGI09RXbPK4W0NqkYWfH7CBTwUfC4u6n45WmaqkZmQFnIWGpFjXHPpHuKHlc352A)5wWHPpHuKHlchwIANqDYHPNqcfx741oM5ZHtP3GNdhsHaKyn4OvxzB0geLHyUZTLr74wWHPpHuKHlchwIANqDYH9ejK8O3HK2bAtt1oETmgNFTceu7u1ovTEIesECGsLpedKET2uR1AxTceuRNiHKhhOu5dXaPx74SQLz7QDYAzR2PQnLEpJ00tHnHRLvTmwRab16jsi5rVdjTd0MMQ1MAz2(x7K1ozTceu7u16jsi5rVdjTd0bsxZSD1AtTSJD1YwTtvBk9EgPPNcBcxlRAzSwbcQ1tKqYJEhsAhOnnvRn1oMXu7K1ojhoLEdEomIYG(fQpQmKWCyPyPI0EIesoMBlJCN7CydDYRY5wWTLrUfCy6tifz4IWHLO2juNC4PRf7uQ8bYeraHxIdNsVbphMPwYe352Ym3coCk9g8CyStPYh4W0NqkYWfH7CBzhUfCy6tifz4IWHbbCym5C4u6n45WZsuNqkIdplvxIdlbHqaDaOFhhn0PLTxRnSQL5AfTwMRDIQDQA9urVhfoaWUsSg7OMjksFcPitTSvReaugadFu4aa7kXASJAMOiIcZ(X1oETmw7K1kATq3ZjcHaPb3gkEdQLTAPNqcfxRn1ob2vlB1oDTq3ZjIz6Qu68nAjcGXqGNWXBqTSv701cDpNitefOfdUindTJ1je46AXGB8gWHNLi9NHehodHU4bTe8M2BWZDUTJHBbhM(esrgUiCyqahgtohoLEdEo8Se1jKI4WZs1L4Wq3ZjIU(GIWyDaIKnUbF8guRab1ovTP1ju7u0qPbpa8i9jKIm1kqqTP1ju7umLK(gOfdUinwr0mksFcPitTtwlB1cDpNicOuAFG0qGNWXBahEwI0FgsCyiN0sWBAVbp352oFUfCy6tifz4IWHbbCym5C4u6n45WZsuNqkIdplvxIdJdiLs7jsi54iKknK(OUiK4AhVwMRLTArzB00m69yAm4y)1AtTmBxTceul09CIqQ0q6J6IqIJ3ao8SeP)mK4WqQ0q6J6IqI1yXVK7CBNaUfCy6tifz4IWHtP3GNdltLsNsVbVw1yNdlrTtOo5WyNsLpqMyQuCyvJD9NHehg7uQ8bUZTDEYTGdtFcPidxeoCk9g8CyzQu6u6n41Qg7CyvJD9NHehwAWCNBR1YTGdtFcPidxeoCk9g8Cy091P0BWRvn25Wsu7eQtoSeecb0bG(DCT2WQwzGomTNghqVP2Xw7u1cDpNiecKgCBO4nOwrRf6Eorqqaa53VDXXBqTtw7ev7u16PIEpYUVTKjTbLmePpHuKPw2QDQANUwpv07XWeXez0hasBO0hI0NqkYuRab1kbaLbWWhdtetKrFaiTHsFiIOWSFCT2ulJ1ozTtw7ev7u1MwNqTtXus6BGwm4I0yfrZOikFMQD8AzUwbcQD6ALaGYay4JqKZarV2hinjMWXBqTceu701cDpNicOuAFG0qGNWXBqTtYHvn21FgsC4t)nEG7CBT)Cl4W0NqkYWfHdNsVbphwMkLoLEdETQXohw1yx)ziXHHUTYWDUTmAh3com9jKImCr4Wsu7eQtom9esO4OHoTS9ATHvTmo)AfTw6jKqXrejKEoCk9g8C4ejZN0oaHO35o3wgzKBbhoLEdEoCIK5t6GRctCy6tifz4IWDUTmYm3coCk9g8CyvlCWXA27xJWq6Dom9jKImCr4o3wgzhUfC4u6n45WqPqn4ODulzcZHPpHuKHlc35ohoarsqiu6Cl42Yi3com9jKImCr4WGaomMCoCk9g8C4zjQtifXHNLQlXHt3tjtAjQ9ATPw7IJHzo8SeP)mK4WGzesJc0su7AFar4bGYWDUTmZTGdNsVbphoa4n45W0NqkYWfH7CBzhUfCy6tifz4IWHLO2juNCyu2gnnJEpMgdo2FT2u7ySJdNsVbphomrmrg9bG0gk9boCaIKGqO01yscEdMdpFUZTDmCl4W0NqkYWfHdlrTtOo5Wtv701sS7BheqMyaqYe5426KrlbHbxp9g8AdnRLuTceu701kbaLbWWhLILkGJaFl1qQe7rZfLEd(AfiOwu2gnnJEp2)SR6jucPOizVg74ANKdNsVbphg7uQ8bUZTD(Cl4W0NqkYWfHdlrTtOo5Wq3ZjIvTK05B0MwsrefM9JRD8A9oK0oqBAQw2Qf6EorSQLKoFJ20skIOWSFCTJx7u1YyTIwReecb0bG(DCTtw7evlJrRLdNsVbphgRAjPZ3OnTK4WbisccHsxJjj4nyom7WDUTta3com9jKImCr4Wsu7eQto8u1oDTe7(2bbKjgaKmroUToz0sqyW1tVbV2qZAjvRab1oDTsaqzam8rPyPc4iW3snKkXE0CrP3GVwbcQfLTrtZO3J9p7QEcLqkks2RXoU2j5WP0BWZHtdI(u1pPrx8ahoarsqiu6AmjbVbZHzK7CBNNCl4W0NqkYWfHd)ziXHtRJhsuI1hW7AWrhayGqC4u6n45WP1XdjkX6d4Dn4OdamqiUZT1A5wWHPpHuKHlchoLEdEomcOuAFG0qGNWC4aejbHqPRXKe8gmhMzUZT1(ZTGdtFcPidxeoSe1oH6KdpDTOSnAAg9ES)zx1tOesrrYEn2XC4u6n45WsXsfWrGVLAivIDomDoK01FgsCyPyPc4iW3snKkXo35oh(0FJh4wWTLrUfCy6tifz4IWHLO2juNC4zjQtiffHCslbVP9g8C4u6n45WqKZarV2hinjMWCNBlZCl4W0NqkYWfHdlrTtOo5Wq3ZjIvTK05B0MwsrefM9JRD8ApTWbxJOWSFCTSvl09CIyvljD(gTPLuerHz)4AhV2PQLXAfTwjiecOda974ANS2jQwgJwlhoLEdEomw1ssNVrBAjXDUTSd3com9jKImCr4Wsu7eQtoCADc1oftjPVbAXGlsJvenJI0NqkYuRab1MwNqTtrdLg8aWJ0NqkYWHtP3GNddrode9AFG0KycZDUTJHBbhoLEdEoSPXbPlh4W0NqkYWfH7CNdJDkv(a3cUTmYTGdtFcPidxeoSe1oH6Kd7PIEpgGiXAWR9bsZaLmfPpHuKPw2QD6A9ejK8yJ1qamMdNsVbphwoqzGgpaCoSuSurAprcjhZTLrUZTLzUfC4u6n45Wzi0fpWHPpHuKHlc35ohwAWCl42Yi3com9jKImCr4WP0BWZHLPsPtP3GxRASZHLO2juNC4PRf7uQ8bYetLIdRASR)mK4WegtVKWCNBlZCl4W0NqkYWfHdlrTtOo5Wtxl09CIPbrFQ6N0OlEiEdQLTANQ2PRLy33oiGmX064HeLy9b8UgC0bagiuTceuReaugadFuLo9UorY8ZiIcZ(X1AtTmBxTtYHtP3GNdNge9PQFsJU4bUZTLD4wWHPpHuKHlchwIANqDYHrzB00m69yAm44nOw2QDQA9ejK8O3HK2bAtt1oETsqieqha63XrdDAz71kqqTtxl2Pu5dKjIacVuTSvReecb0bG(DC0qNw2ET2WQwzGomTNghqVP2XwlJ1ojhoLEdEoCyIyIm6daPnu6dCyPyPI0EIesoMBlJCNB7y4wWHPpHuKHlchwIANqDYHrzB00m69yAm4y)1AtTSJD1o2ArzB00m69yAm4O5IsVbFTSv701IDkv(azIiGWlvlB1kbHqaDaOFhhn0PLTxRnSQvgOdt7PXb0BQDS1YihoLEdEoCyIyIm6daPnu6dCNB785wWHPpHuKHlchwIANqDYHXbKsP9ejKCCT2WQwMRLTANUwO75eHuPH0h1fHehVb1YwTtv701IY2OPz07X0yWrYEn2X1kqqTOSnAAg9EmngCerHz)4ATPwRTwbcQfLTrtZO3JPXGJ9xRn1ovTmx7yRvcakdGHpcPsdPpQlcjokhsKqcRpOu6n4tvTtw7evlZZV2j5WP0BWZHHuPH0h1fHeZDUTta3com9jKImCr4Wsu7eQtoSeecb0bG(DC0qNw2ET2WQwgRv0AHUNtecbsdUnu8gWHtP3GNdlCaGDLyn2rnte352op5wWHPpHuKHlchwIANqDYHNLOoHuuesLgsFuxesSgl(L1YwT4asP0EIesoocPsdPpQlcjUwBQLXAzRw6jKqXrVdjTd0HP9Q1MAzMdNsVbphMPwP6xOghGiI7CBTwUfCy6tifz4IWHLO2juNC4zjQtiffHuPH0h1fHeRXIFzTSvl9esO4O3HK2b6W0E1AtTmZHtP3GNddPsdPrx8a352A)5wWHPpHuKHlchwIANqDYHHUNteD9bfHX6aejBCd(ObWWxlB1cDpNicOuAFG0qGNWrSNsMQD8AzMdNsVbphgbukTpqAiWtyUZTLr74wWHPpHuKHlchwIANqDYHLGqiGoa0VJJg60Y2R1MATJdNsVbph2GO0aPsdH5o3wgzKBbhM(esrgUiCyjQDc1jhg6EorifayuxShruk9AfiOwO75etdI(u1pPrx8q8gWHtP3GNdha8g8CNBlJmZTGdtFcPidxeoCk9g8C4zjQtifP73Ph3UyTWwyodOCnalBLk9(fQrukDaIdlrTtOo5Wq3ZjcPaaJ6I9iIsPxRab16DiPDG20uTJZQwMTRwbcQvccHa6aq)ooAOtlBV2XzvlZC4pdjo8Se1jKI0970JBxSwylmNbuUgGLTsLE)c1ikLoaXDUTmYoCl4W0NqkYWfHdlrTtOo5Wq3ZjcPaaJ6I9iIsPxRab16DiPDG20uTJZQwMTRwbcQvccHa6aq)ooAOtlBV2XzvlZC4u6n45WxmPBNcXCNBlJJHBbhoLEdEomKcam6ZfjMdtFcPidxeUZTLX5ZTGdNsVbphgIqycXu)c5W0NqkYWfH7CBzCc4wWHtP3GNdFAebPaadhM(esrgUiCNBlJZtUfC4u6n45W5ljSJsLwMkfhM(esrgUiCNBlJwl3com9jKImCr4Wsu7eQto801IDkv(azIPsvlB1cDpNyAq0NQ(jn6IhIgadFTSvl09CIHuiajwdoA1v2gTbrzioAam81YwT0tiHIJEhsAhOdt7vRn1oMAzRwKdPHUNdU2XRD(C4u6n45WsXsfWrGVLAivIDomDoK01FgsCyPyPc4iW3snKkXo352YO9NBbhM(esrgUiC4u6n45WP1XdjkX6d4Dn4OdamqioSe1oH6KdpDTq3ZjMge9PQFsJU4H4nOw2QD6AHUNtesLgsFuxesC8gulB1kbaLbWWhtdI(u1pPrx8qerHz)4AhVwgNph(ZqIdNwhpKOeRpG31GJoaWaH4o3wMTJBbhM(esrgUiC4u6n45WjEyw(ewJsRdqAjaLkoSe1oH6KdBiO75erP1biTeGsL2qq3ZjAam81kqqTgc6Eorj4nxP3ZiD)mPne09CI3GAzRwprcjpoqPYhIbsV2XRLDyUw2Q1tKqYJduQ8HyG0R1gw1Yo2vRab1oDTgc6Eorj4nxP3ZiD)mPne09CI3GAzR2PQ1qq3ZjIsRdqAjaLkTHGUNte7PKPATHvTmBxTJTwgTR2jQwdbDpNiKcamAWr7dKMEkuC8guRab1EAHdUgrHz)4AhV2jWUANSw2Qf6EoX0GOpv9tA0fperuy2pUwBQLrRLd)ziXHt8WS8jSgLwhG0sakvCNBlZmYTGdtFcPidxeoSe1oH6KddDpNiKcamQl2JikLETceu7Pfo4AefM9JRDCw1YSD1kqqTsqieqha63XrdDAz71ooRAzMdNsVbph(IjD7uiM7CNddDBLHBb3wg5wWHPpHuKHlchwIANqDYHNQwpv07r29TLmPnOKHi9jKIm1kqqTP1ju7uKjIc0IbxKMH2X6ecCDTyWnIYNPAhVwMRDYAzRwO75ebbbaKF)2fhVb1YwTtvl09CImruGwm4I0m0owNqGRRfdUrSNsMQD8AzCm1kqqT0tiHIRD8AhZ8RDsoCk9g8C4Gg7aLgpaCUZTLzUfCy6tifz4IWHLO2juNCyO75ebbbaKF)2fhVb1YwTq3ZjAO0GhaE8gWHtP3GNdh0yhO04bGZDUTSd3coCk9g8CyC)n2jKg7OMjIdtFcPidxeUZDUZDUZ5a]] )
 
 
     spec:RegisterOptions( {

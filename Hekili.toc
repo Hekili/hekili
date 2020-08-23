@@ -41,7 +41,7 @@ Classes\PaladinRetribution.lua
 # Classes\PriestDiscipline.lua
 Classes\PriestShadow.lua
 # Classes\RogueAssassination.lua
-# Classes\RogueOutlaw.lua
+Classes\RogueOutlaw.lua
 # Classes\RogueSubtlety.lua
 Classes\ShamanElemental.lua
 Classes\ShamanEnhancement.lua
