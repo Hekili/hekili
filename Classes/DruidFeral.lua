@@ -224,7 +224,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             max_stack = function () return talent.moment_of_clarity.enabled and 2 or 1 end,
         },
         predatory_swiftness = {
-            id = 16974,
+            id = 69369,
             duration = 12,
             type = "Magic",
             max_stack = 1,
@@ -576,6 +576,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             if buff.berserk.up or buff.incarnation.up and a > 4 then
                 gain( level > 57 and 2 or 1, "combo_points" )
             end
+
+            if a >= 5 then
+                applyBuff( "predatory_swiftness" )
+            end
         end
     end
 
@@ -897,8 +901,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                     removeBuff( "apex_predator" )
                     removeBuff( "apex_predators_craving" )
                 else
-                    -- gain( 25, "energy" )
-                    if combo_points.current == 5 then applyBuff( "predatory_swiftness" ) end
                     spend( min( 5, combo_points.current ), "combo_points" )
                 end
 
@@ -1052,7 +1054,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 applyDebuff( "target", "maim", combo_points.current )
-                if combo_points.current == 5 then applyBuff( "predatory_swiftness" ) end
                 spend( combo_points.current, "combo_points" )
 
                 removeBuff( "iron_jaws" )
@@ -1442,7 +1443,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,            
 
             handler = function ()
-                if combo_points.current == 5 then applyBuff( "predatory_swiftness" ) end
                 spend( combo_points.current, "combo_points" )
 
                 applyDebuff( "target", "rip", min( 1.3 * class.auras.rip.duration, debuff.rip.remains + class.auras.rip.duration ) )
@@ -1494,8 +1494,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             usable = function () return combo_points.current > 0 end,
             handler = function ()
-                if combo_points.current == 5 then applyBuff( "predatory_swiftness" ) end
-
                 local cost = min( 5, combo_points.current )
                 spend( cost, "combo_points" )
                 if buff.savage_roar.down then energy.regen = energy.regen * 1.1 end
