@@ -108,7 +108,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         fiery_brand = {
             id = 207771,
-            duration = function () return azerite.revel_in_pain.enabled and 10 or 8 end,
+            duration = function () return ( level > 55 or azerite.revel_in_pain.enabled ) and 10 or 8 end,
             max_stack = 1,
         },
         frailty = {
@@ -679,7 +679,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         metamorphosis = {
             id = 187827,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 end,
+            cooldown = function ()
+                return ( level > 47 and 180 or ( level > 19 and 240 or 300 ) ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) end,
             gcd = "off",
 
             toggle = "cooldowns",

@@ -892,7 +892,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         metamorphosis = {
             id = 191427,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( pvptalent.demonic_origins.up and 120 or 240 ) end,
+            cooldown = function () return ( level > 47 and 240 or 120 ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( pvptalent.demonic_origins.up and 0.5 or 1 ) end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -908,7 +908,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
                 if level > 19 then stat.haste = stat.haste + 25 end
                 
-                if level > 51 or azerite.chaotic_transformation.enabled then
+                if level > 53 or azerite.chaotic_transformation.enabled then
                     setCooldown( "eye_beam", 0 )
                     setCooldown( "blade_dance", 0 )
                     setCooldown( "death_sweep", 0 )
@@ -917,9 +917,9 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
             meta = {
                 adjusted_remains = function ()
-                    if level < 116 and ( equipped.delusions_of_grandeur or equipped.convergeance_of_fates ) then
+                    --[[ if level < 116 and ( equipped.delusions_of_grandeur or equipped.convergeance_of_fates ) then
                         return cooldown.metamorphosis.remains * meta_cd_multiplier
-                    end
+                    end ]]
 
                     return cooldown.metamorphosis.remains
                 end
