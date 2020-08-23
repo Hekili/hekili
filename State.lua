@@ -2545,7 +2545,7 @@ local mt_default_cooldown = {
             if not state:IsKnown( t.key ) then return 1 end
             if not raw and ( state:IsDisabled( t.key ) or ability.disabled ) then return 0 end
 
-            if ability.charges then 
+            if ability.charges and ability.charges > 1 then 
                 if t.charge < ability.charges then
                     return min( ability.charges, t.charge + ( max( 0, state.query_time - t.recharge_began ) / t.recharge ) )
                     -- return t.charges + ( 1 - ( class.abilities[ t.key ].recharge - t.recharge_time ) / class.abilities[ t.key ].recharge )
@@ -2553,7 +2553,7 @@ local mt_default_cooldown = {
                 return t.charge
             end
 
-            return t.remains > 0 and 0 or 1
+            return t.remains > 0 and ( t.remains / t.cooldown ) or 1
 
         --
         elseif k == 'recharge_time' then
