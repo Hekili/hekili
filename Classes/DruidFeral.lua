@@ -79,6 +79,16 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
     -- Auras
     spec:RegisterAuras( {
+        adaptive_swarm_dot = {
+            id = 325733,
+            duration = 12,
+            max_stack = 1,
+        },
+        adaptive_swarm_hot = {
+            id = 325748,
+            duration = 12,
+            max_stack = 1,
+        },
         aquatic_form = {
             id = 276012,
         },
@@ -185,6 +195,54 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 30,
             max_stack = 1,
         },
+        -- Damager
+        kindred_empowerment = {
+            id = 327139,
+            duration = 10,
+            max_stack = 1,
+        },
+        -- From Damager
+        kindred_empowerment_partner = {
+            id = 327022,
+            duration = 10,
+            max_stack = 1,
+        },
+        kindred_focus = {
+            id = 327148,
+            duration = 10,
+            max_stack = 1,
+        },
+        kindred_focus_partner = {
+            id = 327071,
+            duration = 10,
+            max_stack = 1,
+        },
+        -- Tank
+        kindred_protection = {
+            id = 327037,
+            duration = 10,
+            max_stack = 1,
+        },
+        kindred_protection_partner = {
+            id = 327148,
+            duration = 10,
+            max_stack = 1,
+        },
+        kindred_spirits = {
+            id = 326967,
+            duration = 3600,
+            max_stack = 1,
+        },
+        lone_spirit = {
+            id = 338041,
+            duration = 3600,
+            max_stack = 1,
+        },
+        lone_empowerment = {
+            id = 338142,
+            duration = 10,
+            max_stack = 1,
+        },
         maim = {
             id = 22570,
             duration = 5,
@@ -250,6 +308,16 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 155722, 
             duration = 15,
             tick_time = function() return 3 * haste end,
+        },
+        ravenous_frenzy = {
+            id = 323546,
+            duration = 20,
+            max_stack = 20,
+        },
+        ravenous_frenzy_stun = {
+            id = 323557,
+            duration = 1,
+            max_stack = 1,
         },
         regrowth = {
             id = 8936,
@@ -388,11 +456,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             max_stack = 1,
         },
 
-        druid_feral_runecarve_2 = {
+        eye_of_fearful_symmetry = {
             id = 339142,
             duration = 15,
             max_stack = 1,
-        },        
+        },
     } )
 
 
@@ -531,7 +599,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         if not a or a.startsCombat then
             break_stealth()
-        end 
+        end
+
+        if buff.ravenous_frenzy.up and ability ~= "ravenous_frenzy" then
+            addStack( "ravenous_frenzy", nil, 1 )
+        end
     end )
 
 
@@ -906,7 +978,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
                 removeStack( "bloodtalons" )
 
-                if buff.druid_feral_runecarve_2.up then gain( 3, "combo_points" ) end
+                if buff.eye_of_fearful_symmetry.up then gain( 3, "combo_points" ) end
 
                 opener_done = true
             end,
@@ -1058,7 +1130,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
                 removeBuff( "iron_jaws" )
 
-                if buff.druid_feral_runecarve_2.up then gain( 3, "combo_points" ) end
+                if buff.eye_of_fearful_symmetry.up then gain( 3, "combo_points" ) end
 
                 opener_done = true
             end,
@@ -1214,7 +1286,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 spend( combo_points.current, "combo_points" )
                 removeStack( "bloodtalons" )
 
-                if buff.druid_feral_runecarve_2.up then gain( 3, "combo_points" ) end
+                if buff.eye_of_fearful_symmetry.up then gain( 3, "combo_points" ) end
 
                 opener_done = true
             end,
@@ -1450,7 +1522,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
                 removeStack( "bloodtalons" )
 
-                if buff.druid_feral_runecarve_2.up then gain( 3, "combo_points" ) end
+                if buff.eye_of_fearful_symmetry.up then gain( 3, "combo_points" ) end
 
                 opener_done = true
             end,
@@ -1499,7 +1571,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 if buff.savage_roar.down then energy.regen = energy.regen * 1.1 end
                 applyBuff( "savage_roar", 6 + ( 6 * cost ) )
 
-                if buff.druid_feral_runecarve_2.up then gain( 3, "combo_points" ) end
+                if buff.eye_of_fearful_symmetry.up then gain( 3, "combo_points" ) end
 
                 opener_done = true
             end,
@@ -1855,8 +1927,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 applyBuff( "tigers_fury" )
                 if azerite.jungle_fury.enabled then applyBuff( "jungle_fury" ) end
 
-                if legendary.druid_feral_runecarve_2.enabled then
-                    applyBuff( "druid_feral_runecarve_2" )
+                if legendary.eye_of_fearful_symmetry.enabled then
+                    applyBuff( "eye_of_fearful_symmetry" )
                 end
             end,
         },
@@ -1964,7 +2036,116 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                     if lunar_eclipse == 0 then applyBuff( "eclipse_lunar" ) end
                 end
             end,
-        },        
+        },
+
+
+        -- Covenants
+        -- Kyrian
+        kindred_spirits = {
+            id = 326434,
+            cast = 2.5,
+            cooldown = 0,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3565444,
+
+            usable = function ()
+                return buff.lone_spirit.down and buff.kinded_spirits.down, "lone_spirit/kindred_spirits already applied"
+            end,
+
+            handler = function ()
+                -- Let's just assume.
+                applyBuff( "lone_spirit" )
+            end,
+        },
+
+        empower_bond = {
+            id = 313347,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3528283,
+
+            usable = function ()
+                return buff.lone_spirit.up or buff.kindred_spirits.up, "requires kindred_spirits/lone_spirit"
+            end,
+
+            handler = function ()
+                if buff.lone_spirit.up then
+                    if role.tank then applyBuff( "lone_protection" )
+                    elseif role.healer then applyBuff( "lone_meditation" )
+                    else applyBuff( "lone_empowerment" ) end
+                else
+                    if role.tank then
+                        applyBuff( "kindred_protection" )
+                        applyBuff( "kindred_protection_partner" )
+                    elseif role.healer then
+                        applyBuff( "kindred_meditation" )
+                        applyBuff( "kindred_meditation_partner" )
+                    else
+                        applyBuff( "kindred_empowerment" )
+                        applyBuff( "kindred_empowerment_partner" )
+                    end
+                end
+            end,
+
+            copy = { "lone_empowerment", "lone_meditation", "lone_protection" }
+        },
+
+        -- Necrolords
+        adaptive_swarm = {
+            id = 313347,
+            cast = 0,
+            cooldown = 25,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3578197,
+
+            handler = function ()
+                applyDebuff( "target", "adaptive_swarm_dot", nil, 325733 )
+            end,
+        },
+
+
+        -- Night Fae
+        convoke_the_spirits = {
+            id = 313347,
+            cast = 4,
+            channeled = true,
+            cooldown = 120,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3636839,
+
+            handler = function ()
+                -- Can we safely assume anything is going to happen?
+                applyBuff( "tigers_fury" )
+                gain( 5, "combo_points" )
+            end,
+        },
+
+        -- Venthyr
+        ravenous_frenzy = {
+            id = 313347,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3565718,
+
+            handler = function ()
+                applyBuff( "ravenous_frenzy" )
+            end,
+        }
     } )
 
 
