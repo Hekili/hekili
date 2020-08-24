@@ -180,6 +180,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 10,
             max_stack = 2,
         },
+        streamline = {
+            id = 342076,
+            duration = 15,
+            max_stack = 1,
+        },
         survival_of_the_fittest = {
             id = 281195,
             duration = 6,
@@ -661,6 +666,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             start = function ()
                 applyBuff( "rapid_fire" )
+                applyBuff( "streamline" )    
                 removeBuff( "trick_shots" )
             end,
 
