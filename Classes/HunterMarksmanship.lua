@@ -265,7 +265,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         aimed_shot = {
             id = 19434,
-            cast = function () return (buff.lock_and_load.up and 0) or (buff.trueshot.up and buff.streamline.up and (2.5 * haste * 0.5 * 0.7)) or (buff.trueshot.up and (2.5 * haste * 0.5)) or (buff.streamline.up and (2.5 * haste * 0.7)) or( 2.5 * haste ) end,
+            cast = function () return haste * 2.5 * ( (buff.lock_and_load.up and 0) or (buff.trueshot.up and buff.streamline.up and 0.5 * 0.7 ) or (buff.trueshot.up and 0.5 ) or (buff.streamline.up and 0.7 ) or 1 ) end,
             charges = 2,
             cooldown = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
             recharge = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
@@ -609,23 +609,20 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
 
-           kill_shot = {
-                id = 53351,
-                cast = 0,
-                charges = 2,
-                cooldown = 10,
-                recharge = 10,
-                gcd = "spell",
-
-                spend = 10,
-                spendType = "focus",
-
-                startsCombat = true,
-                texture = 236174,
-
-                usable = function () return buff.flayers_mark.up or target.health.pct < 20  end,
-                handler = function ()
-                end,
+        kill_shot = {
+            id = 53351,
+            cast = 0,
+            charges = 2,
+            cooldown = 10,
+            recharge = 10,
+            gcd = "spell",
+            spend = 10,
+            spendType = "focus",
+            startsCombat = true,
+            texture = 236174,
+            usable = function () return buff.flayers_mark.up or target.health.pct < 20 end,
+            handler = function ()
+            end,
         },
 
 
