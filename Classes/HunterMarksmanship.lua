@@ -205,7 +205,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 15,
             max_stack = 1,
         },
-
+        -- Covenant 
+        flayers_mark = {
+            id = 324156,
+            duration = 12,
+            max_stack = 1,
+        },
     } )
        
     spec:RegisterStateExpr( "ca_execute", function ()
@@ -604,6 +609,26 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
 
+           kill_shot = {
+                id = 53351,
+                cast = 0,
+                charges = 2,
+                cooldown = 10,
+                recharge = 10,
+                gcd = "spell",
+
+                spend = 10,
+                spendType = "focus",
+
+                startsCombat = true,
+                texture = 236174,
+
+                usable = function () return buff.flayers_mark.up or target.health.pct < 20  end,
+                handler = function ()
+                end,
+        },
+
+
         masters_call = {
             id = 272682,
             cast = 0,
@@ -666,7 +691,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             start = function ()
                 applyBuff( "rapid_fire" )
-                applyBuff( "streamline" )    
+                applyBuff( "streamline" )
                 removeBuff( "trick_shots" )
             end,
 
@@ -825,7 +850,69 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             start = function ()
             end,
         },
-    } )
+
+
+        -- Covenant Abilitys
+        -- Venthyr
+        flayed_shot = {
+            id = 324149,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            spend = 0,
+            spendType = "focus",
+
+            startsCombat = true,
+            texture = 3565719,
+
+        },
+
+        -- Kyrian
+        resonating_arrow = {
+            id = 308491,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 0,
+            spendType = "focus",
+
+            startsCombat = true,
+            texture = 3565445,
+
+        },
+         
+        -- Necrolord
+        death_chakram = {
+            id = 325028,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+    
+            spend = -0,
+            spendType = "focus",
+    
+            startsCombat = true,
+            texture = 3578207,
+    
+           },
+
+            -- Night Fae
+                wild_spirits = {
+                id = 328231,
+                cast = 0,
+                cooldown = 120,
+                gcd = "spell",
+    
+                spend = -0,
+                spendType = "focus",
+    
+                startsCombat = true,
+                texture = 3636840,
+    
+            },
+ } )
 
 
     spec:RegisterOptions( {
