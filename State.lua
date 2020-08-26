@@ -11,6 +11,7 @@ local getSpecializationID = ns.getSpecializationID
 local ResourceRegenerates = ns.ResourceRegenerates
 
 local Error = ns.Error
+local IsActiveSpell = ns.IsActiveSpell
 
 local orderedPairs = ns.orderedPairs
 local round, roundUp, roundDown = ns.round, ns.roundUp, ns.roundDown
@@ -454,7 +455,7 @@ state.GetSpellTexture = GetSpellTexture
 state.GetStablePetInfo = GetStablePetInfo
 state.GetTime = GetTime
 state.GetTotemInfo = GetTotemInfo
-state.IsActiveSpell = ns.IsActiveSpell
+state.IsActiveSpell = IsActiveSpell
 state.IsPlayerSpell = IsPlayerSpell
 state.IsSpellKnown = IsSpellKnown
 state.IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
@@ -5648,6 +5649,12 @@ function state:IsKnown( sID, notoggle )
         return false, "item [ " .. ability.item .. " ] missing"
     end
 
+    if ability.noOverride then
+        local id = type( ability.noOverride ) == "string" and class.abilities[ ability.noOverride ].id or ability.noOverride
+
+        return not IsSpellKnownOrOverridesKnown( id ), "override spell [ " .. ability.noOverride .. " ] is active"
+    end
+
     if ability.known ~= nil then
         if type( ability.known ) == 'number' then
             return IsPlayerSpell( ability.known ), "IsPlayerSpell"
@@ -5655,7 +5662,14 @@ function state:IsKnown( sID, notoggle )
         return ability.known
     end
 
-    return ( ability.item and true ) or IsPlayerSpell( sID ) or IsSpellKnown( sID ) or IsSpellKnown( sID, true )
+    if ability.active ~= nil then
+        if type( ability.active ) == "number" then
+            return IsActiveSpell( ability.active ), "not in spellbook"
+        end
+        return ability.active
+    end
+
+    return ( ability.item and true ) or IsPlayerSpell( sID ) or IsSpellKnownOrOverridesKnown( sID ) or IsSpellKnown( sID, true )
 
 end
 
