@@ -68,6 +68,23 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 return ( state.debuff.void_torrent.up or state.debuff.dispersion.up ) and 0 or ( -6 - ( 0.8 * state.debuff.voidform.stacks ) )
             end,
         },
+        void_torrent = {
+            aura = "void_torrent",
+
+            last = function ()
+                local app = state.buff.void_torrent.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            stop = function( x )
+                return x == 0
+            end,
+
+            interval = 1,
+            value = 12,
+        },
 
         mindbender = {
             aura = "mindbender",
