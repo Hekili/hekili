@@ -69,24 +69,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             end,
         },
 
-        void_torrent = {
-            aura = "void_torrent",
-
-            last = function ()
-                local app = state.buff.void_torrent.applied
-                local t = state.query_time
-
-                return app + floor( t - app )
-            end,
-
-            stop = function( x )
-                return x == 0
-            end,
-
-            interval = 1,
-            value = 12,
-        },
-
         mindbender = {
             aura = "mindbender",
 
@@ -138,7 +120,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
         auspicious_spirits = 22310, -- 155271
         psychic_link = 22311, -- 199484
-        shadow_crash = 21755, -- 205385
+        shadow_crash = 21755, -- 342834
 
         damnation = 21718, -- 341374
         mindbender = 21719, -- 200174
@@ -272,7 +254,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         dark_thought = {
             id = 341207,
             duration = 6,
-            max_stack = 1,
+            max_stack = 5,
         },
         death_and_madness = {
             id = 321973,
@@ -453,7 +435,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 if name then
                     t.name = name
                     t.count = max( 1, count )
-                    t.applied = max( action.void_eruption.lastCast, action.dark_ascension.lastCast, now )
+                    t.applied = max( action.void_eruption.lastCast, now )
                     t.expires = t.applied + 3600
                     t.duration = 3600
                     t.caster = "player"
@@ -1071,16 +1053,16 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
 
         shadow_crash = {
-            id = 205385,
+            id = 342834,
             cast = 0,
-            cooldown = 20,
-            gcd = "spell",
-
-            spend = -20,
+            charges = 3,
+            cooldown = 45,
+            hasteCD = true,
+            recharge = 45,
+            gcd = "spell",            
+            spend = -8,
             spendType = "insanity",
-
             velocity = 10,
-
             startsCombat = true,
             texture = 136201,
 
@@ -1289,9 +1271,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 90,
-            spendType = "insanity",
-
             startsCombat = true,
             texture = 1386548,
 
@@ -1318,7 +1297,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             aura = "void_torrent",
             talent = "void_torrent",
-            buff = "voidform",
 
             start = function ()
                 applyDebuff( "target", "void_torrent" )
