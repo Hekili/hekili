@@ -1367,6 +1367,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             handler = function ()
                 gain( 1, "soul_shards" )
+                removeStack( "decimating_bolt" )
             end,
         },
 
