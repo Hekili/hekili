@@ -65,7 +65,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             interval = 1,
             value = function ()
-                return ( state.debuff.void_torrent.up or state.debuff.dispersion.up ) and 0 or ( -6 - ( 0.8 * state.debuff.voidform.stacks ) )
+                return state.debuff.dispersion.up and 0 or ( -6 - ( 0.8 * state.debuff.voidform.stacks ) )
             end,
         },
 
@@ -83,8 +83,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 return x == 0
             end,
 
-            interval = 1,
-            value = 12,
+            interval = function () return class.auras.void_torrent.tick_time end,
+            value = 6,
         },
 
         mindbender = {
@@ -439,9 +439,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         void_torrent = {
             id = 263165,
-            duration = 4,
+            duration = function () return 4 * haste end,
             max_stack = 1,
-            tick_time = 1,
+            tick_time = function () return haste end,
         },
         voidform = {
             id = 194249,
@@ -453,7 +453,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 if name then
                     t.name = name
                     t.count = max( 1, count )
-                    t.applied = max( action.void_eruption.lastCast, action.dark_ascension.lastCast, now )
+                    t.applied = max( action.void_eruption.lastCast, now )
                     t.expires = t.applied + 3600
                     t.duration = 3600
                     t.caster = "player"
@@ -1073,12 +1073,15 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
 
         shadow_crash = {
-            id = 205385,
+            id = 342834,
             cast = 0,
-            cooldown = 20,
+            charges = 3,
+            cooldown = 45,
+            recharge = 45,
+            hasteCD = true,
             gcd = "spell",
 
-            spend = -20,
+            spend = -8,
             spendType = "insanity",
 
             velocity = 10,
@@ -1291,9 +1294,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 90,
-            spendType = "insanity",
-
             startsCombat = true,
             texture = 1386548,
 
@@ -1302,7 +1302,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             handler = function ()
                 applyBuff( "voidform" )
-                if talent.legacy_of_the_void.enabled then gain( 90, "insanity" ) end
             end,
         },
 
@@ -1315,12 +1314,14 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 45,
             gcd = "spell",
 
+            spend = -6,
+            spendType = "insanity",
+
             startsCombat = true,
             texture = 1386551,
 
             aura = "void_torrent",
             talent = "void_torrent",
-            buff = "voidform",
 
             start = function ()
                 applyDebuff( "target", "void_torrent" )
