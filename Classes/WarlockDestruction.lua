@@ -942,6 +942,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 removeBuff( "chaotic_inferno" )
                 removeStack( "backdraft" )
+                removeStack( "decimating_bolt" )
+
                 -- Using true_active_enemies for resource predictions' sake.
                 gain( 0.2 + ( talent.fire_and_brimstone.enabled and ( ( true_active_enemies - 1 ) * 0.1 ) or 0 ), "soul_shards" )
             end,
