@@ -516,9 +516,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     spec:RegisterGear( 'uncertain_reminder', 143732 )
 
 
-    spec:RegisterTotem( "vesper_totem", 3565451 )
-
-
     spec:RegisterStateFunction( "consume_maelstrom", function( cap )
         local stacks = min( buff.maelstrom_weapon.stack, cap or 5 )
 
@@ -930,7 +927,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         },
 
         healing_surge = {
-            id = 188070,
+            id = 8004,
             cast = function () return maelstrom_mod( 1.5 ) * haste end,
             cooldown = 0,
             gcd = "spell",
@@ -1023,9 +1020,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
                 consume_maelstrom( 5 )
 
-                if level < 116 and equipped.eye_of_the_twisting_nether then
-                    applyBuff( 'shock_of_the_twisting_nether' )
-                end
+                removeBuff( "primordial_wave" )
 
                 if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
             end,
@@ -1211,24 +1206,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             end,
         },
 
-        vesper_totem = {
-            id = 324386,
-            cast = 0,
-            cooldown = 60,
-            gcd = "spell",
-
-            spend = 0.1,
-            spendType = "mana",
-
-            startsCombat = true,
-            texture = 3565451,
-
-            handler = function ()
-                applyBuff( "vesper_totem" )
-                summonPet( "vesper_totem", 30 )
-            end,
-        },
-
         water_walking = {
             id = 546,
             cast = 0,
@@ -1361,6 +1338,8 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                 if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
             end,
         },
+
+        
     } )
 
 
