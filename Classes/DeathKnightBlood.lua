@@ -1402,6 +1402,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 3565442,
 
+            toggle = "essences",
+
             handler = function ()
                 applyDebuff( "target", "shackle_the_unworthy" )
             end,
@@ -1417,7 +1419,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 3578196,
 
-            toggle = "cooldowns",
+            toggle = "essences",
 
             handler = function ()
                 applyBuff( "abomination_limb" )
@@ -1462,7 +1464,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             spend = 1,
             spendType = "runes",
             
-            toggle = "cooldowns",
+            toggle = "essences",
 
             startsCombat = true,
             texture = 3565716,
