@@ -4431,7 +4431,7 @@ do
 
                 -- Toggles
                 BuildToggleList( options, id, "cooldowns", "Cooldowns" )
-                BuildToggleList( options, id, "essences", "Azerite Essences" )
+                BuildToggleList( options, id, "essences", "Covenants/Essences" )
                 BuildToggleList( options, id, "interrupts", "Utility / Interrupts" )
                 BuildToggleList( options, id, "defensives", "Defensives",   "The defensive toggle is generally intended for tanking specializations, " ..
                                                                             "as you may want to turn on/off recommendations for damage mitigation abilities " ..
@@ -6530,22 +6530,22 @@ do
                     args = {
                         key = {
                             type = "keybinding",
-                            name = "Essences",
-                            desc = "Set a key to toggle Azerite Essence recommendations on/off.",
+                            name = "Covenants/Essences",
+                            desc = "Set a key to toggle Covenant/Essence recommendations on/off.",
                             order = 1,
                         },
 
                         value = {
                             type = "toggle",
-                            name = "Show Essences",
-                            desc = "If checked, abilities from Azerite Essences can be recommended.",
+                            name = "Show Covenant/Essences",
+                            desc = "If checked, abilities from Covenants/Essences can be recommended.",
                             order = 2,                            
                         },
 
                         override = {
                             type = "toggle",
                             name = "Cooldowns Override",
-                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Azerite Essences even if Show Essences is not checked.",
+                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Covenants/Essences even if Show Covenants/Essences is not checked.",
                             order = 3,
                         },
                     }
