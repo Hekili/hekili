@@ -255,11 +255,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             duration = 10,
             max_stack = 1,
         },
-        the_hunt = {
-            id = 323802,
-            duration = 60,
-            max_stack = 1,
-        },
         torment = {
             id = 185245,
             duration = 3,
@@ -920,6 +915,11 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 
                 setDistance( 5 )
 
+                if IsSpellKnownOrOverridesKnown( 317009 ) then
+                    applyDebuff( "target", "sinful_brand" )
+                    active_dot.sinful_brand = active_enemies
+                end
+
                 if level > 19 then stat.haste = stat.haste + 25 end
                 
                 if level > 53 or azerite.chaotic_transformation.enabled then
@@ -1033,23 +1033,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         },
         
 
-        the_hunt = {
-            id = 323639,
-            cast = 1,
-            cooldown = 180,
-            gcd = "spell",
-            
-            toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 3636838,
-            
-            handler = function ()
-                applyDebuff( "target", "the_hunt" )
-            end,
-        },
-        
-
         throw_glaive = {
             id = 185123,
             cast = 0,
@@ -1107,6 +1090,113 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 if pvptalent.glimpse.enabled then applyBuff( "blur", 3 ) end
             end,
         },
+
+
+        -- Demon Hunter - Kyrian    - 306830 - elysian_decree       (Elysian Decree)
+        elysian_decree = {
+            id = 306830,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3565443,
+
+            handler = function ()
+                create_sigil( "elysian_decree" )
+            end,
+        },
+
+        -- Demon Hunter - Necrolord - 329554 - fodder_to_the_flame  (Fodder to the Flame)
+        fodder_to_the_flame = {
+            id = 329554,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 3591588,
+
+            handler = function ()
+                applyDebuff( "player", "fodder_to_the_flame_chase" )
+                applyDebuff( "player", "fodder_to_the_flame_cooldown" )
+            end,
+
+            auras = {
+                -- The buff from standing in the pool.
+                fodder_to_the_flame = {
+                    id = 330910,
+                    duration = 30,
+                    max_stack = 1,
+                },
+
+                -- The demon is linked to you.
+                fodder_to_the_flame_chase = {
+                    id = 328605,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+
+                -- This is essentially the countdown before the demon despawns (you can Imprison it for a long time).
+                fodder_to_the_flame_cooldown = {
+                    id = 342357,
+                    duration = 120,
+                    max_stack = 1,
+                },                
+            }
+        },
+
+        -- Demon Hunter - Night Fae - 323639 - the_hunt             (The Hunt)
+        the_hunt = {
+            id = 323639,
+            cast = 1,
+            cooldown = 180,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 3636838,
+            
+            handler = function ()
+                applyDebuff( "target", "the_hunt" )
+            end,
+
+            auras = {
+                the_hunt = {
+                    id = 323802,
+                    duration = 60,
+                    max_stack = 1,
+                },
+            }
+        },
+
+        -- Demon Hunter - Venthyr   - 317009 - sinful_brand         (Sinful Brand)
+        sinful_brand = {
+            id = 317009,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 3565717,
+
+            handler = function ()
+                applyDebuff( "target", "sinful_brand" )
+            end,
+
+            auras = {
+                sinful_brand = {
+                    id = 317009,
+                    duration = 8,
+                    max_stack = 1,
+                }
+            }
+        }
     } )
 
 
@@ -1156,5 +1246,5 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     } )
 
 
-    spec:RegisterPack( "Havoc", 20200823, [[dWdhjaGjGODrjBtOQSpkKzcKkZwW8Lu8jjb)sOCBf9Be7eq7fA3sTFQ60IgMKQXjj64uOsNxsQbJudhjoifQQRsHkogs6CcvPfsrwkqQAXkz5s8yu9uqlJcwNqv1FrXubyYkmDIhjuf9kkLlR66c5WK(kfQYMrPTtP6JcvHzjP0NPO(UqLrcKY0Oqz0a13asojqONbeCnjHUNs1kvkpNkVwsYiveachQCeOH6gQxVsdGGfvQgQObdiuQMYrifLxLA(iS15riOP2jCesrRoq0bcaHosuHFeIWvugeqSXfchQCeOH6gQxVsdGGfvQgmwDQiuJeWKccbTxvgsecohJ34cHJ74iea405PtNNw90uuEvQ57PjSEALljP90H0jopnlP4PbTxvgslegsN4qaiCCwnkiiaeiveacvUKKgHJ0vIOii8TUcFGMqbbAabGqLljPriN0UO5zMQ5KJW36k8bAcfeiiGaqOYLK0iSC7V4oZunNCe(wxHpqtOGangcaHV1v4d0ec5LuEjvekA4TynjZ3s006TUcF4PbPNEfXYAnjZ3s00AqIRrOYLK0iK9bMsKdmkiWkIaq4BDf(anHqEjLxsfHIgElwtY8TenTERRWhEAq6PfTy(IvCPao7k90G0tZgvQ2AC2KNIN2ipDL1rOYLK0i0(BZNnkWuUuUkOGaJpeacvUKKgHc4ZaoQfe(wxHpqtOGabfcaHV1v4d0ec5LuEjveQCjTFM3FM35PnYttfHkxssJqZbnTFg5tk3jOGaRebGqLljPr48IojfkGjU0HW36k8bAcfey8IaqOYLK0i8vFM11jcFRRWhOjuqGuRJaqOYLK0imNtsqLK0mAurr4BDf(anHccKkveacvUKKgH35EZpZQCTke(wxHpqtOGaPAabGW36k8bAcH8skVKkcfn8wSyZItywbczy9wxHp801uJNw5sA)mV)mVZtBKN2acvUKKgHRGooZqB(rbbsfeqai8TUcFGMqiVKYlPIqrdVfl2S4eMvGqgwV1v4dpDn14PvUK2pZ7pZ780g5PnGqLljPr44QaMXf3pfuqGungcaHV1v4d0ec5LuEjveYgvQ2AC2KNIN2ipTXQJqLljPri7dRGookiqQvebGqLljPri7dmlTuuZhHV1v4d0ekiqQXhcaHV1v4d0ec5LuEjveUIyzTyFGzrMlTmMVfRikiu5ssAekGlK4ymh00(rbbsfuiaeQCjjnc5GvIJXjLSQJW36k8bAcfei1kraiu5ssAeQDNGZGkjPr4BDf(anHccKA8IaqOYLK0iC8jPDmRuocFRRWhOjuqbHukNtMlvqaOGccT)Iljnc0qDd1RdkdgSmGW40sNTzhcnEgFqpqqey8i(90EAaGVNoNuifXtZskE6kmoRgfKk4Pl34gLLp80oY8EAnsitv(WtZbRT57S8BGUSVNguXVN240Uikuif5dpTYLK0E6kyoOP9ZiFs5oPcw(n)gioPqkYhEAQEALljP90H0jol)gcDuohbwrqbkesPqyZWry80tRCjjTZIs5CYCPYUFZVPCjjTBFKUsefXVPCjjTZ2EmoPDrZZmvZj3VPCjjTZ2ESYT)I7mt1CY9B(nLljPD22JX(atjYbU2KDx0WBXAsMVLOP1BDf(aKRiwwRjz(wIMwdsCTFt5ssANT9y2FB(SrbMYLYvP2KDx0WBXAsMVLOP1BDf(aKIwmFXkUuaNDLGKnQuT14SjpfJQSUFZVPCjjTZ2Emb8zah1IFt5ssANT9yMdAA)mYNuUtQnz3vUK2pZ7pZ7mIQFt5ssANT9yZl6KuOaM4sNFZVPCjjTZ2ESx9zwxN(nLljPD22JLZjjOssAgnQO(nLljPD22JDN7n)mRY1Q8Bkxss7SThBf0XzgAZFTj7UOH3IfBwCcZkqidR36k8rn1OCjTFM3FM3zKb)MYLK0oB7XgxfWmU4(PuBYUlA4TyXMfNWSceYW6TUcFutnkxs7N59N5DgzWVPCjjTZ2Em2hwbD8At2D2Os1wJZM8umYy19Bkxss7SThJ9bMLwkQ5xRYL0(zE)zENru9Bkxss7SThtaxiXXyoOP9xBYUVIyzTyFGzrMlTmMVfRik(nLljPD22JXbRehJtkzv3VPCjjTZ2EmT7eCgujjTFZVPCjjTZ2ESXNK2XSs5OGcIa]] )
+    spec:RegisterPack( "Havoc", 20200826, [[did4jaGjIq7sK2grK9bOMnfZxkv)IO8nIO2jqTxODlz)kzyIW4OIAWsLHtLCmI05KsrlePAXkSCr9uqlJk8CkDBLAQamzQA6O(nIxru9maPRlfFwk58ur2ms2ovQtlmlrKPjLsFxe1ijc6YQgns5WKoPuk8ycxJiW9KQwjq(RIEnGyukcaHELpc2rchjs4SdjLknbqtaujJq2jxhHUubq0whHLUpcLq1nrGqxQtgI6rai0sAYIJqeoAcd3gfoqOx5JGDKWrIeo7qsPsta0eavsiuByAKmcLWdKWeiKw49VWbc93kqiaAHD1f2vNU6CPcGOT(QJqT6ubhKA1zclBxDuK8QtcpqctKIqtyzlcaH(tPnggbGGLIaqOk4Gui0h2CJlgHV0H5EKoYiyhiaeQcoifcfKY2S)CRTcbcFPdZ9iDKrWafbGqvWbPqy(UF2(5wBfce(shM7r6iJGBlcaHV0H5EKocf5GFoueYQ5fNUj7xCZo9Lom3V6K4QB0qrLUj7xCZo1tsUqOk4GuiK6MzUXsdzeSeGaq4lDyUhPJqro4NdfHSAEXPBY(f3StFPdZ9RojU6yn36CAYbtlkNxDsC1r1KDk1FQqe8Qd4vNZjqOk4Gui09RwNQXmZNZxzKrWscbGqvWbPqit7tAnfJWx6WCpshzeSKrai8Lom3J0rOih8ZHIqvWH7pF9DC7Qd4vNueQcoifcBz0W9N83UULrgb7mcaHQGdsHqkI3)8KjtM2NugDFe(shM7r6iJGBteacvbhKcH7Z6MKDrJydlcFPdZ9iDKrWstGaqOk4Gui8o9546gHV0H5EKoYiyPsraiufCqkeg7nXOCqQP2Kve(shM7r6iJGL6abGqvWbPq4T2xIph5RabHV0H5EKoYiyPafbGWx6WCpshHICWphkcz18ItPISLNddH4tFPdZ9RU2BF1PcoC)5RVJBxDaV6CGqvWbPq4WO(p9AjoYiyPTfbGWx6WCpshHICWphkcz18ItPISLNddH4tFPdZ9RU2BF1PcoC)5RVJBxDaV6CGqvWbPqO)ktBAt(3fYiyPsacaHV0H5EKocf5GFoueQcoC)5RVJBxDaV6KIqvWbPq4nozdTM(lY)iJGLkjeacvbhKcH2OOAmZrwlpcFPdZ9iDKrWsLmcaHV0H5EKocf5GFoues1KDk1FQqe8Qd4vxBtGqvWbPqi1ndJ6pYiyPoJaqOk4GuiK6M5qZzT1r4lDyUhPJmcwABIaq4lDyUhPJqro4NdfHJgkQuQBMdYEOz)(fN24cHQGdsHqMwMK8SLrd3hzeSJeiaeQcoifcf0uIDA5CaKJWx6WCpshzeSdPiaeQcoifc1QcAHr5Gui8Lom3J0rgb7WbcaHQGdsHq)3KYohbFe(shM7r6iJmcDLVGShkJaqWsraiufCqkesr8(NNmzY0(KYO7JWx6WCpshzKrgHUF2gKcb7iHJejC2bqryYAUIQLfHTX2fjZ3V6CS6ubhKA1zclBtxGqO11fiyjqYsgHUYeQWCeQcoiLn1v(cYEOCpfX7FEYKjt7tkJU)c0cKk4Gu2EFyZnU4fivWbPSY7LjiLTz)5wBfIfivWbPSY7LLV7NTFU1wHybAbsfCqkR8Ezu3mZnwAjfu9SAEXPBY(f3StFPdZ9sC0qrLUj7xCZo1tsUwGubhKYkVxM7xTovJzMpNVYjfu9SAEXPBY(f3StFPdZ9sK1CRZPjhmTOCwIunzNs9NkebdSZjwGwGubhKYkVxgt7tAnfVaPcoiLvEVSwgnC)j)TRB5KcQEvWH7pF9DClWsxGubhKYkVxgfX7FEYKjt7tkJU)cKk4Guw59Y2N1nj7IgXg2fOfivWbPSY7LDN(CCDVaPcoiLvEVSyVjgLdsn1MSUaPcoiLvEVSBTVeFoYxbYcKk4Guw59Ygg1)PxlXtkO6z18ItPISLNddH4tFPdZ9T3Uk4W9NV(oUfyhlqQGdszL3lZFLPnTj)7kPGQNvZloLkYwEomeIp9Lom33E7QGd3F(674wGDSaPcoiLvEVSBCYgAn9xK)tkO6vbhU)813XTalDbsfCqkR8Ez2OOAmZrwl)cKk4Guw59YOUzyu)tkO6PAYoL6pvicg42MybsfCqkR8Ezu3mhAoRTEsQGd3F(674wGLUaPcoiLvEVmMwMK8SLrd3pPGQF0qrLsDZCq2dn73V40gxlqQGdszL3ltqtj2PLZbq(cKk4Guw59Y0QcAHr5GulqlqQGdszL3lZ)nPSZrWhzKre]] )
 end
