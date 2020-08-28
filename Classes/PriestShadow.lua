@@ -839,6 +839,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             aura = 'mind_flay',
 
+            nobuff = "boon_of_the_ascended",
+
             start = function ()
                 applyDebuff( "target", "mind_flay" )
                 channelSpell( "mind_flay" )
@@ -1324,6 +1326,142 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 applyDebuff( "target", "void_torrent" )
             end,
         },
+
+
+        -- Priest - Kyrian    - 325013 - boon_of_the_ascended (Boon of the Ascended)
+        boon_of_the_ascended = {
+            id = 325013,
+            cast = 1.5,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3565449,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "boon_of_the_ascended" )
+            end,
+
+            auras = {
+                boon_of_the_ascended = {
+                    id = 325013,
+                    duration = 10,
+                    max_stack = 10 -- ???
+                }
+            }
+        },
+
+        ascended_nova = {
+            id = 325020,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell", -- actually 1s and not 1.5s...
+
+            startsCombat = true,
+            texture = 3528287,
+
+            buff = "boon_of_the_ascended",
+
+            handler = function ()
+                addStack( "boon_of_the_ascended", nil, active_enemies )
+            end
+        },
+
+        ascended_blast = {
+            id = 325283,
+            cast = 0,
+            cooldown = 3,
+            -- hasteCD = true, -- ???
+            gcd = "spell", -- actually 1s and not 1.5s...
+
+            startsCombat = true,
+            texture = 3528286,
+
+            buff = "boon_of_the_ascended",
+
+            handler = function ()
+                addStack( "boon_of_the_ascended", nil, 5 )
+                if spec.shadow then gain( 6, "insanity" ) end
+            end,
+        },
+
+        -- Priest - Necrolord - 324724 - unholy_nova          (Unholy Nova)
+        unholy_nova = {
+            id = 324724,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3578229,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "unholy_transfusion" )
+                active_dot.unholy_transfusion = active_enemies
+            end,
+
+            auras = {
+                unholy_transfusion = {
+                    id = 324724,
+                    duration = 15,
+                    max_stack = 1,
+                }
+            }
+        },
+
+        -- Priest - Night Fae - 327661 - fae_guardians        (Fae Guardians)
+        fae_guardians = {
+            id = 327661,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+
+            spend = 0.02,
+            spendType = "mana",
+
+            toggle = "essences",
+
+            handler = function ()
+                summonPet( "wrathful_faerie" )
+                summonPet( "guardian_faerie" )
+                summonPet( "benevolent_faerie" )
+                -- TODO: Check totem/guardian API re: faeries.
+            end,
+        },
+
+        -- Priest - Venthyr   - 323673 - mindgames            (Mindgames)
+        mindgames = {
+            id = 323673,
+            cast = 1.5,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.02,
+            spendType = "mana",
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "mindgames" )
+            end,
+
+            auras = {
+                mindgames = {
+                    id = 323673,
+                    duration = 5,
+                    max_stack = 1,
+                },
+            },
+        },
+
+
     } )
 
 
