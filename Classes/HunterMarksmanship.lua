@@ -47,8 +47,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
-        
+    spec:RegisterPvpTalents( {         
         dragonscale_armor = 649, -- 202589
         survival_tactics = 651, -- 202746 
         viper_sting = 652, -- 202797
@@ -61,7 +60,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         hunting_pack = 3729, -- 203235
         rangers_finesse = 659, -- 248443
         sniper_shot = 660, -- 203155
-
     } )
 
     -- Auras
@@ -180,6 +178,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 193534,
             duration = 10,
             max_stack = 2,
+        },
+        streamline = {
+            id = 342076,
+            duration = 15,
+            max_stack = 1,
         },
         survival_of_the_fittest = {
             id = 281195,
@@ -659,7 +662,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 257044,
             cast = function () return ( 2 * haste ) end,
             channeled = true,
-            cooldown = function () return buff.trueshot.up and ( haste * 8 ) or 20 end,
+            cooldown = function () return ( buff.trueshot.up and 8 or 20 ) * haste end,
             gcd = "spell",
 
             startsCombat = true,
@@ -668,9 +671,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             start = function ()
                 applyBuff( "rapid_fire" )
                 removeBuff( "trick_shots" )
+                if talent.streamline.enabled then applyBuff( "streamline" ) end
             end,
 
-            finish = function () removeBuff( "double_tap" ) end,
+            finish = function ()
+                removeBuff( "double_tap" )
+            end,
         },
 
 
