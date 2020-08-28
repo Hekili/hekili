@@ -377,6 +377,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     spec:RegisterPet( "primal_earth_elemental", 61056, "earth_elemental", 60 )
     spec:RegisterTotem( "greater_earth_elemental", 136024 ) -- Texture ID
 
+    spec:RegisterTotem( "vesper_totem", 3565451 )
+
 
     spec:RegisterStateTable( "fire_elemental", setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
         __index = function( t, k )
@@ -988,6 +990,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                     gainChargeTime( "fire_elemental", 6 )
                     removeBuff( "surge_of_power" )
                 end
+
+                removeBuff( "primordial_wave" )
             end,
         },
 
@@ -1283,6 +1287,125 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             usable = function () return storm_elemental.up and buff.call_lightning.remains >= 8 end,
             handler = function () end,
         },
+
+
+        -- Shaman - Kyrian    - 324386 - vesper_totem         (Vesper Totem)
+        vesper_totem = {
+            id = 324386,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 0.1,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3565451,
+
+            toggle = "essences",
+
+            handler = function ()
+                summonPet( "vesper_totem", 30 )
+            end,
+        },
+
+        -- Shaman - Necrolord - 326059 - primordial_wave      (Primordial Wave)
+        primordial_wave = {
+            id = 326059,
+            cast = 1.5,
+            cooldown = 45,
+            recharge = 45,
+            charges = 1,
+            gcd = "spell",
+
+            spend = 0.1,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3578231,
+
+            toggle = "essences",
+
+            cycle = "flame_shock",
+
+            handler = function ()
+                applyDebuff( "target", "flame_shock" )
+                applyBuff( "primordial_wave" )
+            end,
+
+            auras = {
+                primordial_wave = {
+                    id = 327164,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
+        },
+
+        -- Shaman - Night Fae - 328923 - fae_transfusion      (Fae Transfusion)
+        fae_transfusion = {
+            id = 328923,
+            cast = 3,
+            channeled = true,
+            cooldown = 120,
+            gcd = "spell",
+
+            spend = 0.075,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3636849,
+
+            toggle = "essences",
+            nobuff = "fae_transfusion",
+
+            handler = function ()
+                applyBuff( "fae_transfusion" )
+            end,
+
+            auras = {
+                fae_transfusion = {
+                    id = 328933,
+                    duration = 20,
+                    max_stack = 1
+                }
+            },
+        },
+        fae_transfusion_heal = {
+            id = 328930,
+            cast = 0,
+            channeled = true,
+            cooldown = 0,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3636849,
+
+            buff = "fae_transfusion",
+
+            handler = function ()
+                removeBuff( "fae_transfusion" )
+            end,
+        },        
+        
+        -- Shaman - Venthyr   - 320674 - chain_harvest        (Chain Harvest)
+        chain_harvest = {
+            id = 320674,
+            cast = 2.5,
+            cooldown = 90,
+            gcd = "spell",
+
+            spend = 0.1,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3565725,
+
+            toggle = "essences",
+
+        }
+
+
     } )
 
 
