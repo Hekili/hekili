@@ -5247,11 +5247,11 @@ function state.reset( dispName )
                 local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
 
                 if tick_time and tick_time > 0 then
-                    local eoc = state.buff.casting.expires - ability.tick_time
+                    local eoc = state.buff.casting.expires - tick_time
 
                     while ( eoc > state.now ) do
                         state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", state.target.GUID )
-                        eoc = eoc - ability.tick_time
+                        eoc = eoc - tick_time
                     end
                 end
             end
