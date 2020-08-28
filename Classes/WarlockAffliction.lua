@@ -310,12 +310,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             duration = 10,
             type = "Curse",
             max_stack = 1,
+            copy = 1714,
         },
         curse_of_weakness = {
             id = 199892,
             duration = 10,
             type = "Curse",
             max_stack = 1,
+            copy = 702,
         },
         demon_armor = {
             id = 285933,
@@ -886,7 +888,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0,
+            spend = function () return active_dot.soul_rot == 0 and 0 or 0.03 end,
             spendType = "mana",
 
             startsCombat = true,
@@ -918,6 +920,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             start = function ()
                 applyDebuff( "target", "drain_soul" )
                 applyBuff( "casting", 5 * haste )
+                removeStack( "decimating_bolt" )
                 channelSpell( "drain_soul" )
             end,
         },
@@ -1391,6 +1394,124 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 applyDebuff( "target", "vile_taint" )
             end,
         },
+
+
+        -- Warlock - Kyrian    - 312321 - scouring_tithe        (Scouring Tithe)
+        scouring_tithe = {
+            id = 312321,
+            cast = 2,
+            cooldown = 40,
+            gcd = "spell",
+
+            spend = 0.02,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3565452,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "scouring_tithe" )
+            end,
+
+            auras = {
+                scouring_tithe = {
+                    id = 312321,
+                    duration = 18,
+                    max_stack = 1,
+                },
+            },
+        },
+
+        -- Warlock - Necrolord - 325289 - decimating_bolt       (Decimating Bolt)
+        decimating_bolt = {
+            id = 325289,
+            cast = 2.5,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.04,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3578232,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "decimating_bolt", nil, 3 )
+            end,
+
+            auras = {
+                decimating_bolt = {
+                    id = 325299,
+                    duration = 3600,
+                    max_stack = 3,
+                }
+            }
+        },
+
+        -- Warlock - Night Fae - 325640 - soul_rot              (Soul Rot)
+        soul_rot = {
+            id = 325640,
+            cast = 1.5,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 0.2,
+            spendType = "health",
+
+            startsCombat = true,
+            texture = 3636850,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "soul_rot" )
+                active_dot.soul_rot = min( 4, active_enemies )
+            end,
+
+            auras = {
+                soul_rot = {
+                    id = 325640,
+                    duration = 8,
+                    max_stack = 1
+                }
+            }
+        },
+
+        -- Warlock - Venthyr   - 321792 - impending_catastrophe (Impending Catastrophe)
+        impending_catastrophe = {
+            id = 321692,
+            cast = 2,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = 0.04,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 775462,
+
+            toggle = "essences",
+
+            velocity = 30,
+
+            handler = function ()
+                applyDebuff( "target", "impending_catastrophe" )
+            end,
+                
+            auras = {
+                impending_catastrophe = {
+                    id = 322170,
+                    duration = 12,
+                    max_stack = 1,
+                },
+            }
+        },
+
+
     } )
 
 
