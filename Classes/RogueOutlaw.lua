@@ -151,11 +151,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
             duration = 10,
             max_stack = 1,
         },
-        echoing_reprimand = {
-            id = 323559,
-            duration = 45,
-            max_stack = 6,
-        },
         evasion = {
             id = 5277,
             duration = 10.001,
@@ -237,16 +232,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
         ruthlessness = {
             id = 14161,
         },
-        sepsis = {
-            id = 328305,
-            duration = 10,
-            max_stack = 1,
-        },
-        serrated_bone_spike = {
-            id = 324073,
-            duration = 3600,
-            max_stack = 3,
-        },
         sharpened_sabers = {
             id = 252285,
             duration = 15,
@@ -255,16 +240,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
         shroud_of_concealment = {
             id = 114018,
             duration = 15,
-            max_stack = 1,
-        },
-        slaughter_poison = {
-            id = 323658,
-            duration = 300,
-            max_stack = 1,        
-        },
-        slaughter_poison_dot = {
-            id = 323659,
-            duration = 12,
             max_stack = 1,
         },
         slice_and_dice = {
@@ -1221,85 +1196,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
         },
 
 
-        -- Covenant Abilities
-        -- Kyrian
-        echoing_reprimand = {
-            id = 323547,
-            cast = 0,
-            cooldown = 45,
-            gcd = "spell",
-
-            spend = 30,
-            spendType = "energy",
-
-            startsCombat = true,
-            texture = 3565450,
-
-            handler = function ()
-                -- Can't predict the Animacharge.
-                gain( buff.broadside.up and 4 or 3, "combo_points" )
-            end,
-        },
-
-        -- Necrolord
-        serrated_bone_spike = {
-            id = 328547,
-            cast = 0,
-            charges = 3,
-            cooldown = 30,
-            recharge = 30,
-            gcd = "spell",
-
-            startsCombat = true,
-            texture = 3578230,
-
-            handler = function ()
-                applyDebuff( "target", "serrated_bone_spike", nil, debuff.serrated_bone_spike.stack + 1 )
-                gain( ( buff.broadside.up and 1 or 0 ) + debuff.serrated_bone_spike.stack, "combo_points" )
-                -- TODO:  Odd behavior on target dummies.
-            end,
-        },
-
-        -- Night Fae
-        sepsis = {
-            id = 313347,
-            cast = 0,
-            cooldown = 90,
-            gcd = "spell",
-
-            startsCombat = true,
-            texture = 3636848,
-
-            toggle = "cooldowns",
-
-            handler = function ()
-                applyDebuff( "target", "sepsis" )
-            end,
-        },
-
-        -- Venthyr
-        slaughter = {
-            id = 323654,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-            
-            spend = 50,
-            spendType = "energy",
-            
-            startsCombat = true,
-            texture = 3565724,
-
-            usable = function ()
-                return stealthed.all, "requires stealth"
-            end,
-            
-            handler = function ()
-                removeBuff( "instant_poison" )
-                applyBuff( "slaughter_poison" )
-                gain( buff.broadside.up and 3 or 2, "combo_points" )
-            end,
-        },
     } )
 
 
