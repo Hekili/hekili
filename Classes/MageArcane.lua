@@ -1040,6 +1040,138 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 applyDebuff( "player", "temporal_displacement" )
             end,
         },
+
+
+        -- Mage - Kyrian    - 307443 - radiant_spark        (Radiant Spark)
+        -- TODO: Increase vulnerability stack on direct damage spells.
+        radiant_spark = {
+            id = 307443,
+            cast = 1.5,
+            cooldown = 30,
+            gcd = "spell",
+
+            spend = 0.02,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3565446,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "radiant_spark" )
+                applyDebuff( "target", "radiant_spark_vulnerability" )
+            end,
+
+            auras = {
+                radiant_spark = {
+                    id = 307443,
+                    duration = 8,
+                    max_stack = 1
+                },
+                radiant_spark_vulnerability = {
+                    id = 307454,
+                    duration = 8,
+                    max_stack = 4
+                }
+            }
+        },
+
+        -- Mage - Necrolord - 324220 - deathborne           (Deathborne)
+        deathborne = {
+            id = 324220,
+            cast = 1.5,
+            cooldown = 180,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3578226,
+
+            toggle = "essences", -- maybe should be cooldowns.
+
+            handler = function ()
+                applyBuff( "deathborne" )
+            end,
+
+            auras = {
+                deathborne = {
+                    id = 324220,
+                    duration = 20,
+                    max_stack = 1,
+                }
+            }
+        },
+
+        -- Mage - Night Fae - 314791 - shifting_power       (Shifting Power)
+        shifting_power = {
+            id = 314791,
+            cast = 6,
+            channeled = true,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3636841,
+
+            toggle = "essences",
+
+            start = function ()
+                applyBuff( "shifting_power" )
+            end,
+            
+            tick  = function ()
+                -- TODO: Identify which abilities have their CDs reduced.
+            end,
+
+            finish = function ()
+                removeBuff( "shifting_power" )
+            end,
+
+            auras = {
+                shifting_power = {
+                    id = 314791,
+                    duration = 6,
+                    max_stack = 1,
+                }
+            }
+        },
+
+        -- Mage - Venthyr   - 314793 - mirrors_of_torment   (Mirrors of Torment)
+        -- TODO:  Get spell ID of the snare, root, silence.
+        mirrors_of_torment = {
+            id = 314793,
+            cast = 1.5,
+            cooldown = 90,
+            gcd = "spell",
+
+            spend = 0.04,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3565720,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "mirrors_of_torment" )
+            end,
+
+            auras = {
+                mirrors_of_torment = {
+                    id = 314793,
+                    duration = 20,
+                    max_stack = 3, -- ???
+                }
+            }
+        }
+
+
     } )
 
 
