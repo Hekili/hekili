@@ -1538,8 +1538,132 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if buff.deadly_poison.down and buff.wound_poison.down then applyBuff( "deadly_poison" )
                 else applyBuff( "crippling_poison" ) end
             end,
-        }
+        },
 
+
+        -- Covenant Abilities
+        -- Rogue - Kyrian    - 323547 - echoing_reprimand    (Echoing Reprimand)
+        echoing_reprimand = {
+            id = 323547,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 30,
+            spendType = "energy",
+
+            startsCombat = true,
+            texture = 3565450,
+
+            toggle = "essences",
+
+            handler = function ()
+                -- Can't predict the Animacharge.
+                gain( buff.broadside.up and 4 or 3, "combo_points" )
+            end,
+
+            auras = {
+                echoing_reprimand = {
+                    id = 323559,
+                    duration = 45,
+                    max_stack = 6,
+                },                
+            }
+        },
+
+        -- Rogue - Necrolord - 328547 - serrated_bone_spike  (Serrated Bone Spike)
+        serrated_bone_spike = {
+            id = 328547,
+            cast = 0,
+            charges = 3,
+            cooldown = 30,
+            recharge = 30,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3578230,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "serrated_bone_spike", nil, debuff.serrated_bone_spike.stack + 1 )
+                gain( ( buff.broadside.up and 1 or 0 ) + debuff.serrated_bone_spike.stack, "combo_points" )
+                -- TODO:  Odd behavior on target dummies.
+            end,
+
+            auras = {
+                serrated_bone_spike = {
+                    id = 324073,
+                    duration = 3600,
+                    max_stack = 3,
+                },
+            }
+        },
+
+        -- Rogue - Night Fae - 328305 - sepsis               (Sepsis)
+        sepsis = {
+            id = 313347,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3636848,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "sepsis" )
+            end,
+
+            auras = {
+                sepsis = {
+                    id = 328305,
+                    duration = 10,
+                    max_stack = 1,
+                }
+            }
+        },
+
+        -- Rogue - Venthyr   - 323654 - slaughter            (Slaughter)
+        slaughter = {
+            id = 323654,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 50,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 3565724,
+
+            -- toggle = "essences", -- no reason to restrict this one.
+
+            usable = function ()
+                return stealthed.all, "requires stealth"
+            end,
+            
+            handler = function ()
+                removeBuff( "instant_poison" )
+                applyBuff( "slaughter_poison" )
+                gain( buff.broadside.up and 3 or 2, "combo_points" )
+            end,
+
+            auras = {
+                slaughter_poison = {
+                    id = 323658,
+                    duration = 300,
+                    max_stack = 1,        
+                },
+                slaughter_poison_dot = {
+                    id = 323659,
+                    duration = 12,
+                    max_stack = 1,
+                },
+            }
+        },
+        
 
     } )
 

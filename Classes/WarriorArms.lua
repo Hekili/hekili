@@ -52,7 +52,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         bounding_stride = 22627, -- 202163
         defensive_stance = 22628, -- 197690
 
-        collateral_damage = 22392, -- 268243
+        collateral_damage = 22392, -- 334779
         warbreaker = 22391, -- 262161
         cleave = 22362, -- 845
 
@@ -67,19 +67,16 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        gladiators_medallion = 3589, -- 208683
-        relentless = 3588, -- 196029
-        adaptation = 3587, -- 214027
-
-        duel = 34, -- 236273
-        disarm = 3534, -- 236077
-        sharpen_blade = 33, -- 198817
-        war_banner = 32, -- 236320
-        spell_reflection = 3521, -- 216890
         death_sentence = 3522, -- 198500
+        demolition = 5372, -- 329033
+        disarm = 3534, -- 236077
+        duel = 34, -- 236273
         master_and_commander = 28, -- 235941
+        overwatch = 5376, -- 329035
         shadow_of_the_colossus = 29, -- 198807
+        sharpen_blade = 33, -- 198817
         storm_of_destruction = 31, -- 236308
+        war_banner = 32, -- 236320
     } )
 
     -- Auras
@@ -103,13 +100,28 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         bladestorm = {
             id = 227847,
-            duration = 6,
+            duration = function () return 6 * haste end,
             max_stack = 1,
         },
         bounding_stride = {
             id = 202164,
             duration = 3,
             max_stack = 1,
+        },
+        challenging_shout = {
+            id = 1161,
+            duration = 6,
+            max_stack = 1,
+        },
+        charge = {
+            id = 105771,
+            duration = 1,
+            max_stack = 1,
+        },
+        collateral_damage = {
+            id = 334783,
+            duration = 30,
+            max_stack = 8,
         },
         colossus_smash = {
             id = 208086,
@@ -118,12 +130,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         deadly_calm = {
             id = 262228,
-            duration = 6,
-            max_stack = 1,
+            duration = 20,
+            max_stack = 4,
         },
         deep_wounds = {
             id = 262115,
-            duration = 6,
+            duration = 12,
             max_stack = 1,
         },
         defensive_stance = {
@@ -139,6 +151,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         hamstring = {
             id = 1715,
             duration = 15,
+            max_stack = 1,
+        },
+        ignore_pain = {
+            id = 190456,
+            duration = 12,
             max_stack = 1,
         },
         in_for_the_kill = {
@@ -161,6 +178,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 15,
             max_stack = 2,
         },
+        piercing_howl = {
+            id = 12323,
+            duration = 8,
+            max_stack = 1,
+        },
         rallying_cry = {
             id = 97463,
             duration = 10,
@@ -171,18 +193,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         }, ]]
         rend = {
             id = 772,
-            duration = 12,
+            duration = 15,
             tick_time = 3,
             max_stack = 1,
         },
         --[[ seasoned_soldier = {
             id = 279423,
         }, ]]
-        sign_of_the_emissary = {
-            id = 225788,
-            duration = 3600,
-            max_stack = 1,
-        },
         stone_heart = {
             id = 225947,
             duration = 10,
@@ -192,9 +209,19 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 10,
             max_stack = 1,
         },
+        spell_reflection = {
+            id = 23920,
+            duration = 5,
+            max_stack = 1,
+        },
+        storm_bolt = {
+            id = 132169,
+            duration = 4,
+            max_stack = 1,
+        },
         sweeping_strikes = {
             id = 260708,
-            duration = 12,
+            duration = 15,
             max_stack = 1,
         },
         --[[ tactician = {
@@ -246,28 +273,71 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     local rageSpent = 0
 
-    spec:RegisterHook( "spend", function( amt, resource )
-        if talent.anger_management.enabled and resource == "rage" then
-            rageSpent = rageSpent + amt
-            local reduction = floor( rageSpent / 20 )
-            rageSpent = rageSpent % 20
+    spec:RegisterStateExpr( "rage_spent", function ()
+        return rageSpent
+    end )
 
-            if reduction > 0 then
-                cooldown.colossus_smash.expires = cooldown.colossus_smash.expires - reduction
-                cooldown.bladestorm.expires = cooldown.bladestorm.expires - reduction
-                cooldown.warbreaker.expires = cooldown.warbreaker.expires - reduction
+    local rageSinceBanner = 0
+
+    spec:RegisterStateExpr( "rage_since_banner", function ()
+        return rageSinceBanner
+    end )
+
+
+    spec:RegisterHook( "spend", function( amt, resource )
+        if resource == "rage" then
+            if talent.anger_management.enabled then
+                rage_spent = rage_spent + amt
+                local reduction = floor( rage_spent / 20 )
+                rage_spent = rage_spent % 20
+
+                if reduction > 0 then
+                    cooldown.colossus_smash.expires = cooldown.colossus_smash.expires - reduction
+                    cooldown.bladestorm.expires = cooldown.bladestorm.expires - reduction
+                    cooldown.warbreaker.expires = cooldown.warbreaker.expires - reduction
+                end
+            end
+
+            if buff.conquerors_frenzy.up then
+                rage_since_banner = rage_since_banner + amt
+                local stacks = floor( rage_since_banner / 20 )
+                rage_since_banner = rage_since_banner % 20
+
+                if stacks > 0 then
+                    addStack( "glory", nil, stacks )
+                end
             end
         end
     end )
-
 
     local last_cs_target = nil
 
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
         local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
-        if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" and ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
-            last_cs_target = destGUID
+        if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" then
+            if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
+                last_cs_target = destGUID
+            elseif spellName == class.abilities.conquerors_banner.name then
+                rageSinceBanner = 0
+            end
+        end
+    end )
+
+
+    local RAGE = Enum.PowerType.Rage
+    local lastRage = -1
+
+    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( unit, powerType )
+        if powerType == RAGE then
+            local current = UnitPower( "player", RAGE )
+
+            if current < lastRage then
+                rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.                
+                rageSinceBanner = ( rageSinceBanner + lastRage - current ) % 20 -- Glory.
+            end
+
+            lastRage = current
         end
     end )
 
@@ -275,7 +345,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local cs_actual
 
     spec:RegisterHook( "reset_precast", function ()
-        rageSpent = 0
+        rage_spent = nil
+        rage_since_banner = nil
+
         if buff.bladestorm.up then
             setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) )
             if buff.gathering_storm.up then applyBuff( "gathering_storm", buff.bladestorm.remains + 6, 4 ) end
@@ -405,7 +477,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "berserker_rage" )
-                if level < 116 and equipped.ceannar_charger then gain( 8, "rage" ) end
             end,
         },
 
@@ -427,11 +498,25 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 applyBuff( "bladestorm" )
                 setCooldown( "global_cooldown", 4 * haste )
-                if level < 116 and equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
 
                 if azerite.gathering_storm.enabled then
                     applyBuff( "gathering_storm", 6 + ( 4 * haste ), 4 )
                 end
+            end,
+        },
+
+
+        challenging_shout = {
+            id = 1161,
+            cast = 0,
+            cooldown = 240,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 132091,
+            
+            handler = function ()
+                applyDebuff( "target", "challenging_shout" )
             end,
         },
 
@@ -450,6 +535,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             usable = function () return target.distance > 10 and ( query_time - max( action.charge.lastCast, action.heroic_leap.lastCast ) > gcd.execute ) end,
             handler = function ()
                 setDistance( 5 )
+                applyDebuff( "target", "charge" )
             end,
         },
 
@@ -457,7 +543,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         cleave = {
             id = 845,
             cast = 0,
-            cooldown = 9,
+            cooldown = 6,
+            hasteCD = true,
             gcd = "spell",
 
             spend = function ()
@@ -472,8 +559,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             talent = "cleave",
 
             handler = function ()
+                if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
                 if active_enemies >= 3 then applyDebuff( "target", "deep_wounds" ) end
-                if talent.collateral_damage.enabled then gain( 4, "rage" ) end
             end,
         },
 
@@ -491,14 +578,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "colossus_smash" )
-
-                if level < 116 then
-                    if set_bonus.tier21_2pc == 1 then applyBuff( "war_veteran" ) end
-                    if set_bonus.tier20_2pc == 1 then
-                        if talent.ravager.enabled then setCooldown( "ravager", max( 0, cooldown.ravager.remains - 2 ) )
-                        else setCooldown( "bladestorm", max( 0, cooldown.bladestorm.remains - 3 ) ) end
-                    end
-                end
 
                 if talent.in_for_the_kill.enabled then
                     applyBuff( "in_for_the_kill" )
@@ -526,7 +605,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
         defensive_stance = {
-            id = 212520,
+            id = 197690,
             cast = 0,
             cooldown = 6,
             gcd = "spell",
@@ -562,8 +641,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
         execute = {
-            id = function () return talent.massacre.enabled and 281001 or 163201 end,
+            id = function () return talent.massacre.enabled and 281000 or 163201 end,
             known = 163201,
+            noOverride = 317485,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
@@ -586,13 +666,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     spend( overflow, "rage" )
                     gain( 0.2 * ( 20 + overflow ), "rage" )
                 end
-                if buff.stone_heart.up then removeBuff( "stone_heart" )
+                if buff.deadly_calm.up then removeStack( "deadly_calm" )
+                elseif buff.stone_heart.up then removeBuff( "stone_heart" )
                 else removeBuff( "sudden_death" ) end
-
-                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
             end,
 
-            copy = { 163201, 281001, 281000 }
+            copy = { 163201, 281000, 281000 }
         },
 
 
@@ -613,7 +692,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "hamstring" )
-                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 2, "rage" ) end
+                if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
             end,
         },
 
@@ -633,10 +712,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 setDistance( 5 )
                 if talent.bounding_stride.enabled then applyBuff( "bounding_stride" ) end
-                if level < 116 and equipped.weight_of_the_earth then
-                    applyDebuff( "target", "colossus_smash" )
-                    active_dot.colossus_smash = max( 1, active_enemies )
-                end
             end,
         },
 
@@ -652,6 +727,24 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             usable = function () return target.distance > 10 end,
             handler = function ()
+            end,
+        },
+
+
+        ignore_pain = {
+            id = 190456,
+            cast = 0,
+            cooldown = 12,
+            gcd = "spell",
+            
+            spend = 0,
+            spendType = "rage",
+            
+            startsCombat = true,
+            texture = 1377132,
+            
+            handler = function ()
+                applyBuff( "ignore_pain" )
             end,
         },
 
@@ -675,7 +768,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 removeBuff( "victorious" )
+                if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 2, "rage" ) end
+            end,
+        },
+
+
+        intervene = {
+            id = 3411,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 132365,
+            
+            handler = function ()
             end,
         },
 
@@ -704,7 +812,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             spend = function ()
                 if buff.deadly_calm.up then return 0 end
-                return 30 - ( ( level < 116 and equipped.archavons_heavy_hand ) and 8 or 0 )
+                return 30
             end,
             spendType = "rage",
 
@@ -715,8 +823,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyDebuff( "target", "mortal_wounds" )
                 applyDebuff( "target", "deep_wounds" )
                 removeBuff( "overpower" )
-                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 6, "rage" ) end
-                if level < 116 and set_bonus.tier21_4pc == 1 then addStack( "weighted_blade", 12, 1 ) end
+                removeStack( "deadly_calm" )
             end,
         },
 
@@ -733,11 +840,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132223,
 
             handler = function ()
-                if talent.dreadnaught.enabled then
-                    addStack( "overpower", 15, 1 )
-                else
-                    applyBuff( "overpower" )
-                end
+                addStack( "overpower", 15, 1 )
 
                 if buff.striking_the_anvil.up then
                     removeBuff( "striking_the_anvil" )
@@ -787,7 +890,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         ravager = {
             id = 152277,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 60 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 45 end,
             gcd = "spell",
 
             spend = -7,
@@ -800,8 +903,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             toggle = "cooldowns",
 
             handler = function ()
-                if ( level < 116 and equipped.the_great_storms_eye ) then addStack( "tornados_eye", 6, 1 ) end
-                -- need to plan out rage gen.
             end,
         },
 
@@ -825,7 +926,57 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "rend" )
-                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 6, "rage" ) end
+                if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
+            end,
+        },
+
+
+        shattering_throw = {
+            id = 64382,
+            cast = 1.5,
+            cooldown = 180,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 311430,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        shield_block = {
+            id = 2565,
+            cast = 0,
+            cooldown = 16,
+            gcd = "spell",
+            
+            spend = 30,
+            spendType = "rage",
+            
+            startsCombat = true,
+            texture = 132110,
+            
+            nobuff = "shield_block",
+
+            handler = function ()
+                applyBuff( "shield_block" )
+            end,
+        },
+        
+
+        shield_slam = {
+            id = 23922,
+            cast = 0,
+            cooldown = 9,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 134951,
+            
+            handler = function ()
             end,
         },
 
@@ -867,8 +1018,23 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132340,
 
             handler = function ()
-                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 4, "rage" ) end
+                if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
                 removeBuff( "crushing_assault" )
+            end,
+        },
+
+
+        spell_reflection = {
+            id = 23920,
+            cast = 0,
+            cooldown = 25,
+            gcd = "off",
+            
+            startsCombat = false,
+            texture = 132361,
+            
+            handler = function ()
+                applyBuff( "spell_reflection" )
             end,
         },
 
@@ -898,6 +1064,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             startsCombat = true,
             texture = 132306,
+
+            notalent = "cleave",
 
             handler = function ()
                 applyBuff( "sweeping_strikes" )
@@ -959,14 +1127,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     applyBuff( "in_for_the_kill" )
                 end
 
-                if level < 116 then
-                    if set_bonus.tier21_2pc == 1 then applyBuff( "war_veteran" ) end
-                    if set_bonus.tier20_2pc == 1 then
-                        if talent.ravager.enabled then setCooldown( "ravager", max( 0, cooldown.ravager.remains - 2 ) )
-                        else setCooldown( "bladestorm", max( 0, cooldown.bladestorm.remains - 3 ) ) end
-                    end
-                end
-
                 applyDebuff( "target", "colossus_smash" )
             end,
         },
@@ -988,10 +1148,143 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132369,
 
             handler = function ()
-                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 6, "rage" ) end
+                if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
                 if talent.fervor_of_battle.enabled and buff.crushing_assault.up then removeBuff( "crushing_assault" ) end
             end,
         },
+
+
+        -- Warrior - Kyrian    - 307865 - spear_of_bastion      (Spear of Bastion)
+        spear_of_bastion = {
+            id = 307865,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            spend = -25,
+            spendType = "rage",
+
+            startsCombat = true,
+            texture = 3565453,
+
+            toggle = "essences",
+
+            velocity = 30,
+
+            handler = function ()
+                applyDebuff( "target", "spear_of_bastion" )
+            end,
+
+            auras = {
+                spear_of_bastion = {
+                    id = 307871,
+                    duration = 4,
+                    max_stack = 1
+                }
+            }
+        },
+        
+        -- Warrior - Necrolord - 324143 - conquerors_banner     (Conqueror's Banner)
+        conquerors_banner = {
+            id = 324143,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3578234,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "conquerors_frenzy" )
+                rage_since_banner = 0
+            end,
+
+            auras = {
+                conquerors_frenzy = {
+                    id = 325862,
+                    duration = 20,
+                    max_stack = 1
+                },
+                glory = {
+                    id = 325787,
+                    duration = 30,
+                    max_stack = 30
+                }
+            }
+        },
+
+        -- Warrior - Night Fae - 325886 - ancient_aftershock    (Ancient Aftershock)
+        ancient_aftershock = {
+            id = 325886,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3636851,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "ancient_aftershock" )
+                -- Rage gain will be reactive, can't tell what is going to get hit.
+            end,
+
+            auras = {
+                ancient_aftershock = {
+                    id = 325886,
+                    duration = 1,
+                    max_stack = 1,
+                },
+            }
+        },
+
+        -- Warrior - Venthyr   - 317320 - condemn               (Condemn)
+        condemn = {
+            id = 317349,
+            cast = 0,
+            cooldown = 6,
+            hasteCD = true,
+            gcd = "spell",
+
+            spend = function ()
+                if spec.fury then return -20 end
+                return 20
+            end,
+            spendType = "rage",
+
+            startsCombat = true,
+            texture = 3565727,
+
+            -- toggle = "essences", -- no need to toggle.
+
+            usable = function ()
+                return target.health_pct < 20 or target.health_pct > 80, "requires >80% or <20% health"
+            end,
+
+            handler = function ()
+                applyDebuff( "target", "condemned" )
+
+                if not spec.fury then
+                    local extra = min( 20, rage.current )
+
+                    if extra > 0 then spend( extra, "rage" ) end
+                    gain( 4 + ( 0.2 * extra ), "rage" )
+                end
+            end,
+
+            auras = {
+                condemned = {
+                    id = 317491,
+                    duration = 10,
+                    max_stack = 1,
+                }
+            }
+        }
+
+
     } )
 
 

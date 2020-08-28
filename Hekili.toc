@@ -36,11 +36,11 @@ Classes\HunterMarksmanship.lua
 Classes\MonkBrewmaster.lua
 # Classes\MonkMistweaver.lua
 Classes\MonkWindwalker.lua
-# Classes\PaladinProtection.lua
+Classes\PaladinProtection.lua
 Classes\PaladinRetribution.lua
 # Classes\PriestDiscipline.lua
 Classes\PriestShadow.lua
-# Classes\RogueAssassination.lua
+Classes\RogueAssassination.lua
 Classes\RogueOutlaw.lua
 # Classes\RogueSubtlety.lua
 Classes\ShamanElemental.lua
@@ -48,9 +48,9 @@ Classes\ShamanEnhancement.lua
 # Classes\WarlockAffliction.lua
 # Classes\WarlockDemonology.lua
 # Classes\WarlockDestruction.lua
-# Classes\WarriorArms.lua
+Classes\WarriorArms.lua
 # Classes\WarriorFury.lua
-# Classes\WarriorProtection.lua
+Classes\WarriorProtection.lua
 
 Targets.lua
 Options.lua

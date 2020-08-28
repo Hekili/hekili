@@ -15,53 +15,49 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     -- Talents
     spec:RegisterTalents( {
-        into_the_fray = 15760, -- 202603
+        war_machine = 15760, -- 316733
         punish = 15759, -- 275334
-        impending_victory = 15774, -- 202168
+        devastator = 15774, -- 236279
 
-        crackling_thunder = 22373, -- 203201
-        bounding_stride = 22629, -- 202163
-        safeguard = 22409, -- 223657
+        double_time = 19676, -- 103827
+        rumbling_earth = 22629, -- 275339
+        storm_bolt = 22409, -- 107570
 
         best_served_cold = 22378, -- 202560
-        unstoppable_force = 22626, -- 275336
+        booming_voice = 22626, -- 202743
         dragon_roar = 23260, -- 118000
 
-        indomitable = 23096, -- 202095
-        never_surrender = 23261, -- 202561
-        bolster = 22488, -- 280001
+        crackling_thunder = 23096, -- 203201
+        bounding_stride = 22627, -- 202163
+        menace = 22488, -- 275338
 
-        menace = 22384, -- 275338
-        rumbling_earth = 22631, -- 275339
-        storm_bolt = 22800, -- 107570
+        never_surrender = 22384, -- 202561
+        indomitable = 22631, -- 202095
+        impending_victory = 22800, -- 202168
 
-        booming_voice = 22395, -- 202743
-        vengeance = 22544, -- 202572
-        devastator = 22401, -- 236279
+        into_the_fray = 22395, -- 202603
+        unstoppable_force = 22544, -- 275336
+        ravager = 22401, -- 228920
 
-        anger_management = 21204, -- 152278
+        anger_management = 23455, -- 152278
         heavy_repercussions = 22406, -- 203177
-        ravager = 23099, -- 228920
+        bolster = 23099, -- 280001
     } )
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        gladiators_medallion = 3595, -- 208683
-        relentless = 3594, -- 196029
-        adaptation = 3593, -- 214027
-
-        oppressor = 845, -- 205800
-        disarm = 24, -- 236077
-        sword_and_board = 167, -- 199127
         bodyguard = 168, -- 213871
-        leave_no_man_behind = 169, -- 199037
-        morale_killer = 171, -- 199023
-        shield_bash = 173, -- 198912
-        thunderstruck = 175, -- 199045
-        ready_for_battle = 3063, -- 253900
-        warpath = 178, -- 199086
+        demolition = 5374, -- 329033
+        disarm = 24, -- 236077
         dragon_charge = 831, -- 206572
-        mass_spell_reflection = 833, -- 213915
+        morale_killer = 171, -- 199023
+        oppressor = 845, -- 205800
+        overwatch = 5378, -- 329035
+        rebound = 833, -- 213915
+        shield_bash = 173, -- 198912
+        sword_and_board = 167, -- 199127
+        thunderstruck = 175, -- 199045
+        warpath = 178, -- 199086
     } )
 
     -- Auras
@@ -83,13 +79,23 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             type = "",
             max_stack = 1,
         },
+        bounding_stride = {
+            id = 202164,
+            duration = 3,
+            max_stack = 1,
+        },
         charge = {
             id = 105771,
             duration = 1,
             max_stack = 1,
         },
+        challenging_shout = {
+            id = 1161,
+            duration = 6,
+            max_stack = 1,
+        },
         deep_wounds = {
-            id = 115768,
+            id = 115767,
             duration = 19.5,
             max_stack = 1,
         },
@@ -106,6 +112,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 6,
             max_stack = 1,
         },
+        hamstring = {
+            id = 1715,
+            duration = 15,
+            max_stack = 1,
+        },
         ignore_pain = {
             id = 190456,
             duration = 12,
@@ -113,18 +124,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         intimidating_shout = {
             id = 5246,
-            duration = 12,
+            duration = 8,
             max_stack = 1,
         },
         into_the_fray = {
             id = 202602,
             duration = 3600,
-            max_stack = 2,
-        },
-        kakushans_stormscale_gauntlets = {
-            id = 207844,
-            duration = 3600,
-            max_stack = 1,
+            max_stack = 3,
         },
         last_stand = {
             id = 12975,
@@ -134,7 +140,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         punish = {
             id = 275335,
             duration = 9,
-            max_stack = 1,
+            max_stack = 3,
         },
         rallying_cry = {
             id = 97463,
@@ -153,7 +159,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         shield_block = {
             id = 132404,
-            duration = 7,
+            duration = 6,
             max_stack = 1,
         },
         shield_wall = {
@@ -173,7 +179,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         storm_bolt = {
             id = 132169,
-            duration = 2,
+            duration = 4,
             max_stack = 1,
         },
         taunt = {
@@ -188,16 +194,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         vanguard = {
             id = 71,
-        },
-        vengeance_ignore_pain = {
-            id = 202574,
-            duration = 15,
-            max_stack = 1,
-        },
-        vengeance_revenge = {
-            id = 202573,
-            duration = 15,
-            max_stack = 1,
         },
 
 
@@ -218,21 +214,69 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     } )
 
 
-    -- model rage expenditure reducing CDs...
-    spec:RegisterHook( "spend", function( amt, resource )
-        if resource == "rage" then
-            if talent.anger_management.enabled and amt >= 10 then
-                local secs = floor( amt / 10 )
+    local rageSpent = 0
+    local rageSinceBanner = 0 
 
-                cooldown.avatar.expires = cooldown.avatar.expires - secs
-                cooldown.last_stand.expires = cooldown.last_stand.expires - secs
-                cooldown.shield_wall.expires = cooldown.shield_wall.expires - secs
-                cooldown.demoralizing_shout.expires = cooldown.demoralizing_shout.expires - secs
+
+    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
+        local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
+
+        if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" then
+            local ability = class.abilities[ spellID ]
+
+            if not ability then return end
+
+            if ability.key == "conquerors_banner" then
+                rageSinceBanner = 0
+            end
+        end
+    end )
+
+    
+    local RAGE = Enum.PowerType.Rage
+    local lastRage = -1
+
+    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( unit, powerType )
+        if powerType == RAGE then
+            local current = UnitPower( "player", RAGE )
+
+            if current < lastRage then
+                rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.                
+                rageSinceBanner = ( rageSinceBanner + lastRage - current ) % 30 -- Glory.
             end
 
-            if level < 116 and equipped.mannoroths_bloodletting_manacles and amt >= 10 then
-                local heal = 0.01 * floor( amt / 10 )
-                gain( heal * health.max, "health" )
+            lastRage = current
+        end
+    end )
+
+    spec:RegisterStateExpr( "rage_spent", function ()
+        return rageSpent
+    end )
+
+    spec:RegisterStateExpr( "rage_since_banner", function ()
+        return rageSinceBanner
+    end )
+
+    -- model rage expenditure reducing CDs...
+    spec:RegisterHook( "spend", function( amt, resource )
+        if resource == "rage" and amt > 0 then
+            if talent.anger_management.enabled then
+                rage_spent = rage_spent + amt
+                local secs = floor( rage_spent / 10 )
+                rage_spent = rage_spent % 10
+
+                cooldown.avatar.expires = cooldown.avatar.expires - secs
+                cooldown.shield_wall.expires = cooldown.shield_wall.expires - secs
+                -- cooldown.last_stand.expires = cooldown.last_stand.expires - secs
+                -- cooldown.demoralizing_shout.expires = cooldown.demoralizing_shout.expires - secs
+            end
+
+            if buff.conquerors_frenzy.up then
+                rage_since_banner = rage_since_banner + amt
+                local stacks = floor( rage_since_banner / 20 )
+                rage_since_banner = rage_since_banner % 20
+
+                if stacks > 0 then addStack( "glory", nil, stacks ) end
             end
         end
     end )
@@ -279,7 +323,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
             gcd = "spell",
 
-            spend = -20,
+            spend = -30,
             spendType = "rage",
 
             toggle = "cooldowns",
@@ -303,7 +347,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 15,
             gcd = "spell",
 
-            essential = true, -- new flag, will prioritize using this in precombat APL even in combat.
+            essential = true,
 
             startsCombat = false,
             texture = 132333,
@@ -333,6 +377,42 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
 
+        challenging_shout = {
+            id = 1161,
+            cast = 0,
+            cooldown = 240,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 132091,
+            
+            handler = function ()
+                applyDebuff( "target", "challenging_shout" )
+                active_dot.challenging_shout = active_enemies
+            end,
+        },
+        
+
+        charge = {
+            id = 100,
+            cast = 0,
+            cooldown = 20,
+            gcd = "spell",
+
+            spend = -20,
+            spendType = "rage",
+            
+            startsCombat = true,
+            texture = 132337,
+
+            usable = function () return target.minR > 7, "requires 8 yard range or more" end,
+            
+            handler = function ()
+                applyDebuff( "target", "charge" )
+            end,
+        },
         demoralizing_shout = {
             id = 1160,
             cast = 0,
@@ -367,10 +447,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "deep_wounds" )
-
-                if level < 116 and equipped.kakushans_stormscale_gauntlets then
-                    applyBuff( "kakushans_stormscale_gauntlets" )
-                end
             end,
         },
 
@@ -381,7 +457,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 35,
             gcd = "spell",
 
-            spend = -10,
+            spend = -20,
             spendType = "rage",
 
             startsCombat = true,
@@ -397,13 +473,42 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
 
+        execute = {
+            id = 163201,
+            noOverride = 317485,
+            cast = 0,
+            cooldown = 6,
+            gcd = "spell",
+            
+            spend = 20,
+            spendType = "rage",
+            
+            startsCombat = true,
+            texture = 135358,
+
+            usable = function () return target.health_pct < 20, "requires target below 20% HP" end,
+            
+            handler = function ()
+                if rage.current > 0 then
+                    local amt = min( 20, rage.current )
+                    spend( amt, "rage" )
+
+                    amt = ( amt + 20 ) * 0.2
+                    gain( amt, "rage" )
+
+                    return
+                end
+
+                gain( 4, "rage" )
+            end,
+        },
+
+
         heroic_leap = {
             id = 6544,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.timeless_stratagem ) and 3 or nil end,
             cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
-            recharge = function () return talent.bounding_stride.enabled and 30 or 45 end,
-            gcd = "spell",
+                gcd = "spell",
 
             startsCombat = true,
             texture = 236171,
@@ -437,7 +542,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 1,
             gcd = "off",
 
-            spend = function () return ( buff.vengeance_ignore_pain.up and 0.67 or 1 ) * 40 end,
+            spend = 40,
             spendType = "rage",
 
             startsCombat = false,
@@ -453,9 +558,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
 
             handler = function ()
-                if talent.vengeance.enabled then applyBuff( "vengeance_revenge" ) end
-                removeBuff( "vengeance_ignore_pain" )
-
                 applyBuff( "ignore_pain" )
             end,
         },
@@ -481,30 +583,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
 
-        intercept = {
-            id = 198304,
+        intervene = {
+            id = 3411,
             cast = 0,
-            charges = 2,
-            cooldown = 15,
-            recharge = 15,
+            cooldown = 30,
             gcd = "spell",
-
-            spend = -15,
-            spendType = "rage",
-
+            
             startsCombat = true,
             texture = 132365,
-
-            usable = function () return target.distance > 10 end,
+            
             handler = function ()
-                applyDebuff( "target", "charge" )
-                setDistance( 5 )
             end,
         },
 
 
         intimidating_shout = {
-            id = 5246,
+            id = function () return talent.menace.enabled and 316593 or 5246 end,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
@@ -519,6 +613,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 active_dot.intimidating_shout = max( active_dot.intimidating_shout, active_enemies )
                 if azerite.intimidating_presence.enabled then applyDebuff( "target", "intimidating_presence" ) end
             end,
+
+            copy = { 316593, 5246 }
         },
 
 
@@ -536,6 +632,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "last_stand" )
+
+                if talent.bolster.enabled then
+                    applyBuff( "shield_block", buff.last_stand.duration )
+                end
             end,
         },
 
@@ -575,8 +675,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "rallying_cry" )
-                gain( 0.15 * health.max, "health" )
-                health.max = health.max * 1.15
+                gain( 0.2 * health.max, "health" )
+                health.max = health.max * 1.2
             end,
         },
 
@@ -603,13 +703,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         revenge = {
             id = 6572,
             cast = 0,
-            cooldown = 3,
-            hasteCD = true,
+            cooldown = 0,
             gcd = "spell",
 
             spend = function ()
                 if buff.revenge.up then return 0 end
-                return buff.vengeance_revenge.up and 20 or 30
+                return 20
             end,
             spendType = "rage",
 
@@ -625,12 +724,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
 
             handler = function ()
-                if talent.vengeance.enabled then applyBuff( "vengeance_ignore_pain" ) end
-
-                if buff.revenge.up then removeBuff( "revenge" )
-                else removeBuff( "vengeance_revenge" ) end
-
-                applyDebuff( "target", "deep_wounds" )
+                removeBuff( "revenge" )
             end,
         },
 
@@ -638,7 +732,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         shield_block = {
             id = 2565,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.ararats_bloodmirror ) and 3 or 2 end,
+            charges = 2,
             cooldown = 16,
             recharge = 16,
             hasteCD = true,
@@ -653,7 +747,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = false,
             texture = 132110,
 
-            readyTime = function () return max( talent.bolster.enabled and buff.last_stand.remains or 0, buff.shield_block.remains ) end,
+            nobuff = "shield_block",
+
             handler = function ()
                 applyBuff( "shield_block" )
             end,
@@ -667,9 +762,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             hasteCD = true,
             gcd = "spell",
 
-            spend = function () 
-                return ( buff.kakushans_stormscale_gauntlets.up and 1.2 or 1 ) * ( ( level < 116 and equipped.the_walls_fell ) and -17 or -15 )
-            end,
+            spend = function () return talent.heavy_repercussions.enabled and -18 or -15 end,
             spendType = "rage",
 
             startsCombat = true,
@@ -681,12 +774,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 end
 
                 if talent.punish.enabled then applyDebuff( "target", "punish" ) end
-
-                if level < 116 and equipped.the_walls_fell then
-                    setCooldown( "shield_wall", cooldown.shield_wall.remains - 4 )
-                end
-
-                removeBuff( "kakushans_stormscale_gauntlets" )
             end,
         },
 
@@ -734,9 +821,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         spell_reflection = {
             id = 23920,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.ararats_bloodmirror ) and 2 or nil end,
             cooldown = 25,
-            recharge = 25,
             gcd = "off",
 
             defensive = true,
@@ -788,7 +873,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = function () return haste * ( ( buff.avatar.up and talent.unstoppable_force.enabled ) and 3 or 6 ) end,
             gcd = "spell",
 
-            spend = function () return ( buff.kakushans_stormscale_gauntlets.up and 1.2 or 1 ) * -5 end,
+            spend = -5,
             spendType = "rage",
 
             startsCombat = true,
@@ -797,12 +882,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 applyDebuff( "target", "thunder_clap" )
                 active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
-
-                if level < 116 and equipped.thundergods_vigor then
-                    setCooldown( "demoralizing_shout", cooldown.demoralizing_shout.remains - ( 3 * active_enemies ) )
-                end
-
-                removeBuff( "kakushans_stormscale_gauntlets" )
             end,
         },
 

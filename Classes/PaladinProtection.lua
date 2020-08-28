@@ -368,10 +368,6 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 applyDebuff( "target", "avengers_shield" )
                 interrupt()
 
-                if level < 116 and equipped.breastplate_of_the_golden_valkyr then
-                    cooldown.guardian_of_ancient_kings.expires = cooldown.guardian_of_ancient_kings.expires - ( 3 * min( 3 + ( talent.redoubt.enabled and 1 or 0 ) + ( equipped.tyelca_ferren_marcuss_stature and 2 or 0 ), active_enemies ) )
-                end
-
                 if talent.redoubt.enabled then
                     applyBuff( "redoubt" ) 
                 end
@@ -949,6 +945,338 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 last_shield = query_time
             end,
         },
+
+
+        word_of_glory = {
+            id = 85673,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 3,
+            spendType = "holy_power",
+            
+            startsCombat = false,
+            texture = 133192,
+            
+            handler = function ()
+                if buff.vanquishers_hammer.up then
+                    applyBuff( "shield_of_the_righteous" )
+                    removeBuff( "vanquishers_hammer" )
+                end 
+            end,
+        },
+
+
+        -- Paladin - Kyrian    - 304971 - divine_toll          (Divine Toll)
+        divine_toll = {
+            id = 304971,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3565448,
+
+            toggle = "essences",
+
+            handler = function ()
+                if spec.protection then
+                    -- Cast Avenger's Shield x5.
+                    -- This is lazy and may be wrong/bad.
+                    for i = 1, active_enemies do
+                        class.abilities.avengers_shield.handler()
+                    end
+                elseif spec.retribution then
+                    -- Cast Judgment x5.
+                    for i = 1, active_enemies do
+                        class.abilities.judgment.handler()
+                    end
+                elseif spec.holy then
+                    -- Cast Holy Shock x5.
+                    for i = 1, active_enemies do
+                        class.abilities.holy_shock.handler()
+                    end
+                end
+            end
+        },
+
+        -- Paladin - Necrolord - 328204 - vanquishers_hammer   (Vanquisher's Hammer)
+        vanquishers_hammer = {
+            id = 328204,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            spend = 1,
+            spendType = "holy_power",
+
+            startsCombat = true,
+            texture = 3578228,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "vanquishers_hammer" )
+            end,
+
+            auras = {
+                vanquishers_hammer = {
+                    id = 328204,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
+        },
+
+        -- Paladin - Night Fae - 328620 - blessing_of_summer   (Blessing of Summer)
+        blessing_of_summer = {
+            id = 328620,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3636845,
+
+            toggle = "essences",
+            buff = "blessing_of_summer_active",
+
+            handler = function ()
+                applyBuff( "blessing_of_summer" ) -- We'll just apply to self because we don't care.
+                
+                removeBuff( "blessing_of_summer_active" )
+                applyBuff( "blessing_of_autumn_active" )
+                setCooldown( "blessing_of_autumn", 45 )
+            end,
+
+            auras = {
+                blessing_of_summer = {
+                    id = 328620,
+                    duration = 30,
+                    max_stack = 1,
+                },
+
+                blessing_of_summer_active = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsActiveSpell( 328620 ) then
+                            t.name = class.auras.blessing_of_summer.name .. " Active"
+                            t.count = 1
+                            t.applied = now
+                            t.expires = now + 3600
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                },
+            }
+        },
+
+        blessing_of_autumn = {
+            id = 328622,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3636843,
+
+            toggle = "essences",
+            buff = "blessing_of_autumn_active",
+
+            handler = function ()
+                applyBuff( "blessing_of_autumn" )
+
+                removeBuff( "blessing_of_autumn_active" )
+                applyBuff( "blessing_of_winter_active" )
+                setCooldown( "blessing_of_winter", 45 )
+            end,
+
+            auras = {
+                blessing_of_autumn = {
+                    id = 328622,
+                    duration = 30,
+                    max_stack = 1,                    
+                },
+                blessing_of_autumn_active = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsActiveSpell( 328622 ) then
+                            t.name = class.auras.blessing_of_autumn.name .. " Active"
+                            t.count = 1
+                            t.applied = now
+                            t.expires = now + 3600
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                }
+            }
+        },
+
+        blessing_of_winter = {
+            id = 328281,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3636846,
+
+            toggle = "essences",
+            buff = "blessing_of_winter_active",
+
+            handler = function ()
+                applyBuff( "blessing_of_winter" )
+
+                removeBuff( "blessing_of_winter_active" )
+                applyBuff( "blessing_of_spring_active" )
+                setCooldown( "blessing_of_spring", 45 )
+            end,
+
+            auras = {
+                blessing_of_winter = {
+                    id = 328281,
+                    duration = 30,
+                    max_stack = 1,                    
+                },
+                blessing_of_winter_debuff = {
+                    id = 328506,
+                    duration = 6,
+                    max_stack = 10
+                },
+                blessing_of_winter_active = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsActiveSpell( 328281 ) then
+                            t.name = class.auras.blessing_of_winter.name .. " Active"
+                            t.count = 1
+                            t.applied = now
+                            t.expires = now + 3600
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                }
+            }
+        },
+
+        blessing_of_spring = {
+            id = 328282,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
+
+            startsCombat = false,
+            texture = 3636844,
+
+            toggle = "essences",
+            buff = "blessing_of_spring_active",
+
+            handler = function ()
+                applyBuff( "blessing_of_spring" )
+
+                removeBuff( "blessing_of_spring_active" )
+                applyBuff( "blessing_of_summer_active" )
+                setCooldown( "blessing_of_summer", 45 )
+            end,
+
+            auras = {
+                blessing_of_spring = {
+                    id = 328281,
+                    duration = 30,
+                    max_stack = 1,
+                    friendly = true,
+                },
+                blessing_of_spring_active = {
+                    duration = 3600,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsActiveSpell( 328282 ) then
+                            t.name = class.auras.blessing_of_winter.name .. " Active"
+                            t.count = 1
+                            t.applied = now
+                            t.expires = now + 3600
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                }
+            }
+        },
+
+        -- Paladin - Venthyr   - 316958 - ashen_hallow         (Ashen Hallow)
+        ashen_hallow = {
+            id = 316958,
+            cast = function () return 1.5 * haste end,
+            cooldown = 120,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3565722,
+
+            toggle = "essences",
+
+            auras = {
+                hammer_of_wrath_hallow = {
+                    duration = 30,
+                    max_stack = 1,
+                    generate = function( t )
+                        if IsUsableSpell( 24275 ) and not ( target.health_pct < 20 or buff.avenging_wrath.up or buff.crusade.up or buff.final_verdict.up ) then
+                            t.name = class.abilities.hammer_of_wrath.name .. " " .. class.abilities.ashen_hallow.name
+                            t.count = 1
+                            t.applied = action.ashen_hallow.lastCast
+                            t.expires = action.ashen_hallow.lastCast + 30
+                            t.caster = "player"
+                            return
+                        end
+
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end,
+                },        
+            }
+        },
+
+
     } )
 
 
