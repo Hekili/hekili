@@ -898,8 +898,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
                 applyBuff( "shuffle" )
 
-                setCooldown( "celestial_brew", max( 0, cooldown.celestial_brew.remains - ( 4 + ( buff.blackout_combo.up and 2 or 0 ) ) ) )
-                gainChargeTime( 'purifying_brew', 4 + ( buff.blackout_combo.up and 2 or 0 ) )
+                setCooldown( "celestial_brew", max( 0, cooldown.celestial_brew.remains - ( 4 + ( buff.blackout_combo.up and 2 or 0 ) + ( buff.bonedust_brew.up and 1 or 0 ) ) ) )
+                gainChargeTime( 'purifying_brew', 4 + ( buff.blackout_combo.up and 2 or 0 ) +  ( buff.bonedust_brew.up and 1 or 0 ) )
                 cooldown.fortifying_brew.expires = max( 0, cooldown.fortifying_brew.expires - 4 + ( buff.blackout_combo.up and 2 or 0 ) )
 
                 removeBuff( "blackout_combo" )
@@ -1147,8 +1147,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     applyDebuff( "target", "eye_of_the_tiger" )
                     applyBuff( "eye_of_the_tiger" )
                 end
-                gainChargeTime( 'celestial_brew', 1 )
-                gainChargeTime( 'purifying_brew', 1 )
+                gainChargeTime( 'celestial_brew', debuff.bonedust_brew.up and 2 or 1 )
+                gainChargeTime( 'purifying_brew', debuff.bonedust_brew.up and 2 or 1 )
 
                 cooldown.fortifying_brew.expires = max( 0, cooldown.fortifying_brew.expires - 1 )
             end,
@@ -1265,20 +1265,121 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
 
 
-        --[[ zen_pilgrimage = {
-            id = 126892,
-            cast = 10,
+        -- Monk - Kyrian    - 310454 - weapons_of_order     (Weapons of Order)
+        -- TODO:  Effects of WoO for each spec.
+        weapons_of_order = {
+            id = 310454,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+
+            toggle = "essences",
+            
+            startsCombat = false,
+            texture = 3565447,
+
+            handler = function ()
+                applyBuff( "weapons_of_order" )
+
+                if spec.windwalker then
+                    setCooldown( "rising_sun_kick", 0 )
+                elseif spec.brewmaster then
+                    setCooldown( "keg_smash", 0 )
+                elseif spec.mistweaver then
+                    setCooldown( "essence_font", 0 )
+                end
+            end,
+
+            auras = {
+                weapons_of_order = {
+                    id = 310454,
+                    duration = 30,
+                    max_stack = 1
+                }
+            }
+        },
+
+        -- Monk - Necrolord - 325216 - bonedust_brew        (Bonedust Brew)
+        bonedust_brew = {
+            id = 325216,
+            cast  = 0,
             cooldown = 60,
             gcd = "spell",
 
-            toggle = "cooldowns",
+            toggle = "essences",
 
             startsCombat = true,
-            texture = 775462,
+            texture = 3578227,
 
             handler = function ()
+                applyDebuff( "target", "bonedust_brew" )
             end,
-        },]]
+
+            auras = {
+                bonedust_brew = {
+                    id = 325216,
+                    duration = 10,
+                    max_stack = 1
+                }
+            }
+        },
+
+        -- Monk - Night Fae - 327104 - faeline_stomp        (Faeline Stomp)
+        faeline_stomp = {
+            id = 327104,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 3636842,
+
+            toggle = "essences",
+            
+            handler = function ()
+                applyBuff( "faeline_stomp" )
+
+                if spec.brewmaster then
+                    applyDebuff( "target", "breath_of_fire" )
+                    active_dot.breath_of_fire = active_enemies
+                end
+            end,
+
+            auras = {
+                faeline_stomp = {
+                    id = 327104,
+                    duration = 30,
+                    max_stack = 1,
+                },        
+            }
+        },
+
+        -- Monk - Venthyr   - 326860 - fallen_order         (Fallen Order)
+        fallen_order = {
+            id = 326860,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 3565721,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "fallen_order" )
+            end,
+
+            auras = {
+                fallen_order = {
+                    id = 326860,
+                    duration = 24,
+                    max_stack = 1
+                }
+            }
+        }
+
+        
     } )
 
 
