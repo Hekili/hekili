@@ -152,11 +152,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 196608,
             duration = 8
         },
-        faeline_stomp = {
-            id = 327104,
-            duration = 30,
-            max_stack = 1,
-        },
         fists_of_fury = {
             id = 113656,
             duration = function () return 4 * haste end,
@@ -834,23 +829,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
         },
 
 
-        faeline_stomp = {
-            id = 327104,
-            cast = 0,
-            cooldown = 30,
-            gcd = "spell",
-            
-            startsCombat = true,
-            texture = 3636842,
-
-            toggle = "essences",
-            
-            handler = function ()
-                applyBuff( "faeline_stomp" )
-            end,
-        },
-
-
         fist_of_the_white_tiger = {
             id = 261947,
             cast = 0,
@@ -1294,8 +1272,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             start = function ()
                 removeBuff( "dance_of_chiji" )
-
                 removeBuff( "chi_energy" ) -- legendary
+
+                if debuff.bonedust_brew.up or active_dot.bonedust_brew > 0 and active_enemies > 1 then
+                    gain( 1, "chi" )
+                end
             end,
         },
 
