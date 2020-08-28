@@ -3582,7 +3582,7 @@ do
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
                             toggles.defensives = "Defensives"
-                            toggles.essences = "Covenants/Essences"
+                            toggles.essences = "Covenants"
                             toggles.cooldowns = "Cooldowns"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
@@ -3702,7 +3702,7 @@ do
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
                             toggles.defensives = "Defensives"
-                            toggles.essences = "Covenants/Essences"
+                            toggles.essences = "Covenants"
                             toggles.cooldowns = "Cooldowns"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
@@ -4431,7 +4431,7 @@ do
 
                 -- Toggles
                 BuildToggleList( options, id, "cooldowns", "Cooldowns" )
-                BuildToggleList( options, id, "essences", "Covenants/Essences" )
+                BuildToggleList( options, id, "essences", "Covenants" )
                 BuildToggleList( options, id, "interrupts", "Utility / Interrupts" )
                 BuildToggleList( options, id, "defensives", "Defensives",   "The defensive toggle is generally intended for tanking specializations, " ..
                                                                             "as you may want to turn on/off recommendations for damage mitigation abilities " ..
@@ -6530,22 +6530,22 @@ do
                     args = {
                         key = {
                             type = "keybinding",
-                            name = "Covenants/Essences",
-                            desc = "Set a key to toggle Covenant/Essence recommendations on/off.",
+                            name = "Covenants",
+                            desc = "Set a key to toggle Covenant recommendations on/off.",
                             order = 1,
                         },
 
                         value = {
                             type = "toggle",
-                            name = "Show Covenant/Essences",
-                            desc = "If checked, abilities from Covenants/Essences can be recommended.",
+                            name = "Show Covenants",
+                            desc = "If checked, abilities from Covenants can be recommended.",
                             order = 2,                            
                         },
 
                         override = {
                             type = "toggle",
                             name = "Cooldowns Override",
-                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Covenants/Essences even if Show Covenants/Essences is not checked.",
+                            desc = "If checked, when Cooldowns are enabled, the addon will also recommend Covenants even if Show Covenants is not checked.",
                             order = 3,
                         },
                     }
