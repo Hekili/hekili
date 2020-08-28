@@ -152,6 +152,18 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             interval = 2,
             value = 5,
         },
+
+        death_chakram = {
+            resource = 'focus',
+            aura = 'death_chakram',
+
+            last = function ()
+                return state.buff.death_chakram.applied + floor( state.query_time - state.buff.death_chakram.applied )
+            end,
+
+            interval = function () return class.auras.death_chakram.tick_time end,
+            value = 3
+        }
     } )
 
     -- Talents
@@ -1117,8 +1129,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
 
-        
-
         kill_shot = {
             id = 53351,
             cast = 0,
@@ -1133,8 +1143,9 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 236174,
             
-            usable = function () return target.health_pct < 20 end,
+            usable = function () return buff.flayers_mark.up or target.health_pct < 20 end,
             handler = function ()
+                removeBuff( "flayers_mark" )
             end,
         },
 
@@ -1578,6 +1589,129 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 if not pet.alive then return false, "requires a living pet" end
                 return true
             end,
+        },
+
+
+        -- Hunter - Kyrian    - 308491 - resonating_arrow     (Resonating Arrow)
+        resonating_arrow = {
+            id = 308491,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3565445,
+
+            handler = function ()
+                applyDebuff( "target", "resonating_arrow" )
+                active_dot.resonating_arrow = active_enemies
+            end,
+
+            toggle = "essences",
+
+            auras = {
+                resonating_arrow = {
+                    id = 308498,
+                    duration = 10,
+                    max_stack = 1,
+                }
+            }
+        },
+
+        -- Hunter - Necrolord - 325028 - death_chakram        (Death Chakram)
+        death_chakram = {
+            id = 325028,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3578207,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyBuff( "death_chakram" )
+            end,
+
+            auras = {
+                death_chakram = {
+                    duration = 3.5,
+                    tick_time = 0.5,
+                    max_stack = 1,
+                    generate = function( t, auraType )
+                        local cast = action.death_chakram.lastCast or 0
+
+                        if cast + class.auras.death_chakram.duration >= query_time then
+                            t.name = class.abilities.death_chakram.name
+                            t.count = 1
+                            t.applied = cast
+                            t.expires = cast + duration
+                            t.caster = "player"
+                            return
+                        end
+                        t.count = 0
+                        t.applied = 0
+                        t.expires = 0
+                        t.caster = "nobody"
+                    end
+                }
+            }
+        },
+
+        -- Hunter - Night Fae - 328231 - wild_spirits         (Wild Spirits)
+        wild_spirits = {
+            id = 328231,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3636840,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "wild_mark" )
+            end,
+
+            auras = {
+                wild_mark = {
+                    id = 328275,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
+        },
+
+        -- Hunter - Venthyr   - 324149 - flayed_shot          (Flayed Shot)
+        flayed_shot = {
+            id = 324149,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 3565719,
+
+            toggle = "essences",
+
+            handler = function ()
+                applyDebuff( "target", "flayed_shot" )
+            end,
+
+            auras = {
+                flayed_shot = {
+                    id = 324149,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                flayers_mark = {
+                    id = 324156,
+                    duration = 12,
+                    max_stack = 1
+                }
+            }
         }
 
 
