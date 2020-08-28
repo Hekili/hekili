@@ -14,6 +14,7 @@ local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDeb
 local GetItemInfo = ns.CachedGetItemInfo
 local GetResourceInfo, GetResourceKey = ns.GetResourceInfo, ns.GetResourceKey
 local RegisterEvent = ns.RegisterEvent
+local RegisterUnitEvent = ns.RegisterUnitEvent
 
 local formatKey = ns.formatKey
 local getSpecializationKey = ns.getSpecializationKey
@@ -669,6 +670,12 @@ local HekiliSpecMixin = {
 
     RegisterEvent = function( self, event, func )
         RegisterEvent( event, function( ... )
+            if state.spec.id == self.id then func( ... ) end
+        end )
+    end,
+
+    RegisterUnitEvent = function( self, event, unit1, unit2, func )
+        RegisterUnitEvent( event, unit1, unit2, function( ... )
             if state.spec.id == self.id then func( ... ) end
         end )
     end,

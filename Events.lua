@@ -29,12 +29,9 @@ local RC = LibStub( "LibRangeCheck-2.0" )
 
 local events = CreateFrame( "Frame" )
 Hekili:ProfileFrame( "GeneralEvents", events )
-
 local handlers = {}
-local unitEvents = CreateFrame( "Frame" )
-Hekili:ProfileFrame( "UnitEvents", unitEvents )
-
 local unitHandlers = {}
+
 local itemCallbacks = {}
 local activeDisplays = {}
 
@@ -47,28 +44,39 @@ end
 local handlerCount = {}
 Hekili.ECount = handlerCount
 
+
+local function GenericOnEvent( self, event, ... )
+    local eventHandlers = handlers[ event ]
+
+    if not eventHandlers then return end
+
+    for i, handler in pairs( eventHandlers ) do
+        handler( event, ... )
+        handlerCount[ event .. "_" .. i ] = ( handlerCount[ event .. "_" .. i ] or 0 ) + 1
+    end
+end
+
+local function UnitSpecificOnEvent( self, event, unit, ... )
+    local unitFrame = unitHandlers[ unit ]
+
+    if unitFrame then
+        local eventHandlers = unitFrame.events[ event ]
+
+        if not eventHandlers then return end
+
+        for i, handler in pairs( eventHandlers ) do
+            handler( event, unit, ... )
+            handlerCount[ event .. "_" .. unit .. "_" .. i ] = ( handlerCount[ event .. "_" .. unit .. "_" .. i ] or 0 ) + 1
+        end
+    end
+end
+
 function ns.StartEventHandler()
-    events:SetScript( "OnEvent", function( self, event, ... )
-        local eventHandlers = handlers[ event ]
+    events:SetScript( "OnEvent", GenericOnEvent )
 
-        if not eventHandlers then return end
-
-        for i, handler in pairs( eventHandlers ) do
-            handler( event, ... )
-            handlerCount[ event .. "_" .. i ] = ( handlerCount[ event .. "_" .. i ] or 0 ) + 1
-        end
-    end )
-
-    unitEvents:SetScript( "OnEvent", function( self, event, ... )
-        local eventHandlers = unitHandlers[ event ]
-
-        if not eventHandlers then return end
-
-        for i, handler in pairs( eventHandlers ) do
-            handler( event, ... )
-            handlerCount[ event .. "_U" .. i ] = ( handlerCount[ event .. "_U" .. i ] or 0 ) + 1
-        end
-    end )
+    for unit, unitFrame in pairs( unitHandlers ) do
+        unitFrame:SetScript( "OnEvent", UnitSpecificOnEvent )
+    end
 
     events:SetScript( "OnUpdate", function( self, elapsed )
         Hekili.freshFrame = true
@@ -80,7 +88,10 @@ end
 
 function ns.StopEventHandler()
     events:SetScript( "OnEvent", nil )
-    unitEvents:SetScript( "OnEvent", nil )
+
+    for unit, unitFrame in pairs( unitEvents ) do
+        unitFrame:SetScript( "OnEvent", nil )
+    end
 
     events:SetScript( "OnUpdate", nil )
 end
@@ -116,15 +127,41 @@ local UnregisterEvent = ns.UnregisterEvent
 
 
 -- For our purposes, all UnitEvents are player/target oriented.
-ns.RegisterUnitEvent = function( event, handler )
+ns.RegisterUnitEvent = function( event, unit1, unit2, handler )
+    if not unit1 then unit1 = "player" end
 
-    unitHandlers[ event ] = unitHandlers[ event ] or {}
-    insert( unitHandlers[ event ], handler )
+    if not unitHandlers[ unit1 ] then
+        unitHandlers[ unit1 ] = CreateFrame( "Frame" )
+        Hekili:ProfileFrame( "UnitEvents:" .. unit1, unitHandlers[ unit1 ] )
+        
+        unitHandlers[ unit1 ].events = {}
+    end
 
-    unitEvents:RegisterUnitEvent( event, 'player', 'target' )
+    local unitFrame = unitHandlers[ unit1 ]
+    
+    unitFrame.events[ event ] = unitFrame.events[ event ] or {}
+    insert( unitFrame.events[ event ], handler )
 
-    Hekili:ProfileCPU( event .. "_U" .. #unitHandlers[event], handler )
+    unitFrame:RegisterUnitEvent( event, unit1 )
+    Hekili:ProfileCPU( event .. "_" .. unit1 .. "_" .. #unitFrame.events[ event ], handler )
 
+
+    if unit2 then
+        if not unitHandlers[ unit2 ] then
+            unitHandlers[ unit2 ] = CreateFrame( "Frame" )
+            Hekili:ProfileFrame( "UnitEvents:" .. unit2, unitHandlers[ unit2 ] )
+            
+            unitHandlers[ unit2 ].events = {}
+        end
+
+        unitFrame = unitHandlers[ unit2 ]
+
+        unitFrame.events[ event ] = unitFrame.events[ event ] or {}
+        insert( unitFrame.events[ event ], handler )
+    
+        unitFrame:RegisterUnitEvent( event, unit2 )
+        Hekili:ProfileCPU( event .. "_" .. unit2 .. "_" .. #unitFrame.events[ event ], handler )
+    end
 end
 local RegisterUnitEvent = ns.RegisterUnitEvent
 
@@ -861,7 +898,7 @@ do
         [7080] = { "swiftsure_wraps", 1, 268 }, -- 337294
         [7081] = { "fatal_touch", 1, 268 }, -- 337296
         [7082] = { "invokers_delight", 1, 268 }, -- 337298
-        [7184] = { "escape_from_reality", 1, 268 }, -- 0
+        [7184] = { "escape_from_reality", 1, 268 }, -- 343250
 
         -- Monk/Windwalker
         [7068] = { "keefers_skyreach", 1, 269 }, -- 337334
@@ -1145,66 +1182,61 @@ end
 local lowLevelWarned = false
 
 -- Need to make caching system.
-RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", function( event, unit, _, spellID )
-    if UnitIsUnit( unit, "player" ) then
-        if lowLevelWarned == false and UnitLevel( "player" ) < 50 then
-            Hekili:Notify( "Hekili is designed for current content.\nUse below level 50 at your own risk.", 5 )
-            lowLevelWarned = true
-        end
-
-        local ability = class.abilities[ spellID ]
-
-        if ability and state.holds[ ability.key ] then
-            Hekili:RemoveHold( ability.key, true )
-        end
+RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", nil, function( event, unit, _, spellID )
+    if lowLevelWarned == false and UnitLevel( "player" ) < 50 then
+        Hekili:Notify( "Hekili is designed for current content.\nUse below level 50 at your own risk.", 5 )
+        lowLevelWarned = true
     end
-    -- Hekili:ForceUpdate( event )
+
+    local ability = class.abilities[ spellID ]
+
+    if ability and state.holds[ ability.key ] then
+        Hekili:RemoveHold( ability.key, true )
+    end
 end )
 
-RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", function( event, unit, _, spellID )
-    if UnitIsUnit( unit, "player" ) then
-        local ability = class.abilities[ spellID ]
-        
-        if ability then
-            local action = ability.key
+RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, unit, _, spellID )
+    local ability = class.abilities[ spellID ]
+    
+    if ability then
+        local action = ability.key
 
-            local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) )
+        local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) )
 
-            state:RemoveSpellEvent( action, true, "CAST_FINISH" )
-            state:RemoveSpellEvent( action, true, "PROJECTILE_IMPACT", true )
+        state:RemoveSpellEvent( action, true, "CAST_FINISH" )
+        state:RemoveSpellEvent( action, true, "PROJECTILE_IMPACT", true )
 
-            local _, _, _, start, finish = UnitCastingInfo( "player" )
-            if start and finish then
-                state:QueueEvent( action, start / 1000, finish / 1000, "CAST_FINISH", target, true )
+        local _, _, _, start, finish = UnitCastingInfo( "player" )
+        if start and finish then
+            state:QueueEvent( action, start / 1000, finish / 1000, "CAST_FINISH", target, true )
 
-                if ability.isProjectile then
-                    local travel
+            if ability.isProjectile then
+                local travel
 
-                    if ability.flightTime then
-                        travel = flightTime
- 
-                    elseif target then
-                        local unit = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
+                if ability.flightTime then
+                    travel = flightTime
 
-                        if unit then
-                            local minR, maxR = RC:GetRange( unit )
-                            travel = 0.5 * ( minR + maxR ) / ability.velocity
-                        end
+                elseif target then
+                    local unit = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
+
+                    if unit then
+                        local minR, maxR = RC:GetRange( unit )
+                        travel = 0.5 * ( minR + maxR ) / ability.velocity
                     end
-
-                    if not travel then travel = state.target.distance / ability.velocity end
-
-                    state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", target, true )
                 end
-            end
 
-            Hekili:ForceUpdate( event )
+                if not travel then travel = state.target.distance / ability.velocity end
+
+                state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", target, true )
+            end
         end
+
+        Hekili:ForceUpdate( event )
     end
 end )
 
 
-RegisterEvent( "UNIT_SPELLCAST_SENT", function (self, event, unit, target, castID, spellID)
+RegisterEvent( "UNIT_SPELLCAST_SENT", function ( self, event, unit, target, castID, spellID )
     state.cast_target = UnitGUID( target )
 end )
 
@@ -1229,9 +1261,6 @@ local spell_names = setmetatable( {}, {
 local lastPowerUpdate = 0
 
 local function UNIT_POWER_FREQUENT( event, unit, power )
-
-    if not UnitIsUnit( unit, "player" ) then return end
-
     if power == "FOCUS" and rawget( state, "focus" ) then
         local now = GetTime()
         local elapsed = now - ( state.focus.last_tick or 0 )
@@ -1265,7 +1294,7 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
 end
 Hekili:ProfileCPU( "UNIT_POWER_UPDATE", UNIT_POWER_FREQUENT )
 
-RegisterUnitEvent( "UNIT_POWER_UPDATE", UNIT_POWER_FREQUENT )
+RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, UNIT_POWER_FREQUENT )
 
 
 local autoAuraKey = setmetatable( {}, {
@@ -1302,8 +1331,9 @@ local autoAuraKey = setmetatable( {}, {
 } )
 
 
-RegisterUnitEvent( "UNIT_AURA", function( event, unit )
-    if UnitIsUnit( unit, 'player' ) then
+-- TODO: Is this undermining throttling?
+RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit )
+    if UnitIsUnit( unit, "player" ) then
         Hekili.ScrapeUnitAuras( "player" )
 
     elseif UnitIsUnit( unit, "target" ) and state.target.updated then
@@ -1658,15 +1688,15 @@ Hekili:ProfileCPU( "CLEU_HANDLER", CLEU_HANDLER )
 RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function ( event ) CLEU_HANDLER( event, CombatLogGetCurrentEventInfo() ) end )
 
 
-local function UNIT_COMBAT( event, unit, action, _, amount )
-    if unit ~= 'player' then return end
-
-    if amount > 0 and action == 'HEAL' then
-        ns.storeHealing( GetTime(), amount )
+do
+    local function UNIT_COMBAT( event, unit, action, _, amount )
+        if amount > 0 and action == 'HEAL' then
+            ns.storeHealing( GetTime(), amount )
+        end
     end
+    Hekili:ProfileCPU( "UNIT_COMBAT", UNIT_COMBAT )
+    RegisterUnitEvent( "UNIT_COMBAT", "player", nil, UNIT_COMBAT )
 end
-Hekili:ProfileCPU( "UNIT_COMBAT", UNIT_COMBAT )
-RegisterUnitEvent( "UNIT_COMBAT", UNIT_COMBAT )
 
 
 local keys = ns.hotkeys
@@ -1937,8 +1967,8 @@ RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
     ReadKeybindings()
     Hekili:ForceUpdate( event )
 end )
--- RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", ReadKeybindings )
--- RegisterUnitEvent( "PLAYER_EQUIPMENT_CHANGED", ReadKeybindings )
+-- RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, ReadKeybindings )
+-- RegisterUnitEvent( "PLAYER_EQUIPMENT_CHANGED", "player", nil, ReadKeybindings )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
