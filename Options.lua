@@ -3582,7 +3582,7 @@ do
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
                             toggles.defensives = "Defensives"
-                            toggles.essences = "Azerite Essences"
+                            toggles.essences = "Covenants/Essences"
                             toggles.cooldowns = "Cooldowns"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
@@ -3702,7 +3702,7 @@ do
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
                             toggles.defensives = "Defensives"
-                            toggles.essences = "Azerite Essences"
+                            toggles.essences = "Covenants/Essences"
                             toggles.cooldowns = "Cooldowns"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
@@ -7530,7 +7530,7 @@ function Hekili:GenerateProfile()
             end
         end
     end
-    essences = format( "%s, %s", major or "none*", minors or "none" )
+    essences = format( "%s, %s", major or "[none]", minors or "none" )
 
     local sets
     for k, v in orderedPairs( class.gear ) do
@@ -7589,7 +7589,7 @@ function Hekili:GenerateProfile()
         "spec: %s\n\n" ..
         "talents: %s\n\n" ..
         "azerite: %s\n\n" ..
-        "essences: %s\n\n" ..
+        "covenants/essences: %s\n\n" ..
         "sets/legendaries/artifacts: %s\n\n" ..
         "gear: %s\n\n" ..
         "legendaries: %s\n\n" ..
