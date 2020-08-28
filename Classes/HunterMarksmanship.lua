@@ -35,7 +35,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         born_to_be_wild = 22268, -- 266921
         posthaste = 22276, -- 109215
-        binding_shackles = 22499, -- 321468
+        binding_shackles = 23463, -- 321468
 
         lethal_shots = 23063, -- 260393
         dead_eye = 23104, -- 321460
@@ -48,22 +48,20 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        relentless = 3564, -- 196029
-        adaptation = 3563, -- 214027
-        gladiators_medallion = 3565, -- 208683
-
-        trueshot_mastery = 658, -- 203129
-        hiexplosive_trap = 657, -- 236776
-        scatter_shot = 656, -- 213691
-        spider_sting = 654, -- 202914
-        scorpid_sting = 653, -- 202900
-        viper_sting = 652, -- 202797
-        survival_tactics = 651, -- 202746
+        
         dragonscale_armor = 649, -- 202589
+        survival_tactics = 651, -- 202746 
+        viper_sting = 652, -- 202797
+        scorpid_sting = 653, -- 202900
+        spider_sting = 654, -- 202914
+        scatter_shot = 656, -- 213691
+        hiexplosive_trap = 657, -- 236776
+        trueshot_mastery = 658, -- 203129
         roar_of_sacrifice = 3614, -- 53480
+        hunting_pack = 3729, -- 203235
         rangers_finesse = 659, -- 248443
         sniper_shot = 660, -- 203155
-        hunting_pack = 3729, -- 203235
+
     } )
 
     -- Auras
@@ -204,21 +202,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             max_stack = 1,
         },
 
-
-        -- Azerite Powers
-        unerring_vision = {
-            id = 274447,
-            duration = function () return buff.trueshot.duration end,
-            max_stack = 10,
-            meta = {
-                stack = function () return buff.unerring_vision.up and max( 1, ceil( query_time - buff.trueshot.applied ) ) end,
-            }
-        },
     } )
 
 
     spec:RegisterStateExpr( "ca_execute", function ()
-        return talent.careful_aim.enabled and ( target.health.pct > 80 or target.health.pct < 20 )
+        return talent.careful_aim.enabled and ( target.health.pct > 70 )
     end )
 
 
@@ -270,7 +258,11 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
         aimed_shot = {
             id = 19434,
-            cast = function () return buff.lock_and_load.up and 0 or ( 2.5 * haste ) end,
+            cast = function ()
+                if buff.lock_and_load.up then return 0 end
+                return 2.5 * haste * ( buff.trueshot.up and 0.5 or 1 ) * ( buff.streamline.up and 0.7 or 1 )
+            end,
+
             charges = 2,
             cooldown = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
             recharge = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
@@ -285,7 +277,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 applyBuff( "precise_shots" )
                 removeBuff( "lock_and_load" )
-                removeBuff( "lethal_shots" )
                 removeBuff( "double_tap" )
                 removeBuff( "trick_shots" )
             end,
@@ -476,7 +467,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             charges = 1,
             cooldown = 20,
             recharge = 20,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = false,
             texture = 132294,
@@ -521,7 +512,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         exhilaration = {
             id = 109304,
             cast = 0,
-            cooldown = function () return azerite.natures_salve.enabled and 105 or 120 end,
+            cooldown = 120,
             gcd = "spell",
 
             toggle = "defensives",
@@ -676,7 +667,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             start = function ()
                 applyBuff( "rapid_fire" )
-                removeBuff( "lethal_shots" )
                 removeBuff( "trick_shots" )
             end,
 
@@ -855,7 +845,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         package = "Marksmanship",
     } )
 
-
+    
     spec:RegisterSetting( "trueshot_vop_overlap", false, {
         name = "|T132329:0|t Trueshot Overlap (Vision of Perfection)",
         desc = "If checked, the addon will recommend |T132329:0|t Trueshot even if the buff is already applied due to a Vision of Perfection proc.\n" ..
