@@ -1055,6 +1055,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 571586,
 
             toggle = "cooldowns",
+            talent = "incarnation",
             nobuff = "incarnation", -- VoP
 
             handler = function ()
