@@ -351,6 +351,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local whirlwind_gained = 0
     local whirlwind_stacks = 0
 
+    local rageSpent = 0
+    local rageSinceBanner = 0 
+
+
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
         local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
@@ -367,23 +371,61 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 whirlwind_stacks = whirlwind_stacks - 1
 
             end
+
+            if ability.key == "conquerors_banner" then
+                rageSinceBanner = 0
+            end
         end
     end )
 
 
-    local rageSpent = 0
+    local RAGE = Enum.PowerType.Rage
+    local lastRage = -1
+
+    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( unit, powerType )
+        if powerType == RAGE then
+            local current = UnitPower( "player", RAGE )
+
+            if current < lastRage then
+                rageSpent = ( rageSpent + lastRage - current ) % 20 -- Recklessness.             
+                rageSinceBanner = ( rageSinceBanner + lastRage - current ) % 30 -- Glory.
+            end
+
+            lastRage = current
+        end
+    end )
+
+    spec:RegisterStateExpr( "rage_spent", function ()
+        return rageSpent
+    end )
+
+    spec:RegisterStateExpr( "rage_since_banner", function ()
+        return rageSinceBanner
+    end )
+
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if talent.recklessness.enabled and resource == "rage" then
-            rageSpent = rageSpent + amt
-            cooldown.recklessness.expires = cooldown.recklessness.expires - floor( rageSpent / 20 )
-            rageSpent = rageSpent % 20
+        if resource == "rage" then
+            if talent.recklessness.enabled then
+                rage_spent = rage_spent + amt
+                cooldown.recklessness.expires = cooldown.recklessness.expires - floor( rage_spent / 20 )
+                rage_spent = rage_spent % 20
+            end
+
+            if buff.conquerors_frenzy.up then
+                rage_since_banner = rage_since_banner + amt
+                local stacks = floor( rage_since_banner / 30 )
+                rage_since_banner = rage_since_banner % 30
+
+                if stacks > 0 then addStack( "glory", nil, stacks ) end
+            end
         end
     end )
 
 
     spec:RegisterHook( "reset_precast", function ()
-        rageSpent = 0
+        rage_spent = nil
+        rage_since_banner = nil
         
         if buff.bladestorm.up then
             setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) )
@@ -553,6 +595,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         execute = {
             id = function () return IsActiveSpell( 280735 ) and 280735 or 5308 end,
             known = 5308,
+            noOverride = 317485,
             cast = 0,
             cooldown = 6,
             hasteCD = true,
