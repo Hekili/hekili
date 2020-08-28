@@ -235,8 +235,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
     local sigils = setmetatable( {}, {
         __index = function( t, k )
-            t[k] = 0
-            return t[k]
+            t[ k ] = 0
+            return t[ k ]
         end
     } )
 
@@ -262,7 +262,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     end
 
     spec:RegisterStateExpr( "activation_time", activation_time )
-    spec:RegisterStateExpr( "sigil_placed", activation_time )
 
     local sigil_placed = function ()
         return sigils.flame > query_time
@@ -276,9 +275,9 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         realTime = 0,
     } )
 
-    spec:RegisterStateFunction( "queue_fragments", function( num )
+    spec:RegisterStateFunction( "queue_fragments", function( num, extraTime )
         fragments.real = fragments.real + num
-        fragments.realTime = GetTime() + 1.25
+        fragments.realTime = GetTime() + 1.25 + ( extraTime or 0 )
     end )
 
     spec:RegisterStateFunction( "purge_fragments", function()
@@ -321,7 +320,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
     end )
 
     
-    local sigil_types = { "chains", "flame", "misery", "silence" }
+    local sigil_types = { "chains", "flame", "misery", "silence", "elysian_decree" }
 
     spec:RegisterHook( "reset_precast", function ()
         last_metamorphosis = nil
@@ -331,6 +330,14 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             local activation = ( action[ "sigil_of_" .. sigil ].lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
             if activation > now then sigils[ sigil ] = activation
             else sigils[ sigil ] = 0 end            
+        end
+
+        if IsSpellKnownOrOverridesKnown( class.abilities.elysian_decree.id ) then
+            local activation = ( action.elysian_decree.lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
+            if activation > now then sigils.elysian_decree = activation
+            else sigils.elysian_decree = 0 end
+        else
+            sigils.elysian_decree = 0
         end
 
         if talent.flame_crash.enabled then
@@ -692,6 +699,11 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 applyBuff( "metamorphosis" )
                 gain( 8, "pain" )
 
+                if IsSpellKnownOrOverridesKnown( 317009 ) then
+                    applyDebuff( "target", "sinful_brand" )
+                    active_dot.sinful_brand = active_enemies
+                end
+                
                 if level < 116 and equipped.runemasters_pauldrons then
                     setCooldown( "sigil_of_chains", 0 )
                     setCooldown( "sigil_of_flame", 0 )
