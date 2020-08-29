@@ -1107,6 +1107,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             end,
         },
 
+        
         -- Demon Hunter - Necrolord - 329554 - fodder_to_the_flame  (Fodder to the Flame)
         fodder_to_the_flame = {
             id = 329554,
