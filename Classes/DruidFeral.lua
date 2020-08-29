@@ -2135,12 +2135,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 3636839,
 
-            handler = function ()
+            finish = function ()
                 -- Can we safely assume anything is going to happen?
-                -- Make spec-sensitive?
-                applyBuff( "tigers_fury" )
-                if target.distance < 8 then
-                    gain( 5, "combo_points" )
+                if spec.feral then
+                    applyBuff( "tigers_fury" )
+                    if target.distance < 8 then
+                        gain( 5, "combo_points" )
+                    end
+                elseif spec.guardian then
+                elseif spec.balance then
                 end
             end,
         },
