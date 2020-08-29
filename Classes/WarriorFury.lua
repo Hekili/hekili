@@ -85,50 +85,48 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     -- Talents
     spec:RegisterTalents( {
         war_machine = 22632, -- 262231
-        endless_rage = 22633, -- 202296
+        sudden_death = 22633, -- 280721
         fresh_meat = 22491, -- 215568
 
         double_time = 19676, -- 103827
         impending_victory = 22625, -- 202168
         storm_bolt = 23093, -- 107570
 
-        inner_rage = 22379, -- 215573
-        sudden_death = 22381, -- 280721
-        furious_slash = 23372, -- 100130
+        massacre = 22379, -- 206315
+        frenzy = 22381, -- 335077
+        onslaught = 23372, -- 315720
 
         furious_charge = 23097, -- 202224
         bounding_stride = 22627, -- 202163
         warpaint = 22382, -- 208154
 
-        carnage = 22383, -- 202922
-        massacre = 22393, -- 206315
-        frothing_berserker = 19140, -- 215571
-
+        seethe = 22383, -- 335091
+        frothing_berserker = 22393, -- 215571
+        cruelty = 19140, -- 335070
+       
         meat_cleaver = 22396, -- 280392
         dragon_roar = 22398, -- 118000
         bladestorm = 22400, -- 46924
 
-        reckless_abandon = 22405, -- 202751
-        anger_management = 22402, -- 152278
+        anger_management = 22405, -- 152278
+        reckless_abandon = 22402, -- 202751
         siegebreaker = 16037, -- 280772
     } )
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        gladiators_medallion = 3592, -- 208683
-        relentless = 3591, -- 196029
-        adaptation = 3590, -- 214027
-
-        death_wish = 179, -- 199261
-        enduring_rage = 177, -- 198877
-        thirst_for_battle = 172, -- 199202
-        battle_trance = 170, -- 213857
-        barbarian = 166, -- 280745
-        slaughterhouse = 3735, -- 280747
-        spell_reflection = 1929, -- 216890
+        
         death_sentence = 25, -- 198500
-        disarm = 3533, -- 236077
+        barbarian = 166, -- 280745
+        battle_trance = 170, -- 213857
+        blood_rage = 172, -- 329038
+        enduring_rage = 177, -- 198877
+        death_wish = 179, -- 199261
         master_and_commander = 3528, -- 235941
+        disarm = 3533, -- 236077       
+        slaughterhouse = 3735, -- 280747        
+        demolition = 5373, -- 329033
+        overwatch = 5375 -- 329035
     } )
 
 
@@ -161,11 +159,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 1,
             max_stack = 1,
         },
-        dragon_roar = {
-            id = 118000,
-            duration = 6,
-            max_stack = 1,
-        },
+        --dragon_roar = {  No Debuff anymore
+        --    id = 118000,
+        --    duration = 6,
+        --    max_stack = 1,
+        --},
         enrage = {
             id = 184362,
             duration = 4,
@@ -176,39 +174,54 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 8,
             max_stack = 1,
         },
-        frothing_berserker = {
-            id = 215572,
-            duration = 6,
-            max_stack = 1,
-        },
+        frenzy = {
+            id = 335082,
+            duration = 12,
+            max_stack = 3,      
+        },        
+        --frothing_berserker = { Its a Passive now for refund Rage
+        --    id = 215572,
+        --    duration = 6,
+        --    max_stack = 1,
+        --},
         furious_charge = {
             id = 202225,
             duration = 5,
             max_stack = 1,
         },
-        furious_slash = {
-            id = 202539,
+        hamstring= { 
+            id = 1715,
             duration = 15,
-            max_stack = 3,
+            max_stack = 1,
+        },
+        ignore_pain = {
+            id = 190456,
+            duration = 12,
+            max_stack = 1,
         },
         intimidating_shout = {
             id = 5246,
             duration = 8,
             max_stack = 1,
         },
+        moment_of_glory = { --Additional Buff from Rallying_Cryw
+            id = 280210,
+            duration = 12,
+            max_stack = 1,
+        },
         piercing_howl = {
             id = 12323,
-            duration = 15,
+            duration = 8,
             max_stack = 1,
         },
         rallying_cry = {
             id = 97463,
-            duration = 10,
+            duration = 12,
             max_stack = 1,
         },
         recklessness = {
             id = 1719,
-            duration = function () return talent.reckless_abandon.enabled and 14 or 10 end,
+            duration = 10,
             max_stack = 1,
         },
         siegebreaker = {
@@ -216,11 +229,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 10,
             max_stack = 1,
         },
-        sign_of_the_skirmisher = {
-            id = 186401,
-            duration = 3600,
-            max_stack = 1,
-        },
+        --sign_of_the_skirmisher = { Just for Arena Right?
+        --    id = 186401,
+        --   duration = 3600,
+        --    max_stack = 1,
+        --},
         storm_bolt = {
             id = 132169,
             duration = 4,
@@ -236,15 +249,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 3,
             max_stack = 1,
         },
-        victorious = {
+        victorious = {  --Need Check
             id = 32216,
             duration = 20,
         },
         whirlwind = {
             id = 85739,
             duration = 20,
-            max_stack = 2,
-            copy = "meat_cleaver"
+            max_stack = 2
         },
 
 
@@ -339,12 +351,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local whirlwind_consumers = {
         bloodthirst = 1,
         execute = 1,
-        furious_slash = 1,
+    --   furious_slash = 1,
         impending_victory = 1,
         raging_blow = 1,
         rampage = 1,
         siegebreaker = 1,
-        storm_bolt = 1,
+    --    storm_bolt = 1,
         victory_rush = 1
     }
 
@@ -476,7 +488,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "berserker_rage" )
-                if level < 116 and equipped.ceannar_charger then gain( 8, "rage" ) end
             end,
         },
 
@@ -496,14 +507,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "bladestorm" )
-                gain( 5, "rage" )
+                gain( 25, "rage" )
                 setCooldown( "global_cooldown", 4 * haste )
 
-                if level < 116 and equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
+                --if level < 116 and equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
 
-                if azerite.gathering_storm.enabled then
-                    applyBuff( "gathering_storm", 6 + ( 4 * haste ), 5 )
-                end
+                --if azerite.gathering_storm.enabled then
+                --    applyBuff( "gathering_storm", 6 + ( 4 * haste ), 5 )
+                --end
             end,
         },
 
@@ -522,7 +533,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 136012,
 
             handler = function ()
-                gain( health.max * ( buff.enraged_regeneration.up and 0.25 or 0.05 ) * ( talent.fresh_meat.enabled and 1.2 or 1 ), "health" )
+                gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ), "health" )
                 if level < 116 and equipped.kazzalax_fujiedas_fury then addStack( "fujiedas_fury", 10, 1 ) end
                 removeBuff( "bloody_rage" )
                 removeStack( "whirlwind" )
@@ -569,9 +580,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             talent = "dragon_roar",
             range = 12,
 
-            handler = function ()
-                applyDebuff( "target", "dragon_roar" )                
-            end,
         },
 
 
@@ -618,29 +626,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
 
-        furious_slash = {
-            id = 100130,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = -4,
-            spendType = "rage",
-
-            startsCombat = true,
-            texture = 132367,
-
-            talent = "furious_slash",
-
-            recheck = function () return buff.furious_slash.remains - 9, buff.furious_slash.remains - 3, buff.furious_slash.remains, cooldown.recklessness.remains < 3, cooldown.recklessness.remains end,
-            handler = function ()
-                if buff.furious_slash.stack < 3 then stat.haste = stat.haste + 0.02 end
-                addStack( "furious_slash", 15, 1 )
-                removeStack( "whirlwind" )
-            end,
-        },
-
-
         heroic_leap = {
             id = 6544,
             cast = 0,
@@ -659,18 +644,20 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
         },
 
-
-        heroic_throw = {
-            id = 57755,
+        ignore_pain = {
+            id = 190456,
             cast = 0,
-            cooldown = 6,
+            cooldown = 12,
             gcd = "spell",
 
-            startsCombat = true,
-            texture = 132453,
+            toggle = "defensives",
 
-            handler = function ()
-            end,
+            spend = 80,
+            spendType = "rage",
+
+            startsCombat = false,
+            texture = 1377132,
+
         },
 
 
@@ -689,7 +676,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             talent = "impending_victory",
 
             handler = function ()
-                gain( health.max * 0.2, "health" )
+                gain( health.max * 0.3, "health" )
                 removeStack( "whirlwind" )
             end,
         },
@@ -708,7 +695,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "intimidating_shout" )
-                if azerite.intimidating_presence.enabled then applyDebuff( "target", "intimidating_presence" ) end
+                --if azerite.intimidating_presence.enabled then applyDebuff( "target", "intimidating_presence" ) end
             end,
         },
 
@@ -716,10 +703,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         piercing_howl = {
             id = 12323,
             cast = 0,
-            cooldown = 0,
+            cooldown = 30,
             gcd = "spell",
 
-            spend = 10,
+            spend = -0,
             spendType = "rage",
 
             startsCombat = true,
@@ -755,8 +742,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 85288,
             cast = 0,
             charges = 2,
-            cooldown = function () return ( talent.inner_rage.enabled and 7 or 8 ) * haste end,
-            recharge = function () return ( talent.inner_rage.enabled and 7 or 8 ) * haste end,
+            cooldown = function () return haste * 8 end,
+            recharge = function () return haste * 8 end,
             gcd = "spell",
 
             spend = -12,
@@ -766,7 +753,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 589119,
 
             handler = function ()
-                removeBuff( "raging_thirst" )
                 if level < 116 and set_bonus.tier_21_4pc == 1 then addStack( "bloody_rage", 10, 1 ) end
                 removeStack( "whirlwind" )
             end,
@@ -786,6 +772,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "rallying_cry" )
+                applyBuff( "moment_of_gloryw" )
             end,
         },
 
@@ -796,30 +783,16 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function ()
-                if talent.carnage.enabled then return 75 end
-                if talent.frothing_berserker.enabled then return 95 end
-                return 85
-            end,
+            spend = 80,
             spendType = "rage",
 
             startsCombat = true,
             texture = 132352,
 
             handler = function ()
-                if not buff.enrage.up then
-                    stat.haste = stat.haste + 0.25
-                end
-
+                applyBuff ( "frenzy" ) --Can Stack 3 Times if target not swoped
                 applyBuff( "enrage" )
-                if talent.endless_rage.enabled then gain( 6, "rage" ) end
-
                 if level < 116 and set_bonus.tier21_2pc == 1 then applyDebuff( "target", "slaughter" ) end
-
-                if talent.frothing_berserker.enabled then
-                    if buff.frothing_berserker.down then stat.haste = stat.haste + 0.05 end
-                    applyBuff( "frothing_berserker" )
-                end
                 removeStack( "whirlwind" )  
             end,
         },
@@ -828,7 +801,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         recklessness = {
             id = 1719,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
+            cooldown = 90,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -838,8 +811,21 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "recklessness" )
-                if talent.reckless_abandon.enabled then gain( 100, "rage" ) end
+                --if talent.reckless_abandon.enabled then gain( 100, "rage" ) end generates 20 more Rage 
             end,
+        },
+
+        shattering_throw = {
+            id = 64382,
+            cast = 1.5,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 311430,
+            range = 30,
+
+        --    handler = function () end, Removing any magical immunities
         },
 
 
@@ -864,6 +850,40 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
 
+        slam = {
+            id = 1464,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            spend = 20,
+            spendType = "rage",
+
+            startsCombat = true,
+            texture = 132340,
+
+            handler = function ()
+                removeStack( "whirlwind" )
+            end,
+        },
+
+
+        spell_reflect = {
+            id = 23920,
+            cast = 0,
+            cooldown = 25,
+            gcd = "off",
+
+            toggle = "defensives",
+
+            startsCombat = false,
+            texture = 132361,
+
+            handler = function ()
+                applyDebuff( "target", "storm_bolt" )
+            end,
+        },
+
         storm_bolt = {
             id = 107570,
             cast = 0,
@@ -877,7 +897,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "storm_bolt" )
-                removeStack( "whirlwind" )
             end,
         },
 
@@ -934,12 +953,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "whirlwind", 20, 2 )
-
-                if talent.meat_cleaver.enabled then
-                    gain( 3 + min( 5, active_enemies ) + min( 3, active_enemies ), "rage" )
-                else
-                    gain( 3 + min( 5, active_enemies ), "rage" )
-                end
+                if talent.meat_cleaver.enabled then gain( 2 + "whirlwind") end -- then gain 2 addtitional stacks
             end,
         },
     } )
