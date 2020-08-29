@@ -1702,7 +1702,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         starsurge = {
             id = 197626,
-            cast = 2,
+            cast = function () return ( buff.heart_of_the_wild.up and 0 or 2 ) * haste end,
             cooldown = 10,
             gcd = "spell",
 
@@ -2079,6 +2079,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 return buff.lone_spirit.up or buff.kindred_spirits.up, "requires kindred_spirits/lone_spirit"
             end,
 
+            toggle = "essences",
+
             handler = function ()
                 if buff.lone_spirit.up then
                     if role.tank then applyBuff( "lone_protection" )
@@ -2119,7 +2121,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
         },
 
-
         -- Druid - Night Fae - 323764 - convoke_the_spirits  (Convoke the Spirits)
         convoke_the_spirits = {
             id = 323764,
@@ -2128,7 +2129,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 120,
             gcd = "spell",
 
-            toggle = "cooldowns",
+            toggle = "essences",
 
             startsCombat = true,
             texture = 3636839,
@@ -2150,10 +2151,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 180,
             gcd = "spell",
 
-            toggle = "cooldowns",
-
             startsCombat = true,
             texture = 3565718,
+
+            toggle = "essences",
 
             handler = function ()
                 applyBuff( "ravenous_frenzy" )
