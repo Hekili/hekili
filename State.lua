@@ -853,7 +853,7 @@ local function applyDebuff( unit, aura, duration, stacks, value )
 
     if state.cycle then
         if duration == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] - 1
-    else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+        else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
         return
     end
 
@@ -873,7 +873,10 @@ local function applyDebuff( unit, aura, duration, stacks, value )
 
         state.active_dot[ aura ] = max( 0, state.active_dot[ aura ] - 1 )
     else
-        if d.down then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+        if d.down or state.active_dot[ aura ] == 0 then
+            state.active_dot[ aura ] = state.active_dot[ aura ] + 1
+            -- TODO: Aura scraping utility may want to populate active_dot table when it sees an aura that wasn't tracked.
+        end
 
         -- state.debuff[ aura ] = state.debuff[ aura ] or {}
         d.expires = state.query_time + duration
@@ -884,7 +887,7 @@ local function applyDebuff( unit, aura, duration, stacks, value )
         d.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
         d.value = value or 0
         d.applied = state.now
-        d.unit = unit or 'target'
+        d.unit = unit or "target"
     end
 
 end
