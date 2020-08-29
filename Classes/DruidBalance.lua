@@ -204,9 +204,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             max_stack = 1,
         },
         heart_of_the_wild = {
-            id = 108292,
+            id = 108291,
             duration = 45,
             max_stack = 1,
+            copy = { 108292, 108293, 108294 }
         },
         incarnation = {
             id = 102560,
