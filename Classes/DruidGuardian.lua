@@ -42,6 +42,19 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             interval = 1,
             value = 10 -- tooltip says 60, meaning this would be 20, but NOPE.
         },
+
+        thrash_bear = {
+            aura = "thrash_bear",
+            talent = "blood_frenzy",
+            debuff = true,
+
+            last = function ()
+                return state.debuff.thrash_bear.applied + floor( state.query_time - state.debuff.thrash_bear.applied )
+            end,
+
+            interval = function () return class.auras.thrash_bear.tick_time end,
+            value = function () return 2 * active_dot.thrash_bear end,
+        }
     } )
 
     spec:RegisterResource( Enum.PowerType.LunarPower )
@@ -57,7 +70,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         bristling_fur = 22420, -- 155835
 
         tiger_dash = 19283, -- 252216
-        ursols_vortex = 22916, -- 102793
+        renewal = 18570, -- 108238
         wild_charge = 18571, -- 102401
 
         balance_affinity = 22163, -- 197488
@@ -66,7 +79,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         mighty_bash = 21778, -- 5211
         mass_entanglement = 18576, -- 102359
-        typhoon = 18577, -- 132469
+        heart_of_the_wild = 18577, -- 319454
 
         soul_of_the_forest = 21709, -- 158477
         galactic_guardian = 21707, -- 203964
@@ -84,24 +97,19 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        relentless = 3465, -- 196029
-        gladiators_medallion = 3464, -- 208683
-        adaptation = 3463, -- 214027
-
-        malornes_swiftness = 1237, -- 236147
         alpha_challenge = 842, -- 207017
-        master_shapeshifter = 49, -- 236144
-        toughness = 50, -- 201259
-        den_mother = 51, -- 236180
-        demoralizing_roar = 52, -- 201664
-        roaring_speed = 3054, -- 236148
-        protector_of_the_pack = 197, -- 202043
-        overrun = 196, -- 202246
-        entangling_claws = 195, -- 202226
         charging_bash = 194, -- 228431
-        sharpened_claws = 193, -- 202110
+        demoralizing_roar = 52, -- 201664
+        den_mother = 51, -- 236180
+        entangling_claws = 195, -- 202226
+        freedom_of_the_herd = 3750, -- 213200
+        malornes_swiftness = 1237, -- 236147
+        master_shapeshifter = 49, -- 236144
+        overrun = 196, -- 202246
         raging_frenzy = 192, -- 236153
-        clan_defender = 191, -- 213951
+        roar_of_the_protector = 197, -- 329042
+        sharpened_claws = 193, -- 202110
+        toughness = 50, -- 201259
     } )
 
 
@@ -125,6 +133,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 3600,
             max_stack = 1,
         },
+        berserk = {
+            id = 50334,
+            duration = 15,
+            max_stack = 1,
+        },
         bristling_fur = {
             id = 155835,
             duration = 8,
@@ -135,22 +148,25 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 3600,
             max_stack = 1,
         },
+        convoke_the_spirits = {
+            id = 323764,
+            duration = 4,
+            max_stack = 1,
+        },
         dash = {
             id = 1850,
             duration = 10,
             max_stack = 1,
         },
-        earth_warden = {
+        earthwarden = {
             id = 203975,
-            duration = 0, -- persistent / removed by taking auto attacks
+            duration = 3600,
             max_stack = 3,
         },
-        --[[ enrage_effect = {
-            I am not sure if this could / would be done here or its even viable for recommending soothe, but could be good as it's instant, doesn't take you out of bear form, but there are a million enrage buffs
-        } ]]
         entangling_roots = {
             id = 339,
             duration = 30,
+            type = "Magic",
             max_stack = 1,
         },
         feline_swiftness = {
@@ -174,7 +190,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         gore = {
             id = 93622,
             duration = 10,
-            max_stack =1,
+            max_stack = 1,
         },
         growl = {
             id = 6795,
@@ -185,6 +201,12 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 213680,
             duration = 15,
             max_stack = 1,
+        },
+        heart_of_the_wild = {
+            id = 319454,
+            duration = 45,
+            max_stack = 1,
+            copy = { 319451, 319452, 319453 }
         },
         hibernate = {
             id = 2637,
@@ -220,37 +242,27 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         lightning_reflexes = {
             id = 231065,
         },
-        lunar_empowerment = {
-            id = 164547,
-            duration = 45,
-            max_stack = 3,
-        },
         mass_entanglement = {
             id = 102359,
             duration = 30,
-            max_stack = 1,
             type = "Magic",
+            max_stack = 1,
         },
         mighty_bash = {
             id = 5211,
-            duration = 5,
+            duration = 4,
             max_stack = 1,
         },
         moonfire = {
             id = 164812,
             duration = 16,
-            max_stack = 1,
             type = "Magic",
+            max_stack = 1,
         },
         moonkin_form = {
             id = 197625,
             duration = 3600,
             max_stack = 1,
-        },
-        natural_defenses = {
-            id = 211160,
-            duration = 15,
-            max_stack = 2,
         },
         prowl = {
             id = 5215,
@@ -258,13 +270,19 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             max_stack = 1,
         },
         pulverize = {
-            id = 158792,
-            duration = 20,
+            id = 80313,
+            duration = 10,
+            max_stack = 1,
+        },
+        rake = {
+            id = 155722,
+            duration = 15,
             max_stack = 1,
         },
         regrowth = {
             id = 8936,
             duration = 12,
+            type = "Magic",
             max_stack = 1,
         },
         rejuvenation = {
@@ -272,15 +290,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 15,
             max_stack = 1,
         },
+        soulshape = {
+            id = 310143,
+            duration = 3600,
+            max_stack = 1,
+        },
         stampeding_roar = {
             id = 77761,
             duration = 8,
             max_stack = 1,
-        },
-        solar_empowerment = {
-            id = 164545,
-            duration = 45,
-            max_stack = 3,
         },
         sunfire = {
             id = 164815,
@@ -298,8 +316,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         thrash_bear = {
             id = 192090,
-            duration = 16,
-            max_stack = function () return ( ( level < 116 and equipped.elizes_everlasting_encasement ) and 5 or 3 ) end,
+            duration = 15,
+            tick_time = 3,
+            max_stack = 3,
         },
         thrash_cat = {
             id = 106830,
@@ -329,6 +348,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         wild_charge = {
             id = 102401,
+            duration = 0.5,
+            max_stack = 1,
         },
         wild_growth = {
             id = 48438,
@@ -475,7 +496,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         barkskin = {
             id = 22812,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return talent.survival_of_the_fittest.enabled and 40 or 60 end,
             gcd = "off",
 
             startsCombat = false,
@@ -491,11 +512,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
             handler = function ()
                 applyBuff( "barkskin" )
-
-                if ( level < 116 and equipped.oakhearts_puny_quods ) then
-                    gain( 45, "rage" )
-                    applyBuff( "oakhearts_puny_quods" )
-                end
             end,
         },
 
@@ -517,6 +533,23 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 shift( "bear_form" )                
+            end,
+        },
+
+
+        berserk = {
+            id = 50334,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 236149,
+            
+            handler = function ()
+                applyBuff( "berserk" )
             end,
         },
 
@@ -579,6 +612,39 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
 
+        cyclone = {
+            id = 33786,
+            cast = 1.7,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.1,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136022,
+            
+            handler = function ()
+                applyDebuff( "target", "cyclone" )
+            end,
+        },
+
+
+        dash = {
+            id = 1850,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            startsCombat = false,
+            texture = 132120,
+            
+            handler = function ()
+                applyBuff( "dash" )
+            end,
+        },
+
+
         demoralizing_roar = {
             id = 201664,
             cast = 0,
@@ -603,10 +669,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.18,
+            spend = 0.06,
             spendType = "mana",
 
-            startsCombat = false,
+            startsCombat = true,
             texture = 136100,
 
             handler = function ()
@@ -635,11 +701,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
 
             handler = function ()
-                if args.max_energy == 1 then gain( 25, "energy" ) end
                 spend( min( 5, combo_points.current ), "combo_points" )
-                if target.health_pct < 25 and debuff.rip.up then
-                    debuff.rip.expires = query_time + min( debuff.rip.remains + debuff.rip.duration, debuff.rip.duration * 1.3 )
-                end
             end,
         },
 
@@ -648,11 +710,12 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 22842,
             cast = 0,
             charges = 2,
-            cooldown = 36,
-            recharge = 36,
+            cooldown = function () return buff.berserk.up and 18 or 36 end,
+            recharge = function () return buff.berserk.up and 18 or 36 end,
+            hasteCD = true,
             gcd = "spell",
 
-            spend = function () return 10 - ( 5 * buff.natural_defenses.stack ) end,
+            spend = 10,
             spendType = "rage",
 
             startsCombat = false,
@@ -662,15 +725,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             defensive = true,
 
             form = "bear_form",
-
-            readyTime = function () return buff.frenzied_regeneration.remains end,
+            nobuff = "frenzied_regeneration",
 
             handler = function ()
                 applyBuff( "frenzied_regeneration" )
                 gain( health.max * 0.08, "health" )
-
-                if level < 116 and equipped.skysecs_hold then applyBuff( "skysecs_hold" ) end
-                removeStack( "natural_defenses" )
             end,
         },
 
@@ -678,7 +737,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         growl = {
             id = 6795,
             cast = 0,
-            cooldown = 8,
+            cooldown = function () return buff.berserk.up and 4 or 8 end,
             gcd = "spell",
 
             nopvptalent = "alpha_challenge",
@@ -692,13 +751,30 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
 
+        heart_of_the_wild = {
+            id = 319454,
+            cast = 0,
+            cooldown = 300,
+            gcd = "spell",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 135879,
+            
+            handler = function ()
+                applyBuff( "heart_of_the_wild" )
+            end,
+        },
+
+
         hibernate = {
             id = 2637,
             cast = 1.5,
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.15,
+            spend = 0.06,
             spendType = "mana",
 
             startsCombat = false,
@@ -744,28 +820,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
 
-        intimidating_roar = {
-            id = 236748,
-            cast = 0,
-            cooldown = 30,
-            gcd = "spell",
-
-            startsCombat = true,
-            texture = 132117,
-
-            handler = function ()
-                applyDebuff( "target", "intimidating_roar" )
-            end,
-        },
-
-
         ironfur = {
             id = 192081,
             cast = 0,
             cooldown = 0.5,
             gcd = "off",
 
-            spend = function () return 45 - ( 5 * buff.natural_defenses.stack ) end,
+            spend = function () return buff.berserk.up and 20 or 40 end,
             spendType = "rage",
 
             startsCombat = false,
@@ -785,7 +846,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 applyBuff( "ironfur" )
                 removeBuff( "guardian_of_elune" )
-                removeStack( "natural_defenses" )
             end,
         },
 
@@ -804,6 +864,32 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 -- may need to construct fake aura...
             end,
+
+            auras = {
+                lunar_beam = {
+                    duration = 8,
+                    max_stack = 1,
+        
+                    generate = function( t )
+                        local applied = action.lunar_beam.lastCast
+
+                        if not t.name then t.name = class.auras.lunar_beam.name end
+        
+                        if applied and now - applied < 8 then
+                            t.count = 1
+                            t.expires = applied + 8
+                            t.applied = applied
+                            t.caster = "player"
+                            return
+                        end
+        
+                        t.count = 0
+                        t.expires = 0
+                        t.applied = 0
+                        t.caster = "nobody"
+                    end,
+                },
+            }
         },
 
 
@@ -828,13 +914,37 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
 
+        maim = {
+            id = 22570,
+            cast = 0,
+            cooldown = 20,
+            gcd = "spell",
+            
+            spend = 30,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 132134,
+
+            talent = "feral_affinity",
+            form = "cat_form",
+
+            usable = function () return combo_points.current > 0, "requires combo_points" end,
+            
+            handler = function ()
+                applyDebuff( "target", "maim", combo_points.current )
+                spend( combo_points.current, "combo_points" )
+            end,
+        },
+
+
         mangle = {
             id = 33917,
             cast = 0,
-            cooldown = 6,
+            cooldown = function () return buff.berserk.up and 3 or 6 end,
             gcd = "spell",
 
-            spend = function () return -10 + ( buff.gore.up and -4 or 0 ) end,
+            spend = function () return buff.gore.up and -19 or -15 end,
             spendType = "rage",
 
             startsCombat = true,
@@ -844,15 +954,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 if talent.guardian_of_elune.enabled then applyBuff( "guardian_of_elune" ) end
-
-                if set_bonus.tier21_2pc == 1 and buff.gore.up then
-                    cooldown.barkskin.expires = cooldown.barkskin.expires - 1
-                end
-
-                if set_bonus.tier19_4pc == 1 then
-                    addStack( "natural_defenses", 15, 1 )
-                end
-
                 removeBuff( "gore" )
             end,
         },
@@ -903,7 +1004,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         mighty_bash = {
             id = 5211,
             cast = 0,
-            cooldown = 50,
+            cooldown = 60,
             gcd = "spell",
 
             startsCombat = true,
@@ -931,9 +1032,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 applyDebuff( "target", "moonfire" )
-                if ( level < 116 and equipped.lady_and_the_child ) then
-                    active_dot.moonfire = min( active_enemies, active_dot.moonfire + 1 )
-                end
 
                 if buff.galactic_guardian.up then
                     gain( 8, "rage" )
@@ -970,8 +1068,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 1408833,
 
+            pvptalent = "overrun",
+
             handler = function ()
                 applyDebuff( "target", "overrun" )
+                setDistance( 5 )
             end,
         },
 
@@ -1001,7 +1102,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         pulverize = {
             id = 80313,
             cast = 0,
-            cooldown = 0,
+            cooldown = 30,
             gcd = "spell",
 
             startsCombat = true,
@@ -1041,6 +1142,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 applyDebuff( "target", "rake" )
                 debuff.rake.pmultiplier = persistent_multiplier
+
                 gain( 1, "combo_points" )
             end,
         },
@@ -1134,6 +1236,27 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
 
+        renewal = {
+            id = 108238,
+            cast = 0,
+            cooldown = 90,
+            gcd = "spell",
+            
+            toggle = "defensives",
+            defensive = true,
+
+            startsCombat = true,
+            texture = 136059,
+
+            talent = "renewal",
+            
+            handler = function ()
+                gain( 0.3 * health.max, "health" )
+            end,
+        },
+
+
+
         --[[ revive = {
             id = 50769,
             cast = 10,
@@ -1214,23 +1337,22 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
 
-        solar_wrath = {
-            id = 197629,
-            cast = 1.5,
-            cooldown = 0,
+        soothe = {
+            id = 2908,
+            cast = 0,
+            cooldown = 10,
             gcd = "spell",
-
-            spend = 0.02,
+            
+            spend = 0.06,
             spendType = "mana",
-
+            
             startsCombat = true,
-            texture = 535045,
+            texture = 132163,
 
-            talent = "balance_affinity",
-            form = "moonkin_form",
-
+            debuff = "dispellable_enrage",
+            
             handler = function ()
-                removeStack( "solar_empowerment" )
+                removeDebuff( "target", "dispellable_enrage" )                
             end,
         },
 
@@ -1253,9 +1375,29 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
 
+        starfire = {
+            id = 197628,
+            cast = 2.5,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.03,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 135753,
+
+            talent = "balance_affinity",
+            form = "moonkin_form",
+            
+            handler = function ()
+            end,
+        },
+
+
         starsurge = {
             id = 197626,
-            cast = 2,
+            cast = function () return buff.heart_of_the_wild.up and 0 or 2 end,
             cooldown = 10,
             gcd = "spell",
 
@@ -1300,9 +1442,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         survival_instincts = {
             id = 61336,
             cast = 0,
-            charges = function () return ( ( level < 116 and equipped.dual_determination ) and 3 or 2 ) end,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( ( level < 116 and equipped.dual_determination ) and 0.85 or 1 ) * 240 end,
-            recharge = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( ( level < 116 and equipped.dual_determination ) and 0.85 or 1 ) * 240 end,
+            charges = 2,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( talent.survival_of_the_fittest.enabled and ( 2/3 ) or 1 ) * 180 end,
+            recharge = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( talent.survival_of_the_fittest.enabled and ( 2/3 ) or 1 ) * 180 end,
             gcd = "off",
 
             startsCombat = false,
@@ -1345,9 +1487,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             toggle = "defensives",
             defensive = true,
 
+            usable = function ()
+                return IsSpellUsable( 18562 ) or buff.regrowth.up or buff.wild_growth.up or buff.rejuvenation.up, "requires a HoT"
+            end,
 
             handler = function ()
                 unshift()
+                if buff.regrowth.up then removeBuff( "regrowth" )
+                elseif buff.wild_growth.up then removeBuff( "wild_growth" )
+                elseif buff.rejuvenation.up then removeBuff( "rejuvenation" ) end
             end,
         },
 
@@ -1369,6 +1517,26 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
 
             copy = "swipe"
+        },
+
+
+        swipe_cat = {
+            id = 106785,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = 35,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 134296,
+
+            form = "cat_form",
+            
+            handler = function ()
+                gain( 1, "combo_points" )
+            end,
         },
 
 
@@ -1394,7 +1562,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             known = 106832,
             suffix = "(Bear)",
             cast = 0,
-            cooldown = 6,
+            cooldown = function () return buff.berserk.up and 3 or 6 end,
             gcd = "spell",
 
             spend = -5,
@@ -1455,7 +1623,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 236170,
 
-            talent = "typhoon",
+            talent = "balance_affinity",
 
             handler = function ()
                 if target.distance < 15 then
@@ -1465,27 +1633,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
 
-        --[[ wartime_ability = {
-            id = 264739,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            startsCombat = true,
-            texture = 1518639,
-
-            handler = function ()
-            end,
-        }, ]]
-
-
         ursols_vortex = {
             id = 102793,
             cast = 0,
             cooldown = 60,
             gcd = "spell",
 
-            talent = "ursols_vortex",
+            talent = "restoration_affinity",
 
             startsCombat = true,
             texture = 571588,
@@ -1497,7 +1651,12 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
 
         wild_charge = {
-            id = 102401,
+            id = function ()
+                if buff.bear_form.up then return 16979
+                elseif buff.cat_form.up then return 49376
+                elseif buff.moonkin_form.up then return 102383 end
+                return 102401
+            end,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
@@ -1511,6 +1670,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 if buff.bear_form.up then target.distance = 5; applyDebuff( "target", "immobilized" )
                 elseif buff.cat_form.up then target.distance = 5; applyDebuff( "target", "dazed" ) end
             end,
+
+            copy = { 49376, 16979, 102401, 102383 }
         },
 
 
@@ -1520,7 +1681,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 10,
             gcd = "spell",
 
-            spend = 0.3,
+            spend = 0.22,
             spendType = "mana",
 
             startsCombat = false,
@@ -1530,6 +1691,27 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 applyBuff( "wild_growth" )
             end,
         },
+
+
+        wrath = {
+            id = 5176,
+            cast = 1.5,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = 0.01,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 535045,
+
+            handler = function ()
+                if buff.moonkin_form.down then unshift() end
+                removeStack( "solar_empowerment" )
+            end,
+        },
+
+
     } )
 
 
