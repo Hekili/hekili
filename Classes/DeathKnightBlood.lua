@@ -1439,6 +1439,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 3636837,
 
+            notalent = "defile",
+
             handler = function ()
                 removeBuff( "crimson_scourge" )
 
@@ -1447,6 +1449,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 end
 
                 applyBuff( "death_and_decay" )
+                setCooldown( "death_and_decay", 15 )
 
                 applyBuff( "deaths_due_buff" )
                 applyDebuff( "target", "deaths_due_debuff" )

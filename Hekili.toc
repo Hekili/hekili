@@ -21,7 +21,7 @@ Events.lua
 Classes.lua
 Classes\DeathKnightBlood.lua
 Classes\DeathKnightFrost.lua
-# Classes\DeathKnightUnholy.lua
+Classes\DeathKnightUnholy.lua
 Classes\DemonHunterHavoc.lua
 Classes\DemonHunterVengeance.lua
 Classes\DruidBalance.lua
