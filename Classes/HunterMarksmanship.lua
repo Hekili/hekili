@@ -696,7 +696,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             talent = "serpent_sting",
 
-            recheck = function () return remains - ( duration * 0.3 ), remains end,
             handler = function ()
                 applyDebuff( "target", "serpent_sting" )
             end,

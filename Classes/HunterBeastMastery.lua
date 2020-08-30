@@ -764,7 +764,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 132127,
 
-            recheck = function () return buff.bestial_wrath.remains end,
             handler = function ()
                 applyBuff( 'bestial_wrath' )
                 if pvptalent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
@@ -1194,7 +1193,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             velocity = 40,
 
-            recheck = function () return buff.beast_cleave.remains - gcd, buff.beast_cleave.remains end,
             handler = function ()
                 applyBuff( 'beast_cleave' )
             end,
@@ -1307,7 +1305,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 461112,
 
-            recheck = function () return cooldown.bestial_wrath.remains - gcd, target.time_to_die - 15 end,
             handler = function ()
             end,
         },

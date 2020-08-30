@@ -632,7 +632,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             talent = "furious_slash",
 
-            recheck = function () return buff.furious_slash.remains - 9, buff.furious_slash.remains - 3, buff.furious_slash.remains, cooldown.recklessness.remains < 3, cooldown.recklessness.remains end,
             handler = function ()
                 if buff.furious_slash.stack < 3 then stat.haste = stat.haste + 0.02 end
                 addStack( "furious_slash", 15, 1 )
