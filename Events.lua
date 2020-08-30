@@ -1064,6 +1064,8 @@ do
             Hekili:UpdateUseItems()
         end
 
+        state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
+
         if not gearInitialized then
             C_Timer.After( 3, ns.updateGear )
         else
