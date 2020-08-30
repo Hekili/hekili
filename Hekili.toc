@@ -49,7 +49,7 @@ Classes\ShamanEnhancement.lua
 # Classes\WarlockDemonology.lua
 # Classes\WarlockDestruction.lua
 Classes\WarriorArms.lua
-# Classes\WarriorFury.lua
+Classes\WarriorFury.lua
 Classes\WarriorProtection.lua
 
 Targets.lua
