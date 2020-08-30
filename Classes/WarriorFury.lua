@@ -340,8 +340,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         raging_blow = 1,
         rampage = 1,
         siegebreaker = 1,
-        victory_rush = 1,
-        onslaught = 1
+        victory_rush = 1
     }
 
     local whirlwind_gained = 0
@@ -809,12 +808,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             toggle = "cooldowns",
 
+            spend = -40,
+            spendType = "rage",
+
             startsCombat = false,
             texture = 458972,
 
             handler = function ()
                 applyBuff( "recklessness" )
-                --if talent.reckless_abandon.enabled then gain( 100, "rage" ) end generates 20 more Rage 
+                if talent.reckless_abandon.enabled then gain( 20, "rage" ) end --generates 20 more Rage 
             end,
         },
 
