@@ -256,7 +256,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         whirlwind = {
             id = 85739,
             duration = 20,
-            max_stack = 2
+            max_stack = 4
         },
 
 
@@ -351,12 +351,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local whirlwind_consumers = {
         bloodthirst = 1,
         execute = 1,
-    --   furious_slash = 1,
         impending_victory = 1,
         raging_blow = 1,
         rampage = 1,
         siegebreaker = 1,
-    --    storm_bolt = 1,
         victory_rush = 1
     }
 
@@ -699,6 +697,25 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
         },
 
+        onslaught = {
+            id = 315720,
+            cast = 0,
+            cooldown = 12,
+            gcd = "spell",
+
+            spend = -15,
+            spendType = "rage",
+
+
+            startsCombat = true,
+            texture = 132364,
+
+            usable = function () return buff.enrage.up end,
+            handler = function ()
+                removeStack( "whirlwind" )
+            end,
+
+        },
 
         piercing_howl = {
             id = 12323,
@@ -952,8 +969,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
 
             handler = function ()
-                applyBuff( "whirlwind", 20, 2 )
-                if talent.meat_cleaver.enabled then gain( 2 + "whirlwind") end -- then gain 2 addtitional stacks
+               applyBuff ( "whirlwind" )             
             end,
         },
     } )
