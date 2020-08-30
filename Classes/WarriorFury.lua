@@ -7,6 +7,8 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local IsActiveSpell = ns.IsActiveSpell
+
 
 if UnitClassBase( 'player' ) == 'WARRIOR' then
     local spec = Hekili:NewSpecialization( 72 )
@@ -16,7 +18,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     spec:RegisterResource( Enum.PowerType.Rage, {
         mainhand_fury = {
-            -- setting = "forecast_fury",
+            swing = "mainhand",
 
             last = function ()
                 local swing = state.swings.mainhand
@@ -34,7 +36,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
         offhand_fury = {
-            -- setting = 'forecast_fury',
+            swing = "offhand",
 
             last = function ()
                 local swing = state.swings.offhand
@@ -43,11 +45,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 return swing + ( floor( ( t - swing ) / state.swings.offhand_speed ) * state.swings.offhand_speed )
             end,
 
-            interval = 'offhand_speed',
+            interval = "offhand_speed",
 
             stop = function () return state.time == 0 or state.swings.offhand == 0 end,
             value = function ()
-                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.mainhand_speed * offhand_mod / state.haste
+                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.offhand_speed * offhand_mod / state.haste
             end,
         },
 
@@ -85,50 +87,47 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     -- Talents
     spec:RegisterTalents( {
         war_machine = 22632, -- 262231
-        endless_rage = 22633, -- 202296
+        sudden_death = 22633, -- 280721
         fresh_meat = 22491, -- 215568
 
         double_time = 19676, -- 103827
         impending_victory = 22625, -- 202168
         storm_bolt = 23093, -- 107570
 
-        inner_rage = 22379, -- 215573
-        sudden_death = 22381, -- 280721
-        furious_slash = 23372, -- 100130
+        massacre = 22379, -- 206315
+        frenzy = 22381, -- 335077
+        onslaught = 23372, -- 315720
 
         furious_charge = 23097, -- 202224
         bounding_stride = 22627, -- 202163
         warpaint = 22382, -- 208154
 
-        carnage = 22383, -- 202922
-        massacre = 22393, -- 206315
-        frothing_berserker = 19140, -- 215571
+        seethe = 22383, -- 335091
+        frothing_berserker = 22393, -- 215571
+        cruelty = 19140, -- 335070
 
         meat_cleaver = 22396, -- 280392
         dragon_roar = 22398, -- 118000
         bladestorm = 22400, -- 46924
 
-        reckless_abandon = 22405, -- 202751
-        anger_management = 22402, -- 152278
+        anger_management = 22405, -- 152278
+        reckless_abandon = 22402, -- 202751
         siegebreaker = 16037, -- 280772
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
-        gladiators_medallion = 3592, -- 208683
-        relentless = 3591, -- 196029
-        adaptation = 3590, -- 214027
-
-        death_wish = 179, -- 199261
-        enduring_rage = 177, -- 198877
-        thirst_for_battle = 172, -- 199202
-        battle_trance = 170, -- 213857
+    spec:RegisterPvpTalents( {         
         barbarian = 166, -- 280745
-        slaughterhouse = 3735, -- 280747
-        spell_reflection = 1929, -- 216890
+        battle_trance = 170, -- 213857
+        blood_rage = 172, -- 329038
         death_sentence = 25, -- 198500
-        disarm = 3533, -- 236077
+        death_wish = 179, -- 199261
+        demolition = 5373, -- 329033
+        disarm = 3533, -- 236077       
+        enduring_rage = 177, -- 198877
         master_and_commander = 3528, -- 235941
+        overwatch = 5375, -- 329035
+        slaughterhouse = 3735, -- 280747        
     } )
 
 
@@ -161,11 +160,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 1,
             max_stack = 1,
         },
-        dragon_roar = {
-            id = 118000,
-            duration = 6,
-            max_stack = 1,
-        },
         enrage = {
             id = 184362,
             duration = 4,
@@ -176,20 +170,25 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 8,
             max_stack = 1,
         },
-        frothing_berserker = {
-            id = 215572,
-            duration = 6,
-            max_stack = 1,
+        frenzy = {
+            id = 335082,
+            duration = 12,
+            max_stack = 3,      
         },
         furious_charge = {
             id = 202225,
             duration = 5,
             max_stack = 1,
         },
-        furious_slash = {
-            id = 202539,
+        hamstring= { 
+            id = 1715,
             duration = 15,
-            max_stack = 3,
+            max_stack = 1,
+        },
+        ignore_pain = {
+            id = 190456,
+            duration = 12,
+            max_stack = 1,
         },
         intimidating_shout = {
             id = 5246,
@@ -198,27 +197,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         piercing_howl = {
             id = 12323,
-            duration = 15,
+            duration = 8,
             max_stack = 1,
         },
         rallying_cry = {
             id = 97463,
-            duration = 10,
+            duration = function () return azerite.moment_of_glory.enabled and 12 or 10 end,
             max_stack = 1,
         },
         recklessness = {
             id = 1719,
-            duration = function () return talent.reckless_abandon.enabled and 14 or 10 end,
+            duration = 12,
             max_stack = 1,
         },
         siegebreaker = {
             id = 280773,
             duration = 10,
-            max_stack = 1,
-        },
-        sign_of_the_skirmisher = {
-            id = 186401,
-            duration = 3600,
             max_stack = 1,
         },
         storm_bolt = {
@@ -239,11 +233,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         victorious = {
             id = 32216,
             duration = 20,
+            max_stack = 1,
         },
         whirlwind = {
             id = 85739,
             duration = 20,
-            max_stack = 2,
+            max_stack = function () return talent.meat_cleaver.enabled and 4 or 2 end,
             copy = "meat_cleaver"
         },
 
@@ -264,6 +259,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
         intimidating_presence = {
             id = 288644,
+            duration = 12,
+            max_stack = 1,
+        },
+
+        moment_of_glory = {
+            id = 280210,
             duration = 12,
             max_stack = 1,
         },
@@ -325,26 +326,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     spec:RegisterGear( "soul_of_the_battlelord", 151650 )
 
-
-    local function IsActiveSpell( id )
-        local slot = FindSpellBookSlotBySpellID( id )
-        if not slot then return false end
-
-        local _, _, spellID = GetSpellBookItemName( slot, "spell" )
-        return id == spellID 
-    end
-
     state.IsActiveSpell = IsActiveSpell
 
     local whirlwind_consumers = {
         bloodthirst = 1,
         execute = 1,
-        furious_slash = 1,
         impending_victory = 1,
         raging_blow = 1,
         rampage = 1,
         siegebreaker = 1,
-        storm_bolt = 1,
         victory_rush = 1
     }
 
@@ -365,7 +355,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             if ability.key == "whirlwind" then
                 whirlwind_gained = GetTime()
-                whirlwind_stacks = 2
+                whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
             
             elseif whirlwind_consumers[ ability.key ] and whirlwind_stacks > 0 then
                 whirlwind_stacks = whirlwind_stacks - 1
@@ -476,14 +466,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "berserker_rage" )
-                if level < 116 and equipped.ceannar_charger then gain( 8, "rage" ) end
             end,
         },
 
 
         bladestorm = {
             id = 46924,
-            cast = 0,
+            cast = function () return 4 * haste end,
+            channeled = true,
             cooldown = 60,
             gcd = "spell",
 
@@ -492,14 +482,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 236303,
 
+            talent = "bladestorm",
             range = 8,
 
-            handler = function ()
+            start = function ()
                 applyBuff( "bladestorm" )
                 gain( 5, "rage" )
-                setCooldown( "global_cooldown", 4 * haste )
-
-                if level < 116 and equipped.the_great_storms_eye then addStack( "tornados_eye", 6, 1 ) end
 
                 if azerite.gathering_storm.enabled then
                     applyBuff( "gathering_storm", 6 + ( 4 * haste ), 5 )
@@ -515,17 +503,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             hasteCD = true,
             gcd = "spell",
 
-            spend = -8,
+            spend = function () return ( talent.seethe.enabled and ( stat.crit >= 100 and -4 or -2 ) or 0 ) - 8 end,
             spendType = "rage",
 
             startsCombat = true,
             texture = 136012,
 
             handler = function ()
-                gain( health.max * ( buff.enraged_regeneration.up and 0.25 or 0.05 ) * ( talent.fresh_meat.enabled and 1.2 or 1 ), "health" )
-                if level < 116 and equipped.kazzalax_fujiedas_fury then addStack( "fujiedas_fury", 10, 1 ) end
+                gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ), "health" )
+
                 removeBuff( "bloody_rage" )
                 removeStack( "whirlwind" )
+
                 if azerite.cold_steel_hot_blood.enabled and stat.crit >= 100 then
                     applyDebuff( "target", "gushing_wound" )
                     gain( 4, "rage" )
@@ -568,10 +557,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             talent = "dragon_roar",
             range = 12,
-
-            handler = function ()
-                applyDebuff( "target", "dragon_roar" )                
-            end,
         },
 
 
@@ -618,28 +603,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
 
-        furious_slash = {
-            id = 100130,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = -4,
-            spendType = "rage",
-
-            startsCombat = true,
-            texture = 132367,
-
-            talent = "furious_slash",
-
-            handler = function ()
-                if buff.furious_slash.stack < 3 then stat.haste = stat.haste + 0.02 end
-                addStack( "furious_slash", 15, 1 )
-                removeStack( "whirlwind" )
-            end,
-        },
-
-
         heroic_leap = {
             id = 6544,
             cast = 0,
@@ -658,17 +621,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
         },
 
-
-        heroic_throw = {
-            id = 57755,
+        ignore_pain = {
+            id = 190456,
             cast = 0,
-            cooldown = 6,
+            cooldown = 12,
             gcd = "spell",
 
-            startsCombat = true,
-            texture = 132453,
+            toggle = "defensives",
+
+            spend = 80,
+            spendType = "rage",
+
+            startsCombat = false,
+            texture = 1377132,
 
             handler = function ()
+                applyBuff( "ignore_pain" )
             end,
         },
 
@@ -688,7 +656,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             talent = "impending_victory",
 
             handler = function ()
-                gain( health.max * 0.2, "health" )
+                gain( health.max * 0.3, "health" )
                 removeStack( "whirlwind" )
             end,
         },
@@ -707,19 +675,36 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "intimidating_shout" )
-                if azerite.intimidating_presence.enabled then applyDebuff( "target", "intimidating_presence" ) end
+                --if azerite.intimidating_presence.enabled then applyDebuff( "target", "intimidating_presence" ) end
             end,
         },
 
 
+        onslaught = {
+            id = 315720,
+            cast = 0,
+            cooldown = 12,
+            hasteCD = true,
+            gcd = "spell",
+
+            spend = -15,
+            spendType = "rage",
+
+            startsCombat = true,
+            texture = 132364,
+
+            buff = "enrage",
+
+            handler = function ()
+                removeStack( "whirlwind" )
+            end,
+        },
+
         piercing_howl = {
             id = 12323,
             cast = 0,
-            cooldown = 0,
+            cooldown = 30,
             gcd = "spell",
-
-            spend = 10,
-            spendType = "rage",
 
             startsCombat = true,
             texture = 136147,
@@ -754,8 +739,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 85288,
             cast = 0,
             charges = 2,
-            cooldown = function () return ( talent.inner_rage.enabled and 7 or 8 ) * haste end,
-            recharge = function () return ( talent.inner_rage.enabled and 7 or 8 ) * haste end,
+            cooldown = 8,
+            recharge = 8,
+            hasteCD = true,
             gcd = "spell",
 
             spend = -12,
@@ -765,8 +751,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 589119,
 
             handler = function ()
-                removeBuff( "raging_thirst" )
-                if level < 116 and set_bonus.tier_21_4pc == 1 then addStack( "bloody_rage", 10, 1 ) end
                 removeStack( "whirlwind" )
             end,
         },
@@ -785,6 +769,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "rallying_cry" )
+
+                if azerite.moment_of_glory.enabled then applyBuff( "moment_of_glory" ) end
             end,
         },
 
@@ -795,30 +781,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function ()
-                if talent.carnage.enabled then return 75 end
-                if talent.frothing_berserker.enabled then return 95 end
-                return 85
-            end,
+            spend = 80,
             spendType = "rage",
 
             startsCombat = true,
             texture = 132352,
 
             handler = function ()
-                if not buff.enrage.up then
-                    stat.haste = stat.haste + 0.25
-                end
-
+                if talent.frenzy.enabled then addStack( "frenzy", nil, 1 ) end
                 applyBuff( "enrage" )
-                if talent.endless_rage.enabled then gain( 6, "rage" ) end
-
-                if level < 116 and set_bonus.tier21_2pc == 1 then applyDebuff( "target", "slaughter" ) end
-
-                if talent.frothing_berserker.enabled then
-                    if buff.frothing_berserker.down then stat.haste = stat.haste + 0.05 end
-                    applyBuff( "frothing_berserker" )
-                end
                 removeStack( "whirlwind" )  
             end,
         },
@@ -827,18 +798,33 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         recklessness = {
             id = 1719,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
+            cooldown = 90,
             gcd = "spell",
 
             toggle = "cooldowns",
+
+            spend = -40,
+            spendType = "rage",
 
             startsCombat = false,
             texture = 458972,
 
             handler = function ()
                 applyBuff( "recklessness" )
-                if talent.reckless_abandon.enabled then gain( 100, "rage" ) end
+                if talent.reckless_abandon.enabled then gain( 20, "rage" ) end --generates 20 more Rage 
             end,
+        },
+
+        shattering_throw = {
+            id = 64382,
+            cast = 1.5,
+            cooldown = 180,
+            gcd = "spell",
+
+            startsCombat = true,
+            texture = 311430,
+
+            range = 30,
         },
 
 
@@ -863,6 +849,43 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
 
+        slam = {
+            id = 1464,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            spend = 20,
+            spendType = "rage",
+
+            startsCombat = true,
+            texture = 132340,
+
+            handler = function ()
+                removeStack( "whirlwind" )
+            end,
+        },
+
+
+        spell_reflect = {
+            id = 23920,
+            cast = 0,
+            cooldown = 25,
+            gcd = "off",
+
+            toggle = "interrupts",
+
+            startsCombat = false,
+            texture = 132361,
+
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+
+            handler = function ()
+                applyDebuff( "target", "storm_bolt" )
+            end,
+        },
+
         storm_bolt = {
             id = 107570,
             cast = 0,
@@ -876,7 +899,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "storm_bolt" )
-                removeStack( "whirlwind" )
             end,
         },
 
@@ -924,21 +946,13 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132369,
 
-            range = 7,
-            
             usable = function ()
                 if settings.check_ww_range and target.outside7 then return false, "target is outside of whirlwind range" end
                 return true
             end,
 
             handler = function ()
-                applyBuff( "whirlwind", 20, 2 )
-
-                if talent.meat_cleaver.enabled then
-                    gain( 3 + min( 5, active_enemies ) + min( 3, active_enemies ), "rage" )
-                else
-                    gain( 3 + min( 5, active_enemies ), "rage" )
-                end
+               applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
             end,
         },
     } )
@@ -969,5 +983,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     } ) 
 
 
-    spec:RegisterPack( "Fury", 20200210, [[dKukNaqiuvEekInHkzuQu5uQu1RqrnlsPULiHDrXVePggQQogPKLru6zQuyAevY1uPuBtLI6BOiX4uPiNtLswhrLY8iQ4EOI9js0brLkluL0drLQyIIKQUOijyJOsvnsIkvoPiPYkjfZuKK6MevQANOGHksswQij6PszQQexvKeAROsv6RIKs7vv)vfdMKdlSyP6XeMmvDzOntPptKrJQCAGvJIuVMu1SPYTrPDR43igUioUiPy5k9CqtxY1f12rH(orX4rrsNNOQ1JkL5tQSFK(16V8nFu4ZGS8ll)8lRS3WW)T4NFzVX3k5tWVLec9He(TjyXVX9ZR8FljK3rc)F5BqsEf434vvcuULoTeO4L7gbHnneWMDrbiJydBLgcyfP)wpdCvQB((38rHpdYYVS8ZVSYEdd)3IF(16M(wKlEK9Bnal3dvLMQ4UvWdWwGLa)gpG3JZ3)MhHIVXeQI7Nx5PQuBSlGSunmHQ4vvcuULoTeO4L7gbHnneWMDrbiJydBLgcyfunmHQ4(yFZXkpvPf)AtvYYVS8t1q1WeQI7HxmsiuUr1WeQkfuf359ONQsvzww0zOAycvLcQk1dGr3HEQILWiYItrvPPk5oCjabvLQXiHQeHZrv3nKIQge9ONQSKLQatkKcwKQeKPqMADVHQHjuvkOk5EcJONQU6cpclYYsvX4PQu)gsKHQsLKyPQOtyePQRocXx8alSOQIqva2KLWisv2ftnzCeYtvelvTOGWYIJpkazGu1DqalKQwswINtEQctn5WDVHQHjuvkOkUZ7rpvDnQYHuvJhjxuvrOQKffe2Euuf3LQs1gQgMqvPGQ4oVh9uf3lquKvEQkvMH8OQOtyePkiyKCykQyLWIQsT8aRtgW4nunmHQsbvXDEp6PQurisvPUczHMV5aWc(x(gemso8uXkH1F5zqR)Y3crbiZ3Gauc7lg6X9B4eDh6)RF9mi7F5B4eDh6)RFtSGcxq8T7OQE2Anlk07qiCqi0KtOkD6OQE2AnSilzL)qShxwa8h)Ibl0KtOQ7PkD6OQ7OQkC4ug7skEGr60XfIRECn4eDh6PkD6OQkC4ugrStiHgCIUd9ufxu1DuvpBTgC2qcnlYgGbsvYHQKeEQsNoQAdjKQsjvDl(PQ7PkD6OQkC4ug2acdXIgCIUd9ufxu1DuvpBTgC2qcnlYgGbsvYHQKeEQsNoQAdjKQsjvDl(PQ7PQ7)wikaz(2gSjHe(1ZWn(lFlefGmFdzQOix43Wj6o0)x)6zqU(lFdNO7q)F9BIfu4cIVXhv1ZwRP7ieVldltoHQ4IQ6zR1yZlGKHhOlG8mlYgGbsvYHQUX3crbiZ3S5fqYWd0fqEF9mC7)Y3Wj6o0)x)MybfUG4BjlY4rs4nAz2GnjKWVfIcqMV1DHhHfzz)6z4M)lFdNO7q)F9BIfu4cIV1ZwRbNnKqto5BHOaK5B(nKiZzjX(1Zat5V8nCIUd9)1VjwqHli(wpBTgC2qcnEImdvPthvfCdxqHgbX5pWcr3HhPoDhH4nBm6PQusvA9TquaY8TUJq8fpWcRVEgUP)Y3Wj6o0)x)MybfUG4BcEXkHqQIdvj73crbiZ32qcmsNUJiZxpd36V8TquaY8TUJq8fpWcRVHt0DO)V(1ZGw8)x(gor3H()63elOWfeFRchoLre7esObNO7qpvPthvDhvvHdNYWgqyiw0Gt0DONQ4IQ2qcPk5qv3e)u19uLoDu1DuvfoCkJDjfpWiD64cXvpUgCIUd9ufxu1gsivjhQ6w8tv3)TquaY8TnKaJ0P7iY81ZGwA9x(gor3H()63elOWfeFRchoLXMxajdpqxa5zWj6o0)TquaY8nBEbKm8aDbK3xpdAj7F5BHOaK5BmcefzL)SziVVHt0DO)V(1ZGw34V8TquaY8naBcoEWiDyeikYk)3Wj6o0)x)6zql56V8TquaY8nz4bwNmGX)nCIUd9)1V(6BSegrwCQ)YZGw)LVfIcqMVXdxcqCCyK8nCIUd9)1V(6BE0gzx9xEg06V8TquaY8nbVyLWVHt0DO)V(1ZGS)LVfIcqMVLKzzr33Wj6o0)x)6z4g)LVHt0DO)V(nXckCbX3UJQ2a4piJ4ugwcJiloLXdGvmcKQsjvj7TPkUOQna(dYioLHLWiYItzadvLsQsUUnvD)3crbiZ34Hlbiooms(6zqU(lFdNO7q)F9BIfu4cIV1ZwRrkhRheZHypb3WLu8m5eQsNoQ6oQIpQcHqCeOrqgpoq0FCalAjRanSbttwQIlQQIvcltbyXtroEasvYHdvDZ8tv3)TquaY8TesbiZxpd3(V8nCIUd9)1VjwqHli(MGqCEImJzrHEhcHdcHMfzdWaPk5qv34BHOaK5BBWMes4xpd38F5B4eDh6)RFtSGcxq8TE2Anlk07qiCqi0Kt(wikaz(w3ri(dXEkE4bhKv(VEgyk)LVHt0DO)V(nXckCbX34JQ6zR1SOqVdHWbHqtoHQ4IQ4JQ6zR1abOe2xm0JRjN8TquaY8TK8cSYdgPt3fW6RNHB6V8nCIUd9)1VjwqHli(gFuvpBTMff6DieoieAYjufxufFuvpBTgiaLW(IHECn5KVfIcqMVTGKehEaZbMec8RNHB9x(gor3H()63elOWfeFJpQQNTwZIc9oechecn5eQIlQIpQQNTwdeGsyFXqpUMCY3crbiZ3KHSopJiyolcjtmc8RNbT4)V8nCIUd9)1VjwqHli(gFuvpBTMff6DieoieAYjufxufFuvpBTgiaLW(IHECn5KVfIcqMVzjIme9NGB4ck80XG9RNbT06V8nCIUd9)1VjwqHli(gFuvpBTMff6DieoieAYjufxufFuvpBTgiaLW(IHECn5KVfIcqMVTyKagPJ1fSi8RNbTK9V8nCIUd9)1VjwqHli(gFuvpBTMff6DieoieAYjufxufFuvpBTgiaLW(IHECn5eQIlQYtkJGmcCQnk0FSUGfp98oMfzdWaPkouf)FlefGmFtqgbo1gf6pwxWIF9mO1n(lFdNO7q)F9BIfu4cIV1ZwRzrHEhcHhlzfOjN8TquaY8TIhEYtNKh)Xswb(1ZGwY1F5B4eDh6)RFtSGcxq8n(OQE2Anlk07qiCqi0KtOkUOQ7OQcWINIC8aKQsjvP1TUnvPthvvXkHLHhgUINjruuLCOkz5NQU)BHOaK5Bs5y9Gyoe7j4gUKI3xpdAD7)Y3Wj6o0)x)MybfUG4B8rv9S1AwuO3Hq4GqOjN8TquaY8nwKLSYFi2Jlla(JFXGf(1ZGw38F5B4eDh6)RFtSGcxq8n(OkecXrGgbz84ar)XbSOLSc0WgmnzPkUOk(OkecXrGMUJq8hI9u8WdoiR8g2GPjlvPthvjieNNiZyKYX6bXCi2tWnCjfpZISbyGuvkPkTOkD6OQE2Ans5y9Gyoe7j4gUKINjNqv60rvccX5jYmMUJq8hI9u8WdoiR8MfzdWaPk5qvsc)3crbiZ3wuO3Hq4Gq4xpdAXu(lFdNO7q)F9BIfu4cIVbtqN7uXkHf0idpW6KbmEQkLuLwufxufFuvpBTgwmQJWHbJ4AYjFlefGmFtgEG1jdy8F9mO1n9x(gor3H()63crbiZ3cipgJbHNn4gzpcYgUVjwqHli(wbyXtroEasvYHQKLFQsNoQIpQYJ9S1A2GBK9iiB4oESNTwtoHQ0PJQUJQQyLWYuaw8uKtIOo3GFQsou1TPkUOkp2ZwRrqgFwuagXdy0F8ypBTMCcvDpvPthvDhvXhv5XE2AncY4ZIcWiEaJ(Jh7zR1KtOkUOQE2AnSilzL)qShxwa8h)Ibl0KtOkD6OQKfz8ij8gzns5y9Gyoe7j4gUKIhvPthvLSiJhjH3iRzrHEhcHdcHufxu1DufFufcH4iqdlYsw5pe7XLfa)XVyWcnSbttwQIlQIpQcHqCeOrqgpoq0FCalAjRanSbttwQ6EQ6(Vnbl(TaYJXyq4zdUr2JGSH7RNbTU1F5B4eDh6)RFBcw8BBWMagPtWM4av2JhjGuWiXvhCKad(TquaY8TnytaJ0jytCGk7XJeqkyK4QdosGb)6zqw()lFlefGmFldXdOqw43Wj6o0)x)6zqwT(lFdNO7q)F9BIfu4cIV1ZwRzrHEhcHdcHMCY3crbiZ36ocXFS5v(VEgKv2)Y3Wj6o0)x)MybfUG4B9S1AwuO3Hq4GqOjN8TquaY8ToUqC1dgPVEgK9g)LVHt0DO)V(nXckCbX36zR1SOqVdHWbHqJNiZqvCrvESNTwdeGsyFXqpUgprM5BHOaK5BoGeVcEy6SxIfN6RNbzLR)Y3Wj6o0)x)MybfUG4B9S1AwuO3Hq4GqOjN8TquaY8nlyXUJq8F9mi7T)lFdNO7q)F9BIfu4cIV1ZwRzrHEhcHdcHMCY3crbiZ3IrGWAd3reo3xpdYEZ)LVHt0DO)V(nXckCbX36zR1SOqVdHWbHqJNiZqvCrvESNTwdeGsyFXqpUgprMHQ4IQ6zR1GZgsOjN8TquaY8TEiDi2tTaHE4xpdYYu(lFdNO7q)F9BHOaK5BBEoHOaK54aW6BoaSotWIFdcgjhEQyLW6RV(wYIccBpQ)YZGw)LVHt0DO)V(1ZGS)LVHt0DO)V(1ZWn(lFdNO7q)F9RNb56V8TquaY8TEuLdpqEKC9nCIUd9)1VEgU9F5B4eDh6)RFBcw8Bb3G8InGhlzQdXEsiYG73crbiZ3cUb5fBapwYuhI9KqKb3VEgU5)Y3crbiZ3KHSopJiyolcjtmc8B4eDh6)RF9mWu(lFlefGmFJfzjR8hI94YcG)4xmyHFdNO7q)F9RNHB6V8TquaY8nPCSEqmhI9eCdxsX7B4eDh6)RF9mCR)Y3crbiZ3wuO3Hq4Gq43Wj6o0)x)6zql()lFlefGmFlHuaY8nCIUd9)1V(6RVXiUqazEgKLFz5NFTKvU(MmXoGrc(TuhBczl0tvYfvfIcqgQYbGf0q18TKLybo8BmHQ4(5vEQk1g7cilvdtOkEvLaLBPtlbkE5UrqytdbSzxuaYi2WwPHawbvdtOkUp23CSYtvAXV2uLS8ll)ununmHQ4E4fJecLBunmHQsbvXDEp6PQuvMLfDgQgMqvPGQs9ay0DONQyjmIS4uuvAQsUdxcqqvPAmsOkr4Cu1DdPOQbrp6PklzPkWKcPGfPkbzkKPw3BOAycvLcQsUNWi6PQRUWJWISSuvmEQk1VHezOQujjwQk6egrQ6QJq8fpWclQQiufGnzjmIuLDXutghH8ufXsvlkiSS44JcqgivDheWcPQLKL45KNQWutoC3BOAycvLcQI78E0tvxJQCiv14rYfvveQkzrbHThfvXDPQuTHQHjuvkOkUZ7rpvX9cefzLNQsLzipQk6egrQccgjhMIkwjSOQulpW6KbmEdvdtOQuqvCN3JEQkveIuvQRqwOHQHQHjuvQatff5c9uvhTKfPkbHThfv1rjWanuf3jeysbPQHmPGxSS2SJQcrbidKQiJtEdvtikazGMKffe2EuCSUaQNQjefGmqtYIccBpkM5K2siEQMquaYanjlkiS9OyMt6ilXItffGmunmHQAtKa5rkQAdGNQ6zRf9ufSIcsvD0swKQee2EuuvhLadKQIXtvjlMIesvGrIQaqQYtg0q1eIcqgOjzrbHThfZCs3JQC4bYJKlQMquaYanjlkiS9OyMt6mepGcz1EcwKtWniVyd4XsM6qSNeIm4s1eIcqgOjzrbHThfZCsldzDEgrWCwesMyeivtikazGMKffe2EumZjnlYsw5pe7XLfa)XVyWcPAcrbid0KSOGW2JIzoPLYX6bXCi2tWnCjfpQMquaYanjlkiS9OyMt6ff6Dieoies1eIcqgOjzrbHThfZCsNqkazOAOAycvLkWurrUqpvHmIR8uvbyrQQ4HuvikYsvaivfmgax0DOHQjefGmqocEXkHunHOaKbYmN0jzww0r1WeQ6cpaKQaqQILalN8uvrOQKfzeNIQeeIZtKzGuLDjSuvhbJevfcbWJtfoN8uvgIEQYNxWirvSegrwCkdvdtOQquaYazMt6npNquaYCCayP9eSihwcJiloL2alhwcJiloLXdGvmcmL3MQjefGmqM5KMhUeG44WirBGLZDBa8hKrCkdlHrKfNY4bWkgbMszVnxBa8hKrCkdlHrKfNYaMukx3(EQMquaYazMt6esbiJ2alNE2Ans5y9Gyoe7j4gUKINjNOt3D8Hqioc0iiJhhi6poGfTKvGg2GPjlxvSsyzkalEkYXdq5W5M5)EQMquaYazMt6nytcjuBGLJGqCEImJzrHEhcHdcHMfzdWaLZnOAcrbidKzoP7ocXFi2tXdp4GSYRnWYPNTwZIc9oechecn5eQMquaYazMt6K8cSYdgPt3fWsBGLdF9S1AwuO3Hq4GqOjNWfF9S1AGauc7lg6X1KtOAcrbidKzoPxqsIdpG5atcbQnWYHVE2Anlk07qiCqi0Kt4IVE2AnqakH9fd94AYjunHOaKbYmN0YqwNNremNfHKjgbQnWYHVE2Anlk07qiCqi0Kt4IVE2AnqakH9fd94AYjunHOaKbYmN0wIidr)j4gUGcpDmy1gy5WxpBTMff6DieoieAYjCXxpBTgiaLW(IHECn5eQMquaYazMt6fJeWiDSUGfHAdSC4RNTwZIc9oechecn5eU4RNTwdeGsyFXqpUMCcvtikazGmZjTGmcCQnk0FSUGf1gy5WxpBTMff6DieoieAYjCXxpBTgiaLW(IHECn5eU8KYiiJaNAJc9hRlyXtpVJzr2amqo8t1eIcqgiZCsx8WtE6K84pwYkqTbwo9S1AwuO3Hq4XswbAYjunHOaKbYmN0s5y9Gyoe7j4gUKIN2alh(6zR1SOqVdHWbHqtoHR7kalEkYXdWuQ1TUToDvSsyz4HHR4zseLCKL)7PAcrbidKzoPzrwYk)HypUSa4p(fdwO2alh(6zR1SOqVdHWbHqtoHQjefGmqM5KErHEhcHdcHAdSC4dHqCeOrqgpoq0FCalAjRanSbttwU4dHqCeOP7ie)Hypfp8GdYkVHnyAYQtNGqCEImJrkhRheZHypb3WLu8mlYgGbMsT0PRNTwJuowpiMdXEcUHlP4zYj60jieNNiZy6ocXFi2tXdp4GSYBwKnaduoscpvtikazGmZjTm8aRtgW41gy5atqN7uXkHf0idpW6Kbm(uQfx81ZwRHfJ6iCyWiUMCcvtikazGmZjDgIhqHSApblYjG8ymgeE2GBK9iiB40gy5uaw8uKJhGYrw(1PJpp2ZwRzdUr2JGSH74XE2An5eD6URIvcltbyXtrojI6Cd(LZT5YJ9S1AeKXNffGr8ag9hp2ZwRjNCVoD3XNh7zR1iiJplkaJ4bm6pESNTwtoHRE2AnSilzL)qShxwa8h)Ibl0Kt0PlzrgpscVrwJuowpiMdXEcUHlP4PtxYImEKeEJSMff6DieoieY1D8Hqioc0WISKv(dXECzbWF8lgSqdBW0KLl(qiehbAeKXJde9hhWIwYkqdBW0K9(7PAcrbidKzoPZq8akKv7jyroBWMagPtWM4av2JhjGuWiXvhCKads1eIcqgiZCsNH4builKQjefGmqM5KU7ie)XMx51gy50ZwRzrHEhcHdcHMCcvtikazGmZjDhxiU6bJK2alNE2Anlk07qiCqi0KtOAcrbidKzoPDajEf8W0zVeloL2alNE2Anlk07qiCqi04jYmC5XE2AnqakH9fd94A8ezgQMquaYazMtAlyXUJq8AdSC6zR1SOqVdHWbHqtoHQjefGmqM5KogbcRnChr4CAdSC6zR1SOqVdHWbHqtoHQjefGmqM5KUhshI9ulqOhQnWYPNTwZIc9oechecnEImdxESNTwdeGsyFXqpUgprMHRE2An4SHeAYjunHOaKbYmN0BEoHOaK54aWs7jyroqWi5WtfRewununHOaKbAyjmIS4uC4HlbioomsOAOAcrbid0abJKdpvSsyXbcqjSVyOhxQMquaYanqWi5WtfRewmZj9gSjHeQnWY5UE2Anlk07qiCqi0Kt0PRNTwdlYsw5pe7XLfa)XVyWcn5K71P7UkC4ug7skEGr60XfIRECn4eDh61PRchoLre7esObNO7qpx31ZwRbNnKqZISbyGYrs41PBdjmL3I)71PRchoLHnGWqSObNO7qpx31ZwRbNnKqZISbyGYrs41PBdjmL3I)7VNQjefGmqdemso8uXkHfZCsJmvuKlKQjefGmqdemso8uXkHfZCsBZlGKHhOlG80gy5WxpBTMUJq8UmSm5eU6zR1yZlGKHhOlG8mlYgGbkNBq1eIcqgObcgjhEQyLWIzoP7UWJWISSAdSCswKXJKWB0YSbBsiHunHOaKbAGGrYHNkwjSyMtA)gsK5SKy1gy50ZwRbNnKqtoHQjefGmqdemso8uXkHfZCs3DeIV4bwyPnWYPNTwdoBiHgprMrNUGB4ck0iio)bwi6o8i1P7ieVzJrFk1IQjefGmqdemso8uXkHfZCsVHeyKoDhrgTbwocEXkHqoYs1eIcqgObcgjhEQyLWIzoP7ocXx8alSOAcrbid0abJKdpvSsyXmN0BibgPt3rKrBGLtfoCkJi2jKqdor3HED6URchoLHnGWqSObNO7qpxBiHY5M4)ED6URchoLXUKIhyKoDCH4Qhxdor3HEU2qcLZT4)EQMquaYanqWi5WtfRewmZjTnVasgEGUaYtBGLtfoCkJnVasgEGUaYZGt0DONQjefGmqdemso8uXkHfZCsZiquKv(ZMH8OAcrbid0abJKdpvSsyXmN0a2eC8Gr6WiquKvEQMquaYanqWi5WtfRewmZjTm8aRtgW4)gmbfpdmfz)6R)b]] )
+    spec:RegisterPack( "Fury", 20200830, [[dKukOaqiIOhreAtiPgLivNsvfVcPywKkDlrI2ff)svvdJO0Xiv1YikEMijttvL4AIuABKkY3uvjnosf15qkX6qkjnpsfUhs1(ejCqvvQfQQ0djcktuKI6IIKs2isjXifjfDsrkYkjfZuKcUjrq1orcdvKu1sfjvEQctvvXvfjLARIKcFvKcTxv(RQmysoSWIf1JjmzQCzWMP0NrvJMO60qTAIaVMinBQ62OYUL8BedxehhPKA5k9CitxQRROTJK8DKOXteKZtQY6rk18jL2pkF6FFUHlA4OqgzLrwz15ujRrFDkvYK2F9gTEjWnscH0GhUrfCWnOvMRE3ij0Ztc395giYCfWnK3DcIw9)FEClFMncc3FeMB6JgtkXg2(pcZj(FJ8e770uD5B4IgokKrwzKvwDovYA0xNsLmPvNUrmB5K9gdmNegt9NP(9kKJ5A8sq3qo25G6Y3WbiXnKitrRmx9yQ0ySlMSmnsKP(9KFIAMkvYQltjJSYiltdtJezkjm5rXdiAvMgjYuPKP(TZboMk1p54aVHPrImvkzQ0mgfzp4ykocvahunt9NPsnHLGfmvAaIeMseEptLErAMQaWboMYswMcxPKp4aMsqQgKq9pgMgjYuPKPKWjuboM6RpCaQjlhtfLJPsZBWtkMk1rILPImHkGP(6jexlhVOMPActH5swcvatzxGwpHsOhtrSm1ccchhuUOXKcXuPJWCiMAjtE5E9ykGwpd)pgMgjYuPKP(TZboM6B0ThyQHCYSzQMWujliiC5OzQFN6tdgMgjYuPKP(TZboMk1alAYQhtL6Mi5mvKjubmfcx8EiLDS8qZuPr541tjUCgMgjYuPKP(TZboMk1gbmvAQboK5gEmQr3NBGWfVhEDS8qFFok0)(CJq0ysDdeg4H8cHuyVbur2dU771hfYCFUbur2dU77nelUHfh3iDMkpTwZccPEaHkaHmZeMsRwMkpTwdhWrw9Ee7Zpfy3ZTqWHmZeM6hMsRwMkDMQdpuTXUKwoU4FzyrWkfwdur2doMsRwMQdpuTreBf8GbQi7bhtrntLotLNwRbQn4bZcCbUqmLoykEHJP0QLP2GhyQuWu0ISm1pmLwTmvhEOAdxGqHybdur2doMIAMkDMkpTwduBWdMf4cCHykDWu8chtPvltTbpWuPGPOfzzQFyQFUriAmPUXgCjbpC9rrQUp3ienMu3aKqGy2WnGkYEWDFV(O4xUp3ienMu3qqkhWv3aQi7b3996JI0EFUbur2dU77nelUHfh3izbQE8cNrFZgCjbpCJq0ysDJSpCaQjl31hf6095gqfzp4UV3qS4gwCCJ80AnqTbpyMj3ienMu3WTbpPElj2Rpk(17ZnGkYEWDFVHyXnS44g5P1AGAdEW4iuwmLwTmvqByXnyeeV7HAa8p5K(L9eIZSrjLPsbtP)ncrJj1nYEcX1YXlQV(OqNVp3aQi7b399gIf3WIJBiKhlpGyk6mLm3ienMu3ydECX)YEcLxFuql3NBeIgtQBK9eIRLJxuFdOIShC33Rpk0x27ZnGkYEWDFVHyXnS44gD4HQnIyRGhmqfzp4ykTAzQ0zQo8q1gUaHcXcgOIShCmf1m1g8atPdMsNLLP(HP0QLPsNP6WdvBSlPLJl(xgweSsH1avK9GJPOMP2GhykDWu0ISm1p3ienMu3ydECX)YEcLxFuOV(3NBeIgtQBqfw0KvV3orYVbur2dU771hf6lZ95gHOXK6gyUeOC4I)rfw0KvVBavK9G7(E9rH(P6(CJq0ysDdkLJxpL4YDdOIShC33RV(goWgtFFFok0)(CJq0ysDdH8y5HBavK9G7(E9rHm3NBeIgtQBKm54a)nGkYEWDFV(Oiv3NBavK9G7(EdXIByXXnsNP2a7Eavq1gocvahuTXHrDucGPsbtjtAzkQzQnWUhqfuTHJqfWbvBWftLcM6xslt9ZncrJj1nKdlblEEisU(O4xUp3aQi7b399gIf3WIJBKNwRHFgRdh1JyFbTHL0YnZeMsRwMkDMssMcqiOeGrqkhuiW98ylyjRamCHeqwMIAMQJLhAtJ5GxtEomWu6GotPtYYu)CJq0ysDJesJj11hfP9(CdOIShC33BiwCdloUHGq8ocLLzbHupGqfGqMf4cCHykDWuP6gHOXK6gBWLe8W1hf6095gqfzp4UV3qS4gwCCJ80AnliK6beQaeYmtUriAmPUr2tiUhX(A5WdkGtVRpk(17ZnGkYEWDFVHyXnS44gsYu5P1Awqi1diubiKzMWuuZusYu5P1AqyGhYlesH1mtUriAmPUrYCXw9Wf)l7duF9rHoFFUbur2dU77nelUHfh3qsMkpTwZccPEaHkaHmZeMIAMssMkpTwdcd8qEHqkSMzYncrJj1nwCsIhE46HscbC9rbTCFUbur2dU77nelUHfh3qsMkpTwZccPEaHkaHmZeMIAMssMkpTwdcd8qEHqkSMzYncrJj1nOKSEhvaUElGivuc46Jc9L9(CdOIShC33BiwCdloUHKmvEATMfes9acvaczMjmf1mLKmvEATgeg4H8cHuynZKBeIgtQByjIjcCVG2WIB4LHG76Jc91)(CdOIShC33BiwCdloUHKmvEATMfes9acvaczMjmf1mLKmvEATgeg4H8cHuynZKBeIgtQBSqKGl(N1hCa66Jc9L5(CdOIShC33BiwCdloUHKmvEATMfes9acvaczMjmf1mLKmvEATgeg4H8cHuynZeMIAMYrAJGucO6nAW9S(GdE55wMf4cCHyk6mLS3ienMu3qqkbu9gn4EwFWbxFuOFQUp3aQi7b399gIf3WIJBKNwRzbHupGqplzfGzMCJq0ysDJwo8MvMml3ZswbC9rH()Y95gqfzp4UV3qS4gwCCdjzQ80AnliK6beQaeYmtykQzQ0zQgZbVM8CyGPsbtPpTKwMsRwMQJLhAJCi8TCtIOzkDWuYilt9ZncrJj1n4NX6Wr9i2xqByjT8Rpk0pT3NBavK9G7(EdXIByXXnKKPYtR1SGqQhqOcqiZm5gHOXK6gCahz17rSp)uGDp3cbh66Jc91P7ZnGkYEWDFVHyXnS44g5P1Awqi1diubiKXrOSykQzkhKNwRbHbEiVqifwJJqzDJq0ysDdbPO1tyjl6LJQG96Jc9)17ZnGkYEWDFVHyXnS44gsYuacbLamcs5GcbUNhBblzfGHlKaYYuuZusYuacbLamzpH4Ee7RLdpOao9mCHeqwMsRwMsqiEhHYYWpJ1HJ6rSVG2WsA5Mf4cCHyQuWu6ZuA1Yu5P1A4NX6Wr9i2xqByjTCZmHP0QLPeeI3rOSmzpH4Ee7RLdpOao9mlWf4cXu6GP4fUBeIgtQBSGqQhqOcqORpk0xNVp3aQi7b399gIf3WIJBGsaV)1XYdnYqPC86PexoMkfmL(mf1mLKmvEATgoi6NWdbvWAMj3ienMu3Gs541tjUCxFuOpTCFUbur2dU77ncrJj1ncKCQIcqVnOnzFcYg(BiwCdloUrJ5GxtEomWu6GPKrwMsRwMssMYb5P1A2G2K9jiB4FoipTwZmHP0QLPsNP6y5H20yo41KxIOFPswMshmvAzkQzkhKNwRrqk3u0yQGhUK(CqEATMzct9dtPvltLotjjt5G80Ancs5MIgtf8WL0NdYtR1mtykQzQ80AnCahz17rSp)uGDp3cbhYmtykTAzQKfO6XlCgzm8ZyD4OEe7lOnSKwotPvltLSavpEHZiJzbHupGqfGqmf1mv6mLKmfGqqjadhWrw9Ee7Zpfy3ZTqWHmCHeqwMIAMssMcqiOeGrqkhuiW98ylyjRamCHeqwM6hM6NBubhCJajNQOa0BdAt2NGSH)6JczK9(CdOIShC33BubhCJn4sWf)l4s84E6GhpMpOI47hu84cUriAmPUXgCj4I)fCjECpDWJhZhur89dkECbxFuiJ(3NBeIgtQBmrWd3ah6gqfzp4UVxFuiJm3NBavK9G7(EdXIByXXnYtR1SGqQhqOcqiZm5gHOXK6gzpH4E25Q31hfYKQ7ZnGkYEWDFVHyXnS44g5P1Awqi1diubiKzMCJq0ysDJmSiyLIl(RpkK5xUp3aQi7b399gIf3WIJBKNwRzbHupGqfGqghHYIPOMPCqEATgeg4H8cHuynocL1ncrJj1n8yE5n6jbthphu91hfYK27ZnGkYEWDFVHyXnS44g5P1Awqi1diubiKXrOSykQzkhKNwRbHbEiVqifwJJqzDJq0ysDduce7JyF5a1ysD9rHm6095gqfzp4UV3qS4gwCCJ80AnliK6beQaeY4iuwmf1mLdYtR1GWapKxiKcRXrOSykQzQ0zQq0yQGhuahgqmvkyk9zkTAzQmbHyQFUriAmPUrucmu9lSnSi5eH0RpkK5xVp3aQi7b399gIf3WIJBKNwRzbHupGqfGqMzYncrJj1nS4fYEcXD9rHm6895gqfzp4UV3qS4gwCCJ80AnliK6beQaeYmtUriAmPUruca1B4FIW7V(OqgA5(CdOIShC33BiwCdloUrEATMfes9acvaczCeklMIAMYb5P1AqyGhYlesH14iuwmf1mvEATgO2GhmZKBeIgtQBKd(hX(6flKIU(OivYEFUbur2dU77ncrJj1n2z9crJj1ZJr9n8yu)QGdUbcx8E41XYd91xFdocvahu995Oq)7ZncrJj1nKdlblEEisUbur2dU771xFJKfeeUC03NJc9Vp3aQi7b3996JczUp3aQi7b3996JIuDFUbur2dU771hf)Y95gHOXK6g5OBp8qYjZ(gqfzp4UVxFuK27ZnGkYEWDFVrfCWncAJKhBGEws1pI9LqOe2BeIgtQBe0gjp2a9SKQFe7lHqjSxFuOt3NBeIgtQBqjz9oQaC9warQOeWnGkYEWDFV(O4xVp3ienMu3Gd4iREpI95NcS75wi4q3aQi7b3996JcD((CJq0ysDd(zSoCupI9f0gwsl)gqfzp4UVxFuql3NBeIgtQBSGqQhqOcqOBavK9G7(E9rH(YEFUriAmPUrcPXK6gqfzp4UVxF913GkyrysDuiJSYiRSYOVS3GYylCXJUrAIlHSn4yQFHPcrJjft5XOgzyAUbkbehf)Qm3izjwShUHezkAL5QhtLgJDXKLPrIm1VN8tuZuPswDzkzKvgzzAyAKitjHjpkEarRY0irMkLm1VDoWXuP(jhh4nmnsKPsjtLMXOi7bhtXrOc4GQzQ)mvQjSeSGPsdqKWuIW7zQ0lsZufaoWXuwYYu4kL8bhWucs1GeQ)XW0irMkLmLeoHkWXuF9Hdqnz5yQOCmvAEdEsXuPosSmvKjubm1xpH4A54f1mvtykmxYsOcyk7c06juc9ykILPwqq44GYfnMuiMkDeMdXulzYl3Rhtb06z4)XW0irMkLm1VDoWXuFJU9atnKtMnt1eMkzbbHlhnt97uFAWW0irMkLm1VDoWXuPgyrtw9yQu3ejNPImHkGPq4I3dPSJLhAMknkhVEkXLZW0irMkLm1VDoWXuP2iGPstnWHmmnmnsKPsTKqGy2GJPYGLSatjiC5OzQmWJlKHP(TqajnIPksLs5XYzNEMkenMuiMIuE9mmnHOXKczswqq4Yrt36dKuMMq0ysHmjliiC5OPH(FlH4yAcrJjfYKSGGWLJMg6)JjphuD0ysX0irMAurcsoPzQnWoMkpTwWXuOoAetLblzbMsq4YrZuzGhxiMkkhtLSqktiDJlEMcJykhPadttiAmPqMKfeeUC00q)Fo62dpKCYSzAcrJjfYKSGGWLJMg6)Ni4HBGt3k4a6bTrYJnqplP6hX(siuclttiAmPqMKfeeUC00q)pLK17OcW1BbePIsamnHOXKczswqq4Yrtd9)Cahz17rSp)uGDp3cbhIPjenMuitYcccxoAAO)NFgRdh1JyFbTHL0YzAcrJjfYKSGGWLJMg6)xqi1diubiettiAmPqMKfeeUC00q)FcPXKIPHPrImvQLeceZgCmfqfS6XunMdyQwoWuHOjltHrmvqvG9r2dgMMq0ysHOlKhlpW0eIgtken0)Nm54aptJezQpYXiMcJykocQ96XunHPswGkOAMsqiEhHYcXu2LWXuzax8mvieyhuD496Xute4yk3CXfptXrOc4GQnmnsKPcrJjfIg6)3z9crJj1ZJrTUvWb05iubCq16IT05iubCq1ghg1rjGuKwMMq0ysHOH(F5WsWINhIeDXw6PVb29aQGQnCeQaoOAJdJ6OeqkKjTuVb29aQGQnCeQaoOAdUsXVK2FyAcrJjfIg6)tinMu6IT0ZtR1WpJ1HJ6rSVG2WsA5MzIwTPljGqqjaJGuoOqG75XwWswby4cjGSu3XYdTPXCWRjphg0bDDs2FyAcrJjfIg6)3Glj4bDXw6ccX7iuwMfes9acvaczwGlWfshPIPjenMuiAO)p7je3JyFTC4bfWPNUyl980AnliK6beQaeYmtyAcrJjfIg6)tMl2QhU4FzFGADXw6sMNwRzbHupGqfGqMzc1sMNwRbHbEiVqifwZmHPjenMuiAO)FXjjE4HRhkjeGUylDjZtR1SGqQhqOcqiZmHAjZtR1GWapKxiKcRzMW0eIgtken0)tjz9oQaC9warQOeGUylDjZtR1SGqQhqOcqiZmHAjZtR1GWapKxiKcRzMW0eIgtken0)BjIjcCVG2WIB4LHGtxSLUK5P1Awqi1diubiKzMqTK5P1AqyGhYlesH1mtyAcrJjfIg6)xisWf)Z6doaPl2sxY80AnliK6beQaeYmtOwY80AnimWd5fcPWAMjmnHOXKcrd9)csjGQ3Ob3Z6doqxSLUK5P1Awqi1diubiKzMqTK5P1AqyGhYlesH1mtO2rAJGucO6nAW9S(GdE55wMf4cCHOllttiAmPq0q)FlhEZktML7zjRa0fBPNNwRzbHupGqplzfGzMW0eIgtken0)ZpJ1HJ6rSVG2WsA56IT0LmpTwZccPEaHkaHmZeQtVXCWRjphgsH(0sA1QTJLhAJCi8TCtIO1HmY(dttiAmPq0q)phWrw9Ee7Zpfy3ZTqWH0fBPlzEATMfes9acvaczMjmnHOXKcrd9)csrRNWsw0lhvbRUyl980AnliK6beQaeY4iuwu7G80AnimWd5fcPWACeklMMq0ysHOH()fes9acvacPl2sxsaHGsagbPCqHa3ZJTGLScWWfsazPwsaHGsaMSNqCpI91YHhuaNEgUqciRwTccX7iuwg(zSoCupI9f0gwsl3SaxGluk0xR280An8ZyD4OEe7lOnSKwUzMOvRGq8ocLLj7je3JyFTC4bfWPNzbUaxiDWlCmnHOXKcrd9)ukhVEkXLtxSLokb8(xhlp0idLYXRNsC5sH(ulzEATgoi6NWdbvWAMjmnHOXKcrd9)te8WnWPBfCa9ajNQOa0BdAt2NGSHxxSLEJ5GxtEomOdzKvRwjDqEATMnOnzFcYg(NdYtR1mt0Qn9owEOnnMdEn5Li6xQKvhPLAhKNwRrqk3u0yQGhUK(CqEATMzYpA1MUKoipTwJGuUPOXubpCj95G80AnZeQZtR1WbCKvVhX(8tb29CleCiZmrR2KfO6XlCgzm8ZyD4OEe7lOnSKwUwTjlq1Jx4mYywqi1diubie1PljGqqjadhWrw9Ee7Zpfy3ZTqWHmCHeqwQLeqiOeGrqkhuiW98ylyjRamCHeq2F(HPjenMuiAO)FIGhUboDRGdOVbxcU4FbxIh3th84X8bveF)GIhxattiAmPq0q))ebpCdCiMMq0ysHOH()SNqCp7C1txSLEEATMfes9acvaczMjmnHOXKcrd9)zyrWkfx86IT0ZtR1SGqQhqOcqiZmHPjenMuiAO)3J5L3ONemD8Cq16IT0ZtR1SGqQhqOcqiJJqzrTdYtR1GWapKxiKcRXrOSyAcrJjfIg6)rjqSpI9LduJjLUyl980AnliK6beQaeY4iuwu7G80AnimWd5fcPWACeklMMq0ysHOH()OeyO6xyByrYjcP6IT0ZtR1SGqQhqOcqiJJqzrTdYtR1GWapKxiKcRXrOSOo9q0yQGhuahgqPqFTAZee6hMMq0ysHOH(FlEHSNqC6IT0ZtR1SGqQhqOcqiZmHPjenMuiAO)pkbG6n8pr496IT0ZtR1SGqQhqOcqiZmHPjenMuiAO)ph8pI91lwifPl2sppTwZccPEaHkaHmocLf1oipTwdcd8qEHqkSghHYI680AnqTbpyMjmnHOXKcrd9)7SEHOXK65XOw3k4a6iCX7Hxhlp0mnmnHOXKcz4iubCq10LdlblEEisyAyAcrJjfYGWfVhEDS8qthHbEiVqifwMMq0ysHmiCX7Hxhlp00q))gCjbpOl2sp980AnliK6beQaeYmt0QnpTwdhWrw9Ee7Zpfy3ZTqWHmZKF0Qn9o8q1g7sA54I)LHfbRuynqfzp40QTdpuTreBf8GbQi7bh1PNNwRbQn4bZcCbUq6Gx40QDdEif0IS)OvBhEOAdxGqHybdur2doQtppTwduBWdMf4cCH0bVWPv7g8qkOfz)5hMMq0ysHmiCX7Hxhlp00q)piHaXSbMMq0ysHmiCX7Hxhlp00q)VGuoGRyAcrJjfYGWfVhEDS8qtd9)zF4autwoDXw6jlq1Jx4m6B2Glj4bMMq0ysHmiCX7Hxhlp00q)VBdEs9wsS6IT0ZtR1a1g8GzMW0eIgtkKbHlEp86y5HMg6)ZEcX1YXlQ1fBPNNwRbQn4bJJqzPvBqByXnyeeV7HAa8p5K(L9eIZSrjnf6Z0eIgtkKbHlEp86y5HMg6)3Ghx8VSNqPUylDH8y5beDzyAcrJjfYGWfVhEDS8qtd9)zpH4A54f1mnHOXKczq4I3dVowEOPH()n4Xf)l7juQl2sVdpuTreBf8GbQi7bNwTP3HhQ2WfiuiwWavK9GJ6n4bDOZY(JwTP3HhQ2yxslhx8VmSiyLcRbQi7bh1BWd6GwK9hMMq0ysHmiCX7Hxhlp00q)pvyrtw9E7ejNPjenMuidcx8E41XYdnn0)J5sGYHl(hvyrtw9yAcrJjfYGWfVhEDS8qtd9)ukhVEkXL76RVda]] )
+
+
 end
