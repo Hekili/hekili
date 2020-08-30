@@ -159,11 +159,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 1,
             max_stack = 1,
         },
-        --dragon_roar = {  No Debuff anymore
-        --    id = 118000,
-        --    duration = 6,
-        --    max_stack = 1,
-        --},
         enrage = {
             id = 184362,
             duration = 4,
@@ -179,11 +174,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 12,
             max_stack = 3,      
         },        
-        --frothing_berserker = { Its a Passive now for refund Rage
-        --    id = 215572,
-        --    duration = 6,
-        --    max_stack = 1,
-        --},
         furious_charge = {
             id = 202225,
             duration = 5,
@@ -229,11 +219,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 10,
             max_stack = 1,
         },
-        --sign_of_the_skirmisher = { Just for Arena Right?
-        --    id = 186401,
-        --   duration = 3600,
-        --    max_stack = 1,
-        --},
         storm_bolt = {
             id = 132169,
             duration = 4,
