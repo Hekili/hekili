@@ -340,7 +340,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         raging_blow = 1,
         rampage = 1,
         siegebreaker = 1,
-        victory_rush = 1
+        victory_rush = 1,
+        onslaught = 1
     }
 
     local whirlwind_gained = 0
