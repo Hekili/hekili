@@ -1133,7 +1133,8 @@ local function forecastResources( resource )
                 ( not v.pvptalent or state.pvptalent[ v.pvptalent ].enabled ) and
                 ( not v.aura      or state[ v.debuff and 'debuff' or 'buff' ][ v.aura ].remains > 0 ) and
                 ( not v.set_bonus or state.set_bonus[ v.set_bonus ] > 0 ) and
-                ( not v.setting   or state.settings[ v.setting ] ) then
+                ( not v.setting   or state.settings[ v.setting ] ) and
+                ( not v.swing     or state.swings[ v.swing .. "_speed" ] and state.swings[ v.swing .. "_speed" ] > 0 ) then
 
                 local r = state[ v.resource ]
 
@@ -5660,7 +5661,7 @@ function state:IsKnown( sID, notoggle )
 
     if ability.known ~= nil then
         if type( ability.known ) == 'number' then
-            return IsPlayerSpell( ability.known ), "IsPlayerSpell"
+            return IsPlayerSpell( ability.known ) or IsSpellKnownOrOverridesKnown( ability.known ), "IsPlayerSpell/IsSpellKnownOrOverridesKnown"
         end
         return ability.known
     end
