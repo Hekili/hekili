@@ -5258,6 +5258,8 @@ function Hekili:SpecializationChanged()
     ns.updateTalents()
     -- ns.updateGear()
 
+    state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
+
     self:UpdateDisplayVisibility()
 
     self:RefreshOptions()
