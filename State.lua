@@ -2906,6 +2906,9 @@ local mt_resource = {
 
         elseif k == 'regen' then
             return ( state.time > 0 and t.active_regen or t.inactive_regen ) or 0
+        
+        elseif k == "modmax" then
+            return t.max
 
         elseif k == 'model' then
             return
@@ -3355,6 +3358,54 @@ state.legendary.no_trait = { rank = 0 }
 -- Essences
 setmetatable( state.essence, mt_artifact_traits )
 state.essence.no_trait = { rank = 0, major = false, minor = false }
+
+
+-- Covenants
+do
+    local CovenantSignatures = {
+        kyrian = { 324739 },
+        necrolord = { 324631 },
+        night_fae = { 310143, 324701 },
+        venthyr = { 300728 },
+    }
+
+    CovenantSignatures[1] = CovenantSignatures.kyrian
+    CovenantSignatures[2] = CovenantSignatures.venthyr
+    CovenantSignatures[3] = CovenantSignatures.night_fae
+    CovenantSignatures[4] = CovenantSignatures.necrolord
+
+    local CovenantKeys = { "kyrian", "venthyr", "night_fae", "necrolord" }
+    local GetActiveCovenantID = C_Covenants.GetActiveCovenantID
+
+    -- v1, no caching.
+    state.covenant = setmetatable( {}, {
+        __index = function( t, k )
+            if type( k ) == "number" then
+                if GetActiveCovenantID() == k then return true end
+                if CovenantSignatures[ k ] then
+                    for _, spell in ipairs( CovenantSignatures[ k ] ) do
+                        if IsSpellKnownOrOverridesKnown( spell ) then return true end
+                    end
+                end
+                return false
+            end
+
+            -- Strings.
+            local myCovenant = GetActiveCovenantID()
+
+            if myCovenant > 0 then
+                return k == CovenantKeys[ myCovenant ]
+            end
+
+            if CovenantSignatures[ k ] then
+                for _, spell in ipairs( CovenantSignatures[ k ] ) do
+                    if IsSpellKnownOrOverridesKnown( spell ) then return true end
+                end
+            end
+            return false
+        end,
+    } )
+end
 
 
 do
@@ -4181,7 +4232,9 @@ local mt_default_action = {
             local a = ability.spend
             if not a then return 0 end
             if type( a ) == 'function' then a = a() end
-            if a > 0 and a < 1 then a = a * state[ ability.spendType or class.primaryResource ].modmax end
+            if a > 0 and a < 1 then
+                a = a * state[ ability.spendType or class.primaryResource ].modmax
+            end
             return a
 
         elseif k == 'in_flight' then
@@ -5157,7 +5210,6 @@ function state.reset( dispName )
             res.actual = UnitPower( 'player', power.type )
             res.max = UnitPowerMax( 'player', power.type )
 
-            res.modmax = res.max
             if k == "mana" and state.spec.arcane then
                 res.modmax = res.modmax / ( 1 + state.mastery_value )
             end
