@@ -826,7 +826,25 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 applyBuff( "dark_transformation" )
                 if azerite.helchains.enabled then applyBuff( "helchains" ) end
                 if talent.unholy_pact.enabled then applyBuff( "unholy_pact" ) end
+
+                if legendary.frenzied_monstrosity.enabled then
+                    applyBuff( "frenzied_monstrosity" )
+                    applyBuff( "frenzied_monstrosity_pet" )
+                end
             end,
+
+            copy = {
+                frenzied_monstrosity = {
+                    id = 334895,
+                    duration = 15,
+                    max_stack = 1,
+                },
+                frenzied_monstrosity = {
+                    id = 334896,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -858,7 +876,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.sudden_doom.up and 0 or 40 end,
+            spend = function () return buff.sudden_doom.up and 0 or ( lggendary.deadliest_coil.enabled and 30 or 40 ) end,
             spendType = "runic_power",
 
             startsCombat = true,
@@ -867,6 +885,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             handler = function ()
                 removeStack( "sudden_doom" )
                 if cooldown.dark_transformation.remains > 0 then setCooldown( 'dark_transformation', cooldown.dark_transformation.remains - 1 ) end
+                if legendary.deadliest_coil.enabled and buff.dark_transformation.up then buff.dark_transformation.expires = buff.dark_transformation.expires + 2 end
+                if legendary.deaths_certainty.enabled then
+                    local spell = conduit.night_fae and "deaths_due" or ( talent.defile.enabled and "defile" or "death_and_decay" )
+                    if cooldown[ spell ].remains > 0 then reduceCooldown( spell, 2 ) end
+                end                
             end,
         },
 
@@ -923,6 +946,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             handler = function ()
                 removeBuff( "dark_succor" )
+
+                if legendary.deaths_certainty.enabled then
+                    local spell = conduit.night_fae and "deaths_due" or ( talent.defile.enabled and "defile" or "death_and_decay" )
+                    if cooldown[ spell ].remains > 0 then reduceCooldown( spell, 2 ) end
+                end                
             end,
         },
 

@@ -927,7 +927,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         frostwyrms_fury = {
             id = 279302,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return legendary.absolute_zero.enabled and 90 or 180 end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -937,7 +937,18 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             handler = function ()
                 applyDebuff( "target", "frost_breath" )
+                
+                if legendary.absolute_zero.enabled then applyDebuff( "target", "absolute_zero" ) end                
             end,
+
+            auras = {
+                -- Legendary.
+                absolute_zero = {
+                    id = 334693,
+                    duration = 3,
+                    max_stack = 1,
+                }
+            }
         },
 
 
@@ -996,6 +1007,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
                 if talent.obliteration.enabled and buff.pillar_of_frost.up then applyBuff( "killing_machine" ) end
                 -- if pvptalent.delirium.enabled then applyDebuff( "target", "delirium" ) end
+
+                if legendary.rage_of_the_frozen_champion.enabled and buff.rime.up then
+                    gain( 8, "runic_power" )
+                end
 
                 removeBuff( "rime" )
             end,
@@ -1088,6 +1103,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             handler = function ()
                 removeStack( "inexorable_assault" )
+                -- Koltira's Favor is not predictable.
             end,
         },
 
@@ -1179,6 +1195,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             handler = function ()
                 applyBuff( "remorseless_winter" )
+
+                if active_enemies > 2 and legendary.biting_cold.enabled then
+                    applyBuff( "rime" )
+                end
+
                 -- if pvptalent.deathchill.enabled then applyDebuff( "target", "deathchill" ) end
             end,
         },
