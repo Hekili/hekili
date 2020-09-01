@@ -246,6 +246,7 @@ local function SimToLua( str, modifier )
     str = str:gsub("^%-%-.-\n", "")
 
     -- Replace '!' with ' not '.
+    str = str:gsub( "!=", "~=" )
     if str:find("!") then str = forgetMeNots( str ) end
 
     -- Replace '>?' and '<?' with max/min.
@@ -451,14 +452,14 @@ do
         -- ["<"] = true,
         ["<="] = true,
         ["="] = true,
-        ["=="] = true
+        ["=="] = true,
     }
 
     local moreOrEqual = {
         -- [">"] = true,
         [">="] = true,
         ["="] = true,
-        ["=="] = true
+        ["=="] = true,
     }
 
 
@@ -474,7 +475,7 @@ do
             expr = expr:sub( 2, -2 )
         end
 
-        local lhs, comp, rhs = expr:match( "^(.-)([<>=?]+)(.-)$" )
+        local lhs, comp, rhs = expr:match( "^(.-)([<>=~?]+)(.-)$" )
 
         if comp and comp:match( "?" ) then
             comp = nil
@@ -588,6 +589,7 @@ do
         [">"] = true,
         ["?"] = true,
         ["="] = true,
+        ["~"] = true,
         ["!"] = true,
      }
 
@@ -599,20 +601,24 @@ do
         ["%"] = true,
         ["<"] = true,
         [">"] = true,
-        ["="] = true
+        ["="] = true,
+        ["~="] = true,
+        ["<="] = true,
+        [">="] = true,
+        [">?"] = true,
+        ["<?"] = true,
      }
 
      local comp_ops = {
         ["<"] = true,
         [">"] = true,
-        ["="] = true,
         ["?"] = true,
      }
 
      local bool_ops = {
          ["|"] = true,
          ["&"] = true,
-         ["!"] = true
+         ["!"] = true,
      }
 
 
@@ -647,8 +653,8 @@ do
         if ors then p = p:gsub( " or ", "|" ) end
         if nots then p = p:gsub( " not ", "!" ) end
 
-        p = p:gsub( "([!%|&%-%+%*=%%/<>%?]) +", "%1" )
-        p = p:gsub( " +([!%|&%-%+%*=%%/<>%?])", "%1" )
+        p = p:gsub( "([!%|&%-%+%*=%%/<>%?%~]+) +", "%1" )
+        p = p:gsub( " +([!%|&%-%+%*=%%/<>%?%~]+)", "%1" )
 
         local orig = p
 
@@ -687,12 +693,12 @@ do
                  if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
               end
 
-              c = p:sub( i ):match( "^([&%|%-%+*%%/><=!%?]+)" )
+              c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~]+)" )
 
               table.insert( results, {
                     s = c,
                     t = "op",
-                    a = c:sub(1,1)
+                    a = c:trim() --sub(1,1)
               } )
 
               p = p:sub( i + c:len() )
@@ -737,7 +743,7 @@ do
                 if ( prev and prev.t == "op" and math_ops[ prev.a ] ) or ( next and next.t == "op" and math_ops[ next.a ] ) then
                     -- This expression is getting mathed.
                     -- Lets see what it returns and wrap it in btoi if it is a boolean expr.
-                    if piece.s:find("^variable") then
+                    if piece.s:find("^variable%.") then
                         -- Let's wrap the variable just to be sure.
                         piece.s = "safenum(" .. piece.s .. ")"
                     else
@@ -748,17 +754,19 @@ do
                             local pass, val = pcall( func )
                             if not pass and not piece.s:match("variable") then
                                 local safepiece = piece.s:gsub( "%%", "%%%%" )
-                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-n)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
-                            else if val == nil or type( val ) == "boolean" then piece.s = "safenum(" .. piece.s .. ")" end end
+                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-n)\n\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
+                            else
+                                if val == nil or type( val ) ~= "number" then piece.s = "safenum(" .. piece.s .. ")" end
+                            end
                         else
                             Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-n)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
                         end
                     end
                     piece.r = nil
 
-                elseif not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] )  ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] ) ) then
+                elseif not numeric and ( not prev or ( prev.t == "op" and not math_ops[ prev.a ] ) ) and ( not next or ( next.t == "op" and not math_ops[ next.a ] ) ) then
                     -- This expression is not having math operations performed on it.
-                    -- Let's make sure it's a boolean.                
+                    -- Let's make sure it's a boolean.
                     if piece.s:find("^variable") then
                         piece.s = "safebool(" .. piece.s .. ")"
                     else    
@@ -775,7 +783,7 @@ do
                         end                        
                     end
                     piece.r = nil
-                end 
+                end
             end
 
            output = output .. piece.s
