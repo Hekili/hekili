@@ -112,6 +112,12 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
     -- Auras
     spec:RegisterAuras( {
+        apexis_empowerment = {
+            id = 337532,
+            duration = 3600,
+            max_stack = 1,
+            -- TODO: Requires Metamorphosis.
+        },
         blade_dance = {
             id = 188499,
             duration = 1,
@@ -755,8 +761,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             id = 195072,
             cast = 0,
             charges = 2,
-            cooldown = function () return legendary.demon_hunter_havoc_power_03_dnt.enabled and 7 or 10 end,
-            recharge = function () return legendary.demon_hunter_havoc_power_03_dnt.enabled and 7 or 10 end,
+            cooldown = function () return legendary.erratic_fel_core.enabled and 7 or 10 end,
+            recharge = function () return legendary.erratic_fel_core.enabled and 7 or 10 end,
             gcd = "spell",
 
             startsCombat = true,

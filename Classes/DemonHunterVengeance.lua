@@ -557,7 +557,16 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyDebuff( "target", "fiery_brand" )
                 if talent.charred_flesh.enabled then applyBuff( "charred_flesh" ) end
+                removeBuff( "spirit_of_the_darkness_flame" )
             end,
+
+            auras = {
+                spirit_of_the_darkness_flame = {
+                    id = 337542,
+                    duration = 3600,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -634,10 +643,20 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyBuff( "immolation_aura" )
 
+                if legendary.cloak_of_fel_flames.enabled then applyBuff( "cloak_of_fel_flames" ) end
+
                 if pvptalent.cleansed_by_flame.enabled then
                     removeDebuff( "player", "reversible_magic" )
                 end
             end,
+
+            auras = {
+                cloak_of_fel_flames = {
+                    id = 217741,
+                    duration = function () return class.auras.immolation_aura.duration end,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -872,9 +891,11 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 end
 
                 if talent.void_reaver.enabled then applyDebuff( "target", "void_reaver" ) end
+                if legendary.fiery_soul.enabled then reduceCooldown( "fiery_brand", 2 * min( 2, buff.soul_fragments.stack ) ) end
+
+                -- Razelikh's is random; can't predict it.
 
                 buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - 2 )
-                if talent.void_reaver.enabled then applyDebuff( "target", "void_reaver" ) end
             end,
         },
 
