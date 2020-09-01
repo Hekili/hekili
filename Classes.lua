@@ -2123,6 +2123,58 @@ do
             end,
         },            
     } )
+
+    all:RegisterAuras( {
+        echo_of_eonar = {
+            id = 338481,
+            duration = 3600,
+            max_stack = 1,
+        },
+        echo_of_eonar_debuff = {
+            id = 338494,
+            duration = 15,
+            max_stack = 1,
+        },
+        echo_of_eonar_buff = {
+            id = 338489,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        maw_rattle = {
+            id = 341617,
+            duration = 10,
+            max_stack = 1
+        },
+
+        sephuzs_proclamation = {
+            id = 339463,
+            duration = 15,
+            max_stack = 1
+        },
+        sephuz_proclamation_icd = {
+            duration = 30,
+            max_stack = 1,
+            -- TODO: Track last application of Sephuz's buff via event and create a generator to manufacture this buff.
+        },
+
+        third_eye_of_the_jailer = {
+            id = 339970,
+            duration = 60,
+            max_stack = 5,
+        },
+
+        vitality_sacrifice_buff = {
+            id = 338746,
+            duration = 60,
+            max_stack = 1,
+        },
+        vitality_sacrifice_debuff = {
+            id = 339131,
+            duration = 60,
+            max_stack = 1
+        }
+    } )
 end
 
 
