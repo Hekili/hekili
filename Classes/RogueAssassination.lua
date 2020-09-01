@@ -175,7 +175,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         prey_on_the_weak = 22115, -- 131511
 
         venom_rush = 22343, -- 152152
-        toxic_blade = 23015, -- 245388
+        alacrity = 23015, -- 193539
         exsanguinate = 22344, -- 200806
 
         poison_bomb = 21186, -- 255544
@@ -228,21 +228,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         end
     } ) )
 
-
-    -- Legendary from Legion, shows up in APL still.
-    spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
-    spec:RegisterAura( "master_assassins_initiative", {
-        id = 235027,
-        duration = 3600
-    } )
-
-    spec:RegisterStateExpr( "mantle_duration", function ()
-        if level > 115 then return 0 end
-
-        if stealthed.mantle then return cooldown.global_cooldown.remains + 5
-        elseif buff.master_assassins_initiative.up then return buff.master_assassins_initiative.remains end
-        return 0
-    end )
 
     spec:RegisterStateExpr( "master_assassin_remains", function ()
         if not talent.master_assassin.enabled then return 0 end
@@ -498,10 +483,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         local a = class.abilities[ ability ]
 
         if stealthed.mantle and ( not a or a.startsCombat ) then
-            if level < 116 and equipped.mantle_of_the_master_assassin then
-                applyBuff( "master_assassins_initiative", 5 )
-            end
-
             if talent.master_assassin.enabled then
                 applyBuff( "master_assassin" )
             end
@@ -545,7 +526,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         crimson_tempest = {
             id = 121411,
-            duration = 14,
+            duration = function () return talent.deeper_stratagem.enabled and 14 or 12 end,
             max_stack = 1,
             meta = {
                 exsanguinated = function ( t ) return t.up and crimson_tempests[ target.unit ] end,                
@@ -555,7 +536,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         crimson_vial = {
             id = 185311,
-            duration = 6,
+            duration = 4,
             max_stack = 1,
         },
         crippling_poison = {
@@ -585,7 +566,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         envenom = {
             id = 32645,
-            duration = 4,
+            duration = function () return talent.deeper_stratagem.enabled and 7 or 6 end,
             type = "Poison",
             max_stack = 1,
         },
@@ -617,7 +598,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         garrote_silence = {
             id = 1330,
-            duration = 3,
+            duration = function () return talent.iron_wire.enabled and 6 or 3 end,
             max_stack = 1,
         },
         hidden_blades = {
@@ -635,11 +616,16 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 tick_time = function ( t )
                     --if not talent.exsanguinate.enabled then return haste end
                     return t.exsanguinated and ( 0.5 * haste ) or haste end,
-            },                    
+            },
+        },
+        iron_wire = {
+            id = 256148,
+            duration = 8,
+            max_stack = 1,
         },
         kidney_shot = {
             id = 408,
-            duration = 1,
+            duration = function () return talent.deeper_stratagem.enabled and 7 or 6 end,
             max_stack = 1,
         },
         lethal_poison = {
@@ -654,12 +640,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
         master_assassin = {
             id = 256735,
-            duration = 5,
-            max_stack = 3,
-        },
-        master_assassins_initiative = {
-            id = 235027,
-            duration = 5,
+            duration = 3,
             max_stack = 1,
         },
         prey_on_the_weak = {
@@ -679,9 +660,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     return t.exsanguinated and haste or ( 2 * haste ) end,
             },                    
         },
-        seal_fate = {
-            id = 14190,
-        },
         shadowstep = {
             id = 36554,
             duration = 2,
@@ -692,10 +670,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 15,
             max_stack = 1,
         },
-        sign_of_battle = {
-            id = 186403,
-            duration = 3600,
-            max_stack = 1,
+        slice_and_dice = {
+            id = 315496,
+            duration = function () return talent.deeper_stratagem.enabled and 42 or 36 end,
+            max_stack = 1
         },
         sprint = {
             id = 2983,
@@ -711,11 +689,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         subterfuge = {
             id = 115192,
             duration = 3,
-            max_stack = 1,
-        },
-        toxic_blade = {
-            id = 245389,
-            duration = 9,
             max_stack = 1,
         },
         tricks_of_the_trade = {
@@ -822,27 +795,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             handler = function ()
                 applyDebuff( "target", "blind" )
-                -- applies blind (2094)
-            end,
-        },
-
-
-        blindside = {
-            id = 111240,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = function () return buff.blindside.up and 0 or 30 end,
-            spendType = "energy",
-
-            startsCombat = true,
-            texture = 236274,
-
-            usable = function () return buff.blindside.up or target.health_pct < 30 end,
-            handler = function ()
-                gain( 1, "combo_points" )
-                removeBuff( "blindside" )
             end,
         },
 
@@ -936,6 +888,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 1373904,
 
+            toggle = "defensives",
+
             handler = function ()
                 applyBuff( "crimson_vial" )
             end,
@@ -1008,7 +962,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = true,
             texture = 132287,
 
-            usable = function () return combo_points.current > 0 end,
+            usable = function () return combo_points.current > 0, "requires combo_points" end,
 
             handler = function ()
                 if pvptalent.system_shock.enabled then
@@ -1143,7 +1097,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 gain( 1, "combo_points" )
 
                 if stealthed.rogue then
-                    applyDebuff( "target", "garrote_silence" ) 
+                    applyDebuff( "target", "garrote_silence" )
+                    if talent.iron_wire.enabled then applyDebuff( "target", "iron_wire" ) end
 
                     if azerite.shrouded_suffocation.enabled then
                         gain( 2, "combo_points" )
@@ -1313,7 +1268,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cycle = "rupture",
 
             usable = function () return combo_points.current > 0 end,
-            remains = function () return remains - ( duration * 0.3 ), remains - tick_time, remains - tick_time * 2, remains, cooldown.exsanguinate.remains - 1, 10 - time end,
             handler = function ()
                 applyDebuff( "target", "rupture", min( dot.rupture.remains, class.auras.rupture.duration * 0.3 ) + 4 + ( 4 * combo_points.current ) )
                 debuff.rupture.pmultiplier = persistent_multiplier
@@ -1340,7 +1294,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = true,
             texture = 132310,
 
-            usable = function () return stealthed.all end,
+            usable = function () return stealthed.all, "requires stealth" end,
             handler = function ()
                 applyDebuff( "target", "sap" )
             end,
@@ -1369,6 +1323,39 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 setDistance( 5 )
             end,
         },
+        
+
+        shiv = {
+            id = 5938,
+            cast = 0,
+            cooldown = 25,
+            gcd = "spell",
+            
+            spend = 20,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 135428,
+            
+            handler = function ()
+                gain( 1, "combo_point" )
+                applyDebuff( "target", "crippling_poison_shiv" )
+                applyDebuff( "target", "shiv" )
+            end,
+
+            auras = {
+                crippling_poison_shiv = {
+                    id = 319504,
+                    duration = 9,
+                    max_stack = 1,        
+                },
+                shiv = {
+                    id = 319504,
+                    duration = 9,
+                    max_stack = 1,
+                },
+            }
+        },
 
 
         shroud_of_concealment = {
@@ -1380,7 +1367,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 635350,
 
-            usable = function () return stealthed.all end,
+            usable = function () return stealthed.all, "requires stealth" end,
             handler = function ()
                 applyBuff( "shroud_of_concealment" )
             end,
@@ -1411,30 +1398,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = false,
             texture = 132320,
 
-            usable = function () return time == 0 and not buff.stealth.up and not buff.vanish.up end,            
+            usable = function () return time == 0 and not buff.stealth.up and not buff.vanish.up, "requires out of combat and not stealthed" end,            
             handler = function ()
                 applyBuff( "stealth" )
-            end,
-        },
-
-
-        toxic_blade = {
-            id = 245388,
-            cast = 0,
-            cooldown = 25,
-            gcd = "spell",
-
-            spend = 20,
-            spendType = "energy",
-
-            startsCombat = true,
-            texture = 135697,
-
-            talent = "toxic_blade",
-
-            handler = function ()
-                applyDebuff( "target", "toxic_blade" )
-                gain( 1, "combo_points" )
             end,
         },
 
@@ -1464,7 +1430,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132331,
 
             disabled = function ()
-                return not ( boss and group )
+                return not ( boss and group ), "can only vanish in a boss encounter or with a group"
             end,
 
             handler = function ()
@@ -1496,6 +1462,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
             end,
         },
+
 
         wound_poison = {
             id = 8679,
