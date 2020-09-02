@@ -257,6 +257,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             max_stack = 1,
         },
 
+        relentless_inquisitor = {
+            id = 337315,
+            duration = 12,
+            max_stack = 5,
+        },
+
         retribution_aura = {
             id = 183435,
             duration = 3600,
@@ -289,6 +295,12 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
         shield_of_vengeance = {
             id = 184662,
+            duration = 15,
+            max_stack = 1,
+        },
+
+        the_magistrates_judgment = {
+            id = 337682,
             duration = 15,
             max_stack = 1,
         },
@@ -412,6 +424,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             return amt * 3, resource, overcap
         end
     end )
+
     
     spec:RegisterHook( 'spend', function( amt, resource )
         if amt > 0 and resource == "holy_power" then
@@ -421,7 +434,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             if talent.fist_of_justice.enabled then
                 setCooldown( "hammer_of_justice", max( 0, cooldown.hammer_of_justice.remains - 2 * amt ) )
             end
-            if legendary.uthers_guard.enabled then
+            if legendary.uthers_devotion.enabled then
                 setCooldown( "blessing_of_freedom", max( 0, cooldown.blessing_of_freedom.remains - 1 ) )
                 setCooldown( "blessing_of_protection", max( 0, cooldown.blessing_of_protection.remains - 1 ) )
                 setCooldown( "blessing_of_sacrifice", max( 0, cooldown.blessing_of_sacrifice.remains - 1 ) )
@@ -478,7 +491,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         avenging_wrath = {
             id = 31884,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( level > 42 and 120 or 180 ) end,
             gcd = "spell",
 
             toggle = 'cooldowns',
@@ -492,10 +505,6 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             handler = function ()
                 applyBuff( 'avenging_wrath' )
                 applyBuff( "avenging_wrath_crit" )
-
-                if talent.liadrins_fury_reborn.enabled then
-                    gain( 5, "holy_power" )
-                end
             end,
         },
 
@@ -737,8 +746,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             id = 190784,
             cast = 0,
             charges = function () return talent.cavalier.enabled and 2 or nil end,
-            cooldown = 45,
-            recharge = 45,
+            cooldown = function () return level > 48 and 30 or 45 end,
+            recharge = function () return level > 48 and 30 or 45 end,
             gcd = "spell",
 
             startsCombat = false,
@@ -759,7 +768,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
                 if buff.empyrean_power.up then return 0 end
-                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_arbiters_judgment.up and 1 or 0 )
+                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_arbiters_judgment.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -789,7 +798,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_arbiters_judgment.up and 1 or 0 )
+                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_arbiters_judgment.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -905,7 +914,9 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         hammer_of_wrath = {
             id = 24275,
             cast = 0,
+            charges = function () return legendary.vanguards_momentum.enabled and 3 or nil end,
             cooldown = function () return 7.5 * haste end,
+            recharge = function () return legendary.vanguards_momentum.enabled and ( 7.5 * haste ) or nil end,
             gcd = "spell",
 
             spend = -1,
@@ -918,9 +929,9 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             handler = function ()
                 removeBuff( "final_verdict" )
 
-                if legendary.badge_of_the_mad_paragon.enabled then
-                    if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 3 end
-                    if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 3 end
+                if legendary.the_mad_paragon.enabled then
+                    if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 1 end
+                    if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 1 end
                 end
             end,
         },
@@ -999,8 +1010,6 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 if set_bonus.tier20_2pc > 0 then applyBuff( 'sacred_judgment' ) end
                 if set_bonus.tier21_4pc > 0 then applyBuff( 'hidden_retribution_t21_4p', 15 ) end
                 if talent.sacred_judgment.enabled then applyBuff( 'sacred_judgment' ) end
-
-                -- TODO: Legendary
             end,
         },
 
@@ -1013,7 +1022,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 5 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 )
+                return 5 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -1131,7 +1140,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 45,
             gcd = "spell",
 
-            spend = 3,
+            spend = function () return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 ) end,
             spendType = "holy_power",
 
             talent = 'seraphim',
@@ -1152,7 +1161,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 1,
             gcd = "spell",
             
-            spend = 3,
+            spend = function () return 3  - ( buff.the_magistrates_judgment.up and 1 or 0 ) end,
             spendType = "holy_power",
             
             startsCombat = true,
@@ -1191,7 +1200,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 )
+                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -1222,7 +1231,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             cooldown = 30,
             gcd = "spell",
 
-            spend = 1,
+            spend = function () return 1 - ( buff.the_magistrates_judgment.up and 1 or 0 ) end,
             spendType = "holy_power",
 
             startsCombat = true,
@@ -1280,7 +1289,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 )
+                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 

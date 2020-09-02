@@ -1068,7 +1068,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         hunters_mark = {
             id = 257284,
             cast = 0,
-            cooldown = 0,
+            cooldown = 20,
             gcd = "spell",
             
             startsCombat = true,

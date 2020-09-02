@@ -201,7 +201,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     local spendHook = function( amt, resource, noHook )
         if amt > 0 and resource == "runic_power" and buff.breath_of_sindragosa.up and runic_power.current < 16 then
             removeBuff( "breath_of_sindragosa" )
-            gain( 2, "runes" )
+        end
+
+        if amt > 0 and resource == "runes" and active_dot.shackle_the_unworthy > 0 then
+            reduceCooldown( "shackle_the_unworthy", 4 * amt )
         end
     end
 

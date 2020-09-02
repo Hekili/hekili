@@ -24,7 +24,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         forceful_winds = 22355, -- 262647
         elemental_blast = 22353, -- 117014
 
-        stormfury = 22636, -- 334175
+        stormflurry = 22636, -- 344357
         hot_hand = 23462, -- 201900
         ice_strike = 23109, -- 342240
 
@@ -424,7 +424,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         },
 
         windfury_weapon = {
-            duration = 1800,
+            duration = 3600,
             max_stack = 1,
         },
 

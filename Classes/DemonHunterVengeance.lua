@@ -365,27 +365,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
     spec:RegisterGear( "convergence_of_fates", 140806 )
 
-    spec:RegisterGear( "achor_the_eternal_hunger", 137014 )
-    spec:RegisterGear( "anger_of_the_halfgiants", 137038 )
-    spec:RegisterGear( "chaos_theory", 151798 )
-    spec:RegisterGear( "cloak_of_fel_flames", 137066 )
-    spec:RegisterGear( "cinidaria_the_symbiote", 133976 )
-    spec:RegisterGear( "delusions_of_grandeur", 144279 )
-    spec:RegisterGear( "fragment_of_the_betrayers_prison", 138854 )
-    spec:RegisterGear( "kirel_narak", 138949 )
-    spec:RegisterGear( "loramus_thalipedes_sacrifice", 137022 )
-    spec:RegisterGear( "moarg_bionic_stabilizers", 137090 )
-    spec:RegisterGear( "oblivions_embrace", 151799 )
-    spec:RegisterGear( "raddons_cascading_eyes", 137061 )
-    spec:RegisterGear( "runemasters_pauldrons", 137071 )
-    spec:RegisterGear( "soul_of_the_slayer", 151639 )
-    spec:RegisterGear( "spirit_of_the_darkness_flame", 144292 )
-        spec:RegisterAura( "spirit_of_the_darkness_flame", {
-            id = 235543,
-            duration = 3600,
-            max_stack = 15
-        } )
-
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -579,7 +558,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             hasteCD = true,
             gcd = "spell",
 
-            spend = function () return buff.metamorphosis.up and -45 or -25 end,
+            spend = function () return level > 47 and buff.metamorphosis.up and -45 or -25 end,
             spendType = "fury",            
 
             startsCombat = true,
@@ -643,7 +622,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyBuff( "immolation_aura" )
 
-                if legendary.cloak_of_fel_flames.enabled then applyBuff( "cloak_of_fel_flames" ) end
+                if legendary.fel_flame_fortification.enabled then applyBuff( "fel_flame_fortification" ) end
 
                 if pvptalent.cleansed_by_flame.enabled then
                     removeDebuff( "player", "reversible_magic" )
@@ -651,8 +630,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             end,
 
             auras = {
-                cloak_of_fel_flames = {
-                    id = 217741,
+                fel_flame_fortification = {
+                    id = 337546,
                     duration = function () return class.auras.immolation_aura.duration end,
                     max_stack = 1
                 }
@@ -752,7 +731,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.metamorphosis.up and -30 or -10 end,
+            spend = function () return level > 47 and buff.metamorphosis.up and -30 or -10 end,
             spendType = "fury",
 
             startsCombat = true,

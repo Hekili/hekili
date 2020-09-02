@@ -784,6 +784,25 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
     -- Abilities
     spec:RegisterAbilities( {
+        ambush = {
+            id = 8676,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = function () return buff.blindside.up and 0 or 50 end,
+            spendType = "energy",
+            
+            startsCombat = true,
+            texture = 132282,
+            
+            usable = function () return stealth.all or buff.blindside.up, "requires stealth or blindside proc" end,
+            handler = function ()
+                gain( 2, "combo_points" )
+            end,
+        },
+        
+        
         blind = {
             id = 2094,
             cast = 0,
@@ -1097,7 +1116,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 gain( 1, "combo_points" )
 
                 if stealthed.rogue then
-                    applyDebuff( "target", "garrote_silence" )
+                    if level > 45 then applyDebuff( "target", "garrote_silence" ) end
                     if talent.iron_wire.enabled then applyDebuff( "target", "iron_wire" ) end
 
                     if azerite.shrouded_suffocation.enabled then

@@ -114,6 +114,20 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             interval = function () return 1.5 * state.haste end,
             value = function () return ( state.buff.surrender_to_madness.up and 6 or 3 ) end,
         },
+
+        death_and_madness = {
+            aura = "death_and_madness",
+
+            last = function ()
+                local app = state.buff.death_and_madness.applied
+                local t = state.query_time
+
+                return app + floor( t - app )
+            end,
+
+            interval = 1,
+            value = 1,
+        }
     } )
     spec:RegisterResource( Enum.PowerType.Mana )
 

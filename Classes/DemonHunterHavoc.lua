@@ -112,11 +112,11 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
     -- Auras
     spec:RegisterAuras( {
-        apexis_empowerment = {
+        halfgiant_empowerment = {
             id = 337532,
             duration = 3600,
             max_stack = 1,
-            -- TODO: Requires Metamorphosis.
+            -- TODO: Requires
         },
         blade_dance = {
             id = 188499,
@@ -1169,6 +1169,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             handler = function ()
                 applyDebuff( "target", "the_hunt" )
+                setDistance( 5 )
             end,
 
             auras = {

@@ -176,8 +176,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         steady_focus = {
             id = 193534,
-            duration = 10,
-            max_stack = 2,
+            duration = 15,
+            max_stack = 1,
         },
         streamline = {
             id = 342076,
@@ -595,7 +595,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         hunters_mark = {
             id = 257284,
             cast = 0,
-            cooldown = 0,
+            cooldown = 20,
             gcd = "spell",
 
             startsCombat = false,
@@ -716,7 +716,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 if talent.steady_focus.enabled and prev_gcd[1].steady_shot and action.steady_shot.lastCast > last_steady_focus then
-                    addStack( "steady_focus", nil, 1 )
+                    applyBuff( "steady_focus" )
                     last_steady_focus = query_time
                 end
                 if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 3 end

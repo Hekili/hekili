@@ -119,7 +119,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     spec:RegisterPvpTalents( {         
         barbarian = 166, -- 280745
         battle_trance = 170, -- 213857
-        blood_rage = 172, -- 329038
+        bloodrage = 172, -- 329038
         death_sentence = 25, -- 198500
         death_wish = 179, -- 199261
         demolition = 5373, -- 329033
@@ -430,6 +430,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyBuff( "whirlwind", buff.whirlwind.remains, whirlwind_stacks )
             end
         end
+
+        if legendary.will_of_the_berserker.enabled and buff.recklessness.up then
+            applyBuff( "will_of_the_berserker" )
+            buff.will_of_the_berserker.applied = buff.recklessness.expires
+            buff.will_of_the_berserker.expires = buff.recklessness.expires + 8
+        end
     end )    
 
 
@@ -519,7 +525,19 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     applyDebuff( "target", "gushing_wound" )
                     gain( 4, "rage" )
                 end
+
+                if legendary.cadence_of_fujieda.enabled then
+                    addStack( "cadence_of_fujieda", nil, 1 )
+                end
             end,
+
+            auras = {
+                cadence_of_fujieda = {
+                    id = 335558,
+                    duration = 8,
+                    max_stack = 4,
+                },
+            }
         },
 
 
@@ -752,6 +770,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 removeStack( "whirlwind" )
+
+                if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = buff.will_of_the_berserker.expires + 8 end
             end,
         },
 
@@ -803,16 +823,26 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             toggle = "cooldowns",
 
-            spend = -40,
-            spendType = "rage",
-
             startsCombat = false,
             texture = 458972,
 
             handler = function ()
                 applyBuff( "recklessness" )
-                if talent.reckless_abandon.enabled then gain( 20, "rage" ) end --generates 20 more Rage 
+                if talent.reckless_abandon.enabled then gain( 20, "rage" ) end
+                if legendary.will_of_the_berserker.enabled then
+                    applyBuff( "will_of_the_berserker" )
+                    buff.will_of_the_berserker.applied = buff.recklessness.expires
+                    buff.will_of_the_berserker.expires = buff.recklessness.expires + 8
+                end
             end,
+
+            auras = {
+                will_of_the_berserker = {
+                    id = 335597,
+                    duration = 8,
+                    max_stack = 1
+                }
+            }
         },
 
         shattering_throw = {

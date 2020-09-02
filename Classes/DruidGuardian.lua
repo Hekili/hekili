@@ -540,7 +540,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         berserk = {
             id = 50334,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return legendary.legacy_of_the_sleeper.enabled and 150 or 180 end,
             gcd = "spell",
             
             toggle = "cooldowns",
@@ -713,8 +713,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 22842,
             cast = 0,
             charges = 2,
-            cooldown = function () return buff.berserk.up and 18 or 36 end,
-            recharge = function () return buff.berserk.up and 18 or 36 end,
+            cooldown = function () return buff.berserk.up and ( level > 57 and 9 or 18 ) or 36 end,
+            recharge = function () return buff.berserk.up and ( level > 57 and 9 or 18 ) or 36 end,
             hasteCD = true,
             gcd = "spell",
 
@@ -740,7 +740,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         growl = {
             id = 6795,
             cast = 0,
-            cooldown = function () return buff.berserk.up and 4 or 8 end,
+            cooldown = function () return buff.berserk.up and ( level > 57 and 2 or 4 ) or 8 end,
             gcd = "spell",
 
             nopvptalent = "alpha_challenge",
@@ -948,7 +948,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         mangle = {
             id = 33917,
             cast = 0,
-            cooldown = function () return buff.berserk.up and 3 or 6 end,
+            cooldown = function () return buff.berserk.up and ( level > 57 and 1.5 or 3 ) or 6 end,
             gcd = "spell",
 
             spend = function () return buff.gore.up and -19 or -15 end,
@@ -1569,7 +1569,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             known = 106832,
             suffix = "(Bear)",
             cast = 0,
-            cooldown = function () return buff.berserk.up and 3 or 6 end,
+            cooldown = function () return buff.berserk.up and ( level > 57 and 1.5 or 3 ) or 6 end,
             gcd = "spell",
 
             spend = -5,

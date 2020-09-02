@@ -177,6 +177,15 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         end
     end )
 
+    
+    local spendHook = function( amt, resource, noHook )
+        if amt > 0 and resource == "runes" and active_dot.shackle_the_unworthy > 0 then
+            reduceCooldown( "shackle_the_unworthy", 4 * amt )
+        end
+    end
+
+    spec:RegisterHook( "spend", spendHook )
+
 
     -- Talents
     spec:RegisterTalents( {
@@ -655,6 +664,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                     apply_festermight( debuff.festering_wound.stack )
                     removeDebuff( "target", "festering_wound" )
                 end
+
+                if level > 57 then gain( 2, "runes" ) end
 
                 if pvptalent.necromancers_bargain.enabled then applyDebuff( "target", "crypt_fever" ) end
             end,

@@ -472,7 +472,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             recharge = 8,
             gcd = "spell",
             
-            spend = 0.01,
+            spend = 0.013,
             spendType = "mana",
             
             startsCombat = true,

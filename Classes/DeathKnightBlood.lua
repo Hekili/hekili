@@ -165,7 +165,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         if amt > 0 and resource == "runic_power" and talent.red_thirst.enabled then
             cooldown.vampiric_blood.expires = max( 0, cooldown.vampiric_blood.expires - amt / 10 )
         elseif resource == "rune" and amt > 0 and active_dot.shackle_the_unworthy > 0 then
-            reduceCooldown( "shackle_the_unworthy", 4 )
+            reduceCooldown( "shackle_the_unworthy", 4 * amt )
         end
     end
 
@@ -1224,9 +1224,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         rune_tap = {
             id = 194679,
             cast = 0,
-            charges = 2,
+            charges = function () return level > 43 and 2 or nil end,
             cooldown = 25,
-            recharge = 25,
+            recharge = function () return level > 43 and 25 or nil end,
             gcd = "spell",
 
             spend = 1,

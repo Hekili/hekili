@@ -738,7 +738,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 applyBuff( "celestial_alignment" )
-                gain( 40, "astral_power" )
+                stat.haste = stat.haste + 0.15
+
                 if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
             end,
 
@@ -1057,6 +1058,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 shift( "moonkin_form" )
                 
                 applyBuff( "incarnation" )
+                stat.crit = stat.crit + 0.10
 
                 if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
             end,

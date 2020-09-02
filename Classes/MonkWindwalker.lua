@@ -418,34 +418,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             end,
         },
 
-        recently_rushing_tiger_palm = {
-            id = 337341,
-            duration = 30,
-            max_stack = 1,
-        },
-
-        rushing_tiger_palm = {
-            duration = 6,
-            max_stack = 1,
-            generate = function( t, auraType )
-                local rrtp = debuff.recently_rushing_tiger_palm.remains
-
-                if rrtp > 24 then
-                    t.count = 1
-                    t.expires = query_time + rrtp - 24
-                    t.applied = debuff.recently_rushing_tiger_palm.applied
-                    t.caster = "player"
-
-                    return
-                end
-
-                t.count = 0
-                t.expires = 0
-                t.applied = 0
-                t.caster = "nobody"
-            end
-        },
-
         chi_energy = {
             id = 337571,
             duration = 45,
@@ -992,7 +964,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         paralysis = {
             id = 115078,
             cast = 0,
-            cooldown = 45,
+            cooldown = function () return level > 55 and 30 or 45 end,
             gcd = "spell",
 
             spend = 0,
@@ -1333,9 +1305,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     applyDebuff( "target", "recently_challenged" )
                 end
 
-                if legendary.rushing_tiger_palm.enabled and target.minR >= 10 then
+                if legendary.rushing_tiger_palm.enabled and debuff.recently_rushing_tiger_palm.down then
                     setDistance( 5 )
-                    applyDebuff( "target", "rushing_tiger_palm" )
+                    applyDebuff( "target", "keefers_skyreach" )
                     applyDebuff( "target", "recently_rushing_tiger_palm" )
                 end
 
@@ -1343,6 +1315,19 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
                 applyDebuff( "target", "mark_of_the_crane" )
             end,
+
+            auras = {
+                keefers_skyreach = {
+                    id = 344021,
+                    duration = 6,
+                    max_stack = 1,
+                },
+                recently_rushing_tiger_palm = {
+                    id = 337341,
+                    duration = 30,
+                    max_stack = 1,
+                },                
+            }
         },
 
 
@@ -1395,11 +1380,20 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             cycle = "touch_of_death",
 
-            usable = function () return target.is_player and target.health.pct < 35 or target.health.pct < 15, "requires low health target" end,
+            usable = function () return target.health.pct < 15, "requires low health target" end,
 
             handler = function ()
                 applyDebuff( "target", "touch_of_death" )
+                if level > 51 then applyBuff( "touch_of_death_buff" ) end
             end,
+
+            auras = {
+                touch_of_death_buff = {
+                    id = 344361,
+                    duration = 8,
+                    max_stack = 1
+                }
+            }
         },
 
 
