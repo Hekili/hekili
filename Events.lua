@@ -687,8 +687,8 @@ do
         [6830] = { "glacial_fragments", 1, 64 }, -- 327492
 
         -- Paladin/Holy
-        [7053] = { "uthers_guard", 1, 65 }, -- 337600
-        [7054] = { "liadrins_fury_reborn", 1, 65 }, -- 337638
+        [7053] = { "uthers_devotion", 1, 65 }, -- 337600
+        [7054] = { "vanguards_momentum", 1, 65 }, -- 337638
         [7055] = { "of_dusk_and_dawn", 1, 65 }, -- 337746
         [7056] = { "the_magistrates_judgment", 1, 65 }, -- 337681
         [7057] = { "shadowbreaker_dawn_of_the_sun", 1, 65 }, -- 337812
@@ -704,7 +704,7 @@ do
 
         -- Paladin/Retribution
         [7064] = { "final_verdict", 1, 70 }, -- 337247
-        [7065] = { "badge_of_the_mad_paragon", 1, 70 }, -- 337594
+        [7065] = { "the_mad_paragon", 1, 70 }, -- 337594
         [7066] = { "relentless_inquisitor", 1, 70 }, -- 337297
         [7067] = { "tempest_of_the_lightbringer", 1, 70 }, -- 337257
 
@@ -913,9 +913,9 @@ do
         [7075] = { "ancient_teachings_of_the_monastery", 1, 270 }, -- 337172
 
         -- Demon Hunter/Havoc
-        [7041] = { "sigil_of_the_illidari", 1, 577 }, -- 337504
-        [7042] = { "apexis_empowerment", 1, 577 }, -- 337532
-        [7043] = { "darkglare_medallion", 1, 577 }, -- 337534
+        [7041] = { "collective_anguish", 1, 577 }, -- 337504
+        [7042] = { "halfgiant_empowerment", 1, 577 }, -- 337532
+        [7043] = { "darkglare_boon", 1, 577 }, -- 337534
         [7044] = { "darkest_hour", 1, 577 }, -- 337539
         [7049] = { "inner_demons", 1, 577 }, -- 337548
         [7050] = { "chaos_theory", 1, 577 }, -- 337551
