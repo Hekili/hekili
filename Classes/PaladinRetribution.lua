@@ -492,7 +492,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             id = 31884,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( level > 42 and 120 or 180 ) end,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = 'cooldowns',
             notalent = 'crusade',
@@ -655,7 +655,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             id = 231895,
             cast = 0,
             cooldown = 120,
-            gcd = "spell",
+            gcd = "off",
 
             talent = 'crusade',
             toggle = 'cooldowns',
@@ -977,7 +977,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             id = 105809,
             cast = 0,
             cooldown = 180,
-            gcd = "spell",
+            gcd = "off",
             
             toggle = "cooldowns",
             talent = "holy_avenger",

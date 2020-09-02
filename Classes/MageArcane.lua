@@ -579,7 +579,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             id = 12042,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
             nobuff = "arcane_power", -- don't overwrite a free proc.

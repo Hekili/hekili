@@ -1190,7 +1190,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 152173,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
 
@@ -1259,7 +1259,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
             charges = 2,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 90 end,
             recharge = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 90 end,
-            gcd = "spell",
+            icd = 1, -- guessing.
+            gcd = "off",
 
             toggle = "cooldowns",
 

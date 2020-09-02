@@ -476,7 +476,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             id = 108281,
             cast = 0,
             cooldown = 120,
-            gcd = "spell",
+            gcd = "off",
 
             talent = "ancestral_guidance",
             toggle = "defensives",

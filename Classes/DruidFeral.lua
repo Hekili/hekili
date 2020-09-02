@@ -758,7 +758,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 106951,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = false,
             texture = 236149,
@@ -1050,7 +1050,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 102543,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = false,
             texture = 571586,
@@ -2153,7 +2153,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 323546,
             cast = 0,
             cooldown = 180,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = true,
             texture = 3565718,

@@ -541,7 +541,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 50334,
             cast = 0,
             cooldown = function () return legendary.legacy_of_the_sleeper.enabled and 150 or 180 end,
-            gcd = "spell",
+            gcd = "off",
             
             toggle = "cooldowns",
 

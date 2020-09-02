@@ -727,7 +727,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 194223,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
 
@@ -1042,7 +1042,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 102560,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.85 or 1 ) * 180 end,
-            gcd = "spell",
+            gcd = "off",
 
             spend = -40,
             spendType = "astral_power",

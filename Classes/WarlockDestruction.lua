@@ -678,7 +678,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             id = 113858,
             cast = 0,
             cooldown = 120,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
 

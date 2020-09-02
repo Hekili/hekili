@@ -1463,7 +1463,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             id = 79140,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
 

@@ -339,7 +339,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 107574,
             cast = 0,
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
-            gcd = "spell",
+            gcd = "off",
 
             spend = -30,
             spendType = "rage",

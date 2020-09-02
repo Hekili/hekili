@@ -430,7 +430,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 107574,
             cast = 0,
             cooldown = 90,
-            gcd = "spell",
+            gcd = "off",
 
             spend = -20,
             spendType = "rage",
@@ -1069,6 +1069,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "sweeping_strikes" )
+                setCooldown( "global_cooldown", 0.75 ) -- Might work?
             end,
         },
 
