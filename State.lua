@@ -5211,7 +5211,7 @@ function state.reset( dispName )
             res.max = UnitPowerMax( 'player', power.type )
 
             if k == "mana" and state.spec.arcane then
-                res.modmax = res.modmax / ( 1 + state.mastery_value )
+                res.modmax = res.max / ( 1 + state.mastery_value )
             end
 
             res.last_tick = rawget( res, 'last_tick' ) or 0
