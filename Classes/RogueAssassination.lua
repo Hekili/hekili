@@ -744,6 +744,20 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             no_ticks = true,
         },
 
+
+        lethal_poison = {
+            alias = { "deadly_poison", "wound_poison" },
+            aliasMode = "first",
+            aliasType = "buff",
+            duration = 3600,
+        },
+        nonlethal_poison = {
+            alias = { "crippling_poison", "numbing_poison" },
+            aliasMode = "first",
+            aliasType = "buff",
+            duration = 3600,
+        },
+
         -- Azerite Powers
         nothing_personal = {
             id = 286581,
@@ -925,7 +939,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             essential = true,
 
             texture = 132274,
-            nobuff = "crippling_poison",
+
+            readyTime = function () return buff.nonlethal_poison.remains - 120 end,
 
             handler = function ()
                 applyBuff( "crippling_poison" )
@@ -943,7 +958,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             essential = true,
             texture = 132290,
 
-            nobuff = "deadly_poison",
+            
+            readyTime = function () return buff.lethal_poison.remains - 120 end,
 
             handler = function ()
                 applyBuff( "deadly_poison" )
@@ -1224,6 +1240,23 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
 
 
+        numbing_poison = {
+            id = 5761,
+            cast = 1,
+            cooldown = 0,
+            gcd = "spell",
+
+            startsCombat = false,
+            texture = 136066,
+
+            readyTime = function () return buff.nonlethal_poison.remains - 120 end,
+
+            handler = function ()
+                applyBuff( "numbing_poison" )
+            end,
+        },
+
+
         --[[ pick_lock = {
             id = 1804,
             cast = 1.5,
@@ -1493,8 +1526,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             essential = true,
 
             texture = 134197,
-            nobuff = "wound_poison",
 
+            readyTime = function () return buff.lethal_poison.remains - 120 end,
+            
             handler = function ()
                 applyBuff( "wound_poison" )
             end,
@@ -1588,7 +1622,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
         -- Rogue - Night Fae - 328305 - sepsis               (Sepsis)
         sepsis = {
-            id = 313347,
+            id = 328305,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
