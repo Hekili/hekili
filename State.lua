@@ -5986,6 +5986,10 @@ function state:TimeToReady( action, pool )
         wait = max( wait, self.buff[ ability.nobuff ].remains )
     end
 
+    if ability.nodebuff and self.debuff[ ability.nodebuff ].up then
+        wait = max( wait, self.debuff[ ability.nodebuff ].remains )
+    end
+
     -- Need to house this in an encounter module, really.
     if self.debuff.repeat_performance.up and self.prev[1][ action ] then
         wait = max( wait, self.debuff.repeat_performance.remains )
