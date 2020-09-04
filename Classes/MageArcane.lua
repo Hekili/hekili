@@ -759,6 +759,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         arcane_missiles = {
             id = 5143,
             cast = function () return ( buff.clearcasting.up and 0.8 or 1 ) * 2.5 * haste end,
+            channeled = true,
             cooldown = 0,
             gcd = "spell",
 
@@ -770,9 +771,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 136096,
 
-            handler = function ()
-                removeBuff( "rule_of_threes" )
-                removeStack( "clearcasting" )
+            start = function ()
+                if buff.rule_of_threes.up then removeBuff( "rule_of_threes" )
+                else removeStack( "clearcasting" ) end
             end,
         },
 
@@ -1012,8 +1013,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 applyBuff( "focus_magic" )
             end,
         },
-
-
 
 
         frostbolt = {
