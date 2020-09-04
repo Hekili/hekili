@@ -811,9 +811,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = true,
             texture = 132282,
             
-            usable = function () return stealth.all or buff.blindside.up, "requires stealth or blindside proc" end,
+            usable = function () return stealthed.all or buff.blindside.up, "requires stealth or blindside proc" end,
             handler = function ()
                 gain( 2, "combo_points" )
+                removeBuff( "blindside" )
             end,
         },
         
@@ -1320,7 +1321,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             aura = "rupture",
             cycle = "rupture",
 
-            usable = function () return combo_points.current > 0 end,
+            usable = function () return combo_points.current > 0, "requires combo_points" end,
             handler = function ()
                 applyDebuff( "target", "rupture", min( dot.rupture.remains, class.auras.rupture.duration * 0.3 ) + 4 + ( 4 * combo_points.current ) )
                 debuff.rupture.pmultiplier = persistent_multiplier
