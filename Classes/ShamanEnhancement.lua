@@ -703,24 +703,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
                 removeBuff( "crashing_lightning" )
                 removeBuff( "crash_lightning_cl" )
-
-                --[[ if level < 116 then
-                    if equipped.emalons_charged_core and spell_targets.crash_lightning >= 3 then
-                        applyBuff( 'emalons_charged_core', 10 )
-                    end
-
-                    if set_bonus.tier20_2pc > 1 then
-                        applyBuff( 'lightning_crash' )
-                    end
-
-                    if equipped.eye_of_the_twisting_nether then
-                        applyBuff( 'shock_of_the_twisting_nether', 8 )
-                    end
-
-                    if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
-                    if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
-                    if azerite.natural_harmony.enabled then applyBuff( "natural_harmony_nature" ) end
-                end ]]
             end,
         },
 
@@ -1133,20 +1115,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
                     addStack( "maelstrom_weapon", nil, 1 )
                 end
 
-                if level < 116 then
-                    if equipped.storm_tempests then
-                        applyDebuff( 'target', 'storm_tempests', 15 )
-                    end
-
-                    if set_bonus.tier20_4pc > 0 then
-                        addStack( 'crashing_lightning', 16, 1 )
-                    end
-
-                    if equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
-                        applyBuff( 'shock_of_the_twisting_nether', 8 )
-                    end
-                end
-
                 if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
                 if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
                 if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
@@ -1162,10 +1130,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             gcd = "spell",
 
             handler = function ()
-                if level < 116 and equipped.eye_of_the_twisting_nether then
-                    applyBuff( 'fire_of_the_twisting_nether' )
-                end
-
                 applyDebuff( "target", "sundering" )
 
                 if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
@@ -1317,20 +1281,6 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
                 if talent.elemental_assault.enabled then
                     addStack( "maelstrom_weapon", nil, 1 )
-                end
-
-                if level < 116 then
-                    if equipped.storm_tempests then
-                        applyDebuff( 'target', 'storm_tempests', 15 )
-                    end
-
-                    if set_bonus.tier20_4pc > 0 then
-                        addStack( 'crashing_lightning', 16, 1 )
-                    end
-
-                    if equipped.eye_of_the_twisting_nether and buff.crash_lightning.up then
-                        applyBuff( 'shock_of_the_twisting_nether', 8 )
-                    end
                 end
 
                 if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end

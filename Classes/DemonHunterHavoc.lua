@@ -362,9 +362,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
         if equipped.delusions_of_grandeur then
             -- From SimC model, 1/13/2018.
-            local fps = 10.2 + ( talent.demonic.enabled and 1.2 or 0 ) + ( ( level < 116 and equipped.anger_of_the_halfgiants ) and 1.8 or 0 )
-
-            if level < 116 and set_bonus.tier19_2pc > 0 then fps = fps * 1.1 end
+            local fps = 10.2 + ( talent.demonic.enabled and 1.2 or 0 )
 
             -- SimC uses base haste, we'll use current since we recalc each time.
             fps = fps / haste
@@ -380,10 +378,10 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if level < 116 and equipped.delusions_of_grandeur and resource == 'fury' then
+        --[[ if level < 116 and equipped.delusions_of_grandeur and resource == 'fury' then
             -- revisit this if really needed... 
             cooldown.metamorphosis.expires = cooldown.metamorphosis.expires - ( amt / 30 )
-        end
+        end ]]
     end )
 
     spec:RegisterCycle( function ()
@@ -482,7 +480,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyBuff( "blade_dance" )
                 setCooldown( "death_sweep", 9 * haste )
-                if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( 20, 'fury' ) end
             end,
         },
         
@@ -603,7 +600,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyBuff( "death_sweep" )
                 setCooldown( "blade_dance", 9 * haste )
-                if level < 116 and set_bonus.tier20_2pc == 1 and target.within8 then gain( buff.solitude.up and 22 or 20, "fury" ) end
             end,
         },
         
@@ -623,7 +619,6 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             notalent = "demon_blades",
 
             handler = function ()
-                if level < 116 and equipped.anger_of_the_halfgiants then gain( 1, "fury" ) end
             end,
         },
         
@@ -668,10 +663,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         eye_beam = {
             id = 198013,
             cast = function () return ( talent.blind_fury.enabled and 3 or 2 ) * haste end,
-            cooldown = function ()
-                if level < 116 and equipped.raddons_cascading_eyes then return 30 - active_enemies end
-                return 30
-            end,
+            cooldown = 30,
             channeled = true,
             gcd = "spell",
 

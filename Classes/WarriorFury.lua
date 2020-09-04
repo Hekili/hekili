@@ -624,9 +624,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         heroic_leap = {
             id = 6544,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.timeless_stratagem ) and 3 or nil end,
             cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
-            recharge = function () return talent.bounding_stride.enabled and 30 or 45 end,
             gcd = "spell",
 
             startsCombat = false,

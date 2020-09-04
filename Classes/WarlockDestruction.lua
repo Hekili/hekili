@@ -22,7 +22,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 return app + floor( t - app )
             end,
 
-            interval = 1,
+            interval = 0.5,
             value = 0.1
         },
 
@@ -71,13 +71,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
     spec:RegisterHook( "spend", function( amt, resource )
         if resource == "soul_shards" and amt > 0 then
-            if talent.soul_fire.enabled and cooldown.soul_fire.remains > 0 then
-                setCooldown( "soul_fire", max( 0, cooldown.soul_fire.remains - ( 2 * amt ) ) )
-            end
-
-            if talent.grimoire_of_supremacy.enabled and pet.infernal.up then
-                addStack( "grimoire_of_supremacy", nil, amt )
-            end
+            -- ???
         end
     end )
 
@@ -102,10 +96,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         darkfury = 22047, -- 264874
         mortal_coil = 19291, -- 6789
-        demonic_circle = 19288, -- 268358
+        howl_of_terror = 23465, -- 5484
 
         roaring_blaze = 23155, -- 205184
-        grimoire_of_supremacy = 23156, -- 266086
+        rain_of_chaos = 23156, -- 266086
         grimoire_of_sacrifice = 19295, -- 108503
 
         soul_conduit = 19284, -- 215941
@@ -116,21 +110,17 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
     -- PvP Talents
     spec:RegisterPvpTalents( { 
-        relentless = 3493, -- 196029
-        adaptation = 3494, -- 214027
-        gladiators_medallion = 3495, -- 208683
-
+        amplify_curse = 3504, -- 328774
+        bane_of_fragility = 3502, -- 199954
         bane_of_havoc = 164, -- 200546
-        entrenched_in_flame = 161, -- 233581
+        casting_circle = 3510, -- 221703
         cremation = 159, -- 212282
+        demon_armor = 3741, -- 285933
+        essence_drain = 3509, -- 221711
         fel_fissure = 157, -- 200586
         focused_chaos = 155, -- 233577
-        casting_circle = 3510, -- 221703
-        essence_drain = 3509, -- 221711
+        gateway_mastery = 5382, -- 248855
         nether_ward = 3508, -- 212295
-        curse_of_weakness = 3504, -- 199892
-        curse_of_tongues = 3503, -- 199890
-        curse_of_fragility = 3502, -- 199954
     } )
 
 
@@ -167,9 +157,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             id = 117828,
             duration = 10,
             type = "Magic",
-            max_stack = function () return talent.flashover.enabled and 4 or 2 end,
+            max_stack = 2,
         },
-
         -- Going to need to keep an eye on this.  active_dot.bane_of_havoc won't work due to no SPELL_AURA_APPLIED event.
         bane_of_havoc = {
             id = 200548,
@@ -195,8 +184,32 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         conflagrate = {
             id = 265931,
-            duration = 6,
+            duration = 8,
             type = "Magic",
+            max_stack = 1,
+        },
+        corruption = {
+            id = 146739,
+            duration = 14,
+            type = "Magic",
+            max_stack = 1,
+        },
+        curse_of_exhaustion = {
+            id = 334275,
+            duration = 8,
+            type = "Curse",
+            max_stack = 1,
+        },
+        curse_of_tongues = {
+            id = 1714,
+            duration = 30,
+            type = "Curse",
+            max_stack = 1,
+        },
+        curse_of_weakness = {
+            id = 702,
+            duration = 120,
+            type = "Curse",
             max_stack = 1,
         },
         dark_pact = {
@@ -207,7 +220,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         dark_soul_instability = {
             id = 113858,
             duration = 20,
+            type = "Magic",
             max_stack = 1,
+            copy = "dark_soul"
         },
         demonic_circle = {
             id = 48018,
@@ -219,7 +234,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         drain_life = {
             id = 234153,
-            duration = 4.95,
+            duration = function () return 5 * haste end,
+            tick_time = function () return haste end,
             max_stack = 1,
         },
         eradication = {
@@ -236,47 +252,28 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             type = "Magic",
             max_stack = 1,
         },
+        fel_domination = {
+            id = 333889,
+            duration = 15,
+            type = "Magic",
+            max_stack = 1,
+        },
         grimoire_of_sacrifice = {
             id = 196099,
             duration = 3600,
             max_stack = 1,
         },
-        grimoire_of_supremacy = {
-            id = 266091,
-            duration = 3600,
-            max_stack = 8,
-        },
         havoc = {
             id = 80240,
-            duration = 10,
+            duration = 12,
             type = "Curse",
             max_stack = 1,
-
-            generate = function ( t, type )
-                if type == "buff" then
-                    t.count = 0
-                    t.applied = 0
-                    t.expires = 0
-                    t.caster = "nobody"
-                    return
-                end
-
-                local h = debuff.havoc
-                --[[ local name, _, count, _, duration, expires, caster = FindUnitDebuffByID( "target", 80240, "PLAYER" )
-
-                if active_enemies > 1 and name then
-                    h.count = 1
-                    h.applied = expires - duration
-                    h.expires = expires
-                    h.caster = "player"
-                    return
-                end ]]
-
-                h.count = 0
-                h.applied = 0
-                h.expires = 0
-                h.caster = "nobody"
-            end
+        },
+        howl_of_terror = {
+            id = 5484,
+            duration = 20,
+            type = "Magic",
+            max_stack = 1,
         },
         immolate = {
             id = 157736,
@@ -350,6 +347,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         soul_shards = {
             id = 246985,
+        },
+        soulstone = {
+            id = 20707,
+            duration = 900,
+            max_stack = 1,
         },
         unending_breath = {
             id = 5697,
@@ -516,6 +518,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cast = 2,
             cooldown = 30,
             gcd = "spell",
+            
+            spend = 0.01,
+            spendType = "mana",
 
             startsCombat = true,
 
@@ -544,9 +549,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             talent = "channel_demonfire",
 
             usable = function () return active_dot.immolate > 0 end,
-            start = function ()
-                -- applies channel_demonfire (196447)
-            end,
         },
 
 
@@ -606,16 +608,35 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
 
             startsCombat = true,
+            texture = 135807,
 
             cycle = function () return talent.roaring_blaze.enabled and "conflagrate" or nil end,
 
             handler = function ()
                 gain( 0.5, "soul_shards" )
-                addStack( "backdraft", nil, talent.flashover.enabled and 4 or 2 )
+                applyBuff( "backdraft", nil, talent.flashover.enabled and 2 or 1 )
                 if talent.roaring_blaze.enabled then
                     applyDebuff( "target", "conflagrate" )
                     active_dot.conflagrate = max( active_dot.conflagrate, active_dot.bane_of_havoc )
                 end
+            end,
+        },
+        
+
+        corruption = {
+            id = 172,
+            cast = 1.885,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.01,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136118,
+            
+            handler = function ()
+                applyDebuff( "target", "corruption" )
             end,
         },
 
@@ -654,6 +675,65 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         }, ]]
 
 
+        curse_of_exhaustion = {
+            id = 334275,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 136162,
+            
+            handler = function ()
+                applyDebuff( "target", "curse_of_exhaustion" )
+                removeDebuff( "target", "curse_of_tongues" )
+                removeDebuff( "target", "curse_of_weakness" )
+            end,
+        },
+        
+
+        curse_of_tongues = {
+            id = 1714,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.01,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136140,
+            
+            handler = function ()
+                removeDebuff( "target", "curse_of_exhaustion" )
+                applyDebuff( "target", "curse_of_tongues" )
+                removeDebuff( "target", "curse_of_weakness" )
+            end,
+        },
+        
+
+        curse_of_weakness = {
+            id = 702,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.01,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136138,
+            
+            handler = function ()
+                removeDebuff( "target", "curse_of_exhaustion" )
+                removeDebuff( "target", "curse_of_tongues" )
+                applyDebuff( "target", "curse_of_weakness" )
+            end,
+        },
+        
+
+
+
         dark_pact = {
             id = 108416,
             cast = 0,
@@ -666,7 +746,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             talent = "dark_pact",
 
-            usable = function () return health.pct > 20 end,
+            usable = function () return health.pct > 20, "insufficient health" end,
             handler = function ()
                 applyBuff( "dark_pact" )
                 spend( 0.2 * health.max, "health" )
@@ -795,7 +875,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         fear = {
             id = 5782,
-            cast = 1.69983,
+            cast = 1.7,
             cooldown = 0,
             gcd = "spell",
 
@@ -808,7 +888,21 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 applyDebuff( "target", "fear" )
             end,
         },
+        
 
+        fel_domination = {
+            id = 333889,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 237564,
+            
+            handler = function ()
+                applyBuff( "fel_domination" )
+            end,
+        },
 
         grimoire_of_sacrifice = {
             id = 108503,
@@ -845,12 +939,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
 
             startsCombat = true,
+            texture = 460695,
+
             indicator = function () return ( lastTarget == "lastTarget" or target.unit == lastTarget ) and "cycle" or nil end,
             cycle = "havoc",
 
             bind = "bane_of_havoc",
 
-            usable = function () return not pvptalent.bane_of_havoc.enabled and active_enemies > 1 end,
+            usable = function () return not pvptalent.bane_of_havoc.enabled and active_enemies > 1, "requires multiple targets and no bane_of_havoc" end,
             handler = function ()
                 if class.abilities.havoc.indicator == "cycle" then
                     active_dot.havoc = active_dot.havoc + 1
@@ -877,14 +973,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             bind = "havoc",
 
             pvptalent = "bane_of_havoc",
-            usable = function () return active_enemies > 1 end,
+            usable = function () return active_enemies > 1, "requires multiple targets" end,
             
             handler = function ()
                 applyDebuff( "target", "bane_of_havoc" )
                 active_dot.bane_of_havoc = active_enemies
                 applyBuff( "active_havoc" )
             end,
-        },        
+        },
 
 
         health_funnel = {
@@ -896,10 +992,28 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             gcd = "spell",
 
             startsCombat = true,
+            texture = 136168,
 
-            usable = function () return pet.active end,
+            usable = function () return pet.active and pet.alive and pet.health_pct < 100, "requires pet" end,
             start = function ()
                 applyBuff( "health_funnel" )
+            end,
+        },
+
+
+        howl_of_terror = {
+            id = 5484,
+            cast = 1.5,
+            cooldown = 40,
+            gcd = "spell",
+            
+            startsCombat = true,
+            texture = 607852,
+
+            talent = "howl_of_terror",
+            
+            handler = function ()
+                applyDebuff( "target", "howl_of_terror" )
             end,
         },
 
@@ -960,6 +1074,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
 
             startsCombat = true,
+            texture = 607853,
 
             talent = "mortal_coil",
 
@@ -981,12 +1096,51 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
 
             startsCombat = true,
+            texture = 136186,
 
             handler = function ()
                 -- establish that RoF is ticking?
                 -- need a CLEU handler?
             end,
         },
+
+
+        --[[ ritual_of_doom = {
+            id = 342601,
+            cast = 0,
+            cooldown = 3600,
+            gcd = "spell",
+            
+            spend = 1,
+            spendType = "soul_shards",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 538538,
+            
+            handler = function ()
+            end,
+        },
+        
+
+        ritual_of_summoning = {
+            id = 698,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+            
+            spend = 0,
+            spendType = "mana",
+            
+            toggle = "cooldowns",
+
+            startsCombat = true,
+            texture = 136223,
+            
+            handler = function ()
+            end,
+        }, ]]
 
 
         shadowburn = {
@@ -997,10 +1151,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             recharge = 12,
             gcd = "spell",
 
-            spend = 0.01,
-            spendType = "mana",
-
+            spend = 1,
+            spendType = "soul_shards",
+            
             startsCombat = true,
+            texture = 136191,
 
             talent = "shadowburn",
 
@@ -1017,8 +1172,12 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cast = 1.5,
             cooldown = function () return talent.darkfury.enabled and 45 or 60 end,
             gcd = "spell",
+            
+            spend = 0.01,
+            spendType = "mana",
 
             startsCombat = true,
+            texture = 607865,
 
             handler = function ()
                 applyDebuff( "target", "shadowfury" )
@@ -1028,6 +1187,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         singe_magic = {
             id = 132411,
+            known = function () return IsSpellKnownOrOverridesKnown( 132411 ) or IsSpellKnownOrOverridesKnown( 119905 ) end,
             cast = 0,
             cooldown = 15,
             gcd = "spell",
@@ -1036,19 +1196,20 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
 
             startsCombat = true,
-
+            
+            buff = "dispellable_magic",
             usable = function ()
-                return pet.exists or buff.grimoire_of_sacrifice.up
+                return pet.imp.alive or buff.grimoire_of_sacrifice.up, "requires imp or grimoire_of_sacrifice"
             end,
             handler = function ()
-                -- generic dispel effect?
+                removeBuff( "dispellable_magic" )
             end,
         },
 
 
         soul_fire = {
             id = 6353,
-            cast = 1.5,
+            cast = function () return 4 * haste end,
             cooldown = 20,
             gcd = "spell",
 
@@ -1101,9 +1262,28 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
 
 
+        subjugate_demon = {
+            id = 1098,
+            cast = 3,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 0.02,
+            spendType = "mana",
+            
+            startsCombat = true,
+            texture = 136154,
+            
+            usable = function () return target.is_demon and target.level < level + 2, "requires demon target" end,
+            handler = function ()
+                summonPet( "controlled_demon" )
+            end,
+        },
+        
+        
         summon_felhunter = {
             id = 691,
-            cast = 2.5,
+            cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -1117,7 +1297,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
                 return true
             end,
-            handler = function () summonPet( "felhunter" ) end,
+            handler = function ()
+                summonPet( "felhunter" )
+                removeBuff( "fel_domination" )
+            end,
 
             copy = { 112869 }
         },
@@ -1125,7 +1308,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         summon_imp = {
             id = 688,
-            cast = 2.5,
+            cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -1141,7 +1324,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
                 return true
             end,
-            handler = function () summonPet( "imp" ) end,
+            handler = function ()
+                summonPet( "imp" )
+                removeBuff( "fel_domination" )
+            end,
 
             copy = "summon_pet"
         },
@@ -1163,6 +1349,30 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 summonPet( "infernal", 30 )
                 if azerite.crashing_chaos.enabled then applyBuff( "crashing_chaos", 3600, 8 ) end
+            end,
+        },
+
+
+        summon_voidwalker = {
+            id = 697,
+            cast = function () return ( buff.fel_domination.up and 0.5 or 6 ) * haste end,
+            cooldown = 0,
+            gcd = "spell",
+            
+            spend = 1,
+            spendType = "soul_shards",
+            
+            startsCombat = true,
+            texture = 136221,
+            
+            usable = function ()
+                if pet.alive then return false, "pet is alive"
+                elseif buff.grimoire_of_sacrifice.up then return false, "grimoire_of_sacrifice is up" end
+                return true
+            end,
+            handler = function ()
+                summonPet( "voidwalker" )
+                removeBuff( "fel_domination" )
             end,
         },
 

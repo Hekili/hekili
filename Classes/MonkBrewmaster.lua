@@ -558,8 +558,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 removeBuff( "blackout_combo" )
 
-                if level < 116 and equipped.firestone_walkers then setCooldown( "fortifying_brew", max( 0, cooldown.fortifying_brew.remains - ( min( 6, active_enemies * 2 ) ) ) ) end
-
                 if debuff.keg_smash.up then applyDebuff( "target", "breath_of_fire_dot" ) end
                 addStack( "elusive_brawler", 10, active_enemies * ( 1 + set_bonus.tier21_2pc ) )                
             end,
@@ -881,9 +879,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         keg_smash = {
             id = 121253,
             cast = 0,
-            charges = function () return ( level < 116 and equipped.stormstouts_last_gasp ) and 2 or nil end,
             cooldown = 8,
-            recharge = 8,
             gcd = "spell",
 
             spend = 40,
