@@ -475,11 +475,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
         local a = class.abilities[ ability ]
 
         if stealthed.mantle and ( not a or a.startsCombat ) then
-            --[[ if level < 116 and stealthed.mantle and equipped.mantle_of_the_master_assassin then
-                applyBuff( "master_assassins_initiative", 5 )
-                -- revisit for subterfuge?
-            end ]]
-
             if talent.subterfuge.enabled and stealthed.mantle then
                 applyBuff( "subterfuge" )
             end
