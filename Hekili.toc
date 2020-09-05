@@ -46,7 +46,7 @@ Classes\RogueSubtlety.lua
 Classes\ShamanElemental.lua
 Classes\ShamanEnhancement.lua
 Classes\WarlockAffliction.lua
-# Classes\WarlockDemonology.lua
+Classes\WarlockDemonology.lua
 Classes\WarlockDestruction.lua
 Classes\WarriorArms.lua
 Classes\WarriorFury.lua
