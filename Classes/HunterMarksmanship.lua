@@ -212,6 +212,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         return talent.careful_aim.enabled and ( target.health.pct > 70 )
     end )
 
+    spec:RegisterStateExpr( "ca_active", function ()
+        return talent.careful_aim.enabled and ( target.health.pct > 70 )
+    end )
+
 
     local steady_focus_applied = 0
 
