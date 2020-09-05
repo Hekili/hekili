@@ -496,64 +496,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     } )
 
 
-
-    spec:RegisterStateExpr( "incanters_flow_stacks", function ()
-        if not talent.incanters_flow.enabled then return 0 end
-
-        local index = incanters_flow.startIndex + floor( query_time - incanters_flow.startTime )
-        if index > 10 then index = index % 10 end
-        
-        return incanters_flow.values[ index ][ 1 ]
-    end )
-
-    spec:RegisterStateExpr( "incanters_flow_dir", function()
-        if not talent.incanters_flow.enabled then return 0 end
-
-        local index = incanters_flow.startIndex + floor( query_time - incanters_flow.startTime )
-        if index > 10 then index = index % 10 end
-
-        return incanters_flow.values[ index ][ 2 ]
-    end )
-
-    -- Seemingly, a very silly way to track Incanter's Flow...
-    local incanters_flow_time_obj = setmetatable( { __stack = 0 }, {
-        __index = function( t, k )
-            if not state.talent.incanters_flow.enabled then return 0 end
-
-            local stack = t.__stack
-            local ticks = #state.incanters_flow.values
-
-            local start = state.incanters_flow.startIndex + floor( state.offset + state.delay )
-
-            local low_pos, high_pos
-
-            if k == "up" then low_pos = 5
-            elseif k == "down" then high_pos = 6 end
-
-            local time_since = ( state.query_time - state.incanters_flow.changed ) % 1
-
-            for i = 0, 10 do
-                local index = ( start + i )
-                if index > 10 then index = index % 10 end
-
-                local values = state.incanters_flow.values[ index ]
-
-                if values[ 1 ] == stack and ( not low_pos or index <= low_pos ) and ( not high_pos or index >= high_pos ) then
-                    return max( 0, i - time_since )
-                end
-            end
-
-            return 0
-        end
-    } )
-
-    spec:RegisterStateTable( "incanters_flow_time_to", setmetatable( {}, {
-        __index = function( t, k )
-            incanters_flow_time_obj.__stack = tonumber( k ) or 0
-            return incanters_flow_time_obj
-        end
-    } ) )
-
     spec:RegisterHook( "reset_precast", function ()
         if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
         else removeBuff( "rune_of_power" ) end
