@@ -1,9 +1,9 @@
 -- ShamanElemental.lua
--- 07.2020
+-- 09.2020
 
 -- TODOs:
 -- Legendaries
--- Covenant abilities
+-- Covenant abilities (1/4)
 -- Soulbinds (?)
 -- Conduits (?)
 
@@ -30,7 +30,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         aftershock = 23108, -- 273221
         echoing_shock = 23460, -- 320125
-        elemental_blast = 22358, -- 117014
+        elemental_blast = 23190, -- 117014
 
         spirit_wolf = 23162, -- 260878
         earth_shield = 23163, -- 974
@@ -93,7 +93,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         astral_shift = {
             id = 108271,
-            duration = 8,
+            duration = 12,
             max_stack = 1,
         },
 
@@ -101,6 +101,12 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             id = 2825,
             duration = 40,
             type = "Magic",
+            max_stack = 1,
+        },
+
+        celestial_guidance = {
+            id = 324748,
+            duration = 10,
             max_stack = 1,
         },
 
@@ -192,17 +198,17 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             max_stack = 1,
         },
 
+        fleshcraft = {
+            id = 324631,
+            duration = 120,
+            max_stack = 1,
+        },
+
         frost_shock = {
             id = 196840,
             duration = 6,
             type = "Magic",
             max_stack = 1,
-        },
-
-        fulmination = {
-            id = 260111,
-            duration = 30,
-            max_stack = 8,
         },
 
         ghost_wolf = {
@@ -232,6 +238,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         lightning_shield = {
             id = 192106,
+            duration = 1800,
+            type = "Magic",
+            max_stack = 1,
         },
 
         master_of_the_elements = {
@@ -241,16 +250,19 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             max_stack = 1,
         },
 
-        seismic_thunder = {
-            id = 319343,
-            duration = 12,
-            max_stack = 5,
+        primordial_wave = {
+            id = 327164,
+            duration = 15,
+            max_stack = 1,
         },
 
-        spiritwalkers_grace = {
-            id = 79206,
-            duration = 15,
-            type = "Magic",
+        reincarnation = {
+            id = 20608,
+        },
+
+        sated = {
+            id = 57724,
+            duration = 600,
             max_stack = 1,
         },
 
@@ -260,9 +272,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             max_stack = 4,
         },
 
-        static_charge = {
-            id = 265046,
-            duration = 3,
+        spiritwalkers_grace = {
+            id = 79206,
+            duration = 15,
             type = "Magic",
             max_stack = 1,
         },
@@ -315,30 +327,10 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             max_stack = 1,
         },
 
-        totem_mastery = {
-            duration = 15,
-            generate = function ()
-            end,
-        },
-
         wind_gust = {
             id = 263806,
             duration = 30,
             max_stack = 20
-        },
-
-
-        -- Azerite Powers
-        ancestral_resonance = {
-            id = 277943,
-            duration = 15,
-            max_stack = 1,
-        },
-
-        tectonic_thunder = {
-            id = 286976,
-            duration = 15,
-            max_stack = 1,
         },
 
 
@@ -452,16 +444,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         end
     } ) )
 
-
-    local function natural_harmony( elem1, elem2, elem3 )
-        if not azerite.natural_harmony.enabled then return end
-
-        if elem1 then applyBuff( "natural_harmony_" .. elem1 ) end
-        if elem2 then applyBuff( "natural_harmony_" .. elem2 ) end
-        if elem3 then applyBuff( "natural_harmony_" .. elem3 ) end
-    end
-
-    setfenv( natural_harmony, state )
 
     spec:RegisterHook( "reset_precast", function ()
         if talent.master_of_the_elements.enabled and action.lava_burst.in_flight and buff.master_of_the_elements.down then
@@ -621,12 +603,15 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         chain_lightning = {
             id = 188443,
-            cast = function () return ( buff.tectonic_thunder.up or buff.stormkeeper.up ) and 0 or ( 2 * haste ) end,
+            cast = function () return buff.stormkeeper.up and 0 or ( 2 * haste ) end,
             cooldown = 0,
             gcd = "spell",
 
             nobuff = "ascendance",
             bind = "lava_beam",
+
+            spend = 0.01,
+            spendType = "mana",
 
             startsCombat = true,
             texture = 136015,
@@ -634,14 +619,11 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 removeBuff( "master_of_the_elements" )
 
-                if active_enemies > 1 then
-                    addStack( "fulmination", nil, 1 )
-                end
+                -- TODO: generate maelstrom
 
                 if buff.stormkeeper.up then
+                    -- TODO: generate maelstrom
                     removeStack( "stormkeeper" )
-                else
-                    removeBuff( "tectonic_thunder" )
                 end
 
                 if pet.storm_elemental.up then
@@ -722,16 +704,16 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cooldown = 0,
             gcd = "spell",
 
+            spend = 60
+            spendType = "maelstrom"
 
             startsCombat = true,
             texture = 136026,
 
             handler = function ()
-                if talent.surge_of_power.enabled and buff.fulmination.stack >= 6 then
+                if talent.surge_of_power.enabled then
                     applyBuff( "surge_of_power" )
                 end
-
-                removeBuff( "fulmination" )
             end,
         },
 
@@ -753,20 +735,19 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         earthquake = {
             id = 61882,
-            cast = function ()
-                return max( 0, 1 - 0.2 * buff.fulmination.stack ) * 3 * haste
-            end,
+            cast = 0,
             cooldown = 0,
             gcd = "spell",
+
+            spend = 60,
+            spendType = "maelstrom",
 
             -- TODO: add echoes of the great sundering legendary buff
             startsCombat = true,
             texture = 451165,
 
             handler = function ()
-                -- TODO: recycle buff
                 --removeBuff( "echoes_of_the_great_sundering" )
-                removeBuff( "fulmination" )
                 removeBuff( "master_of_the_elements" )
             end,
         },
@@ -776,6 +757,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
+
+            spend = 0.03,
+            spendType = "mana",
 
             startsCombat = true,
             texture = 1603013,
@@ -791,16 +775,18 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cooldown = 12,
             gcd = "spell",
 
+            spend = 30,
+            spendType = "maelstrom",
+
             startsCombat = true,
             texture = 651244,
 
             handler = function ()
                 applyBuff( "elemental_blast" )
-                if talent.surge_of_power.enabled and buff.fulmination.stack >= 6 then
+                if talent.surge_of_power.enabled then
                     applyBuff( "surge_of_power" )
                 end
 
-                removeBuff( "fulmination" )
                 removeBuff( "master_of_the_elements" )
             end,
         },
@@ -822,9 +808,12 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             id = 198067,
             cast = 0,
             charges = 1,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 150 end,
-            recharge = function () return ( essence.vision_of_perfection.enabled and 0.9 or 1 ) * 150 end,
+            cooldown = 150,
+            recharge = 150,
             gcd = "spell",
+
+            spend = 0.05,
+            spendType = "mana",
 
             toggle = "cooldowns",
             notalent = "storm_elemental",
@@ -842,6 +831,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cast = 0,
             cooldown = 6,
             gcd = "spell",
+
+            spend = 0.02,
+            spendType = "mana",
 
             startsCombat = true,
             texture = 135813,
@@ -863,6 +855,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
+
+            spend = 0.02,
+            spendType = "mana",
 
             startsCombat = true,
             texture = 135849,
@@ -897,13 +892,29 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             end,
         },
 
+        healing_stream_totem = {
+            id = 5394,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            spend = 0.09,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 135127,
+
+            handler = function ()
+            end,
+        },
+
         healing_surge = {
             id = 8004,
             cast = function () return 1.5 * haste end,
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.23,
+            spend = 0.24,
             spendType = "mana",
 
             startsCombat = false,
@@ -933,6 +944,9 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cooldown = 30,
             gcd = "spell",
 
+            spend = 0.03,
+            spendType = "mana",
+
             startsCombat = true,
             texture = 135855,
 
@@ -955,14 +969,10 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 236216,
 
             handler = function ()
-                if active_enemies > 1 then
-                    addStack( "fulmination", nil, 1)
-                end
+                -- TODO: Add maelstrom
 
                 if buff.stormkeeper.up then
-                    if active_enemies > 1 then
-                        addStack( "fulmination", nil, min( 5, active_enemies ))
-                    end
+                    -- TODO: Add maelstrom
                     removeStack( "stormkeeper" )
                 end
             end,
@@ -976,13 +986,15 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             recharge = function () return buff.ascendance.up and 0 or ( 8 * haste ) end,
             gcd = "spell",
 
+            spend = 0.06,
+            spendType = "mana",
 
             startsCombat = true,
             texture = 237582,
 
             handler = function ()
                 removeBuff( "lava_surge" )
-                addStack( "fulmination", nil, 1 )
+                -- TODO: add Maelstrom
 
                 if talent.master_of_the_elements.enabled then applyBuff( "master_of_the_elements" ) end
 
@@ -1001,21 +1013,24 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cooldown = 0,
             gcd = "spell",
 
+            spend = 0.02,
+            spendType = "mana",
+
             startsCombat = true,
             texture = 136048,
 
             handler = function ()
-                addStack("fulmination", nil, 1)
+                -- TODO: Add Maelstrom
 
                 removeBuff( "master_of_the_elements" )
 
                 if buff.stormkeeper.up then
-                    addStack( "fulmination", nil, 1 )
+                    -- TODO: add maelstrom
                     removeStack( "stormkeeper" )
                 end
 
                 if buff.surge_of_power.up then
-                    addStack( "fulmination", nil, 1 )
+                    -- todo: add maelstrom
                     removeBuff( "surge_of_power" )
                 end
 
@@ -1042,6 +1057,23 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             start = function ()
                 applyDebuff( "target", "lightning_lasso" )
+            end,
+        },
+
+        lightning_shield = {
+            id = 192106,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+
+            spend = 0.02,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 136051,
+
+            handler = function ()
+                -- applies lightning_shield (192106)
             end,
         },
 
@@ -1076,6 +1108,23 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             end,
         },
 
+        primordial_wave = {
+            id = 326059,
+            cast = function ()  return 1.5 * haste end,
+            cooldown = 45,
+            gcd = "spell",
+
+            spend = 0.1,
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 3578231,
+
+            handler = function ()
+                -- todo apply primordial wave buff
+            end,
+        },
+
         purge = {
             id = 370,
             cast = 0,
@@ -1107,6 +1156,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 451170,
 
             handler = function ()
+                -- TODO: applies spiritwalkers_grace (79206)
             end,
         },
 
@@ -1115,24 +1165,27 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cast = 0,
             cooldown = 30,
             gcd = "spell",
-            
+
+            spend = 0.03,
+            spendType = "mana",
+
             startsCombat = off,
             texture = 135845,
 
             talent = "static_discharge",
             buff = "lightning_shield",
-            
+
             handler = function ()
                 applyBuff( "static_discharge" )
             end,
         },
-        
+
         storm_elemental = {
             id = 192249,
             cast = 0,
             charges = 1,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 150 end,
-            recharge = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 150 end,
+            cooldown = 150,
+            recharge = 150,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -1386,8 +1439,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 removeBuff( "fae_transfusion" )
             end,
-        },        
-        
+        },
+
         -- Shaman - Venthyr   - 320674 - chain_harvest        (Chain Harvest)
         chain_harvest = {
             id = 320674,
