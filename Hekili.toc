@@ -31,7 +31,7 @@ Classes\HunterBeastMastery.lua
 Classes\HunterMarksmanship.lua
 Classes\HunterSurvival.lua
 Classes\MageArcane.lua
-# Classes\MageFire.lua
+Classes\MageFire.lua
 Classes\MageFrost.lua
 Classes\MonkBrewmaster.lua
 # Classes\MonkMistweaver.lua
