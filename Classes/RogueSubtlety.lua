@@ -183,11 +183,12 @@ if UnitClassBase( "player" ) == "ROGUE" then
         relentless_strikes = {
             id = 58423,
         },
+        --[[ Share Assassination implementation to avoid errors.
         rupture = {
             id = 1943,
             duration = function () return talent.deeper_stratagem.enabled and 28 or 24 end,
             max_stack = 1,
-        },
+        }, ]]
         shadow_blades = {
             id = 121471,
             duration = 20,
