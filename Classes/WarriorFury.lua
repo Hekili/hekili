@@ -119,7 +119,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     spec:RegisterPvpTalents( {         
         barbarian = 166, -- 280745
         battle_trance = 170, -- 213857
-        blood_rage = 172, -- 329038
+        bloodrage = 172, -- 329038
         death_sentence = 25, -- 198500
         death_wish = 179, -- 199261
         demolition = 5373, -- 329033
