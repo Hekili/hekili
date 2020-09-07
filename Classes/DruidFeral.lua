@@ -133,6 +133,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 1850,
             duration = 10,
         },
+        --[[ Inherit from Balance to support empowerment.
         eclipse_lunar = {
             id = 48518,
             duration = 10,
@@ -142,7 +143,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 48517,
             duration = 10,
             max_stack = 1,
-        },
+        }, ]]
         entangling_roots = {
             id = 339,
             duration = 30,
