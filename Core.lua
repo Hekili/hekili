@@ -489,6 +489,44 @@ do
 end
 
 
+local Timer = {
+    start = 0,
+    n = {},
+    v = {},
+
+    Reset = function( self )
+        if not Hekili.ActiveDebug then return end
+
+        twipe( self.n )
+        twipe( self.v )
+        self.start = debugprofilestop()
+    end,
+
+    Track = function( self, key )
+        if not Hekili.ActiveDebug then return end
+        tinsert( self.n, key )
+        tinsert( self.v, debugprofilestop() )
+    end,
+
+    Output = function( self )
+        if not Hekili.ActiveDebug then return "" end
+
+        local o = string.format( "%.2f", self.v[1] - self.start )
+
+        for i = 2, #self.n do
+            o = string.format( "%s:%s:%.2f", o, self.n[i], ( self.v[i] - self.v[i-1] ) )
+        end
+
+        return o
+    end,
+
+    Total = function( self )
+        if not Hekili.ActiveDebug then return "" end
+        return string.format("%.2f", self.v[#self.v] - self.start )
+    end,
+}
+
+
 local waitBlock = {}
 local listDepth = 0
 
@@ -528,7 +566,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
         local actID = 1
 
         while actID <= #list do
-            -- if not state.channel or rWait >= state.channel_remains then
             -- Watch this section, may impact usage of off-GCD abilities.
             if rWait <= state.cooldown.global_cooldown.remains and not state.spec.canCastWhileCasting then
                 if debug then self:Debug( "The recommended action (%s) would be ready before the next GCD (%.2f < %.2f); exiting list (%s).", rAction, rWait, state.cooldown.global_cooldown.remains, listName ) end
@@ -543,11 +580,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 break
 
             end
-            -- end
 
-            local startTime
-            
-            if debug then startTime = debugprofilestop() end
+
+            Timer:Reset()
 
             if self:IsActionActive( packName, listName, actID ) then
                 -- Check for commands before checking actual actions.
@@ -594,7 +629,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         self:Debug( d )
                     end
 
-                    -- if debug then self:Debug( "%s is %sknown and %senabled.", action, known and "" or "NOT ", enabled and "" or "NOT " ) end
+                    Timer:Track("Ability Known, Enabled")
 
                     if ability and known and enabled then
                         local scriptID = packName .. ":" .. listName .. ":" .. actID
@@ -616,14 +651,15 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         elseif ( rWait - state.ClashOffset( rAction ) ) - ( wait_time - clash ) <= 0.05 then
                             if debug then self:Debug( "The action is not ready in time ( %.2f vs. %.2f ) [ Clash: %.2f vs. %.2f ] - padded by 0.05s.", wait_time, rWait, clash, state.ClashOffset( rAction ) ) end
                         else
-                            if state.channeling then
+                            --[[ if state.channeling then
                                 if debug then self:Debug( "NOTE:  We are channeling ( %s ) until %.2f.", state.player.channelSpell, state.player.channelEnd - state.query_time ) end
-                            end
+                            end ]]
 
                             -- APL checks.
                             if precombatFilter and not ability.essential then
                                 if debug then self:Debug( "We are already in-combat and this pre-combat action is not essential.  Skipping." ) end
                             else
+                                Timer:Track("Post-TTR and Essential")
                                 if action == 'call_action_list' or action == 'run_action_list' or action == 'use_items' then
                                     -- We handle these here to avoid early forking between starkly different APLs.
                                     local aScriptPass = true
@@ -633,13 +669,29 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         if debug then self:Debug( "There is no criteria for %s.", action == 'use_items' and "Use Items" or "this action list." ) end
                                         -- aScriptPass = ts or self:CheckStack()
                                     else
-                                        aScriptPass = ts or scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
+                                        aScriptPass = scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
 
-                                        if debug then 
-                                            self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", ts and "deferred" or ( aScriptPass and "PASS" or "FAIL" ), state.offset, scripts:GetConditionsAndValues( scriptID ) )
+                                        if not aScriptPass and ts then
+                                            -- Time-sensitive criteria, let's see if we have rechecks that would pass.
+                                            state.recheck( action, script, Stack )
+
+                                            if #state.recheckTimes == 0 then
+                                                if debug then self:Debug( "Time-sensitive Criteria FAIL at +%.2f with no valid rechecks - %s", state.offset, scripts:GetConditionsAndValues( scriptID ) ) end
+                                                ts = false
+                                            elseif state.delayMax and state.recheckTimes[ 1 ] > state.delayMax then
+                                                if debug then self:Debug( "Time-sensitive Criteria FAIL at +%.2f with rechecks outside of max delay ( %.2f > %.2f ) - %s", state.offset, state.recheckTimes[ 1 ], state.delayMax, scripts:GetConditionsAndValues( scriptID ) ) end
+                                                ts = false
+                                            elseif state.recheckTimes[ 1 ] > 5 then
+                                                if debug then self:Debug( "Time-sensitive Criteria FAIL at +%.2f with rechecks 5+ seconds out ( %.2f ) - %s", state.offset, state.recheckTimes[ 1 ], scripts:GetConditionsAndValues( scriptID ) ) end
+                                                ts = false
+                                            end
+                                        else
+                                            if debug then 
+                                                self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", ts and "deferred" or ( aScriptPass and "PASS" or "FAIL" ), state.offset, scripts:GetConditionsAndValues( scriptID ) )
+                                            end
                                         end
 
-                                        -- aScriptPass = ts or aScriptPass
+                                        aScriptPass = ts or aScriptPass
                                     end
 
                                     if aScriptPass then
@@ -695,6 +747,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         state.ClearCycle()
                                     end
 
+                                    Timer:Track("Post Cycle")
+                                    
                                     local usable, why = state:IsUsable()
                                     if debug then
                                         if usable then
@@ -703,6 +757,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", action, state.offset, state.delay, why or "IsUsable returned false" )
                                         end
                                     end
+
+                                    Timer:Track("Post Usable")
 
                                     if usable then
                                         local waitValue = max( 0, rWait - state:ClashOffset( rAction ) )
@@ -713,10 +769,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         if readyFirst then
                                             local hasResources = true
 
-        
+                                            Timer:Track("Post Ready/Clash")
+
                                             if hasResources then
                                                 local aScriptPass = self:CheckStack()
-                                                local channelPass = not state.channeling or self:CheckChannel( action, rWait )
+                                                local channelPass = true -- not state.channeling or self:CheckChannel( action, rWait )
+
+                                                Timer:Track("Post Stack")
 
                                                 if not aScriptPass then
                                                     if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
@@ -727,8 +786,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             self:Debug( " - this entry has no criteria to test." ) 
                                                             if not channelPass then self:Debug( "   - however, criteria not met to break current channeled spell." )  end
                                                         end
-                                                    else 
+                                                    else
+                                                        Timer:Track("Pre-Script")
                                                         aScriptPass = scripts:CheckScript( scriptID )
+                                                        Timer:Track("Post-Script")
 
                                                         if debug then
                                                             self:Debug( " - this entry's criteria %s: %s", aScriptPass and "PASSES" or "FAILS", scripts:GetConditionsAndValues( scriptID ) )
@@ -736,12 +797,15 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         end
                                                     end
                                                     aScriptPass = aScriptPass and channelPass
-
                                                 end
+
+                                                Timer:Track("Pre-Recheck")
 
                                                 -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.                                        
                                                 if not aScriptPass then
                                                     state.recheck( action, script, Stack )
+
+                                                    Timer:Track("Post-Recheck Times")
 
                                                     if #state.recheckTimes == 0 then
                                                         if debug then self:Debug( "There were no recheck events to check." ) end
@@ -752,8 +816,12 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                         local first_rechannel = 0
 
+                                                        Timer:Track("Pre-Recheck Loop")
+
                                                         for i, step in pairs( state.recheckTimes ) do
                                                             local new_wait = base_delay + step
+
+                                                            Timer:Track("Recheck Loop Start")
 
                                                             if new_wait >= 10 then
                                                                 if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 10s ).", i, new_wait ) end
@@ -774,9 +842,18 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                                 end
                                                             end
 
+                                                            Timer:Track("Recheck Post-Usable")
+
                                                             if self:CheckStack() then
+                                                                Timer:Track("Recheck Post-Stack")
+
                                                                 aScriptPass = scripts:CheckScript( scriptID )
+
+                                                                Timer:Track("Recheck Post-Script")
+
                                                                 channelPass = self:CheckChannel( action, rWait )
+                                                                
+                                                                Timer:Track("Recheck Post-Channel")
 
                                                                 if debug then
                                                                     self:Debug( "Recheck #%d ( +%.2f ) %s: %s", i, state.delay, aScriptPass and "MET" or "NOT MET", scripts:GetConditionsAndValues( scriptID ) )
@@ -787,6 +864,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             else
                                                                 if debug then self:Debug( "Unable to recheck #%d at %.2f, as APL conditions would not pass.", i, state.delay ) end
                                                             end
+
+                                                            Timer:Track("Recheck Loop End")
 
                                                             if aScriptPass then
                                                                 if first_rechannel == 0 and state.channel and action == state.channel then
@@ -800,10 +879,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                                 else break end
                                                             else state.delay = base_delay end
                                                         end
+                                                        Timer:Track("Post Recheck Loop")
                                                     end
                                                 end
 
-                                                -- Need to revisit this, make sure that lower priority abilities are only tested after the channel is over.
+                                                Timer:Track("Post Recheck")
+
+                                                --[[ Need to revisit this, make sure that lower priority abilities are only tested after the channel is over.
                                                 if action == state.channel then
                                                     if ( state.now + state.offset + rWait <= state.player.channelEnd + 0.05 ) then 
                                                         -- If a higher priority ability is selected, we should stop here.
@@ -814,7 +896,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         if debug then self:Debug( "Rechanneling " .. state.channel .. " criteria passed; stop here." ) end
                                                         stop = true
                                                     end
-                                                end
+                                                end ]]
 
                                                 if aScriptPass then
                                                     if action == 'potion' then
@@ -971,6 +1053,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         elseif module and module.cycle then
                                                             slot.indicator = module.cycle()
                                                         end
+                                                        Timer:Track("Action Stored")
                                                     end
                                                 end
 
@@ -987,7 +1070,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     end
                 
                     if debug and action ~= "call_action_list" and action ~= "run_action_list" and action ~= "use_items" then
-                        self:Debug( "Time spent on this action:  %.2fms", debugprofilestop() - startTime )
+                        self:Debug( "Time spent on this action:  %.2fms\nTimeData:%s-%s-%d:%s:%.2f:%s", Timer:Total(), packName, listName, actID, action, Timer:Total(), Timer:Output() )
                     end
                 end
             else
