@@ -418,7 +418,7 @@ do
                                                     "%1.remains" }, -- Assassination
 
         { "^!?(dot%.[a-z0-9_]+)%.exsanguinated$",   "%1.remains" }, -- Assassination
-        { "^ss_buffed",                             "remains" }, -- Assassination
+        { "^ss_buffed$",                            "remains" }, -- Assassination
         { "^!?(debuff%.[a-z0-9_]+)%.ss_buffed$",    "%1.remains" }, -- Assassination
         { "^!?(dot%.[a-z0-9_]+)%.ss_buffed$",       "%1.remains" }, -- Assassination
         { "^!?consecration.up",                     "consecration.remains" }, -- Prot Paladin
@@ -568,7 +568,7 @@ do
         local recheck
 
         conditions = conditions:gsub( " +", "" )
-        -- conditions = self:EmulateSyntax( conditions, true )
+        conditions = self:EmulateSyntax( conditions, true )
 
         local exprs = self:SplitExpr( conditions )
 
@@ -902,11 +902,12 @@ local function stripScript( str, thorough )
   str = str:gsub("^return ", "")
 
   -- Remove min/max/safenum/safebool.
-  str = str:gsub("([^%a%w_%.])min([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])max([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safebool([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safenum([^%a%w_)]+)%s?%(?", "%1%2 ")
+  -- str = str:gsub("([^%a%w_%.])min([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])max([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safebool([^%a%w_)]+)%s?%(?", "%1%2 "):gsub("([^%a%w_%.])safenum([^%a%w_)]+)%s?%(?", "%1%2 ")
+  str = str:gsub( "min(%b())", "%1" ):gsub( "max(%b())", "%1" ):gsub( "safebool(%b())", "%1" ):gsub( "safenum(%b())", "%1" )
 
-  -- Remove comments and parentheses.
-  str = str:gsub("%-%-.-\n", ""):gsub("[()]", "")
-
+  -- Remove comments.
+  str = str:gsub("%-%-.-\n", "")
+ 
   -- Remove conjunctions.
   str = str:gsub("[%s-]and[%s-]", " "):gsub("[%s-]or[%s-]", " "):gsub("%(-%s-not[%s-]", " ")
 
@@ -925,6 +926,8 @@ local function stripScript( str, thorough )
 
   return ( str )
 end
+
+scripts.stripScript = stripScript
 
 
 function scripts:StoreValues( tbl, node, mod )
@@ -965,6 +968,7 @@ local function GetScriptElements( script )
     local e, c = {}, stripScript( script, true )
 
     for s in c:gmatch( "[^ ,]+" ) do
+        while s:match("^(%b())$" ) do s = s:sub( 2, -2 ) end
         if not e[ s ] and not tonumber( s ) then
             local ef = loadstring( 'return '.. ( s or true ) )
             if ef then setfenv( ef, state ) end
@@ -1084,7 +1088,7 @@ local function ConvertScript( node, hasModifiers, header )
         rs = scripts:BuildRecheck( node.criteria )
         if rs then
             local orig = rs
-            -- rs = scripts:EmulateSyntax( rs )
+
             rs = SimToLua( rs )
             rc, erc = loadstring( "-- " .. header .. " recheck\nreturn " .. rs )
             if rc then
