@@ -1328,28 +1328,40 @@ do
 
     function state.recheck( ability, script, stack )
         local times = state.recheckTimes
-        wipe( times )
 
-        local debug = Hekili.ActiveDebug
+        if #times > 0 then
+            wipe( times )
+        end
+
+        -- local debug = Hekili.ActiveDebug
+        -- local steps = {}
 
         if script then
             if script.Recheck then
+                -- if Hekili.ActiveDebug then Hekili:Debug( "Recheck times for this entry are: %s", scripts:GetConditionsAndValues( script.ID, nil, nil, true ) ) end
                 recheckHelper( times, script.Recheck() )
             end
 
+            --[[ This was found to be CPU intensive (when repeated a LOT) without commensurate benefit.
             if script.Variables then
+                if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
                 for i, var in ipairs( script.Variables ) do
                     local varIDs = state:GetVariableIDs( var )
 
                     if varIDs then
                         for _, entry in ipairs( varIDs ) do
                             local vr = scripts.DB[ entry.id ].VarRecheck
-                            if vr then recheckHelper( times, vr() ) end
+                            if vr then
+                                recheckHelper( times, vr() )
+                            end
                         end
                     end
+                    if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
                 end
-            end
+            end ]]
         end
+
+        -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
 
         local data = class.abilities[ ability ]
         if data and data.aura then
@@ -1364,6 +1376,8 @@ do
             end
         end
 
+        -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
+
         if stack and #stack > 0 then
             for i, caller in ipairs( stack ) do
                 local callScript = caller.script
@@ -1374,6 +1388,8 @@ do
                 end
             end
         end
+
+        -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
 
         if state.channeling then
             local aura = class.auras[ state.channel ]
@@ -1399,6 +1415,17 @@ do
 
             table.insert( times, remains )
         end
+
+        --[[ if Hekili.ActiveDebug and #steps > 0 then 
+            -- table.insert( steps, debugprofilestop() )
+            local str = string.format( "RECHECK: %.2f", steps[#steps] - steps[1] )
+
+            for i = 2, #steps do
+                str = string.format( "%s, %.2f ", str, steps[i] - steps[i-1] )
+            end
+
+            Hekili:Debug( str )
+        end ]]
 
         sort( times )
     end
@@ -2550,7 +2577,20 @@ local mt_default_cooldown = {
             if not state:IsKnown( t.key ) then return 1 end
             if not raw and ( state:IsDisabled( t.key ) or ability.disabled ) then return 0 end
 
-            if ability.charges and ability.charges > 1 then 
+            if ability.charges and ability.charges > 1 then
+                -- run this ad-hoc rather than with every advance.
+                while t.next_charge > 0 and t.next_charge < state.now + state.offset do
+                    -- if class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset then
+                    t.charge = t.charge + 1
+                    if t.charge < ability.charges then
+                        t.recharge_began = t.next_charge
+                        t.next_charge = t.next_charge + ability.recharge
+                    else 
+                        t.recharge_began = 0
+                        t.next_charge = 0
+                    end
+                end
+
                 if t.charge < ability.charges then
                     return min( ability.charges, t.charge + ( max( 0, state.query_time - t.recharge_began ) / t.recharge ) )
                     -- return t.charges + ( 1 - ( class.abilities[ t.key ].recharge - t.recharge_time ) / class.abilities[ t.key ].recharge )
@@ -2558,7 +2598,7 @@ local mt_default_cooldown = {
                 return t.charge
             end
 
-            return t.remains > 0 and ( t.remains / t.cooldown ) or 1
+            return t.remains > 0 and ( t.remains / ability.cooldown ) or 1
 
         --
         elseif k == 'recharge_time' then
@@ -3616,11 +3656,11 @@ do
                 return 0
             end
 
-            state.variable[ var ] = 0
-
             if not db[ var ] then
                 return 0
             end
+
+            state.variable[ var ] = 0
 
             local data = db[ var ]
             local parent = state.scriptID
@@ -5382,8 +5422,6 @@ function state.advance( time )
         return
     end
 
-    if Hekili.ActiveDebug then Hekili:Debug( "Advancing clock by %.2f...", time ) end
-
     time = ns.callHook( 'advance', time ) or time
     if not state.resetting then time = roundUp( time, 2 ) end
 
@@ -5447,7 +5485,7 @@ function state.advance( time )
 
     local bonus_cdr = 0 -- ns.callHook( 'advance_bonus_cdr', 0 )
 
-    for k, cd in pairs( state.cooldown ) do
+    --[[ for k, cd in pairs( state.cooldown ) do
         if state:IsKnown( k ) then
             if bonus_cdr > 0 then
                 if cd.next_charge > 0 then
@@ -5471,7 +5509,7 @@ function state.advance( time )
                 end
             end
         end
-    end
+    end ]]
 
     ns.callHook( 'advance_end', time )
 
@@ -5655,7 +5693,7 @@ function state:IsKnown( sID, notoggle )
     if not sID then
         return false, "could not find valid ID" -- no ability
 
-    elseif sID < 0 then
+    elseif sID < 0 and sID > -100 then
         return true
 
     end
@@ -5669,14 +5707,14 @@ function state:IsKnown( sID, notoggle )
 
     local profile = Hekili.DB.profile
 
-    if ability.spec and not state.spec[ ability.spec ] then
-        return false, "wrong specialization"
+    if ability.item and not state.equipped[ ability.item ] then
+        return false, "item [ " .. ability.item .. " ] missing"
     end
-
-    if ability.nospec and state.spec[ ability.nospec ] then
-        return false, "spec [ " .. ability.nospec .. " ] disallowed"
+    
+    if ability.equipped and not state.equipped[ ability.equipped ] then
+        return false, "equipment [ " .. ability.equipped .. " ] missing"
     end
-
+    
     if ability.talent and not state.talent[ ability.talent ].enabled then
         return false, "talent [ " .. ability.talent .. " ] missing"
     end
@@ -5697,12 +5735,12 @@ function state:IsKnown( sID, notoggle )
         return false, "trait [ " .. ability.trait .. " ] missing"
     end
 
-    if ability.equipped and not state.equipped[ ability.equipped ] then
-        return false, "equipment [ " .. ability.equipped .. " ] missing"
+    if ability.spec and not state.spec[ ability.spec ] then
+        return false, "wrong specialization"
     end
 
-    if ability.item and not state.equipped[ ability.item ] then
-        return false, "item [ " .. ability.item .. " ] missing"
+    if ability.nospec and state.spec[ ability.nospec ] then
+        return false, "spec [ " .. ability.nospec .. " ] disallowed"
     end
 
     if ability.noOverride then
@@ -5818,6 +5856,20 @@ do
             end
         end
 
+        if ability.usable ~= nil then
+            if type( ability.usable ) == 'number' then
+                if IsUsableSpell( ability.usable ) then
+                    return true
+                end
+                return false, "IsSpellUsable(" .. ability.usable .. ") was false"
+            elseif type( rawget( ability, "usable" ) ) == 'boolean' then
+                return ability.usable
+            end
+            local usable, reason = ability.funcs.usable()
+            if usable then return true end
+            return false, reason or "ability 'usable' function returned false without explanation"
+        end
+
         if ability.disabled then
             return false, "ability.disabled returned true"
         end
@@ -5857,20 +5909,6 @@ do
 
         local hook, reason = ns.callHook( "IsUsable", spell )
         if hook == false then return false, reason end
-
-        if ability.usable ~= nil then
-            if type( ability.usable ) == 'number' then
-                if IsUsableSpell( ability.usable ) then
-                    return true
-                end
-                return false, "IsSpellUsable(" .. ability.usable .. ") was false"
-            elseif type( rawget( ability, "usable" ) ) == 'boolean' then
-                return ability.usable
-            end
-            local usable, reason = ability.funcs.usable()
-            if usable then return true end
-            return false, reason or "ability 'usable' function returned false without explanation"
-        end
 
         return true        
     end
