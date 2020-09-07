@@ -511,7 +511,7 @@ local Timer = {
     Output = function( self )
         if not Hekili.ActiveDebug then return "" end
 
-        local o = string.format( "%.2f", self.v[1] - self.start )
+        local o = ""
 
         for i = 2, #self.n do
             o = string.format( "%s:%s:%.2f", o, self.n[i], ( self.v[i] - self.v[i-1] ) )
@@ -1070,7 +1070,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     end
                 
                     if debug and action ~= "call_action_list" and action ~= "run_action_list" and action ~= "use_items" then
-                        self:Debug( "Time spent on this action:  %.2fms\nTimeData:%s-%s-%d:%s:%.2f:%s", Timer:Total(), packName, listName, actID, action, Timer:Total(), Timer:Output() )
+                        self:Debug( "Time spent on this action:  %.2fms\nTimeData:%s-%s-%d:%s:%.2f%s", Timer:Total(), packName, listName, actID, action, Timer:Total(), Timer:Output() )
                     end
                 end
             else
@@ -1113,7 +1113,6 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     self:ResetSpellCaches()
     state:ResetVariables()
-    scripts:ResetCache()
 
     local display = rawget( self.DB.profile.displays, dispName )
     local pack = rawget( self.DB.profile.packs, packName )

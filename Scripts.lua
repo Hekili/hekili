@@ -1186,78 +1186,48 @@ end
 scripts.ConvertScript = ConvertScript
 
 
-do
-    local cacheTime = 0
-    local cache = {}
+function scripts:CheckScript( scriptID, action, elem )
+    local prev_action = state.this_action
+    if action then state.this_action = action end
 
-    function scripts:CheckScript( scriptID, action, elem )
-        local moment = state.now + state.offset + state.delay
+    local script = self.DB[ scriptID ]
 
-        if moment ~= cacheTime then
-            if Hekili.ActiveDebug then Hekili:Debug( "Resetting CheckScript cache as time changed from %.2f to %.2f ( %.2f ).", cacheTime, moment, moment - cacheTime ) end
-            cacheTime = moment
-            twipe( cache )
-        end
-
-        local uniqueID = scriptID .. "-" .. state.query_time
-        if cache[ uniqueID ] ~= nil then return cache[ uniqueID ] end
-
-        local prev_action = state.this_action
-        if action then state.this_action = action end
-
-        local script = self.DB[ scriptID ]
-
-        if not script then
-            state.this_action = prev_action
-            cache[ uniqueID ] = false
-            return false
-        end
-
-        if not elem then
-            if script.Error then
-                state.this_action = prev_action
-                cache[ uniqueID ] = false
-                return false, script.Error
-
-            elseif not script.Conditions then
-                state.this_action = prev_action
-                cache[ uniqueID ] = true
-                return true
-
-            else
-                -- local success, value = pcall( script.Conditions )
-                local success, value = true, script.Conditions()
-
-                if success then
-                    state.this_action = prev_action
-                    cache[ uniqueID ] = value
-                    return value
-                end
-            end
-
-        else
-            if not script.Modifiers[ elem ] then
-                state.this_action = prev_action
-                return nil, elem .. " not set."
-
-            else
-                local success, value = pcall( script.Modifiers[ elem ] )
-
-                if success then
-                    state.this_action = prev_action
-                    return value
-                end
-            end
-        end
-
+    if not script then
         state.this_action = prev_action
-        cache[ uniqueID ] = false
         return false
     end
 
-    function scripts:ResetCache()
-        twipe( cache )
+    if not elem then
+        if script.Error then
+            state.this_action = prev_action
+            return false, script.Error
+
+        elseif not script.Conditions then
+            state.this_action = prev_action
+            return true
+
+        end
+
+        state.this_action = prev_action
+        return script.Conditions()
+
+    else
+        if not script.Modifiers[ elem ] then
+            state.this_action = prev_action
+            return nil, elem .. " not set."
+
+        else
+            local success, value = pcall( script.Modifiers[ elem ] )
+
+            if success then
+                state.this_action = prev_action
+                return value
+            end
+        end
     end
+
+    state.this_action = prev_action
+    return false
 end
 
 

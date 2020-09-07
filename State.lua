@@ -1338,7 +1338,7 @@ do
 
         if script then
             if script.Recheck then
-                -- if Hekili.ActiveDebug then Hekili:Debug( "Recheck times for this entry are: %s", scripts:GetConditionsAndValues( script.ID, nil, nil, true ) ) end
+                if Hekili.ActiveDebug then Hekili:Debug( "Recheck times for this entry are: %s", scripts:GetConditionsAndValues( script.ID, nil, nil, true ) ) end
                 recheckHelper( times, script.Recheck() )
             end
 
@@ -4880,8 +4880,6 @@ do
         
         end
 
-        scripts:ResetCache()
-
         state.this_action = curr_action
         state:RemoveEvent( e )
     end
@@ -5031,8 +5029,7 @@ function state.reset( dispName )
     state.resetting = true
 
     state.ClearCycle()
-    state:ResetVariables()    
-    scripts:ResetCache()
+    state:ResetVariables()
 
     state.selectionTime = 60
     state.selectedAction = nil
@@ -5856,20 +5853,6 @@ do
             end
         end
 
-        if ability.usable ~= nil then
-            if type( ability.usable ) == 'number' then
-                if IsUsableSpell( ability.usable ) then
-                    return true
-                end
-                return false, "IsSpellUsable(" .. ability.usable .. ") was false"
-            elseif type( rawget( ability, "usable" ) ) == 'boolean' then
-                return ability.usable
-            end
-            local usable, reason = ability.funcs.usable()
-            if usable then return true end
-            return false, reason or "ability 'usable' function returned false without explanation"
-        end
-
         if ability.disabled then
             return false, "ability.disabled returned true"
         end
@@ -5909,6 +5892,20 @@ do
 
         local hook, reason = ns.callHook( "IsUsable", spell )
         if hook == false then return false, reason end
+
+        if ability.usable ~= nil then
+            if type( ability.usable ) == 'number' then
+                if IsUsableSpell( ability.usable ) then
+                    return true
+                end
+                return false, "IsSpellUsable(" .. ability.usable .. ") was false"
+            elseif type( rawget( ability, "usable" ) ) == 'boolean' then
+                return ability.usable
+            end
+            local usable, reason = ability.funcs.usable()
+            if usable then return true end
+            return false, reason or "ability 'usable' function returned false without explanation"
+        end
 
         return true        
     end
