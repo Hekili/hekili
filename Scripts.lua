@@ -384,45 +384,55 @@ do
         { "^cooldown%.([a-z0-9_]+)%.up$",           "cooldown.%1.remains" },
         { "^!?cooldown%.([a-z0-9_]+)%.remains$",    "cooldown.%1.remains" },
         
-        { "^charges_fractional[>=]+(.-)$",          "(%1-charges_fractional)*recharge" },
-        { "^charges>=?(.-)$",                       "(1+%1-charges_fractional)*recharge" },
+        { "^charges_fractional=(.-)$",              "(%1-charges_fractional)*recharge" },
+        { "^charges_fractional>=?(.-)$",            "0.01+(%1-charges_fractional)*recharge" },
+        { "^charges=(.-)$",                         "(%1-charges_fractional)*recharge" },
+        { "^charges>=?(.-)$",                       "0.01+(%1-charges_fractional)*recharge" },
+
         { "^(cooldown%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$",
                                                     "(%2-%1.charges_fractional)*%1.recharge" },
+
         { "^(cooldown%.[a-z0-9_]+)%.charges>=?(.-)$",
                                                     "(1+%2-%1.charges_fractional)*recharge" },
+
         { "^(action%.[a-z0-9_]+)%.charges_fractional[>=]+(.-)$",
                                                     "(%2-%1.charges_fractional)*%1.recharge" },
+
         { "^(action%.[a-z0-9_]+)%.charges>=?(.-)$",
                                                     "(1+%2-%1.charges_fractional)*%1.recharge" },
         
-        { "^full_recharge_time>=?(.-)$", "full_recharge_time-%1" },
+        { "^full_recharge_time>=?(.-)$",            "full_recharge_time-%1" },
         
         { "^!(action%.[a-z0-9]+)%.executing$",      "%1.execute_remains" },
-        { "^(.-time_to_die)<=?(.-)$",               "%1 - %2" },
+        { "^(.-time_to_die)<=?(.-)$",               "%1-%2" },
         { "^(.-)%.time_to_(.-)<=?(.-)$",            "%1.time_to_%2-%3" },
 
         { "^debuff%.festering_wound%.stack[>=]=?(.-)$", -- UH DK helper during Unholy Frenzy.
                                                     "time_to_wounds(%1)" },
+
         { "^dot%.festering_wound%.stack[>=]=?(.-)$",    -- UH DK helper during Unholy Frenzy.
                                                     "time_to_wounds(%1)" },
 
         { "^exsanguinated$",                        "remains" }, -- Assassination
         { "^!?(debuff%.[a-z0-9_]+)%.exsanguinated$",
                                                     "%1.remains" }, -- Assassination
+
         { "^!?(dot%.[a-z0-9_]+)%.exsanguinated$",   "%1.remains" }, -- Assassination
         { "^ss_buffed",                             "remains" }, -- Assassination
-        { "^!?(debuff%.[a-z0-9_]+)%.ss_buffed$",
-                                                    "%1.remains" }, -- Assassination
+        { "^!?(debuff%.[a-z0-9_]+)%.ss_buffed$",    "%1.remains" }, -- Assassination
         { "^!?(dot%.[a-z0-9_]+)%.ss_buffed$",       "%1.remains" }, -- Assassination
         { "^!?consecration.up",                     "consecration.remains" }, -- Prot Paladin
         { "^!?contagion<=?(.-)",                    "contagion-%1" }, -- Affliction Warlock
         
-    { "^!?action%.([a-z0-9_]+)%.in_flight$",        "action.%1.in_flight_remains" }, -- Fire Mage, but others too, potentially.
+        { "^!?action%.([a-z0-9_]+)%.in_flight$",    "action.%1.in_flight_remains" }, -- Fire Mage, but others too, potentially.
+
         { "^!?action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$",
                                                     "action.%1.in_flight_remains-%2" }, -- Fire Mage, but others too, potentially.
-        { "^!?variable.time_to_combustion$",        "variable.time_to_combustion" },
-        { "^!?variable.time_to_combustion<=?(.-)$",
-                                                    "variable.time_to_combustion-%1" },
+
+        { "^!?variable%.([a-z0-9_]+)$",             "variable.%1" },
+
+        { "^!?variable%.([a-z0-9_]+)<=?(.-)$",
+                                                    "variable.%1-%2" },
 
         { "^!?(pet%.[a-z0-9_]+)%.up",               "%1.remains" },
         { "^!?(pet%.[a-z0-9_]+)%.active",           "%1.remains" },
@@ -440,8 +450,8 @@ do
     -- Things that tick up.
     local increases = {
         ["^time$"] = true,
-        ["charges"] = true,
-        ["charges_fractional"] = true,        
+        -- ["charges"] = true,
+        -- ["charges_fractional"] = true,        
     }
 
     local removals = {
@@ -558,7 +568,7 @@ do
         local recheck
 
         conditions = conditions:gsub( " +", "" )
-        conditions = self:EmulateSyntax( conditions, true )
+        -- conditions = self:EmulateSyntax( conditions, true )
 
         local exprs = self:SplitExpr( conditions )
 
@@ -568,7 +578,7 @@ do
 
                 if converted then
                     -- calc = self:EmulateSyntax( calc, true )
-                    recheck = ( recheck and ( recheck .. ", " ) or "return " ) .. calc
+                    recheck = ( recheck and ( recheck .. ", " ) or "" ) .. calc
                 end
             end
         end
@@ -693,7 +703,7 @@ do
                  if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
               end
 
-              c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~]+)" )
+              c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~][&%|%-%+*%%/><%?=%~]?)" )
 
               table.insert( results, {
                     s = c,
@@ -725,15 +735,29 @@ do
         local output = ""
 
         -- So at this point, we've broken our string into all of its components.  Now let's iterate through and fix it up.
-        for i = 1, #results do
+        local i = 1
+
+        while( i <= #results ) do
             local prev, piece, next = i > 1 and results[i-1] or nil, results[i], i < #results and results[i+1] or nil
 
-            if piece.t == "expr" then
+            -- print( prev and prev.a or "nil", piece.s, next and next.a or "nil" )
+
+            -- If we get a math op (*) followed by a not (!) followed by an expression, we want to safely wrap up the !expr in safenum().
+            if prev and prev.t == "op" and math_ops[ prev.a ] and piece.t == "op" and piece.a == "!" and next and next.t == "expr" then
+                table.remove( results, i )
+                piece = results[ i ]
+                next = results[ i + 1 ]
+                piece.s = "(!" .. piece.s .. ")"
+            end
+
+            if piece and piece.t == "expr" then
                 if piece.r then
                     if piece.s == orig then
                         if bracketed then orig = "(" .. orig .. ")" end
                         if ands then orig = orig:gsub( "&", " and " ) end
                         if ors then orig = orig:gsub( "|", " or " ) end
+                        if nots then orig = orig:gsub( "!", " not " ) end
+
                         esDepth = esDepth - 1
                         return orig 
                     end
@@ -745,7 +769,8 @@ do
                     -- Lets see what it returns and wrap it in btoi if it is a boolean expr.
                     if piece.s:find("^variable%.") then
                         -- Let's wrap the variable just to be sure.
-                        piece.s = "safenum(" .. piece.s .. ")"
+                        if piece.s:sub(1, 1) == "(" then piece.s = "safenum" .. piece.s
+                        else piece.s = "safenum(" .. piece.s .. ")" end
                     else
                         local func, warn = loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
                         if func then
@@ -768,7 +793,8 @@ do
                     -- This expression is not having math operations performed on it.
                     -- Let's make sure it's a boolean.
                     if piece.s:find("^variable") then
-                        piece.s = "safebool(" .. piece.s .. ")"
+                        if piece.s:sub(1, 1) == "(" then piece.s = "safebool" .. piece.s
+                        else piece.s = "safebool(" .. piece.s .. ")" end
                     else    
                         local func, warn = loadstring( "return " .. ( SimToLua( piece.s ) or "" ) )
                         if func  then
@@ -786,7 +812,8 @@ do
                 end
             end
 
-           output = output .. piece.s
+            output = output .. piece.s        
+            i = i + 1
         end
 
         if bracketed then output = "(" .. output .. ")" end
@@ -1052,13 +1079,20 @@ local function ConvertScript( node, hasModifiers, header )
     end
 
     -- autorecheck...    
-    local rs, rc, erc
-    if t and t ~= "" then        
+    local rs, rc, erc, rEle
+    if t and t ~= "" then
         rs = scripts:BuildRecheck( node.criteria )
-        if rs then 
+        if rs then
+            local orig = rs
+            -- rs = scripts:EmulateSyntax( rs )
             rs = SimToLua( rs )
-            rc, erc = loadstring( "-- " .. header .. " recheck\n" .. rs )
-            if rc then setfenv( rc, state ) end
+            rc, erc = loadstring( "-- " .. header .. " recheck\nreturn " .. rs )
+            if rc then
+                setfenv( rc, state )                
+            end
+
+            rEle = GetScriptElements( orig )
+            rEle.zzz = orig
 
             if type( rc ) ~= "function" then
                 Hekili:Error( "Recheck function for " .. node.criteria .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
@@ -1070,10 +1104,11 @@ local function ConvertScript( node, hasModifiers, header )
     local output = {
         Conditions = sf,
         Error = e,
+        Elements = se,
         Recheck = rc,
         RecheckScript = rs,
         RecheckError = erc,
-        Elements = se,
+        RecheckElements = rEle,
         Modifiers = {},
         ModElements = {},
         ModEmulates = {},
@@ -1084,7 +1119,9 @@ local function ConvertScript( node, hasModifiers, header )
 
         Lua = clean and clean:trim() or nil,
         Emulated = t and t:trim() or nil,
-        SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil,        
+        SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil,
+
+        ID = header
     }
 
     if hasModifiers then
@@ -1112,8 +1149,9 @@ local function ConvertScript( node, hasModifiers, header )
                     local var_val, var_recheck, var_err
                     var_val = scripts:BuildRecheck( node[m] )
                     if var_val then
+                        var_val = scripts:EmulateSyntax( var_val )
                         var_val = SimToLua( var_val )
-                        var_recheck, var_err = loadstring( "-- val " ..header .. " recheck\n" .. var_val )
+                        var_recheck, var_err = loadstring( "-- val " ..header .. " recheck\nreturn " .. var_val )
                         if var_recheck then setfenv( var_recheck, state ) end
 
                         if type( var_recheck ) ~= "function" then
@@ -1140,25 +1178,6 @@ local function ConvertScript( node, hasModifiers, header )
                 end
             end
         end
-
-        --[[ local name = nameMap[ node.action ]
-        if name and node[ name ] then
-            -- local bitwrapped = SimToLua( scripts:EmulateSyntax( node[ name ] ) )
-            local o = tostring( node[ name ] )
-            o = "'" .. o .. "'"
-            output.SpecialMods = output.SpecialMods .. " - " .. name .. " : " .. o
-
-            local sf, e
-            sf, e = loadstring( "return " .. o )
-
-            if sf then
-                setfenv( sf, state )
-                output.Modifiers[ name ] = sf
-                output.ModElements[ name ] = GetScriptElements( o )
-            else
-                output.Modifiers[ name ] = e
-            end
-        end ]]
     end
 
     state.scriptID = previousScript
@@ -1172,7 +1191,7 @@ do
     local cache = {}
 
     function scripts:CheckScript( scriptID, action, elem )
-        local moment = state.now + state.offset
+        local moment = state.now + state.offset + state.delay
 
         if moment ~= cacheTime then
             if Hekili.ActiveDebug then Hekili:Debug( "Resetting CheckScript cache as time changed from %.2f to %.2f ( %.2f ).", cacheTime, moment, moment - cacheTime ) end
@@ -1590,44 +1609,36 @@ local key_cache = setmetatable( {}, {
 
 local checked = {}
 
-function scripts:GetConditionsAndValues( scriptID, listName, actID )
-    if listName and actID then
-        scriptID = scriptID .. ":" .. listName .. ":" .. actID
-    end
-
-    local script = self.DB[ scriptID ]
-
-    if script and script.SimC and script.SimC ~= "" then        
-        local output = script.SimC
-
+local function embedConditionsAndValues( source, elements )
+    if source and source ~= "" then        
         local wasDebugging = Hekili.ActiveDebug
         Hekili.ActiveDebug = false
 
-        if script.Elements then
+        if elements then
             wipe( checked )
 
-            for k, v in pairs( script.Elements ) do
+            for k, v in pairs( elements ) do
                 if not checked[ k ] then
                     local key = key_cache[ k ]
                     local success, value = pcall( v, true )
 
                     -- if emsg then value = emsg end
                     if type( value ) == 'number' then
-                        if output == key then
-                            output = output .. "[" .. tostring( value ) .. "]"
+                        if source == key then
+                            source = source .. "[" .. tostring( value ) .. "]"
                         else
-                            output = output:gsub( "([^a-z0-9_.[])("..key..")([^a-z0-9_.[])", format( "%%1%%2[%.2f]%%3", value ) )
-                            output = output:gsub( "^("..key..")([^a-z0-9_.[])", format( "%%1[%.2f]%%2", value ) )
-                            output = output:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%.2f]", value ) )
+                            source = source:gsub( "([^a-z0-9_.[])("..key..")([^a-z0-9_.[])", format( "%%1%%2[%.2f]%%3", value ) )
+                            source = source:gsub( "^("..key..")([^a-z0-9_.[])", format( "%%1[%.2f]%%2", value ) )
+                            source = source:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%.2f]", value ) )
                         end
-                        -- output = output:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
+                        -- source = source:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
                     else
-                        if output == key then
-                            output = output .. "[" .. tostring( value ) .. "]"
+                        if source == key then
+                            source = source .. "[" .. tostring( value ) .. "]"
                         else
-                            output = output:gsub( "([^a-z0-9_.[])("..key..")([^a-z0-9_.[])", format( "%%1%%2[%s]%%3", tostring( value ) ) )
-                            output = output:gsub( "^("..key..")([^a-z0-9_.[])", format( "%%1[%s]%%2", tostring( value ) ) )
-                            output = output:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%s]", tostring( value ) ) )
+                            source = source:gsub( "([^a-z0-9_.[])("..key..")([^a-z0-9_.[])", format( "%%1%%2[%s]%%3", tostring( value ) ) )
+                            source = source:gsub( "^("..key..")([^a-z0-9_.[])", format( "%%1[%s]%%2", tostring( value ) ) )
+                            source = source:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%s]", tostring( value ) ) )
                         end
                     end
 
@@ -1638,10 +1649,25 @@ function scripts:GetConditionsAndValues( scriptID, listName, actID )
         end
         
         if wasDebugging then Hekili.ActiveDebug = true end
-        return output
+        return source
     end
 
     return "NONE"
+end
+
+
+function scripts:GetConditionsAndValues( scriptID, listName, actID, recheck )
+    if listName and actID then
+        scriptID = scriptID .. ":" .. listName .. ":" .. actID
+    end
+
+    local script = self.DB[ scriptID ]
+    
+    if recheck then
+        return embedConditionsAndValues( script.RecheckScript, script.RecheckElements )
+    end
+
+    return embedConditionsAndValues( script.SimC, script.Elements )
 end
 
 
