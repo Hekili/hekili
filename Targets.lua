@@ -7,6 +7,8 @@ local Hekili = _G[addon]
 local class = Hekili.Class
 local state = Hekili.State
 
+local FindUnitBuffByID = ns.FindUnitBuffByID
+
 local targetCount = 0
 local targets = {}
 
@@ -48,12 +50,13 @@ end
 
 
 local enemyExclusions = {
-    ["120651"] = true, -- Explosives
-    ["23775"]  = true, -- Head of the Horseman,
-    ["156227"] = true, -- Neferset Denizen,
-    ["160966"] = true, -- Thing from Beyond?
-    ["161895"] = true, -- Thing from Beyond?
-    ["157452"] = true, -- Nightmare Antigen in Carapace.
+    ["120651"] = true,      -- Explosives
+    [ "23775"] = true,      -- Head of the Horseman
+    ["156227"] = true,      -- Neferset Denizen
+    ["160966"] = true,      -- Thing from Beyond?
+    ["161895"] = true,      -- Thing from Beyond?
+    ["157452"] = true,      -- Nightmare Antigen in Carapace
+    ["158041"] = 310126,    -- N'Zoth with Psychic Shell
 }
 
 local f = CreateFrame("Frame")
@@ -121,8 +124,14 @@ do
             for unit, guid in pairs(npGUIDs) do
                 if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitHealth(unit) > 1 and not UnitPhaseReason(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
                     local npcid = guid:match("(%d+)-%x-$")
+                    local excluded = enemyExclusions[npcid]
 
-                    if not enemyExclusions[npcid] then
+                    if excluded and type( excluded ) == "number" then
+                        -- If our table has a number, unit is ruled out only if the buff is present.
+                        excluded = not FindUnitBuffByID( unit, excluded )
+                    end
+
+                    if not excluded then
                         local _, range = RC:GetRange(unit)
 
                         guidRanges[ guid ] = range
@@ -146,8 +155,14 @@ do
                 if guid and counted[ guid ] == nil then
                     if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitHealth(unit) > 1 and not UnitPhaseReason(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
                         local npcid = guid:match("(%d+)-%x-$")
+                        local excluded = enemyExclusions[npcid]
+
+                        if excluded and type( excluded ) == "number" then
+                            -- If our table has a number, unit is ruled out only if the buff is present.
+                            excluded = not FindUnitBuffByID( unit, excluded )
+                        end    
     
-                        if not enemyExclusions[npcid] then
+                        if not excluded then
                             local _, range = RC:GetRange(unit)
     
                             guidRanges[ guid ] = range
