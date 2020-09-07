@@ -89,7 +89,7 @@ end
 function ns.StopEventHandler()
     events:SetScript( "OnEvent", nil )
 
-    for unit, unitFrame in pairs( unitEvents ) do
+    for unit, unitFrame in pairs( unitHandlers ) do
         unitFrame:SetScript( "OnEvent", nil )
     end
 
