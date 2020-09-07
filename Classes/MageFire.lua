@@ -341,6 +341,69 @@ if UnitClassBase( "player" ) == "MAGE" then
 
         if Hekili.ActiveDebug then Hekili:Debug( "*** HOT STREAK END ***\nHeating Up: %s, %.2f\nHot Streak: %s, %.2f\n***", buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains ) end
     end )
+
+
+    --[[ spec:RegisterVariable( "combustion_on_use", function ()
+        return equipped.manifesto_of_madness or equipped.gladiators_badge or equipped.gladiators_medallion or equipped.ignition_mages_fuse or equipped.tzanes_barkspines or equipped.azurethos_singed_plumage or equipped.ancient_knot_of_wisdom or equipped.shockbiters_fang or equipped.neural_synapse_enhancer or equipped.balefire_branch
+    end )
+
+    spec:RegisterVariable( "font_double_on_use", function ()
+        return equipped.azsharas_font_of_power and variable.combustion_on_use
+    end )
+
+    -- Items that are used outside of Combustion are not used after this time if they would put a trinket used with Combustion on a sharded cooldown.
+    spec:RegisterVariable( "on_use_cutoff", function ()
+        return 20 * ( ( variable.combustion_on_use and not variable.font_double_on_use ) and 1 or 0 ) + 40 * ( variable.font_double_on_use and 1 or 0 ) + 25 * ( ( equipped.azsharas_font_of_power and not variable.font_double_on_use ) and 1 or 0 ) + 8 * ( ( equipped.manifesto_of_madness and not variable.font_double_on_use ) and 1 or 0 )
+    end )
+
+    -- Combustion is only used without Worldvein Resonance or Memory of Lucid Dreams if it will be available at least this many seconds before the essence's cooldown is ready.
+    spec:RegisterVariable( "hold_combustion_threshold", function ()
+        return 20
+    end )
+
+    -- This variable specifies the number of targets at which Hot Streak Flamestrikes outside of Combustion should be used.
+    spec:RegisterVariable( "hot_streak_flamestrike", function ()
+        if talent.flame_patch.enabled then return 2 end
+        return 99
+    end )
+
+    -- This variable specifies the number of targets at which Hard Cast Flamestrikes outside of Combustion should be used as filler.
+    spec:RegisterVariable( "hard_cast_flamestrike", function ()
+        if talent.flame_patch.enabled then return 3 end
+        return 99
+    end )
+
+    -- Using Flamestrike after Combustion is over can cause a significant amount of damage to be lost due to the overwriting of Ignite that occurs when the Ignite from your primary Combustion target spreads. This variable is used to specify the amount of time in seconds that must pass after Combustion expires before Flamestrikes will be used normally.
+    spec:RegisterVariable( "delay_flamestrike", function ()
+        return 25
+    end )
+
+    -- With Kindling, Combustion's cooldown will be reduced by a random amount, but the number of crits starts very high after activating Combustion and slows down towards the end of Combustion's cooldown. When making decisions in the APL, Combustion's remaining cooldown is reduced by this fraction to account for Kindling.
+    spec:RegisterVariable( "kindling_reduction", function ()
+        return 0.2
+    end )
+
+    spec:RegisterVariable( "time_to_combustion", function ()
+        local out = ( talent.firestarter.enabled and 1 or 0 ) * firestarter.remains + ( cooldown.combustion.remains * ( 1 - variable.kindling_reduction * ( talent.kindling.enabled and 1 or 0 ) ) - action.rune_of_power.execute_time * ( talent.rune_of_power.enabled and 1 or 0 ) ) * ( not cooldown.combustion.ready and 1 or 0 ) * ( buff.combustion.down and 1 or 0 )
+
+        if essence.memory_of_lucid_dreams.major and buff.memory_of_lucid_dreams.down and cooldown.memory_of_lucid_dreams.remains - out <= variable.hold_combustion_threshold then
+            out = max( out, cooldown.memory_of_lucid_dreams.remains )
+        end
+
+        if essence.worldvein_resonance.major and buff.worldvein_resonance.down and cooldown.worldvein_resonance.remains - out <= variable.hold_combustion_threshold then
+            out = max( out, cooldown.worldvein_resonance.remains )
+        end
+
+        return out
+    end )
+
+    spec:RegisterVariable( "fire_blast_pooling", function ()
+        return talent.rune_of_power.enabled and cooldown.rune_of_power.remains < cooldown.fire_blast.full_recharge_time and ( variable.time_to_combustion > action.rune_of_power.full_recharge_time ) and ( cooldown.rune_of_power.remains < time_to_die or action.rune_of_power.charges > 0 ) or variable.time_to_combustion < action.fire_blast.full_recharge_time and variable.time_to_combustion < time_to_die
+    end )
+
+    spec:RegisterVariable( "phoenix_pooling", function ()
+        return talent.rune_of_power.enabled and cooldown.rune_of_power.remains < cooldown.phoenix_flames.full_recharge_time and ( variable.time_to_combustion > action.rune_of_power.full_recharge_time ) and ( cooldown.rune_of_power.remains < time_to_die or action.rune_of_power.charges > 0 ) or variable.time_to_combustion < action.phoenix_flames.full_recharge_time and variable.time_to_combustion < time_to_die
+    end ) ]]
     
     
     -- Abilities
@@ -736,7 +799,7 @@ if UnitClassBase( "player" ) == "MAGE" then
             spend = 0.01,
             spendType = "mana",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 1033911,
 
             flightTime = 1,
@@ -827,7 +890,8 @@ if UnitClassBase( "player" ) == "MAGE" then
             end,
 
             handler = function ()
-                if hardcast then removeStack( "pyroclasm" ) end
+                if hardcast then removeStack( "pyroclasm" )
+                else removeBuff( "hot_streak" ) end
             end,
 
             velocity = 35,
