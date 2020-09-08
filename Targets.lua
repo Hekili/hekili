@@ -128,7 +128,7 @@ do
 
                     if excluded and type( excluded ) == "number" then
                         -- If our table has a number, unit is ruled out only if the buff is present.
-                        excluded = not FindUnitBuffByID( unit, excluded )
+                        excluded = FindUnitBuffByID( unit, excluded )
                     end
 
                     if not excluded then
@@ -159,7 +159,7 @@ do
 
                         if excluded and type( excluded ) == "number" then
                             -- If our table has a number, unit is ruled out only if the buff is present.
-                            excluded = not FindUnitBuffByID( unit, excluded )
+                            excluded = FindUnitBuffByID( unit, excluded )
                         end    
     
                         if not excluded then
