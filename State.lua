@@ -69,6 +69,7 @@ state.action = {}
 state.active_dot = {}
 state.args = {}
 state.azerite = {}
+state.conduit = {}
 state.essence = {}
 state.aura = {}
 state.buff = {}
@@ -3388,6 +3389,9 @@ local mt_artifact_traits = {
 setmetatable( state.azerite, mt_artifact_traits )
 state.azerite.no_trait = { rank = 0 }
 state.artifact = state.azerite
+
+setmetatable( state.conduit, mt_artifact_traits )
+state.conduit.no_trait = { rank = 0, mod = 0 }
 
 setmetatable( state.corruptions, mt_artifact_traits )
 state.corruptions.no_trait = { rank = 0 }
