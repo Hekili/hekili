@@ -429,10 +429,10 @@ do
         { "^!?action%.([a-z0-9_]+)%.in_flight_remains<=?(.-)$",
                                                     "action.%1.in_flight_remains-%2" }, -- Fire Mage, but others too, potentially.
 
-        { "^!?variable%.([a-z0-9_]+)$",             "variable.%1" },
+        { "^!?variable%.([a-z0-9_]+)$",             "safenum(variable.%1)" },
 
         { "^!?variable%.([a-z0-9_]+)<=?(.-)$",
-                                                    "variable.%1-%2" },
+                                                    "safenum(variable.%1)-%2" },
 
         { "^!?(pet%.[a-z0-9_]+)%.up$",              "%1.remains" },
         { "^!?(pet%.[a-z0-9_]+)%.active$",          "%1.remains" },
