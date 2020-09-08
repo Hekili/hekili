@@ -919,7 +919,8 @@ local function stripScript( str, thorough )
     -- Collapse whitespace around comparison operators.
     str = str:gsub("[%s-]==[%s-]", "=="):gsub("[%s-]>=[%s-]", ">="):gsub("[%s-]<=[%s-]", "<="):gsub("[%s-]~=[%s-]", "~="):gsub("[%s-]<[%s-]", "<"):gsub("[%s-]>[%s-]", ">")
   else
-    str = str:gsub("[=+]", " "):gsub("[><~]%??", " "):gsub("[%*//%-%+]", " ")
+    -- Strip operators and parentheses.
+    str = str:gsub("[=+]", " "):gsub("[><~]%??", " "):gsub("[%*//%-%+]", " "):gsub("[%(%)]", " ")
   end
 
   str = str:gsub( "([%a%w_])%.(%d+)", "%1[%2]" )
@@ -974,11 +975,15 @@ local function GetScriptElements( script )
     for s in c:gmatch( "[^ ,]+" ) do
         while s:match("^(%b())$" ) do s = s:sub( 2, -2 ) end
         if not e[ s ] and not tonumber( s ) then
-            local ef = loadstring( 'return '.. ( s or true ) )
-            if ef then setfenv( ef, state ) end
+            local ef = loadstring( "return ".. s )
+            if ef then
+                setfenv( ef, state )
+                local success, v = pcall( ef )
 
-            local success, v = pcall( ef )
-            e[ s ] = ef
+                if success then
+                    e[ s ] = ef
+                end
+            end
         end
     end
 
