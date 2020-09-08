@@ -364,17 +364,17 @@ do
     end
 
     local timely = {
-        { "^(d?e?buff%.[a-z0-9_]+)%.down",          "%1.remains" },
-        { "^(dot%.[a-z0-9_]+)%.down",               "%1.remains" },
-        { "!(d?e?buff%.[a-z0-9_]+)%.up",            "%1.remains" },
-        { "!(dot%.[a-z0-9_]+)%.up",                 "%1.remains" },
-        { "!(d?e?buff%.[a-z0-9_]+)%.react",         "%1.remains" },
-        { "!(dot%.[a-z0-9_]+)%.react",              "%1.remains" },
-        { "!(d?e?buff%.[a-z0-9_]+)%.ticking",       "%1.remains" },
-        { "!(dot%.[a-z0-9_]+)%.ticking",            "%1.remains" },
-        { "!?(d?e?buff%.[a-z0-9_]+)%.remains",      "%1.remains" },
-        { "!ticking",                               "remains" },
-        { "^!?remains$",                            "remains" },
+        { "^(d?e?buff%.[a-z0-9_]+)%.down$",         "%1.remains" },
+        { "^(dot%.[a-z0-9_]+)%.down$",              "%1.remains" },
+        { "^!(d?e?buff%.[a-z0-9_]+)%.up$",          "%1.remains" },
+        { "^!(dot%.[a-z0-9_]+)%.up$",               "%1.remains" },
+        { "^!(d?e?buff%.[a-z0-9_]+)%.react$",       "%1.remains" },
+        { "^!(dot%.[a-z0-9_]+)%.react$",            "%1.remains" },
+        { "^!(d?e?buff%.[a-z0-9_]+)%.ticking$",     "%1.remains" },
+        { "^!(dot%.[a-z0-9_]+)%.ticking$",          "%1.remains" },
+        { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$",    "%1.remains" },
+        { "^!ticking",                              "remains" },
+        { "^^!?remains$",                           "remains" },
         { "^refreshable",                           "time_to_refresh" },
         
         { "^(.-)%.deficit<=?(.-)$",                 "%1.timeTo(%1.max-(%2))" },
@@ -434,9 +434,10 @@ do
         { "^!?variable%.([a-z0-9_]+)<=?(.-)$",
                                                     "variable.%1-%2" },
 
-        { "^!?(pet%.[a-z0-9_]+)%.up",               "%1.remains" },
-        { "^!?(pet%.[a-z0-9_]+)%.active",           "%1.remains" },
+        { "^!?(pet%.[a-z0-9_]+)%.up$",              "%1.remains" },
+        { "^!?(pet%.[a-z0-9_]+)%.active$",          "%1.remains" },
     }
+
 
     -- Things that tick down.
     local decreases = {
@@ -476,13 +477,14 @@ do
     -- Given an expression, can we assess whether it is time-based and progressing in a meaningful way?
     -- 1.  Cooldowns
     local function ConvertTimeComparison( expr, verbose )
-        for k, v in pairs( removals ) do
-            expr = expr:gsub( k, v )
+        while expr:match( "^%b()$" ) do
+            expr = expr:sub( 2, -2 )
         end
 
-        local bracketed = expr:match( "(%b())" )
-        if bracketed and bracketed:len() == expr:len() then
-            expr = expr:sub( 2, -2 )
+        local orig = expr
+
+        for k, v in pairs( removals ) do
+            expr = expr:gsub( k, v )
         end
 
         local lhs, comp, rhs = expr:match( "^(.-)([<>=~?]+)(.-)$" )
@@ -529,7 +531,7 @@ do
                     elseif lessOrEqual[ comp ] then
                         return true, rhs .. ".timeTo( " .. lhs .. " )"
                     end
-                end
+                end                
             end
 
             if lhs == "rune" then
@@ -549,9 +551,12 @@ do
             end
         end
 
+        -- If we didn't convert a resource.current to resource.timeTo then let's revert our string.
+        expr = orig
+
         for i, swap in ipairs( timely ) do
             if expr:match( swap[1] ) then
-                return true, expr:gsub( swap[1], swap[2] )
+                return true, expr:gsub( swap[1], swap[2]), swap[1]
             end
         end
 
@@ -574,10 +579,11 @@ do
 
         if #exprs > 0 then            
             for i, expr in ipairs( exprs ) do
-                local converted, calc = ConvertTimeComparison( expr )
+                local converted, calc, why = ConvertTimeComparison( expr )
 
                 if converted then
-                    -- calc = self:EmulateSyntax( calc, true )
+                    calc = SimToLua( calc )
+                    calc = self:EmulateSyntax( calc, true )
                     recheck = ( recheck and ( recheck .. ", " ) or "" ) .. calc
                 end
             end
@@ -703,7 +709,7 @@ do
                  if expr:find( "[&$|$-$+/$%%*]" ) ~= nil then results[#results].r = true end
               end
 
-              c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~][&%|%-%+*%%/><%?=%~]?)" )
+              c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~][&%|%-%+*/><%?=%~]?)" )
 
               table.insert( results, {
                     s = c,
@@ -739,8 +745,6 @@ do
 
         while( i <= #results ) do
             local prev, piece, next = i > 1 and results[i-1] or nil, results[i], i < #results and results[i+1] or nil
-
-            -- print( prev and prev.a or "nil", piece.s, next and next.a or "nil" )
 
             -- If we get a math op (*) followed by a not (!) followed by an expression, we want to safely wrap up the !expr in safenum().
             if prev and prev.t == "op" and math_ops[ prev.a ] and piece.t == "op" and piece.a == "!" and next and next.t == "expr" then
@@ -1088,18 +1092,14 @@ local function ConvertScript( node, hasModifiers, header )
         rs = scripts:BuildRecheck( node.criteria )
         if rs then
             local orig = rs
-
-            rs = SimToLua( rs )
             rc, erc = loadstring( "-- " .. header .. " recheck\nreturn " .. rs )
-            if rc then
-                setfenv( rc, state )                
-            end
+            if rc then setfenv( rc, state ) end
 
             rEle = GetScriptElements( orig )
             rEle.zzz = orig
 
             if type( rc ) ~= "function" then
-                Hekili:Error( "Recheck function for " .. node.criteria .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
+                Hekili:Error( "Recheck function for " .. clean .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
                 rc = nil
             end    
         end
