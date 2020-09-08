@@ -282,7 +282,7 @@ local displayTemplate = {
     keepAspectRatio = true,
     zoom = 30,
 
-    frameStrata = "MEDIUM",
+    frameStrata = "LOW",
     frameLevel = 10,
 
     --[[ font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
@@ -873,7 +873,7 @@ do
             conf.color = { val, v2, v3, v4 }
             set = true
         elseif option == 'frameStrata' then
-            conf.frameStrata = frameStratas[ val ] or "MEDIUM"
+            conf.frameStrata = frameStratas[ val ] or "LOW"
             set = true
         end
 
