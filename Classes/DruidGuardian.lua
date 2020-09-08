@@ -113,6 +113,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     } )
 
 
+    local mod_circle_hot = setfenv( function( x )
+        return legendary.circle_of_life_and_death.enabled and ( 0.85 * x ) or x
+    end, state )
+
+    local mod_circle_dot = setfenv( function( x )
+        return legendary.circle_of_life_and_death.enabled and ( 0.75 * x ) or x
+    end, state )
+
+
     -- Auras
     spec:RegisterAuras( {
         aquatic_form = {
@@ -255,7 +264,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         moonfire = {
             id = 164812,
-            duration = 16,
+            duration = function () return mod_circle_dot( 16 ) end,
+            tick_time = function () return mod_circle_dot( 2 ) * haste end,
             type = "Magic",
             max_stack = 1,
         },
@@ -281,13 +291,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         regrowth = {
             id = 8936,
-            duration = 12,
+            duration = function () return mod_circle_hot( 12 ) end,
             type = "Magic",
             max_stack = 1,
         },
         rejuvenation = {
             id = 774,
-            duration = 15,
+            duration = function () return mod_circle_hot( 15 ) end,
+            tick_time = function () return mod_circle_hot( 3 ) * haste end,
             max_stack = 1,
         },
         soulshape = {
@@ -302,7 +313,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         sunfire = {
             id = 164815,
-            duration = 12,
+            duration = function () return mod_circle_dot( 12 ) end,
+            tick_time = function () return mod_circle_dot( 2 ) * haste end,
             max_stack = 1,
             type = "Magic",
         },
@@ -316,13 +328,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         thrash_bear = {
             id = 192090,
-            duration = 15,
-            tick_time = 3,
+            duration = function () return mod_circle_dot( 15 ) end,
+            tick_time = function () return mod_circle_dot( 3 ) * haste end,
             max_stack = 3,
         },
         thrash_cat = {
             id = 106830,
-            duration = 15,
+            duration = function () return mod_circle_dot( 15 ) end,
+            tick_time = function () return mod_circle_dot( 3 ) * haste end,
             max_stack = 1,            
         },
         tiger_dash = {

@@ -105,6 +105,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     } )
 
 
+    local mod_circle_hot = setfenv( function( x )
+        return legendary.circle_of_life_and_death.enabled and ( 0.85 * x ) or x
+    end, state )
+
+    local mod_circle_dot = setfenv( function( x )
+        return legendary.circle_of_life_and_death.enabled and ( 0.75 * x ) or x
+    end, state )
+    
+
     -- Auras
     spec:RegisterAuras( {
         aquatic_form = {
@@ -239,8 +248,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         moonfire = {
             id = 164812,
-            duration = 28,
-            tick_time = function () return 2 * haste end,
+            duration = function () return mod_circle_dot( 22 ) end,
+            tick_time = function () return mod_circle_dot( 2 ) * haste end,
             type = "Magic",
             max_stack = 1,
         },
@@ -256,7 +265,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         regrowth = {
             id = 8936,
-            duration = 12,
+            duration = function () return mod_circle_hot( 12 ) end,
             type = "Magic",
             max_stack = 1,
         },
@@ -328,15 +337,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         stellar_flare = {
             id = 202347,
-            duration = 24,
-            tick_time = function () return 2 * haste end,
+            duration = function () return mod_circle_dot( 24 ) end,
+            tick_time = function () return mod_circle_dot( 2 ) * haste end,
             type = "Magic",
             max_stack = 1,
         },
         sunfire = {
             id = 164815,
-            duration = 18,
-            tick_time = function () return 2 * haste end,
+            duration = function () return mod_circle_dot( 18 ) end,
+            tick_time = function () return mod_circle_dot( 2 ) * haste end,
             type = "Magic",
             max_stack = 1,
         },
@@ -345,34 +354,16 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         thrash_bear = {
             id = 192090,
-            duration = 15,
+            duration = function () return mod_circle_dot( 15 ) end,
+            tick_time = function () return mod_circle_dot( 3 ) * haste end,
             max_stack = 3,
         },
         thrash_cat ={
             id = 106830, 
-            duration = function()
-                local x = 15 -- Base duration
-                return talent.jagged_wounds.enabled and x * 0.80 or x
-            end,
-            tick_time = function()
-                local x = 3 -- Base tick time
-                return talent.jagged_wounds.enabled and x * 0.80 or x
-            end,
+            duration = function () return mod_circle_dot( 15 ) end,
+            tick_time = function () return mod_circle_dot( 3 ) * haste end,
+            max_stack = 1,
         },
-        --[[ thrash = {
-            id = function ()
-                if buff.cat_form.up then return 106830 end
-                return 192090
-            end,
-            duration = function()
-                local x = 15 -- Base duration
-                return talent.jagged_wounds.enabled and x * 0.80 or x
-            end,
-            tick_time = function()
-                local x = 3 -- Base tick time
-                return talent.jagged_wounds.enabled and x * 0.80 or x
-            end,
-        }, ]]
         tiger_dash = {
             id = 252216,
             duration = 5,
@@ -476,6 +467,20 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 20,
             max_stack = 1
         },
+
+
+        -- Legendaries
+        oneths_perception = {
+            id = 339800,
+            duration = 30,
+            max_stack = 1,
+        },
+
+        oneths_clear_vision = {
+            id = 339797,
+            duration = 30,
+            max_stack = 1,
+        },        
     } )
 
 
@@ -1529,10 +1534,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function ()
-                if buff.oneths_overconfidence.up then return 0 end
-                return 50
-            end,
+            spend = function () return buff.oneths_perception.up and 0 or 50 end,
             spendType = "astral_power",
 
             startsCombat = true,
@@ -1542,7 +1544,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
-                removeBuff( "oneths_overconfidence" )
+                removeBuff( "oneths_perception" )
             end,
         },
 
@@ -1600,7 +1602,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 30,
+            spend = function () return buff.oneths_clear_vision.up and 0 or 30 end,
             spendType = "astral_power",
 
             startsCombat = true,
@@ -1611,7 +1613,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
                 
-                removeBuff( "oneths_intuition" )
+                removeBuff( "oneths_clear_vision" )
                 removeBuff( "sunblaze" )
 
                 if buff.eclipse_solar.up then buff.eclipse_solar.empowerTime = query_time end

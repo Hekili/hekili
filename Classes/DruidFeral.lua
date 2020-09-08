@@ -77,16 +77,25 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     } )
 
 
+    local mod_circle_hot = setfenv( function( x )
+        return legendary.circle_of_life_and_death.enabled and ( 0.85 * x ) or x
+    end, state )
+
+    local mod_circle_dot = setfenv( function( x )
+        return legendary.circle_of_life_and_death.enabled and ( 0.75 * x ) or x
+    end, state )
+
+
     -- Auras
     spec:RegisterAuras( {
         adaptive_swarm_dot = {
             id = 325733,
-            duration = 12,
+            duration = function () return mod_circle_dot( 12 ) end,
             max_stack = 1,
         },
         adaptive_swarm_hot = {
             id = 325748,
-            duration = 12,
+            duration = function () return mod_circle_hot( 12 ) end,
             max_stack = 1,
         },
         aquatic_form = {
@@ -119,10 +128,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         clearcasting = {
             id = 135700,
             duration = 15,
-            max_stack = function()
-                local x = 1 -- Base Stacks
-                return talent.moment_of_clarity.enabled and 2 or x
-            end,
+            max_stack = function() return talent.moment_of_clarity.enabled and 2 or 1 end,
         },
         cyclone = {
             id = 209753,
@@ -263,15 +269,16 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         moonfire = {
             id = 164812,
-            duration = 16,
-            tick_time = function () return 2 * haste end,
+            duration = function () return mod_circle_dot( 16 ) end,
+            tick_time = function () return mod_circle_dot( 2 ) * haste end,
             type = "Magic",
             max_stack = 1,
         },
         moonfire_cat = {
             id = 155625, 
-            duration = 16,
-            tick_time = function() return 2 * haste end,
+            duration = function () return mod_circle_dot( 16 ) end,
+            tick_time = function() return mod_circle_dot( 2 ) * haste end,
+            max_stack = 1,
         },
         moonkin_form = {
             id = 197625,
@@ -308,8 +315,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         rake = {
             id = 155722, 
-            duration = 15,
-            tick_time = function() return 3 * haste end,
+            duration = function () return mod_circle_dot( 15 ) end,
+            tick_time = function() return mod_circle_dot( 3 ) * haste end,
         },
         ravenous_frenzy = {
             id = 323546,
@@ -323,14 +330,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         regrowth = {
             id = 8936,
-            duration = 12,
+            duration = function () return mod_circle_hot( 12 ) end,
             type = "Magic",
             max_stack = 1,
         },
         rip = {
             id = 1079,
-            duration = 24,
-            tick_time = function() return 2 * haste end,
+            duration = function () return mod_circle_dot( 24 ) end,
+            tick_time = function() return mod_circle_dot( 2 ) * haste end,
         },
         savage_roar = {
             id = 52610,
@@ -353,7 +360,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         sunfire = {
             id = 164815,
-            duration = 12,
+            duration = function () return mod_circle_dot( 12 ) end,
             type = "Magic",
             max_stack = 1,
         },
@@ -364,13 +371,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         thrash_bear = {
             id = 192090,
-            duration = 15,
+            duration = function () return mod_circle_dot( 15 ) end,
             max_stack = 3,
         },
         thrash_cat ={
             id = 106830, 
-            duration = 15,
-            tick_time = function() return 3 * haste end,
+            duration = function () return mod_circle_dot( 15 ) end,
+            tick_time = function() return mod_circle_dot( 3 ) * haste end,
         },
         thick_hide = {
             id = 16931,
@@ -789,11 +796,13 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             gcd = "spell",
 
             spend = function ()
-                if buff.clearcasting.up then return 0 end
-
-                local x = 25
-                if buff.scent_of_blood.up then x = x + buff.scent_of_blood.v1 end
-                return x * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
+                if buff.clearcasting.up then
+                    if legendary.cateye_curio.enabled then
+                        return 25 * -0.25
+                    end
+                    return 0
+                end
+                return max( 0, 25 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 ) + buff.scent_of_blood.v1 )
             end,
             spendType = "energy",
 
@@ -1284,7 +1293,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             usable = function () return combo_points.current > 0, "no combo points" end,
             handler = function ()
-                applyDebuff( "target", "rip", 2 + 2 * combo_points.current )
+                applyDebuff( "target", "rip", mod_circle_dot( 2 + 2 * combo_points.current ) )
                 active_dot.rip = active_enemies
 
                 spend( combo_points.current, "combo_points" )
@@ -1521,7 +1530,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 spend( combo_points.current, "combo_points" )
 
-                applyDebuff( "target", "rip", min( 1.3 * class.auras.rip.duration, debuff.rip.remains + class.auras.rip.duration ) )
+                applyDebuff( "target", "rip", mod_circle_dot( min( 1.3 * class.auras.rip.duration, debuff.rip.remains + class.auras.rip.duration ) ) )
                 debuff.rip.pmultiplier = persistent_multiplier
 
                 removeStack( "bloodtalons" )
@@ -1589,8 +1598,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             gcd = "spell",
 
             spend = function ()
-                if buff.clearcasting.up then return 0 end
-                return 40 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 ) 
+                if buff.clearcasting.up then
+                    if legendary.cateye_curio.enabled then return -10 end
+                    return 0
+                end
+                return 40 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
             end,
             spendType = "energy",
 
@@ -1792,7 +1804,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             gcd = "spell",
 
             spend = function ()
-                if buff.clearcasting.up then return 0 end
+                if buff.clearcasting.up then
+                    if legendary.cateye_curio.enabled then return 35 * -0.25 end
+                    return 0
+                end
                 return max( 0, ( 35 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 ) ) + buff.scent_of_blood.v1 )
             end,
             spendType = "energy",
@@ -1863,7 +1878,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             gcd = "spell",
 
             spend = function ()
-                if buff.clearcasting.up then return 0 end
+                if buff.clearcasting.up then
+                    if legendary.cateye_curio.enabled then return -10 end
+                    return 0
+                end
                 return 40 * ( ( buff.berserk.up or buff.incarnation.up ) and 0.6 or 1 )
             end,
             spendType = "energy",
