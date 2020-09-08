@@ -320,7 +320,22 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                     return min( 40, t.count + floor( offset + delay + appliedBuffer ) )
                 end,
             }
-        }        
+        },
+
+
+        -- Conduit
+        essence_break = {
+            id = 320338,
+            duration = 8,
+            max_stack = 1
+        },
+
+        exposed_wound = {
+            id = 339229,
+            duration = 10,
+            max_stack = 1,
+        }
+
     } )
 
 
@@ -487,7 +502,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         blur = {
             id = 198589,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return 60 + ( conduit.fel_defender.enabled and ( conduit.fel_defender.mod / 1000 ) or 0 ) end,
             gcd = "off",
 
             toggle = "defensives",
