@@ -271,7 +271,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         },
 
         maelstrom_weapon = {
-            id = 187881,
+            id = 344179,
             duration = 30,
             max_stack = 10,
         },
