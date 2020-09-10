@@ -275,10 +275,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 63560, 
             duration = 15,
             generate = function( t )
-                local cast = class.abilities.dark_transformation.lastCast or 0
+                local cast = class.abilities.apocalypse.lastCast or 0
                 local up = pet.ghoul.up and cast + 20 > state.query_time
 
-                t.name = class.abilities.dark_transformation.name
+                t.name = t.name or GetSpellInfo( 63560 )
                 t.count = up and 1 or 0
                 t.expires = up and cast + 20 or 0
                 t.applied = up and cast or 0
