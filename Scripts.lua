@@ -1602,7 +1602,7 @@ local function embedConditionsAndValues( source, elements )
                     local success, value = pcall( v, true )
 
                     -- if emsg then value = emsg end
-                    if type( value ) == 'number' then
+                    if type( value ) == "number" then
                         if source == key then
                             source = source .. "[" .. tostring( value ) .. "]"
                         else
@@ -1611,7 +1611,7 @@ local function embedConditionsAndValues( source, elements )
                             source = source:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%.2f]", value ) )
                         end
                         -- source = source:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
-                    else
+                    elseif type( value ) == "string" and not value:find( "function" ) then
                         if source == key then
                             source = source .. "[" .. tostring( value ) .. "]"
                         else
