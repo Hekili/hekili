@@ -183,8 +183,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         consumption = 19220, -- 274156
 
         foul_bulwark = 19221, -- 206974
-        ossuary = 22134, -- 219786
-        relish_in_blood = 22135, -- 317610
+        relish_in_blood = 22134, -- 317610
+        blood_tap = 22135, -- 221699
 
         will_of_the_necropolis = 22013, -- 206967
         antimagic_barrier = 22014, -- 205727
@@ -724,7 +724,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             startsCombat = false,
 
-            handler = function () end
+            talent = "blood_tap",
+
+            handler = function ()
+                gain( 1, "runes" )
+            end
         },
 
 
@@ -979,7 +983,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( talent.ossuary.enabled and buff.bone_shield.stack >= 5 ) and 40 or 45 end,
+            spend = function () return ( level > 57 and buff.bone_shield.stack >= 5 ) and 40 or 45 end,
             spendType = "runic_power",
 
             startsCombat = true,
@@ -1234,8 +1238,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             startsCombat = true,
             texture = 237529,
-
-            talent = "rune_tap",
 
             handler = function ()
                 applyBuff( "rune_tap" )
