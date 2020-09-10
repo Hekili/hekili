@@ -1076,7 +1076,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 29166,
             cast = 0,
             cooldown = 180,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
 
