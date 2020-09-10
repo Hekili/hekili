@@ -210,11 +210,11 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         death_pact = 23373, -- 48743
 
         pestilence = 22532, -- 277234
-        epidemic = 22534, -- 207317
+        unholy_pact = 22534, -- 319230
         defile = 22536, -- 152280
 
         army_of_the_damned = 22030, -- 276837
-        unholy_pact = 22110, -- 319230
+        summon_gargoyle = 22110, -- 49206
         unholy_assault = 22538, -- 207289
     } )
 
@@ -668,7 +668,30 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if level > 57 then gain( 2, "runes" ) end
 
                 if pvptalent.necromancers_bargain.enabled then applyDebuff( "target", "crypt_fever" ) end
+
+                -- DT now built in to Apocalypse.
+                applyBuff( "dark_transformation" )
+                if azerite.helchains.enabled then applyBuff( "helchains" ) end
+                if talent.unholy_pact.enabled then applyBuff( "unholy_pact" ) end
+
+                if legendary.frenzied_monstrosity.enabled then
+                    applyBuff( "frenzied_monstrosity" )
+                    applyBuff( "frenzied_monstrosity_pet" )
+                end
             end,
+
+            auras = {
+                frenzied_monstrosity = {
+                    id = 334895,
+                    duration = 15,
+                    max_stack = 1,
+                },
+                frenzied_monstrosity_pet = {
+                    id = 334896,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -823,7 +846,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
 
 
-        dark_transformation = {
+        --[[ dark_transformation = {
             id = 63560,
             cast = 0,
             cooldown = 60,
@@ -844,19 +867,19 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 end
             end,
 
-            copy = {
+            auras = {
                 frenzied_monstrosity = {
                     id = 334895,
                     duration = 15,
                     max_stack = 1,
                 },
-                frenzied_monstrosity = {
+                frenzied_monstrosity_pet = {
                     id = 334896,
                     duration = 15,
                     max_stack = 1
                 }
             }
-        },
+        }, ]]
 
 
         death_and_decay = {
@@ -887,7 +910,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.sudden_doom.up and 0 or ( lggendary.deadliest_coil.enabled and 30 or 40 ) end,
+            spend = function () return buff.sudden_doom.up and 0 or ( legendary.deadliest_coil.enabled and 30 or 40 ) end,
             spendType = "runic_power",
 
             startsCombat = true,
@@ -895,10 +918,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             handler = function ()
                 removeStack( "sudden_doom" )
-                if cooldown.dark_transformation.remains > 0 then setCooldown( 'dark_transformation', cooldown.dark_transformation.remains - 1 ) end
+                if cooldown.apocalypse.remains > 0 then setCooldown( "apocalypse", max( 0, cooldown.apocalypse.remains - 1.5 ) ) end
                 if legendary.deadliest_coil.enabled and buff.dark_transformation.up then buff.dark_transformation.expires = buff.dark_transformation.expires + 2 end
                 if legendary.deaths_certainty.enabled then
-                    local spell = conduit.night_fae and "deaths_due" or ( talent.defile.enabled and "defile" or "death_and_decay" )
+                    local spell = covenant.night_fae and "deaths_due" or ( talent.defile.enabled and "defile" or "death_and_decay" )
                     if cooldown[ spell ].remains > 0 then reduceCooldown( spell, 2 ) end
                 end                
             end,
@@ -1015,8 +1038,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             startsCombat = true,
             texture = 136066,
-
-            talent = "epidemic",
 
             targets = {
                 count = function () return active_dot.virulent_plague end,
@@ -1286,6 +1307,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             startsCombat = true,
             texture = 458967,
+
+            talent = "summon_gargoyle",
 
             handler = function ()
                 summonPet( "gargoyle", 30 )
