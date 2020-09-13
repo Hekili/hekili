@@ -1421,7 +1421,7 @@ do
             if node.conduitID and node.conduitRank then
                 local spellID = GetConduitSpellID( node.conduitID, node.conduitRank )
 
-                if spellID > 0 then
+                if node.state == Enum.SoulbindNodeState.Selected and spellID > 0 then
                     if not conduits[ spellID ] then
                         Hekili:Error( "Unknown conduit spellID '%d' (%d, %d).", spellID, node.conduit.ID, node.conduitRank )
                     else
