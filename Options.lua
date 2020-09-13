@@ -617,36 +617,6 @@ function Hekili:GetDefaults()
                     defensives = {},
                     custom1 = {},
                     custom2 = {},
-
-                    enabled = false,
-
-                    potion = "prolonged_power",
-                
-                    aoe = 2,
-                    cycle = false,
-                    cycle_min = 6,
-                    gcdSync = true,
-                
-                    buffPadding = 0,
-                    debuffPadding = 0,
-                
-                    nameplates = true,
-                    nameplateRange = 8,
-                
-                    damage = true,
-                    damageExpiration = 8,
-                    damageDots = false,
-                    damageRange = 0,
-                
-                    throttleRefresh = false,
-                    maxRefresh = 10,
-                
-                    throttleTime = false,
-                    maxTime = 33,
-                
-                    -- Toggles
-                    custom1Name = "Custom 1",
-                    custom2Name = "Custom 2",
                 },
             },
 

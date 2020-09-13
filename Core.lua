@@ -61,7 +61,7 @@ local hookOnce = false
 -- OnInitialize()
 -- Addon has been loaded by the WoW client (1x).
 function Hekili:OnInitialize()
-    self.DB = LibStub( "AceDB-3.0" ):New( "HekiliDB", self:GetDefaults() )
+    self.DB = LibStub( "AceDB-3.0" ):New( "HekiliDB", self:GetDefaults(), true )
 
     self.Options = self:GetOptions()
     self.Options.args.profiles = LibStub( "AceDBOptions-3.0" ):GetOptionsTable( self.DB )
