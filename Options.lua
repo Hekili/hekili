@@ -679,10 +679,10 @@ function Hekili:GetDefaults()
                     displayPoint = "TOP",
                     anchorPoint = "BOTTOM",
 
-                    x = -82,
+                    x = -55,
                     y = -225,
 
-                    numIcons = 4,
+                    numIcons = 3,
                     order = 1,
 
                     flash = {
@@ -701,10 +701,10 @@ function Hekili:GetDefaults()
 
                     name = "AOE",
 
-                    x = -82,
+                    x = -55,
                     y = -170,
 
-                    numIcons = 4,
+                    numIcons = 3,
                     order = 2,
 
                     flash = { 
@@ -724,7 +724,7 @@ function Hekili:GetDefaults()
                     name = "Defensives",
                     filter = 'defensives',
 
-                    x = -192,
+                    x = -165,
                     y = -225,
 
                     numIcons = 1,
@@ -747,7 +747,7 @@ function Hekili:GetDefaults()
                     name = "Interrupts",
                     filter = 'interrupts',
 
-                    x = -137,
+                    x = -110,
                     y = -225,
 
                     numIcons = 1,
