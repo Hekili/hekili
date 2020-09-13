@@ -628,7 +628,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 -- 3 MS per target, overload.
 
                 gain( ( buff.stormkeeper.up and 7 or 4 ) * min( 5, active_enemies ), "maelstrom" )
-                removeStack( "stormkeeper" )    
+                removeStack( "stormkeeper" )
 
                 if pet.storm_elemental.up then
                     addStack( "wind_gust", nil, 1 )
@@ -703,7 +703,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 if talent.surge_of_power.enabled then
                     applyBuff( "surge_of_power" )
                 end
-                
+
                 removeBuff( "echoing_shock" )
             end,
         },
@@ -868,6 +868,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 applyDebuff( "target", "frost_shock" )
 
                 if buff.icefury.up then
+                    gain(8, "maelstrom")
                     removeStack( "icefury", 1 )
                 end
 
@@ -957,6 +958,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 removeBuff( "echoing_shock" )
 
                 applyBuff( "icefury", 15, 4 )
+                gain(25, "maelstrom")
             end,
         },
 
@@ -979,7 +981,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 -- 3 MS per target, overload.
 
                 gain( ( buff.stormkeeper.up and 7 or 4 ) * min( 5, active_enemies ), "maelstrom" )
-                removeStack( "stormkeeper" )  
+                removeStack( "stormkeeper" )
             end,
         },
 
@@ -1035,7 +1037,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 removeBuff( "echoing_shock" )
 
-                gain( ( buff.stormkeeper.up and 14 or 8 ) + ( buff.surge_of_power.up and 6 or 0 ), "maelstrom" )
+                gain( ( buff.stormkeeper.up and 11 or 8 ) + ( buff.surge_of_power.up and 3 or 0 ), "maelstrom" )
 
                 removeBuff( "master_of_the_elements" )
                 removeBuff( "surge_of_power" )
