@@ -312,7 +312,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
 
         lethal_poison = {
-            alias = { "instant_poison", "wound_poison" },
+            alias = { "instant_poison", "wound_poison", "slaughter_poison" },
             aliasMode = "first",
             aliasType = "buff",
             duration = 3600
@@ -375,14 +375,23 @@ if UnitClassBase( "player" ) == "ROGUE" then
         all     = { "stealth", "vanish", "shadow_dance", "shadowmeld" }
     }
 
+
     spec:RegisterStateTable( "stealthed", setmetatable( {}, {
         __index = function( t, k )
             if k == "rogue" then
-                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
+            elseif k == "rogue_remains" then
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains )
+
             elseif k == "mantle" then
                 return buff.stealth.up or buff.vanish.up
+            elseif k == "mantle_remains" then
+                return max( buff.stealth.remains, buff.vanish.remains )
+            
             elseif k == "all" then
-                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.shadowmeld.up
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up
+            elseif k == "remains" or k == "all_remains" then
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.shadowmeld.remains )
             end
 
             return false

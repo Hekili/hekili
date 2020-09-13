@@ -214,14 +214,23 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         all     = { "stealth", "vanish", "shadow_dance", "subterfuge", "shadowmeld" }
     }
 
+
     spec:RegisterStateTable( "stealthed", setmetatable( {}, {
         __index = function( t, k )
             if k == "rogue" then
                 return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
+            elseif k == "rogue_remains" then
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains )
+
             elseif k == "mantle" then
                 return buff.stealth.up or buff.vanish.up
+            elseif k == "mantle_remains" then
+                return max( buff.stealth.remains, buff.vanish.remains )
+            
             elseif k == "all" then
                 return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up
+            elseif k == "remains" or k == "all_remains" then
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.shadowmeld.remains )
             end
 
             return false
@@ -629,7 +638,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             max_stack = 1,
         },
         lethal_poison = {
-            alias = { "deadly_poison_dot", "wound_poison_dot" },
+            alias = { "deadly_poison", "wound_poison", "slaughter_poison" },
             aliasMode = "longest",
             aliasType = "debuff",
         },
@@ -651,13 +660,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         rupture = {
             id = 1943,
             duration = function () return talent.deeper_stratagem.enabled and 28 or 24 end,
+            tick_time = function () return debuff.rupture.exsanguinated and haste or ( 2 * haste ) end,
             max_stack = 1,
             meta = {
                 exsanguinated = function ( t ) return t.up and ruptures[ target.unit ] end,
                 last_tick = function ( t ) return ltR[ target.unit ] or t.applied end,
-                tick_time = function ( t )
+                --[[ tick_time = function ( t )
                     --if not talent.exsanguinate.enabled then return 2 * haste end
-                    return t.exsanguinated and haste or ( 2 * haste ) end,
+                    return t.exsanguinated and haste or ( 2 * haste ) end, ]]
             },                    
         },
         shadowstep = {
@@ -1608,8 +1618,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             toggle = "essences",
 
             handler = function ()
-                applyDebuff( "target", "serrated_bone_spike", nil, debuff.serrated_bone_spike.stack + 1 )
-                gain( ( buff.broadside.up and 1 or 0 ) + debuff.serrated_bone_spike.stack, "combo_points" )
+                applyDebuff( "target", "serrated_bone_spike" )
+                gain( ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike, "combo_points" )
                 -- TODO:  Odd behavior on target dummies.
             end,
 
@@ -1667,9 +1677,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             end,
             
             handler = function ()
-                removeBuff( "instant_poison" )
                 applyBuff( "slaughter_poison" )
                 gain( buff.broadside.up and 3 or 2, "combo_points" )
+                removeBuff( "symbols_of_death_crit" )
             end,
 
             auras = {

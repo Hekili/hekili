@@ -272,7 +272,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
 
         lethal_poison = {
-            alias = { "instant_poison", "wound_poison" },
+            alias = { "instant_poison", "wound_poison", "slaughter_poison" },
             aliasMode = "first",
             aliasType = "buff",
             duration = 3600
@@ -330,10 +330,18 @@ if UnitClassBase( "player" ) == "ROGUE" then
         __index = function( t, k )
             if k == "rogue" then
                 return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
+            elseif k == "rogue_remains" then
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains )
+
             elseif k == "mantle" then
                 return buff.stealth.up or buff.vanish.up
+            elseif k == "mantle_remains" then
+                return max( buff.stealth.remains, buff.vanish.remains )
+            
             elseif k == "all" then
                 return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up
+            elseif k == "remains" or k == "all_remains" then
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.shadowmeld.remains )
             end
 
             return false
@@ -620,7 +628,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 gain( 2 + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
                 removeBuff( "symbols_of_death_crit" )
-
             end,
         },
 
@@ -1072,7 +1079,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             startsCombat = true,
             texture = 1373912,
 
-            usable = function () return stealthed.all end,
+            usable = function () return stealthed.all, "requires stealth" end,
             handler = function ()
                 gain( buff.shadow_blades.up and 3 or 2, "combo_points" )
                 removeBuff( "symbols_of_death_crit" )
@@ -1251,7 +1258,12 @@ if UnitClassBase( "player" ) == "ROGUE" then
             startsCombat = false,
             texture = 132320,
 
-            usable = function () return time == 0 and not buff.stealth.up and not buff.vanish.up end,            
+            usable = function ()
+                if time > 0 then return false, "cannot use in combat" end
+                if buff.stealth.up then return false, "cannot use in stealth" end
+                if buff.vanish.up then return false, "cannot use while vanished" end
+                return true
+            end,
             readyTime = function () return buff.shadow_dance.remains end,
             handler = function ()
                 applyBuff( "stealth" )
