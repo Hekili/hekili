@@ -421,6 +421,11 @@ do
         { "^ss_buffed$",                            "remains" }, -- Assassination
         { "^!?(debuff%.[a-z0-9_]+)%.ss_buffed$",    "%1.remains" }, -- Assassination
         { "^!?(dot%.[a-z0-9_]+)%.ss_buffed$",       "%1.remains" }, -- Assassination
+
+        { "^!?stealthed.all$",                      "stealthed.remains" },
+        { "^!?stealthed.mantle$",                   "stealthed.mantle_remains" },
+        { "^!?stealthed.rogue$",                    "stealthed.rogue_remains" },
+
         { "^!?consecration.up",                     "consecration.remains" }, -- Prot Paladin
         { "^!?contagion<=?(.-)",                    "contagion-%1" }, -- Affliction Warlock
         
@@ -1361,7 +1366,7 @@ function scripts:LoadScripts()
 
                             if not script.TimeSensitive then
                                 -- Check for other time-sensitive variables.
-                                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) then
+                                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) or lua:find( "stealthed" ) then
                                     script.TimeSensitive = true
                                 end
                             end
@@ -1611,7 +1616,7 @@ local function embedConditionsAndValues( source, elements )
                             source = source:gsub( "([^a-z0-9_.[])("..key..")$", format( "%%1%%2[%.2f]", value ) )
                         end
                         -- source = source:gsub( "^("..key..")", format( "%%1[%.2f]", value ) )
-                    elseif type( value ) == "string" and not value:find( "function" ) then
+                    elseif type( value ) == "boolean" then
                         if source == key then
                             source = source .. "[" .. tostring( value ) .. "]"
                         else
@@ -1635,18 +1640,25 @@ local function embedConditionsAndValues( source, elements )
 end
 
 
-function scripts:GetConditionsAndValues( scriptID, listName, actID, recheck )
-    if listName and actID then
-        scriptID = scriptID .. ":" .. listName .. ":" .. actID
-    end
 
-    local script = self.DB[ scriptID ]
-    
-    if recheck then
-        return embedConditionsAndValues( script.RecheckScript, script.RecheckElements )
-    end
+do
+    local troubleshootingSnapshotTimes = false
 
-    return embedConditionsAndValues( script.SimC, script.Elements )
+    function scripts:GetConditionsAndValues( scriptID, listName, actID, recheck )
+        if troubleshootingSnapshotTimes then return "[no data]" end
+
+        if listName and actID then
+            scriptID = scriptID .. ":" .. listName .. ":" .. actID
+        end
+
+        local script = self.DB[ scriptID ]
+        
+        if recheck then
+            return embedConditionsAndValues( script.RecheckScript, script.RecheckElements )
+        end
+
+        return embedConditionsAndValues( script.SimC, script.Elements )
+    end
 end
 
 

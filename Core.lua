@@ -312,6 +312,26 @@ function Hekili:AddToStack( script, list, parent, run )
 end
 
 
+local blockValues = {}
+local inTable = {}
+
+local function blockHelper( ... )
+    local n = select( "#", ... )
+    twipe( inTable )
+
+    for i = 1, n do
+        local val = select( i, ... )
+
+        if val > 0 and val >= state.delayMin and not inTable[ val ] then
+            blockValues[ #blockValues + 1 ] = val
+            inTable[ val ] = true
+        end
+    end
+
+    table.sort( blockValues )
+end
+
+
 function Hekili:PopStack()
     local x = tremove( Stack, #Stack )
 
@@ -324,6 +344,10 @@ function Hekili:PopStack()
     end
 
     -- if self.ActiveDebug then self:Debug( "Removed " .. x.list .. " from stack." ) end
+    if x.priorMin then
+        if self.ActiveDebug then Hekili:Debug( "Resetting delayMin to %.2f from %.2f.", x.priorMin, state.delayMin ) end
+        state.delayMin = x.priorMin
+    end
 
     for i = #Block, 1, -1 do
         if Block[ i ].parent == x.script then
@@ -335,7 +359,56 @@ function Hekili:PopStack()
     if x.run then
         -- This was called via Run Action List; we have to make sure it DOESN'T PASS until we exit this list.
         if self.ActiveDebug then self:Debug( "Added " .. x.list .. " to blocklist as it was called via RAL." ) end
+        state:PurgeListVariables( x.list )
         tinsert( Block, x )
+
+        -- Set up new delayMin.        
+        x.priorMin = state.delayMin
+        local script = scripts:GetScript( x.script )
+
+        if script.Recheck then
+            if #blockValues > 0 then twipe( blockValues ) end
+            blockHelper( script.Recheck() )
+
+            local firstFail
+            local actualDelay = state.delay
+
+            for i, check in ipairs( blockValues ) do
+                state.delay = actualDelay + check
+
+                if not scripts:CheckScript( x.script ) then
+                    firstFail = check
+                    break
+                end
+            end
+
+            if firstFail and firstFail > 0 then
+                state.delayMin = actualDelay + firstFail
+
+                local subFail
+
+                -- May want to try to tune even better?
+                for i = 1, 10 do
+                    if subFail then subFail = firstFail - ( firstFail - subFail ) / 2
+                    else subFail = firstFail / 2 end
+
+                    state.delay = actualDelay + subFail
+                    if not scripts:CheckScript( x.script ) then
+                        firstFail = subFail
+                        subFail = nil
+                    end
+                end
+
+                state.delayMin = actualDelay + firstFail
+                if Hekili.ActiveDebug then Hekili:Debug( " - setting delayMin to " .. state.delayMin .. " based on recheck and brute force." ) end
+            else
+                state.delayMin = x.priorMin
+                -- Leave it alone.
+                if Hekili.ActiveDebug then Hekili:Debug( " - leaving delayMin at " .. state.delayMin .. "." ) end
+            end
+
+            state.delay = actualDelay
+        end
     end
 
     InUse[ x.list ] = nil
@@ -566,13 +639,20 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
         local actID = 1
 
         while actID <= #list do
-            -- Watch this section, may impact usage of off-GCD abilities.
+            if rWait < state.delayMax then state.delayMax = rWait end
+
+            --[[ Watch this section, may impact usage of off-GCD abilities.
             if rWait <= state.cooldown.global_cooldown.remains and not state.spec.canCastWhileCasting then
                 if debug then self:Debug( "The recommended action (%s) would be ready before the next GCD (%.2f < %.2f); exiting list (%s).", rAction, rWait, state.cooldown.global_cooldown.remains, listName ) end
                 break
 
-            elseif rWait <= 0.2 then
+            else ]]
+            if rWait <= 0.2 then
                 if debug then self:Debug( "The recommended action (%s) is ready in less than 0.2s; exiting list (%s).", rAction, listName ) end
+                break
+            
+            elseif state.delayMin > state.delayMax then
+                if debug then self:Debug( "The current minimum delay (%.2f) is greater than the current maximum delay (%.2f). Exiting list (%s).", state.delayMin, state.delayMax, listName ) end
                 break
 
             elseif stop then
@@ -580,7 +660,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 break
 
             end
-
 
             Timer:Reset()
 
@@ -598,6 +677,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 if state.whitelist and not state.whitelist[ action ] and ( ability.id < -99 or ability.id > 0 ) then
                     -- if debug then self:Debug( "[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
 
+                elseif rWait <= state.cooldown.global_cooldown.remains and not state.spec.canCastWhileCasting and ability.gcd ~= "off" then
+                    -- if debug then self:Debug( "Only off-GCD abilities would be usable before the currently selected ability; skipping..." ) end
+                
                 else
                     local entryReplaced = false
                     
@@ -644,7 +726,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                         if not script then
                             if debug then self:Debug( "There is no script ( " .. scriptID .. " ).  Skipping." ) end
-                        elseif  script.Error then
+                        elseif script.Error then
                             if debug then self:Debug( "The conditions for this entry contain an error.  Skipping." ) end
                         elseif wait_time > state.delayMax then
                             if debug then self:Debug( "The action is not ready ( %.2f ) before our maximum delay window ( %.2f ) for this query.", wait_time, state.delayMax ) end
@@ -673,7 +755,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                         if not aScriptPass and ts then
                                             -- Time-sensitive criteria, let's see if we have rechecks that would pass.
-                                            state.recheck( action, script, Stack )
+                                            state.recheck( action, script, Stack, Block )
 
                                             if #state.recheckTimes == 0 then
                                                 if debug then self:Debug( "Time-sensitive Criteria FAIL at +%.2f with no valid rechecks - %s", state.offset, scripts:GetConditionsAndValues( scriptID ) ) end
@@ -681,8 +763,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             elseif state.delayMax and state.recheckTimes[ 1 ] > state.delayMax then
                                                 if debug then self:Debug( "Time-sensitive Criteria FAIL at +%.2f with rechecks outside of max delay ( %.2f > %.2f ) - %s", state.offset, state.recheckTimes[ 1 ], state.delayMax, scripts:GetConditionsAndValues( scriptID ) ) end
                                                 ts = false
-                                            elseif state.recheckTimes[ 1 ] > 5 then
-                                                if debug then self:Debug( "Time-sensitive Criteria FAIL at +%.2f with rechecks 5+ seconds out ( %.2f ) - %s", state.offset, state.recheckTimes[ 1 ], scripts:GetConditionsAndValues( scriptID ) ) end
+                                            elseif state.recheckTimes[ 1 ] > rWait then
+                                                if debug then self:Debug( "Time-sensitive Criteria FAIL at +%.2f with rechecks greater than wait time ( %.2f > %.2f ) - %s", state.offset, state.recheckTimes[ 1 ], rWait, scripts:GetConditionsAndValues( scriptID ) ) end
                                                 ts = false
                                             end
                                         else
@@ -732,7 +814,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     local name = state.args.var_name
 
                                     if name ~= nil then
-                                        state:RegisterVariable( name, scriptID, Stack, Block )
+                                        state:RegisterVariable( name, scriptID, listName, Stack )
                                         if debug then self:Debug( " - variable.%s will check this script entry ( %s ).", name, scriptID ) end
                                     else
                                         if debug then self:Debug( " - variable name not provided, skipping." ) end
@@ -752,7 +834,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     local usable, why = state:IsUsable()
                                     if debug then
                                         if usable then
-                                            self:Debug( "The action (%s) is usable at (%.2f + %.2f) with cost of %d.", action, state.offset, state.delay, state.action[ action ].cost or 0 )
+                                            if state.action[ action ].cost and state.action[ action ].cost > 0 then
+                                                self:Debug( "The action (%s) is usable at (%.2f + %.2f) with cost of %d %s.", action, state.offset, state.delay, state.action[ action ].cost or 0, state.action[ action ].cost_type )
+                                            else
+                                                self:Debug( "The action (%s) is usable at (%.2f + %.2f).", action, state.offset, state.delay )
+                                            end
                                         else
                                             self:Debug( "The action (%s) is unusable at (%.2f + %.2f) because %s.", action, state.offset, state.delay, why or "IsUsable returned false" )
                                         end
@@ -803,7 +889,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                 -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.                                        
                                                 if not aScriptPass then
-                                                    state.recheck( action, script, Stack )
+                                                    state.recheck( action, script, Stack, Block )
 
                                                     Timer:Track("Post-Recheck Times")
 

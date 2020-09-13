@@ -1306,6 +1306,7 @@ do
     -- Rechecking System
     -- Setup on a per-ability basis, this gives the prediction engine a head's up that the ability may become ready in a short time.
 
+    local workTable = {}    
     state.recheckTimes = {}
 
     local function recheckHelper( t, ... )
@@ -1313,8 +1314,8 @@ do
 
         for i = 1, n do
             local x = select( i, ... )
-            if type( x ) == "number" and x > state.delayMin and x < state.delayMax then
-                table.insert( t, roundUp( x, 2 ) )
+            if type( x ) == "number" and x > 0 and x >= state.delayMin and x <= state.delayMax then
+                t[ x ] = true
             end
         end
     end
@@ -1327,25 +1328,21 @@ do
     end
 
 
-    function state.recheck( ability, script, stack )
+    function state.recheck( ability, script, stack, block )
         local times = state.recheckTimes
-
-        if #times > 0 then
-            wipe( times )
-        end
+        wipe( workTable )
 
         -- local debug = Hekili.ActiveDebug
         -- local steps = {}
 
         if script then
             if script.Recheck then
-                if Hekili.ActiveDebug then Hekili:Debug( "Recheck times for this entry are: %s", scripts:GetConditionsAndValues( script.ID, nil, nil, true ) ) end
-                recheckHelper( times, script.Recheck() )
+                recheckHelper( workTable, script.Recheck() )
             end
 
             --[[ This was found to be CPU intensive (when repeated a LOT) without commensurate benefit.
             if script.Variables then
-                if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
+                -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
                 for i, var in ipairs( script.Variables ) do
                     local varIDs = state:GetVariableIDs( var )
 
@@ -1353,11 +1350,11 @@ do
                         for _, entry in ipairs( varIDs ) do
                             local vr = scripts.DB[ entry.id ].VarRecheck
                             if vr then
-                                recheckHelper( times, vr() )
+                                recheckHelper( workTable, vr() )
                             end
                         end
                     end
-                    if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
+                    -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
                 end
             end ]]
         end
@@ -1368,12 +1365,12 @@ do
         if data and data.aura then
             local a = state.buff[ data.aura ]
             if a and a.up then
-                recheckHelper( times, a.remains )
+                recheckHelper( workTable, a.remains )
             end
 
             a = state.debuff[ data.aura ]
             if a and a.up then
-                recheckHelper( times, a.remains )
+                recheckHelper( workTable, a.remains )
             end
         end
 
@@ -1385,7 +1382,18 @@ do
                 callScript = callScript and scripts:GetScript( callScript )
 
                 if callScript and callScript.Recheck then
-                    recheckHelper( times, callScript.Recheck() )
+                    recheckHelper( workTable, callScript.Recheck() )
+                end
+            end
+        end
+
+        if block and #block > 0 then
+            for i, caller in ipairs( block ) do
+                local callScript = caller.script
+                callScript = callScript and scripts:GetScript( callScript )
+
+                if callScript and callScript.Recheck then
+                    recheckHelper( workTable, callScript.Recheck() )
                 end
             end
         end
@@ -1400,21 +1408,21 @@ do
                 -- Put tick times into recheck.
                 local i = 1
                 while ( true ) do
-                    if remains - ( i * aura.tick_time ) > 0 then table.insert( times, roundUp( remains - ( i * aura.tick_time ), 2 ) )
+                    if remains - ( i * aura.tick_time ) > 0 then table.insert( workTable, roundUp( remains - ( i * aura.tick_time ), 2 ) )
                     else break end
                     i = i + 1
                 end
 
-                for i = #times, 1, -1 do
-                    local time = times[ i ]
+                for i = #workTable, 1, -1 do
+                    local time = workTable[ i ]
 
                     if ( ( remains - time ) / aura.tick_time ) % 1 <= 0.5 then
-                        table.remove( times, i )
+                        table.remove( workTable, i )
                     end
                 end
             end
 
-            table.insert( times, remains )
+            table.insert( workTable, remains )
         end
 
         --[[ if Hekili.ActiveDebug and #steps > 0 then 
@@ -1428,7 +1436,25 @@ do
             Hekili:Debug( str )
         end ]]
 
+        wipe( times )
+
+        for k in pairs( workTable ) do
+            times[ #times + 1 ] = k
+        end
+
         sort( times )
+
+        if Hekili.ActiveDebug then 
+            if #times > 0 then
+                local o
+                for i, time in ipairs( times ) do
+                    o = string.format( "%s - %.2f", o or "", time )
+                end
+                Hekili:Debug( "Recheck times for this entry are: %s\n%s [ %.2f - %.2f ]", scripts:GetConditionsAndValues( script.ID, nil, nil, true ), o, state.delayMin, state.delayMax )
+            else
+                Hekili:Debug( "Recheck times for this entry are: %s", scripts:GetConditionsAndValues( script.ID, nil, nil, true ) )
+            end
+        end
     end
 end
 
@@ -3583,7 +3609,7 @@ do
 
     local entryPool = {}
 
-    function state:RegisterVariable( key, scriptID, preconditions, preclusions )
+    function state:RegisterVariable( key, scriptID, list, preconditions )
         db[ key ] = db[ key ] or {}
         local data = db[ key ]
         
@@ -3593,10 +3619,11 @@ do
 
         local entry = remove( entryPool ) or {
             mustPass = {},
-            mustFail = {}
+            -- mustFail = {}
         }
 
         entry.id = scriptID
+        entry.list = list
 
         if preconditions then
             for i, prereq in ipairs( preconditions ) do
@@ -3608,7 +3635,7 @@ do
             end
         end
 
-        if preclusions then
+        --[[ if preclusions then
             for i, block in ipairs( preclusions ) do
                 local script = block.script
                 if script ~= 0 then                
@@ -3616,10 +3643,24 @@ do
                     fullPath = fullPath .. "-" .. script
                 end
             end
-        end
+        end ]]
 
         entry.fullPath = fullPath
         insert( data, entry )
+    end
+
+
+    function state:PurgeListVariables( list )
+        for variable, data in pairs( db ) do
+            for i = #data, 1, -1 do
+                if data[ i ].list == list then
+                    local item = remove( data, i )
+                    wipe( item.mustPass )
+                    insert( entryPool, item )
+                    wipe( cache[ variable ] )
+                end
+            end
+        end
     end
 
     
@@ -3628,7 +3669,7 @@ do
             for i = #v, 1, -1 do
                 local x = remove( v, i )
                 wipe( x.mustPass )
-                wipe( x.mustFail )
+                -- wipe( x.mustFail )
                 insert( entryPool, x )
             end
             wipe( cache[ k ] )
@@ -3693,7 +3734,7 @@ do
                         end
                     end
 
-                    if pathState[ currPath ] then
+                    --[[ if pathState[ currPath ] then
                         for e, excl in ipairs( entry.mustFail ) do
                             state.scriptID = excl
                             if scripts:CheckScript( excl ) then
@@ -3701,7 +3742,7 @@ do
                                 break
                             end
                         end
-                    end
+                    end ]]
                 end
 
                 if pathState[ currPath ] then                    
@@ -4280,6 +4321,15 @@ local mt_default_action = {
                 a = a * state[ ability.spendType or class.primaryResource ].modmax
             end
             return a
+
+        elseif k == 'cost_type' then
+            local a = ability.spendType
+            if type( a ) == "string" then return a end
+
+            local a = ability.spend
+            if type( a ) == "function" then a, a = a() end
+            if type( a ) == "string" then return a end
+            return class.primaryResource
 
         elseif k == 'in_flight' then
             if ability and ability.flightTime then
