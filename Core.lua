@@ -673,8 +673,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 state.delay = nil
 
                 local ability = class.abilities[ action ]
+                
+                if not ability then
+                    Hekili:Error( "Priority '%s' uses action '%s' that is not found in the abilities table.", packName, action )
 
-                if state.whitelist and not state.whitelist[ action ] and ( ability.id < -99 or ability.id > 0 ) then
+                elseif state.whitelist and not state.whitelist[ action ] and ( ability.id < -99 or ability.id > 0 ) then
                     -- if debug then self:Debug( "[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
 
                 elseif rWait <= state.cooldown.global_cooldown.remains and not state.spec.canCastWhileCasting and ability.gcd ~= "off" then
