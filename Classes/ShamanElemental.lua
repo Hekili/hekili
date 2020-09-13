@@ -868,7 +868,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 applyDebuff( "target", "frost_shock" )
 
                 if buff.icefury.up then
-                    gain(8, "maelstrom")
+                    gain( 8, "maelstrom" )
                     removeStack( "icefury", 1 )
                 end
 
@@ -953,12 +953,14 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             startsCombat = true,
             texture = 135855,
 
+            talent = "icefury",
+
             handler = function ()
                 removeBuff( "master_of_the_elements" )
                 removeBuff( "echoing_shock" )
 
                 applyBuff( "icefury", 15, 4 )
-                gain(25, "maelstrom")
+                gain( 25, "maelstrom" )
             end,
         },
 
