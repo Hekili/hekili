@@ -769,7 +769,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             cooldown = 12,
             gcd = "spell",
 
-            spend = 30,
+            spend = -30,
             spendType = "maelstrom",
 
             startsCombat = true,
