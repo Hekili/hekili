@@ -207,6 +207,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return combo_points.max
     end )
 
+    spec:RegisterStateExpr( "animacharged_cp", function ()
+        local n = buff.echoing_reprimand.stack
+        if n > 0 then return n end
+        return -1
+    end )
+
 
     local stealth = {
         rogue   = { "stealth", "vanish", "shadow_dance", "subterfuge" },
@@ -914,6 +920,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 debuff.crimson_tempest.pmultiplier = persistent_multiplier
                 debuff.crimson_tempest.exsanguinated = false
 
+                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
@@ -1023,6 +1030,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 applyBuff( "envenom", 1 + combo_points.current )
+                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
@@ -1201,6 +1209,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 end
 
                 applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
+                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
@@ -1341,6 +1350,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     applyBuff( "scent_of_blood", dot.rupture.remains )
                 end
 
+                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( combo_points.current, "combo_points" )
             end,
         },
@@ -1595,11 +1605,34 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             end,
 
             auras = {
-                echoing_reprimand = {
+                echoing_reprimand_2 = {
+                    id = 323558,
+                    duration = 45,
+                    max_stack = 6,
+                },
+                echoing_reprimand_3 = {
                     id = 323559,
                     duration = 45,
                     max_stack = 6,
-                },                
+                },
+                echoing_reprimand_4 = {
+                    id = 323560,
+                    duration = 45,
+                    max_stack = 6,
+                },
+                echoing_reprimand = {
+                    alias = { "echoing_reprimand_2", "echoing_reprimand_3", "echoing_reprimand_4" },
+                    aliasMode = "first",
+                    aliasType = "buff",
+                    meta = {
+                        stack = function ()
+                            if buff.echoing_reprimand_2.up then return 2 end
+                            if buff.echoing_reprimand_3.up then return 3 end
+                            if buff.echoing_reprimand_4.up then return 4 end
+                            return 0
+                        end
+                    }
+                }
             }
         },
 

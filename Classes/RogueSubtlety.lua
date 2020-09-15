@@ -740,6 +740,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     addStack( "alacrity", 20, 1 )
                 end
                 removeBuff( "nights_vengeance" )
+
+                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
@@ -853,6 +855,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 if talent.prey_on_the_weak.enabled then applyDebuff( "target", "prey_on_the_weak" ) end
 
+                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
@@ -943,6 +946,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
             handler = function ()
                 if talent.alacrity.enabled and combo_points.current >= 5 then addStack( "alacrity", nil, 1 ) end
                 applyDebuff( "target", "rupture", 4 + ( 4 * combo_points.current ) )
+
+                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
@@ -981,6 +986,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             usable = function () return combo_points.current > 0, "requires combo_points" end,
             handler = function ()
                 if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity", nil, 1 ) end                
+                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
@@ -1040,9 +1046,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
             
             startsCombat = true,
             texture = 135430,
-            
+
+            usable = function () return combo_points.current > 0, "requires combo_points" end,
             handler = function ()
-                if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity", nil, 1 ) end                
+                if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity", nil, 1 ) end
+                if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
         },
