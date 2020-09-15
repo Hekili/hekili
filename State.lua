@@ -78,7 +78,7 @@ state.consumable = {}
 state.cooldown = {}
 state.corruptions = {} -- TODO: REMOVE
 state.legendary = {}
-state.runeforge = state.legendary -- TODO: Assess if we can safely delete state.legendary table to be consistent with SimC.
+state.runeforge = state.legendary -- Different APLs use runeforge.X.equipped vs. legendary.X.enabled.
 --[[ state.health = {
     resource = "health",
     actual = 10000,
@@ -3392,7 +3392,7 @@ local mt_pvptalents = {
 
 local mt_default_trait = {
     __index = function( t, k )
-        if k == 'enabled' or k == 'minor' then
+        if k == 'enabled' or k == 'minor' or k == 'equipped' then
             return t.rank and t.rank > 0
         elseif k == 'disabled' then
             return not t.rank or t.rank == 0
@@ -4350,6 +4350,9 @@ local mt_default_action = {
 
         elseif k == 'execute_remains' then
             return ( state:IsCasting( t.action ) and max( state:QueuedCastRemains( t.action ), state.gcd.remains ) ) or ( state.prev[1][ t.action ] and state.gcd.remains ) or 0
+
+        elseif k == "last_used" then
+            return state.combat > 0 and max( 0, ability.lastCast - state.combat ) or 0
 
         else
             local val = ability[ k ]
