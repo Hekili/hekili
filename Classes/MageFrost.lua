@@ -820,6 +820,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 applyBuff( "frozen_orb" )
                 applyDebuff( "target", "frozen_orb_snare" )
             end,
+
+            copy = 198149
         },
 
 
