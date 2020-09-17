@@ -242,7 +242,7 @@ do
 end
 
 
-local OnFirstEntrance
+--[[ local OnFirstEntrance
 OnFirstEntrance = function ()
     Hekili.PLAYER_ENTERING_WORLD = true
     Hekili:SpecializationChanged()
@@ -259,7 +259,34 @@ OnFirstEntrance = function ()
     Hekili:BuildUI()
     UnregisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance )
 end
-RegisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance )
+RegisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance ) ]]
+
+
+-- Try to avoid updating between PLAYER_ENTERING_WORLD and PLAYER_LEAVING_WORLD.
+RegisterEvent( "PLAYER_LEAVING_WORLD", function ()
+    Hekili.PLAYER_ENTERING_WORLD = false
+end )
+
+RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
+    if Hekili.PLAYER_ENTERING_WORLD == nil then
+        Hekili.PLAYER_ENTERING_WORLD = true
+        Hekili:SpecializationChanged()
+        Hekili:RestoreDefaults()
+    
+        ns.checkImports()
+        ns.updateGear()
+    
+        if state.combat == 0 and InCombatLockdown() then
+            state.combat = GetTime() - 0.01
+            Hekili:UpdateDisplayVisibility()
+        end
+    
+        Hekili:BuildUI()
+        return
+    end
+
+    Hekili.PLAYER_ENTERING_WORLD = true
+end )
 
 
 do
