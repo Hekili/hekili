@@ -749,7 +749,7 @@ do
         -- Druid/Guardian
         [7092] = { "luffainfused_embrace", 1, 104 }, -- 339060
         [7093] = { "the_natural_orders_will", 1, 104 }, -- 339063
-        [7094] = { "ursocs_lingering_spirit", 1, 104 }, -- 339056
+        [7094] = { "ursocs_fury_remembered", 1, 104 }, -- 339056
         [7095] = { "legacy_of_the_sleeper", 1, 104 }, -- 339062
 
         -- Druid/Restoration
