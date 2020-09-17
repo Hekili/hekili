@@ -640,7 +640,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
             
-            spend = 30,
+            spend = 40,
             spendType = "focus",
             
             startsCombat = true,
@@ -1395,7 +1395,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         }, ]]
 
 
-        -- Pet Abilities
+        --[[ Pet Abilities
         -- Moths
         serenity_dust = {
             id = 264055,
@@ -1570,7 +1570,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 removeBuff( "dispellable_enrage" )
                 removeBuff( "dispellable_magic" )
             end,
-        },
+        }, ]]
 
 
         -- Utility
