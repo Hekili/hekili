@@ -634,7 +634,7 @@ local HekiliSpecMixin = {
             end
         end
 
-        if a.castableWhileCasting then
+        if a.castableWhileCasting or a.funcs.castableWhileCasting then
             self.canCastWhileCasting = true
             self.castableWhileCasting[ a.key ] = true
         end
