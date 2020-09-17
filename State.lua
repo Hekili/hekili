@@ -1400,7 +1400,7 @@ do
 
         -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
 
-        if state.channeling then
+        --[[ if state.channeling then
             local aura = class.auras[ state.channel ]
             local remains = state.channel_remains
 
@@ -1408,22 +1408,21 @@ do
                 -- Put tick times into recheck.
                 local i = 1
                 while ( true ) do
-                    if remains - ( i * aura.tick_time ) > 0 then table.insert( workTable, roundUp( remains - ( i * aura.tick_time ), 2 ) )
+                    if remains - ( i * aura.tick_time ) > 0 then
+                        workTable[ roundUp( remains - ( i * aura.tick_time ), 2 ) ] = true
                     else break end
                     i = i + 1
                 end
 
-                for i = #workTable, 1, -1 do
-                    local time = workTable[ i ]
-
+                for time in pairs( workTable ) do
                     if ( ( remains - time ) / aura.tick_time ) % 1 <= 0.5 then
-                        table.remove( workTable, i )
+                        workTable[ time ] = nil
                     end
                 end
             end
 
-            table.insert( workTable, remains )
-        end
+            workTable[ remains ] = true
+        end ]]
 
         --[[ if Hekili.ActiveDebug and #steps > 0 then 
             -- table.insert( steps, debugprofilestop() )
@@ -1438,7 +1437,8 @@ do
 
         wipe( times )
 
-        for k in pairs( workTable ) do
+        for k, v in pairs( workTable ) do
+            if Hekili.ActiveDebug then Hekili:Debug( "%s - %s", tostring( k ), tostring( v ) ) end
             times[ #times + 1 ] = k
         end
 
@@ -5019,7 +5019,11 @@ do
         for i, entry in ipairs( queue ) do
             if cast_events[ entry.type ] and ( action == nil or entry.action == action ) and entry.start <= self.query_time then
                 self.applyBuff( "casting", entry.time - self.query_time )
-                break
+
+                if entry.action then
+                    local spell = class.abilities[ entry.action ]
+                    if spell.id then self.buff.casting.v1 = spell.id end
+                end
             end
         end
     end
@@ -6020,11 +6024,11 @@ function state:TimeToReady( action, pool )
     local ability = class.abilities[ action ]
 
     if ability.id < -99 or ability.id > 0 then
-        if not ability.castableWhileCasting and self.args.use_off_gcd ~= 1 and ( ability.gcd ~= 'off' or ( ability.item and not ability.essence ) or not ability.interrupt ) then
+        if not ability.castableWhileCasting and ( ability.gcd ~= 'off' or ( ability.item and not ability.essence ) or not ability.interrupt ) then
             wait = max( wait, self.cooldown.global_cooldown.remains )
         end
 
-        if not ability.castableWhileCasting and self.args.use_while_casting ~= 1 and self.buff.casting.remains > 0 then
+        if not ability.castableWhileCasting and self.buff.casting.remains > 0 then
             wait = max( wait, self.buff.casting.remains )
         end
     end
