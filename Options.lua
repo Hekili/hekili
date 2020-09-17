@@ -9190,22 +9190,26 @@ function Hekili:TogglePause( ... )
 end
 
 
--- Key Bindings
 function Hekili:MakeSnapshot( dispName )
 
     self.ActiveDebug = true
 
+    local success = false
+
     for i, display in pairs( ns.UI.Displays ) do
-        if self:IsDisplayActive( i ) and display.alpha > 0 and ( dispName == nil or display.id == dispName ) then
+        if self:IsDisplayActive( i ) and ( dispName == nil or display.id == dispName ) then
             self:ProcessHooks( i )
+            self:SaveDebugSnapshot( i )
+            snapshotted = true
         end
     end
 
-    self:SaveDebugSnapshot( dispName )
-    self:Print( "Snapshot saved." )
-    self.ActiveDebug = false
+    if snapshotted then
+        self:Print( "Snapshot saved." )
+        self:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
+    end
 
-    self:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
+    self.ActiveDebug = false
 
 end
 
