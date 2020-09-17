@@ -6151,7 +6151,7 @@ do
                                                         use_while_casting = {
                                                             type = "toggle",
                                                             name = "Use While Casting",
-                                                            desc = "If checked, this entry can be checked even if the global cooldown (GCD) is active.",
+                                                            desc = "If checked, this entry can be checked even if you are already casting or channeling.",
                                                             order = 2,
                                                             width = 1.5
                                                         }
@@ -9247,21 +9247,23 @@ end
 
 -- Key Bindings
 function Hekili:MakeSnapshot( dispName )
-
     self.ActiveDebug = true
+    local success = false
 
     for i, display in pairs( ns.UI.Displays ) do
         if self:IsDisplayActive( i ) and display.alpha > 0 and ( dispName == nil or display.id == dispName ) then
             self:ProcessHooks( i )
+            self:SaveDebugSnapshot( i )
+            success = true
         end
     end
 
-    self:SaveDebugSnapshot( dispName )
-    self:Print( "Snapshot saved." )
     self.ActiveDebug = false
 
-    self:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
-
+    if success then
+        self:Print( "Snapshot saved." )
+        self:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
+    end
 end
 
 
