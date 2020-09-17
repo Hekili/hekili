@@ -1081,7 +1081,7 @@ end
 function Hekili:ProcessHooks( dispName, packName )
 
     if self.Pause then return end
-    if not self.PLAYER_ENTERING_WORLD then return end -- In 8.2.5, we can start resetting before our character information is loaded apparently.
+    if not self.PLAYER_ENTERING_WORLD or UnitHealthMax( "player" ) == 0 then return end -- In 8.2.5, we can start resetting before our character information is loaded apparently.
 
     dispName = dispName or "Primary"
     local display = rawget( self.DB.profile.displays, dispName )

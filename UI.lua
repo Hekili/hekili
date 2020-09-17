@@ -1600,6 +1600,33 @@ do
     local listActive = {}
     local actsActive = {}
 
+    function Hekili:ReviewPacks()
+        local profile = self.DB.profile
+
+        for list in pairs( listActive ) do
+            listActive[ list ] = nil
+        end
+
+        for a in pairs( actsActive ) do
+            actsActive[ a ] = nil
+        end
+
+        for packName, pack in pairs( profile.packs ) do
+            if pack.spec == 0 or pack.spec == state.spec.id then
+                for listName, list in pairs( pack.lists ) do
+                    listActive[ packName .. ":" .. listName ] = true
+
+                    -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
+                    for a, entry in ipairs( list ) do
+                        if entry.enabled and entry.action and class.abilities[ entry.action ] then
+                            actsActive[ packName .. ":" .. listName .. ":" .. a ] = true
+                        end
+                    end
+                end
+            end
+        end
+    end
+
     function Hekili:UpdateDisplayVisibility()
         local profile = self.DB.profile
         local displays = ns.UI.Displays
@@ -1620,6 +1647,9 @@ do
         specEnabled = specEnabled and GetSpecializationInfo( specEnabled )
         specEnabled = specEnabled and profile.specs[ specEnabled ]
         specEnabled = specEnabled and specEnabled.enabled or false
+
+        -- Revise pack/list availability before displays potentially get activated.
+        self:ReviewPacks()
 
         if profile.enabled and specEnabled then
             for i, display in pairs( profile.displays ) do
@@ -1648,52 +1678,10 @@ do
                     end
                 end
             end
-
-            for packName, pack in pairs( profile.packs ) do
-                if pack.spec == 0 or pack.spec == state.spec.id then
-                    for listName, list in pairs( pack.lists ) do
-                        listActive[ packName .. ":" .. listName ] = true
-
-                        -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
-                        for a, entry in ipairs( list ) do
-                            if entry.enabled and entry.action then
-                                actsActive[ packName .. ":" .. listName .. ":" .. a ] = true
-                            end
-                        end
-                    end
-                end
-            end
         end
 
         for i, d in pairs(ns.UI.Displays) do
             d:UpdateAlpha()
-        end
-    end
-
-    function Hekili:ReviewPacks()
-        local profile = self.DB.profile
-
-        for list in pairs( listActive ) do
-            listActive[ list ] = nil
-        end
-
-        for a in pairs( actsActive ) do
-            actsActive[ a ] = nil
-        end
-
-        for packName, pack in pairs( profile.packs ) do
-            if pack.spec == 0 or pack.spec == state.spec.id then
-                for listName, list in pairs( pack.lists ) do
-                    listActive[ packName .. ":" .. listName ] = true
-
-                    -- NYI:  We can cache if abilities are disabled here as well to reduce checking in ProcessHooks.
-                    for a, entry in ipairs( list ) do
-                        if entry.enabled and entry.action and class.abilities[ entry.action ] then
-                            actsActive[ packName .. ":" .. listName .. ":" .. a ] = true
-                        end
-                    end
-                end
-            end
         end
     end
 

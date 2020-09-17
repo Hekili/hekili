@@ -263,10 +263,6 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance ) ]]
 
 
 -- Try to avoid updating between PLAYER_ENTERING_WORLD and PLAYER_LEAVING_WORLD.
-RegisterEvent( "PLAYER_LEAVING_WORLD", function ()
-    Hekili.PLAYER_ENTERING_WORLD = false
-end )
-
 RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
     if Hekili.PLAYER_ENTERING_WORLD == nil then
         Hekili.PLAYER_ENTERING_WORLD = true
@@ -285,6 +281,18 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function ()
         return
     end
 
+    Hekili.PLAYER_ENTERING_WORLD = true
+end )
+
+RegisterEvent( "PLAYER_LEAVING_WORLD", function ()
+    Hekili.PLAYER_ENTERING_WORLD = false
+end )
+
+RegisterEvent( "LOADING_SCREEN_ENABLED", function ()
+    Hekili.PLAYER_ENTERING_WORLD = false
+end )
+
+RegisterEvent( "LOADING_SCREEN_DISABLED", function ()
     Hekili.PLAYER_ENTERING_WORLD = true
 end )
 
