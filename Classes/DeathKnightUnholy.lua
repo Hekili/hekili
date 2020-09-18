@@ -275,10 +275,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             id = 63560, 
             duration = 15,
             generate = function( t )
-                local cast = class.abilities.apocalypse.lastCast or 0
+                local cast = class.abilities.dark_transformation.lastCast or 0
                 local up = pet.ghoul.up and cast + 20 > state.query_time
 
-                t.name = t.name or GetSpellInfo( 63560 )
+                t.name = t.name or class.abilities.dark_transformation.name
                 t.count = up and 1 or 0
                 t.expires = up and cast + 20 or 0
                 t.applied = up and cast or 0
@@ -668,16 +668,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if level > 57 then gain( 2, "runes" ) end
 
                 if pvptalent.necromancers_bargain.enabled then applyDebuff( "target", "crypt_fever" ) end
-
-                -- DT now built in to Apocalypse.
-                applyBuff( "dark_transformation" )
-                if azerite.helchains.enabled then applyBuff( "helchains" ) end
-                if talent.unholy_pact.enabled then applyBuff( "unholy_pact" ) end
-
-                if legendary.frenzied_monstrosity.enabled then
-                    applyBuff( "frenzied_monstrosity" )
-                    applyBuff( "frenzied_monstrosity_pet" )
-                end
             end,
 
             auras = {
@@ -846,7 +836,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
 
 
-        --[[ dark_transformation = {
+        dark_transformation = {
             id = 63560,
             cast = 0,
             cooldown = 60,
@@ -879,7 +869,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                     max_stack = 1
                 }
             }
-        }, ]]
+        },
 
 
         death_and_decay = {
@@ -918,7 +908,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             handler = function ()
                 removeStack( "sudden_doom" )
-                if cooldown.apocalypse.remains > 0 then setCooldown( "apocalypse", max( 0, cooldown.apocalypse.remains - 1.5 ) ) end
+                if cooldown.dark_transformation.remains > 0 then setCooldown( "dark_transformation", max( 0, cooldown.dark_transformation.remains - 1 ) ) end
                 if legendary.deadliest_coil.enabled and buff.dark_transformation.up then buff.dark_transformation.expires = buff.dark_transformation.expires + 2 end
                 if legendary.deaths_certainty.enabled then
                     local spell = covenant.night_fae and "deaths_due" or ( talent.defile.enabled and "defile" or "death_and_decay" )
