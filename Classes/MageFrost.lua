@@ -1017,8 +1017,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = false,
             texture = 135994,
 
-            talent = "mirror_image",
-
             handler = function ()
                 applyBuff( "mirror_image", nil, 3 )
             end,
