@@ -56,8 +56,6 @@ local function EmbedBlizOptions()
 end
 
 
-local hookOnce = false
-
 -- OnInitialize()
 -- Addon has been loaded by the WoW client (1x).
 function Hekili:OnInitialize()
@@ -95,15 +93,6 @@ function Hekili:OnInitialize()
             OnClick = function( f, button )
                 if button == "RightButton" then ns.StartConfiguration()
                 else
-                    if not hookOnce then 
-                        hooksecurefunc("UIDropDownMenu_InitializeHelper", function(frame)
-                            for i = 1, UIDROPDOWNMENU_MAXLEVELS do
-                                if _G["DropDownList"..i.."Backdrop"].SetTemplate then _G["DropDownList"..i.."Backdrop"]:SetTemplate( "Transparent" ) end
-                                if _G["DropDownList"..i.."MenuBackdrop"].SetTemplate then _G["DropDownList"..i.."MenuBackdrop"]:SetTemplate( "Transparent" ) end
-                            end
-                        end )
-                        hookOnce = true
-                    end
                     ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 0, 0 )
                 end
                 GameTooltip:Hide()
