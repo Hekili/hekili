@@ -3398,44 +3398,82 @@ local mt_pvptalents = {
 }
 
 
-local mt_default_trait = {
-    __index = function( t, k )
-        if k == 'enabled' or k == 'minor' or k == 'equipped' then
-            return t.rank and t.rank > 0
-        elseif k == 'disabled' then
-            return not t.rank or t.rank == 0
+do
+    -- Azerite and Essences.
+    local mt_default_trait = {
+        __index = function( t, k )
+            local heart = C_AzeriteItem.FindActiveAzeriteItem()
+
+            if heart then
+                heart = C_AzeriteItem.IsAzeriteItemEnabled( heart )
+            end
+
+            if k == 'enabled' or k == 'minor' or k == 'equipped' then
+                return heart and t.__rank and t.__rank > 0
+            elseif k == 'disabled' then
+                return not heart or not t.__rank or t.__rank == 0
+            elseif k == 'rank' then
+                return heart and t.__rank or 0
+            elseif k == 'major' then
+                return heart and t.__major or false
+            elseif k == 'minor' then
+                return heart and t.__minor or false
+            end
         end
-    end
-}
+    }
+
+    local mt_artifact_traits = {
+        __index = function( t, k )
+            return t.no_trait
+        end,
+
+        __newindex = function( t, k, v )
+            rawset( t, k, setmetatable( v, mt_default_trait ) )
+            return t[ k ]
+        end
+    }
+
+    setmetatable( state.azerite, mt_artifact_traits )
+    state.azerite.no_trait = { rank = 0 }
+    state.artifact = state.azerite
+
+    -- Essences
+    setmetatable( state.essence, mt_artifact_traits )
+    state.essence.no_trait = { rank = 0, major = false, minor = false }
+end
 
 
-local mt_artifact_traits = {
-    __index = function( t, k )
-        return t.no_trait
-    end,
+do
+    local mt_default_gen_trait = {
+        __index = function( t, k )
+            if k == 'enabled' or k == 'minor' or k == 'equipped' then
+                return t.rank and t.rank > 0
+            elseif k == 'disabled' then
+                return not t.rank or t.rank == 0
+            end
+        end
+    }
 
-    __newindex = function( t, k, v )
-        rawset( t, k, setmetatable( v, mt_default_trait ) )
-        return t.k
-    end
-}
+    local mt_generic_traits = {
+        __index = function( t, k )
+            return t.no_trait
+        end,
 
-setmetatable( state.azerite, mt_artifact_traits )
-state.azerite.no_trait = { rank = 0 }
-state.artifact = state.azerite
+        __newindex = function( t, k, v )
+            rawset( t, k, setmetatable( v, mt_default_gen_trait ) )
+            return t[ k ]
+        end
+    }
 
-setmetatable( state.conduit, mt_artifact_traits )
-state.conduit.no_trait = { rank = 0, mod = 0 }
+    setmetatable( state.conduit, mt_generic_traits )
+    state.conduit.no_trait = { rank = 0, mod = 0 }
 
-setmetatable( state.corruptions, mt_artifact_traits )
-state.corruptions.no_trait = { rank = 0 }
+    setmetatable( state.corruptions, mt_generic_traits )
+    state.corruptions.no_trait = { rank = 0 }
 
-setmetatable( state.legendary, mt_artifact_traits )
-state.legendary.no_trait = { rank = 0 }
-
--- Essences
-setmetatable( state.essence, mt_artifact_traits )
-state.essence.no_trait = { rank = 0, major = false, minor = false }
+    setmetatable( state.legendary, mt_generic_traits )
+    state.legendary.no_trait = { rank = 0 }
+end
 
 
 -- Covenants

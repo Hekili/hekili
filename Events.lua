@@ -466,8 +466,8 @@ do
                             if not name then
                                 Hekili:Error( "Missing Azerite Power info for #" .. pInfo.spellID .. ": " .. GetSpellInfo( pInfo.spellID ) .. "." )
                             else
-                                p[ name ] = rawget( p, name ) or { rank = 0 }
-                                p[ name ].rank = p[ name ].rank + 1
+                                p[ name ] = rawget( p, name ) or { __rank = 0 }
+                                p[ name ].__rank = p[ name ].__rank + 1
                             end
                         end
                     end
@@ -572,11 +572,11 @@ do
                     if info then
                         local key = essenceKeys[ info.ID ]
                         
-                        e[ key ].rank = info.rank
-                        e[ key ].minor = true
+                        e[ key ].__rank = info.rank
+                        e[ key ].__minor = true
                         
                         if i == 1 then                            
-                            e[ key ].major = true
+                            e[ key ].__major = true
                             class.active_essence = essenceMajors[ key ]
                         end
                     end
