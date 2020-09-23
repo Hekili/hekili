@@ -62,6 +62,7 @@ local enemyExclusions = {
 local f = CreateFrame("Frame")
 f:RegisterEvent("NAME_PLATE_UNIT_ADDED")
 f:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+f:RegisterEvent("UNIT_FLAGS")
 
 f:SetScript( "OnEvent", function(self, event, unit)
     if event == "NAME_PLATE_UNIT_ADDED" then
@@ -73,6 +74,10 @@ f:SetScript( "OnEvent", function(self, event, unit)
         local id = npGUIDs[ unit ]
         npGUIDs[unit] = nil
         npUnits[id]   = nil
+    
+    elseif event == "UNIT_FLAGS" and not UnitIsUnit( "player", unit ) and UnitIsFriend( "player", unit ) then
+        local id = UnitGUID( unit )
+        ns.eliminateUnit( id, true )
 
     end
 end )

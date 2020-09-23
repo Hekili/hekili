@@ -1015,6 +1015,8 @@ function state.stopChanneling( reset )
         if ability and ability.breakchannel then ability.breakchannel() end
     end
 
+    if Hekili.ActiveDebug then Hekili:Debug( "Breaking channel of %s ( reset = %s ).", state.player.channelSpell or "nil", tostring( reset ) or "false" ) end
+
     state.player.channelSpell = nil
     state.player.channelStart = 0
     state.player.channelEnd   = 0
@@ -1585,6 +1587,9 @@ local mt_state = {
 
         elseif k == 'cast_target' then
             return 'nobody'
+        
+        elseif k == 'canBreakChannel' then
+            return false
 
         elseif k == 'delay' then
             return 0
@@ -1922,11 +1927,11 @@ local mt_state = {
                 return true
 
             elseif k == 'ticks' then
-                if app then return 1 + floor( duration / tick_time ) - t.ticks_remain end
+                if app then return app.ticks end
                 return 0
 
             elseif k == 'ticks_remain' then
-                if app then return 1 + floor( app.remains / tick_time ) end
+                if app then return app.ticks_remain end
                 return 0
 
             elseif k == 'tick_time_remains' then
@@ -2633,7 +2638,9 @@ local mt_default_cooldown = {
             return t.recharge
 
         elseif k == 'up' or k == 'ready' then
-            return ( t.remains == 0 )
+            -- This cooldown_ready flag
+            if ability.cooldown_ready ~= nil then return ability.cooldown_ready end
+            return t.remains == 0
 
         -- Hunters
         elseif k == 'remains_guess' then
@@ -3176,11 +3183,12 @@ local mt_default_buff = {
             if t.up then return ( 100 * t.stack / t.max_stack ) else return 0 end
 
         elseif k == 'ticks' then
-            if t.up then return 1 + ( ( class.auras[ t.key ].duration or ( 30 * state.haste ) ) / ( class.auras[ t.key ].tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
+            if t.up then return floor( t.duration / t.tick_time ) - t.ticks_remain end
+            -- if t.up then return 1 + ( ( class.auras[ t.key ].duration or ( 30 * state.haste ) ) / ( class.auras[ t.key ].tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
             return 0
         
         elseif k == 'tick_time' then
-            return aura and aura.tick_time or 3 -- Default tick time will be 3 because why not?
+            return aura and aura.tick_time or ( 3 * state.haste ) -- Default tick time will be 3 because why not?
 
         elseif k == 'ticks_remain' then
             if t.up then return math.floor( t.remains / t.tick_time ) end
@@ -4091,15 +4099,14 @@ local mt_default_debuff = {
             return ns.getModifier( aura.id, state.target.unit )
 
         elseif k == 'ticks' then
-            if t.up then return floor( 1 + ( ( aura.duration or ( 30 * state.haste ) ) / ( aura.tick_time or ( 3 * state.haste ) ) ) - t.ticks_remain ) end
+            if t.up then return floor( t.duration / t.tick_time ) - t.ticks_remain end
             return 0
 
         elseif k == 'tick_time' then
             return aura.tick_time or ( 3 * state.haste )
 
         elseif k == 'ticks_remain' then
-            if not aura.tick_time then return t.remains end
-            return floor( t.remains / aura.tick_time )       
+            return floor( t.remains / t.tick_time )
 
         elseif k == 'tick_time_remains' then
             if not aura.tick_time then return t.remains end
@@ -5030,7 +5037,6 @@ do
 end
 
 
-
 function state:RunHandler( key, noStart )
     local ability = class.abilities[ key ]
 
@@ -5039,7 +5045,7 @@ function state:RunHandler( key, noStart )
         return
     end
 
-    if state.channeling then state.stopChanneling() end
+    if not state.canBreakChannel and state.channeling then state.stopChanneling() end
 
     if ability.channeled and ability.start then ability.start()
     elseif ability.handler then ability.handler() end
@@ -6028,7 +6034,7 @@ function state:TimeToReady( action, pool )
             wait = max( wait, self.cooldown.global_cooldown.remains )
         end
 
-        if not ability.castableWhileCasting and self.buff.casting.remains > 0 then
+        if not state.canBreakChannel and not ability.castableWhileCasting and self.buff.casting.remains > 0 then
             wait = max( wait, self.buff.casting.remains )
         end
     end
