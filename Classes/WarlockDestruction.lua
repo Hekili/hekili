@@ -613,7 +613,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "mana",
 
             startsCombat = true,
-            texture = 135807,
 
             cycle = function () return talent.roaring_blaze.enabled and "conflagrate" or nil end,
 
@@ -1101,7 +1100,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             spendType = "soul_shards",
 
             startsCombat = true,
-            texture = 136186,
 
             handler = function ()
                 -- establish that RoF is ticking?
