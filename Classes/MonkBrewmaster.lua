@@ -1277,11 +1277,11 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 applyBuff( "weapons_of_order" )
 
-                if spec.windwalker then
+                if state.spec.windwalker then
                     setCooldown( "rising_sun_kick", 0 )
-                elseif spec.brewmaster then
+                elseif state.spec.brewmaster then
                     setCooldown( "keg_smash", 0 )
-                elseif spec.mistweaver then
+                elseif state.spec.mistweaver then
                     setCooldown( "essence_font", 0 )
                 end
             end,

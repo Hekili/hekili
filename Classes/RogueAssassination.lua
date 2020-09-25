@@ -1563,7 +1563,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             texture = function ()
                 if buff.lethal_poison.down then
-                    return spec.assassination and class.abilities.deadly_poison.texture or class.abilities.instant_poison.texture
+                    return state.spec.assassination and class.abilities.deadly_poison.texture or class.abilities.instant_poison.texture
                 end
                 if buff.nonlethal_poison.down then return class.abilities.crippling_poison.texture end
             end,
@@ -1574,7 +1574,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             handler = function ()
                 if buff.lethal_poison.down then
-                    applyBuff( spec.assassination and "deadly_poison" or "instant_poison" )
+                    applyBuff( state.spec.assassination and "deadly_poison" or "instant_poison" )
                 else applyBuff( "crippling_poison" ) end
             end,
         },

@@ -1252,7 +1252,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             gcd = "spell",
 
             spend = function ()
-                if spec.fury then return -20 end
+                if state.spec.fury then return -20 end
                 return buff.sudden_death.up and 0 or 20
             end,
             spendType = "rage",
@@ -1270,7 +1270,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 applyDebuff( "target", "condemned" )
 
-                if not spec.fury and buff.sudden_death.down then
+                if not state.spec.fury and buff.sudden_death.down then
                     local extra = min( 20, rage.current )
 
                     if extra > 0 then spend( extra, "rage" ) end

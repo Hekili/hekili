@@ -1407,8 +1407,12 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             toggle = "essences",
             nobuff = "fae_transfusion",
 
-            handler = function ()
+            start = function ()
                 applyBuff( "fae_transfusion" )
+            end,
+
+            finish = function ()
+                if state.spec.enhancement then addStack( "maelstrom_weapon", nil, 1 ) end
             end,
 
             auras = {
@@ -1462,7 +1466,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         desc = function ()
             local s = "If checked, the addon's default priority will encourage you to spread |T135813:0|t Flame Shock but will focus damage on your current target, using |T136026:0|t Earth Shock rather than |T451165:0|t Earthquake."
 
-            if not Hekili.DB.profile.specs[ spec.id ].cycle then
+            if not Hekili.DB.profile.specs[ state.spec.id ].cycle then
                 s = s .. "\n\n|cFFFF0000Requires 'Recommend Target Swaps' on Targeting tab.|r"
             end
 

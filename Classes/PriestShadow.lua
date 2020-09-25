@@ -1442,7 +1442,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             handler = function ()
                 addStack( "boon_of_the_ascended", nil, 5 )
-                if spec.shadow then gain( 6, "insanity" ) end
+                if state.spec.shadow then gain( 6, "insanity" ) end
             end,
         },
 

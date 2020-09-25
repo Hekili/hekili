@@ -288,6 +288,28 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
     } )
 
 
+    -- Legendaries
+    -- Vanguard's Momentum
+    -- Badge of the Mad Paragon
+    -- Final Verdict
+    -- From Dusk till Dawn
+    -- The Magistrate's Judgment
+
+
+    -- Conduits
+    -- Ringing Clarity
+    -- Vengeful Shock
+    -- Focused Light
+    -- Light's Reach
+    -- Templar's Vindication
+    -- The Long Summer
+    -- Truth's Wake
+    -- Virtuous Command
+    -- Righteous Might
+    -- Hallowed Discernment
+    -- Punish the Guilty
+
+
     -- Gear Sets
     spec:RegisterGear( 'tier19', 138350, 138353, 138356, 138359, 138362, 138369 )
     spec:RegisterGear( 'tier20', 147160, 147162, 147158, 147157, 147159, 147161 )
@@ -1083,18 +1105,18 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             toggle = "essences",
 
             handler = function ()
-                if spec.protection then
+                if state.spec.protection then
                     -- Cast Avenger's Shield x5.
                     -- This is lazy and may be wrong/bad.
                     for i = 1, active_enemies do
                         class.abilities.avengers_shield.handler()
                     end
-                elseif spec.retribution then
+                elseif state.spec.retribution then
                     -- Cast Judgment x5.
                     for i = 1, active_enemies do
                         class.abilities.judgment.handler()
                     end
-                elseif spec.holy then
+                elseif state.spec.holy then
                     -- Cast Holy Shock x5.
                     for i = 1, active_enemies do
                         class.abilities.holy_shock.handler()
