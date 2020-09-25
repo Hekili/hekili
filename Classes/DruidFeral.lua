@@ -680,6 +680,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 gain( level > 57 and 2 or 1, "combo_points" )
             end
 
+            if legendary.frenzyband.enabled then
+                gainChargeTime( talent.incarnation.enabled and "incarnation" or "berserk", 0.2 )
+            end
+
             if a >= 5 then
                 applyBuff( "predatory_swiftness" )
             end
