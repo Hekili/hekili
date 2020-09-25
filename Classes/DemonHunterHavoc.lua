@@ -1176,13 +1176,25 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             
             handler = function ()
                 applyDebuff( "target", "the_hunt" )
+                applyDebuff( "target", "the_hunt_dot" )
+                applyDebuff( "target", "the_hunt_root" )
                 setDistance( 5 )
             end,
 
             auras = {
+                the_hunt_root = {
+                    id = 323996,
+                    duration = 1.5,
+                    max_stack = 1,
+                },
+                the_hunt_dot = {
+                    id = 345335,
+                    duration = 6,
+                    max_stack = 1,
+                },
                 the_hunt = {
                     id = 323802,
-                    duration = 60,
+                    duration = 30,
                     max_stack = 1,
                 },
             }
