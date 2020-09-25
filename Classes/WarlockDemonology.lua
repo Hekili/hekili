@@ -1002,6 +1002,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 end
 
                 removeStack( "demonic_core" )
+                removeStack( "decimating_bolt" )
                 gain( 2, "soul_shards" )
             end,
         },
@@ -1359,7 +1360,6 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             handler = function ()
                 gain( 1, "soul_shards" )
-                removeStack( "decimating_bolt" )
             end,
         },
 
