@@ -499,6 +499,18 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             duration = 30,
             max_stack = 1,
         },
+
+        primordial_arcanic_pulsar = {
+            id = 338825,
+            duration = 3600,
+            max_stack = 10,
+        },
+
+        timeworn_dreambinder = {
+            id = 340049,
+            duration = 6,
+            max_stack = 2,
+        },
     } )
 
 
@@ -662,11 +674,23 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     end )
 
 
-    --[[ spec:RegisterHook( "spend", function( amt, resource )
-        if level < 116 and equipped.impeccable_fel_essence and resource == "astral_power" and cooldown.celestial_alignment.remains > 0 then
-            setCooldown( "celestial_alignment", max( 0, cooldown.celestial_alignment.remains - ( amt / 12 ) ) )
+    spec:RegisterHook( "spend", function( amt, resource )
+        if legendary.primordial_arcanic_pulsar.enabled and resource == "astral_power" and amt > 0 then
+            local v1 = ( buff.primordial_arcanic_pulsar.v1 or 0 ) + amt
+
+            if v1 >= 300 then
+                applyBuff( talent.incarnation.enabled and "incarnation" or "celestial_alignment", 9 )
+                v1 = v1 - 300
+            end
+
+            if v1 > 0 then
+                applyBuff( "primordial_arcanic_pulsar", nil, max( 1, floor( amt / 30 ) ) )
+                buff.primordial_arcanic_pulsar.v1 = v1
+            else
+                removeBuff( "primordial_arcanic_pulsar" )
+            end
         end 
-    end ) ]]
+    end )
 
 
     -- Legion Sets (for now).
@@ -1569,7 +1593,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.oneths_perception.up and 0 or 50 end,
+            spend = function () return ( buff.oneths_perception.up and 0 or 50 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.15 ) ) end,
             spendType = "astral_power",
 
             startsCombat = true,
@@ -1580,6 +1604,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
                 removeBuff( "oneths_perception" )
+
+                if legendary.timeworn_dreambinder.enabled then
+                    addStack( "timeworn_dreambinder", nil, 1 )
+                end                
             end,
         },
 
@@ -1627,7 +1655,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                     end
                 end
 
-                if azerite.dawning_sun.enabled then applyBuff( "dawning_sun" ) end                
+                if azerite.dawning_sun.enabled then applyBuff( "dawning_sun" ) end
             end,
         },
 
@@ -1638,7 +1666,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.oneths_clear_vision.up and 0 or 30 end,
+            spend = function () return ( buff.oneths_clear_vision.up and 0 or 30 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.15 ) ) end,
             spendType = "astral_power",
 
             startsCombat = true,
@@ -1665,6 +1693,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                         removeBuff( "arcanic_pulsar" )
                         applyBuff( talent.incarnation.enabled and "incarnation" or "celestial_alignment" )
                     end
+                end
+
+                if legendary.timeworn_dreambinder.enabled then
+                    addStack( "timeworn_dreambinder", nil, 1 )
                 end
             end,
         },
