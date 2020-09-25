@@ -1360,7 +1360,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         -- Shaman - Necrolord - 326059 - primordial_wave      (Primordial Wave)
         primordial_wave = {
             id = 326059,
-            cast = 1.5,
+            cast = 0,
             cooldown = 45,
             recharge = 45,
             charges = 1,
