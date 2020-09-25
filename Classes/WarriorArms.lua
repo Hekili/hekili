@@ -580,6 +580,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyDebuff( "target", "colossus_smash" )
+                applyDebuff( "target", "deep_wounds" )
 
                 if talent.in_for_the_kill.enabled then
                     applyBuff( "in_for_the_kill" )
@@ -1129,6 +1130,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 end
 
                 applyDebuff( "target", "colossus_smash" )
+                applyDebuff( "target", "deep_wounds" )
             end,
         },
 
