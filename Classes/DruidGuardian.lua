@@ -432,13 +432,38 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         removeBuff( "bear_form" )
         removeBuff( "travel_form" )
         removeBuff( "moonkin_form" )
+        removeBuff( "travel_form" )
+        removeBuff( "aquatic_form" )
+        removeBuff( "stag_form" )
+
+        if legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent.restoration_affinity.enabled then
+            applyBuff( "heart_of_the_wild" )
+            applyDebuff( "player", "oath_of_the_elder_druid_icd" )
+        end
     end )
 
 
+    local affinities = {
+        bear_form = "guardian_affinity",
+        cat_form = "feral_affinity",
+        moonkin_form = "balance_affinity",
+    }
+
     -- Function to apply form that is passed into it via string.
     spec:RegisterStateFunction( "shift", function( form )
-        unshift()
+        removeBuff( "cat_form" )
+        removeBuff( "bear_form" )
+        removeBuff( "travel_form" )
+        removeBuff( "moonkin_form" )
+        removeBuff( "travel_form" )
+        removeBuff( "aquatic_form" )
+        removeBuff( "stag_form" )
         applyBuff( form )
+    
+        if affinities[ form ] and legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent[ affinities[ form ] ].enabled then
+            applyBuff( "heart_of_the_wild" )
+            applyDebuff( "player", "oath_of_the_elder_druid_icd" )
+        end
     end )
 
     spec:RegisterStateExpr( "ironfur_damage_threshold", function ()
