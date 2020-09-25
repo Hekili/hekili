@@ -491,7 +491,8 @@ function Hekili:CheckChannel( ability, prio )
             if self.ActiveDebug then self:Debug( "CC: chain returns %s...", tostring( chain ) ) end
             return chain
         end
-
+        
+        return false
     else
         -- If interrupt_global is flagged, we interrupt for any potential cast.  Don't bother with additional testing.
         -- REVISIT THIS:  Interrupt Global allows entries from any action list rather than just the current (sub) list.
@@ -854,12 +855,18 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             Timer:Track("Post Ready/Clash")
 
                                             if hasResources then
-                                                local aScriptPass = self:CheckStack()
-                                                local channelPass = true -- not state.channeling or self:CheckChannel( action, rWait )
+                                                local channelPass = not state.channeling or ( action ~= state.channel ) or self:CheckChannel( action, rWait )                                                
+                                                local aScriptPass = channelPass and self:CheckStack()
 
                                                 Timer:Track("Post Stack")
 
-                                                if not aScriptPass then
+                                                if not channelPass then
+                                                    if debug then self:Debug( " - this entry cannot break the channeled spell." ) end
+                                                    if action == state.channel then
+                                                        stop = scripts:CheckScript( scriptID )
+                                                    end
+
+                                                elseif not aScriptPass then
                                                     if debug then self:Debug( " - this entry would not be reached at the current time via the current action list path (%.2f).", state.delay ) end
 
                                                 else
@@ -875,10 +882,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                         if debug then
                                                             self:Debug( " - this entry's criteria %s: %s", aScriptPass and "PASSES" or "FAILS", scripts:GetConditionsAndValues( scriptID ) )
-                                                            if not channelPass then self:Debug( "   - however, criteria not met to break current channeled spell." )  end
                                                         end
                                                     end
-                                                    aScriptPass = aScriptPass and channelPass
                                                 end
 
                                                 Timer:Track("Pre-Recheck")
@@ -1207,8 +1212,10 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     state.selectedAction = nil
 
     if not state.canBreakChannel and state.buff.casting.up and state.spec.canCastWhileCasting then
+        self:Debug( "Whitelist of castable-while-casting spells applied." )
         state:SetWhitelist( state.spec.castableWhileCasting )
     else
+        self:Debug( "No whitelist." )
         state:SetWhitelist( nil )
     end
 
@@ -1374,6 +1381,9 @@ function Hekili:ProcessHooks( dispName, packName )
         local event = events[ 1 ]
         local n = 1
 
+        if debug and #events > 0 then
+            self:Debug( "There are %d queued events to review.", #events )
+        end
 
         while( event ) do
             local eStart
@@ -1395,83 +1405,79 @@ function Hekili:ProcessHooks( dispName, packName )
 
             local t = event.time - state.now - state.offset
 
-            --[[
-                Okay, new paradigm.  We're checking whether we should break channeled spells before we worry about casting while casting.
-                Are we channeling?
-                    a.  If yes, check whether conditions are met to break the channel.
-                        i.  If yes, allow the channel to be broken by anything but the channeled spell itself.  
-                            If we get a condition-pass for the channeled spell, stop seeking recommendations and move on.
-                        ii. If no, move on to checking whether we can cast while casting (old code).
-                    b.  If no, move on to checking whether we can cast while casting (old code).
-                ]]
-            
-            local channeling, shouldBreak = state:IsChanneling(), false
-            
-            if channeling then
-                if debug then Hekili:Debug( "IsChanneling is true; checking if we should break." ) end
-                shouldBreak = Hekili:CheckChannel( nil, 0 )
-            end
-            state.canBreakChannel = shouldBreak
-
-            local casting, shouldCheck = state:IsCasting(), true
-
-            if casting or ( channeling and not shouldBreak ) then
-                if not state.spec.canCastWhileCasting then
-                    if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and cannot cast.\n", n, event.type, event.action, t ) end
-                    if t > 0 then state.advance( t ) end
-                    event = events[ 1 ]
-                    n = n + 1
-                    shouldCheck = false
-                elseif t > 0 and t < 0.1 then
-                    if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.1 seconds.\n", n, event.type, event.action, t ) end
-                    if t > 0 then state.advance( t ) end
-                    event = events[ 1 ]
-                    n = n + 1
-                    shouldCheck = false
+            if t > 0 and t < 0.1 then
+                if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.1 seconds.\n", n, event.type, event.action, t ) end
+                if t > 0 then state.advance( t ) end
+                event = events[ 1 ]
+                n = n + 1
+            else
+                --[[
+                    Okay, new paradigm.  We're checking whether we should break channeled spells before we worry about casting while casting.
+                    Are we channeling?
+                        a.  If yes, check whether conditions are met to break the channel.
+                            i.  If yes, allow the channel to be broken by anything but the channeled spell itself.  
+                                If we get a condition-pass for the channeled spell, stop seeking recommendations and move on.
+                            ii. If no, move on to checking whether we can cast while casting (old code).
+                        b.  If no, move on to checking whether we can cast while casting (old code).
+                    ]]
+                
+                local channeling, shouldBreak = state:IsChanneling(), false
+                
+                if channeling then
+                    if debug then Hekili:Debug( "IsChanneling is true; checking if we should break." ) end
+                    shouldBreak = Hekili:CheckChannel( nil, 0 )
+                    state.canBreakChannel = shouldBreak
                 else
+                    state.canBreakChannel = false
+                end
+
+                local casting, shouldCheck = state:IsCasting(), true
+
+                if ( casting or ( channeling and not shouldBreak ) ) and state.spec.canCastWhileCasting then
                     shouldCheck = false
 
                     for spell in pairs( state.spec.castableWhileCasting ) do
                         if debug then Hekili:Debug( "CWC: %s | %s | %s | %s | %.2f | %s | %.2f | %.2f", spell, tostring( state:IsKnown( spell ) ), tostring( state:IsUsable( spell ) ), tostring( class.abilities[ spell ].castableWhileCasting ), state:TimeToReady( spell ), tostring( state:TimeToReady( spell ) <= t ), state.offset, state.delay ) end
                         if class.abilities[ spell ].castableWhileCasting and state:IsKnown( spell ) and state:IsUsable( spell ) and state:TimeToReady( spell ) <= t then
                             shouldCheck = true
+                            break
                         end
                     end
                 end
-            end
 
-            if not shouldBreak and not shouldCheck then
-                if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and castable spells are not ready.\n", n, event.type, event.action, t ) end
-                state.advance( t )
-                event = events[ 1 ]
-                n = n + 1
-            else
-                state:SetConstraint( 0, t - 0.01 )
-
-                hadProj = true
-
-                if debug then self:Debug( 1, "Queued event #%d (%s %s) due at %.2f; checking pre-event recommendations.\n", n, event.action, event.type, t ) end
-
-                if state:IsCasting() or state:IsChanneling() then
-                    state:ApplyCastingAuraFromQueue()
-                    if debug then self:Debug( 2, "Player is casting for %.2f seconds.  Only abilities that can be cast while casting will be tested.", state:QueuedCastRemains() ) end
-                else
-                    state.removeBuff( "casting" )
-                end
-
-                action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
-
-                if not action then
-                    if debug then self:Debug( "Time spent on event #%d PREADVANCE: %.2fms...", n, debugprofilestop() - eStart ) end
-                    if debug then self:Debug( 1, "No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).\n", n, event.action, event.type, t, state.offset + state.delay ) end
-                    
-                    state.advance( t )
-                    if debug then self:Debug( "Time spent on event #%d POSTADVANCE: %.2fms...", n, debugprofilestop() - eStart ) end
-
+                if not shouldBreak and not shouldCheck then
+                    if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and castable spells are not ready.\n", n, event.type, event.action, t ) end
+                    if t > 0 then state.advance( t ) end
                     event = events[ 1 ]
                     n = n + 1
                 else
-                    break
+                    state:SetConstraint( 0, t - 0.01 )
+
+                    hadProj = true
+
+                    if debug then self:Debug( 1, "Queued event #%d (%s %s) due at %.2f; checking pre-event recommendations.\n", n, event.action, event.type, t ) end
+
+                    if state:IsCasting() or state:IsChanneling() then
+                        state:ApplyCastingAuraFromQueue()
+                        if debug then self:Debug( 2, "Player is casting for %.2f seconds.  %s.", state.buff.casting.remains, shouldBreak and "We can break the channel" or "Only spells castable while casting will be used" ) end
+                    else
+                        state.removeBuff( "casting" )
+                    end
+
+                    action, wait, depth = self:GetNextPrediction( dispName, packName, slot )
+
+                    if not action then
+                        if debug then self:Debug( "Time spent on event #%d PREADVANCE: %.2fms...", n, debugprofilestop() - eStart ) end
+                        if debug then self:Debug( 1, "No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).\n", n, event.action, event.type, t, state.offset + state.delay ) end
+                        
+                        state.advance( t )
+                        if debug then self:Debug( "Time spent on event #%d POSTADVANCE: %.2fms...", n, debugprofilestop() - eStart ) end
+
+                        event = events[ 1 ]
+                        n = n + 1
+                    else
+                        break
+                    end
                 end
             end
 
@@ -1550,13 +1556,9 @@ function Hekili:ProcessHooks( dispName, packName )
                 local ability = class.abilities[ action ]
                 local cast = ability.cast
 
-                if not state.canBreakChannel and not state.spec.canCastWhileCasting then state.stopChanneling() end
-
                 if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
                     state.setCooldown( 'global_cooldown', state.gcd.execute )
                 end
-
-                state.stopChanneling()
 
                 if ability.charges and ability.charges > 1 and ability.recharge > 0 then
                     state.spendCharges( action, 1 )

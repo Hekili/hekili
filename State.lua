@@ -1007,15 +1007,16 @@ function state.channelSpell( name, start, duration, id )
 end
 
 function state.stopChanneling( reset )
-
     if not reset then
         local spell = state.player.channelSpell
         local ability = spell and class.abilities[ spell ]
 
+        if spell then
+            if Hekili.ActiveDebug then Hekili:Debug( "Breaking channel of %s (non-reset).", state.player.channelSpell or "nil", tostring( reset ) or "false" ) end
+            state:RemoveSpellEvents( spell )
+        end
         if ability and ability.breakchannel then ability.breakchannel() end
     end
-
-    if Hekili.ActiveDebug then Hekili:Debug( "Breaking channel of %s ( reset = %s ).", state.player.channelSpell or "nil", tostring( reset ) or "false" ) end
 
     state.player.channelSpell = nil
     state.player.channelStart = 0
@@ -1452,9 +1453,9 @@ do
                 for i, time in ipairs( times ) do
                     o = string.format( "%s - %.2f", o or "", time )
                 end
-                Hekili:Debug( "Recheck times for this entry are: %s\n%s [ %.2f - %.2f ]", scripts:GetConditionsAndValues( script.ID, nil, nil, true ), o, state.delayMin, state.delayMax )
-            else
-                Hekili:Debug( "Recheck times for this entry are: %s", scripts:GetConditionsAndValues( script.ID, nil, nil, true ) )
+                -- Hekili:Debug( "Recheck times for this entry are: %s\n%s [ %.2f - %.2f ]", scripts:GetConditionsAndValues( script.ID, nil, nil, true ), o, state.delayMin, state.delayMax )
+            -- else
+                -- Hekili:Debug( "Recheck times for this entry are: %s", scripts:GetConditionsAndValues( script.ID, nil, nil, true ) )
             end
         end
     end
@@ -4809,7 +4810,11 @@ do
     function state:RemoveEvent( e, real )
         local queue = real and realQueue or virtualQueue
 
-        Hekili:Debug( "Trying to remove %s %s from queue.", e.action, e.type )
+        Hekili:Debug( "Trying to remove %s %s from queue.", ( e.action or "NO_ACTION" ), ( e.type or "NO_TYPE" ) )
+
+        for k,v in pairs( e ) do
+            Hekili:Debug( " - %s = %s", tostring( k ), tostring( v ) )
+        end
 
         for i = #queue, 1, -1 do
             if queue[ i ] == e then
@@ -4875,6 +4880,12 @@ do
             if e.action == action and ( eType == nil or e.type == eType ) then
                 RecycleEvent( queue, i )
                 success = true
+            end
+        end
+
+        if success then
+            for k in pairs( class.resources ) do
+                forecastResources( k )
             end
         end
 
@@ -5067,7 +5078,10 @@ do
 
                 if entry.action then
                     local spell = class.abilities[ entry.action ]
-                    if spell.id then self.buff.casting.v1 = spell.id end
+                    if spell.id then
+                        self.buff.casting.v1 = spell.id
+                        self.channelSpell( entry.action, entry.start or self.now, entry.time - ( entry.start or self.now ), spell.id )
+                    end
                 end
             end
         end
@@ -5082,8 +5096,10 @@ function state:RunHandler( key, noStart )
         -- ns.Error( "runHandler() attempting to run handler for non-existant ability '" .. key .. "'." )
         return
     end
-
-    if not state.canBreakChannel and state.channeling then state.stopChanneling() end
+    
+    if state.channeling and not ability.castableWhileCasting then
+        state.stopChanneling()
+    end
 
     if ability.channeled and ability.start then ability.start()
     elseif ability.handler then ability.handler() end
@@ -5115,7 +5131,7 @@ function state:RunHandler( key, noStart )
     end
 
     -- state.cast_start = 0
-    ns.callHook( 'runHandler', key )    
+    ns.callHook( 'runHandler', key )
 end
 
 function state.runHandler( key, noStart )
