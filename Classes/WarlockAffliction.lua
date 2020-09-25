@@ -1583,8 +1583,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 60,
             gcd = "spell",
 
-            spend = 0.2,
-            spendType = "health",
+            spend = 0.005,
+            spendType = "mana",
 
             startsCombat = true,
             texture = 3636850,
