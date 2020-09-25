@@ -7,7 +7,7 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
-local FindUnitBuffByID = ns.FindUnitBuffByID
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 
 
 local PTR = ns.PTR
@@ -191,13 +191,34 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     local thought_harvester_consumed = 0
     local unfurling_darkness_triggered = 0
 
+    local swp_applied = 0
+
     spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
         if sourceGUID == GUID then
-            if subtype == "SPELL_AURA_REMOVED" and spellID == 288343 then
-                thought_harvester_consumed = GetTime()
-            elseif subtype == "SPELL_AURA_APPLIED" and spellID == 341273 then
-                unfurling_darkness_triggered = GetTime()
+            if subtype == "SPELL_AURA_REMOVED" then
+                if spellID == 288343 then
+                    thought_harvester_consumed = GetTime()
+                elseif spellID == 341207 then
+                    Hekili:ForceUpdate( subtype, true )
+                end
+
+            elseif subtype == "SPELL_AURA_APPLIED" then
+                if spellID == 341273 then
+                    unfurling_darkness_triggered = GetTime()
+                elseif spellID == 341207 then
+                    Hekili:ForceUpdate( subtype, true )
+                end
             end
+
+            --[[ if spellName == "Shadow Word: Pain" and ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) then
+                local name, id, _, aType, duration, expiration = FindUnitDebuffByID( "target", class.auras.shadow_word_pain.id )
+                -- print( name, id, _, aType, duration, applied )
+                if expiration then print( "SWP", subtype, duration, ( GetTime() - ( expiration - duration ) ) / class.auras.shadow_word_pain.tick_time, ( expiration - GetTime() ) / class.auras.shadow_word_pain.tick_time ) end
+            end
+
+            if spellName == "Shadow Word: Pain" and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) then
+                swp_applied = GetTime()
+            end ]]
         end
     end )
 
@@ -258,20 +279,23 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     end )
 
 
-
-    spec:RegisterHook( 'runHandler', function( ability )
+    --[[ spec:RegisterHook( 'runHandler', function( action )
         -- Make sure only the correct debuff is applied for channels to help resource forecasting.
-        if ability == "mind_sear" then
+        if action == "mind_sear" then
             removeDebuff( "target", "mind_flay" )
-        elseif ability == "mind_flay" then
+        elseif action == "mind_flay" then
             removeDebuff( "target", "mind_sear" )
             removeBuff( "mind_sear_th" )
         else
-            removeDebuff( "target", "mind_flay" )
-            removeDebuff( "target", "mind_sear" )
-            removeBuff( "mind_sear_th" )
+            local ability = class.abilities[ action ]
+
+            if not ability or not ability.castableWhileCasting then
+                removeDebuff( "target", "mind_flay" )
+                removeDebuff( "target", "mind_sear" )
+                removeBuff( "mind_sear_th" )
+            end
         end
-    end )
+    end ) ]]
 
 
     -- Auras
