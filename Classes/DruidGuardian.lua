@@ -330,7 +330,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 192090,
             duration = function () return mod_circle_dot( 15 ) end,
             tick_time = function () return mod_circle_dot( 3 ) * haste end,
-            max_stack = 3,
+            max_stack = function () return legendary.luffainfused_embrace and 4 or 3 end,
         },
         thrash_cat = {
             id = 106830,
@@ -422,7 +422,14 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             id = 273349,
             duration = 30,
             max_stack = 1,
-        }
+        },
+
+        -- Legendary
+        ursocs_fury_remembered = {
+            id = 345048,
+            duration = 15,
+            max_stack = 1,
+        },
     } )
 
 
@@ -550,6 +557,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
             handler = function ()
                 applyBuff( "barkskin" )
+
+                if legendary.the_natural_orders_will.enabled and buff.bear_form.up then
+                    applyBuff( "ironfur" )
+                    applyBuff( "frenzied_regeneration" )
+                end
             end,
         },
 
@@ -845,7 +857,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         incarnation = {
             id = 102558,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return legendary.legacy_of_the_sleeper.enabled and 150 or 180 end,
             gcd = "off",
 
             toggle = "cooldowns",
@@ -1621,6 +1633,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 applyDebuff( "target", "thrash_bear", 15, debuff.thrash_bear.count + 1 )
                 active_dot.thrash_bear = active_enemies
+
+                if legendary.ursocs_fury_remembered.enabled then
+                    applyBuff( "ursocs_fury_remembered" )
+                end
             end,
 
             copy = "thrash"
