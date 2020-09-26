@@ -1871,8 +1871,8 @@ do
         -- Backdrop (for borders)
         b.Backdrop = b.Backdrop or Mixin( CreateFrame("Frame", bName .. "_Backdrop", b ), BackdropTemplateMixin )
         b.Backdrop:ClearAllPoints()
-        b.Backdrop:SetWidth( b:GetWidth() + 2 )
-        b.Backdrop:SetHeight( b:GetHeight() + 2 )
+        b.Backdrop:SetWidth( b:GetWidth() + ( conf.border.thickness and ( 2 * conf.border.thickness ) or 2 ) )
+        b.Backdrop:SetHeight( b:GetHeight() + ( conf.border.thickness and ( 2 * conf.border.thickness ) or 2 ) )
 
         local framelevel = b:GetFrameLevel()
         if framelevel > 0 then
@@ -1893,7 +1893,7 @@ do
                 edgeFile = "Interface\\Buttons\\WHITE8X8",
                 tile = false,
                 tileSize = 0,
-                edgeSize = 1,
+                edgeSize = conf.border.thickness or 1,
                 insets = { left = -1, right = -1, top = -1, bottom = -1 }
             } )
             if conf.border.coloring == 'custom' then

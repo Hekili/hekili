@@ -340,6 +340,7 @@ local displayTemplate = {
 
     border = {
         enabled = true,
+        width = 1,
         coloring = 'custom',
         color = { 0, 0, 0, 1 },
     },
@@ -1694,6 +1695,17 @@ do
                                 name = "Border Inside",
                                 desc = "If enabled, when borders are enabled, the button's border will fit inside the button (instead of around it).",
                                 order = 2,
+                                width = "full",
+                            },
+
+                            thickness = {
+                                type = "range",
+                                name = "Border Thickness",
+                                desc = "Determines the thickness (width) of the border.  Default is 1.",
+                                softMin = 1,
+                                softMax = 20,
+                                step = 1,
+                                order = 2.5,
                                 width = "full",
                             },
 
