@@ -3545,7 +3545,7 @@ do
             local ability = class.abilities[ v ]
             local option = {
                 type = "group",
-                name = function () return ability.name end,
+                name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. ability.name .. "|r" end,
                 order = 1,
                 set = "SetAbilityOption",
                 get = "GetAbilityOption",
@@ -3665,7 +3665,7 @@ do
             local ability = class.abilities[ v ]
             local option = {
                 type = "group",
-                name = function () return ability.name end,
+                name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. ability.name .. "|r" end,
                 order = 1,
                 set = "SetItemOption",
                 get = "GetItemOption",
