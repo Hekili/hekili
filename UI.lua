@@ -653,7 +653,7 @@ do
                     local a = r.actionName
 
                     if a then                        
-                        r.keybind = Hekili:GetBindingForAction( r.actionName, conf )
+                        r.keybind = Hekili:GetBindingForAction( r.actionName, conf, i )
                     end
 
                     if i == 1 or ( conf.keybindings.queued and not cPort ) then
@@ -1845,14 +1845,17 @@ do
 
         -- Keybinding Text
         b.Keybinding = b.Keybinding or b:CreateFontString(bName .. "_KB", "OVERLAY")
-        local kbFont = conf.keybindings.font or conf.font
-        b.Keybinding:SetFont( LSM:Fetch("font", kbFont), conf.keybindings.fontSize or 12, conf.keybindings.fontStyle or "OUTLINE" )
+
+        local queued = id > 1 and conf.keybindings.separateQueueStyle
+        local kbFont = queued and conf.keybindings.queuedFont or conf.keybindings.font or conf.font
+
+        b.Keybinding:SetFont( LSM:Fetch("font", kbFont), queued and conf.keybindings.queuedFontSize or conf.keybindings.fontSize or 12, queued and conf.keybindings.queuedFontStyle or conf.keybindings.fontStyle or "OUTLINE" )
 
         local kbAnchor = conf.keybindings.anchor or "TOPRIGHT"
         b.Keybinding:ClearAllPoints()
         b.Keybinding:SetPoint( kbAnchor, b, kbAnchor, conf.keybindings.x or 0, conf.keybindings.y or 0 )
         b.Keybinding:SetSize( 0, 0 )
-        b.Keybinding:SetTextColor( unpack( conf.keybindings.color ) )
+        b.Keybinding:SetTextColor( unpack( queued and conf.keybindings.queuedColor or conf.keybindings.color ) )
 
         local kbText = b.Keybinding:GetText()
         b.Keybinding:SetText( nil )

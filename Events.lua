@@ -2334,7 +2334,7 @@ end )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
-    function Hekili:GetBindingForAction( key, display )
+    function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end
 
         local ability = class.abilities[ key ]
@@ -2353,8 +2353,11 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
         if not keys[ key ] then return "" end
 
         local caps, console = true, false
+
+        local queued = ( i or 1 ) > 1 and display.keybindings.separateQueueStyle
+
         if display then
-            caps = not display.keybindings.lowercase
+            caps = not ( queued and display.keybindings.queuedLowercase or display.keybindings.lowercase )
             console = ConsolePort ~= nil and display.keybindings.cPortOverride
         end
 
@@ -2391,7 +2394,7 @@ if select( 2, UnitClass( "player" ) ) == "DRUID" then
         return output
     end
 elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
-    function Hekili:GetBindingForAction( key, display )
+    function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end
 
         local ability = class.abilities[ key ]
@@ -2409,9 +2412,11 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
 
         if not keys[ key ] then return "" end
 
+        local queued = ( i or 1 ) > 1 and display.keybindings.separateQueueStyle
+
         local caps, console = true, false
         if display then
-            caps = not display.keybindings.lowercase
+            caps = not ( queued and display.keybindings.queuedLowercase or display.keybindings.lowercase )
             console = ConsolePort ~= nil and display.keybindings.cPortOverride
         end
 
@@ -2441,7 +2446,7 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
     end
 
 else
-    function Hekili:GetBindingForAction( key, display )
+    function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end
 
         local ability = class.abilities[ key ]
@@ -2459,9 +2464,11 @@ else
 
         if not keys[ key ] then return "" end
 
+        local queued = ( i or 1 ) > 1 and display.keybindings.separateQueueStyle
+
         local caps, console = true, false
         if display then
-            caps = not display.keybindings.lowercase
+            caps = not ( queued and display.keybindings.queuedLowercase or display.keybindings.lowercase )
             console = ConsolePort ~= nil and display.keybindings.cPortOverride
         end
         

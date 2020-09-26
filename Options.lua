@@ -429,6 +429,12 @@ local displayTemplate = {
 
         lowercase = false,
 
+        queuedFont = ElvUI and "PT Sans Narrow" or "Arial Narrow",
+        queuedFontSize = 12,
+        queuedFontStyle = "OUTLINE",
+
+        queuedLowercase = false,
+
         anchor = "TOPRIGHT",
         x = 1,
         y = -1,
@@ -437,6 +443,7 @@ local displayTemplate = {
         cPortZoom = 0.6,
 
         color = { 1, 1, 1, 1 },
+        queuedColor = { 1, 1, 1, 1 },
     },
 
 }
@@ -840,8 +847,8 @@ do
         local conf = self.DB.profile.displays[ display ]
         if category ~= option and category ~= 'main' then conf = conf[ category ] end
 
-        if option == 'color' then
-            conf.color = { val, v2, v3, v4 }
+        if option == 'color' or option == 'queuedColor' then
+            conf[ option ] = { val, v2, v3, v4 }
             set = true
         elseif option == 'frameStrata' then
             conf.frameStrata = frameStratas[ val ] or "LOW"
@@ -1638,9 +1645,74 @@ do
                             textStyle = {
                                 type = "group",
                                 inline = true,
-                                name = "Text",
+                                name = "Text Style",
                                 order = 5,
                                 args = fontElements,
+                            },
+
+                            lowercase = {
+                                type = "toggle",
+                                name = "Use Lowercase",
+                                order = 5.1,
+                                width = "full",
+                            },
+
+                            separateQueueStyle = {
+                                type = "toggle",
+                                name = "Use Different Settings for Queue",
+                                order = 6,
+                                width = "full",
+                            },
+
+                            queuedTextStyle = {
+                                type = "group",
+                                inline = true,
+                                name = "Queued Text Style",
+                                order = 7,
+                                hidden = function () return not data.keybindings.separateQueueStyle end,
+                                args = {
+                                    queuedFont = {
+                                        type = "select",
+                                        name = "Font",
+                                        order = 1,
+                                        width = 1.5,
+                                        dialogControl = 'LSM30_Font',
+                                        values = LSM:HashTable("font"),
+                                    },
+                            
+                                    queuedFontSize = {
+                                        type = "range",
+                                        name = "Size",
+                                        order = 2,
+                                        min = 8,
+                                        max = 64,
+                                        step = 1,
+                                        width = 1.5
+                                    },
+                            
+                                    queuedFontStyle = {
+                                        type = "select",
+                                        name = "Style",
+                                        order = 3,
+                                        values = fontStyles,
+                                        width = 1.5
+                                    },
+                            
+                                    queuedColor = {
+                                        type = "color",
+                                        name = "Color",
+                                        order = 4, 
+                                        width = 1.5           
+                                    }
+                                },
+                            },
+
+                            queuedLowercase = {
+                                type = "toggle",
+                                name = "Use Lowercase in Queue",
+                                order = 7.1,
+                                width = "full",
+                                hidden = function () return not data.keybindings.separateQueueStyle end,
                             },
 
                             cPort = {
