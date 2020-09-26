@@ -34,7 +34,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
 
         empower_rune = {
-            aura        = 'empower_rune_weapon',
+            aura = "empower_rune_weapon",
 
             last = function ()
                 return state.buff.empower_rune_weapon.applied + floor( state.query_time - state.buff.empower_rune_weapon.applied )
@@ -170,8 +170,8 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
     spec:RegisterResource( Enum.PowerType.RunicPower, {
         breath = {
-            talent      = 'breath_of_sindragosa',
-            aura        = 'breath_of_sindragosa',
+            talent = "breath_of_sindragosa",
+            aura = "breath_of_sindragosa",
 
             last = function ()
                 return state.buff.breath_of_sindragosa.applied + floor( state.query_time - state.buff.breath_of_sindragosa.applied )
@@ -184,7 +184,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
 
         empower_rp = {
-            aura        = 'empower_rune_weapon',
+            aura = "empower_rune_weapon",
 
             last = function ()
                 return state.buff.empower_rune_weapon.applied + floor( state.query_time - state.buff.empower_rune_weapon.applied )
@@ -193,6 +193,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             interval = 5,
             value = 5
         },
+
+        swarming_mist = {
+            aura = "swarming_mist",
+
+            last = function ()
+                return state.buff.swarming_mist.applied + floor( state.query_time - state.buff.swarming_mist.applied )
+            end,
+
+            interval = 1,
+            value = function () return min( 15, state.true_active_enemies * 3 ) end,
+        },        
     } )
 
 

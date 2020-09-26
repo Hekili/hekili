@@ -33,7 +33,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             end,
 
             value = 1,    
-        }
+        },      
     }, setmetatable( {
         expiry = { 0, 0, 0, 0, 0, 0 },
         cooldown = 10,
@@ -164,7 +164,21 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         end
     } ) )
 
-    spec:RegisterResource( Enum.PowerType.RunicPower )
+    spec:RegisterResource( Enum.PowerType.RunicPower, {
+        swarming_mist = {
+            aura = "swarming_mist",
+
+            last = function ()
+                local app = state.debuff.swarming_mist.applied
+                local t = state.query_time
+
+                return app + floor( ( t - app ) / class.auras.swarming_mist.tick_time ) * class.auras.swarming_mist.tick_time
+            end,
+
+            interval = function () return class.auras.swarming_mist.tick_time end,
+            value = function () return min( 15, state.true_active_enemies * 3 ) end,
+        },          
+    } )
 
 
     spec:RegisterStateFunction( "apply_festermight", function( n )

@@ -159,7 +159,21 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         end
     } ) )
 
-    spec:RegisterResource( Enum.PowerType.RunicPower )
+    spec:RegisterResource( Enum.PowerType.RunicPower, {
+        swarming_mist = {
+            aura = "swarming_mist",
+
+            last = function ()
+                local app = state.debuff.swarming_mist.applied
+                local t = state.query_time
+
+                return app + floor( ( t - app ) / class.auras.swarming_mist.tick_time ) * class.auras.swarming_mist.tick_time
+            end,
+
+            interval = function () return class.auras.swarming_mist.tick_time end,
+            value = function () return min( 15, state.true_active_enemies * 3 ) end,
+        },        
+    } )
 
     local spendHook = function( amt, resource )
         if amt > 0 and resource == "runic_power" and talent.red_thirst.enabled then
@@ -417,6 +431,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         swarming_mist = { -- Venthyr
             id = 311648,
             duration = 8,
+            tick_time = 1,
             max_stack = 1,
         },
         tombstone = {
