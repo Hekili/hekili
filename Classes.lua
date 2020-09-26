@@ -2872,6 +2872,15 @@ all:RegisterAura( "shockbitten", {
 } )
 
 
+all:RegisterAbility( "living_oil_canister", {
+    cast = 0,
+    cooldown = 60,
+    gcd = "off",
+
+    item = 158216,
+})
+
+
 -- Remote Guidance Device, 169769
 all:RegisterAbility( "remote_guidance_device", {
     cast = 0,
