@@ -595,6 +595,13 @@ if UnitClassBase( 'player' ) == 'MONK' then
         return debuff.recently_challenged.remains
     end )
 
+    spec:RegisterStateFunction( "weapons_of_order", function( c )
+        if c and c > 0 then
+            return buff.weapons_of_order_buff.up and ( c - 1 ) or c
+        end
+        return c
+    end )
+
 
     spec:RegisterTotem( "xuen", 620832 )
 
@@ -609,7 +616,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             spend = function ()
                 if buff.serenity.up or buff.bok_proc.up then return 0 end
-                return 1
+                return weapons_of_order( 1 )
             end,
             spendType = "chi",
 
@@ -624,8 +631,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     if set_bonus.tier21_4pc > 0 then gain( 1, "chi" ) end
                 end
 
-                cooldown.rising_sun_kick.expires = max( 0, cooldown.rising_sun_kick.expires - 1 )
-                cooldown.fists_of_fury.expires = max( 0, cooldown.fists_of_fury.expires - 1 )
+                cooldown.rising_sun_kick.expires = max( 0, cooldown.rising_sun_kick.expires - ( buff.weapons_of_order.up and 2 or 1 ) )
+                cooldown.fists_of_fury.expires = max( 0, cooldown.fists_of_fury.expires - ( buff.weapons_of_order.up and 2 or 1 ) )
 
                 if talent.eye_of_the_tiger.enabled then applyDebuff( "target", "eye_of_the_tiger" ) end
                 applyDebuff( "target", "mark_of_the_crane", 15 )
@@ -834,7 +841,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             spend = function ()
                 if buff.serenity.up then return 0 end
-                return 3
+                return weapons_of_order( 3 )
             end,
             spendType = "chi",
 
@@ -1116,7 +1123,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             spend = function ()
                 if buff.serenity.up then return 0 end
-                return 2
+                return weapons_of_order( 2 )
             end,
             spendType = "chi",
 
@@ -1134,6 +1141,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 end
 
                 if azerite.sunrise_technique.enabled then applyDebuff( "target", "sunrise_technique" ) end
+
+                if buff.weapons_of_order.up then
+                    applyBuff( "weapons_of_order_buff" )
+                end
             end,
         },
 
@@ -1172,7 +1183,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             hasteCD = true,
             gcd = "spell",
 
-            spend = 1,
+            spend = function() return weapons_of_order( 1 ) end,
             spendType = "chi",
 
             talent = "rushing_jade_wind",
@@ -1236,7 +1247,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return buff.dance_of_chiji.up and 0 or 2 end,
+            spend = function () return buff.dance_of_chiji.up and 0 or weapons_of_order( 2 ) end,
             spendType = "chi",
 
             startsCombat = true,

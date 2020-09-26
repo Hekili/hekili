@@ -898,6 +898,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 setCooldown( "fortifying_brew", max( 0, cooldown.fortifying_brew.remains - ( 4 + ( buff.blackout_combo.up and 2 or 0 ) + ( buff.bonedust_brew.up and 1 or 0 ) ) ) )
                 gainChargeTime( "purifying_brew", 4 + ( buff.blackout_combo.up and 2 or 0 ) +  ( buff.bonedust_brew.up and 1 or 0 ) )
 
+                if buff.weapons_of_order.up then
+                    applyDebuff( "target", "weapons_of_order_debuff", nil, min( 5, debuff.weapons_of_order_debuff.stack + 1 ) )
+                end
+
                 removeBuff( "blackout_combo" )
                 addStack( "elusive_brawler", nil, 1 )
             end,
@@ -1290,6 +1294,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 weapons_of_order = {
                     id = 310454,
                     duration = 30,
+                    max_stack = 1
+                },
+                weapons_of_order_debuff = {
+                    id = 312106,
+                    duration = 8,
+                    max_stack = 5
+                },
+                weapons_of_order_buff = {
+                    id = 311054,
+                    duration = 5,
                     max_stack = 1
                 }
             }
