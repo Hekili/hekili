@@ -5078,7 +5078,7 @@ do
 
                 if entry.action then
                     local spell = class.abilities[ entry.action ]
-                    if spell.id then
+                    if spell and spell.id then
                         self.buff.casting.v1 = spell.id
                         self.channelSpell( entry.action, entry.start or self.now, entry.time - ( entry.start or self.now ), spell.id )
                     end
