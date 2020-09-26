@@ -8831,6 +8831,11 @@ local function Sanitize( segment, i, line, warnings )
 
     local times = 0
 
+    i, times = i:gsub( "covenant%.([%w_]+)%.enabled", "covenant.%1" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'covenant.X.enabled' to 'covenant.X' (" .. times .. "x)." )
+    end
+
     i, times = i:gsub( "pet%.[%w_]+%.([%w_]+)%.", "%1." )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'pet.X.Y...' to 'Y...' (" .. times .. "x)." )
