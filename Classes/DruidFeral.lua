@@ -1923,7 +1923,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 applyDebuff( "target", "thrash_cat" )
 
-                active_dot.thrash_cat = max( active_dot.thrash, true_active_enemies )
+                active_dot.thrash_cat = max( active_dot.thrash, active_enemies )
                 debuff.thrash_cat.pmultiplier = persistent_multiplier
 
                 if talent.scent_of_blood.enabled then
