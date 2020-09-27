@@ -5569,9 +5569,6 @@ function state:IsKnown( sID, notoggle )
     if not sID then
         return false, "could not find valid ID" -- no ability
 
-    elseif sID < 0 then
-        return true
-
     end
 
     local ability = class.abilities[ sID ]
@@ -5579,6 +5576,14 @@ function state:IsKnown( sID, notoggle )
     if not ability then
         Error( "IsKnown() - " .. sID .. " not found in abilities table." )
         return false
+    end
+
+    if sID < 0 then
+        if ability.item then
+            return IsUsableItem( ability.item ), "IsUsableItem"
+        end
+
+        return true
     end
 
     local profile = Hekili.DB.profile
@@ -5626,7 +5631,7 @@ function state:IsKnown( sID, notoggle )
         return ability.known
     end
 
-    return ( ability.item and true ) or IsPlayerSpell( sID ) or IsSpellKnown( sID ) or IsSpellKnown( sID, true )
+    return IsPlayerSpell( sID ) or IsSpellKnown( sID ) or IsSpellKnown( sID, true )
 
 end
 
