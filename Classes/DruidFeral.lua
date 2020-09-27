@@ -1853,7 +1853,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
 
             copy = { 213764, "swipe" },
-            bind = { "swipe_cat", "swipe_bear", "swipe" }
+            bind = { "swipe_cat", "swipe_bear", "swipe", "brutal_slash" }
         },
 
         teleport_moonglade = {
