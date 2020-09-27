@@ -173,21 +173,21 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             duration = function () return ( talent.blind_fury.enabled and 3 or 2 ) * haste end,
             max_stack = 1,
             generate = function( t )
-                local cast = action.eye_beam.lastCast
-
-                if now - cast < t.duration then
-                    t.applied = cast
-                    t.expires = cast + t.duration
-                    t.stack   = 1
-                    t.caster  = "player"
+                if buff.casting.up and buff.casting.v1 == 198013 then
+                    t.applied  = buff.casting.applied
+                    t.duration = buff.casting.duration
+                    t.expires  = buff.casting.expires
+                    t.stack    = 1
+                    t.caster   = "player"
                     forecastResources( "fury" )
                     return
                 end
 
-                t.applied = 0
-                t.expires = 0
-                t.stack   = 0
-                t.caster  = "nobody"
+                t.applied  = 0
+                t.duration = class.auras.eye_beam.duration
+                t.expires  = 0
+                t.stack    = 0
+                t.caster   = "nobody"
             end,
         },
         fel_barrage = {
