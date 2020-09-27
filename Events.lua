@@ -2246,10 +2246,9 @@ local function ReadKeybindings()
                 local binding = btn.keyBoundTarget
                 local action, aType = btn._state_action, "spell"
 
-                binding = GetBindingKey( binding )
-                action, aType = GetActionInfo( action )
-
-                if action then
+                if action and type( action ) == "number" then
+                    binding = GetBindingKey( binding )
+                    action, aType = GetActionInfo( action )
                     StoreKeybindInfo( i, binding, action, aType )
                 end
             end
@@ -2262,10 +2261,9 @@ local function ReadKeybindings()
                 local binding = "ACTIONBUTTON" .. b
                 local action, aType = btn._state_action, "spell"
 
-                binding = GetBindingKey( binding )
-                action, aType = GetActionInfo( action )
-
-                if action then
+                if action and type( action ) == "number" then
+                    binding = GetBindingKey( binding )
+                    action, aType = GetActionInfo( action )
                     StoreKeybindInfo( i, binding, action, aType )
                 end
             end
