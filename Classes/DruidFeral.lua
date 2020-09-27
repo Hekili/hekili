@@ -1592,6 +1592,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
 
             copy = { 213764, "swipe" },
+            bind = { "swipe_cat", "swipe_bear", "swipe" }
         },
 
         teleport_moonglade = {
@@ -1669,6 +1670,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 removeStack( "clearcasting" )
                 if target.within8 then gain( 1, "combo_points" ) end
             end,
+
+            copy = { "thrash", 106832 },
+            bind = { "thrash_cat", "thrash_bear", "thrash" }
         },
 
 

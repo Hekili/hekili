@@ -1368,7 +1368,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
             end,
 
-            copy = "swipe"
+            copy = { "swipe", 213764 },
+            bind = { "swipe_bear", "swipe_cat", "swipe" }
         },
 
 
@@ -1410,7 +1411,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 active_dot.thrash_bear = active_enemies
             end,
 
-            copy = "thrash"
+            copy = { "thrash", 106832 },
+            bind = { "thrash_bear", "thrash_cat", "thrash" },
         },
 
 
