@@ -7743,7 +7743,7 @@ function Hekili:GetOptions()
                             desc = {
                                 type = 'description',
                                 name = function ()
-                                    local output = "\n|cFF00CCFFTHANK YOU TO ALL PATRONS SUPPORTING THIS ADDON'S DEVELOPMENT!|r\n\n"
+                                    local output = "\n|cFF00CCFFTHANK YOU TO OUR SUPPORTERS!|r\n\n"
 
                                     for i, name in ipairs( ns.Patrons ) do
                                         if i == 1 then
