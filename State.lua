@@ -5811,9 +5811,6 @@ function state:IsKnown( sID, notoggle )
     if not sID then
         return false, "could not find valid ID" -- no ability
 
-    elseif sID < 0 and sID > -100 then
-        return true
-
     end
 
     local ability = class.abilities[ sID ]
@@ -5823,16 +5820,24 @@ function state:IsKnown( sID, notoggle )
         return false
     end
 
+    if sID < 0 then
+        if ability.item then
+            return IsUsableItem( ability.item ), "IsUsableItem"
+        end
+
+        return true
+    end
+
     local profile = Hekili.DB.profile
 
-    if ability.item and not state.equipped[ ability.item ] then
-        return false, "item [ " .. ability.item .. " ] missing"
+    if ability.spec and not state.spec[ ability.spec ] then
+        return false, "wrong specialization"
     end
-    
-    if ability.equipped and not state.equipped[ ability.equipped ] then
-        return false, "equipment [ " .. ability.equipped .. " ] missing"
+
+    if ability.nospec and state.spec[ ability.nospec ] then
+        return false, "spec [ " .. ability.nospec .. " ] disallowed"
     end
-    
+
     if ability.talent and not state.talent[ ability.talent ].enabled then
         return false, "talent [ " .. ability.talent .. " ] missing"
     end
@@ -5853,35 +5858,22 @@ function state:IsKnown( sID, notoggle )
         return false, "trait [ " .. ability.trait .. " ] missing"
     end
 
-    if ability.spec and not state.spec[ ability.spec ] then
-        return false, "wrong specialization"
+    if ability.equipped and not state.equipped[ ability.equipped ] then
+        return false, "equipment [ " .. ability.equipped .. " ] missing"
     end
 
-    if ability.nospec and state.spec[ ability.nospec ] then
-        return false, "spec [ " .. ability.nospec .. " ] disallowed"
-    end
-
-    if ability.noOverride then
-        local id = type( ability.noOverride ) == "string" and class.abilities[ ability.noOverride ].id or ability.noOverride
-
-        return not IsSpellKnownOrOverridesKnown( id ), "override spell [ " .. ability.noOverride .. " ] is active"
+    if ability.item and not state.equipped[ ability.item ] then
+        return false, "item [ " .. ability.item .. " ] missing"
     end
 
     if ability.known ~= nil then
         if type( ability.known ) == 'number' then
-            return IsPlayerSpell( ability.known ) or IsSpellKnownOrOverridesKnown( ability.known ), "IsPlayerSpell/IsSpellKnownOrOverridesKnown"
+            return IsPlayerSpell( ability.known ), "IsPlayerSpell"
         end
         return ability.known
     end
 
-    if ability.active ~= nil then
-        if type( ability.active ) == "number" then
-            return IsActiveSpell( ability.active ), "not in spellbook"
-        end
-        return ability.active
-    end
-
-    return ( ability.item or sID < 0 ) or IsPlayerSpell( sID ) or IsSpellKnownOrOverridesKnown( sID ) or IsSpellKnown( sID, true )
+    return IsPlayerSpell( sID ) or IsSpellKnown( sID ) or IsSpellKnown( sID, true )
 
 end
 
