@@ -1523,7 +1523,7 @@ end
 
 local function StoreKeybindInfo( page, key, aType, id, console )
 
-    if not key then return end
+    if not key or not aType then return end
 
     local ability
 
@@ -1654,6 +1654,38 @@ local function ReadKeybindings()
                 end
 
                 StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
+            end
+        end
+    elseif _G["ElvUI"] then
+        for i = 1, 6 do
+            for b = 1, 12 do
+                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b ]
+
+                local binding = btn.keyBoundTarget
+                local action, aType = btn._state_action, "spell"
+
+                binding = GetBindingKey( binding )
+                action, aType = GetActionInfo( action )
+
+                if action then
+                    StoreKeybindInfo( i, binding, action, aType )
+                end
+            end
+        end
+
+        for i = 7, 10 do
+            for b = 1, 12 do
+                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b ]
+
+                local binding = "ACTIONBUTTON" .. b
+                local action, aType = btn._state_action, "spell"
+
+                binding = GetBindingKey( binding )
+                action, aType = GetActionInfo( action )
+
+                if action then
+                    StoreKeybindInfo( i, binding, action, aType )
+                end
             end
         end
     else
