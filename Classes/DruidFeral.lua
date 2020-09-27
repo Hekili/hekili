@@ -1853,6 +1853,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             end,
 
             copy = { 213764, "swipe" },
+            bind = { "swipe_cat", "swipe_bear", "swipe" }
         },
 
         teleport_moonglade = {
@@ -1936,6 +1937,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                     if will_proc_bloodtalons then proc_bloodtalons() end
                 end
             end,
+
+            copy = { "thrash", 106832 },
+            bind = { "thrash_cat", "thrash_bear", "thrash" }
         },
 
 

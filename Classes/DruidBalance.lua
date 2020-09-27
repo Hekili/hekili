@@ -1778,7 +1778,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
 
         -- May want to revisit this and split out swipe_cat from swipe_bear.
-        swipe = {
+        swipe_bear = {
             known = 213764,
             cast = 0,
             cooldown = function () return haste * ( buff.cat_form.up and 0 or 6 ) end,
@@ -1799,11 +1799,12 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 end
             end,
 
-            copy = { 106785, 213771 }
+            copy = { "swipe", 106785, 213771 },
+            bind = { "swipe", "swipe_bear", "swipe_cat" }
         },
 
 
-        thrash = {
+        thrash_bear = {
             id = 106832,
             cast = 0,
             cooldown = 0,
@@ -1822,6 +1823,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 applyDebuff( "target", "thrash_bear", nil, debuff.thrash.stack + 1 )
             end,
+
+            copy = { "thrash", 106832 },
+            bind = { "thrash", "thrash_bear", "thrash_cat" }
         },
 
 

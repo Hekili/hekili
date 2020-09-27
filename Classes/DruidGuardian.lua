@@ -1573,27 +1573,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
             end,
 
-            copy = "swipe"
-        },
-
-
-        swipe_cat = {
-            id = 106785,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = 35,
-            spendType = "energy",
-            
-            startsCombat = true,
-            texture = 134296,
-
-            form = "cat_form",
-            
-            handler = function ()
-                gain( 1, "combo_points" )
-            end,
+            copy = { "swipe", 213764 },
+            bind = { "swipe_bear", "swipe_cat", "swipe" }
         },
 
 
@@ -1629,6 +1610,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             texture = 451161,
 
             form = "bear_form",
+            bind = "thrash",
 
             handler = function ()
                 applyDebuff( "target", "thrash_bear", 15, debuff.thrash_bear.count + 1 )
@@ -1638,8 +1620,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                     applyBuff( "ursocs_fury_remembered" )
                 end
             end,
-
-            copy = "thrash"
         },
 
 
