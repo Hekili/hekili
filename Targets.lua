@@ -49,9 +49,95 @@ function Hekili:GetUnitByGUID( id )
 end
 
 
+do
+    -- Pet-Based Target Detection
+    -- Requires a class-appropriate pet ability on the player's action bars.
+    -- ** Not the pet's action bar. **
+    local petAction = 0
+    local petSlot = 0
+
+    local myClass = UnitClassBase( "player" )
+
+    local petSpells = {
+        HUNTER = {
+            [288962] = true,
+            [16827]  = true,
+            [17253]  = true,
+            [49966]  = true,
+            
+            count    = 4
+        },
+
+        WARLOCK = {
+            [6360]  = true, -- Whiplash (Succubus)
+
+            count   = 1
+        }
+    }
+
+    function Hekili:GetPetBasedTargetSpells()
+        return petSpells[ myClass ]
+    end
+
+    function Hekili:CanUsePetBasedTargetDetection()
+        return petSpells[ myClass ] ~= nil
+    end
+
+    function Hekili:HasPetBasedTargetSpell()
+        return petSlot > 0
+    end
+
+    function Hekili:GetPetBasedTargetSpell()
+        return petAction > 0 and petAction or nil
+    end
+
+    function Hekili:PetBasedTargetDetectionIsReady()
+        if petSlot == 0 then return false, "Pet action not found in player action bars." end
+        if not UnitExists( "pet" ) then return false, "No active pet." end
+        if UnitIsDead( "pet" ) then return false, "Pet is dead." end
+    
+        -- If we have a target and the target is out of our pet's range, don't use pet detection.
+        if UnitExists( "target" ) and not IsActionInRange( petSlot, "target" ) then return false, "Player has target and player's target not in range of pet." end
+        return true
+    end
+
+    function Hekili:SetupPetBasedTargetDetection()
+        petAction = 0
+        petSlot = 0
+
+        if not self:CanUsePetBasedTargetDetection() then return end
+
+        local spells = petSpells[ myClass ]
+        local success = false
+
+        for i = 1, 120 do
+            local slotType, spell = GetActionInfo( i )
+
+            if slotType and spell and spells[ spell ] then
+                petAction = spell
+                petSlot = i
+
+                Hekili:Error( "Pet Action is %d and it is in slot %d.", petAction, petSlot )                
+                return true
+            end
+        end
+
+        return success
+    end
+
+    function Hekili:TargetIsNearPet( unit )
+        return IsActionInRange( petSlot, unit )
+    end
+
+    function Hekili:DumpPetBasedTargetInfo()
+        print( petAction, petSlot )
+    end
+end
+
+
 local enemyExclusions = {
+    ["23775"]  = true,      -- Head of the Horseman
     ["120651"] = true,      -- Explosives
-    [ "23775"] = true,      -- Head of the Horseman
     ["156227"] = true,      -- Neferset Denizen
     ["160966"] = true,      -- Thing from Beyond?
     ["161895"] = true,      -- Thing from Beyond?
@@ -116,7 +202,7 @@ do
 
         local showNPs = GetCVar( "nameplateShowEnemies" ) == "1"
 
-        wipe(counted)
+        wipe( counted )
 
         local count = 0
 
@@ -125,69 +211,88 @@ do
         local spec = state.spec.id
         spec = spec and rawget( Hekili.DB.profile.specs, spec ) or nil
 
-        if spec and spec.nameplates and showNPs then
-            for unit, guid in pairs(npGUIDs) do
-                if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitHealth(unit) > 1 and not UnitPhaseReason(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
-                    local npcid = guid:match("(%d+)-%x-$")
-                    local excluded = enemyExclusions[npcid]
-
-                    if excluded and type( excluded ) == "number" then
-                        -- If our table has a number, unit is ruled out only if the buff is present.
-                        excluded = not FindUnitBuffByID( unit, excluded )
-                    end
-
-                    if not excluded then
-                        local _, range = RC:GetRange(unit)
-
-                        guidRanges[ guid ] = range
-
-                        local rate, n = Hekili:GetTTD(unit)
-                        Hekili.TargetDebug = format( "%s%12s - %2d - %s - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, UnitName( unit ) or "-", guid, rate or 0, n or 0 )
-
-                        if range and range <= spec.nameplateRange then
-                            count = count + 1
-                            counted[ guid ] = true
-                        end
-                    end
-                end
-
-                counted[ guid ] = counted[ guid ] or false
-            end
-
-            for _, unit in ipairs(unitIDs) do
-                local guid = UnitGUID(unit)
-    
-                if guid and counted[ guid ] == nil then
-                    if UnitExists(unit) and not UnitIsDead(unit) and UnitCanAttack("player", unit) and UnitHealth(unit) > 1 and not UnitPhaseReason(unit) and (UnitIsPVP("player") or not UnitIsPlayer(unit)) then
-                        local npcid = guid:match("(%d+)-%x-$")
-                        local excluded = enemyExclusions[npcid]
+        if spec then
+            local checkPets = showNPs and spec.petbased and Hekili:PetBasedTargetDetectionIsReady()
+            local checkPlates = showNPs and spec.nameplates
+            
+            if checkPets or checkPlates then
+                for unit, guid in pairs(npGUIDs) do
+                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitHealth( unit ) > 1 and not UnitPhaseReason( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                        local npcid = guid:match( "(%d+)-%x-$" )
+                        local excluded = enemyExclusions[ npcid ]
 
                         if excluded and type( excluded ) == "number" then
                             -- If our table has a number, unit is ruled out only if the buff is present.
                             excluded = not FindUnitBuffByID( unit, excluded )
-                        end    
-    
-                        if not excluded then
-                            local _, range = RC:GetRange(unit)
-    
+                        end
+
+                        if not excluded and checkPets then
+                            excluded = not Hekili:TargetIsNearPet( unit )
+                        end
+
+                        if not excluded and checkPlates then
+                            local _, range = RC:GetRange( unit )
                             guidRanges[ guid ] = range
-    
+
+                            excluded = range > spec.nameplateRange
+                        end
+
+                        -- Always count your target.
+                        if UnitIsUnit( unit, "target" ) then excluded = false end
+
+                        if not excluded then
                             local rate, n = Hekili:GetTTD(unit)
                             Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
-    
-                            if range and range <= spec.nameplateRange then
+                            count = count + 1
+                            counted[ guid ] = true
+                        end
+                    end
+
+                    counted[ guid ] = counted[ guid ] or false
+                end                
+
+                for _, unit in ipairs(unitIDs) do
+                    local guid = UnitGUID( unit )
+        
+                    if guid and counted[ guid ] == nil then
+                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitHealth( unit ) > 1 and not UnitPhaseReason( unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                            local npcid = guid:match( "(%d+)-%x-$" )
+                            local excluded = enemyExclusions[ npcid ]
+
+                            if excluded and type( excluded ) == "number" then
+                                -- If our table has a number, unit is ruled out only if the buff is present.
+                                excluded = not FindUnitBuffByID( unit, excluded )
+                            end
+
+                            if not excluded and checkPets then
+                                excluded = not Hekili:TargetIsNearPet( unit )
+                            end
+
+                            if not excluded and checkPlates then
+                                local _, range = RC:GetRange( unit )
+                                guidRanges[ guid ] = range
+
+                                excluded = range > spec.nameplateRange
+                            end
+        
+                            -- Always count your target.
+                            if UnitIsUnit( unit, "target" ) then excluded = false end
+
+                            if not excluded then
+                                local rate, n = Hekili:GetTTD(unit)
+                                Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
                                 count = count + 1
                                 counted[ guid ] = true
                             end
+        
+                            counted[ guid ] = counted[ guid ] or false
                         end
-    
-                        counted[ guid ] = counted[ guid ] or false
                     end
                 end
-            end            
+            end
         end
 
-        if not spec or spec.damage or not spec.nameplates or not showNPs then
+        if not spec or spec.damage or ( not spec.nameplates and not spec.petbased ) or not showNPs then
             local db = spec and (spec.myTargetsOnly and myTargets or targets) or targets
 
             for guid, seen in pairs(db) do
@@ -238,6 +343,7 @@ end
 
 
 function ns.updateTarget(id, time, mine)
+    if not Hekili.DB.profile.specs[ state.spec.id ].damage then return end
     if id == state.GUID then
         return
     end
@@ -537,6 +643,7 @@ Hekili.auditInterval = 0
 ns.Audit = function()
     local now = GetTime()
     local spec = state.spec.id and Hekili.DB.profile.specs[ state.spec.id ]
+    local nodmg = spec and ( spec.damage == false ) or false
     local grace = spec and spec.damageExpiration or 6
 
     Hekili.auditInterval = now - Hekili.lastAudit
@@ -556,7 +663,7 @@ ns.Audit = function()
     end
 
     for whom, when in pairs(targets) do
-        if now - when > grace then
+        if nodmg or now - when > grace then
             ns.eliminateUnit(whom)
         end
     end
