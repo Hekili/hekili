@@ -3405,9 +3405,7 @@ do
         __index = function( t, k )
             local heart = C_AzeriteItem.FindActiveAzeriteItem()
 
-            if heart then
-                heart = C_AzeriteItem.IsAzeriteItemEnabled( heart )
-            end
+            heart = heart and heart:IsValid() and C_Azerite.IsAzeriteItemEnabled( heart ) or false
 
             if k == 'enabled' or k == 'minor' or k == 'equipped' then
                 return heart and t.__rank and t.__rank > 0
