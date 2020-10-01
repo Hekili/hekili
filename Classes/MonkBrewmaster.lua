@@ -522,8 +522,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             hasteCD = true,
             gcd = "spell",
 
-            rangeSpell = 100780,
-
             startsCombat = true,
             texture = 574575,
 
@@ -1281,11 +1279,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 applyBuff( "weapons_of_order" )
 
-                if state.spec.windwalker then
-                    setCooldown( "rising_sun_kick", 0 )
-                elseif state.spec.brewmaster then
-                    setCooldown( "keg_smash", 0 )
-                elseif state.spec.mistweaver then
+                if state.spec.mistweaver then
                     setCooldown( "essence_font", 0 )
                 end
             end,
