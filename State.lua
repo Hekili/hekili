@@ -5871,7 +5871,7 @@ function state:IsKnown( sID, notoggle )
         return ability.known
     end
 
-    return IsPlayerSpell( sID ) or IsSpellKnown( sID ) or IsSpellKnown( sID, true )
+    return IsPlayerSpell( sID ) or IsSpellKnownOrOverridesKnown( sID ) or IsSpellKnown( sID, true )
 
 end
 
