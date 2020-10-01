@@ -7678,6 +7678,12 @@ function Hekili:GenerateProfile()
         end
     end
 
+    local covenants = { "kyrian", "necrolord", "night_fae", "venthyr" }
+    local covenant = "none"
+    for i, v in ipairs( covenants ) do
+        if state.covenant[ v ] then covenant = v; break end
+    end
+
     local traits
     for k, v in orderedPairs( s.azerite ) do
         if v.rank > 0 then
@@ -7756,8 +7762,9 @@ function Hekili:GenerateProfile()
         "class: %s\n" ..
         "spec: %s\n\n" ..
         "talents: %s\n\n" ..
+        "covenant: %s\n\n" ..
         "azerite: %s\n\n" ..
-        "covenants/essences: %s\n\n" ..
+        "essences: %s\n\n" ..
         "sets/legendaries/artifacts: %s\n\n" ..
         "gear: %s\n\n" ..
         "legendaries: %s\n\n" ..
@@ -7769,6 +7776,7 @@ function Hekili:GenerateProfile()
         class.file or "NONE",
         spec or "none",
         talents or "none",
+        covenant or "none",
         traits or "none",
         essences or "none",
         sets or "none",
