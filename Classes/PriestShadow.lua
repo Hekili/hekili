@@ -1362,7 +1362,6 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
                 if debuff.shadow_word_pain.up then debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires + 3 end
                 if debuff.vampiric_touch.up then debuff.vampiric_touch.expires = debuff.vampiric_touch.expires + 3 end
-                if debuff.devouring_plague.up then debuff.devouring_plague.expires = debuff.devouring_plague.expires + 3 end
 
                 removeBuff( "anunds_last_breath" )
             end,
@@ -1375,7 +1374,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 if pvptalent.void_origins.enabled then return 0 end
                 return haste * 1.5 
             end,
-            cooldown = 0,
+            cooldown = 90,
             gcd = "spell",
 
             startsCombat = true,
