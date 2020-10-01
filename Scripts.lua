@@ -426,6 +426,9 @@ do
         { "^!?stealthed.mantle$",                   "stealthed.mantle_remains" },
         { "^!?stealthed.rogue$",                    "stealthed.rogue_remains" },
 
+        { "^!?time_to_hpg$",                        "time_to_hpg" }, -- Retribution Paladin
+        { "^!?time_to_hpg[<=]=?(.-)$",              "time_to_hpg-%1" }, -- Retribution Paladin
+
         { "^!?consecration.up",                     "consecration.remains" }, -- Prot Paladin
         { "^!?contagion<=?(.-)",                    "contagion-%1" }, -- Affliction Warlock
         
@@ -682,7 +685,7 @@ do
         while ( i <= maxlen ) do
            local c = p:sub( i, i )
 
-           if c == " " then -- do nothing
+           if c == " " or c == "," then -- do nothing
            elseif c == "(" then depth = depth + 1
            elseif c == ")" and depth > 0 then
               depth = depth - 1
@@ -1160,9 +1163,12 @@ local function ConvertScript( node, hasModifiers, header )
                 end
 
                 if node.action == "variable" then
-                    local var_val, var_recheck, var_err
+                    --[[ local var_val, var_recheck, var_err
                     var_val = scripts:BuildRecheck( node[m] )
                     if var_val then
+                        if var_val:match(",") then
+
+                        end
                         var_val = scripts:EmulateSyntax( var_val )
                         var_val = SimToLua( var_val )
                         var_recheck, var_err = loadstring( "-- val " ..header .. " recheck\nreturn " .. var_val )
@@ -1176,7 +1182,27 @@ local function ConvertScript( node, hasModifiers, header )
                         output.VarRecheck = var_recheck
                         output.VarRecheckScript = var_val
                         output.VarRecheckError = var_err
-                    end
+                    end ]]
+                    local rs, rc, erc
+                    rs = scripts:BuildRecheck( node[m] )
+                    
+                    if rs then
+                        local orig = rs
+                        rc, erc = loadstring( "-- var " .. header .. " recheck\nreturn " .. rs )
+                        if rc then setfenv( rc, state ) end
+            
+                        --[[rEle = GetScriptElements( orig )
+                        rEle.zzz = orig ]]
+            
+                        if type( rc ) ~= "function" then
+                            Hekili:Error( "Variable recheck function for " .. clean .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
+                            rc = nil
+                        end
+
+                        output.VarRecheck = rc
+                        output.VarRecheckScript = rs
+                        output.VarRecheckError = erc
+                    end                    
                 end
 
                 sf, e = loadstring( "return " .. emulated )
