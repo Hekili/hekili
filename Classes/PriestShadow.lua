@@ -47,7 +47,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             value = function () return state.active_enemies end,
         },
 
-        -- need to revise the value of this, void decay ticks up and is impacted by void torrent.
+        --[[ need to revise the value of this, void decay ticks up and is impacted by void torrent.
         voidform = {
             aura = "voidform",
             talent = "legacy_of_the_void",
@@ -67,7 +67,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             value = function ()
                 return state.debuff.dispersion.up and 0 or ( -6 - ( 0.8 * state.debuff.voidform.stacks ) )
             end,
-        },
+        }, ]]
 
         void_torrent = {
             aura = "void_torrent",
@@ -159,7 +159,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         void_torrent = 21720, -- 263165
 
         ancient_madness = 21637, -- 341240
-        legacy_of_the_void = 21978, -- 193225
+        hungering_void = 21978, -- 345218
+        -- legacy_of_the_void = 21978, -- 193225
         surrender_to_madness = 21979, -- 319952
     } )
 
@@ -491,9 +492,9 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
         voidform = {
             id = 194249,
-            duration = function () return talent.legacy_of_the_void.enabled and 3600 or 15 end,
+            duration = 15, -- function () return talent.legacy_of_the_void.enabled and 3600 or 15 end,
             max_stack = 1,
-            generate = function( t )
+            --[[ generate = function( t )
                 local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = FindUnitBuffByID( "player", 194249 )
 
                 if name then
@@ -553,7 +554,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 remains = function ()                    
                     return max( 0, buff.voidform.drop_time - query_time )
                 end,
-            },
+            }, ]]
         },
         weakened_soul = {
             id = 6788,
@@ -617,13 +618,13 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     } )
 
 
-    spec:RegisterHook( "advance_end", function ()
+    --[[ spec:RegisterHook( "advance_end", function ()
         if buff.voidform.up and talent.legacy_of_the_void.enabled and insanity.current == 0 then
             insanity.regen = 0
             removeBuff( "voidform" )
             applyBuff( "shadowform" )
         end
-    end )
+    end ) ]]
 
 
     spec:RegisterGear( "tier21", 152154, 152155, 152156, 152157, 152158, 152159 )
