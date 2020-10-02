@@ -452,6 +452,7 @@ do
         ["remains$"] = true,
         ["ticks_remain$"] = true,
         ["execute_remains$"] = true,
+        ["^time_to_hpg$"] = true,
         -- ["time_to_%d+$"] = true,
         -- ["deficit$"] = true,
     }
