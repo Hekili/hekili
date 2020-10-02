@@ -234,7 +234,7 @@ do
                             local _, range = RC:GetRange( unit )
                             guidRanges[ guid ] = range
 
-                            excluded = range > spec.nameplateRange
+                            excluded = range and range > spec.nameplateRange or false
                         end
 
                         -- Always count your target.
@@ -272,7 +272,7 @@ do
                                 local _, range = RC:GetRange( unit )
                                 guidRanges[ guid ] = range
 
-                                excluded = range > spec.nameplateRange
+                                excluded = range and range > spec.nameplateRange or false
                             end
         
                             -- Always count your target.
