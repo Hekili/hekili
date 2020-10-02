@@ -717,7 +717,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
                 if legendary.superstrain.enabled then
                     applyDebuff( "target", "frost_fever" )
-                    active_Dot.frost_fever = active_enemies
+                    active_dot.frost_fever = active_enemies
 
                     applyDebuff( "target", "virulent_plague" )
                     active_dot.virulent_plague = active_enemies
