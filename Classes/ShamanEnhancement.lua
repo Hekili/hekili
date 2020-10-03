@@ -461,6 +461,10 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         if buff.windfury_totem.down and ( now - action.windfury_totem.lastCast < 1 ) then applyBuff( "windfury_totem" ) end
         if buff.windfury_weapon.down and ( now - action.windfury_weapon.lastCast < 1 ) then applyBuff( "windfury_weapon" ) end
         if buff.flametongue_weapon.down and ( now - action.flametongue_weapon.lastCast < 1 ) then applyBuff( "flametongue_weapon" ) end
+
+        if settings.pad_windstrike and cooldown.windstrike.remains > 0 then
+            reduceCooldown( "windstrike", latency * 2 )
+        end
     end )
 
 
@@ -1257,7 +1261,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         windstrike = {
             id = 115356,
             cast = 0,
-            cooldown = function() return gcd.execute * 2 - 0.01 end,
+            cooldown = function() return gcd.execute * 2 end,
             gcd = "spell",
 
             texture = 1029585,
@@ -1307,6 +1311,14 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         potion = "superior_battle_potion_of_agility",
 
         package = "Enhancement",
+    } )
+
+
+    spec:RegisterSetting( "pad_windstrike", true, {
+        name = "Pad |T1029585:0|t Windstrike Cooldown",
+        desc = "If checked, the addon will treat |T1029585:0|t Windstrike's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during Ascendance.",
+        type = "toggle",
+        width = 1.5
     } )
 
 
