@@ -3389,6 +3389,8 @@ do
         if option == "package" then self:UpdateUseItems(); self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
         elseif option == "potion" and state.spec[ info[1] ] then class.potion = val
         elseif option == "enabled" then ns.StartConfiguration() end
+
+        Hekili:UpdateDamageDetectionForCLEU()        
     end
 
 
@@ -4141,6 +4143,78 @@ do
                                 },
 
 
+                                -- Pet-Based Cluster Detection
+                                petbased = {
+                                    type = "toggle",
+                                    name = "Use Pet-Based Detection",
+                                    desc = function ()
+                                        local msg = "If checked and properly configured, the addon will count targets near your pet as valid targets, when your target is also within range of your pet."
+
+                                        if Hekili:HasPetBasedTargetSpell() then
+                                            local spell = Hekili:GetPetBasedTargetSpell()
+                                            local name, _, tex = GetSpellInfo( spell )
+                                            
+                                            msg = msg .. "\n\n|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r is on your action bar and will be used for all your " .. UnitClass("player") .. " pets."
+                                        end
+
+                                        return msg
+                                    end,
+                                    width = "full",
+                                    hidden = function ()
+                                        return Hekili:GetPetBasedTargetSpells() == nil
+                                    end,
+                                    order = 3.1
+                                },
+
+                                addPetAbility = {
+                                    type = "description",
+                                    name = function ()
+                                        local out = "For pet-based detection to work, you must take an ability from your |cFF00FF00pet's spellbook|r and place it on one of |cFF00FF00your|r action bars.\n\n"
+                                        local spells = Hekili:GetPetBasedTargetSpells()
+
+                                        if not spells then return " " end
+
+                                        out = out .. "For %s, |T%d:0|t |cFFFFD100%s|r is recommended due to its range.  It will work for all your pets."
+
+                                        if spells.count > 1 then
+                                            out = out .. "\nAlternative(s): "
+                                        end
+
+                                        local n = 0
+
+                                        for spell in pairs( spells ) do                                            
+                                            if type( spell ) == "number" then
+                                                n = n + 1
+
+                                                local name, _, tex = GetSpellInfo( spell )
+
+                                                if n == 1 then
+                                                    out = string.format( out, UnitClass( "player" ), tex, name )
+                                                elseif n == 2 and spells.count == 2 then
+                                                    out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
+                                                elseif n ~= spells.count then
+                                                    out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r, "
+                                                else
+                                                    out = out .. "and |T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
+                                                end
+                                            end
+                                        end
+                                        
+                                        return out
+                                    end,
+                                    fontSize = "medium",
+                                    width = "full",
+                                    hidden = function ( info, val )
+                                        if Hekili:GetPetBasedTargetSpells() == nil then return true end
+                                        if self.DB.profile.specs[ id ].petbased == false then return true end
+                                        if self:HasPetBasedTargetSpell() then return true end
+
+                                        return false
+                                    end,
+                                    order = 3.11,
+                                },
+
+
                                 -- Damage Detection Quasi-Group
                                 damage = {
                                     type = "toggle",
@@ -4157,9 +4231,19 @@ do
                                     desc = "When checked, the addon will continue to count enemies who are taking damage from your damage over time effects (bleeds, etc.), even if they are not nearby or taking other damage from you.\n\n" ..
                                         "This may not be ideal for melee specializations, as enemies may wander away after you've applied your dots/bleeds.  If used with |cFFFFD100Use Nameplate Detection|r, dotted enemies that are no longer in melee range will be filtered.\n\n" ..
                                         "For ranged specializations with damage over time effects, this should be enabled.",
-                                    width = "full",
+                                    width = 1.49,
                                     hidden = function () return self.DB.profile.specs[ id ].damage == false end,
                                     order = 5,
+                                },
+
+                                damagePets = {
+                                    type = "toggle",
+                                    name = "Detect Enemies Damaged by Pets",
+                                    desc = "If checked, the addon will count enemies that your pets or minions have hit (or hit you) within the past several seconds.  " ..
+                                        "This may give misleading target counts if your pet/minions are spread out over the battlefield.",
+                                    width = 1.49,
+                                    hidden = function () return self.DB.profile.specs[ id ].damage == false end,
+                                    order = 5.1
                                 },
 
                                 damageRange = {
@@ -4171,7 +4255,7 @@ do
                                     min = 0,
                                     max = 100,
                                     step = 1,
-                                    order = 5.1,
+                                    order = 5.2,
                                 },
 
                                 damageExpiration = {
@@ -4185,7 +4269,7 @@ do
                                     max = 10,
                                     step = 0.1,
                                     hidden = function() return self.DB.profile.specs[ id ].damage == false end,
-                                    order = 6,
+                                    order = 5.3,
                                 },
 
                                 damageSpace = {

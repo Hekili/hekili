@@ -1177,6 +1177,18 @@ local dmg_events = {
 }
 
 
+local direct_dmg_events = {
+    SPELL_DAMAGE            = true,
+    SPELL_MISSED            = true,
+    SWING_DAMAGE            = true,
+    SWING_MISSED            = true,
+    RANGE_DAMAGE            = true,
+    RANGE_MISSED            = true,
+    ENVIRONMENTAL_DAMAGE    = true,
+    ENVIRONMENTAL_MISSED    = true
+}
+
+
 local death_events = {
     UNIT_DIED               = true,
     UNIT_DESTROYED          = true,
@@ -1198,6 +1210,19 @@ local function IsActuallyFriend( unit )
 end
 
 
+local countDamage = false
+local countDots = false
+local countPets = false
+
+
+function Hekili:UpdateDamageDetectionForCLEU()
+    local profile = self.DB.profile
+    local spec = profile.specs[ state.spec.id ]
+
+    countDamage = spec.damage or false
+    countDots = spec.damageDots or false
+    countPets = spec.damagePets or false
+end
 
 -- Use dots/debuffs to count active targets.
 -- Track dot power (until 6.0) for snapshotting.
@@ -1222,7 +1247,11 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
     local time = GetTime()
 
-    if subtype == 'SPELL_SUMMON' and sourceGUID == state.GUID then
+
+    local amSource = ( sourceGUID == state.GUID )
+    local amTarget = ( destGUID   == state.GUID )
+
+    if subtype == 'SPELL_SUMMON' and amSource then    
         -- Guardian of Azeroth check.
         -- ID is 152396.
         local npcid = destGUID:match("(%d+)-%x-$")
@@ -1238,7 +1267,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
     local hostile = ( bit.band( destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY ) == 0 ) and not IsActuallyFriend( destName )
 
-    if dmg_events[ subtype ] and destGUID == state.GUID then
+    if dmg_events[ subtype ] and amTarget then
         local damage, damageType
 
         if subtype:sub( 1, 13 ) == "ENVIRONMENTAL" then
@@ -1286,7 +1315,10 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
     end
 
-    if sourceGUID ~= state.GUID and not ( state.role.tank and destGUID == state.GUID ) and not ns.isMinion( sourceGUID ) then
+
+    local minion = ns.isMinion( sourceGUID )
+    
+    if sourceGUID ~= state.GUID and not ( state.role.tank and destGUID == state.GUID ) and ( not minion or not countPets ) then
         return
     end
 
@@ -1394,8 +1426,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
         end
 
     -- Player/Minion Event
-    elseif sourceGUID == state.GUID or ns.isMinion( sourceGUID ) or ( sourceGUID == destGUID and sourceGUID == UnitGUID( 'target' ) ) then
-
+    elseif amSource or ( countPets and minion ) or ( sourceGUID == destGUID and sourceGUID == UnitGUID( 'target' ) ) then
         if aura_events[ subtype ] then
             if subtype == "SPELL_CAST_SUCCESS" or state.GUID == destGUID then 
                 state.player.updated = true
@@ -1415,7 +1446,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 -- Aura Tracking
                 if subtype == 'SPELL_AURA_APPLIED' or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, true )
-                    ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+                    if ( not minion or countPets ) and countDots then ns.updateTarget( destGUID, time, amSource ) end
 
                     if spellID == 48108 or spellID == 48107 then
                         Hekili:ForceUpdate( "SPELL_AURA_SUPER", true )
@@ -1423,8 +1454,8 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                 elseif subtype == 'SPELL_PERIODIC_DAMAGE' or subtype == 'SPELL_PERIODIC_MISSED' then
                     ns.trackDebuff( spellID, destGUID, time )
-                    if Hekili.currentSpecOpts and Hekili.currentSpecOpts.damageDots then
-                        ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+                    if countDots and ( not minion or countPets ) then
+                        ns.updateTarget( destGUID, time, amSource )
                     end
 
                 elseif destGUID and subtype == 'SPELL_AURA_REMOVED' or subtype == 'SPELL_AURA_BROKEN' or subtype == 'SPELL_AURA_BROKEN_SPELL' then
@@ -1432,7 +1463,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                 end
 
-            elseif sourceGUID == state.GUID and aura.friendly then -- friendly effects
+            elseif amSource and aura.friendly then -- friendly effects
                 if subtype == 'SPELL_AURA_APPLIED'  or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' then
                     ns.trackDebuff( spellID, destGUID, time, subtype == 'SPELL_AURA_APPLIED' )
 
@@ -1450,14 +1481,14 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
         local action = class.abilities[ spellID ]
 
-        if hostile and dmg_events[ subtype ] and not dmg_filtered[ spellID ] then
+        if hostile and ( countDots and dmg_events[ subtype ] or direct_dmg_events[ subtype ] ) and not dmg_filtered[ spellID ] then
             -- Don't wipe overkill targets in rested areas (it is likely a dummy).
             -- Interrupt is actually overkill.
             if not IsResting( "player" ) and ( ( ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and interrupt > 0 ) or ( subtype == "SWING_DAMAGE" and spellName > 0 ) ) and ns.isTarget( destGUID ) then
                 ns.eliminateUnit( destGUID, true )
                 Hekili:ForceUpdate( "SPELL_DAMAGE_OVERKILL" )
             elseif not ( subtype == "SPELL_MISSED" and amount == "IMMUNE" ) then
-                ns.updateTarget( destGUID, time, sourceGUID == state.GUID )
+                ns.updateTarget( destGUID, time, amSource )
             end
 
             if state.spec.enhancement and spellName == class.abilities.fury_of_air.name then
@@ -1657,26 +1688,21 @@ local function ReadKeybindings()
             end
         end
     elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
-        for i = 1, 6 do
+        for i = 1, 10 do
             for b = 1, 12 do
-                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b ]
+                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b]
 
-                local binding = btn.keyBoundTarget
-                local action, aType = btn._state_action, "spell"
+                local binding = btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
 
-                if action and type( action ) == "number" then
-                    binding = GetBindingKey( binding )
-                    action, aType = GetActionInfo( action )
-                    StoreKeybindInfo( i, binding, action, aType )
+                if i > 6 then
+                    -- Checking whether bar is active.
+                    local bar = _G["ElvUI_Bar" .. i]
+
+                    if not bar or not bar.db.enabled then
+                        binding = "ACTIONBUTTON" .. b
+                    end
                 end
-            end
-        end
 
-        for i = 7, 10 do
-            for b = 1, 12 do
-                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b ]
-
-                local binding = "ACTIONBUTTON" .. b
                 local action, aType = btn._state_action, "spell"
 
                 if action and type( action ) == "number" then
@@ -1760,6 +1786,8 @@ local function ReadKeybindings()
         end
     end
 
+    -- This is also the right time to update pet-based target detection.
+    Hekili:SetupPetBasedTargetDetection()
 end    
 ns.ReadKeybindings = ReadKeybindings
 

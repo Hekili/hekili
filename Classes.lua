@@ -46,10 +46,13 @@ local specTemplate = {
     nameplates = true,
     nameplateRange = 8,
 
+    petbased = false,
+
     damage = true,
     damageExpiration = 8,
     damageDots = false,
     damageRange = 0,
+    damagePets = false,
 
     throttleRefresh = false,
     maxRefresh = 10,
@@ -5191,6 +5194,8 @@ function Hekili:SpecializationChanged()
 
     self:RefreshOptions()
     self:LoadScripts()
+
+    self:UpdateDamageDetectionForCLEU()
 end
 
 
