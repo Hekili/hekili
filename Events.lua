@@ -2099,30 +2099,32 @@ Hekili.KeybindInfo = keys
 local updatedKeys = {}
 
 local bindingSubs = {
-    ["CTRL%-"] = "C",
-    ["ALT%-"] = "A",
-    ["SHIFT%-"] = "S",
-    ["STRG%-"] = "ST",
-    ["%s+"] = "",
-    ["NUMPAD"] = "N",
-    ["PLUS"] = "+",
-    ["MINUS"] = "-",
-    ["MULTIPLY"] = "*",
-    ["DIVIDE"] = "/",
-    ["BUTTON"] = "M",
-    ["DOWN"] = "Dn",
-    ["UP"] = "Up",
-    ["MOUSEWHEEL"] = "Mw",
-    ["BACKSPACE"] = "BkSp",
-    ["DECIMAL"] = ".",
-    ["CAPSLOCK"] = "CAPS",
+    { "CTRL%-", "C" },
+    { "ALT%-", "A" },
+    { "SHIFT%-", "S" },
+    { "STRG%-", "ST" },
+    { "%s+", "" },
+    { "NUMPAD", "N" },
+    { "PLUS", "+" },
+    { "MINUS", "-" },
+    { "MULTIPLY", "*" },
+    { "DIVIDE", "/" },
+    { "BUTTON", "M" },
+    { "MOUSEWHEELUP", "MwU" },
+    { "MOUSEWHEELDOWN", "MwD" },
+    { "MOUSEWHEEL", "Mw" },
+    { "DOWN", "Dn" },
+    { "UP", "Up" },
+    { "BACKSPACE", "BkSp" },
+    { "DECIMAL", "." },
+    { "CAPSLOCK", "CAPS" },
 }
 
 local function improvedGetBindingText( binding )
     if not binding then return "" end
 
-    for k, v in pairs( bindingSubs ) do
-        binding = binding:gsub( k, v )
+    for i, rep in ipairs( bindingSubs ) do
+        binding = binding:gsub( rep[1], rep[2] )
     end
 
     return binding
@@ -2272,26 +2274,21 @@ local function ReadKeybindings()
         end
     -- Use ElvUI's actionbars only if they are actually enabled.
     elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
-        for i = 1, 6 do
+        for i = 1, 10 do
             for b = 1, 12 do
-                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b ]
+                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b]
 
-                local binding = btn.keyBoundTarget
-                local action, aType = btn._state_action, "spell"
+                local binding = btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
 
-                if action and type( action ) == "number" then
-                    binding = GetBindingKey( binding )
-                    action, aType = GetActionInfo( action )
-                    StoreKeybindInfo( i, binding, action, aType )
+                if i > 6 then
+                    -- Checking whether bar is active.
+                    local bar = _G["ElvUI_Bar" .. i]
+
+                    if not bar or not bar.db.enabled then
+                        binding = "ACTIONBUTTON" .. b
+                    end
                 end
-            end
-        end
 
-        for i = 7, 10 do
-            for b = 1, 12 do
-                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b ]
-
-                local binding = "ACTIONBUTTON" .. b
                 local action, aType = btn._state_action, "spell"
 
                 if action and type( action ) == "number" then
