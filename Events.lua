@@ -1522,30 +1522,32 @@ Hekili.KeybindInfo = keys
 local updatedKeys = {}
 
 local bindingSubs = {
-    ["CTRL%-"] = "C",
-    ["ALT%-"] = "A",
-    ["SHIFT%-"] = "S",
-    ["STRG%-"] = "ST",
-    ["%s+"] = "",
-    ["NUMPAD"] = "N",
-    ["PLUS"] = "+",
-    ["MINUS"] = "-",
-    ["MULTIPLY"] = "*",
-    ["DIVIDE"] = "/",
-    ["BUTTON"] = "M",
-    ["DOWN"] = "Dn",
-    ["UP"] = "Up",
-    ["MOUSEWHEEL"] = "Mw",
-    ["BACKSPACE"] = "BkSp",
-    ["DECIMAL"] = ".",
-    ["CAPSLOCK"] = "CAPS",
+    { "CTRL%-", "C" },
+    { "ALT%-", "A" },
+    { "SHIFT%-", "S" },
+    { "STRG%-", "ST" },
+    { "%s+", "" },
+    { "NUMPAD", "N" },
+    { "PLUS", "+" },
+    { "MINUS", "-" },
+    { "MULTIPLY", "*" },
+    { "DIVIDE", "/" },
+    { "BUTTON", "M" },
+    { "MOUSEWHEELUP", "MwU" },
+    { "MOUSEWHEELDOWN", "MwD" },
+    { "MOUSEWHEEL", "Mw" },
+    { "DOWN", "Dn" },
+    { "UP", "Up" },
+    { "BACKSPACE", "BkSp" },
+    { "DECIMAL", "." },
+    { "CAPSLOCK", "CAPS" },
 }
 
 local function improvedGetBindingText( binding )
     if not binding then return "" end
 
-    for k, v in pairs( bindingSubs ) do
-        binding = binding:gsub( k, v )
+    for i, rep in ipairs( bindingSubs ) do
+        binding = binding:gsub( rep[1], rep[2] )
     end
 
     return binding
