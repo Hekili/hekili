@@ -353,51 +353,56 @@ function Hekili:PopStack()
 
         -- Set up new delayMin.        
         x.priorMin = state.delayMin
-        local script = scripts:GetScript( x.script )
+        local actualDelay = state.delay
 
-        if script.Recheck then
-            if #blockValues > 0 then twipe( blockValues ) end
-            blockHelper( script.Recheck() )
+        -- If the script would block at the present time, find when it wouldn't block.
+        if scripts:CheckScript( x.script ) then
+            local script = scripts:GetScript( x.script )
 
-            local firstFail
-            local actualDelay = state.delay
+            if script.Recheck then
+                if #blockValues > 0 then twipe( blockValues ) end
+                blockHelper( script.Recheck() )
 
-            for i, check in ipairs( blockValues ) do
-                state.delay = actualDelay + check
+                local firstFail
 
-                if not scripts:CheckScript( x.script ) then
-                    firstFail = check
-                    break
-                end
-            end
+                if Hekili.ActiveDebug then Hekili:Debug( " - blocking script did not immediately block; will attempt to tune it." ) end
+                for i, check in ipairs( blockValues ) do
+                    state.delay = actualDelay + check
 
-            if firstFail and firstFail > 0 then
-                state.delayMin = actualDelay + firstFail
-
-                local subFail
-
-                -- May want to try to tune even better?
-                for i = 1, 10 do
-                    if subFail then subFail = firstFail - ( firstFail - subFail ) / 2
-                    else subFail = firstFail / 2 end
-
-                    state.delay = actualDelay + subFail
                     if not scripts:CheckScript( x.script ) then
-                        firstFail = subFail
-                        subFail = nil
+                        firstFail = check
+                        break
                     end
                 end
 
-                state.delayMin = actualDelay + firstFail
-                if Hekili.ActiveDebug then Hekili:Debug( " - setting delayMin to " .. state.delayMin .. " based on recheck and brute force." ) end
-            else
-                state.delayMin = x.priorMin
-                -- Leave it alone.
-                if Hekili.ActiveDebug then Hekili:Debug( " - leaving delayMin at " .. state.delayMin .. "." ) end
-            end
+                if firstFail and firstFail > 0 then
+                    state.delayMin = actualDelay + firstFail
 
-            state.delay = actualDelay
+                    local subFail
+
+                    -- May want to try to tune even better?
+                    for i = 1, 10 do
+                        if subFail then subFail = firstFail - ( firstFail - subFail ) / 2
+                        else subFail = firstFail / 2 end
+
+                        state.delay = actualDelay + subFail
+                        if not scripts:CheckScript( x.script ) then
+                            firstFail = subFail
+                            subFail = nil
+                        end
+                    end
+
+                    state.delayMin = actualDelay + firstFail
+                    if Hekili.ActiveDebug then Hekili:Debug( " - setting delayMin to " .. state.delayMin .. " based on recheck and brute force." ) end
+                else
+                    state.delayMin = x.priorMin
+                    -- Leave it alone.
+                    if Hekili.ActiveDebug then Hekili:Debug( " - leaving delayMin at " .. state.delayMin .. "." ) end
+                end
+            end
         end
+
+        state.delay = actualDelay
     end
 
     InUse[ x.list ] = nil
