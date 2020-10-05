@@ -5359,12 +5359,16 @@ function state.reset( dispName )
     -- interrupts
     state.target.casting = nil
 
+    local foundResource = false
+
     for k, power in pairs( class.resources ) do
         local res = rawget( state, k )
 
         if res then
             res.actual = UnitPower( 'player', power.type )
             res.max = UnitPowerMax( 'player', power.type )
+
+            if res.max > 0 then foundResource = true end
 
             if k == "mana" and state.spec.arcane then
                 res.modmax = res.max / ( 1 + state.mastery_value )
@@ -5393,6 +5397,11 @@ function state.reset( dispName )
             if res.reset then res.reset() end
             forecastResources( k )            
         end
+    end
+
+    if not foundResource then
+        state.resetting = false
+        return false, "no available resources"
     end
 
     state.health = rawget( state, "health" ) or setmetatable( { resource = "health" }, mt_resource )
@@ -5508,6 +5517,7 @@ function state.reset( dispName )
     end
 
     state.resetting = false
+    return true
 end
 
 

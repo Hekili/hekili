@@ -1279,6 +1279,18 @@ function Hekili:ProcessHooks( dispName, packName )
     local spec = rawget( self.DB.profile.specs, specID )
     if not spec then return end
 
+    local debug = self.ActiveDebug
+
+    if debug then
+        self:SetupDebug( dispName )
+        -- self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
+    end
+
+    if not state.reset( dispName ) then
+        if debug then self:Debug( "Stopping update; was not able to reset the virtual gamestate." ) end
+        return
+    end
+
     local UI = ns.UI.Displays[ dispName ]
     local Queue = UI.Recommendations
 
@@ -1317,15 +1329,6 @@ function Hekili:ProcessHooks( dispName, packName )
     state.system.packInfo = pack
     state.system.display  = dispName
     state.system.dispInfo = display
-
-    local debug = self.ActiveDebug
-
-    if debug then
-        self:SetupDebug( dispName )
-        -- self:Debug( "*** START OF NEW DISPLAY: %s ***", dispName ) 
-    end
-
-    state.reset( dispName )
 
     local numRecs = display.numIcons or 4
 
