@@ -10,6 +10,13 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
+-- Conduits
+-- [-] calculated_strikes
+-- [-] coordinated_offensive (aura)
+-- [-] inner_fury
+-- [x] xuens_bond
+
+
 if UnitClassBase( 'player' ) == 'MONK' then
     local spec = Hekili:NewSpecialization( 269 )
 
@@ -520,7 +527,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
             if last_combo == key then removeBuff( "hit_combo" )
             else
                 if talent.hit_combo.enabled then addStack( "hit_combo", 10, 1 ) end
-                if azerite.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end                
+                if azerite.fury_of_xuen.enabled then addStack( "fury_of_xuen", nil, 1 ) end
+                if conduit.xuens_bond.enabled and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.1 ) end
             end
             virtual_combo = key
         end
@@ -887,6 +895,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             handler = function ()
                 applyBuff( "fortifying_brew" )
+                if conduit.fortifying_ingredients.enabled then applyBuff( "fortifying_ingredients" ) end
             end,
         },
 
@@ -964,6 +973,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 applyDebuff( "target", "leg_sweep" )
                 active_dot.leg_sweep = active_enemies
+                if conduit.dizzying_tumble.enabled then applyDebuff( "target", "dizzying_tumble" ) end
             end,
         },
 
@@ -1214,6 +1224,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 setCooldown( "fists_of_fury", cooldown.fists_of_fury.remains - ( cooldown.fists_of_fury.remains / 2 ) )
                 setCooldown( "rising_sun_kick", cooldown.rising_sun_kick.remains - ( cooldown.rising_sun_kick.remains / 2 ) )
                 setCooldown( "rushing_jade_wind", cooldown.rushing_jade_wind.remains - ( cooldown.rushing_jade_wind.remains / 2 ) )
+                if conduit.coordinated_offensive.enabled then applyBuff( "coordinated_offensive" ) end
             end,
         },
 
@@ -1283,7 +1294,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 applyBuff( "storm_earth_and_fire" )
             end,
 
-            copy = { 137639, 221771 }
+            copy = { 137639, 221771 },
+
+            auras = {
+                -- Conduit
+                coordinated_offensive = {
+                    id = 336602,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
         },
 
 

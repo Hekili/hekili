@@ -10,10 +10,35 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'HUNTER' then
+-- Shadowlands Legendaries
+-- [x] Eagletalon's True Focus
+-- [-] Surging Shots (passive/reactive)
+-- [-] Serpentstalker's Trickery (passive/reactive)
+-- [-] Secrets of the Unblinking Vigil (passive/reactive)
+
+-- Conduits
+-- [x] Brutal Projectiles
+-- [-] Deadly Chain
+-- [-] Powerful Precision
+-- [x] Sharpshooter's Focus
+
+
+if UnitClassBase( "player" ) == "HUNTER" then
     local spec = Hekili:NewSpecialization( 254, true )
 
-    spec:RegisterResource( Enum.PowerType.Focus )
+    spec:RegisterResource( Enum.PowerType.Focus, {
+        death_chakram = {
+            resource = "focus",
+            aura = "death_chakram",
+
+            last = function ()
+                return state.buff.death_chakram.applied + floor( state.query_time - state.buff.death_chakram.applied )
+            end,
+
+            interval = function () return class.auras.death_chakram.tick_time end,
+            value = function () return conduit.necrotic_barrage.enabled and 5 or 3 end,
+        }        
+    } )
 
     -- Talents
     spec:RegisterTalents( {
@@ -67,11 +92,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         a_murder_of_crows = {
             id = 131894,
             duration = 15,
-            max_stack = 1,
-        },
-        aspect_of_the_cheetah = {
-            id = 186258,
-            duration = 9,
             max_stack = 1,
         },
         aspect_of_the_turtle = {
@@ -216,10 +236,14 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         trueshot = {
             id = 288613,
-            duration = 15,
+            duration = function () return 15 * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
             max_stack = 1,
         },
-
+        volley = {
+            id = 257622,
+            duration = 6,
+            max_stack = 1,
+        }
     } )
 
 
@@ -237,7 +261,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
         local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 
-        if sourceGUID == state.GUID and ( subtype == 'SPELL_AURA_APPLIED' or subtype == 'SPELL_AURA_REFRESH' or subtype == 'SPELL_AURA_APPLIED_DOSE' ) and spellID == 193534 then -- Steady Aim.
+        if sourceGUID == state.GUID and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) and spellID == 193534 then -- Steady Aim.
             steady_focus_applied = GetTime()
         end
     end )
@@ -271,7 +295,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 60,
             gcd = "spell",
 
-            spend = 20,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -297,7 +321,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             recharge = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
             gcd = "spell",
 
-            spend = function () return buff.lock_and_load.up and 0 or 35 end,
+            spend = function () return buff.lock_and_load.up and 0 or ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 35 ) end,
             spendType = "focus",
 
             startsCombat = true,
@@ -307,7 +331,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 applyBuff( "precise_shots" )
                 removeBuff( "lock_and_load" )
                 removeBuff( "double_tap" )
-                removeBuff( "trick_shots" )
+                if buff.volley.down then removeBuff( "trick_shots" ) end
             end,
         },
 
@@ -318,7 +342,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 20,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -336,7 +360,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_cheetah = {
             id = 186257,
             cast = 0,
-            cooldown = function () return 180 * ( talent.born_to_be_wild.enabled and 0.8 or 1 ) end,
+            cooldown = function () return ( 180 * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( talent.born_to_be_wild.enabled and 0.8 or 1 ) ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
             gcd = "off",
 
             startsCombat = false,
@@ -351,7 +375,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_turtle = {
             id = 186265,
             cast = 0,
-            cooldown = function () return 180 * ( talent.born_to_be_wild.enabled and 0.8 or 1 ) end,
+            cooldown = function () return ( 180 * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( talent.born_to_be_wild.enabled and 0.8 or 1 ) ) + ( conduit.harmony_of_the_tortollan.mod * 0.001 ) end,
             gcd = "off",
 
             toggle = "defensives",
@@ -373,7 +397,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 20,
             gcd = "spell",
 
-            spend = 30,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 30 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -407,7 +431,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 30,
             gcd = "spell",
 
-            spend = 10,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 10 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -456,7 +480,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 20,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -486,6 +510,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             readyTime = state.timeToInterrupt,
 
             handler = function ()
+                if conduit.reversal_of_fortune.enabled then
+                    gain( conduit.reversal_of_fortune.mod, "focus" )
+                end
+
                 interrupt()
             end,
         },
@@ -504,6 +532,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 if talent.posthaste.enabled then applyBuff( "posthaste" ) end
+                if conduit.tactical_retreat.enabled and target.within8 then applyDebuff( "target", "tactical_retreat" ) end
             end,
         },
 
@@ -551,6 +580,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 461117,
 
             handler = function ()
+                gain( 0.3 * health.max, "health" )
+                if conduit.rejuvenating_wind.enabled then applyBuff( "rejuvenating_wind" ) end
             end,
         },
 
@@ -561,7 +592,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 30,
             gcd = "spell",
 
-            spend = 20,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = false,
@@ -575,6 +606,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
 
+        --[[ Using from BM module.
         feign_death = {
             id = 5384,
             cast = 0,
@@ -587,7 +619,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 applyBuff( "feign_death" )
             end,
-        },
+        }, ]]
 
 
         --[[ flare = {
@@ -671,7 +703,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 20,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -697,13 +729,23 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             start = function ()
                 applyBuff( "rapid_fire" )
-                removeBuff( "trick_shots" )
+                if buff.volley.down then removeBuff( "trick_shots" ) end
                 if talent.streamline.enabled then applyBuff( "streamline" ) end
+                removeBuff( "brutal_projectiles" )
             end,
 
             finish = function ()
                 removeBuff( "double_tap" )                
             end,
+
+            auras = {
+                -- Conduit
+                brutal_projectiles = {
+                    id = 339929,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+            }
         },
 
 
@@ -713,7 +755,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 10,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 10 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -735,7 +777,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = -0,
+            spend = -10,
             spendType = "focus",
 
             startsCombat = true,
@@ -757,9 +799,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0,
-            spendType = "focus",
-
             startsCombat = false,
             essential = true,
 
@@ -768,7 +807,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function () return false and not pet.exists end, -- turn this into a pref!
             handler = function ()
-                summonPet( 'made_up_pet', 3600, 'ferocity' )
+                summonPet( "made_up_pet", 3600, "ferocity" )
             end,
         },
 
@@ -847,15 +886,14 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 45,
             gcd = "spell",
 
-            spend = 0,
-            spendType = "focus",
-
             startsCombat = true,
             texture = 132205,
 
             talent = "volley",
 
-            start = function ()
+            handler = function ()
+                applyBuff( "volley" )
+                applyBuff( "trick_shots", 6 )
             end,
         },
     } )

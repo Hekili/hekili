@@ -10,17 +10,53 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
+-- Shadowlands
+-- Legendaries
+-- [x] Call of the Wild
+-- [-] Nessingwary's Trapping Apparatus (leave as reactive)
+-- [x] Soulforge Embers
+-- [x] Craven Strategem
+
+-- [-] Dire Command (passive/reactive)
+-- [x] Flamewaker's Cobra Sting
+-- [x] Qa'pla, Eredun War Order
+-- [-] Rylakstalker's Piercing Fangs (passive/reactive)
+
+-- Conduits
+-- [x] Bloodletting
+-- [-] Echoing Call
+-- [x] Ferocious Appetite
+-- [-] One with the Beast
+
+-- Covenants
+-- [-] Enfeebled Mark
+-- [-] Empowered Release
+-- [x] Necrotic Barrage
+-- [x] Spirit Attunement
+
+-- Endurance
+-- [x] Harmony of the Tortollan
+-- [-] Markman's Advantage (sp)
+-- [x] Rejuvenating Wind
+-- [-] Resilience of the Hunter
+
+-- Finesse
+-- [x] cheetahs_vigor
+-- [x] reversal_of_fortune
+-- [x] tactical_retreat
+
+
 -- needed for Frenzy.
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 
 
-if UnitClassBase( 'player' ) == 'HUNTER' then
+if UnitClassBase( "player" ) == "HUNTER" then
     local spec = Hekili:NewSpecialization( 253, true )
 
     spec:RegisterResource( Enum.PowerType.Focus, {
         aspect_of_the_wild = {
-            resource = 'focus',
-            aura = 'aspect_of_the_wild',
+            resource = "focus",
+            aura = "aspect_of_the_wild",
 
             last = function ()
                 local app = state.buff.aspect_oF_the_wild.applied
@@ -34,8 +70,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         barbed_shot = {
-            resource = 'focus',
-            aura = 'barbed_shot',
+            resource = "focus",
+            aura = "barbed_shot",
 
             last = function ()
                 local app = state.buff.barbed_shot.applied
@@ -49,8 +85,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         barbed_shot_2 = {
-            resource = 'focus',
-            aura = 'barbed_shot_2',
+            resource = "focus",
+            aura = "barbed_shot_2",
 
             last = function ()
                 local app = state.buff.barbed_shot_2.applied
@@ -64,8 +100,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         barbed_shot_3 = {
-            resource = 'focus',
-            aura = 'barbed_shot_3',
+            resource = "focus",
+            aura = "barbed_shot_3",
 
             last = function ()
                 local app = state.buff.barbed_shot_3.applied
@@ -79,8 +115,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         barbed_shot_4 = {
-            resource = 'focus',
-            aura = 'barbed_shot_4',
+            resource = "focus",
+            aura = "barbed_shot_4",
 
             last = function ()
                 local app = state.buff.barbed_shot_4.applied
@@ -94,8 +130,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         barbed_shot_5 = {
-            resource = 'focus',
-            aura = 'barbed_shot_5',
+            resource = "focus",
+            aura = "barbed_shot_5",
 
             last = function ()
                 local app = state.buff.barbed_shot_5.applied
@@ -109,8 +145,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         barbed_shot_6 = {
-            resource = 'focus',
-            aura = 'barbed_shot_6',
+            resource = "focus",
+            aura = "barbed_shot_6",
 
             last = function ()
                 local app = state.buff.barbed_shot_6.applied
@@ -122,10 +158,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             interval = 2,
             value = 5,
         },
-        
+
         barbed_shot_7 = {
-            resource = 'focus',
-            aura = 'barbed_shot_7',
+            resource = "focus",
+            aura = "barbed_shot_7",
 
             last = function ()
                 local app = state.buff.barbed_shot_7.applied
@@ -137,10 +173,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             interval = 2,
             value = 5,
         },
-        
+
         barbed_shot_8 = {
-            resource = 'focus',
-            aura = 'barbed_shot_8',
+            resource = "focus",
+            aura = "barbed_shot_8",
 
             last = function ()
                 local app = state.buff.barbed_shot_8.applied
@@ -154,15 +190,15 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         death_chakram = {
-            resource = 'focus',
-            aura = 'death_chakram',
+            resource = "focus",
+            aura = "death_chakram",
 
             last = function ()
                 return state.buff.death_chakram.applied + floor( state.query_time - state.buff.death_chakram.applied )
             end,
 
             interval = function () return class.auras.death_chakram.tick_time end,
-            value = 3
+            value = function () return conduit.necrotic_barrage.enabled and 5 or 3 end,
         }
     } )
 
@@ -198,7 +234,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         dire_beast_basilisk = 825, -- 205691
         dire_beast_hawk = 824, -- 208652
         dragonscale_armor = 3600, -- 202589
@@ -223,8 +259,14 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
         aspect_of_the_cheetah = {
+            id = 186258,
+            duration = function () return conduit.cheetahs_vigor.enabled and 12 or 9 end,
+            max_stack = 1,
+        },
+
+        aspect_of_the_cheetah_sprint = {
             id = 186257,
-            duration = 9,
+            duration = 3,
             max_stack = 1,
         },
 
@@ -269,25 +311,25 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 8,
             max_stack = 1,
         },
-        
+
         barbed_shot_6 = {
             id = 284255,
             duration = 8,
             max_stack = 1,
         },
-        
+
         barbed_shot_7 = {
             id = 284257,
             duration = 8,
             max_stack = 1,
         },
-        
+
         barbed_shot_8 = {
             id = 284258,
             duration = 8,
             max_stack = 1,
         },
-        
+
         barbed_shot_dot = {
             id = 217200,
             duration = 8,
@@ -361,7 +403,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 fr.expires = 0
                 fr.applied = 0
                 fr.caster = "nobody"
-            end,            
+            end,
         },
 
         camouflage = {
@@ -380,7 +422,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 281036,
             duration = 8,
             max_stack = 1,
-        },        
+        },
 
         dire_beast_basilisk = {
             id = 209967,
@@ -592,7 +634,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 8,
             max_stack = 1
         },
-        
+
         primal_instincts = {
             id = 279810,
             duration = 20,
@@ -606,6 +648,14 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 10,
             max_stack = 1
         },
+
+
+        -- Conduits
+        resilience_of_the_hunter = {
+            id = 339461,
+            duration = 8,
+            max_stack = 1
+        }
     } )
 
     spec:RegisterStateExpr( "barbed_shot_grace_period", function ()
@@ -623,29 +673,29 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             spend = 30,
             spendType = "focus",
 
-            talent = 'a_murder_of_crows',   
+            talent = "a_murder_of_crows",
 
             startsCombat = true,
             texture = 645217,
 
             handler = function ()
-                applyDebuff( 'target', 'a_murder_of_crows' )
+                applyDebuff( "target", "a_murder_of_crows" )
             end,
         },
 
-        
+
         arcane_shot = {
             id = 185358,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 40,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 132218,
-            
+
             handler = function ()
             end,
         },
@@ -654,14 +704,15 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_cheetah = {
             id = 186257,
             cast = 0,
-            cooldown = function () return pvptalent.hunting_pack.enabled and 90 or 180 end,
+            cooldown = function () return ( ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * 180 ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
             gcd = "spell",
 
             startsCombat = false,
             texture = 132242,
 
             handler = function ()
-                applyBuff( 'aspect_of_the_cheetah' )
+                applyBuff( "aspect_of_the_cheetah" )
+                applyBuff( "aspect_of_the_cheetah_sprint" )
             end,
         },
 
@@ -669,7 +720,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_turtle = {
             id = 186265,
             cast = 8,
-            cooldown = 180,
+            cooldown = function() return ( ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * 180 ) + ( conduit.harmony_of_the_tortollan.mod * 0.001 ) end,
             gcd = "spell",
             channeled = true,
 
@@ -677,7 +728,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 132199,
 
             start = function ()
-                applyBuff( 'aspect_of_the_turtle' )
+                applyBuff( "aspect_of_the_turtle" )
             end,
         },
 
@@ -685,10 +736,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_wild = {
             id = 193530,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * 120 end,
             gcd = "off",
 
-            toggle = 'cooldowns',
+            toggle = "cooldowns",
 
             startsCombat = false,
             texture = 136074,
@@ -699,7 +750,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
 
             handler = function ()
-                applyBuff( 'aspect_of_the_wild' )
+                applyBuff( "aspect_of_the_wild" )
 
                 if azerite.primal_instincts.enabled then gainCharges( "barbed_shot", 1 ) end
             end,
@@ -710,8 +761,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 217200,
             cast = 0,
             charges = 2,
-            cooldown = function () return 12 * haste end,
-            recharge = function () return 12 * haste end,
+            cooldown = function () return ( conduit.bloodletting.enabled and 11 or 12 ) * haste end,
+            recharge = function () return ( conduit.bloodletting.enabled and 11 or 12 ) * haste end,
             gcd = "spell",
 
             velocity = 50,
@@ -719,20 +770,24 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             startsCombat = true,
             texture = 2058007,
 
-            cycle = 'barbed_shot',
+            cycle = "barbed_shot",
 
             handler = function ()
-                if buff.barbed_shot.down then applyBuff( 'barbed_shot' )
+                if buff.barbed_shot.down then applyBuff( "barbed_shot" )
                 else
                     for i = 2, 8 do
-                        if buff[ 'barbed_shot_' .. i ].down then applyBuff( 'barbed_shot_' .. i ); break end
+                        if buff[ "barbed_shot_" .. i ].down then applyBuff( "barbed_shot_" .. i ); break end
                     end
                 end
 
-                addStack( 'frenzy', 8, 1 )
+                addStack( "frenzy", 8, 1 )
 
-                setCooldown( 'bestial_wrath', cooldown.bestial_wrath.remains - 12 )
-                applyDebuff( 'target', 'barbed_shot_dot' )
+                setCooldown( "bestial_wrath", cooldown.bestial_wrath.remains - 12 )
+                applyDebuff( "target", "barbed_shot_dot" )
+
+                if legendary.qapla_eredun_war_order.enabled then
+                    reduceCooldown( "kill_command", 4 )
+                end
             end,
         },
 
@@ -765,7 +820,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 132127,
 
             handler = function ()
-                applyBuff( 'bestial_wrath' )
+                applyBuff( "bestial_wrath" )
                 if pvptalent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
                 if talent.scent_of_blood.enabled then gainCharges( "barbed_shot", 2 ) end
             end,
@@ -778,13 +833,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 45,
             gcd = "spell",
 
-            talent = 'binding_shot',
+            talent = "binding_shot",
 
             startsCombat = true,
             texture = 462650,
 
             handler = function ()
-                applyDebuff( 'target', 'binding_shot' )
+                applyDebuff( "target", "binding_shot" )
             end,
         },
 
@@ -794,12 +849,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 132176,
-            
+
             handler = function ()
                 applyDebuff( "target", "bloodshed" )
             end,
@@ -816,7 +871,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 461113,
 
             handler = function ()
-                applyBuff( 'camouflage' )
+                applyBuff( "camouflage" )
             end,
         },
 
@@ -829,13 +884,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             velocity = 50,
 
-            talent = 'chimaera_shot',
+            talent = "chimaera_shot",
 
             startsCombat = true,
             texture = 236176,
 
             handler = function ()
-                gain( 10 * min( 2, active_enemies ), 'focus' )                
+                gain( 10 * min( 2, active_enemies ), "focus" )
             end,
         },
 
@@ -855,8 +910,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 461114,
 
             handler = function ()
-                if talent.killer_cobra.enabled and buff.bestial_wrath.up then setCooldown( 'kill_command', 0 )
-                else setCooldown( 'kill_command', cooldown.kill_command.remains - 1 ) end
+                if talent.killer_cobra.enabled and buff.bestial_wrath.up then setCooldown( "kill_command", 0 )
+                else setCooldown( "kill_command", cooldown.kill_command.remains - 1 ) end
             end,
         },
 
@@ -873,7 +928,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 135860,
 
             handler = function ()
-                applyDebuff( 'target', 'concussive_shot' )
+                applyDebuff( "target", "concussive_shot" )
             end,
         },
 
@@ -884,7 +939,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 24,
             gcd = "off",
 
-            toggle = 'interrupts',
+            toggle = "interrupts",
 
             startsCombat = true,
             texture = 249170,
@@ -893,6 +948,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             readyTime = state.timeToInterrupt,
 
             handler = function ()
+                if conduit.reversal_of_fortune.enabled then
+                    gain( conduit.reversal_of_fortune.mod, "focus" )
+                end
+
                 interrupt()
             end,
         },
@@ -911,7 +970,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 236186,
 
             handler = function ()
-                summonPet( 'dire_beast', 8 )
+                summonPet( "dire_beast", 8 )
             end,
         },
 
@@ -963,14 +1022,24 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             charges = 1,
             cooldown = 20,
             recharge = 20,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = false,
             texture = 132294,
 
             handler = function ()
-                applyBuff( "posthaste" )
+                if talent.posthaste.enabled then applyBuff( "posthaste" ) end
+                if conduit.tactical_retreat.enabled and target.within8 then applyDebuff( "target", "tactical_retreat" ) end
             end,
+
+            auras = {
+                -- Conduits
+                tactical_retreat = {
+                    id = 339654,
+                    duration = 3,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -984,7 +1053,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 132172,
 
             handler = function ()
-                applyBuff( 'eagle_eye', 60 )
+                applyBuff( "eagle_eye", 60 )
             end,
         },
 
@@ -1000,21 +1069,38 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 gain( 0.3 * health.max, "health" )
+                if conduit.rejuvenating_wind.enabled then applyBuff( "rejuvenating_wind" ) end
             end,
+
+            auras = {
+                -- Conduit
+                rejuvenating_wind = {
+                    id = 339400,
+                    duration = 8,
+                    max_stack = 1
+                }
+            }
         },
 
 
         feign_death = {
             id = 5384,
             cast = 0,
-            cooldown = 30,
+            cooldown = function () return legendary.craven_stategem.enabled and 15 or 30 end,
             gcd = "spell",
 
             startsCombat = false,
             texture = 132293,
 
             handler = function ()
-                applyBuff( 'feign_death' )
+                applyBuff( "feign_death" )
+
+                if legendary.craven_strategem.enabled then
+                    removeDebuff( "player", "dispellable_curse" )
+                    removeDebuff( "player", "dispellable_disease" )
+                    removeDebuff( "player", "dispellable_magic" )
+                    removeDebuff( "player", "dispellable_poison" )
+                end
             end,
         },
 
@@ -1029,7 +1115,21 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 135815,
 
             handler = function ()
+                applyDebuff( "target", "flare" )
+
+                if legendary.soulforge_embers.enabled and debuff.tar_trap.up then
+                    applyDebuff( "target", "soulforge_embers" )
+                    active_dot.soulforge_embers = max( 1, min( 5, active_dot.tar_trap ) )
+                end
             end,
+
+            auras = {
+                soulforge_embers = {
+                    id = 336746,
+                    duration = 12,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1043,7 +1143,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 135834,
 
             handler = function ()
-                applyDebuff( 'target', 'freezing_trap' )
+                applyDebuff( "target", "freezing_trap" )
             end,
         },
 
@@ -1063,17 +1163,17 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             end,
         },
 
-                
+
 
         hunters_mark = {
             id = 257284,
             cast = 0,
             cooldown = 20,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 236188,
-            
+
             handler = function ()
                 applyDebuff( "target", "hunters_mark" )
             end,
@@ -1106,7 +1206,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             texture = 132111,
 
             handler = function ()
-                applyDebuff( 'target', 'intimidation' )
+                applyDebuff( "target", "intimidation" )
             end,
         },
 
@@ -1117,7 +1217,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = function () return 7.5 * haste end,
             gcd = "spell",
 
-            spend = 30,
+            spend = function () return buff.flamewakers_cobra_shot.up and 0 or 30 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -1126,7 +1226,20 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             usable = function () return pet.alive, "requires a living pet" end,
 
             handler = function ()
+                removeBuff( "flamewakers_cobra_shot" )
+
+                if conduit.ferocious_appetite.enabled and stat.crit >= 100 then
+                    reduceCooldown( "aspect_of_the_wild", conduit.ferocious_appetite.mod / 10 )
+                end
             end,
+
+            auras = {
+                flamewakers_cobra_shot = {
+                    id = 336826,
+                    duration = 15,
+                    max_stack = 1,
+                }
+            }
         },
 
 
@@ -1137,13 +1250,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 10,
             recharge = 10,
             gcd = "spell",
-            
+
             spend = function () return buff.flayers_mark.up and 0 or 10 end,
             spendType = "focus",
-            
+
             startsCombat = true,
             texture = 236174,
-            
+
             usable = function () return buff.flayers_mark.up or target.health_pct < 20 end,
             handler = function ()
                 removeBuff( "flayers_mark" )
@@ -1196,7 +1309,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             velocity = 40,
 
             handler = function ()
-                applyBuff( 'beast_cleave' )
+                applyBuff( "beast_cleave" )
             end,
         },
 
@@ -1206,12 +1319,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 360,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 136224,
-            
+
             usable = function () return pet.alive and pet.ferocity, "requires a living ferocity pet" end,
             handler = function ()
                 applyBuff( "primal_Fury" )
@@ -1282,15 +1395,15 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 90,
             gcd = "spell",
 
-            talent = 'spitting_cobra',
-            toggle = 'cooldowns',
+            talent = "spitting_cobra",
+            toggle = "cooldowns",
 
             startsCombat = true,
             texture = 236177,
 
             handler = function ()
-                summonPet( 'spitting_cobra', 20 )
-                applyBuff( 'spitting_cobra', 20 )
+                summonPet( "spitting_cobra", 20 )
+                applyBuff( "spitting_cobra", 20 )
             end,
         },
 
@@ -1301,8 +1414,8 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cooldown = 120,
             gcd = "spell",
 
-            toggle = 'cooldowns',
-            talent = 'stampede',
+            toggle = "cooldowns",
+            talent = "stampede",
 
             startsCombat = true,
             texture = 461112,
@@ -1330,7 +1443,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             usable = function () return not pet.exists, "requires no active pet" end,
 
             handler = function ()
-                summonPet( 'made_up_pet', 3600, 'ferocity' )
+                summonPet( "made_up_pet", 3600, "ferocity" )
             end,
         },
 
@@ -1354,10 +1467,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             cast = 0,
             cooldown = 10,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 136020,
-            
+
             usable = function () return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic effect" end,
             handler = function ()
                 removeBuff( "dispellable_enrage" )
@@ -1678,7 +1791,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             auras = {
                 wild_mark = {
                     id = 328275,
-                    duration = 15,
+                    duration = function () return conduit.spirit_attunement.enabled and 18 or 15 end,
                     max_stack = 1
                 }
             }
@@ -1743,7 +1856,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             "This may be preferred when delaying Aspect of the Wild would cost you one or more uses of Aspect of the Wild in a given fight.",
         type = "toggle",
         width = "full"
-    } )    
+    } )
 
     spec:RegisterSetting( "barbed_shot_grace_period", 0.5, {
         name = "|T2058007:0|t Barbed Shot Grace Period",
@@ -1755,7 +1868,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         max = 1,
         step = 0.01,
         width = 1.5
-    } )    
+    } )
 
 
     if state.level > 50 then

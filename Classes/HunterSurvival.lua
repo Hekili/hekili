@@ -10,7 +10,20 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'HUNTER' then
+-- Shadowlands Legendaries
+-- [x] Wildfire Cluster
+-- [-] Rylakstalker's Confounding Strikes (passive/reactive)
+-- [x] Latent Poison Injectors
+-- [x] Butcher's Bone Fragments
+
+-- Conduits
+-- [x] Deadly Tandem
+-- [x] Flame Infusion
+-- [-] Stinging Strike
+-- [-] Strength of the Pack
+
+
+if UnitClassBase( "player" ) == "HUNTER" then
     local spec = Hekili:NewSpecialization( 255 )
 
     spec:RegisterResource( Enum.PowerType.Focus, {
@@ -26,6 +39,18 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             interval = 1,
             value = 2,
+        },
+
+        death_chakram = {
+            resource = "focus",
+            aura = "death_chakram",
+
+            last = function ()
+                return state.buff.death_chakram.applied + floor( state.query_time - state.buff.death_chakram.applied )
+            end,
+
+            interval = function () return class.auras.death_chakram.tick_time end,
+            value = function () return conduit.necrotic_barrage.enabled and 5 or 3 end,
         }
     } )
 
@@ -83,16 +108,6 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             duration = 15,
             max_stack = 1,
         },
-        aspect_of_the_cheetah = {
-            id = 186258,
-            duration = 9,
-            max_stack = 1,
-        },
-        aspect_of_the_cheetah_sprint = {
-            id = 186257, 
-            duration = 3,
-            max_stack = 1,
-        },
         aspect_of_the_eagle = {
             id = 186289,
             duration = 15,
@@ -115,7 +130,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
         coordinated_assault = {
             id = 266779,
-            duration = 20,
+            duration = function () return 20 + ( conduit.deadly_tandem.mod * 0.001 ) end,
             max_stack = 1,
         },
         eagle_eye = {
@@ -309,7 +324,14 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 336903,
             duration = 15,
             max_stack = 10
-        }        
+        },
+
+        -- Conduits
+        strength_of_the_pack = {
+            id = 341223,
+            duration = 4,
+            max_stack = 1
+        }
     } )
 
 
@@ -418,7 +440,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_cheetah = {
             id = 186257,
             cast = 0,
-            cooldown = function () return talent.born_to_be_wild.enabled and 144 or 180 end,
+            cooldown = function () return ( 180 * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( talent.born_to_be_wild.enabled and 0.8 or 1 ) ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
             gcd = "spell",
 
             startsCombat = false,
@@ -426,7 +448,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 applyBuff( "aspect_of_the_cheetah_sprint" )
-                applyBuff( "aspect_of_the_cheetah", 12 )
+                applyBuff( "aspect_of_the_cheetah" )
             end,
         },
 
@@ -434,7 +456,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_eagle = {
             id = 186289,
             cast = 0,
-            cooldown = function () return talent.born_to_be_wild.enabled and 72 or 90 end,
+            cooldown = function () return 90 * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( talent.born_to_be_wild.enabled and 0.8 or 1 ) end,
             gcd = "off",
 
             toggle = "cooldowns",
@@ -451,7 +473,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         aspect_of_the_turtle = {
             id = 186265,
             cast = 0,
-            cooldown = function () return talent.born_to_be_wild.enabled and 144 or 180 end,
+            cooldown = function () return ( 180 * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( talent.born_to_be_wild.enabled and 0.8 or 1 ) ) + ( conduit.harmony_of_the_tortollan.mod * 0.001 ) end,
             gcd = "spell",
 
             toggle = "defensives",
@@ -513,6 +535,12 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 end
 
                 if debuff.shrapnel_bomb.up then applyDebuff( "target", "internal_bleeding", 9, min( 3, debuff.internal_bleeding.stack + 1 ) ) end
+
+                removeBuff( "butchers_bone_fragments" )
+                
+                if conduit.flame_infusion.enabled then
+                    addStack( "flame_infusion", nil, 1 )
+                end
             end,
         },
 
@@ -564,7 +592,22 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 if talent.birds_of_prey.enabled and buff.coordinated_assault.up and UnitIsUnit( "pettarget", "target" ) then
                     buff.coordinated_assault.expires = buff.coordinated_assault.expires + 1.5
                 end
+
+                removeBuff( "butchers_bone_fragments" )
+
+                if conduit.flame_infusion.enabled then
+                    addStack( "flame_infusion", nil, 1 )
+                end
             end,
+
+            auras = {
+                -- Conduit
+                flame_infusion = {
+                    id = 341401,
+                    duration = 8,
+                    max_stack = 2,
+                }
+            }
         },
 
 
@@ -590,7 +633,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         coordinated_assault = {
             id = 266779,
             cast = 0,
-            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 120 end,
+            cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * 120 end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -614,7 +657,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             id = 781,
             cast = 0,
             cooldown = 20,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = false,
             texture = 132294,
@@ -622,6 +665,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 setDistance( 15 )
                 if talent.posthaste.enabled then applyBuff( "posthaste" ) end
+                if conduit.tactical_retreat.enabled and target.within8 then applyDebuff( "target", "tactical_retreat" ) end
             end,
         },
 
@@ -653,11 +697,13 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             handler = function ()
                 gain( 0.3 * health.max, "health" )
+                if conduit.rejuvenating_wind.enabled then applyBuff( "rejuvenating_wind" ) end
             end,
         },
 
 
-        feign_death = {
+        --[[ Using from BM module.
+            feign_death = {
             id = 5384,
             cast = 0,
             cooldown = 30,
@@ -669,7 +715,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 applyBuff( "feign_death" )
             end,
-        },
+        }, ]]
 
 
         flanking_strike = {
@@ -690,7 +736,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
         },
 
 
-        flare = {
+        --[[ flare = {
             id = 1543,
             cast = 0,
             cooldown = 20,
@@ -702,7 +748,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             handler = function ()
                 applyDebuff( "target", "flare" )
             end,
-        },
+        }, ]]
 
 
         freezing_trap = {
@@ -900,6 +946,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 if azerite.blur_of_talons.enabled and buff.coordinated_assault.up then
                     addStack( "blur_of_talons", nil, 1)
                 end
+
+                if legendary.butchers_bone_fragments.enabled then
+                    addStack( "butchers_bone_fragments", nil, 1 )
+                end
             end,
 
             copy = { 265888, "mongoose_bite_eagle" }
@@ -921,6 +971,10 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
             readyTime = state.timeToInterrupt,
 
             handler = function ()
+                if conduit.reversal_of_fortune.enabled then
+                    gain( conduit.reversal_of_fortune.mod, "focus" )
+                end
+
                 interrupt()
             end,
         },
@@ -996,9 +1050,21 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                 if azerite.blur_of_talons.enabled and buff.coordinated_assault.up then
                     addStack( "blur_of_talons", nil, 1)
                 end
+
+                if legendary.butchers_bone_fragments.enabled then
+                    addStack( "butchers_bone_fragments", nil, 1 )
+                end
             end,
 
             copy = { "raptor_strike_eagle", 265189 },
+
+            auras = {
+                butchers_bone_fragments = {
+                    id = 336908,
+                    duration = 12,
+                    max_stack = 10,
+                },
+            }
         },
 
 
@@ -1098,7 +1164,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
 
             usable = function () return not pet.exists end,
             handler = function ()
-                summonPet( 'made_up_pet', 3600, 'ferocity' )
+                summonPet( "made_up_pet", 3600, "ferocity" )
             end,
         },
 
@@ -1193,6 +1259,7 @@ if UnitClassBase( 'player' ) == 'HUNTER' then
                     return
                 end
                 applyDebuff( "target", "wildfire_bomb_dot" )
+                removeBuff( "flame_infusion" )
             end,
 
             copy = { 271045, 270335, 270323, 259495 }

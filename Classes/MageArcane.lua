@@ -10,6 +10,30 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
+-- Conduits
+-- [x] arcane_prodigy
+-- [-] artifice_of_the_archmage
+-- [-] magis_brand
+-- [x] nether_precision
+
+-- Covenant
+-- [-] ire_of_the_ascended
+-- [x] siphoned_malice
+-- [x] gift_of_the_lich
+-- [x] discipline_of_the_grove
+
+-- Endurance
+-- [-] cryofreeze
+-- [-] diverted_energy
+-- [x] tempest_barrier
+
+-- Finesse
+-- [x] flow_of_time
+-- [x] incantation_of_swiftness
+-- [x] winters_protection
+-- [x] grounding_surge
+
+
 if UnitClassBase( 'player' ) == 'MAGE' then
     local spec = Hekili:NewSpecialization( 62, true )
 
@@ -341,6 +365,14 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 3600,
             max_stack = 1,
         },
+
+
+        -- Conduits
+        nether_precision = {
+            id = 336889,
+            duration = 10,
+            max_stack = 2
+        }
     } )
 
 
@@ -686,6 +718,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     if buff.presence_of_mind.down then setCooldown( "presence_of_mind", 60 ) end
                 end
                 removeBuff( "rule_of_threes" )
+                removeStack( "nether_precision" )
                 if arcane_charges.current < arcane_charges.max then gain( 1, "arcane_charges" ) end
             end,
         },
@@ -773,7 +806,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             start = function ()
                 if buff.rule_of_threes.up then removeBuff( "rule_of_threes" )
-                else removeStack( "clearcasting" ) end
+                else removeStack( "clearcasting" )
+                end
+
+                if conduit.arcane_prodigy.enabled and cooldown.arcane_power.remains > 0 then
+                    reduceCooldown( "arcane_power", conduit.arcane_prodigy.mod * 0.1 )
+                end
             end,
         },
 
@@ -821,9 +859,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         blink = {
             id = function () return talent.shimmer.enabled and 212653 or 1953 end,
             cast = 0,
-            charges = function () return talent.shimmer.enabled and 2 or 1 end,
-            cooldown = function () return talent.shimmer.enabled and 20 or 15 end,
-            recharge = function () return talent.shimmer.enabled and 20 or 15 end,
+            charges = function () return talent.shimmer.enabled and 2 or nil end,
+            cooldown = function () return ( talent.shimmer.enabled and 20 or 15 ) - conduit.flow_of_time.mod * 0.001 end,
+            recharge = function () return ( talent.shimmer.enabled and ( 20 - conduit.flow_of_time.mod * 0.001 ) or nil ) end,
             gcd = "off",
 
             spend = function () return 0.02 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
@@ -833,9 +871,18 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             texture = function () return talent.shimmer.enabled and 135739 or 135736 end,
 
             handler = function ()
+                if conduit.tempest_barrier.enabled then applyBuff( "tempest_barrier" ) end
             end,
 
-            copy = { 212653, 1953, "shimmer", "blink_any" }
+            copy = { 212653, 1953, "shimmer", "blink_any" },
+
+            auras = {
+                tempest_barrier = {
+                    id = 337299,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
         },
         
 
@@ -929,7 +976,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         counterspell = {
             id = 2139,
             cast = 0,
-            cooldown = 24,
+            cooldown = function () return 24 - ( conduit.grounding_surge.mod * 0.1 ) end, -- Assume always successful.
             gcd = "off",
 
             interrupt = true,
@@ -1067,14 +1114,24 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 applyBuff( "greater_invisibility" )
+                if conduit.incantation_of_swiftness.enabled then applyBuff( "incantation_of_swiftness" ) end
             end,
+
+            auras = {
+                -- Conduit
+                incantation_of_swiftness = {
+                    id = 337278,
+                    duration = 6,
+                    max_stack = 1
+                }
+            }
         },
 
 
         ice_block = {
             id = 45438,
             cast = 0,
-            cooldown = 240,
+            cooldown = function () return 240 + ( conduit.winters_protection.mod * 0.001 ) end,
             gcd = "spell",
 
             toggle = "defensives",
@@ -1411,7 +1468,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             auras = {
                 deathborne = {
                     id = 324220,
-                    duration = 20,
+                    duration = function () return 20 + ( conduit.gift_of_the_lich.mod * 0.001 ) end,
                     max_stack = 1,
                 },
             }
@@ -1420,7 +1477,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         -- Mage - Night Fae - 314791 - shifting_power       (Shifting Power)
         shifting_power = {
             id = 314791,
-            cast = 6,
+            cast = function () return 4 * haste * ( 1 - ( conduit.discipline_of_the_grove.mod * 0.01 ) ) end,
             channeled = true,
             cooldown = 45,
             gcd = "spell",
@@ -1448,7 +1505,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             auras = {
                 shifting_power = {
                     id = 314791,
-                    duration = function () return 6 * haste end,
+                    duration = function () return 4 * haste * ( 1 - ( conduit.discipline_of_the_grove.mod * 0.01 ) ) end,
                     max_stack = 1,
                 },
             }
@@ -1471,7 +1528,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             toggle = "essences",
 
             handler = function ()
-                applyDebuff( "target", "mirrors_of_torment" )
+                applyDebuff( "target", "mirrors_of_torment", nil, 3 )
             end,
 
             auras = {
@@ -1479,6 +1536,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     id = 314793,
                     duration = 20,
                     max_stack = 3, -- ???
+                },
+                -- Conduit
+                siphoned_malice = {
+                    id = 337090,
+                    duration = 10,
+                    max_stack = 3
                 }
             }
         }

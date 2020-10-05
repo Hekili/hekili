@@ -12,7 +12,14 @@ local roundUp = ns.roundUp
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
+-- Conduits
+-- [x] Convocation of the Dead
+-- [-] Embrace Death
+-- [x] Eternal Hunger
+-- [x] Lingering Plague
+
+
+if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     local spec = Hekili:NewSpecialization( 252 )
 
     spec:RegisterResource( Enum.PowerType.Runes, {
@@ -104,7 +111,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         end,
     }, {
         __index = function( t, k, v )
-            if k == 'actual' then
+            if k == "actual" then
                 local amount = 0
 
                 for i = 1, 6 do
@@ -115,7 +122,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
                 return amount
 
-            elseif k == 'current' then
+            elseif k == "current" then
                 -- If this is a modeled resource, use our lookup system.
                 if t.forecast and t.fcount > 0 then
                     local q = state.query_time
@@ -142,17 +149,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
                 return t.actual
             
-            elseif k == 'deficit' then
+            elseif k == "deficit" then
                 return t.max - t.current
 
-            elseif k == 'time_to_next' then
-                return t[ 'time_to_' .. t.current + 1 ]
+            elseif k == "time_to_next" then
+                return t[ "time_to_" .. t.current + 1 ]
 
-            elseif k == 'time_to_max' then
+            elseif k == "time_to_max" then
                 return t.current == 6 and 0 or max( 0, t.expiry[6] - state.query_time )
 
 
-            elseif k == 'add' then
+            elseif k == "add" then
                 return t.gain
 
             else
@@ -253,7 +260,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     spec:RegisterAuras( {
         antimagic_shell = {
             id = 48707,
-            duration = function () return talent.spell_eater.enabled and 10 or 5 end,
+            duration = function () return ( talent.spell_eater.enabled and 10 or 5 ) + ( conduit.reinforced_shell.mod * 0.001 ) end,
             max_stack = 1,
         },
         antimagic_zone = {
@@ -287,14 +294,14 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         dark_transformation = {
             id = 63560, 
-            duration = 15,
+            duration = function () return 15 + ( conduit.eternal_hunger.mod * 0.001 ) end,
             generate = function( t )
                 local cast = class.abilities.dark_transformation.lastCast or 0
-                local up = pet.ghoul.up and cast + 20 > state.query_time
+                local up = pet.ghoul.up and cast + t.duration > state.query_time
 
                 t.name = t.name or class.abilities.dark_transformation.name
                 t.count = up and 1 or 0
-                t.expires = up and cast + 20 or 0
+                t.expires = up and cast + t.duration or 0
                 t.applied = up and cast or 0
                 t.caster = "player"
             end,
@@ -467,13 +474,13 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
     } )
 
 
-    spec:RegisterStateTable( 'death_and_decay', 
+    spec:RegisterStateTable( "death_and_decay", 
         setmetatable( { onReset = function( self ) end },
         { __index = function( t, k )
-            if k == 'ticking' then
+            if k == "ticking" then
                 return buff.death_and_decay.up
 
-            elseif k == 'remains' then
+            elseif k == "remains" then
                 return buff.death_and_decay.remains
 
             end
@@ -481,13 +488,13 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             return false
         end } ) )
 
-    spec:RegisterStateTable( 'defile', 
+    spec:RegisterStateTable( "defile", 
         setmetatable( { onReset = function( self ) end },
         { __index = function( t, k )
-            if k == 'ticking' then
+            if k == "ticking" then
                 return buff.death_and_decay.up
 
-            elseif k == 'remains' then
+            elseif k == "remains" then
                 return buff.death_and_decay.remains
 
             end
@@ -672,10 +679,16 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 if debuff.festering_wound.stack > 4 then
                     applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.remains - 4 )
                     apply_festermight( 4 )
+                    if conduit.convocation_of_the_dead.enabled and cooldown.apocalypse.remains > 0 then
+                        reduceCooldown( "apocalypse", 4 * conduit.convocation_of_the_dead.mod * 0.1 )
+                    end
                     gain( 12, "runic_power" )
                 else                    
                     gain( 3 * debuff.festering_wound.stack, "runic_power" )
                     apply_festermight( debuff.festering_wound.stack )
+                    if conduit.convocation_of_the_dead.enabled and cooldown.apocalypse.remains > 0 then
+                        reduceCooldown( "apocalypse", debuff.festering_wound.stack * conduit.convocation_of_the_dead.mod * 0.1 )
+                    end
                     removeDebuff( "target", "festering_wound" )
                 end
 
@@ -782,10 +795,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             talent = "clawing_shadows",
 
             handler = function ()
-                if debuff.festering_wound.stack > 1 then
-                    applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
-                else removeDebuff( "target", "festering_wound" ) end
-                apply_festermight( 1 )
+                if debuff.festering_wound.up then
+                    if debuff.festering_wound.stack > 1 then
+                        applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
+                    else removeDebuff( "target", "festering_wound" ) end
+                    
+                    if conduit.convocation_of_the_dead.enabled and cooldown.apocalypse.remains > 0 then
+                        reduceCooldown( "apocalypse", conduit.convocation_of_the_dead.mod * 0.1 )
+                    end
+
+                    apply_festermight( 1 )
+                end
                 gain( 3, "runic_power" )
             end,
         },
@@ -935,9 +955,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         death_grip = {
             id = 49576,
             cast = 0,
-            charges = 1,
             cooldown = 25,
-            recharge = 25,
             gcd = "spell",
 
             startsCombat = true,
@@ -946,6 +964,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             handler = function ()
                 applyDebuff( "target", "death_grip" )
                 setDistance( 5 )
+                if conduit.unending_grip.enabled then applyDebuff( "target", "unending_grip" ) end
             end,
         },
 
@@ -1004,6 +1023,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             handler = function ()
                 applyBuff( "deaths_advance" )
+                if conduit.fleeting_wind.enabled then applyBuff( "fleeting_wind" ) end
             end,
         },
 
@@ -1079,10 +1099,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         icebound_fortitude = {
             id = 48792,
             cast = 0,
-            cooldown = function ()
-                if azerite.cold_hearted.enabled then return 165 end
-                return 180
-            end,
+            cooldown = function () return 180 - ( azerite.cold_hearted.enabled and 15 or 0 ) + ( conduit.chilled_resilience.mod * 0.001 ) end,
             gcd = "spell",
 
             toggle = "defensives",
@@ -1110,6 +1127,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             handler = function ()
                 applyBuff( "lichborne" )
+                if conduit.hardened_bones.enabled then applyBuff( "hardened_bones" ) end
             end,
         },
 
@@ -1132,6 +1150,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             readyTime = state.timeToInterrupt,
 
             handler = function ()
+                if conduit.spirit_drain.enabled then gain( conduit.spirit_drain.mod * 0.1, "runic_power" ) end
                 interrupt()
             end,
         },
@@ -1160,6 +1179,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                     if debuff.festering_wound.stack == 1 then removeDebuff( "target", "festering_wound" )
                     else applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 ) end
 
+                    if conduit.convocation_of_the_dead.enabled and cooldown.apocalypse.remains > 0 then
+                        reduceCooldown( "apocalypse", conduit.convocation_of_the_dead.mod * 0.1 )
+                    end
+
                     applyDebuff( "target", "necrotic_wound" )
                 end
             end,
@@ -1178,7 +1201,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             startsCombat = true,
             texture = 348565,
 
-            cycle = 'virulent_plague',
+            cycle = "virulent_plague",
 
             handler = function ()
                 applyDebuff( "target", "virulent_plague" )
@@ -1277,6 +1300,10 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                     applyDebuff( "target", "festering_wound", debuff.festering_wound.remains, debuff.festering_wound.stack - 1 )
                 else removeDebuff( "target", "festering_wound" ) end
                 apply_festermight( 1 )
+
+                if conduit.lingering_plague.enabled and debuff.virulent_plague.up then
+                    debuff.virulent_plague.expires = debuff.virulent_plague.expires + ( conduit.lingering_plague.mod * 0.001 )
+                end
             end,
         },
 

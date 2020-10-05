@@ -12,8 +12,14 @@ local PTR = ns.PTR
 -- Globals
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 
+-- Conduits
+-- [-] Chilled to the Core
+-- [-] Focused Lightning
+-- [-] Magma Fist
+-- [-] Unruly Winds
+
 -- Generate the Enhancement spec database only if you're actually a Shaman.
-if UnitClassBase( 'player' ) == 'SHAMAN' then
+if UnitClassBase( "player" ) == "SHAMAN" then
     local spec = Hekili:NewSpecialization( 263 )
 
     spec:RegisterResource( Enum.PowerType.Mana )
@@ -435,15 +441,15 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     } )
 
 
-    spec:RegisterStateTable( 'feral_spirit', setmetatable( {}, {
+    spec:RegisterStateTable( "feral_spirit", setmetatable( {}, {
         __index = function( t, k )
             return buff.feral_spirit[ k ]
         end
     } ) )
 
-    spec:RegisterStateTable( 'twisting_nether', setmetatable( { onReset = function( self ) end }, {
+    spec:RegisterStateTable( "twisting_nether", setmetatable( { onReset = function( self ) end }, {
         __index = function( t, k )
-            if k == 'count' then
+            if k == "count" then
                 return ( buff.fire_of_the_twisting_nether.up and 1 or 0 ) + ( buff.chill_of_the_twisting_nether.up and 1 or 0 ) + ( buff.shock_of_the_twisting_nether.up and 1 or 0 )
             end
 
@@ -468,20 +474,20 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
     end )
 
 
-    spec:RegisterGear( 'waycrest_legacy', 158362, 159631 )
-    spec:RegisterGear( 'electric_mail', 161031, 161034, 161032, 161033, 161035 )
+    spec:RegisterGear( "waycrest_legacy", 158362, 159631 )
+    spec:RegisterGear( "electric_mail", 161031, 161034, 161032, 161033, 161035 )
 
-    spec:RegisterGear( 'tier21', 152169, 152171, 152167, 152166, 152168, 152170 )
-        spec:RegisterAura( 'force_of_the_mountain', {
+    spec:RegisterGear( "tier21", 152169, 152171, 152167, 152166, 152168, 152170 )
+        spec:RegisterAura( "force_of_the_mountain", {
             id = 254308,
             duration = 10
         } )
-        spec:RegisterAura( 'exposed_elements', {
+        spec:RegisterAura( "exposed_elements", {
             id = 252151,
             duration = 4.5
         } )
 
-    spec:RegisterGear( 'tier20', 147175, 147176, 147177, 147178, 147179, 147180 )
+    spec:RegisterGear( "tier20", 147175, 147176, 147177, 147178, 147179, 147180 )
         spec:RegisterAura( "lightning_crash", {
             id = 242284,
             duration = 16
@@ -492,14 +498,14 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             max_stack = 15
         } )
 
-    spec:RegisterGear( 'tier19', 138341, 138343, 138345, 138346, 138348, 138372 )
-    spec:RegisterGear( 'class', 139698, 139699, 139700, 139701, 139702, 139703, 139704, 139705 )
+    spec:RegisterGear( "tier19", 138341, 138343, 138345, 138346, 138348, 138372 )
+    spec:RegisterGear( "class", 139698, 139699, 139700, 139701, 139702, 139703, 139704, 139705 )
 
 
 
-    spec:RegisterGear( 'akainus_absolute_justice', 137084 )
-    spec:RegisterGear( 'emalons_charged_core', 137616 )
-    spec:RegisterGear( 'eye_of_the_twisting_nether', 137050 )
+    spec:RegisterGear( "akainus_absolute_justice", 137084 )
+    spec:RegisterGear( "emalons_charged_core", 137616 )
+    spec:RegisterGear( "eye_of_the_twisting_nether", 137050 )
         spec:RegisterAura( "fire_of_the_twisting_nether", {
             id = 207995,
             duration = 8
@@ -513,11 +519,11 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             duration = 8
         } )
 
-    spec:RegisterGear( 'smoldering_heart', 151819 )
-    spec:RegisterGear( 'soul_of_the_farseer', 151647 )
-    spec:RegisterGear( 'spiritual_journey', 138117 )
-    spec:RegisterGear( 'storm_tempests', 137103 )
-    spec:RegisterGear( 'uncertain_reminder', 143732 )
+    spec:RegisterGear( "smoldering_heart", 151819 )
+    spec:RegisterGear( "soul_of_the_farseer", 151647 )
+    spec:RegisterGear( "spiritual_journey", 138117 )
+    spec:RegisterGear( "storm_tempests", 137103 )
+    spec:RegisterGear( "uncertain_reminder", 143732 )
 
 
     spec:RegisterStateFunction( "consume_maelstrom", function( cap )
@@ -547,21 +553,21 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             id = 114051,
             cast = 0,
             cooldown = 180,
-            gcd = 'off',
+            gcd = "off",
 
             readyTime = function() return buff.ascendance.remains end,
 
-            toggle = 'cooldowns',
+            toggle = "cooldowns",
 
             startsCombat = false,
 
-            talent = 'ascendance',
-            nobuff = 'ascendance',
+            talent = "ascendance",
+            nobuff = "ascendance",
 
             handler = function ()
-                applyBuff( 'ascendance' )
-                setCooldown( 'stormstrike', 0 )
-                setCooldown( 'windstrike', 0 )
+                applyBuff( "ascendance" )
+                setCooldown( "stormstrike", 0 )
+                setCooldown( "windstrike", 0 )
             end,
         },
 
@@ -569,7 +575,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             id = 108271,
             cast = 0,
             cooldown = 90,
-            gcd = 'off',
+            gcd = "off",
 
             startsCombat = false,
 
@@ -583,15 +589,18 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             known = 2825,
             cast = 0,
             cooldown = 300,
-            gcd = 'off', -- Ugh.
+            gcd = "off", -- Ugh.
 
             spend = 0.215,
-            spendType = 'mana',
+            spendType = "mana",
 
             startsCombat = false,
 
             handler = function ()
-                applyBuff( 'bloodlust', 40 )
+                applyBuff( "bloodlust", 40 )
+                if conduit.spiritual_resonance.enabled then
+                    applyBuff( "spirit_walk", conduit.spiritual_resonance.mod * 0.001 )
+                end
             end,
 
             copy = { 204361, 2825 }
@@ -600,7 +609,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         capacitor_totem = {
             id = 192058,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return 60 + ( conduit.totemic_surge.mod * 0.001 ) end,
             gcd = "spell",
 
             spend = 0.1,
@@ -695,13 +704,13 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             id = 187874,
             cast = 0,
             cooldown = function () return 9 * haste end,
-            gcd = 'spell',
+            gcd = "spell",
 
             startsCombat = true,
 
             handler = function ()
                 if active_enemies >= 2 then
-                    applyBuff( 'crash_lightning', 10 )
+                    applyBuff( "crash_lightning", 10 )
                     applyBuff( "gathering_storms" )
                 end
 
@@ -723,6 +732,10 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             handler = function ()
                 summonPet( "greater_earth_elemental", 60 )
+                if conduit.vital_accretion.enabled then
+                    applyBuff( "vital_accretion" )
+                    health.max = health.max * ( 1 + ( conduit.vital_accretion.mod * 0.01 ) )
+                end
             end,
         },
 
@@ -749,13 +762,13 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             id = 188089,
             cast = 0,
             cooldown = function () return 20 * haste end,
-            gcd = 'spell',
+            gcd = "spell",
 
             startsCombat = true,
             texture = 1016245,
 
             handler = function ()
-                applyDebuff( 'target', 'earthen_spike' )
+                applyDebuff( "target", "earthen_spike" )
 
                 if azerite.natural_harmony.enabled and buff.frostbrand.up then applyBuff( "natural_harmony_frost" ) end
                 if azerite.natural_harmony.enabled and buff.flametongue.up then applyBuff( "natural_harmony_fire" ) end
@@ -893,7 +906,17 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
 
             handler = function ()
                 applyBuff( "ghost_wolf" )
+                if conduit.thunderous_paws.enabled then applyBuff( "thunderous_paws" ) end
             end,
+
+            auras = {
+                -- Conduit
+                thunderous_paws = {
+                    id = 338036,
+                    duration = 3,
+                    max_stack = 1
+                }
+            }
         },
 
         healing_stream_totem = {
@@ -936,14 +959,14 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             gcd = "spell", -- Ugh.
 
             spend = 0.215,
-            spendType = 'mana',
+            spendType = "mana",
 
             startsCombat = false,
-            toggle = 'cooldowns',
+            toggle = "cooldowns",
 
             handler = function ()
-                applyBuff( 'heroism' )
-                applyDebuff( 'player', 'exhaustion', 600 )
+                applyBuff( "heroism" )
+                applyDebuff( "player", "exhaustion", 600 )
             end,
 
             copy = { 204362, 32182 }
@@ -1099,11 +1122,11 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             nobuff = "ascendance",
 
             handler = function ()
-                setCooldown( 'windstrike', action.stormstrike.cooldown )
-                setCooldown( 'strike', action.stormstrike.cooldown )
+                setCooldown( "windstrike", action.stormstrike.cooldown )
+                setCooldown( "strike", action.stormstrike.cooldown )
 
                 if buff.stormbringer.up then
-                    removeBuff( 'stormbringer' )
+                    removeBuff( "stormbringer" )
                 end
 
                 removeBuff( "gathering_storms" )
@@ -1159,7 +1182,7 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
         tremor_totem = {
             id = 8143,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return 60 + ( conduit.totemic_surge.mod * 0.001 ) end,
             gcd = "spell",
 
             spend = 0.02,
@@ -1267,16 +1290,16 @@ if UnitClassBase( 'player' ) == 'SHAMAN' then
             texture = 1029585,
             known = 17364,
 
-            buff = 'ascendance',
+            buff = "ascendance",
 
             bind = "stormstrike",
 
             handler = function ()
-                setCooldown( 'stormstrike', action.stormstrike.cooldown )
-                setCooldown( 'strike', action.stormstrike.cooldown )
+                setCooldown( "stormstrike", action.stormstrike.cooldown )
+                setCooldown( "strike", action.stormstrike.cooldown )
 
                 if buff.stormbringer.up then
-                    removeBuff( 'stormbringer' )
+                    removeBuff( "stormbringer" )
                 end
 
                 removeBuff( "gathering_storms" )

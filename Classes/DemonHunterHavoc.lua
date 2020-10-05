@@ -10,7 +10,31 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
+-- Conduits
+-- [-] dancing_with_fate
+-- [-] relentless_onslaught
+-- [-] growing_inferno
+-- [x] serrated_glaive
+
+-- Covenant
+-- [-] repeat_decree
+-- [x] increased_scrutiny
+-- [x] brooding_pool
+-- [-] unnatural_malice
+
+-- Endurance
+-- [x] fel_defender
+-- [-] shattered_restoration
+-- [-] viscous_ink
+
+-- Finesse
+-- [-] demonic_parole
+-- [x] felfire_haste
+-- [-] lost_in_darkness
+-- [-] ravenous_consumption
+
+
+if UnitClassBase( "player" ) == "DEMONHUNTER" then
     local spec = Hekili:NewSpecialization( 577 )
 
     spec:RegisterResource( Enum.PowerType.Fury, {
@@ -393,7 +417,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
 
     spec:RegisterHook( "spend", function( amt, resource )
-        --[[ if level < 116 and equipped.delusions_of_grandeur and resource == 'fury' then
+        --[[ if level < 116 and equipped.delusions_of_grandeur and resource == "fury" then
             -- revisit this if really needed... 
             cooldown.metamorphosis.expires = cooldown.metamorphosis.expires - ( amt / 30 )
         end ]]
@@ -408,29 +432,29 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
 
 
     -- Gear Sets
-    spec:RegisterGear( 'tier19', 138375, 138376, 138377, 138378, 138379, 138380 )
-    spec:RegisterGear( 'tier20', 147130, 147132, 147128, 147127, 147129, 147131 )
-    spec:RegisterGear( 'tier21', 152121, 152123, 152119, 152118, 152120, 152122 )
-        spec:RegisterAura( 'havoc_t21_4pc', {
+    spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
+    spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
+    spec:RegisterGear( "tier21", 152121, 152123, 152119, 152118, 152120, 152122 )
+        spec:RegisterAura( "havoc_t21_4pc", {
             id = 252165,
             duration = 8 
         } )
 
-    spec:RegisterGear( 'class', 139715, 139716, 139717, 139718, 139719, 139720, 139721, 139722 )
+    spec:RegisterGear( "class", 139715, 139716, 139717, 139718, 139719, 139720, 139721, 139722 )
 
-    spec:RegisterGear( 'convergence_of_fates', 140806 )
+    spec:RegisterGear( "convergence_of_fates", 140806 )
 
-    spec:RegisterGear( 'achor_the_eternal_hunger', 137014 )
-    spec:RegisterGear( 'anger_of_the_halfgiants', 137038 )
-    spec:RegisterGear( 'cinidaria_the_symbiote', 133976 )
-    spec:RegisterGear( 'delusions_of_grandeur', 144279 )
-    spec:RegisterGear( 'kiljaedens_burning_wish', 144259 )
-    spec:RegisterGear( 'loramus_thalipedes_sacrifice', 137022 )
-    spec:RegisterGear( 'moarg_bionic_stabilizers', 137090 )
-    spec:RegisterGear( 'prydaz_xavarics_magnum_opus', 132444 )
-    spec:RegisterGear( 'raddons_cascading_eyes', 137061 )
-    spec:RegisterGear( 'sephuzs_secret', 132452 )
-    spec:RegisterGear( 'the_sentinels_eternal_refuge', 146669 )
+    spec:RegisterGear( "achor_the_eternal_hunger", 137014 )
+    spec:RegisterGear( "anger_of_the_halfgiants", 137038 )
+    spec:RegisterGear( "cinidaria_the_symbiote", 133976 )
+    spec:RegisterGear( "delusions_of_grandeur", 144279 )
+    spec:RegisterGear( "kiljaedens_burning_wish", 144259 )
+    spec:RegisterGear( "loramus_thalipedes_sacrifice", 137022 )
+    spec:RegisterGear( "moarg_bionic_stabilizers", 137090 )
+    spec:RegisterGear( "prydaz_xavarics_magnum_opus", 132444 )
+    spec:RegisterGear( "raddons_cascading_eyes", 137061 )
+    spec:RegisterGear( "sephuzs_secret", 132452 )
+    spec:RegisterGear( "the_sentinels_eternal_refuge", 146669 )
 
     spec:RegisterGear( "soul_of_the_slayer", 151639 )
     spec:RegisterGear( "chaos_theory", 151798 )
@@ -502,7 +526,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         blur = {
             id = 198589,
             cast = 0,
-            cooldown = function () return 60 + ( conduit.fel_defender.enabled and ( conduit.fel_defender.mod / 1000 ) or 0 ) end,
+            cooldown = function () return 60 + ( conduit.fel_defender.mod * 0.001 ) end,
             gcd = "off",
 
             toggle = "defensives",
@@ -778,13 +802,23 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             usable = function ()
                 if settings.recommend_movement ~= true then return false, "fel_rush movement is disabled" end
                 return not prev_gcd[1].fel_rush
-            end,            
+            end,
             handler = function ()
                 if talent.momentum.enabled then applyBuff( "momentum" ) end
-                if cooldown.vengeful_retreat.remains < 1 then setCooldown( 'vengeful_retreat', 1 ) end
+                if cooldown.vengeful_retreat.remains < 1 then setCooldown( "vengeful_retreat", 1 ) end
                 setDistance( 5 )
                 setCooldown( "global_cooldown", 0.25 )
+                if conduit.felfire_haste.enabled then applyBuff( "felfire_haste" ) end
             end,
+
+            auras = {
+                -- Conduit
+                felfire_haste = {
+                    id = 338804,
+                    duration = 8,
+                    max_stack = 1
+                }
+            }
         },
         
 
@@ -869,6 +903,15 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 applyDebuff( "target", "imprison" )
             end,
+
+            auras = {
+                -- Conduit
+                demonic_parole = {
+                    id = 339051,
+                    duration = 12,
+                    max_stack = 1
+                }
+            }
         },
         
 
@@ -1061,7 +1104,17 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             handler = function ()
                 removeBuff( "fel_bombardment" ) -- legendary
                 if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
+                if conduit.serrated_glaive.enabled then applyDebuff( "target", "exposed_wound" ) end
             end,
+
+            auras = {
+                -- Conduit: serrated_glaive
+                exposed_wound = {
+                    id = 339229,
+                    duration = 10,
+                    max_stack = 1
+                }
+            }
         },
         
 
@@ -1142,7 +1195,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 -- The buff from standing in the pool.
                 fodder_to_the_flame = {
                     id = 330910,
-                    duration = 30,
+                    duration = function () return 30 + ( conduit.brooding_pool.mod * 0.001 ) end,
                     max_stack = 1,
                 },
 
@@ -1204,7 +1257,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         sinful_brand = {
             id = 317009,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return 60 + ( conduit.sinful_brand.mod * 0.001 ) end,
             gcd = "spell",
 
             toggle = "cooldowns",

@@ -1,12 +1,6 @@
 -- ShamanElemental.lua
 -- 09.2020
 
--- TODOs:
--- Legendaries
--- Covenant abilities (1/4)
--- Soulbinds (?)
--- Conduits (?)
-
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
@@ -14,6 +8,29 @@ local class = Hekili.Class
 local state = Hekili.State
 
 local PTR = ns.PTR
+
+-- Conduits
+-- [x] Call of Flame
+-- [-] High Voltage
+-- [-] Pyroclastic Shock
+-- [-] Shake the Foundations
+
+-- Covenants
+-- [-] Elysian Dirge
+-- [-] Lavish Harvest
+-- [-] Tumbling Waves
+-- [x] Essential Extraction
+
+-- Endurance
+-- [-] Astral Protection
+-- [-] Refreshing Waters
+-- [x] Vital Accretion
+
+-- Finesse
+-- [x] Crippling Hex
+-- [x] Spiritual Resonance
+-- [x] Thunderous Paws
+-- [x] Totemic Surge
 
 
 if UnitClassBase( "player" ) == "SHAMAN" then
@@ -554,13 +571,16 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 applyBuff( "bloodlust" )
                 applyDebuff( "player", "sated" )
+                if conduit.spiritual_resonance.enabled then
+                    applyBuff( "spiritwalkers_grace", conduit.spiritual_resonance.mod * 0.001 )
+                end
             end,
         },
 
         capacitor_totem = {
             id = 192058,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return 60 + ( conduit.totemic_surge.mod * 0.001 ) end,
             gcd = "spell",
 
             spend = 0.1,
@@ -665,7 +685,20 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             handler = function ()
                 summonPet( talent.primal_elementalist.enabled and "primal_earth_elemental" or "greater_earth_elemental", 60 )
+                if conduit.vital_accretion.enabled then
+                    applyBuff( "vital_accretion" )
+                    health.max = health.max * ( 1 + ( conduit.vital_accretion.mod * 0.01 ) )
+                end
             end,
+
+            auras = {
+                -- Conduit
+                vital_accretion = {
+                    id = 337984,
+                    duration = 60,
+                    max_stack = 1
+                }
+            }
         },
 
         earth_shield = {
@@ -818,7 +851,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 135790,
 
             handler = function ()
-                summonPet( talent.primal_elementalist.enabled and "primal_fire_elemental" or "greater_fire_elemental", 30 )
+                summonPet( talent.primal_elementalist.enabled and "primal_fire_elemental" or "greater_fire_elemental", 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) )
             end,
         },
 
@@ -891,6 +924,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 applyBuff( "ghost_wolf" )
                 if talent.spirit_wolf.enabled then applyBuff( "spirit_wolf" ) end
+                if conduit.thunderous_paws.enabled then applyBuff( "thunderous_paws" ) end
             end,
         },
 
@@ -939,6 +973,15 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 applyDebuff( "target", "hex" )
             end,
+
+            auras = {
+                -- Conduit
+                crippling_hex = {
+                    id = 338055,
+                    duration = 8,
+                    max_stack = 1
+                }
+            }
         },
 
         icefury = {
@@ -1200,7 +1243,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 2065626,
 
             handler = function ()
-                summonPet( talent.primal_elementalist.enabled and "primal_storm_elemental" or "greater_storm_elemental", 30 )
+                summonPet( talent.primal_elementalist.enabled and "primal_storm_elemental" or "greater_storm_elemental", 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) ) )
             end,
         },
 
@@ -1239,7 +1282,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         tremor_totem = {
             id = 8143,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return 60 + ( conduit.totemic_surge.mod * 0.001 ) end,
             gcd = "spell",
 
             spend = 0.02,
@@ -1393,7 +1436,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         -- Shaman - Night Fae - 328923 - fae_transfusion      (Fae Transfusion)
         fae_transfusion = {
             id = 328923,
-            cast = 3,
+            cast = function () return haste * 3 * ( 1 + ( conduit.essential_extraction.mod * 0.01 ) ) end,
             channeled = true,
             cooldown = 120,
             gcd = "spell",

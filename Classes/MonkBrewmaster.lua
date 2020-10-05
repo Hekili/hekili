@@ -10,6 +10,32 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
+-- Conduits
+-- [-] scalding_brew
+-- [x] walk_with_the_ox
+
+-- Covenant
+-- [x] strike_with_clarity
+-- [-] imbued_reflections
+-- [-] bone_marrow_hops
+-- [-] way_of_the_fae
+
+-- Endurance
+-- [x] fortifying_ingredients
+-- [-] grounding_breath
+-- [-] harm_denial
+
+-- Brewmaster Endurance
+-- [x] celestial_effervescence
+-- [x] evasive_stride
+
+-- Finesse
+-- [x] dizzying_tumble
+-- [-] lingering_numbness
+-- [x] swift_transference
+-- [-] tumbling_technique
+
+
 if UnitClassBase( 'player' ) == 'MONK' then
     local spec = Hekili:NewSpecialization( 268 )
 
@@ -264,6 +290,14 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 285959,
             duration = 7,
             max_stack = 1,
+        },
+
+
+        -- Conduits
+        lingering_numbness = {
+            id = 336884,
+            duration = 5,
+            max_stack = 1
         }
     } )
 
@@ -527,6 +561,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             handler = function ()
                 applyBuff( "shuffle" )
+                if conduit.walk_with_the_ox.enabled and cooldown.invoke_niuzao.remains > 0 then
+                    reduceCooldown( "invoke_niuzao", 0.5 )
+                end
 
                 if talent.blackout_combo.enabled then
                     applyBuff( "blackout_combo" )
@@ -770,7 +807,17 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 applyBuff( "fortifying_brew" )
                 health.max = health.max * 1.2
                 health.actual = health.actual * 1.2
+                if conduit.fortifying_ingredients.enabled then applyBuff( "fortifying_ingredients" ) end
             end,
+
+            auras = {
+                -- Conduit
+                fortifying_ingredients = {
+                    id = 336874,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -920,7 +967,17 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 applyDebuff( "target", "leg_sweep" )
                 interrupt()
+                if conduit.dizzying_tumble.enabled then applyDebuff( "target", "dizzying_tumble" ) end
             end,
+
+            auras = {
+                -- Conduit
+                dizzying_tumble = {
+                    id = 336891,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1195,7 +1252,17 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 237585,
 
             handler = function ()
+                if conduit.swift_transference.enabled then applyBuff( "swift_transference" ) end
             end,
+
+            auras = {
+                -- Conduit
+                swift_transference = {
+                    id = 337079,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1287,7 +1354,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             auras = {
                 weapons_of_order = {
                     id = 310454,
-                    duration = 30,
+                    duration = function () return conduit.strike_with_clarity.enabled and 35 or 30 end,
                     max_stack = 1
                 },
                 weapons_of_order_debuff = {

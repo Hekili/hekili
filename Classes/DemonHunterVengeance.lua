@@ -10,7 +10,15 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
+-- Conduits
+-- [x] soul_furnace -- NYI: forecast stacks.
+
+-- Vengeance Endurance
+-- [-] demon_muzzle
+-- [-] roaring_fire
+
+
+if UnitClassBase( "player" ) == "DEMONHUNTER" then
     local spec = Hekili:NewSpecialization( 581 )
 
     spec:RegisterResource( Enum.PowerType.Fury )
@@ -525,7 +533,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
         fiery_brand = {
             id = 204021,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return 60 + ( conduit.fel_defender.mod * 0.001 ) end,
             gcd = "spell",
 
             toggle = "defensives",
@@ -675,6 +683,8 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 if talent.abyssal_strike.enabled then
                     create_sigil( "flame" )
                 end
+
+                if conduit.felfire_haste.enabled then applyBuff( "felfire_haste" ) end
             end,
         },
 
@@ -825,6 +835,15 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             end,
 
             copy = { 207682, 202137 },
+
+            auras = {
+                -- Conduit, applies after SoS expires.
+                demon_muzzle = {
+                    id = 339589,
+                    duration = 6,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -875,7 +894,18 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
                 -- Razelikh's is random; can't predict it.
 
                 buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - 2 )
+
+                if buff.soul_furnace.up and buff.soul_furnace.stack == 10 then removeBuff( "soul_furnace" ) end
             end,
+
+            auras = {
+                -- Conduit
+                soul_furnace = {
+                    id = 339424,
+                    duration = 30,
+                    max_stack = 10,
+                }
+            }
         },
 
 
@@ -931,6 +961,7 @@ if UnitClassBase( 'player' ) == 'DEMONHUNTER' then
             texture = 1305159,
 
             handler = function ()
+                if conduit.serrated_glaive.enabled then applyDebuff( "target", "exposed_wound" ) end
             end,
         },
 

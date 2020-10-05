@@ -10,7 +10,14 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'MONK' then
+-- Conduits
+-- [ ] jade_bond
+-- [ ] nourishing_chi
+-- [ ] rising_sun_revival
+-- [ ] resplendent_mist
+
+
+if UnitClassBase( "player" ) == "MONK" then
     local spec = Hekili:NewSpecialization( 270 )
 
     spec:RegisterResource( Enum.PowerType.Mana )
@@ -560,6 +567,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             handler = function ()
                 -- 243453
                 applyBuff( "fortifying_brew" )
+                if conduit.fortifying_ingredients.enabled then applyBuff( "fortifying_ingredients" ) end
             end,
         },
         
@@ -613,6 +621,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 -- applies leg_sweep (119381)
                 applyDebuff( "target", "leg_sweep" )
                 interrupt()
+                if conduit.dizzying_tumble.enabled then applyDebuff( "target", "dizzying_tumble" ) end
             end,
         },
         
@@ -786,9 +795,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 1020466,
             
             handler = function ()
-                removeDebuff( "dispellable_magic" )
-                removeDebuff( "dispellable_poison" )
-                removeDebuff( "dispellable_disease" )
+                removeDebuff( "player", "dispellable_magic" )
+                removeDebuff( "player", "dispellable_poison" )
+                removeDebuff( "player", "dispellable_disease" )
             end,
         },
         

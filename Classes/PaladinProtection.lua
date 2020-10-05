@@ -11,7 +11,33 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'PALADIN' then
+-- Conduits
+-- [-] punish_the_guilty
+-- [x] vengeful_shock
+
+-- Covenant
+-- [-] ringing_clarity
+-- [-] hallowed_discernment
+-- [-] righteous_might
+-- [x] the_long_summer
+
+-- Endurance
+-- [-] divine_call
+-- [-] golden_path
+-- [x] shielding_words
+
+-- Protection Endurance
+-- [x] resolute_defender
+-- [x] royal_decree
+
+-- Finesse
+-- [ ] echoing_blessings -- NYI: auras not identified
+-- [x] lights_barding
+-- [-] pure_concentration
+-- [x] wrench_evil
+
+
+if UnitClassBase( "player" ) == "PALADIN" then
     local spec = Hekili:NewSpecialization( 66 )
 
     spec:RegisterResource( Enum.PowerType.HolyPower )
@@ -178,7 +204,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         },
         divine_steed = {
             id = 221886,
-            duration = 3,
+            duration = function () return 3 * ( 1 + ( conduit.lights_barding.mod * 0.01 ) ) end,
             max_stack = 1,
         },
         final_stand = {
@@ -311,20 +337,20 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
 
     -- Gear Sets
-    spec:RegisterGear( 'tier19', 138350, 138353, 138356, 138359, 138362, 138369 )
-    spec:RegisterGear( 'tier20', 147160, 147162, 147158, 147157, 147159, 147161 )
-        spec:RegisterAura( 'sacred_judgment', {
+    spec:RegisterGear( "tier19", 138350, 138353, 138356, 138359, 138362, 138369 )
+    spec:RegisterGear( "tier20", 147160, 147162, 147158, 147157, 147159, 147161 )
+        spec:RegisterAura( "sacred_judgment", {
             id = 246973,
             duration = 8,
             max_stack = 1,
         } )        
 
-    spec:RegisterGear( 'tier21', 152151, 152153, 152149, 152148, 152150, 152152 )
-    spec:RegisterGear( 'class', 139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697 )
+    spec:RegisterGear( "tier21", 152151, 152153, 152149, 152148, 152150, 152152 )
+    spec:RegisterGear( "class", 139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697 )
 
     spec:RegisterGear( "breastplate_of_the_golden_valkyr", 137017 )
     spec:RegisterGear( "heathcliffs_immortality", 137047 )
-    spec:RegisterGear( 'justice_gaze', 137065 )
+    spec:RegisterGear( "justice_gaze", 137065 )
     spec:RegisterGear( "saruans_resolve", 144275 )
     spec:RegisterGear( "tyelca_ferren_marcuss_stature", 137070 )
     spec:RegisterGear( "tyrs_hand_of_faith", 137059 )
@@ -420,7 +446,18 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 end
 
                 gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+
+                if conduit.vengeful_shock.enabled then applyDebuff( "target", "vengeful_shock" ) end
             end,
+
+            auras = {
+                -- Conduit
+                vengeful_shock = {
+                    id = 340007,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -722,7 +759,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
         guardian_of_ancient_kings = {
             id = 86659,
             cast = 0,
-            cooldown = 300,
+            cooldown = function () return 300 - ( conduit.royal_decree.mod * 0.001 ) end,
             gcd = "off",
 
             toggle = "defensives",
@@ -733,7 +770,17 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
 
             handler = function ()
                 applyBuff( "guardian_of_ancient_kings" )
+                if conduit.royal_decree.enabled then applyBuff( "royal_decree" ) end
             end,
+
+            auras = {
+                -- Conduit
+                royal_decree = {
+                    id = 340147,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1039,15 +1086,18 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 end
 
                 applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
-
                 last_shield = query_time
+
+                if conduit.resolute_defender.enabled and buff.ardent_defender.up then
+                    buff.ardent_defender.expires = buff.ardent_defender.expires + ( buff.ardent_defender.duration * ( conduit.resolute_defender.mod * 0.01 ) )
+                end
             end,
         },
 
 
         turn_evil = {
             id = 10326,
-            cast = 1.5,
+            cast = function () return 1.5 * ( 1 + ( conduit.wrench_evil.mod * 0.01 ) ) end,
             cooldown = 15,
             gcd = "spell",
             
@@ -1070,7 +1120,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             gcd = "spell",
             
             spend = function ()
-                if buff.divine_purpose.up or buff.shining_light.stack == 5 then return 0 end
+                if buff.divine_purpose.up or buff.shining_light.stack == 5 or buff.royal_decree.up then return 0 end
                 return 3
             end,
             spendType = "holy_power",
@@ -1079,7 +1129,8 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             texture = 133192,
             
             handler = function ()
-                if buff.divine_purpose.up then removeBuff( "divine_purpose" )
+                if buff.royal_decree.up then removeBuff( "royal_decree" )
+                elseif buff.divine_purpose.up then removeBuff( "divine_purpose" )
                 else removeBuff( "shining_light_full" ) end
 
                 gain( 2.9 * stat.spell_power * ( 1 + stat.versatility_atk_mod ), "health" )
@@ -1087,8 +1138,19 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
                 if buff.vanquishers_hammer.up then
                     applyBuff( "shield_of_the_righteous" )
                     removeBuff( "vanquishers_hammer" )
-                end 
+                end
+
+                if conduit.shielding_words.enabled then applyBuff( "shielding_words" ) end
             end,
+
+            auras = {
+                -- Conduit
+                shielding_words = {
+                    id = 338788,
+                    duration = 10,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1184,7 +1246,7 @@ if UnitClassBase( 'player' ) == 'PALADIN' then
             auras = {
                 blessing_of_summer = {
                     id = 328620,
-                    duration = 30,
+                    duration = function () return 30 * ( 1 - ( conduit.the_long_summer.mod * 0.01 ) ) end,
                     max_stack = 1,
                 },
 

@@ -11,7 +11,28 @@ local PTR = ns.PTR
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
 
 
-if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
+-- Conduits
+-- [-] Withering Plague
+-- [x] Debilitating Malady
+
+-- [-] Kyrian: Proliferation
+-- [x] Venthyr: Impenetrable Gloom
+-- [-] Necrolord: Brutal Grasp
+-- [-] Night Fae: Withering Ground
+
+-- Endurance
+-- [x] hardened_bones
+-- [-] insatiable_appetite
+-- [x] reinforced_shell
+
+-- Finesse
+-- [x] chilled_resilience
+-- [x] fleeting_wind
+-- [x] spirit_drain
+-- [x] unending_grip
+
+
+if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     local spec = Hekili:NewSpecialization( 250 )
 
     spec:RegisterResource( Enum.PowerType.Runes, {
@@ -100,7 +121,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         end,
     }, {
         __index = function( t, k, v )
-            if k == 'actual' then
+            if k == "actual" then
                 local amount = 0
 
                 for i = 1, 6 do
@@ -111,7 +132,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
                 return amount
 
-            elseif k == 'current' then
+            elseif k == "current" then
                 -- If this is a modeled resource, use our lookup system.
                 if t.forecast and t.fcount > 0 then
                     local q = state.query_time
@@ -138,16 +159,16 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
                 return t.actual
             
-            elseif k == 'deficit' then
+            elseif k == "deficit" then
                 return t.max - t.current            
 
-            elseif k == 'time_to_next' then
-                return t[ 'time_to_' .. t.current + 1 ]
+            elseif k == "time_to_next" then
+                return t[ "time_to_" .. t.current + 1 ]
 
-            elseif k == 'time_to_max' then
+            elseif k == "time_to_max" then
                 return t.current == 6 and 0 or max( 0, t.expiry[6] - state.query_time )
 
-            elseif k == 'add' then
+            elseif k == "add" then
                 return t.gain
 
             else
@@ -243,7 +264,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         },
         antimagic_shell = {
             id = 48707,
-            duration = function () return ( legendary.deaths_embrace.enabled and 2 or 1 ) * ( ( azerite.runic_barrier.enabled and 1 or 0 ) + ( talent.antimagic_barrier.enabled and 7 or 5 ) ) end,
+            duration = function () return ( legendary.deaths_embrace.enabled and 2 or 1 ) * ( ( azerite.runic_barrier.enabled and 1 or 0 ) + ( talent.antimagic_barrier.enabled and 7 or 5 ) ) + ( conduit.reinforced_shell.mod * 0.001 ) end,
             max_stack = 1,
         },
         antimagic_zone = {
@@ -722,7 +743,20 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                     applyDebuff( "target", "virulent_plague" )
                     active_dot.virulent_plague = active_enemies
                 end
+
+                if conduit.debilitating_malady.enabled then
+                    addStack( "debilitating_malady", nil, 1 )
+                end
             end,
+
+            auras = {
+                -- Conduit
+                debilitating_malady = {
+                    id = 338523,
+                    duration = 6,
+                    max_stack = 3
+                }
+            }
         },
 
 
@@ -971,9 +1005,9 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         death_grip = {
             id = 49576,
             cast = 0,
-            charges = function () return pvptalent.unholy_command.enabled and 2 or 1 end,
+            charges = function () return pvptalent.unholy_command.enabled and 2 or nil end,
             cooldown = 15,
-            recharge = 15,
+            recharge = function () return pvptalent.unholy_command.enabled and 15 or nil end,
             gcd = "spell",
 
             startsCombat = true,
@@ -988,7 +1022,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
                 else
                     removeBuff( "grip_of_the_everlasting" )
                 end
+
+                if conduit.unending_grip.enabled then applyDebuff( "target", "unending_grip" ) end
             end,
+
+            auras = {
+                unending_grip = {
+                    id = 338311,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1028,7 +1072,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
 
             handler = function ()
                 applyBuff( "deaths_advance" )
+                if conduit.fleeting_wind.enabled then applyBuff( "fleeting_wind" ) end
             end,
+
+            auras = {
+                -- Conduit
+                fleeting_wind = {
+                    id = 338093,
+                    duration = 3,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1096,10 +1150,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
         icebound_fortitude = {
             id = 48792,
             cast = 0,
-            cooldown = function ()
-                if azerite.cold_hearted.enabled then return 165 end
-                return 180
-            end,
+            cooldown = function () return 180 - ( azerite.cold_hearted.enabled and 15 or 0 ) + ( conduit.chilled_resilience.mod * 0.001 ) end,
             gcd = "spell",
 
             toggle = "defensives",
@@ -1126,7 +1177,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyBuff( "lichborne" )
+                if conduit.hardened_bones.enabled then applyBuff( "hardened_bones" ) end
             end,
+
+            auras = {
+                -- Conduit
+                hardened_bones = {
+                    id = 337973,
+                    duration = 10,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1172,9 +1233,6 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             cooldown = 15,
             gcd = "spell",
 
-            spend = 0,
-            spendType = "runic_power",
-
             startsCombat = true,
             texture = 237527,
 
@@ -1184,6 +1242,7 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             readyTime = state.timeToInterrupt,
 
             handler = function ()
+                if conduit.spirit_drain.enabled then gain( conduit.spirit_drain.mod * 0.1, "runic_power" ) end
                 interrupt()
             end,
         },
@@ -1491,7 +1550,17 @@ if UnitClassBase( 'player' ) == 'DEATHKNIGHT' then
             
             handler = function ()
                 applyBuff( "swarming_mist" )
+                if conduit.impenetrable_gloom.enabled then applyBuff( "impenetrable_gloom" ) end
             end,
+
+            auras = {
+                -- Conduit
+                impenetrable_gloom = {
+                    id = 338629,
+                    duration = 4,
+                    max_stack = 1
+                }
+            }
         },
         
 

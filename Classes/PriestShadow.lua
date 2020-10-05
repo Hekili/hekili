@@ -13,12 +13,36 @@ local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDeb
 local PTR = ns.PTR
 
 
-if UnitClassBase( 'player' ) == 'PRIEST' then
+-- Conduits
+-- [x] dissonant_echoes
+-- [-] haunting_apparitions
+-- [x] mind_devourer
+-- [x] rabid_shadows
+
+-- Covenant
+-- [-] courageous_ascension
+-- [x] shattered_perceptions
+-- [x] festering_transfusion
+-- [x] fae_fermata
+
+-- Endurance
+-- [x] charitable_soul
+-- [x] lights_inspiration
+-- [x] translucent_image
+
+-- Finesse
+-- [x] clear_mind
+-- [x] mental_recovery
+-- [-] move_with_grace
+-- [x] power_unto_others
+
+
+if UnitClassBase( "player" ) == "PRIEST" then
     local spec = Hekili:NewSpecialization( 258, true )
 
     spec:RegisterResource( Enum.PowerType.Insanity, {
         mind_flay = {
-            aura = 'mind_flay',
+            aura = "mind_flay",
             debuff = true,
 
             last = function ()
@@ -33,7 +57,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         },
 
         mind_sear = {
-            aura = 'mind_sear',
+            aura = "mind_sear",
             debuff = true,
 
             last = function ()
@@ -97,7 +121,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 return app + floor( ( t - app ) / ( 1.5 * state.haste ) ) * ( 1.5 * state.haste )
             end,
 
-            interval = function () return 1.5 * state.haste end,
+            interval = function () return 1.5 * state.haste * ( conduit.rabid_shadows.enabled and 0.8 or 1 ) end,
             value = function () return ( state.buff.surrender_to_madness.up and 12 or 6 ) end,
         },
 
@@ -111,7 +135,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 return app + floor( ( t - app ) / ( 1.5 * state.haste ) ) * ( 1.5 * state.haste )
             end,
 
-            interval = function () return 1.5 * state.haste end,
+            interval = function () return 1.5 * state.haste * ( conduit.rabid_shadows.enabled and 0.8 or 1 ) end,
             value = function () return ( state.buff.surrender_to_madness.up and 6 or 3 ) end,
         },
 
@@ -273,7 +297,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     end )
 
 
-    spec:RegisterHook( 'pregain', function( amount, resource, overcap )
+    spec:RegisterHook( "pregain", function( amount, resource, overcap )
         if amount > 0 and resource == "insanity" and state.buff.memory_of_lucid_dreams.up then
             amount = amount * 2
         end
@@ -282,7 +306,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
     end )
 
 
-    --[[ spec:RegisterHook( 'runHandler', function( action )
+    --[[ spec:RegisterHook( "runHandler", function( action )
         -- Make sure only the correct debuff is applied for channels to help resource forecasting.
         if action == "mind_sear" then
             removeDebuff( "target", "mind_flay" )
@@ -517,12 +541,12 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 t.expires = 0
                 t.applied = 0
                 t.duration = 3600
-                t.caster = 'nobody'
+                t.caster = "nobody"
                 t.timeMod = 1
                 t.v1 = 0
                 t.v2 = 0
                 t.v3 = 0
-                t.unit = 'player'
+                t.unit = "player"
             end,
             meta = {
                 up = function ()
@@ -609,6 +633,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             max_stack = 1,
         },
 
+
+        -- Conduits
         dissonant_echoes = {
             id = 343144,
             duration = 10,
@@ -674,13 +700,16 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             
             startsCombat = true,
             texture = 236295,
+
+            -- TODO: Set up cycle.
+            -- cycle = function ()
             
             handler = function ()
                 applyDebuff( "target", "shadow_word_pain" )
                 applyDebuff( "target", "vampiric_touch" )
                 applyDebuff( "target", "devouring_plague" )
 
-                if talent.unfurling_darkness.enabled and query_time - action.vampiric_touch.lastCast > 8 then
+                if talent.unfurling_darkness.enabled and debuff.unfurling_darkness_icd.down then
                     applyBuff( "unfurling_darkness" )
                     applyDebuff( "player", "unfurling_darkness_icd" )
                 end
@@ -702,7 +731,17 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             handler = function ()                
                 health.max = health.max * 1.25
                 gain( 0.8 * health.max, "health" )
+                if conduit.lights_inspiration.enabled then applyBuff( "lights_inspiration" ) end
             end,
+
+            auras = {
+                -- Conduit
+                lights_inspiration = {
+                    id = 337749,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -733,7 +772,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 0.02,
+            spend = function () return 0.016 * ( 1 + conduit.clear_mind.mod * 0.01 ) end,
             spendType = "mana",
 
             startsCombat = false,
@@ -777,7 +816,17 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
 
             handler = function ()
                 applyBuff( "fade" )
+                if conduit.translucent_image.enabled then applyBuff( "translucent_image" ) end
             end,
+
+            auras = {
+                -- Conduit
+                translucent_image = {
+                    id = 337661,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -823,7 +872,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             cooldown = 45,
             gcd = "spell",
 
-            spend = 0.08,
+            spend = function () return 0.08 * ( 1 + ( conduit.clear_mind.mod * 0.01 ) ) end,
             spendType = "mana",
 
             startsCombat = true,
@@ -910,7 +959,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             startsCombat = true,
             texture = 136208,
 
-            aura = 'mind_flay',
+            aura = "mind_flay",
 
             nobuff = "boon_of_the_ascended",
             bind = "ascended_blast",
@@ -945,7 +994,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             startsCombat = true,
             texture = 237565,
 
-            aura = 'mind_sear',
+            aura = "mind_sear",
 
             start = function ()
                 applyDebuff( "target", "mind_sear" )
@@ -990,7 +1039,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
         power_infusion = {
             id = 10060,
             cast = 0,
-            cooldown = 120,
+            cooldown = function () return 120 - ( conduit.power_unto_others.mod and group and conduit.power_unto_others.mod or 0 ) end,
             gcd = "off",
             
             toggle = "cooldowns",
@@ -1043,7 +1092,17 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 applyDebuff( "weakened_soul" )
                 if talent.body_and_soul.enabled then applyBuff( "body_and_soul" ) end
                 if time > 0 then gain( 6, "insanity" ) end
+                -- charitable_soul triggered by casting on others; not modeled.
             end,
+
+            auras = {
+                -- Conduit
+                charitable_soul = {
+                    id = 337716,
+                    duration = 10,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1081,15 +1140,22 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             handler = function ()
                 applyDebuff( "target", "psychic_scream" )
             end,
+
+            auras = {
+                -- Conduit
+                mental_recovery = {
+                    id = 337956,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
         },
 
 
          purify_disease = {
             id = 213634,
             cast = 0,
-            charges = 1,
             cooldown = 8,
-            recharge = 8,
             gcd = "spell",
 
             spend = 0.01,
@@ -1234,7 +1300,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             texture = 136200,
 
             essential = true,
-            nobuff = function () return buff.voidform.up and 'voidform' or 'shadowform' end,
+            nobuff = function () return buff.voidform.up and "voidform" or "shadowform" end,
 
             handler = function ()
                 applyBuff( "shadowform" )
@@ -1309,7 +1375,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             startsCombat = true,
             texture = 135978,
 
-            cycle = function () return talent.misery.enabled and 'shadow_word_pain' or 'vampiric_touch' end,
+            cycle = function () return talent.misery.enabled and "shadow_word_pain" or "vampiric_touch" end,
 
             handler = function ()
                 applyDebuff( "target", "vampiric_touch" )
@@ -1319,9 +1385,8 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
                 end
 
                 if talent.unfurling_darkness.enabled then
-                    if buff.unfurling_darkness.up and query_time - action.vampiric_touch.lastCast < 8 then
-                        removeBuff( "unfurling_darkness" )
-                    elseif debuff.unfurling_darkness_icd.down and query_time - action.vampiric_touch.lastCast > 8 then
+                    removeBuff( "unfurling_darkness" )
+                    if debuff.unfurling_darkness_icd.down then
                         applyBuff( "unfurling_darkness" )
                         applyDebuff( "player", "unfurling_darkness_icd" )
                     end
@@ -1505,7 +1570,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             auras = {
                 unholy_transfusion = {
                     id = 324724,
-                    duration = 15,
+                    duration = function () return conduit.festering_transfusion.enabled and 20 or 15 end,
                     max_stack = 1,
                 }
             }
@@ -1524,11 +1589,53 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             toggle = "essences",
 
             handler = function ()
+                applyBuff( "fae_guardians" )
                 summonPet( "wrathful_faerie" )
+                applyDebuff( "target", "wrathful_faerie" )
                 summonPet( "guardian_faerie" )
+                applyBuff( "guardian_faerie" )
                 summonPet( "benevolent_faerie" )
+                applyBuff( "benevolent_faerie" )
                 -- TODO: Check totem/guardian API re: faeries.
             end,
+
+            auras = {
+                fae_guardians = {
+                    id = 327661,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                wrathful_faerie = {
+                    id = 342132,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                wrathful_faerie_fermata = {
+                    id = 345452,
+                    duration = function () return conduit.fae_fermata.enabled and ( conduit.fae_fermata.mod * 0.001 ) or 3 end,
+                    max_stack = 1
+                },
+                guardian_faerie = {
+                    id = 327694,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                guardian_faerie_fermata = {
+                    id = 345451,
+                    duration = function () return conduit.fae_fermata.enabled and ( conduit.fae_fermata.mod * 0.001 ) or 3 end,
+                    max_stack = 1
+                },
+                benevolent_faerie = {
+                    id = 327710,
+                    duration = 20,
+                    max_stack = 1,
+                },
+                benevolent_faerie_fermata = {
+                    id = 345453,
+                    duration = function () return conduit.fae_fermata.enabled and ( conduit.fae_fermata.mod * 0.001 ) or 3 end,
+                    max_stack = 1
+                },
+            }
         },
 
         -- Priest - Venthyr   - 323673 - mindgames            (Mindgames)
@@ -1550,7 +1657,7 @@ if UnitClassBase( 'player' ) == 'PRIEST' then
             auras = {
                 mindgames = {
                     id = 323673,
-                    duration = 5,
+                    duration = function () return conduit.shattered_perceptions.enabled and 8 or 5 end,
                     max_stack = 1,
                 },
             },

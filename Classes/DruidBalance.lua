@@ -9,13 +9,35 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
--- TODO:  Heart of the Wild, Covenants, Legendaries, Conduits.
+-- Conduits
+-- [-] fury_of_the_skies
+-- [x] precise_alignment
+-- [-] stellar_inspiration
+-- [-] umbral_intensity
 
-if UnitClassBase( 'player' ) == 'DRUID' then
+-- Covenants
+-- [x] deep_allegiance
+-- [-] endless_thirst
+-- [-] evolved_swarm
+-- [-] conflux_of_elements
+
+-- Endurance
+-- [x] tough_as_bark
+-- [x] ursine_vigor
+-- [-] innate_resolve
+
+-- Finesse
+-- [x] born_anew
+-- [-] front_of_the_pack
+-- [x] born_of_the_wilds
+-- [x] tireless_pursuit
+
+
+if UnitClassBase( "player" ) == "DRUID" then
     local spec = Hekili:NewSpecialization( 102, true )
 
     spec:RegisterResource( Enum.PowerType.LunarPower, {
-        fury_of_elune = {            
+        fury_of_elune = {
             aura = "fury_of_elune_ap",
 
             last = function ()
@@ -84,7 +106,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         celestial_guardian = 180, -- 233754
         crescent_burn = 182, -- 200567
         deep_roots = 834, -- 233755
@@ -112,7 +134,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     local mod_circle_dot = setfenv( function( x )
         return legendary.circle_of_life_and_death.enabled and ( 0.75 * x ) or x
     end, state )
-    
+
 
     -- Auras
     spec:RegisterAuras( {
@@ -139,7 +161,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         celestial_alignment = {
             id = 194223,
-            duration = 20,
+            duration = function () return 20 + ( conduit.precise_alignment.mod * 0.001 ) end,
             max_stack = 1,
         },
         dash = {
@@ -226,7 +248,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         },
         incarnation = {
             id = 102560,
-            duration = 30,
+            duration = function () return 30 + ( conduit.precise_alignment.mod * 0.001 ) end,
             max_stack = 1,
             copy = "incarnation_chosen_of_elune"
         },
@@ -359,7 +381,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             max_stack = 3,
         },
         thrash_cat ={
-            id = 106830, 
+            id = 106830,
             duration = function () return mod_circle_dot( 15 ) end,
             tick_time = function () return mod_circle_dot( 3 ) * haste end,
             max_stack = 1,
@@ -526,6 +548,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
     -- Function to remove any form currently active.
     spec:RegisterStateFunction( "unshift", function()
+        if conduit.tireless_pursuit.enabled and ( buff.cat_form.up or buff.travel_form.up ) then applyBuff( "tireless_pursuit" ) end
+
         removeBuff( "cat_form" )
         removeBuff( "bear_form" )
         removeBuff( "travel_form" )
@@ -550,6 +574,8 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
     -- Function to apply form that is passed into it via string.
     spec:RegisterStateFunction( "shift", function( form )
+        if conduit.tireless_pursuit.enabled and ( buff.cat_form.up or buff.travel_form.up ) then applyBuff( "tireless_pursuit" ) end
+
         removeBuff( "cat_form" )
         removeBuff( "bear_form" )
         removeBuff( "travel_form" )
@@ -558,7 +584,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         removeBuff( "aquatic_form" )
         removeBuff( "stag_form" )
         applyBuff( form )
-    
+
         if affinities[ form ] and legendary.oath_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid_icd.down and talent[ affinities[ form ] ].enabled then
             applyBuff( "heart_of_the_wild" )
             applyDebuff( "player", "oath_of_the_elder_druid_icd" )
@@ -584,7 +610,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         if not a or a.startsCombat then
             break_stealth()
-        end 
+        end
     end )
 
     spec:RegisterHook( "pregain", function( amt, resource, overcap, clean )
@@ -618,9 +644,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     end, state )
 
     spec:RegisterStateExpr( "ap_check", function() return check_for_ap_overcap() end )
-    
+
     -- Simplify lookups for AP abilities consistent with SimC.
-    local ap_checks = { 
+    local ap_checks = {
         "force_of_nature", "full_moon", "half_moon", "incarnation", "moonfire", "new_moon", "starfall", "starfire", "starsurge", "sunfire", "wrath"
     }
 
@@ -629,7 +655,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             return action[ lookup ]
         end )
     end
-    
+
 
     spec:RegisterStateExpr( "active_moon", function ()
         return "new_moon"
@@ -640,7 +666,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         if not slot then return false end
 
         local _, _, spellID = GetSpellBookItemName( slot, "spell" )
-        return id == spellID 
+        return id == spellID
     end
 
     state.IsActiveSpell = IsActiveSpell
@@ -659,7 +685,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         end
 
         if buff.warrior_of_elune.up then
-            setCooldown( "warrior_of_elune", 3600 ) 
+            setCooldown( "warrior_of_elune", 3600 )
         end
 
         -- Eclipses
@@ -689,30 +715,30 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             else
                 removeBuff( "primordial_arcanic_pulsar" )
             end
-        end 
+        end
     end )
 
 
     -- Legion Sets (for now).
-    spec:RegisterGear( 'tier21', 152127, 152129, 152125, 152124, 152126, 152128 )
-        spec:RegisterAura( 'solar_solstice', {
+    spec:RegisterGear( "tier21", 152127, 152129, 152125, 152124, 152126, 152128 )
+        spec:RegisterAura( "solar_solstice", {
             id = 252767,
             duration = 6,
             max_stack = 1,
-         } ) 
+         } )
 
-    spec:RegisterGear( 'tier20', 147136, 147138, 147134, 147133, 147135, 147137 )
-    spec:RegisterGear( 'tier19', 138330, 138336, 138366, 138324, 138327, 138333 )
-    spec:RegisterGear( 'class', 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
+    spec:RegisterGear( "tier20", 147136, 147138, 147134, 147133, 147135, 147137 )
+    spec:RegisterGear( "tier19", 138330, 138336, 138366, 138324, 138327, 138333 )
+    spec:RegisterGear( "class", 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
 
-    spec:RegisterGear( "impeccable_fel_essence", 137039 )    
+    spec:RegisterGear( "impeccable_fel_essence", 137039 )
     spec:RegisterGear( "oneths_intuition", 137092 )
         spec:RegisterAuras( {
             oneths_intuition = {
                 id = 209406,
                 duration = 3600,
                 max_stacks = 1,
-            },    
+            },
             oneths_overconfidence = {
                 id = 209407,
                 duration = 3600,
@@ -735,7 +761,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         barkskin = {
             id = 22812,
             cast = 0,
-            cooldown = 60,
+            cooldown = function () return 60 * ( 1 + ( conduit.tough_as_bark.mod * 0.01 ) ) end,
             gcd = "off",
 
             toggle = "defensives",
@@ -766,7 +792,17 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 shift( "bear_form" )
+                if conduit.ursine_vigor.enabled then applyBuff( "ursine_vigor" ) end
             end,
+
+            auras = {
+                -- Conduit
+                ursine_vigor = {
+                    id = 340541,
+                    duration = 4,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -784,6 +820,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             handler = function ()
                 shift( "cat_form" )
             end,
+
+            auras = {
+                -- Conduit
+                tireless_pursuit = {
+                    id = 340546,
+                    duration = function () return conduit.tireless_pursuit.enabled and conduit.tireless_pursuit.mod or 3 end,
+                    max_stack = 1,
+                }
+            }
         },
 
 
@@ -1037,7 +1082,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
 
         half_moon = {
-            id = 274282, 
+            id = 274282,
             known = 274281,
             cast = 2,
             charges = 3,
@@ -1056,7 +1101,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             ap_check = function() return check_for_ap_overcap( "half_moon" ) end,
 
-            usable = function () return active_moon == 'half_moon' end,
+            usable = function () return active_moon == "half_moon" end,
             handler = function ()
                 spendCharges( "new_moon", 1 )
                 spendCharges( "full_moon", 1 )
@@ -1069,15 +1114,15 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         heart_of_the_wild = {
             id = 319454,
             cast = 0,
-            cooldown = 300,
+            cooldown = function () return 300 * ( 1 - ( conduit.born_of_the_wilds.mod * 0.01 ) ) end,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
             talent = "heart_of_the_wild",
 
             startsCombat = true,
             texture = 135879,
-            
+
             handler = function ()
                 applyBuff( "heart_of_the_wild" )
             end,
@@ -1120,7 +1165,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             handler = function ()
                 shift( "moonkin_form" )
-                
+
                 applyBuff( "incarnation" )
                 stat.crit = stat.crit + 0.10
 
@@ -1174,20 +1219,20 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             gcd = "spell",
 
             talent = "feral_affinity",
-            
+
             spend = 30,
             spendType = "energy",
-            
+
             startsCombat = true,
             texture = 132134,
-            
+
             usable = function () return combo_points.current > 0, "requires combo points" end,
             handler = function ()
                 applyDebuff( "target", "maim" )
                 spend( combo_points.current, "combo_points" )
             end,
         },
-        
+
 
         mangle = {
             id = 33917,
@@ -1211,7 +1256,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         mass_entanglement = {
             id = 102359,
             cast = 0,
-            cooldown = 30,
+            cooldown = function () return 30 * ( 1 - ( conduit.born_of_the_wilds.mod * 0.01 ) ) end,
             gcd = "spell",
 
             startsCombat = false,
@@ -1229,7 +1274,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
         mighty_bash = {
             id = 5211,
             cast = 0,
-            cooldown = 50,
+            cooldown = function () return 50 * ( 1 - ( conduit.born_of_the_wilds.mod * 0.01 ) ) end,
             gcd = "spell",
 
             startsCombat = true,
@@ -1289,7 +1334,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
 
         new_moon = {
-            id = 274281, 
+            id = 274281,
             cast = 1,
             charges = 3,
             cooldown = 25,
@@ -1354,25 +1399,6 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 applyDebuff( "target", "rake" )
             end,
         },
-
-
-        --[[ rebirth = {
-            id = 20484,
-            cast = 2,
-            cooldown = 600,
-            gcd = "spell",
-
-            spend = 0,
-            spendType = "rage",
-
-            -- toggle = "cooldowns",
-
-            startsCombat = true,
-            texture = 136080,
-
-            handler = function ()
-            end,
-        }, ]]
 
 
         regrowth = {
@@ -1607,23 +1633,23 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
                 if legendary.timeworn_dreambinder.enabled then
                     addStack( "timeworn_dreambinder", nil, 1 )
-                end                
+                end
             end,
         },
 
 
         starfire = {
             id = 194153,
-            cast = function () 
+            cast = function ()
                 if buff.warrior_of_elune.up or buff.elunes_wrath.up then return 0 end
-                return haste * ( buff.eclipse_lunar and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 2.25 
+                return haste * ( buff.eclipse_lunar and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 2.25
             end,
             cooldown = 0,
             gcd = "spell",
 
             spend = function () return ( buff.warrior_of_elune.up and 1.4 or 1 ) * -8 end,
             spendType = "astral_power",
-            
+
             startsCombat = true,
             texture = 135753,
 
@@ -1651,7 +1677,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                 elseif buff.warrior_of_elune.up then
                     removeStack( "warrior_of_elune" )
                     if buff.warrior_of_elune.down then
-                        setCooldown( "warrior_of_elune", 45 ) 
+                        setCooldown( "warrior_of_elune", 45 )
                     end
                 end
 
@@ -1672,11 +1698,11 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = true,
             texture = 135730,
 
-            ap_check = function() return check_for_ap_overcap( "starsurge" ) end,   
+            ap_check = function() return check_for_ap_overcap( "starsurge" ) end,
 
             handler = function ()
                 addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
-                
+
                 removeBuff( "oneths_clear_vision" )
                 removeBuff( "sunblaze" )
 
@@ -1741,7 +1767,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
             ap_check = function()
                 return astral_power.current - action.sunfire.cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
-            end,            
+            end,
 
             readyTime = function()
                 return mana[ "time_to_" .. ( 0.12 * mana.max ) ]
@@ -1769,7 +1795,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             startsCombat = false,
             texture = 134914,
 
-            talent = "restoration_affinity",            
+            talent = "restoration_affinity",
 
             handler = function ()
                 if buff.moonkin_form.down then unshift() end
@@ -1924,9 +1950,9 @@ if UnitClassBase( 'player' ) == 'DRUID' then
             cast = 0,
             cooldown = 60,
             gcd = "spell",
-            
+
             talent = "restoration_affinity",
-            
+
             startsCombat = true,
             texture = 571588,
 
@@ -2032,7 +2058,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
                         if talent.solstice.enabled then applyBuff( "solstice" ) end
                     end
                 end
-                
+
                 removeBuff( "dawning_sun" )
                 if azerite.sunblaze.enabled then applyBuff( "sunblaze" ) end
             end,
@@ -2055,10 +2081,10 @@ if UnitClassBase( 'player' ) == 'DRUID' then
 
         potion = "unbridled_fury",
 
-        package = "Balance",        
+        package = "Balance",
     } )
 
-    
+
     spec:RegisterSetting( "starlord_cancel", false, {
         name = "Cancel |T462651:0|t Starlord",
         desc = "If checked, the addon will recommend canceling your Starlord buff before starting to build stacks with Starsurge again.\n\n" ..
@@ -2074,7 +2100,7 @@ if UnitClassBase( 'player' ) == 'DRUID' then
     class.specs[0].abilities.cancel_buff.funcs.usable = setfenv( function ()
         if not settings.starlord_cancel and args.buff_name == "starlord" then return false, "starlord cancel option disabled" end
         return args.buff_name ~= nil, "no buff name detected"
-    end, state )    
+    end, state )
 
 
     spec:RegisterPack( "Balance", 20200907, [[dC0o6aqifvpIqvxsHk2eH8jbu1OuqNsHSkOO6vurMfHYTuOQ2fP(fvudtHYXeiltaEgbQPjGY1iqSnfQ03iqY4iuPZPqvwhuuI3rGuAEci3JG2hbCqcv0cfuEOaQmrcvWfjqk2iuus9rOOKCscKQvQOmtOOu2Pa1sHIs1tbAQcI9sYFfAWQ6Wuwms9yitgQUmQntvFgknAf40sTAcvOxtfMnr3gj7wLFJy4uPLl55GMUORdy7qHVlOA8qrX5fKwpuK5Ri7xPvbPcrbIBjRcoGXcySXgVXeu6aeCGjUcwWkWmuxwb6AihgwwbEgfRadZK2HyfORfQKy4QquGqcqHyf4GmDHywC2zSDoaGwJiuodBkaPLn5qL5tNHnfYzfinqltb9trRaXTKvbhWybm2yJ3yckDabjybjWgpfObKdiLceSPcCkWbnooFkAfiodrkqXVFyM0oeVV4qb047mXVpi7Mmfnx7lOeB)aglGX2z7mXVFGBGDyziMLDM43F83xCIJZ47dsKwTFySrP3zIF)XF)a3a7WY47NwHLZy73hzqgUFs2hfksYX0kSCc17mXV)4Vpyt5kBFO7loXexDY7NL15(scXbGlC)H4KlWN7da59bUJrmeAvO7JHvTrl59HHEPHzgP3zIF)XFFm7mfbdgFFmBngSm09bD7QZ9rKdVZMC77j1(bowYWSn5(ItzJ9O4lf0UFOeGaVuU)addE)o3Nu7hkby)WjxGp3h2hI3xq)oUWWsE)gU)Gg7aU23TAs1zOAfOSHjufIceN9gGmvHOcoivikqdLn5uGqI0QinBukq(mAjJROvPk4auHOa5ZOLmUkmfiQ6KR2uG0aEVgzX(qAaxfOHYMCkqAUGC5OpSQufSGvHOa5ZOLmUkmf4zuSc0WeCGvgm6jxgj(OljCUuGgkBYPanmbhyLbJEYLrIp6scNlfiQ6KR2uGZ3NgW71il2hsd4UVO9XjPMIqoFxSoBKJ(WUVO9XjPgcC(UyD2ih9HDFr7pC)57NMKVudtwkTk6LwXA(mAjJV)00(4KudtwkTk6LwX6Sro6d7(JuPk4atfIcKpJwY4QWuGOQtUAtboC)57NMKVudtRKKcxZNrlz89NM2NgW71W0kjPW1aU7pAFr7pFFAaVxJSyFinG7(I2hNKAkc58DX6Sro6d7(I2hNKAiW57I1zJC0h29fT)W9NVFAs(snmzP0QOxAfR5ZOLm((tt7JtsnmzP0QOxAfRZg5OpS7psbAOSjNcelGv4TDrIpAyIlsoqLQGfevikq(mAjJRctbAOSjNcefkssYICnkslnyQarvNC1McC((0aEVgzX(qAa39fTpoj1ueY57I1zJC0h29fTpoj1qGZ3fRZg5OpS7lA)H7pF)0K8LAyYsPvrV0kwZNrlz89NM2hNKAyYsPvrV0kwNnYrFy3FKcK9EgLXZOyfikuKKKf5AuKwAWuLQGhxvikq(mAjJRctbAOSjNceoOXGRig8rOIflBKc8mkwbch0yWved(iuXILnsbIQo5Qnf489Pb8EnYI9H0aU7lA)57td49AAjHGlbGPgWvbMwHLZy7vG4Kudh0yWved(iuAyAih7lGW9fevQcwqPcrbYNrlzCvykWZOyfiLDTNHjjs8rkd)yiubAOSjNcKYU2ZWKej(iLHFmeQarvNC1McKgW71il2hsxmL1hCFb2pOX2FAAFAaVxJSyFiDXuwFW9fy)aBFr7td49ARq21OOlGeALgMgYX(cS)4U)00((g7GmwmL1hC)aTFabPsvWIRkefiFgTKXvHParvNC1McerisCs4NgzX(q6IPS(G7lW(cEmfOHYMCkqAjHGhj(yoGJ8XuHQsvWJNkefiFgTKXvHParvNC1McC((0aEVgzX(qAa39fT)W9nywMm6scNR9d0(bii7pnTpIqK4KWpnYI9H0ftz9b3xG9f8y7pAFr7Jtsne48DX6IPS(G7lW(bn2(I2hNKAkc58DX6IPS(G7lW(bn2(I2F4(Z3pnjFPgMSuAv0lTI18z0sgF)PP9XjPgMSuAv0lTI1ftz9b3xG9dAS9hPanu2KtbsXuKk0iXhLaOgpIxSrbvPk4GgtfIc0qztofOlq1(q7dBKwAWubYNrlzCvyQufCqbPcrbAOSjNcSAxxjh7lcDneRa5ZOLmUkmvQcoOauHOanu2KtbIihIVSSKXJEPrXkq(mAjJRctLQGdsWQquG8z0sgxfMcevDYvBkqAaVxxmYHKHWONuiwd4UVO9XjPMIqoFxSoBKJ(WUVO9XjPgcC(UyD2ih9HDFr7pC)57NMKVudtwkTk6LwXA(mAjJV)00(4KudtwkTk6LwX6Sro6d7(JuGgkBYPaZbCe4OjahE0tkeRsvWbfyQquGgkBYPadNusCm4(IfdjNDiwbYNrlzCvyQufCqcIkefiFgTKXvHParvNC1McC4(Z3hdRAJwYAdtriC)PP9NVpnG3RrwSpKgWD)r7lAFCsQPiKZ3fRZg5OpS7lAFCsQHaNVlwNnYrFy3x0(d3F((Pj5l1WKLsRIEPvSMpJwY47pnTpoj1WKLsRIEPvSoBKJ(WU)ifOHYMCkqpbbaz8OHjU6KJ0SrPsvWbnUQquGgkBYPaZbK6Gkq(mAjJRctLQGdsqPcrbYNrlzCvykqu1jxTPaPb8EnYI9H0aU7pnTVVXoiJftz9b3pq7hWykqdLn5uGaqo2jtbvPk4GexvikqdLn5uGHBv1Kks8rwcCScKpJwY4QWuPk4Ggpvikq(mAjJRctbIQo5Qnf489Pb8EnYI9H0aU7lA)H7td49AkMIuHgj(Oea14r8InkOgWD)PP9hU)W9reIeNe(PPyksfAK4JsauJhXl2OG6IPS(G7lW(bm2(tt7pFFgc5dXAkMIuHgj(Oea14r8InkOMYehj1(J2x0(MBenGro2F0(J2x0(d3NgW71umfPcns8rjaQXJ4fBuqnG7(tt7BUr0ag5y)r7lAFCsQHaNVlwxmL1hCFb2xC3x0(4KutriNVlwxmL1hCFb2pOa2x0(d3hNKAyYsPvrV0kwxmL1hCFb2FC3FAA)57NMKVudtwkTk6LwXA(mAjJV)ifOHYMCkW(qwDw2KtLQGdymvikq(mAjJRctbIQo5Qnf489Pb8EnYI9H0aU7lA)H7td49AkMIuHgj(Oea14r8InkOgWD)PP9hU)W9reIeNe(PPyksfAK4JsauJhXl2OG6IPS(G7lW(bm2(tt7pFFgc5dXAkMIuHgj(Oea14r8InkOMYehj1(J2x0(MBenGro2F0(J2x0(d3hNKAiW57I1ftz9b3xG9dyFr7JtsnfHC(UyD2ih9HDFr7pCFCsQHjlLwf9sRyD2ih9HD)PP9NVFAs(snmzP0QOxAfR5ZOLm((J2FKc0qztofiILmmBtgnzJ9O4lvPk4acsfIc0qztofit5scNRin5WvG8z0sgxfMkvbhqaQquGgkBYPaldd(iaWOV4dtHQa5ZOLmUkmvQcoabRcrbYNrlzCvykqu1jxTPahUpnG3RrwSpKgWD)PP9reIeNe(PrwSpKUykRp4(cSVGhB)r7lA)WllhOn3iAaJCOanu2Ktb6bQqJeFKLahRsvWbeyQquG8z0sgxfMcevDYvBkWH7td49AKf7dPbC3FAAFeHiXjHFAKf7dPlMY6dUVa7l4X2F0(I23CJObmYHc0qztofONuios8XZsGIvPk4aeevikq(mAjJRctbIQo5QnfinG3RHPvssHRlMY6dUFG2xW7lA)57hEz5aT5grdyKdfOHYMCkqKDiwgPb8EfinG3hpJIvGW0kjPWvPk4agxvikq(mAjJRctbIQo5QnfinG3RzKSDHCucCwPbC3x0(Z3NgW71ms2UqokboR0mLljCUy89NM2NgW71ms2UqocjsR0aU7lA)57td49AgjBxihHePvAMYLeoxmUc0qztofimTccuyzvQcoabLkefiFgTKXvHParvNC1McC4(Z3p8YYbAZnIgWih7pnT)W9Pb8EnmTsskCnmnKJ9d0(cE)PP9Pb8EnmTsskCDXuwFW9fq4(I7(J2x0(d333yhKXIPS(G770(bT)O9X89HUSugtRWYjCFb2hrG5(JZ(bOfK9hTVO9HUSugtRWYjCFbeUpgw1gTK1qFmTclNqfOHYMCkqyAL3KsvQcoaXvfIcKpJwY4QWuGOQtUAtboC)H7NMKVudtRKKcxZNrlz89fT)W9Pb8EnmTsskCnmnKJ9d0(cE)PP9Pb8EnmTsskCDXuwFW9fq4(cY(I2NgW71wHSRrrxaj0knmnKJ9d0(I7(J2FAA)57NMKVudtRKKcxZNrlz89fT)W9Pb8ETvi7Au0fqcTsdtd5y)aTV4U)00(0aEVgzX(qAa39hT)O9fT)W9Pb8EnJKTlKJqI0knG7(I2NgW71ms2UqokboR0aU7pAFr7td496IroKmeg9KcXreb4sU0W0qo2pq7h04T)00(0aEVUyKdjdHrpPqSgWD)r7lAFOllLX0kSCc1W0kVjL7hO9XWQ2OLSg6JPvy5eUVO9hU)89XWQ2OLS2Wuec3FAA)57td49AKf7dPbC3FAA)577wmgAyAfeOWY7pA)PP99n2bzSykRp4(bs4(mMHrajhZMI3hZ33GzzYOljCU2FC2pWgB)PP9NVF4LLd0MBenGrouGgkBYPaHPvqGclRsvWbmEQquG8z0sgxfMcevDYvBkqdLngCKpMQz4(bAFmSQnAjRH(yAfwoH7lA)H7td49AgjBxihHePv6IPS(G7lW(idMXSP49NM2NgW71ms2UqokboR0ftz9b3xG9rgmJztX7psbAOSjNceMwbbkSSkvbl4XuHOa5ZOLmUkmfiQ6KR2uG0aEVgzX(qAa39fTpnG3RrwSpKUykRp4(bAFSiCnLHz2x0(gM4QtwdZInh9HnctRG6Yoh7lAFCsQPiKZ3fRlMY6dUVa7xmL1hubAOSjNcecC(UyvQcwWbPcrbYNrlzCvykqu1jxTPaPb8EnYI9H0aU7lAFAaVxJSyFiDXuwFW9d0(yr4AkdZSVO9nmXvNSgMfBo6dBeMwb1LDouGgkBYPaPiKZ3fRsvWcoavikq(mAjJRctbAOSjNcecC(UyfiQ6KR2uGf7lgoWOL8(I23CJObmYX(I23ljKA)H7NwHLtD2uCmjr8M3FC2F4(bSpMVp0LLY4adM8(J2F0(y((qxwkJPvy5eUVac3hXTC)H77LesT)W9dy)XzFOllLX0kSCc3F0(y((bPfK9hTVt7hW(y((qxwkJPvy5eUVO9hUp0LLYyAfwoH7lW(bTVt7NMKVuNH3xKIqoOMpJwY47pnTpoj1ueY57I1zJC0h29hTVO9hU)89nmXvNSgMfBo6dBeMwb1LDo2FAA)57td49AKf7dPbC3FAA)577wmgAiW57I3F0(I2F4(0aEVgzX(q6IPS(G7lW(ftz9b3FAA)57td49AKf7dPbC3FKcefksYX0kSCcvbhKkvblybRcrbYNrlzCvykqdLn5uGueY57IvGOQtUAtbwSVy4aJwY7lAFZnIgWih7lAFVKqQ9hUFAfwo1ztXXKeXBE)Xz)H7hW(y((qxwkJdmyY7pA)r7J57dDzPmMwHLt4(ciC)XDFr7pC)57ByIRoznml2C0h2imTcQl7CS)00(Z3NgW71il2hsd4U)00(Z33Tym0ueY57I3F0(I2F4(0aEVgzX(q6IPS(G7lW(ftz9b3FAA)57td49AKf7dPbC3FKcefksYX0kSCcvbhKkvbl4atfIcKpJwY4QWuGgkBYPaHjlLwf9sRyfiQ6KR2uGf7lgoWOL8(I23CJObmYX(I23ljKA)H7NwHLtD2uCmjr8M3FC2F4(bSpMVp0LLY4adM8(J2F0(ciCFbzFr7pC)57ByIRoznml2C0h2imTcQl7CS)00(Z3NgW71il2hsd4U)00(Z33Tym0WKLsRIEPv8(JuGOqrsoMwHLtOk4GuPkybliQquGgkBYParKddIdoMd4i0TRoHkq(mAjJRctLQGf84QcrbYNrlzCvykqu1jxTPan3iAaJCOanu2KtbEC4rkc5uPkyblOuHOa5ZOLmUkmfiQ6KR2uGMBenGrouGgkBYPahysFKIqovQcwWIRkefiFgTKXvHParvNC1Mc0CJObmYHc0qztofOhqkJueYPsvWcE8uHOa5ZOLmUkmfiQ6KR2uGMBenGro2x0(d3NgW71ms2UqokboR0ftz9b3xG9rgmJztX7pnTpKiTkYiz7c59fy)X2FKc0qztofimTY3fRsvWb2yQquG8z0sgxfMcevDYvBkqZnIgWih7lA)H7td49AgjBxihHePv6IPS(G7lW(idMXSP49NM2xcCwfzKSDH8(cS)y7psbAOSjNcm8YYbQufCGfKkefOHYMCkqiW57IvG8z0sgxfMkvPc0TyeHI2sviQGdsfIcKpJwY4QWuGexfiKtfOHYMCkqmSQnAjRaXWKaScmWuGyyv8mkwbc9X0kSCcvPk4auHOa5ZOLmUkmfiXvbA44kqdLn5uGyyvB0swbIHjbyfyqkqu1jxTPanmXvNS2kKDnk6ciHwP5ZOLmUcedRINrXkqOpMwHLtOkvblyvikq(mAjJRctbsCvGgoUc0qztofigw1gTKvGyysawbgKcevDYvBkW0K8LAyALKu4A(mAjJRaXWQ4zuSce6JPvy5eQsvWbMkefiFgTKXvHPajUkqdhxbAOSjNcedRAJwYkqmmjaRadsbIQo5QnfOHjU6K1WSyZrFyJW0kOUSZX(cSFa7lAFdtC1jRTczxJIUasOvA(mAjJRaXWQ4zuSce6JPvy5eQsvWcIkefiFgTKXvHPajUkqiaTc0qztofigw1gTKvGyysawbgKcevDYvBkW57NMKVuNH3xKIqoOMpJwY4kqmSkEgfRaH(yAfwoHQuf84QcrbAOSjNcKIqoh9f9KIsbYNrlzCvyQufSGsfIc0qztofOJ(WlgpcD7QtOcKpJwY4QWuPkyXvfIcKpJwY4QWuGNrXkqdtWbwzWONCzK4JUKW5sbAOSjNc0WeCGvgm6jxgj(OljCUuPk4XtfIcKpJwY4QWuGgkBYPaDjztofiEONr1OOBXUKubgKkvbh0yQquGgkBYPadVSCGcKpJwY4QWuPk4GcsfIc0qztofimTccuyzfiFgTKXvHPsvQsfigCbBYPcoGXcySXe3agpTGvGHB11hwOcuqNYLujJVFa7BOSj3(YgMq9otb6weFlzfO43pmtAhI3xCOaA8DM43hKDtMIMR9fuITFaJfWy7SDM43pWnWoSmeZYot87p(7loXXz89bjsR2pm2O07mXV)4VFGBGDyz89tRWYzS97Jmid3pj7Jcfj5yAfwoH6DM43F83hSPCLTp09fNyIRo59ZY6CFjH4aWfU)qCYf4Z9bG8(a3XigcTk09XWQ2OL8(WqV0WmJ07mXV)4VpMDMIGbJVpMTgdwg6(GUD15(iYH3ztU99KA)ahlzy2MCFXPSXEu8LcA3pucqGxk3FGHbVFN7tQ9dLaSF4KlWN7d7dX7lOFhxyyjVFd3FqJDax77wnP6mu9oBNj(9f0GzyeqY47tZEsX7Jiu0wUpnJTpOEFXjcXUjC)JCJ)aRO8aY9nu2KdUp5KHQ3zIFFdLn5GA3IrekAlf6Lg0Xot87BOSjhu7wmIqrBPtcD2ti47mXVVHYMCqTBXicfTLoj0zdalfFPLn52z7mXVV4etC1jVpgw1gTKH7mXVVHYMCqTBXicfTLoj0zmSQnAjl2zuSqdtriummmjal0WexDYAywS5OpSryAfux25yNj(9nu2KdQDlgrOOT0jHoJHvTrlzXoJIfAykAUIHHjbyHgM4QtwBfYUgfDbKqR0LDo2z7mXVpyAL3KY9XyFW0kiqHL3pTclN7JasI3VZmu2KdQDlgrOOTuigw1gTKf7mkwi0htRWYjummmjalmW2zgkBYb1UfJiu0w6KqNXWQ2OLSyNrXcH(yAfwoHIrCfA44IHHjbyHbjw7fAyIRozTvi7Au0fqcTsZNrlz8DMHYMCqTBXicfTLoj0zmSQnAjl2zuSqOpMwHLtOyexHgoUyyysawyqI1EHPj5l1W0kjPW18z0sgFNzOSjhu7wmIqrBPtcDgdRAJwYIDgfle6JPvy5ekgXvOHJlggMeGfgKyTxOHjU6K1WSyZrFyJW0kOUSZHabiYWexDYARq21OOlGeALMpJwY47mdLn5GA3IrekAlDsOZyyvB0swSZOyHqFmTclNqXiUcHa0IHHjbyHbjw7fopnjFPodVVifHCqnFgTKX3zgkBYb1UfJiu0w6KqNPiKZrFrpPO2z7mXVp4zUWbKC)YA89Pb8EgFFyAjCFA2tkEFeHI2Y9PzS9b33o89DlE8Djz2h29B4(4KJ17mXVVHYMCqTBXicfTLoj0z4zUWbKmctlH7mdLn5GA3IrekAlDsOZo6dVy8i0TRoH7mdLn5GA3IrekAlDsOZaqo2jtj2zuSqdtWbwzWONCzK4JUKW5ANzOSjhu7wmIqrBPtcD2LKn5edp0ZOAu0TyxskmODMHYMCqTBXicfTLoj05WllhSZmu2KdQDlgrOOT0jHodtRGafwENTZe)(cAWmmciz89zm4k09ZMI3phW7BOKu73W9nmSwA0swVZmu2KdkesKwfPzJANj(9dCIdWDMHYMCqNe6mnxqUC0hwXAVqAaVxJSyFinG7oZqztoOtcDgaYXozkXoJIfAycoWkdg9KlJeF0LeoxI1EHZPb8EnYI9H0aUIWjPMIqoFxSoBKJ(WkcNKAiW57I1zJC0hwrdNNMKVudtwkTk6LwXA(mAjJpnHtsnmzP0QOxAfRZg5OpSJ2zgkBYbDsOZybScVTls8rdtCrYbI1EHdNNMKVudtRKKcxZNrlz8PjAaVxdtRKKcxd4os0CAaVxJSyFinGRiCsQPiKZ3fRZg5OpSIWjPgcC(UyD2ih9Hv0W5Pj5l1WKLsRIEPvSMpJwY4tt4KudtwkTk6LwX6Sro6d7ODMHYMCqNe6maKJDYuIXEpJY4zuSquOijjlY1OiT0GPyTx4CAaVxJSyFinGRiCsQPiKZ3fRZg5OpSIWjPgcC(UyD2ih9Hv0W5Pj5l1WKLsRIEPvSMpJwY4tt4KudtwkTk6LwX6Sro6d7ODMHYMCqNe6maKJDYuIDgfleoOXGRig8rOIflBKyTx4CAaVxJSyFinGRO50aEVMwsi4sayQbCflTclNX2leNKA4GgdUIyWhHsdtd5qaHcYoZqztoOtcDgaYXozkXoJIfszx7zysIeFKYWpgcfR9cPb8EnYI9H0ftz9bfiOXMMOb8EnYI9H0ftz9bfiWerd49ARq21OOlGeALgMgYHaJ70KVXoiJftz9bduabTZmu2Kd6KqNPLecEK4J5aoYhtfQyTxiIqK4KWpnYI9H0ftz9bfqWJTZmu2Kd6KqNPyksfAK4JsauJhXl2OGI1EHZPb8EnYI9H0aUIgAWSmz0LeoxbkabzAcrisCs4NgzX(q6IPS(Gci4XgjcNKAiW57I1ftz9bfiOXeHtsnfHC(UyDXuwFqbcAmrdNNMKVudtwkTk6LwXA(mAjJpnHtsnmzP0QOxAfRlMY6dkqqJnANzOSjh0jHo7cuTp0(WgPLgm3zgkBYbDsOZv76k5yFrORH4DMHYMCqNe6mICi(YYsgp6LgfVZmu2Kd6KqNZbCe4OjahE0tkelw7fsd496IroKmeg9KcXAaxr4KutriNVlwNnYrFyfHtsne48DX6Sro6dROHZttYxQHjlLwf9sRynFgTKXNMWjPgMSuAv0lTI1zJC0h2r7mdLn5Goj05WjLehdUVyXqYzhI3zgkBYbDsOZEccaY4rdtC1jhPzJsS2lC4CmSQnAjRnmfHWPP50aEVgzX(qAa3rIWjPMIqoFxSoBKJ(WkcNKAiW57I1zJC0hwrdNNMKVudtwkTk6LwXA(mAjJpnHtsnmzP0QOxAfRZg5OpSJ2zgkBYbDsOZ5asDWDMHYMCqNe6maKJDYuqXAVqAaVxJSyFinG70KVXoiJftz9bduaJTZmu2Kd6KqNd3QQjvK4JSe44DM433qztoOtcDUVJlmSKfR9cnmXvNSw2yWYqJq3U6uZNrlzCrdreIeNe(P7dz1zztoDXuwFWafW0eIqK4KWpnILmmBtgnzJ9O4l1ftz9bduqbmANzOSjh0jHo3hYQZYMCI1EHZPb8EnYI9H0aUIgsd49AkMIuHgj(Oea14r8InkOgWDAA4qeHiXjHFAkMIuHgj(Oea14r8InkOUykRpOabm200Cgc5dXAkMIuHgj(Oea14r8InkOMYehj1irMBenGrogns0qAaVxtXuKk0iXhLaOgpIxSrb1aUttMBenGrogjcNKAiW57I1ftz9bfqCfHtsnfHC(UyDXuwFqbckardXjPgMSuAv0lTI1ftz9bfyCNMMNMKVudtwkTk6LwXA(mAjJpANzOSjh0jHoJyjdZ2Krt2ypk(sXAVW50aEVgzX(qAaxrdPb8EnftrQqJeFucGA8iEXgfud4onnCiIqK4KWpnftrQqJeFucGA8iEXgfuxmL1huGagBAAodH8HynftrQqJeFucGA8iEXgfutzIJKAKiZnIgWihJgjAioj1qGZ3fRlMY6dkqaIWjPMIqoFxSoBKJ(WkAioj1WKLsRIEPvSoBKJ(WonnpnjFPgMSuAv0lTI18z0sgF0ODMHYMCqNe6mt5scNRin5W3zgkBYbDsOZLHbFeay0x8HPq3zgkBYbDsOZEGk0iXhzjWXI1EHdPb8EnYI9H0aUtticrItc)0il2hsxmL1huabp2irHxwoqBUr0ag5yNzOSjh0jHo7jfIJeF8SeOyXAVWH0aEVgzX(qAa3PjeHiXjHFAKf7dPlMY6dkGGhBKiZnIgWih7SDM43h0LpCUG7mdLn5Goj0zKDiwgPb8EXoJIfctRKKcxS2lKgW71W0kjPW1ftz9bdKGfnp8YYbAZnIgWih7mdLn5Goj0zyAfeOWYI1EH0aEVMrY2fYrjWzLgWv0CAaVxZiz7c5Oe4SsZuUKW5IXNMOb8EnJKTlKJqI0knGRO50aEVMrY2fYrirALMPCjHZfJVZmu2Kd6KqNHPvEtkfR9chop8YYbAZnIgWihttdPb8EnmTsskCnmnKJaj4PjAaVxdtRKKcxxmL1huaHI7ird9n2bzSykRpOtbncZHUSugtRWYjuaebMJtaAbzKiOllLX0kSCcfqigw1gTK1qFmTclNWDMHYMCqNe6mmTccuyzXAVWHdttYxQHPvssHR5ZOLmUOH0aEVgMwjjfUgMgYrGe80enG3RHPvssHRlMY6dkGqbrenG3RTczxJIUasOvAyAihbsChnnnpnjFPgMwjjfUMpJwY4Igsd49ARq21OOlGeALgMgYrGe3PjAaVxJSyFinG7OrIgsd49AgjBxihHePvAaxr0aEVMrY2fYrjWzLgWDKiAaVxxmYHKHWONuioIiaxYLgMgYrGcA8MMOb8EDXihsgcJEsHynG7irqxwkJPvy5eQHPvEtkdegw1gTK1qFmTclNqrdNJHvTrlzTHPieonnNgW71il2hsd4onn3Tym0W0kiqHLhnn5BSdYyXuwFWajKXmmci5y2umMBWSmz0LeoxJtGn2008WllhOn3iAaJCSZmu2Kd6KqNHPvqGcllw7fAOSXGJ8Xunddegw1gTK1qFmTclNqrdPb8EnJKTlKJqI0kDXuwFqbqgmJztXtt0aEVMrY2fYrjWzLUykRpOaidMXSP4r7mdLn5Goj0ziW57IfR9cPb8EnYI9H0aUIOb8EnYI9H0ftz9bdeweUMYWmImmXvNSgMfBo6dBeMwb1LDoeHtsnfHC(UyDXuwFqbkMY6dUZmu2Kd6KqNPiKZ3flw7fsd49AKf7dPbCfrd49AKf7dPlMY6dgiSiCnLHzezyIRoznml2C0h2imTcQl7CSZ2zIFFXbsiWDMHYMCqNe6me48DXIHcfj5yAfwoHcdsS2lSyFXWbgTKfzUr0ag5qKxsi1W0kSCQZMIJjjI384mmamh6YszCGbtE0imh6YszmTclNqbeI4wo0ljKAyaJd0LLYyAfwoHJW8G0cYiNcaZHUSugtRWYju0qOllLX0kSCcfiiNstYxQZW7lsrihuZNrlz8PjCsQPiKZ3fRZg5OpSJenCUHjU6K1WSyZrFyJW0kOUSZX00CAaVxJSyFinG700C3IXqdboFx8irdPb8EnYI9H0ftz9bfOykRp400CAaVxJSyFinG7ODMHYMCqNe6mfHC(UyXqHIKCmTclNqHbjw7fwSVy4aJwYIm3iAaJCiYljKAyAfwo1ztXXKeXBECggaMdDzPmoWGjpAeMdDzPmMwHLtOachxrdNByIRoznml2C0h2imTcQl7CmnnNgW71il2hsd4onn3Tym0ueY57IhjAinG3RrwSpKUykRpOaftz9bNMMtd49AKf7dPbChTZmu2Kd6KqNHjlLwf9sRyXqHIKCmTclNqHbjw7fwSVy4aJwYIm3iAaJCiYljKAyAfwo1ztXXKeXBECggaMdDzPmoWGjpAKacferdNByIRoznml2C0h2imTcQl7CmnnNgW71il2hsd4onn3Tym0WKLsRIEPv8OD2ot87JzfFCzjPG7mdLn5Goj0ze5WG4GJ5aocD7Qt4oZqztoOtcD(4WJueYjw7fAUr0ag5yNzOSjh0jHopWK(ifHCI1EHMBenGro2zgkBYbDsOZEaPmsriNyTxO5grdyKJDMHYMCqNe6mmTY3flw7fAUr0ag5q0qAaVxZiz7c5Oe4SsxmL1huaKbZy2u80eKiTkYiz7czbgB0oZqztoOtcDo8YYbI1EHMBenGroenKgW71ms2UqocjsR0ftz9bfazWmMnfpnjboRIms2UqwGXgTZ2zIFFmRnPmhua77j1(uemyk(YDMHYMCqNe6me48DXkqOlJubh0ybOsvQu]] )

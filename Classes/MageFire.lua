@@ -10,6 +10,13 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
+-- Conduits
+-- [-] controlled_destruction
+-- [-] flame_accretion -- adds to "fireball" buff
+-- [-] master_flame
+-- [x] infernal_cascade
+
+
 if UnitClassBase( "player" ) == "MAGE" then
     local spec = Hekili:NewSpecialization( 63, true )
 
@@ -497,9 +504,9 @@ if UnitClassBase( "player" ) == "MAGE" then
         blink = {
             id = function () return talent.shimmer.enabled and 212653 or 1953 end,
             cast = 0,
-            charges = function () return talent.shimmer.enabled and 2 or 1 end,
-            cooldown = function () return talent.shimmer.enabled and 20 or 15 end,
-            recharge = function () return talent.shimmer.enabled and 20 or 15 end,
+            charges = function () return talent.shimmer.enabled and 2 or nil end,
+            cooldown = function () return ( talent.shimmer.enabled and 20 or 15 ) - conduit.flow_of_time.mod * 0.001 end,
+            recharge = function () return ( talent.shimmer.enabled and ( 20 - conduit.flow_of_time.mod * 0.001 ) or nil ) end,
             gcd = "off",
 
             spend = function () return 0.02 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
@@ -562,7 +569,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         counterspell = {
             id = 2139,
             cast = 0,
-            cooldown = 24,
+            cooldown = function () return 24 - ( conduit.grounding_surge.mod * 0.1 ) end,
             gcd = "off",
 
             interrupt = true,
@@ -630,7 +637,17 @@ if UnitClassBase( "player" ) == "MAGE" then
 
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 if azerite.blaster_master.enabled then addStack( "blaster_master", nil, 1 ) end
+                if conduit.infernal_cascade.enabled and buff.combustion.up then addStack( "infernal_cascade" ) end
             end,
+
+            auras = {
+                -- Conduit
+                infernal_cascade = {
+                    id = 336832,
+                    duration = 5,
+                    max_stack = 3
+                }
+            }
         },
 
 
@@ -659,10 +676,10 @@ if UnitClassBase( "player" ) == "MAGE" then
                     if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 else
                     addStack( "fireball", nil, 1 )
+                    if conduit.flame_accretion.enabled then addStack( "flame_accretion" ) end
                 end
 
                 applyDebuff( "target", "ignite" )
-                if talent.conflagration.enabled then applyDebuff( "target", "conflagration" ) end
             end,
         },
 
@@ -734,7 +751,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         ice_block = {
             id = 45438,
             cast = 0,
-            cooldown = 240,
+            cooldown = function () return 240 + ( conduit.winters_protection.mod * 0.001 ) end,
             gcd = "spell",
 
             toggle = "defensives",
@@ -768,6 +785,7 @@ if UnitClassBase( "player" ) == "MAGE" then
             handler = function ()
                 applyBuff( "preinvisibility" )
                 applyBuff( "invisibility", 23 )
+                if conduit.incantation_of_swiftness.enabled then applyBuff( "incantation_of_swiftness" ) end
             end,
         },
 
