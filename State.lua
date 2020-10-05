@@ -5968,6 +5968,10 @@ do
             return false, "ability.disabled returned true"
         end
 
+        if self.args.only_cwc and ( not self.buff.casting.up or not self.buff.casting.v3 ) then
+            return false, "only castable while channeling"
+        end
+
         if ability.nomounted and IsMounted() then
             return false, "not recommended while mounted"
         end

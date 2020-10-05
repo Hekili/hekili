@@ -1012,6 +1012,7 @@ local newModifiers = {
     interrupt_if = 'bool',
     interrupt_immediate = 'bool',
     moving = 'bool',
+    only_cwc = 'bool',
     strict = 'bool',
     target_if = 'bool',
     use_off_gcd = 'bool',

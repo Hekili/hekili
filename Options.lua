@@ -6311,17 +6311,24 @@ do
                                                     args = {
                                                         use_off_gcd = {
                                                             type = "toggle",
-                                                            name = "Use Off Global Cooldown",
+                                                            name = "Use Off GCD",
                                                             desc = "If checked, this entry can be checked even if the global cooldown (GCD) is active.",
                                                             order = 1,
-                                                            width = 1.5,
+                                                            width = 0.99,
                                                         },
                                                         use_while_casting = {
                                                             type = "toggle",
                                                             name = "Use While Casting",
                                                             desc = "If checked, this entry can be checked even if you are already casting or channeling.",
                                                             order = 2,
-                                                            width = 1.5
+                                                            width = 0.99
+                                                        },
+                                                        only_cwc = {
+                                                            type = "toggle",
+                                                            name = "During Channel",
+                                                            desc = "If checked, this entry can only be used if you are channeling another spell.",
+                                                            order = 3,
+                                                            width = 0.99
                                                         }
                                                     },
                                                     hidden = function ()
