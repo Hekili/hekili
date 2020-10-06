@@ -8,6 +8,13 @@ local class = Hekili.Class
 local state = Hekili.State
 
 
+-- Conduits
+-- [-] ashen_remains
+-- [x] combusting_engine
+-- [-] duplicitous_havoc
+-- [-] infernal_brand
+
+
 if UnitClassBase( 'player' ) == 'WARLOCK' then
     local spec = Hekili:NewSpecialization( 267, true )
 
@@ -534,6 +541,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 applyDebuff( "target", "immolate" )
                 active_dot.immolate = max( active_dot.immolate, true_active_enemies )
+                removeDebuff( "target", "combusting_engine" )                
             end,
         },
 
@@ -623,7 +631,19 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     applyDebuff( "target", "conflagrate" )
                     active_dot.conflagrate = max( active_dot.conflagrate, active_dot.bane_of_havoc )
                 end
+                if conduit.combusting_engine.enabled then
+                    applyDebuff( "target", "combusting_engine" )
+                end
             end,
+
+            auras = {
+                -- Conduit
+                combusting_engine = {
+                    id = 339986,
+                    duration = 30,
+                    max_stack = 1
+                }
+            }
         },
         
 
@@ -842,6 +862,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             start = function ()
                 applyDebuff( "target", "drain_life" )
             end,
+
+            finish = function ()
+                if conduit.accrued_vitality.enabled then applyBuff( "accrued_vitality" ) end
+            end,
         },
 
 
@@ -897,7 +921,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         fel_domination = {
             id = 333889,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return 180 + conduit.fel_celerity.mod * 0.001 end,
             gcd = "spell",
             
             startsCombat = true,
@@ -1037,6 +1061,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 applyDebuff( "target", "immolate" )
                 active_dot.immolate = max( active_dot.immolate, active_dot.bane_of_havoc )
+                removeDebuff( "target", "combusting_engine" )
             end,
         },
 

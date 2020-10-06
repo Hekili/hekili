@@ -8,6 +8,29 @@ local class = Hekili.Class
 local state = Hekili.State
 
 
+-- Conduits
+-- [-] cold_embrace
+-- [-] corrupting_leer
+-- [-] focused_malignancy
+-- [x] rolling_agony
+
+-- Covenants
+-- [x] soul_tithe
+-- [x] catastrophic_origin
+-- [-] prolonged_decimation
+-- [-] soul_eater
+
+-- Endurance
+-- [x] accrued_vitality
+-- [-] diabolic_bloodstone
+-- [-] resolute_barrier
+
+-- Finesse
+-- [x] demonic_momentum
+-- [x] fel_celerity
+-- [-] shade_of_terror
+
+
 if UnitClassBase( 'player' ) == 'WARLOCK' then
     local spec = Hekili:NewSpecialization( 265, true )
 
@@ -90,7 +113,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     spec:RegisterAuras( {
         agony = {
             id = 980,
-            duration = function () return 18 * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+            duration = function () return ( 18 + conduit.rolling_agony.mod * 0.001 ) * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
             tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) * haste end,
             type = "Curse",
             max_stack = function () return ( talent.writhe_in_agony.enabled and 18 or 10 ) end,
@@ -394,6 +417,14 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             duration = 8,
             max_stack = 5,
         },
+
+
+        -- Conduit
+        diabolic_bloodstone = {
+            id = 340563,
+            duration = 8,
+            max_stack = 1
+        }
     } )
 
 
@@ -869,6 +900,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
             handler = function ()
             end,
+
+            -- Conduit in WarlockDemonology.lua
         },
 
 
@@ -928,6 +961,19 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             start = function ()
                 removeBuff( "inevitable_demise" )
             end,
+
+            finish = function ()
+                if conduit.accrued_vitality.enabled then applyBuff( "accrued_vitality" ) end
+            end,
+
+            auras = {
+                -- Conduit
+                accrued_vitality = {
+                    id = 339298,
+                    duration = 10,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1017,7 +1063,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         fel_domination = {
             id = 333889,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return 180 + conduit.fel_celerity.mod * 0.001 end,
             gcd = "spell",
             
             startsCombat = false,
@@ -1545,6 +1591,12 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     duration = 18,
                     max_stack = 1,
                 },
+                -- Conduit
+                soul_tithe = {
+                    id = 340238,
+                    duration = 10,
+                    max_stack = 1
+                }
             },
         },
 
@@ -1629,7 +1681,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             auras = {
                 impending_catastrophe = {
                     id = 322170,
-                    duration = 12,
+                    duration = function () return 12 * ( 1 + conduit.catastrophic_origin.mod * 0.01 ) end,
                     max_stack = 1,
                 },
             }

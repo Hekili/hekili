@@ -10,6 +10,13 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
+-- Conduits
+-- [-] borne_of_blood
+-- [-] carnivorous_stalkers
+-- [-] fel_commando
+-- [x] tyrants_soul
+
+
 if UnitClassBase( "player" ) == "WARLOCK" then
     local spec = Hekili:NewSpecialization( 266, true )
 
@@ -1041,7 +1048,17 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             buff = "demonic_circle",
 
             handler = function ()
+                if conduit.demonic_momentum.enabled then applyBuff( "demonic_momentum" ) end
             end,
+
+            auras = {
+                -- Conduit
+                demonic_momentum = {
+                    id = 339412,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1115,6 +1132,10 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             start = function ()
                 applyDebuff( "drain_life" )
             end,
+
+            finish = function ()
+                if conduit.accrued_vitality.enabled then applyBuff( "accrued_vitality" ) end
+            end,
         },
 
 
@@ -1154,7 +1175,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         fel_domination = {
             id = 333889,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return 180 + conduit.fel_celerity.mod * 0.001 end,
             gcd = "spell",
             
             startsCombat = false,
@@ -1462,6 +1483,16 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 if azerite.baleful_invocation.enabled then gain( 5, "soul_shards" ) end
                 gain( 5, "soul_shards" )
             end,
+
+            auras = {
+                -- Conduit
+                -- Note:  Should set up a queued event for this to start when Tyrant finishes.
+                tyrants_soul = {
+                    id = 339766,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
         },
 
 
