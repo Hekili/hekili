@@ -13,6 +13,30 @@ local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDeb
 local IterateTargets, ActorHasDebuff = ns.iterateTargets, ns.actorHasDebuff
 
 
+-- Conduits
+-- [-] lethal_poisons
+-- [-] maim_mangle
+-- [-] poisoned_katar
+-- [x] wellplaced_steel
+
+-- Covenant
+-- [-] reverberation
+-- [-] slaughter_scars
+-- [-] sudden_fractures
+-- [-] septic_shock
+
+-- Endurance
+-- [x] cloaked_in_shadows
+-- [x] nimble_fingers -- may need to double check which reductions come first.
+-- [-] recuperator
+
+-- Finesse
+-- [x] fade_to_nothing
+-- [x] prepared_for_all
+-- [x] quick_decisions
+-- [x] rushed_setup
+
+
 if UnitClassBase( 'player' ) == 'ROGUE' then
     local spec = Hekili:NewSpecialization( 259 )
 
@@ -851,7 +875,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 40,
+            spend = function () return 40 * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = true,
@@ -929,7 +953,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 30,
             gcd = "spell",
 
-            spend = 30,
+            spend = function () return 20 - conduit.nimble_fingers.mod end,
             spendType = "energy",
 
             startsCombat = false,
@@ -987,7 +1011,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 30,
             gcd = "spell",
 
-            spend = 30,
+            spend = function () return 30 * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = false,
@@ -1112,7 +1136,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 15,
             gcd = "spell",
 
-            spend = 35,
+            spend = function () return 35 - conduit.nimble_fingers.mod end,
             spendType = "energy",
 
             startsCombat = false,
@@ -1176,6 +1200,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             handler = function ()
                 interrupt()
+                
+                if conduit.prepared_for_all.enabled and cooldown.cloak_of_shadows.remains > 0 then
+                    reduceCooldown( "cloak_of_shadows", 2 * conduit.prepared_for_all.mod )
+                end
             end,
         },
 
@@ -1186,7 +1214,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 20,
             gcd = "spell",
 
-            spend = 25,
+            spend = function () return 25 * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = true,
@@ -1357,7 +1385,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 35,
+            spend = function () return 35 * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = true,
@@ -1376,11 +1404,11 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             charges = 1,
             cooldown = function ()
                 if pvptalent.intent_to_kill.enabled and debuff.vendetta.up then return 10 end
-                return 30
+                return 30 * ( 1 - conduit.quick_decisions.mod * 0.01 )
             end,
             recharge = function ()
                 if pvptalent.intent_to_kill.enabled and debuff.vendetta.up then return 10 end
-                return 30
+                return 30 * ( 1 - conduit.quick_decisions.mod * 0.01 )
             end,                
             gcd = "spell",
 
@@ -1410,6 +1438,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 gain( 1, "combo_points" )
                 applyDebuff( "target", "crippling_poison_shiv" )
                 applyDebuff( "target", "shiv" )
+
+                if conduit.wellplaced_steel.enabled and debuff.envenom.up then
+                    debuff.envenom.expires = debuff.envenom.expires + conduit.wellplaced_steel.mod
+                end
             end,
 
             auras = {
@@ -1439,6 +1471,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return stealthed.all, "requires stealth" end,
             handler = function ()
                 applyBuff( "shroud_of_concealment" )
+                if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
             end,
         },
 
@@ -1470,7 +1503,25 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return time == 0 and not buff.stealth.up and not buff.vanish.up, "requires out of combat and not stealthed" end,            
             handler = function ()
                 applyBuff( "stealth" )
+
+                if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
+                if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
             end,
+
+            auras = {
+                -- Conduit
+                cloaked_in_shadows = {
+                    id = 341530,
+                    duration = 3600,
+                    max_stack = 1
+                },
+                -- Conduit
+                fade_to_nothing = {
+                    id = 341533,
+                    duration = 3,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1505,6 +1556,9 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 applyBuff( "vanish" )
                 applyBuff( "stealth" )
+
+                if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end -- ???
+                if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
             end,
         },
 

@@ -10,6 +10,13 @@ local state =  Hekili.State
 local PTR = ns.PTR
 
 
+-- Conduits
+-- [x] deeper_daggers
+-- [x] perforated_veins
+-- [-] planned_execution
+-- [-] stiletto_staccato
+
+
 if UnitClassBase( "player" ) == "ROGUE" then
     local spec = Hekili:NewSpecialization( 261 )
 
@@ -318,13 +325,6 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
 
         -- Legendaries (Shadowlands)
-
-        perforated_veins = {
-            id = 341572,
-            duration = 12,
-            max_stack = 3
-        },
-
         deathly_shadows = {
             id = 341202,
             duration = 15,
@@ -612,7 +612,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             spend = function () 
                 if buff.shot_in_the_dark.up then return 0 end
-                return 40 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
+                return 40 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) * ( 1 - conduit.rushed_setup.mod * 0.01 )
             end,
             spendType = "energy",
 
@@ -673,7 +673,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             toggle = "cooldowns",
 
-            spend = function () return 20 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function () return ( 20 - conduit.nimble_fingers.mod ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
 
             startsCombat = false,
@@ -710,7 +710,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = function () return 30 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function () return 30 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = false,
@@ -759,7 +759,18 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
+
+                if conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
             end,
+
+            auras = {
+                -- Conduit
+                deeper_daggers = {
+                    id = 341550,
+                    duration = 5,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -769,7 +780,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 15,
             gcd = "spell",
 
-            spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function () return ( 35 - conduit.nimble_fingers.mod ) * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
 
             startsCombat = false,
@@ -842,6 +853,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             handler = function ()
                 interrupt()
+                
+                if conduit.prepared_for_all.enabled and cooldown.cloak_of_shadows.remains > 0 then
+                    reduceCooldown( "cloak_of_shadows", 2 * conduit.prepared_for_all.mod )
+                end
             end,
         },
 
@@ -852,7 +867,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 20,
             gcd = "spell",
 
-            spend = function () return 25 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function () return 25 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             toggle = "cooldowns",
@@ -975,7 +990,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function () return 35 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = false,
@@ -1068,6 +1083,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity", nil, 1 ) end
                 if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
+                if conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
             end,
         },
 
@@ -1076,8 +1092,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
             id = 36554,
             cast = 0,
             charges = 2,
-            cooldown = 30,
-            recharge = 30,
+            cooldown = function () return 30 * ( 1 - conduit.quick_decisions.mod * 0.01 ) end,
+            recharge = function () return 30 * ( 1 - conduit.quick_decisions.mod * 0.01 ) end,
             gcd = "off",
 
             startsCombat = false,
@@ -1119,12 +1135,21 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     removeBuff( "premeditation" )
                 end
 
-                if legendary.perforated_veins.enabled then
+                if conduit.perforated_veins.enabled then
                     addStack( "perforated_veins", nil, 1 )
                 end
 
                 applyDebuff( "target", "find_weakness" )
             end,
+
+            auras = {
+                -- Conduit
+                perforated_veins = {
+                    id = 341572,
+                    duration = 12,
+                    max_stack = 3
+                },
+            }
         },
 
 
@@ -1169,6 +1194,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             handler = function ()
                 applyBuff( "shroud_of_concealment" )
+                if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
             end,
         },
 
@@ -1299,6 +1325,9 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if talent.premeditation.enabled then applyBuff( "premeditation" ) end
 
                 emu_stealth_change = query_time
+
+                if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end  
+                if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end              
             end,
 
             copy = { 1784, 115191 }
@@ -1366,6 +1395,9 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     gain( 5, "combo_points" )
                     applyBuff( "deathly_shadows" )
                 end
+
+                if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
+                if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
             end,
         },
 

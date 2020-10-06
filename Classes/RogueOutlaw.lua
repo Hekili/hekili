@@ -11,6 +11,13 @@ local state =  Hekili.State
 local PTR = ns.PTR
 
 
+-- Conduits
+-- [-] ambidexterity
+-- [-] count_the_odds
+-- [-] sleight_of_hand
+-- [-] triple_threat
+
+
 if UnitClassBase( "player" ) == "ROGUE" then
     local spec = Hekili:NewSpecialization( 260 )
 
@@ -608,7 +615,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return talent.dirty_tricks.enabled and 0 or 40 end,
+            spend = function () return ( talent.dirty_tricks.enabled and 0 or 40 ) * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = true,
@@ -654,7 +661,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = 20,
+            spend = function () return 20 - conduit.nimble_fingers.mod end,
             spendType = "energy",
 
             startsCombat = false,
@@ -717,7 +724,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = 30,
+            spend = function () return 30 * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = false,
@@ -773,7 +780,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 15,
             gcd = "spell",
 
-            spend = 35,
+            spend = function () return 35 - conduit.nimble_fingers.mod end,
             spendType = "energy",
 
             startsCombat = false,
@@ -830,7 +837,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
         grappling_hook = {
             id = 195457,
             cast = 0,
-            cooldown = function () return 60 - ( talent.retractable_hook.enabled and 30 or 0 ) end,
+            cooldown = function () return ( 1 - conduit.quick_decisions.mod * 0.01 ) * ( talent.retractable_hook.enabled and 30 or 60 ) end,
             gcd = "spell",
 
             startsCombat = false,
@@ -877,6 +884,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             handler = function ()
                 interrupt()
+                
+                if conduit.prepared_for_all.enabled and cooldown.cloak_of_shadows.remains > 0 then
+                    reduceCooldown( "cloak_of_shadows", 2 * conduit.prepared_for_all.mod )
+                end
             end,
         },
 
@@ -887,7 +898,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 20,
             gcd = "spell",
             
-            spend = 25,
+            spend = function () return 25 * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
             
             startsCombat = true,
@@ -1071,7 +1082,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return 35 - ( talent.dirty_tricks.enabled and 35 or 0 ) end,
+            spend = function () return ( talent.dirty_tricks.enabled and 0 or 35 ) * ( 1 - conduit.rushed_setup.mod * 0.01 ) end,
             spendType = "energy",
 
             startsCombat = false,
@@ -1112,6 +1123,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             handler = function ()
                 applyBuff( "shroud_of_concealment", 15 )
+                if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
             end,
         },
 
@@ -1200,6 +1212,9 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             handler = function ()
                 applyBuff( "stealth" )
+
+                if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
+                if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
             end,
         },
 
@@ -1235,6 +1250,9 @@ if UnitClassBase( "player" ) == "ROGUE" then
             handler = function ()
                 applyBuff( "vanish", 3 )
                 applyBuff( "stealth" )
+
+                if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
+                if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
             end,
         },
 
