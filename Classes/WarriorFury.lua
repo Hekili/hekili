@@ -10,6 +10,12 @@ local state = Hekili.State
 local IsActiveSpell = ns.IsActiveSpell
 
 
+-- Conduits
+-- [x] depths_of_insanity
+-- [-] hack_and_slash
+-- [-] vicious_contempt
+
+
 if UnitClassBase( 'player' ) == 'WARRIOR' then
     local spec = Hekili:NewSpecialization( 72 )
 
@@ -202,12 +208,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         rallying_cry = {
             id = 97463,
-            duration = function () return azerite.moment_of_glory.enabled and 12 or 10 end,
+            duration = function () return ( azerite.moment_of_glory.enabled and 12 or 10 ) * ( 1 + conduit.inspiring_presence.mod * 0.01 ) end,
             max_stack = 1,
         },
         recklessness = {
             id = 1719,
-            duration = 12,
+            duration = function () return 12 * ( 1 + conduit.depths_of_insanity.mod * 0.01 ) end,
             max_stack = 1,
         },
         siegebreaker = {
@@ -581,7 +587,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         enraged_regeneration = {
             id = 184364,
             cast = 0,
-            cooldown = 120,
+            cooldown = function () return 120 - conduit.stalwart_guardian.mod * 0.001 end,
             gcd = "spell",
 
             toggle = "defensives",
@@ -674,6 +680,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 gain( health.max * 0.3, "health" )
                 removeStack( "whirlwind" )
+                if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
             end,
         },
 
@@ -719,7 +726,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         piercing_howl = {
             id = 12323,
             cast = 0,
-            cooldown = 30,
+            cooldown = function () return 30 + conduit.disturb_the_peace.mod * 0.001 end,
             gcd = "spell",
 
             startsCombat = true,
@@ -961,6 +968,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 removeBuff( "victorious" )
                 removeStack( "whirlwind" )
+                if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
             end,
         },
 

@@ -8,6 +8,14 @@ local class = Hekili.Class
 local state = Hekili.State
 
 
+-- Conduits
+-- [x] unnerving_focus
+-- [x] show_of_force
+
+-- Prot Endurance
+-- [-] brutal_vitality
+
+
 if UnitClassBase( 'player' ) == 'WARRIOR' then
     local spec = Hekili:NewSpecialization( 73 )
 
@@ -162,7 +170,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         rallying_cry = {
             id = 97463,
-            duration = 10,
+            duration = function () return 10 * ( 1 + conduit.inspiring_presence.mod * 0.01 ) end,
             max_stack = 1,
         },
         ravager = {
@@ -341,7 +349,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
             gcd = "off",
 
-            spend = -30,
+            spend = function () return -30 * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
             spendType = "rage",
 
             toggle = "cooldowns",
@@ -419,7 +427,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 20,
             gcd = "spell",
 
-            spend = -20,
+            spend = function () return -20 * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
             spendType = "rage",
             
             startsCombat = true,
@@ -431,13 +439,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyDebuff( "target", "charge" )
             end,
         },
+
+
         demoralizing_shout = {
             id = 1160,
             cast = 0,
             cooldown = 45,
             gcd = "spell",
 
-            spend = function () return talent.booming_voice.enabled and -40 or 0 end,
+            spend = function () return ( talent.booming_voice.enabled and -40 or 0 ) * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
             spendType = "rage",
 
             startsCombat = true,
@@ -475,7 +485,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 35,
             gcd = "spell",
 
-            spend = -20,
+            spend = function () return -20 * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
             spendType = "rage",
 
             startsCombat = true,
@@ -526,7 +536,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 6544,
             cast = 0,
             cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
-                gcd = "spell",
+            gcd = "spell",
 
             startsCombat = true,
             texture = 236171,
@@ -597,6 +607,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 gain( health.max * 0.2, "health" )
+                if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
             end,
         },
 
@@ -654,7 +665,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 if talent.bolster.enabled then
                     applyBuff( "shield_block", buff.last_stand.duration )
                 end
+
+                if conduit.unnerving_focus.enabled then applyBuff( "unnerving_focus" ) end
             end,
+
+            auras = {
+                -- Conduit
+                unnerving_focus = {
+                    id = 337155,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -743,7 +765,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 removeBuff( "revenge" )
+                if conduit.show_of_force.enabled then applyBuff( "show_of_force" ) end
             end,
+
+            auras = {
+                -- Conduit
+                show_of_force = {
+                    id = 339825,
+                    duration = 12,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -780,7 +812,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             hasteCD = true,
             gcd = "spell",
 
-            spend = function () return talent.heavy_repercussions.enabled and -18 or -15 end,
+            spend = function () return ( talent.heavy_repercussions.enabled and -18 or -15 ) * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
             spendType = "rage",
 
             startsCombat = true,
@@ -799,7 +831,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         shield_wall = {
             id = 871,
             cast = 0,
-            cooldown = 240,
+            cooldown = function () return 240 - conduit.stalwart_guardian.mod * 0.002 end,
             gcd = "spell",
 
             toggle = "defensives",
@@ -817,7 +849,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         shockwave = {
             id = 46968,
             cast = 0,
-            cooldown = function () return ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40 end,
+            cooldown = function () return ( ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40 ) + conduit.disturb_the_peace.mod * 0.001 end,
             gcd = "spell",
 
             startsCombat = true,
@@ -891,7 +923,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = function () return haste * ( ( buff.avatar.up and talent.unstoppable_force.enabled ) and 3 or 6 ) end,
             gcd = "spell",
 
-            spend = -5,
+            spend = function () return -5 * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
             spendType = "rage",
 
             startsCombat = true,
@@ -900,6 +932,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 applyDebuff( "target", "thunder_clap" )
                 active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
+                removeBuff( "show_of_force" )
             end,
         },
 
@@ -918,6 +951,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 removeBuff( "victorious" )
                 gain( 0.2 * health.max, "health" )
+                if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
             end,
         },
     } )

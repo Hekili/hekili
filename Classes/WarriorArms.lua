@@ -11,6 +11,30 @@ local state = Hekili.State
 local PTR = ns.PTR
 
 
+-- Conduits
+--[-] crash_the_ramparts
+--[-] merciless_bonegrinder
+--[-] mortal_combo
+--[x] ashen_juggernaut
+
+-- Covenants
+--[x] piercing_verdict
+--[-] harrowing_punishment
+--[x] veterans_repute
+--[x] destructive_reverberations
+
+-- Endurance
+--[-] iron_maiden
+--[x] indelible_victory
+--[x] stalwart_guardian
+
+-- Finesse
+--[-] cacophonous_roar
+--[x] disturb_the_peace
+--[x] inspiring_presence
+--[-] safeguard
+
+
 if UnitClassBase( 'player' ) == 'WARRIOR' then
     local spec = Hekili:NewSpecialization( 71 )
 
@@ -187,7 +211,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         rallying_cry = {
             id = 97463,
-            duration = 10,
+            duration = function () return 10 * ( 1 + conduit.inspiring_presence.mod * 0.01 ) end,
             max_stack = 1,
         },
         --[[ ravager = {
@@ -629,7 +653,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         die_by_the_sword = {
             id = 118038,
             cast = 0,
-            cooldown = 180,
+            cooldown = function () return 180 - conduit.stalwart_guardian.mod * 0.001 end,
             gcd = "spell",
 
             startsCombat = false,
@@ -672,9 +696,20 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 if buff.deadly_calm.up then removeStack( "deadly_calm" )
                 elseif buff.stone_heart.up then removeBuff( "stone_heart" )
                 else removeBuff( "sudden_death" ) end
+
+                if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
             end,
 
-            copy = { 163201, 281000, 281000 }
+            copy = { 163201, 281000, 281000 },
+
+            auras = {
+                -- Conduit
+                ashen_juggernaut = {
+                    id = 335234,
+                    duration = 8,
+                    max_stack = function () return max( 6, conduit.ashen_juggernaut.mod ) end
+                }
+            }
         },
 
 
@@ -771,7 +806,17 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 removeBuff( "victorious" )
                 if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
                 if talent.collateral_damage.enabled and active_enemies > 1 then gain( 2, "rage" ) end
+                if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
             end,
+
+            auras = {
+                -- Conduit
+                indelible_victory = {
+                    id = 336642,
+                    duration = 8,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1105,6 +1150,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 removeBuff( "victorious" )
+                if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
             end,
         },
 
@@ -1164,7 +1210,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = 60,
             gcd = "spell",
 
-            spend = -25,
+            spend = function () return -25 * ( 1 + conduit.piercing_verdict.mod * 0.01 ) end,
             spendType = "rage",
 
             startsCombat = true,
@@ -1201,6 +1247,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "conquerors_frenzy" )
+                if conduit.veterans_repute.enabled then
+                    applyBuff( "veterans_repute" )
+                    addStack( "glory", nil, 5 )
+                end
                 rage_since_banner = 0
             end,
 
@@ -1214,6 +1264,12 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     id = 325787,
                     duration = 30,
                     max_stack = 30
+                },
+                -- Conduit
+                veterans_repute = {
+                    id = 339267,
+                    duration = 30,
+                    max_stack = 1
                 }
             }
         },
@@ -1222,7 +1278,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         ancient_aftershock = {
             id = 325886,
             cast = 0,
-            cooldown = 90,
+            cooldown = function () return 90 - conduit.destructive_reverberations.mod * 0.001 end,
             gcd = "spell",
 
             startsCombat = true,
@@ -1280,6 +1336,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 end
 
                 removeBuff( "sudden_death" )
+
+                if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
             end,
 
             auras = {
