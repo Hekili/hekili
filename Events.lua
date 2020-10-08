@@ -1578,8 +1578,17 @@ do
 end
 
 
+local last_combat, combat_ended = 0, 0
+local COMBAT_RESUME_TIME = 5
+
 RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
-    state.combat = GetTime() - 0.01
+    local t = GetTime()
+
+    if t - combat_ended <= COMBAT_RESUME_TIME then
+        state.combat = last_combat
+    else
+        state.combat = GetTime() - 0.01
+    end
 
     Hekili.HasSnapped = false -- some would disagree.
     Hekili:ForceUpdate( event ) -- Force update on entering combat since OOC refresh can be very slow (0.5s).
@@ -1587,6 +1596,9 @@ end )
 
 
 RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
+    last_combat = state.combat
+    combat_ended = GetTime()
+
     state.combat = 0
 
     state.swings.mh_actual = 0
