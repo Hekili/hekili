@@ -1389,6 +1389,101 @@ do
         [345594] = { "pyroclastic_shock", { 15, 16.5, 18, 19.5, 21, 22.5, 24, 25.5, 27, 28.5, 30, 31.5, 33, 34.5, 36 }, },
     }
 
+    local soulbinds = {
+        [320658] = "stay_on_the_move",                   -- Niya
+        [320659] = "niyas_tools_burrs",                  -- Niya
+        [320660] = "niyas_tools_poison",                 -- Niya
+        [320662] = "niyas_tools_herbs",                  -- Niya
+        [320668] = "natures_splendor",                   -- Niya
+        [320687] = "swift_patrol",                       -- Niya
+        [322721] = "grove_invigoration",                 -- Niya
+        [342270] = "run_without_tiring",                 -- Niya
+        [319191] = "field_of_blossoms",                  -- Dreamweaver
+        [319210] = "social_butterfly",                   -- Dreamweaver
+        [319211] = "soothing_voice",                     -- Dreamweaver
+        [319213] = "empowered_chrysalis",                -- Dreamweaver
+        [319214] = "faerie_dust",                        -- Dreamweaver
+        [319216] = "somnambulist",                       -- Dreamweaver
+        [319217] = "podtender",                          -- Dreamweaver
+        [319973] = "built_for_war",                      -- General Draven
+        [319978] = "enduring_gloom",                     -- General Draven
+        [319982] = "move_as_one",                        -- General Draven
+        [332753] = "superior_tactics",                   -- General Draven
+        [332754] = "hold_your_ground",                   -- General Draven
+        [332755] = "unbreakable_body",                   -- General Draven
+        [332756] = "expedition_leader",                  -- General Draven
+        [340159] = "service_in_stone",                   -- General Draven
+        [323074] = "volatile_solvent",                   -- Plague Deviser Marileth
+        [323079] = "kevins_keyring",                     -- Plague Deviser Marileth
+        [323081] = "plagueborn_cleansing_slime",         -- Plague Deviser Marileth
+        [323089] = "travel_with_bloop",                  -- Plague Deviser Marileth
+        [323090] = "plagueys_preemptive_strike",         -- Plague Deviser Marileth
+        [323091] = "oozs_frictionless_coating",          -- Plague Deviser Marileth
+        [323095] = "ultimate_form",                      -- Plague Deviser Marileth
+        [323916] = "sulfuric_emission",                  -- Emeni
+        [323918] = "gristled_toes",                      -- Emeni
+        [323919] = "gnashing_chompers",                  -- Emeni
+        [323921] = "emenis_magnificent_skin",            -- Emeni
+        [324440] = "cartilaginous_legs",                 -- Emeni
+        [324441] = "hearth_kidneystone",                 -- Emeni
+        [341650] = "emenis_ambulatory_flesh",            -- Emeni
+        [342156] = "lead_by_example",                    -- Emeni
+        [325065] = "wild_hunts_charge",                  -- Korayn
+        [325066] = "wild_hunt_tactics",                  -- Korayn
+        [325067] = "horn_of_the_wild_hunt",              -- Korayn
+        [325068] = "face_your_foes",                     -- Korayn
+        [325069] = "first_strike",                       -- Korayn
+        [325072] = "vorkai_sharpening_techniques",       -- Korayn
+        [325073] = "get_in_formation",                   -- Korayn
+        [325601] = "hold_the_line",                      -- Korayn
+        [328257] = "let_go_of_the_past",                 -- Pelagos
+        [328261] = "focusing_mantra",                    -- Pelagos
+        [328263] = "cleansed_vestments",                 -- Pelagos
+        [328265] = "bond_of_friendship",                 -- Pelagos
+        [328266] = "combat_meditation",                  -- Pelagos
+        [329777] = "phial_of_patience",                  -- Pelagos
+        [329786] = "road_of_trials",                     -- Pelagos
+        [331576] = "agent_of_chaos",                     -- Nadija the Mistblade
+        [331577] = "fancy_footwork",                     -- Nadija the Mistblade
+        [331579] = "friends_in_low_places",              -- Nadija the Mistblade
+        [331580] = "exacting_preparation",               -- Nadija the Mistblade
+        [331582] = "familiar_predicaments",              -- Nadija the Mistblade
+        [331584] = "dauntless_duelist",                  -- Nadija the Mistblade
+        [331586] = "thrill_seeker",                      -- Nadija the Mistblade
+        [319983] = "wasteland_propriety",                -- Theotar the Mad Duke
+        [336140] = "watch_the_shoes!",                   -- Theotar the Mad Duke
+        [336147] = "leisurely_gait",                     -- Theotar the Mad Duke
+        [336184] = "exquisite_ingredients",              -- Theotar the Mad Duke
+        [336239] = "soothing_shade",                     -- Theotar the Mad Duke
+        [336243] = "refined_palate",                     -- Theotar the Mad Duke
+        [336245] = "token_of_appreciation",              -- Theotar the Mad Duke
+        [336247] = "life_of_the_party",                  -- Theotar the Mad Duke
+        [326504] = "serrated_spaulders",                 -- Bonesmith Heirmir
+        [326507] = "resourceful_fleshcrafting",          -- Bonesmith Heirmir
+        [326509] = "heirmirs_arsenal_ravenous_pendant",  -- Bonesmith Heirmir
+        [326511] = "heirmirs_arsenal_gorestompers",      -- Bonesmith Heirmir
+        [326512] = "runeforged_spurs",                   -- Bonesmith Heirmir
+        [326513] = "bonesmiths_satchel",                 -- Bonesmith Heirmir
+        [326514] = "forgeborne_reveries",                -- Bonesmith Heirmir
+        [326572] = "heirmirs_arsenal_marrowed_gemstone", -- Bonesmith Heirmir
+        [328258] = "ever_forward",                       -- Kleia
+        [329776] = "ascendant_phial",                    -- Kleia
+        [329778] = "pointed_courage",                    -- Kleia
+        [329779] = "bearers_pursuit",                    -- Kleia
+        [329781] = "resonant_accolades",                 -- Kleia
+        [329784] = "cleansing_rites",                    -- Kleia
+        [329791] = "valiant_strikes",                    -- Kleia
+        [334066] = "mentorship",                         -- Kleia
+        [331609] = "forgelite_filter",                   -- Forgelite Prime Mikanikos
+        [331610] = "charged_additive",                   -- Forgelite Prime Mikanikos
+        [331611] = "soulsteel_clamps",                   -- Forgelite Prime Mikanikos
+        [331612] = "sparkling_driftglobe_core",          -- Forgelite Prime Mikanikos
+        [331725] = "resilient_plumage",                  -- Forgelite Prime Mikanikos
+        [331726] = "regenerating_materials",             -- Forgelite Prime Mikanikos
+        [333935] = "hammer_of_genesis",                  -- Forgelite Prime Mikanikos
+        [333950] = "brons_call_to_action",               -- Forgelite Prime Mikanikos
+    }
+
     local soulbindEvents = {
         "SOULBIND_ACTIVATED",
         "SOULBIND_CONDUIT_INSTALLED",
@@ -1409,6 +1504,10 @@ do
             v.mod = 0
         end
 
+        for k, v in pairs( state.soulbind ) do
+            v.rank = 0
+        end
+
         local found = false
 
         local soulbind = GetActiveSoulbindID()
@@ -1419,12 +1518,10 @@ do
 
         for i, node in ipairs( souldata.tree.nodes ) do
             if node.conduitID and node.conduitRank then
-                local spellID = GetConduitSpellID( node.conduitID, node.conduitRank )
+                if node.state == Enum.SoulbindNodeState.Selected and node.spellID > 0 then
+                    local spellID = GetConduitSpellID( node.conduitID, node.conduitRank )
 
-                if node.state == Enum.SoulbindNodeState.Selected and spellID > 0 then
-                    if not conduits[ spellID ] then
-                        Hekili:Error( "Unknown conduit spellID '%d' (%d, %d).", spellID, node.conduitID, node.conduitRank )
-                    else
+                    if conduits[ spellID ] then
                         found = true
 
                         local data = conduits[ spellID ]
@@ -1439,6 +1536,15 @@ do
                         conduit.mod = data[ 2 ][ node.conduitRank ]
 
                         state.conduit[ key ] = conduit
+                    
+                    -- This is just soulbind data.
+                    elseif soulbinds[ node.spellID ] then
+                        local key = soulbinds[ node.spellID ]
+
+                        local soulbind = rawget( state.soulbind, key ) or {}
+                        soulbind.rank = 1
+
+                        state.soulbind[ key ] = soulbind
                     end
                 end
             end

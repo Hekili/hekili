@@ -79,6 +79,7 @@ state.cooldown = {}
 state.corruptions = {} -- TODO: REMOVE
 state.legendary = {}
 state.runeforge = state.legendary -- Different APLs use runeforge.X.equipped vs. legendary.X.enabled.
+state.soulbind = {}
 --[[ state.health = {
     resource = "health",
     actual = 10000,
@@ -2491,9 +2492,14 @@ local mt_default_cooldown = {
         local profile = Hekili.DB.profile
         local id = ability.id
 
-        if ability and ability.item then
-            GetCooldown = _G.GetItemCooldown
-            id = ability.itemCd or ability.item
+        if ability then
+            if ability.item then
+                GetCooldown = _G.GetItemCooldown
+                id = ability.itemCd or ability.item
+            elseif ability.funcs.cooldown_special then
+                GetCooldown = ability.funcs.cooldown_special
+                id = 999999
+            end
         end
 
         local raw = false
@@ -3467,6 +3473,9 @@ do
     setmetatable( state.conduit, mt_generic_traits )
     state.conduit.no_trait = { rank = 0, mod = 0 }
 
+    setmetatable( state.soulbind, mt_generic_traits )
+    state.soulbind.no_trait = { rank = 0 }
+
     setmetatable( state.corruptions, mt_generic_traits )
     state.corruptions.no_trait = { rank = 0 }
 
@@ -4388,6 +4397,12 @@ local mt_default_action = {
             end
 
             return state:InFlightRemains( t.action )
+        
+        elseif k == "channeling" then
+            return state:IsChanneling( t.action )
+        
+        elseif k == "channel_remains" then
+            return state:IsChanneling( t.action ) and state:QueuedCastRemains( t.action ) or 0
 
         elseif k == "executing" then
             return state:IsCasting( t.action ) or ( state.prev[ 1 ][ t.action ] and state.gcd.remains > 0 )
