@@ -404,6 +404,7 @@ do
         { "^full_recharge_time>=?(.-)$",            "full_recharge_time-%1" },
         
         { "^!(action%.[a-z0-9]+)%.executing$",      "%1.execute_remains" },
+        { "^!(action%.[a-z0-9]+)%.channeling$",     "%1.channel_remains" },
         { "^(.-time_to_die)<=?(.-)$",               "%1-%2" },
         { "^(.-)%.time_to_(.-)<=?(.-)$",            "%1.time_to_%2-%3" },
 
@@ -452,6 +453,7 @@ do
         ["remains$"] = true,
         ["ticks_remain$"] = true,
         ["execute_remains$"] = true,
+        ["channel_remains$"] = true,
         ["^time_to_hpg$"] = true,
         -- ["time_to_%d+$"] = true,
         -- ["deficit$"] = true,

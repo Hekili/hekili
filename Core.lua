@@ -1046,6 +1046,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                                 actID = 0
                                                             end
                                                         end
+                                                    
+                                                    elseif action == "cancel_action" then
+                                                        if state:IsChanneling() then state.canBreakChannel = true end
 
                                                     elseif action == 'pool_resource' then
                                                         if state.args.for_next == 1 and false then

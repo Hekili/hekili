@@ -1957,6 +1957,13 @@ all:RegisterAbilities( {
         gcd = 'off',
     },
 
+    cancel_action = {
+        name = "|cff00ccff[Cancel Action]|r",
+        cast = 0,
+        cooldown = 0,
+        gcd = "off",        
+    },
+
     variable = {
         name = '|cff00ccff[Variable]|r',
         cast = 0,
