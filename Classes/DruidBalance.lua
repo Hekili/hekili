@@ -171,7 +171,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
         eclipse_lunar = {
             id = 48518,
-            duration = 16,
+            duration = 10,
             max_stack = 1,
             meta = {
                 empowered = function( t ) return t.up and t.empowerTime >= t.applied end,
@@ -179,7 +179,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
         eclipse_solar = {
             id = 48517,
-            duration = 16,
+            duration = 10,
             max_stack = 1,
             meta = {
                 empowered = function( t ) return t.up and t.empowerTime >= t.applied end,
@@ -1191,6 +1191,14 @@ if UnitClassBase( "player" ) == "DRUID" then
             handler = function ()
                 active_dot.innervate = 1
             end,
+
+            auras = {
+                innervate = {
+                    id = 29166,
+                    duration = 10,
+                    max_stack = 1
+                }
+            }
         },
 
 
