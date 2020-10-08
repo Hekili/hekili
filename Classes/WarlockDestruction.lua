@@ -1031,7 +1031,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         howl_of_terror = {
             id = 5484,
-            cast = 1.5,
+            cast = 0,
             cooldown = 40,
             gcd = "spell",
             
