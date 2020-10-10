@@ -945,7 +945,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 970854,
 
-            talents = "ravager",
+            talent = "ravager",
             toggle = "cooldowns",
 
             handler = function ()
