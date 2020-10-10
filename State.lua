@@ -5139,8 +5139,8 @@ function state:RunHandler( key, noStart )
 
         -- Assume MH swing at combat start and OH swing half a swing later?
         if self.target.distance < 8 then
-            if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = self.false_start end
-            if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = self.false_start + ( self.offhand_speed / 2 ) end
+            if self.swings.mainhand_speed > 0 and self.nextMH == 0 then self.swings.mh_pseudo = 0.01 + self.query_time - self.swings.mainhand_speed end
+            if self.swings.offhand_speed > 0 and self.nextOH == 0 then self.swings.oh_pseudo = 0.01 + self.query_time - ( self.offhand_speed / 2 ) end
         end
     end
 
