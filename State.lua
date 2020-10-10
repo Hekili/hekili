@@ -470,6 +470,7 @@ state.UnitChannelInfo = UnitChannelInfo
 state.UnitClassification = UnitClassification
 state.UnitDebuff = UnitDebuff
 state.UnitExists = UnitExists
+state.UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
 state.UnitHealth = UnitHealth
 state.UnitHealthMax = UnitHealthMax
 state.UnitName = UnitName
@@ -5844,6 +5845,13 @@ function state:IsKnown( sID, notoggle )
     end
 
     if sID < 0 then
+        if ability.known ~= nil then
+            if type( ability.known ) == 'number' then
+                return IsUsableItem( ability.known ), "IsUsableItem"
+            end
+            return ability.known
+        end
+
         if ability.item then
             return IsUsableItem( ability.item ), "IsUsableItem"
         end
@@ -5885,7 +5893,7 @@ function state:IsKnown( sID, notoggle )
         return false, "equipment [ " .. ability.equipped .. " ] missing"
     end
 
-    if ability.item and not state.equipped[ ability.item ] then
+    if ability.item and not ability.bagItem and not state.equipped[ ability.item ] then
         return false, "item [ " .. ability.item .. " ] missing"
     end
 
@@ -5974,7 +5982,7 @@ do
         end
 
         if ability.item then
-            if not self.equipped[ ability.item ] then
+            if not ability.bagItem and not self.equipped[ ability.item ] then
                 return false, "item not equipped"
             end
         else
