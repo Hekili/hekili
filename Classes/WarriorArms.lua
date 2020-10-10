@@ -805,7 +805,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 removeBuff( "victorious" )
                 if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
-                if talent.collateral_damage.enabled and active_enemies > 1 then gain( 2, "rage" ) end
                 if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
             end,
 
@@ -1199,6 +1198,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
                 if talent.fervor_of_battle.enabled and buff.crushing_assault.up then removeBuff( "crushing_assault" ) end
+                removeBuff( "collateral_damage" )
             end,
         },
 
