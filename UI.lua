@@ -1871,6 +1871,12 @@ do
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
 
+        if _G["ElvUI"] and ( ( id == 1 and conf.elvuiCooldown ) or ( id > 1 and conf.queue.elvuiCooldown ) ) and not b.Cooldown.elvRegistered then
+            local E = unpack( ElvUI )            
+            E:RegisterCooldown( b.Cooldown )
+            b.Cooldown.elvRegistered = true
+        end
+
         -- Backdrop (for borders)
         b.Backdrop = b.Backdrop or Mixin( CreateFrame("Frame", bName .. "_Backdrop", b ), BackdropTemplateMixin )
         b.Backdrop:ClearAllPoints()

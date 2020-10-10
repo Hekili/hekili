@@ -279,15 +279,13 @@ local displayTemplate = {
     primaryWidth = 50,
     primaryHeight = 50,
 
+    elvuiCooldown = false,
+
     keepAspectRatio = true,
     zoom = 30,
 
     frameStrata = "LOW",
     frameLevel = 10,
-
-    --[[ font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
-    fontSize = 12,
-    fontStyle = "OUTLINE", ]]
 
     queue = {
         anchor = 'RIGHT',
@@ -302,6 +300,8 @@ local displayTemplate = {
         offsetX = 5,
         offsetY = 0,
         spacing = 5,
+
+        elvuiCooldown = false,
 
         --[[ font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
         fontSize = 12,
@@ -407,6 +407,7 @@ local displayTemplate = {
         type = "__NA",
         fade = false,
         extend = true,
+        elvuiCooldowns = false,
 
         font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
         fontSize = 12,
@@ -1087,6 +1088,15 @@ do
                                 hidden = function () return name == "Primary" or name == "AOE" or name == "Defensives" or name == "Interrupts" end
                             },
 
+                            elvuiCooldown = {
+                                type = "toggle",
+                                name = "Apply ElvUI Cooldown Style",
+                                desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
+                                width = "full",
+                                order = 0.51,
+                                hidden = function () return _G["ElvUI"] == nil end,
+                            },
+
                             numIcons = {
                                 type = 'range',
                                 name = "Icons Shown",
@@ -1290,6 +1300,15 @@ do
                         end,
 
                         args = {
+                            elvuiCooldown = {
+                                type = "toggle",
+                                name = "Apply ElvUI Cooldown Style",
+                                desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
+                                width = "full",
+                                order = 0.5,
+                                hidden = function () return _G["ElvUI"] == nil end,
+                            },
+
                             anchor = {
                                 type = 'select',
                                 name = 'Anchor To',
