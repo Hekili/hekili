@@ -2008,6 +2008,9 @@ all:RegisterAbilities( {
         cooldown = function () return time > 0 and 3600 or 60 end,
         gcd = "off",
 
+        item = 5512,
+        bagItem = true,
+
         startsCombat = false,
         texture = 538745,
 
@@ -2108,6 +2111,9 @@ do
             cast = 0,
             cooldown = function () return time > 0 and 3600 or 60 end,
             gcd = "off",
+
+            item = 177278,
+            bagItem = true,
         
             startsCombat = false,
             texture = 463534,
@@ -2131,7 +2137,32 @@ do
                 removeBuff( "dispellable_curse" )
                 removeBuff( "dispellable_bleed" ) -- TODO: Bleeds?
             end,
-        },            
+        },
+
+        fleshcraft = {
+            id = 324631,
+            cast = function () return 4 * haste end,            
+            channeled = true,
+            cooldown = 120,
+            gcd = "spell",
+            
+            toggle = "essences",
+
+            startsCombat = false,
+            texture = 3586267,
+            
+            start = function ()
+                applyBuff( "fleshcraft" )
+            end,
+
+            auras = {
+                fleshcraft = {
+                    id = 324867,
+                    duration = 120,
+                    max_stack = 1
+                }
+            }
+        },
     } )
 
     all:RegisterAuras( {
