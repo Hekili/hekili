@@ -5899,7 +5899,7 @@ function state:IsKnown( sID, notoggle )
 
     if ability.known ~= nil then
         if type( ability.known ) == 'number' then
-            return IsPlayerSpell( ability.known ), "IsPlayerSpell"
+            return IsPlayerSpell( ability.known ) or IsSpellKnownOrOverridesKnown( ability.known ) or IsSpellKnown( ability.known, true )
         end
         return ability.known
     end
