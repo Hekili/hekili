@@ -929,6 +929,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 applyBuff( "arcane_power" )
+                if talent.rune_of_power.enabled then applyBuff( "rune_of_power" ) end
                 start_burn_phase()
             end,
         },
@@ -973,7 +974,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             spend = 0.18,
             spendType = "mana",
             
-            startsCombat = true,
+            startsCombat = false,
             texture = 134132,
             
             usable = function ()
@@ -989,12 +990,18 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
         mana_gem = {
             name = "|cff00ccff[Mana Gem]|r",
+            known = function ()
+                return IsUsableItem( 36799 ) or state.fake_mana_gem
+            end,
             cast = 0,
             cooldown = 120,
             gcd = "off",
     
             startsCombat = false,
             texture = 134132,
+
+            item = 36799,
+            bagItem = true,
     
             usable = function ()
                 if GetItemCount( 36799 ) == 0 and not fake_mana_gem then return false, "requires mana_gem in bags" end
