@@ -1442,7 +1442,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     state.canBreakChannel = false
                 end
 
-                local casting, shouldCheck = state:IsCasting(), true
+                local casting, shouldCheck = state:IsCasting(), false
 
                 if ( casting or ( channeling and not shouldBreak ) ) and state.spec.canCastWhileCasting then
                     shouldCheck = false
