@@ -55,7 +55,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             stop = function () return state.time == 0 or state.swings.mainhand == 0 end,
             value = function ()
-                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * state.swings.mainhand_speed / state.haste
+                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * state.swings.mainhand_speed
             end,
         }
     } )
@@ -1322,7 +1322,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             usable = function ()
                 if buff.sudden_death.up then return true end
-                return target.health_pct < 20 or target.health_pct > 80, "requires >80% or <20% health"
+                return target.health_pct < ( talent.massacre.enabled and 35 or 20 ) or target.health_pct > 80, "requires > 80% or < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
             end,
 
             handler = function ()
