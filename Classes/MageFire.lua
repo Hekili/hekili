@@ -869,11 +869,12 @@ if UnitClassBase( "player" ) == "MAGE" then
             velocity = 50,
 
             impact = function ()
-                if hot_streak( true ) and talent.kindling.enabled then
+                if hot_streak( firestarter.active ) and talent.kindling.enabled then
                     setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) )
                 end
 
                 applyDebuff( "target", "ignite" )
+                if active_dot.ignite < active_enemies then active_dot.ignite = active_enemies end
             end,
         },
 
