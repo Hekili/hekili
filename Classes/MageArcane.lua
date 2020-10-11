@@ -373,30 +373,114 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 10,
             max_stack = 2
         },
-
-
-        -- Legendaries
-        disciplinary_command = {
-            id = 327371,
-            duration = 20,
-        },
-
-        disciplinary_command_arcane = {
-            duration = 10,
-            max_stack = 1,
-        },
-
-        disciplinary_command_frost = {
-            duration = 10,
-            max_stack = 1,
-        },
-
-        disciplinary_command_fire = {
-            duration = 10,
-            max_stack = 1,
-        }
-
     } )
+
+
+    do
+        -- Builds Disciplinary Command; written so that it can be ported to the other two Mage specs.
+
+        function Hekili:EmbedDisciplinaryCommand( x )
+            local file_id = x.id
+
+            x:RegisterAuras( {
+                disciplinary_command = {
+                    id = 327371,
+                    duration = 20,
+                },
+
+                disciplinary_command_arcane = {
+                    duration = 10,
+                    max_stack = 1,
+                },
+
+                disciplinary_command_frost = {
+                    duration = 10,
+                    max_stack = 1,
+                },
+
+                disciplinary_command_fire = {
+                    duration = 10,
+                    max_stack = 1,
+                }
+            } )
+
+            local __last_arcane, __last_fire, __last_frost, __last_disciplinary_command = 0, 0, 0, 0
+
+            x:RegisterHook( "reset_precast", function ()
+                if now - __last_arcane < 10 then applyBuff( "disciplinary_command_arcane", 10 - ( now - __last_arcane ) ) end
+                if now - __last_fire   < 10 then applyBuff( "disciplinary_command_fire",   10 - ( now - __last_fire ) ) end
+                if now - __last_frost  < 10 then applyBuff( "disciplinary_command_frost",  10 - ( now - __last_frost ) ) end
+        
+                if now - __last_disciplinary_command < 30 then
+                    setCooldown( "buff_disciplinary_command", 30 - ( now - __last_disciplinary_command ) )
+                end
+            end )
+
+            x:RegisterStateFunction( "update_disciplinary_command", function( elem )
+                if not legendary.disciplinary_command.enabled then return end
+
+                if elem == "arcane" then applyBuff( "disciplinary_command_arcane" ) end
+                if elem == "fire"   then applyBuff( "disciplinary_command_fire" ) end
+                if elem == "frost"  then applyBuff( "disciplinary_command_frost" ) end
+        
+                if cooldown.buff_disciplinary_command.remains == 0 and buff.disciplinary_command_arcane.up and buff.disciplinary_command_fire.up and buff.disciplinary_command_frost.up then
+                    applyBuff( "disciplinary_command" )
+                    setCooldown( "buff_disciplinary_command", 30 )
+                end
+            end )
+        
+            x:RegisterHook( "runHandler", function( action )
+                local a = class.abilities[ action ]
+        
+                if a then
+                    update_disciplinary_command( a.discipline or state.spec.key )
+                end
+            end )
+
+            x:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+                if sourceGUID == GUID then
+                    if subtype == "SPELL_CAST_SUCCESS" then
+                        local ability = class.abilities[ spellID ]
+        
+                        if ability then
+                            if ability.discipline == "frost" then
+                                __last_frost  = GetTime()
+                            elseif ability.discipline == "fire" then
+                                __last_fire   = GetTime()
+                            else
+                                __last_arcane = GetTime()
+                            end
+                        end
+                    elseif subtype == "SPELL_AURA_APPLIED" and spellID == class.auras.disciplinary_command.id then
+                        __last_disciplinary_command = GetTime()
+                    end
+                end
+            end )
+
+            x:RegisterAbility( "buff_disciplinary_command", {
+                cooldown_special = function ()
+                    local remains = ( now + offset ) - __last_disciplinary_command
+                    
+                    if remains < 30 then
+                        return __last_disciplinary_command, 30
+                    end
+    
+                    return 0, 0
+                end,
+                unlisted = true,
+    
+                cast = 0,
+                cooldown = 30,
+                gcd = "off",
+            
+                handler = function()
+                    applyBuff( "disciplinary_command" )
+                end,
+            } )
+        end
+
+        Hekili:EmbedDisciplinaryCommand( spec )
+    end
 
 
     spec:RegisterHook( "spend", function( amt, resource )
@@ -595,9 +679,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
     end )
 
 
-    local __last_arcane, __last_fire, __last_frost, __last_disciplinary_command = 0, 0, 0, 0
-
-
     spec:RegisterHook( "reset_precast", function ()
         if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
         else removeBuff( "rune_of_power" ) end
@@ -616,37 +697,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         fake_mana_gem = nil
 
         incanters_flow.reset()
-
-        if now - __last_arcane < 10 then applyBuff( "disciplinary_command_arcane", 10 - ( now - __last_arcane ) ) end
-        if now - __last_fire   < 10 then applyBuff( "disciplinary_command_fire",   10 - ( now - __last_fire ) ) end
-        if now - __last_frost  < 10 then applyBuff( "disciplinary_command_frost",  10 - ( now - __last_frost ) ) end
-
-        if now - __last_disciplinary_command < 30 then
-            setCooldown( "buff_disciplinary_command", 30 - ( now - __last_disciplinary_command ) )
-        end
-    end )
-
-
-    spec:RegisterStateFunction( "update_disciplinary_command", function( elem )
-        if not legendary.disciplinary_command.enabled then return end
-
-        if elem == "arcane" then applyBuff( "disciplinary_command_arcane" ) end
-        if elem == "fire"   then applyBuff( "disciplinary_command_fire" ) end
-        if elem == "frost"  then applyBuff( "disciplinary_command_frost" ) end
-
-        if cooldown.buff_disciplinary_command.remains == 0 and buff.disciplinary_command_arcane.up and buff.disciplinary_command_fire.up and buff.disciplinary_command_frost.up then
-            applyBuff( "disciplinary_command" )
-            setCooldown( "buff_disciplinary_command", 30 )
-        end
-    end )
-
-
-    spec:RegisterHook( "runHandler", function( action )
-        local a = class.abilities[ action ]
-
-        if a then
-            update_disciplinary_command( a.discipline or "arcane" )
-        end
     end )
 
 
@@ -677,34 +727,18 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
 
     spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-        if sourceGUID == GUID then
-            if subtype == "SPELL_CAST_SUCCESS" then
-                if spellID == 12042 then
-                    burn_info.__start = GetTime()
-                    Hekili:Print( "Burn phase started." )
-                elseif spellID == 12051 and burn_info.__start > 0 then
-                    burn_info.__average = burn_info.__average * burn_info.__n
-                    burn_info.__average = burn_info.__average + ( query_time - burn_info.__start )
-                    burn_info.__n = burn_info.__n + 1
+        if sourceGUID == GUID and subtype == "SPELL_CAST_SUCCESS" then
+            if spellID == 12042 then
+                burn_info.__start = GetTime()
+                Hekili:Print( "Burn phase started." )
+            elseif spellID == 12051 and burn_info.__start > 0 then
+                burn_info.__average = burn_info.__average * burn_info.__n
+                burn_info.__average = burn_info.__average + ( query_time - burn_info.__start )
+                burn_info.__n = burn_info.__n + 1
 
-                    burn_info.__average = burn_info.__average / burn_info.__n
-                    burn_info.__start = 0
-                    Hekili:Print( "Burn phase ended." )
-                else
-                    local ability = class.abilities[ spellID ]
-    
-                    if ability then
-                        if ability.discipline == "frost" then
-                            __last_frost  = GetTime()
-                        elseif ability.discipline == "fire" then
-                            __last_fire   = GetTime()
-                        else
-                            __last_arcane = GetTime()
-                        end
-                    end
-                end
-            elseif subtype == "SPELL_AURA_APPLIED" and spellID == class.auras.disciplinary_command.id then
-                __last_disciplinary_command = GetTime()
+                burn_info.__average = burn_info.__average / burn_info.__n
+                burn_info.__start = 0
+                Hekili:Print( "Burn phase ended." )
             end
         end
     end )
@@ -808,6 +842,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 0,
             gcd = "spell",
 
+            discipline = "arcane",
+
             spend = function ()
                 if not pvptalent.arcane_empowerment.enabled and buff.clearcasting.up then return 0 end
                 return 0.1 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 )
@@ -817,9 +853,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 136116,
 
-            usable = function () return target.distance < 10, "target out of range" end,
+            usable = function () return not state.spec.arcane or target.distance < 10, "target out of range" end,
             handler = function ()
-                removeStack( "clearcasting" )
+                if buff.expanded_potential.up then removeBuff( "expanded_potential" )
+                else removeStack( "clearcasting" ) end
                 gain( 1, "arcane_charges" )
             end,
         },
@@ -884,7 +921,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             start = function ()
                 if buff.rule_of_threes.up then removeBuff( "rule_of_threes" )
-                else removeStack( "clearcasting" )
+                else
+                    if buff.expanded_potential.up then removeBuff( "expanded_potential" )
+                    else removeStack( "clearcasting" ) end
                 end
 
                 if conduit.arcane_prodigy.enabled and cooldown.arcane_power.remains > 0 then
@@ -1638,29 +1677,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 }
             },
         },
-
-
-        -- Legendary ICD
-        buff_disciplinary_command = {
-            cooldown_special = function ()
-                local remains = ( now + offset ) - __last_disciplinary_command
-                
-                if remains < 30 then
-                    return __last_disciplinary_command, 30
-                end
-
-                return 0, 0
-            end,
-            unlisted = true,
-
-            cast = 0,
-            cooldown = 30,
-            gcd = "off",
-        
-            handler = function()
-                applyBuff( "disciplinary_command" )
-            end,
-        }
     } )
 
 
