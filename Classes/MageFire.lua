@@ -618,7 +618,7 @@ if UnitClassBase( "player" ) == "MAGE" then
 
             handler = function ()
                 hot_streak( true )
-                applyDebuff( "target", "ignire" )
+                applyDebuff( "target", "ignite" )
 
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
                 if azerite.blaster_master.enabled then addStack( "blaster_master", nil, 1 ) end
@@ -685,7 +685,7 @@ if UnitClassBase( "player" ) == "MAGE" then
                 if not hardcast then
                     if buff.expanded_potential.up then removeBuff( "expanded_potential" )
                     else removeBuff( "hot_streak" ) end
-                    
+
                     if legendary.sun_kings_blessing.enabled then
                         addStack( "sun_kings_blessing", nil, 1 )
                         if buff.sun_kings_blessing.stack == 16 then
