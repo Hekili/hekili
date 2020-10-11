@@ -1069,7 +1069,7 @@ do
                     if data.builtIn then return '|cFF00B4FF' .. fancyName .. '|r' end
                     return fancyName
                 end,
-                childGroups = "select",
+                childGroups = "tab",
                 desc = data.desc,
                 order = 100 + pos,
                 args = {
@@ -1090,7 +1090,7 @@ do
 
                             elvuiCooldown = {
                                 type = "toggle",
-                                name = "Apply ElvUI Cooldown Style",
+                                name = NewFeature .. " Apply ElvUI Cooldown Style",
                                 desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
                                 width = "full",
                                 order = 0.51,
@@ -1302,7 +1302,7 @@ do
                         args = {
                             elvuiCooldown = {
                                 type = "toggle",
-                                name = "Apply ElvUI Cooldown Style",
+                                name = NewFeature .. " Apply ElvUI Cooldown Style",
                                 desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
                                 width = "full",
                                 order = 0.5,
@@ -1602,7 +1602,7 @@ do
 
                     keybindings = {
                         type = "group",
-                        name = NewFeature .. "Keybinds",
+                        name = "Keybinds",
                         desc = "Options for keybinding text on displayed icons.",
                         order = 7,
 
@@ -1767,7 +1767,7 @@ do
 
                     border = {
                         type = "group",
-                        name = NewFeature .. "Border",
+                        name = "Border",
                         desc = "Enable/disable or set the color for icon borders.\n\n" ..
                             "You may want to disable this if you use Masque or other tools to skin your Hekili icons.",
                         order = 4,
@@ -1791,7 +1791,7 @@ do
 
                             thickness = {
                                 type = "range",
-                                name = "Border Thickness",
+                                name = NewFeature .. " Border Thickness",
                                 desc = "Determines the thickness (width) of the border.  Default is 1.",
                                 softMin = 1,
                                 softMax = 20,
@@ -1860,7 +1860,7 @@ do
 
                     glow = {
                         type = "group",
-                        name = NewFeature .. "Glows",
+                        name = "Glows",
                         desc = "Preferences for glows or overlays.",
                         order = 6,
                         args = {
@@ -4617,8 +4617,8 @@ do
                 end
 
                 -- Toggles
-                BuildToggleList( options, id, "cooldowns", "Cooldowns" )
-                BuildToggleList( options, id, "essences", "Covenants" )
+                BuildToggleList( options, id, "cooldowns",  "Cooldowns" )
+                BuildToggleList( options, id, "essences",   "Covenants" )
                 BuildToggleList( options, id, "interrupts", "Utility / Interrupts" )
                 BuildToggleList( options, id, "defensives", "Defensives",   "The defensive toggle is generally intended for tanking specializations, " ..
                                                                             "as you may want to turn on/off recommendations for damage mitigation abilities " ..
