@@ -873,7 +873,7 @@ if UnitClassBase( "player" ) == "MAGE" then
                     setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) )
                 end
 
-                applyDebuff( "target", "ignire" )
+                applyDebuff( "target", "ignite" )
             end,
         },
 
