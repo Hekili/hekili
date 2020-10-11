@@ -472,6 +472,9 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         end )
     end
 
+    -- SimC documentation reflects that there are still the following expressions, which appear unused:
+    -- greater_soul_fragments, lesser_soul_fragments, blade_dance_worth_using, death_sweep_worth_using
+    -- They are not implemented becuase that documentation is from mid-2016.
 
     -- Abilities
     spec:RegisterAbilities( {
