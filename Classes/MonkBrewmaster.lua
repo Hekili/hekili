@@ -764,7 +764,7 @@ if UnitClassBase( "player" ) == "MONK" then
         expel_harm = {
             id = 322101,
             cast = 0,
-            cooldown = 0,
+            cooldown = function () return level > 42 and 5 or 15 end,
             gcd = "spell",
 
             spend = 15,
