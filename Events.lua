@@ -929,6 +929,17 @@ do
         [7048] = { "fiery_soul", 1, 581 }, -- 337547
     }
 
+    local dk_runeforges = {
+        [6243] = "hysteria",
+        [3370] = "razorice",
+        [6241] = "sanguination",
+        [6242] = "spellwarding",
+        [6245] = "apocalypse",
+        [3368] = "fallen_crusader",
+        [3847] = "stoneskin_gargoyle",
+        [6244] = "unending_thirst"
+    }
+
     local wasWearing = {}
 
     function ns.updateGear()
@@ -986,6 +997,13 @@ do
             state.trinket.t2.id = 0
         end
 
+
+        local dk_forge = class.file == "DEATHKNIGHT" and state.death_knight and state.death_knight.runeforge
+
+        if dk_forge then
+            wipe( dk_forge )
+        end
+
         for i = 1, 19 do
             local item = GetInventoryItemID( 'player', i )
 
@@ -1012,6 +1030,25 @@ do
 
                             state.legendary[ name ] = rawget( state.legendary, name ) or { rank = 0 }
                             state.legendary[ name ].rank = state.legendary[ name ].rank + rank
+                        end
+                    end
+                end
+
+                if ( i == 16 or i == 17 ) and dk_forge then
+                    local enchant = link:match( "item:%d+:(%d+)" )                    
+
+                    if enchant then
+                        enchant = tonumber( enchant )
+                        local name = dk_runeforges[ enchant ]
+
+                        if name then
+                            dk_forge[ name ] = true
+
+                            if name == "razorice" and i == 16 then
+                                dk_forge.razorice_mh = true
+                            elseif name == "razorice" and i == 17 then
+                                dk_forge.razorice_oh = true
+                            end
                         end
                     end
                 end
@@ -1080,6 +1117,9 @@ RegisterEvent( "PLAYER_EQUIPMENT_CHANGED", function()
     ns.updateGear()
 end )
 
+RegisterUnitEvent( "UNIT_INVENTORY_CHANGED", "player", nil, function()
+    ns.updateGear()
+end )
 
 RegisterEvent( "PLAYER_TALENT_UPDATE", function()
     ns.updateTalents()
