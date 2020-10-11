@@ -115,7 +115,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             id = 106951,
             duration = 20,
             max_stack = 1,
-            copy = 279526,
+            copy = { 279526, "berserk_cat" },
         },
         bear_form = {
             id = 5487,
@@ -2158,10 +2158,13 @@ if UnitClassBase( "player" ) == "DRUID" then
             essential = true,
 
             usable = function ()
-                return buff.lone_spirit.down and buff.kinded_spirits.down, "lone_spirit/kindred_spirits already applied"
+                return buff.lone_spirit.down and buff.kindred_spirits.down, "lone_spirit/kindred_spirits already applied"
             end,
 
+            bind = "empower_bond",
+
             handler = function ()
+                unshift()
                 -- Let's just assume.
                 applyBuff( "lone_spirit" )
             end,
@@ -2169,6 +2172,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         empower_bond = {
             id = 326647,
+            known = function () return covenant.kyrian and ( buff.lone_spirit.up or buff.kindred_spirits.up ) end,
             cast = 0,
             cooldown = function () return 60 * ( 1 - ( conduit.deep_allegiance.mod * 0.01 ) ) end,
             gcd = "spell",
@@ -2181,6 +2185,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             end,
 
             toggle = "essences",
+
+            bind = "kindred_spirits",
 
             handler = function ()
                 if buff.lone_spirit.up then
@@ -2201,7 +2207,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 end
             end,
 
-            copy = { "lone_empowerment", "lone_meditation", "lone_protection", 326462, 326446, 338142 }
+            copy = { "lone_empowerment", "lone_meditation", "lone_protection", 326462, 326446, 338142, 338018 }
         },
 
         -- Druid - Necrolord - 325727 - adaptive_swarm       (Adaptive Swarm)

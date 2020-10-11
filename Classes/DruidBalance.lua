@@ -504,7 +504,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             max_stack = 1,
         },
 
-        oath_of_the_elder_druid_icd = {
+        oath_of_the_elder_druid = {
             id = 338643,
             duration = 60,
             max_stack = 1
@@ -640,7 +640,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         local cost = 0
         if a.spendType == "astral_power" then cost = a.cost end
 
-        return astral_power.current - cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 1.5 ) or 0 ) < astral_power.max
+        return astral_power.current - cost + ( talent.shooting_stars.enabled and 4 or 0 ) + ( talent.natures_balance.enabled and ceil( execute_time / 2 ) or 0 ) < astral_power.max
     end, state )
 
     spec:RegisterStateExpr( "ap_check", function() return check_for_ap_overcap() end )
@@ -753,6 +753,52 @@ if UnitClassBase( "player" ) == "DRUID" then
             duration = 5,
             max_stack = 2,
         } )
+
+
+    spec:RegisterStateTable( "eclipse", setmetatable( {}, {
+        __index = function( t, k )
+            -- any_next
+            if k == "any_next" then
+                return lunar_eclipse == 2 and solar_eclipse == 2
+            -- in_any
+            elseif k == "in_any" then
+                return buff.eclipse_lunar.up or buff.eclipse_solar.up            
+            -- in_solar
+            elseif k == "in_solar" then
+                return buff.eclipse_solar.up                
+            -- in_lunar
+            elseif k == "in_lunar" then
+                return buff.eclipse_lunar.up
+            -- in_both
+            elseif k == "in_both" then
+                return buff.eclipse_lunar.up and buff.eclipse_solar.up
+            -- solar_next
+            elseif k == "solar_next" then
+                return solar_eclipse > 0
+            -- solar_in
+            elseif k == "solar_in" then
+                return solar_eclipse
+            -- solar_in_2
+            elseif k == "solar_in_2" then
+                return solar_eclipse == 2                
+            -- solar_in_1
+            elseif k == "solar_in_1" then
+                return solar_eclipse == 1
+            -- lunar_next
+            elseif k == "lunar_next" then
+                return lunar_eclipse > 0
+            -- lunar_in
+            elseif k == "lunar_in" then
+                return lunar_eclipse > 0
+            -- lunar_in_2
+            elseif k == "lunar_in_2" then
+                return lunar_eclipse == 2
+            -- lunar_in_1
+            elseif k == "lunar_in_1" then
+                return lunar_eclipse == 1
+            end
+        end
+    } ) )
 
 
 
@@ -1647,7 +1693,8 @@ if UnitClassBase( "player" ) == "DRUID" then
 
 
         starfire = {
-            id = 194153,
+            id = function () return state.spec.balance and 194153 or 197628 end,
+            known = function () return state.spec.balance and IsPlayerSpell( 194153 ) or IsPlayerSpell( 197628 ) end,
             cast = function ()
                 if buff.warrior_of_elune.up or buff.elunes_wrath.up then return 0 end
                 return haste * ( buff.eclipse_lunar and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 2.25
@@ -1662,6 +1709,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             texture = 135753,
 
             ap_check = function() return check_for_ap_overcap( "starfire" ) end,
+
+            talent = function () return ( not state.spec.balance and "balance_affinity" or nil ) end,
 
             handler = function ()
                 if not buff.moonkin_form.up then unshift() end
@@ -1691,6 +1740,8 @@ if UnitClassBase( "player" ) == "DRUID" then
 
                 if azerite.dawning_sun.enabled then applyBuff( "dawning_sun" ) end
             end,
+
+            copy = { 194153, 197628 }
         },
 
 
@@ -2043,6 +2094,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         wrath = {
             id = 190984,
+            known = function () return state.spec.balance and IsPlayerSpell( 190984 ) or IsPlayerSpell( 5176 ) end,
             cast = function () return haste * ( buff.eclipse_solar.up and ( level > 46 and 0.8 or 0.92 ) or 1 ) * 1.5 end,
             cooldown = 0,
             gcd = "spell",
@@ -2071,7 +2123,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 if azerite.sunblaze.enabled then applyBuff( "sunblaze" ) end
             end,
 
-            copy = "solar_wrath"
+            copy = { "solar_wrath", 5176 }
         },
     } )
 
