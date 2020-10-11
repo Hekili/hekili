@@ -402,7 +402,7 @@ local HekiliSpecMixin = {
     
     RegisterHook = function( self, hook, func )
         self.hooks[ hook ] = self.hooks[ hook ] or {}
-        self.hooks[ hook ] = setfenv( func, state )
+        insert( self.hooks[ hook ], setfenv( func, state ) )
     end,
 
     RegisterAbility = function( self, ability, data )
@@ -4895,9 +4895,14 @@ do
 
     ns.callHook = function( hook, ... )
         if class.hooks[ hook ] and not inProgress[ hook ] then
+            local a1, a2, a3, a4, a5
+
             inProgress[ hook ] = true
-            local a1, a2, a3, a4, a5 = class.hooks[ hook ] ( ... )
+            for _, hook in ipairs( class.hooks[ hook ] ) do
+                a1, a2, a3, a4, a5 = hook ( ... )
+            end
             inProgress[ hook ] = nil
+
             if a1 ~= nil then
                 return a1, a2, a3, a4, a5
             else
@@ -5230,9 +5235,10 @@ function Hekili:SpecializationChanged()
                     class.pvptalents[ talent ] = id
                 end
 
-                for name, func in pairs( spec.hooks ) do
+                class.hooks = spec.hooks or {}
+                --[[ for name, func in pairs( spec.hooks ) do
                     class.hooks[ name ] = func
-                end
+                end ]]
 
                 class.variables = spec.variables
 
