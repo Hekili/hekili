@@ -50,7 +50,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             end,
 
             interval = function () return class.auras.death_chakram.tick_time end,
-            value = function () return conduit.necrotic_barrage.enabled and 5 or 3 end,
+            value = function () return state.conduit.necrotic_barrage.enabled and 5 or 3 end,
         }
     } )
 
