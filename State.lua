@@ -967,10 +967,10 @@ local function summonTotem( name, elem, duration )
         state.totem[ elem ] = rawget( state.totem, elem ) or {}
         state.totem[ elem ].name = name
         state.totem[ elem ].expires = state.query_time + duration
+        summonPet( elem, duration )    
     end
 
     summonPet( name, duration )
-    summonPet( elem, duration )    
 end
 state.summonTotem = summonTotem
 
@@ -3652,9 +3652,11 @@ local mt_totem = {
             return t[k]
         end
 
-        Error( "UNK: totem." .. k )
+        if pet[ k ] ~= nil then return pet[ k ] end
 
-        end, __newindex = function(t, k, v)
+        Error( "UNK: totem." .. k )
+    end,
+    __newindex = function( t, k, v )
         rawset( t, k, setmetatable( v, mt_default_totem ) )
     end
 }
