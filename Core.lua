@@ -750,7 +750,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                     local ts = not strict and entry.strict ~= 1 and scripts:IsTimeSensitive( scriptID )
 
                                     if not entry.criteria or entry.criteria == "" then
-                                        if debug then self:Debug( "There is no criteria for %s.", action == 'use_items' and "Use Items" or "this action list." ) end
+                                        if debug then self:Debug( "There is no criteria for %s.", action == 'use_items' and "Use Items" or state.args.list_name or "this action list" ) end
                                         -- aScriptPass = ts or self:CheckStack()
                                     else
                                         aScriptPass = scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
@@ -771,7 +771,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                             end
                                         else
                                             if debug then 
-                                                self:Debug( "%sCriteria %s at +%.2f - %s", ts and "Time-sensitive " or "", ts and "deferred" or ( aScriptPass and "PASS" or "FAIL" ), state.offset, scripts:GetConditionsAndValues( scriptID ) )
+                                                self:Debug( "%sCriteria for %s %s at +%.2f - %s", ts and "Time-sensitive " or "", state.args.list_name or "???", ts and "deferred" or ( aScriptPass and "PASS" or "FAIL" ), state.offset, scripts:GetConditionsAndValues( scriptID ) )
                                             end
                                         end
 
