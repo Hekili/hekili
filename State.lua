@@ -2390,6 +2390,9 @@ local mt_target = {
             end
             return ( UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 ) )
 
+        elseif k == "is_add" then
+            return not t.is_boss
+
         elseif k:sub(1, 6) == 'within' then
             local maxR = k:match( "^within(%d+)$" )
 
@@ -3519,7 +3522,7 @@ do
             local myCovenant = GetActiveCovenantID()
 
             if myCovenant > 0 then
-                return k == CovenantKeys[ myCovenant ]
+                if k == CovenantKeys[ myCovenant ] then return true end
             end
 
             if CovenantSignatures[ k ] then
@@ -3527,6 +3530,12 @@ do
                     if IsSpellKnownOrOverridesKnown( spell ) then return true end
                 end
             end
+
+            -- Support covenant.fae_guardians and similar syntax.
+            if class.abilities[ k ] then
+                if state:IsKnown( k ) then return true end
+            end
+
             return false
         end,
     } )
