@@ -1127,21 +1127,6 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         },
         
 
-        torment = {
-            id = 281854,
-            cast = 0,
-            cooldown = 8,
-            gcd = "off",
-
-            startsCombat = true,
-            texture = 1344654,
-
-            handler = function ()
-                applyDebuff( "target", "torment" )
-            end,
-        },
-        
-
         vengeful_retreat = {
             id = 198793,
             cast = 0,
