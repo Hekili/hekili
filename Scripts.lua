@@ -459,6 +459,7 @@ do
         ["execute_remains$"] = true,
         ["channel_remains$"] = true,
         ["^time_to_hpg$"] = true,
+        ["time_to_max$"] = true,
         -- ["time_to_%d+$"] = true,
         -- ["deficit$"] = true,
     }
