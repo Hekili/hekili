@@ -9048,7 +9048,7 @@ local function Sanitize( segment, i, line, warnings )
 
     local times = 0
 
-    i, times = i:gsub( "([^%%])%%([^%%])", "%1/%2" )
+    i, times = i:gsub( "([^%%])[ ]*%%[ ]*([^%%])", "%1 / %2" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted SimC syntax % to Lua division operator (/) (" .. times .. "x)." )
     end

@@ -256,10 +256,10 @@ local function SimToLua( str, modifier )
     str = SimcWithResources( str )
 
     -- Replace '%' for division with actual division operator '/'.
-    str = str:gsub("([^%%])[ ]+%%[ ]+([^%%])", "%1/%2")
+    -- str = str:gsub("([^%%])[ ]+%%[ ]+([^%%])", "%1/%2")
 
     -- Replace '%%' for modulus with '%'.
-    str = str:gsub( "%%%%", "%%" )
+    -- str = str:gsub( "%%%%", "%%" )
 
     -- Replace '&' with ' and '.
     str = str:gsub("&", " and ")
@@ -1078,9 +1078,9 @@ local function ConvertScript( node, hasModifiers, header )
     state.this_action = node.action
 
     local t = node.criteria and node.criteria ~= "" and node.criteria
-    t = scripts:EmulateSyntax( t )
     local clean = SimToLua( t )
 
+    t = scripts:EmulateSyntax( t )
     t = SimToLua( t )
 
     local sf, e
