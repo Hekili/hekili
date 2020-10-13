@@ -8,9 +8,6 @@ addons:
 
 branches:
   only:
-  - /^v?9\.\d+(\.\d+)?(-\S*)?$/
+  - /^v?\d+\.\d+(\.\d+)?(-\S*)?$/
 
 script: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash
-env:
-  CF_API_KEY:
-  WOWI_API_TOKEN:
