@@ -5422,7 +5422,7 @@ do
                                         Hekili.Options.args.packs.plugins.packages[ pack ] = nil
 
                                         -- Hekili:EmbedPackOptions()
-                                        ACD:SelectGroup( "Hekili", "packs", defPack )
+                                        ACD:SelectGroup( "Hekili", "packs" )
                                     end,                                    
                                     hidden = data.builtIn
                                 },
