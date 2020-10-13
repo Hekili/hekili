@@ -121,7 +121,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 return app + floor( ( t - app ) / ( 1.5 * state.haste ) ) * ( 1.5 * state.haste )
             end,
 
-            interval = function () return 1.5 * state.haste * ( conduit.rabid_shadows.enabled and 0.8 or 1 ) end,
+            interval = function () return 1.5 * state.haste * ( state.conduit.rabid_shadows.enabled and 0.8 or 1 ) end,
             value = function () return ( state.buff.surrender_to_madness.up and 12 or 6 ) end,
         },
 
@@ -135,7 +135,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 return app + floor( ( t - app ) / ( 1.5 * state.haste ) ) * ( 1.5 * state.haste )
             end,
 
-            interval = function () return 1.5 * state.haste * ( conduit.rabid_shadows.enabled and 0.8 or 1 ) end,
+            interval = function () return 1.5 * state.haste * ( state.conduit.rabid_shadows.enabled and 0.8 or 1 ) end,
             value = function () return ( state.buff.surrender_to_madness.up and 6 or 3 ) end,
         },
 
