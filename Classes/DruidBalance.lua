@@ -215,25 +215,27 @@ if UnitClassBase( "player" ) == "DRUID" then
         fury_of_elune_ap = {
             id = 202770,
             duration = 8,
+            tick_time = 0.5,
             max_stack = 1,
 
-            generate = function ()
-                local foe = buff.fury_of_elune_ap
+            generate = function ( t )
                 local applied = action.fury_of_elune.lastCast
 
                 if applied and now - applied < 8 then
-                    foe.count = 1
-                    foe.expires = applied + 8
-                    foe.applied = applied
-                    foe.caster = "player"
+                    t.count = 1
+                    t.expires = applied + 8
+                    t.applied = applied
+                    t.caster = "player"
                     return
                 end
 
-                foe.count = 0
-                foe.expires = 0
-                foe.applied = 0
-                foe.caster = "nobody"
+                t.count = 0
+                t.expires = 0
+                t.applied = 0
+                t.caster = "nobody"
             end,
+
+            copy = "fury_of_elune"
         },
         growl = {
             id = 6795,
