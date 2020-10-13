@@ -2117,6 +2117,12 @@ do
         
             startsCombat = false,
             texture = 463534,
+
+            toggle = function ()
+                if not toggle.interrupts then return "interrupts" end
+                if not toggle.essences then return "essences" end
+                return "essences"
+            end,
     
             usable = function ()
                 if GetItemCount( 177278 ) == 0 then return false, "requires phial in bags"
