@@ -99,11 +99,13 @@ if UnitClassBase( "player" ) == "DRUID" then
             id = 325733,
             duration = function () return mod_circle_dot( 12 ) end,
             max_stack = 1,
+            copy = "adaptive_swarm_damage"
         },
         adaptive_swarm_hot = {
             id = 325748,
             duration = function () return mod_circle_hot( 12 ) end,
             max_stack = 1,
+            copy = "adaptive_swarm_heal"
         },
         aquatic_form = {
             id = 276012,
@@ -208,54 +210,6 @@ if UnitClassBase( "player" ) == "DRUID" then
         jungle_stalker = {
             id = 252071,
             duration = 30,
-            max_stack = 1,
-        },
-        -- Damager
-        kindred_empowerment = {
-            id = 327139,
-            duration = 10,
-            max_stack = 1,
-        },
-        -- From Damager
-        kindred_empowerment_partner = {
-            id = 327022,
-            duration = 10,
-            max_stack = 1,
-        },
-        kindred_focus = {
-            id = 327148,
-            duration = 10,
-            max_stack = 1,
-        },
-        kindred_focus_partner = {
-            id = 327071,
-            duration = 10,
-            max_stack = 1,
-        },
-        -- Tank
-        kindred_protection = {
-            id = 327037,
-            duration = 10,
-            max_stack = 1,
-        },
-        kindred_protection_partner = {
-            id = 327148,
-            duration = 10,
-            max_stack = 1,
-        },
-        kindred_spirits = {
-            id = 326967,
-            duration = 3600,
-            max_stack = 1,
-        },
-        lone_spirit = {
-            id = 338041,
-            duration = 3600,
-            max_stack = 1,
-        },
-        lone_empowerment = {
-            id = 338142,
-            duration = 10,
             max_stack = 1,
         },
         maim = {
@@ -2168,6 +2122,58 @@ if UnitClassBase( "player" ) == "DRUID" then
                 -- Let's just assume.
                 applyBuff( "lone_spirit" )
             end,
+
+            copy = {
+                -- Damager
+                kindred_empowerment = {
+                    id = 327139,
+                    duration = 10,
+                    max_stack = 1,
+                    copy = "kindred_empowerment_energize",
+                },
+                -- From Damager
+                kindred_empowerment_partner = {
+                    id = 327022,
+                    duration = 10,
+                    max_stack = 1,
+                },
+                kindred_focus = {
+                    id = 327148,
+                    duration = 10,
+                    max_stack = 1,
+                },
+                kindred_focus_partner = {
+                    id = 327071,
+                    duration = 10,
+                    max_stack = 1,
+                },
+                -- Tank
+                kindred_protection = {
+                    id = 327037,
+                    duration = 10,
+                    max_stack = 1,
+                },
+                kindred_protection_partner = {
+                    id = 327148,
+                    duration = 10,
+                    max_stack = 1,
+                },
+                kindred_spirits = {
+                    id = 326967,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+                lone_spirit = {
+                    id = 338041,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+                lone_empowerment = {
+                    id = 338142,
+                    duration = 10,
+                    max_stack = 1,
+                },                
+            }
         },
 
         empower_bond = {
@@ -2226,6 +2232,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             handler = function ()
                 applyDebuff( "target", "adaptive_swarm_dot", nil, 325733 )
             end,
+
+            copy = "adaptive_swarm_damage"
         },
 
         -- Druid - Night Fae - 323764 - convoke_the_spirits  (Convoke the Spirits)
