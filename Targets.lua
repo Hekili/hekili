@@ -192,6 +192,11 @@ local lastCycle = 0
 local guidRanges = {}
 
 
+local function UnitInPhase( unit )
+    return UnitPhaseReason( unit ) == ( C_PvP.IsWarModeDesired() and 2 or nil )
+end
+
+
 do
     function ns.iterateTargets()
         return next, counted, nil
@@ -227,7 +232,7 @@ do
             
             if checkPets or checkPlates then
                 for unit, guid in pairs(npGUIDs) do
-                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and not UnitPhaseReason( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local npcid = guid:match( "(%d+)-%x-$" )
                         local excluded = enemyExclusions[ npcid ]
 
@@ -265,7 +270,7 @@ do
                     local guid = UnitGUID( unit )
         
                     if guid and counted[ guid ] == nil then
-                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and not UnitPhaseReason( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                             local npcid = guid:match( "(%d+)-%x-$" )
                             local excluded = enemyExclusions[ npcid ]
 
@@ -322,7 +327,7 @@ do
 
         local targetGUID = UnitGUID( "target" )
         if targetGUID then
-            if counted[ targetGUID ] == nil and UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") and not UnitPhaseReason("target") and (UnitIsPVP("player") or not UnitIsPlayer("target")) then
+            if counted[ targetGUID ] == nil and UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") and UnitInPhase("target") and (UnitIsPVP("player") or not UnitIsPlayer("target")) then
                 Hekili.TargetDebug = format("%s%12s - %2d - %s\n", Hekili.TargetDebug, "target", 0, targetGUID)
                 count = count + 1
                 counted[ targetGUID ] = true

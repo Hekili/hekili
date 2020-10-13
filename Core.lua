@@ -1326,7 +1326,7 @@ function Hekili:ProcessHooks( dispName, packName )
     local packName = packName or spec.package
     local pack = rawget( self.DB.profile.packs, packName )
 
-    if not pack then
+    if not pack and UI.RecommendationsStr then
         UI.RecommendationsStr = nil
         UI.NewRecommendations = true 
         return 
