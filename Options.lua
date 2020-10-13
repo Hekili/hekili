@@ -4794,7 +4794,7 @@ do
         local n = #info
         local category, subcat, option = info[ 2 ], info[ 3 ], info[ n ]
 
-        if rawget( self.DB.profile.packs[ category ].lists, packControl.listName ) == nil then
+        if rawget( self.DB.profile.packs, category ) and rawget( self.DB.profile.packs[ category ].lists, packControl.listName ) == nil then
             packControl.listName = "default"
         end
 
