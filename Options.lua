@@ -4683,7 +4683,15 @@ do
     local function GetListEntry( pack )
         local entry = rawget( Hekili.DB.profile.packs, pack )
 
+        if rawget( entry.lists, packControl.listName ) == nil then
+            packControl.listName = "default"
+        end
+
         if entry then entry = entry.lists[ packControl.listName ] else return end
+
+        if rawget( entry, tonumber( packControl.actionID ) ) == nil then
+            packControl.actionID = "0001"
+        end
 
         local listPos = tonumber( packControl.actionID )
         if entry and listPos > 0 then entry = entry[ listPos ] else return end
@@ -4695,6 +4703,10 @@ do
     function Hekili:GetActionOption( info )
         local n = #info
         local pack, option = info[ 2 ], info[ n ]
+
+        if rawget( self.DB.profile.packs[ pack ].lists, packControl.listName ) == nil then
+            packControl.listName = "default"
+        end
 
         local actionID = tonumber( packControl.actionID )
         local data = self.DB.profile.packs[ pack ].lists[ packControl.listName ]
@@ -4781,6 +4793,10 @@ do
     function Hekili:GetPackOption( info )
         local n = #info
         local category, subcat, option = info[ 2 ], info[ 3 ], info[ n ]
+
+        if rawget( self.DB.profile.packs[ category ].lists, packControl.listName ) == nil then
+            packControl.listName = "default"
+        end
 
         if option == "newPackSpec" and packControl[ option ] == "" then
             packControl[ option ] = GetCurrentSpec()
@@ -5638,6 +5654,7 @@ do
                                     -- imageCoords = GetAtlasCoords( "communities-icon-redx" ),
                                     imageHeight = 20,
                                     imageWidth = 20,
+                                    confirm = function() return "Delete this action list?" end,
                                     disabled = function () return packControl.listName == "default" or packControl.listName == "precombat" end,
                                     func = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
@@ -5861,7 +5878,7 @@ do
                                     end,
                                     disabled = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
-                                        return #p.lists[ packControl.listName ] < 2 
+                                        return not p.lists[ packControl.listName ] or #p.lists[ packControl.listName ] < 2 
                                     end,
                                     hidden = function () return packControl.makingNew end,
                                 },
@@ -6129,7 +6146,7 @@ do
                                                             for i, entry in ipairs( alist ) do
                                                                 if name ~= list or i ~= action then
                                                                     if entry.action == "variable" and entry.var_name then
-                                                                        state:RegisterVariable( entry.var_name, pack .. ":" .. name .. ":" .. i )
+                                                                        state:RegisterVariable( entry.var_name, pack .. ":" .. name .. ":" .. i, name )
                                                                     end
                                                                 end
                                                             end
@@ -6169,7 +6186,7 @@ do
                                                             for i, entry in ipairs( alist ) do
                                                                 if name ~= list or i ~= action then
                                                                     if entry.action == "variable" and entry.var_name then
-                                                                        state:RegisterVariable( entry.var_name, pack .. ":" .. name .. ":" .. i )
+                                                                        state:RegisterVariable( entry.var_name, pack .. ":" .. name .. ":" .. i, name )
                                                                     end
                                                                 end
                                                             end
@@ -7233,8 +7250,6 @@ do
 
             for i = 1, GetNumSpellTabs() do
                 local tab, _, offset, n = GetSpellTabInfo( i )
-
-                print( tab, offset, n )
 
                 if i == 2 or tab == spec then
                     for j = offset, offset + n do
@@ -8968,7 +8983,7 @@ local function Sanitize( segment, i, line, warnings )
         ["~"] = true,
         ["+"] = true,
         ["-"] = true,
-        ["%"] = true,
+        ["%%"] = true,
         ["*"] = true
     }
 
@@ -9032,6 +9047,16 @@ local function Sanitize( segment, i, line, warnings )
     end   
 
     local times = 0
+
+    i, times = i:gsub( "([^%%])%%([^%%])", "%1/%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted SimC syntax % to Lua division operator (/) (" .. times .. "x)." )
+    end
+    
+    i, times = i:gsub( "%%%%", "%%" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted SimC syntax %% to Lua modulus operator (%) (" .. times .. "x)." )
+    end
 
     i, times = i:gsub( "covenant%.([%w_]+)%.enabled", "covenant.%1" )
     if times > 0 then

@@ -2305,9 +2305,11 @@ function Hekili:ShowDiagnosticTooltip( q )
 
     if q.HookHeader or (q.HookScript and q.HookScript ~= "") then
         if q.HookHeader then
-            tt:AddLine("\n" .. q.HookHeader)
+            tt:AddLine(" ")
+            tt:AddLine(q.HookHeader)
         else
-            tt:AddLine("\nHook Criteria")
+            tt:AddLine(" ")
+            tt:AddLine("Hook Criteria")
         end
 
         if q.HookScript and q.HookScript ~= "" then
@@ -2319,10 +2321,11 @@ function Hekili:ShowDiagnosticTooltip( q )
             local applied = false
             for k, v in orderedPairs(q.HookElements) do
                 if not applied then
+                    tt:AddLine(" ")
                     tt:AddLine("Values")
                     applied = true
                 end
-                if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) then
+                if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
                     tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
                 end
             end
@@ -2330,7 +2333,8 @@ function Hekili:ShowDiagnosticTooltip( q )
     end
 
     if q.ReadyScript and q.ReadyScript ~= "" then
-        tt:AddLine("\nTime Script")
+        tt:AddLine(" ")
+        tt:AddLine("Time Script")
 
         local Text = Format(q.ReadyScript)
         tt:AddLine(fmt.FormatCode(Text, 0, SyntaxColors), 1, 1, 1, 1)
@@ -2338,7 +2342,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         if q.ReadyElements then
             tt:AddLine("Values")
             for k, v in orderedPairs(q.ReadyElements) do
-                if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) then
+                if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
                     tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
                 end
             end
@@ -2346,7 +2350,8 @@ function Hekili:ShowDiagnosticTooltip( q )
     end
 
     if q.ActScript and q.ActScript ~= "" then
-        tt:AddLine("\nAction Criteria")
+        tt:AddLine(" ")
+        tt:AddLine("Action Criteria")
 
         local Text = Format(q.ActScript)
         tt:AddLine(fmt.FormatCode(Text, 0, SyntaxColors), 1, 1, 1, 1)
@@ -2354,7 +2359,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         if q.ActElements then
             tt:AddLine("Values")
             for k, v in orderedPairs(q.ActElements) do
-                if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) then
+                if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
                     tt:AddDoubleLine( key_cache[ k ], ns.formatValue(v), 1, 1, 1, 1, 1, 1)
                 end
             end

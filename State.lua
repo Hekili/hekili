@@ -1644,7 +1644,7 @@ local mt_state = {
         elseif k == 'query_time' then
             return t.now + t.offset + t.delay
 
-        elseif k == 'time_to_die' or k == 'fight_remains' then
+        elseif k == 'time_to_die' or k == 'fight_remains' or k == "interpolated_fight_remains" then
             if not t.boss then return 3600 end
             return max( 1, Hekili:GetGreatestTTD() - ( t.offset + t.delay ) )
         
@@ -2167,6 +2167,7 @@ local mt_default_pet = {
             return max( 0, t.expires - ( state.query_time ) )
 
         elseif k == 'up' or k == 'active' or k == 'alive' or k == 'exists' then
+            -- TODO:  Need to make pet.alive work here.
             return ( t.expires >= ( state.query_time ) )
 
         elseif k == 'down' then
@@ -2205,7 +2206,7 @@ local mt_pets = {
             return UnitExists( 'pet' ) and ( not UnitIsDead( 'pet' ) )
 
         elseif k == 'alive' then
-            return UnitExists( 'pet' ) and not UnitIsDead( 'pet' )
+            return UnitExists( 'pet' ) and not UnitIsDead( 'pet' ) and UnitHealth( "pet" ) > 0
 
         elseif k == 'dead' then
             return UnitExists( 'pet' ) and UnitIsDead( 'pet' )
@@ -3186,6 +3187,12 @@ local mt_default_buff = {
 
         elseif k == 'mine' then
             return t.caster == 'player'
+        
+        elseif k == "value" then
+            return t.v1
+
+        elseif k == "stack_value" then
+            return t.v1 * t.stack
 
         elseif k == 'stack' or k == 'stacks' then
             if t.up then return ( t.count ) else return 0 end
@@ -4151,6 +4158,12 @@ local mt_default_debuff = {
             end 
 
             return 0
+        
+        elseif k == "value" then
+            return t.v1
+
+        elseif k == "stack_value" then
+            return t.v1 * t.stack
 
         elseif k == 'pmultiplier' then
             -- Persistent modifier, used by Druids.

@@ -256,7 +256,10 @@ local function SimToLua( str, modifier )
     str = SimcWithResources( str )
 
     -- Replace '%' for division with actual division operator '/'.
-    str = str:gsub("%%", "/")
+    str = str:gsub("([^%%])[ ]+%%[ ]+([^%%])", "%1/%2")
+
+    -- Replace '%%' for modulus with '%'.
+    str = str:gsub( "%%%%", "%%" )
 
     -- Replace '&' with ' and '.
     str = str:gsub("&", " and ")
@@ -300,6 +303,7 @@ local function SimToLua( str, modifier )
     str = str:gsub("prev_gcd%.(%d+)", "prev_gcd[%1]")
     str = str:gsub("prev_off_gcd%.(%d+)", "prev_off_gcd[%1]")
     str = str:gsub("time_to_sht%.(%d+)", "time_to_sht[%1]")
+    -- str = str:gsub("([a-z0-9_]+)%.(%d+)", "%1[%2]")
 
     --str = SpaceOut( str )
 
@@ -648,6 +652,11 @@ do
          ["!"] = true,
      }
 
+     local funcs = {
+         ["floor"] = true,
+         ["ceil"] = true
+     }
+
 
      -- This is hideous.
 
@@ -793,8 +802,8 @@ do
                             -- maximum warningness
                             local pass, val = pcall( func )
                             if not pass and not piece.s:match("variable") then
-                                local safepiece = piece.s:gsub( "%%", "%%%%" )
-                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-n)\n\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
+                                -- local safepiece = piece.s:gsub( "%%", "%%%%" )
+                                -- Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-n)\n\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
                             else
                                 if val == nil or type( val ) ~= "number" then piece.s = "safenum(" .. piece.s .. ")" end
                             end
@@ -816,8 +825,8 @@ do
                             setfenv( func, state )
                             local pass, val = pcall( func )
                             if not pass and not piece.s:match("variable") then
-                                local safepiece = piece.s:gsub( "%%", "%%%%" )
-                                Hekili:Error( "Unable to compile '" .. safepiece .. "' - " .. val .. " (pcall-b)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
+                                -- local safepiece = piece.s:gsub( "%%", "%%%%" )
+                                -- Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-b)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
                             else if val == nil or type( val ) == "number" then piece.s = "safebool(" .. piece.s .. ")" end end
                         else
                             Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-b)." )
@@ -1069,9 +1078,9 @@ local function ConvertScript( node, hasModifiers, header )
     state.this_action = node.action
 
     local t = node.criteria and node.criteria ~= "" and node.criteria
+    t = scripts:EmulateSyntax( t )
     local clean = SimToLua( t )
 
-    t = scripts:EmulateSyntax( t )
     t = SimToLua( t )
 
     local sf, e

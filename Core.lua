@@ -1021,6 +1021,11 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             slot.wait = state.delay
                                                             slot.resource = state.GetResourceType( rAction )
 
+                                                            if debug then
+                                                                scripts:ImplantDebugData( slot )
+                                                                self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
+                                                            end
+
                                                             -- slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
 
                                                             rAction = state.this_action
@@ -1140,6 +1145,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         state.selectedAction = rAction
 
                                                         if debug then
+                                                            scripts:ImplantDebugData( slot )
                                                             self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
                                                         end
 
@@ -1538,7 +1544,7 @@ function Hekili:ProcessHooks( dispName, packName )
         end
 
         if action then
-            if debug then scripts:ImplantDebugData( slot ) end
+            -- if debug then scripts:ImplantDebugData( slot ) end
 
             slot.time = state.offset + wait
             slot.exact_time = state.now + state.offset + wait
