@@ -3636,9 +3636,16 @@ do
 
         for k, v in orderedPairs( abilities ) do
             local ability = class.abilities[ v ]
+            local useName = ability.name
+
+            if not useName then
+                Hekili:Error( "No name available for %s (id:%d) in EmbedAbilityOptions.", ability.key or "no_id", ability.id or 0 )
+                useName = ability.key or ability.id or "???"
+            end
+
             local option = {
                 type = "group",
-                name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. ability.name .. "|r" end,
+                name = function () return ( state:IsDisabled( v, true ) and "|cFFFF0000" or "" ) .. useName .. "|r" end,
                 order = 1,
                 set = "SetAbilityOption",
                 get = "GetAbilityOption",
