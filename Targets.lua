@@ -48,6 +48,16 @@ function Hekili:GetUnitByGUID( id )
     end
 end
 
+function Hekili:GetUnitByName( name )
+    for _, unit in ipairs( unitIDs ) do
+        if UnitName( unit ) == name then return unit end
+    end
+
+    for unit in pairs( npUnits ) do
+        if UnitName( unit ) == name then return unit end
+    end
+end
+
 
 do
     -- Pet-Based Target Detection

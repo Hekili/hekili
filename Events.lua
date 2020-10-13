@@ -1756,8 +1756,26 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
 end )
 
 
-RegisterEvent( "UNIT_SPELLCAST_SENT", function ( self, event, unit, target, castID, spellID )
-    state.cast_target = UnitGUID( target )
+RegisterEvent( "UNIT_SPELLCAST_SENT", function ( self, unit, target_name, castID, spellID )
+    if not UnitIsUnit( "player", unit ) then return end
+
+    if target_name and UnitGUID( target_name ) then
+        state.cast_target = UnitGUID( target_name )
+        return
+    end
+
+    local gubn = Hekili:GetUnitByName( target_name )
+    if gubn and UnitGUID( gubn ) then
+        state.cast_target = UnitGUID( gubn )
+        return
+    end
+    
+    if UnitName( "target" ) == target_name then
+        state.cast_target = UnitGUID( "target" )
+        return
+    end
+
+    state.cast_target = nil
 end )
 
 
@@ -2068,6 +2086,10 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
             if ability then
                 if subtype == "SPELL_CAST_START" then
                     local _, _, _, start, finish = UnitCastingInfo( "player" )
+
+                    if state.cast_target ~= "nobody" and destGUID:len() == 0 then
+                        destGUID = state.cast_target
+                    end
 
                     if start then
                         state:QueueEvent( ability.key, start / 1000, finish / 1000, "CAST_FINISH", destGUID, true )

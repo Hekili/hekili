@@ -727,11 +727,11 @@ local function applyBuff( aura, duration, stacks, value )
         aura = auraInfo.alias[1]
     end
 
-    if state.cycle then
+    --[[ if state.cycle then
         if duration == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] - 1
         else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
         return
-    end
+    end ]]
 
     local b = state.buff[ aura ]
     if not b then return end
@@ -5010,9 +5010,20 @@ do
             -- Spend resources.
             ns.spendResources( action )
 
+            local wasCycling
+
+            if not self.cycle and e.target and self.target.unit ~= "unknown" and e.target ~= self.target.unit then
+                wasCycling = rawget( self, cycle )
+                self.cycle = true
+            end
+
             -- Perform the action.            
             self:RunHandler( action )
             self.hardcast = nil
+
+            if self.cycle then
+                self.cycle = wasCycling
+            end
 
             if ability.item and not ability.essence then
                 self.putTrinketsOnCD( cooldown / 6 )
@@ -5502,7 +5513,7 @@ function state.reset( dispName )
         if not state:IsCasting( casting ) then
             local channeled = ability and ability.channeled
 
-            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, channeled and "CHANNEL_FINISH" or "CAST_FINISH", state.target.GUID )
+            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, channeled and "CHANNEL_FINISH" or "CAST_FINISH", state.target.unit )
             
             if channeled then
                 local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
@@ -5511,7 +5522,7 @@ function state.reset( dispName )
                     local eoc = state.buff.casting.expires - tick_time
 
                     while ( eoc > state.now ) do
-                        state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", state.target.GUID )
+                        state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", state.target.unit )
                         eoc = eoc - tick_time
                     end
                 end

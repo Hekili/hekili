@@ -1587,7 +1587,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 if ability.cast > 0 and not ability.channeled then
                     if debug then Hekili:Debug( "Queueing %s cast finish at %.2f.", action, state.query_time + cast ) end
-                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH" )
+                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH", state.target.unit )
 
                 else
                     ns.spendResources( action )
@@ -1596,7 +1596,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                     if ability.channeled then
                         if debug then Hekili:Debug( "Queueing %s channel finish at %.2f.", action, state.query_time + cast ) end
-                        state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH" )
+                        state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH", state.target.unit )
     
                         -- Queue ticks because we may not have an ability.tick function, but may have resources tied to an aura.
                         if ability.tick_time then
@@ -1604,7 +1604,7 @@ function Hekili:ProcessHooks( dispName, packName )
     
                             for i = 1, ticks do
                                 if debug then Hekili:Debug( "Queueing %s channel tick (%d of %d) at %.2f.", action, i, ticks, state.query_time + ( i * ability.tick_time ) ) end
-                                state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK" )
+                                state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK", state.target.unit )
                             end
                         end
                     end
@@ -1612,7 +1612,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
                 if ability.isProjectile then
-                    state:QueueEvent( action, state.query_time + cast, nil, "PROJECTILE_IMPACT", state.target.GUID )
+                    state:QueueEvent( action, state.query_time + cast, nil, "PROJECTILE_IMPACT", state.target.unit )
                     -- state:QueueEvent( action, "projectile", true )
                 end
 
