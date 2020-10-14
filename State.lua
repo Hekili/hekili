@@ -4354,6 +4354,9 @@ local mt_default_action = {
         elseif k == 'cooldown' then
             return ability.cooldown
 
+        elseif k == 'damage' then
+            return ability.damage or 1
+
         elseif k == 'crit_pct_current' then
             return ability.critical or state.stat.crit
 
