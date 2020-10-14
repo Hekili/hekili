@@ -1295,6 +1295,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             
             handler = function ()
                 dismissPet( "ghoul" )
+                gain( 0.25 * health.max, "health" )
             end,
         },
 
