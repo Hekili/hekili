@@ -249,7 +249,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         },
         icy_veins = {
             id = 12472,
-            duration = function () return talent.thermal_void.enabled and 30 or 20 end,
+            duration = function () return talent.thermal_void.enabled and 30 or 20 + ( level > 55 and 3 or 0 ) end,
             type = "Magic",
             max_stack = 1,
         },
@@ -637,7 +637,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         cold_snap = {
             id = 235219,
             cast = 0,
-            cooldown = 300,
+            cooldown = function () return leel > 53 and 270 or 300 end,
             gcd = "spell",
 
             toggle = "cooldowns",

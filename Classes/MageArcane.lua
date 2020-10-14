@@ -293,7 +293,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         presence_of_mind = {
             id = 205025,
             duration = 3600,
-            max_stack = 3,
+            max_stack = function () return level > 53 and 3 or 2 end,
         },
         prismatic_barrier = {
             id = 235450,

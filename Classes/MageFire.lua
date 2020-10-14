@@ -113,7 +113,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         },
         combustion = {
             id = 190319,
-            duration = 12,
+            duration = function () return level > 55 and 12 or 10 end,
             type = "Magic",
             max_stack = 1,
         },
