@@ -736,6 +736,10 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                     end
                 end
             end,
+            
+            finish = function ()
+                if level > 58 then applyBuff( "furious_gaze" ) end
+            end,
         },
         
 
