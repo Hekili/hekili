@@ -102,7 +102,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         },
         fiery_brand = {
             id = 207771,
-            duration = function () return ( level > 55 or azerite.revel_in_pain.enabled ) and 10 or 8 end,
+            duration = function () return ( level > 53 or azerite.revel_in_pain.enabled ) and 10 or 8 end,
             max_stack = 1,
         },
         frailty = {
