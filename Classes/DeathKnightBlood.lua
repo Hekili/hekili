@@ -970,7 +970,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             startsCombat = true,
             texture = 136144,
 
-            noOverride = "deaths_due",
+            noOverride = 324128,
 
             handler = function ()
                 removeBuff( "crimson_scourge" )
