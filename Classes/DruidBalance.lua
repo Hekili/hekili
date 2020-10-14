@@ -1894,9 +1894,9 @@ if UnitClassBase( "player" ) == "DRUID" then
             end,
         },
 
-        -- May want to revisit this and split out swipe_cat from swipe_bear.
+        --[[ May want to revisit this and split out swipe_cat from swipe_bear.
         swipe_bear = {
-            known = 213764,
+            id = 213764,
             cast = 0,
             cooldown = function () return haste * ( buff.cat_form.up and 0 or 6 ) end,
             gcd = "spell",
@@ -1918,7 +1918,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             copy = { "swipe", 106785, 213771 },
             bind = { "swipe", "swipe_bear", "swipe_cat" }
-        },
+        }, ]]
 
 
         thrash_bear = {
