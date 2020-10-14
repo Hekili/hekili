@@ -193,7 +193,7 @@ local guidRanges = {}
 
 
 local function UnitInPhase( unit )
-    return UnitPhaseReason( unit ) == ( C_PvP.IsWarModeDesired() and 2 or nil )
+    return UnitPhaseReason( unit ) == ( not IsInInstance() and C_PvP.IsWarModeDesired() and 2 or nil )
 end
 
 
