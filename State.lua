@@ -5935,6 +5935,10 @@ function state:IsKnown( sID, notoggle )
         return false, "item [ " .. ability.item .. " ] missing"
     end
 
+    if ability.noOverride and IsSpellKnownOrOverridesKnown( ability.noOverride ) then
+        return false, "override [ " .. ability.noOverride .. " ] disallowed"
+    end
+
     if ability.known ~= nil then
         if type( ability.known ) == 'number' then
             return IsPlayerSpell( ability.known ) or IsSpellKnownOrOverridesKnown( ability.known ) or IsSpellKnown( ability.known, true )
