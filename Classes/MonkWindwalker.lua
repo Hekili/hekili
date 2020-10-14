@@ -924,7 +924,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         flying_serpent_kick = {
             id = 101545,
             cast = 0,
-            cooldown = 25,
+            cooldown = function () return level > 53 and 20 or 25 end,
             gcd = "spell",
 
             startsCombat = true,
