@@ -1451,7 +1451,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         tar_trap = {
             id = 187698,
             cast = 0,
-            cooldown = 30,
+            cooldown = function () return level > 55 and 25 or 30 end,
             gcd = "spell",
 
             startsCombat = false,
@@ -1475,6 +1475,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             handler = function ()
                 removeBuff( "dispellable_enrage" )
                 removeBuff( "dispellable_magic" )
+                if level > 53 then gain( 10, "focus" ) end
             end,
         },
 

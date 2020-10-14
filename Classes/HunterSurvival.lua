@@ -1193,10 +1193,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
             startsCombat = true,
             texture = 136020,
             
-            usable = function () return debuff.dispellable_enrage.up or debuff.dispellable_magic.up, "requires dispellable_enrage or dispellable_magic" end,
+            usable = function () return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires dispellable_enrage or dispellable_magic" end,
             handler = function ()
-                removeDebuff( "target", "dispellable_enrage" )
-                removeDebuff( "target", "dispellable_magic" )
+                removeBuff( "dispellable_enrage" )
+                removeBuff( "dispellable_magic" )
+                if level > 53 then gain( 10, "focus" ) end
             end,
         },
 
