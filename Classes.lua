@@ -5142,7 +5142,6 @@ function Hekili:SpecializationChanged()
     wipe( class.powers )
     wipe( class.gear )
     wipe( class.packs )
-    wipe( class.hooks )
     wipe( class.resources )
     wipe( class.resourceAuras )
 
