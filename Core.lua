@@ -1286,7 +1286,7 @@ function Hekili:ProcessHooks( dispName, packName )
     if not specID then return end
 
     local spec = rawget( self.DB.profile.specs, specID )
-    if not spec then return end
+    if not spec or not class.specs[ specID ] then return end
 
     local debug = self.ActiveDebug
 
@@ -1324,7 +1324,10 @@ function Hekili:ProcessHooks( dispName, packName )
     local checkstr = nil
 
     local packName = packName or spec.package
+    if not packName then return end
+
     local pack = rawget( self.DB.profile.packs, packName )
+    if not pack then return end
 
     if not pack and UI.RecommendationsStr then
         UI.RecommendationsStr = nil
