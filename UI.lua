@@ -2357,6 +2357,7 @@ function Hekili:ShowDiagnosticTooltip( q )
         tt:AddLine(fmt.FormatCode(Text, 0, SyntaxColors), 1, 1, 1, 1)
 
         if q.ActElements then
+            tt:AddLine(" ")
             tt:AddLine("Values")
             for k, v in orderedPairs(q.ActElements) do
                 if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find( "ceil" ) and not key_cache[k]:find( "floor" ) then
