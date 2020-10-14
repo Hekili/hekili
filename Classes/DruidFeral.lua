@@ -93,44 +93,35 @@ if UnitClassBase( "player" ) == "DRUID" then
     end, state )
 
 
-    local tick_calculation = setfenv( function( t, pmult_adj )
-        local remaining_ticks, potential_ticks = 0, 0
-        local duration, durrem, pmult = 0, 0, 0
-
-        duration = class.abilities[ this_action ].apply_duration or t.duration
-
-        if t.up then
-            remaining_ticks = min( t.remains, target.time_to_die ) / t.tick_time
-            -- time to next tick + triggered_duration
-            durrem = min( 0.3 * duration, t.remains ) + duration
-            if pmult_adj then remaining_ticks = remaining_ticks * t.pmultiplier end
-        end
-
-        if pmult_adj then
-            pmult = persistent_multiplier
-        end
-
-        potential_ticks = min( max(  ))
-
-
-
-    end, state )
-
-
     -- Ticks gained on refresh.
     local tick_calculator = setfenv( function( t, action, pmult )
-        local app_duration = class.abilities[ this_action ].apply_duration or t.duration
-        local duration = t.duration
+        local remaining_ticks = 0
+        local potential_ticks = 0
         local remains = t.remains
         local tick_time = t.tick_time
-
-        local max_duration = duration * 1.3
-        local extend_amt = min( app_duration, max_duration - remains )
-
-        local current_ticks = floor( remains / tick_time ) * ( pmult and t.pmultiplier or 1 )
-        local added_ticks = floor( extend_amt / tick_time) * ( pmult and persistent_multiplier or 1 )
-
-        return added_ticks - current_ticks
+    
+        local duration = t.duration
+        local app_duration = min( target.time_to_die, fight_remains, class.abilities[ this_action ].apply_duration or duration )
+        local app_ticks = app_duration / tick_time
+        
+        local ttd = fight_remains
+    
+        if active_dot[ t.key ] > 0 then
+            -- If our current target isn't debuffed, let's assume that other targets have 1 tick remaining.
+            if remains == 0 then remains = tick_time end
+            remaining_ticks = ( pmult and t.pmultiplier or 1 ) * min( remains, ttd ) / tick_time
+            duration = max( 0, min( duration, 1.3 * t.duration, ttd ) )
+        end
+    
+        potential_ticks = ( pmult and persistent_multiplier or 1 ) * min( duration, ttd ) / tick_time
+    
+        if action == "thrash_cat" then
+            return max( 0, active_enemies - active_dot.thrash_cat ) * ( pmult and persistent_multiplier or 1 ) * app_ticks + active_dot.thrash_cat * ( remaining_ticks - potential_ticks )
+        elseif action == "primal_wrath" then
+            return max( 0, active_enemies - active_dot.rip ) * ( pmult and persistent_multiplier or 1 ) * app_ticks + active_dot.rip * ( remaining_ticks - potential_ticks )
+        end
+    
+        return max( 0, potential_ticks - remaining_ticks )
     end, state )
 
 
@@ -160,6 +151,15 @@ if UnitClassBase( "player" ) == "DRUID" then
             max_stack = 1,
             copy = { 279526, "berserk_cat" },
         },
+
+        -- Alias for Berserk vs. Incarnation
+        bs_inc = {
+            alias = { "berserk", "incarnation" },
+            aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
+            aliasType = "buff",
+            duration = function () return talent.incarnation.enabled and 30 or 20 end,
+        },
+
         bear_form = {
             id = 5487,
             duration = 3600,
@@ -870,6 +870,15 @@ if UnitClassBase( "player" ) == "DRUID" then
     } ) )
 
 
+    spec:RegisterStateExpr( "bleeding", function ()
+        return debuff.rake.up or debuff.rip.up or debuff.thrash_cat.up or debuff.feral_frenzy.up
+    end )
+
+    spec:RegisterStateExpr( "effective_stealth", function ()
+        return buff.prowl.up or buff.berserk.up or buff.incarnation.up
+    end )
+
+
     -- Legendaries.  Ugh.
     spec:RegisterGear( "ailuro_pouncers", 137024 )
     spec:RegisterGear( "behemoth_headdress", 151801 )
@@ -983,7 +992,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             form = "cat_form",
             talent = "brutal_slash",
 
-            damage = function () return stat.attack_power * 0.69 end, -- TODO: Check damage.
+            damage = function () return min( 5, active_enemies ) * stat.attack_power * 0.69 end, -- TODO: Check damage.
 
             handler = function ()
                 gain( 1, "combo_points" )
@@ -1829,6 +1838,8 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             form = "cat_form",
 
+            damage = function () return 0.46 * stat.attack_power * ( bleeding and 1.2 or 1 ) * ( effective_stealth and ( 1.6 * 1 + stat.crit * ( level > 53 and 2 or 1 ) ) or 1 ) end,
+
             handler = function ()
                 if level > 53 and ( buff.prowl.up or buff.berserk.up or buff.incarnation.up ) then
                     gain( 2, "combo_points" )
@@ -2038,7 +2049,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             notalent = "brutal_slash",
             form = "cat_form",
 
-            damage = function () return stat.attack_power * 0.35 * ( ( active_dot.thrash_cat > 0 or active_dot.rake > 0 ) and 1.2 or 1 ) end, -- TODO: Check damage.
+            damage = function () return min( 5, active_enemies ) * stat.attack_power * 0.35 * ( bleeding and 1.2 or 1 ) end, -- TODO: Check damage.
 
             handler = function ()
                 gain( 1, "combo_points" )
