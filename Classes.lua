@@ -2794,7 +2794,7 @@ do
 
     all:RegisterAbility( "cyclotronic_blast", {
         id = 293491,
-        -- key = "pocketsized_computation_device",
+        known = function () return equipped.cyclotronic_blast end,
         cast = function () return 1.5 * haste end,
         channeled = function () return cooldown.cyclotronic_blast.remains > 0 end,
         cooldown = function () return equipped.cyclotronic_blast and 120 or 0 end,
@@ -2830,7 +2830,7 @@ do
 
     all:RegisterAbility( "harmonic_dematerializer", {
         id = 293512,
-        -- key = "pocketsized_computation_device",
+        known = function () return equipped.harmonic_dematerializer end,
         cast = 0,
         cooldown = 15,
         gcd = "spell",
