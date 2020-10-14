@@ -513,7 +513,7 @@ function Hekili:CheckChannel( ability, prio )
         -- We are concerned with chain and early_chain_if.
         if modifiers.interrupt_if and modifiers.interrupt_if() then
             local val = state.cooldown.global_cooldown.up and ( modifiers.interrupt_immediate() or ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 ) )
-            if self.ActiveDebug then self:Debug( "CC:  Interrupt_If is %s [%d, %s].", tostring( val ), state.ticks, tostring( state.cooldown.void_bolt.up ) ) end
+            if self.ActiveDebug then self:Debug( "CC:  Interrupt_If is %s [ticks = %d].", tostring( val ), state.ticks ) end
             state.this_action = act            
             return val
         end

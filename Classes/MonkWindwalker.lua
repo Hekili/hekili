@@ -829,10 +829,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 627486,
 
-            usable = function ()
-                if health.current == health.max then return false, "requires health deficit" end
-                return true
-            end,
             handler = function ()
                 gain( ( healing_sphere.count * stat.attack_power ) + stat.spell_power * ( 1 + stat.versatility_atk_mod ), "health" )
                 removeBuff( "gift_of_the_ox" )
