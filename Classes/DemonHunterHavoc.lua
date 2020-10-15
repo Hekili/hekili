@@ -191,6 +191,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             id = 320338,
             duration = 8,
             max_stack = 1,
+            copy = "dark_slash" -- Just in case.
         },
         eye_beam = {
             id = 198013,
@@ -704,6 +705,8 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
                 applyDebuff( "target", "essence_break" )
                 active_dot.essence_break = max( 1, active_enemies )
             end,
+
+            copy = "dark_slash"
         },
         
 
