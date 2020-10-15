@@ -9547,6 +9547,8 @@ do
         custom2 = "Custom #2",
     }, {
         __index = function( t, k )
+            if k == "essences" then k = "covenants" end
+            
             local name = k:gsub( "^(.)", strupper )
             t[k] = name
             return name
