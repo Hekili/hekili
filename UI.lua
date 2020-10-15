@@ -452,7 +452,7 @@ do
         },
 
         {
-            text = "Essences",
+            text = "Covenants",
             func = function() Hekili:FireToggle( "essences" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.essences.value end,
         },
