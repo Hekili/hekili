@@ -308,8 +308,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         unstable_affliction = {
             id = 316099,
-            duration = 21,
-            tick_time = 1.5,
+            duration = function () return level > 55 and 21 or 16 end,
+            tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) * haste end,
             type = "Magic",
             max_stack = 1,
         },

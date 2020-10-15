@@ -80,7 +80,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         astral_shift = {
             id = 108271,
-            duration = 8,
+            duration = function () return level > 53 and 12 or 8 end,
             max_stack = 1,
         },
 
@@ -666,7 +666,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             texture = 136015,
 
             handler = function ()
-                if active_enemies > 1 then
+                if level > 51 and active_enemies > 1 then
                     applyBuff( "crash_lightning_cl", nil, min( 3, active_enemies ) )
                 end
 
@@ -675,7 +675,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                     return
                 end
 
-                consume_maelstrom( 5 )
+                consume_maelstrom( 5 )                
 
                 removeBuff( "chains_of_devastation_cl" )
                 if legendary.chains_of_devastation.enabled then

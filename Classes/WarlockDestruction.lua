@@ -134,21 +134,21 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
     -- Auras
     spec:RegisterAuras( {
         active_havoc = {
-            duration = 10,
+            duration = function () return level > 53 and 12 or 10 end,
             max_stack = 1,
 
             generate = function( ah )
                 if active_enemies > 1 then
-                    if pvptalent.bane_of_havoc.enabled and debuff.bane_of_havoc.up and query_time - last_havoc < 10 then
+                    if pvptalent.bane_of_havoc.enabled and debuff.bane_of_havoc.up and query_time - last_havoc < ah.duration then
                         ah.count = 1
                         ah.applied = last_havoc
-                        ah.expires = last_havoc + 10
+                        ah.expires = last_havoc + ah.duration
                         ah.caster = "player"
                         return
-                    elseif not pvptalent.bane_of_havoc.enabled and active_dot.havoc > 0 and query_time - last_havoc < 10 then
+                    elseif not pvptalent.bane_of_havoc.enabled and active_dot.havoc > 0 and query_time - last_havoc < ah.duration then
                         ah.count = 1
                         ah.applied = last_havoc
-                        ah.expires = last_havoc + 10
+                        ah.expires = last_havoc + ah.duration
                         ah.caster = "player"
                         return
                     end
@@ -169,11 +169,11 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         -- Going to need to keep an eye on this.  active_dot.bane_of_havoc won't work due to no SPELL_AURA_APPLIED event.
         bane_of_havoc = {
             id = 200548,
-            duration = 10,
+            duration = function () return level > 53 and 12 or 10 end,
             max_stack = 1,
             generate = function( boh )
                 boh.applied = action.bane_of_havoc.lastCast
-                boh.expires = boh.applied > 0 and ( boh.applied + 10 ) or 0
+                boh.expires = boh.applied > 0 and ( boh.applied + boh.duration ) or 0
             end,
         },
         blood_pact = {
@@ -272,7 +272,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         havoc = {
             id = 80240,
-            duration = 12,
+            duration = function () return level > 53 and 12 or 10 end,
             type = "Curse",
             max_stack = 1,
         },

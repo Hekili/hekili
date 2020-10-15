@@ -9,6 +9,7 @@ local state = Hekili.State
 
 local PTR = ns.PTR
 
+
 -- Conduits
 -- [x] Call of Flame
 -- [-] High Voltage
@@ -110,7 +111,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         astral_shift = {
             id = 108271,
-            duration = 12,
+            duration = function () return level > 53 and 12 or 8 end,
             max_stack = 1,
         },
 
@@ -209,7 +210,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         flame_shock = {
             id = 188389,
-            duration = 18,
+            duration = function () return level > 58 and ( fire_elemental.up or storm_elemental.up ) and 36 or 18 end,
             tick_time = function () return 3 * haste end,
             type = "Magic",
             max_stack = 1,
@@ -964,7 +965,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         hex = {
             id = 51514,
             cast = function () return 1.7 * haste end,
-            cooldown = 30,
+            cooldown = function () return level > 55 and 20 or 30 end,
             gcd = "spell",
 
             startsCombat = false,

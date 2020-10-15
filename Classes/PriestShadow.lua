@@ -434,6 +434,11 @@ if UnitClassBase( "player" ) == "PRIEST" then
             duration = 15,
             max_stack = 2
         },
+        shadow_mend = {
+            id = 342992,
+            duration = 15,
+            max_stack = 2
+        },
         shadow_word_pain = {
             id = 589,
             duration = 16,
@@ -1236,6 +1241,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             handler = function ()
                 removeBuff( "depth_of_the_shadows" )
+                if level > 55 then addStack( "shadow_mend", nil, 1 ) end
             end,
         },
 

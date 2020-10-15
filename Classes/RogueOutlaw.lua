@@ -837,7 +837,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
         grappling_hook = {
             id = 195457,
             cast = 0,
-            cooldown = function () return ( 1 - conduit.quick_decisions.mod * 0.01 ) * ( talent.retractable_hook.enabled and 30 or 60 ) end,
+            cooldown = function () return ( 1 - conduit.quick_decisions.mod * 0.01 ) * ( talent.retractable_hook.enabled and 45 or 60 ) - ( level > 55 and 15 or 0 ) end,
             gcd = "spell",
 
             startsCombat = false,

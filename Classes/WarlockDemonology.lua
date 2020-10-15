@@ -206,7 +206,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 imp.start = now
                 imp.casts = imp.casts + 1
 
-                imp.expires = min( imp.max, now + ( ( 6 - imp.casts ) * 2 * state.haste ) )
+                imp.expires = min( imp.max, now + ( ( ( level > 55 and 7 or 6 ) - imp.casts ) * 2 * state.haste ) )
             end
         end
     end )
@@ -907,7 +907,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         call_dreadstalkers = {
             id = 104316,
             cast = function () if pvptalent.master_summoner.enabled then return 0 end
-                return buff.demonic_calling.up and 0 or ( 2 * haste )
+                return buff.demonic_calling.up and 0 or ( ( level > 53 and 1.5 or 2 ) * haste )
             end,
             cooldown = 20,
             gcd = "spell",
@@ -1483,7 +1483,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 extend_demons()
 
                 if azerite.baleful_invocation.enabled then gain( 5, "soul_shards" ) end
-                gain( 5, "soul_shards" )
+                if level > 57 then gain( 5, "soul_shards" ) end
             end,
 
             auras = {

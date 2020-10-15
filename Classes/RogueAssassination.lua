@@ -1437,7 +1437,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             handler = function ()
                 gain( 1, "combo_points" )
                 applyDebuff( "target", "crippling_poison_shiv" )
-                applyDebuff( "target", "shiv" )
+                
+                if level > 57 then applyDebuff( "target", "shiv" ) end
 
                 if conduit.wellplaced_steel.enabled and debuff.envenom.up then
                     debuff.envenom.expires = debuff.envenom.expires + conduit.wellplaced_steel.mod
