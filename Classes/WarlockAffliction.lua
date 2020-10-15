@@ -1548,12 +1548,26 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 136228,
 
             handler = function ()
+                if azerite.cascading_calamity.enabled and debuff.unstable_affliction.up then
+                    applyBuff( "cascading_calamity" )
+                end
+
                 applyDebuff( "target", "unstable_affliction" )
 
                 if azerite.dreadful_calling.enabled then
                     gainChargeTime( "summon_darkglare", 1 )
                 end
+
             end,
+
+            auras = {
+                -- Azerite
+                cascading_calamity = {
+                    id = 275378,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
         },
 
 
