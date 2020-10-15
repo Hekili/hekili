@@ -442,7 +442,7 @@ do
         local p = state.azerite
 
         for k, v in pairs( p ) do
-            v.rank = 0
+            v.__rank = 0
         end
 
         if next( class.powers ) == nil then
@@ -549,7 +549,7 @@ do
     }
 
     for _, key in pairs( essenceKeys ) do
-        state.essence[ key ] = { rank = 0, major = false }
+        state.essence[ key ] = { __rank = 0, __major = false }
     end
 
 
@@ -557,7 +557,7 @@ do
         local e = state.essence
 
         for k, v in pairs( e ) do
-            v.rank = 0
+            v.__rank = 0
         end
 
         class.active_essence = nil
