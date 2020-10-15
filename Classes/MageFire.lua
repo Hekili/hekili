@@ -566,7 +566,7 @@ if UnitClassBase( "player" ) == "MAGE" then
             texture = 135856,
 
             debuff = function () return not runeforge.disciplinary_command.enabled and "casting" or nil end,
-            readyTime = function () if debuff.casting.up then return state.timeToInterrupt end end,
+            readyTime = function () if debuff.casting.up then return state.timeToInterrupt() end end,
 
             handler = function ()
                 interrupt()
