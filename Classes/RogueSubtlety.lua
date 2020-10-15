@@ -656,6 +656,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
             end,
 
             handler = function ()
+                removeBuff( "cold_blood" )
+
                 applyDebuff( "target", "find_weakness" )
 
                 if talent.prey_on_the_weak.enabled then
@@ -1126,6 +1128,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             usable = function () return stealthed.all, "requires stealth" end,
             handler = function ()
+                removeBuff( "cold_blood" )
+
                 gain( ( buff.shadow_blades.up and 3 or 2 ) + ( buff.the_rotten.up and 3 or 0 ), "combo_points" )
                 removeBuff( "symbols_of_death_crit" )
 
@@ -1423,7 +1427,33 @@ if UnitClassBase( "player" ) == "ROGUE" then
             handler = function ()
                 applyBuff( "wound_poison" )
             end,
-        }
+        },
+
+
+        -- PvP Ability (by request)
+        cold_blood = {
+            id = 213981,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+            
+            pvptalent = "cold_blood",            
+
+            startsCombat = true,
+            texture = 135988,
+            
+            handler = function ()
+                applyBuff( "cold_blood" )
+            end,
+
+            auras = {
+                cold_blood = {
+                    id = 213981,
+                    duration = 3600,
+                    max_stack = 1,
+                },        
+            }
+        },
 
 
     } )
