@@ -247,7 +247,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         sweeping_strikes = {
             id = 260708,
-            duration = 15,
+            duration = function () return level > 57 and 15 or 12 end,
             max_stack = 1,
         },
         --[[ tactician = {
@@ -653,7 +653,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         die_by_the_sword = {
             id = 118038,
             cast = 0,
-            cooldown = function () return 180 - conduit.stalwart_guardian.mod * 0.001 end,
+            cooldown = function () return ( level > 51 and 120 or 180 ) - conduit.stalwart_guardian.mod * 0.001 end,
             gcd = "spell",
 
             startsCombat = false,

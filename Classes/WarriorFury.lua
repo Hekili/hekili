@@ -213,7 +213,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         recklessness = {
             id = 1719,
-            duration = function () return 12 * ( 1 + conduit.depths_of_insanity.mod * 0.01 ) end,
+            duration = function () return ( level > 51 and 12 or 10 ) * ( 1 + conduit.depths_of_insanity.mod * 0.01 ) end,
             max_stack = 1,
         },
         siegebreaker = {

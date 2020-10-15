@@ -349,7 +349,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 end,
             gcd = "off",
 
-            spend = function () return -30 * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
+            spend = function () return ( level > 51 and -40 or -30 ) * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
             spendType = "rage",
 
             toggle = "cooldowns",
