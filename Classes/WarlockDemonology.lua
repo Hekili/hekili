@@ -206,7 +206,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 imp.start = now
                 imp.casts = imp.casts + 1
 
-                imp.expires = min( imp.max, now + ( ( ( level > 55 and 7 or 6 ) - imp.casts ) * 2 * state.haste ) )
+                imp.expires = min( imp.max, now + ( ( ( state.level > 55 and 7 or 6 ) - imp.casts ) * 2 * state.haste ) )
             end
         end
     end )
