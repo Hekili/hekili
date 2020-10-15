@@ -4128,6 +4128,9 @@ local mt_default_debuff = {
         elseif k == 'refreshable' then
             -- if state.isCyclingTargets( nil, t.key ) then return true end
             return t.remains < 0.3 * ( aura and aura.duration or t.duration or 30 )
+        
+        elseif k == 'ticks_gained_on_refresh' then
+            return min( 1.3 * t.duration, t.remains + t.duration ) / ( t.tick_time )
 
         elseif k == 'time_to_refresh' then
             -- if state.isCyclingTargets( nil, t.key ) then return 0 end
