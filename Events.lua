@@ -6,6 +6,7 @@ local Hekili = _G[ addon ]
 
 local class = Hekili.Class
 local state = Hekili.State
+local PTR = ns.PTR
 local TTD = ns.TTD
 
 local formatKey = ns.formatKey
@@ -1524,17 +1525,26 @@ do
         [333950] = "brons_call_to_action",               -- Forgelite Prime Mikanikos
     }
 
-    local soulbindEvents = {
-        "SOULBIND_ACTIVATED",
-        "SOULBIND_CONDUIT_INSTALLED",
-        "SOULBIND_CONDUIT_UNINSTALLED",
-        "SOULBIND_CONDUITS_RESET",
-        "SOULBIND_NODE_LEARNED",
-        "SOULBIND_NODE_UNLEARNED",
-        "SOULBIND_NODE_UPDATED",
-        "SOULBIND_PATH_CHANGED",
-        "PLAYER_ENTERING_WORLD"
-    }
+    local soulbindEvents
+    
+    if PTR then 
+        soulbindEvents = {
+            "SOULBIND_ACTIVATED",
+            "SOULBIND_CONDUIT_CHARGES_UPDATED",
+            "SOULBIND_CONDUIT_INSTALLED",
+            "SOULBIND_CONDUIT_UNINSTALLED",
+            "SOULBIND_FORGE_INTERACTION_STARTED",
+            "SOULBIND_FORGE_INTERACTION_ENDED",
+            "SOULBIND_NODE_LEARNED",
+            "SOULBIND_NODE_UNLEARNED",
+            "SOULBIND_NODE_UPDATED",
+            "SOULBIND_PATH_CHANGED",
+            "SOULBIND_PENDING_CONDUIT_CHANGED",
+            "PLAYER_ENTERING_WORLD"
+        }
+    else
+        soulbindEvents = {}
+    end
 
     local GetActiveSoulbindID, GetSoulbindData, GetConduitSpellID = C_Soulbinds.GetActiveSoulbindID, C_Soulbinds.GetSoulbindData, C_Soulbinds.GetConduitSpellID
 
