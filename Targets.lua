@@ -126,8 +126,6 @@ do
             if slotType and spell and spells[ spell ] then
                 petAction = spell
                 petSlot = i
-
-                Hekili:Error( "Pet Action is %d and it is in slot %d.", petAction, petSlot )                
                 return true
             end
         end
