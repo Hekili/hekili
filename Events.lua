@@ -915,13 +915,15 @@ do
 
         -- Demon Hunter/Havoc
         [7041] = { "collective_anguish", 1, 577 }, -- 337504
-        [7042] = { "halfgiant_empowerment", 1, 577 }, -- 337532
-        [7043] = { "darkglare_boon", 1, 577 }, -- 337534
+        -- [7042] = { "halfgiant_empowerment", 1, 577 }, -- 337532
+        [7043] = { "darkglare_medallion", 1, 577 }, -- 337534
         [7044] = { "darkest_hour", 1, 577 }, -- 337539
-        [7049] = { "inner_demons", 1, 577 }, -- 337548
+        -- [7049] = { "inner_demons", 1, 577 }, -- 337548
         [7050] = { "chaos_theory", 1, 577 }, -- 337551
         [7051] = { "erratic_fel_core", 1, 577 }, -- 337685
         [7052] = { "fel_bombardment", 1, 577 }, -- 337775
+        [7218] = { "darker_nature", 1, 577 }, -- 346264
+        [7219] = { "burning_wound", 1, 577 }, -- 346279
 
         -- Demon Hunter/Vengeance
         [7045] = { "spirit_of_the_darkness_flame", 1, 581 }, -- 337541
