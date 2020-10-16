@@ -1293,6 +1293,8 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             startsCombat = true,
             texture = 136133,
             
+            usable = function () return pet.alive, "requires an undead pet" end,
+
             handler = function ()
                 dismissPet( "ghoul" )
                 gain( 0.25 * health.max, "health" )
