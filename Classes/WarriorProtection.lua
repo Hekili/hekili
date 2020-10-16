@@ -425,7 +425,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 100,
             cast = 0,
             cooldown = 20,
-            gcd = "spell",
+            gcd = "off",
 
             spend = function () return -20 * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
             spendType = "rage",
@@ -616,7 +616,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 3411,
             cast = 0,
             cooldown = 30,
-            gcd = "spell",
+            gcd = "off",
             
             startsCombat = true,
             texture = 132365,

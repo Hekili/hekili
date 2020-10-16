@@ -553,7 +553,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             charges = function () return talent.double_time.enabled and 2 or nil end,
             cooldown = function () return talent.double_time.enabled and 17 or 20 end,
             recharge = function () return talent.double_time.enabled and 17 or 20 end,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = true,
             texture = 132337,
