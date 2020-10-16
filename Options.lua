@@ -7667,12 +7667,12 @@ do
 
         db.args.errors = {
             type = "group",
-            name = "Errors",
+            name = "Warnings",
             order = 99,
             args = {
                 errName = {
                     type = "select",
-                    name = "Error Identifier",
+                    name = "Warning Identifier",
                     width = "full",
                     order = 1,
 
@@ -7694,7 +7694,7 @@ do
 
                 errorInfo = {
                     type = "input",
-                    name = "Error Information",
+                    name = "Warning Information",
                     width = "full",
                     multiline = 10,
                     order = 2,
