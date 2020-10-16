@@ -5183,9 +5183,8 @@ do
 
                                 exportString = {
                                     type = "input",
-                                    name = "Priority Export String",
+                                    name = "Priority Export String (CTRL+A to Select, CTRL+C to Copy)",
                                     order = 3,
-                                    multiline = 8,
                                     get = function ()
                                         if rawget( Hekili.DB.profile.packs, shareDB.actionPack ) then
                                             shareDB.export = self:SerializeActionPack( shareDB.actionPack )
@@ -6565,8 +6564,7 @@ do
                             args = {
                                 exportString = {
                                     type = "input",
-                                    name = "Export String",
-                                    multiline = 20,
+                                    name = "Export String (CTRL+A to Select, CTRL+C to Copy)",
                                     get = function( info )
                                         return self:SerializeActionPack( pack )
                                     end,
