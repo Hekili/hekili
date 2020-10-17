@@ -190,8 +190,51 @@ local lastCycle = 0
 local guidRanges = {}
 
 
+-- Chromie Time impacts phasing as well.
+local chromieTime = false
+
+do
+    local ct = CreateFrame( "Frame" )    
+
+    ct:RegisterEvent( "CHROMIE_TIME_OPEN" )
+    ct:RegisterEvent( "CHROMIE_TIME_CLOSE" )
+    ct:RegisterEvent( "PLAYER_ENTERING_WORLD" )
+
+    function UpdateChromieTime()
+        chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
+    end
+
+    ct:SetScript( "OnEvent", function( self, event )
+        chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
+        C_Timer.After( 2, UpdateChromieTime )
+    end )
+end
+
+
+-- War Mode
+local warmode = false
+
+do
+    local wm = CreateFrame( "Frame" )
+
+    wm:RegisterEvent( "UI_INFO_MESSAGE" )
+    wm:RegisterEvent( "PLAYER_ENTERING_WORLD" )
+
+    wm:SetScript( "OnEvent", function( self, event, val )
+        warmode = C_PvP.IsWarModeDesired()
+    end )
+end
+
+
 local function UnitInPhase( unit )
-    return UnitPhaseReason( unit ) == ( not IsInInstance() and C_PvP.IsWarModeDesired() and 2 or nil )
+    local reason = UnitPhaseReason( unit )
+    local wm = not IsInInstance() and warmode
+
+    if reason == 3 and chromieTime then return true end
+    if reason == 2 and wm then return true end
+    if reason == nil then return true end
+
+    return false
 end
 
 
@@ -243,8 +286,9 @@ do
                             excluded = not Hekili:TargetIsNearPet( unit )
                         end
 
+                        local _, range
                         if not excluded and checkPlates then
-                            local _, range = RC:GetRange( unit )
+                            _, range = RC:GetRange( unit )
                             guidRanges[ guid ] = range
 
                             excluded = range and range > spec.nameplateRange or false
@@ -281,8 +325,9 @@ do
                                 excluded = not Hekili:TargetIsNearPet( unit )
                             end
 
+                            local _, range
                             if not excluded and checkPlates then
-                                local _, range = RC:GetRange( unit )
+                                _, range = RC:GetRange( unit )
                                 guidRanges[ guid ] = range
 
                                 excluded = range and range > spec.nameplateRange or false
