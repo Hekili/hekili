@@ -278,6 +278,8 @@ end
 
 -- Duplicate spell info lookup.
 function ns.FindUnitBuffByID( unit, id, filter )
+    if unit == "player" then return GetPlayerAuraBySpellID( id ) end
+
     local i = 1
     local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitBuff( unit, i, filter )
 
@@ -292,6 +294,8 @@ end
 
 
 function ns.FindUnitDebuffByID( unit, id, filter )
+    if unit == "player" then return GetPlayerAuraBySpellID( id ) end
+    
     local i = 1
     local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitDebuff( unit, i, filter )
 

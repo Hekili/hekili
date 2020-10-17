@@ -965,14 +965,7 @@ all:RegisterAuras( {
                 end
             end
 
-            local i = 1
-            local name, _, count, _, duration, expires, caster, _, _, spellID = UnitBuff( 'player', i )
-
-            while( name ) do
-                if spellID == 2525 then break end
-                i = i + 1
-                name, _, count, _, duration, expires, caster, _, _, spellID = UnitBuff( 'player', i )
-            end
+            local name, _, count, _, duration, expires, caster, _, _, spellID = GetPlayerAuraBySpellID( "player", t.id )
 
             if name then
                 buff.bloodlust.count = max( 1, count )
