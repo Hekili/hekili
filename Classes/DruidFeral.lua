@@ -778,6 +778,10 @@ if UnitClassBase( "player" ) == "DRUID" then
             end
         end
 
+        if prev_gcd[1].feral_frenzy and now - action.feral_frenzy.lastCast < gcd.execute and combo_points.current < 5 then
+            gain( 5, "combo_points" )
+        end
+
         opener_done = nil
         last_bloodtalons = nil
     end )
