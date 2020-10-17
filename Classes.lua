@@ -965,7 +965,7 @@ all:RegisterAuras( {
                 end
             end
 
-            local name, _, count, _, duration, expires, caster, _, _, spellID = GetPlayerAuraBySpellID( "player", t.id )
+            local name, _, count, _, duration, expires, caster, _, _, spellID = GetPlayerAuraBySpellID( 2825 )
 
             if name then
                 t.count = max( 1, count )
@@ -980,7 +980,6 @@ all:RegisterAuras( {
             t.applied = 0
             t.caster = 'nobody'
         end,
-
     },
 
     exhaustion = {
