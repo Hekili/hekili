@@ -472,7 +472,11 @@ function Hekili:CheckChannel( ability, prio )
 
     local channel = state.channel
     local aura = class.auras[ channel ]
-    if not aura or not aura.tick_time then return true end
+
+    if not aura or not aura.tick_time then
+        if self.ActiveDebug then self:Debug( "CC: No aura / no aura.tick_time to forecast channel breaktimes; don't break it." ) end
+        return false
+    end
 
     local modifiers = scripts.Channels[ state.system.packName ]
     modifiers = modifiers and modifiers[ channel ] or default_modifiers
@@ -497,6 +501,7 @@ function Hekili:CheckChannel( ability, prio )
             return chain
         end
         
+        if self.ActiveDebug then self:Debug( "CC: channel == ability, not breaking." ) end
         return false
     else
         -- If interrupt_global is flagged, we interrupt for any potential cast.  Don't bother with additional testing.
@@ -1225,8 +1230,10 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     state.selectionTime = 60
     state.selectedAction = nil
 
+    if self.ActiveDebug then self:Debug( "Checking if I'm casting and should break it.  [ %s, %s, %.2f, %s ]", tostring( state.canBreakChannel ), tostring( state.buff.casting.up ), state.buff.casting.remains, tostring( state.spec.canCastWhileCasting ) ) end
+
     if not state.canBreakChannel and state.buff.casting.up and state.spec.canCastWhileCasting then
-        self:Debug( "Whitelist of castable-while-casting spells applied." )
+        self:Debug( "Whitelist of castable-while-casting spells applied [ %d, %.2f ]", state.buff.casting.v1, state.buff.casting.remains )
         state:SetWhitelist( state.spec.castableWhileCasting )
     else
         self:Debug( "No whitelist." )
@@ -1285,9 +1292,6 @@ function Hekili:ProcessHooks( dispName, packName )
     local specID = state.spec.id
     if not specID then return end
 
-    local spec = rawget( self.DB.profile.specs, specID )
-    if not spec or not class.specs[ specID ] then return end
-
     local debug = self.ActiveDebug
 
     if debug then
@@ -1323,13 +1327,15 @@ function Hekili:ProcessHooks( dispName, packName )
 
     local checkstr = nil
 
+    local spec = rawget( self.DB.profile.specs, specID )
+    if not spec or not class.specs[ specID ] then return end
+
     local packName = packName or spec.package
     if not packName then return end
 
     local pack = rawget( self.DB.profile.packs, packName )
-    if not pack then return end
 
-    if not pack and UI.RecommendationsStr then
+    if not ( spec and class.specs[ specID ] and pack ) and UI.RecommendationsStr then
         UI.RecommendationsStr = nil
         UI.NewRecommendations = true 
         return 

@@ -674,7 +674,7 @@ do
         end
 
         cycle.expires = cDebuff.expires
-        cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0 )
+        cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
         cycle.maxTTD  = ability.max_ttd
 
         cycle.aura = aura
