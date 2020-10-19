@@ -3691,8 +3691,11 @@ do
                         values = function ()
                             table.wipe( toggles )
 
+                            local t = class.abilities[ v ].toggle or "none"
+                            if t == "essences" then t = "covenants" end
+
                             toggles.none = "None"
-                            toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
+                            toggles.default = "Default |cffffd100(" .. t .. ")|r"
                             toggles.defensives = "Defensives"
                             toggles.essences = "Covenants"
                             toggles.cooldowns = "Cooldowns"
