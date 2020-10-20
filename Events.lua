@@ -690,7 +690,7 @@ do
         -- Paladin/Holy
         [7053] = { "uthers_devotion", 1, 65 }, -- 337600
         [7054] = { "vanguards_momentum", 1, 65 }, -- 337638
-        [7055] = { "of_dusk_and_dawn", 1, 65 }, -- 337746
+        [7055] = { "from_dusk_till_dawn", 1, 65 }, -- 337746
         [7056] = { "the_magistrates_judgment", 1, 65 }, -- 337681
         [7057] = { "shadowbreaker_dawn_of_the_sun", 1, 65 }, -- 337812
         [7058] = { "inflorescence_of_the_sunwell", 1, 65 }, -- 337777
@@ -872,7 +872,7 @@ do
         -- Warlock/Affliction
         [7025] = { "wilfreds_sigil_of_superior_summoning", 1, 265 }, -- 337020
         [7026] = { "claw_of_endereth", 1, 265 }, -- 337038
-        [7027] = { "mark_of_borrowed_power", 1, 265 }, -- 337057
+        [7027] = { "relic_of_demonic_synergy", 1, 265 }, -- 337057
         [7028] = { "pillars_of_the_dark_portal", 1, 265 }, -- 337065
         [7029] = { "perpetual_agony_of_azjaqir", 1, 265 }, -- 337106
         [7030] = { "sacrolashs_dark_strike", 1, 265 }, -- 337111
