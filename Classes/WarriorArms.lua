@@ -697,6 +697,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 elseif buff.stone_heart.up then removeBuff( "stone_heart" )
                 else removeBuff( "sudden_death" ) end
 
+                if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
+
                 if conduit.ashen_juggernaut.enabled then addStack( "ashen_juggernaut", nil, 1 ) end
             end,
 
@@ -707,7 +709,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 ashen_juggernaut = {
                     id = 335234,
                     duration = 8,
-                    max_stack = function () return max( 6, conduit.ashen_juggernaut.mod ) end
+                    max_stack = function () return max( 8, conduit.ashen_juggernaut.mod ) end
                 }
             }
         },
@@ -857,7 +859,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             spend = function ()
                 if buff.deadly_calm.up then return 0 end
-                return 30
+                return 30 - ( buff.battlelord.up and 12 or 0 )
             end,
             spendType = "rage",
 
@@ -868,8 +870,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyDebuff( "target", "mortal_wounds" )
                 applyDebuff( "target", "deep_wounds" )
                 removeBuff( "overpower" )
-                removeStack( "deadly_calm" )
+                removeBuff( "exploiter" )
+
+                if buff.deadly_calm.up then
+                    removeStack( "deadly_calm" )
+                else
+                    removeBuff( "battlelord" )
+                end
             end,
+
+            auras = {
+                battlelord = {
+                    id = 346369,
+                    duration = 10,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1200,6 +1216,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 if talent.fervor_of_battle.enabled and buff.crushing_assault.up then removeBuff( "crushing_assault" ) end
                 removeBuff( "collateral_damage" )
             end,
+
+            auras = {
+                merciless_bonegrinder = {
+                    id = 346574,
+                    duration = 9,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1334,6 +1358,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     if extra > 0 then spend( extra, "rage" ) end
                     gain( 4 + floor( 0.2 * extra ), "rage" )
                 end
+
+                if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
 
                 removeBuff( "sudden_death" )
 

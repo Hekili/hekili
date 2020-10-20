@@ -370,6 +370,16 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
 
         -- Legendaries
+        cold_front = {
+            id = 327327,
+            duration = 30,
+            max_stack = 15
+        },
+        cold_front_ready = {
+            id = 327330,
+            duration = 30,
+            max_stack = 1
+        },
         expanded_potential = {
             id = 327495,
             duration = 300,
@@ -779,6 +789,16 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                     frost_info.virtual_brain_freeze = false
                 end
 
+                removeBuff( "cold_front_ready" )
+
+                if legendary.cold_front.enabled then
+                    addStack( "cold_front" )
+                    if buff.cold_front.stack == 15 then
+                        removeBuff( "cold_front" )
+                        applyBuff( "cold_front_ready" )
+                    end
+                end
+
                 applyDebuff( "target", "flurry" )
                 addStack( "icicles", nil, 1 )
 
@@ -855,6 +875,16 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if talent.bone_chilling.enabled then addStack( "bone_chilling", nil, 1 ) end
 
                 removeBuff( "ice_floes" )
+
+                removeBuff( "cold_front_ready" )
+
+                if legendary.cold_front.enabled then
+                    addStack( "cold_front" )
+                    if buff.cold_front.stack == 15 then
+                        removeBuff( "cold_front" )
+                        applyBuff( "cold_front_ready" )
+                    end
+                end
 
                 if azerite.tunnel_of_ice.enabled then
                     if frost_info.last_target_virtual == target.unit then

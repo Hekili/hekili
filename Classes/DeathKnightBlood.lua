@@ -976,7 +976,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 removeBuff( "crimson_scourge" )
 
                 if legendary.phearomones.enabled and buff.death_and_decay.down then
-                    stat.haste = stat.haste + 0.1
+                    stat.haste = stat.haste + 0.08
                 end
 
                 applyBuff( "death_and_decay" )
@@ -1523,7 +1523,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 removeBuff( "crimson_scourge" )
 
                 if legendary.phearomones.enabled and buff.death_and_decay.down then
-                    stat.haste = stat.haste + 0.1
+                    stat.haste = stat.haste + ( state.spec.blood and 0.08 or 0.15 )
                 end
 
                 applyBuff( "death_and_decay" )

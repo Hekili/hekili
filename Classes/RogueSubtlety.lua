@@ -327,9 +327,16 @@ if UnitClassBase( "player" ) == "ROGUE" then
         -- Legendaries (Shadowlands)
         deathly_shadows = {
             id = 341202,
-            duration = 15,
-            max_stack = 3,
+            duration = 12,
+            max_stack = 1,
         },
+
+        mark_of_the_master_assassin = {
+            id = 318587,
+            duration = 3600,
+            max_stack = 1
+        },
+
         the_rotten = {
             id = 341134,
             duration = 3,
@@ -477,7 +484,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 cooldown.secret_technique.expires = max( 0, cooldown.secret_technique.expires - amt )
             end
 
-            cooldown.shadow_blades.expires = max( 0, cooldown.shadow_blades.expires - ( amt * 1.5 ) )
+            cooldown.shadow_dance.expires = max( 0, cooldown.shadow_dance.remains - ( amt * ( talent.enveloping_shadows.enabled and 1.5 or 1 ) ) )
         end
     end
 
@@ -506,6 +513,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
         if stealthed.mantle and ( not a or a.startsCombat ) then
             if talent.subterfuge.enabled and stealthed.mantle then
                 applyBuff( "subterfuge" )
+            end
+
+            if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
+                applyBuff( "mark_of_the_master_assassin", 4 )
             end
 
             if buff.stealth.up then 
@@ -610,9 +621,21 @@ if UnitClassBase( "player" ) == "ROGUE" then
             handler = function ()
                 if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity", nil, 1 ) end
                 if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
+
+                if buff.finality_black_powder.up then removeBuff( "finality_black_powder" )
+                elseif legendary.finality.enabled then applyBuff( "finality_black_powder" ) end
+
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
                 if conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
             end,
+
+            auras = {
+                finality_black_powder = {
+                    id = 340603,
+                    duration = 30,
+                    max_stack = 1
+                }
+            }
         },
         
 
@@ -786,6 +809,9 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 end
                 removeBuff( "nights_vengeance" )
 
+                if buff.finality_eviscerate.up then removeBuff( "finality_eviscerate" )
+                elseif legendary.finality.enabled then applyBuff( "finality_eviscerate" ) end
+
                 if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
 
@@ -798,6 +824,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     id = 341550,
                     duration = 5,
                     max_stack = 1
+                },
+                finality_eviscerate = {
+                    id = 340600,
+                    duration = 30,
+                    max_stack = 1 
                 }
             }
         },
@@ -1007,9 +1038,20 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if talent.alacrity.enabled and combo_points.current >= 5 then addStack( "alacrity", nil, 1 ) end
                 applyDebuff( "target", "rupture", 4 + ( 4 * combo_points.current ) )
 
+                if buff.finality_rupture.up then removeBuff( "finality_rupture" )
+                elseif legendary.finality.enabled then applyBuff( "finality_rupture" ) end
+
                 if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
             end,
+
+            auras = {
+                finality_rupture = {
+                    id = 340601,
+                    duration = 30,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -1168,7 +1210,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 25,
             gcd = "spell",
             
-            spend = function () return 25 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
+            spend = function ()
+                if legendary.tiny_toxic_blades.enabled then return 0 end
+                return 20 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
+            end,
             spendType = "energy",
             
             startsCombat = true,
@@ -1405,6 +1450,12 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if legendary.deathly_shadows.enabled then
                     gain( 5, "combo_points" )
                     applyBuff( "deathly_shadows" )
+                end
+
+                if legendary.invigorating_shadowdust.enabled then
+                    for name, cd in pairs( cooldown ) do
+                        if cd.remains > 0 then reduceCooldown( name, 15 ) end
+                    end
                 end
 
                 if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end

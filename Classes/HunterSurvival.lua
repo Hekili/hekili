@@ -1062,7 +1062,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 butchers_bone_fragments = {
                     id = 336908,
                     duration = 12,
-                    max_stack = 10,
+                    max_stack = 6,
                 },
             }
         },

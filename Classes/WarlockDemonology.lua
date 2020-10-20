@@ -331,8 +331,14 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if resource == "soul_shards" and buff.nether_portal.up then
-            summon_demon( "other", 15, amt )
+        if resource == "soul_shards" and amt > 0 then
+            if buff.nether_portal.up then
+                summon_demon( "other", 15, amt )
+            end
+
+            if legendary.wilfreds_sigil_of_superior_summoning.enabled then
+                reduceCooldown( "summon_demonic_tyrant", amt * 0.6 )
+            end
         end
     end )
 
@@ -1064,7 +1070,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
         demonic_gateway = {
             id = 111771,
-            cast = 2,
+            cast = function () return legendary.pillars_of_the_dark_portal.eanbled and 0 or 2 end,
             cooldown = 10,
             gcd = "spell",
 
@@ -1274,8 +1280,20 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             handler = function ()
                 if azerite.explosive_potential.enabled and buff.wild_imps.stack >= 3 then applyBuff( "explosive_potential" ) end
+                if legendary.implosive_potential.enabled and active_enemies > 2 then
+                    if buff.implosive_potential.down then stat.haste = stat.haste + 0.05 * buff.wild_imps.stack end
+                    applyBuff( "implosive_potential" )
+                end
                 consume_demons( "wild_imps", "all" )
             end,
+
+            auras = {
+                implosive_potential = {
+                    id = 337139,
+                    duration = 8,
+                    max_stack = 1
+                }
+            }
         },
 
 

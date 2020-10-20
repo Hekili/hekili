@@ -755,7 +755,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             notalent = "fracture",
 
             handler = function ()
-                addStack( "soul_fragments", nil, 1 )
+                addStack( "soul_fragments", nil, level > 19 and 2 or 1 )
             end,
         },
 

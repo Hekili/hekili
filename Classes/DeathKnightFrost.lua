@@ -438,7 +438,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         },
         pillar_of_frost = {
             id = 51271,
-            duration = 15,
+            duration = 12,
             max_stack = 1,
         },
         razorice = {
@@ -1176,7 +1176,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         pillar_of_frost = {
             id = 51271,
             cast = 0,
-            cooldown = 45,
+            cooldown = 60,
             gcd = "off",
 
             startsCombat = false,

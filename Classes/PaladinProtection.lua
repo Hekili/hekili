@@ -75,7 +75,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
     } )
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         cleansing_light = 3472, -- 236186
         guarded_by_the_light = 97, -- 216855
         guardian_of_the_forgotten_queen = 94, -- 228049
@@ -155,7 +155,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             generate = function( c, type )
                 if type == "buff" and FindUnitBuffByID( "player", 188370 ) then
                     local dropped, expires
-                    
+
                     for i = 1, 5 do
                         local up, name, start, duration = GetTotemInfo( i )
 
@@ -343,7 +343,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             id = 246973,
             duration = 8,
             max_stack = 1,
-        } )        
+        } )
 
     spec:RegisterGear( "tier21", 152151, 152153, 152149, 152148, 152150, 152152 )
     spec:RegisterGear( "class", 139690, 139691, 139692, 139693, 139694, 139695, 139696, 139697 )
@@ -357,7 +357,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
     spec:RegisterGear( "uthers_guard", 137105 )
 
     spec:RegisterGear( "soul_of_the_highlord", 151644 )
-    spec:RegisterGear( "pillars_of_inmost_light", 151812 )    
+    spec:RegisterGear( "pillars_of_inmost_light", 151812 )
 
 
     spec:RegisterStateExpr( "last_consecration", function () return action.consecration.lastCast end )
@@ -390,9 +390,9 @@ if UnitClassBase( "player" ) == "PALADIN" then
             end
             if legendary.relentless_inquisitor.enabled then
                 addStack( "relentless_inquisitor", nil, amt )
-            end                
+            end
             if legendary.of_dusk_and_dawn.enabled and holy_power.current == 0 then applyBuff( "blessing_of_dusk" ) end
-        end        
+        end
     end )
 
 
@@ -448,6 +448,10 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
 
                 if conduit.vengeful_shock.enabled then applyDebuff( "target", "vengeful_shock" ) end
+
+                if legendary.bulwark_of_righteous_fury.enabled then
+                    addStack( "bulwark_of_righteous_fury", nil, min( 5, active_enemies ) )
+                end
             end,
 
             auras = {
@@ -664,10 +668,10 @@ if UnitClassBase( "player" ) == "PALADIN" then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135890,
-            
+
             handler = function ()
                 removeBuff( "concentration_aura" )
                 removeBuff( "devotion_aura" )
@@ -675,17 +679,17 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 applyBuff( "crusader_aura" )
             end,
         },
-        
+
 
         devotion_aura = {
             id = 465,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 135893,
-            
+
             handler = function ()
                 removeBuff( "concentration_aura" )
                 removeBuff( "crusader_aura" )
@@ -822,20 +826,25 @@ if UnitClassBase( "player" ) == "PALADIN" then
         },
 
 
-        
+
 
         hammer_of_wrath = {
             id = 24275,
             cast = 0,
             cooldown = 7.5,
             gcd = "spell",
-            
+
             startsCombat = true,
             texture = 613533,
-            
+
             usable = function () return target.health_pct < 20 or ( level > 57 and buff.avenging_wrath.up ) or buff.hammer_of_wrath_hallow.up, "requires low health, avenging_wrath, or ashen_hallow" end,
             handler = function ()
                 gain( buff.holy_avenger.up and 3 or 1, "holy_power" )
+
+                if legendary.the_mad_paragon.enabled then
+                    if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 1 end
+                    if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 1 end
+                end
             end,
         },
 
@@ -865,14 +874,14 @@ if UnitClassBase( "player" ) == "PALADIN" then
             cast = 0,
             cooldown = 180,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 571555,
 
             talent = "holy_avenger",
-            
+
             handler = function ()
                 applyBuff( "holy_avenger" )
             end,
@@ -906,7 +915,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 if talent.judgment_of_light.enabled then applyDebuff( "target", "judgment_of_light", nil, 25 ) end
 
                 if talent.fist_of_justice.enabled then
-                    cooldown.hammer_of_justice.expires = max( 0, cooldown.hammer_of_justice.expires - 6 ) 
+                    cooldown.hammer_of_justice.expires = max( 0, cooldown.hammer_of_justice.expires - 6 )
                 end
             end,
         },
@@ -939,14 +948,14 @@ if UnitClassBase( "player" ) == "PALADIN" then
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "cooldowns",
 
             startsCombat = true,
             texture = 589117,
 
             talent = "moment_of_glory",
-            
+
             handler = function ()
                 setCooldown( "avengers_shield", 0 )
                 applyBuff( "moment_of_glory", nil, 3 )
@@ -1009,17 +1018,17 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 applyDebuff( "target", "repentance" )
             end,
         },
-        
+
 
         retribution_aura = {
             id = 183435,
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 135889,
-            
+
             handler = function ()
                 removeBuff( "concentration_aura" )
                 removeBuff( "crusader_aura" )
@@ -1036,7 +1045,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 3
+                return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -1046,7 +1055,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
             talent = "seraphim",
 
             handler = function ()
-                removeBuff( "divine_purpose" )                
+                removeBuff( "divine_purpose" )
+                removeBuff( "the_magistrates_judgment" )
                 local used = min( 2, cooldown.shield_of_the_righteous.charges )
                 applyBuff( "seraphim", used * 8 )
             end,
@@ -1062,7 +1072,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 3
+                return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -1074,7 +1084,9 @@ if UnitClassBase( "player" ) == "PALADIN" then
             handler = function ()
                 if talent.redoubt.enabled then addStack( "redoubt", nil, 3 ) end
 
-                removeBuff( "divine_purpose" )                
+                removeBuff( "bulwark_of_righteous_fury" )
+                removeBuff( "divine_purpose" )
+                removeBuff( "the_magistrates_judgment" )
 
                 if buff.shining_light_full.up then applyBuff( "shining_light_full" )
                 else
@@ -1100,13 +1112,13 @@ if UnitClassBase( "player" ) == "PALADIN" then
             cast = function () return 1.5 * ( 1 + ( conduit.wrench_evil.mod * 0.01 ) ) end,
             cooldown = 15,
             gcd = "spell",
-            
+
             spend = 0.1,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 571559,
-            
+
             handler = function ()
                 applyDebuff( "turn_evil" )
             end,
@@ -1118,20 +1130,22 @@ if UnitClassBase( "player" ) == "PALADIN" then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function ()
                 if buff.divine_purpose.up or buff.shining_light.stack == 5 or buff.royal_decree.up then return 0 end
-                return 3
+                return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
-            
+
             startsCombat = false,
             texture = 133192,
-            
+
             handler = function ()
                 if buff.royal_decree.up then removeBuff( "royal_decree" )
                 elseif buff.divine_purpose.up then removeBuff( "divine_purpose" )
                 else removeBuff( "shining_light_full" ) end
+
+                removeBuff( "the_magistrates_judgment" )
 
                 gain( 2.9 * stat.spell_power * ( 1 + stat.versatility_atk_mod ), "health" )
 
@@ -1196,7 +1210,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 1
+                return 1 - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -1206,7 +1220,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
             toggle = "essences",
 
             handler = function ()
-                removeBuff( "divine_purpose" )                
+                removeBuff( "divine_purpose" )
+                removeBuff( "the_magistrates_judgment" )
                 applyBuff( "vanquishers_hammer" )
             end,
 
@@ -1237,7 +1252,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
             handler = function ()
                 applyBuff( "blessing_of_summer" ) -- We'll just apply to self because we don't care.
-                
+
                 removeBuff( "blessing_of_summer_active" )
                 applyBuff( "blessing_of_autumn_active" )
                 setCooldown( "blessing_of_autumn", 45 )
@@ -1299,7 +1314,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 blessing_of_autumn = {
                     id = 328622,
                     duration = 30,
-                    max_stack = 1,                    
+                    max_stack = 1,
                 },
                 blessing_of_autumn_active = {
                     duration = 3600,
@@ -1350,7 +1365,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 blessing_of_winter = {
                     id = 328281,
                     duration = 30,
-                    max_stack = 1,                    
+                    max_stack = 1,
                 },
                 blessing_of_winter_debuff = {
                     id = 328506,
@@ -1462,7 +1477,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
                         t.expires = 0
                         t.caster = "nobody"
                     end,
-                },        
+                },
             }
         },
 

@@ -747,7 +747,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             gcd = "spell",
 
             spend = function ()
-                if buff.revenge.up then return 0 end
+                if buff.revenge.up or buff.reprisal.up then return 0 end
                 return 20
             end,
             spendType = "rage",
@@ -764,7 +764,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
 
             handler = function ()
-                removeBuff( "revenge" )
+                if buff.revenge.up then removeBuff( "revenge" )
+                else removeBuff( "reprisal" ) end
                 if conduit.show_of_force.enabled then applyBuff( "show_of_force" ) end
             end,
 
@@ -773,6 +774,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 show_of_force = {
                     id = 339825,
                     duration = 12,
+                    max_stack = 1
+                },
+                reprisal = {
+                    id = 335734,
+                    duration = 6,
                     max_stack = 1
                 }
             }
@@ -812,7 +818,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             hasteCD = true,
             gcd = "spell",
 
-            spend = function () return ( talent.heavy_repercussions.enabled and -18 or -15 ) * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
+            spend = function () return ( ( legendary.the_wall.enabled and -5 or 0 ) + ( talent.heavy_repercussions.enabled and -18 or -15 ) ) * ( 1 + conduit.unnerving_focus.mod * 0.01 ) end,
             spendType = "rage",
 
             startsCombat = true,
@@ -821,6 +827,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 if talent.heavy_repercussions.enabled and buff.shield_block.up then
                     buff.shield_block.expires = buff.shield_block.expires + 1
+                end
+
+                if legendary.the_wall.enabled and cooldown.shield_wall.remains > 0 then
+                    reduceCooldown( "shield_wall", 5 )
                 end
 
                 if talent.punish.enabled then applyDebuff( "target", "punish" ) end
@@ -933,6 +943,10 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyDebuff( "target", "thunder_clap" )
                 active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
                 removeBuff( "show_of_force" )
+
+                if legendary.thunderlord.enabled and cooldown.demoralizing_shout.remains > 0 then
+                    reduceCooldown( "demoralizing_shout", min( 3, active_enemies ) * 1.5 )
+                end
             end,
         },
 

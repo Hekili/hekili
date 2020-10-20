@@ -1048,16 +1048,13 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 45,
             gcd = "spell",
 
-            spend = 45,
+            spend = 25,
             spendType = "energy",
 
             startsCombat = false,
             texture = 1373910,
 
             handler = function ()
-                spend( 5, "energy" ) -- this is a temporary band-aid to make RTB come up before spenders.
-                -- If you constantly spend down below 50 energy, RtB will get buried.
-
                 for _, name in pairs( rtb_buff_list ) do
                     removeBuff( name )
                 end
@@ -1101,7 +1098,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 25,
             gcd = "spell",
             
-            spend = 20,
+            spend = function () return legendary.tiny_toxic_blades.enabled and 0 or 20 end,
             spendType = "energy",
             
             startsCombat = true,
@@ -1253,6 +1250,12 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
                 if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
+
+                if legendary.invigorating_shadowdust.enabled then
+                    for name, cd in pairs( cooldown ) do
+                        if cd.remains > 0 then reduceCooldown( name, 15 ) end
+                    end
+                end
             end,
         },
 

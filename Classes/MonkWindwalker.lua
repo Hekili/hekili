@@ -539,14 +539,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
     local chiSpent = 0
 
     spec:RegisterHook( "spend", function( amt, resource )
-        if talent.spiritual_focus.enabled then
-            chiSpent = chiSpent + amt           
-            cooldown.storm_earth_and_fire.expires = max( 0, cooldown.storm_earth_and_fire.expires - floor( chiSpent / 2 ) )
-            chiSpent = chiSpent % 2
-        end
+        if resource == "chi" and amt > 0 then
+            if talent.spiritual_focus.enabled then
+                chiSpent = chiSpent + amt           
+                cooldown.storm_earth_and_fire.expires = max( 0, cooldown.storm_earth_and_fire.expires - floor( chiSpent / 2 ) )
+                chiSpent = chiSpent % 2
+            end
 
-        if legendary.the_emperors_capacitor.enabled and amt > 0 and resource == "chi" then
-            addStack( "the_emperors_capacitor", nil, 1 )
+            if legendary.last_emperors_capacitor.enabled then
+                addStack( "the_emperors_capacitor", nil, 1 )
+            end
         end
     end )
 
@@ -833,6 +835,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 gain( ( healing_sphere.count * stat.attack_power ) + stat.spell_power * ( 1 + stat.versatility_atk_mod ), "health" )
                 removeBuff( "gift_of_the_ox" )
                 healing_sphere.count = 0
+
+                gain( pvptalent.reverse_harm.enabled and 2 or 1, "chi" )
             end,
         },
 
@@ -905,7 +909,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         fortifying_brew = {
             id = 201318,
             cast = 0,
-            cooldown = 90,
+            cooldown = 180,
             gcd = "off",
 
             toggle = "defensives",
@@ -973,7 +977,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 summonPet( "xuen", 45 )
 
                 if legendary.invokers_delight.enabled then
-                    if buff.invokers_delight.down then stat.haste = state.haste + 0.12 end
+                    if buff.invokers_delight.down then stat.haste = stat.haste + 0.33 end
                     applyBuff( "invokers_delight" )
                 end
             end,
@@ -1121,7 +1125,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             handler = function ()
                 health.actual = min( health.max, health.current + 0.08 * health.max )
-                gain( 2, "chi" )
+                gain( 1, "chi" )
             end,
         },
 
@@ -1422,7 +1426,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         touch_of_death = {
             id = 322109,
             cast = 0,
-            cooldown = function () return legendary.fatal_touch.enabled and 120 or 180 end,
+            cooldown = function () return legendary.fatal_touch.enabled and 60 or 180 end,
             gcd = "spell",
 
             toggle = "cooldowns",
@@ -1488,14 +1492,26 @@ if UnitClassBase( 'player' ) == 'MONK' then
         transcendence_transfer = {
             id = 119996,
             cast = 0,
-            cooldown = 45,
+            cooldown = function () return buff.escape_from_reality.up and 0 or 45 end,
             gcd = "spell",
 
             startsCombat = false,
             texture = 237585,
 
             handler = function ()
+                if buff.escape_from_reality.up then removeBuff( "escape_from_reality" )
+                elseif legendary.escape_from_reality.enabled then
+                    applyBuff( "escape_from_reality" )
+                end
             end,
+
+            auras = {
+                escape_from_reality = {
+                    id = 343249,
+                    duration = 10,
+                    max_stack = 1
+                }
+            }
         },
 
 

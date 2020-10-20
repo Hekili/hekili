@@ -267,7 +267,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
         relentless_inquisitor = {
             id = 337315,
             duration = 12,
-            max_stack = 5,
+            max_stack = 6,
         },
 
         retribution_aura = {
@@ -345,13 +345,13 @@ if UnitClassBase( "player" ) == "PALADIN" then
         -- Legendaries
         blessing_of_dawn = {
             id = 337767,
-            duration = 10,
+            duration = 8,
             max_stack = 1
         },
 
         blessing_of_dusk = {
             id = 337757,
-            duration = 10,
+            duration = 8,
             max_stack = 1
         },
 
@@ -456,7 +456,10 @@ if UnitClassBase( "player" ) == "PALADIN" then
                 setCooldown( "blessing_of_spellwarding", max( 0, cooldown.blessing_of_spellwarding.remains - 1 ) )
             end
             if legendary.relentless_inquisitor.enabled then
-                addStack( "relentless_inquisitor", nil, amt )
+                if buff.relentless_inquisitor.stack < 6 then
+                    stat.haste = stat.haste + 0.01
+                end
+                addStack( "relentless_inquisitor" )
             end
             if legendary.of_dusk_and_dawn.enabled and holy_power.current == 0 then applyBuff( "blessing_of_dusk" ) end
         end
@@ -929,7 +932,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
         hammer_of_wrath = {
             id = 24275,
             cast = 0,
-            charges = function () return legendary.vanguards_momentum.enabled and 3 or nil end,
+            charges = function () return legendary.vanguards_momentum.enabled and 2 or nil end,
             cooldown = function () return 7.5 * haste end,
             recharge = function () return legendary.vanguards_momentum.enabled and ( 7.5 * haste ) or nil end,
             gcd = "spell",
@@ -948,7 +951,19 @@ if UnitClassBase( "player" ) == "PALADIN" then
                     if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + 1 end
                     if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + 1 end
                 end
+
+                if legendary.vanguards_momentum.enabled then
+                    addStack( "vanguards_momentum" )
+                end
             end,
+
+            auras = {
+                vanguards_momentum = {
+                    id = 345046,
+                    duration = 8,
+                    max_stack = 3
+                }
+            }
         },
 
 

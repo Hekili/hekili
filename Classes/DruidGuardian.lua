@@ -1225,7 +1225,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         pulverize = {
             id = 80313,
             cast = 0,
-            cooldown = 30,
+            cooldown = 45,
             gcd = "spell",
 
             startsCombat = true,

@@ -1675,7 +1675,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( buff.oneths_perception.up and 0 or 50 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.15 ) ) end,
+            spend = function () return ( buff.oneths_perception.up and 0 or 50 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) end,
             spendType = "astral_power",
 
             startsCombat = true,
@@ -1684,7 +1684,11 @@ if UnitClassBase( "player" ) == "DRUID" then
             ap_check = function() return check_for_ap_overcap( "starfall" ) end,
 
             handler = function ()
-                addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
+                if talent.starlord.enabled then
+                    if buff.starlord.stack < 3 then stat.haste = stat.haste + 0.04 end
+                    addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
+                end
+                
                 removeBuff( "oneths_perception" )
 
                 if legendary.timeworn_dreambinder.enabled then
@@ -1753,7 +1757,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( buff.oneths_clear_vision.up and 0 or 30 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.15 ) ) end,
+            spend = function () return ( buff.oneths_clear_vision.up and 0 or 30 ) * ( 1 - ( buff.timeworn_dreambinder.stack * 0.1 ) ) end,
             spendType = "astral_power",
 
             startsCombat = true,
@@ -1762,7 +1766,10 @@ if UnitClassBase( "player" ) == "DRUID" then
             ap_check = function() return check_for_ap_overcap( "starsurge" ) end,
 
             handler = function ()
-                addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
+                if talent.starlord.enabled then
+                    if buff.starlord.stack < 3 then stat.haste = stat.haste + 0.04 end
+                    addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
+                end
 
                 removeBuff( "oneths_clear_vision" )
                 removeBuff( "sunblaze" )
@@ -2131,7 +2138,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( talent.soul_of_the_forest.enabled and buff.eclipse_solar.up ) and -7.5 or -6 end,
+            spend = function () return ( talent.soul_of_the_forest.enabled and buff.eclipse_solar.up ) and -9 or -6 end,
             spendType = "astral_power",
 
             startsCombat = true,

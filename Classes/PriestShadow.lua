@@ -121,7 +121,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 return app + floor( ( t - app ) / ( 1.5 * state.haste ) ) * ( 1.5 * state.haste )
             end,
 
-            interval = function () return 1.5 * state.haste * ( state.conduit.rabid_shadows.enabled and 0.8 or 1 ) end,
+            interval = function () return 1.5 * state.haste * ( state.conduit.rabid_shadows.enabled and 0.85 or 1 ) end,
             value = function () return ( state.buff.surrender_to_madness.up and 12 or 6 ) end,
         },
 
@@ -135,7 +135,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 return app + floor( ( t - app ) / ( 1.5 * state.haste ) ) * ( 1.5 * state.haste )
             end,
 
-            interval = function () return 1.5 * state.haste * ( state.conduit.rabid_shadows.enabled and 0.8 or 1 ) end,
+            interval = function () return 1.5 * state.haste * ( state.conduit.rabid_shadows.enabled and 0.85 or 1 ) end,
             value = function () return ( state.buff.surrender_to_madness.up and 6 or 3 ) end,
         },
 
@@ -1416,7 +1416,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             gcd = "spell",
 
             spend = function ()
-                return buff.surrender_to_madness.up and -40 or -20
+                return buff.surrender_to_madness.up and -24 or -12
             end,
             spendType = "insanity",
 
@@ -1436,10 +1436,10 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
                 if debuff.shadow_word_pain.up then debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires + 3 end
                 if debuff.vampiric_touch.up then debuff.vampiric_touch.expires = debuff.vampiric_touch.expires + 3 end
+                if talent.legacy_of_the_void.enabled and debuff.devouring_plague.up then debuff.devouring_plague.expires = query_time + debuff.devouring_plague.duration end
 
                 if talent.hungering_void.enabled then
                     if debuff.hungering_void.up then buff.voidform.expires = buff.voidform.expires + 1 end
-
                     applyDebuff( "target", "hungering_void", 6 )
                 end
 

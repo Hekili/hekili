@@ -832,6 +832,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         }
     } )
 
+
     -- Abilities
     spec:RegisterAbilities( {
         ambush = {
@@ -1278,8 +1279,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 gain( 2, "combo_points" )
 
                 if talent.venom_rush.enabled and ( debuff.deadly_poison_dot.up or debuff.wound_poison_dot.up or debuff.crippling_poison_dot.up ) then
-                    gain( 5, "energy" )
+                    gain( 8, "energy" )
                 end
+
+                -- if legendary.doomblade.enabled then -- need aura id.
+                    -- applyDebuff( "target", "doomblade" )
+                -- end
             end,
         },
 
@@ -1428,7 +1433,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 25,
             gcd = "spell",
             
-            spend = 20,
+            spend = function () return legendary.tiny_toxic_blades.enabled and 0 or 20 end,
             spendType = "energy",
             
             startsCombat = true,
@@ -1560,6 +1565,12 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
                 if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end -- ???
                 if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
+
+                if legendary.invigorating_shadowdust.enabled then
+                    for name, cd in pairs( cooldown ) do
+                        if cd.remains > 0 then reduceCooldown( name, 15 ) end
+                    end
+                end
             end,
         },
 
@@ -1748,7 +1759,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         flagellation = {
             id = 323654,
             cast = 0,
-            cooldown = 25,
+            cooldown = 5,
             gcd = "spell",
             
             startsCombat = true,
@@ -1771,7 +1782,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 flagellation = {
                     id = 323654,
                     duration = 45,
-                    max_stack = 25,
+                    max_stack = 40,
                     generate = function( t, aType )
                         local unit, func
 
@@ -1812,7 +1823,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         flagellation_cleanse = {
             id = 345569,
             cast = 0,
-            cooldown = 45,
+            cooldown = 5,
             gcd = "off",
 
             startsCombat = true,
@@ -1825,11 +1836,15 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return IsActiveSpell( 345569 ), "flagellation_cleanse not active" end,
 
             handler = function ()
+                if buff.flagellation_buff.down then
+                    stat.haste = stat.haste + ( 0.005 * buff.flagellation.stack )
+                end
+
                 removeBuff( "flagellation" )
                 removeDebuff( "target", "flagellation" )
                 active_dot.flagellation = 0
                 applyBuff( "flagellation_buff" )
-                setCooldown( "flagellation", 25 )
+                setCooldown( "flagellation", 5 )
             end,
         },        
     } )

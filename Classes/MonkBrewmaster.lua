@@ -888,9 +888,22 @@ if UnitClassBase( "player" ) == "MONK" then
 
             handler = function ()
                 summonPet( "niuzao", 45 )
+
+                if legendary.invokers_delight.enabled then
+                    if buff.invokers_delight.down then stat.haste = stat.haste + 0.33 end
+                    applyBuff( "invokers_delight" )
+                end
             end,
 
-            copy = "invoke_niuzao_the_black_ox"
+            copy = "invoke_niuzao_the_black_ox",
+
+            auras = {
+                invokers_delight = {
+                    id = 338321,
+                    duration = 20,
+                    max_stack = 1
+                }
+            }
         },
 
 

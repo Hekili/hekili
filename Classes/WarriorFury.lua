@@ -533,6 +533,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 end
 
                 if legendary.cadence_of_fujieda.enabled then
+                    if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
                     addStack( "cadence_of_fujieda", nil, 1 )
                 end
             end,
@@ -541,7 +542,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 cadence_of_fujieda = {
                     id = 335558,
                     duration = 8,
-                    max_stack = 4,
+                    max_stack = 5,
                 },
             }
         },
@@ -776,7 +777,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 removeStack( "whirlwind" )
 
-                if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = buff.will_of_the_berserker.expires + 8 end
+                if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 8 end
             end,
         },
 

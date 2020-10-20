@@ -295,7 +295,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 60,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -321,7 +321,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             recharge = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) end,
             gcd = "spell",
 
-            spend = function () return buff.lock_and_load.up and 0 or ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 35 ) end,
+            spend = function () return buff.lock_and_load.up and 0 or ( ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 35 ) end,
             spendType = "focus",
 
             startsCombat = true,
@@ -342,7 +342,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -397,7 +397,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 20,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 30 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 30 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -431,7 +431,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 10 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 10 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -480,7 +480,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -592,7 +592,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 30,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = false,
@@ -703,7 +703,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 20 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 20 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -755,7 +755,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.7 or 1 ) * 10 end,
+            spend = function () return ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 ) * 10 end,
             spendType = "focus",
 
             startsCombat = true,

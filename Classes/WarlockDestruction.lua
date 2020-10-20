@@ -78,7 +78,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
     spec:RegisterHook( "spend", function( amt, resource )
         if resource == "soul_shards" and amt > 0 then
-            -- ???
+            if legendary.wilfreds_sigil_of_superior_summoning.enabled then
+                reduceCooldown( "summon_infernal", amt * 1.5 )
+            end
         end
     end )
 
@@ -383,6 +385,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             duration = 2,
             max_stack = 1
         },
+
+
     } )
 
 
@@ -569,7 +573,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         chaos_bolt = {
             id = 116858,
-            cast = function () return ( buff.backdraft.up and 0.7 or 1 ) * 3 * haste end,
+            cast = function () return ( buff.backdraft.up and 0.7 or 1 ) * ( buff.madness_of_the_azjaqir.up and 0.8 or 1 ) * 3 * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -591,9 +595,20 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     if debuff.immolate.remains <= 5 then removeDebuff( "target", "immolate" )
                     else debuff.immolate.expires = debuff.immolate.expires - 5 end
                 end
+                if legendary.madness_of_the_azjaqir.enabled then
+                    applyBuff( "madness_of_the_azjaqir" )
+                end
                 removeStack( "backdraft" )
                 removeStack( "crashing_chaos" )
             end,
+
+            auras = {
+                madness_of_the_azjaqir = {
+                    id = 337170,
+                    duration = 3,
+                    max_stack = 1
+                }
+            }
         },
 
 
@@ -980,13 +995,23 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             handler = function ()
                 if class.abilities.havoc.indicator == "cycle" then
                     active_dot.havoc = active_dot.havoc + 1
+                    active_dot.odr_shawl_of_the_ymirjar = 1
                 else
                     applyDebuff( "target", "havoc" )
+                    applyDebuff( "target", "odr_shawl_of_the_ymirjar" )
                 end
                 applyBuff( "active_havoc" )
             end,
 
-            copy = "real_havoc"
+            copy = "real_havoc",
+
+            auras = {
+                odr_shawl_of_the_ymirjar = {
+                    id = 337160,
+                    duration = function () return class.auras.havoc.duration end,
+                    max_stack = 1
+                }
+            }
         },
 
 

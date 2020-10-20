@@ -424,6 +424,20 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             id = 340563,
             duration = 8,
             max_stack = 1
+        },
+
+
+        -- Legendaries
+        relic_of_demonic_synergy = {
+            id = 337060,
+            duration = 15,
+            max_stack = 1
+        },
+
+        wrath_of_consumption = {
+            id = 337130,
+            duration = 20,
+            max_stack = 5
         }
     } )
 
@@ -515,6 +529,15 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         if buff.casting_circle.up then
             applyBuff( "casting_circle", action.casting_circle.lastCast + 8 - query_time )
+        end
+    end )
+
+
+    spec:RegisterHook( "spend", function( amt, resource )
+        if resource == "soul_shards" and amt > 0 then
+            if legendary.wilfreds_sigil_of_superior_summoning.enabled then
+                reduceCooldown( "summon_darkglare", amt * 2 )
+            end                
         end
     end )
 

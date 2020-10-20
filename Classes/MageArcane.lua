@@ -796,6 +796,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if level > 51 then gain( 0.02 * mana.max * arcane_charges.current, "mana" ) end
 
                 spend( arcane_charges.current, "arcane_charges" )
+                removeBuff( "arcane_harmony" )
 
                 if talent.chrono_shift.enabled then
                     applyBuff( "chrono_shift_buff" )
@@ -929,7 +930,17 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if conduit.arcane_prodigy.enabled and cooldown.arcane_power.remains > 0 then
                     reduceCooldown( "arcane_power", conduit.arcane_prodigy.mod * 0.1 )
                 end
+
+                if legendary.arcane_harmony.enabled then addStack( "arcane_harmony", nil, 5 ) end
             end,
+
+            auras = {
+                arcane_harmony = {
+                    id = 332777,
+                    duration = 3600,
+                    max_stack = 30
+                }
+            }
         },
 
 
