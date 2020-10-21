@@ -964,7 +964,6 @@ if UnitClassBase( "player" ) == "DRUID" then
             handler = function ()
                 if buff.cat_form.down then shift( "cat_form" ) end
                 applyBuff( "berserk" )
-                energy.max = energy.max + 50
             end,
 
             copy = "berserk_cat"
@@ -2160,9 +2159,10 @@ if UnitClassBase( "player" ) == "DRUID" then
                 removeStack( "clearcasting" )
                 if target.within8 then
                     gain( 1, "combo_points" )
-                    applyBuff( "bt_thrash" )
-                    if will_proc_bloodtalons then proc_bloodtalons() end
                 end
+
+                applyBuff( "bt_thrash" )
+                if will_proc_bloodtalons then proc_bloodtalons() end
             end,
 
             copy = { "thrash", 106832 },
