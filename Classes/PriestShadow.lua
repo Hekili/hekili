@@ -190,7 +190,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         gladiators_medallion = 3476, -- 208683
         adaptation = 3477, -- 214027
         relentless = 3478, -- 196029
@@ -321,7 +321,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         },
         dark_thought = {
             id = 341207,
-            duration = 6,
+            duration = 10,
             max_stack = 1,
             copy = "dark_thoughts"
         },
@@ -566,7 +566,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                     return buff.voidform.applied > 0 and ( buff.voidform.count + floor( offset + delay ) ) or 0
                 end,
 
-                remains = function ()                    
+                remains = function ()
                     return max( 0, buff.voidform.drop_time - query_time )
                 end,
             }, ]]
@@ -688,13 +688,13 @@ if UnitClassBase( "player" ) == "PRIEST" then
             gcd = "spell",
 
             talent = "damnation",
-            
+
             startsCombat = true,
             texture = 236295,
 
             -- TODO: Set up cycle.
             -- cycle = function ()
-            
+
             handler = function ()
                 applyDebuff( "target", "shadow_word_pain" )
                 applyDebuff( "target", "vampiric_touch" )
@@ -706,20 +706,20 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 end
             end,
         },
-        
-        
+
+
         desperate_prayer = {
             id = 19236,
             cast = 0,
             cooldown = 90,
             gcd = "spell",
-            
+
             toggle = "defensives",
 
             startsCombat = true,
             texture = 237550,
-            
-            handler = function ()                
+
+            handler = function ()
                 health.max = health.max * 1.25
                 gain( 0.8 * health.max, "health" )
                 if conduit.lights_inspiration.enabled then applyBuff( "lights_inspiration" ) end
@@ -741,15 +741,15 @@ if UnitClassBase( "player" ) == "PRIEST" then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = function () return buff.mind_devourer.up and 0 or 50 end,
             spendType = "insanity",
-            
+
             startsCombat = true,
             texture = 252997,
 
             cycle = "devouring_plague",
-            
+
             handler = function ()
                 removeBuff( "mind_devourer" )
                 applyDebuff( "target", "devouring_plague" )
@@ -898,7 +898,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             velocity = 15,
 
-            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -7 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) end,
+            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -8 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) end,
             spendType = "insanity",
 
             startsCombat = true,
@@ -977,7 +977,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             breakchannel = function ()
                 removeDebuff( "target", "mind_sear" )
                 removeBuff( "mind_sear_th" )
-            end,            
+            end,
             prechannel = true,
 
             tick_time = function () return class.auras.mind_flay.tick_time end,
@@ -992,12 +992,12 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 channelSpell( "mind_sear" )
 
                 if azerite.searing_dialogue.enabled then applyDebuff( "target", "searing_dialogue" ) end
-                
+
                 if buff.thought_harvester.up then
                     removeBuff( "thought_harvester" )
                     applyBuff( "mind_sear_th" )
                 end
-                
+
                 forecastResources( "insanity" )
             end,
         },
@@ -1026,18 +1026,18 @@ if UnitClassBase( "player" ) == "PRIEST" then
             copy = { "shadowfiend", 200174, 34433, 132603 }
         },
 
-        
+
         power_infusion = {
             id = 10060,
             cast = 0,
             cooldown = function () return 120 - ( conduit.power_unto_others.mod and group and conduit.power_unto_others.mod or 0 ) end,
             gcd = "off",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 135939,
-            
+
             handler = function ()
                 applyBuff( "power_infusion" )
                 stat.haste = stat.haste + 0.25
@@ -1171,15 +1171,15 @@ if UnitClassBase( "player" ) == "PRIEST" then
             castableWhileCasting = true,
 
             talent = "searing_nightmare",
-            
+
             spend = 30,
             spendType = "insanity",
-            
+
             startsCombat = true,
             texture = 1022950,
 
             debuff = "mind_sear",
-            
+
             handler = function ()
                 applyDebuff( "target", "shadow_word_pain" )
                 active_dot.shadow_word_pain = max( active_enemies, active_dot.shadow_word_pain )
@@ -1460,7 +1460,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             id = 228260,
             cast = function ()
                 if pvptalent.void_origins.enabled then return 0 end
-                return haste * 1.5 
+                return haste * 1.5
             end,
             cooldown = 90,
             gcd = "spell",
