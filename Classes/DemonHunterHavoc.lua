@@ -136,12 +136,6 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
     -- Auras
     spec:RegisterAuras( {
-        halfgiant_empowerment = {
-            id = 337532,
-            duration = 3600,
-            max_stack = 1,
-            -- TODO: Requires
-        },
         blade_dance = {
             id = 188499,
             duration = 1,
@@ -1308,11 +1302,11 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
     } )
 
 
-    spec:RegisterSetting( "recommend_movement", false, {
+    spec:RegisterSetting( "recommend_movement", true, {
         name = "Recommend Movement",
         desc = "If checked, the addon will recommend |T1247261:0|t Fel Rush / |T1348401:0|t Vengeful Retreat when it is a potential DPS gain.\n\n" ..
             "These abilities are critical for DPS when using the Momentum or Unbound Chaos talents.\n\n" ..
-            "If not using Momentum, you may want to leave this disabled to avoid unnecessary movement in combat.",
+            "If not using Momentum or Unbound Chaos, you may want to disabled this to avoid unnecessary movement in combat.",
         type = "toggle",
         width = "full"
     } )
