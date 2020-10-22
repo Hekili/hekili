@@ -471,9 +471,13 @@ function Hekili:CheckChannel( ability, prio )
     end
 
     local channel = state.channel
-    local aura = class.auras[ channel ]
+    
+    local a = class.abilities[ channel ]
+    local aura = class.auras[ a.aura or channel ]
 
-    if not aura or not aura.tick_time then
+    if self.ActiveDebug then self:Debug( "channel: %s, a.aura: %s, aura: %s", channel or "none", a and a.aura or "none", aura and aura.key or "none" ) end
+
+    if not a.tick_time and ( not aura or not aura.tick_time ) then
         if self.ActiveDebug then self:Debug( "CC: No aura / no aura.tick_time to forecast channel breaktimes; don't break it." ) end
         return false
     end
@@ -481,7 +485,7 @@ function Hekili:CheckChannel( ability, prio )
     local modifiers = scripts.Channels[ state.system.packName ]
     modifiers = modifiers and modifiers[ channel ] or default_modifiers
 
-    local tick_time = aura.tick_time
+    local tick_time = a.tick_time or aura.tick_time
     local remains = state.channel_remains
 
     if channel == ability then

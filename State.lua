@@ -5440,7 +5440,7 @@ function state.reset( dispName )
 
                 res.active_regen = active or 0
                 res.inactive_regen = inactive or 0
-
+                res.regen = nil
             else
                 if ResourceRegenerates( k ) then
                     local inactive, active = GetPowerRegenForPowerType( power.type )
