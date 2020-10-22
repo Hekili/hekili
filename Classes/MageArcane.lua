@@ -727,7 +727,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             elseif subtype == "SPELL_AURA_REMOVED" and ( spellID == 276743 or spellID == 263725 ) then
                 -- Clearcasting was consumed.
                 clearcasting_consumed = GetTime()
-                print( "clearcasting spent!" )
             end
         end
     end )
@@ -762,8 +761,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         if arcane_charges.current > 0 then applyBuff( "arcane_charge", nil, arcane_charges.current ) end
 
         fake_mana_gem = nil
-
-        print( mana.regen )
 
         incanters_flow.reset()
     end )
