@@ -77,8 +77,14 @@ local function Aura_DetectSharedAura( t, type )
 
     if name then
         t.count = count > 0 and count or 1
-        t.applied = expirationTime - duration
-        t.expires = expirationTime
+
+        if expirationTime > 0 then
+            t.applied = expirationTime - duration
+            t.expires = expirationTime
+        else
+            t.applied = state.query_time
+            t.expires = state.query_time + t.duration
+        end
         t.caster = caster
         return
     end
