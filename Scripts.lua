@@ -1431,9 +1431,22 @@ function scripts:LoadScripts()
                             -- This will load the channel criteria for the first entry for this ability in any of the action lists.
                             -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
                             -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
+                            -- 2020-10-22:  Modified this to decide that if any breakchannel logic is met, you break the channel.
+                            -- TODO:  Phase 3 would be only using channel-break logic for channel entries that you've passed in the current APL run.
 
                             for k in pairs( channelModifiers ) do
-                                if script.Modifiers[ k ] and not cInfo[ k ] then cInfo[ k ] = script.Modifiers[ k ] end
+                                if script.Modifiers[ k ] then
+                                    if cInfo[ k ] then
+                                        local oldfunc = cInfo[ k ]
+                                        local newfunc = script.Modifiers[ k ]
+
+                                        cInfo[ k ] = setfenv( function() return ( oldfunc() ) or ( newfunc() ) end, state )
+                                        cInfo[ "_" .. k ] = "(" .. cInfo[ "_" .. k ] .. ") or ( " .. script.ModEmulates[k] .. " )"
+                                    else
+                                        cInfo[ "_" .. k ] = script.ModEmulates[ k ]
+                                        cInfo[ k ] = script.Modifiers[ k ]
+                                    end
+                                end
                             end
                         end
 
