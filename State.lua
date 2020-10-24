@@ -681,6 +681,17 @@ do
         debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
     end
 
+    function state.GetCycleInfo()
+        return cycle.expires, cycle.minTTD, cycle.maxTTD, cycle.aura
+    end
+
+    function state.SetCycleInfo( expires, minTTD, maxTTD, aura )
+        cycle.expires = expires
+        cycle.minTTD  = minTTD
+        cycle.maxTTD  = maxTTD
+        cycle.aura    = aura
+    end
+
     function state.IsCycling( aura )
         if not cycle.aura then return false end
         if aura and cycle.aura ~= aura then return false end
@@ -728,11 +739,11 @@ local function applyBuff( aura, duration, stacks, value )
         aura = auraInfo.alias[1]
     end
 
-    --[[ if state.cycle then
+    if state.cycle then
         if duration == 0 then state.active_dot[ aura ] = state.active_dot[ aura ] - 1
         else state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
         return
-    end ]]
+    end
 
     local b = state.buff[ aura ]
     if not b then return end
@@ -2207,7 +2218,7 @@ local mt_pets = {
             return UnitExists( 'pet' ) and ( not UnitIsDead( 'pet' ) )
 
         elseif k == 'alive' then
-            return UnitExists( 'pet' ) and not UnitIsDead( 'pet' ) and UnitHealth( "pet" ) > 0
+            return UnitExists( "pet" ) and not UnitIsDead( "pet" ) and UnitHealth( "pet" ) > 0
 
         elseif k == 'dead' then
             return UnitExists( 'pet' ) and UnitIsDead( 'pet' )
@@ -5017,19 +5028,26 @@ do
             -- Spend resources.
             ns.spendResources( action )
 
-            local wasCycling
+            local wasCycling = self.IsCycling()
+            local expires, minTTD, maxTTD, aura
+            
+            if wasCycling then
+                expires, minTTD, maxTTD, aura = self.GetCycleInfo()
+            end
 
-            if not self.cycle and e.target and self.target.unit ~= "unknown" and e.target ~= self.target.unit then
-                wasCycling = rawget( self, cycle )
-                self.cycle = true
+            if Hekili.ActiveDebug then Hekili:Debug( "%s %s %s %s", tostring( self.cycle ), tostring( e.target ) or "notarget", tostring( self.target.unit ) or "notarget", tostring( e.target == self.target.unit ) ) end
+
+            if e.target and self.target.unit ~= "unknown" and e.target ~= self.target.unit then
+                if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
+                self.SetupCycle( ability )
             end
 
             -- Perform the action.            
             self:RunHandler( action )
             self.hardcast = nil
 
-            if self.cycle then
-                self.cycle = wasCycling
+            if wasCycling then
+                self.SetCycleInfo( expires, minTTD, maxTTD, aura )
             end
 
             if ability.item and not ability.essence then
@@ -5518,9 +5536,14 @@ function state.reset( dispName )
 
     if casting and cast_time > 0 then
         if not state:IsCasting( casting ) then
-            local channeled = ability and ability.channeled
+            local channeled, destGUID
+            
+            if ability then
+                channeled = ability.channeled
+                destGUID =  Hekili:GetMacroCastTarget( ability.key, state.buff.casting.applied, "RESET" ) or state.target.unit
+            end
 
-            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, channeled and "CHANNEL_FINISH" or "CAST_FINISH", state.target.unit )
+            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, channeled and "CHANNEL_FINISH" or "CAST_FINISH", destGUID )
             
             if channeled then
                 local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
@@ -5529,14 +5552,14 @@ function state.reset( dispName )
                     local eoc = state.buff.casting.expires - tick_time
 
                     while ( eoc > state.now ) do
-                        state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", state.target.unit )
+                        state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", destGUID )
                         eoc = eoc - tick_time
                     end
                 end
             end
         end
 
-        if not state.spec.canCastWhileCasting then
+        --[[ if not state.spec.canCastWhileCasting then
             if ( not ability or not ability.breakable ) then
                 -- Revisit auto-advance, we may be overcompensating for it now that we use the queue.
                 state.setCooldown( "global_cooldown", max( cast_time, state.cooldown.global_cooldown.remains ) )
@@ -5551,7 +5574,7 @@ function state.reset( dispName )
                     end
                 end
             end
-        end
+        end ]]
     end    
 
     -- Delay to end of GCD.
@@ -5974,25 +5997,25 @@ do
 
         spell = ability.key
 
-        if self.holds[ spell ] then return true end
+        if self.holds[ spell ] then return true, "on hold" end
 
         local profile = Hekili.DB.profile
         local spec = profile.specs[ state.spec.id ]
 
         local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
 
-        if option.disabled then return true end
-        if option.boss and not state.boss then return true end
+        if option.disabled then return true, "preference" end
+        if option.boss and not state.boss then return true, "boss-only" end
 
         if not strict then
             local toggle = option.toggle
             if not toggle or toggle == 'default' then toggle = ability.toggle end
 
             if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
-                if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then return true
+                if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
                 elseif ability.item and not state.equipped[ ability.item ] then return false
                 elseif toggle and toggle ~= 'none' then
-                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true end
+                    if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true, "toggle" end
                 end
             end
         end
