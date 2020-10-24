@@ -457,11 +457,14 @@ function Hekili:CheckStack()
 end
 
 
+
+local function return_false() return false end
+
 local default_modifiers = {
-    early_chain_if = false,
-    chain = false,
-    interrupt_if = false,
-    interrupt = false
+    early_chain_if = return_false,
+    chain = return_false,
+    interrupt_if = return_false,
+    interrupt = return_false
 }
 
 function Hekili:CheckChannel( ability, prio )
@@ -484,6 +487,19 @@ function Hekili:CheckChannel( ability, prio )
 
     local modifiers = scripts.Channels[ state.system.packName ]
     modifiers = modifiers and modifiers[ channel ] or default_modifiers
+
+    --[[ if self.ActiveDebug then 
+        if default_modifiers == modifiers then
+            self:Debug( "Using default modifiers." )
+        else
+            local vals = ""
+            for k, v in pairs( modifiers ) do
+                vals = format( "%s%s = %s - ", vals, tostring( k ), tostring( type(v) == 'function' and v() or v ) )
+            end
+
+            self:Debug( "Channel modifiers: %s", vals )
+        end
+    end ]]
 
     local tick_time = a.tick_time or aura.tick_time
     local remains = state.channel_remains
@@ -521,8 +537,11 @@ function Hekili:CheckChannel( ability, prio )
 
         -- We are concerned with chain and early_chain_if.
         if modifiers.interrupt_if and modifiers.interrupt_if() then
-            local val = state.cooldown.global_cooldown.up and ( modifiers.interrupt_immediate() or ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 ) )
-            if self.ActiveDebug then self:Debug( "CC:  Interrupt_If is %s [ticks = %d].", tostring( val ), state.ticks ) end
+            local imm = modifiers.interrupt_immediate and modifiers.interrupt_immediate() or nil
+            local val = state.cooldown.global_cooldown.up and ( imm or ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 ) )
+            if self.ActiveDebug then
+                self:Debug( "CC:  Interrupt_If is %s [ticks = %d].", tostring( val ), state.ticks )
+            end
             state.this_action = act            
             return val
         end
@@ -554,18 +573,22 @@ do
 
 
     local disabledCache = {}
+    local disabledReasonCache = {}
 
     function Hekili:IsSpellEnabled( spell )
-        if disabledCache[ spell ] ~= nil then return disabledCache[ spell ] end
-        disabledCache[ spell ] = not state:IsDisabled( spell )
-        return disabledCache[ spell ]
+        if disabledCache[ spell ] ~= nil then return disabledCache[ spell ], disabledReasonCache[ spell ] end
+        disabledCache[ spell ], disabledReasonCache[ spell ] = state:IsDisabled( spell )
+        disabledCache[ spell ] = not disabledCache[ spell ]
+        return disabledCache[ spell ], disabledReasonCache[ spell ]
     end
 
 
     function Hekili:ResetSpellCaches()
         twipe( knownCache )
         twipe( reasonCache )
+
         twipe( disabledCache )
+        twipe( disabledReasonCache )
     end
 end
 
@@ -708,7 +731,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     local clash = 0
 
                     local known, reason = self:IsSpellKnown( action )
-                    local enabled = self:IsSpellEnabled( action )
+                    local enabled, enReason = self:IsSpellEnabled( action )
 
                     if debug then
                         local d = ""
@@ -717,7 +740,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )                        
 
                         if not known then d = d .. " - " .. ( reason or "ability unknown" )
-                        elseif not enabled then d = d .. " - ability disabled." end
+                        elseif not enabled then d = d .. " - ability disabled ( " .. ( enReason or "unknown" ) .. " )" end
 
                         self:Debug( d )
                     end
@@ -1435,12 +1458,14 @@ function Hekili:ProcessHooks( dispName, packName )
 
             local t = event.time - state.now - state.offset
 
+            --[[ Disabling this because with very short ticks of channeled spells, this results in the addon saying GO! STOP! GO! STOP! in rapid succession.
             if t > 0 and t < 0.1 then
                 if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.1 seconds.\n", n, event.type, event.action, t ) end
                 if t > 0 then state.advance( t ) end
                 event = events[ 1 ]
                 n = n + 1
-            else
+            else ]]
+            if t > 0 then
                 --[[
                     Okay, new paradigm.  We're checking whether we should break channeled spells before we worry about casting while casting.
                     Are we channeling?
@@ -1598,9 +1623,11 @@ function Hekili:ProcessHooks( dispName, packName )
                 
                 end
 
+                local cast_target = state.cast_target ~= "nobody" and state.cast_target or state.target.unit
+
                 if ability.cast > 0 and not ability.channeled then
-                    if debug then Hekili:Debug( "Queueing %s cast finish at %.2f.", action, state.query_time + cast ) end
-                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH", state.target.unit )
+                    if debug then Hekili:Debug( "Queueing %s cast finish at %.2f on %s.", action, state.query_time + cast, cast_target ) end
+                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH", cast_target )
 
                 else
                     ns.spendResources( action )
@@ -1609,7 +1636,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                     if ability.channeled then
                         if debug then Hekili:Debug( "Queueing %s channel finish at %.2f.", action, state.query_time + cast ) end
-                        state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH", state.target.unit )
+                        state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH", cast_target )
     
                         -- Queue ticks because we may not have an ability.tick function, but may have resources tied to an aura.
                         if ability.tick_time then
@@ -1617,7 +1644,7 @@ function Hekili:ProcessHooks( dispName, packName )
     
                             for i = 1, ticks do
                                 if debug then Hekili:Debug( "Queueing %s channel tick (%d of %d) at %.2f.", action, i, ticks, state.query_time + ( i * ability.tick_time ) ) end
-                                state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK", state.target.unit )
+                                state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK", cast_target )
                             end
                         end
                     end
@@ -1625,7 +1652,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
                 if ability.isProjectile then
-                    state:QueueEvent( action, state.query_time + cast, nil, "PROJECTILE_IMPACT", state.target.unit )
+                    state:QueueEvent( action, state.query_time + cast, nil, "PROJECTILE_IMPACT", cast_target )
                     -- state:QueueEvent( action, "projectile", true )
                 end
 
