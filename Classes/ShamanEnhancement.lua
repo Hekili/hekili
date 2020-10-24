@@ -373,6 +373,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             id = 327942,
             duration = 120,
             max_stack = 1,
+            shared = "player",
         },
 
 
