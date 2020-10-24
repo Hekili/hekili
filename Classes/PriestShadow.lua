@@ -898,7 +898,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             velocity = 15,
 
-            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -8 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) end,
+            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( ( PTR and -8 or -7 ) - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) end,
             spendType = "insanity",
 
             startsCombat = true,
@@ -1172,7 +1172,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             talent = "searing_nightmare",
 
-            spend = 30,
+            spend = PTR and 30 or 35,
             spendType = "insanity",
 
             startsCombat = true,
@@ -1393,8 +1393,9 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 end
 
                 if talent.unfurling_darkness.enabled then
-                    removeBuff( "unfurling_darkness" )
-                    if debuff.unfurling_darkness_icd.down then
+                    if buff.unfurling_darkness.up then
+                        removeBuff( "unfurling_darkness" )
+                    elseif debuff.unfurling_darkness_icd.down then
                         applyBuff( "unfurling_darkness" )
                         applyDebuff( "player", "unfurling_darkness_icd" )
                     end
