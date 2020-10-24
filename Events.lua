@@ -1711,6 +1711,51 @@ function state:AddToHistory( spellID, destGUID )
 end
 
 
+local SpellQueueWindow = tonumber( GetCVar( "SpellQueueWindow" ) ) / 1000
+
+RegisterEvent( "CVAR_UPDATE", function( event )
+    SpellQueueWindow = tonumber( GetCVar( "SpellQueueWindow" ) ) / 1000
+end )
+
+
+
+do
+    local macroInfo = {}
+
+    RegisterEvent( "EXECUTE_CHAT_LINE", function( event, macroText )
+        if macroText then
+            local action, target = SecureCmdOptionParse( macroText )
+
+            local ability = action and class.abilities[ action ]
+
+            if ability and ability.key then
+                local m = macroInfo[ ability.key ] or {}
+
+                m.target = target and UnitGUID( target ) or UnitGUID( "target" )
+                m.time   = GetTime()
+
+                macroInfo[ ability.key ] = m
+            end
+        end
+    end )
+
+    local abs = math.abs
+
+    function Hekili:GetMacroCastTarget( spell, castTime, source )
+        local ability = class.abilities[ spell ]
+        local buffer = 0.1 + SpellQueueWindow
+
+        if ability and ability.key then
+            local m = macroInfo[ ability.key ]
+
+            if m and abs( castTime - m.time ) < buffer then
+                return m.target -- This is a GUID.
+            end
+        end
+    end
+end
+
+
 local lowLevelWarned = false
 
 -- Need to make caching system.
@@ -1732,13 +1777,12 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
     
     if ability then
         local action = ability.key
-
-        local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) )
+        local _, _, _, start, finish = UnitCastingInfo( "player" )
+        local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) ) or Hekili:GetMacroCastTarget( action, start / 1000, "DELAYED" )
 
         state:RemoveSpellEvent( action, true, "CAST_FINISH" )
         state:RemoveSpellEvent( action, true, "PROJECTILE_IMPACT", true )
 
-        local _, _, _, start, finish = UnitCastingInfo( "player" )
         if start and finish then
             state:QueueEvent( action, start / 1000, finish / 1000, "CAST_FINISH", target, true )
 
@@ -2099,8 +2143,8 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 if subtype == "SPELL_CAST_START" then
                     local _, _, _, start, finish = UnitCastingInfo( "player" )
 
-                    if state.cast_target ~= "nobody" and destGUID:len() == 0 then
-                        destGUID = state.cast_target
+                    if destGUID:len() == 0 then
+                        destGUID = Hekili:GetMacroCastTarget( ability.key, GetTime(), "START" ) or UnitGUID( "target" )
                     end
 
                     if start then
