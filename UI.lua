@@ -675,8 +675,8 @@ do
 
     local oocRefresh = 1
     local icRefresh = {
-        Primary = 0.5,
-        AOE = 0.5,
+        Primary = 0.1,
+        AOE = 0.2,
         Interrupts = 1,
         Defensives = 1
     }
