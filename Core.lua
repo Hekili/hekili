@@ -469,8 +469,8 @@ local default_modifiers = {
 
 function Hekili:CheckChannel( ability, prio )
     if not state.channeling then
-        if self.ActiveDebug then self:Debug( "CC: We aren't channeling; CheckChannel is true." ) end
-        return true
+        if self.ActiveDebug then self:Debug( "CC: We aren't channeling; CheckChannel is false." ) end
+        return false
     end
 
     local channel = state.channel
