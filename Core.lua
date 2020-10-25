@@ -1575,7 +1575,7 @@ function Hekili:ProcessHooks( dispName, packName )
         -- if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs (%.2fs).\n", action or "NO ACTION", wait or 60, state.offset + state.delay ) end
         if debug then self:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay ) end
 
-        if not debug and not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and Hekili.DB.profile.autoSnapshot then
+        if not debug and not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and Hekili.DB.profile.autoSnapshot and state.level < 50 then
             Hekili:MakeSnapshot( dispName )
             Hekili.HasSnapped = true
             return
