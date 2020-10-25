@@ -1020,16 +1020,16 @@ function state.channelSpell( name, start, duration, id )
     end
 end
 
-function state.stopChanneling( reset )
+function state.stopChanneling( reset, action )
     if not reset then
         local spell = state.player.channelSpell
         local ability = spell and class.abilities[ spell ]
 
-        if spell then
+        if spell and spell ~= action then
             if Hekili.ActiveDebug then Hekili:Debug( "Breaking channel of %s (non-reset).", state.player.channelSpell or "nil", tostring( reset ) or "false" ) end
             state:RemoveSpellEvents( spell )
+            if ability and ability.breakchannel then ability.breakchannel() end
         end
-        if ability and ability.breakchannel then ability.breakchannel() end
     end
 
     state.player.channelSpell = nil
@@ -5048,6 +5048,8 @@ do
 
             if wasCycling then
                 self.SetCycleInfo( expires, minTTD, maxTTD, aura )
+            else
+                self.ClearCycle()
             end
 
             if ability.item and not ability.essence then
@@ -5059,7 +5061,7 @@ do
 
         elseif e.type == "CHANNEL_FINISH" then
             if ability.finish then ability.finish() end
-            self.stopChanneling()
+            self.stopChanneling( false, ability.key )
 
         elseif e.type == "PROJECTILE_IMPACT" then
             if ability.impact then ability.impact() end
