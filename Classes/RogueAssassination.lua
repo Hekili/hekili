@@ -1628,20 +1628,20 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             essential = true,
 
             texture = function ()
-                if buff.lethal_poison.down then
+                if buff.lethal_poison.down or level < 33 then
                     return state.spec.assassination and class.abilities.deadly_poison.texture or class.abilities.instant_poison.texture
                 end
-                if buff.nonlethal_poison.down then return class.abilities.crippling_poison.texture end
+                if level > 32 and buff.nonlethal_poison.down then return class.abilities.crippling_poison.texture end
             end,
 
             usable = function ()
-                return buff.lethal_poison.down or buff.nonlethal_poison.down, "requires missing poison"
+                return buff.lethal_poison.down or level > 32 and buff.nonlethal_poison.down, "requires missing poison"
             end,
 
             handler = function ()
                 if buff.lethal_poison.down then
                     applyBuff( state.spec.assassination and "deadly_poison" or "instant_poison" )
-                else applyBuff( "crippling_poison" ) end
+                elseif level > 32 then applyBuff( "crippling_poison" ) end
             end,
         },
 
