@@ -921,6 +921,10 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             startsCombat = true,
             texture = 237520,
 
+            cycle = function ()
+                if death_knight.runeforge.razorice then return "razorice" end
+            end,
+
             handler = function ()
                 applyDebuff( "target", "razorice", 20, 2 )
                 if talent.obliteration.enabled and buff.pillar_of_frost.up then applyBuff( "killing_machine" ) end
@@ -1137,6 +1141,10 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
             startsCombat = true,
             texture = 135771,
+
+            cycle = function ()
+                if death_knight.runeforge.razorice then return "razorice" end
+            end,
 
             handler = function ()
                 removeStack( "inexorable_assault" )
