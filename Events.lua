@@ -1643,7 +1643,7 @@ RegisterEvent( "PLAYER_REGEN_DISABLED", function( event )
     end
 
     Hekili.HasSnapped = false -- some would disagree.
-    Hekili:ForceUpdate( event ) -- Force update on entering combat since OOC refresh can be very slow (0.5s).
+    Hekili:ForceUpdate( event, true ) -- Force update on entering combat since OOC refresh can be very slow (0.5s).
 end )
 
 
