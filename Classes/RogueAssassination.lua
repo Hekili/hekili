@@ -781,7 +781,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
 
         lethal_poison = {
-            alias = { "deadly_poison", "wound_poison" },
+            alias = { "deadly_poison", "wound_poison", "instant_poison" },
             aliasMode = "first",
             aliasType = "buff",
             duration = 3600
@@ -1629,7 +1629,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             texture = function ()
                 if buff.lethal_poison.down or level < 33 then
-                    return state.spec.assassination and class.abilities.deadly_poison.texture or class.abilities.instant_poison.texture
+                    return state.spec.assassination and level > 12 and class.abilities.deadly_poison.texture or class.abilities.instant_poison.texture
                 end
                 if level > 32 and buff.nonlethal_poison.down then return class.abilities.crippling_poison.texture end
             end,
@@ -1640,7 +1640,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             handler = function ()
                 if buff.lethal_poison.down then
-                    applyBuff( state.spec.assassination and "deadly_poison" or "instant_poison" )
+                    applyBuff( state.spec.assassination and level > 12 and "deadly_poison" or "instant_poison" )
                 elseif level > 32 then applyBuff( "crippling_poison" ) end
             end,
         },
