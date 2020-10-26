@@ -523,6 +523,22 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             end
         end
 
+        -- Can't trust Agony stacks/duration to refresh.
+        local name, _, count, _, duration, expires, caster = FindUnitDebuffByID( "target", 980 )
+        if name then
+            debuff.agony.expires = expires
+            debuff.agony.duration = duration
+            debuff.agony.applied = max( 0, expires - duration )
+            debuff.agony.count = expires > 0 and max( 1, count ) or 0
+            debuff.agony.caster = caster
+        else
+            debuff.agony.expires = 0
+            debuff.agony.duration = 0
+            debuff.agony.applied = 0
+            debuff.agony.count = 0
+            debuff.agony.caster = "nobody"
+        end
+
         if buff.casting.up and buff.casting.v1 == 234153 then
             removeBuff( "inevitable_demise" )
             removeBuff( "inevitable_demise_az" )
@@ -1291,7 +1307,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             velocity = 30,
 
             usable = function () return dot.seed_of_corruption.down end,
-            handler = function ()
+            
+            impact = function ()
                 applyDebuff( "target", "seed_of_corruption" )
                 
                 if active_enemies > 1 and talent.sow_the_seeds.enabled then
