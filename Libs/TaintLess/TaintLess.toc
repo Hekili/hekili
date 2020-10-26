@@ -1,0 +1,5 @@
+## Interface: 90001
+## Title: TaintLess
+## Notes: Eliminates certain classes of taint errors.
+## Version: 20-10-19
+TaintLess.xml
