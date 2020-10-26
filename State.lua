@@ -1598,7 +1598,7 @@ local mt_state = {
             return 'wait'
         
         elseif k == 'current_action' then
-            return 'this_action'
+            return t.this_action
 
         elseif k == 'cast_target' then
             return 'nobody'
@@ -1613,9 +1613,9 @@ local mt_state = {
             return nil
         
         elseif k == 'selection' then
-            return t.selectionTime < 60
+            return t.selection_time < 60
 
-        elseif k == 'selectionTime' then
+        elseif k == 'selection_time' then
             return 60
 
         elseif k == 'desired_targets' then
@@ -5228,8 +5228,8 @@ function state.reset( dispName )
     state.ClearCycle()
     state:ResetVariables()
 
-    state.selectionTime = 60
-    state.selectedAction = nil
+    state.selection_time = 60
+    state.selected_action = nil
 
     local _, zone = GetInstanceInfo()
 

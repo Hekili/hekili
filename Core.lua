@@ -1063,8 +1063,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                             -- slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
 
-                                                            state.selectionTime = state.delay
-                                                            state.selectedAction = rAction
+                                                            state.selection_time = state.delay
+                                                            state.selected_action = rAction
                                                         end
 
                                                     elseif action == 'wait' then
@@ -1173,8 +1173,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         rAction = state.this_action
                                                         rWait = state.delay
 
-                                                        state.selectionTime = state.delay
-                                                        state.selectedAction = rAction
+                                                        state.selection_time = state.delay
+                                                        state.selected_action = rAction
 
                                                         if debug then
                                                             scripts:ImplantDebugData( slot )
@@ -1254,8 +1254,8 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     state.this_action = nil
 
-    state.selectionTime = 60
-    state.selectedAction = nil
+    state.selection_time = 60
+    state.selected_action = nil
 
     if self.ActiveDebug then
         self:Debug( "Checking if I'm casting ( %s ) and if it is a channel ( %s ).", state.buff.casting.up and "Yes" or "No", state.buff.casting.v3 and "Yes" or "No" )
@@ -1468,14 +1468,23 @@ function Hekili:ProcessHooks( dispName, packName )
 
             local t = event.time - state.now - state.offset
 
-            --[[ Disabling this because with very short ticks of channeled spells, this results in the addon saying GO! STOP! GO! STOP! in rapid succession.
-            if t > 0 and t < 0.1 then
-                if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.1 seconds.\n", n, event.type, event.action, t ) end
-                if t > 0 then state.advance( t ) end
+            if t < 0 then
+                state.offset = state.offset - t
+                state:HandleEvent( event )
+                state.offset = state.offset + t
                 event = events[ 1 ]
                 n = n + 1
-            else ]]
-            if t > 0 then
+            elseif t < 0.05 then
+                if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.05 seconds.\n", n, event.type, event.action, t ) end
+                state.advance( t )
+                if event == events[ 1 ] then
+                    -- Event did not get handled due to rounding.
+                    state:HandleEvent( event )
+                    -- state:RemoveEvent( event )
+                end
+                event = events[ 1 ]
+                n = n + 1
+            else
                 --[[
                     Okay, new paradigm.  We're checking whether we should break channeled spells before we worry about casting while casting.
                     Are we channeling?
