@@ -572,6 +572,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         if abs( now - brain_freeze_removed ) < 1 then applyDebuff( "target", "winters_chill" ) end
 
         incanters_flow.reset()
+
+        if Hekili.ActiveDebug then
+            Hekili:Debug( "Ice Lance in-flight?  %s\nWinter's Chill Actual Stacks?  %d\nremaining_winters_chill:  %d", state:IsInFlight( "ice_lance" ) and "Yes" or "No", state.debuff.winters_chill.stack, state.remaining_winters_chill )
+        end
     end )
 
     
@@ -808,7 +812,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             impact = function ()
                 if frost_info.virtual_brain_freeze then
-                    applyDebuff( "target", "winters_chill" )
+                    applyDebuff( "target", "winters_chill", 2 )
                     frost_info.virtual_brain_freeze = false
                 end
             end
@@ -912,10 +916,15 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 629077,
 
+            velocity = 20,
+
             handler = function ()
-                addStack( "fingers_of_frost", nil, 1 )
                 if talent.freezing_rain.enabled then applyBuff( "freezing_rain" ) end
                 applyBuff( "frozen_orb" )
+            end,                
+
+            impact = function ()
+                addStack( "fingers_of_frost", nil, 1 )
                 applyDebuff( "target", "frozen_orb_snare" )
             end,
 
@@ -1039,7 +1048,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             impact = function ()
                 if debuff.winters_chill.up then
-                    if debuff.winters_chill.stack > 1 then removeStack( "winters_chill" )
+                    if debuff.winters_chill.stack > 1 then removeDebuffStack( "target", "winters_chill", 1 )
                     else removeDebuff( "target", "winters_chill" ) end
                 end
             end
