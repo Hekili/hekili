@@ -514,7 +514,7 @@ do
             for key in pairs( decreases ) do
                 if lhs:match( key ) then
                     if comp == "<" then
-                        return true, lhs .. " + 0.01 - " .. rhs
+                        return true, "(" .. lhs .. " + 0.01) - (" .. rhs .. ")"
                     elseif lessOrEqual[ comp ] then
                         return true, lhs .. " - " .. rhs
                     end
@@ -524,7 +524,7 @@ do
             for key in pairs( increases ) do
                 if lhs:match( key ) then
                     if comp == ">" then
-                        return true, rhs .. " + 0.01 - " .. rhs
+                        return true, "(" .. rhs .. " + 0.01) - (" .. rhs .. ")"
                     elseif moreOrEqual[ comp ] then
                         return true, rhs .. " - " .. lhs
                     end
