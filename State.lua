@@ -5561,7 +5561,7 @@ function state.reset( dispName )
             end
 
             -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
-            if ability.isProjectile then
+            if ability and ability.isProjectile then
                 state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
                 -- state:QueueEvent( action, "projectile", true )
             end            
