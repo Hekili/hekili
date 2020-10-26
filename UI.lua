@@ -816,7 +816,7 @@ do
 
         self.refreshTimer = self.refreshTimer - elapsed
 
-        if not Hekili.Pause then
+        if Hekili.freshFrame and not Hekili.Pause then
             local spec = Hekili.DB.profile.specs[ state.spec.id ]
             local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or ( 1 / 20 )
             local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
@@ -1403,6 +1403,9 @@ do
     end
 
     function Display_UpdatePerformance( self, now, used )
+        if used == nil then return end        
+        used = used / 1000 -- ms to sec.
+
         if self.combatTime.samples == 0 then
             self.combatTime.fastest = used
             self.combatTime.slowest = used
