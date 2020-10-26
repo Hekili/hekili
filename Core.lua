@@ -1519,7 +1519,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     end
                 end
 
-                if not shouldBreak and not shouldCheck then
+                if ( casting or channeling ) and not shouldBreak and not shouldCheck then
                     if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and castable spells are not ready.\nCasting: %s, Channeling: %s, Break: %s, Check: %s", n, event.type, event.action, t, casting and "Yes" or "No", channeling and "Yes" or "No", shouldBreak and "Yes" or "No", shouldCheck and "Yes" or "No" ) end
                     if t > 0 then state.advance( t ) end
                     event = events[ 1 ]
