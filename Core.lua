@@ -1450,6 +1450,16 @@ function Hekili:ProcessHooks( dispName, packName )
 
         while( event ) do
             local eStart
+
+            if debugprofilestop() - actualStartTime > 100 then
+                if not Hekili.HasSnapped then
+                    Hekili.HasSnapped = true
+                    Hekili:MakeSnapshot( dispName )
+                end
+                
+                if debug then self:Debug( "Escaping events loop due to high CPU usage." ) end
+                break
+            end
             
             if debug then
                 eStart = debugprofilestop()
@@ -1473,7 +1483,6 @@ function Hekili:ProcessHooks( dispName, packName )
                 state:HandleEvent( event )
                 state.offset = state.offset + t
                 event = events[ 1 ]
-                n = n + 1
             elseif t < 0.05 then
                 if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.05 seconds.\n", n, event.type, event.action, t ) end
                 state.advance( t )
@@ -1483,7 +1492,6 @@ function Hekili:ProcessHooks( dispName, packName )
                     -- state:RemoveEvent( event )
                 end
                 event = events[ 1 ]
-                n = n + 1
             else
                 --[[
                     Okay, new paradigm.  We're checking whether we should break channeled spells before we worry about casting while casting.
@@ -1523,7 +1531,6 @@ function Hekili:ProcessHooks( dispName, packName )
                     if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and castable spells are not ready.\nCasting: %s, Channeling: %s, Break: %s, Check: %s", n, event.type, event.action, t, casting and "Yes" or "No", channeling and "Yes" or "No", shouldBreak and "Yes" or "No", shouldCheck and "Yes" or "No" ) end
                     if t > 0 then state.advance( t ) end
                     event = events[ 1 ]
-                    n = n + 1
                 else
                     state:SetConstraint( 0, t - 0.01 )
 
@@ -1548,12 +1555,13 @@ function Hekili:ProcessHooks( dispName, packName )
                         if debug then self:Debug( "Time spent on event #%d POSTADVANCE: %.2fms...", n, debugprofilestop() - eStart ) end
 
                         event = events[ 1 ]
-                        n = n + 1
                     else
                         break
                     end
                 end
             end
+
+            n = n + 1
 
             if n > 10 then
                 if debug then Hekili:Debug( "WARNING:  Attempted to process 10+ events; breaking to avoid CPU wastage." ) end
