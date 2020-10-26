@@ -478,7 +478,7 @@ function Hekili:CheckChannel( ability, prio )
     local a = class.abilities[ channel ]
     local aura = class.auras[ a.aura or channel ]
 
-    if self.ActiveDebug then self:Debug( "channel: %s, a.aura: %s, aura: %s", channel or "none", a and a.aura or "none", aura and aura.key or "none" ) end
+    if self.ActiveDebug then self:Debug( "CC: Channel: %s, Ability Aura: %s, Aura: %s.", channel or "none", a and a.aura or "none", aura and aura.key or "none" ) end
 
     if not a.tick_time and ( not aura or not aura.tick_time ) then
         if self.ActiveDebug then self:Debug( "CC: No aura / no aura.tick_time to forecast channel breaktimes; don't break it." ) end
@@ -556,7 +556,7 @@ function Hekili:CheckChannel( ability, prio )
         state.this_action = act
     end
 
-    if self.ActiveDebug then self:Debug( "CC:  Default false." ) end
+    if self.ActiveDebug then self:Debug( "CC:  No result; defaulting to false." ) end
     return false
 end
 
@@ -975,7 +975,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                                 Timer:Track("Recheck Post-Script")
 
-                                                                channelPass = self:CheckChannel( action, rWait )
+                                                                channelPass = not state.channeling or ( action ~= state.channel ) or self:CheckChannel( action, rWait )                                                
                                                                 
                                                                 Timer:Track("Recheck Post-Channel")
 
@@ -1257,7 +1257,13 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     state.selectionTime = 60
     state.selectedAction = nil
 
-    if self.ActiveDebug then self:Debug( "Checking if I'm casting and should break it.  [ %s, %s, %.2f, %s ]", tostring( state.canBreakChannel ), tostring( state.buff.casting.up ), state.buff.casting.remains, tostring( state.spec.canCastWhileCasting ) ) end
+    if self.ActiveDebug then
+        self:Debug( "Checking if I'm casting ( %s ) and if it is a channel ( %s ).", state.buff.casting.up and "Yes" or "No", state.buff.casting.v3 and "Yes" or "No" )
+        if state.buff.casting.up then
+            if state.buff.casting.v3 then self:Debug( " - Is criteria met to break channel?  %s.", state.canBreakChannel and "Yes" or "No" ) end
+            self:Debug( " - Can I cast while casting/channeling?  %s.", state.spec.canCastWhileCasting and "Yes" or "No" )
+        end
+    end
 
     if not state.canBreakChannel and state.buff.casting.up and state.spec.canCastWhileCasting then
         self:Debug( "Whitelist of castable-while-casting spells applied [ %d, %.2f ]", state.buff.casting.v1, state.buff.casting.remains )
@@ -1382,7 +1388,7 @@ function Hekili:ProcessHooks( dispName, packName )
     end
 
     local actualStartTime = debugprofilestop()
-    local maxTime
+    local maxTime = 200
 
     if state.settings.throttleTime then
         maxTime = state.settings.maxTime or 50
@@ -1394,6 +1400,10 @@ function Hekili:ProcessHooks( dispName, packName )
 
             if maxTime and usedTime > maxTime then
                 if debug then self:Debug( -100, "Addon used %.2fms CPU time (of %.2fms softcap) before recommendation #%d; stopping early.", usedTime, maxTime, i-1 ) end
+                if not Hekili.HasSnapped then
+                    Hekili.HasSnapped = true
+                    Hekili:MakeSnapshot( dispName )
+                end
                 break
             end
             
@@ -1479,7 +1489,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 local channeling, shouldBreak = state:IsChanneling(), false
                 
                 if channeling then
-                    if debug then Hekili:Debug( "IsChanneling is true; checking if we should break." ) end
+                    if debug then Hekili:Debug( "We are channeling, checking if we should break the channel..." ) end
                     shouldBreak = Hekili:CheckChannel( nil, 0 )
                     state.canBreakChannel = shouldBreak
                 else
@@ -1501,7 +1511,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 end
 
                 if not shouldBreak and not shouldCheck then
-                    if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and castable spells are not ready.\n", n, event.type, event.action, t ) end
+                    if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f as player is casting and castable spells are not ready.\nCasting: %s, Channeling: %s, Break: %s, Check: %s", n, event.type, event.action, t, casting and "Yes" or "No", channeling and "Yes" or "No", shouldBreak and "Yes" or "No", shouldCheck and "Yes" or "No" ) end
                     if t > 0 then state.advance( t ) end
                     event = events[ 1 ]
                     n = n + 1
@@ -1575,9 +1585,9 @@ function Hekili:ProcessHooks( dispName, packName )
         -- if debug then self:Debug( "Prediction engine would recommend %s at +%.2fs (%.2fs).\n", action or "NO ACTION", wait or 60, state.offset + state.delay ) end
         if debug then self:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or 60, state.offset + state.delay ) end
 
-        if not debug and not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and Hekili.DB.profile.autoSnapshot and state.level < 50 then
-            Hekili:MakeSnapshot( dispName )
+        if not debug and not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and Hekili.DB.profile.autoSnapshot and InCombatLockdown() and state.level >= 50 then
             Hekili.HasSnapped = true
+            Hekili:MakeSnapshot( dispName )
             return
         end
 
@@ -1626,7 +1636,8 @@ function Hekili:ProcessHooks( dispName, packName )
                 local cast_target = state.cast_target ~= "nobody" and state.cast_target or state.target.unit
 
                 if ability.cast > 0 and not ability.channeled then
-                    if debug then Hekili:Debug( "Queueing %s cast finish at %.2f on %s.", action, state.query_time + cast, cast_target ) end
+                    state:RunHandler( action )
+                    if debug then Hekili:Debug( "Queueing %s cast finish at %.2f on %s.", action, state.query_time + cast, cast_target ) end                    
                     state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH", cast_target )
 
                 else
@@ -1683,7 +1694,7 @@ function Hekili:ProcessHooks( dispName, packName )
     UI.NewRecommendations = true
     UI.RecommendationsStr = checkstr
 
-    if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID ) end
+    if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, UI.eventsTriggered ) end
 
     Hekili.freshFrame     = false
 end

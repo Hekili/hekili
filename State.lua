@@ -1930,7 +1930,7 @@ local mt_state = {
 
             elseif k == 'time_to_refresh' then
                 -- if t.isCyclingTargets( action, aura_name ) then return 0 end
-                if app then return max( 0, app.remains - ( 0.3 * app.duration ) ) end
+                if app then return max( 0, 0.01 + app.remains - ( 0.3 * app.duration ) ) end
                 return 0
 
             elseif k == 'ticking' or k == "up" then
@@ -3189,7 +3189,7 @@ local mt_default_buff = {
             return t.remains < 0.3 * ( aura.duration or 30 )
 
         elseif k == 'time_to_refresh' then
-            return t.up and max( 0, t.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
+            return t.up and max( 0, 0.01 + t.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
 
         elseif k == 'cooldown_remains' then
             return state.cooldown[ t.key ] and state.cooldown[ t.key ].remains or 0
@@ -4146,7 +4146,7 @@ local mt_default_debuff = {
 
         elseif k == 'time_to_refresh' then
             -- if state.isCyclingTargets( nil, t.key ) then return 0 end
-            return t.up and ( max( 0, state.query_time - ( 0.3 * ( aura and aura.duration or t.duration or 30 ) ) ) ) or 0
+            return t.up and ( max( 0, 0.01 + state.query_time - ( 0.3 * ( aura and aura.duration or t.duration or 30 ) ) ) ) or 0
 
         elseif k == 'stack' then
             -- if state.isCyclingTargets( nil, t.key ) then return 0 end
@@ -4834,8 +4834,8 @@ do
 
             if ability then
                 if type == "PROJECTILE_IMPACT" then
-                    if ability.flightTime then time = start + ability.flightTime
-                    else time = start + ( state.target.distance / ability.velocity ) end
+                    if ability.flightTime then time = start + 0.05 + ability.flightTime
+                    else time = start + 0.05 + ( state.target.distance / ability.velocity ) end
                 
                 elseif type == "CHANNEL_START" then
                     time = start
@@ -5559,6 +5559,12 @@ function state.reset( dispName )
                     end
                 end
             end
+
+            -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+            if ability.isProjectile then
+                state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
+                -- state:QueueEvent( action, "projectile", true )
+            end            
         end
 
         --[[ if not state.spec.canCastWhileCasting then

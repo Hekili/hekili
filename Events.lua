@@ -1772,6 +1772,18 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", nil, function( event, u
     end
 end )
 
+
+RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( event, unit, cast, spellID )
+    local ability = class.abilities[ spellID ]
+    
+    if ability and state.holds[ ability.key ] then
+        Hekili:RemoveHold( ability.key, true )
+    end
+
+    Hekili:ForceUpdate( event, true )
+end )
+
+
 RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, unit, _, spellID )
     local ability = class.abilities[ spellID ]
     
@@ -1803,7 +1815,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
 
                 if not travel then travel = state.target.distance / ability.velocity end
 
-                state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", target, true )
+                state:QueueEvent( ability.key, finish / 1000, 0.05 + travel, "PROJECTILE_IMPACT", target, true )
             end
         end
 
@@ -1946,13 +1958,32 @@ RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
 end )
 
 
-RegisterEvent( "PLAYER_STARTED_MOVING", function( event )
-    Hekili:ForceUpdate( event )
-end )
-RegisterEvent( "PLAYER_STOPPED_MOVING", function( event )
-    Hekili:ForceUpdate( event )
-end )
 
+do
+    local MOVEMENT_ICD = 0.5
+
+    local lastStart = 0
+    local lastEnd = 0
+
+    RegisterEvent( "PLAYER_STARTED_MOVING", function( event )
+        local now = GetTime()
+        
+        if now - lastStart > MOVEMENT_ICD then
+            lastStart = now
+            Hekili:ForceUpdate( event )
+        end
+    end )
+
+
+    RegisterEvent( "PLAYER_STOPPED_MOVING", function( event )
+        local now = GetTime()
+
+        if now - lastEnd > MOVEMENT_ICD then
+            lastEnd = now
+            Hekili:ForceUpdate( event )
+        end
+    end )
+end
 
 
 local cast_events = {
@@ -2268,7 +2299,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                     ns.trackDebuff( spellID, destGUID, time, true )
                     if ( not minion or countPets ) and countDots then ns.updateTarget( destGUID, time, amSource ) end
 
-                    if spellID == 48108 or spellID == 48107 then
+                    if spellID == 48108 or spellID == 48107 then 
                         Hekili:ForceUpdate( "SPELL_AURA_SUPER", true )
                     end
 
