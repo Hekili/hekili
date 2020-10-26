@@ -806,7 +806,7 @@ do
             self.flashTimer = -1
             self.delayTimer = -1
 
-            self.recTimer = 1
+            self.recTimer = 0.1
             self.alphaCheck = 0.5
 
             self:RefreshCooldowns()
@@ -821,13 +821,16 @@ do
             local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or ( 1 / 20 )
             local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
 
-            if self.refreshTimer < 0 or Hekili.freshFrame and ( self.superUpdate and ( self.id == "Primary" or self.id == "AOE" ) or self.criticalUpdate and ( now - self.lastUpdate > throttle ) ) then
+            if self.refreshTimer < 0 or ( self.superUpdate and ( self.id == "Primary" or self.id == "AOE" ) ) or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
                 Hekili:ProcessHooks( self.id )
                 self.lastUpdate = now
                 self.criticalUpdate = false
                 self.superUpdate = false
                 self.refreshTimer = refreshRate
+
                 table.wipe( self.eventsTriggered )
+                
+                Hekili.freshFrame = false
             end
         end
 
