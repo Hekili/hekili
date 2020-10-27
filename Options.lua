@@ -7727,6 +7727,14 @@ function Hekili:GenerateProfile()
         end
     end
 
+    local pvptalents
+    for k,v in orderedPairs( s.pvptalent ) do
+        if v.enabled then
+            if pvptalents then pvptalents = format( "%s\n   %s", pvptalents, k )
+            else pvptalents = k end
+        end
+    end
+
     local covenants = { "kyrian", "necrolord", "night_fae", "venthyr" }
     local covenant = "none"
     for i, v in ipairs( covenants ) do
@@ -7811,6 +7819,7 @@ function Hekili:GenerateProfile()
         "class: %s\n" ..
         "spec: %s\n\n" ..
         "talents: %s\n\n" ..
+        "pvptalents: %s\n\n" ..
         "covenant: %s\n\n" ..
         "azerite: %s\n\n" ..
         "essences: %s\n\n" ..
@@ -7825,6 +7834,7 @@ function Hekili:GenerateProfile()
         class.file or "NONE",
         spec or "none",
         talents or "none",
+        pvptalents or "none",
         covenant or "none",
         traits or "none",
         essences or "none",
