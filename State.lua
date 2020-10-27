@@ -5557,15 +5557,24 @@ function state.reset( dispName )
     -- 2.  We cannot cast anything while casting (typical), so we want to advance the clock, complete the cast, and then generate recommendations.
 
     if casting and cast_time > 0 then
-        if not state:IsCasting( casting ) then
-            local channeled, destGUID
+        local channeled, destGUID
             
-            if ability then
-                channeled = ability.channeled
-                destGUID =  Hekili:GetMacroCastTarget( ability.key, state.buff.casting.applied, "RESET" ) or state.target.unit
+        if ability then
+            channeled = ability.channeled
+            destGUID =  Hekili:GetMacroCastTarget( ability.key, state.buff.casting.applied, "RESET" ) or state.target.unit
+        end
+
+        if not state:IsCasting( casting ) and not channeled then
+            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CAST_FINISH", destGUID )
+            
+            -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+            if ability and ability.isProjectile then
+                state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
+                -- state:QueueEvent( action, "projectile", true )
             end
 
-            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, channeled and "CHANNEL_FINISH" or "CAST_FINISH", destGUID )
+        elseif not state:IsChanneling( casting ) and channeled then
+            state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CHANNEL_FINISH", destGUID )
             
             if channeled then
                 local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
@@ -5584,8 +5593,9 @@ function state.reset( dispName )
             if ability and ability.isProjectile then
                 state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
                 -- state:QueueEvent( action, "projectile", true )
-            end            
+            end
         end
+
 
         --[[ if not state.spec.canCastWhileCasting then
             if ( not ability or not ability.breakable ) then
