@@ -1808,8 +1808,9 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
                     local unit = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
 
                     if unit then
-                        local minR, maxR = RC:GetRange( unit )
-                        travel = 0.5 * ( minR + maxR ) / ability.velocity
+                        local _, maxR = RC:GetRange( unit )
+                        maxR = maxR or state.target.distance
+                        travel = maxR / ability.velocity
                     end
                 end
 
@@ -2193,6 +2194,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                             if unit then
                                 local _, maxR = RC:GetRange( unit )
+                                maxR = maxR or state.target.distance
                                 travel = maxR / ability.velocity
                             end
                         end
@@ -2220,6 +2222,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                             if unit then
                                 local _, maxR = RC:GetRange( unit )
+                                maxR = maxR or state.target.distance
                                 travel = maxR / ability.velocity
                             end
                         end
@@ -2231,6 +2234,16 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                     state:AddToHistory( ability.key, destGUID )
 
+                elseif subtype == "SPELL_DAMAGE" then
+                    -- Could be an impact.
+                    local ability = class.abilities[ spellID ]
+        
+                    if ability then
+                        if state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT" ) then
+                            Hekili:ForceUpdate( "PROJECTILE_IMPACT", true )
+                        end
+                    end
+                
                 end
             end
 
@@ -2241,15 +2254,6 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
             Hekili:ForceUpdate( subtype )
 
-        elseif subtype == "SPELL_DAMAGE" then
-            -- Could be an impact.
-            local ability = class.abilities[ spellID ]
-
-            if ability then
-                if state:RemoveSpellEvent( ability.key, true, "PROJECTILE_IMPACT" ) then
-                    Hekili:ForceUpdate( "PROJECTILE_IMPACT", true )
-                end
-            end
         end
     end
 

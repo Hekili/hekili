@@ -4965,6 +4965,9 @@ do
         return success
     end
 
+
+    local EVENT_EXPIRE_MARGIN = 0.2
+
     function state:ResetQueues()
         for i = #virtualQueue, 1, -1 do
             RecycleEvent( virtualQueue, i )
@@ -4975,7 +4978,7 @@ do
         for i = #realQueue, 1, -1 do
             local e = realQueue[ i ]
 
-            if e.time < now then
+            if e.time + EVENT_EXPIRE_MARGIN < now then
                 RecycleEvent( realQueue, i )
             end
         end
@@ -5679,7 +5682,7 @@ function state.advance( time )
     local eCount = 0
 
     while( event ) do
-        if event.time > state.query_time and event.time <= state.query_time + time then
+        if event.time <= state.query_time + time then
             state.offset = event.time - state.now
 
             if Hekili.ActiveDebug then Hekili:Debug( "While advancing by %.2f to %.2f, %s %s occurred at %.2f.", time, realOffset + time, event.action, event.type, state.offset ) end
