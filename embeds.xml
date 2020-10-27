@@ -22,4 +22,5 @@
     <Include file="Libs\LibItemBuffs-1.0\LibItemBuffs-1.0.xml"/>
 	<Include file="Libs\LibCustomGlow-1.0\LibCustomGlow-1.0.xml"/>
 	<Include file="Libs\TaintLess\TaintLess.xml"/>
+	<Include file="Libs\LibChatAnims\LibChatAnims.xml"/>
 </Ui>

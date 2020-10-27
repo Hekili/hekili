@@ -185,6 +185,10 @@ function Hekili:OnEnable()
     ns.StartEventHandler()
 
     self:TotalRefresh()
+    
+    -- Fix spellbook taint???
+    ShowUIPanel( _G.SpellBookFrame )
+    HideUIPanel( _G.SpellBookFrame )
 
     ns.ReadKeybindings()
     self:ForceUpdate( "ADDON_ENABLED" )

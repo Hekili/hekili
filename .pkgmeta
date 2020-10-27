@@ -51,3 +51,5 @@ externals:
         url: git://github.com/AdiAddons/LibItemBuffs-1.0.git
     Libs/LibCustomGlow-1.0:
         url: git://github.com/Stanzilla/LibCustomGlow.git
+    Libs/LibChatAnims:
+        url: https://repos.wowace.com/wow/libchatanims/trunk/LibChatAnims        
