@@ -1784,6 +1784,21 @@ RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( even
 end )
 
 
+RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", nil, function( event, unit, cast, spellID )
+    local ability = class.abilities[ spellID ]
+    
+    if ability then
+        if state.holds[ ability.key ] then
+            Hekili:RemoveHold( ability.key, true )
+        end
+
+        state:RemoveSpellEvents( ability.key, true )
+    end
+
+    Hekili:ForceUpdate( event, true )
+end )
+
+
 RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, unit, _, spellID )
     local ability = class.abilities[ spellID ]
     
@@ -2211,6 +2226,33 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 elseif subtype == "SPELL_CAST_SUCCESS" then
                     state:RemoveSpellEvent( ability.key, true, "CAST_FINISH" ) -- remove next cast finish.
 
+                    if ability.channeled then
+                        local _, _, _, start, finish = UnitChannelInfo( "player" ) 
+
+                        if destGUID:len() == 0 then
+                            destGUID = Hekili:GetMacroCastTarget( ability.key, GetTime(), "START" ) or UnitGUID( "target" )
+                        end
+
+                        if start then
+                            start = start / 1000
+                            finish = finish / 1000
+
+                            state:QueueEvent( ability.key, start, finish, "CHANNEL_FINISH", destGUID, true )
+
+                            local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
+            
+                            if tick_time and tick_time > 0 then
+                                local tick = tick_time
+
+                                while ( start + tick < finish ) do
+                                    state:QueueEvent( ability.key, start, start + tick, "CHANNEL_TICK", destGUID, true )
+                                    tick = tick + tick_time
+                                end
+                            end
+                        end
+                    end
+
+
                     if ability.isProjectile then
                         local travel
 
@@ -2252,7 +2294,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
             end            
 
-            Hekili:ForceUpdate( subtype )
+            Hekili:ForceUpdate( subtype, true )
 
         end
     end
