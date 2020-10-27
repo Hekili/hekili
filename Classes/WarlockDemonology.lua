@@ -1000,7 +1000,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
         demonbolt = {
             id = 264178,
-            cast = function () return buff.demonbolt.up and 0 or 4.5 end,
+            cast = function () return ( buff.demonic_core.up and 0 or 4.5 ) * haste end,
             cooldown = 0,
             gcd = "spell",
 
