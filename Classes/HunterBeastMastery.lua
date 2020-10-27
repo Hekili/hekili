@@ -399,10 +399,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
                     return
                 end
 
-                fr.count = 0
-                fr.expires = 0
-                fr.applied = 0
-                fr.caster = "nobody"
+                t.count = 0
+                t.expires = 0
+                t.applied = 0
+                t.caster = "nobody"
             end,
         },
 
