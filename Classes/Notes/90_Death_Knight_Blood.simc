@@ -1,0 +1,77 @@
+# Blood Death Knight
+# October 17, 2020
+
+# Changes:
+# - Quick and dirty update of BfA to Shadowlands.
+
+# Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat=use_item,name=azsharas_font_of_power
+actions.precombat+=/use_item,effect_name=cyclotronic_blast
+
+# Executed every time the actor is available.
+actions=mind_freeze
+actions+=/blood_fury,if=cooldown.dancing_rune_weapon.ready&(!cooldown.blooddrinker.ready|!talent.blooddrinker.enabled)
+actions+=/berserking
+actions+=/arcane_pulse,if=active_enemies>=2|rune<1&runic_power.deficit>60
+actions+=/lights_judgment,if=buff.unholy_strength.up
+actions+=/ancestral_call
+actions+=/fireblood
+actions+=/bag_of_tricks
+actions+=/use_items,if=cooldown.dancing_rune_weapon.remains>90
+actions+=/use_item,name=razdunks_big_red_button
+actions+=/use_item,effect_name=cyclotronic_blast,if=cooldown.dancing_rune_weapon.remains&!buff.dancing_rune_weapon.up&rune.time_to_4>cast_time
+actions+=/use_item,name=azsharas_font_of_power,if=(cooldown.dancing_rune_weapon.remains<5&target.time_to_die>15)|(target.time_to_die<34)
+actions+=/use_item,name=merekthas_fang,if=(cooldown.dancing_rune_weapon.remains&!buff.dancing_rune_weapon.up&rune.time_to_4>3)&!raid_event.adds.exists|raid_event.adds.in>15
+actions+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down
+actions+=/use_item,name=ashvanes_razor_coral,if=target.health.pct<31&equipped.dribbling_inkpod
+actions+=/use_item,name=ashvanes_razor_coral,if=buff.dancing_rune_weapon.up&debuff.razor_coral_debuff.up&!equipped.dribbling_inkpod
+actions+=/potion,if=buff.dancing_rune_weapon.up
+actions+=/blood_tap,if=runes.time_to_1>gcd
+actions+=/swarming_mist,if=runic_power.deficit>6*active_enemies
+actions+=/raise_dead,if=!pet.alive
+actions+=/abomination_limb
+actions+=/dancing_rune_weapon,if=!talent.blooddrinker.enabled|!cooldown.blooddrinker.ready
+actions+=/tombstone,if=buff.bone_shield.stack>=7
+actions+=/call_action_list,name=mitigation,if=incoming_damage_5s>0
+actions+=/call_action_list,name=essences
+actions+=/call_action_list,name=standard
+
+actions.essences=concentrated_flame,if=dot.concentrated_flame_burn.remains<2&!buff.dancing_rune_weapon.up
+actions.essences+=/anima_of_death,if=buff.vampiric_blood.up&(raid_event.adds.exists|raid_event.adds.in>15)
+actions.essences+=/memory_of_lucid_dreams,if=rune.time_to_1>gcd&runic_power<40
+actions.essences+=/worldvein_resonance
+actions.essences+=/ripple_in_space,if=!buff.dancing_rune_weapon.up
+actions.essences+=/reaping_flames,if=target.health_pct>=80|target.health_pct<=20|fight_remains<45
+
+actions.mitigation=vampiric_blood,if=health.pct<50|(!group&health.pct<66)
+# Incoming damage requirement is 25% of max health solo, 50% of max health in a group.
+actions.mitigation+=/death_strike,if=incoming_damage_3s>=health.current
+# Don't let an existing Blood Shield drop.
+actions.mitigation+=/death_strike,if=save_blood_shield&incoming_damage_5s>0&buff.blood_shield.up&buff.blood_shield.remains<1.5*gcd
+actions.mitigation+=/rune_tap,if=tanking&buff.rune_tap.down&incoming_damage_3s>health.max*0.1
+actions.mitigation+=/icebound_fortitude,if=health.pct<50-(20*buff.blood_shield.up)
+actions.mitigation+=/sacrificial_pact,if=health.pct<75&pet.ghoul.remains<5
+
+actions.standard=death_strike,if=runic_power.deficit<=10&(!talent.bonestorm.enabled|!cooldown.bonestorm.ready|buff.dancing_rune_weapon.up)
+actions.standard+=/sacrificial_pact,if=pet.ghoul.remains<gcd*2
+actions.standard+=/blooddrinker,if=!buff.dancing_rune_weapon.up
+actions.standard+=/marrowrend,if=buff.bone_shield.remains<1.5*gcd.execute|(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<3)&runic_power.deficit>=20
+actions.standard+=/shackle_the_unworthy,if=refreshable
+actions.standard+=/heart_essence,if=!buff.dancing_rune_weapon.up
+actions.standard+=/blood_boil,if=charges_fractional>=1.8&(buff.hemostasis.stack<=(5-spell_targets.blood_boil)|spell_targets.blood_boil>2)
+actions.standard+=/marrowrend,if=buff.bone_shield.stack<=6&runic_power.deficit>=15
+# Mark of Blood does not pandemic-extend.
+actions.standard+=/mark_of_blood,if=debuff.mark_of_blood.down&target.time_to_die>7.5
+actions.standard+=/bonestorm,if=runic_power>=100&!buff.dancing_rune_weapon.up
+actions.standard+=/death_strike,if=runic_power.deficit<=(15+buff.dancing_rune_weapon.up*5+spell_targets.heart_strike*talent.heartbreaker.enabled*2)|time_to_die<10
+actions.standard+=/death_and_decay,if=spell_targets.death_and_decay>=3
+# Watch SimC implementation re: Death's Due; see if they include both abilities or if death_and_decay functions for both.
+actions.standard+=/deaths_due,if=spell_targets.deaths_due>=3
+actions.standard+=/heart_strike,if=buff.dancing_rune_weapon.up|rune.time_to_4<gcd
+actions.standard+=/blood_boil,if=buff.dancing_rune_weapon.up
+actions.standard+=/death_and_decay,if=buff.crimson_scourge.up|talent.rapid_decomposition.enabled|spell_targets.death_and_decay>=2
+actions.standard+=/deaths_due,if=buff.crimson_scourge.up|talent.rapid_decomposition.enabled|spell_targets.deaths_due>=2
+actions.standard+=/consumption
+actions.standard+=/blood_boil
+actions.standard+=/heart_strike,if=rune.time_to_3<gcd|buff.bone_shield.stack>6
+actions.standard+=/arcane_torrent,if=runic_power.deficit>20

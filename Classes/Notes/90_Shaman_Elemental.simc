@@ -1,0 +1,83 @@
+# Elemental Shaman
+# October 24, 2020
+
+# Changes:
+# - Added backup Essence ability.
+# - Tweaks to improve Echoing Shock per Icy-Veins guide.
+
+actions.precombat+=/lightning_shield
+actions.precombat+=/use_item,name=azsharas_font_of_power
+# Use Stormkeeper precombat unless some adds will spawn soon.
+actions.precombat+=/stormkeeper,if=talent.stormkeeper.enabled&(raid_event.adds.count<3|raid_event.adds.in>50)
+actions.precombat+=/elemental_blast,if=talent.elemental_blast.enabled
+actions.precombat+=/lava_burst,if=!talent.elemental_blast.enabled
+
+# Executed every time the actor is available.
+# Cast Bloodlust manually if the Azerite Trait Ancestral Resonance is present.
+actions=bloodlust,if=azerite.ancestral_resonance.enabled
+# In-combat potion is preferentially linked to the Guardian of Azeroth, unless combat will end shortly.
+actions+=/potion,if=fight_remains<60|cooldown.guardian_of_azeroth.remains<30
+
+# Interrupt of casts.
+actions+=/wind_shear
+actions+=/use_items
+actions+=/fire_elemental
+actions+=/storm_elemental
+
+actions+=/concentrated_flame
+actions+=/blood_of_the_enemy
+actions+=/guardian_of_azeroth
+actions+=/focused_azerite_beam
+actions+=/purifying_blast
+actions+=/the_unbound_force
+actions+=/memory_of_lucid_dreams
+actions+=/ripple_in_space
+actions+=/worldvein_resonance
+actions+=/reaping_flames,if=target.health_pct>80|target.health_pct<20|fight_remains<30
+# In case I forgot something.
+actions+=/heart_essence
+
+actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
+actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
+actions+=/fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
+actions+=/ancestral_call,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
+
+actions+=/vesper_totem
+actions+=/primordial_wave
+actions+=/fae_transfusion
+actions+=/chain_harvest,if=active_enemies>1
+
+actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
+actions+=/echoing_shock,if=(maelstrom>=60|cooldown.lava_burst.remains<=gcd|buff.lava_surge.up)
+actions+=/run_action_list,name=aoe,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
+actions+=/run_action_list,name=single_target
+
+# Multi target action priority list
+actions.aoe=stormkeeper
+actions.aoe+=/ascendance
+actions.aoe+=/liquid_magma_totem
+actions.aoe+=/earthquake
+actions.aoe+=/lava_beam,if=talent.ascendance.enabled
+actions.aoe+=/chain_lightning
+actions.aoe+=/static_discharge
+actions.aoe+=/lava_burst,moving=1,if=talent.ascendance.enabled
+actions.aoe+=/flame_shock,moving=1,if=refreshable&buff.echoing_shock.down
+actions.aoe+=/frost_shock,moving=1
+
+# Single Target Action Priority List
+# Ensure FS is active unless you have 14 or more stacks of Wind Gust from Storm Elemental. (Edge case: upcoming Asc but active SE; don't )
+actions.single_target=flame_shock,cycle_targets=1,if=(!ticking|dot.flame_shock.remains<=gcd)&!buff.surge_of_power.up&!buff.echoing_shock.up
+actions.single_target+=/ascendance
+actions.single_target+=/elemental_blast
+actions.single_target+=/stormkeeper
+actions.single_target+=/liquid_magma_totem
+actions.single_target+=/lightning_lasso
+actions.single_target+=/lava_burst
+actions.single_target+=/frost_shock,if=buff.icefury.up&(maelstrom<60|buff.icefury.remains<gcd*(1+buff.icefury.stack))
+actions.single_target+=/icefury
+actions.single_target+=/earth_shock
+actions.single_target+=/static_discharge
+actions.single_target+=/lightning_bolt
+actions.single_target+=/flame_shock,moving=1,cycle_targets=1,if=refreshable
+actions.single_target+=/flame_shock,moving=1,if=movement.distance>6
+actions.single_target+=/frost_shock,moving=1

@@ -1,0 +1,65 @@
+# Affliction Warlock
+# October 24, 2020
+
+# Changes:
+# - Added Spell Lock.
+# - Added Devour Magic.
+# - Added breakchannel logic for Drain Soul.
+# - Tweak Malefic Rapture logic to work if you're missing a talent in that row.
+# - Enable Rampant Afflictions PvP talent.
+
+actions.precombat=fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
+actions.precombat+=/summon_pet
+actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
+actions.precombat+=/use_item,name=azsharas_font_of_power
+actions.precombat+=/seed_of_corruption,if=spell_targets.seed_of_corruption_aoe>=3&!equipped.169314
+actions.precombat+=/haunt
+actions.precombat+=/shadow_bolt,if=!talent.haunt.enabled&spell_targets.seed_of_corruption_aoe<3&!equipped.169314
+
+# Executed every time the actor is available.
+actions=spell_lock
+actions+=/devour_magic
+actions+=/phantom_singularity
+actions+=/vile_taint,if=soul_shard>1
+actions+=/siphon_life,if=refreshable
+actions+=/agony,cycle_targets=1,if=refreshable
+actions+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&refreshable
+actions+=/unstable_affliction,if=ticking&azerite.cascading_calamity.enabled&buff.cascading_calamity.remains<3
+actions+=/unstable_affliction,cycle_targets=1,if=!ticking&pvptalent.rampant_afflictions.enabled&active_dot.unstable_affliction<3
+actions+=/seed_of_corruption,if=spell_targets.seed_of_corruption>2&(dot.corruption.refreshable|active_dot.corruption<active_enemies)
+actions+=/corruption,cycle_targets=1,if=spell_targets.seed_of_corruption<3&refreshable
+actions+=/haunt
+actions+=/call_action_list,name=darkglare_prep,if=cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled)
+actions+=/dark_soul,if=cooldown.summon_darkglare.remains>time_to_die
+actions+=/call_action_list,name=cooldowns
+actions+=/use_items
+actions+=/malefic_rapture,if=dot.vile_taint.ticking|cooldown.vile_taint.remains>10|soul_shard=5
+actions+=/malefic_rapture,if=talent.phantom_singularity.enabled&(dot.phantom_singularity.ticking|cooldown.phantom_singularity.remains>12|soul_shard>3)
+actions+=/malefic_rapture,if=(!talent.vile_taint.enabled&!talent.phantom_singularity.enabled)
+actions+=/drain_life,if=buff.inevitable_demise.stack>30
+actions+=/drain_life,if=buff.inevitable_demise_az.stack>30
+actions+=/drain_soul,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
+actions+=/shadow_bolt
+
+actions.cooldowns=worldvein_resonance
+actions.cooldowns+=/memory_of_lucid_dreams
+actions.cooldowns+=/blood_of_the_enemy
+actions.cooldowns+=/guardian_of_azeroth
+actions.cooldowns+=/ripple_in_space
+actions.cooldowns+=/focused_azerite_beam
+actions.cooldowns+=/purifying_blast
+actions.cooldowns+=/reaping_flames,if=target.health_pct>80|target.health_pct<20|target.time_to_pct_20>40|fight_remains<20
+actions.cooldowns+=/concentrated_flame
+actions.cooldowns+=/the_unbound_force,if=buff.reckless_force.remains
+actions.cooldowns+=/scouring_tithe
+actions.cooldowns+=/impending_catastrophe
+actions.cooldowns+=/soul_rot,if=(buff.inevitable_demise.stack>38|active_enemies>1)
+actions.cooldowns+=/decimating_bolt,if=(target.health_pct<50|fight_remains>50)
+
+actions.darkglare_prep=vile_taint
+actions.darkglare_prep+=/dark_soul
+actions.darkglare_prep+=/potion
+actions.darkglare_prep+=/fireblood
+actions.darkglare_prep+=/blood_fury
+actions.darkglare_prep+=/berserking
+actions.darkglare_prep+=/summon_darkglare,if=active_dot.vile_taint>0|active_dot.phantom_singularity>0|talent.sow_the_seeds.enabled|(!talent.vile_taint.enabled&!talent.phantom_singularity.enabled)

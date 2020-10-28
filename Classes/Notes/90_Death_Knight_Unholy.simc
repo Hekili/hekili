@@ -1,0 +1,101 @@
+# Unholy Death Knight
+# October 28, 2020
+
+# Changes:
+# - Added Mind Freeze.
+# - Converted target_if conditions to regular conditions.
+# - Racials/Font of Power tweaks.
+# - Soul Reaper, Apocalypse tweaks.
+
+actions.precombat+=/raise_dead
+actions.precombat+=/use_item,name=azsharas_font_of_power
+actions.precombat+=/army_of_the_dead,delay=2
+
+# Executed every time the actor is available.
+actions=mind_freeze
+actions+=/variable,name=pooling_for_gargoyle,value=cooldown.summon_gargoyle.remains<5&talent.summon_gargoyle.enabled
+# Racials, Items, and other ogcds
+actions+=/arcane_torrent,if=runic_power.deficit>65&(pet.gargoyle.active|!talent.summon_gargoyle.enabled)&rune.deficit>=5
+actions+=/blood_fury,if=pet.gargoyle.active|!talent.summon_gargoyle.enabled
+actions+=/berserking,if=buff.unholy_assault.up|pet.gargoyle.active|(talent.army_of_the_damned.enabled&pet.apoc_ghoul.active)
+actions+=/lights_judgment,if=(buff.unholy_strength.up&buff.festermight.remains<=5)|active_enemies>=2&(buff.unholy_strength.up|buff.festermight.remains<=5)
+actions+=/ancestral_call,if=(pet.gargoyle.active&talent.summon_gargoyle.enabled)|pet.apoc_ghoul.active
+actions+=/arcane_pulse,if=active_enemies>=2|(rune.deficit>=5&runic_power.deficit>=60)
+actions+=/fireblood,if=(pet.gargoyle.active&talent.summon_gargoyle.enabled)|pet.apoc_ghoul.active
+actions+=/bag_of_tricks,if=buff.unholy_strength.up&active_enemies=1|buff.festermight.remains<gcd&active_enemies=1
+# Custom trinkets usage
+actions+=/use_items,if=time>20|!equipped.ramping_amplitude_gigavolt_engine|!equipped.vision_of_demise
+actions+=/use_item,name=azsharas_font_of_power,if=(essence.vision_of_perfection.enabled&!talent.unholy_assault.enabled)|(!essence.condensed_lifeforce.major&!essence.vision_of_perfection.enabled)
+actions+=/use_item,name=azsharas_font_of_power,if=cooldown.apocalypse.remains<14&(essence.condensed_lifeforce.major|essence.vision_of_perfection.enabled&talent.unholy_assault.enabled)
+actions+=/use_item,name=azsharas_font_of_power,if=fight_remains<cooldown.apocalypse.remains+34
+actions+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.stack<1
+actions+=/use_item,name=ashvanes_razor_coral,if=pet.guardian_of_azeroth.active&pet.apoc_ghoul.active
+actions+=/use_item,name=ashvanes_razor_coral,if=cooldown.apocalypse.ready&(essence.condensed_lifeforce.major&fight_remains<cooldown.condensed_lifeforce.remains+20|!essence.condensed_lifeforce.major)
+actions+=/use_item,name=ashvanes_razor_coral,if=fight_remains<cooldown.apocalypse.remains+20
+actions+=/use_item,name=vision_of_demise,if=(cooldown.apocalypse.ready&debuff.festering_wound.stack>=4&essence.vision_of_perfection.enabled)|buff.unholy_assault.up|pet.gargoyle.active
+actions+=/use_item,name=ramping_amplitude_gigavolt_engine,if=cooldown.apocalypse.remains<2|talent.army_of_the_damned.enabled|raid_event.adds.in<5
+actions+=/use_item,name=bygone_bee_almanac,if=cooldown.summon_gargoyle.remains>60|!talent.summon_gargoyle.enabled&time>20|!equipped.ramping_amplitude_gigavolt_engine
+actions+=/use_item,name=jes_howler,if=pet.gargoyle.active|!talent.summon_gargoyle.enabled&time>20|!equipped.ramping_amplitude_gigavolt_engine
+actions+=/use_item,name=galecallers_beak,if=pet.gargoyle.active|!talent.summon_gargoyle.enabled&time>20|!equipped.ramping_amplitude_gigavolt_engine
+actions+=/use_item,name=grongs_primal_rage,if=rune<=3&(time>20|!equipped.ramping_amplitude_gigavolt_engine)
+actions+=/potion,if=cooldown.army_of_the_dead.ready|pet.gargoyle.active|buff.unholy_assault.up
+# Maintaining Virulent Plague is a priority
+actions+=/outbreak,if=dot.virulent_plague.remains<=gcd
+actions+=/call_action_list,name=essences
+actions+=/call_action_list,name=cooldowns
+actions+=/call_action_list,strict=1,name=aoe,if=active_enemies>=2
+actions+=/call_action_list,strict=1,name=generic,if=active_enemies=1
+actions+=/festering_strike,cycle_targets=1,if=debuff.festering_wound.stack<4
+
+# AoE rotation
+actions.aoe=death_and_decay,if=cooldown.apocalypse.remains&active_dot.festering_wound>0
+actions.aoe+=/defile,if=cooldown.apocalypse.remains&active_dot.festering_wound>0
+actions.aoe+=/deaths_due,if=cooldown.apocalypse.remains&active_dot.festering_wound>0
+actions.aoe+=/epidemic,if=death_and_decay.ticking&runic_power.deficit<14&!talent.bursting_sores.enabled&!variable.pooling_for_gargoyle
+actions.aoe+=/epidemic,if=death_and_decay.ticking&(!death_knight.fwounded_targets&talent.bursting_sores.enabled)&!variable.pooling_for_gargoyle
+actions.aoe+=/scourge_strike,if=death_and_decay.ticking&cooldown.apocalypse.remains
+actions.aoe+=/clawing_shadows,if=death_and_decay.ticking&cooldown.apocalypse.remains
+actions.aoe+=/epidemic,if=!variable.pooling_for_gargoyle
+actions.aoe+=/festering_strike,cycle_targets=1,if=((((debuff.festering_wound.stack<4&!buff.unholy_assault.up)|debuff.festering_wound.stack<3)&cooldown.apocalypse.remains<3)|debuff.festering_wound.stack<1)&(cooldown.army_of_the_dead.remains>5)
+actions.aoe+=/death_coil,if=buff.sudden_doom.react&rune.time_to_4>gcd
+actions.aoe+=/death_coil,if=buff.sudden_doom.react&!variable.pooling_for_gargoyle|pet.gargoyle.active
+actions.aoe+=/death_coil,if=runic_power.deficit<14&(cooldown.apocalypse.remains>5|debuff.festering_wound.stack>4)&!variable.pooling_for_gargoyle
+actions.aoe+=/scourge_strike,cycle_targets=1,if=((cooldown.army_of_the_dead.remains>5|death_knight.disable_aotd)&(cooldown.apocalypse.remains>5&debuff.festering_wound.stack>0|debuff.festering_wound.stack>4)&(fight_remains<cooldown.death_and_decay.remains+10|fight_remains>cooldown.apocalypse.remains))
+actions.aoe+=/clawing_shadows,cycle_targets=1,if=((cooldown.army_of_the_dead.remains>5|death_knight.disable_aotd)&(cooldown.apocalypse.remains>5&debuff.festering_wound.stack>0|debuff.festering_wound.stack>4)&(fight_remains<cooldown.death_and_decay.remains+10|fight_remains>cooldown.apocalypse.remains))
+actions.aoe+=/death_coil,if=runic_power.deficit<20&!variable.pooling_for_gargoyle
+actions.aoe+=/festering_strike,if=((((debuff.festering_wound.stack<4&!buff.unholy_assault.up)|debuff.festering_wound.stack<3)&cooldown.apocalypse.remains<3)|debuff.festering_wound.stack<1)&(cooldown.army_of_the_dead.remains>5|death_knight.disable_aotd)
+actions.aoe+=/scourge_strike,if=death_and_decay.ticking
+actions.aoe+=/death_coil,if=!variable.pooling_for_gargoyle
+
+actions.cooldowns=army_of_the_dead
+actions.cooldowns+=/apocalypse,if=debuff.festering_wound.stack>=4&(active_enemies>=2|!essence.vision_of_perfection.enabled|!azerite.magus_of_the_dead.enabled|essence.vision_of_perfection.enabled&(talent.unholy_assault.enabled&cooldown.unholy_assault.remains<=3|!talent.unholy_assault.enabled))
+actions.cooldowns+=/dark_transformation,if=!raid_event.adds.exists|raid_event.adds.in>15
+actions.cooldowns+=/summon_gargoyle,if=runic_power.deficit<14
+actions.cooldowns+=/unholy_assault,if=essence.vision_of_perfection.enabled&pet.apoc_ghoul.active|debuff.festering_wound.stack<4&!essence.vision_of_perfection.enabled&(!azerite.magus_of_the_dead.enabled|azerite.magus_of_the_dead.enabled&pet.apoc_ghoul.active)
+actions.cooldowns+=/unholy_assault,if=active_enemies>=2&((cooldown.death_and_decay.remains<=gcd&!talent.defile.enabled)|(cooldown.defile.remains<=gcd&talent.defile.enabled))
+actions.cooldowns+=/shackle_the_unworthy,if=target.time_to_die>14
+actions.cooldowns+=/abomination_limb,if=active_enemies>2
+actions.cooldowns+=/swarming_mist,if=active_enemies>2
+actions.cooldowns+=/soul_reaper,cycle_targets=1,if=target.time_to_die<8&target.time_to_die>4
+actions.cooldowns+=/soul_reaper,if=target.time_to_pct_34<5&rune<=(1-buff.unholy_assault.up)
+actions.cooldowns+=/unholy_blight
+
+actions.essences=memory_of_lucid_dreams,if=rune.time_to_1>gcd&runic_power<40
+actions.essences+=/blood_of_the_enemy,if=death_and_decay.ticking|pet.apoc_ghoul.active&active_enemies=1
+actions.essences+=/guardian_of_azeroth,if=(cooldown.apocalypse.remains<6&cooldown.army_of_the_dead.remains>cooldown.condensed_lifeforce.remains)|cooldown.army_of_the_dead.remains<2
+actions.essences+=/the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<11
+actions.essences+=/focused_azerite_beam,if=!death_and_decay.ticking
+actions.essences+=/concentrated_flame,if=dot.concentrated_flame_burn.remains=0
+actions.essences+=/purifying_blast,if=!death_and_decay.ticking
+actions.essences+=/worldvein_resonance,if=talent.army_of_the_damned.enabled&essence.vision_of_perfection.minor&buff.unholy_strength.up|essence.vision_of_perfection.minor&pet.apoc_ghoul.active|talent.army_of_the_damned.enabled&pet.apoc_ghoul.active&cooldown.army_of_the_dead.remains>60|talent.army_of_the_damned.enabled&pet.army_ghoul.active
+actions.essences+=/worldvein_resonance,if=!death_and_decay.ticking&buff.unholy_strength.up&!essence.vision_of_perfection.minor&!talent.army_of_the_damned.enabled|target.time_to_die<cooldown.apocalypse.remains
+actions.essences+=/ripple_in_space,if=!death_and_decay.ticking
+actions.essences+=/reaping_flames,if=!buff.pillar_of_frost.up&!buff.breath_of_sindragosa.up&(target.health_pct>=80|target.health_pct<=20|fight_remains<45)
+
+actions.generic=death_coil,if=buff.sudden_doom.react&rune.time_to_4>gcd&!variable.pooling_for_gargoyle|pet.gargoyle.active
+actions.generic+=/death_coil,if=runic_power.deficit<14&rune.time_to_4>gcd&!variable.pooling_for_gargoyle
+actions.generic+=/scourge_strike,if=debuff.festering_wound.up&(cooldown.apocalypse.remains>5|talent.unholy_assault.enabled&cooldown.unholy_assault.remains>8|debuff.festering_wound.stack>4)
+actions.generic+=/clawing_shadows,if=debuff.festering_wound.up&(cooldown.apocalypse.remains>5|talent.unholy_assault.enabled&cooldown.unholy_assault.remains>8|debuff.festering_wound.stack>4)
+actions.generic+=/death_coil,if=runic_power.deficit<20&!variable.pooling_for_gargoyle
+actions.generic+=/festering_strike,if=debuff.festering_wound.stack<4&cooldown.apocalypse.remains<3|debuff.festering_wound.stack<1
+actions.generic+=/death_coil,if=!variable.pooling_for_gargoyle

@@ -1,0 +1,70 @@
+# Fury Warrior
+# October 20, 2020
+
+# Changes:
+# - Added Pummel.
+# - Disabled movement / Heroic Leap call (not needed for in-game context).
+# - Moved Bladestorm and Dragon Roar above Bloodthirst to improve frequency of recommendations (sims roughly equal).
+# - Added Battle Shout to precombat APL.
+# - Added Victory Rush above single-target Whirlwind.
+# - Added Use Items.
+
+# Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat+=/battle_shout
+actions.precombat+=/use_item,name=azsharas_font_of_power
+actions.precombat+=/worldvein_resonance
+actions.precombat+=/memory_of_lucid_dreams
+actions.precombat+=/guardian_of_azeroth
+actions.precombat+=/recklessness
+
+# Executed every time the actor is available.
+actions=charge
+actions+=/pummel
+# This is mostly to prevent cooldowns from being accidentally used during movement.
+# actions+=/run_action_list,name=movement,if=movement.distance>5
+actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
+actions+=/potion,if=buff.guardian_of_azeroth.up|(!essence.condensed_lifeforce.major&target.time_to_die<=60)
+actions+=/rampage,if=cooldown.recklessness.remains<3&talent.reckless_abandon.enabled
+actions+=/blood_of_the_enemy,if=(buff.recklessness.up|cooldown.recklessness.remains<1)&(rage>80&(buff.meat_cleaver.up&buff.enrage.up|spell_targets.whirlwind=1)|dot.noxious_venom.remains)
+actions+=/purifying_blast,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/ripple_in_space,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/worldvein_resonance,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/focused_azerite_beam,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/reaping_flames,if=!buff.recklessness.up&!buff.siegebreaker.up
+actions+=/concentrated_flame,if=!buff.recklessness.up&!buff.siegebreaker.up&dot.concentrated_flame_burn.remains=0
+actions+=/the_unbound_force,if=buff.reckless_force.up
+actions+=/guardian_of_azeroth,if=!buff.recklessness.up&(time_to_die>195|target.health.pct<20)
+actions+=/memory_of_lucid_dreams,if=!buff.recklessness.up
+actions+=/conquerors_banner,if=buff.recklessness.down&debuff.siegebreaker.down
+actions+=/recklessness,if=gcd.remains=0&(!essence.condensed_lifeforce.major&!essence.blood_of_the_enemy.major|cooldown.guardian_of_azeroth.remains>1|buff.guardian_of_azeroth.up|buff.blood_of_the_enemy.up)
+actions+=/whirlwind,if=spell_targets.whirlwind>1&!buff.meat_cleaver.up
+actions+=/use_item,name=ashvanes_razor_coral,if=time_to_die<20|!debuff.razor_coral_debuff.up|(target.time_to_pct_30<5&debuff.conductive_ink_debuff.up)|(!debuff.conductive_ink_debuff.up&buff.memory_of_lucid_dreams.up|prev_gcd.2.guardian_of_azeroth|prev_gcd.2.recklessness&(!essence.memory_of_lucid_dreams.major&!essence.condensed_lifeforce.major))
+actions+=/use_item,name=ramping_amplitude_gigavolt_engine
+actions+=/use_items
+actions+=/blood_fury,if=buff.recklessness.up
+actions+=/berserking,if=buff.recklessness.up
+actions+=/lights_judgment,if=buff.recklessness.down&debuff.siegebreaker.down
+actions+=/spear_of_bastion,if=buff.recklessness.down&debuff.siegebreaker.down
+actions+=/ancient_aftershock,if=buff.recklessness.down&debuff.siegebreaker.down&(active_enemies>1|boss)
+actions+=/fireblood,if=buff.recklessness.up
+actions+=/ancestral_call,if=buff.recklessness.up
+actions+=/bag_of_tricks,if=buff.recklessness.down&debuff.siegebreaker.down&buff.enrage.up
+actions+=/run_action_list,name=single_target
+
+actions.movement=heroic_leap
+
+actions.single_target=siegebreaker
+actions.single_target+=/rampage,if=(buff.recklessness.up|buff.memory_of_lucid_dreams.up)|(buff.enrage.remains<gcd|rage>90)
+actions.single_target+=/execute
+actions.single_target+=/bladestorm,if=prev_gcd.1.rampage
+actions.single_target+=/dragon_roar,if=buff.enrage.up
+actions.single_target+=/bloodthirst,if=buff.enrage.down|azerite.cold_steel_hot_blood.rank>1
+# actions.single_target+=/bloodbath,if=buff.enrage.down|azerite.cold_steel_hot_blood.rank>1
+actions.single_target+=/onslaught
+actions.single_target+=/raging_blow,if=charges=2
+# actions.single_target+=/crushing_blow,if=charges=2
+actions.single_target+=/bloodthirst
+# actions.single_target+=/bloodbath
+actions.single_target+=/raging_blow
+# actions.single_target+=/crushing_blow
+actions.single_target+=/whirlwind
