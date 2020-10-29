@@ -908,6 +908,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
             startsCombat = true,
             texture = 135959,
 
+            aura = "judgment",
+
             handler = function ()
                 applyDebuff( "target", "judgment" )
                 gain( ( buff.holy_avenger.up and 3 or 1 ) + ( buff.avenging_wrath.up and talent.sanctified_wrath.enabled and 1 or 0 ), "holy_power" )
