@@ -1254,6 +1254,8 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     local display = rawget( self.DB.profile.displays, dispName )
     local pack = rawget( self.DB.profile.packs, packName )
 
+    if not pack then return end
+
     local action, wait, depth = nil, 60, 0
 
     state.this_action = nil
