@@ -882,6 +882,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             startsCombat = false,
             texture = 135814,
 
+            usable = function () return swings.oh_speed > 0, "requires an offhand weapon" end,
+
             handler = function ()
                 applyBuff( "flametongue_weapon" )
             end,
@@ -1116,7 +1118,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         stormstrike = {
             id = 17364,
             cast = 0,
-            cooldown = function() return gcd.execute * 6 end,
+            cooldown = function() return level > 25 and ( gcd.execute * 6 ) or gcd.execute end,
             gcd = "spell",
 
             rangeSpell = 73899,
@@ -1156,7 +1158,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 if azerite.natural_harmony.enabled and buff.crash_lightning.up then applyBuff( "natural_harmony_nature" ) end
             end,
 
-            copy = "strike", -- copies this ability to this key or keys (if a table value)
+            copy = { "strike", "primal_strike", 73899 }, -- copies this ability to this key or keys (if a table value)
         },
 
         sundering = {
