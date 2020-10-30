@@ -3376,6 +3376,18 @@ do
             end
         end
 
+        local use_items_found = false
+
+        for _, list in pairs( output ) do
+            for i, entry in ipairs( list ) do
+                if entry.action == "use_items" then use_items_found = true end
+            end
+        end
+
+        if not use_items_found then
+            AddWarning( "The 'use_items' action was not found in this import." )
+        end
+
         if not output.default then output.default = {} end
         if not output.precombat then output.precombat = {} end  
 
@@ -9399,7 +9411,6 @@ do
                         end
 
                         result[ key ] = value
-                        -- StoreModifier( result, key, value )
                     end
                 end
             end
@@ -9408,14 +9419,6 @@ do
                 result[ nameMap[ result.action ] ] = result.name
                 result.name = nil
             end
-
-            --[[ if result.target_if then
-                if result.criteria and result.criteria:len() > 0 then   
-                    result.criteria = format( "( %s ) & ( %s )", result.criteria, result.target_if )
-                else
-                    result.criteria = result.target_if
-                end
-            end ]]
 
             if result.target_if then result.target_if = result.target_if:gsub( "min:", "" ):gsub( "max:", "" ) end
 
@@ -9443,11 +9446,6 @@ do
             if result.action == 'variable' and not result.op then
                 result.op = 'set'
             end
-
-            --[[ if result.criteria then
-                result.criteria = Sanitize( 'c', result.criteria, line, warnings )
-                result.criteria = SpaceOut( result.criteria )
-            end ]]
 
             table.insert( output, result )
         end
