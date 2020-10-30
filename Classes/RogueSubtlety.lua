@@ -619,7 +619,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             spendType = "energy",
             
             startsCombat = true,
-            texture = 135430,
+            texture = 136181,
 
             usable = function () return combo_points.current > 0, "requires combo_points" end,
             handler = function ()
