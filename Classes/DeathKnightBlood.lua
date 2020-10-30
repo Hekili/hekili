@@ -629,6 +629,8 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
     spec:RegisterTotem( "ghoul", 1100170 ) -- Texture ID
 
+    
+    local any_dnd_set = false
 
     spec:RegisterHook( "reset_precast", function ()
         if UnitExists( "pet" ) then
@@ -643,11 +645,26 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 end
             end
         end
-        --[[ local control_expires = action.control_undead.lastCast + 300
-        if control_expires > now and pet.up then
-            summonPet( "controlled_undead", control_expires - now )
-        end ]]
+
+        if state:IsKnown( "deaths_due" ) then
+            class.abilities.any_dnd = class.abilities.deaths_due
+            cooldown.any_dnd = cooldown.deaths_due
+            setCooldown( "death_and_decay", cooldown.deaths_due.remains )
+        elseif state:IsKnown( "defile" ) then
+            class.abilities.any_dnd = class.abilities.defile
+            cooldown.any_dnd = cooldown.defile
+            setCooldown( "death_and_decay", cooldown.defile.remains )
+        else
+            class.abilities.any_dnd = class.abilities.death_and_decay
+            cooldown.any_dnd = cooldown.death_and_decay
+        end
+
+        if not any_dnd_set then
+            class.abilityList.any_dnd = "|T136144:0|t |cff00ccff[Any]|r " .. class.abilities.death_and_decay.name
+            any_dnd_set = true
+        end
     end )
+    
 
     spec:RegisterStateExpr( "save_blood_shield", function ()
         return settings.save_blood_shield
@@ -1528,6 +1545,8 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 applyDebuff( "target", "deaths_due_debuff" )
                 -- Note:  Debuff is actually a buff on the target...
             end,
+
+            bind = { "defile", "any_dnd" },
         },
 
         -- Death Knight - Venthyr   - 311648 - swarming_mist        (Swarming Mist)

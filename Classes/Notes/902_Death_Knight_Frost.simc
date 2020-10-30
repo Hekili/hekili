@@ -1,11 +1,10 @@
 # Death Knight Frost
-# October 25, 2020
+# October 30, 2020
 
-# Level > 50 (Shadowlands)
+# Shadowlands (9.0.2)
 
 # Executed every time the actor is available.
 actions=mind_freeze
-actions+=/asphyxiate
 # Apply Frost Fever and maintain Icy Talons
 actions+=/howling_blast,if=!dot.frost_fever.ticking&(talent.icecap.enabled|cooldown.breath_of_sindragosa.remains>15|talent.obliteration.enabled&cooldown.pillar_of_frost.remains<dot.frost_fever.remains)
 actions+=/glacial_advance,if=buff.icy_talons.remains<=gcd&buff.icy_talons.up&spell_targets.glacial_advance>=2&(!talent.breath_of_sindragosa.enabled|cooldown.breath_of_sindragosa.remains>15)
@@ -65,8 +64,6 @@ actions.cold_heart+=/chains_of_ice,if=talent.obliteration.enabled&!buff.pillar_o
 
 # On Use Items, Potion and Racials
 actions.cooldowns=use_items,if=cooldown.pillar_of_frost.ready|cooldown.pillar_of_frost.remains>20
-actions.cooldowns+=/heart_essence,if=buff.pillar_of_frost.down
-actions.cooldowns+=/reaping_flames,if=target.health_pct>80|target.health_pct<20|target.time_to_die<2
 actions.cooldowns+=/potion,if=buff.pillar_of_frost.up&buff.empower_rune_weapon.up
 actions.cooldowns+=/blood_fury,if=buff.pillar_of_frost.up&buff.empower_rune_weapon.up
 actions.cooldowns+=/berserking,if=buff.pillar_of_frost.up
@@ -88,6 +85,7 @@ actions.cooldowns+=/frostwyrms_fury,if=active_enemies>=2&cooldown.pillar_of_fros
 actions.cooldowns+=/frostwyrms_fury,if=talent.obliteration.enabled&!buff.pillar_of_frost.up&((buff.unholy_strength.up|!death_knight.runeforge.fallen_crusader)&(debuff.razorice.stack=5|!death_knight.runeforge.razorice))
 actions.cooldowns+=/hypothermic_presence,if=talent.breath_of_sindragosa.enabled&runic_power.deficit>40&rune>=3&buff.pillar_of_frost.up|!talent.breath_of_sindragosa.enabled&runic_power.deficit>=25
 actions.cooldowns+=/raise_dead,if=buff.pillar_of_frost.up
+actions.cooldowns+=/heart_essence
 
 # Obliteration rotation
 actions.obliteration=remorseless_winter,if=talent.gathering_storm.enabled&active_enemies>=3
