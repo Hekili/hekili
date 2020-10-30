@@ -1,5 +1,5 @@
 # Windwalker Monk
-# October 25, 2020
+# October 29, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft
@@ -40,9 +40,7 @@ actions.aoe+=/chi_burst,if=chi.max-chi>=1actions.aoe+=/fist_of_the_white_tiger,c
 actions.aoe+=/tiger_palm,cycle_targets=1,if=chi.max-chi>=2&(!talent.hit_combo.enabled|combo_strike)
 actions.aoe+=/chi_wave,if=combo_strike
 actions.aoe+=/flying_serpent_kick,if=buff.bok_proc.down,interrupt=1
-actions.aoe+=/blackout_kick,cycle_targets=1,if=combo_strike&(buff.bok_proc.up|talent.hit_combo.enabled&prev_gcd.1.tiger_palm&(chi.max-chi>=1&energy.time_to_50<1|chi=2&cooldown.fists_of_fury.remains<3))
-actions.aoe+=/blackout_kick,cycle_targets=1,if=combo_strike&chi.deficit=0&prev_gcd.1.spinning_crane_kick
-
+actions.aoe+=/blackout_kick,cycle_targets=1,if=combo_strike&(buff.bok_proc.up|talent.hit_combo.enabled&prev_gcd.1.tiger_palm&chi=2&cooldown.fists_of_fury.remains<3|chi.max-chi<=1&prev_gcd.1.spinning_crane_kick)
 
 # Storm, Earth, and Fire Cooldowns
 actions.cd_sef=invoke_xuen_the_white_tiger,if=!variable.hold_xuen|fight_remains<25
