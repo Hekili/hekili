@@ -3636,7 +3636,7 @@ do
 
         for k, v in orderedPairs( abilities ) do
             local ability = class.abilities[ v ]
-            local useName = ability.name
+            local useName = class.abilityList[ v ] and class.abilityList[v]:match("|t (.+)$") or ability.name
 
             if not useName then
                 Hekili:Error( "No name available for %s (id:%d) in EmbedAbilityOptions.", ability.key or "no_id", ability.id or 0 )
@@ -5710,7 +5710,7 @@ do
                                                     if not class.abilities[ action ] then warning = true
                                                     else
                                                         if state:IsDisabled( action, true ) then warning = true end
-                                                        action = class.abilities[ action ].name
+                                                        action = class.abilityList[ action ] and class.abilityList[ action ]:match( "|t (.+)$" ) or class.abilities[ action ] and class.abilities[ action ].name or action
                                                     end
                                                 end
 
@@ -9378,7 +9378,11 @@ do
 
                     if ability and ( ability == 'use_item' or class.abilities[ ability ] ) then
                         if ability == "pocketsized_computation_device" then ability = "cyclotronic_blast" end
-                        result.action = class.abilities[ ability ] and class.abilities[ ability ].key or ability
+                        if ability == "any_dnd" or ability == "wound_spender" then
+                            result.action = ability
+                        else
+                            result.action = class.abilities[ ability ] and class.abilities[ ability ].key or ability
+                        end
                     elseif not ignore_actions[ ability ] then
                         table.insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
                         result.action = ability
