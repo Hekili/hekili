@@ -4,7 +4,7 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local Type, Version = "HekiliCustomEditor", 3
+local Type, Version = "HekiliCustomEditor", 4
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -29,12 +29,6 @@ local state   = Hekili.State
 -- List them here for Mikk's FindGlobals script
 -- GLOBALS: ACCEPT, ChatFontNormal
 
-local wowMoP
-do
-  local _, _, _, interface = GetBuildInfo()
-  wowMoP = (interface >= 50000)
-end
-
 
 --[[-----------------------------------------------------------------------------
 
@@ -43,18 +37,18 @@ Support functions
 -------------------------------------------------------------------------------]]
 
 if not HekiliCustomEditorInsertLink then
-  -- upgradeable hook
-  hooksecurefunc("ChatEdit_InsertLink", function(...) return _G.HekiliCustomEditorInsertLink(...) end)
-end
-
-function _G.HekiliCustomEditorInsertLink(text)
-  for i = 1, AceGUI:GetWidgetCount(Type) do
-    local editbox = _G[("HekiliCustomEditor%uEdit"):format(i)]
-    if editbox and editbox:IsVisible() and editbox:HasFocus() then
-      editbox:Insert(text)
-      return true
+  local function HekiliCustomEditorInsertLink(text)
+    for i = 1, AceGUI:GetWidgetCount(Type) do
+      local editbox = _G[("HekiliCustomEditor%uEdit"):format(i)]
+      if editbox and editbox:IsVisible() and editbox:HasFocus() then
+        editbox:Insert(text)
+        return true
+      end
     end
   end
+
+  -- upgradeable hook
+  hooksecurefunc("ChatEdit_InsertLink", function(...) return HekiliCustomEditorInsertLink(...) end)
 end
 
 
@@ -516,7 +510,7 @@ local function Constructor()
   label:SetText(ACCEPT)
   label:SetHeight(10)
 
-  local button = CreateFrame("Button", ("%s%dButton"):format(Type, widgetNum), frame, wowMoP and "UIPanelButtonTemplate" or "UIPanelButtonTemplate2")
+  local button = CreateFrame("Button", ("%s%dButton"):format(Type, widgetNum), frame, "UIPanelButtonTemplate")
   button:SetPoint("BOTTOMLEFT", 0, 4)
   button:SetHeight(22)
   button:SetWidth(label:GetStringWidth() + 24)
@@ -530,7 +524,7 @@ local function Constructor()
   text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -5, 1)
   text:SetJustifyV("MIDDLE")
 
-  local scrollBG = Mixin(CreateFrame("Frame", nil, frame),BackdropTemplateMixin)
+  local scrollBG = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
   scrollBG:SetBackdrop(backdrop)
   scrollBG:SetBackdropColor(0, 0, 0)
   scrollBG:SetBackdropBorderColor(0.4, 0.4, 0.4)
