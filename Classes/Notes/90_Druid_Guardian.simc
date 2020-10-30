@@ -1,5 +1,5 @@
 # Guardian Druid
-# October 11, 2020
+# October 29, 2020
 
 # Changes:
 # - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -67,7 +67,8 @@ actions.bear+=/swipe_bear
 # actions+=/swipe
 
 actions.mitigation=ironfur,if=incoming_damage_5s>ironfur_damage_threshold&buff.ironfur.remains<3*haste
-actions.mitigation+=/frenzied_regeneration,if=health.current<0.75*health.max
+actions.mitigation+=/renewal,if=tanking&health.pct<65
+actions.mitigation+=/frenzied_regeneration,if=tanking&health.pct<65
 actions.mitigation+=/anima_of_death,if=toggle.defensives&health.pct<80
 actions.mitigation+=/barkskin,if=(talent.brambles.enabled)&(buff.bear_form.up)&health.pct<75&incoming_damage_5s>0.25*health.max
 actions.mitigation+=/survival_instincts,if=buff.survival_instincts.down&buff.barkskin.down&health.pct<60&incoming_damage_5s>0.25*health.max

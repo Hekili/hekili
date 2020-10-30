@@ -1,5 +1,5 @@
 # Balance Druid
-# October 24, 2020
+# October 29, 2020
 
 # Changes:
 # - Added Solar Beam.
@@ -127,6 +127,8 @@ actions.prepatch_st+=/half_moon,if=(buff.eclipse_lunar.up|(charges=2&recharge_ti
 actions.prepatch_st+=/full_moon,if=(buff.eclipse_lunar.up|(charges=2&recharge_time<5)|charges=3|buff.ca_inc.up)&ap_check&variable.save_for_ca_inc
 actions.prepatch_st+=/warrior_of_elune
 actions.prepatch_st+=/starfire,if=(azerite.streaking_stars.rank&buff.ca_inc.remains>execute_time&prev.wrath)|(!azerite.streaking_stars.rank|buff.ca_inc.remains<execute_time|!prev.starfire)&(eclipse.in_lunar|eclipse.solar_next|eclipse.any_next|buff.warrior_of_elune.up&buff.eclipse_lunar.up|(buff.ca_inc.remains<action.wrath.execute_time&buff.ca_inc.up))|(azerite.dawning_sun.rank>2&buff.eclipse_solar.remains>5&!buff.dawning_sun.remains>action.wrath.execute_time)
+# If you took Stellar Drift, you probably want some Starfall uptime...
+actions.prepatch_st+=/starfall,if=talent.stellar_drift.enabled&buff.starfall.refreshable&fight_remains>buff.starfall.duration&(!eclipse.in_any|buff.starsurge_empowerment.up)
 actions.prepatch_st+=/wrath
 actions.prepatch_st+=/run_action_list,name=fallthru
 
@@ -146,7 +148,7 @@ actions.st+=/fury_of_elune,if=eclipse.in_any&ap_check&buff.primordial_arcanic_pu
 actions.st+=/starfall,if=buff.oneths_perception.up&buff.starfall.refreshable
 actions.st+=/cancel_buff,name=starlord,if=buff.starlord.remains<5&(buff.eclipse_solar.remains>5|buff.eclipse_lunar.remains>5)&astral_power>90
 actions.st+=/starsurge,if=covenant.night_fae&variable.convoke_condition&cooldown.convoke_the_spirits.remains<gcd.max*ceil(astral_power%30)
-actions.st+=/starfall,if=talent.stellar_drift.enabled&!talent.starlord.enabled&buff.starfall.refreshable&(buff.eclipse_lunar.remains>6&eclipse.in_lunar&buff.primordial_arcanic_pulsar.value<250|buff.primordial_arcanic_pulsar.value>=250&astral_power>90|dot.adaptive_swarm_damage.remains>8|action.adaptive_swarm_damage.in_flight)&!cooldown.ca_inc.ready
+actions.st+=/starfall,if=talent.stellar_drift.enabled&!talent.starlord.enabled&buff.starfall.refreshable&(buff.eclipse_lunar.remains>6&eclipse.in_lunar&(!runeforge.primordial_arcanic_pulsar.enabled|buff.primordial_arcanic_pulsar.value<250)|(!runeforge.primordial_arcanic_pulsar.enabled|buff.primordial_arcanic_pulsar.value>=250)&astral_power>90|dot.adaptive_swarm_damage.remains>8|action.adaptive_swarm_damage.in_flight)&!cooldown.ca_inc.ready
 actions.st+=/starsurge,if=buff.oneths_clear_vision.up|buff.kindred_empowerment_energize.up|buff.ca_inc.up&(buff.ravenous_frenzy.remains<gcd.max*ceil(astral_power%30)&buff.ravenous_frenzy.up|!buff.ravenous_frenzy.up&!cooldown.ravenous_frenzy.ready|!covenant.venthyr)|astral_power>90&eclipse.in_any
 actions.st+=/starsurge,if=talent.starlord.enabled&(buff.starlord.up|astral_power>90)&buff.starlord.stack<3&(buff.eclipse_solar.up|buff.eclipse_lunar.up)&buff.primordial_arcanic_pulsar.value<270&(cooldown.ca_inc.remains>10|!variable.convoke_condition&covenant.night_fae)
 actions.st+=/starsurge,if=(buff.primordial_arcanic_pulsar.value<270|buff.primordial_arcanic_pulsar.value<250&talent.stellar_drift.enabled)&buff.eclipse_solar.remains>7&eclipse.in_solar&!buff.oneths_perception.up&!talent.starlord.enabled&cooldown.ca_inc.remains>7&(cooldown.kindred_spirits.remains>7|!covenant.kyrian)

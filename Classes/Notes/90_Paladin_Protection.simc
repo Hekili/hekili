@@ -1,17 +1,22 @@
 # Protection Paladin
-# October 27, 2020
+# October 29, 2020
 
 # Changes
 # - Added Rebuke.
 # - Remove Seraphim restrictions on multiple mitigation abilities.
+# - Integrate more of the Shadowlands APL.
 
 # Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat+=/fleshcraft
+actions.precombat+=/consecration
 actions.precombat+=/lights_judgment
 
 # Executed every time the actor is available.
 actions=rebuke
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=mitigation
+actions+=/call_action_list,name=standard
+
 actions+=/worldvein_resonance,if=buff.lifeblood.stack<3
 actions+=/shield_of_the_righteous,if=holy_power.deficit=0&((buff.avenging_wrath.up&!talent.seraphim.enabled)|buff.seraphim.up)
 actions+=/shield_of_the_righteous,if=(buff.avenging_wrath.up&buff.avenging_wrath.remains<4&!talent.seraphim.enabled)|(buff.seraphim.remains<4&buff.seraphim.up)
@@ -29,22 +34,47 @@ actions+=/hammer_of_the_righteous
 actions+=/consecration
 actions+=/heart_essence,if=!(essence.the_crucible_of_flame.major|essence.worldvein_resonance.major|essence.anima_of_life_and_death.major|essence.memory_of_lucid_dreams.major)
 
+actions.standard=worldvein_resonance,if=buff.lifeblood.stack<3
+actions.standard+=/shield_of_the_righteous,if=debuff.judgment.up&(debuff.vengeful_shock.up|!conduit.vengeful_shock.enabled)
+actions.standard+=/shield_of_the_righteous,if=holy_power=5|buff.holy_avenger.up|holy_power=4&talent.sanctified_wrath.enabled&buff.avenging_wrath.up
+actions.standard+=/judgment,cycle_targets=1,if=charges=2|!talent.crusaders_judgment.enabled
+actions.standard+=/avengers_shield,if=debuff.vengeful_shock.down&conduit.vengeful_shock.enabled
+actions.standard+=/hammer_of_wrath
+actions.standard+=/avengers_shield
+actions.standard+=/judgment,cycle_targets=1
+actions.standard+=/vanquishers_hammer
+actions.standard+=/consecration,if=!consecration.up
+actions.standard+=/divine_toll
+actions.standard+=/blessed_hammer,strikes=2.4,if=charges=3
+actions.standard+=/ashen_hallow
+actions.standard+=/hammer_of_the_righteous,if=charges=2
+actions.standard+=/word_of_glory,if=buff.vanquishers_hammer.up
+actions.standard+=/anima_of_death
+actions.standard+=/blessed_hammer,strikes=2.4
+actions.standard+=/hammer_of_the_righteous
+actions.standard+=/concentrated_flame,if=(!talent.seraphim.enabled|buff.seraphim.up)&!dot.concentrated_flame_burn.remains>0|essence.the_crucible_of_flame.rank<3
+actions.standard+=/lights_judgment
+actions.standard+=/arcane_torrent
+actions.standard+=/consecration
+actions.standard+=/word_of_glory,if=buff.shining_light_free.up&!covenant.necrolord
+
 actions.cooldowns=fireblood,if=buff.avenging_wrath.up
 actions.cooldowns+=/use_item,name=azsharas_font_of_power,if=cooldown.seraphim.remains<=10|!talent.seraphim.enabled
 actions.cooldowns+=/use_item,name=ashvanes_razor_coral,if=(debuff.razor_coral_debuff.stack>7&buff.avenging_wrath.up)|debuff.razor_coral_debuff.stack=0
 actions.cooldowns+=/seraphim
-actions.cooldowns+=/holy_avenger,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains>30
-actions.cooldowns+=/ashen_hallow
-actions.cooldowns+=/avenging_wrath,if=buff.seraphim.up|cooldown.seraphim.remains<2|!talent.seraphim.enabled
+actions.cooldowns+=/avenging_wrath
+actions.cooldowns+=/holy_avenger,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains>60
 actions.cooldowns+=/potion,if=buff.avenging_wrath.up
+actions.cooldowns+=/ashen_hallow,if=buff.avenging_wrath.down
 actions.cooldowns+=/blessing_of_summer
 actions.cooldowns+=/blessing_of_autumn
 actions.cooldowns+=/blessing_of_winter
 actions.cooldowns+=/blessing_of_spring
 actions.cooldowns+=/vanquishers_hammer
 actions.cooldowns+=/divine_toll,if=holy_power.deficit>0
-actions.cooldowns+=/moment_of_glory,if=cooldown.avengers_shield.remains
+actions.cooldowns+=/heart_essence,if=buff.seraphim.up|!talent.seraphim.enabled
 actions.cooldowns+=/use_items,if=buff.seraphim.up|!talent.seraphim.enabled
+actions.cooldowns+=/moment_of_glory,if=prev_gcd.1.avengers_shield&cooldown.avengers_shield.remains
 actions.cooldowns+=/use_item,name=grongs_primal_rage,if=((cooldown.judgment.full_recharge_time>4|(!talent.crusaders_judgment.enabled&prev_gcd.1.judgment))&cooldown.avengers_shield.remains>4&buff.seraphim.remains>4)|(buff.seraphim.remains<4)
 actions.cooldowns+=/use_item,name=merekthas_fang,if=!buff.avenging_wrath.up&(buff.seraphim.up|!talent.seraphim.enabled)
 actions.cooldowns+=/use_item,name=razdunks_big_red_button
