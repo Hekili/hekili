@@ -4436,11 +4436,11 @@ local mt_default_action = {
             return a
 
         elseif k == 'cost_type' then
-            local a = ability.spendType
+            local a, _ = ability.spendType
             if type( a ) == "string" then return a end
 
-            local a = ability.spend
-            if type( a ) == "function" then a, a = a() end
+            a = ability.spend
+            if type( a ) == "function" then _, a = a() end
             if type( a ) == "string" then return a end
             return class.primaryResource
 

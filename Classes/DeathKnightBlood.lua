@@ -465,11 +465,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             duration = 15,
             max_stack = 1,
         },
-        wraith_walk = {
-            id = 212552,
-            duration = 4,
-            max_stack = 1,
-        },
         vampiric_blood = {
             id = 55233,
             duration = function () return level > 55 and 12 or 10 end,

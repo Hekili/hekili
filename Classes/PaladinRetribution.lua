@@ -264,12 +264,6 @@ if UnitClassBase( "player" ) == "PALADIN" then
             max_stack = 1,
         },
 
-        relentless_inquisitor = {
-            id = 337315,
-            duration = 12,
-            max_stack = 6,
-        },
-
         retribution_aura = {
             id = 183435,
             duration = 3600,

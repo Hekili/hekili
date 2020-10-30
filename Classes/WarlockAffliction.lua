@@ -382,13 +382,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             type = "Curse",
             max_stack = 1,
         },
-        curse_of_tongues = {
-            id = 199890,
-            duration = 10,
-            type = "Curse",
-            max_stack = 1,
-            copy = 1714,
-        },
         curse_of_weakness = {
             id = 199892,
             duration = 10,

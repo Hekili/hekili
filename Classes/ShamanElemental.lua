@@ -73,26 +73,16 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
     -- PvP Talents
     spec:RegisterPvpTalents( {
-        traveling_storms = 730, -- 204403
-        lightning_lasso = 731, -- 305483
-        elemental_attunement = 727, -- 204385
         control_of_lava = 728, -- 204393
-        skyfury_totem = 3488, -- 204330
-        grounding_totem = 3620, -- 204336
-        swelling_waves = 3621, -- 204264
-        spectral_recovery = 3062, -- 204261
-        purifying_waters = 3491, -- 204247
         counterstrike_totem = 3490, -- 204331
-        traveling_storms = 730, -- 204403
-        lightning_lasso = 731, -- 305483
         elemental_attunement = 727, -- 204385
-        control_of_lava = 728, -- 204393
-        skyfury_totem = 3488, -- 204330
         grounding_totem = 3620, -- 204336
-        swelling_waves = 3621, -- 204264
-        spectral_recovery = 3062, -- 204261
+        lightning_lasso = 731, -- 305483
         purifying_waters = 3491, -- 204247
-        counterstrike_totem = 3490, -- 204331
+        skyfury_totem = 3488, -- 204330
+        spectral_recovery = 3062, -- 204261
+        swelling_waves = 3621, -- 204264
+        traveling_storms = 730, -- 204403
     } )
 
     -- Auras

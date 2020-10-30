@@ -138,7 +138,7 @@ do
     end
 
     function Hekili:DumpPetBasedTargetInfo()
-        print( petAction, petSlot )
+        self:Print( petAction, petSlot )
     end
 end
 
@@ -200,7 +200,7 @@ do
     ct:RegisterEvent( "CHROMIE_TIME_CLOSE" )
     ct:RegisterEvent( "PLAYER_ENTERING_WORLD" )
 
-    function UpdateChromieTime()
+    local function UpdateChromieTime()
         chromieTime = C_PlayerInfo.IsPlayerInChromieTime()
     end
 

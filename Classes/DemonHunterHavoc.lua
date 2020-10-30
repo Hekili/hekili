@@ -348,12 +348,6 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
 
 
         -- Conduit
-        essence_break = {
-            id = 320338,
-            duration = 8,
-            max_stack = 1
-        },
-
         exposed_wound = {
             id = 339229,
             duration = 10,

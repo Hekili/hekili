@@ -130,6 +130,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             id = 343013,
             duration = 15,
             max_stack = 1,
+            copy = 272987
         },
         ruinous_bulwark = {
             id = 326863,
@@ -213,11 +214,6 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             max_stack = 1,
         },
 
-        revel_in_pain = {
-            id = 272987,
-            duration = 15,
-            max_stack = 1,
-        },
     } )
 
 

@@ -1171,8 +1171,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 75,
             gcd = "spell",
 
-            channeled = true,
-
             spend = 0.02,
             spendType = "mana",
 

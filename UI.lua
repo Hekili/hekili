@@ -82,8 +82,6 @@ local function Mover_OnMouseUp(self, btn)
         elseif obj and obj.id then
             LibStub( "AceConfigDialog-3.0" ):SelectGroup( "Hekili", "displays", obj.id, obj.id )
             return
-        else
-            print( obj, obj:GetName(), obj.id )
         end
     end
 end
@@ -1402,7 +1400,7 @@ do
         return left, right, top, bottom
     end
 
-    function Display_UpdatePerformance( self, now, used )
+    local function Display_UpdatePerformance( self, now, used )
         if used == nil then return end        
         used = used / 1000 -- ms to sec.
 
@@ -1773,7 +1771,7 @@ do
 
         -- Texture
         if not b.Texture then
-            b.Texture = b:CreateTexture( nil, "LOW" )
+            b.Texture = b:CreateTexture( nil, "ARTWORK" )
             b.Texture:SetTexture( "Interface\\ICONS\\Spell_Nature_BloodLust" )
             b.Texture:SetAllPoints( b )
         end
