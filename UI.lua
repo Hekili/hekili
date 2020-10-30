@@ -1496,11 +1496,11 @@ do
 
         local frame
 
-        if conf.relativeTo == "CUSTOM" then
+        --[[ if conf.relativeTo == "CUSTOM" then
             frame = _G[ conf.customFrame ]
         elseif conf.relativeTo == "PERSONAL" then
             frame = C_NamePlate.GetNamePlateForUnit( "player" )
-        end
+        end ]]
 
         if not frame then frame = UIParent end
 
