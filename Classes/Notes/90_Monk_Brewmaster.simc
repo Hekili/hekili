@@ -1,5 +1,5 @@
 # Brewmaster Monk
-# October 27, 2020
+# October 30, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft
@@ -8,8 +8,12 @@ actions.precombat+=/chi_wave
 
 # Executed every time the actor is available.
 actions=spear_hand_strike
+
+actions+=/purifying_brew,if=settings.purify_for_celestial&(time_to_max_charges<gcd.max|buff.purified_chi.up&buff.purified_chi.remains<1.5*gcd.max)|cooldown.celestial_brew.remains<2*gcd.max&charges_fractional>1.5
+actions+=/celestial_brew,if=buff.purified_chi.up
 actions+=/dampen_harm,if=health.pct<75&incoming_damage_3s>health.max*(0.2+(0.2*group))&buff.fortifying_brew.down
 actions+=/fortifying_brew,if=health.pct<50&incoming_damage_3s>health.max*(0.2+(0.2*group))&(buff.dampen_harm.down)
+
 actions+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|debuff.conductive_ink_debuff.up&target.health.pct<31|time_to_die<20
 actions+=/use_items
 actions+=/potion
@@ -21,13 +25,13 @@ actions+=/ancestral_call
 actions+=/invoke_niuzao_the_black_ox,if=time_to_die>25
 
 # Purifying behaviour is based on normalization (iE the late expression triggers if stagger size increased over the last 30 ticks or 15 seconds).
-actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&charges=charges_max&stagger.heavy&(buff.purified_chi.down|buff.purified_chi.remains<1.5*gcd)&cooldown.celestial_brew.remains<5
+# actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&charges=charges_max&stagger.heavy&(buff.purified_chi.down|buff.purified_chi.remains<1.5*gcd)&cooldown.celestial_brew.remains<5
 
 # Purifying behaviour is based on normalization.
-actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&stagger.pct>18
-actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&stagger.pct>9&stagger.amount_to_total_pct>53
-actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&stagger.pct>4.5&stagger.amount_to_total_pct>71
-actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&stagger.pct>3&stagger.amount_to_total_pct>80
+# actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&stagger.pct>18
+# actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&stagger.pct>9&stagger.amount_to_total_pct>53
+# actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&stagger.pct>4.5&stagger.amount_to_total_pct>71
+# actions+=/purifying_brew,if=settings.purify_stagger_currhp=0&settings.purify_stagger_maxhp=0&stagger.pct>3&stagger.amount_to_total_pct>80
 
 # Use configured purify_stagger_currhp from Brewmaster options.
 actions+=/purifying_brew,if=settings.purify_stagger_currhp>0&group&stagger.pct>=settings.purify_stagger_currhp
