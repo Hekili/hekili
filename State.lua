@@ -1896,7 +1896,7 @@ local mt_state = {
             return t.cooldown[ action ].charges_fractional
 
         elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
-            return t.cooldown[ action ].full_recharge_time
+                return ( ( ability.charges or 1 ) - t.charges_fractional ) * ( ability.recharge or ability.cooldown )
 
         elseif k == 'max_charges' or k == 'charges_max' then
             return ability and ability.charges or 1
@@ -4372,7 +4372,7 @@ local mt_default_action = {
             return ability.charges or 0
 
         elseif k == 'time_to_max_charges' or k == 'full_recharge_time' then
-            return ( ability.charges - state.cooldown[ t.action ].charges_fractional ) * ability.recharge
+            return ( ( ability.charges or 1 ) - state.cooldown[ t.action ].charges_fractional ) * ( ability.recharge or ability.cooldown )
 
         elseif k == 'ready_time' then
             return state:IsUsable( t.action ) and state:TimeToReady( t.action ) or 999
