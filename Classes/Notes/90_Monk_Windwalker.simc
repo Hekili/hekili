@@ -63,6 +63,7 @@ actions.cd_sef+=/memory_of_lucid_dreams,if=energy<40
 actions.cd_sef+=/ripple_in_space
 actions.cd_sef+=/storm_earth_and_fire,if=cooldown.storm_earth_and_fire.charges=2|fight_remains<20|buff.seething_rage.up|(cooldown.blood_of_the_enemy.remains+1>cooldown.storm_earth_and_fire.full_recharge_time|!essence.blood_of_the_enemy.major)&cooldown.fists_of_fury.remains<10&chi>=2&cooldown.whirling_dragon_punch.remains<12
 actions.cd_sef+=/use_item,name=ashvanes_razor_coral
+actions.cd_sef+=/use_items
 actions.cd_sef+=/touch_of_karma,interval=90,pct_health=0.5
 # Use Blood Fury if Touch of Death's cooldown is greater than 30 (this includes while ToD is currently active), or off cooldown when you are holding onto ToD, or when the target is about to die
 actions.cd_sef+=/blood_fury,if=fight_remains>125|buff.storm_earth_and_fire.up|fight_remains<20
@@ -95,6 +96,7 @@ actions.cd_serenity+=/fireblood,if=fight_remains>125|variable.serenity_burst
 actions.cd_serenity+=/ancestral_call,if=fight_remains>125|variable.serenity_burst
 actions.cd_serenity+=/bag_of_tricks,if=variable.serenity_burst
 actions.cd_serenity+=/use_item,name=ashvanes_razor_coral
+actions.cd_serenity+=/use_items
 actions.cd_serenity+=/touch_of_death,if=target.health.pct<=15
 actions.cd_serenity+=/touch_of_karma,interval=90,pct_health=0.5
 actions.cd_serenity+=/serenity,if=cooldown.rising_sun_kick.remains<2|fight_remains<15
