@@ -427,14 +427,14 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             table.wipe( sht )
 
-            if mh_speed then
+            if mh_speed and mh_speed > 0 then
                 sht[1] = mh_next + ( 1 * mh_speed )
                 sht[2] = mh_next + ( 2 * mh_speed )
                 sht[3] = mh_next + ( 3 * mh_speed )
                 sht[4] = mh_next + ( 4 * mh_speed )
             end
 
-            if oh_speed then
+            if oh_speed and oh_speed > 0 then
                 sht[5] = oh_next + ( 1 * oh_speed )
                 sht[6] = oh_next + ( 2 * oh_speed )
                 sht[7] = oh_next + ( 3 * oh_speed )
