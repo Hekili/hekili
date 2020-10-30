@@ -8,7 +8,6 @@ local class = Hekili.Class
 local state = Hekili.State
 
 
-
 local CommitKey = ns.commitKey
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local GetItemInfo = ns.CachedGetItemInfo
@@ -24,9 +23,6 @@ local insert, wipe = table.insert, table.wipe
 
 local mt_resource = ns.metatables.mt_resource
 
-
-
-local Spell = _G.Spell
 local GetSpellDescription, GetSpellTexture = _G.GetSpellDescription, _G.GetSpellTexture
 local GetSpecialization, GetSpecializationInfo = _G.GetSpecialization, _G.GetSpecializationInfo
 
@@ -226,48 +222,59 @@ local HekiliSpecMixin = {
 
         if a.id then
             if a.id > 0 then
-                local spell = Spell:CreateFromSpellID( a.id )
-                if not spell:IsSpellEmpty() then
-                    spell:ContinueOnSpellLoad( function ()
-                        a.name = spell:GetSpellName()
-                        a.desc = GetSpellDescription( a.id )
+                Hekili:ContinueOnSpellLoad( a.id, function( success )
+                    a.name = GetSpellInfo( a.id )
 
-                        local texture = a.texture or GetSpellTexture( a.id )
-
-                        class.auraList[ a.key ] = "|T" .. texture .. ":0|t " .. a.name
-
-                        self.auras[ a.name ] = a
-                        if GetSpecializationInfo( GetSpecialization() or 0 ) == self.id then
-                            -- Copy to class table as well.
-                            class.auras[ a.name ] = a
+                    if not success or not a.name then
+                        for k, v in pairs( class.auraList ) do
+                            if v == a then class.auraList[ k ] = nil end
                         end
-                        
-                        if self.pendingItemSpells[ a.name ] then
-                            local items = self.pendingItemSpells[ a.name ]
-    
-                            if type( items ) == 'table' then
-                                for i, item in ipairs( items ) do
-                                    local ability = self.abilities[ item ]
-                                    ability.itemSpellKey = a.key .. "_" .. ability.itemSpellID
-    
-                                    self.abilities[ ability.itemSpellKey ] = a
-                                    class.abilities[ ability.itemSpellKey ] = a
-                                end
-                            else
-                                local ability = self.abilities[ items ]
+                        for k, v in pairs( self.auras ) do 
+                            if v == a then self.auras[ k ] = nil end
+                        end
+                        Hekili.InvalidSpellIDs = Hekili.InvalidSpellIDs or {}
+                        insert( Hekili.InvalidSpellIDs, a.id )
+                        Hekili.NewSpellInfo = true
+                        return
+                    end
+
+                    a.desc = GetSpellDescription( a.id )
+
+                    local texture = a.texture or GetSpellTexture( a.id )
+
+                    class.auraList[ a.key ] = "|T" .. texture .. ":0|t " .. a.name
+
+                    self.auras[ a.name ] = a
+                    if GetSpecializationInfo( GetSpecialization() or 0 ) == self.id then
+                        -- Copy to class table as well.
+                        class.auras[ a.name ] = a
+                    end
+                    
+                    if self.pendingItemSpells[ a.name ] then
+                        local items = self.pendingItemSpells[ a.name ]
+
+                        if type( items ) == 'table' then
+                            for i, item in ipairs( items ) do
+                                local ability = self.abilities[ item ]
                                 ability.itemSpellKey = a.key .. "_" .. ability.itemSpellID
-    
+
                                 self.abilities[ ability.itemSpellKey ] = a
                                 class.abilities[ ability.itemSpellKey ] = a
                             end
-    
-                            self.pendingItemSpells[ a.name ] = nil
-                            self.itemPended = nil
+                        else
+                            local ability = self.abilities[ items ]
+                            ability.itemSpellKey = a.key .. "_" .. ability.itemSpellID
+
+                            self.abilities[ ability.itemSpellKey ] = a
+                            class.abilities[ ability.itemSpellKey ] = a
                         end
 
-                        Hekili.NewSpellInfo = true
-                    end )
-                end
+                        self.pendingItemSpells[ a.name ] = nil
+                        self.itemPended = nil
+                    end
+
+                    Hekili.NewSpellInfo = true
+                end )
             end
             self.auras[ a.id ] = a
         end
@@ -485,7 +492,7 @@ local HekiliSpecMixin = {
                     self.abilities[ ability ] = self.abilities[ ability ] or a
                     self.abilities[ a.name ] = self.abilities[ a.name ] or a
                     self.abilities[ a.link ] = self.abilities[ a.link ] or a
-                    self.abilities[ a.id ] = self.abilities[ a.link ] or a
+                    self.abilities[ data.id ] = self.abilities[ a.link ] or a
 
                     a.itemLoaded = GetTime()
 
@@ -593,39 +600,46 @@ local HekiliSpecMixin = {
         a.realCast = 0
 
         if a.id and a.id > 0 then
-            local spell = Spell:CreateFromSpellID( a.id )
-            if not spell:IsSpellEmpty() then
-                spell:ContinueOnSpellLoad( function ()
-                    a.name = spell:GetSpellName()
-                    a.desc = GetSpellDescription( a.id ) -- spell:GetSpellDescription() was returning raw tooltip data.
-
-                    if a.suffix then
-                        a.actualName = a.name
-                        a.name = a.name .. " " .. a.suffix
+            Hekili:ContinueOnSpellLoad( a.id, function( success )
+                if not success then
+                    for k, v in pairs( class.abilityList ) do
+                        if v == a then class.abilityList[ k ] = nil end
                     end
-
-                    local texture = a.texture or GetSpellTexture( a.id )
-
-                    self.abilities[ a.name ] = self.abilities[ a.name ] or a
-                    class.abilities[ a.name ] = class.abilities[ a.name ] or a
-
-                    if not a.unlisted then
-                        class.abilityList[ ability ] = a.listName or ( "|T" .. texture .. ":0|t " .. a.name )
-                        class.abilityByName[ a.name ] = class.abilities[ a.name ] or a
-                    end
-
+                    Hekili.InvalidSpellIDs = Hekili.InvalidSpellIDs or {}
+                    table.insert( Hekili.InvalidSpellIDs, a.id )
                     Hekili.NewSpellInfo = true
-                end )
-            end
+                    return
+                end
+                a.name = GetSpellInfo( a.id )
+                a.desc = GetSpellDescription( a.id ) -- was returning raw tooltip data.
+
+                if a.suffix then
+                    a.actualName = a.name
+                    a.name = a.name .. " " .. a.suffix
+                end
+
+                local texture = a.texture or GetSpellTexture( a.id )
+
+                self.abilities[ a.name ] = self.abilities[ a.name ] or a
+                class.abilities[ a.name ] = class.abilities[ a.name ] or a
+
+                if not a.unlisted then
+                    class.abilityList[ ability ] = a.listName or ( "|T" .. texture .. ":0|t " .. a.name )
+                    class.abilityByName[ a.name ] = class.abilities[ a.name ] or a
+                end
+
+                Hekili.NewSpellInfo = true
+            end )
         end
 
         if a.rangeSpell and type( a.rangeSpell ) == "number" then
-            local spell = Spell:CreateFromSpellID( a.rangeSpell )
-            if not spell:IsSpellEmpty() then
-                spell:ContinueOnSpellLoad( function ()
-                    a.rangeSpell = spell:GetSpellName()
-                end )
-            end
+            Hekili:ContinueOnSpellLoad( a.rangeSpell, function( success )
+                if success then
+                    a.rangeSpell = GetSpellInfo( a.rangeSpell )
+                else
+                    a.rangeSpell = nil
+                end
+            end )
         end
 
         self.abilities[ ability ] = a
@@ -3071,14 +3085,6 @@ all:RegisterAura( "void_embrace", {
     id = 295174,
     duration = 12,
     max_stack = 1,
-} )
-
-
--- Stormglide Steps (PROC)
-all:RegisterAura( "untouchable", {
-    id = 167834,
-    duration = 15,
-    max_stack = 10
 } )
 
 

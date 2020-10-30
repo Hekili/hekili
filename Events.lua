@@ -34,6 +34,7 @@ local handlers = {}
 local unitHandlers = {}
 
 local itemCallbacks = {}
+local spellCallbacks = {}
 local activeDisplays = {}
 
 
@@ -84,6 +85,7 @@ function ns.StartEventHandler()
     end )
 
     Hekili:RunItemCallbacks()
+    Hekili:RunSpellCallbacks()
 end
 
 
@@ -221,6 +223,11 @@ do
 end
 
 function Hekili:ContinueOnItemLoad( itemID, func )
+    --[[ if C_Item.IsItemDataCachedByID( itemID ) then
+        func( true )
+        return
+    end ]]
+
     local callbacks = itemCallbacks[ itemID ] or {}
     insert( callbacks, func )
     itemCallbacks[ itemID ] = callbacks
@@ -239,6 +246,48 @@ function Hekili:RunItemCallbacks()
         end
     end
 end
+
+
+RegisterEvent( "SPELL_DATA_LOAD_RESULT", function( event, spellID, success )
+    local callbacks = spellCallbacks[ spellID ]
+
+    if callbacks then
+        for i, func in ipairs( callbacks ) do
+            func( success )
+            callbacks[ i ] = nil
+        end
+
+        spellCallbacks[ spellID ] = nil
+    end
+end )
+
+
+function Hekili:ContinueOnSpellLoad( spellID, func )
+    --[[ if C_Spell.IsSpellDataCached( spellID ) then
+        func( true )
+        return
+    end ]]
+
+    local callbacks = spellCallbacks[ spellID ] or {}
+    insert( callbacks, func )
+    spellCallbacks[ spellID ] = callbacks
+
+    C_Spell.RequestLoadSpellData( spellID )
+end
+
+
+function Hekili:RunSpellCallbacks()
+    for spell, callbacks in pairs( spellCallbacks ) do
+        for i = #callbacks, 1, -1 do
+            if callbacks[ i ]( true ) then remove( callbacks, i ) end
+        end
+
+        if #callbacks == 0 then
+            spellCallbacks[ spell ] = nil
+        end
+    end
+end
+
 
 
 RegisterEvent( "DISPLAY_SIZE_CHANGED", function () Hekili:BuildUI() end )
