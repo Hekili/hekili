@@ -509,7 +509,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
         bloodthirst = {
-            id = 23881,
+            id = function () return talent.reckless_abandon.enabled and buff.recklessness.up and 335096 or 23881 end,
             cast = 0,
             cooldown = 4.5,
             hasteCD = true,
@@ -519,7 +519,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             spendType = "rage",
 
             startsCombat = true,
-            texture = 136012,
+            texture = function () return talent.reckless_abandon.enabled and buff.recklessness.up and 236304 or 136012 end,
 
             handler = function ()
                 gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ), "health" )
@@ -544,7 +544,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     duration = 8,
                     max_stack = 5,
                 },
-            }
+            },
+
+            copy = { "bloodbath", 335096, 23881 }
         },
 
 
@@ -760,7 +762,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
 
         raging_blow = {
-            id = 85288,
+            id = function () return talent.reckless_abandon.enabled and buff.recklessness.up and 335097 or 85288 end,
             cast = 0,
             charges = 2,
             cooldown = 8,
@@ -772,13 +774,15 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             spendType = "rage",
 
             startsCombat = true,
-            texture = 589119,
+            texture = function () return talent.reckless_abandon.enabled and buff.recklessness.up and 132215 or 589119 end,
 
             handler = function ()
                 removeStack( "whirlwind" )
 
                 if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 8 end
             end,
+
+            copy = { "crushing_blow", 335097, 85288 }
         },
 
 
@@ -834,7 +838,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             handler = function ()
                 applyBuff( "recklessness" )
-                if talent.reckless_abandon.enabled then gain( 20, "rage" ) end
+                if talent.reckless_abandon.enabled then
+                    gain( 50, "rage" )
+                end
                 if legendary.will_of_the_berserker.enabled then
                     applyBuff( "will_of_the_berserker" )
                     buff.will_of_the_berserker.applied = buff.recklessness.expires
