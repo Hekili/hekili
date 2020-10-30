@@ -1125,6 +1125,7 @@ do
                                 order = 10,
 
                                 args = {
+                                    --[[
                                     relativeTo = {
                                         type = "select",
                                         name = "Anchored To",
@@ -1147,7 +1148,6 @@ do
                                         hidden = function() return data.relativeTo ~= "CUSTOM" end,
                                     },
 
-
                                     setParent = {
                                         type = "toggle",
                                         name = "Set Parent to Anchor",
@@ -1157,13 +1157,12 @@ do
                                         hidden = function() return data.relativeTo == "SCREEN" end,
                                     },
 
-
                                     preXY = {
                                         type = "description",
                                         name = " ",
                                         width = "full",
                                         order = 97
-                                    },
+                                    }, ]]
 
                                     x = {
                                         type = "range",

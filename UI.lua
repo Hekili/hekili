@@ -202,23 +202,26 @@ function ns.StartConfiguration( external )
         if ns.UI.Buttons[ i ][ 1 ] and Hekili.DB.profile.displays[ i ] then
             -- if not Hekili:IsDisplayActive( i ) then v:Show() end
 
-            v:EnableMouse( true )
-            v:SetMovable( true )
-
             v.Backdrop = v.Backdrop or Mixin( CreateFrame( "Frame", v:GetName().. "_Backdrop", UIParent ), BackdropTemplateMixin )
             v.Backdrop:ClearAllPoints()
             
-            local left, right, top, bottom = v:GetPerimeterButtons()
-            if left and right and top and bottom then
-                v.Backdrop:SetPoint( "LEFT", left, "LEFT", -2, 0 )
-                v.Backdrop:SetPoint( "RIGHT", right, "RIGHT", 2, 0 )
-                v.Backdrop:SetPoint( "TOP", top, "TOP", 0, 2 )
-                v.Backdrop:SetPoint( "BOTTOM", bottom, "BOTTOM", 0, -2 )
-            else
-                v.Backdrop:SetWidth( v:GetWidth() + 2 )
-                v.Backdrop:SetHeight( v:GetHeight() + 2 )
-                v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
+            if not v:IsAnchoringRestricted() then
+                v:EnableMouse( true )
+                v:SetMovable( true )
+            
+                local left, right, top, bottom = v:GetPerimeterButtons()
+                if left and right and top and bottom then
+                    v.Backdrop:SetPoint( "LEFT", left, "LEFT", -2, 0 )
+                    v.Backdrop:SetPoint( "RIGHT", right, "RIGHT", 2, 0 )
+                    v.Backdrop:SetPoint( "TOP", top, "TOP", 0, 2 )
+                    v.Backdrop:SetPoint( "BOTTOM", bottom, "BOTTOM", 0, -2 )
+                else
+                    v.Backdrop:SetWidth( v:GetWidth() + 2 )
+                    v.Backdrop:SetHeight( v:GetHeight() + 2 )
+                    v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
+                end
             end
+
 
             v.Backdrop:SetFrameStrata( v:GetFrameStrata() )
             v.Backdrop:SetFrameLevel( v:GetFrameLevel() + 1 )
@@ -328,7 +331,7 @@ function ns.StopConfiguration()
 
     for i, v in pairs( ns.UI.Displays ) do
         v:EnableMouse( false )
-        v:SetMovable( true )
+        if not v:IsAnchoringRestricted() then v:SetMovable( true ) end
         -- v:SetBackdrop( nil )
         if v.Header then
             v.Header:Hide()
@@ -1487,12 +1490,31 @@ do
         local border = 2
 
         d:SetSize( scale * ( border + ( conf.primaryWidth or 50 ) ), scale * ( border + ( conf.primaryHeight or 50 ) ) )
-        d:SetPoint( "CENTER", nil, "CENTER", conf.x or 0, conf.y or -225 )
+        d:SetIgnoreParentScale( true )
+        d:SetScale( UIParent:GetScale() )
+        d:ClearAllPoints()
+
+        local frame
+
+        if conf.relativeTo == "CUSTOM" then
+            frame = _G[ conf.customFrame ]
+        elseif conf.relativeTo == "PERSONAL" then
+            frame = C_NamePlate.GetNamePlateForUnit( "player" )
+        end
+
+        if not frame then frame = UIParent end
+
+        d:SetPoint( "CENTER", frame, "CENTER", conf.x or 0, conf.y or -225 )
+        d:SetParent( frame )
+
         d:SetFrameStrata( conf.frameStrata or "MEDIUM" )
         d:SetFrameLevel( conf.frameLevel or ( 10 * d.index ) )
-        d:SetClampedToScreen( true )
-        d:EnableMouse( false )
-        d:SetMovable( true )
+        
+        if not d:IsAnchoringRestricted() then
+            d:SetClampedToScreen( true )
+            d:EnableMouse( false )
+            d:SetMovable( true )
+        end
 
         d.Activate = Display_Activate
         d.Deactivate = Display_Deactivate
