@@ -181,18 +181,13 @@ function Hekili:ReInitialize()
 end 
 
 
-function Hekili:OnEnable()
+function Hekili:OnEnable()  
     ns.StartEventHandler()
-
     self:TotalRefresh()
-    
-    -- Fix spellbook taint???
-    ShowUIPanel( _G.SpellBookFrame )
-    HideUIPanel( _G.SpellBookFrame )
 
     ns.ReadKeybindings()
     self:ForceUpdate( "ADDON_ENABLED" )
-    ns.Audit()    
+    ns.Audit()
 end
 
 
@@ -221,36 +216,6 @@ function Hekili:Toggle()
     end
 
     self:UpdateDisplayVisibility()
-end
-
-
--- Texture Caching,
-local s_textures = setmetatable( {},
-{
-    __index = function(t, k)
-        local a = _G[ 'GetSpellTexture' ](k)
-        if a and k ~= GetSpellInfo( 115698 ) then t[k] = a end
-        return (a)
-    end
-} )
-
-local i_textures = setmetatable( {},
-{
-    __index = function(t, k)
-        local a = select(10, GetItemInfo(k))
-        if a then t[k] = a end
-        return a
-    end
-} )
-
--- Insert textures that don't work well with predictions.
-s_textures[ 115356 ] = 1029585 -- Windstrike
-s_textures[ 17364 ] = 132314 -- Stormstrike
--- NYI: Need Chain Lightning/Lava Beam here.
-
-local function GetSpellTexture( spell )
-    -- if class.abilities[ spell ].item then return i_textures[ spell ] end
-    return ( s_textures[ spell ] )
 end
 
 
