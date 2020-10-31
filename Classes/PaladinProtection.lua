@@ -1078,8 +1078,6 @@ if UnitClassBase( "player" ) == "PALADIN" then
             end,
             spendType = "holy_power",
 
-            defensives = true,
-
             startsCombat = true,
             texture = 236265,
 
