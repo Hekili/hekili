@@ -1782,7 +1782,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 flagellation = {
                     id = 323654,
                     duration = 45,
-                    max_stack = 40,
+                    max_stack = 30,
                     generate = function( t, aType )
                         local unit, func
 
@@ -1811,16 +1811,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                         t.caster = "nobody"
                     end,
                 },
-
-                flagellation_buff = {
-                    id = 345569,
-                    duration = 25,
-                    max_stack = 1,
-                }
             },
         },
 
-        flagellation_cleanse = {
+        flagellation_cleanse = PTR and {
             id = 345569,
             cast = 0,
             cooldown = 5,
@@ -1846,7 +1840,15 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 applyBuff( "flagellation_buff" )
                 setCooldown( "flagellation", 5 )
             end,
-        },        
+
+            auras = {
+                flagellation_buff = {
+                    id = 345569,
+                    duration = 20,
+                    max_stack = 1,
+                }
+            }
+        } or nil,
     } )
 
 
