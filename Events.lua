@@ -252,12 +252,13 @@ RegisterEvent( "SPELL_DATA_LOAD_RESULT", function( event, spellID, success )
     local callbacks = spellCallbacks[ spellID ]
 
     if callbacks then
-        for i, func in ipairs( callbacks ) do
-            func( success )
-            callbacks[ i ] = nil
+        for i = #callbacks, 1, -1 do
+            if not callbacks[ i ]( true ) == false then remove( callbacks, i ) end
         end
 
-        spellCallbacks[ spellID ] = nil
+        if #callbacks == 0 then
+            spellCallbacks[ spellID ] = nil
+        end
     end
 end )
 
@@ -279,7 +280,7 @@ end
 function Hekili:RunSpellCallbacks()
     for spell, callbacks in pairs( spellCallbacks ) do
         for i = #callbacks, 1, -1 do
-            if callbacks[ i ]( true ) then remove( callbacks, i ) end
+            if not callbacks[ i ]( true ) == false then remove( callbacks, i ) end
         end
 
         if #callbacks == 0 then

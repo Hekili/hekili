@@ -907,7 +907,11 @@ do
                             if a.item then
                                 outOfRange = IsItemInRange( a.itemCd or a.item, "target" ) == false
                             else
-                                outOfRange = LSR.IsSpellInRange( a.rangeSpell or a.actualName or a.name, "target" ) == 0
+                                local name = a.rangeSpell or a.actualName or a.name
+
+                                if name then
+                                    outOfRange = LSR.IsSpellInRange( a.rangeSpell or a.actualName or a.name, "target" ) == 0
+                                end
                             end
                         end
                     end

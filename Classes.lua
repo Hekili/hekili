@@ -610,7 +610,10 @@ local HekiliSpecMixin = {
                     Hekili.NewSpellInfo = true
                     return
                 end
+
                 a.name = GetSpellInfo( a.id )
+                if not a.name then Hekili:Print( "Name info not available for " .. a.id .. "." ); return false end
+
                 a.desc = GetSpellDescription( a.id ) -- was returning raw tooltip data.
 
                 if a.suffix then
