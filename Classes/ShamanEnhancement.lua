@@ -555,6 +555,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     end )
 
     spec:RegisterTotem( "windfury_totem", 136114 )
+    spec:RegisterTotem( "skyfury_totem", 135829 )
+    spec:RegisterTotem( "counterstrike_totem", 511726 )
 
 
     spec:RegisterAbilities( {
@@ -706,6 +708,25 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             handler = function ()
                 removeBuff( "dispellable_curse" )
+            end,
+        },
+
+        counterstrike_totem = {
+            id = 204331,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+            
+            spend = 0.03,
+            spendType = "mana",
+
+            pvptalent = "counterstrike_totem",            
+            
+            startsCombat = false,
+            texture = 511726,
+            
+            handler = function ()
+                summonPet( "counterstrike_totem" )
             end,
         },
 
@@ -1100,6 +1121,34 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             handler = function ()
                 removeBuff( "dispellable_magic" )
             end,
+        },
+
+        skyfury_totem = {
+            id = 204330,
+            cast = 0,
+            cooldown = 40,
+            gcd = "spell",
+            
+            spend = 0.03,
+            spendType = "mana",
+            
+            startsCombat = false,
+            texture = 135829,
+
+            pvptalent = "skyfury_totem",
+            
+            handler = function ()
+                summonPet( "skyfury_totem" )
+                applyBuff( "skyfury_totem" )
+            end,
+
+            auras = {
+                skyfury_totem = {
+                    id = 208963,
+                    duration = 3600,
+                    max_stack = 1,
+                },
+            },
         },
 
         spirit_walk = {
