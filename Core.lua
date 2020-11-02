@@ -1623,8 +1623,10 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 local cast_target = state.cast_target ~= "nobody" and state.cast_target or state.target.unit
 
-                if ability.cast > 0 and not ability.channeled then
+                if ability.cast == 0 then
                     state:RunHandler( action )
+
+                elseif ability.cast > 0 and not ability.channeled then
                     if debug then Hekili:Debug( "Queueing %s cast finish at %.2f on %s.", action, state.query_time + cast, cast_target ) end                    
                     state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH", cast_target )
 
