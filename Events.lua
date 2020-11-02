@@ -1867,7 +1867,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
                 local travel
 
                 if ability.flightTime then
-                    travel = flightTime
+                    travel = ability.flightTime
 
                 elseif target then
                     local unit = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
@@ -2252,7 +2252,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                         local travel
 
                         if ability.flightTime then
-                            travel = flightTime
+                            travel = ability.flightTime
                         
                         elseif destGUID then
                             local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
