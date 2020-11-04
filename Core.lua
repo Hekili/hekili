@@ -1623,20 +1623,16 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 local cast_target = state.cast_target ~= "nobody" and state.cast_target or state.target.unit
 
-                if ability.cast == 0 then
-                    state:RunHandler( action )
+                if ability.cast > 0 then
+                    if not ability.channeled then
+                        if debug then Hekili:Debug( "Queueing %s cast finish at %.2f [+%.2f] on %s.", action, state.query_time + cast, state.offset + cast, cast_target ) end                    
+                        state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH", cast_target )
 
-                elseif ability.cast > 0 and not ability.channeled then
-                    if debug then Hekili:Debug( "Queueing %s cast finish at %.2f on %s.", action, state.query_time + cast, cast_target ) end                    
-                    state:QueueEvent( action, state.query_time, state.query_time + cast, "CAST_FINISH", cast_target )
+                    else
+                        ns.spendResources( action )
+                        state:RunHandler( action )
 
-                else
-                    ns.spendResources( action )
-
-                    state:RunHandler( action )
-
-                    if ability.channeled then
-                        if debug then Hekili:Debug( "Queueing %s channel finish at %.2f.", action, state.query_time + cast ) end
+                        if debug then Hekili:Debug( "Queueing %s channel finish at %.2f [%.2f+%.2f].", action, state.query_time + cast, state.offset, cast ) end
                         state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH", cast_target )
     
                         -- Queue ticks because we may not have an ability.tick function, but may have resources tied to an aura.
@@ -1644,17 +1640,22 @@ function Hekili:ProcessHooks( dispName, packName )
                             local ticks = floor( cast / ability.tick_time )
     
                             for i = 1, ticks do
-                                if debug then Hekili:Debug( "Queueing %s channel tick (%d of %d) at %.2f.", action, i, ticks, state.query_time + ( i * ability.tick_time ) ) end
+                                if debug then Hekili:Debug( "Queueing %s channel tick (%d of %d) at %.2f [+%.2f].", action, i, ticks, state.query_time + ( i * ability.tick_time ), state.offset + ( i * ability.tick_time ) ) end
                                 state:QueueEvent( action, state.query_time, state.query_time + ( i * ability.tick_time ), "CHANNEL_TICK", cast_target )
                             end
                         end
+
                     end
+                else                    
+                    -- Instants.
+                    ns.spendResources( action )
+                    state:RunHandler( action )
+
                 end
 
-                -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+                -- Projectile spells have two handlers, effectively.  A handler (run on cast/channel finish), and then an impact handler.
                 if ability.isProjectile then
                     state:QueueEvent( action, state.query_time + cast, nil, "PROJECTILE_IMPACT", cast_target )
-                    -- state:QueueEvent( action, "projectile", true )
                 end
 
                 if ability.item and not ability.essence then

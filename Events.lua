@@ -2302,8 +2302,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                         end
                     end
 
-
-                    if ability.isProjectile then
+                    if ability.isProjectile and not state:IsInFlight( ability.key, true ) then
                         local travel
 
                         if ability.flightTime then
