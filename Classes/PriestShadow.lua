@@ -931,7 +931,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
         mind_flay = {
             id = 15407,
-            cast = 3,
+            cast = 4.5,
             cooldown = 0,
             gcd = "spell",
 
