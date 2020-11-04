@@ -118,9 +118,9 @@ if UnitClassBase( "player" ) == "DRUID" then
         Hekili:Debug( "%s %.2f %.2f %.2f %.2f", action, remains, app_duration, app_ticks, potential_ticks )
 
         if action == "thrash_cat" then
-            return max( 0, active_enemies - active_dot.thrash_cat ) * app_ticks + active_dot.thrash_cat * ( potential_ticks - remaining_ticks )
+            return max( 0, active_enemies - active_dot.thrash_cat ) * app_ticks + min( active_enemies, active_dot.thrash_cat ) * ( potential_ticks - remaining_ticks )
         elseif action == "primal_wrath" then
-            return max( 0, active_enemies - active_dot.rip ) * app_ticks + active_dot.rip * ( potential_ticks - remaining_ticks )
+            return max( 0, active_enemies - active_dot.rip ) * app_ticks + min( active_enemies, active_dot.rip ) * ( potential_ticks - remaining_ticks )
         end
             
         return max( 0, potential_ticks - remaining_ticks )
