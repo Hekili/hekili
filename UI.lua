@@ -1494,8 +1494,8 @@ do
         local border = 2
 
         d:SetSize( scale * ( border + ( conf.primaryWidth or 50 ) ), scale * ( border + ( conf.primaryHeight or 50 ) ) )
-        d:SetIgnoreParentScale( true )
-        d:SetScale( UIParent:GetScale() )
+        --[[ d:SetIgnoreParentScale( true )
+        d:SetScale( UIParent:GetScale() ) ]]
         d:ClearAllPoints()
 
         local frame
