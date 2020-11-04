@@ -1259,7 +1259,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             spendType = "soul_shards",
 
             startsCombat = true,
-            flightTime = 1,
+            flightTime = 0.7,
 
             -- usable = function () return soul_shards.current >= 3 end,
             handler = function ()
