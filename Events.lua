@@ -1761,12 +1761,16 @@ function state:AddToHistory( spellID, destGUID )
 end
 
 
-local SpellQueueWindow = tonumber( GetCVar( "SpellQueueWindow" ) ) / 1000
+local SpellQueueWindow = 0.4
 
-RegisterEvent( "CVAR_UPDATE", function( event )
-    SpellQueueWindow = tonumber( GetCVar( "SpellQueueWindow" ) ) / 1000
-end )
+local function UpdateSpellQueueWindow()
+    SpellQueueWindow = ( tonumber( GetCVar( "SpellQueueWindow" ) ) or 400 ) / 1000
+end
 
+RegisterEvent( "CVAR_UPDATE", UpdateSpellQueueWindow )
+RegisterEvent( "VARIABLES_LOADED", UpdateSpellQueueWindow )
+
+C_Timer.After( 60, UpdateSpellQueueWindow )
 
 
 do
