@@ -1,5 +1,5 @@
 # Fury Warrior
-# October 20, 2020
+# November 5, 2020
 
 # Changes:
 # - Added Pummel.
@@ -37,7 +37,7 @@ actions+=/guardian_of_azeroth,if=!buff.recklessness.up&(time_to_die>195|target.h
 actions+=/memory_of_lucid_dreams,if=!buff.recklessness.up
 actions+=/conquerors_banner,if=buff.recklessness.down&debuff.siegebreaker.down
 actions+=/recklessness,if=gcd.remains=0&(!essence.condensed_lifeforce.major&!essence.blood_of_the_enemy.major|cooldown.guardian_of_azeroth.remains>1|buff.guardian_of_azeroth.up|buff.blood_of_the_enemy.up)
-actions+=/whirlwind,if=spell_targets.whirlwind>1&!buff.meat_cleaver.up
+actions+=/whirlwind,if=spell_targets.whirlwind>1&level>36&!buff.meat_cleaver.up
 actions+=/use_item,name=ashvanes_razor_coral,if=time_to_die<20|!debuff.razor_coral_debuff.up|(target.time_to_pct_30<5&debuff.conductive_ink_debuff.up)|(!debuff.conductive_ink_debuff.up&buff.memory_of_lucid_dreams.up|prev_gcd.2.guardian_of_azeroth|prev_gcd.2.recklessness&(!essence.memory_of_lucid_dreams.major&!essence.condensed_lifeforce.major))
 actions+=/use_item,name=ramping_amplitude_gigavolt_engine
 actions+=/use_items
