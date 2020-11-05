@@ -1913,7 +1913,7 @@ local mt_state = {
             return ability and ability.spend or 0
 
         elseif k == 'cast_regen' then
-            return ( max( state.gcd.execute, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen ) -- - ( ability and ability.spend or 0 )
+            return ( max( state.gcd.execute, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen ) - ( ability and ability.spend or 0 )
 
         elseif k == 'crit_pct_current' or k == 'crit_percent_current' then
             -- This is the crit % of the current ability.
@@ -4424,7 +4424,7 @@ local mt_default_action = {
             return 0
 
         elseif k == 'cast_regen' then
-            return floor( max( state.gcd.execute, t.cast_time ) * state[ class.primaryResource ].regen ) -- - ( ability and t.cost or 0 )
+            return floor( max( state.gcd.execute, t.cast_time ) * state[ class.primaryResource ].regen ) - t.cost
 
         elseif k == 'cost' then
             local a = ability.spend
