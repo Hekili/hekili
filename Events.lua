@@ -2628,12 +2628,13 @@ local function ReadKeybindings()
     -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
     if _G["Bartender4"] then
         for actionBarNumber = 1, 10 do
+            local bar = _G["BT4Bar" .. actionBarNumber]
             for keyNumber = 1, 12 do
                 local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
                 local bindingKeyName = "ACTIONBUTTON" .. keyNumber
 
-                -- Action bar 1 and 7+ use bindings of action bar 1
-                if actionBarNumber > 1 and actionBarNumber <= 6 then
+                -- If bar is disabled assume paging / stance switching on bar 1
+                if actionBarNumber > 1 and bar and not bar.disabled then
                     bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":LeftButton"
                 end
 
