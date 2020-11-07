@@ -999,6 +999,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             talent = "brutal_slash",
 
             damage = function () return min( 5, active_enemies ) * stat.attack_power * 0.69 end, -- TODO: Check damage.
+            -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
+            cost = function () return max( 1, class.abilities.brutal_slash.spend ) end,
 
             handler = function ()
                 gain( 1, "combo_points" )
@@ -1161,6 +1163,8 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             -- Use maximum damage.
             damage = function () return 0.9828 * stat.attack_power * 2 end,
+            -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
+            cost = function () return max( 1, class.abilities.ferocious_bite.spend ) end,
 
             usable = function () return buff.apex_predator.up or combo_points.current > 0 end,
             handler = function ()
@@ -1577,6 +1581,9 @@ if UnitClassBase( "player" ) == "DRUID" then
                 return stat.attack_power * 0.18225
             end,
 
+            -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
+            cost = function () return max( 1, class.abilities.rake.spend ) end,            
+
             tick_damage = function ()
                 return stat.attack_power * 0.15561
             end,
@@ -1857,6 +1864,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             form = "cat_form",
 
             damage = function () return 0.46 * stat.attack_power * ( bleeding and 1.2 or 1 ) * ( effective_stealth and ( 1.6 * 1 + 0.01 * stat.crit * ( level > 53 and 2 or 1 ) ) or 1 ) end,
+            -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
+            cost = function () return max( 1, class.abilities.brutal_slash.spend ) end,
 
             handler = function ()
                 if level > 53 and ( buff.prowl.up or buff.berserk.up or buff.incarnation.up ) then
@@ -2068,6 +2077,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             form = "cat_form",
 
             damage = function () return min( 5, active_enemies ) * stat.attack_power * 0.35 * ( bleeding and 1.2 or 1 ) * ( 1 + stat.crit * 0.01 ) end, -- TODO: Check damage.
+            -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
+            cost = function () return max( 1, class.abilities.swipe_cat.spend ) end,            
 
             handler = function ()
                 gain( 1, "combo_points" )

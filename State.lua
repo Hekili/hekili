@@ -1910,7 +1910,21 @@ local mt_state = {
             return t.cooldown[ action ].recharge_time
 
         elseif k == 'cost' then
-            return ability and ability.spend or 0
+            if ability then
+                local c = ability.cost
+
+                if c then return c end
+
+                c = ability.spend
+
+                if c and c > 0 and c < 1 then
+                    c = c * state[ ability.spendType or class.primaryResource ].modmax
+                end
+
+                return c or 0
+            end
+
+            return 0
 
         elseif k == 'cast_regen' then
             return ( max( state.gcd.execute, ability.cast or 0 ) * state[ ability.spendType or class.primaryResource ].regen ) - ( ability and ability.spend or 0 )
@@ -4427,13 +4441,21 @@ local mt_default_action = {
             return floor( max( state.gcd.execute, t.cast_time ) * state[ class.primaryResource ].regen ) - t.cost
 
         elseif k == 'cost' then
-            local a = ability.spend
-            if not a then return 0 end
-            if type( a ) == 'function' then a = a() end
-            if a > 0 and a < 1 then
-                a = a * state[ ability.spendType or class.primaryResource ].modmax
+            if ability then
+                local c = ability.cost
+
+                if c then return c end
+
+                c = ability.spend
+
+                if c and c > 0 and c < 1 then
+                    c = c * state[ ability.spendType or class.primaryResource ].modmax
+                end
+
+                return c or 0
             end
-            return a
+
+            return 0
 
         elseif k == 'cost_type' then
             local a, _ = ability.spendType
