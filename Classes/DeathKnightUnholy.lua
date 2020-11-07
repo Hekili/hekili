@@ -1301,9 +1301,9 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
 
         raise_dead = {
-            id = 46584,
+            id = function () return IsActiveSpell( 46584 ) and 46584 or 46585 end,
             cast = 0,
-            cooldown = 30,
+            cooldown = function () return level < 29 and 120 or 30 end,
             gcd = "spell",
 
             startsCombat = false,
@@ -1314,9 +1314,11 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
             usable = function () return not pet.alive end,
             handler = function ()
-                summonPet( "ghoul", 3600 )
-                if talent.all_will_serve.enabled then summonPet( "skeleton", 3600 ) end
+                summonPet( "ghoul", level > 28 and 3600 or 30 )
+                if talent.all_will_serve.enabled then summonPet( "skeleton", level > 28 and 3600 or 30 ) end
             end,
+
+            copy = { 46584, 46585 }
         },
 
 
