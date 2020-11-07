@@ -1,5 +1,5 @@
 # Shadow Priest
-# October 30, 2020
+# November 6, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/power_word_fortitude,if=remains<300
@@ -89,10 +89,8 @@ actions.main+=/mindbender,if=dot.vampiric_touch.ticking&((talent.searing_nightma
 actions.main+=/void_torrent,cycle_targets=1,if=variable.dots_up&target.time_to_die>3&buff.voidform.down&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
 # Use SW:D with Painbreaker Psalm unless the target will be below 20% before the cooldown comes back
 actions.main+=/shadow_word_death,if=runeforge.painbreaker_psalm.equipped&variable.dots_up&target.time_to_pct_20>(cooldown.shadow_word_death.duration+gcd)
-# Use all charges of Shadow Crash in a row on Single target, or if the boss is about to die.
-actions.main+=/shadow_crash,if=spell_targets.shadow_crash=1&(cooldown.shadow_crash.charges=3|debuff.shadow_crash_debuff.up|action.shadow_crash.in_flight|target.time_to_die<cooldown.shadow_crash.full_recharge_time)&raid_event.adds.in>30
 # Use Shadow Crash on CD unless there are adds incoming.
-actions.main+=/shadow_crash,if=raid_event.adds.in>30&spell_targets.shadow_crash>1
+actions.main+=/shadow_crash,if=raid_event.adds.in>10
 # Use Mind Sear to consume Dark Thoughts procs on AOE. TODO Confirm is this is a higher priority than redotting on AOE unless dark thoughts is about to time out
 actions.main+=/mind_sear,cycle_targets=1,if=spell_targets.mind_sear>variable.mind_sear_cutoff&buff.dark_thought.up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
 # Use Mind Flay to consume Dark Thoughts procs on ST. TODO Confirm if this is a higher priority than redotting unless dark thoughts is about to time out

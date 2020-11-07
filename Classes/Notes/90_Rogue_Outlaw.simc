@@ -1,5 +1,5 @@
 # Outlaw Rogue
-# November 3, 2020
+# November 6, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
@@ -52,7 +52,7 @@ actions.cds+=/marked_for_death,if=raid_event.adds.in>30-raid_event.adds.duration
 # Blade Flurry on 2+ enemies. ST with Ambidexterity if no adds in the next 10s.
 actions.cds+=/blade_flurry,if=spell_targets>=2-conduit.ambidexterity.enabled&!buff.blade_flurry.up&raid_event.adds.in>10
 actions.cds+=/ghostly_strike,if=combo_points.deficit>=1+buff.broadside.up
-actions.cds+=/killing_spree,if=variable.blade_flurry_sync&spell_targets.blade_flurry>1&energy.time_to_max>2
+actions.cds+=/killing_spree,if=variable.blade_flurry_sync&energy.time_to_max>2
 actions.cds+=/blade_rush,if=variable.blade_flurry_sync&energy.time_to_max>2
 # Using Vanish/Ambush is only a very tiny increase, so in reality, you're absolutely fine to use it as a utility spell.
 actions.cds+=/vanish,if=!stealthed.all&variable.ambush_condition
