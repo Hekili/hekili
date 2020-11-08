@@ -943,6 +943,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             
             startsCombat = true,
             texture = 237564,
+
+            essential = true,
+            nomounted = true,
             
             handler = function ()
                 applyBuff( "fel_domination" )

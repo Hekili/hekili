@@ -1222,6 +1222,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             texture = 237564,
 
             essential = true,
+            nomounted = true,
             
             handler = function ()
                 applyBuff( "fel_domination" )
