@@ -1917,6 +1917,12 @@ RegisterEvent( "UNIT_SPELLCAST_SENT", function ( self, unit, target_name, castID
 end )
 
 
+-- Update due to player totems.
+RegisterEvent( "PLAYER_TOTEM_UPDATE", function( event, totem )
+    Hekili:ForceUpdate( event )
+end )
+
+
 local power_tick_data = {
     focus_avg = 0.10,
     focus_ticks = 1,
