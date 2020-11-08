@@ -1758,7 +1758,7 @@ local mt_state = {
         elseif k == 'in_flight' then
             local data = t.action[ t.this_action ]
             if data and data.flightTime then
-                return data.lastCast + data.flightTime - query_time > 0
+                return data.lastCast + data.flightTime - t.query_time > 0
             end
 
             return state:IsInFlight( t.this_action )
@@ -1766,7 +1766,7 @@ local mt_state = {
         elseif k == 'in_flight_remains' then
             local data = t.action[ t.this_action ]
             if data and data.flightTime then
-                return max( 0, data.lastCast + data.flightTime - query_time )
+                return max( 0, data.lastCast + data.flightTime - t.query_time )
             end
 
             return state:InFlightRemains( t.this_action )
