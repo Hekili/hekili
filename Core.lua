@@ -818,7 +818,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                     if name ~= nil then
                                         state:RegisterVariable( name, scriptID, listName, Stack )
-                                        if debug then self:Debug( " - variable.%s will check this script entry ( %s ).", name, scriptID ) end
+                                        if debug then self:Debug( " - variable.%s will check this script entry ( %s )\n%s", name, scriptID, scripts:GetModifierValues( "value", scriptID ) ) end
                                     else
                                         if debug then self:Debug( " - variable name not provided, skipping." ) end
                                     end
