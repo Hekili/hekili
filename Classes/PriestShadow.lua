@@ -1204,7 +1204,18 @@ if UnitClassBase( "player" ) == "PRIEST" then
         },
 
 
-        shadow_crash = {
+        shadow_crash = PTR and {
+            id = 205385,
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            spend = -20,
+            spendType = "insanity",
+
+            startsCombat = true,
+            texture = 136201,
+        } or {
             id = 342834,
             cast = 0,
             charges = 3,
