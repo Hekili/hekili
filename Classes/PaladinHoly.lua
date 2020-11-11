@@ -496,7 +496,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             recharge = function () return 6 * haste end,
             gcd = "spell",
 
-            spend = 0.12,
+            spend = 0.09,
             spendType = "mana",
 
             startsCombat = true,

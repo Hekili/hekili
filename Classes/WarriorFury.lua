@@ -179,7 +179,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         frenzy = {
             id = 335082,
             duration = 12,
-            max_stack = 3,      
+            max_stack = PTR and 3 or 4,      
         },
         furious_charge = {
             id = 202225,

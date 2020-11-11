@@ -712,7 +712,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             recharge = function () return 6 * ( talent.fires_of_justice.enabled and 0.85 or 1 ) * haste end,
             gcd = "spell",
 
-            spend = 0.12,
+            spend = 0.09,
             spendType = "mana",
 
             startsCombat = true,
