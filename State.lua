@@ -2809,12 +2809,10 @@ setmetatable( state.gcd, mt_gcd )
 
 local mt_prev_lookup = {
     __index = function( t, k )
-        if state.time == 0 then return false end
-
         local idx = t.index
         local preds, prev
         local action
-        
+
         if t.meta == 'castsAll' then preds, prev = state.predictions, state.prev
         elseif t.meta == 'castsOn' then preds, prev = state.predictionsOn, state.prev_gcd
         elseif t.meta == 'castsOff' then preds, prev = state.predictionsOff, state.prev_off_gcd end
@@ -2845,6 +2843,8 @@ local mt_prev_lookup = {
         if idx == 1 and prev.override then
             return prev.override == k
         end
+
+        if state.time == 0 then return false end
 
         return prev.history[ idx - #preds ] == k
     end,
@@ -4841,6 +4841,7 @@ do
             e.time   = nil
             e.type   = nil
             e.target = nil
+            e.func   = nil
 
             insert( eventPool, e )
             remove( queue, i )
@@ -4877,6 +4878,7 @@ do
             e.time   = time
             e.type   = type
             e.target = target
+            e.func   = nil
 
             insert( queue, e )
             sort( queue, byTime )
@@ -4885,14 +4887,45 @@ do
         end
     end
 
+    function state:QueueAuraExpiration( action, func, time )
+        local queue = virtualQueue
+        local e = NewEvent()
+
+        if not time then return end
+
+        e.action = action
+        e.func   = func
+        e.start  = self.query_time
+        e.time   = time
+        e.type   = "AURA_EXPIRATION"
+        e.target = "nobody"
+
+        insert( queue, e )
+        sort( queue, byTime )
+
+        if Hekili.ActiveDebug then Hekili:Debug( "Queued %s AURA_EXPIRATION at +%.2f.", action, time - state.query_time ) end
+    end
+
+    function state:RemoveAuraExpiration( action )
+        local queue = virtualQueue
+        
+        Hekili:Debug( "Trying to remove %s AURA_EXPIRATION from queue.", action )
+
+        for i = 1, #queue do
+            local e = queue[ i ]
+
+            if e.action == action and e.type == "AURA_EXPIRATION" then
+                RecycleEvent( queue, i )
+                Hekili:Debug( "Removed #%d from queue.", i )
+                break
+            end
+        end
+    end
+
     function state:RemoveEvent( e, real )
         local queue = real and realQueue or virtualQueue
 
         Hekili:Debug( "Trying to remove %s %s from queue.", ( e.action or "NO_ACTION" ), ( e.type or "NO_TYPE" ) )
-
-        for k,v in pairs( e ) do
-            Hekili:Debug( " - %s = %s", tostring( k ), tostring( v ) )
-        end
 
         for i = #queue, 1, -1 do
             if queue[ i ] == e then
@@ -5025,15 +5058,19 @@ do
         if not e then return end
 
         local action = e.action
-        local ability = class.abilities[ e.action ]
-        
-        if not ability then
-            state:RemoveEvent( e )
-            return
-        end
-
+        local ability
         local curr_action = self.this_action
-        self.this_action = action
+
+        if e.type ~= "AURA_EXPIRATION" then 
+            ability = class.abilities[ e.action ]
+            
+            if not ability then
+                state:RemoveEvent( e )
+                return
+            end
+
+            self.this_action = action
+        end
 
         if Hekili.ActiveDebug then Hekili:Debug( "\nHandling %s at %.2f (%s).", action, e.time, e.type ) end
 
@@ -5091,6 +5128,9 @@ do
         elseif e.type == "PROJECTILE_IMPACT" then
             if ability.impact then ability.impact() end
             self:StartCombat()
+        
+        elseif e.type == "AURA_EXPIRATION" then
+            if e.func then e.func() end
         
         end
 
@@ -5221,7 +5261,7 @@ function state:RunHandler( key, noStart )
     self.prev_gcd.override = nil
     self.prev_off_gcd.override = nil
 
-    if self.time == 0 and ability.startsCombat and not noStart then
+    if self.time == 0 and ability.startsCombat and not ability.isProjectile and not noStart then
         self.false_start = self.query_time - 0.01
 
         -- Assume MH swing at combat start and OH swing half a swing later?
