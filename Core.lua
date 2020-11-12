@@ -1392,7 +1392,7 @@ function Hekili:ProcessHooks( dispName, packName )
         local attempts = 0
         local iterated = false
 
-        if debug then self:Debug( "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f, %s: %.2f ).\n", i, state.offset, state.cooldown.global_cooldown.remains, ( state.buff.casting.v3 and "Channeling" or "Casting" ), state.buff.casting.remains ) end
+        if debug then self:Debug( 0, "\nRECOMMENDATION #%d ( Offset: %.2f, GCD: %.2f, %s: %.2f ).\n", i, state.offset, state.cooldown.global_cooldown.remains, ( state.buff.casting.v3 and "Channeling" or "Casting" ), state.buff.casting.remains ) end
 
         --[[ if debug then
             for k in pairs( class.resources ) do
@@ -1416,7 +1416,7 @@ function Hekili:ProcessHooks( dispName, packName )
         local n = 1
 
         if debug and #events > 0 then
-            self:Debug( "There are %d queued events to review.", #events )
+            self:Debug( 1, "There are %d queued events to review.", #events )
         end
 
         while( event ) do
@@ -1446,6 +1446,8 @@ function Hekili:ProcessHooks( dispName, packName )
                     self:Debug( 1, "Currently channeling ( %s ) until ( %.2f ).\n", state.player.channelSpell, state.player.channelEnd - state.query_time )
                 end
             end
+
+            ns.callHook( "step" )
 
             local t = event.time - state.now - state.offset
 
@@ -1558,6 +1560,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     resources = ( resources and ( resources .. ", " ) or "" ) .. string.format( "%s[ %.2f / %.2f ]", k, state[ k ].current, state[ k ].max )
                 end
                 self:Debug( 1, "Resources: %s", resources or "none" )
+                ns.callHook( "step" )
                 
                 if state.channeling then
                     self:Debug( " - Channeling ( %s ) until ( %.2f ).", state.player.channelSpell, state.player.channelEnd - state.query_time )
