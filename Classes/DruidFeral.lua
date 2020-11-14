@@ -764,9 +764,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         debuff.rake.pmultiplier = nil
         debuff.thrash.pmultiplier = nil
 
-        -- Eclipses
-        solar_eclipse = buff.eclipse_lunar.up and 2 or GetSpellCount( 197628 )
-        lunar_eclipse = buff.eclipse_solar.up and 2 or GetSpellCount( 5176 )
+        eclipse.reset() -- from Balance.
 
         -- Bloodtalons
         if talent.bloodtalons.enabled then
@@ -1951,7 +1949,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
 
 
-        starfire = {
+        --[[ starfire = {
             id = 197628,
             cast = function () return 2.5 * ( buff.eclipse_lunar.up and 0.92 or 1 ) * haste end,
             cooldown = 0,
@@ -1969,7 +1967,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                     if solar_eclipse == 0 then applyBuff( "eclipse_solar" ) end
                 end
             end,
-        },
+        }, ]]
 
 
         starsurge = {
@@ -1988,8 +1986,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             talent = "balance_affinity",
 
             handler = function ()
-                if buff.eclipse_lunar.up then buff.eclipse_lunar.expires = buff.eclipse_lunar.expires + 2 end
-                if buff.eclipse_solar.up then buff.eclipse_solar.expires = buff.eclipse_solar.expires + 2 end
+                if buff.eclipse_lunar.up then buff.eclipse_lunar.empowerTime = query_time; applyBuff( "starsurge_empowerment_lunar" ) end
+                if buff.eclipse_solar.up then buff.eclipse_solar.empowerTime = query_time; applyBuff( "starsurge_empowerment_solar" ) end
             end,
         },
 
@@ -2308,7 +2306,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
 
 
-        wrath = {
+        --[[ wrath = {
             id = 5176,
             cast = function () return 1.5 * ( buff.eclipse_solar.up and 0.92 or 1 ) * haste end,
             cooldown = 0,
@@ -2326,7 +2324,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                     if lunar_eclipse == 0 then applyBuff( "eclipse_lunar" ) end
                 end
             end,
-        },
+        }, ]]
 
 
         -- Covenants (belongs in DruidBalance, really).

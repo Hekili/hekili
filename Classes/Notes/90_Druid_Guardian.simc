@@ -1,5 +1,5 @@
 # Guardian Druid
-# October 29, 2020
+# November 13, 2020
 
 # Changes:
 # - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -90,6 +90,7 @@ actions.cooldowns+=/memory_of_lucid_dreams
 actions.cooldowns+=/use_items
 
 actions.catweave=prowl
+actions.catweave+=/cat_form,if=!buff.cat_form.up
 actions.catweave+=/rake,if=buff.prowl.up
 actions.catweave+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
 actions.catweave+=/empower_bond,if=druid.catweave_bear
@@ -105,12 +106,13 @@ actions.lycarac=cat_form
 
 actions.lycarao=moonkin_form
 
-actions.owlweave=heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
+actions.owlweave=moonkin_form,if=!buff.moonkin_form.up
+actions.owlweave+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
 actions.owlweave+=/empower_bond,if=druid.owlweave_bear
 actions.owlweave+=/convoke_the_spirits,if=druid.owlweave_bear
 actions.owlweave+=/adaptive_swarm,cycle_targets=1,if=refreshable
 actions.owlweave+=/moonfire,cycle_targets=1,if=refreshable|buff.galactic_guardian.up
 actions.owlweave+=/sunfire,cycle_targets=1,if=refreshable
 actions.owlweave+=/starsurge,if=(buff.eclipse_lunar.up|buff.eclipse_solar.up)
-actions.owlweave+=/starfire,if=(eclipse.in_lunar|eclipse.solar_next)|(eclipse.in_lunar&buff.eclipse_lunar.empowered)
+actions.owlweave+=/starfire,if=(eclipse.in_lunar|eclipse.solar_next)|(eclipse.in_lunar&buff.starsurge_empowerment_lunar.up)
 actions.owlweave+=/wrath
