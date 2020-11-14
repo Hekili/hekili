@@ -603,6 +603,8 @@ local Timer = {
 local waitBlock = {}
 local listDepth = 0
 
+local invalidActionWarnings = {}
+
 function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action, wait, depth, caller )
 
     local display = self.DB.profile.displays[ dispName ]
@@ -666,6 +668,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
             if self:IsActionActive( packName, listName, actID ) then
                 -- Check for commands before checking actual actions.
                 local entry = list[ actID ]
+                local scriptID = packName .. ":" .. listName .. ":" .. actID
 
                 local action = entry.action
 
@@ -675,7 +678,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 local ability = class.abilities[ action ]
                 
                 if not ability then
-                    Hekili:Error( "Priority '%s' uses action '%s' that is not found in the abilities table.", packName, action )
+                    if not invalidActionWarnings[ scriptID ] then
+                        Hekili:Error( "Priority '%s' uses action '%s' ( %s - %d ) that is not found in the abilities table.", packName, action, listName, actID )
+                        invalidActionWarnings[ scriptID ] = true
+                    end
 
                 elseif state.whitelist and not state.whitelist[ action ] and ( ability.id < -99 or ability.id > 0 ) then
                     -- if debug then self:Debug( "[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
