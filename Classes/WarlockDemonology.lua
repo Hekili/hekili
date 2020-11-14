@@ -56,7 +56,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
 
     -- PvP Talents
-    spec:RegisterPvpTalents( { 
+    spec:RegisterPvpTalents( {
         amplify_curse = 3507, -- 328774
         bane_of_fragility = 3505, -- 199954
         call_fel_lord = 162, -- 212459
@@ -85,6 +85,9 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     local demonic_tyrant = {}
     local demonic_tyrant_v = {}
 
+    local grim_felguard = {}
+    local grim_felguard_v = {}
+
     local other_demon = {}
     local other_demon_v = {}
 
@@ -92,12 +95,46 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     local guldan = {}
     local guldan_v = {}
 
-    local shards_for_guldan = 0
-
     local last_summon = {}
 
-
     local FindUnitBuffByID = ns.FindUnitBuffByID
+
+
+    local shards_for_guldan = 0
+
+    local function UpdateShardsForGuldan()
+        shards_for_guldan = UnitPower( "player", Enum.PowerType.SoulShards )
+    end
+
+
+    -- tyrant_ready needs to be handled internally, as the priority interpreter can't keep variable state in the same way that simc does.
+    local tyrant_ready_actual = false
+
+    spec:RegisterStateExpr( "tyrant_ready", function ()
+        return tyrant_ready_actual
+    end )
+
+    spec:RegisterStateFunction( "update_tyrant_readiness", function( hog_shards )
+        hog_shards = hog_shards or 0
+
+        -- The last part of a Tyrant Prep phase should be a HoG cast.
+        if not tyrant_ready and cooldown.summon_demonic_tyrant.remains < 5 then
+            if talent.doom.enabled and not debuff.doom.up then return end
+            if talent.demonic_strength.enabled and not talent.demonic_consumption.enabled and cooldown.demonic_strength.remains < 5 then return end
+            if talent.nether_portal.enabled and cooldown.nether_portal.remains < 5 then return end
+            if talent.grimoire_felguard.enabled and cooldown.grimoire_felguard.remains < 5 then return end
+            if talent.summon_vilefiend.enabled and cooldown.summon_filefiend.remains < 5 then return end
+            if cooldown.call_dreadstalkers.remains < 5 then return end
+            if buff.demonic_core.up and soul_shard < 4 and ( talent.demonic_consumption.enabled or buff.nether_portal.down ) then return end
+            if soul_shard + hog_shards < ( buff.nether_portal.up and 1 or 5 ) then return end
+
+            if Hekili.ActiveDebug then Hekili:Debug( "Flagging 'tyrant_ready' as true as all conditions were met." ) end
+            tyrant_ready = true
+        elseif tyrant_ready and cooldown.summon_demonic_tyrant.remains >= 5 then
+            if Hekili.ActiveDebug then Hekili:Debug( "Flagging 'tyrant_ready' as false based on cooldown." ) end
+            tyrant_ready = false
+        end
+    end )
 
 
     spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
@@ -108,13 +145,14 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         if source == state.GUID then
             if subtype == "SPELL_SUMMON" then
                 -- Dreadstalkers: 104316, 12 seconds uptime.
-                if spellID == 193332 or spellID == 193331 then table.insert( dreadstalkers, now + 12 )
+                -- if spellID == 193332 or spellID == 193331 then table.insert( dreadstalkers, now + 12 )
 
                 -- Vilefiend: 264119, 15 seconds uptime.
-                elseif spellID == 264119 then table.insert( vilefiend, now + 15 )
+                -- elseif spellID == 264119 then table.insert( vilefiend, now + 15 )
 
                 -- Wild Imp: 104317 and 279910, 20 seconds uptime.
-                elseif spellID == 104317 or spellID == 279910 then
+                -- else
+                if spellID == 104317 or spellID == 279910 then
                     table.insert( wild_imps, now + 20 )
 
                     imps[ destGUID ] = {
@@ -140,8 +178,21 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                         end
                     end
 
+                -- Grimoire Felguard
+                -- elseif spellID == 111898 then table.insert( grim_felguard, now + 17 )
+
                 -- Demonic Tyrant: 265187, 15 seconds uptime.
                 elseif spellID == 265187 then table.insert( demonic_tyrant, now + 15 )
+                    -- for i = 1, #dreadstalkers do dreadstalkers[ i ] = dreadstalkers[ i ] + 15 end
+                    -- for i = 1, #vilefiend do vilefiend[ i ] = vilefiend[ i ] + 15 end
+                    -- for i = 1, #grim_felguard do grim_felguard[ i ] = grim_felguard[ i ] + 15 end
+                    for i = 1, #wild_imps do wild_imps[ i ] = wild_imps[ i ] + 15 end
+
+                    for _, imp in pairs( imps ) do
+                        imp.expires = imp.expires + 15
+                        imp.max = imp.max + 15
+                    end
+
 
                 -- Other Demons, 15 seconds uptime.
                 -- 267986 - Prince Malchezaar
@@ -156,17 +207,19 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 elseif spellID >= 267986 and spellID <= 267996 then table.insert( other_demon, now + 15 ) end
 
             elseif subtype == "SPELL_CAST_START" and spellID == 105174 then
-                shards_for_guldan = UnitPower( "player", Enum.PowerType.SoulShards )
+                C_Timer.After( 0.25, UpdateShardsForGuldan )
 
             elseif subtype == "SPELL_CAST_SUCCESS" then
+                -- Implosion.
                 if spellID == 196277 then
                     table.wipe( wild_imps )
                     table.wipe( imps )
 
+                -- Power Siphon.
                 elseif spellID == 264130 then
                     if wild_imps[1] then table.remove( wild_imps, 1 ) end
                     if wild_imps[1] then table.remove( wild_imps, 1 ) end
-                    
+
                     for i = 1, 2 do
                         local lowest
 
@@ -182,16 +235,36 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                         end
                     end
 
+                -- Hand of Guldan (queue imps).
                 elseif spellID == 105174 then
-                    -- Hand of Guldan; queue imps.
                     if shards_for_guldan >= 1 then table.insert( guldan, now + 0.11 ) end
                     if shards_for_guldan >= 2 then table.insert( guldan, now + 0.12 ) end
                     if shards_for_guldan >= 3 then table.insert( guldan, now + 0.13 ) end
 
-                elseif spellID == 265187 and state.talent.demonic_consumption.enabled then
-                    --[[ table.wipe( guldan ) -- wipe incoming imps, too.
-                    table.wipe( wild_imps )
-                    table.wipe( imps ) ]]
+                    -- Per SimC APL, we go into Tyrant with 5 shards -OR- with Nether Portal up.
+                    local start, duration = GetSpellCooldown( 265817 )
+
+                    if not tyrant_ready_actual and start and duration and start + duration - now < 5 then
+                        state.reset()
+
+                        local np = state.talent.nether_portal.enabled and FindUnitBuffByID( "player", 267218 )
+
+                        if ( not state.talent.doom.enabled or state.action.doom.lastCast - now < 30 ) and 
+                           ( state.cooldown.demonic_strength.remains > 0 or not state.talent.demonic_strength.enabled or state.talent.demonic_consumption.enabled ) and 
+                           ( state.cooldown.nether_portal.remains > 0 or not state.talent.nether_portal.enabled ) and
+                           ( state.cooldown.grimoire_felguard.remains > 0 or not state.talent.grimoire_felguard.enabled ) and 
+                           ( state.cooldown.summon_vilefiend.remains > 0 or not state.talent.summon_vilefiend.enabled ) and
+                           ( state.cooldown.call_dreadstalkers.remains > 0 ) and
+                           ( state.buff.demonic_core.down or shards_for_guldan > 3 or ( not state.talent.demonic_consumption.enabled or np ) ) and
+                           ( shards_for_guldan == 5 or np ) then
+
+                            tyrant_ready_actual = true
+                        end
+                    end
+
+                -- Summon Demonic Tyrant.
+                elseif spellID == 265187 then
+                    tyrant_ready_actual = false
 
                 end
 
@@ -216,38 +289,13 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
     spec:RegisterHook( "reset_precast", function()
         local i = 1
-        while dreadstalkers[ i ] do
-            if dreadstalkers[ i ] < now then
-                table.remove( dreadstalkers, i )
-            else
-                i = i + 1
-            end
-        end
 
-        wipe( dreadstalkers_v )
-        for n, t in ipairs( dreadstalkers ) do dreadstalkers_v[ n ] = t end
-
-
-        i = 1
-        while( vilefiend[ i ] ) do
-            if vilefiend[ i ] < now then
-                table.remove( vilefiend, i )
-            else
-                i = i + 1
-            end
-        end
-
-        wipe( vilefiend_v )
-        for n, t in ipairs( vilefiend ) do vilefiend_v[ n ] = t end
-
-        
         for id, imp in pairs( imps ) do
             if imp.expires < now then
                 imps[ id ] = nil
             end
         end
 
-        i = 1
         while( wild_imps[ i ] ) do
             if wild_imps[ i ] < now then
                 table.remove( wild_imps, i )
@@ -267,22 +315,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             difference = difference - 1
         end
 
-        
         wipe( guldan_v )
         for n, t in ipairs( guldan ) do guldan_v[ n ] = t end
-
-
-        i = 1
-        while( demonic_tyrant[ i ] ) do
-            if demonic_tyrant[ i ] < now then
-                table.remove( demonic_tyrant, i )
-            else
-                i = i + 1
-            end
-        end
-
-        wipe( demonic_tyrant_v )
-        for n, t in ipairs( demonic_tyrant ) do demonic_tyrant_v[ n ] = t end
 
 
         i = 1
@@ -297,12 +331,56 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         wipe( other_demon_v )
         for n, t in ipairs( other_demon ) do other_demon_v[ n ] = t end
 
+
+        if #dreadstalkers_v > 0 then wipe( dreadstalkers_v ) end
+        if #vilefiend_v > 0     then wipe( vilefiend_v )     end
+        if #grim_felguard_v > 0 then wipe( grim_felguard_v ) end
+
+        -- Pull major demons from Totem API.
+        for i = 1, 5 do
+            local exists, name, summoned, duration, texture = GetTotemInfo( i )
+
+            if exists then
+                local demon
+
+                -- Grimoire Felguard
+                if texture == 136216 then demon = grim_felguard_v
+                elseif texture == 1616211 then demon = vilefiend_v
+                elseif texture == 1378282 then demon = dreadstalkers_v end
+
+                if demon then
+                    insert( demon, summoned + duration )
+                end
+            end
+
+            if #grim_felguard_v > 1 then table.sort( grim_felguard_v ) end
+            if #vilefiend_v > 1 then table.sort( vilefiend_v ) end
+            if #dreadstalkers_v > 1 then table.sort( dreadstalkers_v ) end
+        end
+
         last_summon.name = nil
         last_summon.at = nil
         last_summon.count = nil
 
         if demonic_tyrant_v[ 1 ] and demonic_tyrant_v[ 1 ] > query_time then
             summonPet( "demonic_tyrant", demonic_tyrant_v[ 1 ] - query_time )
+        end
+
+        tyrant_ready = nil
+
+        if Hekili.ActiveDebug then
+            Hekili:Debug(   "Is Tyrant Ready?: %s\n" ..
+                            " - Dreadstalkers: %d, %.2f\n" ..
+                            " - Vilefiend    : %d, %.2f\n" ..
+                            " - Grim Felguard: %d, %.2f\n" ..
+                            " - Wild Imps    : %d, %.2f\n" ..
+                            "Next Demon Exp. : %.2f",
+                            tyrant_ready and "Yes" or "No",
+                            buff.dreadstalkers.stack, buff.dreadstalkers.remains,
+                            buff.vilefiend.stack, buff.vilefiend.remains,
+                            buff.grimoire_felguard.stack, buff.grimoire_felguard.remains,
+                            buff.wild_imps.stack, buff.wild_imps.remains,
+                            major_demon_expires )
         end
     end )
 
@@ -349,6 +427,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         if name == "dreadstalkers" then db = dreadstalkers_v
         elseif name == "vilefiend" then db = vilefiend_v
         elseif name == "wild_imps" then db = wild_imps_v
+        elseif name == "grimoire_felguard" then db = grim_felguard_v
         elseif name == "demonic_tyrant" then db = demonic_tyrant_v end
 
         count = count or 1
@@ -365,13 +444,15 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
 
     spec:RegisterStateFunction( "extend_demons", function( duration )
-        duration = duration or 15 
+        duration = duration or 15
 
         for k, v in pairs( dreadstalkers_v ) do dreadstalkers_v[ k ] = v + duration end
         for k, v in pairs( vilefiend_v     ) do vilefiend_v    [ k ] = v + duration end
         for k, v in pairs( wild_imps_v     ) do wild_imps_v    [ k ] = v + duration end
+        for k, v in pairs( grim_felguard_v ) do grim_felguard_v[ k ] = v + duration end
         for k, v in pairs( other_demon_v   ) do other_demon_v  [ k ] = v + duration end
     end )
+
 
     spec:RegisterStateFunction( "consume_demons", function( name, count )
         local db = other_demon_v
@@ -379,6 +460,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         if name == "dreadstalkers" then db = dreadstalkers_v
         elseif name == "vilefiend" then db = vilefiend_v
         elseif name == "wild_imps" then db = wild_imps_v
+        elseif name == "grimoire_felguard" then db = grim_felguard_v
         elseif name == "demonic_tyrant" then db = demonic_tyrant_v end
 
         if type( count ) == "string" and count == "all" then
@@ -411,13 +493,44 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             while( count > 0 ) do
                 if not guldan_v[1] or guldan_v[1] > now then break end
                 table.remove( guldan_v, 1 )
-                count = count - 1 
+                count = count - 1
             end
         end
     end )
 
 
     spec:RegisterStateExpr( "soul_shard", function () return soul_shards.current end )
+
+    -- How long before you can complete a 3 Soul Shard HoG cast.
+    spec:RegisterStateExpr( "time_to_hog", function ()
+        local shards_needed = max( 0, 3 - soul_shards.current )
+        local cast_time = action.hand_of_guldan.cast_time
+
+        if shards_needed > 0 then
+            local cores = min( shards_needed, buff.demonic_core.stack )
+
+            if cores > 0 then
+                cast_time = cast_time + cores * gcd.execute
+                shards_needed = shards_needed - cores
+            end
+
+            cast_time = cast_time + shards_needed * action.shadow_bolt.cast_time
+        end
+
+        return cast_time
+    end )
+
+    -- When the next major demon (anything but Wild Imps) expires.
+    spec:RegisterStateExpr( "major_demon_expires", function ()
+        local expire = 3600
+
+        if buff.grimoire_felguard.up then expire = min( expire, buff.grimoire_felguard.remains ) end
+        if buff.vilefiend.up then expire = min( expire, buff.vilefiend.remains ) end
+        if buff.dreadstalkers.up then expire = min( expire, buff.dreadstalkers.remains ) end
+
+        if expire == 3600 then return 0 end
+        return expire
+    end )
 
 
     -- New imp forecasting expressions for Demo.
@@ -477,11 +590,12 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         end
     } ) )
 
+    local debugstack = debugstack
 
     spec:RegisterStateTable( "imps_spawned_during", setmetatable( {}, {
         __index = function( t, k, v )
             local cap = query_time
-            
+
             if type(k) == "number" then cap = cap + ( k / 1000 )
             else
                 if not class.abilities[ k ] then k = "summon_demonic_tyrant" end
@@ -490,7 +604,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             -- In SimC, k would be a numeric value to be interpreted but I don't see the point.
             -- We're only using it for SDT now, and I don't know what else we'd really use it for.
-            
+
             -- So imps_spawned_during.summon_demonic_tyrant would be the syntax I'll use here.
 
             local n = 0
@@ -499,7 +613,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 if spawn > cap then break end
                 if spawn > query_time then n = n + 1 end
             end
-            
+
             return n
         end,
     } ) )
@@ -607,7 +721,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             tick_time = function () return 1 * haste end,
             max_stack = 1,
 
-            generate = function () 
+            generate = function ()
                 local fs = buff.felstorm
 
                 local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 89751 )
@@ -630,29 +744,6 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             id = 270569,
             duration = 12,
             max_stack = 1,
-        },
-        grimoire_felguard = {
-            -- fake buff when grimoire_felguard is up.
-            duration = 15,
-            generate = function ()
-                local cast = rawget( class.abilities.grimoire_felguard, "lastCast" ) or 0
-                local up = cast + 15 > query_time
-
-                local gf = buff.grimoire_felguard
-                gf.name = class.abilities.grimoire_felguard.name
-
-                if up then
-                    gf.count = 1
-                    gf.expires = cast + 15
-                    gf.applied = cast
-                    gf.caster = "player"
-                    return
-                end
-                gf.count = 0
-                gf.expires = 0
-                gf.applied = 0
-                gf.caster = "nobody"                
-            end,
         },
         howl_of_terror = {
             id = 5484,
@@ -714,13 +805,52 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             duration = 12,
 
             meta = {
-                up = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and exp >= query_time or false end,
+                up = function ()
+                    local exp = dreadstalkers_v[ #dreadstalkers_v ]
+                    return exp and exp >= query_time or false
+                end,
                 down = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and exp < query_time or true end,
                 applied = function () local exp = dreadstalkers_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
                 remains = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and max( 0, exp - query_time ) or 0 end,
-                count = function () 
+                count = function ()
                     local c = 0
                     for i, exp in ipairs( dreadstalkers_v ) do
+                        if exp >= query_time then c = c + 2 end
+                    end
+                    return c
+                end,
+            }
+        },
+
+        grimoire_felguard = {
+            duration = 17,
+
+            meta = {
+                up = function () local exp = grim_felguard_v[ #grim_felguard_v ]; return exp and exp >= query_time or false end,
+                down = function () local exp = grim_felguard_v[ #grim_felguard_v ]; return exp and exp < query_time or true end,
+                applied = function () local exp = grim_felguard_v[ 1 ]; return exp and ( exp - 12 ) or 0 end,
+                remains = function () local exp = grim_felguard_v[ #grim_felguard_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                count = function ()
+                    local c = 0
+                    for i, exp in ipairs( grim_felguard_v ) do
+                        if exp > query_time then c = c + 1 end
+                    end
+                    return c
+                end,
+            }
+        },
+
+        vilefiend = {
+            duration = 15,
+
+            meta = {
+                up = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp >= query_time or false end,
+                down = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp < query_time or true end,
+                applied = function () local exp = vilefiend_v[ 1 ]; return exp and ( exp - 15 ) or 0 end,
+                remains = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and max( 0, exp - query_time ) or 0 end,
+                count = function ()
+                    local c = 0
+                    for i, exp in ipairs( vilefiend_v ) do
                         if exp > query_time then c = c + 1 end
                     end
                     return c
@@ -736,7 +866,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 down = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and exp < query_time or true end,
                 applied = function () local exp = wild_imps_v[ 1 ]; return exp and ( exp - 20 ) or 0 end,
                 remains = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and max( 0, exp - query_time ) or 0 end,
-                count = function () 
+                count = function ()
                     local c = 0
                     for i, exp in ipairs( wild_imps_v ) do
                         if exp > query_time then c = c + 1 end
@@ -751,24 +881,6 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             }
         },
 
-        vilefiend = {
-            duration = 12,
-
-            meta = {
-                up = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp >= query_time or false end,
-                down = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp < query_time or true end,
-                applied = function () local exp = vilefiend_v[ 1 ]; return exp and ( exp - 15 ) or 0 end,
-                remains = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and max( 0, exp - query_time ) or 0 end,
-                count = function () 
-                    local c = 0
-                    for i, exp in ipairs( vilefiend_v ) do
-                        if exp > query_time then c = c + 1 end
-                    end
-                    return c
-                end,
-            }
-        },
-
         other_demon = {
             duration = 20,
 
@@ -777,7 +889,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 down = function () local exp = other_demon_v[ 1 ]; return exp and exp < query_time or true end,
                 applied = function () local exp = other_demon_v[ 1 ]; return exp and ( exp - 15 ) or 0 end,
                 remains = function () local exp = other_demon_v[ 1 ]; return exp and max( 0, exp - query_time ) or 0 end,
-                count = function () 
+                count = function ()
                     local c = 0
                     for i, exp in ipairs( other_demon_v ) do
                         if exp > query_time then c = c + 1 end
@@ -820,7 +932,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     -- Fel Succubus     120526
     -- Shadow Succubus  120527
     -- Shivarra         58963
-    spec:RegisterPet( "succubus", 
+    spec:RegisterPet( "succubus",
         function()
             if Glyphed( 240263 ) then return 120526
             elseif Glyphed( 240266 ) then return 120527
@@ -837,6 +949,19 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
 
     spec:RegisterStateExpr( "extra_shards", function () return 0 end )
+
+    --[[ spec:RegisterVariable( "tyrant_ready", function ()
+        if cooldown.summon_demonic_tyrant.remains > 5 then return false end
+        if talent.demonic_strength.enabled and not talent.demonic_consumption.enabled and cooldown.demonic_strength.ready then return false end
+        if talent.nether_portal.enabled and cooldown.nether_portal.ready then return false end
+        if talent.grimoire_felguard.enabled and cooldown.grimoire_felguard.ready then return false end
+        if talent.summon_vilefiend.enabled and cooldown.summon_vilefiend.ready then return false end
+        if cooldown.call_dreadstalkers.ready then return false end
+        if buff.demonic_core.up and soul_shard < 4 and ( talent.demonic_consumption.enabled or buff.nether_portal.down ) then return false end
+        if soul_shard < ( buff.nether_portal.up and 1 or 5 ) then return false end
+        return true
+    end ) ]]
+
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -922,10 +1047,10 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             cast = 0,
             cooldown = 24,
             gcd = "spell",
-            
+
             spend = 0.01,
             spendType = "mana",
-            
+
             startsCombat = true,
             texture = 136174,
 
@@ -936,7 +1061,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             debuff = "casting",
             readyTime = state.timeToInterrupt,
-            
+
             handler = function ()
                 interrupt()
             end,
@@ -1145,7 +1270,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             startsCombat = true,
 
             talent = "doom",
-            
+
             cycle = "doom",
             min_ttd = function () return 3 + debuff.doom.duration end,
 
@@ -1217,18 +1342,18 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             cast = 0,
             cooldown = function () return 180 + conduit.fel_celerity.mod * 0.001 end,
             gcd = "spell",
-            
+
             startsCombat = false,
             texture = 237564,
 
             essential = true,
             nomounted = true,
-            
+
             handler = function ()
                 applyBuff( "fel_domination" )
             end,
         },
-        
+
 
         grimoire_felguard = {
             id = 111898,
@@ -1267,6 +1392,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 extra_shards = min( 2, soul_shards.current )
                 if Hekili.ActiveDebug then Hekili:Debug( "Extra Shards: %d", extra_shards ) end
                 spend( extra_shards, "soul_shards" )
+                update_tyrant_readiness( 1 + extra_shards )
             end,
 
             impact = function ()
@@ -1362,7 +1488,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             spend = 1,
             spendType = "soul_shards",
 
-            toggle = "cooldowns", 
+            toggle = "cooldowns",
 
             startsCombat = false,
             texture = 2065615,
@@ -1400,7 +1526,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             end,
 
             handler = function ()
-                local num = min( 2, buff.wild_imps.count ) 
+                local num = min( 2, buff.wild_imps.count )
                 consume_demons( "wild_imps", num )
 
                 addStack( "demonic_core", 20, num )
@@ -1482,30 +1608,30 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             spend = 0.01,
             spendType = "mana",
-            
+
             toggle = "cooldowns",
 
             startsCombat = false,
             texture = 136210,
-            
+
             handler = function ()
                 applyBuff( "soulstone" )
             end,
         },
-        
+
 
         subjugate_demon = {
             id = 1098,
             cast = 2.828,
             cooldown = 0,
             gcd = "spell",
-            
+
             spend = 0.02,
             spendType = "mana",
-            
+
             startsCombat = false,
             texture = 136154,
-            
+
             usable = function () return target.is_demon and target.level < level + 2, "requires demon enemy" end,
             handler = function ()
                 summonPet( "controlled_demon" )
@@ -1531,7 +1657,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 summonPet( "demonic_tyrant", 15 )
                 summon_demon( "demonic_tyrant", 15 )
                 applyBuff( "demonic_power", 15 )
-                
+
                 --[[ if talent.demonic_consumption.enabled then
                     consume_demons( "wild_imps", "all" )
                 end ]]
@@ -1587,8 +1713,6 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             spend = 1,
             spendType = "soul_shards",
-
-            toggle = "cooldowns",
 
             startsCombat = true,
             texture = 1616211,
@@ -1664,7 +1788,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         package = "Demonology",
     } )
 
-    spec:RegisterPack( "Demonology", 20201102, [[dmuPVaqiOOEKKkTjOIrPkYPKu1QGIe9kvLMfPIBbfXUu4xQcddQ0XiLAzKcptvuMgPOUgPsBtsf(MKkQXbfPohPiADQIkMNQkDpGSpsjheksQfcfEOKkIjskcxuvuPojuKWkjvntjvK2PQu)uvujdLuK8ufnvvjFfksYEv5VcgSehw0Ib1JrAYKCzInd4ZqvJgOoTsVwvfZgLBl0UP8BPgUKSCiphvtNQRdY2vv13vvmEvrvNxsz9KIuZhkTFeFAFVUPkD5ERbUAGR2AJRgdTXvBnPM18n9AvYnRs6pjE5MwgLBQjKyBnRXx7MvznwNQ71n5neIk3eS7v8NZJh4xhme8G2Xh8ncXsFBJIsa)bFJ0h3egAzoMc7GVPkD5ERbUAGR2AJRgdTXvBnPgA(M8kHEV1OoQJBcEvkXo4BQeo9M1Lu0esSTM14RrkyQseRP)q0xxsbS7v8NZJh4xhme8G2Xh8ncXsFBJIsa)bFJ0he91LuE3)LiSGifn0Hu0axnWLONOVUKsDc40Wl8NdrFDjfmHuMvcJrk1Pn9NbrFDjfmHuEUmwnsbj0ogftrkAcj2gCZCsPcjycTJWPtklaPSoPSCsznUNMtkp1isbCIu0K7KcqJif4MZfE9dI(6skycPOP6pcIuMBf42iLKX6pIIuQqcMq7iC6KI3KsfQPKYACpnNu0esSn4M5dI(6skycPOP(RPifpzI5KYAUGqqv(4MvOgyzYnRlPOjKyBnRXxJuWuLiwt)HOVUKcy3R4pNhpWVoyi4bTJp4BeIL(2gfLa(d(gPpi6RlP8U)lrybrkAOdPObUAGlrprFDjL6eWPHx4phI(6skycPmRegJuQtB6pdI(6skycP8CzSAKcsODmkMIu0esSn4M5KsfsWeAhHtNuwaszDsz5KYACpnNuEQrKc4ePOj3jfGgrkWnNl86he91LuWesrt1FeePm3kWTrkjJ1FefPuHemH2r40jfVjLkutjL14EAoPOjKyBWnZhe91LuWesrt9xtrkEYeZjL1CbHGQ8brprFDjLN7NxOqUOifybOrcPq7iC6KcSGFn(GuWutPsLZjfRnmbCIIaqmsjP(2gNuAJvBq0NuFBJpQqcTJWP)f0daHfuDCT0320zba5Bu0cxCWCL4JKT)fI(K6BB8rfsODeo9VGEWHIX2cvIt0NuFBJpQqcTJWP)f0JQ(JGc8TcCB6SaGGHaagFwMkSXk(G7j9hT0ghyiaGHsITT0aTrYG7j9NFbPbrFs9Tn(Ocj0ocN(xqpusSn4M56SaGGBohl2K6BBdLeBdUz(GMCheUe9j1324JkKq7iC6Fb9Gdov9NaCZCI(K6BB8rfsODeo9VGE8prBcZeDSmkG8AO08assvnD(NmibeTBMQ)ydoum2wqjX2wAWRHsZhijMRX)vxCEcZEYeZhQUJdXsyMOWIvjWqaadv3Xbuv948emeaWqjX2wAG7iXW7GhqvyXIzpzI5dLeBBPbUJedVdEiwcZefwSEYeZhkj22sd024qXkFBBiwcZev948eM9KjMpmXblOqvJ8KnelHzIclwyiaGHjoybfQAKNSbufwS0UzQ(JnmXblOqvJ8KnqsmxJRL26wpopHzpzI5d8On2lscacdpuIudXsyMOWIL2nt1FSbE0g7fjbaHHhkrQbsI5ACT0w36X5jm7jtmFWHIX2c)xMaSIPgILWmrHflTBMQ)ydoum2w4)YeGvm1ajXCnUwARB948eM9KjMpusSTLgOTXHIv(22qSeMjkSyHHaagFwMkSXk(aQclwEdXcCWjsbsxSyHHaagM4GfuOQrEYgqv4WBiwGdorkTWTEIEI(6skp3pVqHCrrkYFbvJu8nkKIdwiLK6nIuwoPK)ZLLWmzq0NuFBJdIxjmwG10Fi6tQVTX)c6bnzSaGWadzUGi6tQVTX)c6r(8sWBoNOpP(2g)lOhk5FdHcXe)sj6tQVTX)c6bnzSqs9TTaB5Uowgfqnaqapvr0NuFBJ)f0dAYyHK6BBb2YDDSmkGeoxmQWj6tQVTX)c6bcYcj132cSL76yzua51qP5HkKuPd3rl1bPTolaiA3mv)XgCOySTGsITT0GxdLMpqsmxJ)RU4G5)jAtyMm8AO08assvnI(K6BB8VGEGGSqs9TTaB5UowgfqCOySTGxdLMRd3rl1bPTolaO)jAtyMm8AO08assvnI(K6BB8VGEWPneAn8bFDWcrFs9Tn(xqp2yLyQ1WhOPNCh1vGfI(K6BB8VGEWBiwa1UolaOK67FjiMexHRL2e9j1324Fb9qj0nM(A4dWnZ1zba9KNi8IpaljZbhQO(V6IlwSalEWEajXCnUw6IB9e9j1324Fb9GdfJTf(VmbyftPZcaI2nt1FSbhkgBlOKyBln41qP5dKeZ14APzCXIfyXd2dijMRX)L2nt1FSbhkgBlOKyBln41qP5dKeZ14F1qxI(K6BB8VGEqtglOqsQ4EY(rqCI(K6BB8VGEO6oQZcacjaiHdoHzcrFs9Tn(xqpusSTLg4osm8oyI(K6BB8VGEaVmHtBieEja3rybXj6tQVTX)c6b40uHgiGhIPstNfaeVHybo4ePaPlwSWqaadtCWcku1ipzdOkI(K6BB8VGEaonvObc4HyQ00zbaXBiwGdorkTa9mCODZu9hBWHIX2ckj22sdEnuA(ajXCnUwAGlopr7MP6p2GdfJTf(VmbyftnqsmxJRLUyXIzpzI5doum2w4)YeGvm1qSeMjQ6XH2nt1FSbnzSGcjPI7j7hbXhijMRX1sdI(K6BB8VGEOKyBWnZ1zbabdbamusSTLgOnsgijPoo8gIf4GtK6xnt0NuFBJ)f0d8On2lscacdpuIu6SaGODZu9hBWHIX2ckj22sdEnuA(ajXCn(xA3mv)XgCOySTGsITT0GxdLMpuqO0320cyXd2dijMRXXIfyXd2dijMRX)L2nt1FSbhkgBlOKyBln41qP5dKeZ14F1wxI(K6BB8VGEaXLW6sKt0NuFBJ)f0JQ(JGc8TcCB6SaGGHaagFwMkSXk(G7j9hT0ghyiaGHsITT0aTrYG7j9NFFgrFs9Tn(xqp2yfR5BB6SaGEIj)f2V6Iloj13)sqmjUcxlnWIn10cADzipFfR57Fju1Uy(MSbkTF0sBCGHaagYZxXA((xcvTlMVjBGKyUg)3NvpoWqaaJpltf2yfFW9K(JwGEgrFs9Tn(xqp4nelWD0(Jq0NuFBJ)f0do4u1FcWnZj6j6tQVTXhcNlgv4G(0iM6VSwaj82sJk6SaGODZu9hBWHIX2ckj22sdEnuA(ajXCnUwAwxI(K6BB8HW5Irf(xqpIsSr1cnqGbrxvqHKmYj6tQVTXhcNlgv4Fb9aM1Tk0abhSeetI1i6tQVTXhcNlgv4Fb9apuIuBAHgiKAAb1oyI(K6BB8HW5Irf(xqpqBvftcRf4vjvi6tQVTXhcNlgv4Fb9aOPqCrfsnTGwxcWsgj6tQVTXhcNlgv4Fb9OccTa1wdFaMLCNOpP(2gFiCUyuH)f0dKKvRHpaWYOW1zba5jcV4dWsYCWHkQRfMgxSy9eHx8byjzo4qf1)vdCXIfyXd2dijMRX)9z4IfRNi8Ip8nkbVdvupObUAPzCj6tQVTXhcNlgv4Fb9G2gvmhLUOcaSmke9j1324dHZfJk8VGE4GLaKb3qMka0iQOZcacgcayGe6pmHZdanIkdKeZ14e9e9j1324JgaiGNQabliUG(zn86SaGQeFOKyBln41qP5JK67FHOpP(2gF0aab8u1xqpQAFBtNfaemeaWawqCb9ZA4hqvyXwj(qjX2wAWRHsZhj13)coygLuz4OMXi6tQVTXhnaqapv9f0dyw3QaaeQMolaOkXhkj22sdEnuA(iP((xi6tQVTXhnaqapv9f0dGfjWSUv6SaGQeFOKyBln41qP5JK67FHONOpP(2gFWHIX2cEnuAoiWPPcnqapetLMolaiEdXcCWjsbsxDyRjbQcKg4s0NuFBJp4qXyBbVgkn)lOhkj2gCZCDwaqWqaadLeBBPbAJKbufop5jtmFOKyBlnqBJdfR8TTHyjmtuyXcdbammXblOqvJ8Knu9hREDyRjbQcKg4s0NuFBJp4qXyBbVgkn)lOhCWPQ)eGBMRZcacgcay8zzQWgR4dUN0F(UgTJRHpSXk(VAgNN8KjMpusSTLgOTXHIv(22qSeMjkSyHHaagM4GfuOQrEYgQ(JvVoS1KavbsdCj6tQVTXhCOySTGxdLM)f0dAYybfssf3t2pcIt0NuFBJp4qXyBbVgkn)lOhGttfAGaEiMknI(K6BB8bhkgBl41qP5Fb9qjX2GBMRZcacgcayOKyBlnqBKmGQWbgcayyIdwqHQg5jBavHZtpbdbam(VmbyftnqsmxJRLUyXIzpzI5doum2w4)YeGvm1qSeMjQ6X5jyiaGbE0g7fjbaHHhkrQbsI5ACT0flwyiaGbE0g7fjbaHHhkrQHQ)y1xprFs9Tn(GdfJTf8AO08VGEWbNQ(taUzUolaiyiaGHjoybfQAKNSbufop9emeaW4)YeGvm1ajXCnUw6IflM9KjMp4qXyBH)ltawXudXsyMOQhNNGHaag4rBSxKeaegEOePgijMRX1sxSyHHaag4rBSxKeaegEOePgQ(JvF9e91LusQVTXhCOySTGxdLM)f0J)jAtyMOJLrbKxdLMhqsQQPZ)KbjGWmTBMQ)ydoum2wqjX2wAWRHsZhijv1i6tQVTXhCOySTGxdLM)f0doum2wqjX2wAWRHsZ1zbaXBiwGdorkoiCj6tQVTXhCOySTGxdLM)f0do4u1FcWnZj6j6tQVTXhEnuAEOcjvGuDh1HTMeOkqpdxI(K6BB8HxdLMhQqs1xqpusSTLg4osm8oyDwaqy2tMy(qjX2wAG2ghkw5BBdXsyMOi6tQVTXhEnuAEOcjvFb9WehSGcvnYtgrFs9Tn(WRHsZdviP6lOh4rBSxKeaegEOePi6tQVTXhEnuAEOcjvFb9GdfJTf(Vmbyftr0NuFBJp8AO08qfsQ(c6bnzSGcjPI7j7hbXj6tQVTXhEnuAEOcjvFb9qjX2GBMRZcacgcayOKyBlnqBKmGQWH3qSahCIu)QzCEYtMy(qjX2wAG2ghkw5BBdXsyMOWIfgcayyIdwqHQg5jBO6pw9e9j1324dVgknpuHKQVGEWbNQ(taUzUolaiEdXcCWjs9RUyIMXucdbammXblOqvJ8KnGQi6RlPKuFBJp8AO08qfsQ(c6X)eTjmt0XYOaYRHsZdijv105FYGeqAt0NuFBJp8AO08qfsQ(c6b40uHgiGhIPs7M)feFB7ERbUAGR24QrDCZpjYwdp)MykIvnYffPuhKss9TnsHTCNpi6VjB5o)EDtHZfJk8719w771nflHzI6W4Mu06cAZBs7MP6p2GdfJTfusSTLg8AO08bsI5ACsrlsrZ6EZK6BB38tJyQ)YAbKWBlnQC(9wJ71ntQVTDZOeBuTqdeyq0vfuijJ8BkwcZe1HX537NDVUzs9TTBcZ6wfAGGdwcIjXA3uSeMjQdJZV3A(EDZK6BB3epuIuBAHgiKAAb1o4BkwcZe1HX53BDVx3mP(22nrBvftcRf4vjvUPyjmtuhgNFVRJ71ntQVTDtGMcXfvi10cADjalz8MILWmrDyC(9UoFVUzs9TTBwbHwGARHpaZsUFtXsyMOomo)EJPVx3uSeMjQdJBsrRlOnVPNi8IpaljZbhQOoPOfPGPXLuWILu8eHx8byjzo4qf1jLFjfnWLuWILuaw8G9asI5ACs5xs5z4skyXskEIWl(W3Oe8our9Gg4skArkAg3BMuFB7MijRwdFaGLrHF(9wtEVUzs9TTBsBJkMJsxubawgLBkwcZe1HX53BTX9EDtXsyMOomUjfTUG28MWqaadKq)HjCEaOruzGKyUg)Mj132UPdwcqgCdzQaqJOY5NFtLaKqm)EDV1(EDZK6BB3KxjmwG10FUPyjmtuhgNFV14EDZK6BB3KMmwaqyGHmxq3uSeMjQdJZV3p7EDZK6BB3mFEj4nNFtXsyMOomo)ER571ntQVTDtL8VHqHyIFP3uSeMjQdJZV36EVUPyjmtuhg3mP(22nPjJfsQVTfyl3VjB5EWYOCZgaiGNQo)Exh3RBkwcZe1HXntQVTDtAYyHK6BBb2Y9BYwUhSmk3u4CXOc)87DD(EDtXsyMOomUjfTUG28M0UzQ(Jn4qXyBbLeBBPbVgknFGKyUgNu(Lu0LuWHuWmP8prBcZKHxdLMhqsQQDtUJwQFV1(Mj132UjcYcj132cSL73KTCpyzuUPxdLMhQqs153Bm996MILWmrDyCtkADbT5n)NOnHzYWRHsZdijv1Uj3rl1V3AFZK6BB3ebzHK6BBb2Y9BYwUhSmk3KdfJTf8AO08ZV3AY71ntQVTDtoTHqRHp4RdwUPyjmtuhgNFV1g371ntQVTDZnwjMAn8bA6j3rDfy5MILWmrDyC(9wBTVx3uSeMjQdJBsrRlOnVzs99VeetIRWjfTifTVzs9TTBYBiwa1(53BT14EDtXsyMOomUjfTUG28MprkEIWl(aSKmhCOI6KYVKIU4skyXskalEWEajXCnoPOfPOlUKs93mP(22nvcDJPVg(aCZ8ZV3A)S71nflHzI6W4Mu06cAZBs7MP6p2GdfJTfusSTLg8AO08bsI5ACsrlsrZ4skyXskalEWEajXCnoP8lPq7MP6p2GdfJTfusSTLg8AO08bsI5ACs5lPOHU3mP(22n5qXyBH)ltawXuNFV1wZ3RBMuFB7M0KXckKKkUNSFee)MILWmrDyC(9wBDVx3uSeMjQdJBsrRlOnVjsaqchCcZKBMuFB7MQUJNFV1UoUx3mP(22nvsSTLg4osm8o4BkwcZe1HX53BTRZ3RBMuFB7MWlt40gcHxcWDewq8BkwcZe1HX53BTX03RBkwcZe1HXnPO1f0M3K3qSahCIuKcisrxsblwsbgcayyIdwqHQg5jBavDZK6BB3eCAQqdeWdXuPD(9wBn596MILWmrDyCtkADbT5n5nelWbNifPOfis5zKcoKcTBMQ)ydoum2wqjX2wAWRHsZhijMRXjfTifnWLuWHuEIuODZu9hBWHIX2c)xMaSIPgijMRXjfTifDjfSyjfmtkEYeZhCOySTW)LjaRyQHyjmtuKs9KcoKcTBMQ)ydAYybfssf3t2pcIpqsmxJtkArkACZK6BB3eCAQqdeWdXuPD(9wdCVx3uSeMjQdJBsrRlOnVjmeaWqjX2wAG2izGKK6KcoKcVHybo4ePiLFjfnFZK6BB3ujX2GBMF(9wdTVx3uSeMjQdJBsrRlOnVjTBMQ)ydoum2wqjX2wAWRHsZhijMRXjLVKcTBMQ)ydoum2wqjX2wAWRHsZhkiu6BBKIwKcWIhShqsmxJtkyXskalEWEajXCnoP8lPq7MP6p2GdfJTfusSTLg8AO08bsI5ACs5lPOTU3mP(22nXJ2yVijaim8qjsD(9wdnUx3mP(22nH4syDjYVPyjmtuhgNFV14z3RBkwcZe1HXnPO1f0M3egcay8zzQWgR4dUN0FifTifTjfCifyiaGHsITT0aTrYG7j9hs5xs5z3mP(22nR6pckW3kWTD(9wdnFVUPyjmtuhg3KIwxqBEZNifM8xyKYVKIU4sk4qkj13)sqmjUcNu0Iu0GuWILusnTGwxgYZxXA((xcvTlMVjBGs7hsrlsrBsbhsbgcayipFfR57Fju1Uy(MSbsI5ACs5xs5zKs9KcoKcmeaW4ZYuHnwXhCpP)qkAbIuE2ntQVTDZnwXA(2253Bn09EDZK6BB3K3qSa3r7pYnflHzI6W487Tg1X96Mj132UjhCQ6pb4M53uSeMjQdJZp)MviH2r40Vx3BTVx3uSeMjQdJBsrRlOnVPVrHu0IuWLuWHuWmPuj(iz7F5Mj132UjGWcQoUw6BBNFV14EDZK6BB3KdfJTfaegEOePUPyjmtuhgNFVF296MILWmrDyCtkADbT5nHHaagFwMkSXk(G7j9hsrlsrBsbhsbgcayOKyBlnqBKm4Es)Hu(fePOXntQVTDZQ(JGc8TcCBNFV1896MILWmrDyCtkADbT5nHBoNuWILusQVTnusSn4M5dAYDsbePG7ntQVTDtLeBdUz(53BDVx3mP(22n5Gtv)ja3m)MILWmrDyC(9UoUx3uSeMjQdJB2v3Kl(ntQVTDZ)jAtyMCZ)jdsUjTBMQ)ydoum2wqjX2wAWRHsZhijMRXjLFjfDjfCiLNifmtkEYeZhQUJdXsyMOifSyjfLadbamuDhhqvKs9KcoKYtKcmeaWqjX2wAG7iXW7GhqvKcwSKcMjfpzI5dLeBBPbUJedVdEiwcZefPGflP4jtmFOKyBlnqBJdfR8TTHyjmtuKs9KcoKYtKcMjfpzI5dtCWcku1ipzdXsyMOifSyjfyiaGHjoybfQAKNSbufPGflPq7MP6p2WehSGcvnYt2ajXCnoPOfPOTUKs9KcoKYtKcMjfpzI5d8On2lscacdpuIudXsyMOifSyjfA3mv)Xg4rBSxKeaegEOePgijMRXjfTifT1LuQNuWHuEIuWmP4jtmFWHIX2c)xMaSIPgILWmrrkyXsk0UzQ(Jn4qXyBH)ltawXudKeZ14KIwKI26sk1tk4qkprkyMu8KjMpusSTLgOTXHIv(22qSeMjksblwsbgcay8zzQWgR4dOksblwsH3qSahCIuKcisrxsblwsbgcayyIdwqHQg5jBavrk4qk8gIf4GtKIu0IuWLuQ)M)tuWYOCtVgknpGKuv78ZVjhkgBl41qP53R7T23RBkwcZe1HXnPO1f0M3K3qSahCIuKcisr3BMuFB7MGttfAGaEiMkTBYwtcu1n1a3ZV3ACVUPyjmtuhg3KIwxqBEtyiaGHsITT0aTrYaQIuWHuEIu8KjMpusSTLgOTXHIv(22qSeMjksblwsbgcayyIdwqHQg5jBO6pgPu)ntQVTDtLeBdUz(nzRjbQ6MAG7537NDVUPyjmtuhg3KIwxqBEtyiaGXNLPcBSIp4Es)Hu(skRr74A4dBSItk)skAMuWHuEIu8KjMpusSTLgOTXHIv(22qSeMjksblwsbgcayyIdwqHQg5jBO6pgPu)ntQVTDto4u1FcWnZVjBnjqv3udCp)ER571ntQVTDtAYybfssf3t2pcIFtXsyMOomo)ER796Mj132Uj40uHgiGhIPs7MILWmrDyC(9UoUx3uSeMjQdJBsrRlOnVjmeaWqjX2wAG2izavrk4qkWqaadtCWcku1ipzdOksbhs5js5jsbgcay8FzcWkMAGKyUgNu0Iu0LuWILuWmP4jtmFWHIX2c)xMaSIPgILWmrrk1tk4qkprkWqaad8On2lscacdpuIudKeZ14KIwKIUKcwSKcmeaWapAJ9IKaGWWdLi1q1FmsPEsP(BMuFB7Mkj2gCZ8ZV31571nflHzI6W4Mu06cAZBcdbammXblOqvJ8KnGQifCiLNiLNifyiaGX)LjaRyQbsI5ACsrlsrxsblwsbZKINmX8bhkgBl8FzcWkMAiwcZefPupPGdP8ePadbamWJ2yVijaim8qjsnqsmxJtkArk6skyXskWqaad8On2lscacdpuIudv)XiL6jL6Vzs9TTBYbNQ(taUz(53Bm996MILWmrDyCtkADbT5n5nelWbNifNuark4EZK6BB3KdfJTfusSTLg8AO08ZV3AY71ntQVTDto4u1FcWnZVPyjmtuhgNF(nBaGaEQ6EDV1(EDtXsyMOomUjfTUG28MvIpusSTLg8AO08rs99VCZK6BB3ewqCb9ZA4p)ERX96MILWmrDyCtkADbT5nHHaagWcIlOFwd)aQIuWILuQeFOKyBln41qP5JK67FHuWHuWmPGsQmCuZy3mP(22nRAFB7879ZUx3uSeMjQdJBsrRlOnVzL4dLeBBPbVgknFKuF)l3mP(22nHzDRcaqOANFV1896MILWmrDyCtkADbT5nReFOKyBln41qP5JK67F5Mj132UjWIeyw3QZp)MEnuAEOcjv3R7T23RBkwcZe1HXntQVTDtv3XBYwtcu1nFgUNFV14EDtXsyMOomUjfTUG28MyMu8KjMpusSTLgOTXHIv(22qSeMjQBMuFB7Mkj22sdChjgEh8537NDVUzs9TTBAIdwqHQg5j7MILWmrDyC(9wZ3RBMuFB7M4rBSxKeaegEOePUPyjmtuhgNFV19EDZK6BB3KdfJTf(VmbyftDtXsyMOomo)Exh3RBMuFB7M0KXckKKkUNSFee)MILWmrDyC(9UoFVUPyjmtuhg3KIwxqBEtyiaGHsITT0aTrYaQIuWHu4nelWbNifP8lPOzsbhs5jsXtMy(qjX2wAG2ghkw5BBdXsyMOifSyjfyiaGHjoybfQAKNSHQ)yKs93mP(22nvsSn4M5NFVX03RBkwcZe1HXnPO1f0M3K3qSahCIuKYVKIUKcMqkAMuWuskWqaadtCWcku1ipzdOQBMuFB7MCWPQ)eGBMF(9wtEVUzs9TTBconvObc4HyQ0UPyjmtuhgNF(53mHCWn6MZnwNC(53b]] )
+    spec:RegisterPack( "Demonology", 20201114, [[dm0LSaqisv5rKQQnHKAuajNsvrRciL0RuLAwivUfqQ2Ls(LQWWifDmKKLrk8mKQAAiHUMukBtvH8nvfOXbKIZHufTovfK5HeCpvv7JuLdcKs1cbIhQQamrKQWfvvq1jbsjwjPYmvvaTtvj)uvbLHIuL6Ps1uvf9vGuk7vL)kyWk1HfTyi9yOMmjxg1Mb8zKYObQtR41sPA2eUTq7MQFlz4sXYb9CetNY1Hy7irFxvPXRQqDEPK1JuLmFsP9t0hv3ZRRsJVxAOPgAsfvurXfv0NknOIEEDRvdF9Me3EsJVUNr(60dowEjkATUEt2suP6EEDsHaX81bBwd5d94bTXaJGUWv8bzIiI0MYXWeWEqMi(X1rrgHbAXp0RRsJVxAOPgAsfvurXfv0NknOc0CDsdJVxA8rF01bpkf7h61vmbFD9l30dowEjkATKBqBjuu42L60VCd2SgYh6XdAJbgbDHR4dYerePnLJHjG9Gmr8dPo9l3Vkk5ikdLBQOiDYTgAQHMsDsD6xU)aaNonM8HK60VCd6YDVHfc5(dSWTVK60VCd6Y9hMlAj3qgxXi7k5MEWXYrlHj3nqg0Xvenn5EaK7XK7Hi3JtS0n5gufuUbNqfojMCduq5gTieM85sQt)YnOl3076ldL7(0aUC5ofI6lRK7gid64kIMMCBLC3alSCpoXs3KB6bhlhTe2sQt)YnOl30BkP3YTLc2n5ECJHqKgBD9gybmc(66xUPhCS8su0Aj3G2sOOWTl1PF5gSznKp0Jh0gdmc6cxXhKjIisBkhdta7bzI4hsD6xUFvuYrugk3urr6KBn0udnL6K60VC)baoDAm5dj1PF5g0L7EdleY9hyHBFj1PF5g0L7pmx0sUHmUIr2vYn9GJLJwctUBGmOJRiAAY9ai3Jj3drUhNyPBYnOkOCdoHkCsm5gOGYnArim5ZLuN(LBqxUP31xgk39PbC5YDke1xwj3nqg0Xvenn52k5Ubwy5ECILUj30dowoAjSLuN(LBqxUP3usVLBlfSBY94gdHin2sQtQt)Y9h(hZyeJvYnkduqwUXvenn5gLPnozj3G2XyUXiYTxoOdoHraeHCNyBkNi3LlATK6sSnLtwnqgxr00E))aGfbvfhpTPC6gGFBISEAsT(AyBLIHswQlX2uoz1azCfrt79)dcsmwEOHnPUeBt5KvdKXvenT3)pAQVmmqMgWLt3a8JIaaS(ocvyInKfXsC76rf1OiaalfhlFWbCb5fXsC7u4xdPUeBt5KvdKXvenT3)puCSC0sy0na)OfHOvBITP8LIJLJwcBHtI9RPuxITPCYQbY4kIM27)heWPQ(gqlHj1PF5oX2uoz1azCfrt79)dkt4KOcMopJ8V1cMUfGCQArhLPaH)Xvju1xFrqIXYdkow(Gdwly62cYXCCcfAJAqPplfSBlvvXf7jQGvA1QyueaGLQQ4cP5tQbfkcaWsXXYhCGyq2PzGxinA1QplfSBlfhlFWbIbzNMbEXEIkyLwTwky3wkow(Gd4YjiXgBkFXEIky1Nudk9zPGDB5SbMHHMcAPyXEIkyLwTOiaalNnWmm0uqlflKgTAXvju1xF5SbMHHMcAPyb5yoorpQA7tQbL(SuWUTObNynqoaWcAijuTyprfSsRwCvcv91x0GtSgihaybnKeQwqoMJt0JQ2(KAqPplfSBlcsmwEGYrWad7Qf7jQGvA1IRsOQV(IGeJLhOCemWWUAb5yoorpQA7tQbL(SuWUTuCS8bhWLtqIn2u(I9evWkTArraawFhHkmXgYcPrRwsHiceWju93MwTOiaalNnWmm0uqlflKgQjfIiqaNqLEA(PuNuN(L7p8pMXigRKBMsg2sUTjYYTbML7eBfuUhICNuMJirf8sQlX2uo5N0Wcrqu42L6sSnLtE))aNcraGfGrCJHsDj2MYjV)FKFmhSIqK6sSnLtE))qXuwiWqmPnyPUeBt5K3)pWPqesSnLhedXOZZi)xaabAyLuxITPCY7)h4uicj2MYdIHy05zK)zcHDmtK6sSnLtE))aI4HeBt5bXqm68mY)wly6wObYn0rm4GTFQOBa(Xvju1xFrqIXYdkow(Gdwly62cYXCCcfAJA9zTGPBbiNQwsDj2MYjV)Far8qITP8GyigDEg5FcsmwEWAbt3OJyWbB)ur3a8BTGPBbiNQwsDj2MYjV)FqWfcCCAbBmWSuxITPCY7)htSHD140c40sIbRgWSuxITPCY7)hKcreGLr3a8NyBOKdSZXHj6rLuxITPCY7)hkgpX0gNwaTegDdWpOSesJTfyofg4qd2OqBAQvlWqdSfGCmhNOxBA(PuxITPCY7)heKyS8aLJGbg2v0na)4QeQ6RViiXy5bfhlFWbRfmDBb5yoorpkQPwTadnWwaYXCCcfWvju1xFrqIXYdkow(Gdwly62cYXCCYBnAtQlX2uo59)dCkebfKtfXsr7mKi1LyBkN8()HQQiDdWpKbGmbCIkyPUeBt5K3)puCS8bhigKDAgyPUeBt5K3)pqhbtWfcKghqRikdjsDj2MYjV)FaoDvOac0qeQ0PBa(jfIiqaNq1FBA1IIaaSC2aZWqtbTuSqAK6sSnLtE))aC6QqbeOHiuPt3a8tkerGaoHk9(Pp14QeQ6RViiXy5bfhlFWbRfmDBb5yoorpn0KAqHRsOQV(IGeJLhOCemWWUAb5yoorV20QvFwky3weKyS8aLJGbg2vl2tubR(KACvcv91x4uickiNkILI2zizb5yoorpnK6sSnLtE))qXXYrlHr3a8JIaaSuCS8bhWfKxqoXg1KcreiGtOIcuuQlX2uo59)dAWjwdKdaSGgscv0na)4QeQ6RViiXy5bfhlFWbRfmDBb5yoo5nUkHQ(6lcsmwEqXXYhCWAbt3wkeyAt56bm0aBbihZXjA1cm0aBbihZXjuaxLqvF9fbjglpO4y5doyTGPBlihZXjVPQnPUeBt5K3)pqiCymosK6sSnLtE))OP(YWazAaxoDdWpkcaW67iuHj2qwelXTRhvuJIaaSuCS8bhWfKxelXTtb6l1LyBkN8()XeBefzkNUb4hucMswqH20K6eBdLCGDoomrpn0QnPxmCmEXFCJOidLCOPm2Tjfly6TRhvuJIaaS4pUruKHso0ug72KIfKJ54ekq)pPgfbay9DeQWeBilIL4217N(sDj2MYjV)FqkerGyWPDwQlX2uo59)dc4uvFdOLWK6K6sSnLtwmHWoMj)FlOqrjpEaYKYthZ0na)4QeQ6RViiXy5bfhlFWbRfmDBb5yoorpk2MuxITPCYIje2Xm59)JihlyRqbeei4rfuqoJePUeBt5KftiSJzY7)hOIQuHciyG5a7CSLuxITPCYIje2Xm59)dAijunPhkGqsVyyzGL6sSnLtwmHWoMjV)FaNMgbhgpqAsml1LyBkNSycHDmtE))aOWiewfs6fdhJdOCgL6sSnLtwmHWoMjV)F0GahGwJtlGksIj1LyBkNSycHDmtE))aYzZ40caImYe6gGFlH0yBbMtHbo0Gn9anAQvRLqASTaZPWahAWgf0qtTAbgAGTaKJ54ekqFn1Q1sin2w2e5GvHgSf0qt9OOMsDj2MYjlMqyhZK3)pWLJz3GPXQaGiJSuxITPCYIje2Xm59)ddmhqC0cXvbGcIz6gGFueaGfKXTlycjauqmVGCmhNi1j1LyBkNSkaGanS6hLHeg2(40OBa(ByBP4y5doyTGPBReBdLSuxITPCYQaac0WQ3)pAkBkNUb4hfbayHYqcdBFCAlKgTAByBP4y5doyTGPBReBdLm16dMyEzWsiK6sSnLtwfaqGgw9()bQOkvaab2IUb4VHTLIJLp4G1cMUTsSnuYsDj2MYjRcaiqdRE))ayGmQOkfDdWFdBlfhlFWbRfmDBLyBOKL6K6sSnLtweKyS8G1cMU9doDvOac0qeQ0PBa(jfIiqaNq1FBsDj2MYjlcsmwEWAbt3E))qXXYrlHr3a8JIaaSuCS8bhWfKxinudklfSBlfhlFWbC5eKyJnLVyprfSsRwueaGLZgyggAkOLILQ(6FsNyCoGv)AOPuxITPCYIGeJLhSwW0T3)piGtv9nGwcJUb4hfbay9DeQWeBilIL42FpoUIJtlmXgcfOi1GYsb72sXXYhCaxobj2yt5l2tubR0Qffbay5SbMHHMcAPyPQV(N0jgNdy1VgAk1LyBkNSiiXy5bRfmD79)dCkebfKtfXsr7mKi1LyBkNSiiXy5bRfmD79)dWPRcfqGgIqLUuxITPCYIGeJLhSwW0T3)puCSC0sy0na)OiaalfhlFWbCb5fsd1OiaalNnWmm0uqlflKgQbfOqraawuocgyyxTGCmhNOxBA1QplfSBlcsmwEGYrWad7Qf7jQGvFsnOqraaw0GtSgihaybnKeQwqoMJt0RnTArraaw0GtSgihaybnKeQwQ6R)5NsDj2MYjlcsmwEWAbt3E))Gaov13aAjm6gGFueaGLZgyggAkOLIfsd1GcuOiaalkhbdmSRwqoMJt0RnTA1NLc2Tfbjglpq5iyGHD1I9evWQpPguOiaalAWjwdKdaSGgscvlihZXj61MwTOiaalAWjwdKdaSGgscvlv91)8tPo9l3j2MYjlcsmwEWAbt3E))GYeojQGPZZi)BTGPBbiNQw0rzkq4F9HRsOQV(IGeJLhuCS8bhSwW0TfKtvlPUeBt5KfbjglpyTGPBV)FqqIXYdkow(Gdwly6gDdWpPqebc4eQi)Ak1LyBkNSiiXy5bRfmD79)dc4uvFdOLWK6K6sSnLtwwly6wObYn)QQI0jgNdy1p91uQlX2uozzTGPBHgi38()HIJLp4aXGStZat3a8RplfSBlfhlFWbC5eKyJnLVyprfSsQlX2uozzTGPBHgi38()HZgyggAkOLcPUeBt5KL1cMUfAGCZ7)h0GtSgihaybnKeQK6sSnLtwwly6wObYnV)FqqIXYduocgyyxj1LyBkNSSwW0TqdKBE))aNcrqb5urSu0odjsDj2MYjlRfmDl0a5M3)puCSC0sy0na)OiaalfhlFWbCb5fsd1KcreiGtOIcuKAqzPGDBP4y5doGlNGeBSP8f7jQGvA1IIaaSC2aZWqtbTuSu1x)tPUeBt5KL1cMUfAGCZ7)heWPQ(gqlHr3a8tkerGaoHkk0gOtrqROiaalNnWmm0uqlflKgPo9l3j2MYjlRfmDl0a5M3)pOmHtIky68mY)wly6waYPQfDuMce(NkPUeBt5KL1cMUfAGCZ7)hGtxfkGaneHk9Rtjdjt53ln0udnPIkn146FtOponY1bTeBkOXk5(JK7eBt5YTyigzj1D9eXaxWR3N4hW1fdXi3ZRZec7yMCpVxuDpVo7jQGvhixhdhJHtEDCvcv91xeKyS8GIJLp4G1cMUTGCmhNi36j3uSTRNyBk)6FlOqrjpEaYKYthZNDV04EE9eBt5xpYXc2kuabbcEubfKZi56SNOcwDGC29I(3ZRNyBk)6OIQuHciyG5a7CS11zprfS6a5S7ffVNxpX2u(1PHKq1KEOacj9IHLb(6SNOcwDGC29QT751tSnLFD400i4W4bstI5RZEIky1bYz3Rp6EE9eBt5xhOWiewfs6fdhJdOCgVo7jQGvhiNDV(G3ZRNyBk)6niWbO140cOIKyxN9evWQdKZUxGM751zprfS6a56y4ymCYRBjKgBlWCkmWHgSj36j3GgnLBTALBlH0yBbMtHbo0Gn5McYTgAk3A1k3adnWwaYXCCICtb5M(Ak3A1k3wcPX2YMihSk0GTGgAk36j3uuZRNyBk)6qoBgNwaqKrMC29IEEpVEITP8RJlhZUbtJvbarg5RZEIky1bYz3lQ08EED2tubRoqUogogdN86OiaaliJBxWesaOGyEb5yoo56j2MYVUbMdioAH4QaqbX8zNDDfdKic7EEVO6EE9eBt5xN0Wcrqu42Vo7jQGvhiNDV04EE9eBt5xhNcraGfGrCJHxN9evWQdKZUx0)EE9eBt5xp)yoyfHCD2tubRoqo7ErX751tSnLFDftzHadXK2GVo7jQGvhiNDVA7EED2tubRoqUEITP8RJtHiKyBkpigIDDXqSGNr(6faqGgwD296JUNxN9evWQdKRNyBk)64uicj2MYdIHyxxmel4zKVotiSJzYz3Rp4986SNOcwDGCDmCmgo51Xvju1xFrqIXYdkow(Gdwly62cYXCCICtb5Un5MA5wFYT1cMUfGCQADDIbhSDVO66j2MYVoeXdj2MYdIHyxxmel4zKVU1cMUfAGCZz3lqZ986SNOcwDGCDmCmgo51TwW0TaKtvRRtm4GT7fvxpX2u(1HiEiX2uEqme76IHybpJ81jiXy5bRfmD7S7f98EE9eBt5xNGle440c2yG5RZEIky1bYz3lQ08EE9eBt5xFInSRgNwaNwsmy1aMVo7jQGvhiNDVOIQ751zprfS6a56y4ymCYRNyBOKdSZXHjYTEYnvxpX2u(1jfIial7S7fvACpVo7jQGvhixhdhJHtEDqj3wcPX2cmNcdCObBYnfK720uU1QvUbgAGTaKJ54e5wp5UnnL7pVEITP8RRy8etBCAb0syNDVOI(3ZRZEIky1bY1XWXy4KxhxLqvF9fbjglpO4y5doyTGPBlihZXjYTEYnf1uU1QvUbgAGTaKJ54e5McYnUkHQ(6lcsmwEqXXYhCWAbt3wqoMJtK73YTgTD9eBt5xNGeJLhOCemWWU6S7fvu8EE9eBt5xhNcrqb5urSu0odjxN9evWQdKZUxu12986SNOcwDGCDmCmgo51HmaKjGtubF9eBt5xxvv8S7fvF0986j2MYVUIJLp4aXGStZaFD2tubRoqo7Er1h8EE9eBt5xhDembxiqACaTIOmKCD2tubRoqo7ErfO5EED2tubRoqUogogdN86KcreiGtOsU)L72KBTALBueaGLZgyggAkOLIfsZ1tSnLFDWPRcfqGgIqL(z3lQON3ZRZEIky1bY1XWXy4KxNuiIabCcvYTE)Yn9LBQLBCvcv91xeKyS8GIJLp4G1cMUTGCmhNi36j3AOPCtTCdk5gxLqvF9fbjglpq5iyGHD1cYXCCICRNC3MCRvRCRp52sb72IGeJLhOCemWWUAXEIkyLC)PCtTCJRsOQV(cNcrqb5urSu0odjlihZXjYTEYTgxpX2u(1bNUkuabAicv6NDV0qZ751zprfS6a56y4ymCYRJIaaSuCS8bhWfKxqoXMCtTCtkerGaoHk5McYnfVEITP8RR4y5OLWo7EPbv3ZRZEIky1bY1XWXy4KxhxLqvF9fbjglpO4y5doyTGPBlihZXjY9B5gxLqvF9fbjglpO4y5doyTGPBlfcmTPC5wp5gyOb2cqoMJtKBTALBGHgyla5yoorUPGCJRsOQV(IGeJLhuCS8bhSwW0TfKJ54e5(TCtvBxpX2u(1PbNynqoaWcAijuD29sdnUNxpX2u(1riCymosUo7jQGvhiNDV0G(3ZRZEIky1bY1XWXy4Kxhfbay9DeQWeBilIL42LB9KBQKBQLBueaGLIJLp4aUG8IyjUD5McYn9VEITP8R3uFzyGmnGl)S7Lgu8EED2tubRoqUogogdN86GsUfmLSqUPGC3MMYn1YDITHsoWohhMi36j3Ai3A1k3j9IHJXl(JBefzOKdnLXUnPybtVD5wp5Mk5MA5gfbayXFCJOidLCOPm2TjflihZXjYnfKB6l3Fk3ul3OiaaRVJqfMydzrSe3UCR3VCt)RNyBk)6tSruKP8ZUxA02986j2MYVoPqebIbN25RZEIky1bYz3ln(O751tSnLFDc4uvFdOLWUo7jQGvhiND21BGmUIOPDpVxuDpVo7jQGvhixhdhJHtEDBISCRNCRPCtTCRp5UHTvkgk5RNyBk)6aSiOQ44PnLF29sJ751tSnLFDcsmwEaGf0qsO66SNOcwDGC29I(3ZRZEIky1bY1XWXy4Kxhfbay9DeQWeBilIL42LB9KBQKBQLBueaGLIJLp4aUG8IyjUD5Mc)YTgxpX2u(1BQVmmqMgWLF29II3ZRZEIky1bY1XWXy4KxhTie5wRw5oX2u(sXXYrlHTWjXK7F5wZRNyBk)6kowoAjSZUxTDpVEITP8RtaNQ6BaTe21zprfS6a5SZUobjglpyTGPB3Z7fv3ZRZEIky1bY1XWXy4KxNuiIabCcvY9VC321tSnLFDWPRcfqGgIqL(z3lnUNxN9evWQdKRJHJXWjVokcaWsXXYhCaxqEH0i3ul3GsUTuWUTuCS8bhWLtqIn2u(I9evWk5wRw5gfbay5SbMHHMcAPyPQVUC)51tSnLFDfhlhTe21fJZbS66AO5z3l6FpVo7jQGvhixhdhJHtEDueaG13rOctSHSiwIBxUFl3JJR440ctSHi3uqUPOCtTCdk52sb72sXXYhCaxobj2yt5l2tubRKBTALBueaGLZgyggAkOLILQ(6Y9NxpX2u(1jGtv9nGwc76IX5awDDn08S7ffVNxpX2u(1XPqeuqovelfTZqY1zprfS6a5S7vB3ZRNyBk)6GtxfkGaneHk9RZEIky1bYz3Rp6EED2tubRoqUogogdN86OiaalfhlFWbCb5fsJCtTCJIaaSC2aZWqtbTuSqAKBQLBqj3GsUrraawuocgyyxTGCmhNi36j3Tj3A1k36tUTuWUTiiXy5bkhbdmSRwSNOcwj3Fk3ul3GsUrraaw0GtSgihaybnKeQwqoMJtKB9K72KBTALBueaGfn4eRbYbawqdjHQLQ(6Y9NY9NxpX2u(1vCSC0syNDV(G3ZRZEIky1bY1XWXy4Kxhfbay5SbMHHMcAPyH0i3ul3GsUbLCJIaaSOCemWWUAb5yoorU1tUBtU1QvU1NCBPGDBrqIXYduocgyyxTyprfSsU)uUPwUbLCJIaaSObNynqoaWcAijuTGCmhNi36j3Tj3A1k3OiaalAWjwdKdaSGgscvlv91L7pL7pVEITP8RtaNQ6BaTe2z3lqZ986SNOcwDGCDmCmgo51jfIiqaNqfrU)LBnVEITP8RtqIXYdkow(Gdwly62z3l65986j2MYVobCQQVb0syxN9evWQdKZo76faqGgwDpVxuDpVo7jQGvhixhdhJHtE9g2wkow(Gdwly62kX2qjF9eBt5xhLHeg2(40o7EPX986SNOcwDGCDmCmgo51rraawOmKWW2hN2cPrU1QvUByBP4y5doyTGPBReBdLSCtTCRp5gMyEzWsiUEITP8R3u2u(z3l6FpVo7jQGvhixhdhJHtE9g2wkow(Gdwly62kX2qjF9eBt5xhvuLkaGaBD29II3ZRZEIky1bY1XWXy4KxVHTLIJLp4G1cMUTsSnuYxpX2u(1bgiJkQsD2zx3Abt3cnqU5EEVO6EED2tubRoqUEITP8RRQkEDX4CaRUo918S7Lg3ZRZEIky1bY1XWXy4KxxFYTLc2TLIJLp4aUCcsSXMYxSNOcwD9eBt5xxXXYhCGyq2PzGp7Er)751tSnLFDNnWmm0uqlfxN9evWQdKZUxu8EE9eBt5xNgCI1a5aalOHKq11zprfS6a5S7vB3ZRNyBk)6eKyS8aLJGbg2vxN9evWQdKZUxF0986j2MYVoofIGcYPIyPODgsUo7jQGvhiNDV(G3ZRZEIky1bY1XWXy4KxhfbayP4y5doGliVqAKBQLBsHiceWjuj3uqUPOCtTCdk52sb72sXXYhCaxobj2yt5l2tubRKBTALBueaGLZgyggAkOLILQ(6Y9NxpX2u(1vCSC0syNDVan3ZRZEIky1bY1XWXy4KxNuiIabCcvYnfK72KBqxUPOCdAvUrraawoBGzyOPGwkwinxpX2u(1jGtv9nGwc7S7f98EE9eBt5xhC6QqbeOHiuPFD2tubRoqo7SZo7S7a]] )
 
 
 end
