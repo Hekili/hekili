@@ -3492,6 +3492,14 @@ do
         __index = function( t, k )
             if k == 'enabled' or k == 'minor' or k == 'equipped' then
                 return t.rank and t.rank > 0
+            elseif k == 'time_value' then
+                local mod = t.mod
+
+                if mod >= 1000 or mod <= -1000 then
+                    return mod / 1000
+                end
+
+                return mod                
             elseif k == 'disabled' then
                 return not t.rank or t.rank == 0
             end
