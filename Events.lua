@@ -52,7 +52,7 @@ local function GenericOnEvent( self, event, ... )
 
     if not eventHandlers then return end
 
-    for i, handler in pairs( eventHandlers ) do
+    for i, handler in ipairs( eventHandlers ) do
         handler( event, ... )
         handlerCount[ event .. "_" .. i ] = ( handlerCount[ event .. "_" .. i ] or 0 ) + 1
     end
@@ -66,7 +66,7 @@ local function UnitSpecificOnEvent( self, event, unit, ... )
 
         if not eventHandlers then return end
 
-        for i, handler in pairs( eventHandlers ) do
+        for i, handler in ipairs( eventHandlers ) do
             handler( event, unit, ... )
             handlerCount[ event .. "_" .. unit .. "_" .. i ] = ( handlerCount[ event .. "_" .. unit .. "_" .. i ] or 0 ) + 1
         end
@@ -82,6 +82,13 @@ function ns.StartEventHandler()
 
     events:SetScript( "OnUpdate", function( self, elapsed )
         Hekili.freshFrame = true
+
+        if handlers.FRAME_UPDATE then
+            for i, handler in pairs( handlers.FRAME_UPDATE ) do
+                handler( event, elapsed )
+                handlerCount[ "FRAME_UPDATE_" .. i ] = ( handlerCount[ "FRAME_UPDATE_" .. i ] or 0 ) + 1
+            end
+        end
     end )
 
     Hekili:RunItemCallbacks()
@@ -105,7 +112,7 @@ ns.RegisterEvent = function( event, handler )
     handlers[ event ] = handlers[ event ] or {}
     insert( handlers[ event ], handler )
 
-    events:RegisterEvent( event )
+    if event ~= "FRAME_UPDATE" then events:RegisterEvent( event ) end
 
     Hekili:ProfileCPU( event .. "_" .. #handlers[event], handler )
 
