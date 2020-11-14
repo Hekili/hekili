@@ -1,5 +1,5 @@
 # Affliction Warlock
-# November 8, 2020
+# November 12, 2020
 
 # Changes:
 # - Added Spell Lock.
@@ -39,7 +39,7 @@ actions+=/corruption,cycle_targets=1,if=remains<3&(active_enemies<3|talent.vile_
 actions+=/call_action_list,name=darkglare_prep,if=cooldown.summon_darkglare.remains<2&variable.dots_ready
 actions+=/dark_soul,if=cooldown.summon_darkglare.remains>time_to_die
 actions+=/call_action_list,name=cooldowns
-actions+=/use_items
+actions+=/call_action_list,name=item
 actions+=/call_action_list,name=se,if=level>57&(debuff.shadow_embrace.stack<(3-action.shadow_bolt.in_flight)|debuff.shadow_embrace.remains<3)
 actions+=/malefic_rapture,if=dot.vile_taint.ticking|cooldown.vile_taint.remains>10|soul_shard=5
 actions+=/malefic_rapture,if=talent.phantom_singularity.enabled&(dot.phantom_singularity.ticking|cooldown.phantom_singularity.remains>12|soul_shard>3)
@@ -60,7 +60,8 @@ actions.aoe+=/unstable_affliction,cycle_targets=1,if=!ticking&pvptalent.rampant_
 actions.aoe+=/vile_taint,if=soul_shard>1
 actions.aoe+=/call_action_list,name=darkglare_prep,if=cooldown.summon_darkglare.ready&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled)
 actions.aoe+=/dark_soul,if=cooldown.summon_darkglare.remains>time_to_die
-actions.aoe+=/use_items
+actions.aoe+=/call_action_list,name=cooldowns
+actions.aoe+=/call_action_list,name=item
 actions.aoe+=/malefic_rapture,if=dot.vile_taint.ticking
 actions.aoe+=/malefic_rapture,if=!talent.vile_taint.enabled
 actions.aoe+=/siphon_life,cycle_targets=1,if=active_dot.siphon_life<=3&!dot.siphon_life.ticking
@@ -90,6 +91,8 @@ actions.darkglare_prep+=/fireblood
 actions.darkglare_prep+=/blood_fury
 actions.darkglare_prep+=/berserking
 actions.darkglare_prep+=/summon_darkglare,if=active_dot.vile_taint>0|active_dot.phantom_singularity>0|talent.sow_the_seeds.enabled|(!talent.vile_taint.enabled&!talent.phantom_singularity.enabled)
+
+actions.item=use_items
 
 actions.se=haunt
 actions.se+=/drain_soul,interrupt_if=debuff.shadow_embrace.stack>=3
