@@ -5449,6 +5449,17 @@ do
 end
 
 
+-- SHADOWLANDS
+-- Shared Conduits, etc.
+all:RegisterAuras( {
+    lead_by_example = {
+        id = 342181,
+        duration = 10,
+        max_stack = 1,
+    }
+} )
+
+
 -- Register Azerite Powers before going with generics...
 all:RegisterAuras( {
     anduins_dedication = {
