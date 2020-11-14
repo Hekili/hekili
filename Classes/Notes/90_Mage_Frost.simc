@@ -1,5 +1,5 @@
 # Mage Frost
-# October 16, 2020
+# November 11, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/arcane_intellect
@@ -61,9 +61,9 @@ actions.movement+=/arcane_explosion,if=mana.pct>30&active_enemies>=2
 actions.movement+=/fire_blast
 actions.movement+=/ice_lance
 
-actions.st=flurry,if=(remaining_winters_chill=0|debuff.winters_chill.down)&(prev_gcd.1.ebonbolt|buff.brain_freeze.react&(prev_gcd.1.radiant_spark|prev_gcd.1.glacial_spike|prev_gcd.1.frostbolt|(debuff.mirrors_of_torment.up|buff.expanded_potential.react|buff.freezing_winds.up)&buff.fingers_of_frost.react=0))
+actions.st=flurry,if=(remaining_winters_chill=0|debuff.winters_chill.down)&(prev_gcd.1.ebonbolt|buff.brain_freeze.react&(prev_gcd.1.glacial_spike|prev_gcd.1.frostbolt|prev_gcd.1.radiant_spark|buff.fingers_of_frost.react=0&(debuff.mirrors_of_torment.up|buff.freezing_winds.up|buff.expanded_potential.react)))
 actions.st+=/frozen_orb
-actions.st+=/blizzard,if=buff.freezing_rain.up|active_enemies>=3|active_enemies>=2&!runeforge.cold_front.equipped
+actions.st+=/blizzard,if=buff.freezing_rain.up|active_enemies>=2
 actions.st+=/ray_of_frost,if=remaining_winters_chill=1&debuff.winters_chill.remains
 actions.st+=/glacial_spike,if=remaining_winters_chill&debuff.winters_chill.remains>cast_time+travel_time
 actions.st+=/ice_lance,if=remaining_winters_chill&remaining_winters_chill>buff.fingers_of_frost.react&debuff.winters_chill.remains>travel_time
@@ -72,10 +72,9 @@ actions.st+=/ice_nova
 actions.st+=/radiant_spark,if=buff.freezing_winds.up&active_enemies=1
 actions.st+=/ice_lance,if=buff.fingers_of_frost.react|debuff.frozen.remains>travel_time
 actions.st+=/ebonbolt
-actions.st+=/radiant_spark,if=(!runeforge.freezing_winds.equipped|active_enemies>=2)&(buff.brain_freeze.react|soulbind.combat_meditation.enabled)
-actions.st+=/shifting_power,if=active_enemies>=3
-actions.st+=/shifting_power,line_cd=60,if=(soulbind.field_of_blossoms.enabled|soulbind.grove_invigoration.enabled)&(!talent.rune_of_power.enabled|buff.rune_of_power.down&cooldown.rune_of_power.remains>16)
+actions.st+=/radiant_spark,if=(!runeforge.freezing_winds.equipped|active_enemies>=2)&buff.brain_freeze.react
 actions.st+=/mirrors_of_torment
+actions.st+=/shifting_power,if=buff.rune_of_power.down&(!cooldown.rune_of_power.ready|soulbind.grove_invigoration.enabled|soulbind.field_of_blossoms.enabled|runeforge.freezing_winds.equipped|active_enemies>=2)
 actions.st+=/frost_nova,if=runeforge.grisly_icicle.equipped&target.level<=level&debuff.frozen.down
 actions.st+=/arcane_explosion,if=runeforge.disciplinary_command.equipped&cooldown.buff_disciplinary_command.ready&buff.disciplinary_command_arcane.down
 actions.st+=/fire_blast,if=runeforge.disciplinary_command.equipped&cooldown.buff_disciplinary_command.ready&buff.disciplinary_command_fire.down
