@@ -368,6 +368,10 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
         tyrant_ready = nil
 
+        if cooldown.summon_demonic_tyrant.remains > 5 then
+            tyrant_ready = false
+        end
+
         if Hekili.ActiveDebug then
             Hekili:Debug(   "Is Tyrant Ready?: %s\n" ..
                             " - Dreadstalkers: %d, %.2f\n" ..
@@ -1657,6 +1661,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                 summonPet( "demonic_tyrant", 15 )
                 summon_demon( "demonic_tyrant", 15 )
                 applyBuff( "demonic_power", 15 )
+
+                tyrant_ready = false
 
                 --[[ if talent.demonic_consumption.enabled then
                     consume_demons( "wild_imps", "all" )
