@@ -2240,6 +2240,118 @@ do
 end
 
 
+-- 9.0 Trinkets
+do
+    all:RegisterAbilities( {
+        empyreal_ordnance = {
+            cast = 0.5,
+            cooldown = 180,
+            gcd = "off",
+
+            item = 180117,
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyDebuff( "target", "empyreal_ordnance" )
+                active_dot.empyreal_ordnance = min( 5, active_enemies )
+            end,
+
+            auras = {
+                empyreal_ordnance = {
+                    id = 345540,
+                    duration = 10,
+                    max_stack = 1
+                },
+
+                empyreal_surge = {
+                    id = 345541,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
+        },
+
+        soul_igniter = {
+            cast = 0,
+            cooldown = function () return debuff.soul_ignition.down and 0.5 or 60 end,
+            gcd = "off",
+
+            item = 184019,
+            toggle = "cooldowns",
+
+            handler = function ()
+                if debuff.soul_ignition.down then
+                    applyDebuff( "player", "soul_ignition" )
+                else
+                    -- Blazing Surge.
+                    removeDebuff( "soul_ignition" )
+                end
+            end,
+
+            auras = {
+                soul_ignition = {
+                    id = 345211,
+                    duration = 15,
+                    max_stack = 1
+                }
+            }
+        },
+
+        glyph_of_assimilation = {
+            cast = 0,
+            cooldown = 90,
+            gcd = "off",
+
+            item = 184021,
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyDebuff( "target", "glyph_of_assimilation" )
+            end,
+
+            auras = {
+                glyph_of_assimilation = {
+                    id = 345319,
+                    duration = 10,
+                    max_stack = 1
+                },
+
+                glyph_of_assimilation_buff = {
+                    id = 345320,
+                    duration = 20,
+                    max_stack = 1
+                }
+            }
+        },
+
+        macabre_sheet_music = {
+            cast = 0,
+            cooldown = 90,
+            gcd = "off",
+
+            item = 184024,
+            toggle = "cooldowns",
+
+            auras = {
+                blood_waltz = {
+                    id = 345439,
+                    duration = 20,
+                    max_stack = 1
+                }
+            }
+        },
+
+        dreadfire_vessel = {
+            cast = 0,
+            cooldown = 90,
+            gcd = "off",
+
+            item = 184030,
+            toggle = "cooldowns",
+        }
+    } )
+end
+
 -- 8.3 - WORLD
 -- Corruption Curse that impacts resource costs.
 
