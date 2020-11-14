@@ -1685,7 +1685,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         -- Mage - Night Fae - 314791 - shifting_power       (Shifting Power)
         shifting_power = {
             id = 314791,
-            cast = function () return 4 * haste * ( 1 - ( conduit.discipline_of_the_grove.mod * 0.01 ) ) end,
+            cast = function () return 4 * haste end,
             channeled = true,
             cooldown = 45,
             gcd = "spell",
@@ -1698,8 +1698,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             toggle = "essences",
 
+            -- -action.shifting_power.execute_time%action.shifting_power.new_tick_time*(dbc.effect.815503.base_value%1000+conduit.discipline_of_the_grove.time_value)
             cdr = function ()
-                return action.shifting_power.tick_time * ( 1 - ( conduit.discipline_of_the_grove.mod ) )
+                return - action.shifting_power.execute_time / action.shifting_power.tick_time * ( -3 + conduit.discipline_of_the_grove.time_value )
             end,
 
             start = function ()
@@ -1717,8 +1718,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             auras = {
                 shifting_power = {
                     id = 314791,
-                    duration = function () return 4 * haste * ( 1 - ( conduit.discipline_of_the_grove.mod * 0.01 ) ) end,
-                    tick_time = function () return 1.5 * haste end,
+                    duration = function () return 4 * haste end,
+                    tick_time = function () return haste end,
                     max_stack = 1,
                 },
             }
