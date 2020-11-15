@@ -115,6 +115,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     end )
 
     spec:RegisterStateFunction( "update_tyrant_readiness", function( hog_shards )
+        if not IsKnown( 265817 ) then return end
+
         hog_shards = hog_shards or 0
 
         -- The last part of a Tyrant Prep phase should be a HoG cast.
@@ -242,23 +244,25 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                     if shards_for_guldan >= 3 then table.insert( guldan, now + 0.13 ) end
 
                     -- Per SimC APL, we go into Tyrant with 5 shards -OR- with Nether Portal up.
-                    local start, duration = GetSpellCooldown( 265817 )
+                    if IsKnown( 265817 ) then
+                        local start, duration = GetSpellCooldown( 265817 )
 
-                    if not tyrant_ready_actual and start and duration and start + duration - now < 5 then
-                        state.reset()
+                        if not tyrant_ready_actual and start and duration and start + duration - now < 5 then
+                            state.reset()
 
-                        local np = state.talent.nether_portal.enabled and FindUnitBuffByID( "player", 267218 )
+                            local np = state.talent.nether_portal.enabled and FindUnitBuffByID( "player", 267218 )
 
-                        if ( not state.talent.doom.enabled or state.action.doom.lastCast - now < 30 ) and 
-                           ( state.cooldown.demonic_strength.remains > 0 or not state.talent.demonic_strength.enabled or state.talent.demonic_consumption.enabled ) and 
-                           ( state.cooldown.nether_portal.remains > 0 or not state.talent.nether_portal.enabled ) and
-                           ( state.cooldown.grimoire_felguard.remains > 0 or not state.talent.grimoire_felguard.enabled ) and 
-                           ( state.cooldown.summon_vilefiend.remains > 0 or not state.talent.summon_vilefiend.enabled ) and
-                           ( state.cooldown.call_dreadstalkers.remains > 0 ) and
-                           ( state.buff.demonic_core.down or shards_for_guldan > 3 or ( not state.talent.demonic_consumption.enabled or np ) ) and
-                           ( shards_for_guldan == 5 or np ) then
+                            if ( not state.talent.doom.enabled or state.action.doom.lastCast - now < 30 ) and 
+                            ( state.cooldown.demonic_strength.remains > 0 or not state.talent.demonic_strength.enabled or state.talent.demonic_consumption.enabled ) and 
+                            ( state.cooldown.nether_portal.remains > 0 or not state.talent.nether_portal.enabled ) and
+                            ( state.cooldown.grimoire_felguard.remains > 0 or not state.talent.grimoire_felguard.enabled ) and 
+                            ( state.cooldown.summon_vilefiend.remains > 0 or not state.talent.summon_vilefiend.enabled ) and
+                            ( state.cooldown.call_dreadstalkers.remains > 0 ) and
+                            ( state.buff.demonic_core.down or shards_for_guldan > 3 or ( not state.talent.demonic_consumption.enabled or np ) ) and
+                            ( shards_for_guldan == 5 or np ) then
 
-                            tyrant_ready_actual = true
+                                tyrant_ready_actual = true
+                            end
                         end
                     end
 
@@ -1692,7 +1696,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 1,
+            spend = PTR and function () return buff.fel_domination.up and 0 or 1 end or 1,
             spendType = "soul_shards",
 
             startsCombat = false,

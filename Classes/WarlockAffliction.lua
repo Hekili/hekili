@@ -1492,7 +1492,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 1,
+            spend = PTR and function () return buff.fel_domination.up and 0 or 1 end or 1,
             spendType = "soul_shards",
 
             usable = function () return not pet.alive end,
@@ -1506,7 +1506,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 1,
+            spend = PTR and function () return buff.fel_domination.up and 0 or 1 end or 1,
             spendType = "soul_shards",
 
             usable = function () return not pet.alive end,
@@ -1520,7 +1520,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 1,
+            spend = PTR and function () return buff.fel_domination.up and 0 or 1 end or 1,
             spendType = "soul_shards",
 
             essential = true,
@@ -1548,7 +1548,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cooldown = 0,
             gcd = "spell",
 
-            spend = 1,
+            spend = PTR and function () return buff.fel_domination.up and 0 or 1 end or 1,
             spendType = "soul_shards",
 
             usable = function () return not pet.alive end,
