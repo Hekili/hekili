@@ -1849,6 +1849,59 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 }
             }
         },
+
+
+        -- PvP Talents
+        shadowy_duel = {
+            id = 207736,
+            cast = 0,
+            cooldown = 120,
+            gcd = "off",
+            
+            pvptalent = "shadowy_duel",
+
+            startsCombat = false,
+            texture = 1020341,
+
+            usable = function () return target.is_player, "requires a player target" end,
+            
+            handler = function ()
+                applyBuff( "shadowy_duel" )
+            end,
+
+            auras = {
+                shadowy_duel = {
+                    id = 210558,
+                    duration = 6,
+                    max_stack = 1,
+                },        
+            }
+        },
+
+        smoke_bomb = {
+            id = 212182,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+            
+            pvptalent = "smoke_bomb",
+
+            startsCombat = false,
+            texture = 458733,
+            
+            handler = function ()
+                applyDebuff( "player", "smoke_bomb" )
+                if target.within8 then applyDebuff( "target", "smoke_bomb" ) end
+            end,
+
+            auras = {
+                smoke_bomb = {
+                    id = 212183,
+                    duration = 5,
+                    max_stack = 1,
+                },        
+            }
+        },
     } )
 
 
