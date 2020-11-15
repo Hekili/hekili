@@ -700,8 +700,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         },
         drain_life = {
             id = 234153,
-            duration = function () return 5 * haste end,
-            tick_time = function () return haste end,
+            duration = function () return 5 * haste * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
+            tick_time = function () return haste * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
             max_stack = 1,
         },
         eye_of_kilrogg = {
@@ -1233,7 +1233,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
         demonic_gateway = {
             id = 111771,
-            cast = function () return legendary.pillars_of_the_dark_portal.eanbled and 0 or 2 end,
+            cast = function () return legendary.pillars_of_the_dark_portal.enabled and 0 or 2 end,
             cooldown = 10,
             gcd = "spell",
 
@@ -1288,7 +1288,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
         drain_life = {
             id = 234153,
-            cast = function () return 5 * haste end,
+            cast = function () return 5 * haste * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
             cooldown = 0,
             channeled = true,
             gcd = "spell",

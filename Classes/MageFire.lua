@@ -498,6 +498,10 @@ if UnitClassBase( "player" ) == "MAGE" then
 
             handler = function ()
                 applyBuff( "blazing_barrier" )
+                if legendary.triune_ward.enabled then
+                    applyBuff( "ice_barrier" )
+                    applyBuff( "prismatic_barrier" )
+                end
             end,
         },
 
@@ -775,6 +779,7 @@ if UnitClassBase( "player" ) == "MAGE" then
 
             handler = function ()
                 applyDebuff( "target", "frost_nova" )
+                if legendary.grisly_icicle.enabled then applyDebuff( "target", "grisly_icicle" ) end
             end,
         },
 

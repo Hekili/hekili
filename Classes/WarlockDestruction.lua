@@ -243,8 +243,8 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         drain_life = {
             id = 234153,
-            duration = function () return 5 * haste end,
-            tick_time = function () return haste end,
+            duration = function () return 5 * haste * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
+            tick_time = function () return haste * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
             max_stack = 1,
         },
         eradication = {
@@ -451,7 +451,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         -- For Havoc, we want to cast it on a different target.
         if this_action == "havoc" and class.abilities.havoc.key == "havoc" then return "cycle" end
 
-        if debuff.havoc.up or FindUnitDebuffByID( "target", 80240, "PLAYER" ) then
+        if ( debuff.havoc.up or FindUnitDebuffByID( "target", 80240, "PLAYER" ) ) and not legendary.odr_shawl_of_the_ymirjar.enabled then
             return "cycle"
         end
     end )
@@ -628,10 +628,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         conflagrate = {
             id = 17962,
             cast = 0,
-            charges = 2,
-            cooldown = 13,
-            recharge = 13,
-            hasteCD = true,
+            charges = function () return legendary.cinders_of_the_azjaqir.enabled and 3 or 2 end,
+            cooldown = function () return ( legendary.cinders_of_the_azjaqir.enabled and 10 or 13 ) * haste end,
+            recharge = function () return ( legendary.cinders_of_the_azjaqir.enabled and 10 or 13 ) * haste end,
             gcd = "spell",
 
             spend = 0.01,
@@ -865,7 +864,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         drain_life = {
             id = 234153,
-            cast = 5,
+            cast = function () return 5 * haste * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
             channeled = true,
             breakable = true,
             cooldown = 0,
@@ -1118,7 +1117,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 removeStack( "decimating_bolt" )
 
                 -- Using true_active_enemies for resource predictions' sake.
-                gain( 0.2 + ( talent.fire_and_brimstone.enabled and ( ( true_active_enemies - 1 ) * 0.1 ) or 0 ), "soul_shards" )
+                gain( ( 0.2 + ( talent.fire_and_brimstone.enabled and ( ( true_active_enemies - 1 ) * 0.1 ) or 0 ) ) * ( legendary.embers_of_the_diabolic_raiment.enabled and 2 or 1 ), "soul_shards" )
             end,
         },
 

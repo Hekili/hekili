@@ -416,7 +416,12 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             id = 327478,
             duration = 30,
             max_stack = 1
-        },        
+        },
+        slick_ice = {
+            id = 327509,
+            duration = 60,
+            max_stack = 10
+        }
     } )
 
 
@@ -887,13 +892,14 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 applyDebuff( "target", "frost_nova" )
+                if legendary.grisly_icicle.enabled then applyDebuff( "target", "grisly_icicle" ) end
             end,
         },
 
 
         frostbolt = {
             id = 116,
-            cast = 2,
+            cast = function () return 2 * ( 1 - 0.02 * buff.slick_ice.stack ) * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -919,6 +925,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                         removeBuff( "cold_front" )
                         applyBuff( "cold_front_ready" )
                     end
+                end
+
+                if legendary.slick_ice.enabled then
+                    addStack( "slick_ice", nil, 1 )
                 end
 
                 if azerite.tunnel_of_ice.enabled then
@@ -1005,6 +1015,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 applyBuff( "ice_barrier" )
+                if legendary.triune_ward.enabled then
+                    applyBuff( "blazing_barrier" )
+                    applyBuff( "prismatic_barrier" )
+                end
             end,
         },
 

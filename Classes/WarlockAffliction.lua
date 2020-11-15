@@ -186,9 +186,9 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         drain_life = {
             id = 234153,
-            duration = function () return 5 * haste end,
+            duration = function () return 5 * haste * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
             max_stack = 1,
-            tick_time = function () return haste end,
+            tick_time = function () return haste * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
         },
         drain_soul = {
             id = 198590,
@@ -422,6 +422,12 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
 
         -- Legendaries
+        malefic_wrath = {
+            id = 337125,
+            duration = 8,
+            max_stack = 1
+        },
+
         relic_of_demonic_synergy = {
             id = 337060,
             duration = 15,
@@ -986,7 +992,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
 
         drain_life = {
             id = 234153,
-            cast = 5,
+            cast = function () return 5 * haste * ( legendary.claw_of_endereth.enabled and 0.5 or 1 ) end,
             channeled = true,
             breakable = true,
             cooldown = 0,
@@ -1052,6 +1058,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                 applyBuff( "casting", 5 * haste )
                 channelSpell( "drain_soul" )
                 removeStack( "decimating_bolt" )
+                removeBuff( "malefic_wrath" )
 
                 if level > 51 then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
             end,
@@ -1212,6 +1219,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             texture = 236296,
             
             handler = function ()
+                if legendary.malefic_wrath.enabled then addStack( "malefic_wrath", nil, 1 ) end
             end,
         },
 
@@ -1336,6 +1344,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             cycle = function () return talent.shadow_embrace.enabled and "shadow_embrace" or nil end,
 
             handler = function ()
+                removeBuff( "malefic_wrath" )
                 if level > 51 then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
             end,
         },

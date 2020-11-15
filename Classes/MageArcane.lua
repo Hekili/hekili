@@ -354,6 +354,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             max_stack = 1,
         },
 
+
         -- Azerite Powers
         brain_storm = {
             id = 273330,
@@ -374,6 +375,14 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 10,
             max_stack = 2
         },
+
+
+        -- Legendaries
+        grisly_icicle = {
+            id = 348007,
+            duration = 8,
+            max_stack = 1
+        }
     } )
 
 
@@ -482,6 +491,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
         Hekili:EmbedDisciplinaryCommand( spec )
     end
+
+
+    
 
 
     spec:RegisterHook( "spend", function( amt, resource )
@@ -941,7 +953,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 removeBuff( "clearcasting_channel" )
             end,
 
-            tick_time = function()
+            tick_time = function ()
                 if buff.clearcasting_channel.up then return buff.clearcasting_channel.tick_time end
                 return 0.5 * haste
             end,
@@ -957,9 +969,9 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 if conduit.arcane_prodigy.enabled and cooldown.arcane_power.remains > 0 then
                     reduceCooldown( "arcane_power", conduit.arcane_prodigy.mod * 0.1 )
                 end
-
-                if legendary.arcane_harmony.enabled then addStack( "arcane_harmony", nil, 5 ) end
             end,
+
+            tick = function () if legendary.arcane_harmony.enabled then addStack( "arcane_harmony", nil, 1 ) end end,
 
             auras = {
                 arcane_harmony = {
@@ -1304,6 +1316,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 applyDebuff( "target", "frost_nova" )
+                if legendary.grisly_icicle.enabled then applyDebuff( "target", "grisly_icicle" ) end
             end,
         },
 
@@ -1446,6 +1459,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
             handler = function ()
                 applyBuff( "prismatic_barrier" )
+                if legendary.triune_ward.enabled then
+                    applyBuff( "blazing_barrier" )
+                    applyBuff( "ice_barrier" )
+                end
             end,
         },
 
@@ -1593,7 +1610,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 458224,
 
-            handler = function ()
+            handler = function ()                
                 applyBuff( "time_warp" )
                 applyDebuff( "player", "temporal_displacement" )
             end,

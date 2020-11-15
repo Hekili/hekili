@@ -630,6 +630,12 @@ if UnitClassBase( "player" ) == "PRIEST" then
             max_stack = 1,
         },
 
+        measured_contemplation = {
+            id = 341824,
+            duration = 3600,
+            max_stack = 4
+        },
+
 
         -- Conduits
         dissonant_echoes = {
@@ -831,6 +837,8 @@ if UnitClassBase( "player" ) == "PRIEST" then
             id = 73325,
             cast = 0,
             cooldown = 90,
+            charges = function () return legendary.vault_of_heavens.enabled and 2 or nil end,
+            recharge = function () return legendary.vault_of_heavens.enabled and 90 or nil end,
             gcd = "spell",
 
             spend = 0.03,
@@ -841,6 +849,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             handler = function ()
                 if azerite.death_denied.enabled then applyBuff( "death_denied" ) end
+                if legendary.vault_of_heavens.enabled then setDistance( 5 ) end
             end,
         },
 
@@ -1043,6 +1052,8 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             startsCombat = false,
             texture = 135939,
+
+            indicator = function () return group and legendary.twins_of_the_sun_priestess.enabled and "cycle" or nil end,
 
             handler = function ()
                 applyBuff( "power_infusion" )
@@ -1259,6 +1270,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             handler = function ()
                 removeBuff( "depth_of_the_shadows" )
                 if level > 55 then addStack( "shadow_mend", nil, 1 ) end
+                removeBuff( "measured_contemplation" )
             end,
         },
 

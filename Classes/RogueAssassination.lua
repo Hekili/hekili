@@ -399,9 +399,45 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         end
     end )
 
+
     spec:RegisterHook( "UNIT_ELIMINATED", function( guid )
         ssG[ guid ] = nil
     end )
+
+
+    local energySpent = 0
+
+    local ENERGY = Enum.PowerType.Energy
+    local lastEnergy = -1
+
+    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
+        if powerType == "ENERGY" then
+            local current = UnitPower( "player", ENERGY )
+
+            if current < lastEnergy then
+                energySpent = ( energySpent + lastEnergy - current ) % 50
+            end
+
+            lastEnergy = current
+        end
+    end )
+
+    spec:RegisterStateExpr( "energy_spent", function ()
+        return energySpent
+    end )
+
+    spec:RegisterHook( "spend", function( amt, resource )
+        if legendary.duskwalkers_patch.enabled and cooldown.vendetta.remains > 0 and resource == "energy" and amt > 0 then
+            energy_spent = energy_spent + amt
+            local reduction = floor( energy_spent / 50 )
+            energy_spent = energy_spent % 50
+
+            if reduction > 0 then
+                reduceCooldown( "vendetta", reduction )
+            end
+        end
+    end )
+
 
     spec:RegisterStateExpr( 'persistent_multiplier', function ()
         local mult = 1
@@ -829,7 +865,14 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         system_shock = {
             id = 198222,
             duration = 2,
-        }
+        },
+
+        -- Legendaries
+        bloodfang = {
+            id = 23581,
+            duration = 6,
+            max_stack = 1
+        },
     } )
 
 
@@ -1281,10 +1324,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 if talent.venom_rush.enabled and ( debuff.deadly_poison_dot.up or debuff.wound_poison_dot.up or debuff.crippling_poison_dot.up ) then
                     gain( 8, "energy" )
                 end
-
-                -- if legendary.doomblade.enabled then -- need aura id.
-                    -- applyDebuff( "target", "doomblade" )
-                -- end
             end,
         },
 
@@ -1433,7 +1472,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 25,
             gcd = "spell",
             
-            spend = function () return legendary.tiny_toxic_blades.enabled and 0 or 20 end,
+            spend = function () return legendary.tiny_toxic_blade.enabled and 0 or 20 end,
             spendType = "energy",
             
             startsCombat = true,
@@ -1568,7 +1607,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
                 if legendary.invigorating_shadowdust.enabled then
                     for name, cd in pairs( cooldown ) do
-                        if cd.remains > 0 then reduceCooldown( name, 15 ) end
+                        if cd.remains > 0 then reduceCooldown( name, 20 ) end
                     end
                 end
             end,

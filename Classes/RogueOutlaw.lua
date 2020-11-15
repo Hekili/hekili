@@ -376,7 +376,24 @@ if UnitClassBase( "player" ) == "ROGUE" then
             id = 340573,
             duration = 15,
             max_stack = 1
-        }
+        },
+
+        -- Guile Charm
+        shallow_insight = {
+            id = 340582,
+            duration = 10,
+            max_stack = 1,
+        },
+        moderate_insight = {
+            id = 340583,
+            duration = 10,
+            max_stack = 1,
+        },
+        deep_insight = {
+            id = 340584,
+            duration = 10,
+            max_stack = 1,
+        },
     } )
 
 
@@ -555,6 +572,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 end
 
                 if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
+
+                if legendary.greenskins_wickers.enabled and ( combo_points.current >= 5 or combo_points == animacharged_cp ) then
+                    applyBuff( "greenskins_wickers" )
+                end
+
                 spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" ) 
             end,
         },
@@ -1098,7 +1120,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             cooldown = 25,
             gcd = "spell",
             
-            spend = function () return legendary.tiny_toxic_blades.enabled and 0 or 20 end,
+            spend = function () return legendary.tiny_toxic_blade.enabled and 0 or 20 end,
             spendType = "energy",
             
             startsCombat = true,
@@ -1144,6 +1166,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 else
                     gain( buff.broadside.up and 2 or 1, "combo_points" )
                 end
+
+                if buff.shallow_insight.up then buff.shallow_insight.expires = query_time + 10 end
+                if buff.moderate_insight.up then buff.moderate_insight.expires = query_time + 10 end
+                -- Deep Insight does not refresh, and I don't see a way to track why/when we'd advance from Shallow > Moderate > Deep.
             end,
         },
 
@@ -1253,7 +1279,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 if legendary.invigorating_shadowdust.enabled then
                     for name, cd in pairs( cooldown ) do
-                        if cd.remains > 0 then reduceCooldown( name, 15 ) end
+                        if cd.remains > 0 then reduceCooldown( name, 20 ) end
                     end
                 end
             end,

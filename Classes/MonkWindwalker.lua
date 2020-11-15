@@ -223,8 +223,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
             max_stack = 1,
         },
         pressure_point = {
-            id = 247255,
+            id = 337481,
             duration = 5,
+            max_stack = 1,
         },
         provoke = {
             id = 115546,
@@ -258,11 +259,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             id = 137639,
             duration = 15,
             max_stack = 1,
-        },
-        the_emperors_capacitor = {
-            id = 337291,
-            duration = 3600,
-            max_stack = 20,
         },
         tigers_lust = {
             id = 116841,
@@ -425,11 +421,18 @@ if UnitClassBase( 'player' ) == 'MONK' then
             end,
         },
 
+        -- Jade Ignition
         chi_energy = {
             id = 337571,
             duration = 45,
-            max_stack = 20
-        }
+            max_stack = 30
+        },
+
+        the_emperors_capacitor = {
+            id = 337291,
+            duration = 3600,
+            max_stack = 20,
+        },
     } )
 
 
@@ -906,6 +909,16 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     -- TODO: How much to generate?  Do we need to queue it?  Special buff generator?
                 end
             end,
+
+            tick = function ()
+                if legendary.jade_ignition.enabled then
+                    addStack( "jade_ignition", nil, active_enemies )
+                end
+            end,
+
+            finish = function ()
+                if legendary.xuens_battlegear.enabled then applyBuff( "pressure_point" ) end
+            end,
         },
 
 
@@ -1172,7 +1185,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
             handler = function ()
                 applyDebuff( 'target', 'mark_of_the_crane' )
-                removeBuff( 'pressure_point' )
 
                 if talent.whirling_dragon_punch.enabled and cooldown.fists_of_fury.remains > 0 then
                     applyBuff( "whirling_dragon_punch", min( cooldown.fists_of_fury.remains, cooldown.rising_sun_kick.remains ) )
@@ -1194,7 +1206,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
                 return nil
             end,
             cooldown = function () return talent.celerity.enabled and 15 or 20 end,
-            recharge = function () return talent.celerity.eanbled and 15 or 20 end,
+            recharge = function () return talent.celerity.enabled and 15 or 20 end,
             gcd = "spell",
 
             startsCombat = true,
@@ -1364,9 +1376,9 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     applyDebuff( "target", "recently_challenged" )
                 end
 
-                if legendary.rushing_tiger_palm.enabled and debuff.recently_keefers_skyreach.down then
+                if legendary.keefers_skyreach.enabled then
                     setDistance( 5 )
-                    applyDebuff( "target", "keefers_skyreach" )
+                    if debuff.recently_keefers_skyreach.down then applyDebuff( "target", "keefers_skyreach" ) end
                     applyDebuff( "target", "recently_keefers_skyreach" )
                 end
 
@@ -1376,6 +1388,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             end,
 
             auras = {
+                -- Legendary
                 keefers_skyreach = {
                     id = 344021,
                     duration = 6,

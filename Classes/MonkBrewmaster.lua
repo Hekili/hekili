@@ -300,7 +300,21 @@ if UnitClassBase( "player" ) == "MONK" then
             id = 336884,
             duration = 5,
             max_stack = 1
+        },
+
+
+        -- Legendaries
+        charred_passions = {
+            id = 338140,
+            duration = 8,
+            max_stack = 1
+        },
+        mighty_pour = {
+            id = 337994,
+            duration = 7,
+            max_stack = 1
         }
+
     } )
 
 
@@ -583,6 +597,10 @@ if UnitClassBase( "player" ) == "MONK" then
                     applyBuff( "blackout_combo" )
                 end
 
+                if buff.charred_passions.up and debuff.breath_of_fire_dot.up then
+                    applyDebuff( "target", "breath_of_fire_dot" )
+                end
+
                 addStack( "elusive_brawler", 10, 1 )
             end,
         },
@@ -608,6 +626,11 @@ if UnitClassBase( "player" ) == "MONK" then
                 removeBuff( "blackout_combo" )
 
                 if debuff.keg_smash.up then applyDebuff( "target", "breath_of_fire_dot" ) end
+
+                if legendary.charred_passions.enabled then
+                    applyBuff( "charred_passions" )
+                end
+
                 addStack( "elusive_brawler", 10, active_enemies * ( 1 + set_bonus.tier21_2pc ) )                
             end,
         },
@@ -627,6 +650,10 @@ if UnitClassBase( "player" ) == "MONK" then
             handler = function ()
                 removeBuff( "purified_chi" )
                 applyBuff( "celestial_brew" )
+
+                if legendary.mighty_pour.enabled then
+                    applyBuff( "mighty_pour" )
+                end
             end,
         },
 
@@ -952,6 +979,8 @@ if UnitClassBase( "player" ) == "MONK" then
             id = 121253,
             cast = 0,
             cooldown = 8,
+            charges = function () return legendary.stormstouts_last_keg.enabled and 2 or nil end,
+            recharge = function () return legendary.stormstouts_last_keg.enabled and 8 or nil end,
             gcd = "spell",
 
             spend = 40,
@@ -1187,6 +1216,10 @@ if UnitClassBase( "player" ) == "MONK" then
                 if talent.celestial_flames.enabled then
                     applyDebuff( "target", "breath_of_fire_dot" )
                     active_dot.breath_of_fire_dot = active_enemies
+                end
+
+                if buff.charred_passions.up and debuff.breath_of_fire_dot.up then
+                    applyDebuff( "target", "breath_of_fire_dot" )
                 end
             end,
         },

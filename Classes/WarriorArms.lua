@@ -237,7 +237,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
         spell_reflection = {
             id = 23920,
-            duration = 5,
+            duration = function () return legendary.misshapen_mirror.enabled and 8 or 5 end,
             max_stack = 1,
         },
         storm_bolt = {
@@ -293,7 +293,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 275540,
             duration = 12,
             max_stack = 1
-        }
+        },
     } )
 
 
@@ -354,8 +354,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local RAGE = Enum.PowerType.Rage
     local lastRage = -1
 
-    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( unit, powerType )
-        if powerType == RAGE then
+    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
+        if powerType == "RAGE" then
             local current = UnitPower( "player", RAGE )
 
             if current < lastRage then
@@ -741,6 +741,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 6544,
             cast = 0,
             cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
+            charges = function () return legendary.leaper.enabled and 3 or nil end,
+            recharge = function () return legendary.leaper.enabled and ( talent.bounding_stride.enabled and 30 or 45 ) or nil end,
             gcd = "spell",
 
             startsCombat = false,

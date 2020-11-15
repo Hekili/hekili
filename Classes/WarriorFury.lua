@@ -221,6 +221,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             duration = 10,
             max_stack = 1,
         },
+        spell_reflection = {
+            id = 23920,
+            duration = function () return legendary.misshapen_mirror.enabled and 8 or 5 end,
+            max_stack = 1,
+        },
         storm_bolt = {
             id = 132169,
             duration = 4,
@@ -378,8 +383,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     local RAGE = Enum.PowerType.Rage
     local lastRage = -1
 
-    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( unit, powerType )
-        if powerType == RAGE then
+    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
+        if powerType == "RAGE" then
             local current = UnitPower( "player", RAGE )
 
             if current < lastRage then
@@ -419,6 +424,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     end )
 
 
+    local WillOfTheBerserker = setfenv( function()
+        applyBuff( "will_of_the_berserker" )
+    end, state )
+
+
     spec:RegisterHook( "reset_precast", function ()
         rage_spent = nil
         rage_since_banner = nil
@@ -438,9 +448,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         end
 
         if legendary.will_of_the_berserker.enabled and buff.recklessness.up then
-            applyBuff( "will_of_the_berserker" )
-            buff.will_of_the_berserker.applied = buff.recklessness.expires
-            buff.will_of_the_berserker.expires = buff.recklessness.expires + 8
+            state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
         end
     end )    
 
@@ -634,6 +642,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 6544,
             cast = 0,
             cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
+            charges = function () return legendary.leaper.enabled and 3 or nil end,
+            recharge = function () return legendary.leaper.enabled and ( talent.bounding_stride.enabled and 30 or 45 ) or nil end,
             gcd = "spell",
 
             startsCombat = false,
@@ -842,9 +852,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     gain( 50, "rage" )
                 end
                 if legendary.will_of_the_berserker.enabled then
-                    applyBuff( "will_of_the_berserker" )
-                    buff.will_of_the_berserker.applied = buff.recklessness.expires
-                    buff.will_of_the_berserker.expires = buff.recklessness.expires + 8
+                    state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
                 end
             end,
 
@@ -909,7 +917,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         },
 
 
-        spell_reflect = {
+        spell_reflection = {
             id = 23920,
             cast = 0,
             cooldown = 25,
@@ -924,7 +932,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             readyTime = state.timeToInterrupt,
 
             handler = function ()
-                applyDebuff( "target", "storm_bolt" )
+                applyBuff( "spell_reflection" )
             end,
         },
 

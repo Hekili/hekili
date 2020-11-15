@@ -602,7 +602,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
                     addStack( "perforate", nil, 1 )
                     gainChargeTime( "shadow_blades", 0.5 )
                 end
-                gain( ( buff.shadow_blades.up and 2 or 1 ) + ( buff.the_rotten.up and 3 or 0 ), "combo_points" )
+                gain( ( buff.shadow_blades.up and 2 or 1 ) + ( buff.the_rotten.up and 4 or 0 ), "combo_points" )
+                removeBuff( "the_rotten" )
                 removeBuff( "symbols_of_death_crit" )
                 removeBuff( "perforated_veins" )
             end,
@@ -875,7 +876,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
             	if buff.stealth.up then
             		removeBuff( "stealth" )
             	end
-                gain( ( buff.shadow_blades.up and 2 or 1 ) + ( buff.the_rotten.up and 3 or 0 ), "combo_points" )
+                gain( ( buff.shadow_blades.up and 2 or 1 ) + ( buff.the_rotten.up and 4 or 0 ), "combo_points" )
+                removeBuff( "the_rotten" )
                 removeBuff( "symbols_of_death_crit" )
             end,
         },
@@ -1176,7 +1178,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
             handler = function ()
                 removeBuff( "cold_blood" )
 
-                gain( ( buff.shadow_blades.up and 3 or 2 ) + ( buff.the_rotten.up and 3 or 0 ), "combo_points" )
+                gain( ( buff.shadow_blades.up and 3 or 2 ) + ( buff.the_rotten.up and 4 or 0 ), "combo_points" )
+                removeBuff( "the_rotten" )
                 removeBuff( "symbols_of_death_crit" )
 
                 if azerite.blade_in_the_shadows.enabled then addStack( "blade_in_the_shadows", nil, 1 ) end
@@ -1215,7 +1218,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             gcd = "spell",
             
             spend = function ()
-                if legendary.tiny_toxic_blades.enabled then return 0 end
+                if legendary.tiny_toxic_blade.enabled then return 0 end
                 return 20 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 )
             end,
             spendType = "energy",
@@ -1458,7 +1461,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 if legendary.invigorating_shadowdust.enabled then
                     for name, cd in pairs( cooldown ) do
-                        if cd.remains > 0 then reduceCooldown( name, 15 ) end
+                        if cd.remains > 0 then reduceCooldown( name, 20 ) end
                     end
                 end
 
