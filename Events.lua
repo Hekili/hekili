@@ -884,7 +884,7 @@ do
 
         -- Rogue/Assassination
         [7111] = { "mark_of_the_master_assassin", 1, 259 }, -- 340076
-        [7112] = { "tiny_toxic_blades", 1, 259 }, -- 340078
+        [7112] = { "tiny_toxic_blade", 1, 259 }, -- 340078
         [7113] = { "essence_of_bloodfang", 1, 259 }, -- 340079
         [7114] = { "invigorating_shadowdust", 1, 259 }, -- 340080
         [7115] = { "dashing_scoundrel", 1, 259 }, -- 340081
