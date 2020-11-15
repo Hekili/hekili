@@ -1978,10 +1978,7 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
 
     end
 
-    if GetTime() - lastPowerUpdate > 0.1 then
-        Hekili:ForceUpdate( event )
-        lastPowerUpdate = GetTime()
-    end
+    Hekili:ForceUpdate( event, true )
 end
 Hekili:ProfileCPU( "UNIT_POWER_UPDATE", UNIT_POWER_FREQUENT )
 
