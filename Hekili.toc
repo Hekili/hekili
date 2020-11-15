@@ -53,6 +53,8 @@ Classes\WarriorArms.lua
 Classes\WarriorFury.lua
 Classes\WarriorProtection.lua
 
+AnimaPowers.lua
+
 Targets.lua
 Options.lua
 UI.lua

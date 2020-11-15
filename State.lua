@@ -1641,6 +1641,9 @@ local mt_state = {
         elseif k == 'inEncounter' or k == 'encounter' then
             return t.encounterID > 0
         
+        elseif k == 'torghast' then
+            return false
+        
         elseif k == 'mounted' or k == 'is_mounted' then
             return IsMounted()
 
@@ -4740,9 +4743,10 @@ do
         end
 
         i = 1
-        while ( true ) do
+        while ( true ) do            
             local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, unit ~= "player" and "PLAYER" or nil )
             if not name then break end
+
 
             local key = class.auras[ spellID ] and class.auras[ spellID ].key
             -- if not key then key = class.auras[ name ] and class.auras[ name ].key end
@@ -4774,6 +4778,91 @@ do
             end
 
             i = i + 1
+        end
+
+        if UnitIsUnit( unit, "player" ) and IsInJailersTower() then
+            i = 1
+            while ( true ) do
+                local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i, "MAW" )
+                if not name then break end
+
+                local aura = class.auras[ spellID ]
+                local key = aura and aura.key
+
+                if not key then key = autoAuraKey[ spellID ] end
+
+                if key then 
+                    db.buff[ key ] = db.buff[ key ] or {}
+                    local buff = db.buff[ key ]
+
+                    if expires == 0 then
+                        expires = GetTime() + 3600
+                        duration = 7200
+                    end
+
+                    buff.key = key
+                    buff.id = spellID
+                    buff.name = name
+                    buff.count = count > 0 and count or 1
+                    buff.expires = expires
+                    buff.duration = duration
+                    buff.applied = expires - duration
+                    buff.caster = caster
+                    buff.timeMod = timeMod
+                    buff.v1 = v1
+                    buff.v2 = v2
+                    buff.v3 = v3
+
+                    if aura and buff.count > aura.max_stack then aura.max_stack = buff.count end
+                    
+                    buff.last_application = buff.last_application or 0
+                    buff.last_expiry      = buff.last_expiry or 0
+
+                    buff.unit = unit
+                end
+
+                i = i + 1
+            end
+
+            i = 1
+            while ( true ) do
+                local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i, "MAW" )
+                if not name then break end
+
+                local aura = class.auras[ spellID ]
+                local key = aura and aura.key
+
+                if not key then key = autoAuraKey[ spellID ] end
+
+                if key then 
+                    db.debuff[ key ] = db.debuff[ key ] or {}
+                    local debuff = db.debuff[ key ]
+
+                    if expires == 0 then
+                        expires = GetTime() + 3600
+                        duration = 7200
+                    end
+
+                    debuff.key = key
+                    debuff.id = spellID
+                    debuff.name = name
+                    debuff.count = count > 0 and count or 1
+                    debuff.expires = expires
+                    debuff.duration = duration
+                    debuff.applied = expires - duration
+                    debuff.caster = caster
+                    debuff.timeMod = timeMod
+                    debuff.v1 = v1
+                    debuff.v2 = v2
+                    debuff.v3 = v3
+
+                    if aura and debuff.count > aura.max_stack then aura.max_stack = debuff.count end
+
+                    debuff.unit = unit
+                end
+
+                i = i + 1
+            end
         end
     end
 
@@ -5308,6 +5397,8 @@ function state.reset( dispName )
 
     state.bg = zone == 'pvp'
     state.arena = zone == 'arena'
+    
+    state.torghast = IsInJailersTower()
 
     state.min_targets = 0
     state.max_targets = 0
