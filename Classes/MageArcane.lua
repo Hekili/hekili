@@ -326,7 +326,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         },
         rune_of_power = {
             id = 116014,
-            duration = 15,
+            duration = 12,
             max_stack = 1,
         },
         shimmer = {

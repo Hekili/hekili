@@ -265,7 +265,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         },
         rune_of_power = {
             id = 116014,
-            duration = 15,
+            duration = 12,
             max_stack = 1,
         },
         shimmer = {
@@ -311,7 +311,7 @@ if UnitClassBase( "player" ) == "MAGE" then
     
         firestorm = {
             id = 333100,
-            duration = 5,
+            duration = 4,
             max_stack = 1
         },
 
