@@ -338,9 +338,36 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         },
 
         frozen = {
-            alias = { "freeze", "frost_nova", "winters_chill" },
-            aliasMode = "first",
-            aliasType = "debuff",
+            duration = 1,
+    
+            meta = {
+                spell = function( t )
+                    if debuff.winters_chill.up and remaining_winters_chill > 0 then return debuff.winters_chill end
+                    return debuff.frost_nova
+                end,
+
+                up = function( t )
+                    return t.spell.up
+                end,
+                down = function( t )
+                    return t.spell.down
+                end,
+                applied = function( t )
+                    return t.spell.applied
+                end,
+                remains = function( t )
+                    return t.spell.remains
+                end,
+                count = function(t )
+                    return t.spell.count
+                end,
+                stack = function( t )
+                    return t.spell.stack
+                end,
+                stacks = function( t )
+                    return t.spell.stacks
+                end,
+            }
         },
 
         roll_the_bones = {
