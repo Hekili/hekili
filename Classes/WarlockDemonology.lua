@@ -1696,7 +1696,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = PTR and function () return buff.fel_domination.up and 0 or 1 end or 1,
+            spend = function () return buff.fel_domination.up and 0 or 1 end,
             spendType = "soul_shards",
 
             startsCombat = false,

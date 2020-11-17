@@ -913,7 +913,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             velocity = 15,
 
-            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( ( PTR and -8 or -7 ) - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) end,
+            spend = function () return ( talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * ( -8 - buff.empty_mind.stack ) * ( buff.surrender_to_madness.up and 2 or 1 ) end,
             spendType = "insanity",
 
             startsCombat = true,
@@ -1189,7 +1189,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             talent = "searing_nightmare",
 
-            spend = PTR and 30 or 35,
+            spend = 30,
             spendType = "insanity",
 
             startsCombat = true,
@@ -1221,7 +1221,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         },
 
 
-        shadow_crash = PTR and {
+        shadow_crash = {
             id = 205385,
             cast = 0,
             cooldown = 30,
@@ -1232,26 +1232,6 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             startsCombat = true,
             texture = 136201,
-        } or {
-            id = 342834,
-            cast = 0,
-            charges = 3,
-            cooldown = 45,
-            recharge = 45,
-            hasteCD = true,
-            gcd = "spell",
-
-            spend = -8,
-            spendType = "insanity",
-
-            velocity = 10,
-
-            startsCombat = true,
-            texture = 136201,
-
-            impact = function ()
-                if active_enemies == 1 then addStack( "shadow_crash_debuff", nil, 1 ) end
-            end,
         },
 
 

@@ -1854,7 +1854,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         },
 
         flagellation_cleanse = {
-            id = PTR and 345569 or nil,
+            id = 345569,
             cast = 0,
             cooldown = 5,
             gcd = "off",

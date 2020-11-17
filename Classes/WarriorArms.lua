@@ -1128,7 +1128,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132306,
 
-            notalent = not PTR and "cleave" or nil,
             handler = function ()
                 applyBuff( "sweeping_strikes" )
                 setCooldown( "global_cooldown", 0.75 ) -- Might work?
