@@ -1,5 +1,5 @@
 # Subtlety Rogue
-# November 11, 2020
+# November 16, 2020
 
 # Pre-Combat
 actions.precombat+=/apply_poison
@@ -11,7 +11,8 @@ actions.precombat+=/use_item,name=azsharas_font_of_power
 
 # Main Rotation
 actions=kick
-actions+=/variable,name=snd_condition,value=buff.slice_and_dice.up|spell_targets.shuriken_storm>=6,Used to determine whether cooldowns wait for SnD based on targets.
+# Used to determine whether cooldowns wait for SnD based on targets.
+actions+=/variable,name=snd_condition,value=buff.slice_and_dice.up|spell_targets.shuriken_storm>=6
 # Check CDs at first
 actions+=/call_action_list,name=cds
 # Run fully switches to the Stealthed Rotation (by doing so,it forces pooling if nothing is available).
