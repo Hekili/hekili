@@ -69,7 +69,6 @@ state.action = {}
 state.active_dot = {}
 state.args = {}
 state.azerite = {}
-state.conduit = {}
 state.essence = {}
 state.aura = {}
 state.buff = {}
@@ -79,7 +78,6 @@ state.cooldown = {}
 state.corruptions = {} -- TODO: REMOVE
 state.legendary = {}
 state.runeforge = state.legendary -- Different APLs use runeforge.X.equipped vs. legendary.X.enabled.
-state.soulbind = {}
 --[[ state.health = {
     resource = "health",
     actual = 10000,
@@ -3448,49 +3446,6 @@ local mt_pvptalents = {
 
 
 do
-    -- Azerite and Essences.
-    local mt_default_trait = {
-        __index = function( t, k )
-            local heart = C_AzeriteItem.FindActiveAzeriteItem()
-
-            heart = heart and heart:IsValid() and C_AzeriteItem.IsAzeriteItemEnabled( heart ) or false
-
-            if k == 'enabled' or k == 'minor' or k == 'equipped' then
-                return heart and t.__rank and t.__rank > 0
-            elseif k == 'disabled' then
-                return not heart or not t.__rank or t.__rank == 0
-            elseif k == 'rank' then
-                return heart and t.__rank or 0
-            elseif k == 'major' then
-                return heart and t.__major or false
-            elseif k == 'minor' then
-                return heart and t.__minor or false
-            end
-        end
-    }
-
-    local mt_artifact_traits = {
-        __index = function( t, k )
-            return t.no_trait
-        end,
-
-        __newindex = function( t, k, v )
-            rawset( t, k, setmetatable( v, mt_default_trait ) )
-            return t[ k ]
-        end
-    }
-
-    setmetatable( state.azerite, mt_artifact_traits )
-    state.azerite.no_trait = { rank = 0 }
-    state.artifact = state.azerite
-
-    -- Essences
-    setmetatable( state.essence, mt_artifact_traits )
-    state.essence.no_trait = { rank = 0, major = false, minor = false }
-end
-
-
-do
     local mt_default_gen_trait = {
         __index = function( t, k )
             if k == 'enabled' or k == 'minor' or k == 'equipped' then
@@ -3508,6 +3463,7 @@ do
             end
         end
     }
+    ns.metatables.mt_default_gen_trait = mt_default_gen_trait
 
     local mt_generic_traits = {
         __index = function( t, k )
@@ -3519,72 +3475,13 @@ do
             return t[ k ]
         end
     }
-
-    setmetatable( state.conduit, mt_generic_traits )
-    state.conduit.no_trait = { rank = 0, mod = 0 }
-
-    setmetatable( state.soulbind, mt_generic_traits )
-    state.soulbind.no_trait = { rank = 0 }
+    ns.metatables.mt_generic_traits = mt_generic_traits
 
     setmetatable( state.corruptions, mt_generic_traits )
     state.corruptions.no_trait = { rank = 0 }
 
     setmetatable( state.legendary, mt_generic_traits )
     state.legendary.no_trait = { rank = 0 }
-end
-
-
--- Covenants
-do
-    local CovenantSignatures = {
-        kyrian = { 324739 },
-        necrolord = { 324631 },
-        night_fae = { 310143, 324701 },
-        venthyr = { 300728 },
-    }
-
-    CovenantSignatures[1] = CovenantSignatures.kyrian
-    CovenantSignatures[2] = CovenantSignatures.venthyr
-    CovenantSignatures[3] = CovenantSignatures.night_fae
-    CovenantSignatures[4] = CovenantSignatures.necrolord
-
-    local CovenantKeys = { "kyrian", "venthyr", "night_fae", "necrolord" }
-    local GetActiveCovenantID = C_Covenants.GetActiveCovenantID
-
-    -- v1, no caching.
-    state.covenant = setmetatable( {}, {
-        __index = function( t, k )
-            if type( k ) == "number" then
-                if GetActiveCovenantID() == k then return true end
-                if CovenantSignatures[ k ] then
-                    for _, spell in ipairs( CovenantSignatures[ k ] ) do
-                        if IsSpellKnownOrOverridesKnown( spell ) then return true end
-                    end
-                end
-                return false
-            end
-
-            -- Strings.
-            local myCovenant = GetActiveCovenantID()
-
-            if myCovenant > 0 then
-                if k == CovenantKeys[ myCovenant ] then return true end
-            end
-
-            if CovenantSignatures[ k ] then
-                for _, spell in ipairs( CovenantSignatures[ k ] ) do
-                    if IsSpellKnownOrOverridesKnown( spell ) then return true end
-                end
-            end
-
-            -- Support covenant.fae_guardians and similar syntax.
-            if class.abilities[ k ] then
-                if state:IsKnown( k ) then return true end
-            end
-
-            return false
-        end,
-    } )
 end
 
 
@@ -4563,7 +4460,6 @@ local mt_aura = {
 setmetatable( state, mt_state )
 setmetatable( state.action, mt_actions )
 setmetatable( state.active_dot, mt_active_dot )
--- setmetatable( state.azerite, mt_artifact_traits ) -- already set above.
 setmetatable( state.aura, mt_aura )
 setmetatable( state.buff, mt_buffs )
 setmetatable( state.cooldown, mt_cooldowns )

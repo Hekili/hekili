@@ -53,7 +53,13 @@ Classes\WarriorArms.lua
 Classes\WarriorFury.lua
 Classes\WarriorProtection.lua
 
-AnimaPowers.lua
+BfA\AzeritePowers.lua
+BfA\Essences.lua
+
+Shadowlands\AnimaPowers.lua
+Shadowlands\Covenants.lua
+Shadowlands\SoulbindConduits.lua
+Shadowlands\Trinkets.lua
 
 Targets.lua
 Options.lua
