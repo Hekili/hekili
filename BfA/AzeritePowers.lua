@@ -7,46 +7,6 @@ local Hekili = _G[ addon ]
 local all = Hekili.Class.specs[ 0 ]
 local state = Hekili.State
 
--- Azerite and Essences.
-local mt_default_trait = {
-    __index = function( t, k )
-        local heart = C_AzeriteItem.FindActiveAzeriteItem()
-
-        heart = heart and heart:IsValid() and C_AzeriteItem.IsAzeriteItemEnabled( heart ) or false
-
-        if k == 'enabled' or k == 'minor' or k == 'equipped' then
-            return heart and t.__rank and t.__rank > 0
-        elseif k == 'disabled' then
-            return not heart or not t.__rank or t.__rank == 0
-        elseif k == 'rank' then
-            return heart and t.__rank or 0
-        elseif k == 'major' then
-            return heart and t.__major or false
-        elseif k == 'minor' then
-            return heart and t.__minor or false
-        end
-    end
-}
-
-local mt_artifact_traits = {
-    __index = function( t, k )
-        return t.no_trait
-    end,
-
-    __newindex = function( t, k, v )
-        rawset( t, k, setmetatable( v, mt_default_trait ) )
-        return t[ k ]
-    end
-}
-
-setmetatable( state.azerite, mt_artifact_traits )
-state.azerite.no_trait = { rank = 0 }
-state.artifact = state.azerite
-
--- Essences
-setmetatable( state.essence, mt_artifact_traits )
-state.essence.no_trait = { rank = 0, major = false, minor = false }
-
 
 -- Register Azerite Powers before going with generics...
 all:RegisterAuras( {

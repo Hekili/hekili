@@ -5,10 +5,9 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 
 local all = Hekili.Class.specs[ 0 ]
+local state = Hekili.State
 
 
--- 8.3 Essences
--- Breath of the Dying
 all:RegisterAbility( "reaping_flames", {
     id = 310690,
     cast = 0,
