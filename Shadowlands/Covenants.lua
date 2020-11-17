@@ -4,8 +4,10 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local all = Hekili.Class.specs[ 0 ]
 local state = Hekili.State
+local class = Hekili.Class
+
+local all = Hekili.Class.specs[ 0 ]
 
 -- Covenants
 do
