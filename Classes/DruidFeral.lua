@@ -756,6 +756,16 @@ if UnitClassBase( "player" ) == "DRUID" then
         bt_thrash = "thrash_cat"
     }
 
+
+    local LycarasHandler = setfenv( function ()
+        if buff.travel_form.up then state:RunHandler( "stampeding_roar" )
+        elseif buff.moonkin_form.up then state:RunHandler( "starfall" )
+        elseif buff.bear_form.up then state:RunHandler( "barkskin" )
+        elseif buff.cat_form.up then state:RunHandler( "primal_wrath" )
+        else state:RunHandle( "wild_growth" ) end
+    end, state )
+
+
     spec:RegisterHook( "reset_precast", function ()
         if buff.cat_form.down then
             energy.regen = 10 + ( stat.haste * 10 )
@@ -785,6 +795,10 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         opener_done = nil
         last_bloodtalons = nil
+
+        if buff.lycaras_fleeting_glimpse.up then
+            state:QueueAuraExpiration( "lycaras_fleeting_glimpse", LycarasHandler, buff.lycaras_fleeting_glimpse.expires )
+        end
     end )
 
     spec:RegisterHook( "gain", function( amt, resource )

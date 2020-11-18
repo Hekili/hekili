@@ -858,6 +858,14 @@ if UnitClassBase( "player" ) == "DRUID" then
         end
     } ) )
 
+    local LycarasHandler = setfenv( function ()
+        if buff.travel_form.up then state:RunHandler( "stampeding_roar" )
+        elseif buff.moonkin_form.up then state:RunHandler( "starfall" )
+        elseif buff.bear_form.up then state:RunHandler( "barkskin" )
+        elseif buff.cat_form.up then state:RunHandler( "primal_wrath" )
+        else state:RunHandle( "wild_growth" ) end
+    end, state )
+
     spec:RegisterHook( "reset_precast", function ()
         if IsActiveSpell( class.abilities.new_moon.id ) then active_moon = "new_moon"
         elseif IsActiveSpell( class.abilities.half_moon.id ) then active_moon = "half_moon"
@@ -876,6 +884,10 @@ if UnitClassBase( "player" ) == "DRUID" then
         end
 
         eclipse.reset()
+
+        if buff.lycaras_fleeting_glimpse.up then
+            state:QueueAuraExpiration( "lycaras_fleeting_glimpse", LycarasHandler, buff.lycaras_fleeting_glimpse.expires )
+        end
     end )
 
 

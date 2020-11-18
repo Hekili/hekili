@@ -543,9 +543,21 @@ if UnitClassBase( "player" ) == "DRUID" then
         return 0
     end )
 
+    local LycarasHandler = setfenv( function ()
+        if buff.travel_form.up then state:RunHandler( "stampeding_roar" )
+        elseif buff.moonkin_form.up then state:RunHandler( "starfall" )
+        elseif buff.bear_form.up then state:RunHandler( "barkskin" )
+        elseif buff.cat_form.up then state:RunHandler( "primal_wrath" )
+        else state:RunHandle( "wild_growth" ) end
+    end, state )
+
     spec:RegisterHook( "reset_precast", function ()
         if azerite.masterful_instincts.enabled and buff.survival_instincts.up and buff.masterful_instincts.down then
             applyBuff( "masterful_instincts", buff.survival_instincts.remains + 30 )
+        end
+
+        if buff.lycaras_fleeting_glimpse.up then
+            state:QueueAuraExpiration( "lycaras_fleeting_glimpse", LycarasHandler, buff.lycaras_fleeting_glimpse.expires )
         end
 
         eclipse.reset() -- from Balance.
