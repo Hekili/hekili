@@ -99,13 +99,12 @@ if UnitClassBase( "player" ) == "DRUID" then
         local potential_ticks = 0
         local remains = t.remains
         local tick_time = t.tick_time
+        local ttd = min( fight_remains, target.time_to_die )
     
         local duration = t.duration * ( action == "primal_wrath" and 0.5 or 1 )
-        local app_duration = min( target.time_to_die, fight_remains, class.abilities[ this_action ].apply_duration or duration )
+        local app_duration = min( ttd, class.abilities[ this_action ].apply_duration or duration )
         local app_ticks = app_duration / tick_time
         
-        local ttd = fight_remains
-    
         if active_dot[ t.key ] > 0 then
             -- If our current target isn't debuffed, let's assume that other targets have 1 tick remaining.
             if remains == 0 then remains = tick_time end
