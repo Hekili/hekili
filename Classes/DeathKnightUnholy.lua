@@ -655,7 +655,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "target", 191587, "PLAYER" )
 
         if name then
-            print( "VP Actual - Detected = " .. ( expires - debuff.virulent_plague.expires ) )
             debuff.virulent_plague.expires = expires
             debuff.virulent_plague.applied = expires - duration
             debuff.virulent_plague.count = count > 0 and count or 1
@@ -1509,6 +1508,16 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 applyBuff( "wraith_walk" )
             end,
         },
+
+
+        -- Stub.
+        any_dnd = {
+            name = function () return "|T136144:0|t |cff00ccff[Any]|r " .. ( class.abilities.death_and_decay and class.abilities.death_and_decay.name or "Death and Decay" ) end,
+        },
+
+        wound_spender = {
+            name = "|T237530:0|t |cff00ccff[Wound Spender]|r",            
+        }
     } )
 
 
