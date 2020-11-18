@@ -463,7 +463,7 @@ function Hekili:CheckChannel( ability, prio )
         else
             local vals = ""
             for k, v in pairs( modifiers ) do
-                vals = format( "%s%s = %s - ", vals, tostring( k ), tostring( type(v) == 'function' and v() or v ) )
+                vals = format( "%s%s = %s - ", vals, tostring( k ), tostring( type(v) == "function" and v() or v ) )
             end
 
             self:Debug( "Channel modifiers: %s", vals )
@@ -751,13 +751,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 if debug then self:Debug( "We are already in-combat and this pre-combat action is not essential.  Skipping." ) end
                             else
                                 Timer:Track("Post-TTR and Essential")
-                                if action == 'call_action_list' or action == 'run_action_list' or action == 'use_items' then
+                                if action == "call_action_list" or action == "run_action_list" or action == "use_items" then
                                     -- We handle these here to avoid early forking between starkly different APLs.
                                     local aScriptPass = true
                                     local ts = not strict and entry.strict ~= 1 and scripts:IsTimeSensitive( scriptID )
 
                                     if not entry.criteria or entry.criteria == "" then
-                                        if debug then self:Debug( "There is no criteria for %s.", action == 'use_items' and "Use Items" or state.args.list_name or "this action list" ) end
+                                        if debug then self:Debug( "There is no criteria for %s.", action == "use_items" and "Use Items" or state.args.list_name or "this action list" ) end
                                         -- aScriptPass = ts or self:CheckStack()
                                     else
                                         aScriptPass = scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
@@ -807,9 +807,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                 self:PopStack()
 
                                                 -- REVISIT THIS:  IF A RUN_ACTION_LIST CALLER IS NOT TIME SENSITIVE, DON'T BOTHER LOOPING THROUGH IT IF ITS CONDITIONS DON'T PASS.
-                                                -- if action == 'run_action_list' and not ts then
+                                                -- if action == "run_action_list" and not ts then
                                                 --    if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
-                                                --    break
+                                                --    break3
                                                 -- end
 
                                             else
@@ -819,7 +819,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                         end
                                     end
 
-                                elseif action == 'variable' then
+                                elseif action == "variable" then
                                     local name = state.args.var_name
 
                                     if name ~= nil then
@@ -832,7 +832,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 else
                                     -- Target Cycling.
                                     -- We have to determine *here* whether the ability would be used on the current target or a different target.
-                                    if state.args.cycle_targets == 1 and state.settings.cycle and state.spell_targets[ action ] > 1 then
+                                    if state.args.cycle_targets == 1 and state.settings.cycle and state.cycle_enemies > 1 then
                                         state.SetupCycle( ability )
                                     else
                                         state.ClearCycle()
@@ -998,7 +998,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                 end ]]
 
                                                 if aScriptPass then
-                                                    if action == 'potion' then
+                                                    if action == "potion" then
                                                         local potionName = state.args.potion or state.args.name
                                                         if not potionName or potionName == "default" then potionName = class.potion end
                                                         local potion = class.potions[ potionName ]
@@ -1009,7 +1009,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         end
 
                                                         if potion then
-                                                            slot.scriptType = 'simc'
+                                                            slot.scriptType = "simc"
                                                             slot.script = scriptID
                                                             slot.hook = caller
 
@@ -1036,13 +1036,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                                 self:Debug( "Action chosen:  %s at %.2f!", rAction, rWait )
                                                             end
 
-                                                            -- slot.indicator = ( entry.Indicator and entry.Indicator ~= 'none' ) and entry.Indicator
+                                                            -- slot.indicator = ( entry.Indicator and entry.Indicator ~= "none" ) and entry.Indicator
 
                                                             state.selection_time = state.delay
                                                             state.selected_action = rAction
                                                         end
 
-                                                    elseif action == 'wait' then
+                                                    elseif action == "wait" then
                                                         -- local args = scripts:GetModifiers()
                                                         -- local args = ns.getModifiers( listID, actID )
                                                         local sec = state.args.sec or 0.5
@@ -1062,7 +1062,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     elseif action == "cancel_action" then
                                                         if state:IsChanneling() then state.canBreakChannel = true end
 
-                                                    elseif action == 'pool_resource' then
+                                                    elseif action == "pool_resource" then
                                                         if state.args.for_next == 1 and false then
                                                             -- Pooling for the next entry in the list.
                                                             local next_entry  = list[ actID + 1 ]
@@ -1125,7 +1125,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         -- end
 
                                                     else
-                                                        slot.scriptType = 'simc'
+                                                        slot.scriptType = "simc"
                                                         slot.script = scriptID
                                                         slot.hook = caller
 
@@ -1157,7 +1157,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         end
 
                                                         if state.IsCycling() then
-                                                            slot.indicator = 'cycle'
+                                                            slot.indicator = "cycle"
                                                         elseif module and module.cycle then
                                                             slot.indicator = module.cycle()
                                                         end
@@ -1320,7 +1320,7 @@ function Hekili:ProcessHooks( dispName, packName )
     if Queue then
         for k, v in pairs( Queue ) do
             for l, w in pairs( v ) do
-                if type( Queue[ k ][ l ] ) ~= 'table' then
+                if type( Queue[ k ][ l ] ) ~= "table" then
                     Queue[ k ][ l ] = nil
                 end
             end
@@ -1613,19 +1613,21 @@ function Hekili:ProcessHooks( dispName, packName )
 
                 if state.delay > 0 then state.advance( state.delay ) end
 
-                state.cycle = slot.indicator == 'cycle'
-
                 local ability = class.abilities[ action ]
                 local cast = ability.cast
 
-                if ability.gcd ~= 'off' and state.cooldown.global_cooldown.remains == 0 then
-                    state.setCooldown( 'global_cooldown', state.gcd.execute )
+                if slot.indicator == "cycle" then
+                    state.SetupCycle( ability )
+                end
+
+                if ability.gcd ~= "off" and state.cooldown.global_cooldown.remains == 0 then
+                    state.setCooldown( "global_cooldown", state.gcd.execute )
                 end
 
                 if ability.charges and ability.charges > 1 and ability.recharge > 0 then
                     state.spendCharges( action, 1 )
                 
-                elseif action ~= 'global_cooldown' and ability.cooldown > 0 then
+                elseif action ~= "global_cooldown" and ability.cooldown > 0 then
                     state.setCooldown( action, ability.cooldown )
                 
                 end
@@ -1641,7 +1643,7 @@ function Hekili:ProcessHooks( dispName, packName )
                         ns.spendResources( action )
                         state:RunHandler( action )
 
-                        if debug then Hekili:Debug( "Queueing %s channel finish at %.2f [%.2f+%.2f].", action, state.query_time + cast, state.offset, cast ) end
+                        if debug then Hekili:Debug( "Queueing %s channel finish at %.2f [%.2f+%.2f].", action, state.query_time + cast, state.offset, cast, cast_target ) end
                         state:QueueEvent( action, state.query_time, state.query_time + cast, "CHANNEL_FINISH", cast_target )
     
                         -- Queue ticks because we may not have an ability.tick function, but may have resources tied to an aura.
