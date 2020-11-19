@@ -729,7 +729,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( ( pvptalent.necromancers_bargain.enabled and 45 or 90 ) - ( level > 48 and 15 or 0 ) ) end,
             gcd = "spell",
 
-            toggle = "cooldowns",
+            toggle = function () return not talent.army_of_the_damned.enabled and "cooldowns" or nil end,
 
             startsCombat = true,
             texture = 1392565,
