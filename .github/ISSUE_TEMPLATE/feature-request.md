@@ -2,8 +2,8 @@
 name: FEATURE REQUEST
 about: For additional features or ideas.
 title: ''
-labels: ''
-assignees: ''
+labels: enhancement
+assignees: Hekili
 
 ---
 
