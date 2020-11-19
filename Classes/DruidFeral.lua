@@ -544,7 +544,7 @@ if UnitClassBase( "player" ) == "DRUID" then
     local pr_spells = { rake = true }
 
     local snapshot_value = {
-        tigers_fury = 1.15, -- TODO: Implement Carniverious Instinct soulbind
+        tigers_fury = 1.15,
         bloodtalons = 1.3,
         clearcasting = 1.15, -- TODO: Only if talented MoC, not used by 8.1 script
         prowling = 1.6
@@ -553,7 +553,7 @@ if UnitClassBase( "player" ) == "DRUID" then
     local stealth_dropped = 0
 
     local function calculate_multiplier( spellID )
-        local tigers_fury = FindUnitBuffByID( "player", class.auras.tigers_fury.id, "PLAYER" ) and snapshot_value.tigers_fury or 1
+        local tigers_fury = FindUnitBuffByID( "player", class.auras.tigers_fury.id, "PLAYER" ) and ( snapshot_value.tigers_fury + state.conduit.carnivorous_instinct.mod * 0.01 ) or 1
         local bloodtalons = FindUnitBuffByID( "player", class.auras.bloodtalons.id, "PLAYER" ) and snapshot_value.bloodtalons or 1
         local clearcasting = FindUnitBuffByID( "player", class.auras.clearcasting.id, "PLAYER" ) and state.talent.moment_of_clarity.enabled and snapshot_value.clearcasting or 1
         local prowling = ( GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", class.auras.incarnation.id, "PLAYER" ) or FindUnitBuffByID( "player", class.auras.berserk.id, "PLAYER" ) ) and snapshot_value.prowling or 1
