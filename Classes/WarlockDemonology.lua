@@ -244,7 +244,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                     if shards_for_guldan >= 3 then table.insert( guldan, now + 0.13 ) end
 
                     -- Per SimC APL, we go into Tyrant with 5 shards -OR- with Nether Portal up.
-                    if IsKnown( 265817 ) then
+                    if IsSpellKnown( 265817 ) then
                         local start, duration = GetSpellCooldown( 265817 )
 
                         if not tyrant_ready_actual and start and duration and start + duration - now < 5 then
