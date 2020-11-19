@@ -678,6 +678,9 @@ do
 
             cycle.aura = aura
             debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
+            debug( " - confirm:  IsCycling? %s, %s", tostring( state.IsCycling() ), tostring( state.IsCycling( aura ) ) ) 
+        else
+            debug( " - cycle aura appears to be down, so we're sticking with our current target." )
         end
     end
 
