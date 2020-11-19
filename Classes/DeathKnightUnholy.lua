@@ -582,6 +582,21 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
     spec:RegisterPet( "army_ghoul", 24207, "army_of_the_dead", 30 )
 
 
+    local ForceVirulentPlagueRefresh = setfenv( function ()
+        target.updated = true
+        Hekili:ForceUpdate( "VIRULENT_PLAGUE_REFRESH" )
+    end, state )
+
+    local After = C_Timer.After
+
+    spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( event, _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID )
+        if sourceGUID == GUID and subtype == "SPELL_CAST_SUCCESS" and spellID == 77575 then
+            After( state.latency, ForceVirulentPlagueRefresh )
+            After( state.latency * 2, ForceVirulentPlagueRefresh )
+        end
+    end )
+
+
     local any_dnd_set, wound_spender_set = false, false
 
     spec:RegisterHook( "reset_precast", function ()
@@ -651,19 +666,6 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
         if state:IsKnown( "deaths_due" ) and cooldown.deaths_due.remains then setCooldown( "death_and_decay", cooldown.deaths_due.remains )
         elseif talent.defile.enabled and cooldown.defile.remains then setCooldown( "death_and_decay", cooldown.defile.remains ) end
-
-        -- Get real Virulent Plague duration because SPELL_AURA_REFRESH doesn't necessarily fire.
-        local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "target", 191587, "PLAYER" )
-
-        if name then
-            debuff.virulent_plague.expires = expires
-            debuff.virulent_plague.applied = expires - duration
-            debuff.virulent_plague.count = count > 0 and count or 1
-            debuff.virulent_plague.caster = "player"
-        else
-            removeDebuff( "target", "virulent_plague" )
-        end
-
     end )
 
     local mt_runeforges = {

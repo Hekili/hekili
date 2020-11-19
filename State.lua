@@ -5337,6 +5337,7 @@ function state.reset( dispName )
 
     state.resetting = true
 
+    state.cycle = nil
     state.ClearCycle()
     state:ResetVariables()
 
@@ -5357,8 +5358,6 @@ function state.reset( dispName )
     state.my_enemies = nil
     state.true_active_enemies = nil
     state.true_my_enemies = nil
-
-    state.cycle = nil
 
     state.latency = select( 4, GetNetStats() ) / 1000
 
