@@ -1,8 +1,8 @@
 ---
 name: BUG REPORT
 about: IF THE REQUIRED INFORMATION ISN'T PROVIDED, YOUR TICKET IS LIKELY TO BE DISCARDED
-title: ''
-labels: ''
+title: Use a title that describes the problem scenario.
+labels: bug
 assignees: Hekili
 
 ---
