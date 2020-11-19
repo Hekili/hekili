@@ -2062,7 +2062,7 @@ local mt_stat = {
             return UnitHealthMax('player')
 
         elseif k == 'health_pct' then
-            return UnitHealth( 'player' ) / UnitHealthMax( 'player' )
+            return UnitHealth( 'player' ) / UnitHealthMax( 'player' ) * 100
 
         elseif k == 'mana' then
             return Hekili.State.mana and Hekili.State.mana.current or 0
