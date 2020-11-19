@@ -403,12 +403,13 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             duration = 12,
             max_stack = 1,
         },
-        unholy_blight = {
+        unholy_blight_buff = {
             id = 115989,
             duration = 6,
             max_stack = 1,
+            dot = "buff"
         },
-        unholy_blight_dot = {
+        unholy_blight = {
             id = 115994,
             duration = 14,
             tick_time = function () return 2 * haste end,
@@ -1484,8 +1485,8 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             talent = "unholy_blight",
 
             handler = function ()
-                applyBuff( "unholy_blight" )
-                applyDebuff( "unholy_blight_dot" )
+                applyBuff( "unholy_blight_buff" )
+                applyDebuff( "unholy_blight" )
                 applyDebuff( "target", "virulent_plague" )
                 active_dot.virulent_plague = active_enemies
             end,
