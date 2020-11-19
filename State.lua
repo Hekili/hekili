@@ -671,12 +671,14 @@ do
             return
         end
 
-        cycle.expires = cDebuff.expires
-        cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
-        cycle.maxTTD  = ability.max_ttd
+        if cDebuff.up then
+            cycle.expires = cDebuff.expires
+            cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
+            cycle.maxTTD  = ability.max_ttd
 
-        cycle.aura = aura
-        debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
+            cycle.aura = aura
+            debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
+        end
     end
 
     function state.GetCycleInfo()
@@ -700,6 +702,7 @@ do
     end
 
     function state.ClearCycle()
+        debug( "ClearCycle:  %s", debugstack() )
         if cycle.aura then wipe( cycle ) end
     end
 
@@ -4053,6 +4056,11 @@ local mt_default_debuff = {
         local aura = class.auras[ t.key ]
 
         -- The aura is flagged to get info from a different target.
+        if t.key == "festering_wound" then
+            local exp, min, max, a_name = state.GetCycleInfo()
+            if Hekili.ActiveDebug then Hekili:Debug( "festering_wound.%s ... Cycling? %s, cycle_debuff.%s = %s [ %.2f | %d | %d | %s ]", k, tostring( state.IsCycling( t.key ) ), k, tostring( cycle_debuff[ k ] ), exp or 0, min or 0, max or 0, a_name or 'n/a' ) end
+        end
+
         if state.IsCycling( t.key ) and cycle_debuff[ k ] ~= nil then
             return cycle_debuff[ k ]
         end
