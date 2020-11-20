@@ -170,6 +170,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             id = 145152,
             max_stack = 2,
             duration = 30,
+            multiplier = 1.3,
         },
         cat_form = {
             id = 768,
@@ -180,6 +181,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             id = 135700,
             duration = 15,
             max_stack = function() return talent.moment_of_clarity.enabled and 2 or 1 end,
+            multiplier = function() return talent.moment_of_clarity.enabled and 1.15 or 1 end,
         },
         cyclone = {
             id = 209753,
@@ -324,6 +326,9 @@ if UnitClassBase( "player" ) == "DRUID" then
         primal_fury = {
             id = 159286,
         },
+        primal_wrath = {
+            id = 285381,
+        },
         prowl_base = {
             id = 5215,
             duration = 3600,
@@ -337,6 +342,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             aliasMode = "first",
             aliasType = "buff",
             duration = 3600,
+            multiplier = 1.6,
         },
         rake = {
             id = 155722,
@@ -389,6 +395,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             id = 52610,
             duration = 36,
             max_stack = 1,
+            multiplier = 1.15,
         },
         scent_of_blood = {
             id = 285646,
@@ -449,6 +456,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 if talent.predator.enabled then return x + 5 end
                 return x
             end,
+            multiplier = function() return 1.15 + state.conduit.carnivorous_instinct.mod * 0.01 end,
         },
         travel_form = {
             id = 783,
@@ -543,31 +551,25 @@ if UnitClassBase( "player" ) == "DRUID" then
     local mc_spells = { thrash_cat = true }
     local pr_spells = { rake = true }
 
-    local snapshot_value = {
-        tigers_fury = 1.15,
-        bloodtalons = 1.3,
-        clearcasting = 1.15, -- TODO: Only if talented MoC, not used by 8.1 script
-        prowling = 1.6
-    }
-
     local stealth_dropped = 0
 
-    local function calculate_multiplier( spellID )
-        local tigers_fury = FindUnitBuffByID( "player", class.auras.tigers_fury.id, "PLAYER" ) and ( snapshot_value.tigers_fury + state.conduit.carnivorous_instinct.mod * 0.01 ) or 1
-        local bloodtalons = FindUnitBuffByID( "player", class.auras.bloodtalons.id, "PLAYER" ) and snapshot_value.bloodtalons or 1
-        local clearcasting = FindUnitBuffByID( "player", class.auras.clearcasting.id, "PLAYER" ) and state.talent.moment_of_clarity.enabled and snapshot_value.clearcasting or 1
-        local prowling = ( GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", class.auras.incarnation.id, "PLAYER" ) or FindUnitBuffByID( "player", class.auras.berserk.id, "PLAYER" ) ) and snapshot_value.prowling or 1
+    local function calculate_pmultiplier( spellID )
+        local a = class.auras
+        local tigers_fury = FindUnitBuffByID( "player", a.tigers_fury.id, "PLAYER" ) and a.tigers_fury.multiplier or 1
+        local bloodtalons = FindUnitBuffByID( "player", a.bloodtalons.id, "PLAYER" ) and a.bloodtalons.multiplier or 1
+        local clearcasting = FindUnitBuffByID( "player", a.clearcasting.id, "PLAYER" ) and a.clearcasting.multiplier or 1
+        local prowling = ( GetTime() - stealth_dropped < 0.2 or FindUnitBuffByID( "player", a.incarnation.id, "PLAYER" ) or FindUnitBuffByID( "player", a.berserk.id, "PLAYER" ) ) and a.prowl.multiplier or 1
 
-        if spellID == 155722 then
+        if spellID == a.rake.id then
             return 1 * tigers_fury * prowling
 
-        elseif spellID == 1079 or spellID == 285381 then
+        elseif spellID == a.rip.id or spellID == a.primal_wrath.id then
             return 1 * bloodtalons * tigers_fury
 
-        elseif spellID == 106830 then
+        elseif spellID == a.thrash_cat.id then
             return 1 * tigers_fury * clearcasting
 
-        elseif spellID == 155625 then
+        elseif spellID == a.moonfire_cat.id then
             return 1 * tigers_fury
 
         end
@@ -582,10 +584,11 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         if not act then return mult end
 
-        if tf_spells[ act ] and buff.tigers_fury.up then mult = mult * snapshot_value.tigers_fury end
-        if bt_spells[ act ] and buff.bloodtalons.up then mult = mult * snapshot_value.bloodtalons end
-        if mc_spells[ act ] and buff.clearcasting.up then mult = mult * snapshot_value.clearcasting end
-        if pr_spells[ act ] and ( buff.incarnation.up or buff.berserk.up or buff.prowl.up or buff.shadowmeld.up or state.query_time - stealth_dropped < 0.2 ) then mult = mult * snapshot_value.prowling end
+        local a = class.auras
+        if tf_spells[ act ] and buff.tigers_fury.up then mult = mult * a.tigers_fury.multiplier end
+        if bt_spells[ act ] and buff.bloodtalons.up then mult = mult * a.bloodtalons.multiplier end
+        if mc_spells[ act ] and buff.clearcasting.up then mult = mult * a.clearcasting.multiplier end
+        if pr_spells[ act ] and ( buff.incarnation.up or buff.berserk.up or buff.prowl.up or buff.shadowmeld.up or state.query_time - stealth_dropped < 0.2 ) then mult = mult * a.prowl.multiplier end
 
         return mult
     end )
@@ -594,6 +597,7 @@ if UnitClassBase( "player" ) == "DRUID" then
     local snapshots = {
         [155722] = true,
         [1079]   = true,
+        [285381] = true,
         [106830] = true,
         [155625] = true
     }
@@ -624,7 +628,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 end
             elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
                 if snapshots[ spellID ] then
-                    ns.saveDebuffModifier( spellID, calculate_multiplier( spellID ) )
+                    ns.saveDebuffModifier( spellID, calculate_pmultiplier( spellID ) )
                     ns.trackDebuff( spellID, destGUID, GetTime(), true )
                 elseif spellID == 145152 then -- Bloodtalons
                     last_bloodtalons_proc = GetTime()
