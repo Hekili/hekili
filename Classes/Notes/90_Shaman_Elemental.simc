@@ -1,9 +1,8 @@
 # Elemental Shaman
-# November 14, 2020
+# November 20, 2020
 
 # Changes:
 # - Added backup Essence ability.
-# - Tweaks to improve Echoing Shock per Icy-Veins guide.
 
 actions.precombat=use_item,name=azsharas_font_of_power
 actions.precombat+=/potion
@@ -43,7 +42,6 @@ actions+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions+=/vesper_totem
 actions+=/fae_transfusion
 
-actions+=/echoing_shock,if=(maelstrom>=60|cooldown.lava_burst.remains<=gcd|buff.lava_surge.up)
 actions+=/run_action_list,name=aoe,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
 actions+=/run_action_list,name=single_target,if=!talent.storm_elemental.enabled&active_enemies<=2
 actions+=/run_action_list,name=se_single_target,if=talent.storm_elemental.enabled&active_enemies<=2
