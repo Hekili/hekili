@@ -13,7 +13,7 @@ local FindUnitBuffByID = ns.FindUnitBuffByID
 
 
 -- Conduits
--- [-] carnivorous_instinct
+-- [x] carnivorous_instinct
 -- [-] incessant_hunter
 -- [x] sudden_ambush
 -- [ ] taste_for_blood
