@@ -2107,7 +2107,7 @@ local mt_stat = {
             return t.mana and Hekili.State.mana.regen or 0
 
         elseif k == 'attack_power' then
-            return UnitAttackPower('player')
+            return UnitAttackPower('player') + UnitWeaponAttackPower('player')
 
         elseif k == 'crit_rating' then
             return GetCombatRating(CR_CRIT_MELEE)
