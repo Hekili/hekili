@@ -771,7 +771,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         end
         debuff.rip.pmultiplier = nil
         debuff.rake.pmultiplier = nil
-        debuff.thrash.pmultiplier = nil
+        debuff.thrash_cat.pmultiplier = nil
 
         eclipse.reset() -- from Balance.
 
