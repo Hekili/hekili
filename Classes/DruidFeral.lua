@@ -588,7 +588,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         if tf_spells[ act ] and buff.tigers_fury.up then mult = mult * a.tigers_fury.multiplier end
         if bt_spells[ act ] and buff.bloodtalons.up then mult = mult * a.bloodtalons.multiplier end
         if mc_spells[ act ] and buff.clearcasting.up then mult = mult * a.clearcasting.multiplier end
-        if pr_spells[ act ] and ( buff.incarnation.up or buff.berserk.up or buff.prowl.up or buff.shadowmeld.up or state.query_time - stealth_dropped < 0.2 ) then mult = mult * a.prowl.multiplier end
+        if pr_spells[ act ] and ( effective_stealth or state.query_time - stealth_dropped < 0.2 ) then mult = mult * a.prowl.multiplier end
 
         return mult
     end )
@@ -896,8 +896,8 @@ if UnitClassBase( "player" ) == "DRUID" then
         return debuff.rake.up or debuff.rip.up or debuff.thrash_cat.up or debuff.feral_frenzy.up
     end )
 
-    spec:RegisterStateExpr( "effective_stealth", function ()
-        return buff.prowl.up or buff.berserk.up or buff.incarnation.up
+    spec:RegisterStateExpr( "effective_stealth", function () -- TODO: Test sudden_ambush soulbind conduit
+        return buff.prowl.up or buff.berserk.up or buff.incarnation.up or buff.shadowmeld.up or buff.sudden_ambush.up
     end )
 
 
@@ -922,6 +922,17 @@ if UnitClassBase( "player" ) == "DRUID" then
     spec:RegisterGear( "tier19", 138330, 138336, 138366, 138324, 138327, 138333 )
     spec:RegisterGear( "class", 139726, 139728, 139723, 139730, 139725, 139729, 139727, 139724 )
 
+    local function calculate_damage( coefficient, masteryFlag, armorFlag, critChanceMult )
+        local feralAura = 1.29
+        local armor = armorFlag and 0.7 or 1
+        local crit = min( ( 1 + state.stat.crit * 0.01 * ( critChanceMult or 1 ) ), 2 )
+        local vers = 1 + state.stat.versatility_atk_mod
+        local mastery = masteryFlag and ( 1 + state.stat.mastery_value * 0.01 ) or 1
+        local tf = state.buff.tigers_fury.up and class.auras.tigers_fury.multiplier or 1
+        local sr = state.buff.savage_roar.up and class.auras.savage_roar.multiplier or 1
+
+        return coefficient * state.stat.attack_power * crit * vers * mastery * feralAura * armor * tf * sr
+    end
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -1013,7 +1024,9 @@ if UnitClassBase( "player" ) == "DRUID" then
             form = "cat_form",
             talent = "brutal_slash",
 
-            damage = function () return min( 5, active_enemies ) * stat.attack_power * 0.69 end, -- TODO: Check damage.
+            damage = function ()
+                return calculate_damage( 0.69, false, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
+            end,
             -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
             cost = function () return max( 1, class.abilities.brutal_slash.spend ) end,
 
@@ -1177,7 +1190,9 @@ if UnitClassBase( "player" ) == "DRUID" then
             end,
 
             -- Use maximum damage.
-            damage = function () return 0.9828 * stat.attack_power * 2 end,
+            damage = function () -- TODO: Taste For Blood soulbind conduit
+                return calculate_damage( 0.9828 * 2 , true, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1) * ( talent.sabertooth.enabled and 1.2 or 1 ) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 )
+            end,
             -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
             cost = function () return max( 1, class.abilities.ferocious_bite.spend ) end,
 
@@ -1479,6 +1494,16 @@ if UnitClassBase( "player" ) == "DRUID" then
             talent = "lunar_inspiration",
             form = "cat_form",
 
+            damage = function ()
+                return calculate_damage( 0.15 )
+            end,
+            tick_damage = function ()
+                return calculate_damage( 0.15 )
+            end,
+            tick_dmg = function ()
+                return calculate_damage( 0.15 )
+            end,
+
             cycle = "moonfire_cat",
             aura = "moonfire_cat",
 
@@ -1593,19 +1618,17 @@ if UnitClassBase( "player" ) == "DRUID" then
             min_ttd = 6,
 
             damage = function ()
-                return stat.attack_power * 0.18225
+                return calculate_damage( 0.18225, true ) * ( effective_stealth and class.auras.prowl.multiplier or 1 )
+            end,
+            tick_damage = function ()
+                return calculate_damage( 0.15561, true ) * ( effective_stealth and class.auras.prowl.multiplier or 1 )
+            end,
+            tick_dmg = function ()
+                return calculate_damage( 0.15561, true ) * ( effective_stealth and class.auras.prowl.multiplier or 1 )
             end,
 
             -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
             cost = function () return max( 1, class.abilities.rake.spend ) end,            
-
-            tick_damage = function ()
-                return stat.attack_power * 0.15561
-            end,
-
-            tick_dmg = function ()
-                return stat.attack_power * 0.15561
-            end,
 
             form = "cat_form",
 
@@ -1776,6 +1799,13 @@ if UnitClassBase( "player" ) == "DRUID" then
             cycle = "rip",
             min_ttd = 9.6,
 
+            tick_damage = function ()
+                return calculate_damage( 0.14, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 )
+            end,
+            tick_dmg = function ()
+                return calculate_damage( 0.14, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 )
+            end,
+
             form = "cat_form",
 
             apply_duration = function ()
@@ -1878,7 +1908,10 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             form = "cat_form",
 
-            damage = function () return 0.46 * stat.attack_power * ( bleeding and 1.2 or 1 ) * ( effective_stealth and ( 1.6 * 1 + 0.01 * stat.crit * ( level > 53 and 2 or 1 ) ) or 1 ) end,
+            damage = function ()
+                return calculate_damage( 0.46, false, true, ( effective_stealth and 2 or 1 ) ) * ( effective_stealth and class.auras.prowl.multiplier or 1 ) * ( bleeding and 1.2 or 1 ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
+            end,
+
             -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
             cost = function () return max( 1, class.abilities.brutal_slash.spend ) end,
 
@@ -2091,7 +2124,10 @@ if UnitClassBase( "player" ) == "DRUID" then
             notalent = "brutal_slash",
             form = "cat_form",
 
-            damage = function () return min( 5, active_enemies ) * stat.attack_power * 0.35 * ( bleeding and 1.2 or 1 ) * ( 1 + stat.crit * 0.01 ) end, -- TODO: Check damage.
+            damage = function ()
+                return calculate_damage( 0.35, false, true ) * ( bleeding and 1.2 or 1 ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
+            end,
+
             -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
             cost = function () return max( 1, class.abilities.swipe_cat.spend ) end,            
 
@@ -2169,6 +2205,16 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             aura = "thrash_cat",
             cycle = "thrash_cat",
+
+            damage = function ()
+                return calculate_damage( 0.055, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
+            end,
+            tick_damage = function ()
+                return calculate_damage( 0.175, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
+            end,
+            tick_dmg = function ()
+                return calculate_damage( 0.175, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
+            end,
 
             form = "cat_form",
             handler = function ()
