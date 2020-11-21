@@ -705,7 +705,6 @@ do
     end
 
     function state.ClearCycle()
-        debug( "ClearCycle:  %s", debugstack() )
         if cycle.aura then wipe( cycle ) end
     end
 
@@ -2184,7 +2183,7 @@ ns.metatables.mt_stat = mt_stat
 
 -- Table of default handlers for specific pets/totems.
 local mt_default_pet = {
-    __index = function(t, k)
+    __index = function( t, k )
         --[[ if rawget( t, "permanent" ) then
             if k == 'up' or k == 'exists' then
                 return UnitExists( 'pet' ) and ( not UnitIsDead( 'pet' ) )
