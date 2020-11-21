@@ -1141,6 +1141,14 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.texture = ability.texture
                                                         slot.indicator = ability.indicator
 
+                                                        if ability.interrupt and state.buff.casting.up then
+                                                            slot.interrupt = true
+                                                            slot.castStart = state.buff.casting.applied
+                                                        else
+                                                            slot.interrupt = nil
+                                                            slot.castStart = nil
+                                                        end
+                                                        
                                                         slot.wait = state.delay
 
                                                         slot.resource = state.GetResourceType( rAction )

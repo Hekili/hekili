@@ -1198,9 +1198,13 @@ do
                 end
 
                 if i == 1 and conf.delays.extend and rec.time > 0 and rec.exact_time > max( now, start + duration ) then
-                -- if i == 1 and conf.delays.extend and rec.exact_time > max( now, start + duration ) then
-                    start = start > 0 and start or state.gcd.lastStart
-                    duration = rec.exact_time - start
+                    if rec.interrupt and rec.startCast then
+                        start = rec.startCast
+                        duration = rec.exact_time - start
+                    else
+                        start = start > 0 and start or state.gcd.lastStart
+                        duration = rec.exact_time - start
+                    end
                 end
 
                 if cd.lastStart ~= start or cd.lastDuration ~= duration then
