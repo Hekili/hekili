@@ -697,7 +697,7 @@ do
 
     function state.IsCycling( aura )
         if not cycle.aura then
-            debug( "no cycle.aura" )
+            -- debug( "no cycle.aura" )
             return false end
         if aura and cycle.aura ~= aura then
             debug( "cycle.aura ~= '%s'", aura )
