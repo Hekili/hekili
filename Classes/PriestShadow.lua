@@ -214,54 +214,17 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
     do
         -- Shadowfiend/Mindbender "down" is the opposite of other spec pets.
-        local mt_shadowpriest_pet = {
+        local mt_pet_fiend = {
             __index = function( t, k )
-                if k == 'expires' then
-                    local present, name, start, duration
-        
-                    for i = 1, 5 do
-                        present, name, start, duration = GetTotemInfo( i )
-                        if duration == 0 then duration = 3600 end
-        
-                        if present and class.abilities[ t.key ] and name == class.abilities[ t.key ].name then
-                            t.expires = start + duration
-                            return t.expires
-                        end
-                    end
-        
-                    t.expires = 0
-                    return t[ k ]
-        
-                elseif k == 'remains' then
-                    return max( 0, t.expires - ( state.query_time ) )
-                
-                elseif k == 'up' then
-                    -- Up is down, down is up...
-                    return ( t.expires < ( state.query_time ) )
+                local fiend = state.talent.mindbender.enabled and "mindbender" or "shadowfiend"
 
-                elseif k == 'down' then
-                    return ( t.expires >= ( state.query_time ) )
-                
-                elseif k == 'active' or k == 'alive' or k == 'exists' then
-                    return ( t.expires >= ( state.query_time ) )
-        
-                elseif k == 'id' then
-                    return t.exists and UnitGUID( "pet" ) and tonumber( UnitGUID( "pet" ):match("(%d+)-%x-$" ) ) or nil
-        
-                elseif k == 'spec' then
-                    return t.exists and GetSpecialization( false, true )
-        
+                if k == "down" then
+                    return state.cooldown[ fiend ].down
                 end
-        
-                return -- Error("UNK: " .. k)
-            end,
+                
+                return state.pet[ fiend ][ k ]
+            end
         }
-
-        state.summonPet( "mindbender" )
-        setmetatable( state.pet.mindbender, mt_shadowpriest_pet )
-
-        state.summonPet( "shadowfiend" )
-        setmetatable( state.pet.shadowfiend, mt_shadowpriest_pet )
 
         state.summonPet( "fiend" )
         setmetatable( state.pet.fiend, mt_shadowpriest_pet )
@@ -307,6 +270,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
     local ExpireVoidform = setfenv( function()
         applyBuff( "shadowform" )
+        if Hekili.ActiveDebug then Hekili:Debug( "Voidform expired, Shadowform applied.  Did it stick?  %s.", buff.voidform.up and "Yes" or "No" ) end
     end, state )
 
     spec:RegisterHook( "reset_precast", function ()
