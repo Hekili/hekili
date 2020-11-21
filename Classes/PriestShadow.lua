@@ -301,7 +301,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         end
 
         if buff.voidform.up then
-            state:QueueAuraExpiration( "voidform", ExpireVoidform, buff.voidform.remains )
+            state:QueueAuraExpiration( "voidform", ExpireVoidform, buff.voidform.expires )
         end
 
         -- If we are channeling Mind Sear, see if it started with Thought Harvester.
