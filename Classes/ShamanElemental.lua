@@ -1514,7 +1514,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
     } )
 
 
-    spec:RegisterSetting( "funnel_damage", false, {
+    --[[ spec:RegisterSetting( "funnel_damage", false, {
         name = "Funnel AOE -> Target",
         desc = function ()
             local s = "If checked, the addon's default priority will encourage you to spread |T135813:0|t Flame Shock but will focus damage on your current target, using |T136026:0|t Earth Shock rather than |T451165:0|t Earthquake."
@@ -1527,17 +1527,18 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         end,
         type = "toggle",
         width = 1.5
-    } )
+    } ) ]]
 
 
     spec:RegisterStateExpr( "funneling", function ()
-        return active_enemies > 1 and settings.cycle and settings.funnel_damage
+        return false
+        -- return active_enemies > 1 and settings.cycle and settings.funnel_damage
     end )
 
 
     spec:RegisterSetting( "stack_buffer", 1.1, {
         name = "Icefury and Stormkeeper Padding",
-        desc = "The default priority tries to avoid wasting Stormkeeper and Icefury stacks with a grace period of 1.1 GCDs per stack.\n\n" ..
+        desc = "The default priority tries to avoid wasting Stormkeeper and Icefury stacks with a grace period of 1.1 GCD per stack.\n\n" ..
                 "Increasing this number will reduce the likelihood of wasted Icefury / Stormkeeper stacks due to other procs taking priority, and leave you with more time to react.",
         type = "range",
         min = 1,
