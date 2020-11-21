@@ -1437,9 +1437,9 @@ if UnitClassBase( "player" ) == "PRIEST" then
             buff = function () return buff.dissonant_echoes.up and "dissonant_echoes" or "voidform" end,
             bind = "void_eruption",
 
-            cooldown_ready = function ()
+            --[[ cooldown_ready = function ()
                 return cooldown.void_bolt.remains == 0 and ( buff.dissonant_echoes.up or buff.voidform.up )
-            end,
+            end, ]]
 
             handler = function ()
                 removeBuff( "dissonant_echoes" )
