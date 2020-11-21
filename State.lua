@@ -696,12 +696,23 @@ do
     end
 
     function state.IsCycling( aura )
-        if not cycle.aura then return false end
-        if aura and cycle.aura ~= aura then return false end
-        if state.active_enemies == 1 then return false end
-        if cycle.expires < state.query_time then return false end
+        if not cycle.aura then
+            debug( "no cycle.aura" )
+            return false end
+        if aura and cycle.aura ~= aura then
+            debug( "cycle.aura ~= '%s'", aura )
+            return false end
+        if state.cycle_enemies == 1 then
+            debug( "cycle_enemies == 1" )
+            return false end
+        if cycle.expires < state.query_time then
+            debug( "cycle aura expired" )
+            return false end
+        if state.active_dot[ cycle.aura ] >= state.cycle_enemies then
+            debug( "active_dot[%d] >= cycle_enemies[%d]", state.active_dot[ cycle.aura ], state.cycle_enemies )
+            return false end
 
-        return state.active_dot[ cycle.aura ] < state.cycle_enemies
+        return true
     end
 
     function state.ClearCycle()
