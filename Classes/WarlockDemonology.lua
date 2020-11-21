@@ -125,7 +125,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
             if talent.demonic_strength.enabled and not talent.demonic_consumption.enabled and cooldown.demonic_strength.remains < 5 then return end
             if talent.nether_portal.enabled and cooldown.nether_portal.remains < 5 then return end
             if talent.grimoire_felguard.enabled and cooldown.grimoire_felguard.remains < 5 then return end
-            if talent.summon_vilefiend.enabled and cooldown.summon_filefiend.remains < 5 then return end
+            if talent.summon_vilefiend.enabled and cooldown.summon_vilefiend.remains < 5 then return end
             if cooldown.call_dreadstalkers.remains < 5 then return end
             if buff.demonic_core.up and soul_shard < 4 and ( talent.demonic_consumption.enabled or buff.nether_portal.down ) then return end
             if soul_shard + hog_shards < ( buff.nether_portal.up and 1 or 5 ) then return end
