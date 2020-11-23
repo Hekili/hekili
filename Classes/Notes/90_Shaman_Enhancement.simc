@@ -1,5 +1,5 @@
 # Enhancement Shaman
-# November 13, 2020
+# November 23, 2020
 
 # Added Covenant abilities.
 # Restore Essences.
@@ -7,7 +7,7 @@
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
 actions.precombat+=/lightning_shield,if=buff.lightning_shield.remains<300
-actions.precombat+=/windfury_totem,if=buff.windfury_totem.down
+actions.precombat+=/windfury_totem,if=!runeforge.doom_winds.equipped
 actions.precombat+=/stormkeeper,if=talent.stormkeeper.enabled
 
 # Executed every time the actor is available.
