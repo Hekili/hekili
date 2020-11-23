@@ -1,5 +1,5 @@
 # Protection Paladin
-# October 29, 2020
+# November 23, 2020
 
 # Changes
 # - Added Rebuke.
@@ -7,6 +7,7 @@
 # - Integrate more of the Shadowlands APL.
 
 # Executed before combat begins. Accepts non-harmful actions only.
+actions.precombat+=/devotion_aura
 actions.precombat+=/fleshcraft
 actions.precombat+=/consecration
 actions.precombat+=/lights_judgment
