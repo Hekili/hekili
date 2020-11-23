@@ -658,7 +658,7 @@ function Hekili:GetDefaults()
                     displayPoint = "TOP",
                     anchorPoint = "BOTTOM",
 
-                    x = -55,
+                    x = 0,
                     y = -225,
 
                     numIcons = 3,
@@ -680,7 +680,7 @@ function Hekili:GetDefaults()
 
                     name = "AOE",
 
-                    x = -55,
+                    x = 0,
                     y = -170,
 
                     numIcons = 3,
@@ -703,7 +703,7 @@ function Hekili:GetDefaults()
                     name = "Defensives",
                     filter = 'defensives',
 
-                    x = -165,
+                    x = -110,
                     y = -225,
 
                     numIcons = 1,
@@ -726,7 +726,7 @@ function Hekili:GetDefaults()
                     name = "Interrupts",
                     filter = 'interrupts',
 
-                    x = -110,
+                    x = -55,
                     y = -225,
 
                     numIcons = 1,
@@ -9077,6 +9077,11 @@ local function Sanitize( segment, i, line, warnings )
 
     local times = 0
 
+    i, times = i:gsub( "==", "=" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Corrected equality check from '==' to '=' (" .. times .. "x)." )
+    end
+
     i, times = i:gsub( "([^%%])[ ]*%%[ ]*([^%%])", "%1 / %2" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted SimC syntax % to Lua division operator (/) (" .. times .. "x)." )
@@ -9090,6 +9095,36 @@ local function Sanitize( segment, i, line, warnings )
     i, times = i:gsub( "covenant%.([%w_]+)%.enabled", "covenant.%1" )
     if times > 0 then
         table.insert( warnings, "Line " .. line .. ": Converted 'covenant.X.enabled' to 'covenant.X' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "talent%.([%w_]+)([%+%-%*%%/&| ()<>])", "talent%.%1.enabled%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'talent.X' to 'talent.X.enabled' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "talent%.([%w_]+)$", "talent%.%1.enabled" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'talent.X' to 'talent.X.enabled' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "legendary%.([%w_]+)([%+%-%*%%/&| ()<>])", "legendary%.%1.enabled%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'legendary.X' to 'legendary.X.enabled' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "legendary%.([%w_]+)$", "legendary%.%1.enabled" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'legendary.X' to 'legendary.X.enabled' at EOL (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "runeforge%.([%w_]+)([%+%-%*%%/&| ()<>)])", "runeforge%.%1.enabled%2" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' (" .. times .. "x)." )
+    end
+
+    i, times = i:gsub( "runeforge%.([%w_]+)$", "runeforge%.%1.enabled" )
+    if times > 0 then
+        table.insert( warnings, "Line " .. line .. ": Converted 'runeforge.X' to 'runeforge.X.enabled' at EOL (" .. times .. "x)." )
     end
 
     i, times = i:gsub( "pet%.[%w_]+%.([%w_]+)%.", "%1." )
