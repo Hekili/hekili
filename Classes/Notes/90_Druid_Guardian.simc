@@ -1,15 +1,16 @@
 # Guardian Druid
-# November 14, 2020
+# November 23, 2020
 
 # Changes:
 # - Incorporate Cat/Moonkin priorities (if setting is checked).
 
 # Executed before combat begins. Accepts non-harmful actions only.
-actions.precombat+=/kindred_spirits
-actions.precombat+=/prowl,if=druid.catweave_bear&buff.cat_form.up
-actions.precombat+=/bear_form,if=!(druid.catweave_bear&buff.cat_form.up)&!(druid.owlweave_bear&buff.moonkin_form.up)
-actions.precombat+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&(druid.catweave_bear&buff.cat_form.up|druid.owlweave_bear&buff.moonkin_form.up)
-actions.precombat+=/wrath,if=druid.owlweave_bear&buff.moonkin_form.up
+actions.precombat=cat_form,if=(druid.catweave_bear)|(covenant.night_fae&talent.feral_affinity.enabled)
+actions.precombat+=/prowl,if=druid.catweave_bear
+actions.precombat+=/moonkin_form,if=(druid.owlweave_bear)|(covenant.night_fae&talent.balance_affinity.enabled)
+actions.precombat+=/bear_form,if=((!druid.owlweave_bear&!druid.catweave_bear)&(!covenant.night_fae))|((!druid.owlweave_bear&!druid.catweave_bear)&(covenant.night_fae&talent.restoration_affinity.enabled))
+actions.precombat+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&(druid.catweave_bear&buff.cat_form.up|druid.owlweave_bear&buff.moonkin_form.up|buff.moonkin_form.up&talent.balance_affinity.enabled)
+actions.precombat+=/wrath,if=druid.owlweave_bear
 
 # Executed every time the actor is available.
 actions=skull_bash
@@ -21,6 +22,8 @@ actions+=/run_action_list,name=catweave,if=druid.catweave_bear&buff.cat_form.up
 actions+=/run_action_list,name=owlweave,if=druid.owlweave_bear&buff.moonkin_form.up
 actions+=/run_action_list,name=lycarao,if=((runeforge.lycaras_fleeting_glimpse.equipped)&(talent.balance_affinity.enabled)&(buff.lycaras_fleeting_glimpse.up)&(buff.lycaras_fleeting_glimpse.remains<=2))
 actions+=/run_action_list,name=lycarac,if=((runeforge.lycaras_fleeting_glimpse.equipped)&(talent.feral_affinity.enabled)&(buff.lycaras_fleeting_glimpse.up)&(buff.lycaras_fleeting_glimpse.remains<=2))
+actions+=/run_action_list,name=oconvoke,if=((talent.balance_affinity.enabled)&(!druid.catweave_bear)&(!druid.owlweave_bear)&(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1))
+actions+=/run_action_list,name=cconvoke,if=((talent.feral_affinity.enabled)&(!druid.catweave_bear)&(!druid.owlweave_bear)&(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1))
 actions+=/call_action_list,name=mitigation
 actions+=/run_action_list,name=bear
 
@@ -101,9 +104,13 @@ actions.catweave+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action
 actions.catweave+=/rake,if=dot.rake.refreshable&combo_points<4
 actions.catweave+=/shred,if=combo_points<5
 
+actions.cconvoke=cat_form
+
 actions.lycarac=cat_form
 
 actions.lycarao=moonkin_form
+
+actions.oconvoke=moonkin_form
 
 actions.owlweave=moonkin_form,if=!buff.moonkin_form.up
 actions.owlweave+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up

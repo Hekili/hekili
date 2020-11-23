@@ -1,8 +1,8 @@
 # Feral Druid
-# November 20, 2020
+# November 23, 2020
 
 # Changes:
-# - Brutal Slash / Swipe during Berserk / Incarnation if it beats Shred damage.
+# - Brutal Slash / Swipe during Berserk / Incarnation if it beats Shred damage (pre-54).
 # - Refresh Thrash for Wild Fleshrending.
 # - Don't reprowl in combat; there's no point.
 
@@ -101,8 +101,8 @@ actions.finisher+=/ferocious_bite,max_energy=1,cycle_targets=1
 actions.stealth=run_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down
 actions.stealth+=/rake,cycle_targets=1,if=dot.rake.pmultiplier<1.6&druid.rake.ticks_gained_on_refresh>2
 actions.stealth+=/thrash_cat,if=azerite.wild_fleshrending.enabled&!dot.thrash_cat.ticking
-actions.stealth+=/brutal_slash,if=action.brutal_slash.damage>action.shred.damage
-actions.stealth+=/swipe_cat,if=action.swipe_cat.damage>action.shred.damage
+actions.stealth+=/brutal_slash,if=level<54&spell_targets.brutal_slash*action.brutal_slash.damage>action.shred.damage
+actions.stealth+=/swipe_cat,if=level<54&spell_targets.swipe_cat*action.swipe_cat.damage>action.shred.damage
 actions.stealth+=/shred
 
 actions.balance=sunfire,if=buff.eclipse_solar.down&buff.eclipse_lunar.down&(refreshable|(active_enemies>1&active_dot.sunfire<active_enemies))
