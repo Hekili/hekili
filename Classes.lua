@@ -1896,7 +1896,8 @@ all:RegisterAbilities( {
             elseif class.file == "PALADIN" then gain( 1, "holy_power" )
             elseif class.file == "ROGUE" then gain( 15, "energy" )
             elseif class.file == "WARRIOR" then gain( 15, "rage" )
-            elseif class.file == "DEMONHUNTER" then gain( 15, "fury" ) end
+            elseif class.file == "DEMONHUNTER" then gain( 15, "fury" )
+            elseif class.file == "PRIEST" and state.spec.shadow then gain( 15, "insanity" ) end
 
             removeBuff( "dispellable_magic" )
         end,
