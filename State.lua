@@ -1083,9 +1083,10 @@ state.spell_targets = setmetatable( {}, {
 
         local n = state.active_enemies
 
-        if ability.max_targets then n = min( n, ability.max_targets ) end
         if ability.max_ttd then n = min( n, Hekili:GetNumTTDsBefore( ability.max_ttd + state.offset + state.delay ) ) end
         if ability.min_ttd then n = min( n, Hekili:GetNumTTDsAfter( ability.min_ttd + state.offset + state.delay ) ) end
+
+        if ability.max_targets then n = min( n, ability.max_targets ) end
 
         return n
     end
@@ -1750,10 +1751,14 @@ local mt_state = {
             local targets = t.active_enemies
             local timeframe = t.delay + t.offset
 
-            local minTTD, maxTTD = t.cycleInfo.minTTD, t.cycleInfo.maxTTD
+            local minTTD = timeframe + ( t.cycleInfo.minTTD or 10 )
+            local maxTTD = min( 3599, timeframe + ( t.cycleInfo.maxTTD or 3599 ) )
 
-            if maxTTD then targets = targets - Hekili:GetNumTTDsAfter(  maxTTD + timeframe ) end
-            if minTTD then targets = targets - Hekili:GetNumTTDsBefore( minTTD + timeframe ) end
+            targets = targets - Hekili:GetNumTTDsAfter( maxTTD )
+            targets = targets - Hekili:GetNumTTDsBefore( minTTD )
+
+            -- So the reason we're stuck here is that we may need 'cycle_enemies' when we *aren't* cycling targets.
+            -- I.e., we would cycle Festering Strike (festering_wound) but if we've already dotted our valid adds, we'd hit Death and Decay.
 
             return max( 1, targets )
 
@@ -6517,4 +6522,4 @@ for k, v in pairs( state ) do
     ns.commitKey( k )
 end
 
-ns.attr = { "serenity", "active", "active_enemies", "my_enemies", "active_flame_shock", "adds", "agility", "air", "armor", "attack_power", "bonus_armor", "cast_delay", "cast_time", "casting", "cooldown_react", "cooldown_remains", "cooldown_up", "crit_rating", "deficit", "distance", "down", "duration", "earth", "enabled", "energy", "execute_time", "fire", "five", "focus", "four", "gcd", "hardcasts", "haste", "haste_rating", "health", "health_max", "health_pct", "intellect", "level", "mana", "mastery_rating", "mastery_value", "max_nonproc", "max_stack", "maximum_energy", "maximum_focus", "maximum_health", "maximum_mana", "maximum_rage", "maximum_runic", "melee_haste", "miss_react", "moving", "mp5", "multistrike_pct", "multistrike_rating", "one", "pct", "rage", "react", "regen", "remains", "resilience_rating", "runic", "seal", "spell_haste", "spell_power", "spirit", "stack", "stack_pct", "stacks", "stamina", "strength", "this_action", "three", "tick_damage", "tick_dmg", "tick_time", "ticking", "ticks", "ticks_remain", "time", "time_to_die", "time_to_max", "travel_time", "two", "up", "water", "weapon_dps", "weapon_offhand_dps", "weapon_offhand_speed", "weapon_speed", "single", "aoe", "cleave", "percent", "last_judgment_target", "unit", "ready", "refreshable", "pvptalent", "conduit", "legendary" }
+ns.attr = { "serenity", "active", "active_enemies", "my_enemies", "active_flame_shock", "adds", "agility", "air", "armor", "attack_power", "bonus_armor", "cast_delay", "cast_time", "casting", "cooldown_react", "cooldown_remains", "cooldown_up", "crit_rating", "deficit", "distance", "down", "duration", "earth", "enabled", "energy", "execute_time", "fire", "five", "focus", "four", "gcd", "hardcasts", "haste", "haste_rating", "health", "health_max", "health_pct", "intellect", "level", "mana", "mastery_rating", "mastery_value", "max_nonproc", "max_stack", "maximum_energy", "maximum_focus", "maximum_health", "maximum_mana", "maximum_rage", "maximum_runic", "melee_haste", "miss_react", "moving", "mp5", "multistrike_pct", "multistrike_rating", "one", "pct", "rage", "react", "regen", "remains", "resilience_rating", "runic", "seal", "spell_haste", "spell_power", "spirit", "stack", "stack_pct", "stacks", "stamina", "strength", "this_action", "three", "tick_damage", "tick_dmg", "tick_time", "ticking", "ticks", "ticks_remain", "time", "time_to_die", "time_to_max", "travel_time", "two", "up", "water", "weapon_dps", "weapon_offhand_dps", "weapon_offhand_speed", "weapon_speed", "single", "aoe", "cleave", "percent", "last_judgment_target", "unit", "ready", "refreshable", "pvptalent", "conduit", "legendary", "runeforge", "covenant" }

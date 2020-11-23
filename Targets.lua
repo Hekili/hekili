@@ -974,7 +974,7 @@ do
 
         for k, v in pairs(db) do
             if v.n > 3 then
-                if ceil(v.lastHealth / v.rate) <= x then
+                if ceil( v.lastHealth / v.rate ) <= x then
                     count = count + 1
                 end
             end
@@ -988,10 +988,8 @@ do
         local count = 0
 
         for k, v in pairs(db) do
-            if v.n > 3 then
-                if ceil(v.lastHealth / v.rate) > x then
-                    count = count + 1
-                end
+            if v.n < 4 or ceil( v.lastHealth / v.rate ) > x then
+                count = count + 1
             end
         end
 
