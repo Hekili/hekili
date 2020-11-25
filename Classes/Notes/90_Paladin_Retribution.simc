@@ -1,7 +1,12 @@
 # Retribution Paladin
-# November 17, 2020
+# November 24, 2020
 
+actions.precombat=potion
 actions.precombat+=/arcane_torrent
+actions.precombat+=/blessing_of_summer
+actions.precombat+=/blessing_of_autumn
+actions.precombat+=/blessing_of_winter
+actions.precombat+=/blessing_of_spring
  
 # Executed every time the actor is available.
 actions=rebuke
@@ -9,6 +14,17 @@ actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=generators
  
 actions.cooldowns=potion,if=(buff.bloodlust.react|buff.avenging_wrath.up&buff.avenging_wrath.remains>18|buff.crusade.up&buff.crusade.remains<25)
+actions.cooldowns+=/use_item,name=skulkers_wing
+actions.cooldowns+=/use_item,name=macabre_sheet_music,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10
+actions.cooldowns+=/use_item,name=memory_of_past_sins
+actions.cooldowns+=/use_item,name=dreadfire_vessel
+actions.cooldowns+=/use_item,name=darkmoon_deck_voracity,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10
+actions.cooldowns+=/use_item,name=overwhelming_power_crystal,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10
+actions.cooldowns+=/use_item,name=spare_meat_hook
+actions.cooldowns+=/use_item,name=grim_codex
+actions.cooldowns+=/use_item,name=inscrutable_quantum_device,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
+actions.cooldowns+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
+actions.cooldowns+=/use_items
 actions.cooldowns+=/lights_judgment,if=spell_targets.lights_judgment>=2|(!raid_event.adds.exists|raid_event.adds.in>75)
 actions.cooldowns+=/fireblood,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10
 actions.cooldowns+=/shield_of_vengeance
@@ -47,7 +63,6 @@ actions.cooldowns+=/use_item,name=azsharas_font_of_power,if=!talent.crusade.enab
 actions.cooldowns+=/use_item,name=vision_of_demise,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10|cooldown.avenging_wrath.remains>=30|cooldown.crusade.remains>=30
 actions.cooldowns+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|(buff.avenging_wrath.remains>=20|buff.crusade.stack=10&buff.crusade.remains>15)&(cooldown.guardian_of_azeroth.remains>90|time_to_die<30|!essence.condensed_lifeforce.major)
 actions.cooldowns+=/use_item,name=knot_of_ancient_fury,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>30|!buff.crusade.up&cooldown.crusade.remains>30
-actions.cooldowns+=/use_items
 actions.cooldowns+=/avenging_wrath,if=(holy_power>=4&time<5|holy_power>=3&time>5|talent.holy_avenger.enabled&cooldown.holy_avenger.remains=0)&time_to_hpg=0
 actions.cooldowns+=/crusade,if=(holy_power>=4&time<5|holy_power>=3&time>5|talent.holy_avenger.enabled&cooldown.holy_avenger.remains=0)&time_to_hpg=0
 actions.cooldowns+=/ashen_hallow
