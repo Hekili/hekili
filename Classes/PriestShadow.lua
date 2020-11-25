@@ -1485,6 +1485,8 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 removeBuff( "anunds_last_breath" )
             end,
 
+            copy = 343355,
+
             auras = {
                 hungering_void = {
                     id = 345219,
