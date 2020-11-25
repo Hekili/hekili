@@ -1174,7 +1174,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             startsCombat = true,
             texture = 1373912,
 
-            usable = function () return stealthed.all, "requires stealth" end,
+            usable = function () return stealthed.all or buff.sepsis_buff.up, "requires stealth or sepsis_buff" end,
             handler = function ()
                 removeBuff( "cold_blood" )
 
@@ -1196,6 +1196,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if conduit.perforated_veins.enabled then
                     addStack( "perforated_veins", nil, 1 )
                 end
+
+                removeBuff( "sepsis_buff" )
 
                 applyDebuff( "target", "find_weakness" )
             end,

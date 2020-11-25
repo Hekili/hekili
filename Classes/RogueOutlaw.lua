@@ -531,13 +531,15 @@ if UnitClassBase( "player" ) == "ROGUE" then
             startsCombat = true,
             texture = 132282,
 
-            usable = function () return stealthed.all end,            
+            usable = function () return stealthed.all or buff.sepsis_buff.up, "requires stealth or sepsis_buff" end,
             handler = function ()
                 if debuff.dreadblades.up then
                     gain( combo_points.max, "combo_points" )
                 else
                     gain( buff.broadside.up and 3 or 2, "combo_points" )
                 end
+
+                removeBuff( "sepsis_buff" )
             end,
         },
 
