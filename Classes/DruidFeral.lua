@@ -2428,7 +2428,6 @@ if UnitClassBase( "player" ) == "DRUID" then
                     id = 327139,
                     duration = 10,
                     max_stack = 1,
-                    copy = "kindred_empowerment_energize",
                 },
                 -- From Damager
                 kindred_empowerment_partner = {
@@ -2471,7 +2470,14 @@ if UnitClassBase( "player" ) == "DRUID" then
                     id = 338142,
                     duration = 10,
                     max_stack = 1,
-                },                
+                },
+
+                kindred_empowerment_energize = {
+                    alias = { "kindred_empowerment", "kindred_focus", "kindred_protection", "lone_empowerment" },
+                    aliasMode = "first",
+                    aliasType = "buff",
+                    duration = 10,
+                }
             }
         },
 
@@ -2489,7 +2495,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 return buff.lone_spirit.up or buff.kindred_spirits.up, "requires kindred_spirits/lone_spirit"
             end,
 
-            toggle = "essences",
+            toggle = function () return role.tank and "defensives" or "essences" end,
 
             bind = "kindred_spirits",
 
