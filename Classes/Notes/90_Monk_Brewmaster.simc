@@ -1,5 +1,5 @@
 # Brewmaster Monk
-# November 23, 2020
+# November 24, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft
@@ -23,8 +23,8 @@ actions+=/lights_judgment
 actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
-actions+=/invoke_niuzao_the_black_ox
-actions+=/touch_of_death
+actions+=/invoke_niuzao_the_black_ox,if=fight_remains>25
+actions+=/touch_of_death,if=target.health.pct<=15|target.health.current<health.max
 actions+=/weapons_of_order
 actions+=/fallen_order
 actions+=/bonedust_brew
@@ -52,6 +52,7 @@ actions+=/healing_elixir,if=health.pct<33
 # Offensively, the APL prioritizes KS on cleave, BoS else, with energy spenders and cds sorted below
 actions+=/keg_smash,if=spell_targets>=2
 actions+=/faeline_stomp,if=spell_targets>=2
+
 # Cast KS at top prio during WoO buff.
 actions+=/keg_smash,if=buff.weapons_of_order.up
 
@@ -61,22 +62,23 @@ actions+=/celestial_brew,if=tanking&buff.purified_chi.up&(buff.purified_chi.rema
 
 actions+=/detox
 
+actions+=/rushing_jade_wind,if=spell_targets>=2&buff.rushing_jade_wind.down
 actions+=/tiger_palm,if=talent.rushing_jade_wind.enabled&buff.blackout_combo.up&buff.rushing_jade_wind.up
 actions+=/breath_of_fire,if=buff.charred_passions.down&runeforge.charred_passions.equipped
-actions+=/tiger_palm
 actions+=/blackout_kick
 actions+=/keg_smash
-actions+=/concentrated_flame,if=dot.concentrated_flame.remains=0
 actions+=/faeline_stomp
-actions+=/heart_essence,if=!essence.the_crucible_of_flame.major
-actions+=/expel_harm,if=buff.gift_of_the_ox.stack>=3
-actions+=/touch_of_death,if=target.health.pct<=15
 actions+=/rushing_jade_wind,if=buff.rushing_jade_wind.down
 actions+=/spinning_crane_kick,if=buff.charred_passions.up
-actions+=/breath_of_fire,if=buff.charred_passions.down&runeforge.charred_passions.equipped
+actions+=/concentrated_flame,if=dot.concentrated_flame.remains=0
+actions+=/expel_harm,if=buff.gift_of_the_ox.stack>=3
+actions+=/breath_of_fire,if=buff.blackout_combo.down&(buff.bloodlust.down|(buff.bloodlust.up&dot.breath_of_fire_dot.refreshable))
+actions+=/heart_essence,if=!essence.the_crucible_of_flame.major
 actions+=/chi_burst
 actions+=/chi_wave
-actions+=/spinning_crane_kick,if=active_enemies>=3&cooldown.keg_smash.remains>gcd&(energy+(energy.regen*(cooldown.keg_smash.remains+execute_time)))>=65&(!talent.spitfire.enabled|!runeforge.charred_passions.equipped)
+# Expel Harm has higher DPET than TP when you have at least 2 orbs.
+actions+=/expel_harm,if=buff.gift_of_the_ox.stack>=2
+actions+=/spinning_crane_kick,if=active_enemies>=3&cooldown.keg_smash.remains>execute_time&(energy+(energy.regen*(cooldown.keg_smash.remains+execute_time)))>=65
 actions+=/tiger_palm,if=!talent.blackout_combo.enabled&cooldown.keg_smash.remains>gcd&(energy+(energy.regen*(cooldown.keg_smash.remains+gcd)))>=65
 actions+=/arcane_torrent,if=energy<31
 actions+=/rushing_jade_wind
