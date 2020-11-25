@@ -353,12 +353,13 @@ if UnitClassBase( "player" ) == "ROGUE" then
         true_stealth_change = GetTime()
     end )
 
+
     spec:RegisterStateTable( "stealthed", setmetatable( {}, {
         __index = function( t, k )
             if k == "rogue" then
-                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.sepsis_buff.up
             elseif k == "rogue_remains" then
-                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains )
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.sepsis_buff.remains )
 
             elseif k == "mantle" then
                 return buff.stealth.up or buff.vanish.up
@@ -366,9 +367,9 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 return max( buff.stealth.remains, buff.vanish.remains )
             
             elseif k == "all" then
-                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up or buff.sepsis_buff.up
             elseif k == "remains" or k == "all_remains" then
-                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.shadowmeld.remains )
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.shadowmeld.remains, buff.sepsis_buff.remains )
             end
 
             return false
