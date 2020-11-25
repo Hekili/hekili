@@ -1351,12 +1351,13 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
     if ability then
         local action = ability.key
         local _, _, _, start, finish = UnitCastingInfo( "player" )
-        local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) ) or Hekili:GetMacroCastTarget( action, start / 1000, "DELAYED" )
-
+        local target = select( 5, state:GetEventInfo( action, nil, nil, "CAST_FINISH", nil, true ) ) 
+        
         state:RemoveSpellEvent( action, true, "CAST_FINISH" )
         state:RemoveSpellEvent( action, true, "PROJECTILE_IMPACT", true )
 
         if start and finish then
+            if not target then target = Hekili:GetMacroCastTarget( action, start / 1000, "DELAYED" ) end
             state:QueueEvent( action, start / 1000, finish / 1000, "CAST_FINISH", target, true )
 
             if ability.isProjectile then
