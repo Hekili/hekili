@@ -1181,7 +1181,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             cooldown = 120,
             gcd = "spell",
 
-            toggle = "cooldowns",
+            toggle = "essences",
 
             startsCombat = true,
             texture = 3591588,
@@ -1222,7 +1222,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             cooldown = 180,
             gcd = "spell",
             
-            toggle = "cooldowns",
+            toggle = "essences",
 
             startsCombat = true,
             texture = 3636838,
@@ -1260,7 +1260,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             cooldown = function () return 60 + ( conduit.sinful_brand.mod * 0.001 ) end,
             gcd = "spell",
 
-            toggle = "cooldowns",
+            toggle = "essences",
 
             startsCombat = true,
             texture = 3565717,
