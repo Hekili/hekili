@@ -37,7 +37,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             stop = function () return state.time == 0 or state.swings.mainhand == 0 end,
             value = function ()
-                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * ( base_rage_gen * fury_rage_mult * state.swings.mainhand_speed / state.haste )
+                return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * fury_rage_mult * state.swings.mainhand_speed / state.haste
             end
         },
 
