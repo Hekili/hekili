@@ -1,5 +1,5 @@
 # Demon Hunter Vengeance
-# November 23, 2020
+# November 24, 2020
 
 actions.precombat+=/use_item,name=azsharas_font_of_power
 
@@ -39,7 +39,7 @@ actions.cooldowns+=/elysian_decree
 actions.defensives=demon_spikes,if=tanking&((full_recharge_time<1&incoming_damage_3s)|(active_enemies>3&incoming_damage_3s&buff.demon_spikes.down)|(incoming_damage_5s>0.25*health.max))
 actions.defensives+=/soul_barrier,if=(active_enemies>3&incoming_damage_3s&buff.demon_spikes.down)|(incoming_damage_5s>0.4*health.max)
 actions.defensives+=/bulk_extraction,if=health.percent<50
-actions.defensives+=/metamorphosis,if=!(talent.demonic.enabled)&(!covenant.venthyr.enabled|!dot.sinful_brand.ticking)|(boss&fight_remains<15)
+actions.defensives+=/metamorphosis,if=!(talent.demonic.enabled)&(!covenant.venthyr|!dot.sinful_brand.ticking)|(boss&fight_remains<15)
 actions.defensives+=/fiery_brand
 
 # Normal Rotation
@@ -51,6 +51,6 @@ actions.normal+=/soul_cleave,if=((talent.spirit_bomb.enabled&soul_fragments=0)|!
 actions.normal+=/immolation_aura,if=((variable.brand_build&cooldown.fiery_brand.remains>10)|!variable.brand_build)&fury<=90
 actions.normal+=/felblade,if=fury<=60
 actions.normal+=/fracture,if=((talent.spirit_bomb.enabled&soul_fragments<=3)|(!talent.spirit_bomb.enabled&((buff.metamorphosis.up&fury<=55)|(buff.metamorphosis.down&fury<=70))))
-actions.normal+=/sigil_of_flame,if=!(covenant.kyrian.enabled&runeforge.razelikhs_defilement)
+actions.normal+=/sigil_of_flame,if=!(covenant.kyrian&runeforge.razelikhs_defilement)
 actions.normal+=/shear
 actions.normal+=/throw_glaive

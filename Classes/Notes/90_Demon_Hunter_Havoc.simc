@@ -1,5 +1,5 @@
 # Demon Hunter Havoc
-# November 23, 2020
+# November 24, 2020
 
 # Snapshot raid buffed stats before combat begins and pre-potting is done.
 actions.precombat+=/use_item,name=azsharas_font_of_power
