@@ -2428,38 +2428,48 @@ if UnitClassBase( "player" ) == "DRUID" then
                     id = 327139,
                     duration = 10,
                     max_stack = 1,
+                    shared = "player",
                 },
                 -- From Damager
                 kindred_empowerment_partner = {
                     id = 327022,
                     duration = 10,
                     max_stack = 1,
+                    dot = "buff",
+                    shared = "player",
                 },
                 kindred_focus = {
                     id = 327148,
                     duration = 10,
                     max_stack = 1,
+                    shared = "player",
                 },
                 kindred_focus_partner = {
                     id = 327071,
                     duration = 10,
                     max_stack = 1,
+                    dot = "buff",                    
+                    shared = "player",
                 },
                 -- Tank
                 kindred_protection = {
                     id = 327037,
                     duration = 10,
                     max_stack = 1,
+                    shared = "player",
                 },
                 kindred_protection_partner = {
                     id = 327148,
                     duration = 10,
                     max_stack = 1,
+                    dot = "buff",
+                    shared = "player",
                 },
                 kindred_spirits = {
                     id = 326967,
                     duration = 3600,
                     max_stack = 1,
+                    shared = "player",
                 },
                 lone_spirit = {
                     id = 338041,
@@ -2489,7 +2499,16 @@ if UnitClassBase( "player" ) == "DRUID" then
             gcd = "spell",
 
             startsCombat = false,
-            texture = 3528282,
+            texture = function ()
+                if buff.lone_spirit.up then
+                    if role.tank then return 3528283 end
+                    return 3528282
+                end
+                if active_dot.kindred_protection_partner > 0 then
+                    return 3528283
+                end
+                return 3528282
+            end,
 
             usable = function ()
                 return buff.lone_spirit.up or buff.kindred_spirits.up, "requires kindred_spirits/lone_spirit"
