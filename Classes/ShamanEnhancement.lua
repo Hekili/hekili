@@ -772,7 +772,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         },
 
         earth_shield = {
-            id = 204288,
+            id = 974,
             cast = 0,
             cooldown = 6,
             gcd = "spell",
