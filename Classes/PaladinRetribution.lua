@@ -326,6 +326,15 @@ if UnitClassBase( "player" ) == "PALADIN" then
         },
 
 
+        -- Generic Aura to cover any Aura.
+        paladin_aura = {
+            alias = { "concentration_aura", "crusader_aura", "devotion_aura", "retribution_aura" },
+            aliasMode = "first",
+            aliasType = "buff",
+            duration = 3600,
+        },
+
+
         -- Azerite Powers
         empyreal_ward = {
             id = 287731,
@@ -643,10 +652,10 @@ if UnitClassBase( "player" ) == "PALADIN" then
             cooldown = 0,
             gcd = "spell",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 135933,
 
-            nobuff = "concentration_aura",
+            nobuff = "paladin_aura",
 
             handler = function ()
                 apply_aura( "concentration_aura" )
@@ -695,8 +704,10 @@ if UnitClassBase( "player" ) == "PALADIN" then
             cooldown = 0,
             gcd = "spell",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 135890,
+
+            nobuff = "paladin_aura",
 
             handler = function ()
                 apply_aura( "crusader_aura" )
@@ -730,10 +741,13 @@ if UnitClassBase( "player" ) == "PALADIN" then
             cooldown = 0,
             gcd = "spell",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 135893,
 
+            nobuff = "paladin_aura",
+            
             handler = function ()
+                apply_aura( "devotion_aura" )
             end,
         },
 
@@ -1169,6 +1183,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
             startsCombat = false,
             texture = 135889,
+
+            nobuff = "paladin_aura",
 
             handler = function ()
                 apply_aura( "retribution_aura" )

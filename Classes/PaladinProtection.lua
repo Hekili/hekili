@@ -186,6 +186,11 @@ if UnitClassBase( "player" ) == "PALADIN" then
             duration = 12,
             max_stack = 1,
         },
+        crusader_aura = {
+            id = 32223,
+            duration = 3600,
+            max_stack = 1,
+        },        
         devotion_aura = {
             id = 465,
             duration = 3600,
@@ -301,6 +306,15 @@ if UnitClassBase( "player" ) == "PALADIN" then
             id = 10326,
             duration = 40,
             max_stack = 1
+        },
+
+
+        -- Generic Aura to cover any Aura.
+        paladin_aura = {
+            alias = { "concentration_aura", "crusader_aura", "devotion_aura", "retribution_aura" },
+            aliasMode = "first",
+            aliasType = "buff",
+            duration = 3600,
         },
 
 
@@ -672,6 +686,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
             startsCombat = true,
             texture = 135890,
 
+            nobuff = "paladin_aura",
+
             handler = function ()
                 removeBuff( "concentration_aura" )
                 removeBuff( "devotion_aura" )
@@ -689,6 +705,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
             startsCombat = true,
             texture = 135893,
+
+            nobuff = "paladin_aura",
 
             handler = function ()
                 removeBuff( "concentration_aura" )
@@ -1030,6 +1048,8 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
             startsCombat = false,
             texture = 135889,
+
+            nobuff = "paladin_aura",
 
             handler = function ()
                 removeBuff( "concentration_aura" )
