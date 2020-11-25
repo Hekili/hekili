@@ -2489,7 +2489,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             gcd = "spell",
 
             startsCombat = false,
-            texture = 3528283,
+            texture = 3528282,
 
             usable = function ()
                 return buff.lone_spirit.up or buff.kindred_spirits.up, "requires kindred_spirits/lone_spirit"
