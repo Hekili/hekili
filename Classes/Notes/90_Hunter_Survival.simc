@@ -1,5 +1,5 @@
 # Survival Hunter
-# November 23, 2020
+# November 24, 2020
 
 # Shadowlands release priority (with Essences).
 
@@ -60,7 +60,7 @@ actions.apst+=/raptor_strike,cycle_targets=1
 actions.apst+=/wildfire_bomb,if=next_wi_bomb.volatile&dot.serpent_sting.ticking|next_wi_bomb.pheromone|next_wi_bomb.shrapnel&focus>50
 
 actions.bop=serpent_sting,cycle_targets=1,if=buff.vipers_venom.remains&buff.vipers_venom.remains<gcd
-actions.bop+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&buff.nesingwarys_trapping_apparatus.up
+actions.bop+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&buff.nessingwarys_trapping_apparatus.up
 actions.bop+=/wildfire_bomb,if=focus+cast_regen<focus.max&!ticking&full_recharge_time<gcd
 actions.bop+=/wild_spirits
 actions.bop+=/flanking_strike,if=focus+cast_regen<focus.max
