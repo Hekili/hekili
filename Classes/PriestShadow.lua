@@ -1386,7 +1386,9 @@ if UnitClassBase( "player" ) == "PRIEST" then
             texture = 254090,
 
             handler = function ()
+                applyBuff( "voidform" )
                 applyBuff( "surrender_to_madness" )
+                applyDebuff( "target", "surrender_to_madness" )
             end,
         },
 
@@ -1637,6 +1639,8 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 applyDebuff( "target", "unholy_transfusion" )
                 active_dot.unholy_transfusion = active_enemies
             end,
+
+            range = 15,
 
             auras = {
                 unholy_transfusion = {
