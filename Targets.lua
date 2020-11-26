@@ -878,16 +878,17 @@ do
         local enemy = db[ guid ]
         if not enemy then return default end
 
+        local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
+        local healthPct = health / healthMax
+
+        if healthPct <= percent then return 0, enemy.n end
+
+        health = health + UnitGetTotalAbsorbs( unit )
+        healthPct = health / healthMax
+
         if enemy.n < 3 or enemy.rate == 0 then
             return default, enemy.n
         end
-
-        local health, healthMax = UnitHealth( unit ), UnitHealthMax( unit )
-        health = health + UnitGetTotalAbsorbs( unit )
-
-        local healthPct = health / healthMax
-
-        if healthPct <= percent then return FOREVER, enemy.n end
 
         return ceil( ( healthPct - percent ) / enemy.rate ), enemy.n
     end
