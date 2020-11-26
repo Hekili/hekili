@@ -924,7 +924,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
 
         fortifying_brew = {
-            id = 201318,
+            id = 243435,
             cast = 0,
             cooldown = 180,
             gcd = "off",
