@@ -872,7 +872,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             toggle = "cooldowns",
 
             startsCombat = true,
-            texture = 132176,
+            texture = 132139,
 
             handler = function ()
                 applyDebuff( "target", "bloodshed" )
