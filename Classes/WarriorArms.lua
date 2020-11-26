@@ -1374,7 +1374,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 }
             },
 
-            copy = { 317485, 330325, 317349 }
+            copy = { 317485, 330325, 317349, 330334 }
         }
 
 
