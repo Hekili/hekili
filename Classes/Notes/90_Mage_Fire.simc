@@ -1,6 +1,6 @@
 # Fire Mage
 # https://github.com/simulationcraft/simc/
-# November 23, 2020
+# November 26, 2020
 
 # Changes:
 # - Use fight_remains rather than target.time_to_die for last-second ability usages.
@@ -41,7 +41,7 @@ actions.precombat+=/pyroblast,if=!prev.pyroblast
 
 # Executed every time the actor is available.
 actions=counterspell,if=!runeforge.disciplinary_command
-actions+=/variable,name=time_to_combustion,op=set,value=talent.firestarter*firestarter.remains+(cooldown.combustion.true_remains*(1-variable.kindling_reduction*talent.kindling))*!cooldown.combustion.ready*buff.combustion.down
+actions+=/variable,name=time_to_combustion,op=set,value=talent.firestarter*firestarter.remains+(cooldown.combustion.remains*(1-variable.kindling_reduction*talent.kindling))*!cooldown.combustion.ready*buff.combustion.down
 # Make sure Combustion is delayed if needed based on the empyreal_ordnance_delay variable
 actions+=/variable,name=time_to_combustion,op=max,value=variable.empyreal_ordnance_delay-(cooldown.empyreal_ordnance.duration-cooldown.empyreal_ordnance.remains)*!cooldown.empyreal_ordnance.ready,if=equipped.empyreal_ordnance
 actions+=/variable,name=time_to_combustion,op=max,value=cooldown.gladiators_badge.remains,if=equipped.gladiators_badge

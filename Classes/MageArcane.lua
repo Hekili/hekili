@@ -1723,7 +1723,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 3636841,
 
-            toggle = "essences",
+            toggle = "cooldowns",
 
             -- -action.shifting_power.execute_time%action.shifting_power.new_tick_time*(dbc.effect.815503.base_value%1000+conduit.discipline_of_the_grove.time_value)
             cdr = function ()
