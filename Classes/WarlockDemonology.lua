@@ -115,7 +115,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     end )
 
     spec:RegisterStateFunction( "update_tyrant_readiness", function( hog_shards )
-        if not IsKnown( 265817 ) then return end
+        if not IsKnown( 265187 ) then return end
 
         hog_shards = hog_shards or 0
 
@@ -244,8 +244,8 @@ if UnitClassBase( "player" ) == "WARLOCK" then
                     if shards_for_guldan >= 3 then table.insert( guldan, now + 0.13 ) end
 
                     -- Per SimC APL, we go into Tyrant with 5 shards -OR- with Nether Portal up.
-                    if IsSpellKnown( 265817 ) then
-                        local start, duration = GetSpellCooldown( 265817 )
+                    if IsSpellKnown( 265187 ) then
+                        local start, duration = GetSpellCooldown( 265187 )
 
                         if not tyrant_ready_actual and start and duration and start + duration - now < 5 then
                             state.reset()
