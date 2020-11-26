@@ -1699,6 +1699,12 @@ local mt_state = {
             local percent = tonumber( k:sub( 13 ) ) or 0
             return Hekili:GetGreatestTimeToPct( percent ) - ( t.offset + t.delay )
 
+        elseif k == "shortest_ttd" then
+            return Hekili:GetLowestTTD()
+
+        elseif k == "longest_ttd" then
+            return Hekili:GetGreatestTTD()
+
         elseif k == "expected_combat_length" then
             if not t.boss then return 3600 end
             return Hekili:GetGreatestTTD() + t.time -- + t.offset + t.delay
