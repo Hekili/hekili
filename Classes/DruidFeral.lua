@@ -481,6 +481,14 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
 
 
+        any_form = {
+            alias = { "bear_form", "cat_form", "moonkin_form" },
+            duration = 3600,
+            aliasMode = "first",
+            aliasType = "buff",            
+        },
+
+
         -- PvP Talents
         ferocious_wound = {
             id = 236021,
@@ -2577,6 +2585,10 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             startsCombat = true,
             texture = 3636839,
+
+            disabled = function ()
+                return covenant.night_fae and not IsSpellKnownOrOverridesKnown( 323764 ), "you have not finished your night_fae covenant intro"
+            end,
 
             finish = function ()
                 -- Can we safely assume anything is going to happen?
