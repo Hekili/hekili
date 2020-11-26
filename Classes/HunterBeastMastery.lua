@@ -1809,6 +1809,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 applyBuff( "wild_spirits" )
             end,
 
+            disabled = function ()
+                return covenant.night_fae and not IsSpellKnownOrOverridesKnown( 328231 ), "you have not finished your night_fae covenant intro"
+            end,
+
             auras = {
                 wild_mark = {
                     id = 328275,
