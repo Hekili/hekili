@@ -1608,7 +1608,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         width = "full",
     } ) 
 
-    spec:RegisterSetting( "tok_damage", 80, {
+    spec:RegisterSetting( "tok_damage", 1, {
         name = "Required Damage for |T651728:0|t Touch of Karma",
         desc = "If set above zero, |T651728:0|t Touch of Karma will only be recommended while you have incoming damage.",
         type = "range",
