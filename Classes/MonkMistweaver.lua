@@ -565,7 +565,6 @@ if UnitClassBase( "player" ) == "MONK" then
             texture = 1616072,
             
             handler = function ()
-                -- 243453
                 applyBuff( "fortifying_brew" )
                 if conduit.fortifying_ingredients.enabled then applyBuff( "fortifying_ingredients" ) end
             end,

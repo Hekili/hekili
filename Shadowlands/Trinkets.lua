@@ -728,6 +728,10 @@ do
             item = 178770,
             toggle = "defensives",
 
+            buff = "gluttonous",
+
+            usable = function () return buff.gluttonous.stack > 8 and health.percent < 80, "requires gluttonous stacks and a health deficit" end,
+
             handler = function ()
                 removeBuff( "gluttonous" )
             end,
