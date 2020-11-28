@@ -1,5 +1,5 @@
 # Feral Druid
-# November 26, 2020
+# November 28, 2020
 
 # Changes:
 # - Brutal Slash / Swipe during Berserk / Incarnation if it beats Shred damage (pre-54).
@@ -12,7 +12,7 @@ actions.precombat+=/variable,name=fourcp_bite,value=0
 # Shred = 0, Non-snapshot Rake = 1, Snapshot Rake = 2, LI = 3, Swipe = 4
 actions.precombat+=/variable,name=filler,value=0
 # Scale with haste.
-actions.precombat+=/variable,name=rip_ticks,value=7
+actions.precombat+=/variable,name=rip_ticks,value=7%haste
 actions.precombat+=/variable,name=thrash_ticks,value=1
 actions.precombat+=/kindred_spirits
 actions.precombat+=/prowl,if=buff.moonkin_form.down
@@ -36,7 +36,7 @@ actions+=/run_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&(buff.b
 actions+=/ferocious_bite,cycle_targets=1,if=buff.apex_predators_craving.up&(!talent.bloodtalons.enabled|buff.bloodtalons.up)
 actions+=/feral_frenzy,if=combo_points=0
 actions+=/pool_resource,for_next=1
-actions+=/rake,cycle_targets=1,if=refreshable|persistent_multiplier>dot.rake.pmultiplier&druid.rake.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
+actions+=/rake,cycle_targets=1,if=(refreshable|persistent_multiplier>dot.rake.pmultiplier)&druid.rake.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
 actions+=/moonfire_cat,cycle_targets=1,if=refreshable&druid.moonfire.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
 actions+=/pool_resource,for_next=1
 actions+=/thrash_cat,if=refreshable&druid.thrash_cat.ticks_gained_on_refresh>variable.thrash_ticks

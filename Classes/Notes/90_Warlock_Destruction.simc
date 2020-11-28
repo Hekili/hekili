@@ -1,5 +1,5 @@
 # Destruction Warlock
-# November 20, 2020
+# November 28, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=fel_domination,if=time>0&!pet.alive
@@ -10,8 +10,6 @@ actions.precombat+=/incinerate,if=!talent.soul_fire.enabled
 
 # Executed every time the actor is available.
 actions=spell_lock
-actions+=/singe_magic
-
 actions=call_action_list,name=havoc,if=havoc_active&active_enemies>1&active_enemies<5-talent.inferno.enabled+(talent.inferno.enabled&talent.internal_combustion.enabled)
 actions+=/conflagrate,if=talent.roaring_blaze.enabled&debuff.roaring_blaze.remains<1.5
 actions+=/cataclysm,if=!(pet.infernal.active&dot.immolate.remains+1>pet.infernal.remains)|spell_targets.cataclysm>1

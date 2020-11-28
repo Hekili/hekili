@@ -1,8 +1,7 @@
 # Survival Hunter
-# November 24, 2020
+# November 28, 2020
 
-# Shadowlands release priority (with Essences).
-
+actions.precombat+=/summon_pet
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers.equipped
 actions.precombat+=/steel_trap
 
@@ -40,6 +39,7 @@ actions.apst=death_chakram,if=focus+cast_regen<focus.max
 actions.apst+=/serpent_sting,cycle_targets=1,if=!dot.serpent_sting.ticking&target.time_to_die>7
 actions.apst+=/flayed_shot
 actions.apst+=/resonating_arrow
+actions.apst+=/wild_spirits
 actions.apst+=/coordinated_assault
 actions.apst+=/kill_shot
 actions.apst+=/flanking_strike,if=focus+cast_regen<focus.max
