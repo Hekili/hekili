@@ -1,9 +1,8 @@
 # Blood Death Knight
-# November 23, 2020
+# November 29, 2020
 
 # Changes:
 # - Quick and dirty update of BfA to Shadowlands.
-# - Note:  Leaving in some BfA items/essences until around 1/1/2021.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=use_item,name=azsharas_font_of_power
@@ -19,14 +18,6 @@ actions+=/lights_judgment,if=buff.unholy_strength.up
 actions+=/ancestral_call
 actions+=/fireblood
 actions+=/bag_of_tricks
-# These BfA trinkets to be retired around 1/1/2021.
-actions+=/use_item,name=razdunks_big_red_button
-actions+=/use_item,effect_name=cyclotronic_blast,if=cooldown.dancing_rune_weapon.remains&!buff.dancing_rune_weapon.up&rune.time_to_4>cast_time
-actions+=/use_item,name=azsharas_font_of_power,if=(cooldown.dancing_rune_weapon.remains<5&fight_remains>15)|(fight_remains<34)
-actions+=/use_item,name=merekthas_fang,if=(cooldown.dancing_rune_weapon.remains&!buff.dancing_rune_weapon.up&rune.time_to_4>3)&!raid_event.adds.exists|raid_event.adds.in>15
-actions+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down
-actions+=/use_item,name=ashvanes_razor_coral,if=target.health.pct<31&equipped.dribbling_inkpod
-actions+=/use_item,name=ashvanes_razor_coral,if=buff.dancing_rune_weapon.up&debuff.razor_coral_debuff.up&!equipped.dribbling_inkpod
 # Since the potion cooldown has changed, we'll sync with DRW
 actions+=/potion,if=buff.dancing_rune_weapon.up
 actions+=/use_items
@@ -35,7 +26,6 @@ actions+=/blooddrinker,if=!buff.dancing_rune_weapon.up&(!covenant.night_fae|buff
 actions+=/blood_boil,if=charges>=2&(covenant.kyrian|buff.dancing_rune_weapon.up)
 actions+=/death_strike,if=fight_remains<3
 actions+=/call_action_list,name=covenants
-actions+=/call_action_list,name=essences
 actions+=/call_action_list,name=standard
 
 # Burn RP if we have time between DD refreshes
@@ -56,14 +46,6 @@ actions.covenants+=/marrowrend,if=covenant.necrolord&buff.bone_shield.stack<=0
 actions.covenants+=/abomination_limb,if=!buff.dancing_rune_weapon.up
 # We just don't cast this during DRW
 actions.covenants+=/shackle_the_unworthy,if=cooldown.dancing_rune_weapon.remains<3|!buff.dancing_rune_weapon.up
-
-actions.essences=concentrated_flame,if=dot.concentrated_flame_burn.remains<2&!buff.dancing_rune_weapon.up
-actions.essences+=/anima_of_death,if=buff.vampiric_blood.up&(raid_event.adds.exists|raid_event.adds.in>15)
-actions.essences+=/memory_of_lucid_dreams,if=rune.time_to_1>gcd&runic_power<40
-actions.essences+=/worldvein_resonance
-actions.essences+=/ripple_in_space,if=!buff.dancing_rune_weapon.up
-actions.essences+=/reaping_flames,if=target.health_pct>=80|target.health_pct<=20|fight_remains<45
-actions.essences+=/heart_essence,if=!buff.dancing_rune_weapon.up
 
 actions.mitigation=vampiric_blood,if=health.pct<50|(!group&health.pct<66)
 # Incoming damage requirement is 25% of max health solo, 50% of max health in a group.
@@ -86,8 +68,7 @@ actions.standard+=/sacrificial_pact,if=pet.ghoul.remains<gcd*2
 actions.standard=blood_tap,if=rune<=2&rune.time_to_4>gcd&charges_fractional>=1.8
 actions.standard+=/dancing_rune_weapon,if=!talent.blooddrinker.enabled|!cooldown.blooddrinker.ready
 actions.standard+=/tombstone,if=buff.bone_shield.stack>=7&rune>=2
-actions.standard+=/marrowrend,if=(!covenant.necrolord|buff.abomination_limb.up)&(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<3)&runic_power.deficit>=20
-actions.standard+=/death_strike,if=runic_power.deficit<=70
+actions.standard+=/marrowrend,if=(!covenant.necrolord|buff.abomination_limb.down)&(buff.bone_shield.remains<=rune.time_to_3|buff.bone_shield.remains<=(gcd+cooldown.blooddrinker.ready*talent.blooddrinker.enabled*2)|buff.bone_shield.stack<3)&runic_power.deficit>=20
 actions.standard+=/marrowrend,if=buff.bone_shield.stack<6&runic_power.deficit>=15&(!covenant.night_fae|buff.deaths_due.remains>5)
 actions.standard+=/heart_strike,if=!talent.blooddrinker.enabled&death_and_decay.remains<5&runic_power.deficit<=(15+buff.dancing_rune_weapon.up*5+spell_targets.heart_strike*talent.heartbreaker.enabled*2actions.standard+=/blood_boil,if=charges_fractional>=1.8&(buff.hemostasis.stack<=(5-spell_targets.blood_boil)|spell_targets.blood_boil>2)
 actions.standard+=/blood_boil,if=charges_fractional>=1.8&(buff.hemostasis.stack<=(5-spell_targets.blood_boil)|spell_targets.blood_boil>2)
