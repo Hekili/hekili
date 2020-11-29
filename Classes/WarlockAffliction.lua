@@ -194,7 +194,10 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             id = 198590,
             duration = function () return 5 * haste end,
             max_stack = 1,
-            tick_time = function () return haste end,
+            tick_time = function ()
+                if not settings.manage_ds_ticks then return nil end
+                return haste
+            end,
         },
         eye_of_kilrogg = {
             id = 126,
@@ -1051,7 +1054,15 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             talent = "drain_soul",
             texture = 136163,
 
-            tick_time = function () return class.auras.drain_soul.tick_time end,
+            break_any = function ()
+                if not settings.manage_ds_ticks then return true end
+                return nil
+            end,
+
+            tick_time = function ()
+                if not settings.manage_ds_ticks then return nil end
+                return class.auras.drain_soul.tick_time
+            end,
 
             start = function ()
                 applyDebuff( "target", "drain_soul" )
@@ -1064,6 +1075,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             end,
 
             tick = function ()
+                if not settings.manage_ds_ticks then return end
                 if level > 51 then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
             end,
         },
@@ -1770,6 +1782,15 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
 
 
+    } )
+
+
+    spec:RegisterSetting( "manage_ds_ticks", false, {
+        name = "Model |T136163:0|t Drain Soul Ticks",
+        desc = "If checked, the addon will expend |cFFFF0000more CPU|r determining when to break |T136163:0|t Drain Soul channels in favor of " ..
+            "other spells.  This is generally not worth it, but is technically more accurate.",
+        type = "toggle",
+        width = "full"
     } )
 
 
