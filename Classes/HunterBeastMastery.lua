@@ -838,6 +838,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
             startsCombat = true,
             texture = 132127,
 
+            nobuff = function () return settings.avoid_bw_overlap and "bestial_wrath" or nil, "avoid_bw_overlap is checked and bestial_wrath is up" end,
+
             handler = function ()
                 applyBuff( "bestial_wrath" )
                 if pvptalent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
@@ -1889,14 +1891,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
     } )
 
 
-    spec:RegisterSetting( "aspect_vop_overlap", false, {
-        name = "|T136074:0|t Aspect of the Wild Overlap (Vision of Perfection)",
-        desc = "If checked, the addon will recommend |T136074:0|t Aspect of the Wild even if the buff is already applied due to a Vision of Perfection proc.\n" ..
-            "This may be preferred when delaying Aspect of the Wild would cost you one or more uses of Aspect of the Wild in a given fight.",
-        type = "toggle",
-        width = "full"
-    } )
-
     spec:RegisterSetting( "barbed_shot_grace_period", 0.5, {
         name = "|T2058007:0|t Barbed Shot Grace Period",
         desc = "If set above zero, the addon (using the default priority or |cFFFFD100barbed_shot_grace_period|r expression) will recommend |T2058007:0|t Barbed Shot up to 1 global cooldown earlier.",
@@ -1906,7 +1900,14 @@ if UnitClassBase( "player" ) == "HUNTER" then
         min = 0,
         max = 1,
         step = 0.01,
-        width = 1.5
+        width = "full"
+    } )
+
+    spec:RegisterSetting( "avoid_bw_overlap", false, {
+        name = "Avoid |T132127:0|t Bestial Wrath Overlap",
+        desc = "If checked, the addon will not recommend |T132127:0|t Bestial Wrath if the buff is already applied.",
+        type = "toggle",
+        width = "full"
     } )
 
 
