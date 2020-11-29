@@ -150,7 +150,8 @@ local enemyExclusions = {
     ["160966"] = true,      -- Thing from Beyond?
     ["161895"] = true,      -- Thing from Beyond?
     ["157452"] = true,      -- Nightmare Antigen in Carapace
-    ["158041"] = 310126,    -- N'Zoth with Psychic Shell
+    ["158041"] = 310126,    -- N'Zoth with Psychic Shell,
+    ["164698"] = true,      -- Tor'ghast Junk
 }
 
 local f = CreateFrame("Frame")
@@ -272,14 +273,14 @@ do
             local checkPlates = showNPs and spec.nameplates
             
             if checkPets or checkPlates then
-                for unit, guid in pairs(npGUIDs) do
+                for unit, guid in pairs( npGUIDs ) do
                     if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local npcid = guid:match( "(%d+)-%x-$" )
                         local excluded = enemyExclusions[ npcid ]
 
                         if excluded and type( excluded ) == "number" then
                             -- If our table has a number, unit is ruled out only if the buff is present.
-                            excluded = not FindUnitBuffByID( unit, excluded )
+                            excluded = FindUnitBuffByID( unit, excluded )
                         end
 
                         if not excluded and checkPets then
@@ -308,7 +309,7 @@ do
                     counted[ guid ] = counted[ guid ] or false
                 end                
 
-                for _, unit in ipairs(unitIDs) do
+                for _, unit in ipairs( unitIDs ) do
                     local guid = UnitGUID( unit )
         
                     if guid and counted[ guid ] == nil then
@@ -318,7 +319,7 @@ do
 
                             if excluded and type( excluded ) == "number" then
                                 -- If our table has a number, unit is ruled out only if the buff is present.
-                                excluded = not FindUnitBuffByID( unit, excluded )
+                                excluded = FindUnitBuffByID( unit, excluded )
                             end
 
                             if not excluded and checkPets then
