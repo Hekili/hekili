@@ -449,7 +449,7 @@ function Hekili:CheckChannel( ability, prio )
 
     if self.ActiveDebug then self:Debug( "CC: Channel: %s, Ability Aura: %s, Aura: %s.", channel or "none", a and a.aura or "none", aura and aura.key or "none" ) end
 
-    if not a.tick_time and ( not aura or not aura.tick_time ) then
+    if not a.break_any and not a.tick_time and ( not aura or not aura.tick_time ) then
         if self.ActiveDebug then self:Debug( "CC: No aura / no aura.tick_time to forecast channel breaktimes; don't break it." ) end
         return false
     end
