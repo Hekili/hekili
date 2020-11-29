@@ -1,11 +1,12 @@
 # Demonology Warlock
 # https://github.com/simulationcraft/simc/
-# November 14, 2020
+# November 29, 2020
 
 # Changes:
 # - Spell Lock.
 # - Only recommend Demonbolt pre-combat if it is instant (or hardcast for bosses).
 # - Power Siphon allowed pre-combat to proc instant Demonbolt.
+# - Revise Implosion based on Wowhead guide.
 # - PvP talent interrupt.
 
 # Executed before combat begins. Accepts non-harmful actions only.
@@ -40,8 +41,8 @@ actions+=/demonbolt,if=buff.demonic_core.react&soul_shard<4
 actions+=/grimoire_felguard,if=cooldown.summon_demonic_tyrant.remains+cooldown.summon_demonic_tyrant.duration>fight_remains|fight_remains<cooldown.summon_demonic_tyrant.remains+15
 actions+=/use_items
 actions+=/power_siphon,if=buff.wild_imps.stack>1&buff.demonic_core.stack<3
-actions+=/implosion,if=(level<50&active_enemies>2|azerite.explosive_potential.rank>1&buff.explosive_potential.remains<3)&buff.wild_imps.stack>=3
 actions+=/soul_strike
+actions+=/implosion,if=buff.wild_imps.stack>2&spell_targets.implosion>=2
 actions+=/shadow_bolt
 
 actions.essences=worldvein_resonance,if=cooldown.summon_demonic_tyrant.remains>45
