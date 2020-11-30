@@ -3666,7 +3666,7 @@ all:RegisterAura( "galecallers_boon", {
 
 all:RegisterAbility( "ignition_mages_fuse", {
     cast = 0,
-    cooldown = 20,
+    cooldown = 120,
     gcd = "off",
 
     item = 159615,
@@ -4990,12 +4990,22 @@ function Hekili:GetActivePack()
 end
 
 
+local lastChange = 0
+
 function Hekili:SpecializationChanged()
+    local now = GetTime()
+
+    if now - lastChange < 0.5 then
+        return
+    end
+
+    lastChange = now
+
     local currentSpec = GetSpecialization()
     local currentID = GetSpecializationInfo( currentSpec )
 
     if currentID == nil then
-        C_Timer.After( 0.25, function () Hekili:SpecializationChanged() end )
+        C_Timer.After( 0.5, function () Hekili:SpecializationChanged() end )
         return
     end
 
@@ -5252,7 +5262,6 @@ function Hekili:SpecializationChanged()
     state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
 
     self:UpdateDisplayVisibility()
-
     self:RefreshOptions()
     self:LoadScripts()
 
@@ -5267,6 +5276,11 @@ end
 
 ns.specializationChanged = function()
     Hekili:SpecializationChanged()
+end
+
+
+function Hekili:IsValidSpec()
+    return state.spec.id and class.specs[ state.spec.id ] ~= nil
 end
 
 
