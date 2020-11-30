@@ -2507,16 +2507,6 @@ if UnitClassBase( "player" ) == "DRUID" then
             gcd = "spell",
 
             startsCombat = false,
-            texture = function ()
-                if buff.lone_spirit.up then
-                    if role.tank then return 3528283 end
-                    return 3528282
-                end
-                if active_dot.kindred_protection_partner > 0 then
-                    return 3528283
-                end
-                return 3528282
-            end,
 
             usable = function ()
                 return buff.lone_spirit.up or buff.kindred_spirits.up, "requires kindred_spirits/lone_spirit"
