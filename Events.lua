@@ -378,16 +378,16 @@ do
         end
     end
 
-    RegisterEvent( "SPELLS_CHANGED", function ()
+    --[[ RegisterEvent( "SPELLS_CHANGED", function ()
         pendingChange = true
         updateSpells()
-    end )
+    end ) ]]
 end
 
 
 
 -- ACTIVE_TALENT_GROUP_CHANGED fires 2x on talent swap.  Uggh, why?
-do
+--[[ do
     local lastChange = 0
 
     RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", function ( event, from, to )
@@ -398,7 +398,7 @@ do
             lastChange = now
         end
     end )
-end
+end ]]
 
 
 -- Hide when going into the barbershop.
@@ -1166,9 +1166,9 @@ do
         end
     end
 
-    for i, event in pairs( azeriteEvents ) do
+    --[[ for i, event in pairs( azeriteEvents ) do
         RegisterEvent( event, UpdateEssences )
-    end
+    end ]]
 end
 
 
@@ -2113,152 +2113,171 @@ local defaultBarMap = {
 }
 
 
+local ReadKeybindings
 
-local function ReadKeybindings()
+do
+    local lastRefresh = 0
+    local queuedRefresh = false
 
-    for k, v in pairs( keys ) do
-        wipe( v.upper )
-        wipe( v.lower )
-    end
+    ReadKeybindings = function( event )
+        if not Hekili:IsValidSpec() then return end
 
-    -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
-    if _G["Bartender4"] then
-        for actionBarNumber = 1, 10 do
-            local bar = _G["BT4Bar" .. actionBarNumber]
-            for keyNumber = 1, 12 do
-                local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
-                local bindingKeyName = "ACTIONBUTTON" .. keyNumber
+        local now = GetTime()
 
-                -- If bar is disabled assume paging / stance switching on bar 1
-                if actionBarNumber > 1 and bar and not bar.disabled then
-                    bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":LeftButton"
-                end
+        if now - lastRefresh < 0.25 then
+            if queuedRefresh then return end
 
-                StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
-            end
+            queuedRefresh = true
+            C_Timer.After( 0.25 - ( now - lastRefresh ), ReadKeybindings )
+            
+            return
         end
-    -- Use ElvUI's actionbars only if they are actually enabled.
-    elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
-        for i = 1, 10 do
-            for b = 1, 12 do
-                local btn = _G["ElvUI_Bar" .. i .. "Button" .. b]
 
-                local binding = btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
+        lastRefresh = now
+        queuedRefresh = false
 
-                if i > 6 then
-                    -- Checking whether bar is active.
-                    local bar = _G["ElvUI_Bar" .. i]
+        for k, v in pairs( keys ) do
+            wipe( v.upper )
+            wipe( v.lower )
+        end
 
-                    if not bar or not bar.db.enabled then
-                        binding = "ACTIONBUTTON" .. b
+        -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
+        if _G["Bartender4"] then
+            for actionBarNumber = 1, 10 do
+                local bar = _G["BT4Bar" .. actionBarNumber]
+                for keyNumber = 1, 12 do
+                    local actionBarButtonId = (actionBarNumber - 1) * 12 + keyNumber
+                    local bindingKeyName = "ACTIONBUTTON" .. keyNumber
+
+                    -- If bar is disabled assume paging / stance switching on bar 1
+                    if actionBarNumber > 1 and bar and not bar.disabled then
+                        bindingKeyName = "CLICK BT4Button" .. actionBarButtonId .. ":LeftButton"
+                    end
+
+                    StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( actionBarButtonId ) )
+                end
+            end
+        -- Use ElvUI's actionbars only if they are actually enabled.
+        elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
+            for i = 1, 10 do
+                for b = 1, 12 do
+                    local btn = _G["ElvUI_Bar" .. i .. "Button" .. b]
+
+                    local binding = btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
+
+                    if i > 6 then
+                        -- Checking whether bar is active.
+                        local bar = _G["ElvUI_Bar" .. i]
+
+                        if not bar or not bar.db.enabled then
+                            binding = "ACTIONBUTTON" .. b
+                        end
+                    end
+
+                    local action, aType = btn._state_action, "spell"
+
+                    if action and type( action ) == "number" then
+                        binding = GetBindingKey( binding )
+                        action, aType = GetActionInfo( action )
+                        StoreKeybindInfo( i, binding, action, aType )
                     end
                 end
+            end
+        else
+            for i = 1, 12 do
+                StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
+            end
 
-                local action, aType = btn._state_action, "spell"
+            for i = 13, 24 do
+                StoreKeybindInfo( 2, GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
+            end
 
-                if action and type( action ) == "number" then
-                    binding = GetBindingKey( binding )
-                    action, aType = GetActionInfo( action )
-                    StoreKeybindInfo( i, binding, action, aType )
+            for i = 25, 36 do
+                StoreKeybindInfo( 3, GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
+            end
+
+            for i = 37, 48 do
+                StoreKeybindInfo( 4, GetBindingKey( "MULTIACTIONBAR4BUTTON" .. i - 36 ), GetActionInfo( i ) )
+            end
+
+            for i = 49, 60 do
+                StoreKeybindInfo( 5, GetBindingKey( "MULTIACTIONBAR2BUTTON" .. i - 48 ), GetActionInfo( i ) )
+            end
+
+            for i = 61, 72 do
+                StoreKeybindInfo( 6, GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
+            end
+
+            for i = 72, 119 do
+                StoreKeybindInfo( 7 + floor( ( i - 72 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. 1 + ( i - 72 ) % 12 ), GetActionInfo( i + 1 ) )
+            end
+        end
+
+        if _G.ConsolePort then
+            for i = 1, 120 do
+                local bind = ConsolePort:GetActionBinding(i)
+
+                if bind then
+                    local action, id = GetActionInfo( i )
+                    local key, mod = ConsolePort:GetCurrentBindingOwner(bind)
+                    StoreKeybindInfo( math.ceil( i / 12 ), ConsolePort:GetFormattedButtonCombination( key, mod ), action, id, "cPort" )
                 end
             end
-        end
-    else
-        for i = 1, 12 do
-            StoreKeybindInfo( 1, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( i ) )
-        end
+        end 
 
-        for i = 13, 24 do
-            StoreKeybindInfo( 2, GetBindingKey( "ACTIONBUTTON" .. i - 12 ), GetActionInfo( i ) )
-        end
+        for k, v in pairs( keys ) do
+            local ability = class.abilities[ k ]
 
-        for i = 25, 36 do
-            StoreKeybindInfo( 3, GetBindingKey( "MULTIACTIONBAR3BUTTON" .. i - 24 ), GetActionInfo( i ) )
-        end
-
-        for i = 37, 48 do
-            StoreKeybindInfo( 4, GetBindingKey( "MULTIACTIONBAR4BUTTON" .. i - 36 ), GetActionInfo( i ) )
-        end
-
-        for i = 49, 60 do
-            StoreKeybindInfo( 5, GetBindingKey( "MULTIACTIONBAR2BUTTON" .. i - 48 ), GetActionInfo( i ) )
-        end
-
-        for i = 61, 72 do
-            StoreKeybindInfo( 6, GetBindingKey( "MULTIACTIONBAR1BUTTON" .. i - 60 ), GetActionInfo( i ) )
-        end
-
-        for i = 72, 119 do
-            StoreKeybindInfo( 7 + floor( ( i - 72 ) / 12 ), GetBindingKey( "ACTIONBUTTON" .. 1 + ( i - 72 ) % 12 ), GetActionInfo( i + 1 ) )
-        end
-    end
-
-    if _G.ConsolePort then
-        for i = 1, 120 do
-            local bind = ConsolePort:GetActionBinding(i)
-
-            if bind then
-                local action, id = GetActionInfo( i )
-                local key, mod = ConsolePort:GetCurrentBindingOwner(bind)
-                StoreKeybindInfo( math.ceil( i / 12 ), ConsolePort:GetFormattedButtonCombination( key, mod ), action, id, "cPort" )
-            end
-        end
-    end 
-
-    for k, v in pairs( keys ) do
-        local ability = class.abilities[ k ]
-
-        if ability and ability.bind then
-            if type( ability.bind ) == 'table' then
-                for _, b in ipairs( ability.bind ) do
+            if ability and ability.bind then
+                if type( ability.bind ) == 'table' then
+                    for _, b in ipairs( ability.bind ) do
+                        for page, value in pairs( v.lower ) do
+                            keys[ b ] = keys[ b ] or {
+                                lower = {},
+                                upper = {},
+                                console = {}
+                            }
+                            keys[ b ].lower[ page ] = value
+                            keys[ b ].upper[ page ] = v.upper[ page ]
+                            keys[ b ].console[ page ] = v.console[ page ]
+                        end
+                    end
+                else
                     for page, value in pairs( v.lower ) do
-                        keys[ b ] = keys[ b ] or {
+                        keys[ ability.bind ] = keys[ ability.bind ] or {
                             lower = {},
                             upper = {},
                             console = {}
                         }
-                        keys[ b ].lower[ page ] = value
-                        keys[ b ].upper[ page ] = v.upper[ page ]
-                        keys[ b ].console[ page ] = v.console[ page ]
+                        keys[ ability.bind ].lower[ page ] = value
+                        keys[ ability.bind ].upper[ page ] = v.upper[ page ]
+                        keys[ ability.bind ].console[ page ] = v.console[ page ]
                     end
-                end
-            else
-                for page, value in pairs( v.lower ) do
-                    keys[ ability.bind ] = keys[ ability.bind ] or {
-                        lower = {},
-                        upper = {},
-                        console = {}
-                    }
-                    keys[ ability.bind ].lower[ page ] = value
-                    keys[ ability.bind ].upper[ page ] = v.upper[ page ]
-                    keys[ ability.bind ].console[ page ] = v.console[ page ]
                 end
             end
         end
-    end
 
-    -- This is also the right time to update pet-based target detection.
-    Hekili:SetupPetBasedTargetDetection()
-end    
+        -- This is also the right time to update pet-based target detection.
+        Hekili:SetupPetBasedTargetDetection()
+    end
+end
 ns.ReadKeybindings = ReadKeybindings
 
 
 RegisterEvent( "UPDATE_BINDINGS", ReadKeybindings )
 RegisterEvent( "PLAYER_ENTERING_WORLD", ReadKeybindings )
-RegisterEvent( "ACTIONBAR_SLOT_CHANGED", ReadKeybindings )
+-- RegisterEvent( "ACTIONBAR_SLOT_CHANGED", ReadKeybindings )
 RegisterEvent( "ACTIONBAR_SHOWGRID", ReadKeybindings )
 RegisterEvent( "ACTIONBAR_HIDEGRID", ReadKeybindings )
 RegisterEvent( "ACTIONBAR_PAGE_CHANGED", ReadKeybindings )
-RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
-RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
+-- RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
+-- RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
 RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
 
 RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
     ReadKeybindings()
     Hekili:ForceUpdate( event )
 end )
--- RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, ReadKeybindings )
--- RegisterUnitEvent( "PLAYER_EQUIPMENT_CHANGED", "player", nil, ReadKeybindings )
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
