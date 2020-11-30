@@ -140,6 +140,7 @@ do
 
             item = 184017,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "huntsmans_bond" )
@@ -234,6 +235,7 @@ do
 
             item = 173096,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "indomitable_deck" )
@@ -444,6 +446,7 @@ do
 
             item = 178850,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "suns_embrace" )
@@ -465,6 +468,7 @@ do
 
             item = 184841,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "lyre_of_sacred_purpose" )
@@ -646,6 +650,7 @@ do
 
             item = 178825,
             toggle = "defensives",
+            defensive = true,
 
             handler = function ()
                 applyBuff( "heart_of_a_gargoyle" )
@@ -727,6 +732,7 @@ do
 
             item = 178770,
             toggle = "defensives",
+            defensive = true,
 
             buff = "gluttonous",
 
