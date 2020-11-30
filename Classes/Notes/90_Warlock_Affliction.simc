@@ -1,5 +1,5 @@
 # Affliction Warlock
-# November 28, 2020
+# November 29, 2020
 
 # Changes:
 # - Added Spell Lock.
@@ -33,7 +33,7 @@ actions+=/call_action_list,name=darkglare_prep,if=(active_enemies>2&covenant.ven
 actions+=/seed_of_corruption,if=active_enemies>2&talent.sow_the_seeds.enabled&!dot.seed_of_corruption.ticking&!in_flight
 actions+=/seed_of_corruption,if=active_enemies>2&talent.siphon_life.enabled&!dot.seed_of_corruption.ticking&!in_flight&dot.corruption.remains<4
 actions+=/vile_taint,if=(soul_shard>1|active_enemies>2)&cooldown.summon_darkglare.remains>12
-actions+=/unstable_affliction,if=dot.unstable_affliction.remains<4
+actions+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&dot.unstable_affliction.remains<4
 actions+=/siphon_life,if=dot.siphon_life.remains<4
 actions+=/siphon_life,cycle_targets=1,if=(active_enemies>1)&(dot.siphon_life.remains<4)
 actions+=/call_action_list,name=covenant,if=!covenant.necrolord
