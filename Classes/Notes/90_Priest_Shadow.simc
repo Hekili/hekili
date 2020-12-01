@@ -1,5 +1,5 @@
 # Shadow Priest
-# November 23, 2020
+# December 1, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/power_word_fortitude,if=remains<300
@@ -38,7 +38,7 @@ actions.cds+=/unholy_nova,if=raid_event.adds.in>20
 actions.cds+=/boon_of_the_ascended,if=!buff.voidform.up&!cooldown.void_eruption.up&spell_targets.mind_sear>1&!talent.searing_nightmare.enabled|(buff.voidform.up&spell_targets.mind_sear<2&!talent.searing_nightmare.enabled)|(buff.voidform.up&talent.searing_nightmare.enabled)
 actions.cds+=/call_action_list,name=essences
 # Default fallback for usable items: Use on cooldown.
-actions.cds+=/use_items
+actions.cds+=/use_items,if=buff.voidform.up|buff.power_infusion.up
 
 # APL to use when Boon of the Ascended is active
 actions.boon=ascended_blast,if=spell_targets.mind_sear<=3

@@ -1,5 +1,5 @@
 # Subtlety Rogue
-# November 29, 2020
+# December 1, 2020
 
 # Pre-Combat
 actions.precombat+=/apply_poison
@@ -27,8 +27,8 @@ actions+=/variable,name=stealth_threshold,value=25+talent.vigor.enabled*20+talen
 # Consider using a Stealth CD when reaching the energy threshold
 actions+=/call_action_list,name=stealth_cds,if=energy.deficit<=variable.stealth_threshold
 actions+=/call_action_list,name=finish,if=combo_points=animacharged_cp
-# Finish at 4+ without DS, 5+ with DS (outside stealth)
-actions+=/call_action_list,name=finish,if=combo_points.deficit<=1|fight_remains<=1&combo_points>=3
+# Finish at 4+ without DS or with SoD crit buff, 5+ with DS (outside stealth)
+actions+=/call_action_list,name=finish,if=combo_points.deficit<=1|fight_remains<=1&combo_points>=3|buff.symbols_of_death_autocrit.up&combo_points>=4
 # With DS also finish at 4+ against 4 targets (outside stealth)
 actions+=/call_action_list,name=finish,if=spell_targets.shuriken_storm>=4&combo_points>=4
 # Use a builder when reaching the energy threshold
@@ -115,7 +115,7 @@ actions.stealthed+=/shiv,if=talent.nightstalker.enabled&runeforge.tiny_toxic_bla
 actions.stealthed+=/shadowstrike,cycle_targets=1,if=debuff.find_weakness.remains<1&spell_targets.shuriken_storm<=3&target.time_to_die-remains>6
 # For priority rotation, use Shadowstrike over Storm with WM against up to 4 targets or if FW is running off (on any amount of targets)
 actions.stealthed+=/shadowstrike,if=variable.use_priority_rotation&(debuff.find_weakness.remains<1|talent.weaponmaster.enabled&spell_targets.shuriken_storm<=4)
-actions.stealthed+=/shuriken_storm,if=spell_targets>=3+(buff.the_rotten.up|runeforge.akaaris_soul_fragment&conduit.deeper_daggers.rank>=7)&(!buff.premeditation.up|spell_targets>=5)
+actions.stealthed+=/shuriken_storm,if=spell_targets>=3+(buff.the_rotten.up|runeforge.akaaris_soul_fragment&conduit.deeper_daggers.rank>=7)&(buff.symbols_of_death_autocrit.up|!buff.premeditation.up|spell_targets>=5)
 # Shadowstrike to refresh Find Weakness and to ensure we can carry over a full FW into the next SoD if possible.
 actions.stealthed+=/shadowstrike,if=debuff.find_weakness.remains<=1|cooldown.symbols_of_death.remains<18&debuff.find_weakness.remains<cooldown.symbols_of_death.remains
 actions.stealthed+=/gloomblade,if=buff.perforated_veins.stack>=5&conduit.perforated_veins.rank>=13

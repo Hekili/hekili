@@ -1,18 +1,15 @@
 # Elemental Shaman
-# November 24, 2020
+# December 1, 2020
 
 # Changes:
 # - Added backup Essence ability.
 # - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
 
-actions.precombat=use_item,name=azsharas_font_of_power
-actions.precombat+=/potion
-
 # Executed every time the actor is available.
-# Cast Bloodlust manually if the Azerite Trait Ancestral Resonance is present.
-actions=bloodlust,if=azerite.ancestral_resonance.enabled
-# In-combat potion is preferentially linked to the Guardian of Azeroth, unless combat will end shortly.
-actions+=/potion,if=fight_remains<60|cooldown.guardian_of_azeroth.remains<30
+actions.precombat=earth_elemental,if=!talent.primal_elementalist.enabled
+actions.precombat+=/potion
+actions.precombat+=/elemental_blast,if=talent.elemental_blast.enabled
+actions.precombat+=/lava_burst,if=!talent.elemental_blast.enabled
 
 # Interrupt of casts.
 actions+=/wind_shear

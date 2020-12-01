@@ -1,5 +1,5 @@
 # Death Knight Unholy
-# November 24, 2020
+# December 1, 2020
 
 # Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
 
@@ -14,12 +14,13 @@ actions+=/variable,name=pooling_for_gargoyle,value=cooldown.summon_gargoyle.rema
 actions+=/variable,name=st_planning,value=active_enemies=1&(!raid_event.adds.exists|raid_event.adds.in>15)
 # Racials
 actions+=/arcane_torrent,if=runic_power.deficit>65&(pet.gargoyle.active|!talent.summon_gargoyle.enabled)&rune.deficit>=5
-actions+=/blood_fury,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&(pet.army_ghoul.active|cooldown.army_of_the_dead.remains>target.time_to_die|pet.apoc_ghoul.active&cooldown.army_of_the_dead.remains>cooldown.blood_fury.duration)
-actions+=/berserking,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&(pet.army_ghoul.active|cooldown.army_of_the_dead.remains>target.time_to_die|pet.apoc_ghoul.active&cooldown.army_of_the_dead.remains>cooldown.berserking.duration)
+actions+=/blood_fury,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&pet.apoc_ghoul.active&(pet.army_ghoul.active|cooldown.army_of_the_dead.remains>cooldown.blood_fury.duration%3)|fight_remains<=buff.blood_fury.duration
+actions+=/berserking,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&pet.apoc_ghoul.active&(pet.army_ghoul.active|cooldown.army_of_the_dead.remains>cooldown.berserking.duration%3)|fight_remains<=buff.berserking.duration
 actions+=/lights_judgment,if=buff.unholy_strength.up
-actions+=/ancestral_call,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&(pet.army_ghoul.active|cooldown.army_of_the_dead.remains>target.time_to_die|pet.apoc_ghoul.active&cooldown.army_of_the_dead.remains>cooldown.ancestral_call.duration)
+# Ancestral Call can trigger 4 potential buffs, each lasting 15 seconds. Utilized hard coded time as a trigger to keep it readable.
+actions+=/ancestral_call,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&pet.apoc_ghoul.active&(pet.army_ghoul.active|cooldown.army_of_the_dead.remains>cooldown.ancestral_call.duration%3)|fight_remains<=15
 actions+=/arcane_pulse,if=active_enemies>=2|(rune.deficit>=5&runic_power.deficit>=60)
-actions+=/fireblood,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&(pet.army_ghoul.active|cooldown.army_of_the_dead.remains>target.time_to_die|pet.apoc_ghoul.active&cooldown.army_of_the_dead.remains>cooldown.fireblood.duration)
+actions+=/fireblood,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&pet.apoc_ghoul.active&(pet.army_ghoul.active|cooldown.army_of_the_dead.remains>cooldown.fireblood.duration%3)|fight_remains<=buff.fireblood.duration
 actions+=/bag_of_tricks,if=buff.unholy_strength.up&active_enemies=1
 # Custom trinkets usage
 actions+=/use_items,if=time>20|!equipped.ramping_amplitude_gigavolt_engine|!equipped.vision_of_demise
@@ -51,26 +52,29 @@ actions+=/run_action_list,name=generic_aoe,if=active_enemies>=2&(!death_and_deca
 actions+=/call_action_list,name=generic,if=active_enemies=1
 
 # AoE Burst
-actions.aoe_burst=epidemic,if=runic_power.deficit<(10+death_knight.fwounded_targets*3)&death_knight.fwounded_targets<6&!variable.pooling_for_gargoyle
+actions.aoe_burst=epidemic,if=runic_power.deficit<(10+death_knight.fwounded_targets*3)&death_knight.fwounded_targets<6&!variable.pooling_for_gargoyle|buff.swarming_mist.up
 actions.aoe_burst+=/epidemic,if=runic_power.deficit<25&death_knight.fwounded_targets>5&!variable.pooling_for_gargoyle
-actions.aoe_burst+=/epidemic,if=!death_knight.fwounded_targets&!variable.pooling_for_gargoyle
+actions.aoe_burst+=/epidemic,if=!death_knight.fwounded_targets&!variable.pooling_for_gargoyle|fight_remains<5|raid_event.adds.exists&raid_event.adds.remains<5
 actions.aoe_burst+=/wound_spender
 actions.aoe_burst+=/epidemic,if=!variable.pooling_for_gargoyle
 
 # AoE Setup
 actions.aoe_setup=any_dnd,if=death_knight.fwounded_targets>=cycle_enemies|raid_event.adds.exists&raid_event.adds.remains<=11
 actions.aoe_setup+=/any_dnd,if=death_knight.fwounded_targets>=5
-actions.aoe_setup+=/epidemic,if=!variable.pooling_for_gargoyle&runic_power.deficit<20|buff.sudden_doom.react
+actions.aoe_setup+=/epidemic,if=!variable.pooling_for_gargoyle
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=debuff.festering_wound.stack<=3&cooldown.apocalypse.remains<3
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=debuff.festering_wound.stack<1
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=rune.time_to_4<(cooldown.death_and_decay.remains&!talent.defile|cooldown.defile.remains&talent.defile)
-actions.aoe_setup+=/epidemic,if=!variable.pooling_for_gargoyle
 
 # Potions and other on use
-actions.cooldowns=use_items
-actions.cooldowns+=/potion,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&(pet.army_ghoul.active|pet.apoc_ghoul.active|cooldown.army_of_the_dead.remains>target.time_to_die)
+actions.cooldowns=potion,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&(pet.army_ghoul.active|pet.apoc_ghoul.active|cooldown.army_of_the_dead.remains>fight_remains)
+actions.cooldowns+=/use_item,name=inscrutable_quantum_device,if=cooldown.unholy_blight.remains&(pet.army_ghoul.active|cooldown.apocalypse.remains<5&(cooldown.army_of_the_dead.remains|death_knight.disable_aotd))|target.time_to_pct_20<5
+actions.cooldowns+=/use_item,name=macabre_sheet_music,if=cooldown.apocalypse.remains<5&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
+actions.cooldowns+=/use_item,name=dreadfire_vessel,if=cooldown.apocalypse.remains&rune.time_to_4<gcd&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
+actions.cooldowns+=/use_item,name=darkmoon_deck_verocity,if=pet.apoc_ghoul.active&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
+actions.cooldowns+=/use_items,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
 # Cooldowns
-actions.cooldowns+=/army_of_the_dead,if=cooldown.unholy_blight.remains<5&talent.unholy_blight|!talent.unholy_blight
+actions.cooldowns+=/army_of_the_dead,if=debuff.festering_wound.up&cooldown.unholy_blight.remains<5&talent.unholy_blight|!talent.unholy_blight
 actions.cooldowns+=/unholy_blight,if=variable.st_planning&(cooldown.army_of_the_dead.remains>5|death_knight.disable_aotd)&(cooldown.apocalypse.ready&(debuff.festering_wound.stack>=4|rune>=3)|cooldown.apocalypse.remains)
 actions.cooldowns+=/unholy_blight,if=active_enemies>=2
 actions.cooldowns+=/dark_transformation,if=variable.st_planning&cooldown.unholy_blight.remains&(!runeforge.deadliest_coil|runeforge.deadliest_coil&(!buff.dark_transformation.up&!talent.unholy_pact|talent.unholy_pact))
@@ -79,35 +83,24 @@ actions.cooldowns+=/dark_transformation,if=active_enemies>=2
 actions.cooldowns+=/apocalypse,if=active_enemies=1&debuff.festering_wound.stack>=4&((!talent.unholy_blight|talent.army_of_the_damned|conduit.convocation_of_the_dead)|talent.unholy_blight&!talent.army_of_the_damned&dot.unholy_blight.remains)
 actions.cooldowns+=/apocalypse,if=active_enemies>=2&debuff.festering_wound.stack>=4&!death_and_decay.ticking
 actions.cooldowns+=/summon_gargoyle,if=runic_power.deficit<14
-actions.cooldowns+=/unholy_assault,if=variable.st_planning&debuff.festering_wound.stack<2&(pet.apoc_ghoul.active|conduit.convocation_of_the_dead)
+actions.cooldowns+=/unholy_assault,if=variable.st_planning&debuff.festering_wound.stack<2&(pet.apoc_ghoul.active|conduit.convocation_of_the_dead&cooldown.apocalypse.remains)
 actions.cooldowns+=/unholy_assault,cycle_targets=1,if=active_enemies>=2&debuff.festering_wound.stack<2
 actions.cooldowns+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&target.time_to_die>5
 actions.cooldowns+=/raise_dead,if=!pet.ghoul.active
 
 # Covenant Abilities
 actions.covenants=swarming_mist,if=variable.st_planning&runic_power.deficit>6
-actions.covenants+=/swarming_mist,if=active_enemies>=2&active_enemies<=5&runic_power.deficit>(active_enemies*6)|active_enemies>5&runic_power.deficit>30
+# Set to use after apoc is on CD as to prevent overcapping RP while setting up CD's
+actions.covenants+=/swarming_mist,if=cooldown.apocalypse.remains&(active_enemies>=2&active_enemies<=5&runic_power.deficit>(active_enemies*6)|active_enemies>5&runic_power.deficit>30)
 actions.covenants+=/abomination_limb,if=variable.st_planning&rune.time_to_4>(3+buff.runic_corruption.remains)
 actions.covenants+=/abomination_limb,if=active_enemies>=2&rune.time_to_4>(3+buff.runic_corruption.remains)
 actions.covenants+=/shackle_the_unworthy,if=variable.st_planning&cooldown.apocalypse.remains
 actions.covenants+=/shackle_the_unworthy,if=active_enemies>=2&(death_and_decay.ticking|raid_event.adds.remains<=14)
 
-actions.essences=memory_of_lucid_dreams,if=rune.time_to_1>gcd&runic_power<40
-actions.essences+=/blood_of_the_enemy,if=death_and_decay.ticking|pet.apoc_ghoul.active&active_enemies=1
-actions.essences+=/guardian_of_azeroth,if=(cooldown.apocalypse.remains<6&cooldown.army_of_the_dead.remains>cooldown.condensed_lifeforce.remains)|cooldown.army_of_the_dead.remains<2
-actions.essences+=/the_unbound_force,if=buff.reckless_force.up|buff.reckless_force_counter.stack<11
-actions.essences+=/focused_azerite_beam,if=!death_and_decay.ticking
-actions.essences+=/concentrated_flame,if=dot.concentrated_flame_burn.remains=0
-actions.essences+=/purifying_blast,if=!death_and_decay.ticking
-actions.essences+=/worldvein_resonance,if=talent.army_of_the_damned.enabled&essence.vision_of_perfection.minor&buff.unholy_strength.up|essence.vision_of_perfection.minor&pet.apoc_ghoul.active|talent.army_of_the_damned.enabled&pet.apoc_ghoul.active&cooldown.army_of_the_dead.remains>60|talent.army_of_the_damned.enabled&pet.army_ghoul.active
-actions.essences+=/worldvein_resonance,if=!death_and_decay.ticking&buff.unholy_strength.up&!essence.vision_of_perfection.minor&!talent.army_of_the_damned.enabled|target.time_to_die<cooldown.apocalypse.remains
-actions.essences+=/ripple_in_space,if=!death_and_decay.ticking
-actions.essences+=/reaping_flames
-
 # Single Target
 actions.generic=death_coil,if=buff.sudden_doom.react&!variable.pooling_for_gargoyle|pet.gargoyle.active
 actions.generic+=/death_coil,if=runic_power.deficit<13&!variable.pooling_for_gargoyle
-actions.generic+=/any_dnd,if=cooldown.apocalypse.remains&(talent.defile.enabled|covenant.night_fae)
+actions.generic+=/any_dnd,if=cooldown.apocalypse.remains&(talent.defile.enabled|covenant.night_fae|runeforge.phearomones)
 actions.generic+=/wound_spender,if=debuff.festering_wound.stack>4
 actions.generic+=/wound_spender,if=debuff.festering_wound.up&cooldown.apocalypse.remains>5&(!talent.unholy_blight|talent.army_of_the_damned|conduit.convocation_of_the_dead|raid_event.adds.exists)
 actions.generic+=/wound_spender,if=debuff.festering_wound.up&talent.unholy_blight&!talent.army_of_the_damned&!conduit.convocation_of_the_dead&!raid_event.adds.exists&(cooldown.unholy_blight.remains>5&cooldown.apocalypse.ready&!dot.unholy_blight.remains|!cooldown.apocalypse.ready)

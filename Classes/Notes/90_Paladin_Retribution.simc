@@ -1,12 +1,12 @@
 # Retribution Paladin
-# November 24, 2020
+# December 1, 2020
 
 actions.precombat=potion
-actions.precombat+=/arcane_torrent
 actions.precombat+=/blessing_of_summer
 actions.precombat+=/blessing_of_autumn
 actions.precombat+=/blessing_of_winter
 actions.precombat+=/blessing_of_spring
+actions.precombat+=/arcane_torrent
  
 # Executed every time the actor is available.
 actions=rebuke
@@ -14,6 +14,13 @@ actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=generators
  
 actions.cooldowns=potion,if=(buff.bloodlust.react|buff.avenging_wrath.up&buff.avenging_wrath.remains>18|buff.crusade.up&buff.crusade.remains<25)
+actions.cooldowns+=/lights_judgment,if=spell_targets.lights_judgment>=2|(!raid_event.adds.exists|raid_event.adds.in>75)
+actions.cooldowns+=/fireblood,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10
+actions.cooldowns+=/shield_of_vengeance
+actions.cooldowns+=/blessing_of_summer
+actions.cooldowns+=/blessing_of_autumn
+actions.cooldowns+=/blessing_of_winter
+actions.cooldowns+=/blessing_of_spring
 actions.cooldowns+=/use_item,name=skulkers_wing
 actions.cooldowns+=/use_item,name=macabre_sheet_music,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10
 actions.cooldowns+=/use_item,name=memory_of_past_sins
@@ -24,57 +31,13 @@ actions.cooldowns+=/use_item,name=spare_meat_hook
 actions.cooldowns+=/use_item,name=grim_codex
 actions.cooldowns+=/use_item,name=inscrutable_quantum_device,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
 actions.cooldowns+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
-actions.cooldowns+=/use_items
-actions.cooldowns+=/lights_judgment,if=spell_targets.lights_judgment>=2|(!raid_event.adds.exists|raid_event.adds.in>75)
-actions.cooldowns+=/fireblood,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10
-actions.cooldowns+=/shield_of_vengeance
-actions.cooldowns+=/blessing_of_summer
-actions.cooldowns+=/blessing_of_autumn
-actions.cooldowns+=/blessing_of_winter
-actions.cooldowns+=/blessing_of_spring
-actions.cooldowns+=/use_item,name=razdunks_big_red_button
-actions.cooldowns+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|(buff.avenging_wrath.remains>=20|buff.crusade.stack=10&buff.crusade.remains>15)&(cooldown.guardian_of_azeroth.remains>90|target.time_to_die<30|!essence.condensed_lifeforce.major)
-actions.cooldowns+=/use_item,name=jes_howler,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10
-actions.cooldowns+=/use_item,name=vial_of_animated_blood,if=(buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<18)|(cooldown.avenging_wrath.remains>30|cooldown.crusade.remains>30)
-actions.cooldowns+=/use_item,name=dooms_fury,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<18
-actions.cooldowns+=/use_item,name=galecallers_beak,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<15
-actions.cooldowns+=/use_item,name=bygone_bee_almanac,if=buff.avenging_wrath.up|buff.crusade.up
-actions.cooldowns+=/use_item,name=merekthas_fang,if=(!raid_event.adds.exists|raid_event.adds.in>15)|spell_targets.divine_storm>=2
-actions.cooldowns+=/use_item,name=plunderbeards_flask,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|!buff.crusade.up&cooldown.crusade.remains>45
-actions.cooldowns+=/use_item,name=berserkers_juju,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|!buff.crusade.up&cooldown.crusade.remains>45
-actions.cooldowns+=/use_item,name=endless_tincture_of_fractional_power,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
-actions.cooldowns+=/use_item,name=pearl_divers_compass,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10
-actions.cooldowns+=/use_item,name=first_mates_spyglass,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<=15
-actions.cooldowns+=/use_item,name=corrupted_gladiators_medallion,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<20
-actions.cooldowns+=/use_item,name=corrupted_gladiators_badge,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<15
-actions.cooldowns+=/use_item,name=writhing_segment_of_drestagath
-actions.cooldowns+=/use_item,name=shockbiters_fang,if=buff.avenging_wrath.up|buff.crusade.up
-actions.cooldowns+=/use_item,name=living_oil_canister
-actions.cooldowns+=/use_item,name=ritual_feather_of_unng_ak,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10|cooldown.avenging_wrath.remains>=30|cooldown.crusade.remains>=30
-actions.cooldowns+=/use_item,name=remote_guidance_device
-actions.cooldowns+=/use_item,name=vial_of_storms
-actions.cooldowns+=/use_item,name=whirlwings_plumage,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<=20
-actions.cooldowns+=/use_item,name=dread_gladiators_badge,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<=20
-actions.cooldowns+=/use_item,name=dread_aspirants_medallion,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<=20
-actions.cooldowns+=/use_item,name=grongs_primal_rage,if=!buff.avenging_wrath.up&!buff.crusade.up
-actions.cooldowns+=/use_item,name=sinister_gladiators_badge,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<=15
-actions.cooldowns+=/use_item,name=sinister_gladiators_medallion,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.remains<=20
-actions.cooldowns+=/use_item,name=azsharas_font_of_power,if=!talent.crusade.enabled&cooldown.avenging_wrath.remains<5|talent.crusade.enabled&cooldown.crusade.remains<5&time>10|holy_power>=3&time<10&talent.wake_of_ashes.enabled
-actions.cooldowns+=/use_item,name=vision_of_demise,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10|cooldown.avenging_wrath.remains>=30|cooldown.crusade.remains>=30
-actions.cooldowns+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_debuff.down|(buff.avenging_wrath.remains>=20|buff.crusade.stack=10&buff.crusade.remains>15)&(cooldown.guardian_of_azeroth.remains>90|time_to_die<30|!essence.condensed_lifeforce.major)
-actions.cooldowns+=/use_item,name=knot_of_ancient_fury,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>30|!buff.crusade.up&cooldown.crusade.remains>30
+actions.cooldowns+=/use_item,name=ashvanes_razor_coral,if=(buff.avenging_wrath.up|buff.crusade.up)
+actions.cooldowns+=/use_items,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10
 actions.cooldowns+=/avenging_wrath,if=(holy_power>=4&time<5|holy_power>=3&time>5|talent.holy_avenger.enabled&cooldown.holy_avenger.remains=0)&time_to_hpg=0
 actions.cooldowns+=/crusade,if=(holy_power>=4&time<5|holy_power>=3&time>5|talent.holy_avenger.enabled&cooldown.holy_avenger.remains=0)&time_to_hpg=0
 actions.cooldowns+=/ashen_hallow
 actions.cooldowns+=/holy_avenger,if=time_to_hpg=0&((buff.avenging_wrath.up|buff.crusade.up)|(buff.avenging_wrath.down&cooldown.avenging_wrath.remains>40|buff.crusade.down&cooldown.crusade.remains>40))
 actions.cooldowns+=/final_reckoning,if=holy_power>=3&cooldown.avenging_wrath.remains>gcd&time_to_hpg=0&(!talent.seraphim.enabled|buff.seraphim.up)
-actions.cooldowns+=/the_unbound_force,if=time<=2|buff.reckless_force.up
-actions.cooldowns+=/blood_of_the_enemy,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10
-actions.cooldowns+=/guardian_of_azeroth,if=!talent.crusade.enabled&(cooldown.avenging_wrath.remains<5&holy_power>=3|cooldown.avenging_wrath.remains>=45)|(talent.crusade.enabled&cooldown.crusade.remains<gcd&holy_power>=4|cooldown.crusade.remains>=45)
-actions.cooldowns+=/worldvein_resonance,if=cooldown.avenging_wrath.remains<gcd&holy_power>=3|talent.crusade.enabled&cooldown.crusade.remains<gcd&holy_power>=4|cooldown.avenging_wrath.remains>=45|cooldown.crusade.remains>=45
-actions.cooldowns+=/focused_azerite_beam,if=(!raid_event.adds.exists|raid_event.adds.in>30|spell_targets.divine_storm>=2)&!(buff.avenging_wrath.up|buff.crusade.up)&(cooldown.blade_of_justice.remains>gcd*3&cooldown.judgment.remains>gcd*3)
-actions.cooldowns+=/memory_of_lucid_dreams,if=(buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack=10)&holy_power<=3
-actions.cooldowns+=/purifying_blast,if=(!raid_event.adds.exists|raid_event.adds.in>30|spell_targets.divine_storm>=2)
  
 actions.finishers+=/variable,name=ds_castable,value=spell_targets.divine_storm>=2|buff.empyrean_power.up&debuff.judgment.down&buff.divine_purpose.down|spell_targets.divine_storm>=2&buff.crusade.up&buff.crusade.stack<10
 actions.finishers+=/seraphim,if=((!talent.crusade.enabled&buff.avenging_wrath.up|cooldown.avenging_wrath.remains>25)|(buff.crusade.up|cooldown.crusade.remains>25))&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains<10)&(!talent.execution_sentence.enabled|cooldown.execution_sentence.remains<10)&time_to_hpg=0
@@ -92,8 +55,7 @@ actions.generators+=/judgment,if=!debuff.judgment.up&(holy_power<=2|holy_power<=
 actions.generators+=/call_action_list,name=finishers,if=(target.health.pct<=20|buff.avenging_wrath.up|buff.crusade.up|buff.empyrean_power.up)
 actions.generators+=/crusader_strike,if=cooldown.crusader_strike.charges_fractional>=1.75&(holy_power<=2|holy_power<=3&cooldown.blade_of_justice.remains>gcd*2|holy_power=4&cooldown.blade_of_justice.remains>gcd*2&cooldown.judgment.remains>gcd*2)
 actions.generators+=/call_action_list,name=finishers
+actions.generators+=/consecration,if=!consecration.up
 actions.generators+=/crusader_strike,if=holy_power<=4
-actions.generators+=/concentrated_flame
-actions.generators+=/reaping_flames,if=target.health_pct>80|target.health_pct<20|fight_remains<35
 actions.generators+=/arcane_torrent,if=holy_power<=4
 actions.generators+=/consecration,if=time_to_hpg>gcd
