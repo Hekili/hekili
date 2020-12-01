@@ -779,7 +779,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
 
         guardian_of_ancient_kings = {
-            id = 86659,
+            id = function () return IsSpellKnownOrOverridesKnown( 212641 ) and 212641 or 86659 end,
             cast = 0,
             cooldown = function () return 300 - ( conduit.royal_decree.mod * 0.001 ) end,
             gcd = "off",
@@ -802,7 +802,9 @@ if UnitClassBase( "player" ) == "PALADIN" then
                     duration = 15,
                     max_stack = 1
                 }
-            }
+            },
+
+            copy = { 86659, 212641 }
         },
 
 
