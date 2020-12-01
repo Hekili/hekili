@@ -136,7 +136,23 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             id = 335904,
             duration = 60,
             max_stack = 1,
-            copy = "doom_winds_debuff"
+            copy = "doom_winds_debuff",
+            generate = function( t )
+                local name, _, count, debuffType, duration, expirationTime = GetPlayerAuraBySpellID( 335904 )
+    
+                if name then
+                    t.count = count > 0 and count or 1
+                    t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    t.caster = "player"
+                    return
+                end
+    
+                t.count = 0
+                t.expires = 0
+                t.applied = 0
+                t.caster = "nobody"
+            end,
         },
 
         earth_shield = {
