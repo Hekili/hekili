@@ -1338,6 +1338,10 @@ local function scriptLoader()
     if not scriptsLoaded then scripts:LoadScripts() end
 end
 
+function Hekili:ScriptsLoaded()
+    return scriptsLoaded
+end
+
 
 local channelModifiers = {
     interrupt = 1,

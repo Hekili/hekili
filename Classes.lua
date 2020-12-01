@@ -5255,7 +5255,7 @@ function Hekili:SpecializationChanged()
 
     self:UpdateDisplayVisibility()
     -- self:RefreshOptions()
-    -- self:LoadScripts()
+    if not self:ScriptsLoaded() then self:LoadScripts() end
 
     Hekili:UpdateDamageDetectionForCLEU()
 end
