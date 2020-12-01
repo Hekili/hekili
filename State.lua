@@ -735,9 +735,8 @@ local function applyBuff( aura, duration, stacks, value )
     if not auraInfo then
         local spec = class.specs[ state.spec.id ]
         if spec then
-            spec:RegisterAura( aura, { duration = duration } )
+            spec:RegisterAura( aura, { ["duration"] = duration } )
             class.auras[ aura ] = spec.auras[ aura ]
-            -- Hekili:SpecializationChanged()
         end
 
         auraInfo = class.auras[ aura ]
@@ -884,9 +883,8 @@ local function applyDebuff( unit, aura, duration, stacks, value )
         Error( "Attempted to apply unknown aura '%s'.", aura )
         local spec = class.specs[ state.spec.id ]
         if spec then
-            spec:RegisterAura( aura, { duration = duration } )
+            spec:RegisterAura( aura, { ["duration"] = duration } )
             class.auras[ aura ] = spec.auras[ aura ]
-            -- Hekili:SpecializationChanged()
         end
 
         if not class.auras[ aura ] then return end
