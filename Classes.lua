@@ -4993,14 +4993,6 @@ end
 local lastChange = 0
 
 function Hekili:SpecializationChanged()
-    local now = GetTime()
-
-    if now - lastChange < 0.5 then
-        return
-    end
-
-    lastChange = now
-
     local currentSpec = GetSpecialization()
     local currentID = GetSpecializationInfo( currentSpec )
 
@@ -5262,8 +5254,8 @@ function Hekili:SpecializationChanged()
     state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
 
     self:UpdateDisplayVisibility()
-    self:RefreshOptions()
-    self:LoadScripts()
+    -- self:RefreshOptions()
+    -- self:LoadScripts()
 
     Hekili:UpdateDamageDetectionForCLEU()
 end
