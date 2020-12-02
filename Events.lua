@@ -2286,9 +2286,6 @@ RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
 end )
 
 
-local function 
-
-
 if select( 2, UnitClass( "player" ) ) == "DRUID" then
     function Hekili:GetBindingForAction( key, display, i )
         if not key then return "" end
