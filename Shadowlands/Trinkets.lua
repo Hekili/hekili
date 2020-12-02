@@ -268,7 +268,9 @@ do
                     duration = 10,
                     max_stack = 1
                 }
-            }
+            },
+
+            copy = "darkmoon_deck__putrescence" -- simc
         },
 
         darkmoon_deck_repose = {
