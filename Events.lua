@@ -2004,26 +2004,29 @@ local function StoreKeybindInfo( page, key, aType, id, console )
 
     if not key or not aType or not id then return end
 
-    local ability
+    local action, ability
 
     if aType == "spell" then
-        ability = class.abilities[ id ] and class.abilities[ id ].key
+        ability = class.abilities[ id ]
+        action = ability and ability.key
 
     elseif aType == "macro" then
         local sID = GetMacroSpell( id ) or GetMacroItem( id )
-        ability = sID and class.abilities[ sID ] and class.abilities[ sID ].key
+        ability = sID and class.abilities[ sID ]
+        action = ability and ability.key
 
     elseif aType == "item" then
-        ability = GetItemInfo( id )
-        ability = class.abilities[ ability ] and class.abilities[ ability ].key
+        local item = GetItemInfo( id )
+        ability = item and class.abilities[ item ]
+        action = ability and ability.key
 
-        if not ability then
+        if not action then
             if itemToAbility[ id ] then
-                ability = itemToAbility[ id ]
+                action = itemToAbility[ id ]
             else
                 for k, v in pairs( class.potions ) do
                     if v.item == id then
-                        ability = "potion"
+                        action = "potion"
                         break
                     end
                 end
@@ -2032,8 +2035,8 @@ local function StoreKeybindInfo( page, key, aType, id, console )
 
     end
 
-    if ability then
-        keys[ ability ] = keys[ ability ] or {
+    if action then
+        keys[ action ] = keys[ action ] or {
             lower = {},
             upper = {},
             console = {}
@@ -2041,16 +2044,16 @@ local function StoreKeybindInfo( page, key, aType, id, console )
 
         if console == "cPort" then
             local newKey = key:gsub( ":%d+:%d+:0:0", ":0:0:0:0" )
-            keys[ ability ].console[ page ] = newKey
+            keys[ action ].console[ page ] = newKey
         else
-            keys[ ability ].upper[ page ] = improvedGetBindingText( key )
-            keys[ ability ].lower[ page ] = lower( keys[ ability ].upper[ page ] )
+            keys[ action ].upper[ page ] = improvedGetBindingText( key )
+            keys[ action ].lower[ page ] = lower( keys[ action ].upper[ page ] )
         end
-        updatedKeys[ ability ] = true
+        updatedKeys[ action ] = true
 
-        if ability.bind then
-            local bind = ability.bind
+        local bind = ability and ability.bind
 
+        if bind then
             if type( bind ) == 'table' then
                 for _, b in ipairs( bind ) do
                     keys[ b ] = keys[ b ] or {
@@ -2059,9 +2062,9 @@ local function StoreKeybindInfo( page, key, aType, id, console )
                         console = {}
                     }
 
-                    keys[ b ].lower[ page ] = keys[ ability ].lower[ page ]
-                    keys[ b ].upper[ page ] = keys[ ability ].upper[ page ]
-                    keys[ b ].console[ page ] = keys[ ability ].console[ page ]
+                    keys[ b ].lower[ page ] = keys[ action ].lower[ page ]
+                    keys[ b ].upper[ page ] = keys[ action ].upper[ page ]
+                    keys[ b ].console[ page ] = keys[ action ].console[ page ]
         
                     updatedKeys[ b ] = true
                 end
@@ -2072,9 +2075,9 @@ local function StoreKeybindInfo( page, key, aType, id, console )
                     console = {}
                 }
 
-                keys[ bind ].lower[ page ] = keys[ ability ].lower[ page ]
-                keys[ bind ].upper[ page ] = keys[ ability ].upper[ page ]
-                keys[ bind ].console[ page ] = keys[ ability ].console[ page ]
+                keys[ bind ].lower[ page ] = keys[ action ].lower[ page ]
+                keys[ bind ].upper[ page ] = keys[ action ].upper[ page ]
+                keys[ bind ].console[ page ] = keys[ action ].console[ page ]
 
                 updatedKeys[ bind ] = true
             end
@@ -2136,6 +2139,7 @@ do
         queuedRefresh = false
 
         for k, v in pairs( keys ) do
+            wipe( v.console )
             wipe( v.upper )
             wipe( v.lower )
         end
@@ -2214,14 +2218,17 @@ do
 
         if _G.ConsolePort then
             for i = 1, 120 do
-                local bind = ConsolePort:GetActionBinding(i)
+                local action, id = GetActionInfo( i )
 
-                if bind then
-                    local action, id = GetActionInfo( i )
-                    local key, mod = ConsolePort:GetCurrentBindingOwner(bind)
-                    StoreKeybindInfo( math.ceil( i / 12 ), ConsolePort:GetFormattedButtonCombination( key, mod ), action, id, "cPort" )
+                if action and id then
+                    local bind = ConsolePort:GetActionBinding( i )
+                    local key, mod = ConsolePort:GetCurrentBindingOwner( bind )
+
+                    if key then
+                        StoreKeybindInfo( math.ceil( i / 12 ), ConsolePort:GetFormattedButtonCombination( key, mod ), action, id, "cPort" )
+                    end
                 end
-            end
+            end                
         end 
 
         for k, v in pairs( keys ) do
@@ -2277,6 +2284,9 @@ RegisterEvent( "UPDATE_SHAPESHIFT_FORM", function ( event )
     ReadKeybindings()
     Hekili:ForceUpdate( event )
 end )
+
+
+local function 
 
 
 if select( 2, UnitClass( "player" ) ) == "DRUID" then

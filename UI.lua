@@ -646,8 +646,6 @@ do
         local conf = Hekili.DB.profile.displays[ self.id ]
 
         if conf.keybindings and conf.keybindings.enabled then
-            local cPort = conf.keybindings.cPortOverride and ConsolePort ~= nil
-
             for i, b in ipairs( self.Buttons ) do
                 local r = self.Recommendations[i]
                 if r then
@@ -657,7 +655,7 @@ do
                         r.keybind = Hekili:GetBindingForAction( r.actionName, conf, i )
                     end
 
-                    if i == 1 or ( conf.keybindings.queued and not cPort ) then
+                    if i == 1 or conf.keybindings.queued then
                         b.Keybinding:SetText( r.keybind )
                     else
                         b.Keybinding:SetText( nil )
@@ -763,7 +761,7 @@ do
                         b.Caption:SetText(nil)
                     end
 
-                    if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued and not ( conf.keybindings.cPortOverride and ConsolePort ~= nil ) ) then
+                    if conf.keybindings.enabled and ( i == 1 or conf.keybindings.queued ) then
                         b.Keybinding:SetText( keybind )
                     else
                         b.Keybinding:SetText(nil)
