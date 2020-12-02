@@ -5,7 +5,6 @@
 actions.precombat+=/power_word_fortitude,if=remains<300
 actions.precombat+=/shadowform,if=!buff.shadowform.up
 actions.precombat+=/arcane_torrent,if=insanity.deficit>15
-actions.precombat+=/use_item,name=azsharas_font_of_power
 actions.precombat+=/variable,name=mind_sear_cutoff,op=set,value=2
 actions.precombat+=/vampiric_touch
 
@@ -26,36 +25,14 @@ actions+=/ancestral_call,if=buff.voidform.up
 actions+=/call_action_list,name=cwc
 actions+=/run_action_list,name=main
 
-# CDs
-actions.cds=power_infusion,if=buff.voidform.up
-# Use Silence on CD to proc Sephuz's Proclamation.
-actions.cds+=/silence,cycle_targets=1,if=runeforge.sephuzs_proclamation.equipped&(target.is_add|target.debuff.casting.react)
-# Use Badge inside of VF for the first use or on CD after the first use. With Night Fae hold for VF.
-actions.cds+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=buff.voidform.up|time>10&(!covenant.night_fae)
-actions.cds+=/fae_guardians
-actions.cds+=/mindgames,cycle_targets=1,if=insanity<90&(variable.all_dots_up|buff.voidform.up)
-actions.cds+=/unholy_nova,if=raid_event.adds.in>20
-actions.cds+=/boon_of_the_ascended,if=!buff.voidform.up&!cooldown.void_eruption.up&spell_targets.mind_sear>1&!talent.searing_nightmare.enabled|(buff.voidform.up&spell_targets.mind_sear<2&!talent.searing_nightmare.enabled)|(buff.voidform.up&talent.searing_nightmare.enabled)
-actions.cds+=/call_action_list,name=essences
-# Default fallback for usable items: Use on cooldown.
-actions.cds+=/use_items,if=buff.voidform.up|buff.power_infusion.up
-
 # APL to use when Boon of the Ascended is active
 actions.boon=ascended_blast,if=spell_targets.mind_sear<=3
 actions.boon+=/ascended_nova,if=(spell_targets.mind_sear>2&talent.searing_nightmare.enabled|(spell_targets.mind_sear>1&!talent.searing_nightmare.enabled))&spell_targets.ascended_nova>1
 
-# BfA Essences for Pre-patch
-# Delete this after Shadowlands launch
-actions.essences=memory_of_lucid_dreams
-actions.essences+=/blood_of_the_enemy
-actions.essences+=/guardian_of_azeroth
-actions.essences+=/focused_azerite_beam,if=spell_targets.mind_sear>=2|raid_event.adds.in>60
-actions.essences+=/purifying_blast,if=spell_targets.mind_sear>=2|raid_event.adds.in>60
-actions.essences+=/concentrated_flame,line_cd=6,if=time<=10|full_recharge_time<gcd|target.time_to_die<5
-actions.essences+=/ripple_in_space
-actions.essences+=/reaping_flames
-actions.essences+=/worldvein_resonance
-actions.essences+=/the_unbound_force
+# CDs
+# Use Silence on CD to proc Sephuz's Proclamation.
+actions.cds+=/silence,cycle_targets=1,if=runeforge.sephuzs_proclamation.equipped&(target.is_add|target.debuff.casting.react)
+actions.cds+=/call_action_list,name=trinkets
 
 # Cast While Casting actions. Set at higher priority to short circuit interrupt conditions on Mind Sear/Flay
 # Use Searing Nightmare if you will hit enough targets and Power Infusion and Voidform are not ready, or to refresh SW:P on two or more targets.
@@ -64,6 +41,11 @@ actions.cwc=searing_nightmare,use_while_casting=1,cycle_targets=1,if=(variable.s
 actions.cwc+=/searing_nightmare,use_while_casting=1,cycle_targets=1,if=talent.searing_nightmare.enabled&dot.shadow_word_pain.refreshable&spell_targets.mind_sear>2
 # only_cwc makes the action only usable during channeling and not as a regular action.
 actions.cwc+=/mind_blast,only_cwc=1
+
+actions.dmg_trinkets=use_item,name=darkmoon_deck__putrescence
+actions.dmg_trinkets+=/use_item,name=sunblood_amethyst
+actions.dmg_trinkets+=/use_item,name=glyph_of_assimilation
+actions.dmg_trinkets+=/use_item,name=dreadfire_vessel
 
 # Main APL, should cover all ranges of targets and scenarios
 actions.main+=/call_action_list,name=boon,strict=1,if=buff.boon_of_the_ascended.up
@@ -74,7 +56,7 @@ actions.main=void_eruption,if=variable.pool_for_cds&insanity>=40&(insanity<=85|t
 actions.main+=/shadow_word_pain,if=buff.fae_guardians.up&!debuff.wrathful_faerie.up
 actions.main+=/call_action_list,name=cds
 # High Priority Mind Sear action to refresh DoTs with searing_nightmare
-actions.main+=/mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>variable.mind_sear_cutoff&!dot.shadow_word_pain.ticking&!cooldown.fiend.up
+actions.main+=/mind_sear,cycle_targets=1,if=talent.searing_nightmare.enabled&spell_targets.mind_sear>variable.mind_sear_cutoff&!dot.shadow_word_pain.ticking&!cooldown.fiend.up
 # Prefer to use Damnation ASAP if any DoT is not up.
 actions.main+=/damnation,cycle_targets=1,if=!variable.all_dots_up
 # Use Void Bolt at higher priority with Hungering Void up to 4 targets, or other talents on ST.
@@ -88,7 +70,7 @@ actions.main+=/shadow_word_death,cycle_targets=1,if=(target.health.pct<20&spell_
 # Use Surrender to Madness on a target that is going to die at the right time.
 actions.main+=/surrender_to_madness,cycle_targets=1,if=target.time_to_die<25&buff.voidform.down
 # Use Void Torrent only if SW:P and VT are active and the target won't die during the channel.
-actions.main+=/void_torrent,cycle_targets=1,if=variable.dots_up&target.time_to_die>3&buff.voidform.down&active_dot.vampiric_touch==spell_targets.vampiric_touch&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
+actions.main+=/void_torrent,cycle_targets=1,if=variable.dots_up&target.time_to_die>3&buff.voidform.down&active_dot.vampiric_touch=spell_targets.vampiric_touch&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
 actions.main+=/mindbender,if=dot.vampiric_touch.ticking&(talent.searing_nightmare.enabled&spell_targets.mind_sear>variable.mind_sear_cutoff|dot.shadow_word_pain.ticking)
 # Use SW:D with Painbreaker Psalm unless the target will be below 20% before the cooldown comes back
 actions.main+=/shadow_word_death,if=runeforge.painbreaker_psalm.equipped&variable.dots_up&target.time_to_pct_20>(cooldown.shadow_word_death.duration+gcd)
@@ -111,3 +93,18 @@ actions.main+=/mind_flay,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2&coo
 actions.main+=/shadow_word_death
 # Use SW:P as last resort if on the move and SW:D is on CD
 actions.main+=/shadow_word_pain
+
+# Use on CD ASAP to get DoT ticking and expire to line up better with Voidform
+actions.trinkets=use_item,name=empyreal_ordnance,if=cooldown.void_eruption.remains<=12|buff.voidform.up|cooldown.void_eruption.remains>27
+# Sync IQD with Voidform
+actions.trinkets+=/use_item,name=inscrutable_quantum_device,if=buff.voidform.up|cooldown.void_eruption.remains>10
+# Sync Sheet Music with Voidform
+actions.trinkets+=/use_item,name=macabre_sheet_music,if=buff.voidform.up|cooldown.void_eruption.remains>10
+# Sync Ruby with Power Infusion usage, make sure to snipe the lowest HP target
+actions.trinkets+=/use_item,name=soulletting_ruby,if=buff.power_infusion.up,cycle_targets=1
+# Use Badge inside of VF for the first use or on CD after the first use. Short circuit if void eruption cooldown is 10s or more away.
+actions.trinkets+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=buff.voidform.up|cooldown.void_eruption.remains>=10
+# Use list of on-use damage trinkets only if Hungering Void Debuff is active, or you are not talented into it.
+actions.trinkets+=/call_action_list,name=dmg_trinkets,if=(!talent.hungering_void.enabled|debuff.hungering_void.up)&(buff.voidform.up|cooldown.void_eruption.remains>10)
+# Default fallback for usable items: Use on cooldown in order by trinket slot.
+actions.trinkets+=/use_items,if=buff.voidform.up|buff.power_infusion.up|cooldown.void_eruption.remains>10
