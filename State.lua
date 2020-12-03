@@ -5409,6 +5409,7 @@ function state.reset( dispName )
             if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
             elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
         elseif dispName == 'AOE' then state.min_targets = spec and spec.aoe or 3
+        elseif dispName == 'Cooldowns' then state.filter = 'cooldowns'
         elseif dispName == 'Interrupts' then state.filter = 'interrupts'
         elseif dispName == 'Defensives' then state.filter = 'defensives'
         end
