@@ -2342,7 +2342,7 @@ local function ReadOneKeybinding( event, slot )
 
     else
         if actionBarNumber == 1 or actionBarNumber == 2 or actionBarNumber > 6 then
-            ability = StoreKeybindInfo( keyNumber, GetBindingKey( "ACTIONBUTTON" .. i ), GetActionInfo( slot ) )
+            ability = StoreKeybindInfo( keyNumber, GetBindingKey( "ACTIONBUTTON" .. keyNumber ), GetActionInfo( slot ) )
         
         elseif actionBarNumber > 2 and actionBarNumber < 5 then
             ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( "MULTIACTIONBAR" .. actionBarNumber .. "BUTTON" .. keyNumber ), GetActionInfo( slot ) )
