@@ -1798,7 +1798,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
     spec:RegisterSetting( "implosion_imps", 3, {
         name = "Wild Imps for |T2065588:0|t Implosion",
         desc = "When using |T2065588:0|t Implosion, the default priority will require you to have at least this many Wild Imps.\n\n" ..
-            "Current sims reflect that a minimum of 3 imps are needed for optimal DPS in Hectic Add Cleave, while using \n\n" ..
+            "Current sims reflect that a minimum of 3 imps are needed for optimal DPS in Hectic Add Cleave, while using " ..
             "Implosion with 4+ imps is more optimal in 5+ target sustained scenarios.",
         type = "range",
         min = 3,
