@@ -32,6 +32,12 @@ actions.boon+=/ascended_nova,if=(spell_targets.mind_sear>2&talent.searing_nightm
 # CDs
 # Use Silence on CD to proc Sephuz's Proclamation.
 actions.cds+=/silence,cycle_targets=1,if=runeforge.sephuzs_proclamation.equipped&(target.is_add|target.debuff.casting.react)
+# Use Badge inside of VF for the first use or on CD after the first use. With Night Fae hold for VF.
+actions.cds+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=buff.voidform.up|time>10&(!covenant.night_fae)
+actions.cds+=/fae_guardians
+actions.cds+=/mindgames,cycle_targets=1,if=insanity<90&(variable.all_dots_up|buff.voidform.up)
+actions.cds+=/unholy_nova,if=raid_event.adds.in>20
+actions.cds+=/boon_of_the_ascended,if=!buff.voidform.up&!cooldown.void_eruption.up&spell_targets.mind_sear>1&!talent.searing_nightmare.enabled|(buff.voidform.up&spell_targets.mind_sear<2&!talent.searing_nightmare.enabled)|(buff.voidform.up&talent.searing_nightmare.enabled)
 actions.cds+=/call_action_list,name=trinkets
 
 # Cast While Casting actions. Set at higher priority to short circuit interrupt conditions on Mind Sear/Flay
