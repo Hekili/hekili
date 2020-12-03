@@ -652,7 +652,7 @@ do
                     local a = r.actionName
 
                     if a then                        
-                        r.keybind = Hekili:GetBindingForAction( r.actionName, conf, i )
+                        r.keybind, r.keybindFrom = Hekili:GetBindingForAction( r.actionName, conf, i )
                     end
 
                     if i == 1 or conf.keybindings.queued then
