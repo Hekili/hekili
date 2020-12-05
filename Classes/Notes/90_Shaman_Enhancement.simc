@@ -1,8 +1,7 @@
 # Enhancement Shaman
-# November 23, 2020
+# December 5, 2020
 
 # Added Covenant abilities.
-# Restore Essences.
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -17,17 +16,6 @@ actions+=/potion,if=fight_remains<60
 # Interrupt of casts.
 actions+=/wind_shear
 actions+=/windstrike
-actions+=/concentrated_flame
-actions+=/blood_of_the_enemy
-actions+=/guardian_of_azeroth
-actions+=/focused_azerite_beam
-actions+=/purifying_blast
-actions+=/the_unbound_force
-actions+=/memory_of_lucid_dreams
-actions+=/ripple_in_space
-actions+=/worldvein_resonance
-actions+=/reaping_flames,if=target.health_pct>80|target.health_pct<20|fight_remains<30
-actions+=/heart_essence
 actions+=/use_items
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
@@ -45,7 +33,8 @@ actions+=/skyfury_totem
 actions+=/primal_strike
 
 # Multi target action priority list
-actions.aoe=frost_shock,if=buff.hailstorm.up
+actions.aoe=fae_transfusion,if=soulbind.grove_invigoration|soulbind.field_of_blossoms
+actions.aoe+=/frost_shock,if=buff.hailstorm.up
 actions.aoe+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down
 actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&(talent.fire_nova.enabled|talent.lashing_flames.enabled|covenant.necrolord)
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
