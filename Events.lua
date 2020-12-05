@@ -2304,6 +2304,7 @@ local function ReadOneKeybinding( event, slot )
     local keyNumber = slot - ( 12 * ( actionBarNumber - 1 ) )
 
     local ability
+    local completed = false
 
     -- Bartender4 support (Original from tanichan, rewritten for action bar paging by konstantinkoeppe).
     if _G["Bartender4"] then
@@ -2316,31 +2317,38 @@ local function ReadOneKeybinding( event, slot )
         end
 
         ability = StoreKeybindInfo( actionBarNumber, GetBindingKey( bindingKeyName ), GetActionInfo( slot ) )
+        
+        if ability then completed = true end
 
         -- Use ElvUI's actionbars only if they are actually enabled.
     elseif _G["ElvUI"] and _G["ElvUI_Bar1Button1"] then
         local btn = _G[ "ElvUI_Bar" .. actionBarNumber .. "Button" .. keyNumber ]
 
-        local binding = btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
+        if btn then
+            local binding = btn.keyBoundTarget or ( " CLICK " .. btn:GetName() .. ":LeftButton" )
 
-        if actionBarNumber > 6 then
-            -- Checking whether bar is active.
-            local bar = _G[ "ElvUI_Bar" .. slot ]
+            if actionBarNumber > 6 then
+                -- Checking whether bar is active.
+                local bar = _G[ "ElvUI_Bar" .. slot ]
 
-            if not bar or not bar.db.enabled then
-                binding = "ACTIONBUTTON" .. keyNumber
+                if not bar or not bar.db.enabled then
+                    binding = "ACTIONBUTTON" .. keyNumber
+                end
+            end
+
+            local action, aType = btn._state_action, "spell"
+
+            if action and type( action ) == "number" then
+                binding = GetBindingKey( binding )
+                action, aType = GetActionInfo( action )
+                ability = StoreKeybindInfo( actionBarNumber, binding, action, aType )
+                completed = true
             end
         end
 
-        local action, aType = btn._state_action, "spell"
+    end
 
-        if action and type( action ) == "number" then
-            binding = GetBindingKey( binding )
-            action, aType = GetActionInfo( action )
-            ability = StoreKeybindInfo( actionBarNumber, binding, action, aType )
-        end
-
-    else
+    if not completed then
         if actionBarNumber == 1 or actionBarNumber == 2 or actionBarNumber > 6 then
             ability = StoreKeybindInfo( keyNumber, GetBindingKey( "ACTIONBUTTON" .. keyNumber ), GetActionInfo( slot ) )
         
@@ -2412,7 +2420,6 @@ RegisterEvent( "ACTIONBAR_PAGE_CHANGED", ReadKeybindings )
 -- RegisterEvent( "ACTIONBAR_UPDATE_STATE", ReadKeybindings )
 -- RegisterEvent( "SPELL_UPDATE_ICON", ReadKeybindings )
 -- RegisterEvent( "SPELLS_CHANGED", ReadKeybindings )
-
 RegisterEvent( "ACTIONBAR_SLOT_CHANGED", ReadOneKeybinding )
 
 RegisterEvent( "PLAYER_SPECIALIZATION_CHANGED", function( event, unit )
