@@ -1,5 +1,5 @@
 # Protection Paladin
-# November 23, 2020
+# December 3, 2020
 
 # Changes
 # - Added Rebuke.
@@ -18,7 +18,6 @@ actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=mitigation
 actions+=/call_action_list,name=standard
 
-actions+=/worldvein_resonance,if=buff.lifeblood.stack<3
 actions+=/shield_of_the_righteous,if=holy_power.deficit=0&((buff.avenging_wrath.up&!talent.seraphim.enabled)|buff.seraphim.up)
 actions+=/shield_of_the_righteous,if=(buff.avenging_wrath.up&buff.avenging_wrath.remains<4&!talent.seraphim.enabled)|(buff.seraphim.remains<4&buff.seraphim.up)
 actions+=/hammer_of_wrath,if=holy_power.deficit>0
@@ -27,15 +26,11 @@ actions+=/consecration,if=!consecration.up
 actions+=/judgment,if=(cooldown.judgment.remains<gcd&cooldown.judgment.charges_fractional>1&cooldown_react)|!talent.crusaders_judgment.enabled
 actions+=/avengers_shield,if=cooldown_react
 actions+=/judgment,if=cooldown_react|!talent.crusaders_judgment.enabled
-actions+=/concentrated_flame,if=(!talent.seraphim.enabled|buff.seraphim.up)&!dot.concentrated_flame_burn.remains>0|essence.the_crucible_of_flame.rank<3
 actions+=/lights_judgment,if=!talent.seraphim.enabled|buff.seraphim.up
-actions+=/anima_of_death
 actions+=/blessed_hammer,strikes=3
 actions+=/hammer_of_the_righteous
 actions+=/consecration
-actions+=/heart_essence,if=!(essence.the_crucible_of_flame.major|essence.worldvein_resonance.major|essence.anima_of_life_and_death.major|essence.memory_of_lucid_dreams.major)
 
-actions.standard=worldvein_resonance,if=buff.lifeblood.stack<3
 actions.standard+=/shield_of_the_righteous,if=debuff.judgment.up&(debuff.vengeful_shock.up|!conduit.vengeful_shock.enabled)
 actions.standard+=/shield_of_the_righteous,if=holy_power=5|buff.holy_avenger.up|holy_power=4&talent.sanctified_wrath.enabled&buff.avenging_wrath.up
 actions.standard+=/judgment,cycle_targets=1,if=charges=2|!talent.crusaders_judgment.enabled
@@ -50,18 +45,14 @@ actions.standard+=/blessed_hammer,strikes=2.4,if=charges=3
 actions.standard+=/ashen_hallow
 actions.standard+=/hammer_of_the_righteous,if=charges=2
 actions.standard+=/word_of_glory,if=buff.vanquishers_hammer.up
-actions.standard+=/anima_of_death
 actions.standard+=/blessed_hammer,strikes=2.4
 actions.standard+=/hammer_of_the_righteous
-actions.standard+=/concentrated_flame,if=(!talent.seraphim.enabled|buff.seraphim.up)&!dot.concentrated_flame_burn.remains>0|essence.the_crucible_of_flame.rank<3
 actions.standard+=/lights_judgment
 actions.standard+=/arcane_torrent
 actions.standard+=/consecration
 actions.standard+=/word_of_glory,if=buff.shining_light_free.up&!covenant.necrolord
 
 actions.cooldowns=fireblood,if=buff.avenging_wrath.up
-actions.cooldowns+=/use_item,name=azsharas_font_of_power,if=cooldown.seraphim.remains<=10|!talent.seraphim.enabled
-actions.cooldowns+=/use_item,name=ashvanes_razor_coral,if=(debuff.razor_coral_debuff.stack>7&buff.avenging_wrath.up)|debuff.razor_coral_debuff.stack=0
 actions.cooldowns+=/seraphim
 actions.cooldowns+=/avenging_wrath
 actions.cooldowns+=/holy_avenger,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains>60
@@ -73,7 +64,6 @@ actions.cooldowns+=/blessing_of_winter
 actions.cooldowns+=/blessing_of_spring
 actions.cooldowns+=/vanquishers_hammer
 actions.cooldowns+=/divine_toll,if=holy_power.deficit>0
-actions.cooldowns+=/heart_essence,if=buff.seraphim.up|!talent.seraphim.enabled
 actions.cooldowns+=/use_items,if=buff.seraphim.up|!talent.seraphim.enabled
 actions.cooldowns+=/moment_of_glory,if=prev_gcd.1.avengers_shield&cooldown.avengers_shield.remains
 actions.cooldowns+=/use_item,name=grongs_primal_rage,if=((cooldown.judgment.full_recharge_time>4|(!talent.crusaders_judgment.enabled&prev_gcd.1.judgment))&cooldown.avengers_shield.remains>4&buff.seraphim.remains>4)|(buff.seraphim.remains<4)
