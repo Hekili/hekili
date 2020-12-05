@@ -222,7 +222,6 @@ function ns.StartConfiguration( external )
                 end
             end
 
-
             v.Backdrop:SetFrameStrata( v:GetFrameStrata() )
             v.Backdrop:SetFrameLevel( v:GetFrameLevel() + 1 )
 
@@ -277,7 +276,7 @@ function ns.StartConfiguration( external )
 
             if i == "Defensives" then v.Header:SetText( AtlasToString( "nameplates-InterruptShield", 20, 20 ) )
             elseif i == "Interrupts" then v.Header:SetText( AtlasToString( "communities-icon-redx", 20, 20 ) )
-            elseif i == "Cooldowns" then v.Header:SetText( AtlasToString( "communities-icon-redx", 20, 20 ) )
+            elseif i == "Cooldowns" then v.Header:SetText( "CD" )
             else v.Header:SetText( i ) end
             
             v.Header:SetJustifyH("CENTER")

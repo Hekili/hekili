@@ -698,14 +698,14 @@ function Hekili:GetDefaults()
                 },
 
                 Cooldowns = {
-                    enabled = true,
+                    enabled = false,
                     builtIn = true,
 
                     name = "Cooldowns",
                     filter = 'cooldowns',
 
-                    x = -55,
-                    y = -225,
+                    x = 0,
+                    y = -280,
 
                     numIcons = 1,
                     order = 3,
@@ -727,7 +727,7 @@ function Hekili:GetDefaults()
                     name = "Defensives",
                     filter = 'defensives',
 
-                    x = -165,
+                    x = -110,
                     y = -225,
 
                     numIcons = 1,
@@ -750,7 +750,7 @@ function Hekili:GetDefaults()
                     name = "Interrupts",
                     filter = 'interrupts',
 
-                    x = -110,
+                    x = -55,
                     y = -225,
 
                     numIcons = 1,
@@ -1076,7 +1076,6 @@ do
 
         if name == "Defensives" then fancyName = AtlasToString( "nameplates-InterruptShield" ) .. " " .. name
         elseif name == "Interrupts" then fancyName = AtlasToString( "communities-icon-redx" ) .. " " .. name
-        elseif name == "Cooldowns" then fancyName = AtlasToString( "communities-icon-redx" ) .. " " .. name
         else fancyName = name end
 
         return {
@@ -1110,7 +1109,7 @@ do
                                 name = "Enabled",
                                 desc = "If disabled, this display will not appear under any circumstances.",
                                 order = 0.5,
-                                hidden = function () return name == "Primary" or name == "AOE" or name == "Cooldowns"  or name == "Defensives" or name == "Interrupts"end
+                                hidden = function () return name == "Primary" or name == "AOE" or name == "Cooldowns"  or name == "Defensives" or name == "Interrupts" end
                             },
 
                             elvuiCooldown = {
@@ -1135,7 +1134,7 @@ do
                                     local n = #info
                                     local display = info[2]
 
-                                    if display == "Cooldowns" or display == "Defensives" or display == "Interrupts" then
+                                    if display == "Defensives" or display == "Interrupts" then
                                         return true
                                     end
 
@@ -4529,7 +4528,8 @@ do
                             args = {
                                 toggleDesc = {
                                     type = "description",
-                                    name = "This section controls which abilities are enabled/disabled when you toggle each category when in this specialization.  Gear and Trinkets can be adjusted via their own section (left).",
+                                    name = "This section shows which Abilities are enabled/disabled when you toggle each category when in this specialization.  Gear and Trinkets can be adjusted via their own section (left).\n\n" ..
+                                        "Removing an ability from its toggle leaves it |cFF00FF00ENABLED|r regardless of whether the toggle is active.",
                                     fontSize = "medium",
                                     order = 1,
                                     width = 3,
@@ -5586,11 +5586,13 @@ do
                                 },
 
                                 warnings = {
-                                    type = "input",
-                                    name = "Import Log",
-                                    desc = "If this pack's action lists were imported from a SimulationCraft profile, any details logged at import are included here.",
+                                    type = "description",
+                                    name = function ()
+                                        local p = rawget( Hekili.DB.profile.packs, pack )
+                                        return "|cFFFFD100Import Log|r\n" .. ( p.warnings ) .. "\n\n"
+                                    end,
                                     order = 5,
-                                    multiline = 10,
+                                    fontSize = "medium",
                                     width = "full",                                
                                     hidden = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
@@ -7905,27 +7907,18 @@ function Hekili:GetOptions()
                 order = 10,
                 childGroups = "tab",
                 args = {
-                    topRow = {
-                        type = "group",
-                        inline = true,
-                        name = "",
-                        order = 1,
-                        width = "full",
-                        args = {
-                            enabled = {
-                                type = "toggle",
-                                name = "Enabled",
-                                desc = "Enables or disables the addon.",
-                                order = 1
-                            },
+                    enabled = {
+                        type = "toggle",
+                        name = "Enabled",
+                        desc = "Enables or disables the addon.",
+                        order = 1
+                    },
 
-                            minimapIcon = {
-                                type = "toggle",
-                                name = "Hide Minimap Icon",
-                                desc = "If checked, the minimap icon will be hidden.",
-                                order = 2,
-                            },
-                        },                      
+                    minimapIcon = {
+                        type = "toggle",
+                        name = "Hide Minimap Icon",
+                        desc = "If checked, the minimap icon will be hidden.",
+                        order = 2,
                     },
 
                     welcome = {
