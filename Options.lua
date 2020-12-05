@@ -6777,6 +6777,20 @@ do
                             order = 3,
                         },
 
+                        lineBreak = {
+                            type = "description",
+                            name = "",
+                            width = "full",
+                            order = 3.1,
+                        },
+
+                        indent = {
+                            type = "description",
+                            name = "",
+                            width = 1,
+                            order = 3.2
+                        },
+
                         override = {
                             type = "toggle",
                             name = "Bloodlust Override",
