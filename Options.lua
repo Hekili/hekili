@@ -559,6 +559,7 @@ function Hekili:GetDefaults()
                     key = "ALT-SHIFT-R",
                     value = false,
                     override = false,
+                    separate = false,
                 },
 
                 defensives = {
@@ -696,6 +697,29 @@ function Hekili:GetDefaults()
                     },
                 },
 
+                Cooldowns = {
+                    enabled = true,
+                    builtIn = true,
+
+                    name = "Cooldowns",
+                    filter = 'cooldowns',
+
+                    x = -55,
+                    y = -225,
+
+                    numIcons = 1,
+                    order = 3,
+
+                    flash = {
+                        color = { 0, 0, 1, 1 },
+                    },
+
+                    glow = {
+                        enabled = true,
+                        mode = "autocast",
+                    },
+                },
+
                 Defensives = {
                     enabled = true,
                     builtIn = true,
@@ -703,11 +727,11 @@ function Hekili:GetDefaults()
                     name = "Defensives",
                     filter = 'defensives',
 
-                    x = -110,
+                    x = -165,
                     y = -225,
 
                     numIcons = 1,
-                    order = 3,
+                    order = 4,
 
                     flash = {
                         color = { 0, 0, 1, 1 },
@@ -726,11 +750,11 @@ function Hekili:GetDefaults()
                     name = "Interrupts",
                     filter = 'interrupts',
 
-                    x = -55,
+                    x = -110,
                     y = -225,
 
                     numIcons = 1,
-                    order = 4,
+                    order = 5,
 
                     flash = {
                         color = { 1, 1, 1, 1 },
@@ -1052,6 +1076,7 @@ do
 
         if name == "Defensives" then fancyName = AtlasToString( "nameplates-InterruptShield" ) .. " " .. name
         elseif name == "Interrupts" then fancyName = AtlasToString( "communities-icon-redx" ) .. " " .. name
+        elseif name == "Cooldowns" then fancyName = AtlasToString( "communities-icon-redx" ) .. " " .. name
         else fancyName = name end
 
         return {
@@ -1085,7 +1110,7 @@ do
                                 name = "Enabled",
                                 desc = "If disabled, this display will not appear under any circumstances.",
                                 order = 0.5,
-                                hidden = function () return name == "Primary" or name == "AOE" or name == "Defensives" or name == "Interrupts" end
+                                hidden = function () return name == "Primary" or name == "AOE" or name == "Cooldowns"  or name == "Defensives" or name == "Interrupts"end
                             },
 
                             elvuiCooldown = {
@@ -1110,7 +1135,7 @@ do
                                     local n = #info
                                     local display = info[2]
 
-                                    if display == "Interrupts" or display == "Defensives" then
+                                    if display == "Cooldowns" or display == "Defensives" or display == "Interrupts" then
                                         return true
                                     end
 
@@ -3067,8 +3092,8 @@ ns.AbilitySettings = function ()
 
                         abilityToggles[ 'none' ] = 'None'
                         abilityToggles[ 'default' ] = 'Default' .. ( ability.toggle and ( ' |cFFFFD100(' .. ability.toggle .. ')|r' ) or ' |cFFFFD100(none)|r' )
-                        abilityToggles[ 'defensives' ] = 'Defensives'
                         abilityToggles[ 'cooldowns' ] = 'Cooldowns'
+                        abilityToggles[ 'defensives' ] = 'Defensives'
                         abilityToggles[ 'interrupts' ] = 'Interrupts'
                         abilityToggles[ 'potions' ] = 'Potions'
 
@@ -3707,9 +3732,9 @@ do
 
                             toggles.none = "None"
                             toggles.default = "Default |cffffd100(" .. t .. ")|r"
-                            toggles.defensives = "Defensives"
-                            toggles.essences = "Covenants"
                             toggles.cooldowns = "Cooldowns"
+                            toggles.essences = "Covenants"
+                            toggles.defensives = "Defensives"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
                             toggles.custom1 = "Custom 1"
@@ -3827,9 +3852,9 @@ do
 
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
-                            toggles.defensives = "Defensives"
-                            toggles.essences = "Covenants"
                             toggles.cooldowns = "Cooldowns"
+                            toggles.essences = "Covenants"
+                            toggles.defensives = "Defensives"
                             toggles.interrupts = "Interrupts"
                             toggles.potions = "Potions"
                             toggles.custom1 = "Custom 1"
@@ -6743,12 +6768,19 @@ do
                             order = 2,                            
                         },
 
+                        separate = {
+                            type = "toggle",
+                            name = "Show Separately",
+                            desc = "If checked, cooldown abilities will be shown separately in your Cooldowns Display.",
+                            order = 3,
+                        },
+
                         override = {
                             type = "toggle",
                             name = "Bloodlust Override",
                             desc = "If checked, when Bloodlust (or similar effects) are active, the addon will recommend cooldown abilities even if Show Cooldowns is not checked.",
-                            order = 3,
-                        },
+                            order = 4,
+                        }
                     }
                 },
 

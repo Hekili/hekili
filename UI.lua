@@ -277,6 +277,7 @@ function ns.StartConfiguration( external )
 
             if i == "Defensives" then v.Header:SetText( AtlasToString( "nameplates-InterruptShield", 20, 20 ) )
             elseif i == "Interrupts" then v.Header:SetText( AtlasToString( "communities-icon-redx", 20, 20 ) )
+            elseif i == "Cooldowns" then v.Header:SetText( AtlasToString( "communities-icon-redx", 20, 20 ) )
             else v.Header:SetText( i ) end
             
             v.Header:SetJustifyH("CENTER")
@@ -677,7 +678,8 @@ do
         Primary = 0.1,
         AOE = 0.2,
         Interrupts = 1,
-        Defensives = 1
+        Defensives = 1,
+        Cooldowns = 0.2
     }
 
     local LRC = LibStub("LibRangeCheck-2.0")
@@ -1659,6 +1661,8 @@ do
                         dispActive[i] = ( profile.toggles.interrupts.value and profile.toggles.interrupts.separate ) and 1 or nil
                     elseif i == 'Defensives' then
                         dispActive[i] = ( profile.toggles.defensives.value and profile.toggles.defensives.separate ) and 1 or nil
+                    elseif i == 'Cooldowns' then
+                        dispActive[i] = ( profile.toggles.cooldowns.value and profile.toggles.cooldowns.separate ) and 1 or nil
                     else
                         dispActive[i] = 1
                     end
@@ -2110,7 +2114,7 @@ end
 -- Buttons (as frames) are never deleted, but should get reused effectively.
 
 local builtIns = {
-    "Primary", "AOE", "Interrupts", "Defensives"
+    "Primary", "AOE", "Cooldowns", "Interrupts", "Defensives"
 }
 
 function Hekili:BuildUI()
