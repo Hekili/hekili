@@ -455,7 +455,6 @@ local HekiliSpecMixin = {
 
             a.name = name or ability
             a.link = link or ability
-            -- a.texture = texture or "Interface\\ICONS\\Spell_Nature_BloodLust"
 
             class.itemMap[ item ] = ability
 
@@ -482,7 +481,7 @@ local HekiliSpecMixin = {
                 if name then
                     a.name = name
                     a.link = link
-                    a.texture = a.texture or texture
+                    a.texture = texture
 
                     if a.suffix then
                         a.actualName = name
@@ -527,7 +526,7 @@ local HekiliSpecMixin = {
                     end
 
                     if not a.unlisted then
-                        class.abilityList[ ability ] = "|T" .. a.texture .. ":0|t " .. link
+                        class.abilityList[ ability ] = "|T" .. ( a.texture or texture ) .. ":0|t " .. link
                         class.itemList[ item ] = "|T" .. a.texture .. ":0|t " .. link
 
                         class.abilityByName[ a.name ] = a
@@ -5233,9 +5232,8 @@ function Hekili:SpecializationChanged()
                 local name, _, tex = GetSpellInfo( ability.id )
 
                 if name and tex then
-                    ability.texture = ability.texture or tex
                     ability.name = ability.name or name
-                    class.abilityList[ k ] = "|T" .. ability.texture .. ":0|t " .. ability.name
+                    class.abilityList[ k ] = "|T" .. tex .. ":0|t " .. ability.name
                 end
             else
                 class.abilityList[ k ] = "|T" .. ability.texture .. ":0|t " .. ability.name
