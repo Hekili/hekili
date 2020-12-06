@@ -2469,6 +2469,9 @@ local mt_target = {
 
         elseif k == "is_add" then
             return not t.is_boss
+        
+        elseif k == "is_friendly" then
+            return UnitExists( "target" ) and UnitIsFriend( "target", "player" )
 
         elseif k:sub(1, 6) == 'within' then
             local maxR = k:match( "^within(%d+)$" )
@@ -6232,7 +6235,7 @@ do
             return false, "ability.disabled returned true"
         end
 
-        if self.args.only_cwc and ( not self.buff.casting.up or not self.buff.casting.v3 ) then
+        if self.args.only_cwc and ( not self.buff.casting.up or not self.buff.casting.v3 or not ability.castableWhileCasting ) then
             return false, "only castable while channeling"
         end
 
@@ -6254,6 +6257,14 @@ do
 
         if ability.debuff and not state.debuff[ ability.debuff ].up then
             return false, "required debuff (" ..ability.debuff .. ") not active"
+        end
+
+        if ability.channeling then
+            local c = class.abilities[ ability.channeling ] and class.abilities[ ability.channeling ].id
+            
+            if not c or state.buff.casting.down or not state.buff.casting.v3 or state.buff.casting.v1 ~= c then
+                return false, "required channel (" .. ability.channeling .. ") not active"
+            end
         end
 
         if self.args.moving == 1 and state.buff.movement.down then
