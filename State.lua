@@ -724,7 +724,7 @@ end
 
 
 -- Apply a buff to the current game state.
-local function applyBuff( aura, duration, stacks, value )
+local function applyBuff( aura, duration, stacks, value, v2, v3 )
     if not aura then
         Error( "Attempted to apply/remove a nameless aura '%s'.", aura or "nil" )
         return
@@ -768,6 +768,8 @@ local function applyBuff( aura, duration, stacks, value )
         b.last_application = b.applied or 0
 
         b.v1 = 0
+        b.v2 = nil
+        b.v3 = nil
         b.applied = 0
         b.caster = 'unknown'
 
@@ -788,6 +790,8 @@ local function applyBuff( aura, duration, stacks, value )
 
         b.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
         b.v1 = value or 0
+        b.v2 = v2
+        b.v3 = v3
         b.caster = 'player'
     end
 
@@ -1042,10 +1046,9 @@ function state.channelSpell( name, start, duration, id )
         state.player.channelStart = start
         state.player.channelEnd = start + duration
 
-        applyBuff( "casting", duration, nil, id or ( ability and ability.id ) or 0 )
+        applyBuff( "casting", duration, nil, id or ( ability and ability.id ) or 0, nil, true )
         state.buff.casting.applied = start
         state.buff.casting.expires = start + duration
-        -- state.buff.casting.v3 = true
     end
 end
 
@@ -5301,6 +5304,8 @@ do
                     local spell = class.abilities[ entry.action ]
                     if spell and spell.id then
                         self.buff.casting.v1 = spell.id
+                        self.buff.casting.v3 = entry.type == "CHANNEL_FINISH"
+
                         self.channelSpell( entry.action, entry.start or self.now, entry.time - ( entry.start or self.now ), spell.id )
                     end
                 end

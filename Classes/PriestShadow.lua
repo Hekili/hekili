@@ -296,10 +296,6 @@ if UnitClassBase( "player" ) == "PRIEST" then
             summonPet( "fiend", buff.shadowfiend.remains )
         end
 
-        if action.void_bolt.in_flight then
-            runHandler( "void_bolt" )
-        end
-
         if talent.mindbender.enabled then
             cooldown.fiend = cooldown.mindbender
         else
@@ -941,6 +937,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 return 7.5 * haste
             end,
             gcd = "spell",
+
             castableWhileCasting = function ()
                 if buff.dark_thought.up and ( buff.casting.v1 == class.abilities.mind_flay.id or buff.casting.v1 == class.abilities.mind_sear.id ) then return true end
                 return nil
@@ -1231,7 +1228,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             startsCombat = true,
             texture = 1022950,
 
-            debuff = "mind_sear",
+            channeling = "mind_sear",
 
             handler = function ()
                 applyDebuff( "target", "shadow_word_pain" )
@@ -1472,6 +1469,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             texture = 1035040,
 
             velocity = 40,
+
             buff = function () return buff.dissonant_echoes.up and "dissonant_echoes" or "voidform" end,
             bind = "void_eruption",
 
@@ -1486,12 +1484,14 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 if debuff.vampiric_touch.up then debuff.vampiric_touch.expires = debuff.vampiric_touch.expires + 3 end
                 if talent.legacy_of_the_void.enabled and debuff.devouring_plague.up then debuff.devouring_plague.expires = query_time + debuff.devouring_plague.duration end
 
+                removeBuff( "anunds_last_breath" )
+            end,
+
+            impact = function ()                
                 if talent.hungering_void.enabled then
                     if debuff.hungering_void.up then buff.voidform.expires = buff.voidform.expires + 1 end
                     applyDebuff( "target", "hungering_void", 6 )
                 end
-
-                removeBuff( "anunds_last_breath" )
             end,
 
             copy = 343355,
