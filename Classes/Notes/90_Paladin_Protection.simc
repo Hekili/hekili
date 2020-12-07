@@ -1,10 +1,9 @@
 # Protection Paladin
-# December 3, 2020
+# December 6, 2020
 
 # Changes
 # - Added Rebuke.
 # - Remove Seraphim restrictions on multiple mitigation abilities.
-# - Integrate more of the Shadowlands APL.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/devotion_aura
@@ -31,11 +30,14 @@ actions+=/blessed_hammer,strikes=3
 actions+=/hammer_of_the_righteous
 actions+=/consecration
 
-actions.standard+=/shield_of_the_righteous,if=debuff.judgment.up&(debuff.vengeful_shock.up|!conduit.vengeful_shock.enabled)
+actions.standard=shield_of_the_righteous,if=debuff.judgment.up
 actions.standard+=/shield_of_the_righteous,if=holy_power=5|buff.holy_avenger.up|holy_power=4&talent.sanctified_wrath.enabled&buff.avenging_wrath.up
 actions.standard+=/judgment,cycle_targets=1,if=charges=2|!talent.crusaders_judgment.enabled
-actions.standard+=/avengers_shield,if=debuff.vengeful_shock.down&conduit.vengeful_shock.enabled
 actions.standard+=/hammer_of_wrath
+actions.standard+=/blessing_of_summer
+actions.standard+=/blessing_of_autumn
+actions.standard+=/blessing_of_winter
+actions.standard+=/blessing_of_spring
 actions.standard+=/avengers_shield
 actions.standard+=/judgment,cycle_targets=1
 actions.standard+=/vanquishers_hammer
@@ -58,10 +60,6 @@ actions.cooldowns+=/avenging_wrath
 actions.cooldowns+=/holy_avenger,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains>60
 actions.cooldowns+=/potion,if=buff.avenging_wrath.up
 actions.cooldowns+=/ashen_hallow,if=buff.avenging_wrath.down
-actions.cooldowns+=/blessing_of_summer
-actions.cooldowns+=/blessing_of_autumn
-actions.cooldowns+=/blessing_of_winter
-actions.cooldowns+=/blessing_of_spring
 actions.cooldowns+=/vanquishers_hammer
 actions.cooldowns+=/divine_toll,if=holy_power.deficit>0
 actions.cooldowns+=/use_items,if=buff.seraphim.up|!talent.seraphim.enabled
