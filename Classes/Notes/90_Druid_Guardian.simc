@@ -1,5 +1,5 @@
 # Guardian Druid
-# December 5, 2020
+# December 7, 2020
 
 # Changes:
 # - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -32,17 +32,17 @@ actions.bear+=/ravenous_frenzy
 actions.bear+=/convoke_the_spirits,if=!druid.catweave_bear&!druid.owlweave_bear
 actions.bear+=/berserk_bear,if=(buff.ravenous_frenzy.up|!covenant.venthyr)
 actions.bear+=/incarnation,if=(buff.ravenous_frenzy.up|!covenant.venthyr)
-actions.bear+=/adaptive_swarm,,if=(!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>3)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<5&dot.adaptive_swarm_damage.ticking)
-actions.bear+=/moonfire,if=(buff.galactic_guardian.up&druid.owlweave_bear)&active_enemies<=3
-actions.bear+=/thrash_bear,cycle_targets=1,if=refreshable|dot.thrash_bear.stack<3|(dot.thrash_bear.stack<4&runeforge.luffainfused_embrace.equipped)|active_enemies>=4
+actions.bear+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>3)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<5&dot.adaptive_swarm_damage.ticking)
+actions.bear+=/thrash_bear,target_if=refreshable|dot.thrash_bear.stack<3|(dot.thrash_bear.stack<4&runeforge.luffainfused_embrace.equipped)|active_enemies>=4
+actions.bear+=/moonfire,if=((buff.galactic_guardian.up)&active_enemies<2)|((buff.galactic_guardian.up)&!dot.moonfire.ticking&active_enemies>1&target.time_to_die>12)
+actions.bear+=/moonfire,if=(dot.moonfire.remains<=3&(buff.galactic_guardian.up)&active_enemies>5&target.time_to_die>12)
+actions.bear+=/moonfire,if=(refreshable&active_enemies<2&target.time_to_die>12)|(!dot.moonfire.ticking&active_enemies>1&target.time_to_die>12)
 actions.bear+=/swipe,if=buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&active_enemies>=4
 actions.bear+=/maul,if=buff.incarnation.up&active_enemies<2
 actions.bear+=/maul,if=(buff.savage_combatant.stack>=1)&(buff.tooth_and_claw.up)&buff.incarnation.up&active_enemies=2
 actions.bear+=/mangle,if=buff.incarnation.up&active_enemies<=3
-actions.bear+=/moonfire,cycle_targets=1,if=refreshable&active_enemies<=3
 actions.bear+=/maul,if=(((buff.tooth_and_claw.stack>=2)|(buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1.5)|(buff.savage_combatant.stack>=3))&active_enemies<3)
 actions.bear+=/thrash_bear,if=active_enemies>1
-actions.bear+=/moonfire,if=(buff.galactic_guardian.up&druid.catweave_bear)&active_enemies<=3|(buff.galactic_guardian.up&!druid.catweave_bear&!druid.owlweave_bear)&active_enemies<=3
 actions.bear+=/mangle,if=((rage<90)&active_enemies<3)|((rage<85)&active_enemies<3&talent.soul_of_the_forest.enabled)
 actions.bear+=/pulverize,cycle_targets=1,if=dot.thrash_bear.stack>2
 actions.bear+=/thrash_bear
@@ -76,7 +76,6 @@ actions.mitigation+=/barkskin,if=buff.bear_form.up&tanking&health.pct<75&incomin
 actions.mitigation+=/survival_instincts,if=buff.survival_instincts.down&buff.barkskin.down&health.pct<60&incoming_damage_5s>0.25*health.max
 
 actions.cooldowns=potion
-actions.cooldowns+=/heart_essence
 actions.cooldowns+=/blood_fury
 actions.cooldowns+=/berserking
 actions.cooldowns+=/arcane_torrent
@@ -87,8 +86,6 @@ actions.cooldowns+=/bristling_fur,if=buff.bear_form.up
 actions.cooldowns+=/incarnation,if=(dot.moonfire.ticking|active_enemies>1)&dot.thrash_bear.ticking
 actions.cooldowns+=/berserk
 actions.cooldowns+=/use_item,effect_name=cyclotronic_blast
-actions.cooldowns+=/anima_of_death,if=toggle.cooldowns&(time_to_die<cooldown%2|active_enemies>1)
-actions.cooldowns+=/memory_of_lucid_dreams
 actions.cooldowns+=/use_items
 
 actions.catweave=prowl

@@ -1,6 +1,6 @@
 # Demonology Warlock
 # https://github.com/simulationcraft/simc/
-# November 30, 2020
+# December 7, 2020
 
 # Changes:
 # - Spell Lock.
@@ -14,7 +14,6 @@ actions.precombat+=/fel_domination,if=time>0&!pet.alive
 actions.precombat+=/summon_pet
 actions.precombat+=/power_siphon,if=buff.wild_imps.stack>1&buff.demonic_core.stack<=2
 actions.precombat+=/demonbolt,if=(boss|action.demonbolt.cast=0)&soul_shards<4
-actions.precombat+=/shadow_bolt,if=soul_shards<5
 # actions.precombat+=/variable,name=tyrant_ready,value=cooldown.summon_demonic_tyrant.remains<5&(!talent.doom.enabled|debuff.doom.up)&(buff.demonic_strength.up|!talent.demonic_strength.enabled|talent.demonic_consumption.enabled)&(!talent.nether_portal.enabled|buff.nether_portal.up|cooldown.nether_portal.remains>15)&(!talent.grimoire_felguard.enabled|cooldown.grimoire_felguard.remains>15)&(!talent.summon_vilefiend.enabled|cooldown.summon_vilefiend.remains>15)&(!talent.demonic_consumption.enabled|buff.wild_imps.up|soul_shard=5|buff.nether_portal.up&soul_shard>0)
 
 # Executed every time the actor is available.
@@ -64,7 +63,7 @@ actions.summon_tyrant+=/hand_of_guldan
 actions.summon_tyrant+=/demonbolt,if=buff.demonic_core.up&buff.nether_portal.up&((buff.vilefiend.remains>5|!talent.summon_vilefiend.enabled)&(buff.grimoire_felguard.remains>5|buff.grimoire_felguard.down))
 actions.summon_tyrant+=/shadow_bolt,if=buff.nether_portal.up&((buff.vilefiend.remains>5|!talent.summon_vilefiend.enabled)&(buff.grimoire_felguard.remains>5|buff.grimoire_felguard.down))
 # actions.summon_tyrant+=/variable,name=tyrant_ready,value=!cooldown.summon_demonic_tyrant.ready
-actions.summon_tyrant+=/summon_demonic_tyrant,if=soul_shards=0
+actions.summon_tyrant+=/summon_demonic_tyrant,if=!talent.demonic_consumption|buff.wild_imps.stack>5
 actions.summon_tyrant+=/shadow_bolt
 
 actions.tyrant_prep=doom,line_cd=30

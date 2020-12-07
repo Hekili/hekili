@@ -1,5 +1,5 @@
 # Outlaw Rogue
-# December 6, 2020
+# December 7, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
@@ -40,7 +40,7 @@ actions.build+=/gouge,if=talent.dirty_tricks.enabled&combo_points.deficit>=1+buf
 
 # Cooldowns
 # Using Ambush is a 2% increase, so Vanish can be sometimes be used as a utility spell unless using Master Assassin or Deathly Shadows
-actions.cds=vanish,if=!stealthed.all&variable.ambush_condition&master_assassin_remains=0&buff.deathly_shadows.down
+actions.cds=vanish,if=!stealthed.all&variable.ambush_condition&master_assassin_remains=0&(!runeforge.deathly_shadows|buff.deathly_shadows.down&combo_points<2)
 actions.cds+=/flagellation
 actions.cds+=/flagellation_cleanse,if=debuff.flagellation.remains<2
 actions.cds+=/adrenaline_rush,if=!buff.adrenaline_rush.up&(!cooldown.killing_spree.up|!talent.killing_spree.enabled)
@@ -72,5 +72,6 @@ actions.finish+=/slice_and_dice,if=buff.slice_and_dice.remains<fight_remains&buf
 actions.finish+=/dispatch
 
 # Stealth
+actions.stealth=dispatch,if=combo_points>=cp_max_spend
 actions.stealth=cheap_shot,cycle_targets=1,if=talent.prey_on_the_weak.enabled&!target.is_boss
 actions.stealth+=/ambush

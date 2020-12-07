@@ -1,5 +1,5 @@
 # Affliction Warlock
-# November 29, 2020
+# December 7, 2020
 
 # Changes:
 # - Added Spell Lock.
@@ -79,9 +79,7 @@ actions.aoe+=/malefic_rapture,if=dot.vile_taint.ticking
 actions.aoe+=/malefic_rapture,if=dot.soul_rot.ticking&!talent.sow_the_seeds.enabled
 actions.aoe+=/malefic_rapture,if=!talent.vile_taint.enabled
 actions.aoe+=/malefic_rapture,if=soul_shard>4
-actions.aoe+=/siphon_life,cycle_targets=1,if=(active_dot.siphon_life<=3)&(!dot.siphon_life.ticking)
-actions.aoe+=/drain_life,if=buff.inevitable_demise.stack>=50|buff.inevitable_demise.up&time_to_die<5
-actions.aoe+=/drain_soul
+actions.aoe+=/siphon_life,cycle_targets=1,if=active_dot.siphon_life<=3&!dot.siphon_life.ticking
 actions.aoe+=/call_action_list,name=covenant
 actions.aoe+=/drain_life,if=buff.inevitable_demise.stack>=50|buff.inevitable_demise.up&time_to_die<5|buff.inevitable_demise.stack>=35&dot.soul_rot.ticking
 actions.aoe+=/drain_soul,interrupt=1
@@ -91,20 +89,6 @@ actions.covenant=impending_catastrophe,if=cooldown.summon_darkglare.remains<10|c
 actions.covenant+=/decimating_bolt,if=cooldown.summon_darkglare.remains>5&(debuff.haunt.remains>4|!talent.haunt.enabled)
 actions.covenant+=/soul_rot,if=cooldown.summon_darkglare.remains<5|cooldown.summon_darkglare.remains>50|cooldown.summon_darkglare.remains>25&conduit.corrupting_leer.enabled
 actions.covenant+=/scouring_tithe
-actions.covenant+=/worldvein_resonance
-actions.covenant+=/memory_of_lucid_dreams
-actions.covenant+=/blood_of_the_enemy
-actions.covenant+=/guardian_of_azeroth
-actions.covenant+=/ripple_in_space
-actions.covenant+=/focused_azerite_beam
-actions.covenant+=/purifying_blast
-actions.covenant+=/reaping_flames,if=target.health_pct>80|target.health_pct<20|target.time_to_pct_20>40|fight_remains<20
-actions.covenant+=/concentrated_flame
-actions.covenant+=/the_unbound_force,if=buff.reckless_force.remains
-actions.covenant+=/scouring_tithe
-actions.covenant+=/impending_catastrophe
-actions.covenant+=/soul_rot,if=(buff.inevitable_demise.stack>38|active_enemies>1)
-actions.covenant+=/decimating_bolt,if=(target.health_pct<50|fight_remains>50)
 
 actions.darkglare_prep=vile_taint,if=cooldown.summon_darkglare.remains<2
 actions.darkglare_prep+=/dark_soul
@@ -113,7 +97,7 @@ actions.darkglare_prep+=/fireblood
 actions.darkglare_prep+=/blood_fury
 actions.darkglare_prep+=/berserking
 actions.darkglare_prep+=/call_action_list,name=covenant,strict=1,if=!covenant.necrolord&cooldown.summon_darkglare.remains<2
-actions.darkglare_prep+=/summon_darkglare,if=active_dot.vile_taint>0|active_dot.phantom_singularity>0|talent.sow_the_seeds.enabled|(!talent.vile_taint.enabled&!talent.phantom_singularity.enabled)
+actions.darkglare_prep+=/summon_darkglare
 
 actions.item=use_items
 

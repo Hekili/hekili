@@ -1,7 +1,5 @@
 # Enhancement Shaman
-# December 5, 2020
-
-# Added Covenant abilities.
+# December 7, 2020
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -15,7 +13,6 @@ actions=bloodlust
 actions+=/potion,if=fight_remains<60
 # Interrupt of casts.
 actions+=/wind_shear
-actions+=/windstrike
 actions+=/use_items
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
@@ -24,6 +21,7 @@ actions+=/ancestral_call,if=!talent.ascendance.enabled|buff.ascendance.up|cooldo
 actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
 actions+=/feral_spirit
 actions+=/ascendance
+actions+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down
 # If only one enemy, priority follows the 'single' action list.
 actions+=/call_action_list,name=single,if=active_enemies=1
 # On multiple enemies, the priority follows the 'aoe' action list.
@@ -33,9 +31,9 @@ actions+=/skyfury_totem
 actions+=/primal_strike
 
 # Multi target action priority list
-actions.aoe=fae_transfusion,if=soulbind.grove_invigoration|soulbind.field_of_blossoms
+actions.aoe=windstrike,if=buff.crash_lightning.up
+actions.aoe+=/fae_transfusion,if=soulbind.grove_invigoration|soulbind.field_of_blossoms
 actions.aoe+=/frost_shock,if=buff.hailstorm.up
-actions.aoe+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down
 actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&(talent.fire_nova.enabled|talent.lashing_flames.enabled|covenant.necrolord)
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/fire_nova,if=active_dot.flame_shock>=3
@@ -43,6 +41,7 @@ actions.aoe+=/vesper_totem
 actions.aoe+=/lightning_bolt,if=buff.primordial_wave.up&(buff.stormkeeper.up|buff.maelstrom_weapon.stack>=5)
 actions.aoe+=/crash_lightning,if=talent.crashing_storm.enabled|buff.crash_lightning.down
 actions.aoe+=/lava_lash,cycle_targets=1,if=talent.lashing_flames.enabled
+actions.aoe+=/stormstrike,if=buff.crash_lightning.up
 actions.aoe+=/crash_lightning
 actions.aoe+=/chain_lightning,if=buff.stormkeeper.up
 actions.aoe+=/chain_harvest,if=buff.maelstrom_weapon.stack>=5
@@ -52,6 +51,7 @@ actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack=10
 actions.aoe+=/flame_shock,cycle_targets=1,if=talent.fire_nova.enabled
 actions.aoe+=/sundering
 actions.aoe+=/lava_lash,cycle_targets=1,if=runeforge.primal_lava_actuators.equipped&buff.primal_lava_actuators.stack>6
+actions.aoe+=/windstrike
 actions.aoe+=/stormstrike
 actions.aoe+=/lava_lash
 actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable
@@ -65,8 +65,11 @@ actions.aoe+=/earth_elemental
 actions.aoe+=/windfury_totem,if=buff.windfury_totem.remains<30
 
 # Single target action priority list
-actions.single=primordial_wave,if=!buff.primordial_wave.up
-actions.single+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down
+actions.single=windstrike
+actions.single+=/primordial_wave,if=!buff.primordial_wave.up
+actions.single+=/stormstrike,if=runeforge.doom_winds.equipped&buff.doom_winds.up
+actions.single+=/crash_lightning,if=runeforge.doom_winds.equipped&buff.doom_winds.up
+actions.single+=/ice_strike,if=runeforge.doom_winds.equipped&buff.doom_winds.up
 actions.single+=/flame_shock,if=!ticking
 actions.single+=/vesper_totem
 actions.single+=/frost_shock,if=buff.hailstorm.up
