@@ -1,10 +1,10 @@
 # Outlaw Rogue
-# December 5, 2020
+# December 6, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
 actions.precombat+=/marked_for_death,precombat_seconds=5,if=raid_event.adds.in>40
-actions.precombat+=/stealth,if=(!equipped.pocketsized_computation_device|!cooldown.cyclotronic_blast.duration|raid_event.invulnerable.exists)
+actions.precombat+=/stealth
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=refreshable
 actions.precombat+=/slice_and_dice,precombat_seconds=2,if=refreshable
 actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=(!equipped.pocketsized_computation_device|!cooldown.cyclotronic_blast.duration|raid_event.invulnerable.exists)
@@ -20,8 +20,8 @@ actions+=/variable,name=ambush_condition,value=combo_points.deficit>=2+buff.broa
 actions+=/variable,name=blade_flurry_sync,value=spell_targets.blade_flurry<2&raid_event.adds.in>20|buff.blade_flurry.up
 actions+=/call_action_list,name=stealth,if=stealthed.all
 actions+=/call_action_list,name=cds
-# Finish at maximum CP. Substract one for each Broadside and Opportunity when Quick Draw is selected and MfD is not ready after the next second.
-actions+=/run_action_list,name=finish,if=combo_points>=cp_max_spend-(buff.broadside.up+buff.opportunity.up)*(talent.quick_draw.enabled&(!talent.marked_for_death.enabled|cooldown.marked_for_death.remains>1))|combo_points=animacharged_cp
+# Finish at maximum CP but avoid wasting Broadside and Quick Draw bonus combo points
+actions+=/run_action_list,name=finish,if=combo_points>=cp_max_spend-buff.broadside.up-(buff.opportunity.up*talent.quick_draw.enabled)|combo_points=animacharged_cp
 actions+=/call_action_list,name=build
 actions+=/arcane_torrent,if=energy.deficit>=15+energy.regen
 actions+=/arcane_pulse
@@ -34,7 +34,7 @@ actions.build+=/echoing_reprimand
 actions.build+=/serrated_bone_spike,cycle_targets=1,if=!dot.serrated_bone_spike.ticking|active_enemies=1&raid_event.adds.in>full_recharge_time|charges>2&fight_remains<5
 # Use Pistol Shot with Opportunity if below 45 energy, or when using Quick Draw
 actions.build+=/pistol_shot,if=buff.opportunity.up&(energy<45|talent.quick_draw.enabled)
-actions.build+=/pistol_shot,if=buff.opportunity.up&(buff.deadshot.up|buff.greenskins_wickers.up|buff.concealed_blunderbuss.up)
+actions.build+=/pistol_shot,if=buff.opportunity.up&(buff.greenskins_wickers.up|buff.concealed_blunderbuss.up)
 actions.build+=/sinister_strike
 actions.build+=/gouge,if=talent.dirty_tricks.enabled&combo_points.deficit>=1+buff.broadside.up
 
@@ -57,7 +57,7 @@ actions.cds+=/blade_rush,if=variable.blade_flurry_sync&energy.time_to_max>2
 actions.cds+=/dreadblades,if=!stealthed.all&combo_points<=1
 actions.cds+=/shadowmeld,if=!stealthed.all&variable.ambush_condition
 actions.cds+=/sepsis,if=!stealthed.all
-actions.cds+=/potion,if=buff.bloodlust.react|buff.adrenaline_rush.up
+actions.cds+=/potion,if=buff.bloodlust.react|fight_remains<30|buff.adrenaline_rush.up
 actions.cds+=/blood_fury
 actions.cds+=/berserking
 actions.cds+=/fireblood
