@@ -276,6 +276,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
             applyDebuff( "target", "serpent_sting" )
         end
 
+        if now - action.volley.lastCast < 6 then applyBuff( "volley", 6 - ( now - action.volley.lastCast ) ) end
+
         last_steady_focus = nil
     end )
 
@@ -887,6 +889,8 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 end,
             }
         },
+
+
         volley = {
             id = 260243,
             cast = 0,
