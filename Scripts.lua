@@ -588,6 +588,8 @@ do
     end
 
     function scripts:BuildRecheck( conditions )
+        if type( conditions ) ~= "string" then return end
+        
         local recheck
 
         conditions = conditions:gsub( " +", "" )
