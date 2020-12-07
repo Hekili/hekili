@@ -1,15 +1,16 @@
 # Balance Druid
-# December 1, 2020
+# December 6, 2020
 
 # Changes:
 # - Added Solar Beam.
 # - Changed target_if cases to cycle_targets.
 # - Removed unnecessary variables (i.e., prev_starsurge -> prev.starsurge).
+# - Avoid precasting Wrath if it's the wrong Eclipse.
 
 actions.precombat=moonkin_form
 actions.precombat+=/kindred_spirits
-actions.precombat+=/wrath,line_cd=10
-actions.precombat+=/wrath,if=prev.1.wrath&!prev.2.wrath
+actions.precombat+=/wrath,line_cd=10,if=(eclipse.lunar_next|eclipse.in_lunar|eclipse.in_both|eclipse.any_next)
+actions.precombat+=/wrath,if=(eclipse.lunar_next|eclipse.in_lunar|eclipse.in_both|eclipse.any_next)&prev.1.wrath&!prev.2.wrath
 actions.precombat+=/starfire
 actions.precombat+=/variable,name=convoke_desync,value=boss&floor((fight_remains-20)%120)>floor((fight_remains-25-(10*talent.incarnation.enabled)-(4*conduit.precise_alignment.enabled))%180)
 
