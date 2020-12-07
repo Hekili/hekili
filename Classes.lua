@@ -5269,6 +5269,16 @@ ns.specializationChanged = function()
 end
 
 
+RegisterEvent( "PLAYER_ENTERING_WORLD", function( event )
+    local currentSpec = GetSpecialization()
+    local currentID = GetSpecializationInfo( currentSpec )
+
+    if currentID ~= state.spec.id then
+        Hekili:SpecializationChanged()
+    end
+end )
+
+
 function Hekili:IsValidSpec()
     return state.spec.id and class.specs[ state.spec.id ] ~= nil
 end
