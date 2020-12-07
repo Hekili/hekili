@@ -698,7 +698,7 @@ function Hekili:GetDefaults()
                 },
 
                 Cooldowns = {
-                    enabled = false,
+                    enabled = true,
                     builtIn = true,
 
                     name = "Cooldowns",
@@ -1076,6 +1076,7 @@ do
 
         if name == "Defensives" then fancyName = AtlasToString( "nameplates-InterruptShield" ) .. " " .. name
         elseif name == "Interrupts" then fancyName = AtlasToString( "communities-icon-redx" ) .. " " .. name
+        elseif name == "Cooldowns" then fancyName = NewFeature .. " " .. name
         else fancyName = name end
 
         return {
@@ -6772,8 +6773,9 @@ do
 
                         separate = {
                             type = "toggle",
-                            name = "Show Separately",
-                            desc = "If checked, cooldown abilities will be shown separately in your Cooldowns Display.",
+                            name = NewFeature .. " Show Separately",
+                            desc = "If checked, cooldown abilities will be shown separately in your Cooldowns Display.\n\n" ..
+                                "This is an experimental feature and may not work well for some specializations.",
                             order = 3,
                         },
 
