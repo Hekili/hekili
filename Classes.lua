@@ -1560,7 +1560,58 @@ all:RegisterAuras( {
 } )
 
 
-all:RegisterPotions( {    
+all:RegisterPotions( {
+    -- 9.0
+    potion_of_spectral_strength = {
+        item = 171275,
+        buff = "potion_of_spectral_strength",
+        copy = "spectral_strength",
+    },
+    potion_of_spectral_agility = {
+        item = 171270,
+        buff = "potion_of_spectral_agility",
+        copy = "spectral_agility",        
+    },
+    potion_of_spiritual_clarity = {
+        item = 171272,
+        buff = "potion_of_spiritual_clarity",
+        copy = "spiritual_clarity"
+    },
+    potion_of_phantom_fire = {
+        item = 171349,
+        buff = "potion_of_phantom_fire",
+        copy = "phantom_fire",
+    },
+    potion_of_spectral_intellect = {
+        item = 171273,
+        buff = "potion_of_spectral_intellect",
+        copy = "spectral_intellect"
+    },
+    potion_of_deathly_fixation = {
+        item = 171351,
+        buff = "potion_of_deathly_fixation",
+        copy = "deathly_fixation"
+    },
+    strength_of_blood = {
+        item = 182163,
+        buff = "strength_of_blood",
+    },
+    potion_of_empowered_exorcisms = {
+        item = 171352,
+        buff = "potion_of_empowered_exorcisms",
+        copy = "empowered_exorcisms"
+    },
+    potion_of_unusual_strength = {
+        item = 180771,
+        buff = "potion_of_unusual_strength",
+        copy = "unusual_strength"
+    },
+    potion_of_spectral_stamina = {
+        item = 171274,
+        buff = "potion_of_spectral_stamina",
+        copy = "spectral_stamina"
+    },
+
     -- 8.2
     potion_of_empowered_proximity = {
         item = 168529,
@@ -1629,24 +1680,71 @@ all:RegisterPotions( {
         item = 152557,
         buff = 'steelskin_potion',
     },
-
-    -- Legion
-    old_war = {
-        item = 127844,
-        buff = 'old_war'
-    },
-    deadly_grace = {
-        item = 127843,
-        buff = 'deadly_grace'
-    },
-    prolonged_power = {
-        item = 142117,
-        buff = 'prolonged_power'
-    },
 } )
 
 
 all:RegisterAuras( {
+    -- 9.0
+    potion_of_spectral_strength = {
+        id = 307164,
+        duration = 25,
+        max_stack = 1,
+        copy = "spectral_strength"
+    },
+    potion_of_spectral_agility = {
+        id = 307159,
+        duration = 25,
+        max_stack = 1,
+        copy = "spectral_agility"
+    },
+    potion_of_spiritual_clarity = {
+        id = 307161,
+        duration = 10,
+        max_stack = 1,
+        copy = "spiritual_clarity"
+    },
+    potion_of_phantom_fire = {
+        id = 307495,
+        duration = 25,
+        max_stack = 1,
+        copy = "phantom_fire",
+    },
+    potion_of_spectral_intellect = {
+        id = 307162,
+        duration = 25,
+        max_stack = 1,
+        copy = "spectral_intellect"
+    },
+    potion_of_deathly_fixation = {
+        id = 307497,
+        duration = 25,
+        max_stack = 1,
+        copy = "deathly_fixation"
+    },
+    strength_of_blood = {
+        id = 338385,
+        duration = 60,
+        max_stack = 1
+    },
+    potion_of_empowered_exorcisms = {
+        id = 307494,
+        duration = 25,
+        max_stack = 1,
+        copy = "empowered_exorcisms"
+    },
+    potion_of_unusual_strength = {
+        id = 334436,
+        duration = 25,
+        max_stack = 1,
+        copy = "unusual_strength"
+    },
+    potion_of_spectral_stamina = {
+        id = 307163,
+        duration = 25,
+        max_stack = 1,
+        copy = "spectral_stamina"
+    },
+
     -- 8.2
     potion_of_empowered_proximity = {
         id = 298225,
