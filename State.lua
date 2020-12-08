@@ -22,6 +22,7 @@ local tcopy = ns.tableCopy
 -- Clean up table_x later.
 local insert, remove, sort, unpack, wipe = table.insert, table.remove, table.sort, table.unpack, table.wipe
 local RC = LibStub( "LibRangeCheck-2.0" )
+local LSR = LibStub( "SpellRange-1.0" )
 
 
 local class = Hekili.Class
@@ -2668,7 +2669,7 @@ local mt_default_cooldown = {
             return t[k]
 
         elseif k == 'charges' then
-            if not raw and ( state:IsDisabled( t.key ) or ability.disabled ) then
+            if not raw and ( state:IsDisabled( t.key, true ) or ability.disabled ) then
                 return 0
             end
 
@@ -2690,7 +2691,7 @@ local mt_default_cooldown = {
 
             -- If the ability is toggled off in the profile, we may want to fake its CD.
             -- Revisit this if I add base_cooldown to the ability tables.
-            if not raw and ( state:IsDisabled( t.key ) or ability.disabled ) then
+            if not raw and ( state:IsDisabled( t.key, true ) or ability.disabled ) then
                 return ability.cooldown
             end
 
@@ -2701,7 +2702,7 @@ local mt_default_cooldown = {
 
         elseif k == 'charges_fractional' then
             if not state:IsKnown( t.key ) then return 1 end
-            if not raw and ( state:IsDisabled( t.key ) or ability.disabled ) then return 0 end
+            if not raw and ( state:IsDisabled( t.key, true ) or ability.disabled ) then return 0 end
 
             if ability.charges and ability.charges > 1 then
                 -- run this ad-hoc rather than with every advance.
@@ -4083,12 +4084,6 @@ local mt_default_debuff = {
     __index = function( t, k )
         local aura = class.auras[ t.key ]
 
-        -- The aura is flagged to get info from a different target.
-        if t.key == "festering_wound" then
-            local exp, min, max, a_name = state.GetCycleInfo()
-            if Hekili.ActiveDebug then Hekili:Debug( "festering_wound.%s ... Cycling? %s, cycle_debuff.%s = %s [ %.2f | %d | %d | %s ]", k, tostring( state.IsCycling( t.key ) ), k, tostring( cycle_debuff[ k ] ), exp or 0, min or 0, max or 0, a_name or 'n/a' ) end
-        end
-
         if state.IsCycling( t.key ) and cycle_debuff[ k ] ~= nil then
             return cycle_debuff[ k ]
         end
@@ -4475,6 +4470,13 @@ local mt_default_action = {
 
         elseif k == "last_used" then
             return state.combat > 0 and max( 0, ability.lastCast - state.combat ) or 0
+        
+        elseif k == "in_range" then
+            if UnitExists( "target" ) and UnitCanAttack( "player", "target" ) and LSR.IsSpellInRange( ability.rangeSpell or ability.id, "target" ) == 0 then
+                return false
+            end
+
+            return true
 
         else
             local val = ability[ k ]
@@ -6150,8 +6152,6 @@ end
 
 
 do
-    local LSR = LibStub( "SpellRange-1.0" )
-
     local toggleSpells = {
         potion = true,
         cancel_buff = true,
@@ -6187,6 +6187,35 @@ do
                 elseif toggle and toggle ~= 'none' then
                     if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true, "toggle" end
                 end
+            end
+        end
+
+        return false
+    end
+
+
+    -- TODO:  Finish this, need to support toggles that knock spells to their own display vs. toggles that disable an ability entirely.
+    function state:IsFiltered( spell )
+        if state.filter == "none" then return false end
+
+        spell = spell or self.this_action
+
+        local ability = class.abilities[ spell ]
+        if not ability then return false end
+
+        spell = ability.key
+
+        local profile = Hekili.DB.profile
+        local spec = profile.specs[ state.spec.id ]
+
+        local toggle = option.toggle
+        if not toggle or toggle == 'default' then toggle = ability.toggle end
+
+        if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
+            if state.filter ~= 'none' and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
+            elseif ability.item and not state.equipped[ ability.item ] then return false
+            elseif toggle and toggle ~= 'none' then
+                if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true, "toggle" end
             end
         end
 
