@@ -1971,6 +1971,9 @@ local mt_state = {
             -- Pulse from the ability's 'critical' value or uses current character sheet crit.
             return ability and ability.critical or t.stat.crit
 
+        elseif k == "in_range" then
+            return t.action[ action ].in_range
+
         end
 
 
