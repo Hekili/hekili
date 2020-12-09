@@ -8971,7 +8971,7 @@ do
                             output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%s|r (%s)", output, setting.name, prefs[ setting.name ] and "ON" or "OFF", setting.info.name )
                             hasToggle = true
                             exToggle = setting.name
-                        elseif setting.info.type == "number" then
+                        elseif setting.info.type == "range" then
                             output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
                             hasNumber = true
                             exNumber = setting.name
