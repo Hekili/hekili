@@ -1,5 +1,5 @@
 # Marksmanship Hunter
-# December 8, 2020
+# December 9, 2020
 
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers
 actions.precombat+=/double_tap,precast_time=10,if=active_enemies>1|!covenant.kyrian&!talent.volley
@@ -28,7 +28,7 @@ actions.cds+=/potion,if=buff.trueshot.up&buff.bloodlust.up|buff.trueshot.up&targ
 actions.st=steady_shot,if=talent.steady_focus&(prev_gcd.1.steady_shot&buff.steady_focus.remains<5|buff.steady_focus.down)
 actions.st+=/kill_shot
 actions.st+=/double_tap,if=covenant.kyrian&cooldown.resonating_arrow.remains<gcd|!covenant.kyrian&!covenant.night_fae|covenant.night_fae&(cooldown.wild_spirits.remains<gcd|cooldown.trueshot.remains>55)|target.time_to_die<15
-actions.st+=/flare,if=tar_trap.up&runeforge.soulforge_embers
+actions.st+=/flare,line_cd=25,if=tar_trap.up&runeforge.soulforge_embers
 actions.st+=/tar_trap,if=runeforge.soulforge_embers&tar_trap.remains<gcd&cooldown.flare.remains<gcd
 actions.st+=/explosive_shot
 actions.st+=/wild_spirits
@@ -51,7 +51,7 @@ actions.st+=/steady_shot
 actions.trickshots=steady_shot,if=talent.steady_focus&in_flight&buff.steady_focus.remains<5
 actions.trickshots+=/double_tap,if=covenant.kyrian&cooldown.resonating_arrow.remains<gcd|!covenant.kyrian&!covenant.night_fae|covenant.night_fae&(cooldown.wild_spirits.remains<gcd|cooldown.trueshot.remains>55)|target.time_to_die<10
 actions.trickshots+=/tar_trap,if=runeforge.soulforge_embers&tar_trap.remains<gcd&cooldown.flare.remains<gcd
-actions.trickshots+=/flare,if=tar_trap.up&runeforge.soulforge_embers
+actions.trickshots+=/flare,line_cd=25,if=tar_trap.up&runeforge.soulforge_embers
 actions.trickshots+=/explosive_shot
 actions.trickshots+=/wild_spirits
 actions.trickshots+=/resonating_arrow

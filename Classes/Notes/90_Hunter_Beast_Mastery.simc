@@ -1,5 +1,5 @@
 # Beast Mastery Hunter
-# December 5, 2020
+# December 9, 2020
 
 actions.precombat+=/summon_pet
 actions.precombat+=/use_item,name=azsharas_font_of_power
@@ -44,7 +44,7 @@ actions.cleave=aspect_of_the_wild
 actions.cleave+=/barbed_shot,cycle_targets=1,if=pet.main.buff.frenzy.up&pet.main.buff.frenzy.remains<=gcd
 actions.cleave+=/multishot,if=gcd-pet.main.buff.beast_cleave.remains>0.25
 actions.cleave+=/tar_trap,if=runeforge.soulforge_embers&tar_trap.remains<gcd&cooldown.flare.remains<gcd
-actions.cleave+=/flare,if=tar_trap.up&runeforge.soulforge_embers
+actions.cleave+=/flare,line_cd=25,if=tar_trap.up&runeforge.soulforge_embers
 actions.cleave+=/death_chakram,if=focus+cast_regen<focus.max
 actions.cleave+=/wild_spirits
 actions.cleave+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd&cooldown.bestial_wrath.remains|cooldown.bestial_wrath.remains<12+gcd&talent.scent_of_blood
@@ -73,7 +73,7 @@ actions.cleave+=/the_unbound_force,if=buff.reckless_force.up|buff.reckless_force
 actions.st=aspect_of_the_wild
 actions.st+=/barbed_shot,if=pet.main.buff.frenzy.up&pet.main.buff.frenzy.remains<=gcd
 actions.st+=/tar_trap,if=runeforge.soulforge_embers&tar_trap.remains<gcd&cooldown.flare.remains<gcd
-actions.st+=/flare,if=tar_trap.up&runeforge.soulforge_embers
+actions.st+=/flare,line_cd=25,if=tar_trap.up&runeforge.soulforge_embers
 actions.st+=/bloodshed
 actions.st+=/wild_spirits
 actions.st+=/flayed_shot
