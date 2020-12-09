@@ -2223,10 +2223,10 @@ if UnitClassBase( "player" ) == "DRUID" then
                 return calculate_damage( 0.055, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
             end,
             tick_damage = function ()
-                return calculate_damage( 0.175, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
+                return calculate_damage( 0.035, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
             end,
             tick_dmg = function ()
-                return calculate_damage( 0.175, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
+                return calculate_damage( 0.035, true ) * ( buff.clearcasting.up and class.auras.clearcasting.multiplier or 1)
             end,
 
             form = "cat_form",
