@@ -3925,6 +3925,11 @@ do
         local k = class.itemList[ ability.item ]
         local v = ability.itemKey or ability.key
 
+        if not item or not ability.item or not k then
+            Hekili:Error( "Unable to find %s / %s / %s in the itemlist.", item or "unknown", ability.item or "unknown", k or "unknown" )
+            return
+        end
+
         local option = db.args.items.plugins.equipment[ v ] or {}
 
         option.type = "group"
