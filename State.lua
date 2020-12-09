@@ -2672,7 +2672,7 @@ local mt_default_cooldown = {
             return t[k]
 
         elseif k == 'charges' then
-            if not raw and ( state:IsDisabled( t.key, true ) or ability.disabled ) then
+            if not raw and ( state:IsDisabled( t.key ) or ability.disabled ) then
                 return 0
             end
 
@@ -2694,7 +2694,7 @@ local mt_default_cooldown = {
 
             -- If the ability is toggled off in the profile, we may want to fake its CD.
             -- Revisit this if I add base_cooldown to the ability tables.
-            if not raw and ( state:IsDisabled( t.key, true ) or ability.disabled ) then
+            if not raw and ( state:IsDisabled( t.key ) or ability.disabled ) then
                 return ability.cooldown
             end
 
@@ -2705,7 +2705,7 @@ local mt_default_cooldown = {
 
         elseif k == 'charges_fractional' then
             if not state:IsKnown( t.key ) then return 1 end
-            if not raw and ( state:IsDisabled( t.key, true ) or ability.disabled ) then return 0 end
+            if not raw and ( state:IsDisabled( t.key ) or ability.disabled ) then return 0 end
 
             if ability.charges and ability.charges > 1 then
                 -- run this ad-hoc rather than with every advance.
