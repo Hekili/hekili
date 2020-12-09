@@ -1170,7 +1170,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         damage = true,
         damageExpiration = 6,
 
-        potion = "superior_battle_potion_of_intellect",
+        potion = "spectral_intellect",
 
         package = "Fire",
     } )

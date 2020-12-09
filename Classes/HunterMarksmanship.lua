@@ -925,7 +925,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         damage = true,
         damageExpiration = 6,
 
-        potion = "unbridled_fury",
+        potion = "spectral_agility",
 
         package = "Marksmanship",
     } )

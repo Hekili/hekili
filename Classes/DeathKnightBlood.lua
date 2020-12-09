@@ -1595,7 +1595,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         damage = true,
         damageExpiration = 8,
 
-        potion = "potion_of_unbridled_fury",
+        potion = "potion_of_phantom_fire",
 
         package = "Blood",        
     } )

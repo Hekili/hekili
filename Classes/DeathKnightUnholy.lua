@@ -1538,7 +1538,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
         cycle = true,
 
-        potion = "potion_of_unbridled_fury",
+        potion = "potion_of_spectral_strength",
 
         package = "Unholy",
     } )

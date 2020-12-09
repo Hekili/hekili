@@ -1545,7 +1545,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
         damage = true,
         damageExpiration = 6,
 
-        potion = "potion_of_unbridled_fury",
+        potion = "phantom_fire",
 
         package = "Subtlety",
     } )

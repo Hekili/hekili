@@ -2624,7 +2624,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         damageDots = false,
         damageExpiration = 3,
 
-        potion = "focused_resolve",
+        potion = "spectral_agility",
 
         package = "Feral"
     } )

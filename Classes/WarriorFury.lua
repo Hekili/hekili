@@ -1022,7 +1022,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         damage = true,
         damageExpiration = 8,
 
-        potion = "potion_of_unbridled_fury",
+        potion = "potion_of_phantom_fire",
 
         package = "Fury",
     } )

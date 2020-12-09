@@ -1575,7 +1575,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         damageDots = true,
         damageExpiration = 8,
 
-        potion = "potion_of_unbridled_fury",
+        potion = "potion_of_spectral_intellect",
 
         package = "Elemental",
     } )

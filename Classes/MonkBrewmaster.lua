@@ -1525,7 +1525,7 @@ if UnitClassBase( "player" ) == "MONK" then
         damageDots = false,
         damageExpiration = 8,
 
-        potion = "superior_battle_potion_of_agility",
+        potion = "phantom_fire",
 
         package = "Brewmaster"
     } )

@@ -1583,7 +1583,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
         damage = true,
         damageExpiration = 8,
 
-        potion = "unbridled_fury",
+        potion = "potion_of_spectral_agility",
 
         package = "Windwalker",
 

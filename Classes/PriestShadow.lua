@@ -1764,7 +1764,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         damage = true,
         damageExpiration = 6,
 
-        potion = "unbridled_fury",
+        potion = "potion_of_phantom_fire",
 
         package = "Shadow",
     } )

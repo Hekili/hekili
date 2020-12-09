@@ -1384,7 +1384,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         damage = true,
         damageExpiration = 6,
 
-        potion = "potion_of_focused_resolve",
+        potion = "phantom_fire",
 
         package = "Frost Mage",
     } )

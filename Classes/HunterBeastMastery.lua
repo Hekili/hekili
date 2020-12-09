@@ -1882,7 +1882,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
     spec:RegisterOptions( {
         enabled = true,
 
-        potion = "unbridled_fury",
+        potion = "spectral_agility",
 
         buffPadding = 0,
 

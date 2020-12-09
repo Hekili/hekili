@@ -1518,7 +1518,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
         damage = true,
         damageExpiration = 8,
 
-        potion = "potion_of_unbridled_fury",
+        potion = "phantom_fire",
 
         package = "Protection Paladin",
     } )

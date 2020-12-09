@@ -1834,7 +1834,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         damage = true,
         damageExpiration = 6,
 
-        potion = "unbridled_fury",
+        potion = "spectral_intellect",
 
         package = "Affliction",
     } )

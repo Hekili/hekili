@@ -1433,7 +1433,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
         damage = true,
         damageExpiration = 8,
 
-        potion = "superior_battle_potion_of_agility",
+        potion = "potion_of_spectral_agility",
 
         package = "Enhancement",
     } )

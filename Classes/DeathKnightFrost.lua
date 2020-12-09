@@ -1364,7 +1364,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         damageDots = false,
         damageExpiration = 8,
 
-        potion = "potion_of_unbridled_fury",
+        potion = "potion_of_spectral_strength",
 
         package = "Frost DK",
     } )

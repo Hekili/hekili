@@ -2379,7 +2379,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         damageDots = true,
         damageExpiration = 6,
 
-        potion = "unbridled_fury",
+        potion = "spectral_intellect",
 
         package = "Balance",
     } )

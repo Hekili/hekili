@@ -246,7 +246,12 @@ local oneTimeFixes = {
             p.specs[ 261 ].settings.mfd_waste = nil
         end
     end,
-            
+
+    resetAllPotions_20201209 = function( p )
+        for id in pairs( p.specs ) do
+            p.specs[ id ].potion = nil
+        end
+    end,
 }
 
 
