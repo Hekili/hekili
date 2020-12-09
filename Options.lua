@@ -8037,28 +8037,6 @@ function Hekili:GenerateProfile()
         if state.covenant[ v ] then covenant = v; break end
     end
 
-    local traits
-    for k, v in orderedPairs( s.azerite ) do
-        if v.rank > 0 then
-            if traits then traits = format( "%s\n    %s = %d", traits, k, v.rank )
-            else traits = format( "%s = %d", k, v.rank ) end
-        end
-    end
-
-    local essences
-    local major, minors
-
-    for k, v in orderedPairs( s.essence ) do
-        if v.rank > 0 then
-            if v.major then major = format( "[%s] = %d", k, v.rank )
-            else
-                if minors then minors = format( "%s, %s = %d", minors, k, v.rank )
-                else minors = format( "%s = %d", k, v.rank ) end
-            end
-        end
-    end
-    essences = format( "%s, %s", major or "[none]", minors or "none" )
-
     local sets
     for k, v in orderedPairs( class.gear ) do
         if s.set_bonus[ k ] > 0 then
@@ -8117,9 +8095,7 @@ function Hekili:GenerateProfile()
         "talents: %s\n\n" ..
         "pvptalents: %s\n\n" ..
         "covenant: %s\n\n" ..
-        "azerite: %s\n\n" ..
-        "essences: %s\n\n" ..
-        "sets/legendaries/artifacts: %s\n\n" ..
+        "sets: %s\n\n" ..
         "gear: %s\n\n" ..
         "legendaries: %s\n\n" ..
         "itemIDs: %s\n\n" ..
@@ -8132,8 +8108,6 @@ function Hekili:GenerateProfile()
         talents or "none",
         pvptalents or "none",
         covenant or "none",
-        traits or "none",
-        essences or "none",
         sets or "none",
         gear or "none",
         legendaries or "none",
