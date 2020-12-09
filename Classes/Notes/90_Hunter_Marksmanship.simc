@@ -1,5 +1,5 @@
 # Marksmanship Hunter
-# December 5, 2020
+# December 8, 2020
 
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers
 actions.precombat+=/double_tap,precast_time=10,if=active_enemies>1|!covenant.kyrian&!talent.volley
@@ -9,8 +9,10 @@ actions.precombat+=/steady_shot,if=active_enemies>2|(covenant.kyrian|talent.voll
 actions+=/counter_shot
 # TODO:  This will need support to allow Counter Shot when target is not casting.
 actions+=/counter_shot,line_cd=30,if=runeforge.sephuzs_proclamation|soulbind.niyas_tools_poison|(conduit.reversal_of_fortune&!runeforge.sephuzs_proclamation)
+# Use this on cooldown if it's the only on-use. If you have another on-use with a longer cooldown, stack that with Trueshot when their cooldowns conflict, so wait until it's on cooldown to use this, otherwise continue to use on cooldown.
 actions+=/use_item,name=dreadfire_vessel
-actions+=/use_items,if=buff.trueshot.up|cooldown.trueshot.remains>59|target.time_to_die<20
+# If two on-uses are ready and competing for a Trueshot sync, assume the longer cd has a stronger effect and prefer that unless it's already on cooldown, otherwise use the one that's off cooldown. If a trinket is ready and another stronger (assumed from longer cooldown) on-use will also be ready by the time Trueshot comes back off cooldown, then use it trinket if the shared 20 second cd it triggers won't interfere with the upcoming Trueshot sync'd on-use. If a trinket could be used and still come back off cooldown for a future Trueshot, it's safe to use, preferring the longest cooldown if two are ready. If the fight is going to end before your next Trueshot, just start using trinkets to make sure they get used.
+actions+=/use_items,if=buff.trueshot.up|buff.trueshot.down&cooldown.trueshot.remains>20|fight_remains<cooldown.trueshot.remains
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=st,if=active_enemies<3
 actions+=/call_action_list,name=trickshots,if=active_enemies>2

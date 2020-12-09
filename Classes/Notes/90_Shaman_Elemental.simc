@@ -1,37 +1,24 @@
 # Elemental Shaman
-# December 5, 2020
+# December 8, 2020
 
 # Changes:
-# - Added backup Essence ability.
 # - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
 
 # Executed every time the actor is available.
 actions.precombat=earth_elemental,if=!talent.primal_elementalist.enabled
 # Use Stormkeeper precombat unless some adds will spawn soon.
 actions.precombat+=/stormkeeper,if=talent.stormkeeper.enabled&(raid_event.adds.count<3|raid_event.adds.in>50)
-actions.precombat+=/potion
 actions.precombat+=/elemental_blast,if=talent.elemental_blast.enabled
 actions.precombat+=/lava_burst,if=!talent.elemental_blast.enabled
+actions.precombat+=/potion
 
 # Interrupt of casts.
 actions+=/wind_shear
+actions+=/spiritwalkers_grace,moving=1
+actions+=/potion
 actions+=/use_items
 actions+=/fire_elemental
 actions+=/storm_elemental
-
-actions+=/concentrated_flame
-actions+=/blood_of_the_enemy
-actions+=/guardian_of_azeroth
-actions+=/focused_azerite_beam
-actions+=/purifying_blast
-actions+=/the_unbound_force
-actions+=/memory_of_lucid_dreams
-actions+=/ripple_in_space
-actions+=/worldvein_resonance
-actions+=/reaping_flames,if=target.health_pct>80|target.health_pct<20|fight_remains<30
-# In case I forgot something.
-actions+=/heart_essence
-
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
 actions+=/fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50

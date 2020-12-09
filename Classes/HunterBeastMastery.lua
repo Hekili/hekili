@@ -1479,6 +1479,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             texture = 576309,
 
             handler = function ()
+                applyDebuff( "target", "tar_trap" )
             end,
         },
 
