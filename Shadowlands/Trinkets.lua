@@ -278,7 +278,7 @@ do
             cooldown = 90,
             gcd = "off",
 
-            item = 173096,
+            item = 173078,
         },
 
         darkmoon_deck_voracity = {
