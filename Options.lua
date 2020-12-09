@@ -8888,162 +8888,169 @@ end
 
 
 
-local validCommands = {
-    makedefaults = true,
-    import = true,
-    skeleton = true,
-    recover = true,
-    set = true
-}
+do
+    local validCommands = {
+        makedefaults = true,
+        import = true,
+        skeleton = true,
+        recover = true,
+        set = true
+    }
+
+    local info = {}
 
 
-function Hekili:CmdLine( input )
-    if not input or input:trim() == "" or input:trim() == "makedefaults" or input:trim() == "import" or input:trim() == "skeleton" then
-        if input:trim() == 'makedefaults' then
-            Hekili.MakeDefaults = true
+    function Hekili:CmdLine( input )
+        if not input or input:trim() == "" or input:trim() == "makedefaults" or input:trim() == "import" or input:trim() == "skeleton" then
+            if input:trim() == 'makedefaults' then
+                Hekili.MakeDefaults = true
 
-        elseif input:trim() == 'import' then
-            Hekili.AllowSimCImports = true
+            elseif input:trim() == 'import' then
+                Hekili.AllowSimCImports = true
 
-        elseif input:trim() == 'skeleton' then
-            self:StartListeningForSkeleton()
-            self:Print( "Addon will now gather specialization information.  Select all talents and use all abilities for best results." )
-            self:Print( "See the Skeleton tab for more information. ")
-            Hekili.Skeleton = ""
-        end
-        ns.StartConfiguration()
-        return
+            elseif input:trim() == 'skeleton' then
+                self:StartListeningForSkeleton()
+                self:Print( "Addon will now gather specialization information.  Select all talents and use all abilities for best results." )
+                self:Print( "See the Skeleton tab for more information. ")
+                Hekili.Skeleton = ""
+            end
+            ns.StartConfiguration()
+            return
 
-    elseif input:trim() == "center" then                
-        for i, v in ipairs( Hekili.DB.profile.displays ) do
-            ns.UI.Buttons[i][1]:ClearAllPoints()
-            ns.UI.Buttons[i][1]:SetPoint("CENTER", 0, (i-1) * 50 )
-        end
-        self:SaveCoordinates()
-        return
+        elseif input:trim() == "center" then                
+            for i, v in ipairs( Hekili.DB.profile.displays ) do
+                ns.UI.Buttons[i][1]:ClearAllPoints()
+                ns.UI.Buttons[i][1]:SetPoint("CENTER", 0, (i-1) * 50 )
+            end
+            self:SaveCoordinates()
+            return
 
-    elseif input:trim() == "recover" then
-        self.DB.profile.displays = {}
-        self.DB.profile.actionLists = {}
-        self:RestoreDefaults()
-        -- ns.convertDisplays()
-        self:BuildUI()
-        self:Print("Default displays and action lists restored.")
-        return
-    
-    end
-
-    if input then
-        input = input:trim()
-        local args = {}
-
-        for arg in string.gmatch( input, "%S+" ) do
-            insert( args, lower( arg ) )
+        elseif input:trim() == "recover" then
+            self.DB.profile.displays = {}
+            self.DB.profile.actionLists = {}
+            self:RestoreDefaults()
+            -- ns.convertDisplays()
+            self:BuildUI()
+            self:Print("Default displays and action lists restored.")
+            return
+        
         end
 
-        if args[1] == "set" then
-            local prefs = Hekili.DB.profile.specs[ state.spec.id ]
-            local settings = class.specs[ state.spec.id ].settings
+        if input then
+            input = input:trim()
+            local args = {}
 
-            local index
-
-            if args[2] then
-                for i, setting in ipairs( settings ) do
-                    if setting.name == args[2] then
-                        index = i
-                        break
-                    end
-                end
+            for arg in string.gmatch( input, "%S+" ) do
+                insert( args, lower( arg ) )
             end
 
-            if #args == 1 or not index then
-                -- No arguments, list options.
-                local output = "Use |cFFFFD100/hekili set|r to adjust your specialization options via chat or macros.\n\nOptions for " .. state.spec.name .. " are:"
+            if args[1] == "set" then
+                local prefs = Hekili.DB.profile.specs[ state.spec.id ].settings
+                local settings = class.specs[ state.spec.id ].settings
 
-                local hasToggle, hasNumber = false, false
-                local exToggle, exNumber
+                local index
 
-                for i, setting in ipairs( settings ) do
-                    if setting.info.type == "toggle" then
-                        output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%s|r (%s)", output, setting.name, prefs[ setting.name ] and "ON" or "OFF", setting.info.name )
-                        hasToggle = true
-                        exToggle = setting.name
-                    elseif setting.info.type == "number" then
-                        output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
-                        hasNumber = true
-                        exNumber = setting.name
+                if args[2] then
+                    for i, setting in ipairs( settings ) do
+                        if setting.name == args[2] then
+                            index = i
+                            break
+                        end
                     end
                 end
 
-                if hasToggle then
-                    output = format( "%s\n\nTo set a |cFFFFD100toggle|r, use the following commands:\n" ..
-                        " - Switch On/Off:  |cFFFFD100/hek set %s|r\n" ..
-                        " - Set to On:  |cFFFFD100/hek set %s on|r\n" ..
-                        " - Set to Off:  |cFFFFD100/hek set %s off|r\n" ..
-                        " - Reset to Default:  |cFFFFD100/hek set %s default|r", output, exToggle, exToggle, exToggle, exToggle )
+                if #args == 1 or not index then
+                    -- No arguments, list options.
+                    local output = "Use |cFFFFD100/hekili set|r to adjust your specialization options via chat or macros.\n\nOptions for " .. state.spec.name .. " are:"
+
+                    local hasToggle, hasNumber = false, false
+                    local exToggle, exNumber
+
+                    for i, setting in ipairs( settings ) do
+                        if setting.info.type == "toggle" then
+                            output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%s|r (%s)", output, setting.name, prefs[ setting.name ] and "ON" or "OFF", setting.info.name )
+                            hasToggle = true
+                            exToggle = setting.name
+                        elseif setting.info.type == "number" then
+                            output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
+                            hasNumber = true
+                            exNumber = setting.name
+                        end
+                    end
+
+                    if hasToggle then
+                        output = format( "%s\n\nTo set a |cFFFFD100toggle|r, use the following commands:\n" ..
+                            " - Switch On/Off:  |cFFFFD100/hek set %s|r\n" ..
+                            " - Set to On:  |cFFFFD100/hek set %s on|r\n" ..
+                            " - Set to Off:  |cFFFFD100/hek set %s off|r\n" ..
+                            " - Reset to Default:  |cFFFFD100/hek set %s default|r", output, exToggle, exToggle, exToggle, exToggle )
+                    end
+
+                    if hasNumber then
+                        output = format( "%s\n\nTo set a |cFFFFD100number|r value, use the following commands:\n" ..
+                            " - Set to #:  |cFFFFD100/hek set %s #|r\n" ..
+                            " - Reset to Default:  |cFFFFD100/hek set %s default|r", output, exNumber, exNumber )
+                    end
+
+                    Hekili:Print( output )
+                    return
                 end
 
-                if hasNumber then
-                    output = format( "%s\n\nTo set a |cFFFFD100number|r value, use the following commands:\n" ..
-                        " - Set to #:  |cFFFFD100/hek set %s #|r\n" ..
-                        " - Reset to Default:  |cFFFFD100/hek set %s default|r", output, exNumber, exNumber )
-                end
+                -- Two or more arguments, we're setting (or querying).
+                local setting = settings[ index ]
 
-                Hekili:Print( output )
-                return
-            end
+                if setting.info.type == "toggle" then
+                    local to
 
-            -- Two or more arguments, we're setting (or querying).
-            local setting = settings[ index ]
-
-            if setting.info.type == "toggle" then
-                local to
-
-                if args[3] then
-                    if args[3] == "on" then to = true
-                    elseif args[3] == "off" then to = false
-                    elseif args[3] == "default" then to = setting.default
+                    if args[3] then
+                        if args[3] == "on" then to = true
+                        elseif args[3] == "off" then to = false
+                        elseif args[3] == "default" then to = setting.default
+                        else
+                            Hekili:Print( format( "'%s' is not a valid option for |cFFFFD100%s|r.", args[3] ) )
+                            return
+                        end
                     else
-                        Hekili:Print( format( "'%s' is not a valid option for |cFFFFD100%s|r.", args[3] ) )
+                        to = not prefs[ setting.name ]
+                    end
+                    
+                    Hekili:Print( format( "%s set to %s.", setting.info.name, ( to and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r" ) ) )
+
+                    info[ 1 ] = setting.name
+                    setting.info.set( info, to )
+
+                    Hekili:ForceUpdate( "CLI_TOGGLE" )
+                    return
+
+                elseif setting.info.type == "number" then
+                    local to
+
+                    if args[3] == "default" then
+                        to = setting.default
+                    else
+                        to = tonumber( args[3] )
+                    end
+
+                    if to and ( ( setting.info.min and to < setting.info.min ) or ( setting.info.max and to > setting.info.max ) ) then
+                        Hekili:Print( format( "The value for %s must be between %s and %s.", args[2], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ) ) )
                         return
                     end
-                else
-                    to = not prefs[ setting.name ]
-                end
-                
-                Hekili:Print( format( "%s set to %s.", setting.info.name, ( to and "ON" or "OFF" ) ) )
-                prefs[ setting.name ] = to
-                Hekili:ForceUpdate( "CLI_TOGGLE" )
-                return
 
-            elseif setting.info.type == "number" then
-                local to
+                    if not to then
+                        Hekili:Print( format( "You must provide a number value for %s (or default).", args[2] ) )
+                        return
+                    end
 
-                if args[3] == "default" then
-                    to = setting.default
-                else
-                    to = tonumber( args[3] )
-                end
-
-                if to and ( ( setting.info.min and to < setting.info.min ) or ( setting.info.max and to > setting.info.max ) ) then
-                    Hekili:Print( format( "The value for %s must be between %s and %s.", args[2], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ) ) )
+                    Hekili:Print( format( "%s set to |cFF00B4FF%.2f|r.", setting.info.name, to ) )
+                    prefs[ setting.name ] = to
+                    Hekili:ForceUpdate( "CLI_NUMBER" )
                     return
+
                 end
 
-                if not to then
-                    Hekili:Print( format( "You must provide a number value for %s (or default).", args[2] ) )
-                    return
-                end
-
-                Hekili:Print( format( "%s set to %.2f", setting.info.name, to ) )
-                prefs[ setting.name ] = to
-                Hekili:ForceUpdate( "CLI_NUMBER" )
-                return
-
+            else
+                LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
             end
-
-        else
-            LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
         end
     end
 end
