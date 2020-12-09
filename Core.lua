@@ -183,7 +183,7 @@ end
 
 function Hekili:OnEnable()  
     ns.StartEventHandler()
-    self:TotalRefresh()
+    self:TotalRefresh( true )
 
     ns.ReadKeybindings()
     self:ForceUpdate( "ADDON_ENABLED" )

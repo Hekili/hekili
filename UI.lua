@@ -126,15 +126,11 @@ local function Button_OnMouseDown(self, btn)
 
     if Hekili.Config and btn == "LeftButton" and not mover.Moving then
         startScreenMovement(mover)
-
     end
 end
 
 
 function ns.StartConfiguration( external )
-    if Hekili.NewSpellInfo then Hekili:EmbedAbilityOptions(); Hekili:EmbedSpecOptions() end
-    if Hekili.NewItemInfo  then Hekili:EmbedItemOptions()    end
-
     Hekili.Config = true
 
     local scaleFactor = Hekili:GetScale()

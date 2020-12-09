@@ -234,7 +234,6 @@ local HekiliSpecMixin = {
                         end
                         Hekili.InvalidSpellIDs = Hekili.InvalidSpellIDs or {}
                         insert( Hekili.InvalidSpellIDs, a.id )
-                        Hekili.NewSpellInfo = true
                         return
                     end
 
@@ -272,8 +271,6 @@ local HekiliSpecMixin = {
                         self.pendingItemSpells[ a.name ] = nil
                         self.itemPended = nil
                     end
-
-                    Hekili.NewSpellInfo = true
                 end )
             end
             self.auras[ a.id ] = a
@@ -393,8 +390,6 @@ local HekiliSpecMixin = {
             data.link = link
 
             class.potionList[ potion ] = link
-
-            Hekili.NewItemInfo = true
         end )
     end,
 
@@ -476,7 +471,6 @@ local HekiliSpecMixin = {
                 end
 
                 local name, link, _, _, _, _, _, _, slot, texture = GetItemInfo( item )
-                Hekili.NewItemInfo = true
 
                 if name then
                     a.name = name
@@ -547,7 +541,7 @@ local HekiliSpecMixin = {
                     class.abilities[ a.link ] = a
                     class.abilities[ a.id ] = a
 
-                    Hekili:EmbedItemOptions()
+                    Hekili:EmbedItemOption( nil, a.key )
 
                     return true
                 end
@@ -606,12 +600,11 @@ local HekiliSpecMixin = {
                     end
                     Hekili.InvalidSpellIDs = Hekili.InvalidSpellIDs or {}
                     table.insert( Hekili.InvalidSpellIDs, a.id )
-                    Hekili.NewSpellInfo = true
                     return
                 end
 
                 a.name = GetSpellInfo( a.id )
-                if not a.name then Hekili:Print( "Name info not available for " .. a.id .. "." ); return false end
+                if not a.name then Hekili:Error( "Name info not available for " .. a.id .. "." ); return false end
 
                 a.desc = GetSpellDescription( a.id ) -- was returning raw tooltip data.
 
@@ -630,7 +623,7 @@ local HekiliSpecMixin = {
                     class.abilityByName[ a.name ] = class.abilities[ a.name ] or a
                 end
 
-                Hekili.NewSpellInfo = true
+                Hekili:EmbedAbilityOption( nil, a.key )
             end )
         end
 
@@ -5087,8 +5080,7 @@ function Hekili:GetActivePack()
 end
 
 
-local lastChange = 0
-
+local optionsInitialized = false
 function Hekili:SpecializationChanged()
     local currentSpec = GetSpecialization()
     local currentID = GetSpecializationInfo( currentSpec )
@@ -5350,7 +5342,13 @@ function Hekili:SpecializationChanged()
     state.swings.mh_speed, state.swings.oh_speed = UnitAttackSpeed( "player" )
 
     self:UpdateDisplayVisibility()
-    -- self:RefreshOptions()
+
+    if not optionsInitialized then
+        Hekili:EmbedAbilityOptions()
+        Hekili:EmbedSpecOptions()
+        optionsInitialized = true
+    end
+
     if not self:ScriptsLoaded() then self:LoadScripts() end
 
     Hekili:UpdateDamageDetectionForCLEU()
