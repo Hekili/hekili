@@ -9022,7 +9022,7 @@ do
                     Hekili:ForceUpdate( "CLI_TOGGLE" )
                     return
 
-                elseif setting.info.type == "number" then
+                elseif setting.info.type == "range" then
                     local to
 
                     if args[3] == "default" then
