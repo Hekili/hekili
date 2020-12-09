@@ -658,10 +658,6 @@ local HekiliSpecMixin = {
             self.castableWhileCasting[ a.key ] = true
         end
 
-        if a.id > 0 and not rawget( a, "texture" ) and not a.funcs.texture then
-            a.autoTexture = true
-        end
-
         if a.auras then
             self:RegisterAuras( a.auras )
         end

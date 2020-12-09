@@ -357,35 +357,6 @@ end
 RegisterEvent( "PLAYER_ENTERING_WORLD", OnFirstEntrance )
 
 
-do
-    local pendingChange = false
-
-    local updateSpells
-    
-    updateSpells = function()
-        if InCombatLockdown() then
-            C_Timer.After( 10, updateSpells )
-            return
-        end
-
-        if pendingChange then
-            for k, v in pairs( class.abilities ) do
-                if v.autoTexture then
-                    v.texture = GetSpellTexture( v.id )
-                end
-            end
-            pendingChange = false
-        end
-    end
-
-    --[[ RegisterEvent( "SPELLS_CHANGED", function ()
-        pendingChange = true
-        updateSpells()
-    end ) ]]
-end
-
-
-
 -- ACTIVE_TALENT_GROUP_CHANGED fires 2x on talent swap.  Uggh, why?
 do
     local lastChange = 0
