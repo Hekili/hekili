@@ -1,6 +1,6 @@
 # Demonology Warlock
 # https://github.com/simulationcraft/simc/
-# December 7, 2020
+# December 9, 2020
 
 # Changes:
 # - Spell Lock.
@@ -63,7 +63,7 @@ actions.summon_tyrant+=/hand_of_guldan
 actions.summon_tyrant+=/demonbolt,if=buff.demonic_core.up&buff.nether_portal.up&((buff.vilefiend.remains>5|!talent.summon_vilefiend.enabled)&(buff.grimoire_felguard.remains>5|buff.grimoire_felguard.down))
 actions.summon_tyrant+=/shadow_bolt,if=buff.nether_portal.up&((buff.vilefiend.remains>5|!talent.summon_vilefiend.enabled)&(buff.grimoire_felguard.remains>5|buff.grimoire_felguard.down))
 # actions.summon_tyrant+=/variable,name=tyrant_ready,value=!cooldown.summon_demonic_tyrant.ready
-actions.summon_tyrant+=/summon_demonic_tyrant,if=!talent.demonic_consumption|buff.wild_imps.stack>5
+actions.summon_tyrant+=/summon_demonic_tyrant,if=!talent.demonic_consumption|buff.wild_imps.stack+imps_spawned_during.summon_demonic_tyrant>3
 actions.summon_tyrant+=/shadow_bolt
 
 actions.tyrant_prep=doom,line_cd=30
