@@ -1521,7 +1521,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         type = "input",
         width = "full",
         multiline = 2,
-        get = function () return "#showtooltip\n/use [@mouseover,harm][] " .. class.abilities.havoc.name end,
+        get = function () return "#showtooltip\n/use [@mouseover,harm,nodead][] " .. class.abilities.havoc.name end,
         set = function () end,
     } )
 
@@ -1537,7 +1537,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         type = "input",
         width = "full",
         multiline = 2,
-        get = function () return "#showtooltip\n/use [@mouseover,harm][] " .. class.abilities.immolate.name end,
+        get = function () return "#showtooltip\n/use [@mouseover,harm,nodead][] " .. class.abilities.immolate.name end,
         set = function () end,
     } )
 

@@ -1,5 +1,5 @@
 # Affliction Warlock
-# December 7, 2020
+# December 8, 2020
 
 # Changes:
 # - Added Spell Lock.
@@ -66,7 +66,7 @@ actions.aoe+=/haunt
 actions.aoe+=/call_action_list,name=darkglare_prep,if=(covenant.venthyr&dot.impending_catastrophe_dot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled))|(covenant.night_fae&dot.soul_rot.ticking&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled))|((covenant.necrolord|covenant.kyrian|covenant.none)&dot.phantom_singularity.ticking&dot.phantom_singularity.remains<2)
 actions.aoe+=/seed_of_corruption,if=talent.sow_the_seeds.enabled&can_seed
 actions.aoe+=/seed_of_corruption,if=!talent.sow_the_seeds.enabled&!dot.seed_of_corruption.ticking&!in_flight&dot.corruption.refreshable
-actions.aoe+=/agony,cycle_targets=1,if=active_dot.agony<4
+actions.aoe+=/agony,cycle_targets=1,if=active_dot.agony<4&refreshable
 actions.aoe+=/agony,cycle_targets=1,if=active_dot.agony>=4&refreshable&dot.agony.ticking
 actions.aoe+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&refreshable
 actions.aoe+=/unstable_affliction,cycle_targets=1,if=!ticking&pvptalent.rampant_afflictions.enabled&active_dot.unstable_affliction<3
@@ -79,7 +79,7 @@ actions.aoe+=/malefic_rapture,if=dot.vile_taint.ticking
 actions.aoe+=/malefic_rapture,if=dot.soul_rot.ticking&!talent.sow_the_seeds.enabled
 actions.aoe+=/malefic_rapture,if=!talent.vile_taint.enabled
 actions.aoe+=/malefic_rapture,if=soul_shard>4
-actions.aoe+=/siphon_life,cycle_targets=1,if=active_dot.siphon_life<=3&!dot.siphon_life.ticking
+actions.aoe+=/siphon_life,cycle_targets=1,if=active_dot.siphon_life<=3&refreshable&!dot.siphon_life.ticking
 actions.aoe+=/call_action_list,name=covenant
 actions.aoe+=/drain_life,if=buff.inevitable_demise.stack>=50|buff.inevitable_demise.up&time_to_die<5|buff.inevitable_demise.stack>=35&dot.soul_rot.ticking
 actions.aoe+=/drain_soul,interrupt=1
