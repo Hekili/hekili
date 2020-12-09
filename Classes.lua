@@ -541,7 +541,8 @@ local HekiliSpecMixin = {
                     class.abilities[ a.link ] = a
                     class.abilities[ a.id ] = a
 
-                    Hekili:EmbedItemOption( nil, a.key )
+                    if not a.key then Hekili:Error( "Wanted to EmbedItemOption but no key for " .. ( a.id or "UNKNOWN" ) .. "." )
+                    else Hekili:EmbedItemOption( nil, a.key ) end
 
                     return true
                 end
