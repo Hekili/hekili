@@ -1,5 +1,5 @@
 # Arms Warrior
-# December 8, 2020
+# December 10, 2020
 
 # Changes:
 # - Added Pummel.
@@ -17,7 +17,7 @@ actions.precombat+=/guardian_of_azeroth,if=talent.fervor_of_battle.enabled|talen
 
 # Executed every time the actor is available.
 actions=charge
-actions+=/auto_attack
+actions+=/pummel
 actions+=/potion
 actions+=/blood_fury,if=debuff.colossus_smash.up
 actions+=/berserking,if=debuff.colossus_smash.remains>6
