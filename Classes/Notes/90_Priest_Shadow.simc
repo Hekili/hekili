@@ -1,5 +1,7 @@
 # Shadow Priest
-# December 8, 2020
+# December 9, 2020
+
+# Tweak Void Torrent when target counts are forced.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/power_word_fortitude,if=remains<300
@@ -82,7 +84,7 @@ actions.main+=/shadow_word_death,cycle_targets=1,if=(target.health.pct<20&spell_
 # Use Surrender to Madness on a target that is going to die at the right time.
 actions.main+=/surrender_to_madness,cycle_targets=1,if=target.time_to_die<25&buff.voidform.down
 # Use Void Torrent only if SW:P and VT are active and the target won't die during the channel.
-actions.main+=/void_torrent,cycle_targets=1,if=variable.dots_up&target.time_to_die>3&buff.voidform.down&active_dot.vampiric_touch=spell_targets.vampiric_touch&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
+actions.main+=/void_torrent,cycle_targets=1,if=variable.dots_up&target.time_to_die>3&buff.voidform.down&active_dot.vampiric_touch>=spell_targets.vampiric_touch&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
 actions.main+=/mindbender,if=dot.vampiric_touch.ticking&(talent.searing_nightmare.enabled&spell_targets.mind_sear>variable.mind_sear_cutoff|dot.shadow_word_pain.ticking)
 # Use SW:D with Painbreaker Psalm unless the target will be below 20% before the cooldown comes back
 actions.main+=/shadow_word_death,if=runeforge.painbreaker_psalm.equipped&variable.dots_up&target.time_to_pct_20>(cooldown.shadow_word_death.duration+gcd)
