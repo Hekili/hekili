@@ -925,17 +925,21 @@ do
                         local _, unusable
 
                         if a.itemCd or a.item then
-                            unusable = not IsUsableItem(a.itemCd or a.item)
+                            unusable = not IsUsableItem( a.itemCd or a.item )
                         else
-                            _, unusable = IsUsableSpell(a.actualName or a.name)
+                            _, unusable = IsUsableSpell( a.actualName or a.name )
                         end
 
                         if i == 1 and conf.delays.fade then
                             local delay = r.exact_time - now            
                             local moment = 0
+
+                            local start, duration = 0, 0
                 
-                            local start, duration = GetSpellCooldown( 61304 )
-                            if start > 0 then moment = start + duration - now end
+                            if a.gcd ~= "off" then
+                                start, duration = GetSpellCooldown( 61304 )
+                                if start > 0 then moment = start + duration - now end
+                            end
     
                             local rStart, rDuration
                             if a.item then
@@ -1061,8 +1065,12 @@ do
             local moment = 0
 
             if delay > 0 then
-                local start, duration = GetSpellCooldown( 61304 )
-                if start > 0 then moment = start + duration - now end
+                local start, duration = 0, 0
+
+                if a.gcd ~= "off" then
+                    start, duration = GetSpellCooldown( 61304 )
+                    if start > 0 then moment = start + duration - now end
+                end
 
                 _, _, _, start, duration = UnitCastingInfo( "player" )
                 if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
