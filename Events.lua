@@ -224,6 +224,8 @@ do
                 C_Timer.After( 0.5, CheckForEquipmentUpdates )
             end
 
+            if not success then Hekili:Error( "GET_ITEM_INFO_RECEIVED failed for item '%d'.", itemID or 0 ) end
+
             itemCallbacks[ itemID ] = nil
         end
     end )
