@@ -8894,6 +8894,8 @@ do
         import = true,
         skeleton = true,
         recover = true,
+        
+        profile = true,
         set = true
     }
 
@@ -9047,6 +9049,43 @@ do
                     return
 
                 end
+
+            
+            elseif args[1] == "profile" then
+                if not args[2] then
+                    local output = "Use |cFFFFD100/hekili profile name|r to swap profiles via command-line or macro.\nValid profile |cFFFFD100name|rs are:"
+
+                    for name, prof in ns.orderedPairs( Hekili.DB.profiles ) do
+                        output = format( "%s\n - |cFFFFD100%s|r %s", output, name, Hekili.DB.profile == prof and "|cFF00FF00(current)|r" or "" )
+                    end
+
+                    output = format( "%s\nTo create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r.", output )
+
+                    Hekili:Print( output )
+                    return
+                end
+
+                local profileName = input:match( "%s+(.+)$" )
+
+                if not rawget( Hekili.DB.profiles, profileName ) then
+                    local output = format( "'%s' is not a valid profile name.\nValid profile |cFFFFD100name|rs are:", profileName )
+
+                    local count = 0
+
+                    for name, prof in ns.orderedPairs( Hekili.DB.profiles ) do
+                        count = count + 1
+                        output = format( "%s\n - |cFFFFD100%s|r %s", output, name, Hekili.DB.profile == prof and "|cFF00FF00(current)|r" or "" )
+                    end
+
+                    output = format( "%s\nTo create a new profile, see |cFFFFD100/hekili|r > |cFFFFD100Profiles|r.", output )
+
+                    Hekili:Print( output )
+                    return
+                end
+
+                Hekili:Print( format( "Set profile to |cFF00FF00%s|r.", profileName ) )
+                self.DB:SetProfile( profileName )
+                return
 
             else
                 LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
