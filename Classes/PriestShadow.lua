@@ -1058,7 +1058,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( talent.mindbender.enabled and 60 or 180 ) end,
             gcd = "spell",
 
-            toggle = "cooldowns",
+            toggle = function () return not talent.mindbender.enabled and "cooldowns" or nil end,
 
             startsCombat = true,
             texture = function () return talent.mindbender.enabled and 136214 or 136199 end,
