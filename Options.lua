@@ -8442,7 +8442,13 @@ function Hekili:TotalRefresh( noOptions )
 
     self:OverrideBinds()
 
-    LibStub("LibDBIcon-1.0"):Refresh( "Hekili", self.DB.profile.iconStore )
+    -- LibStub("LibDBIcon-1.0"):Refresh( "Hekili", self.DB.profile.iconStore )
+    
+    if WeakAuras and WeakAuras.ScanEvents then
+        for name in pairs( Hekili.DB.profile.toggles ) do
+            WeakAuras.ScanEvents( "HEKILI_TOGGLE" )
+        end
+    end
 
 end
 
