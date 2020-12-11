@@ -1,5 +1,5 @@
 # Enhancement Shaman
-# December 7, 2020
+# December 10, 2020
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -21,7 +21,7 @@ actions+=/ancestral_call,if=!talent.ascendance.enabled|buff.ascendance.up|cooldo
 actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
 actions+=/feral_spirit
 actions+=/ascendance
-actions+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down
+actions+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down|buff.windfury_totem.down
 # If only one enemy, priority follows the 'single' action list.
 actions+=/call_action_list,name=single,if=active_enemies=1
 # On multiple enemies, the priority follows the 'aoe' action list.
