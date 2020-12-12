@@ -158,6 +158,21 @@ state.target = {
     health = {},
     updated = true
 }
+
+-- String constants for target.class comparisons.
+state.warrior       = "warrior"
+state.paladin       = "paladin"
+state.hunter        = "hunter"
+state.rogue         = "rogue"
+state.priest        = "priest"
+state.deathknight   = "deathknight"
+state.shaman        = "shaman"
+state.mage          = "mage"
+state.warlock       = "warlock"
+state.monk          = "monk"
+state.druid         = "druid"
+state.demonhunter   = "demonhunter"
+
 state.movement = state.target -- lazy!
 state.sim.target = state.target
 state.toggle = {}
@@ -2409,7 +2424,7 @@ local mt_target = {
             if not UnitExists( "target" ) then return "virtual"
             elseif not UnitIsPlayer( "target" ) then return "npc" end
 
-            local c = select( 2, UnitClass( "target" ) )
+            local c = UnitClassBase( "target" )
             if c then return strlower( c ) end
 
             return "unknown"
