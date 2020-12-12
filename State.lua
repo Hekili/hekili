@@ -2404,6 +2404,15 @@ local mt_target = {
             if state.args.cycle_target == 1 then return UnitGUID( 'target' ) .. 'c' or 'cycle'
             elseif state.args.target then return UnitGUID( 'target' ) .. '+' .. state.args.target or 'unknown' end
             return UnitGUID( 'target' ) or 'unknown'
+        
+        elseif k == 'class' then
+            if not UnitExists( "target" ) then return "virtual"
+            elseif not UnitIsPlayer( "target" ) then return "npc" end
+
+            local c = select( 2, UnitClass( "target" ) )
+            if c then return strlower( c ) end
+
+            return "unknown"
 
         elseif k == 'time_to_die' then
             local ttd = Hekili:GetTTD( 'target' )
