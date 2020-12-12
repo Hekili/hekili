@@ -943,7 +943,7 @@ do
     
                             local rStart, rDuration
                             if a.item then
-                                rStart, rDuration = GetItemCooldown( a.id )
+                                rStart, rDuration = GetItemCooldown( a.item )
                             else
                                 rStart, rDuration = GetSpellCooldown( a.id )
                             end
@@ -1077,7 +1077,7 @@ do
 
                 local rStart, rDuration
                 if a.item then
-                    rStart, rDuration = GetItemCooldown( a.id )
+                    rStart, rDuration = GetItemCooldown( a.item )
                 else
                     rStart, rDuration = GetSpellCooldown( a.id )
                 end
