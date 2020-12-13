@@ -4914,7 +4914,7 @@ function state.putTrinketsOnCD( val )
     val = val or 10
 
     for i, item in ipairs( state.items ) do
-        if not class.abilities[ item ].essence then setCooldown( item, val ) end
+        if not class.abilities[ item ].essence and state.cooldown[ item ].remains < val then setCooldown( item, val ) end
     end
 end
 
