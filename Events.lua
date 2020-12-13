@@ -1951,6 +1951,7 @@ local bindingSubs = {
     { "MOUSEWHEEL", "Mw" },
     { "DOWN", "Dn" },
     { "UP", "Up" },
+    { "PAGE", "Pg" },
     { "BACKSPACE", "BkSp" },
     { "DECIMAL", "." },
     { "CAPSLOCK", "CAPS" },
