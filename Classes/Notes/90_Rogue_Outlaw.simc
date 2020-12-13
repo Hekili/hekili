@@ -1,8 +1,9 @@
 # Outlaw Rogue
-# December 9, 2020
+# December 13, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
+actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/marked_for_death,precombat_seconds=5,if=raid_event.adds.in>40
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=refreshable
 actions.precombat+=/slice_and_dice,precombat_seconds=2,if=refreshable
@@ -73,5 +74,5 @@ actions.finish+=/dispatch
 
 # Stealth
 actions.stealth=dispatch,if=combo_points>=cp_max_spend
-actions.stealth=cheap_shot,cycle_targets=1,if=talent.prey_on_the_weak.enabled&!target.is_boss
 actions.stealth+=/ambush
+actions.stealth+=/cheap_shot,cycle_targets=1,if=talent.prey_on_the_weak.enabled&!target.is_boss

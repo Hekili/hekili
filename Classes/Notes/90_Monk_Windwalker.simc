@@ -1,8 +1,9 @@
 # Windwalker Monk
-# November 23, 2020
+# December 13, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=potion
+actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/variable,name=xuen_on_use_trinket,op=set,value=0
 actions.precombat+=/chi_burst,if=!talent.serenity.enabled|!talent.fist_of_the_white_tiger.enabled
 actions.precombat+=/chi_wave,if=!talent.energizing_elixer.enabled
@@ -148,7 +149,7 @@ actions.weapons_of_order+=/whirling_dragon_punch,if=active_enemies>=2
 actions.weapons_of_order+=/spinning_crane_kick,if=(!talent.hit_combo.enabled&conduit.calculated_strikes.enabled|combo_strike)&active_enemies>=3&buff.weapons_of_order_ww.up
 actions.weapons_of_order+=/blackout_kick,cycle_targets=1,if=combo_strike&active_enemies<=2
 actions.weapons_of_order+=/whirling_dragon_punch
-actions.weapons_of_order+=/fists_of_fury,interrupt=1,if=buff.storm_earth_and_fire.up&raid_event.adds.in>cooldown.fists_of_fury.duration*0.6
+actions.weapons_of_order+=/fists_of_fury,interrupt_if=buff.weapons_of_order_ww.up,if=buff.storm_earth_and_fire.up&raid_event.adds.in>cooldown.fists_of_fury.duration*0.6
 actions.weapons_of_order+=/spinning_crane_kick,if=buff.chi_energy.stack>30-5*active_enemies
 actions.weapons_of_order+=/fist_of_the_white_tiger,cycle_targets=1,if=chi<3
 actions.weapons_of_order+=/expel_harm,if=chi.max-chi>=1

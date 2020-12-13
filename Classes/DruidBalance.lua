@@ -1336,6 +1336,14 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             handler = function ()
                 applyBuff( "heart_of_the_wild" )
+
+                if talent.feral_affinity.enabled then
+                    shift( "cat_form" )
+                elseif talent.guardian_affinity.enabled then
+                    shift( "bear_form" )
+                elseif talent.restoration_affinity.enabled then
+                    unshift()
+                end
             end,
         },
 

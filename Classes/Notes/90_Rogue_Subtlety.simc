@@ -1,11 +1,12 @@
 # Subtlety Rogue
-# December 10, 2020
+# December 13, 2020
 
 # Move variable.use_priority_rotation up so it is set before we use it.
 # Combine multiple call_action_list entries to reduce potential rework.
 
 # Pre-Combat
 actions.precombat+=/apply_poison
+actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/stealth
 actions.precombat+=/marked_for_death,precombat_seconds=15
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
@@ -129,3 +130,4 @@ actions.stealthed+=/shuriken_storm,if=spell_targets>=3+(buff.the_rotten.up|runef
 actions.stealthed+=/shadowstrike,if=debuff.find_weakness.remains<=1|cooldown.symbols_of_death.remains<18&debuff.find_weakness.remains<cooldown.symbols_of_death.remains
 actions.stealthed+=/gloomblade,if=buff.perforated_veins.stack>=5&conduit.perforated_veins.rank>=13
 actions.stealthed+=/shadowstrike
+actions.stealthed+=/cheap_shot,if=!target.is_boss&combo_points.deficit>=1&buff.shot_in_the_dark.up&energy.time_to_40>gcd.max

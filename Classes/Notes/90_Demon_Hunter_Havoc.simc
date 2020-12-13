@@ -1,5 +1,7 @@
 # Demon Hunter Havoc
-# December 7, 2020
+# December 13, 2020
+
+actions.precombat=bottled_flayedwing_toxin
 
 # Executed every time the actor is available.
 actions=disrupt

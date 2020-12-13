@@ -1,10 +1,11 @@
 # Assassination Rogue
-# December 7, 2020
+# December 13, 2020
 
 # Moved Flagellation (Cleanse) up in priority so it would not get buried behind stealth actions.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
+actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/marked_for_death,precombat_seconds=5,if=raid_event.adds.in>15
 actions.precombat+=/stealth
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable

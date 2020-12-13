@@ -1,6 +1,7 @@
 # Demon Hunter Vengeance
-# November 24, 2020
+# December 13, 2020
 
+actions.precombat=bottled_flayedwing_toxin
 actions.precombat+=/use_item,name=azsharas_font_of_power
 
 # Executed every time the actor is available.

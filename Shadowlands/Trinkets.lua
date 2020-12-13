@@ -204,7 +204,10 @@ do
 
             item = 178742,
 
-            readyTime = function () return buff.flayedwing_toxin.remains end,            
+            readyTime = function ()
+                if combat > 0 then return buff.flayedwing_toxin.remains end
+                return buff.flayedwing_toxin.remains - 600
+            end,
             handler = function ()
                 applyBuff( "flayedwing_toxin" )
             end,

@@ -1,8 +1,9 @@
 # Brewmaster Monk
-# December 8, 2020
+# December 13, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft
+actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/chi_burst
 actions.precombat+=/chi_wave
 

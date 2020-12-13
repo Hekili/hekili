@@ -1,6 +1,7 @@
 # Marksmanship Hunter
-# December 9, 2020
+# December 13, 2020
 
+actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers
 actions.precombat+=/double_tap,precast_time=10,if=active_enemies>1|!covenant.kyrian&!talent.volley
 actions.precombat+=/aimed_shot,if=active_enemies<3&(!covenant.kyrian&!talent.volley|active_enemies<2)
