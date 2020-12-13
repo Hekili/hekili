@@ -645,10 +645,10 @@ do
     local cycle = {}
     local debug = function( ... ) if Hekili.ActiveDebug then Hekili:Debug( ... ) end end
 
-    function state.SetupCycle( ability )
+    function state.SetupCycle( ability, quiet )
         wipe( cycle )
 
-        if not ability then
+        if not ability and not quiet then
             debug( " - no ability provided to SetupCycle." )
             return
         end
@@ -660,7 +660,7 @@ do
             aura = class.auras[ ability.key ] and ability.key
         end
 
-        if not aura then
+        if not aura and not quiet then
             debug( " - no aura identified for target-cycling and no aura matching " .. ability.key .. " found in ability / spec module; target cycling disabled." )
             return
         end
@@ -678,10 +678,13 @@ do
             cycle.maxTTD  = ability.max_ttd
 
             cycle.aura = aura
-            debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
-            debug( " - confirm:  IsCycling? %s, %s", tostring( state.IsCycling() ), tostring( state.IsCycling( aura ) ) ) 
+
+            if not quiet then
+                debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
+                debug( " - confirm:  IsCycling? %s, %s", tostring( state.IsCycling() ), tostring( state.IsCycling( aura ) ) ) 
+            end
         else
-            debug( " - cycle aura appears to be down, so we're sticking with our current target." )
+            if not quiet then debug( " - cycle aura appears to be down, so we're sticking with our current target." ) end
         end
     end
 
@@ -694,6 +697,12 @@ do
         cycle.minTTD  = minTTD
         cycle.maxTTD  = maxTTD
         cycle.aura    = aura
+    end
+
+    function state.HasCyclingDebuff( aura )
+        if not cycle.aura then return false end
+        if aura and aura ~= cycle.aura then return false end
+        return true
     end
 
     function state.IsCycling( aura )
@@ -1758,8 +1767,13 @@ local mt_state = {
             local targets = t.active_enemies
             local timeframe = t.delay + t.offset
 
-            local minTTD = timeframe + ( t.cycleInfo.minTTD or 10 )
+            local minTTD = timeframe + min( t.cycleInfo.minTTD or 10, t.settings.cycle_min )
             local maxTTD = min( 3599, timeframe + ( t.cycleInfo.maxTTD or 3599 ) )
+
+            if not t.HasCyclingDebuff() and t.settings.cycleDebuff then
+                -- See if the specialization has a default aura to use for cycling (i.e., Unholy using Festering Wound).
+                minTTD = max( minTTD, t.debuff[ t.settings.cycleDebuff ].duration / 2 )
+            end
 
             targets = targets - Hekili:GetNumTTDsAfter( maxTTD )
             targets = targets - Hekili:GetNumTTDsBefore( minTTD )

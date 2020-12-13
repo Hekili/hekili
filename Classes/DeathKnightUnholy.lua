@@ -1403,6 +1403,8 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             startsCombat = true,
             texture = 636333,
 
+            aura = "soul_reaper",
+
             talent = "soul_reaper",
 
             handler = function ()
@@ -1537,6 +1539,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         damageExpiration = 8,
 
         cycle = true,
+        cycleDebuff = "festering_wound",
 
         potion = "potion_of_spectral_strength",
 
