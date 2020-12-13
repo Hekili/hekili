@@ -151,9 +151,14 @@ local HekiliSpecMixin = {
         if r.state.regenModel then
             for _, v in pairs( r.state.regenModel ) do
                 v.resource = v.resource or resource
+                self.resourceAuras[ v.resource ] = self.resourceAuras[ v.resource ] or {}
 
                 if v.aura then
-                    self.resourceAuras[ v.aura ] = resource
+                    self.resourceAuras[ v.resource ][ v.aura ] = true
+                end
+
+                if v.channel then
+                    self.resourceAuras[ v.resource ].casting = true
                 end
             end
         end
@@ -1128,8 +1133,6 @@ all:RegisterAuras( {
         strictTiming = true,
         generate = function( t, auraType )
             local unit = auraType == "debuff" and "target" or "player"
-
-            if unit == "player" then stopChanneling( true ) end
 
             if unit == "player" or UnitCanAttack( "player", "target" ) then
                 local spell, _, _, startCast, endCast, _, _, notInterruptible, spellID = UnitCastingInfo( unit )

@@ -42,7 +42,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
     spec:RegisterResource( Enum.PowerType.Insanity, {
         mind_flay = {
-            aura = "casting",
+            channel = "mind_flay",
 
             last = function ()
                 local app = state.buff.casting.applied
@@ -51,13 +51,12 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 return app + floor( ( t - app ) / class.auras.mind_flay.tick_time ) * class.auras.mind_flay.tick_time
             end,
 
-            stop = function () return not state.buff.casting.v3 or state.buff.casting.v1 ~= class.abilities.mind_flay.id end,
             interval = function () return class.auras.mind_flay.tick_time end,
             value = function () return ( state.talent.fortress_of_the_mind.enabled and 1.2 or 1 ) * 3 end,
         },
 
         mind_sear = {
-            aura = "casting",
+            channel = "mind_sear",
 
             last = function ()
                 local app = state.buff.casting.applied
@@ -66,49 +65,22 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 return app + floor( ( t - app ) / class.auras.mind_sear.tick_time ) * class.auras.mind_sear.tick_time
             end,
 
-            stop = function () return not state.buff.casting.v3 or state.buff.casting.v1 ~= class.abilities.mind_sear.id end,
             interval = function () return class.auras.mind_sear.tick_time end,
             value = function () return state.active_enemies end,
         },
 
-        --[[ need to revise the value of this, void decay ticks up and is impacted by void torrent.
-        voidform = {
-            aura = "voidform",
-            talent = "legacy_of_the_void",
-
-            last = function ()
-                local app = state.buff.voidform.applied
-                local t = state.query_time
-
-                return app + floor( t - app )
-            end,
-
-            stop = function( x )
-                return x == 0
-            end,
-
-            interval = 1,
-            value = function ()
-                return state.debuff.dispersion.up and 0 or ( -6 - ( 0.8 * state.debuff.voidform.stacks ) )
-            end,
-        }, ]]
-
         void_torrent = {
-            aura = "void_torrent",
+            channel = "void_torrent",
 
             last = function ()
-                local app = state.buff.void_torrent.applied
+                local app = state.buff.casting.applied
                 local t = state.query_time
 
                 return app + floor( t - app )
             end,
 
-            stop = function( x )
-                return x == 0
-            end,
-
-            interval = function () return class.auras.void_torrent.tick_time end,
-            value = 6,
+            interval = function () return class.abilities.void_torrent.tick_time end,
+            value = 15,
         },
 
         mindbender = {
@@ -418,7 +390,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             tick_time = function () return 0.75 * haste end,
         },
         mind_sear_th = {
-            duration = function () return 3 * haste end,
+            duration = function () return 4.5 * haste end,
             max_stack = 1,
         },
         mind_vision = {
@@ -538,9 +510,9 @@ if UnitClassBase( "player" ) == "PRIEST" then
         },
         void_torrent = {
             id = 263165,
-            duration = function () return 4 * haste end,
+            duration = 3,
             max_stack = 1,
-            tick_time = function () return haste end,
+            tick_time = 1,
         },
         voidform = {
             id = 194249,
@@ -1417,7 +1389,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
         vampiric_touch = {
             id = 34914,
-            cast = function () return buff.unfurling_darkness.up and 0 or 1.5 end,
+            cast = function () return buff.unfurling_darkness.up and 0 or 1.5 * haste end,
             cooldown = 0,
             gcd = "spell",
 
@@ -1535,13 +1507,13 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
         void_torrent = {
             id = 263165,
-            cast = 4,
+            cast = 3,
             channeled = true,
             fixedCast = true,
-            cooldown = 45,
+            cooldown = 30,
             gcd = "spell",
 
-            spend = -6,
+            spend = -15,
             spendType = "insanity",
 
             startsCombat = true,
@@ -1549,6 +1521,10 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             aura = "void_torrent",
             talent = "void_torrent",
+
+            tick_time = function ()
+                return class.auras.void_torrent.tick_time
+            end,
 
             breakchannel = function ()
                 removeDebuff( "target", "void_torrent" )
@@ -1731,7 +1707,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             cooldown = 45,
             gcd = "spell",
 
-            spend = 0.02,
+            spend = 0.002,
             spendType = "mana",
 
             toggle = "essences",

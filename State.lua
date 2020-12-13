@@ -54,8 +54,7 @@ state.false_start = 0
 state.latency = 0
 
 state.filter = "none"
-state.cycle_aura = 'no_aura'
-state.cast_target = 'nobody'
+state.cast_target = "nobody"
 
 state.arena = false
 state.bg = false
@@ -726,7 +725,7 @@ end
 
 
 -- Apply a buff to the current game state.
-local function applyBuff( aura, duration, stacks, value, v2, v3 )
+local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
     if not aura then
         Error( "Attempted to apply/remove a nameless aura '%s'.", aura or "nil" )
         return
@@ -783,12 +782,11 @@ local function applyBuff( aura, duration, stacks, value, v2, v3 )
         b.lastCount = b.count
         b.lastApplied = b.applied
 
-        -- state.buff[ aura ] = state.buff[ aura ] or {}
-        b.expires = state.query_time + duration
-        b.last_expiry = b.expires
-
-        b.applied = state.query_time
+        b.applied = applied or state.query_time
         b.last_application = b.applied or 0
+
+        b.expires = b.applied + duration
+        b.last_expiry = b.expires
 
         b.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
         b.v1 = value or 0
@@ -797,10 +795,10 @@ local function applyBuff( aura, duration, stacks, value, v2, v3 )
         b.caster = 'player'
     end
 
-    local resource = class.resourceAuras[ aura ]
-
-    if resource then
-        state.forecastResources( resource )
+    for resource, auras in pairs( class.resourceAuras ) do
+        if auras[ aura ] then
+            state.forecastResources( resource )
+        end
     end
 
     if aura == 'heroism' or aura == 'time_warp' or aura == 'ancient_hysteria' then
@@ -1044,34 +1042,29 @@ function state.channelSpell( name, start, duration, id )
 
         if not duration then return end
 
-        state.player.channelSpell = name
-        state.player.channelStart = start
-        state.player.channelEnd = start + duration
-
-        applyBuff( "casting", duration, nil, id or ( ability and ability.id ) or 0, nil, true )
-        state.buff.casting.applied = start
-        state.buff.casting.expires = start + duration
+        applyBuff( "casting", duration, nil, id or ( ability and ability.id ) or 0, nil, true, start )
     end
 end
 
 function state.stopChanneling( reset, action )
     if not reset then
-        local spell = state.player.channelSpell
+        local spell = state.channel
         local ability = spell and class.abilities[ spell ]
 
-        if spell and spell ~= action then
-            if Hekili.ActiveDebug then Hekili:Debug( "Breaking channel of %s (non-reset).", state.player.channelSpell or "nil", tostring( reset ) or "false" ) end
+        if spell then
+            if Hekili.ActiveDebug then Hekili:Debug( "Breaking channel of %s.", spell ) end
+            if ability and ability.breakchannel then ability.breakchannel() end            
             state:RemoveSpellEvents( spell )
-            if ability and ability.breakchannel then ability.breakchannel() end
         end
     end
 
-    state.player.channelSpell = nil
-    state.player.channelStart = 0
-    state.player.channelEnd   = 0
+    -- This will lock in gains from channeling before the channel ends.
+    for resource, auras in pairs( class.resourceAuras ) do
+        if auras.casting then state[ resource ].actual = state[ resource ].current end
+    end
+
     removeBuff( "casting" )
 end
-
 -- See mt_state for 'isChanneling'.
 
 
@@ -1187,7 +1180,8 @@ local function forecastResources( resource )
                 ( not v.aura      or state[ v.debuff and 'debuff' or 'buff' ][ v.aura ].remains > 0 ) and
                 ( not v.set_bonus or state.set_bonus[ v.set_bonus ] > 0 ) and
                 ( not v.setting   or state.settings[ v.setting ] ) and
-                ( not v.swing     or state.swings[ v.swing .. "_speed" ] and state.swings[ v.swing .. "_speed" ] > 0 ) then
+                ( not v.swing     or state.swings[ v.swing .. "_speed" ] and state.swings[ v.swing .. "_speed" ] > 0 ) and
+                ( not v.channel   or state.buff.casting.up and state.buff.casting.v3 and state.buff.casting.v1 == class.abilities[ v.channel ].id ) then
 
                 local r = state[ v.resource ]
 
@@ -1225,7 +1219,7 @@ local function forecastResources( resource )
 
             local bonus = r.regen * ( now - prev )
 
-            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < now ) then
+            if ( e.stop and e.stop( r.forecast[ r.fcount ].v ) ) or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < now ) or ( e.channel and state.buff.casting.expires < now ) then
                 table.remove( events, 1 )
 
                 local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
@@ -1272,7 +1266,7 @@ local function forecastResources( resource )
                 remains[ e.resource ] = finish - e.next
                 e.next = e.next + step
 
-                if e.next > finish or step < 0 or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < e.next ) then
+                if e.next > finish or step < 0 or ( e.aura and state[ e.debuff and 'debuff' or 'buff' ][ e.aura ].expires < e.next ) or ( e.channel and state.buff.casting.expires < e.next ) then
                     table.remove( events, 1 )
                 end
             end
@@ -1375,7 +1369,7 @@ do
 
     local function channelInfo( ability )
         if state.system.packName and scripts.Channels[ state.system.packName ] then
-            return scripts.Channels[ state.system.packName ][ state.player.channelSpell ], class.auras[ state.player.channelSpell ]
+            return scripts.Channels[ state.system.packName ][ state.channel ], class.auras[ state.channel ]
         end
     end
 
@@ -1675,13 +1669,17 @@ local mt_state = {
             return false -- will set to true if/when a spell is hardcast.
 
         elseif k == 'channeling' then
-            return t.player.channelSpell ~= nil and t.player.channelEnd >= t.query_time
+            return t.buff.casting.up and t.buff.casting.v3
 
         elseif k == 'channel' then
-            return t.channeling and t.player.channelSpell or nil
+            if t.buff.casting.down or not t.buff.casting.v3 then return nil end
+            local chan = class.abilities[ t.buff.casting.v1 ]
+
+            if chan then return chan.key end
+            return "unknown"
 
         elseif k == 'channel_remains' then
-            return t.channeling and ( t.player.channelEnd - t.query_time ) or 0
+            return t.buff.casting.up and t.buff.casting.v3 and t.buff.casting.remains or 0
 
         elseif k == 'ranged' then
             return false
@@ -5338,11 +5336,13 @@ function state:RunHandler( key, noStart )
         return
     end
 
-    if state.channeling and not ability.castableWhileCasting then
-        state.stopChanneling()
+    if self.channeling and not ability.castableWhileCasting then
+        self.stopChanneling( false, ability.key )
     end
     
-    if ability.channeled and ability.start then ability.start()
+    if ability.channeled then
+        if ability.start then ability.start() end
+        self.channelSpell( key, self.query_time, ability.cast, ability.id )
     elseif ability.handler then ability.handler() end
 
     self.prev.last = key
