@@ -779,10 +779,8 @@ do
                 next = results[ i + 1 ]
                 piece.s = "(!" .. piece.s .. ")"
             elseif piece.t == "expr" and piece.s:match( "^%s*[a-z0-9_]+%s*%(" ) then
-                print( piece.s )
                 trimmed_prefix = piece.s:match( "^%s*([a-z0-9_]+)%s*%(" )
                 piece.s = piece.s:gsub( "^%s*" .. trimmed_prefix .. "%s*", "" )
-                print( "> " .. piece.s )
             end                
 
             if piece and piece.t == "expr" then
