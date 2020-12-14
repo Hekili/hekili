@@ -767,19 +767,23 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             removeBuff( "starsurge_empowerment_lunar" )
             removeBuff( "starsurge_empowerment_solar" )
-            applyBuff( "eclipse_lunar", duration )
-            applyBuff( "eclipse_solar", duration )
+
+            applyBuff( "eclipse_lunar", ( duration or class.auras.eclipse_lunar.duration ) + buff.eclipse_lunar.remains )
+            applyBuff( "eclipse_solar", ( duration or class.auras.eclipse_solar.duration ) + buff.eclipse_solar.remains )
 
             state:QueueAuraExpiration( "ca_inc", ExpireCelestialAlignment, buff.ca_inc.expires )
             state:RemoveAuraExpiration( "eclipse_solar" )
+            state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
             state:RemoveAuraExpiration( "eclipse_lunar" )
+            state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
         end, state ),
 
         advance = setfenv( function()
             if Hekili.ActiveDebug then Hekili:Debug( "Eclipse Advance (Pre): %s - Starfire(%d), Wrath(%d), Solar(%.2f), Lunar(%.2f)", eclipse.state, eclipse.starfire_counter, eclipse.wrath_counter, buff.eclipse_solar.remains, buff.eclipse_lunar.remains ) end
             
             if eclipse.starfire_counter == 0 and ( eclipse.state == "SOLAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
-                applyBuff( "eclipse_solar" )
+                applyBuff( "eclipse_solar", class.auras.eclipse_solar.duration + buff.eclipse_solar.remains )                
+                state:RemoveAuraExpiration( "eclipse_solar" )
                 state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
                 if talent.solstice.enabled then applyBuff( "solstice" ) end
                 if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 10 ) end
@@ -790,7 +794,8 @@ if UnitClassBase( "player" ) == "DRUID" then
             end
 
             if eclipse.wrath_counter == 0 and ( eclipse.state == "LUNAR_NEXT" or eclipse.state == "ANY_NEXT" ) then
-                applyBuff( "eclipse_lunar" )                
+                applyBuff( "eclipse_lunar", class.auras.eclipse_lunar.duration + buff.eclipse_lunar.remains )                
+                state:RemoveAuraExpiration( "eclipse_lunar" )
                 state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
                 if talent.solstice.enabled then applyBuff( "solstice" ) end
                 if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 10 ) end
@@ -1053,12 +1058,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 applyBuff( "celestial_alignment" )
                 stat.haste = stat.haste + 0.1
 
-                if buff.eclipse_solar.up and buff.eclipse_lunar.up then
-                    buff.eclipse_solar.expires = buff.eclipse_solar.expires + 20
-                    buff.eclipse_lunar.expires = buff.eclipse_lunar.expires + 20
-                else
-                    eclipse.trigger_both()
-                end
+                eclipse.trigger_both( 20 )
 
                 if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
             end,
@@ -1389,12 +1389,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 stat.crit = stat.crit + 0.10
                 stat.haste = stat.haste + 0.10
 
-                if buff.eclipse_solar.up and buff.eclipse_lunar.up then
-                    buff.eclipse_solar.expires = buff.eclipse_solar.expires + 20
-                    buff.eclipse_lunar.expires = buff.eclipse_lunar.expires + 20
-                else
-                    eclipse.trigger_both()
-                end
+                eclipse.trigger_both( 20 )
 
                 if pvptalent.moon_and_stars.enabled then applyBuff( "moon_and_stars" ) end
             end,
