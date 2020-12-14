@@ -506,9 +506,9 @@ function Hekili:CheckChannel( ability, prio )
         -- We are concerned with chain and early_chain_if.
         if modifiers.interrupt_if and modifiers.interrupt_if() then
             local imm = modifiers.interrupt_immediate and modifiers.interrupt_immediate() or nil
-            local val = state.cooldown.global_cooldown.up and ( imm or ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 ) )
+            local val = state.cooldown.global_cooldown.up and ( imm or remains < tick_time or ( state.query_time - state.buff.casting.applied ) % tick_time < 0.25 )
             if self.ActiveDebug then
-                self:Debug( "CC:  Interrupt_If is %s [ticks = %d].", tostring( val ), state.ticks )
+                self:Debug( "CC:  Interrupt_If is %s.", tostring( val ) )
             end
             state.this_action = act            
             return val
@@ -1440,6 +1440,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
             if t < 0 then
                 state.offset = state.offset - t
+                if debug then self:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event should've already occurred.\n", n, event.type, event.action, t ) end
                 state:HandleEvent( event )
                 state.offset = state.offset + t
                 event = events[ 1 ]
@@ -1583,7 +1584,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
             slot.time = state.offset + wait
             slot.exact_time = state.now + state.offset + wait
-            slot.delay = wait
+            slot.delay = i > 1 and wait or ( state.offset + wait )
             slot.since = i > 1 and slot.time - Queue[ i - 1 ].time or 0
             slot.resources = slot.resources or {}
             slot.depth = chosen_depth
