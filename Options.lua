@@ -8047,6 +8047,28 @@ function Hekili:GenerateProfile()
         if state.covenant[ v ] then covenant = v; break end
     end
 
+    local conduits
+    for k,v in orderedPairs( s.conduit ) do
+        if v.enabled then
+            if conduits then conduits = format( "%s\n   %s = %d", conduits, k, v.rank )
+            else conduits = format( "%s = %d", k, v.rank ) end
+        end
+    end
+
+    local soulbinds
+    
+    local activeBind = C_Soulbinds.GetActiveSoulbindID()
+    if activeBind then
+        soulbinds = "[" .. formatKey( C_Soulbinds.GetSoulbindData( activeBind ).name ) .. "]"
+    end
+
+    for k,v in orderedPairs( s.soulbind ) do
+        if v.enabled then
+            if soulbinds then soulbinds = format( "%s\n   %s = %d", soulbinds, k, v.rank )
+            else soulbinds = format( "%s = %d", k, v.rank ) end
+        end
+    end    
+
     local sets
     for k, v in orderedPairs( class.gear ) do
         if s.set_bonus[ k ] > 0 then
@@ -8105,6 +8127,8 @@ function Hekili:GenerateProfile()
         "talents: %s\n\n" ..
         "pvptalents: %s\n\n" ..
         "covenant: %s\n\n" ..
+        "conduits: %s\n\n" ..
+        "soulbinds: %s\n\n" ..
         "sets: %s\n\n" ..
         "gear: %s\n\n" ..
         "legendaries: %s\n\n" ..
@@ -8118,6 +8142,8 @@ function Hekili:GenerateProfile()
         talents or "none",
         pvptalents or "none",
         covenant or "none",
+        conduits or "none",
+        soulbinds or "none",
         sets or "none",
         gear or "none",
         legendaries or "none",
