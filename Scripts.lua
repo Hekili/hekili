@@ -770,6 +770,7 @@ do
 
         while( i <= #results ) do
             local prev, piece, next = i > 1 and results[i-1] or nil, results[i], i < #results and results[i+1] or nil
+            local trimmed_prefix
 
             -- If we get a math op (*) followed by a not (!) followed by an expression, we want to safely wrap up the !expr in safenum().
             if prev and prev.t == "op" and math_ops[ prev.a ] and piece.t == "op" and piece.a == "!" and next and next.t == "expr" then
@@ -777,7 +778,12 @@ do
                 piece = results[ i ]
                 next = results[ i + 1 ]
                 piece.s = "(!" .. piece.s .. ")"
-            end
+            elseif piece.t == "expr" and piece.s:match( "^%s*[a-z0-9_]+%s*%(" ) then
+                print( piece.s )
+                trimmed_prefix = piece.s:match( "^%s*([a-z0-9_]+)%s*%(" )
+                piece.s = piece.s:gsub( "^%s*" .. trimmed_prefix .. "%s*", "" )
+                print( "> " .. piece.s )
+            end                
 
             if piece and piece.t == "expr" then
                 if piece.r then
@@ -807,10 +813,10 @@ do
                             -- maximum warningness
                             local pass, val = pcall( func )
                             if not pass and not piece.s:match("variable") then
-                                -- local safepiece = piece.s:gsub( "%%", "%%%%" )
-                                -- Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-n)\n\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
+                                local safepiece = piece.s:gsub( "%%", "%%%%" )
+                                Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-n)\n\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
                             else
-                                if val == nil or type( val ) ~= "number" then piece.s = "safenum(" .. piece.s .. ")" end
+                                if trimmed_prefix ~= "safenum" and ( val == nil or type( val ) ~= "number" ) then piece.s = "safenum(" .. piece.s .. ")" end
                             end
                         else
                             Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-n)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
@@ -830,15 +836,21 @@ do
                             setfenv( func, state )
                             local pass, val = pcall( func )
                             if not pass and not piece.s:match("variable") then
-                                -- local safepiece = piece.s:gsub( "%%", "%%%%" )
-                                -- Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-b)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
-                            else if val == nil or type( val ) == "number" then piece.s = "safebool(" .. piece.s .. ")" end end
+                                local safepiece = piece.s:gsub( "%%", "%%%%" )
+                                Hekili:Error( "Unable to compile '" .. safepiece:gsub("%%", "%%%%") .. "' - " .. val .. " (pcall-b)\nFrom: " .. esString:gsub( "%%", "%%%%" ) )
+                            else
+                                if trimmed_prefix ~= "safebool" and ( val == nil or type( val ) == "number" ) then piece.s = "safebool(" .. piece.s .. ")" end
+                            end
                         else
                             Hekili:Error( "Unable to compile '" .. ( piece.s ):gsub("%%","%%%%") .. "' - " .. warn .. " (loadstring-b)." )
                         end                        
                     end
                     piece.r = nil
                 end
+            end
+
+            if trimmed_prefix then
+                piece.s = trimmed_prefix .. piece.s
             end
 
             output = output .. piece.s        
