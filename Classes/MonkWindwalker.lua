@@ -891,6 +891,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
             cycle = "mark_of_the_crane",
             aura = "mark_of_the_crane",
 
+            tick_time = function () return haste end,
+
             start = function ()
                 if buff.fury_of_xuen.stack >= 50 then
                     applyBuff( "fury_of_xuen_haste" )
