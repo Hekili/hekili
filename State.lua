@@ -794,6 +794,8 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         b.applied = applied or state.query_time
         b.last_application = b.applied or 0
 
+        b.duration = duration
+
         b.expires = b.applied + duration
         b.last_expiry = b.expires
 
@@ -3313,7 +3315,7 @@ local mt_default_buff = {
             if t.up then return ( 100 * t.stack / t.max_stack ) else return 0 end
 
         elseif k == 'ticks' then
-            if t.up then return floor( t.duration / t.tick_time ) - t.ticks_remain end
+            if t.up then return t.duration / t.tick_time - t.ticks_remain end
             -- if t.up then return 1 + ( ( class.auras[ t.key ].duration or ( 30 * state.haste ) ) / ( class.auras[ t.key ].tick_time or ( 3 * t.haste ) ) ) - t.ticks_remain end
             return 0
 
@@ -3321,7 +3323,7 @@ local mt_default_buff = {
             return aura and aura.tick_time or ( 3 * state.haste ) -- Default tick time will be 3 because why not?
 
         elseif k == 'ticks_remain' then
-            if t.up then return math.floor( t.remains / t.tick_time ) end
+            if t.up then return t.remains / t.tick_time end
             return 0
 
         elseif k == 'last_trigger' then
@@ -4219,14 +4221,14 @@ local mt_default_debuff = {
             return ns.getModifier( aura.id, state.target.unit )
 
         elseif k == 'ticks' then
-            if t.up then return floor( t.duration / t.tick_time ) - t.ticks_remain end
+            if t.up then return t.duration / t.tick_time - t.ticks_remain end
             return 0
 
         elseif k == 'tick_time' then
             return aura.tick_time or ( 3 * state.haste )
 
         elseif k == 'ticks_remain' then
-            return floor( t.remains / t.tick_time )
+            return t.remains / t.tick_time
 
         elseif k == 'tick_time_remains' then
             if not aura.tick_time then return t.remains end
@@ -5756,24 +5758,6 @@ function state.reset( dispName )
                 -- state:QueueEvent( action, "projectile", true )
             end
         end
-
-
-        --[[ if not state.spec.canCastWhileCasting then
-            if ( not ability or not ability.breakable ) then
-                -- Revisit auto-advance, we may be overcompensating for it now that we use the queue.
-                state.setCooldown( "global_cooldown", max( cast_time, state.cooldown.global_cooldown.remains ) )
-
-                if ability and dispName ~= "Interrupts" and dispName ~= "Defensives" then
-                    if not ability.channeled then
-                        state.advance( max( cast_time, state:QueuedCastRemains( casting, true ) ) )
-
-                    elseif ability.postchannel then
-                        ability.postchannel()
-
-                    end
-                end
-            end
-        end ]]
     end
 
     -- Delay to end of GCD.
