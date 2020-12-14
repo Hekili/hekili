@@ -1064,7 +1064,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         mangle = {
             id = 33917,
             cast = 0,
-            cooldown = function () return buff.berserk.up and ( level > 57 and 1.5 or 3 ) or 6 end,
+            cooldown = function () return ( buff.berserk.up and ( level > 57 and 1.5 or 3 ) or 6 ) * haste end,
             gcd = "spell",
 
             spend = function () return buff.gore.up and -19 or -15 end,
@@ -1678,7 +1678,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             known = 106832,
             suffix = "(Bear)",
             cast = 0,
-            cooldown = function () return buff.berserk.up and ( level > 57 and 1.5 or 3 ) or 6 end,
+            cooldown = function () return ( buff.berserk.up and ( level > 57 and 1.5 or 3 ) or 6 ) * haste end,
             gcd = "spell",
 
             spend = -5,
