@@ -1770,18 +1770,24 @@ local mt_state = {
             local timeframe = t.delay + t.offset
 
             local minTTD = timeframe + min( t.cycleInfo.minTTD or 10, t.settings.cycle_min )
-            local maxTTD = min( 3599, timeframe + ( t.cycleInfo.maxTTD or 3599 ) )
+            local maxTTD = t.cycleInfo.maxTTD
 
             if not t.HasCyclingDebuff() and t.settings.cycleDebuff then
                 -- See if the specialization has a default aura to use for cycling (i.e., Unholy using Festering Wound).
                 minTTD = max( minTTD, t.debuff[ t.settings.cycleDebuff ].duration / 2 )
             end
 
-            targets = targets - Hekili:GetNumTTDsAfter( maxTTD )
             targets = targets - Hekili:GetNumTTDsBefore( minTTD )
+
+            if maxTTD then
+                targets = targets - Hekili:GetNumTTDsAfter( maxTTD )
+            end
 
             -- So the reason we're stuck here is that we may need 'cycle_enemies' when we *aren't* cycling targets.
             -- I.e., we would cycle Festering Strike (festering_wound) but if we've already dotted our valid adds, we'd hit Death and Decay.
+
+            if t.min_targets > 0 then targets = max( t.min_targets, targets ) end
+            if t.max_targets > 0 then targets = min( t.max_targets, targets ) end
 
             return max( 1, targets )
 

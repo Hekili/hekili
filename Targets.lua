@@ -967,7 +967,7 @@ do
         return time
     end
 
-    function Hekili:GetNumTTDsWithin(x)
+    function Hekili:GetNumTTDsWithin( x )
         if x <= 3 then
             return 1
         end
@@ -975,10 +975,8 @@ do
         local count = 0
 
         for k, v in pairs(db) do
-            if v.n > 3 then
-                if ceil( v.lastHealth / v.rate ) <= x then
-                    count = count + 1
-                end
+            if v.n > 3 and ceil( v.lastHealth / v.rate ) <= x then
+                count = count + 1
             end
         end
 
@@ -986,11 +984,11 @@ do
     end
     Hekili.GetNumTTDsBefore = Hekili.GetNumTTDsWithin
 
-    function Hekili:GetNumTTDsAfter(x)
+    function Hekili:GetNumTTDsAfter( x )
         local count = 0
 
         for k, v in pairs(db) do
-            if v.n < 4 or ceil( v.lastHealth / v.rate ) > x then
+            if v.n > 3 and ceil( v.lastHealth / v.rate ) > x then
                 count = count + 1
             end
         end
