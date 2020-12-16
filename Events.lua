@@ -622,6 +622,12 @@ end
 do
     local gearInitialized = false
 
+    local function itemSorter( a, b )
+        local action1, action2 = class.abilities[ a ].cooldown, class.abilities[ b ].cooldown
+
+        return action1 > action2
+    end
+
     function Hekili:UpdateUseItems()
         local itemList = class.itemPack.lists.items
         wipe( itemList )
@@ -639,6 +645,8 @@ do
                 end
             end
         end
+        
+        table.sort( itemList, itemSorter )
                 
         class.essence_unscripted = ( class.active_essence and not self:IsEssenceScripted( class.active_essence ) ) or false
 
