@@ -792,7 +792,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             auras = {
                 echoes_of_great_sundering = {
                     id = 336217,
-                    duration = 15,
+                    duration = 25,
                     max_stack = 1
                 }
             }
