@@ -146,6 +146,10 @@ do
                 applyBuff( "huntsmans_bond" )
             end,
 
+            usable = function ()
+                return incoming_damage_3s > 0 and health.pct < 70, "requires incoming damage and health below 70 percent"
+            end,
+
             auras = {
                 huntsmans_bond = {
                     id = 344388,
