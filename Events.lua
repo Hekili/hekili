@@ -623,18 +623,18 @@ do
     local gearInitialized = false
 
     local function itemSorter( a, b )
-        local action1, action2 = class.abilities[ a ].cooldown, class.abilities[ b ].cooldown
+        local action1, action2 = class.abilities[ a.action ].cooldown, class.abilities[ b.action ].cooldown
 
         return action1 > action2
     end
 
-    function Hekili:UpdateUseItems()
+    local function buildUseItemsList()
         local itemList = class.itemPack.lists.items
         wipe( itemList )
 
         if #state.items > 0 then
             for i, item in ipairs( state.items ) do
-                if not self:IsItemScripted( item ) then
+                if not Hekili:IsItemScripted( item ) then
                     insert( itemList, {
                         action = item,
                         enabled = true,
@@ -648,10 +648,20 @@ do
         
         table.sort( itemList, itemSorter )
                 
-        class.essence_unscripted = ( class.active_essence and not self:IsEssenceScripted( class.active_essence ) ) or false
+        class.essence_unscripted = ( class.active_essence and not Hekili:IsEssenceScripted( class.active_essence ) ) or false
 
-        self:LoadItemScripts()
+        Hekili:LoadItemScripts()
     end
+
+    function Hekili:UpdateUseItems()
+        if not Hekili.PLAYER_ENTERING_WORLD then
+            C_Timer.After( 1, buildUseItemsList )
+            return
+        end
+
+        buildUseItemsList()
+    end
+
 
     local shadowlegendaries = {
         -- Mage/Arcane
