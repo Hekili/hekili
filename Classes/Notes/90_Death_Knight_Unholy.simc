@@ -1,5 +1,5 @@
 # Death Knight Unholy
-# December 14, 2020
+# December 16, 2020
 
 # Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
 
@@ -55,7 +55,7 @@ actions.aoe_setup+=/festering_strike,cycle_targets=1,if=rune.time_to_4<(cooldown
 actions.cooldowns=potion,if=pet.gargoyle.active|buff.unholy_assault.up|talent.army_of_the_damned&(pet.army_ghoul.active|pet.apoc_ghoul.active|cooldown.army_of_the_dead.remains>fight_remains)
 actions.cooldowns+=/use_item,name=inscrutable_quantum_device,if=(cooldown.unholy_blight.remains|cooldown.dark_transformation.remains)&(pet.army_ghoul.active|pet.apoc_ghoul.active&!talent.army_of_the_damned|target.time_to_pct_20<5)
 actions.cooldowns+=/use_item,name=macabre_sheet_music,if=cooldown.apocalypse.remains<5&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
-actions.cooldowns+=/use_item,name=dreadfire_vessel,if=cooldown.apocalypse.remains&rune.time_to_4<gcd&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
+actions.cooldowns+=/use_item,name=dreadfire_vessel,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
 actions.cooldowns+=/use_item,name=darkmoon_deck_voracity,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
 actions.cooldowns+=/use_items,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
 # Cooldowns
