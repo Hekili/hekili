@@ -1371,8 +1371,12 @@ do
 
         for i = 1, n do
             local x = select( i, ... )
-            if type( x ) == "number" and x > 0 and x >= state.delayMin and x <= state.delayMax then
-                t[ x ] = true
+            if type( x ) == "number" then
+                if x > 0 and x >= state.delayMin and x <= state.delayMax then
+                    t[ x ] = true
+                elseif x < 60 then
+                    Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 )
+                end
             end
         end
     end
