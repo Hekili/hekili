@@ -618,7 +618,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
     end )
 
 
-    spec:RegisterTotem( "xuen", 620832 )
+    spec:RegisterPet( "xuen_the_white_tiger", 63508, "invoke_xuen", 24 )
 
 
     -- Abilities
@@ -992,7 +992,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 620832,
 
             handler = function ()
-                summonPet( "xuen", 45 )
+                summonPet( "xuen_the_white_tiger", 24 )
 
                 if legendary.invokers_delight.enabled then
                     if buff.invokers_delight.down then stat.haste = stat.haste + 0.33 end

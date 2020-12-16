@@ -550,6 +550,9 @@ if UnitClassBase( "player" ) == "MONK" then
     } ) )
 
 
+    spec:RegisterTotem( "black_ox_statue", 627607 )
+    spec:RegisterPet( "niuzao_the_black_ox", 73967, "invoke_niuzao", 24 )
+
 
     -- Abilities
     spec:RegisterAbilities( {
@@ -916,7 +919,7 @@ if UnitClassBase( "player" ) == "MONK" then
             texture = 608951,
 
             handler = function ()
-                summonPet( "niuzao", 45 )
+                summonPet( "niuzao_the_black_ox", 24 )
 
                 if legendary.invokers_delight.enabled then
                     if buff.invokers_delight.down then stat.haste = stat.haste + 0.33 end
