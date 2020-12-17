@@ -1329,7 +1329,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = function () return talent.massacre.enabled and 330325 or 317485 end,
             known = 317349,
             cast = 0,
-            cooldown = 6,
+            cooldown = function () return state.spec.fury and ( 4.5 * haste ) or 0 end,
             hasteCD = true,
             gcd = "spell",
 
