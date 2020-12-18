@@ -1393,7 +1393,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         damageDots = false,
         damageExpiration = 8,
 
-        potion = "potion_of_phantom_fire",
+        potion = "spectral_strength",
 
         package = "Arms",
     } )
