@@ -333,7 +333,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             startsCombat = true,
             texture = 135130,
 
-            cycle = function () return runeforge.serpentstalkers_treacher.enabled and "serpent_sting" or nil end,
+            cycle = function () return runeforge.serpentstalkers_trickery.enabled and "serpent_sting" or nil end,
 
             usable = function ()
                 if action.aimed_shot.cast > 0 and moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
