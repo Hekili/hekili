@@ -1096,6 +1096,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             startsCombat = false,
             essential = true,
 
+            nobuff = "earth_shield",
+
             timeToReady = function () return buff.lightning_shield.remains - 120 end,
             handler = function ()
                 removeBuff( "earth_shield" )
