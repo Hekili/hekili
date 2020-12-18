@@ -960,7 +960,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             startsCombat = true,
             texture = 613533,
 
-            usable = function () return target.health_pct < 20 or ( level > 57 and ( buff.avenging_wrath.up or buff.crusade.up ) ) or buff.final_verdict.up or buff.hammer_of_wrath_hallow.up end,
+            usable = function () return target.health_pct < 20 or ( level > 57 and ( buff.avenging_wrath.up or buff.crusade.up ) ) or buff.final_verdict.up or buff.hammer_of_wrath_hallow.up or buff.negative_energy_token.up end,
             handler = function ()
                 removeBuff( "final_verdict" )
 
@@ -979,7 +979,13 @@ if UnitClassBase( "player" ) == "PALADIN" then
                     id = 345046,
                     duration = 8,
                     max_stack = 3
-                }
+                },
+
+                negative_energy_token = {
+                    id = 345693,
+                    duration = 5,
+                    max_stack = 1,
+                },
             }
         },
 
