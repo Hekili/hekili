@@ -1,5 +1,5 @@
 # Enhancement Shaman
-# December 13, 2020
+# December 17, 2020
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -49,7 +49,7 @@ actions.aoe+=/chain_harvest,if=buff.maelstrom_weapon.stack>=5
 actions.aoe+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5
 actions.aoe+=/stormkeeper,if=buff.maelstrom_weapon.stack>=5
 actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack=10
-actions.aoe+=/flame_shock,cycle_targets=1,if=talent.fire_nova.enabled
+actions.aoe+=/flame_shock,cycle_targets=1,if=talent.fire_nova.enabled&refreshable
 actions.aoe+=/sundering
 actions.aoe+=/lava_lash,cycle_targets=1,if=runeforge.primal_lava_actuators.equipped&buff.primal_lava_actuators.stack>6
 actions.aoe+=/windstrike
