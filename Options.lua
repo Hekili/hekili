@@ -3678,7 +3678,7 @@ do
         local useName = class.abilityList[ v ] and class.abilityList[v]:match("|t (.+)$") or ability.name
 
         if not useName then
-            Hekili:Error( "No name available for %s (id:%d) in EmbedAbilityOptions.", ability.key or "no_id", ability.id or 0 )
+            Hekili:Error( "No name available for %s (id:%d) in EmbedAbilityOption.", ability.key or "no_id", ability.id or 0 )
             useName = ability.key or ability.id or "???"
         end
 
@@ -3922,7 +3922,7 @@ do
         local ability = class.abilities[ item ]
         local toggles = {}
 
-        local k = class.itemList[ ability.item ]
+        local k = class.itemList[ ability.item ] or ability.name
         local v = ability.itemKey or ability.key
 
         if not item or not ability.item or not k then
@@ -4040,8 +4040,9 @@ do
         local toggles = {}
 
         for k, v in pairs( class.abilities ) do
-            if v.item and not abilities[ v.itemKey or v.key ] and class.itemList[ v.item ] then
-                abilities[ class.itemList[ v.item ] ] = v.itemKey or v.key
+            if v.item and not abilities[ v.itemKey or v.key ] then
+                local name = class.itemList[ v.item ] or v.name
+                if name then abilities[ name ] = v.itemKey or v.key end
             end
         end
 
