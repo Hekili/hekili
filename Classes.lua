@@ -658,6 +658,12 @@ local HekiliSpecMixin = {
             end
         end
 
+        if data.items then
+            for _, itemID in ipairs( data.items ) do
+                class.itemMap[ itemID ] = ability
+            end
+        end        
+
         if a.castableWhileCasting or a.funcs.castableWhileCasting then
             self.canCastWhileCasting = true
             self.castableWhileCasting[ a.key ] = true
@@ -3982,7 +3988,7 @@ do
             end            
             return m
         end,
-        
+        items = { 162897, 161674, 165220, 165055, 167525, 167525, 167377, 172666, 184058, 184055, 184052, 181333 },
         toggle = "cooldowns",
 
         handler = function ()
@@ -4035,6 +4041,7 @@ do
             end
             return b
         end,
+        items = { 162966, 161902, 165223, 165058, 167528, 167528, 167380, 172849, 172669, 175884, 175921 },
             
         toggle = "cooldowns",
 
@@ -4105,7 +4112,7 @@ do
             end
             return e
         end,
-
+        items = { 161812, 162898, 161675, 165221, 165056, 167378, 167526, 172667, 172847, 178334, 178447 },
         toggle = "cooldowns",
 
         handler = function ()
@@ -4392,6 +4399,7 @@ all:RegisterAbility( "ancient_knot_of_wisdom", {
         if equipped[161417] then return 161417 end
         return 166793
     end,
+    items = { 167417, 166793 },
     toggle = "cooldowns",
 
     handler = function ()

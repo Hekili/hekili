@@ -616,6 +616,7 @@ do
                 if equipped[ 177657 ] then return 177657 end
                 return 181359
             end,
+            items = { 177657, 181359 },
             toggle = "cooldowns",
 
             handler = function ()
@@ -923,10 +924,7 @@ do
             cooldown = 120,
             gcd = "off",
 
-            item = function ()
-                if equipped[ 181457 ] then return 181457 end
-                return 183850
-            end,
+            item = 181457,
             toggle = "cooldowns",
 
             handler = function ()
@@ -939,7 +937,7 @@ do
                     duration = 12,
                     max_stack = 1
                 }
-            }
+            },
         },
     } )
 end
