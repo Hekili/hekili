@@ -46,7 +46,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
         mighty_bash = 21778, -- 5211
         mass_entanglement = 18576, -- 102359
-        typhoon = 18577, -- 132469
+        heart_of_the_wild = 18577, -- 319454
 
         soul_of_the_forest = 21708, -- 158476
         savage_roar = 18579, -- 52610
@@ -73,7 +73,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         ferocious_wound = 611, -- 236020
         freedom_of_the_herd = 203, -- 213200
         fresh_wound = 612, -- 203224
-        heart_of_the_wild = 3053, -- 236019
+        strength_of_the_wild = 3053, -- 236019
         king_of_the_jungle = 602, -- 203052
         leader_of_the_pack = 3751, -- 202626
         malornes_swiftness = 601, -- 236012
@@ -1083,8 +1083,6 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = 0,
             gcd = "spell",
 
-            pvptalent = "cyclone",
-
             spend = 0.1,
             spendType = "mana",
 
@@ -1121,7 +1119,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = 3,
             gcd = "spell",
 
-            pvptalent = "heart_of_the_wild",
+            pvptalent = "strength_of_the_wild",
             form = "bear_form",
 
             spend = 40,
@@ -1162,6 +1160,16 @@ if UnitClassBase( "player" ) == "DRUID" then
             cast = 0,
             cooldown = 45,
             gcd = "spell",
+            
+            damage = function ()
+                return calculate_damage( 0.075 * 5, true, true ) 
+            end,
+            tick_damage = function ()
+                return calculate_damage( 0.15 * 5, true ) 
+            end,
+            tick_dmg = function ()
+                return calculate_damage( 0.15 * 5, true ) 
+            end,
 
             spend = 25,
             spendType = "energy",
@@ -1299,6 +1307,8 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             startsCombat = true,
             texture = 135879,
+            
+            talent = "heart_of_the_wild",
 
             handler = function ()
                 applyBuff( "heart_of_the_wild" )
