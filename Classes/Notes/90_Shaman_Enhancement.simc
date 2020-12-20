@@ -1,5 +1,5 @@
 # Enhancement Shaman
-# December 17, 2020
+# December 19, 2020
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -21,8 +21,9 @@ actions+=/fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.as
 actions+=/ancestral_call,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/bag_of_tricks,if=!talent.ascendance.enabled|!buff.ascendance.up
 actions+=/feral_spirit
-actions+=/ascendance
-actions+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down|buff.windfury_totem.down
+actions+=/fae_transfusion,if=(talent.ascendance.enabled|runeforge.doom_winds.equipped)&(soulbind.grove_invigoration|soulbind.field_of_blossoms|active_enemies=1)
+actions+=/ascendance,if=raid_event.adds.in>=90|active_enemies>1
+actions+=/windfury_totem,if=runeforge.doom_winds.equipped&buff.doom_winds_debuff.down&(raid_event.adds.in>=60|active_enemies>1)|buff.windfury_totem.down
 # If only one enemy, priority follows the 'single' action list.
 actions+=/call_action_list,name=single,if=active_enemies=1
 # On multiple enemies, the priority follows the 'aoe' action list.
@@ -35,6 +36,7 @@ actions+=/primal_strike
 actions.aoe=windstrike,if=buff.crash_lightning.up
 actions.aoe+=/fae_transfusion,if=soulbind.grove_invigoration|soulbind.field_of_blossoms
 actions.aoe+=/frost_shock,if=buff.hailstorm.up
+actions.aoe+=/sundering
 actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&(talent.fire_nova.enabled|talent.lashing_flames.enabled|covenant.necrolord)
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/fire_nova,if=active_dot.flame_shock>=3
@@ -50,8 +52,8 @@ actions.aoe+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5
 actions.aoe+=/stormkeeper,if=buff.maelstrom_weapon.stack>=5
 actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack=10
 actions.aoe+=/flame_shock,cycle_targets=1,if=talent.fire_nova.enabled&refreshable
-actions.aoe+=/sundering
 actions.aoe+=/lava_lash,cycle_targets=1,if=runeforge.primal_lava_actuators.equipped&buff.primal_lava_actuators.stack>6
+actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack>=5&active_enemies>=3
 actions.aoe+=/windstrike
 actions.aoe+=/stormstrike
 actions.aoe+=/lava_lash
@@ -88,7 +90,7 @@ actions.single+=/crash_lightning
 actions.single+=/flame_shock,cycle_targets=1,if=refreshable
 actions.single+=/frost_shock
 actions.single+=/ice_strike
-actions.single+=/sundering
+actions.single+=/sundering,if=raid_event.adds.in>=40
 actions.single+=/fire_nova,if=active_dot.flame_shock
 actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack>=5
 actions.single+=/earth_elemental
