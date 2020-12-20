@@ -1,5 +1,7 @@
 # Windwalker Monk
-# December 17, 2020
+# December 18, 2020
+
+# Tweak Fists of Fury interrupt logic.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=potion
@@ -48,16 +50,6 @@ actions.cd_sef+=/fallen_order,if=raid_event.adds.in>30|raid_event.adds.up
 actions.cd_sef+=/bonedust_brew,if=raid_event.adds.in>50|raid_event.adds.up,line_cd=60
 actions.cd_sef+=/storm_earth_and_fire,if=cooldown.storm_earth_and_fire.charges=2|fight_remains<20|(raid_event.adds.remains>15|!covenant.kyrian&((raid_event.adds.in>cooldown.storm_earth_and_fire.full_recharge_time|!raid_event.adds.exists)&(cooldown.invoke_xuen_the_white_tiger.remains>cooldown.storm_earth_and_fire.full_recharge_time|variable.hold_xuen))&cooldown.fists_of_fury.remains<=9&chi>=2&cooldown.whirling_dragon_punch.remains<=12)
 actions.cd_sef+=/storm_earth_and_fire,if=covenant.kyrian&(buff.weapons_of_order.up|(fight_remains<cooldown.weapons_of_order.remains|cooldown.weapons_of_order.remains>cooldown.storm_earth_and_fire.full_recharge_time)&cooldown.fists_of_fury.remains<=9&chi>=2&cooldown.whirling_dragon_punch.remains<=12)
-actions.cd_sef+=/blood_of_the_enemy,if=cooldown.fists_of_fury.remains<2|fight_remains<12
-actions.cd_sef+=/guardian_of_azeroth
-actions.cd_sef+=/worldvein_resonance
-actions.cd_sef+=/concentrated_flame,if=!dot.concentrated_flame_burn.remains&((!talent.whirling_dragon_punch.enabled|cooldown.whirling_dragon_punch.remains)&cooldown.rising_sun_kick.remains&cooldown.fists_of_fury.remains&buff.storm_earth_and_fire.down)|fight_remains<8
-actions.cd_sef+=/the_unbound_force
-actions.cd_sef+=/purifying_blast
-actions.cd_sef+=/reaping_flames,if=target.time_to_pct_20>30|target.health.pct<=20
-actions.cd_sef+=/focused_azerite_beam
-actions.cd_sef+=/memory_of_lucid_dreams,if=energy<40
-actions.cd_sef+=/ripple_in_space
 actions.cd_sef+=/storm_earth_and_fire,if=cooldown.storm_earth_and_fire.charges=2|fight_remains<20|buff.seething_rage.up|(cooldown.blood_of_the_enemy.remains+1>cooldown.storm_earth_and_fire.full_recharge_time|!essence.blood_of_the_enemy.major)&cooldown.fists_of_fury.remains<10&chi>=2&cooldown.whirling_dragon_punch.remains<12
 actions.cd_sef+=/use_item,name=ashvanes_razor_coral
 actions.cd_sef+=/use_items
@@ -73,18 +65,6 @@ actions.cd_serenity=variable,name=serenity_burst,op=set,value=cooldown.serenity.
 actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen|fight_remains<25
 actions.cd_serenity+=/use_item,name=ashvanes_razor_coral
 actions.cd_serenity+=/use_items
-actions.cd_serenity+=/blood_fury,if=variable.serenity_burst
-actions.cd_serenity+=/berserking,if=variable.serenity_burst
-actions.cd_serenity+=/guardian_of_azeroth,if=fight_remains>185|variable.serenity_burst|fight_remains<35
-actions.cd_serenity+=/worldvein_resonance,if=variable.serenity_burst
-actions.cd_serenity+=/blood_of_the_enemy,if=variable.serenity_burst
-actions.cd_serenity+=/concentrated_flame,if=(cooldown.serenity.remains|cooldown.concentrated_flame.charges=2)&!dot.concentrated_flame_burn.remains&(cooldown.rising_sun_kick.remains&cooldown.fists_of_fury.remains|fight_remains<8)
-actions.cd_serenity+=/the_unbound_force
-actions.cd_serenity+=/purifying_blast
-actions.cd_serenity+=/reaping_flames,if=target.time_to_pct_20>30|target.health.pct<=20|target.time_to_die<2
-actions.cd_serenity+=/focused_azerite_beam
-actions.cd_serenity+=/memory_of_lucid_dreams,if=energy<40
-actions.cd_serenity+=/ripple_in_space
 actions.cd_serenity+=/arcane_torrent,if=chi.max-chi>=1
 actions.cd_serenity+=/lights_judgment
 actions.cd_serenity+=/fireblood,if=variable.serenity_burst
@@ -114,7 +94,7 @@ actions.serenity+=/rising_sun_kick,cycle_targets=1,if=combo_strike
 actions.serenity+=/fists_of_fury,if=active_enemies>=3
 actions.serenity+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chiji.up
 actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike&buff.weapons_of_order_ww.up&cooldown.rising_sun_kick.remains>2
-actions.serenity+=/fists_of_fury,interrupt_if=!cooldown.rising_sun_kick.up
+actions.serenity+=/fists_of_fury,interrupt_if=buff.serenity.up&cooldown.rising_sun_kick.ready
 actions.serenity+=/spinning_crane_kick,if=combo_strike&debuff.bonedust_brew.up
 actions.serenity+=/fist_of_the_white_tiger,cycle_targets=1,if=chi<3
 actions.serenity+=/blackout_kick,cycle_targets=1,if=combo_strike|!talent.hit_combo
