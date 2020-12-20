@@ -811,7 +811,9 @@ do
                     duration = 20,
                     max_stack = 1,
                 }
-            }
+            },
+
+            copy = "soul_infusion"
         },
 
         spare_meat_hook = {
