@@ -1,5 +1,5 @@
 # Arms Warrior
-# December 12, 2020
+# December 19, 2020
 
 # Changes:
 # - Added Pummel.
@@ -95,7 +95,7 @@ actions.single_target+=/overpower
 actions.single_target+=/condemn,if=buff.sudden_death.react
 actions.single_target+=/execute,if=buff.sudden_death.react
 actions.single_target+=/mortal_strike
-actions.single_target+=/whirlwind,if=talent.fervor_of_battle.enabled&rage>60
-actions.single_target+=/slam
+actions.single_target+=/whirlwind,if=talent.fervor_of_battle.enabled
+actions.single_target+=/slam,if=!talent.fervor_of_battle.enabled
 actions.single_target+=/victory_rush
 actions.single_target+=/impending_victory
