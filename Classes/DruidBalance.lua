@@ -877,7 +877,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         elseif buff.moonkin_form.up then state:RunHandler( "starfall" )
         elseif buff.bear_form.up then state:RunHandler( "barkskin" )
         elseif buff.cat_form.up then state:RunHandler( "primal_wrath" )
-        else state:RunHandle( "wild_growth" ) end
+        else state:RunHandler( "wild_growth" ) end
     end, state )
 
     spec:RegisterHook( "reset_precast", function ()
