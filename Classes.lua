@@ -499,12 +499,15 @@ local HekiliSpecMixin = {
 
                         if a.itemSpellName == a.name then                    
                             a.itemSpellKey = a.key .. "_" .. a.itemSpellID
+                            self.abilities[ a.itemSpellKey ] = a
+
                         elseif a.itemSpellName then
                             local itemAura = self.auras[ a.itemSpellName ]
 
                             if itemAura then
                                 a.itemSpellKey = itemAura.key .. "_" .. a.itemSpellID
                                 self.abilities[ a.itemSpellKey ] = a
+                                
                             else
                                 if self.pendingItemSpells[ a.itemSpellName ] then
                                     if type( self.pendingItemSpells[ a.itemSpellName ] ) == 'table' then
