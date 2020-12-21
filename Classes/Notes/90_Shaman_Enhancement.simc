@@ -1,5 +1,5 @@
 # Enhancement Shaman
-# December 19, 2020
+# December 20, 2020
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -35,6 +35,7 @@ actions+=/primal_strike
 # Multi target action priority list
 actions.aoe=windstrike,if=buff.crash_lightning.up
 actions.aoe+=/fae_transfusion,if=soulbind.grove_invigoration|soulbind.field_of_blossoms
+actions.aoe+=/crash_lightning,if=runeforge.doom_winds.equipped&buff.doom_winds.up
 actions.aoe+=/frost_shock,if=buff.hailstorm.up
 actions.aoe+=/sundering
 actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&(talent.fire_nova.enabled|talent.lashing_flames.enabled|covenant.necrolord)
