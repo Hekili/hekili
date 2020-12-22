@@ -1,12 +1,12 @@
 # Demonology Warlock
 # https://github.com/simulationcraft/simc/
-# December 9, 2020
+# December 22, 2020
 
 # Changes:
 # - Spell Lock.
 # - Only recommend Demonbolt pre-combat if it is instant (or hardcast for bosses).
 # - Power Siphon allowed pre-combat to proc instant Demonbolt.
-# - Revise Implosion based on Wowhead guide.
+# - Revise Implosion for legendary.
 # - PvP talent interrupt.
 
 # Executed before combat begins. Accepts non-harmful actions only.
@@ -29,8 +29,8 @@ actions+=/call_dreadstalkers
 actions+=/doom,if=refreshable
 actions+=/demonic_strength
 actions+=/bilescourge_bombers
-actions+=/implosion,if=active_enemies>1&!talent.sacrificed_souls.enabled&buff.wild_imps.stack>=settings.implosion_imps&buff.tyrant.down&cooldown.summon_demonic_tyrant.remains>5
-actions+=/implosion,if=active_enemies>2&buff.wild_imps.stack>=settings.implosion_imps&buff.tyrant.down
+actions+=/implosion,if=active_enemies>1&!talent.sacrificed_souls.enabled&buff.wild_imps.stack>=settings.implosion_imps&buff.tyrant.down&cooldown.summon_demonic_tyrant.remains>5&(buff.implosive_potential.down|!runeforge.implosive_potential.enabled)
+actions+=/implosion,if=active_enemies>2&buff.wild_imps.stack>=settings.implosion_imps&buff.tyrant.down&(buff.implosive_potential.down|!runeforge.implosive_potential.enabled)
 actions+=/hand_of_guldan,if=soul_shard=5|buff.nether_portal.up
 actions+=/hand_of_guldan,if=soul_shard>=3&cooldown.summon_demonic_tyrant.remains>20&(cooldown.summon_vilefiend.remains>5|!talent.summon_vilefiend.enabled)&cooldown.call_dreadstalkers.remains>2
 actions+=/call_action_list,name=covenant,strict=1,if=(covenant.necrolord|covenant.night_fae)&!talent.nether_portal.enabled
