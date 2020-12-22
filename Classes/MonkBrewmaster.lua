@@ -1076,7 +1076,7 @@ if UnitClassBase( "player" ) == "MONK" then
         purifying_brew = {
             id = 119582,
             cast = 0,
-            charges = 2,
+            charges = function () return level > 46 and 2 or 1 end,
             cooldown = function () return ( 15 - ( talent.light_brewing.enabled and 3 or 0 ) ) * haste end,
             recharge = function () return ( 15 - ( talent.light_brewing.enabled and 3 or 0 ) ) * haste end,
             gcd = "off",
