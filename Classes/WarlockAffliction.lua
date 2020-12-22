@@ -1777,6 +1777,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
                     id = 322170,
                     duration = function () return 12 * ( 1 + conduit.catastrophic_origin.mod * 0.01 ) end,
                     max_stack = 1,
+                    copy = "impending_catastrophe_dot"
                 },
             }
         },
