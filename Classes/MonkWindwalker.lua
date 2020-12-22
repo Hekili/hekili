@@ -557,6 +557,8 @@ if UnitClassBase( 'player' ) == 'MONK' then
     end )
 
 
+    local noop = function () end
+
     local reverse_harm_target
 
     spec:RegisterHook( "reset_precast", function ()
@@ -574,6 +576,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
         reverse_harm_target = nil
 
         if not IsUsableSpell( 322109 ) then setCooldown( "touch_of_death", action.touch_of_death.cooldown ) end
+
+        if buff.weapons_of_order_ww.up then
+            state:QueueAuraExpiration( "weapons_of_order_ww", noop, buff.weapons_of_order_ww.expires )
+        end
     end )
 
 
@@ -612,7 +618,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     spec:RegisterStateFunction( "weapons_of_order", function( c )
         if c and c > 0 then
-            return buff.weapons_of_order_buff.up and ( c - 1 ) or c
+            return buff.weapons_of_order_ww.up and ( c - 1 ) or c
         end
         return c
     end )
@@ -1194,7 +1200,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
                 if azerite.sunrise_technique.enabled then applyDebuff( "target", "sunrise_technique" ) end
 
-                if buff.weapons_of_order.up then applyBuff( "weapons_of_order_buff" ) end
+                if buff.weapons_of_order.up then
+                    applyBuff( "weapons_of_order_ww" )
+                    state:QueueAuraExpiration( "weapons_of_order_ww", noop, buff.weapons_of_order_ww.expires )
+                end
             end,
         },
 
