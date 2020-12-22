@@ -397,6 +397,9 @@ do
     local soulbindEvents = {
         "SOULBIND_ACTIVATED",
         "SOULBIND_CONDUIT_CHARGES_UPDATED",
+        "SOULBIND_CONDUIT_COLLECTION_CLEARED",
+        "SOULBIND_CONDUIT_COLLECTION_REMOVED",
+        "SOULBIND_CONDUIT_COLLECTION_UPDATED",
         "SOULBIND_CONDUIT_INSTALLED",
         "SOULBIND_CONDUIT_UNINSTALLED",
         "SOULBIND_FORGE_INTERACTION_STARTED",
@@ -406,7 +409,8 @@ do
         "SOULBIND_NODE_UPDATED",
         "SOULBIND_PATH_CHANGED",
         "SOULBIND_PENDING_CONDUIT_CHANGED",
-        "PLAYER_ENTERING_WORLD"
+        "PLAYER_ENTERING_WORLD",
+        "PLAYER_TALENT_UPDATE"
     }
 
     local GetActiveSoulbindID, GetSoulbindData, GetConduitSpellID = C_Soulbinds.GetActiveSoulbindID, C_Soulbinds.GetSoulbindData, C_Soulbinds.GetConduitSpellID
@@ -430,62 +434,47 @@ do
         if not souldata then return end
 
         for i, node in ipairs( souldata.tree.nodes ) do
-            if node.conduitID and node.conduitRank then
-                if node.state == Enum.SoulbindNodeState.Selected then
-                    if node.conduitID > 0 then
-                        local spellID = GetConduitSpellID( node.conduitID, node.conduitRank )
+            if node.state == Enum.SoulbindNodeState.Selected then
+                if node.conduitID > 0 then
+                    local spellID = GetConduitSpellID( node.conduitID, node.conduitRank )
 
-                        if conduits[ spellID ] then
-                            found = true
+                    if conduits[ spellID ] then
+                        found = true
 
-                            local data = conduits[ spellID ]
-                            local key = data[ 1 ]
+                        local data = conduits[ spellID ]
+                        local key = data[ 1 ]
 
-                            local conduit = rawget( state.conduit, key ) or {
-                                rank = 0,
-                                mod = 0
-                            }
+                        local conduit = rawget( state.conduit, key ) or {
+                            rank = 0,
+                            mod = 0
+                        }
 
-                            conduit.rank = node.conduitRank
-                            conduit.mod = data[ 2 ][ node.conduitRank ]
+                        conduit.rank = node.conduitRank
+                        conduit.mod = data[ 2 ][ node.conduitRank ]
 
-                            state.conduit[ key ] = conduit
-                        end
-                    elseif node.spellID > 0 then
-                        if soulbinds[ node.spellID ] then
-                            local key = soulbinds[ node.spellID ]
+                        state.conduit[ key ] = conduit
+                    end
+                elseif node.spellID > 0 then
+                    if soulbinds[ node.spellID ] then
+                        found = true
 
-                            local soulbind = rawget( state.soulbind, key ) or {}
-                            soulbind.rank = 1
+                        local key = soulbinds[ node.spellID ]
 
-                            state.soulbind[ key ] = soulbind
-                        end
+                        local soulbind = rawget( state.soulbind, key ) or {}
+                        soulbind.rank = 1
+
+                        state.soulbind[ key ] = soulbind
                     end
                 end
             end
         end
 
-        return found
-    end
-
-
-    local tries = 30
-    function ns.StartConduits()
-        if not ns.updateConduits() then
-            tries = tries - 1
-            
-            if tries > 0 then
-                C_Timer.After( 1, ns.StartConduits )
-            end
-
-            return
+        if not found then
+            C_Timer.After( 2, ns.updateConduits )
         end
-
-        tries = 0
     end
 
-    ns.StartConduits()
-
+    ns.updateConduits()
 
     for i, event in pairs( soulbindEvents ) do
         RegisterEvent( event, ns.updateConduits )
