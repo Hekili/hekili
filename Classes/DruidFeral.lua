@@ -101,6 +101,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         local tick_time = t.tick_time / haste
         local ttd = min( fight_remains, target.time_to_die )
 
+
         local aura = action
         if action == "primal_wrath" then aura = "rip" end
     
@@ -126,6 +127,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             local fresh = max( 0, active_enemies - active_dot.rip )
             local dotted = max( 0, active_enemies - fresh )
 
+            print( action, tick_time, duration, fresh, app_ticks, dotted, potential_ticks - remaining_ticks )
             return fresh * app_ticks + dotted * ( potential_ticks - remaining_ticks )
         end
             
@@ -1592,7 +1594,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             texture = 1392547,
 
             apply_duration = function () 
-                return 2 + 2 * combo_points.current
+                return mod_circle_dot( 2 + 2 * combo_points.current )
             end,
 
             usable = function () return combo_points.current > 0, "no combo points" end,
@@ -1847,7 +1849,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             form = "cat_form",
 
             apply_duration = function ()
-                return 4 + 4 * combo_points.current
+                return mod_circle_dot( 4 + 4 * combo_points.current )
             end,
 
             usable = function ()
