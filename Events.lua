@@ -1736,27 +1736,27 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
 
                     if start then
                         state:QueueEvent( ability.key, start / 1000, finish / 1000, "CAST_FINISH", destGUID, true )
-                    end
-
-                    if ability.isProjectile then
-                        local travel
-
-                        if ability.flightTime then
-                            travel = ability.flightTime
                         
-                        elseif destGUID then
-                            local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
+                        if ability.isProjectile then
+                            local travel
 
-                            if unit then
-                                local _, maxR = RC:GetRange( unit )
-                                maxR = maxR or state.target.distance
-                                travel = maxR / ability.velocity
+                            if ability.flightTime then
+                                travel = ability.flightTime
+                            
+                            elseif destGUID then
+                                local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
+
+                                if unit then
+                                    local _, maxR = RC:GetRange( unit )
+                                    maxR = maxR or state.target.distance
+                                    travel = maxR / ability.velocity
+                                end
                             end
+
+                            if not travel then travel = state.target.distance / ability.velocity end
+
+                            state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", destGUID, true )
                         end
-
-                        if not travel then travel = state.target.distance / ability.velocity end
-
-                        state:QueueEvent( ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", destGUID, true )
                     end
 
                 elseif subtype == "SPELL_CAST_FAILED" then
