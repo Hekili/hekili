@@ -127,7 +127,6 @@ if UnitClassBase( "player" ) == "DRUID" then
             local fresh = max( 0, active_enemies - active_dot.rip )
             local dotted = max( 0, active_enemies - fresh )
 
-            print( action, tick_time, duration, fresh, app_ticks, dotted, potential_ticks - remaining_ticks )
             return fresh * app_ticks + dotted * ( potential_ticks - remaining_ticks )
         end
             
