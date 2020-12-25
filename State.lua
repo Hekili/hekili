@@ -2771,10 +2771,8 @@ local mt_default_cooldown = {
             if not ability.charges then return t.duration or 0 end
             return t.recharge
 
-        elseif k == 'up' or k == 'ready' then
-            -- This cooldown_ready flag
-            if ability.cooldown_ready ~= nil then return ability.cooldown_ready end
-            return t.remains == 0
+        elseif k == "up" or k == "ready" then
+            return ( ability.cooldown_ready == nil or ability.cooldown_ready ) and t.remains == 0
 
         -- Hunters
         elseif k == 'remains_guess' then
