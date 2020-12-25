@@ -498,8 +498,11 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     spec:RegisterHook( "spend", function( amt, resource )
         if resource == "arcane_charges" then
-            if arcane_charges.current == 0 then removeBuff( "arcane_charge" )
-            else applyBuff( "arcane_charge", nil, arcane_charges.current ) end
+            if arcane_charges.current == 0 then
+                removeBuff( "arcane_charge" )
+            else
+                applyBuff( "arcane_charge", nil, arcane_charges.current )
+            end
 
         elseif resource == "mana" then
             if azerite.equipoise.enabled and mana.percent < 70 then
@@ -510,7 +513,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
     spec:RegisterHook( "gain", function( amt, resource )
         if resource == "arcane_charges" then
-            if arcane_charges.current == 0 then removeBuff( "arcane_charge" )
+            if arcane_charges.current == 0 then
+                removeBuff( "arcane_charge" )
             else
                 if talent.rule_of_threes.enabled and arcane_charges.current >= 3 and arcane_charges.current - amt < 3 then
                     applyBuff( "rule_of_threes" )
@@ -745,11 +749,18 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
 
     spec:RegisterVariable( "have_opened", function ()
-        if active_enemies > 2 or variable.prepull_evo == 1 or settings.am_spam then return 1 end
-        if state.combat > 0 and action.evocation.lastCast - state.combat > -5 then return 1 end
+        if active_enemies > 2 or variable.prepull_evo == 1 or settings.am_spam == 1 then
+            return 1
+        end
+        if state.combat > 0 and action.evocation.lastCast - state.combat > -5 then
+            return 1
+        end
         -- TODO:  Review this to make sure it holds up in longer fights.
-        if action.evocation.lastCast >= state.combat and not ( runeforge.siphon_storm or runeforge.temporal_warp ) then return 1 end
-        if buff.arcane_power.down and ( action.arcane_power.lastCast >= state.combat or cooldown.arcane_power.remains > 0 ) and ( runeforge.siphon_storm or runeforge.temporal_warp ) then return 1 end
+        if state.combat > 0 and action.evocation.lastCast >= state.combat and not ( runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
+            return 1
+        end
+        if buff.arcane_power.down and ( action.arcane_power.lastCast >= state.combat or cooldown.arcane_power.remains > 0 ) and ( runeforge.siphon_storm.enabled or runeforge.temporal_warp.enabled ) then
+            return 1 end
         return 0
     end )
 
@@ -871,7 +882,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 end
                 removeBuff( "rule_of_threes" )
                 removeStack( "nether_precision" )
-                if arcane_charges.current < arcane_charges.max then gain( 1, "arcane_charges" ) end
+                gain( 1, "arcane_charges" )
             end,
         },
 
@@ -1809,7 +1820,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             Hekili.DB.profile.specs[ 62 ].settings.am_spam = val and 1 or 0
         end,
         order = 2,
-    })
+    } )
 
     
     --[[ spec:RegisterSetting( "conserve_mana", 75, { -- NYI
