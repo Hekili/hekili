@@ -1,5 +1,5 @@
 # Windwalker Monk
-# December 22, 2020
+# December 25, 2020
 
 # Tweak Fists of Fury interrupt logic.
 
@@ -62,7 +62,6 @@ actions.cd_sef+=/bag_of_tricks,if=buff.storm_earth_and_fire.down
 
 actions.cd_serenity=variable,name=serenity_burst,op=set,value=cooldown.serenity.remains<1|pet.xuen_the_white_tiger.active&cooldown.serenity.remains>30|fight_remains<20
 actions.cd_serenity+=/invoke_xuen_the_white_tiger,if=!variable.hold_xuen|fight_remains<25
-actions.cd_serenity+=/use_item,name=ashvanes_razor_coral
 actions.cd_serenity+=/use_items
 actions.cd_serenity+=/arcane_torrent,if=chi.max-chi>=1
 actions.cd_serenity+=/lights_judgment
@@ -86,8 +85,7 @@ actions.opener+=/expel_harm
 actions.opener+=/tiger_palm,cycle_targets=1,if=chi.max-chi>=2
 
 actions.serenity=fists_of_fury,if=buff.serenity.remains<1
-actions.serenity+=/use_item,name=inscrutable_quantum_device
-actions.serenity+=/use_item,name=dreadfire_vessel
+actions.serenity+=/use_items
 actions.serenity+=/spinning_crane_kick,if=combo_strike&(active_enemies>=3|active_enemies>1&!cooldown.rising_sun_kick.up)
 actions.serenity+=/rising_sun_kick,cycle_targets=1,if=combo_strike
 actions.serenity+=/fists_of_fury,if=active_enemies>=3
