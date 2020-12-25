@@ -815,13 +815,19 @@ do
         if Hekili.freshFrame and not Hekili.Pause then
             local spec = Hekili.DB.profile.specs[ state.spec.id ]
             local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or ( 1 / 20 )
-            local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
 
             if self.refreshTimer < 0 or ( self.superUpdate and ( self.id == "Primary" or self.id == "AOE" ) ) or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
                 Hekili:ProcessHooks( self.id )
                 self.lastUpdate = now
                 self.criticalUpdate = false
                 self.superUpdate = false
+
+                local refreshRate = max( throttle, state.combat == 0 and oocRefresh or icRefresh[ self.id ] )
+
+                if UnitChannelInfo( "player" ) then
+                    refreshRate = refreshRate * 2
+                end
+    
                 self.refreshTimer = refreshRate
 
                 table.wipe( self.eventsTriggered )
