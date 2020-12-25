@@ -492,6 +492,27 @@ do
             }
         },
 
+        instructors_divine_bell = {
+            cast = 0,
+            cooldown = 90,
+            gcd = "off",
+
+            item = 184842,
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff( "instructors_divine_bell" )
+            end,
+
+            auras = {
+                instructors_divine_bell = {
+                    id = 348139,
+                    duration = 9,
+                    max_stack = 1
+                }
+            }
+        },
+
         macabre_sheet_music = {
             cast = 0,
             cooldown = 90,
