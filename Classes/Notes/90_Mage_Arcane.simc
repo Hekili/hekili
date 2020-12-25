@@ -1,5 +1,5 @@
 # Mage Arcane
-# December 8, 2020
+# December 25, 2020
 
 # Remove variable.am_spam in favor of settings.am_spam (check your spec options).
 # Updated internal handling of variable.have_opened to be 1 when settings.am_spam = 1.
@@ -9,9 +9,9 @@
 actions.precombat=variable,name=prepull_evo,op=reset,default=0
 actions.precombat+=/variable,name=prepull_evo,op=set,value=1,if=variable.prepull_evo=0&runeforge.siphon_storm&active_enemies>2
 actions.precombat+=/variable,name=prepull_evo,op=set,value=1,if=variable.prepull_evo=0&runeforge.siphon_storm&covenant.necrolord&active_enemies>1
-actions.precombat+=/variable,name=have_opened,op=set,value=0
-actions.precombat+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&active_enemies>2
-actions.precombat+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&variable.prepull_evo=1
+# actions.precombat+=/variable,name=have_opened,op=set,value=0
+# actions.precombat+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&active_enemies>2
+# actions.precombat+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&variable.prepull_evo=1
 actions.precombat+=/variable,name=final_burn,op=set,value=0
 actions.precombat+=/variable,name=rs_max_delay_for_totm,op=reset,default=5
 actions.precombat+=/variable,name=rs_max_delay_for_rop,op=reset,default=5
@@ -37,15 +37,11 @@ actions.precombat+=/variable,name=inverted_opener,op=set,value=1,if=variable.inv
 actions.precombat+=/variable,name=inverted_opener,op=set,value=0,if=variable.inverted_opener=0
 actions.precombat+=/variable,name=ap_on_use,op=set,value=equipped.macabre_sheet_music|equipped.gladiators_badge|equipped.gladiators_medallion|equipped.darkmoon_deck_putrescence|equipped.inscrutable_quantum_device|equipped.soulletting_ruby|equipped.sunblood_amethyst|equipped.wakeners_frond|equipped.flame_of_battle
 actions.precombat+=/variable,name=aoe_totm_max_charges,op=reset,default=2
-actions.precombat+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&settings.am_spam=1
+# actions.precombat+=/variable,name=have_opened,op=set,value=1,if=variable.have_opened=0&settings.am_spam=1
 actions.precombat+=/variable,name=evo_pct,op=reset,default=15
-actions.precombat+=/flask
-actions.precombat+=/food
-actions.precombat+=/augmentation
 actions.precombat+=/arcane_familiar
 actions.precombat+=/arcane_intellect
 actions.precombat+=/conjure_mana_gem
-actions.precombat+=/snapshot_stats
 actions.precombat+=/mirror_image
 actions.precombat+=/frostbolt,if=!variable.prepull_evo=1&runeforge.disciplinary_command
 actions.precombat+=/arcane_blast,if=!variable.prepull_evo=1&!runeforge.disciplinary_command
@@ -158,7 +154,7 @@ actions.opener+=/fire_blast,if=runeforge.disciplinary_command&buff.disciplinary_
 actions.opener+=/frost_nova,if=runeforge.grisly_icicle&mana.pct>95
 actions.opener+=/deathborne,if=!runeforge.siphon_storm
 actions.opener+=/radiant_spark,if=mana.pct>40
-actions.opener+=/shifting_power,if=buff.arcane_power.down&cooldown.arcane_power.remains&!variable.inverted_opener=1
+actions.opener+=/shifting_power,if=buff.arcane_power.down&cooldown.arcane_power.remains&variable.inverted_opener!=1
 actions.opener+=/arcane_orb,if=variable.inverted_opener=1&cooldown.rune_of_power.remains=0
 actions.opener+=/arcane_blast,if=variable.inverted_opener=1&cooldown.rune_of_power.remains=0&buff.arcane_charge.stack<buff.arcane_charge.max_stack
 actions.opener+=/rune_of_power,if=variable.inverted_opener=1&buff.rune_of_power.down
@@ -223,8 +219,8 @@ actions.shared_cds+=/ancestral_call,if=buff.arcane_power.up
 actions.shared_cds+=/use_items,if=buff.arcane_power.up
 actions.shared_cds+=/use_item,effect_name=gladiators_badge,if=buff.arcane_power.up|cooldown.arcane_power.remains>=55&debuff.touch_of_the_magi.up
 actions.shared_cds+=/use_item,name=empyreal_ordnance,if=cooldown.arcane_power.remains<=20
-actions.shared_cds+=/use_item,name=dreadfire_vessel,if=cooldown.arcane_power.remains>=20|!variable.ap_on_use=1|(time=0&variable.inverted_opener=1&runeforge.siphon_storm)
-actions.shared_cds+=/use_item,name=soul_igniter,if=cooldown.arcane_power.remains>=20|!variable.ap_on_use=1|(time=0&variable.inverted_opener=1&runeforge.siphon_storm)
-actions.shared_cds+=/use_item,name=glyph_of_assimilation,if=cooldown.arcane_power.remains>=20|!variable.ap_on_use=1|(time=0&variable.inverted_opener=1&runeforge.siphon_storm)
-actions.shared_cds+=/use_item,name=macabre_sheet_music,if=cooldown.arcane_power.remains<=5&(!variable.inverted_opener=1|time>30)
+actions.shared_cds+=/use_item,name=dreadfire_vessel,if=cooldown.arcane_power.remains>=20|variable.ap_on_use!=1|(time=0&variable.inverted_opener=1&runeforge.siphon_storm)
+actions.shared_cds+=/use_item,name=soul_igniter,if=cooldown.arcane_power.remains>=20|variable.ap_on_use!=1|(time=0&variable.inverted_opener=1&runeforge.siphon_storm)
+actions.shared_cds+=/use_item,name=glyph_of_assimilation,if=cooldown.arcane_power.remains>=20|variable.ap_on_use!=1|(time=0&variable.inverted_opener=1&runeforge.siphon_storm)
+actions.shared_cds+=/use_item,name=macabre_sheet_music,if=cooldown.arcane_power.remains<=5&(variable.inverted_opener!=1|time>30)
 actions.shared_cds+=/use_item,name=macabre_sheet_music,if=cooldown.arcane_power.remains<=5&variable.inverted_opener=1&buff.rune_of_power.up&buff.rune_of_power.remains<=(10-5*runeforge.siphon_storm)&time<30
