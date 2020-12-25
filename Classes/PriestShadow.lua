@@ -193,7 +193,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 if k == "down" then
                     return state.cooldown[ fiend ].down
                 end
-                
+
                 return state.pet[ fiend ][ k ]
             end
         }
@@ -201,7 +201,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         state.summonPet( "fiend" )
         setmetatable( state.pet.fiend, mt_shadowpriest_pet )
     end
-        
+
 
 
 
@@ -297,12 +297,12 @@ if UnitClassBase( "player" ) == "PRIEST" then
         end
 
         if settings.pad_void_bolt and cooldown.void_bolt.remains > 0 then
-            reduceCooldown( "void_bolt", latency * 2 )            
+            reduceCooldown( "void_bolt", latency * 2 )
         end
 
         if settings.pad_ascended_blast and cooldown.ascended_blast.remains > 0 then
             reduceCooldown( "ascended_blast", latency * 2 )
-        end        
+        end
     end )
 
 
@@ -959,7 +959,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             channeled = true,
             breakable = true,
-            
+
             breakchannel = function ()
                 removeDebuff( "target", "mind_flay" )
             end,
@@ -1445,9 +1445,9 @@ if UnitClassBase( "player" ) == "PRIEST" then
             buff = function () return buff.dissonant_echoes.up and "dissonant_echoes" or "voidform" end,
             bind = "void_eruption",
 
-            --[[ cooldown_ready = function ()
-                return cooldown.void_bolt.remains == 0 and ( buff.dissonant_echoes.up or buff.voidform.up )
-            end, ]]
+            cooldown_ready = function ()
+                return buff.dissonant_echoes.up or buff.voidform.up
+            end,
 
             handler = function ()
                 removeBuff( "dissonant_echoes" )
@@ -1459,7 +1459,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 removeBuff( "anunds_last_breath" )
             end,
 
-            impact = function ()                
+            impact = function ()
                 if talent.hungering_void.enabled then
                     if debuff.hungering_void.up then buff.voidform.expires = buff.voidform.expires + 1 end
                     applyDebuff( "target", "hungering_void", 6 )
@@ -1532,7 +1532,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
             start = function ()
                 applyDebuff( "target", "void_torrent" )
-                applyDebuff( "target", "devouring_plague" )                
+                applyDebuff( "target", "devouring_plague" )
                 if debuff.vampiric_touch.up then applyDebuff( "target", "vampiric_touch" ) end -- This should refresh/pandemic properly.
                 if debuff.shadow_word_pain.up then applyDebuff( "target", "shadow_word_pain" ) end -- This should refresh/pandemic properly.
             end,
