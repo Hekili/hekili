@@ -1,5 +1,5 @@
 # Protection Paladin
-# December 6, 2020
+# December 25, 2020
 
 # Changes
 # - Added Rebuke.
@@ -46,13 +46,11 @@ actions.standard+=/divine_toll
 actions.standard+=/blessed_hammer,strikes=2.4,if=charges=3
 actions.standard+=/ashen_hallow
 actions.standard+=/hammer_of_the_righteous,if=charges=2
-actions.standard+=/word_of_glory,if=buff.vanquishers_hammer.up
 actions.standard+=/blessed_hammer,strikes=2.4
 actions.standard+=/hammer_of_the_righteous
 actions.standard+=/lights_judgment
 actions.standard+=/arcane_torrent
 actions.standard+=/consecration
-actions.standard+=/word_of_glory,if=buff.shining_light_free.up&!covenant.necrolord
 
 actions.cooldowns=fireblood,if=buff.avenging_wrath.up
 actions.cooldowns+=/seraphim
@@ -69,7 +67,8 @@ actions.cooldowns+=/use_item,name=merekthas_fang,if=!buff.avenging_wrath.up&(buf
 actions.cooldowns+=/use_item,name=razdunks_big_red_button
 
 actions.mitigation=shield_of_the_righteous,if=buff.shield_of_the_righteous.down&(holy_power.deficit=0|buff.divine_purpose.up)
-actions.mitigation+=/word_of_glory,if=buff.shining_light_full.up&buff.shining_light_full.remains<gcd*2
+actions.mitigation+=/word_of_glory,if=buff.vanquishers_hammer.up
+actions.mitigation+=/word_of_glory,if=buff.shining_light_full.up&buff.shining_light_full.remains<gcd*2&health.pct<80&!covenant.necrolord
 actions.mitigation+=/word_of_glory,if=(health.pct<40)
 actions.mitigation+=/word_of_glory,if=(incoming_damage_10000ms<health.max*1.25)&health.pct<55&talent.righteous_protector.enabled
 actions.mitigation+=/word_of_glory,if=(incoming_damage_13000ms<health.max*1.6)&health.pct<55
