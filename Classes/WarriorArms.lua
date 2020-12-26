@@ -618,7 +618,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             id = 262228,
             cast = 0,
             cooldown = 60,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
 
