@@ -1363,6 +1363,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
             startsCombat = true,
             texture = 254090,
 
+            usable = function () return target.time_to_die < settings.stm_timer, format( "time_to_die %.2f > %.2f", target.time_to_die, settings.stm_timer ) end,
             handler = function ()
                 applyBuff( "voidform" )
                 applyBuff( "surrender_to_madness" )
