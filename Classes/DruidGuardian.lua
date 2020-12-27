@@ -592,6 +592,7 @@ if UnitClassBase( "player" ) == "DRUID" then
                 return talent.feral_affinity.enabled and settings.catweave_bear
             elseif k == "owlweave_bear" then
                 return talent.balance_affinity.enabled and settings.owlweave_bear
+            elseif k == "no_cds" then return not toggle.cooldowns
             elseif k == "primal_wrath" then return debuff.rip
             elseif k == "lunar_inspiration" then return debuff.moonfire_cat
             elseif debuff[ k ] ~= nil then return debuff[ k ]
