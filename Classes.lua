@@ -2040,6 +2040,15 @@ all:RegisterAbilities( {
         end,
     },
 
+    will_to_survive = {
+        id = 59752,
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        toggle = "defensives",        
+    },
+
     shadowmeld = {
         id = 58984,
         cast = 0,
