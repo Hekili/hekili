@@ -1,5 +1,5 @@
 # Shadow Priest
-# December 17, 2020
+# December 27, 2020
 
 # Tweak Void Torrent when target counts are forced.
 
@@ -35,7 +35,7 @@ actions.boon+=/ascended_nova,if=target.within8&spell_targets.ascended_nova>1&spe
 # Use Power Infusion with Voidform. Hold for Voidform comes off cooldown in the next 10 seconds otherwise use on cd unless the Pelagos Trait Combat Meditation is talented, or if there will not be another Void Eruption this fight.
 actions.cds=power_infusion,if=buff.voidform.up|!soulbind.combat_meditation.enabled&cooldown.void_eruption.remains>=10|fight_remains<cooldown.void_eruption.remains
 # Use Silence on CD to proc Sephuz's Proclamation.
-actions.cds+=/silence,if=runeforge.sephuzs_proclamation.equipped
+actions.cds+=/silence,target_if=runeforge.sephuzs_proclamation.equipped&(target.is_add|target.debuff.casting.react)
 # Use Badge inside of VF for the first use or on CD after the first use. With Night Fae hold for VF.
 actions.cds+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=buff.voidform.up|time>10&(!covenant.night_fae)
 # Use Fae Guardians on CD outside of Voidform. Use Fae Guardiands in Voidform if you have either Grove Invigoration or Field of Blossoms.
