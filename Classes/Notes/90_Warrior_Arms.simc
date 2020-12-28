@@ -1,5 +1,5 @@
 # Arms Warrior
-# December 19, 2020
+# December 28, 2020
 
 # Changes:
 # - Added Pummel.
@@ -12,8 +12,6 @@
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/battle_shout
 actions.precombat+=/use_item,name=azsharas_font_of_power
-actions.precombat+=/memory_of_lucid_dreams,if=talent.fervor_of_battle.enabled|!talent.fervor_of_battle.enabled&time_to_die>150
-actions.precombat+=/guardian_of_azeroth,if=talent.fervor_of_battle.enabled|talent.massacre.enabled&time_to_die>210|talent.rend.enabled&(time_to_die>210|time_to_die<145)
 
 # Executed every time the actor is available.
 actions=charge
@@ -30,9 +28,11 @@ actions+=/use_item,name=inscrutable_quantum_device
 actions+=/use_item,name=dreadfire_vessel
 actions+=/use_items
 actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.remains>15|talent.ravager.enabled)
-actions+=/run_action_list,name=hac,if=raid_event.adds.exists
-actions+=/run_action_list,name=execute,if=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20|(target.health.pct>80&covenant.venthyr)
-actions+=/run_action_list,name=single_target
+actions+=/call_action_list,name=execute,strict=1,if=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20|(target.health.pct>80&covenant.venthyr)
+actions+=/call_action_list,name=hac,strict=1,if=spell_targets.whirlwind>1
+actions+=/call_action_list,name=single_target
+actions+=/victory_rush
+actions+=/impending_victory
 
 actions.execute=deadly_calm
 actions.execute+=/rend,if=remains<=duration*0.3
@@ -53,8 +53,6 @@ actions.execute+=/skullsplitter,if=rage<40
 actions.execute+=/overpower
 actions.execute+=/condemn
 actions.execute+=/execute
-actions.execute+=/victory_rush
-actions.execute+=/impending_victory
 
 actions.hac=skullsplitter,if=rage<60&buff.deadly_calm.down
 actions.hac+=/conquerors_banner
@@ -74,8 +72,6 @@ actions.hac+=/condemn
 actions.hac+=/execute,if=buff.sweeping_strikes.up
 actions.hac+=/overpower
 actions.hac+=/whirlwind
-actions.hac+=/victory_rush
-actions.hac+=/impending_victory
 
 actions.single_target=conquerors_banner,if=(fight_remains>180|(target.health.pct<20|talent.massacre.enabled&target.health.pct<35))
 actions.single_target+=/avatar,if=cooldown.colossus_smash.remains<8&gcd.remains=0
@@ -97,5 +93,3 @@ actions.single_target+=/execute,if=buff.sudden_death.react
 actions.single_target+=/mortal_strike
 actions.single_target+=/whirlwind,if=talent.fervor_of_battle.enabled
 actions.single_target+=/slam,if=!talent.fervor_of_battle.enabled
-actions.single_target+=/victory_rush
-actions.single_target+=/impending_victory
