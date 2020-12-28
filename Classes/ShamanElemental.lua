@@ -1139,6 +1139,8 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 removeBuff( "echoing_shock" )
                 applyDebuff( "target", "lightning_lasso" )
             end,
+
+            copy = 305485
         },
 
         lightning_shield = {
