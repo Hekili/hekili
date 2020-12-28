@@ -354,17 +354,30 @@ if UnitClassBase( "player" ) == "ROGUE" then
     end )
 
 
+    local stealth = {
+        rogue   = { "stealth", "vanish", "shadow_dance", "subterfuge" },
+        mantle  = { "stealth", "vanish" },
+        sepsis  = { "sepsis_buff" },
+        all     = { "stealth", "vanish", "shadow_dance", "subterfuge", "shadowmeld", "sepsis_buff" }
+    }
+
+
     spec:RegisterStateTable( "stealthed", setmetatable( {}, {
         __index = function( t, k )
             if k == "rogue" then
-                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.sepsis_buff.up
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
             elseif k == "rogue_remains" then
-                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.sepsis_buff.remains )
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains )
 
             elseif k == "mantle" then
                 return buff.stealth.up or buff.vanish.up
             elseif k == "mantle_remains" then
                 return max( buff.stealth.remains, buff.vanish.remains )
+            
+            elseif k == "sepsis" then
+                return buff.sepsis_buff.up
+            elseif k == "sepsis_remains" then
+                return buff.sepsis_buff.remains
             
             elseif k == "all" then
                 return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up or buff.sepsis_buff.up
@@ -533,6 +546,17 @@ if UnitClassBase( "player" ) == "ROGUE" then
         end
     end )
 
+    
+    local ExpireSepsis = setfenv( function ()
+        applyBuff( "sepsis_buff" )
+    end, state )
+
+    spec:RegisterHook( "reset_precast", function( amt, resource )
+        if debuff.sepsis.up then
+            state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
+        end
+    end )    
+
 
     spec:RegisterGear( "insignia_of_ravenholdt", 137049 )
     spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
@@ -681,8 +705,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
             usable = function ()
                 if boss then return false, "cheap_shot assumed unusable in boss fights" end
-                return stealthed.all or buff.subterfuge.up, "not stealthed"
+                return stealthed.all, "not stealthed"
             end,
+
+            nodebuff = "cheap_shot",
 
             handler = function ()
                 removeBuff( "cold_blood" )

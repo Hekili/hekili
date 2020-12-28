@@ -408,23 +408,29 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
 
     local stealth = {
-        rogue   = { "stealth", "vanish", "shadow_dance" },
+        rogue   = { "stealth", "vanish", "shadow_dance", "subterfuge" },
         mantle  = { "stealth", "vanish" },
-        all     = { "stealth", "vanish", "shadow_dance", "shadowmeld" }
+        sepsis  = { "sepsis_buff" },
+        all     = { "stealth", "vanish", "shadow_dance", "subterfuge", "shadowmeld", "sepsis_buff" }
     }
 
 
     spec:RegisterStateTable( "stealthed", setmetatable( {}, {
         __index = function( t, k )
             if k == "rogue" then
-                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.sepsis_buff.up
+                return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up
             elseif k == "rogue_remains" then
-                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains, buff.sepsis_buff.remains )
+                return max( buff.stealth.remains, buff.vanish.remains, buff.shadow_dance.remains, buff.subterfuge.remains )
 
             elseif k == "mantle" then
                 return buff.stealth.up or buff.vanish.up
             elseif k == "mantle_remains" then
                 return max( buff.stealth.remains, buff.vanish.remains )
+            
+            elseif k == "sepsis" then
+                return buff.sepsis_buff.up
+            elseif k == "sepsis_remains" then
+                return buff.sepsis_buff.remains
             
             elseif k == "all" then
                 return buff.stealth.up or buff.vanish.up or buff.shadow_dance.up or buff.subterfuge.up or buff.shadowmeld.up or buff.sepsis_buff.up
@@ -480,11 +486,20 @@ if UnitClassBase( "player" ) == "ROGUE" then
             reduceCooldown( "blade_rush", cdr )
             reduceCooldown( "killing_spree", cdr )
             reduceCooldown( "vanish", cdr )
+            reduceCooldown( "marked_for_death", cdr )
         end
     end )
 
+
+    local ExpireSepsis = setfenv( function ()
+        applyBuff( "sepsis_buff" )
+    end, state )
+
     spec:RegisterHook( "reset_precast", function( amt, resource )
         if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
+        if debuff.sepsis.up then
+            state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
+        end
     end )
 
     spec:RegisterCycle( function ()
@@ -564,15 +579,13 @@ if UnitClassBase( "player" ) == "ROGUE" then
             usable = function() return combo_points.current > 0 end,
 
             handler = function ()
-                if talent.prey_on_the_weak.enabled then
-                    applyDebuff( "target", "prey_on_the_weak", 6 )
-                end
+                local use_combo = combo_points.current == animacharged_cp and 7 or combo_points.current
 
-                if talent.alacrity.enabled and combo_points.current > 4 then
+                if talent.alacrity.enabled and use_combo > 4 then
                     addStack( "alacrity", 20, 1 )
                 end
 
-                applyDebuff( "target", "between_the_eyes", combo_points.current ) 
+                applyDebuff( "target", "between_the_eyes", 3 * use_combo )
 
                 if azerite.deadshot.enabled then
                     applyBuff( "deadshot" )
@@ -580,7 +593,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
 
-                if legendary.greenskins_wickers.enabled and ( combo_points.current >= 5 or combo_points == animacharged_cp ) then
+                if legendary.greenskins_wickers.enabled and use_combo >= 5 then
                     applyBuff( "greenskins_wickers" )
                 end
 
@@ -655,9 +668,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
             end,
 
             usable = function ()
-                if boss then return false, "cheap_shot assumed unusable in boss fights" end
+                if target.is_boss then return false, "cheap_shot assumed unusable in boss fights" end
                 return stealthed.all or buff.subterfuge.up, "not stealthed"
             end,
+
+            nodebuff = "cheap_shot",
 
             handler = function ()
                 applyDebuff( "target", "cheap_shot", 4 )

@@ -429,6 +429,7 @@ do
 
         { "^!?stealthed.all$",                      "stealthed.remains" },
         { "^!?stealthed.mantle$",                   "stealthed.mantle_remains" },
+        { "^!?stealthed.sepsis$",                   "stealthed.sepsis_remains" },
         { "^!?stealthed.rogue$",                    "stealthed.rogue_remains" },
 
         { "^!?time_to_hpg$",                        "time_to_hpg" }, -- Retribution Paladin
