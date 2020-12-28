@@ -6275,7 +6275,7 @@ do
                 return false, "item not equipped"
             end
         else
-            local cfg = self.settings.spec and self.settings.spec.abilities[ spell ]
+            local cfg = self.settings.spec and self.settings.spec.abilities[ ability.key ]
 
             if cfg then
                 if cfg.targetMin > 0 and self.active_enemies < cfg.targetMin then
