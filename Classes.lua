@@ -1179,12 +1179,6 @@ all:RegisterAuras( {
                     t.v3 = true -- channeled.
                     t.caster = unit
 
-                    if unit == "player" then
-                        local castInfo = class.abilities[ spellID ]
-                        local key = castInfo and castInfo.key or formatKey( spell )
-                        channelSpell( key, startCast, t.duration, nil, t.v1 )
-                    end
-
                     return
                 end
             end
