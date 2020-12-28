@@ -1226,7 +1226,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
             cost = function () return max( 1, class.abilities.ferocious_bite.spend ) end,
 
-            usable = function () return buff.apex_predator.up or combo_points.current > 0 end,
+            usable = function () return buff.apex_predator.up or buff.apex_predators_craving.up or combo_points.current > 0 end,
             handler = function ()
                 if talent.sabertooth.enabled and debuff.rip.up then
                     debuff.rip.expires = debuff.rip.expires + ( 4 * combo_points.current )
