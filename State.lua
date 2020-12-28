@@ -798,7 +798,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
 
         b.duration = duration
 
-        b.expires = b.applied + duration
+        b.expires = b.applied + min( b.remains, 0.3 * ( class.auras[ aura ].duration or 15 ) ) + duration
         b.last_expiry = b.expires
 
         b.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
@@ -940,7 +940,7 @@ local function applyDebuff( unit, aura, duration, stacks, value )
         end
 
         -- state.debuff[ aura ] = state.debuff[ aura ] or {}
-        d.expires = state.query_time + duration
+        d.expires = state.query_time + min( d.remains, 0.3 * ( class.auras[ aura ].duration or 15 ) ) + duration
 
         d.lastCount = d.count or 0
         d.lastApplied = d.applied or 0
