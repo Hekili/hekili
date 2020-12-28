@@ -1,13 +1,13 @@
 # Outlaw Rogue
-# December 25, 2020
+# December 28, 2020
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
 actions.precombat+=/bottled_flayedwing_toxin
-actions.precombat+=/marked_for_death,precombat_seconds=5,if=raid_event.adds.in>25
-actions.precombat+=/roll_the_bones,precombat_seconds=2,if=remains<3&rtb_buffs<2
-actions.precombat+=/slice_and_dice,precombat_seconds=2,if=refreshable
 actions.precombat+=/stealth
+actions.precombat+=/marked_for_death,precombat_seconds=5,if=raid_event.adds.in>25
+actions.precombat+=/roll_the_bones,precombat_seconds=2,if=remains<3
+actions.precombat+=/slice_and_dice,precombat_seconds=2,if=refreshable
 
 # Executed every time the actor is available.
 actions=kick

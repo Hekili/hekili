@@ -912,6 +912,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 132282,
             
             usable = function () return stealthed.all or buff.blindside.up or buff.sepsis_buff.up, "requires stealth or blindside or sepsis proc" end,
+            
             handler = function ()                
                 gain( 2, "combo_points" )
                 if buff.sepsis_buff.up then removeBuff( "sepsis_buff" )
@@ -964,7 +965,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 applyDebuff( "target", "cheap_shot" )
                 gain( 2, "combo_points" )
 
-                removeBuff( "sepsis_buff" )
+                if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
 
                 if talent.prey_on_the_weak.enabled then applyDebuff( "target", "prey_on_the_weak" ) end
             end,
@@ -1466,7 +1467,6 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             usable = function () return stealthed.all or buff.sepsis_buff.up, "requires stealth" end,
             handler = function ()
                 applyDebuff( "target", "sap" )
-
                 removeBuff( "sepsis_buff" )
             end,
         },

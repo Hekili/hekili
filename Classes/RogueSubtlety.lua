@@ -726,6 +726,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 applyDebuff( "target", "cheap_shot" )
                 removeBuff( "shot_in_the_dark" )
 
+                if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
+
                 gain( 2 + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
                 removeBuff( "symbols_of_death_crit" )
             end,
