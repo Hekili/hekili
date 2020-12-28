@@ -2539,7 +2539,7 @@ elseif select( 2, UnitClass( "player" ) ) == "ROGUE" then
 
         local output, source
 
-        if state.stealthed.all then
+        if state.stealthed.rogue then
             for _, i in ipairs( stealthedOrder ) do
                 output = db[ i ]
 
