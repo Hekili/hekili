@@ -442,9 +442,20 @@ function Hekili:CheckChannel( ability, prio )
         return false
     end
 
-    local channel = state.channel
-    
+    local channel = state.buff.casting.up and state.buff.casting.v3 and state.buff.casting.v1 or nil
+
+    if not channel then
+        if self.ActiveDebug then self:Debug( "CC: We are not channeling per buff.casting.v3; CheckChannel is false." ) end
+        return false
+    end
+
     local a = class.abilities[ channel ]
+
+    if not a then
+        if self.ActiveDebug then self:Debug( "CC: We don't recognize the channeled spell; CheckChannel is false." ) end
+        return false
+    end
+
     local aura = class.auras[ a.aura or channel ]
 
     if not a.break_any and not a.tick_time and ( not aura or not aura.tick_time ) then
