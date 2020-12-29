@@ -5749,7 +5749,7 @@ function state.reset( dispName )
         elseif not state:IsChanneling() and channeled then
             state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CHANNEL_FINISH", destGUID )
 
-            if channeled then
+            if channeled and ability then
                 local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
 
                 if tick_time and tick_time > 0 then
