@@ -1,5 +1,5 @@
 # Affliction Warlock
-# December 8, 2020
+# December 30, 2020
 
 # Changes:
 # - Added Spell Lock.
@@ -44,7 +44,8 @@ actions+=/malefic_rapture,if=soul_shard>4
 actions+=/call_action_list,name=darkglare_prep,if=(covenant.venthyr&(cooldown.impending_catastrophe.ready|dot.impending_catastrophe_dot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled))|((covenant.necrolord|covenant.kyrian|covenant.none)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled))|(covenant.night_fae&(cooldown.soul_rot.ready|dot.soul_rot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled))
 actions+=/dark_soul,if=cooldown.summon_darkglare.remains>time_to_die
 actions+=/call_action_list,name=item
-actions+=/call_action_list,name=se,strict=1,if=debuff.shadow_embrace.stack<(2-action.shadow_bolt.in_flight)|debuff.shadow_embrace.remains<3
+actions+=/call_action_list,name=se,if=debuff.shadow_embrace.stack<(2-action.shadow_bolt.in_flight)|debuff.shadow_embrace.remains<3
+actions+=/malefic_rapture,if=dot.vile_taint.ticking
 actions+=/malefic_rapture,if=dot.impending_catastrophe_dot.ticking
 actions+=/malefic_rapture,if=dot.soul_rot.ticking
 actions+=/malefic_rapture,if=talent.phantom_singularity.enabled&(dot.phantom_singularity.ticking|soul_shard>3|time_to_die<cooldown.phantom_singularity.remains)
@@ -58,7 +59,7 @@ actions+=/unstable_affliction,if=refreshable
 actions+=/siphon_life,if=refreshable
 actions+=/siphon_life,cycle_targets=1,if=(active_enemies>1)&(refreshable)
 actions+=/corruption,cycle_targets=1,if=(active_enemies<4-(talent.sow_the_seeds.enabled|talent.siphon_life.enabled))&(refreshable)
-actions+=/drain_soul,interrupt=1
+actions+=/drain_soul
 actions+=/shadow_bolt
 
 actions.aoe=phantom_singularity
@@ -80,9 +81,9 @@ actions.aoe+=/malefic_rapture,if=dot.soul_rot.ticking&!talent.sow_the_seeds.enab
 actions.aoe+=/malefic_rapture,if=!talent.vile_taint.enabled
 actions.aoe+=/malefic_rapture,if=soul_shard>4
 actions.aoe+=/siphon_life,cycle_targets=1,if=active_dot.siphon_life<=3&refreshable&!dot.siphon_life.ticking
-actions.aoe+=/call_action_list,name=covenant
+actions.aoe+=/call_action_list,name=covenant,strict=1,if=covenant.necrolord
 actions.aoe+=/drain_life,if=buff.inevitable_demise.stack>=50|buff.inevitable_demise.up&time_to_die<5|buff.inevitable_demise.stack>=35&dot.soul_rot.ticking
-actions.aoe+=/drain_soul,interrupt=1
+actions.aoe+=/drain_soul
 actions.aoe+=/shadow_bolt
 
 actions.covenant=impending_catastrophe,if=cooldown.summon_darkglare.remains<10|cooldown.summon_darkglare.remains>50
@@ -96,7 +97,7 @@ actions.darkglare_prep+=/potion
 actions.darkglare_prep+=/fireblood
 actions.darkglare_prep+=/blood_fury
 actions.darkglare_prep+=/berserking
-actions.darkglare_prep+=/call_action_list,name=covenant,strict=1,if=!covenant.necrolord&cooldown.summon_darkglare.remains<2
+actions.darkglare_prep+=/call_action_list,name=covenant,if=!covenant.necrolord&cooldown.summon_darkglare.remains<2
 actions.darkglare_prep+=/summon_darkglare
 
 actions.item=use_items

@@ -507,10 +507,10 @@ function Hekili:CheckChannel( ability, prio )
         -- If interrupt_global is flagged, we interrupt for any potential cast.  Don't bother with additional testing.
         -- REVISIT THIS:  Interrupt Global allows entries from any action list rather than just the current (sub) list.
         -- That means interrupt / interrupt_if should narrow their scope to the current APL (at some point, anyway).
-        if modifiers.interrupt_global and modifiers.interrupt_global() then
+        --[[ if modifiers.interrupt_global and modifiers.interrupt_global() then
             if self.ActiveDebug then self:Debug( "CC:  Interrupt Global is true." ) end
             return true
-        end
+        end ]]
 
         local act = state.this_action
         state.this_action = channel
@@ -1510,7 +1510,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 if channeling and ( shouldBreak or shouldCheck ) and event.type == "CHANNEL_TICK" then
 
                     local eventAbility = class.abilities[ event.action ]
-                    if eventAbility and not eventAbility.funcs.tick then
+                    if eventAbility and not eventAbility.tick then
                         -- The ability doesn't actually do anything at any tick times, so let's use the time of the next non-channel tick event instead.
                         for i = 1, #events do
                             local e = events[ i ]

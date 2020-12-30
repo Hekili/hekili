@@ -779,7 +779,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         b.lastApplied = b.applied
         b.last_application = b.applied or 0
 
-        b.v1 = 0
+        b.v1 = value or 0
         b.v2 = nil
         b.v3 = nil
         b.applied = 0
@@ -798,7 +798,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
 
         b.duration = duration
 
-        b.expires = b.applied + min( b.remains, 0.3 * ( class.auras[ aura ].duration or 15 ) ) + duration
+        b.expires = b.applied + duration
         b.last_expiry = b.expires
 
         b.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
@@ -893,7 +893,7 @@ state.removeDebuffStack = removeDebuffStack
 
 -- Add a debuff to the simulated game state.
 -- Needs to actually use "unit" !
-local function applyDebuff( unit, aura, duration, stacks, value )
+local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
     if not aura then aura = unit; unit = "target" end
 
     if not class.auras[ aura ] then
@@ -940,7 +940,7 @@ local function applyDebuff( unit, aura, duration, stacks, value )
         end
 
         -- state.debuff[ aura ] = state.debuff[ aura ] or {}
-        d.expires = state.query_time + min( d.remains, 0.3 * ( class.auras[ aura ].duration or 15 ) ) + duration
+        d.expires = state.query_time + ( noPandemic and 0 or min( d.remains, 0.3 * ( class.auras[ aura ].duration or 15 ) ) ) + duration
 
         d.lastCount = d.count or 0
         d.lastApplied = d.applied or 0
@@ -5344,10 +5344,10 @@ do
                     if spell and spell.id then
                         self.buff.casting.v1 = spell.id
                         self.buff.casting.v3 = entry.type == "CHANNEL_FINISH"
-
-                        self.channelSpell( entry.action, entry.start or self.now, entry.time - ( entry.start or self.now ), spell.id )
                     end
                 end
+
+                return
             end
         end
     end
