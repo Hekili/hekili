@@ -459,7 +459,12 @@ function Hekili:CheckChannel( ability, prio )
     channel = a.key
     local aura = class.auras[ a.aura or channel ]
 
-    if not a.break_any and not a.tick_time and ( not aura or not aura.tick_time ) then
+    if a.break_any then
+        if self.ActiveDebug then self:Debug( "CC: %s.break_any is true; break it.", channel ) end
+        return true
+    end
+    
+    if not a.tick_time and ( not aura or not aura.tick_time ) then
         if self.ActiveDebug then self:Debug( "CC: No aura / no aura.tick_time to forecast channel breaktimes; don't break it." ) end
         return false
     end
