@@ -5481,6 +5481,8 @@ function state.reset( dispName )
 
     state.haste = nil
 
+    ns.callHook( "reset_preauras" )
+
     if state.target.updated then
         ScrapeUnitAuras( "target" )
         state.target.updated = false
