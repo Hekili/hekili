@@ -98,7 +98,7 @@ if UnitClassBase( "player" ) == "DRUID" then
         local remaining_ticks = 0
         local potential_ticks = 0
         local remains = t.remains
-        local tick_time = t.tick_time / haste
+        local tick_time = t.tick_time
         local ttd = min( fight_remains, target.time_to_die )
 
 
