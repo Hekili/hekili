@@ -83,7 +83,6 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         mortal_coil = 19291, -- 6789
         howl_of_terror = 23465, -- 5484
 
-            shadow_embrace = 23139, -- 32388
         dark_caller = 23139, -- 334183
         haunt = 23159, -- 48181
         grimoire_of_sacrifice = 19295, -- 108503
@@ -506,6 +505,13 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
             end
         end
     end ) ]]
+
+
+    spec:RegisterHook( "reset_preauras", function ()
+        if class.abilities.summon_darkglare.realCast and state.now - class.abilities.summon_darkglare.realCast < 20 then
+            target.updated = true
+        end
+    end )
 
 
     spec:RegisterHook( "reset_precast", function ()
