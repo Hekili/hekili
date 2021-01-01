@@ -701,6 +701,10 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 end
             end,
 
+            timeToReady = function ()
+                return max( pet.fire_elemental.remains, pet.storm_elemental.remains, pet.primal_fire_elemental.remains, pet.primal_storm_elemental.remains )
+            end,
+
             auras = {
                 -- Conduit
                 vital_accretion = {
