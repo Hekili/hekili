@@ -1731,7 +1731,7 @@ function Hekili:ProcessHooks( dispName, packName )
                     state:QueueEvent( action, state.query_time + cast, nil, "PROJECTILE_IMPACT", cast_target )
                 end
 
-                if ability.item and not ability.essence then
+                if ability.item and not ( ability.essence or ability.no_icd ) then
                     state.putTrinketsOnCD( ability.cooldown / 6 )
                 end
             end

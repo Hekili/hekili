@@ -789,6 +789,7 @@ do
 
             item = 184019,
             toggle = "cooldowns",
+            no_icd = true,
 
             handler = function ()
                 if debuff.soul_ignition.down then

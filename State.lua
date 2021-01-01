@@ -4926,7 +4926,7 @@ function state.putTrinketsOnCD( val )
     val = val or 10
 
     for i, item in ipairs( state.items ) do
-        if not class.abilities[ item ].essence and state.cooldown[ item ].remains < val then setCooldown( item, val ) end
+        if ( not class.abilities[ item ].essence and not class.abilities[ item ].no_icd ) and state.cooldown[ item ].remains < val then setCooldown( item, val ) end
     end
 end
 
@@ -6489,6 +6489,10 @@ function state:TimeToReady( action, pool )
 
     if state.spec.fire and state.buff.casting.up and ( ability.id > 0 or ability.id < -99 ) and ability.gcd ~= "off" and not ability.castableWhileCasting then
         wait = max( wait, state.buff.casting.remains )
+    end
+
+    if ability.timeToReady then
+        wait = max( wait, ability.timeToReady )
     end
 
     wait = max( wait, self.delayMin )
