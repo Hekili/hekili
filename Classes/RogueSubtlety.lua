@@ -21,21 +21,21 @@ if UnitClassBase( "player" ) == "ROGUE" then
     local spec = Hekili:NewSpecialization( 261 )
 
     spec:RegisterResource( Enum.PowerType.Energy, {
-        --[[ shadow_techniques = {
+        shadow_techniques = {
             last = function () return state.query_time end,
             interval = function () return state.time_to_sht[5] end,
             value = 8,
             stop = function () return state.time_to_sht[5] == 0 or state.time_to_sht[5] == 3600 end,
-        }, ]]
+        },
     } )
 
     spec:RegisterResource( Enum.PowerType.ComboPoints, {
-        --[[ shadow_techniques = {
+        shadow_techniques = {
             last = function () return state.query_time end,
             interval = function () return state.time_to_sht[5] end,
             value = 1,
             stop = function () return state.time_to_sht[5] == 0 or state.time_to_sht[5] == 3600 end,
-        }, ]]
+        },
 
         shuriken_tornado = {
             aura = "shuriken_tornado",
@@ -502,7 +502,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 cooldown.secret_technique.expires = max( 0, cooldown.secret_technique.expires - amt )
             end
 
-            cooldown.shadow_dance.expires = max( 0, cooldown.shadow_dance.remains - ( amt * ( talent.enveloping_shadows.enabled and 1.5 or 1 ) ) )
+            gainChargeTime( "shadow_dance", amt * ( talent.enveloping_shadows.enabled and 1.5 or 1 ) )
         end
     end
 
