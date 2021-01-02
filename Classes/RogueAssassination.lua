@@ -1723,7 +1723,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             cooldown = 45,
             gcd = "spell",
 
-            spend = 30,
+            spend = function () return 10 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.8 or 1 ) end,
             spendType = "energy",
 
             startsCombat = true,
@@ -1733,7 +1733,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             handler = function ()
                 -- Can't predict the Animacharge.
-                gain( buff.broadside.up and 4 or 3, "combo_points" )
+                gain( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + 2, "combo_points" )
             end,
 
             auras = {
