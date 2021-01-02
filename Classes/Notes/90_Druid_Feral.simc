@@ -1,5 +1,5 @@
 # Feral Druid
-# December 28, 2020
+# January 2, 2021
 
 # Feral APL can also be found at https://gist.github.com/Xanzara/6896c8996f5afce5ce115daa3a08daff
 # Change druid.owlweave_cat=1 checks to druid.owlweave_cat.
@@ -34,7 +34,7 @@ actions+=/run_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bl
 actions+=/ferocious_bite,cycle_targets=1,if=buff.apex_predators_craving.up
 actions+=/pool_resource,for_next=1
 actions+=/rake,cycle_targets=1,if=(refreshable|persistent_multiplier>dot.rake.pmultiplier)&druid.rake.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
-actions+=/moonfire_cat,cycle_targets=1,if=refreshable&druid.moonfire.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
+actions+=/moonfire_cat,cycle_targets=1,if=refreshable&druid.moonfire_cat.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
 actions+=/pool_resource,for_next=1
 actions+=/thrash_cat,cycle_targets=1,if=refreshable&druid.thrash_cat.ticks_gained_on_refresh>variable.thrash_ticks&!buff.bs_inc.up
 actions+=/pool_resource,for_next=1
