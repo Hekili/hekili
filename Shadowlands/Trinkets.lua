@@ -784,20 +784,17 @@ do
 
         soul_igniter = {
             cast = 0,
-            cooldown = function () return debuff.soul_ignition.down and 0.5 or 60 end,
+            cooldown = 0.5,
             gcd = "off",
 
             item = 184019,
             toggle = "cooldowns",
+
+            nobuff = "soul_ignition",
             no_icd = true,
 
             handler = function ()
-                if debuff.soul_ignition.down then
-                    applyDebuff( "player", "soul_ignition" )
-                else
-                    -- Blazing Surge.
-                    removeDebuff( "soul_ignition" )
-                end
+                applyBuff( "soul_ignition" )
             end,
 
             auras = {
@@ -808,6 +805,23 @@ do
                 }
             }
         },
+
+
+        soul_ignition = {
+            cast = 0,
+            cooldown = 60,
+
+            toggle = "cooldowns",
+
+            buff = "soul_ignition",
+
+            indicator = "cancel",
+
+            handler = function ()
+                removeBuff( "soul_ignition" )
+            end,
+        },
+
 
         soulletting_ruby = {
             cast = 0,
