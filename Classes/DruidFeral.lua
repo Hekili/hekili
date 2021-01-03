@@ -2454,7 +2454,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             bind = "empower_bond",
 
             handler = function ()
-                unshift()
+                if not ( buff.moonkin_form.up or buff.treant_form.up ) then unshift() end
                 -- Let's just assume.
                 applyBuff( "lone_spirit" )
             end,
