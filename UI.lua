@@ -1564,6 +1564,12 @@ do
             end
         end
 
+        if d.forceElvUpdate then
+            local E = _G.ElvUI and ElvUI[1]
+            E:UpdateCooldownOverride( 'global' )
+            d.forceElvUpdate = nil
+        end
+
         -- Performance Information
         -- Time Spent
         d.combatTime = {
@@ -1916,10 +1922,21 @@ do
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
 
-        if _G["ElvUI"] and ( ( id == 1 and conf.elvuiCooldown ) or ( id > 1 and conf.queue.elvuiCooldown ) ) and not b.Cooldown.elvRegistered then
-            local E = unpack( ElvUI )            
-            E:RegisterCooldown( b.Cooldown )
-            b.Cooldown.elvRegistered = true
+        if _G["ElvUI"] and ( ( id == 1 and conf.elvuiCooldown ) or ( id > 1 and conf.queue.elvuiCooldown ) ) then
+            local E = unpack( ElvUI )
+
+            local cd = b.Cooldown.CooldownSettings or {}
+            cd.font = E.Libs.LSM:Fetch( "font", E.db.cooldown.fonts.font )
+            cd.fontSize = E.db.cooldown.fonts.fontSize
+            cd.fontOutline = E.db.cooldown.fonts.fontOutline
+            b.Cooldown.CooldownSettings = cd
+
+            if not b.Cooldown.elvRegistered then
+                E:RegisterCooldown( b.Cooldown )
+                b.Cooldown.elvRegistered = true
+            end
+
+            d.forceElvUpdate = true
         end
 
         -- Backdrop (for borders)
