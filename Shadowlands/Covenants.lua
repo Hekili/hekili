@@ -38,9 +38,23 @@ do
                 end
                 return false
             end
-
+            
             -- Strings.
             local myCovenant = GetActiveCovenantID()
+
+            if k == "none" then
+                -- thanks glue
+                if myCovenant > 0 then return false end
+
+                -- We have to rule out Threads of Fate as well as real Covenants.
+                for i, cov in ipairs( CovenantSignatures ) do
+                    for _, spell in ipairs( cov ) do
+                        if IsSpellKnownOrOverridesKnown( spell ) then return false end
+                    end
+                end
+
+                return true
+            end
 
             if myCovenant > 0 then
                 if k == CovenantKeys[ myCovenant ] then return true end
