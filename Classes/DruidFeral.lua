@@ -2379,7 +2379,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             gcd = "spell",
 
             startsCombat = false,
-            texture = 538771,
+            -- texture = 538771,
 
             form = "cat_form",
 
