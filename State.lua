@@ -607,7 +607,9 @@ function state.gainChargeTime( action, time, debug )
     if cooldown.charge == ability.charges then return end
 
     cooldown.next_charge = cooldown.next_charge - time
-    cooldown.expires = cooldown.expires - time
+    cooldown.recharge_began = cooldown.recharge_began - time
+
+    if cooldown.expires > 0 then cooldown.expires = max( 0, cooldown.expires - time ) end
 
     if cooldown.next_charge <= state.query_time then
         cooldown.charge = min( ability.charges, cooldown.charge + 1 )
@@ -623,7 +625,7 @@ function state.gainChargeTime( action, time, debug )
         else
             cooldown.recharge_began = cooldown.next_charge
             cooldown.next_charge = cooldown.next_charge + ability.recharge
-            cooldown.recharge = cooldown.next_charge - ( state.query_time + time )
+            cooldown.recharge = ability.recharge
         end
     end
 end
@@ -638,7 +640,7 @@ function state.reduceCooldown( action, time )
         return
     end
 
-    cooldown[ action ].expires = cooldown[ action ].expires - time
+    state.cooldown[ action ].expires = max( 0, state.cooldown[ action ].expires - time )
 end
 
 
@@ -2764,7 +2766,7 @@ local mt_default_cooldown = {
                 return t.charge
             end
 
-            return t.remains > 0 and ( t.remains / ability.cooldown ) or 1
+            return t.remains > 0 and ( 1 - ( t.remains / ability.cooldown ) ) or 1
 
         --
         elseif k == "recharge_time" then
