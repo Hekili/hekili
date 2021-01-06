@@ -203,7 +203,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
         },
         shadow_dance = {
             id = 185422,
-            duration = function () return talent.subterfuge.enabled and 6 or 5 end,
+            duration = function () return talent.subterfuge.enabled and 9 or 8 end,
             max_stack = 1,
         },
         shadows_grasp = {
@@ -502,7 +502,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 cooldown.secret_technique.expires = max( 0, cooldown.secret_technique.expires - amt )
             end
 
-            gainChargeTime( "shadow_dance", amt * ( talent.enveloping_shadows.enabled and 1.5 or 1 ) )
+            reduceCooldown( "shadow_dance", amt * ( talent.enveloping_shadows.enabled and 1.5 or 1 ) )
         end
     end
 
@@ -1149,9 +1149,9 @@ if UnitClassBase( "player" ) == "ROGUE" then
         shadow_dance = {
             id = 185313,
             cast = 0,
-            charges = 2,
+            charges = function () return talent.enveloping_shadows.enabled and 2 or nil end,
             cooldown = 60,
-            recharge = 60,
+            recharge = function () return talent.enveloping_shadows.enabled and 60 or nil end,
             gcd = "off",
 
             startsCombat = false,
