@@ -4568,6 +4568,19 @@ do
                                     order = 1,
                                 },
 
+                                nameplatesOption = {
+                                    type = "toggle",
+                                    name = "Cross-Check Aggro Table",
+                                    desc = "If checked, the addon will only count enemies that exist on the tank aggro table. This feature should eliminate  " ..
+                                        "nameplates of other creatures that your character is not in combat with",
+                                    width = "full",
+                                    hidden = function()
+                                        return self.DB.profile.specs[ id ].nameplates == false
+                                    end,
+                                    order = 1.5,
+                                },
+
+
                                 nameplateRange = {
                                     type = "range",
                                     name = "Nameplate Detection Range",

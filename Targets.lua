@@ -298,6 +298,11 @@ do
                         -- Always count your target.
                         if UnitIsUnit( unit, "target" ) then excluded = false end
 
+                        
+                        if spec.nameplatesOption and UnitThreatSituation('player', unit) == nil then
+                            excluded = true
+                        end
+
                         if not excluded then
                             local rate, n = Hekili:GetTTD(unit)
                             Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
