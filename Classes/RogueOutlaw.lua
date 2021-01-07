@@ -312,7 +312,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
         roll_the_bones = {
             alias = rtb_buff_list,
-            aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
+            aliasMode = "longest", -- use duration info from the buff with the longest remaining time.
             aliasType = "buff",
             duration = 30,
         },
