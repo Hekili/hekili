@@ -1248,6 +1248,8 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             startsCombat = true,
             texture = 1100170,
 
+            usable = function () return not pet.alive, "cannot have an active pet" end,
+
             handler = function ()
                 summonPet( "ghoul" )
             end,
