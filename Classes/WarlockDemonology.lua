@@ -1382,6 +1382,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             essential = true,
             nomounted = true,
+            nobuff = "grimoire_of_sacrifice",
 
             handler = function ()
                 applyBuff( "fel_domination" )
