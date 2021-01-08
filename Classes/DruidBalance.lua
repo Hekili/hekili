@@ -334,25 +334,8 @@ if UnitClassBase( "player" ) == "DRUID" then
         },
         starfall = {
             id = 191034,
-            duration = 10,
+            duration = function () return talent.stellar_drift.enabled and 10 or 8 end,
             max_stack = 1,
-
-            generate = function ()
-                local sf = buff.starfall
-
-                if now - action.starfall.lastCast < 8 then
-                    sf.count = 1
-                    sf.applied = action.starfall.lastCast
-                    sf.expires = sf.applied + 8
-                    sf.caster = "player"
-                    return
-                end
-
-                sf.count = 0
-                sf.applied = 0
-                sf.expires = 0
-                sf.caster = "nobody"
-            end
         },
         starlord = {
             id = 279709,
@@ -1862,6 +1845,12 @@ if UnitClassBase( "player" ) == "DRUID" then
                 if talent.starlord.enabled then
                     if buff.starlord.stack < 3 then stat.haste = stat.haste + 0.04 end
                     addStack( "starlord", buff.starlord.remains > 0 and buff.starlord.remains or nil, 1 )
+                end
+
+                applyBuff( "starfall" )
+                if level > 53 then
+                    if debuff.moonfire.up then debuff.moonfire.expires = debuff.moonfire.expires + 4 end
+                    if debuff.sunfire.up then debuff.sunfire.expires = debuff.sunfire.expires + 4 end
                 end
 
                 removeBuff( "oneths_perception" )
