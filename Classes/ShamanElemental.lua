@@ -701,6 +701,10 @@ if UnitClassBase( "player" ) == "SHAMAN" then
                 end
             end,
 
+            usable = function ()
+                return max( cooldown.fire_elemental.true_remains, cooldown.storm_elemental.true_remains ) > 0, "DPS elementals must be on CD first"
+            end,
+
             timeToReady = function ()
                 return max( pet.fire_elemental.remains, pet.storm_elemental.remains, pet.primal_fire_elemental.remains, pet.primal_storm_elemental.remains )
             end,
