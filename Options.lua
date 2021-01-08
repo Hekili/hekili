@@ -10007,14 +10007,17 @@ function Hekili:TogglePause( ... )
         end
 
         self.Pause = true
-        self:SaveDebugSnapshot()
-        self:Print( "Snapshot saved." )
-        self.ActiveDebug = false
-
-        if not warnOnce then
-            Hekili:Print( "Snapshots are viewable via /hekili (until you reload your UI)." )
-            warnOnce = true
+        
+        if self:SaveDebugSnapshot() then
+            if not warnOnce then
+                self:Print( "Snapshot saved; snapshots are viewable via /hekili (until you reload your UI)." )
+                warnOnce = true
+            else
+                self:Print( "Snapshot saved." )
+            end
         end
+        
+        self.ActiveDebug = false
     else
         self.Pause = false
     end

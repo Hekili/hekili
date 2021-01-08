@@ -331,6 +331,8 @@ local snapshots = ns.snapshots
 
 function Hekili:SaveDebugSnapshot( dispName )
 
+    local snapped = false
+
 	for k, v in pairs( debug ) do
 		
 		if dispName == nil or dispName == k then
@@ -343,10 +345,14 @@ function Hekili:SaveDebugSnapshot( dispName )
 			end
 
 			table.insert( v.log, 1, self:GenerateProfile() )
-			table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
+            table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
+            
+            snapped = true
 		end
 
     end
+
+    return snapped
 
 end
 

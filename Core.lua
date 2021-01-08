@@ -1311,7 +1311,7 @@ function Hekili:ProcessHooks( dispName, packName )
     local display = rawget( self.DB.profile.displays, dispName )
 
     local specID = state.spec.id
-    if not specID then return end
+    if not specID or not class.specs[ specID ] then return end
 
     local debug = self.ActiveDebug
 
