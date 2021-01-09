@@ -558,7 +558,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             toggle = "cooldowns",
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 537468,
 
             handler = function ()
@@ -868,7 +868,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             id = 288613,
             cast = 0,
             cooldown = 120,
-            gcd = "spell",
+            gcd = "off",
 
             toggle = "cooldowns",
 
