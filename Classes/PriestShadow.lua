@@ -985,7 +985,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
 
         mind_sear = {
             id = 48045,
-            cast = 3,
+            cast = 4.5,
             cooldown = 0,
             gcd = "spell",
 
