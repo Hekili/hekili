@@ -473,6 +473,7 @@ state.UnitClassification = UnitClassification
 state.UnitDebuff = UnitDebuff
 state.UnitExists = UnitExists
 state.UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
+state.UnitGUID = UnitGUID
 state.UnitHealth = UnitHealth
 state.UnitHealthMax = UnitHealthMax
 state.UnitName = UnitName
