@@ -24,7 +24,7 @@ local FeignEvent = ns.FeignEvent
 
 local insert, remove, wipe = table.insert, table.remove, table.wipe
 
-local unitIDs = { "target", "targettarget", "focus", "focustarget", "boss1", "boss2", "boss3", "boss4", "boss5" }
+local unitIDs = { "target", "targettarget", "focus", "focustarget", "boss1", "boss2", "boss3", "boss4", "boss5", "arena1", "arena2", "arena3", "arena4", "arena5" }
 
 local npGUIDs = {}
 local npUnits = {}
@@ -1034,7 +1034,7 @@ do
         end
     end
 
-    local trackedUnits = {"target", "boss1", "boss2", "boss3", "boss4", "boss5", "focus"}
+    local trackedUnits = {"target", "boss1", "boss2", "boss3", "boss4", "boss5", "focus", "arena1", "arena2", "arena3", "arena4", "arena5" }
     local seen = {}
 
     local UpdateTTDs
