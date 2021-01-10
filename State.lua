@@ -5340,14 +5340,29 @@ do
 
         for i, entry in ipairs( queue ) do
             if cast_events[ entry.type ] and ( action == nil or entry.action == action ) and entry.start <= self.query_time then
-                self.applyBuff( "casting", entry.time - self.query_time )
+                local casting = self.buff.casting
+
+                casting.applied = entry.start
+                
+                if entry.time > entry.start then
+                    casting.expires = entry.time
+                else
+                    casting.expires = entry.start + entry.time
+                end
+
+                casting.duration = casting.expires - casting.applied
+
+                casting.v3 = entry.type == "CHANNEL_FINISH"
 
                 if entry.action then
                     local spell = class.abilities[ entry.action ]
                     if spell and spell.id then
-                        self.buff.casting.v1 = spell.id
-                        self.buff.casting.v3 = entry.type == "CHANNEL_FINISH"
+                        casting.v1 = spell.id
+                    else
+                        casting.v1 = 0
                     end
+                else
+                    casting.v1 = 0
                 end
 
                 return
@@ -6323,7 +6338,7 @@ do
             local c = class.abilities[ ability.channeling ] and class.abilities[ ability.channeling ].id
             
             if not c or state.buff.casting.down or not state.buff.casting.v3 or state.buff.casting.v1 ~= c then
-                return false, "required channel (" .. ability.channeling .. ") not active"
+                return false, "required channel (" .. c .. " / " .. ability.channeling .. ") not active [ " .. state.buff.casting.remains .. " / " .. state.buff.casting.applied .. " / " .. state.buff.casting.expires .. " / " .. state.query_time .. " / " .. tostring( state.buff.casting.v3 ) .. " / " .. state.buff.casting.v1 .. " ]"
             end
         end
 
@@ -6413,7 +6428,8 @@ function state:TimeToReady( action, pool )
     local ability = class.abilities[ action ]
 
     if ability.id < -99 or ability.id > 0 then
-        if not ability.castableWhileCasting and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) or not ability.interrupt ) then
+        -- if not ability.castableWhileCasting and ( ability.gcd ~= "off" or ( ability.item and not ability.essence ) or not ability.interrupt ) then
+        if not ( ability.castableWhileCasting and ability.gcd == "off" ) or ( ability.item and not ability.essence ) or not ability.interrupt then
             wait = max( wait, self.cooldown.global_cooldown.remains )
         end
 
