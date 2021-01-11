@@ -39,6 +39,9 @@ externals:
         url: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
     Libs/AceGUI-3.0-SharedMediaWidgets:
         url: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk/AceGUI-3.0-SharedMediaWidgets
+    Libs/AceGUI-3.0_SFX-Widgets:
+        url: https://github.com/SFX-WoW/AceGUI-3.0_SFX-Widgets.git
+        tag: latest
     Libs/LibSpellRange-1.0:
         url: git://github.com/ascott18/LibSpellRange-1.0.git
     Libs/LibRangeCheck-2.0:

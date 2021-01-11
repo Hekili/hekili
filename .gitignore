@@ -97,3 +97,8 @@ Libs/LICENSE.txt
 Libs/LibCustomGlow-1.0/README.md
 Libs/LibChatAnims/LibChatAnims.lua
 Libs/LibChatAnims/LibChatAnims.xml
+Libs/AceGUI-3.0_SFX-Widgets/Widgets/SFX-Info.lua
+Libs/AceGUI-3.0_SFX-Widgets/AceGUI-3.0_SFX-Widgets.toc
+Libs/AceGUI-3.0_SFX-Widgets/AceGUI-3.0_SFX-Widgets.xml
+Libs/AceGUI-3.0_SFX-Widgets/LibStub/LibStub.lua
+Libs/AceGUI-3.0_SFX-Widgets/Widgets/SFX-Info-URL.lua

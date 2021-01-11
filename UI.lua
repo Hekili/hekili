@@ -137,11 +137,9 @@ function ns.StartConfiguration( external )
     local ccolor = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
 
     -- Notification Panel
-    ns.UI.Notification:EnableMouse( true )
-    ns.UI.Notification:SetMovable( true )
-    ns.UI.Notification.Mover = ns.UI.Notification.Mover or CreateFrame( "Frame", "HekiliNotificationMover", ns.UI.Notification )
+    ns.UI.Notification.Mover = ns.UI.Notification.Mover or CreateFrame( "Frame", "HekiliNotificationMover", ns.UI.Notification, "BackdropTemplate" )
     ns.UI.Notification.Mover:SetAllPoints(HekiliNotification)
-    --[[ ns.UI.Notification.Mover:SetBackdrop( {
+    ns.UI.Notification.Mover:SetBackdrop( {
         bgFile = "Interface/Buttons/WHITE8X8",
         edgeFile = "Interface/Buttons/WHITE8X8",
         tile = false,
@@ -151,7 +149,9 @@ function ns.StartConfiguration( external )
     } )
 
     ns.UI.Notification.Mover:SetBackdropColor( 0, 0, 0, .8 )
-    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 ) ]]
+    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )    
+    ns.UI.Notification:EnableMouse( true )
+    ns.UI.Notification:SetMovable( true )
     ns.UI.Notification.Mover:Show()
 
     local f = ns.UI.Notification.Mover
@@ -198,7 +198,7 @@ function ns.StartConfiguration( external )
         if ns.UI.Buttons[ i ][ 1 ] and Hekili.DB.profile.displays[ i ] then
             -- if not Hekili:IsDisplayActive( i ) then v:Show() end
 
-            v.Backdrop = v.Backdrop or Mixin( CreateFrame( "Frame", v:GetName().. "_Backdrop", UIParent ), BackdropTemplateMixin )
+            v.Backdrop = v.Backdrop or CreateFrame( "Frame", v:GetName().. "_Backdrop", UIParent, "BackdropTemplate" )
             v.Backdrop:ClearAllPoints()
             
             if not v:IsAnchoringRestricted() then
@@ -305,6 +305,10 @@ function ns.StartConfiguration( external )
     end
 
     Hekili:UpdateDisplayVisibility()
+end
+
+function Hekili:OpenConfiguration()
+    ns.StartConfiguration()
 end
 
 function ns.StopConfiguration()
