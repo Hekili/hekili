@@ -1742,6 +1742,10 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 return - action.shifting_power.execute_time / action.shifting_power.tick_time * ( -3 + conduit.discipline_of_the_grove.time_value )
             end,
 
+            full_reduction = function ()
+                return - action.shifting_power.execute_time / action.shifting_power.tick_time * ( -3 + conduit.discipline_of_the_grove.time_value )
+            end,
+
             start = function ()
                 applyBuff( "shifting_power" )
             end,
