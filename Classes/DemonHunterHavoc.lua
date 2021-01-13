@@ -99,7 +99,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         demon_blades = 22799, -- 203555
 
         trail_of_ruin = 22909, -- 258881
-        unbound_chaos = 22494, -- 275144
+        unbound_chaos = 22494, -- 347461
         glaive_tempest = 21862, -- 342817
 
         soul_rending = 21863, -- 204909
@@ -292,8 +292,8 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
             max_stack = 1,
         },
         unbound_chaos = {
-            id = 337313,
-            duration = 3600,
+            id = 347462,
+            duration = 20,
             max_stack = 1
         },
         unrestrained_fury = {
