@@ -9,7 +9,7 @@ local state = Hekili.State
 
 local roundUp = ns.roundUp
 
-local FindUnitBuffBySpellID = ns.FindUnitBuffBySpellID
+local FindUnitBuffByID = ns.FindUnitBuffByID
 local PTR = ns.PTR
 
 -- Conduits
@@ -296,14 +296,24 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             id = 63560,
             duration = function () return 15 + ( conduit.eternal_hunger.mod * 0.001 ) end,
             generate = function( t )
-                local cast = class.abilities.dark_transformation.lastCast or 0
-                local up = pet.ghoul.up and cast + t.duration > state.query_time
+                local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = FindUnitBuffByID( "pet", 63560 )
+
+                if name then
+                    t.name = t.name or name or class.abilities.dark_transformation.name
+                    t.count = count > 0 and count or 1
+                    t.expires = expires
+                    t.duration = duration
+                    t.applied = expires - duration
+                    t.caster = "player"
+                    return
+                end
 
                 t.name = t.name or class.abilities.dark_transformation.name
-                t.count = up and 1 or 0
-                t.expires = up and cast + t.duration or 0
-                t.applied = up and cast or 0
-                t.caster = "player"
+                t.count = 0
+                t.expires = 0
+                t.duration = class.auras.dark_transformation.duration
+                t.applied = 0
+                t.caster = "nobody"
             end,
         },
         death_and_decay = {
