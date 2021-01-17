@@ -1,5 +1,5 @@
 # Enhancement Shaman
-# December 20, 2020
+# January 17, 2021
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -81,7 +81,7 @@ actions.single+=/earthen_spike
 actions.single+=/fae_transfusion
 actions.single+=/lightning_bolt,if=buff.stormkeeper.up
 actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5
-actions.single+=/chain_harvest,if=buff.maelstrom_weapon.stack>=5
+actions.single+=/chain_harvest,if=buff.maelstrom_weapon.stack>=5&raid_event.adds.in>=90
 actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack=10
 actions.single+=/lava_lash,if=buff.hot_hand.up|(runeforge.primal_lava_actuators.equipped&buff.primal_lava_actuators.stack>6)
 actions.single+=/stormstrike
