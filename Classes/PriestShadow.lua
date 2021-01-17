@@ -1268,6 +1268,11 @@ if UnitClassBase( "player" ) == "PRIEST" then
             startsCombat = true,
             texture = 136149,
 
+            usable = function ()
+                if settings.sw_death_protection == 0 then return true end
+                return health.percent >= settings.sw_death_protection, "health percent [ " .. health.percent .. " ] is below user setting [ " .. settings.sw_death_protection .. " ]"
+            end,
+
             handler = function ()
                 removeBuff( "zeks_exterminatus" )
 
@@ -1757,6 +1762,16 @@ if UnitClassBase( "player" ) == "PRIEST" then
         desc = "If checked, the addon will treat |T3528286:0|t Ascended Blast's cooldown as slightly shorter, to help ensure that it is recommended as frequently as possible during Boon of the Ascended.",
         type = "toggle",
         width = "full"
+    } )
+
+    spec:RegisterSetting( "sw_death_protection", 50, {
+        name = "|T136149:0|t Shadow Word: Death Health Threshold",
+        desc = "If set above 0, the addon will not recommend |T136149:0|t Shadow Word: Death while your health percentage is below this threshold.  This setting can help keep you from killing yourself.",
+        type = "range",
+        min = 0,
+        max = 100,
+        step = 0.1,
+        width = "full",
     } )
 
     spec:RegisterSetting( "stm_timer", 20, {
