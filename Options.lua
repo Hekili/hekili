@@ -9015,6 +9015,10 @@ do
                         end
                     end
 
+                    if not hasToggle and not hasNumber then
+                        output = output .. "cFFFFD100<none>|r"
+                    end
+
                     if hasToggle then
                         output = format( "%s\n\nTo set a |cFFFFD100toggle|r, use the following commands:\n" ..
                             " - Switch On/Off:  |cFFFFD100/hek set %s|r\n" ..
