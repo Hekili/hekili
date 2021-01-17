@@ -378,6 +378,12 @@ if UnitClassBase( "player" ) == "ROGUE" then
             max_stack = 1
         },
 
+        master_assassins_mark = {
+            id = 340076,
+            duration = 4,
+            max_stack = 1
+        },
+
         -- Guile Charm
         shallow_insight = {
             id = 340582,
@@ -451,6 +457,14 @@ if UnitClassBase( "player" ) == "ROGUE" then
     } )
 
     spec:RegisterStateExpr( "mantle_duration", function ()
+        return legendary.mark_of_the_master_assassin.enabled and 4 or 0
+    end )
+
+    spec:RegisterStateExpr( "master_assassin_remains", function ()
+        if not legendary.mark_of_the_master_assassin.enabled then return 0 end
+
+        if stealthed.mantle then return cooldown.global_cooldown.remains + 4
+        elseif buff.master_assassins_mark.up then return buff.master_assassin_mark.remains end
         return 0
     end )
 
@@ -462,6 +476,10 @@ if UnitClassBase( "player" ) == "ROGUE" then
         if stealthed.all and ( not a or a.startsCombat ) then
             if buff.stealth.up then
                 setCooldown( "stealth", 2 )
+            end
+
+            if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
+                applyBuff( "master_assassins_mark", 4 )
             end
 
             removeBuff( "stealth" )

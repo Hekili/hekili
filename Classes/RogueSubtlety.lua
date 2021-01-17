@@ -331,9 +331,9 @@ if UnitClassBase( "player" ) == "ROGUE" then
             max_stack = 1,
         },
 
-        mark_of_the_master_assassin = {
-            id = 318587,
-            duration = 3600,
+        master_assassins_mark = {
+            id = 340076,
+            duration = 4,
             max_stack = 1
         },
 
@@ -511,11 +511,15 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
 
     spec:RegisterStateExpr( "mantle_duration", function ()
-        return 0
+        return legendary.mark_of_the_master_assassin.enabled and 4 or 0
+    end )
 
-        --[[ if stealthed.mantle then return cooldown.global_cooldown.remains + 5
-        elseif buff.master_assassins_initiative.up then return buff.master_assassins_initiative.remains end
-        return 0 ]]
+    spec:RegisterStateExpr( "master_assassin_remains", function ()
+        if not legendary.mark_of_the_master_assassin.enabled then return 0 end
+
+        if stealthed.mantle then return cooldown.global_cooldown.remains + 4
+        elseif buff.master_assassins_mark.up then return buff.master_assassin_mark.remains end
+        return 0
     end )
 
 
@@ -534,7 +538,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             end
 
             if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
-                applyBuff( "mark_of_the_master_assassin", 4 )
+                applyBuff( "master_assassins_mark", 4 )
             end
 
             if buff.stealth.up then 

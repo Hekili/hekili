@@ -282,10 +282,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
 
     spec:RegisterStateExpr( "master_assassin_remains", function ()
-        if not talent.master_assassin.enabled then return 0 end
+        if not ( talent.master_assassin.enabled or legendary.mark_of_the_master_assassin.enabled ) then return 0 end
 
-        if stealthed.mantle then return cooldown.global_cooldown.remains + 3
-        elseif buff.master_assassin.up then return buff.master_assassin.remains end
+        if stealthed.mantle then return cooldown.global_cooldown.remains + ( legendary.mark_of_the_master_assassin.enabled and 4 or 3 )
+        elseif buff.master_assassin_any.up then return buff.master_assassin_any.remains end
         return 0
     end )
 
@@ -585,6 +585,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             if talent.subterfuge.enabled then
                 applyBuff( "subterfuge" )
+            end
+
+            if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
+                applyBuff( "master_assassins_mark", 4 )
             end
 
             if buff.stealth.up then
@@ -894,6 +898,19 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             duration = 6,
             max_stack = 1
         },
+
+        master_assassins_mark = {
+            id = 340076,
+            duration = 4,
+            max_stack = 1
+        },
+
+        master_assassin_any = {
+            alias = { "master_assassin", "master_assassins_mark" },
+            aliasMode = "longest",
+            aliasType = "buff",
+            duration = function () return legendary.mark_of_the_master_assassin.enabled and 4 or 3 end,
+        }
     } )
 
 
