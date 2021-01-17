@@ -2632,7 +2632,7 @@ local mt_default_cooldown = {
             end
         end
 
-        local raw = false
+        local raw = state.display ~= "Primary" and state.display ~= "AOE"
 
         if k:sub(1, 5) == "true_" then
             k = k:sub(6)
