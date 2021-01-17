@@ -817,8 +817,8 @@ do
         enemy.lastSeen = time
     end
 
-    local DEFAULT_TTD = 15
-    local FOREVER = 3600
+    local DEFAULT_TTD = 25
+    local FOREVER = 300
     local TRIVIAL = 5
 
 
@@ -1071,8 +1071,8 @@ do
             seen[guid] = true
         end
 
-        C_Timer.After( 0.5, UpdateTTDs )
+        C_Timer.After( 0.25, UpdateTTDs )
     end
 
-    C_Timer.After( 0.5, UpdateTTDs )
+    C_Timer.After( 0.25, UpdateTTDs )
 end

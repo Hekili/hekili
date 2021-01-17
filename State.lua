@@ -1713,7 +1713,7 @@ local mt_state = {
             return t.now + t.offset + t.delay
 
         elseif k == "time_to_die" or k == "fight_remains" or k == "interpolated_fight_remains" then
-            if not t.boss then return 3600 end
+            -- if not t.boss then return 3600 end
             return max( 1, Hekili:GetGreatestTTD() - ( t.offset + t.delay ) )
 
         elseif k:sub(1, 12) == "time_to_pct_" then
