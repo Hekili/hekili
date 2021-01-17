@@ -1,5 +1,5 @@
 # Survival Hunter
-# December 20, 2020
+# January 17, 2021
 
 actions.precombat+=/summon_pet
 actions.precombat+=/bottled_flayedwing_toxin
@@ -9,6 +9,7 @@ actions.precombat+=/steel_trap
 actions+=/muzzle
 actions+=/tranquilizing_shot
 actions+=/use_items
+actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=bop,if=active_enemies<3&!talent.alpha_predator.enabled&!talent.wildfire_infusion.enabled
 actions+=/call_action_list,name=apbop,if=active_enemies<3&talent.alpha_predator.enabled&!talent.wildfire_infusion.enabled
 actions+=/call_action_list,name=apst,if=active_enemies<3&talent.alpha_predator.enabled&talent.wildfire_infusion.enabled
