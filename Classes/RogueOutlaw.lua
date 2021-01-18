@@ -379,10 +379,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
         },
 
         master_assassins_mark = {
-            id = 340076,
+            id = 340094,
             duration = 4,
             max_stack = 1
         },
+
 
         -- Guile Charm
         shallow_insight = {
