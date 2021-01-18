@@ -1338,6 +1338,9 @@ function Hekili:ProcessHooks( dispName, packName )
         end
     end
 
+    local spec = rawget( self.DB.profile.specs, specID )
+    if not spec or not class.specs[ specID ] then return end
+
     if dispName == "AOE" and self:GetToggleState( "mode" ) == "reactive" and ns.getNumberTargets() < ( spec and spec.aoe or 3 ) then
         if UI.RecommendationsStr then
             UI.RecommendationsStr = nil
@@ -1347,9 +1350,6 @@ function Hekili:ProcessHooks( dispName, packName )
     end
 
     local checkstr = nil
-
-    local spec = rawget( self.DB.profile.specs, specID )
-    if not spec or not class.specs[ specID ] then return end
 
     local packName = packName or spec.package
     if not packName then return end
