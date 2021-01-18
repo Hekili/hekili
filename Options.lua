@@ -8931,7 +8931,9 @@ do
         recover = true,
         
         profile = true,
-        set = true
+        set = true,
+        enable = true,
+        disable = true
     }
 
     local info = {}
@@ -8982,16 +8984,21 @@ do
             end
 
             if args[1] == "set" then
-                local prefs = Hekili.DB.profile.specs[ state.spec.id ].settings
+                local spec = Hekili.DB.profile.specs[ state.spec.id ]
+                local prefs = spec.settings
                 local settings = class.specs[ state.spec.id ].settings
 
                 local index
 
                 if args[2] then
-                    for i, setting in ipairs( settings ) do
-                        if setting.name == args[2] then
-                            index = i
-                            break
+                    if args[2] == "target_swap" then
+                        index = -1
+                    else
+                        for i, setting in ipairs( settings ) do
+                            if setting.name == args[2] then
+                                index = i
+                                break
+                            end
                         end
                     end
                 end
@@ -9000,13 +9007,12 @@ do
                     -- No arguments, list options.
                     local output = "Use |cFFFFD100/hekili set|r to adjust your specialization options via chat or macros.\n\nOptions for " .. state.spec.name .. " are:"
 
-                    local hasToggle, hasNumber = false, false
+                    local hasToggle, hasNumber = true, false
                     local exToggle, exNumber
 
                     for i, setting in ipairs( settings ) do
                         if setting.info.type == "toggle" then
                             output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%s|r (%s)", output, setting.name, prefs[ setting.name ] and "ON" or "OFF", setting.info.name )
-                            hasToggle = true
                             exToggle = setting.name
                         elseif setting.info.type == "range" then
                             output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), setting.info.name )
@@ -9014,6 +9020,8 @@ do
                             exNumber = setting.name
                         end
                     end
+
+                    output = format( "%s\n - |cFFFFD100target_swap|r = |cFF00FF00%s|r (%s)", output, spec.cycle and "ON" or "OFF", "Recommend Target Swaps" )
 
                     if not hasToggle and not hasNumber then
                         output = output .. "cFFFFD100<none>|r"
@@ -9038,6 +9046,30 @@ do
                 end
 
                 -- Two or more arguments, we're setting (or querying).
+
+                if index == -1 then
+                    local to
+
+                    if args[3] then
+                        if args[3] == "on" then to = true
+                        elseif args[3] == "off" then to = false
+                        elseif args[3] == "default" then to = false
+                        else
+                            Hekili:Print( format( "'%s' is not a valid option for |cFFFFD100%s|r.", args[3] ) )
+                            return
+                        end
+                    else
+                        to = not spec.cycle
+                    end
+                    
+                    Hekili:Print( format( "Recommend Target Swaps set to %s.", ( to and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r" ) ) )
+
+                    spec.cycle = to
+
+                    Hekili:ForceUpdate( "CLI_TOGGLE" )
+                    return
+                end                    
+
                 local setting = settings[ index ]
 
                 if setting.info.type == "toggle" then
@@ -9125,6 +9157,29 @@ do
                 Hekili:Print( format( "Set profile to |cFF00FF00%s|r.", profileName ) )
                 self.DB:SetProfile( profileName )
                 return
+
+            elseif args[1] == "enable" or args[1] == "disable" then
+                local enable = args[1] == "enable"
+
+                for i, buttons in ipairs( ns.UI.Buttons ) do
+                    for j, _ in ipairs( buttons ) do
+                        if not enable then
+                            buttons[j]:Hide()
+                        else
+                            buttons[j]:Show()
+                        end
+                    end
+                end
+
+                self.DB.profile.enabled = enable
+    
+                if enable then
+                    Hekili:Print( "Addon |cFFFFD100ENABLED|r." )
+                    self:Enable()
+                else
+                    Hekili:Print( "Addon |cFFFFD100DISABLED|r." )
+                    self:Disable()
+                end
 
             else
                 LibStub( "AceConfigCmd-3.0" ):HandleCommand( "hekili", "Hekili", input )
