@@ -28,7 +28,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
     spec:RegisterResource( Enum.PowerType.Focus, {
         death_chakram = {
-            resource = "focus",
             aura = "death_chakram",
 
             last = function ()
@@ -37,7 +36,20 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             interval = function () return class.auras.death_chakram.tick_time end,
             value = function () return state.conduit.necrotic_barrage.enabled and 5 or 3 end,
-        }        
+        },
+        rapid_fire = {
+            channel = "rapid_fire",
+
+            last = function ()
+                local app = state.buff.casting.applied
+                local t = state.query_time
+
+                return app + floor( ( t - app ) / class.auras.rapid_fire.tick_time ) * class.auras.rapid_fire.tick_time
+            end,
+
+            interval = function () return class.auras.rapid_fire.tick_time * ( state.buff.trueshot.up and 0.667 or 1 ) end,
+            value = 1,
+        }
     } )
 
     -- Talents
@@ -196,6 +208,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
         rapid_fire = {
             id = 257044,
             duration = function () return 2 * haste end,
+            tick_time = function ()
+                return ( 2 * haste ) / ( buff.double_tap.up and 14 or 7 )
+            end,
             max_stack = 1,
         },
         serpent_sting = {
@@ -737,6 +752,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = function () return ( buff.trueshot.up and 8 or 20 ) * haste end,
             gcd = "spell",
 
+            spend = 0,
+            spendType = "focus",
+
             startsCombat = true,
             texture = 461115,
 
@@ -790,7 +808,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 0,
             gcd = "spell",
 
-            spend = -10,
+            spend = function () return buff.trueshot.up and -15 or -10 end,
             spendType = "focus",
 
             startsCombat = true,
@@ -870,6 +888,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cooldown = 120,
             gcd = "off",
 
+            spend = 0,
+            spendType = "focus",
+
             toggle = "cooldowns",
 
             startsCombat = false,
@@ -881,7 +902,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
             end,
 
             handler = function ()
+                focus.regen = focus.regen * 1.5
+                reduceCooldown( "aimed_shot", ( 1 - 0.3077 ) * 12 * haste )
+                reduceCooldown( "rapid_fire", ( 1 - 0.3077 ) * 20 * haste )
                 applyBuff( "trueshot" )
+
                 if azerite.unerring_vision.enabled then
                     applyBuff( "unerring_vision" )
                 end
@@ -900,6 +925,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
             cast = 0,
             cooldown = 45,
             gcd = "spell",
+
+            spend = 0,
+            spendType = "focus",
 
             startsCombat = true,
             texture = 132205,
