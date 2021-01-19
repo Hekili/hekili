@@ -224,7 +224,59 @@ function Hekili:SaveDebugSnapshot( dispName )
 				v.log[ i ] = nil
 			end
 
-			table.insert( v.log, 1, self:GenerateProfile() )
+            -- Store aura data.
+            local auraString = "\nplayer_buffs:"
+            local now = GetTime()
+
+            local class = Hekili.Class
+
+            for i = 1, 40 do
+                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitBuff( "player", i )
+
+                if not name then break end
+
+                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+            end
+
+            auraString = auraString .. "\n\nplayer_debuffs:"
+
+            for i = 1, 40 do
+                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff( "player", i )
+
+                if not name then break end
+
+                auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+            end
+
+
+            if not UnitExists( "target" ) then
+                auraString = auraString .. "\n\ntarget_auras:  target does not exist"
+            else
+                auraString = auraString .. "\n\ntarget_buffs:"
+                
+                for i = 1, 40 do
+                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitBuff( "target", i )
+    
+                    if not name then break end
+    
+                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                end
+    
+                auraString = auraString .. "\n\ntarget_debuffs:"
+
+                for i = 1, 40 do
+                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff( "target", i, "PLAYER" )
+    
+                    if not name then break end
+    
+                    auraString = format( "%s\n   %6d - %-40s - %3d - %-.2f", auraString, spellId, class.auras[ spellId ] and class.auras[ spellId ].key or ( "*" .. name ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                end
+            end
+
+            auraString = auraString .. "\n\n"
+
+            table.insert( v.log, 1, auraString )
+            table.insert( v.log, 1, self:GenerateProfile() )
             table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
             
             snapped = true
