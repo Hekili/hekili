@@ -757,7 +757,7 @@ if UnitClassBase( "player" ) == "MONK" then
             toggle = "defensives",
             defensive = true,
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 620827,
 
             talent = "dampen_harm",
@@ -844,7 +844,7 @@ if UnitClassBase( "player" ) == "MONK" then
             toggle = "defensives",
             defensive = true,
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 615341,
 
             handler = function ()
