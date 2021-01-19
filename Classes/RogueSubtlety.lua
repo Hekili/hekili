@@ -518,7 +518,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
         if not legendary.mark_of_the_master_assassin.enabled then return 0 end
 
         if stealthed.mantle then return cooldown.global_cooldown.remains + 4
-        elseif buff.master_assassins_mark.up then return buff.master_assassin_mark.remains end
+        elseif buff.master_assassins_mark.up then return buff.master_assassins_mark.remains end
         return 0
     end )
 

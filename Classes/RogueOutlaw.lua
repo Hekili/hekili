@@ -381,7 +381,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
         master_assassins_mark = {
             id = 340094,
             duration = 4,
-            max_stack = 1
+            max_stack = 1,
+            copy = "master_assassin_any"
         },
 
 
@@ -462,10 +463,16 @@ if UnitClassBase( "player" ) == "ROGUE" then
     end )
 
     spec:RegisterStateExpr( "master_assassin_remains", function ()
-        if not legendary.mark_of_the_master_assassin.enabled then return 0 end
+        if not legendary.mark_of_the_master_assassin.enabled then
+            return 0
+        end
 
-        if stealthed.mantle then return cooldown.global_cooldown.remains + 4
-        elseif buff.master_assassins_mark.up then return buff.master_assassin_mark.remains end
+        if stealthed.mantle then
+            return cooldown.global_cooldown.remains + 4
+        elseif buff.master_assassins_mark.up then
+            return buff.master_assassins_mark.remains
+        end
+
         return 0
     end )
 
@@ -480,7 +487,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             end
 
             if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
-                applyBuff( "master_assassins_mark", 4 )
+                applyBuff( "master_assassins_mark" )
             end
 
             removeBuff( "stealth" )
@@ -1312,6 +1319,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
             disabled = function ()
                 return not settings.solo_vanish and not ( boss and group ), "can only vanish in a boss encounter or with a group"
             end,
+
+            -- nobuff = "master_assassin_any",
 
             handler = function ()
                 applyBuff( "vanish", 3 )
