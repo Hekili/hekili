@@ -1517,8 +1517,6 @@ if UnitClassBase( 'player' ) == 'MONK' then
             startsCombat = true,
             texture = 651728,
 
-            talent = "good_karma",
-
             usable = function ()                
                 return incoming_damage_3s >= health.max * ( settings.tok_damage or 20 ) / 100, "incoming damage not sufficient (" .. ( settings.tok_damage or 20 ) .. "% / 3 sec) to use"
             end,
@@ -1649,7 +1647,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
 
     spec:RegisterSetting( "tok_damage", 1, {
         name = "Required Damage for |T651728:0|t Touch of Karma",
-        desc = "If set above zero, |T651728:0|t Touch of Karma will only be recommended while you have incoming damage.",
+        desc = "If set above zero, |T651728:0|t Touch of Karma will only be recommended while you have taken this percentage of your maximum health in damage in the past 3 seconds.",
         type = "range",
         min = 0,
         max = 99,
