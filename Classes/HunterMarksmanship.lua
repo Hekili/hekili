@@ -815,7 +815,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             texture = 132213,
 
             handler = function ()
-                if talent.steady_focus.enabled and prev_gcd[1].steady_shot and action.steady_shot.lastCast > last_steady_focus then
+                if talent.steady_focus.enabled and prev[1].steady_shot and action.steady_shot.lastCast > last_steady_focus then
                     applyBuff( "steady_focus" )
                     last_steady_focus = query_time
                 end
