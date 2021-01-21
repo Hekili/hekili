@@ -1173,7 +1173,9 @@ if UnitClassBase( "player" ) == "DRUID" then
                 return calculate_damage( 0.15 * 5, true )
             end,
 
-            spend = 25,
+            spend = function ()
+                return 25 * ( buff.incarnation.up and 0.8 or 1 ), "energy"
+            end,
             spendType = "energy",
 
             startsCombat = true,
@@ -1199,12 +1201,12 @@ if UnitClassBase( "player" ) == "DRUID" then
             spend = function ()
                 if buff.apex_predator.up or buff.apex_predators_craving.up then return 0 end
                 -- going to require 50 energy and then refund it back...
-                if talent.sabertooth.enabled and debuff.rip.up then
-                    -- Let's make FB available sooner if we need to keep a Rip from falling off.
+                if talent.soul_of_the_forest.enabled and buff.bs_inc.up then
+                    -- Use minimum Ferocious Bite energy during Berserk/Incarnation with SotF
                     local nrg = 50 * ( buff.incarnation.up and 0.8 or 1 )
 
-                    if energy[ "time_to_" .. nrg ] - debuff.rip.remains > 0 then
-                        return max( 25, energy.current + ( (debuff.rip.remains - 1 ) * energy.regen ) )
+                    if energy[ "time_to_" .. nrg ] > 0 then
+                        return max( 25 * ( buff.incarnation.up and 0.8 or 1 ), energy.current )
                     end
                 end
                 return 50 * ( buff.incarnation.up and 0.8 or 1 )
@@ -1587,7 +1589,9 @@ if UnitClassBase( "player" ) == "DRUID" then
             talent = "primal_wrath",
             aura = "rip",
 
-            spend = 20,
+            spend = function ()
+                return 20 * ( buff.incarnation.up and 0.8 or 1 ), "energy"
+            end,
             spendType = "energy",
 
             startsCombat = true,
@@ -1882,7 +1886,9 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = 60,
             gcd = "spell",
 
-            spend = 60,
+            spend = function ()
+                return 60 * ( buff.incarnation.up and 0.8 or 1 ), "energy"
+            end,
             spendType = "energy",
 
             talent = "rip_and_tear",
