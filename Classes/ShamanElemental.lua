@@ -105,13 +105,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             max_stack = 1,
         },
 
-        bloodlust = {
-            id = 2825,
-            duration = 40,
-            type = "Magic",
-            max_stack = 1,
-        },
-
         celestial_guidance = {
             id = 324748,
             duration = 10,
@@ -266,12 +259,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
         reincarnation = {
             id = 20608,
-        },
-
-        sated = {
-            id = 57724,
-            duration = 600,
-            max_stack = 1,
         },
 
         spirit_wolf = {

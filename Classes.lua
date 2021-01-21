@@ -944,26 +944,35 @@ all:RegisterAuras( {
 
     ancient_hysteria = {
         id = 90355,
-        duration = 40
+        shared = "player", -- use anyone's buff on the player, not just player's.
+        duration = 40,
+        max_stack = 1,
     },
 
     heroism = {
         id = 32182,
+        shared = "player", -- use anyone's buff on the player, not just player's.
         duration = 40,
+        max_stack = 1,
     },
 
     time_warp = {
         id = 80353,
+        shared = "player", -- use anyone's buff on the player, not just player's.
         duration = 40,
+        max_stack = 1,
     },
 
     netherwinds = {
         id = 160452,
+        shared = "player", -- use anyone's buff on the player, not just player's.
         duration = 40,
+        max_stack = 1,
     },
 
     primal_rage = {
         id = 264667,
+        shared = "player", -- use anyone's buff on the player, not just player's.
         duration = 40,
         max_stack = 1,
     },
@@ -1010,27 +1019,70 @@ all:RegisterAuras( {
 
     exhaustion = {
         id = 57723,
+        shared = "player",
         duration = 600,
+        max_stack = 1
     },
 
     insanity = {
         id = 95809,
+        shared = "player",
         duration = 600,
+        max_stack = 1
+    },
+
+    temporal_displacement = {
+        id = 80354,
+        shared = "player",
+        duration = 600,
+        max_stack = 1
+    },
+
+    fatigued = {
+        id = 264689,
+        shared = "player",
+        duration = 600,
+        max_stack = 1
     },
 
     sated = {
         id = 57724,
         duration = 600,
-    },
+        max_stack = 1,
+        generate = function ( t )
+            local sateds = {
+                [57723] = 'exhaustion',
+                [95809] = 'insanity',
+                [80354] = 'temporal_displacement',
+                [264689] = 'fatigued',
+            }
 
-    temporal_displacement = {
-        id = 80354,
-        duration = 600,
-    },
+            for id, key in pairs( sateds ) do
+                local aura = debuff[ key ]
+                if aura.up then
+                    t.count = aura.count
+                    t.expires = aura.expires
+                    t.applied = aura.applied
+                    t.caster = aura.caster
+                    return
+                end
+            end
 
-    fatigued = {
-        id = 160455,
-        duration = 600,
+            local name, _, count, _, duration, expires, caster, _, _, spellID = GetPlayerAuraBySpellID( 57724 )
+
+            if name then
+                t.count = max( 1, count )
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = caster
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = 'nobody'
+        end,
     },
 
     old_war = {

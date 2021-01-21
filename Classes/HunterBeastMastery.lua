@@ -536,12 +536,6 @@ if UnitClassBase( "player" ) == "HUNTER" then
             max_stack = 1,
         },
 
-        primal_fury = {
-            id = 264667,
-            duration = 40,
-            max_stack = 1,
-        },
-
         spitting_cobra = {
             id = 194407,
             duration = 20,
@@ -1354,8 +1348,9 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
             usable = function () return pet.alive and pet.ferocity, "requires a living ferocity pet" end,
             handler = function ()
-                applyBuff( "primal_Fury" )
+                applyBuff( "primal_rage" )
                 applyBuff( "bloodlust" )
+                stat.haste = stat.haste + 0.4
                 applyDebuff( "player", "exhaustion" )
             end,
         },

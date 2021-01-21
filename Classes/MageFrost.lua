@@ -324,12 +324,6 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             duration = 600,
             max_stack = 1,
         },
-        time_warp = {
-            id = 80353,
-            duration = 40,
-            type = "Magic",
-            max_stack = 1,
-        },
         winters_chill = {
             id = 228358,
             duration = 6,
