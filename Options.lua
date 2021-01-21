@@ -467,6 +467,7 @@ local actionTemplate = {
 
     cycle_targets = 0,
     max_cycle_targets = 3,
+    max_energy = 0,
 
     interrupt = 0,  --NYI
     interrupt_if = "",  --NYI
@@ -4967,6 +4968,7 @@ do
     local toggleToNumber = {
         cycle_targets = true,
         for_next = true,
+        max_energy = true,
         strict = true,
         use_off_gcd = true,
         use_while_casting = true,
@@ -6305,6 +6307,18 @@ do
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
                                                         return e.action ~= "wait"
+                                                    end,
+                                                },
+
+                                                max_energy = {
+                                                    type = "toggle",
+                                                    name = "Max Energy",
+                                                    order = 2,
+                                                    width = 1.2,
+                                                    desc = "When checked, this entry will require that the player have enough energy to trigger Ferocious Bite's full damage bonus.",
+                                                    hidden = function ()
+                                                        local e = GetListEntry( pack )
+                                                        return e.action ~= "ferocious_bite"
                                                     end,
                                                 },
 
@@ -10012,6 +10026,7 @@ do
 
             if result.for_next then result.for_next = tonumber( result.for_next ) end
             if result.cycle_targets then result.cycle_targets = tonumber( result.cycle_targets ) end
+            if result.max_energy then result.max_energy = tonumber( result.max_energy ) end
 
             if result.use_off_gcd then result.use_off_gcd = tonumber( result.use_off_gcd ) end
             if result.use_while_casting then result.use_while_casting = tonumber( result.use_while_casting ) end
@@ -10087,7 +10102,9 @@ function Hekili:TogglePause( ... )
 
     for _, group in pairs( ns.UI.Buttons ) do
         for _, button in pairs( group ) do
-            button:EnableMouse( MouseInteract )
+            if button:IsShown() then
+                button:EnableMouse( MouseInteract )
+            end
         end
     end
 

@@ -1052,6 +1052,7 @@ local newModifiers = {
     interrupt_global = 'bool',
     interrupt_if = 'bool',
     interrupt_immediate = 'bool',
+    max_energy = 'bool',
     moving = 'bool',
     only_cwc = 'bool',
     strict = 'bool',
