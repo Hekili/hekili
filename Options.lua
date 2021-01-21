@@ -4700,7 +4700,7 @@ do
                                 damageRange = {
                                     type = "range",
                                     name = "Filter Damaged Enemies by Range",
-                                    desc = "If set above 0, the addon will attempt to avoid counting targets that have were out of range when last seen.  This is based on cached data and may be inaccurate.",
+                                    desc = "If set above 0, the addon will attempt to avoid counting targets that were out of range when last seen.  This is based on cached data and may be inaccurate.",
                                     width = "full",
                                     hidden = function () return self.DB.profile.specs[ id ].damage == false end,
                                     min = 0,
