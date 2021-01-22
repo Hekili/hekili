@@ -1,5 +1,5 @@
 # Outlaw Rogue
-# January 17, 2021
+# January 21, 2021
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
@@ -63,8 +63,8 @@ actions.cds+=/blood_fury
 actions.cds+=/berserking
 actions.cds+=/fireblood
 actions.cds+=/ancestral_call
-# Default fallback for usable items.
-actions.cds+=/use_items,if=debuff.between_the_eyes.up&(!talent.ghostly_strike.enabled|debuff.ghostly_strike.up)|fight_remains<=20
+# Default conditions for usable items.
+actions.cds+=/use_items,if=!runeforge.mark_of_the_master_assassin&debuff.between_the_eyes.up&(!talent.ghostly_strike.enabled|debuff.ghostly_strike.up)|master_assassin_remains>0|fight_remains<=20
 
 # Finishers
 actions.finish=slice_and_dice,if=buff.slice_and_dice.remains<fight_remains&refreshable
