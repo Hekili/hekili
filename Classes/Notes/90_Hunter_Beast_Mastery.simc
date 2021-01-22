@@ -1,5 +1,5 @@
 # Beast Mastery Hunter
-# December 13, 2020
+# January 21, 2021
 
 actions.precombat=summon_pet
 actions.precombat+=/bottled_flayedwing_toxin
@@ -53,6 +53,7 @@ actions.cleave+=/barbed_shot,cycle_targets=1,if=target.time_to_die<9
 actions.cleave+=/cobra_shot,if=focus.time_to_max<gcd*2
 actions.cleave+=/tar_trap,if=runeforge.soulforge_embers|runeforge.nessingwarys_trapping_apparatus
 actions.cleave+=/freezing_trap,if=runeforge.nessingwarys_trapping_apparatus
+actions.cleave+=/arcane_torrent,if=(focus+focus.regen+30)<focus.max
 
 actions.st=aspect_of_the_wild
 actions.st+=/barbed_shot,if=pet.main.buff.frenzy.up&pet.main.buff.frenzy.remains<=gcd
@@ -80,3 +81,4 @@ actions.st+=/barbed_shot,if=buff.wild_spirits.up
 actions.st+=/arcane_pulse,if=buff.bestial_wrath.down|fight_remains<5
 actions.st+=/tar_trap,if=runeforge.soulforge_embers|runeforge.nessingwarys_trapping_apparatus
 actions.st+=/freezing_trap,if=runeforge.nessingwarys_trapping_apparatus
+actions.st+=/arcane_torrent,if=(focus+focus.regen+15)<focus.max
