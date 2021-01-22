@@ -4526,7 +4526,7 @@ do
                                 potion = {
                                     type = "select",
                                     name = "Default Potion",
-                                    desc = "When recommending a potion, the addon will suggest this potion unless unless the action list specifies otherwise.",
+                                    desc = "When recommending a potion, the addon will suggest this potion unless the action list specifies otherwise.",
                                     order = 2,
                                     width = 3,
                                     values = function ()
