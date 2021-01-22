@@ -1,7 +1,8 @@
 # Windwalker Monk
-# January 17, 2021
+# January 21, 2021
 
 # Tweak Fists of Fury interrupt logic.
+# Tweak Spinning Crane Kick logic; avoid delays and integrate Calculated Strikes.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=potion
@@ -31,12 +32,14 @@ actions.aoe+=/spinning_crane_kick,if=combo_strike&(buff.dance_of_chiji.up|debuff
 actions.aoe+=/fists_of_fury,if=energy.time_to_max>execute_time|chi.max-chi<=1
 actions.aoe+=/rising_sun_kick,cycle_targets=1,if=(talent.whirling_dragon_punch&cooldown.rising_sun_kick.duration>cooldown.whirling_dragon_punch.remains+4)&(cooldown.fists_of_fury.remains>3|chi>=5)
 actions.aoe+=/rushing_jade_wind,if=buff.rushing_jade_wind.down
-actions.aoe+=/spinning_crane_kick,if=combo_strike&((cooldown.bonedust_brew.remains>2&(chi>3|cooldown.fists_of_fury.remains>6)&(chi>=5|cooldown.fists_of_fury.remains>2))|energy.time_to_max<=3)
+actions.aoe+=/spinning_crane_kick,if=combo_strike&((cooldown.bonedust_brew.remains>2&(chi>3|cooldown.fists_of_fury.remains>6)&(chi>=5|cooldown.fists_of_fury.remains>2))|!covenant.necrolord&energy.time_to_max>gcd)
 actions.aoe+=/expel_harm,if=chi.max-chi>=1
 actions.aoe+=/fist_of_the_white_tiger,cycle_targets=1,if=chi.max-chi>=3
 actions.aoe+=/chi_burst,if=chi.max-chi>=2
 actions.aoe+=/crackling_jade_lightning,if=buff.the_emperors_capacitor.stack>19&energy.time_to_max>execute_time-1&cooldown.fists_of_fury.remains>execute_time
 actions.aoe+=/tiger_palm,cycle_targets=1,if=chi.max-chi>=2&(!talent.hit_combo|combo_strike)
+# Calculated Strikes
+actions.aoe+=/spinning_crane_kick,if=conduit.calculated_strikes
 actions.aoe+=/chi_wave,if=combo_strike
 actions.aoe+=/flying_serpent_kick,if=buff.bok_proc.down,interrupt=1
 actions.aoe+=/blackout_kick,cycle_targets=1,if=combo_strike&(buff.bok_proc.up|talent.hit_combo&prev_gcd.1.tiger_palm&chi=2&cooldown.fists_of_fury.remains<3|chi.max-chi<=1&prev_gcd.1.spinning_crane_kick&energy.time_to_max<3)
@@ -107,13 +110,13 @@ actions.st+=/rushing_jade_wind,if=buff.rushing_jade_wind.down&active_enemies>1
 actions.st+=/fist_of_the_white_tiger,cycle_targets=1,if=chi<3
 actions.st+=/expel_harm,if=chi.max-chi>=1
 actions.st+=/chi_burst,if=chi.max-chi>=1&active_enemies=1&raid_event.adds.in>20|chi.max-chi>=2&active_enemies>=2
+actions.st+=/spinning_crane_kick,if=conduit.calculated_strikes&spell_targets.spinning_crane_kick>1
 actions.st+=/chi_wave
-actions.st+=/tiger_palm,cycle_targets=1,,if=combo_strike&chi.max-chi>=2&buff.storm_earth_and_fire.down
+actions.st+=/tiger_palm,cycle_targets=1,if=combo_strike&chi.max-chi>=2&buff.storm_earth_and_fire.down
 actions.st+=/spinning_crane_kick,if=buff.chi_energy.stack>30-5*active_enemies&buff.storm_earth_and_fire.down&(cooldown.rising_sun_kick.remains>2&cooldown.fists_of_fury.remains>2|cooldown.rising_sun_kick.remains<3&cooldown.fists_of_fury.remains>3&chi>3|cooldown.rising_sun_kick.remains>3&cooldown.fists_of_fury.remains<3&chi>4|chi.max-chi<=1&energy.time_to_max<2)|buff.chi_energy.stack>10&fight_remains<7
 actions.st+=/blackout_kick,cycle_targets=1,if=combo_strike&(talent.serenity&cooldown.serenity.remains<3|cooldown.rising_sun_kick.remains>1&cooldown.fists_of_fury.remains>1|cooldown.rising_sun_kick.remains<3&cooldown.fists_of_fury.remains>3&chi>2|cooldown.rising_sun_kick.remains>3&cooldown.fists_of_fury.remains<3&chi>3|chi>5|buff.bok_proc.up)
-actions.st+=/tiger_palm,cycle_targets=1,,if=combo_strike&chi.max-chi>=2
+actions.st+=/tiger_palm,cycle_targets=1,if=combo_strike&chi.max-chi>=2
 actions.st+=/flying_serpent_kick,interrupt=1
-# Use BoK if FoF is close and you have 2 chi and your last global was TP, or if you are about to cap energy and either your last gcd was TP or if you are less than 2 chi away from capping
 actions.st+=/blackout_kick,cycle_targets=1,if=combo_strike&cooldown.fists_of_fury.remains<3&chi=2&prev_gcd.1.tiger_palm&energy.time_to_50<1
 actions.st+=/blackout_kick,cycle_targets=1,if=combo_strike&energy.time_to_max<2&(chi.max-chi<=1|prev_gcd.1.tiger_palm)
 
