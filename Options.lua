@@ -460,6 +460,7 @@ local actionTemplate = {
     action = "wait",
     criteria = "",
     caption = "",
+    description = "",
 
     -- Shared Modifiers
     chain = 0,  -- NYI
@@ -3364,20 +3365,34 @@ do
         apl = "\n" .. apl
         apl = apl:gsub( "actions(%+?)=", "actions.default%1=" )
 
-        for list, action in apl:gmatch( "\nactions%.(%S-)%+?=/?([^\n^$]*)" ) do
-            lists[ list ] = lists[ list ] or ""
+        local comment
 
-            --[[ if action:sub( 1, 6 ) == "potion" then
-                local potion = action:match( ",name=(.-),") or action:match( ",name=(.-)$" ) or class.potion or ""
-                action = action:gsub( potion, "\"" .. potion .. "\"" )
-            end ]]
+        for line in apl:gmatch( "\n([^\n^$]*)") do
+            local newComment = line:match( "^# (.+)" )
+            if newComment then comment = newComment end
 
-            if action:sub( 1, 16 ) == "call_action_list" or action:sub( 1, 15 ) == "run_action_list" then
-                local name = action:match( ",name=(.-)," ) or action:match( ",name=(.-)$" )
-                if name then action:gsub( ",name=" .. name, ",name=\"" .. name .. "\"" ) end
+            local list, action = line:match( "^actions%.(%S-)%+?=/?([^\n^$]*)" )
+
+            if list and action then
+                lists[ list ] = lists[ list ] or ""
+
+                --[[ if action:sub( 1, 6 ) == "potion" then
+                    local potion = action:match( ",name=(.-),") or action:match( ",name=(.-)$" ) or class.potion or ""
+                    action = action:gsub( potion, "\"" .. potion .. "\"" )
+                end ]]
+
+                if action:sub( 1, 16 ) == "call_action_list" or action:sub( 1, 15 ) == "run_action_list" then
+                    local name = action:match( ",name=(.-)," ) or action:match( ",name=(.-)$" )
+                    if name then action:gsub( ",name=" .. name, ",name=\"" .. name .. "\"" ) end
+                end
+
+                if comment then
+                    action = action .. ',description=' .. comment:gsub( ",", ";" )
+                    comment = nil
+                end
+
+                lists[ list ] = lists[ list ] .. "actions+=/" .. action .. "\n"
             end
-
-            lists[ list ] = lists[ list ] .. "actions+=/" .. action .. "\n"
         end
 
         local count = 0
@@ -6179,7 +6194,7 @@ do
                                     hidden = function () return packControl.makingNew end,
                                 },
 
-                                actionGroup = {
+                                --[[ actionGroup = {
                                     type = "group",
                                     inline = true,
                                     name = "",
@@ -6205,12 +6220,12 @@ do
                                                 local p = rawget( Hekili.DB.profile.packs, pack )
                                                 return not packControl.actionID or packControl.actionID == "zzzzzzzzzz" or not p.lists[ packControl.listName ][ id ]
                                             end,
-                                            args = {
+                                            args = { ]]
                                                 enabled = {
                                                     type = "toggle",
                                                     name = "Enabled",
                                                     desc = "If disabled, this entry will not be shown even if its criteria are met.",
-                                                    order = 0,
+                                                    order = 3.0,
                                                     width = "full",
                                                 },
 
@@ -6219,7 +6234,7 @@ do
                                                     name = "Action",
                                                     desc = "Select the action that will be recommended when this entry's criteria are met.",
                                                     values = class.abilityList,
-                                                    order = 1,
+                                                    order = 3.1,
                                                     width = 1.5,
                                                 },
 
@@ -6229,7 +6244,7 @@ do
                                                     desc = "Captions are |cFFFF0000very|r short descriptions that can appear on the icon of a recommended ability.\n\n" ..
                                                         "This can be useful for understanding why an ability was recommended at a particular time.\n\n" ..
                                                         "Requires Captions to be Enabled on each display.",
-                                                    order = 2,
+                                                    order = 3.2,
                                                     width = 1.5,
                                                     validate = function( info, val )
                                                         val = val:trim()
@@ -6265,7 +6280,7 @@ do
 
                                                         return v
                                                     end,
-                                                    order = 2,
+                                                    order = 3.2,
                                                     width = 1.2,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
@@ -6276,7 +6291,7 @@ do
                                                 buff_name = {
                                                     type = "select",
                                                     name = "Buff Name",
-                                                    order = 2,
+                                                    order = 3.2,
                                                     width = 1.5,
                                                     desc = "Specify the buff to remove.",
                                                     values = class.auraList,
@@ -6289,7 +6304,7 @@ do
                                                 potion = {
                                                     type = "select",
                                                     name = "Potion",
-                                                    order = 2,
+                                                    order = 3.2,
                                                     -- width = "full",
                                                     values = class.potionList,
                                                     hidden = function ()
@@ -6302,7 +6317,7 @@ do
                                                 sec = {
                                                     type = "input",
                                                     name = "Seconds",
-                                                    order = 2,
+                                                    order = 3.2,
                                                     width = 1.2,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
@@ -6313,7 +6328,7 @@ do
                                                 max_energy = {
                                                     type = "toggle",
                                                     name = "Max Energy",
-                                                    order = 2,
+                                                    order = 3.2,
                                                     width = 1.2,
                                                     desc = "When checked, this entry will require that the player have enough energy to trigger Ferocious Bite's full damage bonus.",
                                                     hidden = function ()
@@ -6322,17 +6337,26 @@ do
                                                     end,
                                                 },
 
+                                                description = {
+                                                    type = "input",
+                                                    name = "Description",
+                                                    desc = "This allows you to provide text that explains this entry, which will show when you Pause and mouseover the ability to see " ..
+                                                        "why this entry was recommended.",
+                                                    order = 3.205,
+                                                    width = "full",
+                                                },
+
                                                 lb01 = {
                                                     type = "description",
                                                     name = "",
-                                                    order = 2.1,
+                                                    order = 3.21,
                                                     width = "full"
                                                 },
 
                                                 var_name = {
                                                     type = "input",
                                                     name = "Variable Name",
-                                                    order = 3,
+                                                    order = 3.3,
                                                     width = 1.5,
                                                     desc = "Specify a name for this variable.  Variables must be lowercase with no spaces or symbols aside from the underscore.",
                                                     validate = function( info, val )
@@ -6368,7 +6392,7 @@ do
                                                         setif = "Set Value If...",
                                                         sub = "Subtract Value",
                                                     },
-                                                    order = 3.1,
+                                                    order = 3.31,
                                                     width = 1.5,
                                                     hidden = function ()
                                                         local e = GetListEntry( pack )
@@ -6380,7 +6404,7 @@ do
                                                     type = "group",
                                                     inline = true,
                                                     name = "",
-                                                    order = 5,
+                                                    order = 3.5,
                                                     args = {
                                                         for_next = {
                                                             type = "toggle",
@@ -6437,7 +6461,7 @@ do
                                                 criteria = {
                                                     type = "input",
                                                     name = "Conditions",
-                                                    order = 6,
+                                                    order = 3.6,
                                                     width = "full",
                                                     multiline = 6,
                                                     dialogControl = "HekiliCustomEditor",
@@ -6477,7 +6501,7 @@ do
                                                     type = "input",
                                                     name = "Value",
                                                     desc = "Provide the value to store (or calculate) when this variable is invoked.",
-                                                    order = 6.1,
+                                                    order = 3.61,
                                                     width = "full",
                                                     multiline = 3,
                                                     dialogControl = "HekiliCustomEditor",
@@ -6521,7 +6545,7 @@ do
                                                     type = "input",
                                                     name = "Value Else",
                                                     desc = "Provide the value to store (or calculate) if this variable's conditions are not met.",
-                                                    order = 6.2,
+                                                    order = 3.62,
                                                     width = "full",
                                                     multiline = 3,
                                                     dialogControl = "HekiliCustomEditor",
@@ -6560,7 +6584,7 @@ do
                                                         -- if not e.criteria or e.criteria:trim() == "" then return true end
                                                         return e.action ~= "variable" or e.op == "reset" or e.op == "ceil" or e.op == "floor"
                                                     end,
-                                                },                                                
+                                                },
 
                                                 showModifiers = {
                                                     type = "toggle",
@@ -6767,11 +6791,11 @@ do
                                                         local p = rawget( Hekili.DB.profile.packs, pack )
                                                         return #p.lists[ packControl.listName ] < 2 
                                                     end
-                                                } ]]
+                                                }
                                             },
-                                        },                                    
+                                        },
                                     }
-                                },
+                                }, ]]
 
                                 newListGroup = {
                                     type = "group",
@@ -10010,6 +10034,10 @@ do
                         if key == 'criteria' or key == 'target_if' or key == 'value' or key == 'value_else' or key == 'sec' or key == 'wait' then
                             value = Sanitize( 'c', value, line, warnings )
                             value = SpaceOut( value )
+                        end
+
+                        if key == 'description' then
+                            value = value:gsub( ";", "," )
                         end
 
                         result[ key ] = value
