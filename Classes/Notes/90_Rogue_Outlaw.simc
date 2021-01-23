@@ -1,7 +1,7 @@
-# Outlaw Rogue
-# January 21, 2021
+## Outlaw Rogue
+## January 23, 2021
 
-# Executed before combat begins. Accepts non-harmful actions only.
+## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/stealth
@@ -9,7 +9,7 @@ actions.precombat+=/marked_for_death,precombat_seconds=5,if=raid_event.adds.in>2
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=remains<3
 actions.precombat+=/slice_and_dice,precombat_seconds=2,if=refreshable
 
-# Executed every time the actor is available.
+## Executed every time the actor is available.
 actions=kick
 # Restealth if possible (no vulnerable enemies in combat)
 actions+=/stealth
@@ -17,19 +17,20 @@ actions+=/stealth
 actions+=/variable,name=rtb_reroll,value=rtb_buffs<2&(!buff.true_bearing.up&!buff.broadside.up)
 # Ensure we get full Ambush CP gains and aren't rerolling Count the Odds buffs away
 actions+=/variable,name=ambush_condition,value=combo_points.deficit>=2+buff.broadside.up&energy>=50&(!conduit.count_the_odds|buff.roll_the_bones.remains>=10)
+# Finish at maximum CP but avoid wasting Broadside and Quick Draw bonus combo points
+actions+=/variable,name=finish_condition,value=combo_points>=cp_max_spend-buff.broadside.up-(buff.opportunity.up*talent.quick_draw.enabled)|combo_points=animacharged_cp
 # With multiple targets, this variable is checked to decide whether some CDs should be synced with Blade Flurry
 actions+=/variable,name=blade_flurry_sync,value=spell_targets.blade_flurry<2&raid_event.adds.in>20|buff.blade_flurry.up
 actions+=/run_action_list,name=stealth,if=stealthed.all
 actions+=/call_action_list,name=cds
-# Finish at maximum CP but avoid wasting Broadside and Quick Draw bonus combo points
-actions+=/run_action_list,name=finish,if=combo_points>=cp_max_spend-buff.broadside.up-(buff.opportunity.up*talent.quick_draw.enabled)|combo_points=animacharged_cp
+actions+=/run_action_list,name=finish,if=variable.finish_condition
 actions+=/call_action_list,name=build
 actions+=/arcane_torrent,if=energy.deficit>=15+energy.regen
 actions+=/arcane_pulse
 actions+=/lights_judgment
 actions+=/bag_of_tricks
 
-# Builders
+## Builders
 actions.build=sepsis
 actions.build+=/ghostly_strike
 actions.build+=/shiv,if=runeforge.tiny_toxic_blade
@@ -41,15 +42,16 @@ actions.build+=/pistol_shot,if=buff.opportunity.up&(buff.greenskins_wickers.up|b
 actions.build+=/sinister_strike
 actions.build+=/gouge,if=talent.dirty_tricks.enabled&combo_points.deficit>=1+buff.broadside.up
 
-# Cooldowns
+## Cooldowns
 # Blade Flurry on 2+ enemies
 actions.cds=blade_flurry,if=spell_targets>=2&!buff.blade_flurry.up
 # Using Ambush is a 2% increase, so Vanish can be sometimes be used as a utility spell unless using Master Assassin or Deathly Shadows
-actions.cds+=/vanish,if=!stealthed.all&variable.ambush_condition&master_assassin_remains=0&(!runeforge.deathly_shadows|buff.deathly_shadows.down&combo_points<=2)
+actions.cds+=/vanish,if=!runeforge.mark_of_the_master_assassin&!stealthed.all&variable.ambush_condition&(!runeforge.deathly_shadows|buff.deathly_shadows.down&combo_points<=2)
+actions.cds+=/vanish,if=runeforge.mark_of_the_master_assassin&master_assassin_remains=0&(!cooldown.between_the_eyes.ready&variable.finish_condition|cooldown.between_the_eyes.ready&variable.ambush_condition)&(!conduit.count_the_odds|buff.roll_the_bones.remains>=10)
 actions.cds+=/flagellation
 actions.cds+=/flagellation_cleanse,if=debuff.flagellation.remains<2
 actions.cds+=/adrenaline_rush,if=!buff.adrenaline_rush.up&(!cooldown.killing_spree.up|!talent.killing_spree.enabled)
-actions.cds+=/roll_the_bones,if=buff.roll_the_bones.remains<=3|variable.rtb_reroll
+actions.cds+=/roll_the_bones,if=master_assassin_remains=0&(buff.roll_the_bones.remains<=3|variable.rtb_reroll)
 # If adds are up, snipe the one with lowest TTD. Use when dying faster than CP deficit or without any CP.
 actions.cds+=/marked_for_death,cycle_targets=1,if=raid_event.adds.up&(target.time_to_die<combo_points.deficit|!stealthed.rogue&combo_points.deficit>=cp_max_spend-1)
 # If no adds will die within the next 30s, use MfD on boss without any CP.
@@ -66,13 +68,13 @@ actions.cds+=/ancestral_call
 # Default conditions for usable items.
 actions.cds+=/use_items,if=!runeforge.mark_of_the_master_assassin&debuff.between_the_eyes.up&(!talent.ghostly_strike.enabled|debuff.ghostly_strike.up)|master_assassin_remains>0|fight_remains<=20
 
-# Finishers
+## Finishers
 actions.finish=slice_and_dice,if=buff.slice_and_dice.remains<fight_remains&refreshable
 # BtE on cooldown to keep the Crit debuff up
 actions.finish+=/between_the_eyes
 actions.finish+=/dispatch
 
-# Stealth
-actions.stealth=dispatch,if=combo_points>=cp_max_spend
+## Stealth
+actions.stealth=dispatch,if=variable.finish_condition
 actions.stealth+=/ambush
 actions.stealth+=/cheap_shot,cycle_targets=1,if=talent.prey_on_the_weak.enabled&!target.is_boss

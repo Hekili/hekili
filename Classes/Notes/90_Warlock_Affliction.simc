@@ -1,15 +1,15 @@
-# Affliction Warlock
-# January 4, 2021
+## Affliction Warlock
+## January 23, 2021
 
-# Changes:
-# - Added Spell Lock.
-# - Added Devour Magic.
-# - Added breakchannel logic for Drain Soul.
-# - Tweak Malefic Rapture logic to work if you're missing a talent in that row.
-# - Enable Rampant Afflictions PvP talent.
-# - Tweaks to avoid blowing Darkglare in multi-target w/o DOTs up.
-# - Condense some Darkglare Prep calls to reduce computation time.
-# - Set some call_action_list entries to strict to avoid checking lists that won't be reached.
+## Changes:
+## - Added Spell Lock.
+## - Added Devour Magic.
+## - Added breakchannel logic for Drain Soul.
+## - Tweak Malefic Rapture logic to work if you're missing a talent in that row.
+## - Enable Rampant Afflictions PvP talent.
+## - Tweaks to avoid blowing Darkglare in multi-target w/o DOTs up.
+## - Condense some Darkglare Prep calls to reduce computation time.
+## - Set some call_action_list entries to strict to avoid checking lists that won't be reached.
 
 actions.precombat=fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
 actions.precombat+=/summon_pet
@@ -20,7 +20,7 @@ actions.precombat+=/seed_of_corruption,if=spell_targets.seed_of_corruption_aoe>=
 actions.precombat+=/haunt
 actions.precombat+=/shadow_bolt,if=!talent.haunt.enabled&spell_targets.seed_of_corruption_aoe<3&!equipped.169314
 
-# Executed every time the actor is available.
+## Executed every time the actor is available.
 actions=spell_lock
 actions+=/devour_magic
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>3
@@ -39,7 +39,7 @@ actions+=/siphon_life,cycle_targets=1,if=(active_enemies>1)&(dot.siphon_life.rem
 actions+=/call_action_list,name=covenant,if=!covenant.necrolord
 actions+=/corruption,if=active_enemies<4-(talent.sow_the_seeds.enabled|talent.siphon_life.enabled)&dot.corruption.remains<2
 actions+=/corruption,cycle_targets=1,if=(active_enemies<4-(talent.sow_the_seeds.enabled|talent.siphon_life.enabled))&(dot.corruption.remains<2)
-actions+=/phantom_singularity,if=covenant.necrolord|covenant.night_fae|covenant.kyrian|covenant.none
+actions+=/phantom_singularity
 actions+=/malefic_rapture,if=soul_shard>4
 actions+=/call_action_list,name=darkglare_prep,if=(covenant.venthyr&(cooldown.impending_catastrophe.ready|dot.impending_catastrophe_dot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled))|((covenant.necrolord|covenant.kyrian|covenant.none)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled))|(covenant.night_fae&(cooldown.soul_rot.ready|dot.soul_rot.ticking)&cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled))
 actions+=/dark_soul,if=cooldown.summon_darkglare.remains>fight_remains
