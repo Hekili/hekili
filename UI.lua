@@ -2432,6 +2432,18 @@ function Hekili:ShowDiagnosticTooltip( q )
             end
         end
     end
+
+    if q.pack and q.listName and q.action then
+        local entry = rawget( self.DB.profile.packs, q.pack )
+        entry = entry and entry.lists[ q.listName ]
+        entry = entry and entry[ q.action ]
+
+        if entry and entry.description and entry.description:len() > 0 then
+            tt:AddLine( " " )
+            tt:AddLine( entry.description, 0, 0.7, 1, true )
+        end
+    end
+
     tt:Show()
 end
 
