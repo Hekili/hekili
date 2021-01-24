@@ -1,5 +1,8 @@
-# Retribution Paladin
-# January 7, 2021
+## Retribution Paladin
+## January 24, 2021
+
+## Changes:
+## - Relax Seraphim requirement for lining up with ExS, FR.
 
 actions.precombat=potion
 actions.precombat+=/blessing_of_summer
@@ -8,7 +11,7 @@ actions.precombat+=/blessing_of_winter
 actions.precombat+=/blessing_of_spring
 actions.precombat+=/arcane_torrent
  
-# Executed every time the actor is available.
+## Executed every time the actor is available.
 actions=rebuke
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=generators
@@ -32,6 +35,7 @@ actions.cooldowns+=/use_item,name=memory_of_past_sins
 actions.cooldowns+=/use_item,name=spare_meat_hook
 actions.cooldowns+=/use_item,name=sinful_gladiators_badge_of_ferocity,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
 actions.cooldowns+=/use_item,name=sinful_aspirants_badge_of_ferocity,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10|cooldown.avenging_wrath.remains>45|cooldown.crusade.remains>45
+actions.cooldowns+=/use_items,if=buff.avenging_wrath.up|buff.crusade.up&buff.crusade.stack>=10
 actions.cooldowns+=/avenging_wrath,if=(holy_power>=4&time<5|holy_power>=3&time>5|talent.holy_avenger.enabled&cooldown.holy_avenger.remains=0)&(!talent.seraphim.enabled|cooldown.seraphim.remains>0)
 actions.cooldowns+=/crusade,if=(holy_power>=4&time<5|holy_power>=3&time>5|talent.holy_avenger.enabled&cooldown.holy_avenger.remains=0)
 actions.cooldowns+=/ashen_hallow
@@ -39,7 +43,7 @@ actions.cooldowns+=/holy_avenger,if=time_to_hpg=0&((buff.avenging_wrath.up|buff.
 actions.cooldowns+=/final_reckoning,if=holy_power>=3&cooldown.avenging_wrath.remains>gcd&time_to_hpg=0&(!talent.seraphim.enabled|buff.seraphim.up)
  
 actions.finishers=variable,name=ds_castable,value=spell_targets.divine_storm>=2|buff.empyrean_power.up&debuff.judgment.down&buff.divine_purpose.down
-actions.finishers+=/seraphim,if=((!talent.crusade.enabled&(cooldown.avenging_wrath.remains>25|cooldown.avenging_wrath.remains=0))|(talent.execution_sentence.enabled&talent.final_reckoning.enabled)|(buff.crusade.up|cooldown.crusade.remains>25))&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains<8)&(!talent.execution_sentence.enabled|cooldown.execution_sentence.remains<8)&time_to_hpg=0
+actions.finishers+=/seraphim,if=((!talent.crusade.enabled&(cooldown.avenging_wrath.remains>25|cooldown.avenging_wrath.remains=0))|(talent.execution_sentence.enabled&talent.final_reckoning.enabled)|(buff.crusade.up|cooldown.crusade.remains>25))&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains<8|cooldown.final_reckoning.remains>45)&(!talent.execution_sentence.enabled|cooldown.execution_sentence.remains<8|cooldown.execution_sentence.remains>45)&time_to_hpg=0
 actions.finishers+=/vanquishers_hammer,if=(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains>gcd*10|debuff.final_reckoning.up)&(!talent.execution_sentence.enabled|cooldown.execution_sentence.remains>gcd*10|debuff.execution_sentence.up)|spell_targets.divine_storm>=2
 actions.finishers+=/execution_sentence,if=((!talent.crusade.enabled|buff.crusade.down&cooldown.crusade.remains>10)|buff.crusade.stack>=3|cooldown.avenging_wrath.remains>10|debuff.final_reckoning.up)&time_to_hpg=0&target.time_to_die>8
 actions.finishers+=/divine_storm,if=variable.ds_castable&!buff.vanquishers_hammer.up&((!talent.crusade.enabled|cooldown.crusade.remains>gcd*3)&(!talent.execution_sentence.enabled|(cooldown.execution_sentence.remains%gcd+holy_power>7|target.time_to_die<8))&(!talent.final_reckoning.enabled|cooldown.final_reckoning.remains%gcd+holy_power>7)|spell_targets.divine_storm>=2&(talent.holy_avenger.enabled&cooldown.holy_avenger.remains<gcd*3|buff.crusade.up&buff.crusade.stack<10))
