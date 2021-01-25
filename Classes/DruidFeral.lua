@@ -1200,7 +1200,8 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             spend = function ()
                 if buff.apex_predator.up or buff.apex_predators_craving.up then return 0 end
-                if args.max_energy and args.max_energy > 0 then return 50 * ( buff.incarnation.up and 0.8 or 1 ) end
+                -- Support true/false or 1/0 through this awkward transition.
+                if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.8 or 1 ) end
                 return max( 25, min( 50 * ( buff.incarnation.up and 0.8 or 1 ), energy.current ) )
             end,
             spendType = "energy",
