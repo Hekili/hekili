@@ -586,6 +586,28 @@ do
             }
         },
 
+        mistcaller_ocarina = {
+            cast = 0,
+            cooldown = 30,
+            gcd = "spell",
+
+            item = 178715,
+            
+            nobuff = "mistcaller_ocarina",
+
+            handler = function ()
+                applyBuff( "mistcaller_ocarina" )
+            end,
+
+            auras = {
+                mistcaller_ocarina = {
+                    id = 330067,
+                    duration = 900,
+                    max_stack = 1
+                }
+            }
+        },
+
         overcharged_anima_battery = {
             cast = 0,
             cooldown = 90,
