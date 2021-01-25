@@ -1528,11 +1528,11 @@ if UnitClassBase( "player" ) == "ROGUE" then
             id = 213981,
             cast = 0,
             cooldown = 60,
-            gcd = "spell",
+            gcd = "off",
             
             pvptalent = "cold_blood",            
 
-            startsCombat = true,
+            startsCombat = false,
             texture = 135988,
             
             handler = function ()
