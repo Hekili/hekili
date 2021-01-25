@@ -1,8 +1,8 @@
-# Feral Druid
-# January 17, 2021
+## Feral Druid
+## January 24, 2021
 
-# Feral APL can also be found at https://gist.github.com/Xanzara/6896c8996f5afce5ce115daa3a08daff
-# Change druid.owlweave_cat=1 checks to druid.owlweave_cat.
+## Feral APL can also be found at https://gist.github.com/Xanzara/6896c8996f5afce5ce115daa3a08daff
+## Change druid.owlweave_cat=1 checks to druid.owlweave_cat.
 
 actions.precombat+=/variable,name=fourcp_bite,value=0
 # Shred = 0, Non-snapshot Rake = 1, Snapshot Rake = 2, LI = 3, Swipe = 4
