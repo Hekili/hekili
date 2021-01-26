@@ -1,7 +1,10 @@
-# Death Knight Frost
-# January 17, 2021
+## Death Knight Frost
+## January 25, 2021
 
-# Executed every time the actor is available.
+## Changes
+## - Removed last-second usage of Chains of Ice as it doesn't play well in practice.
+
+## Executed every time the actor is available.
 actions=mind_freeze
 # Apply Frost Fever and maintain Icy Talons
 actions+=/howling_blast,if=!dot.frost_fever.ticking&(talent.icecap|cooldown.breath_of_sindragosa.remains>15|talent.obliteration&cooldown.pillar_of_frost.remains&!buff.killing_machine.up)
@@ -10,7 +13,7 @@ actions+=/frost_strike,if=buff.icy_talons.remains<=gcd&buff.icy_talons.up&(!tale
 # Choose Action list to run
 actions+=/call_action_list,name=covenants
 actions+=/call_action_list,name=cooldowns
-actions+=/call_action_list,name=cold_heart,if=talent.cold_heart&(buff.cold_heart.stack>=10&(debuff.razorice.stack=5|!death_knight.runeforge.razorice)|fight_remains<=gcd)
+actions+=/call_action_list,name=cold_heart,if=talent.cold_heart&buff.cold_heart.stack>=10&(debuff.razorice.stack=5|!death_knight.runeforge.razorice)
 actions+=/run_action_list,name=bos_ticking,if=buff.breath_of_sindragosa.up
 actions+=/run_action_list,name=bos_pooling,if=talent.breath_of_sindragosa&(cooldown.breath_of_sindragosa.remains<10)
 actions+=/run_action_list,name=obliteration,if=buff.pillar_of_frost.up&talent.obliteration
@@ -59,8 +62,8 @@ actions.bos_ticking+=/obliterate,cycle_targets=1,if=runic_power.deficit>25&rune>
 actions.bos_ticking+=/howling_blast,if=buff.rime.up
 actions.bos_ticking+=/arcane_torrent,if=runic_power.deficit>50
 
-# Cold Heart Conditions
-actions.cold_heart=chains_of_ice,if=fight_remains<gcd
+## Cold Heart Conditions
+## actions.cold_heart=chains_of_ice,if=fight_remains<gcd
 # Use during Pillar with Icecap/Breath
 actions.cold_heart+=/chains_of_ice,if=!talent.obliteration&buff.pillar_of_frost.remains<3&buff.pillar_of_frost.up&buff.cold_heart.stack>=10
 # Outside of Pillar useage with Icecap/Breath
