@@ -1,5 +1,5 @@
 ## Outlaw Rogue
-## January 24, 2021
+## January 25, 2021
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
@@ -70,8 +70,8 @@ actions.cds+=/use_items,if=!runeforge.mark_of_the_master_assassin&debuff.between
 
 ## Finishers
 actions.finish=slice_and_dice,if=buff.slice_and_dice.remains<fight_remains&refreshable
-# BtE on cooldown to keep the Crit debuff up
-actions.finish+=/between_the_eyes
+# BtE on cooldown to keep the Crit debuff up, unless the target is about to die
+actions.finish+=/between_the_eyes,if=target.time_to_die>3
 actions.finish+=/dispatch
 
 ## Stealth
