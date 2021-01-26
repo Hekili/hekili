@@ -2778,7 +2778,7 @@ local mt_default_cooldown = {
             return ( ability.cooldown_ready == nil or ability.cooldown_ready ) and t.remains == 0
 
         -- Hunters
-        elseif k == "remains_guess" then
+        elseif k == "remains_guess" or k == "remains_expected" then
             if t.remains == t.duration then return t.remains end
 
             local lastCast = state.action[ t.key ].lastCast or 0
