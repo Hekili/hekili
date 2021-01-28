@@ -6224,7 +6224,7 @@ do
 
             if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
                 if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
-                elseif ability.item and not state.equipped[ ability.item ] then return false
+                elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false
                 elseif toggle and toggle ~= "none" then
                     if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true, "toggle" end
                 end
@@ -6249,12 +6249,14 @@ do
         local profile = Hekili.DB.profile
         local spec = profile.specs[ state.spec.id ]
 
+        local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
+
         local toggle = option.toggle
         if not toggle or toggle == "default" then toggle = ability.toggle end
 
         if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
             if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
-            elseif ability.item and not state.equipped[ ability.item ] then return false
+            elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false, "not equipped"
             elseif toggle and toggle ~= "none" then
                 if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) then return true, "toggle" end
             end
