@@ -3664,7 +3664,7 @@ do
         local spec = GetCurrentSpec()
 
         self.DB.profile.specs[ spec ].items[ item ][ option ] = val
-        if option == "toggle" then Hekili:EmbedSpecOption( nil, item ) end
+        if option == "toggle" then Hekili:EmbedItemOption( nil, item ) end
     end
 
     function Hekili:GetItemOption( info )
