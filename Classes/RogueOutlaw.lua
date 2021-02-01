@@ -1008,7 +1008,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
             id = 137619,
             cast = 0,
             cooldown = 60,
-            gcd = "spell",
+            gcd = "off",
 
             talent = "marked_for_death", 
 

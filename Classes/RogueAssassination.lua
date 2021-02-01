@@ -1334,7 +1334,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             id = 137619,
             cast = 0,
             cooldown = 30,
-            gcd = "spell",
+            gcd = "off",
 
             -- toggle = "cooldowns",
 
@@ -1342,7 +1342,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             texture = 236364,
 
             usable = function ()
-                return settings.mfd_waste or combo_points.current == 0, "combo_point (" .. combo_points.current .. ") waste not allowed"
+                return combo_points.current <= settings.mfd_points, "combo_point (" .. combo_points.current .. ") > user preference (" .. settings.mfd_points .. ")"
             end,
 
             handler = function ()
@@ -1753,6 +1753,10 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 gain( ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + 2, "combo_points" )
             end,
 
+            disabled = function ()
+                return covenant.kyrian and not IsSpellKnownOrOverridesKnown( 323547 ), "you have not finished your kyrian covenant intro"
+            end,
+
             auras = {
                 echoing_reprimand_2 = {
                     id = 323558,
@@ -2032,10 +2036,13 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         return energy.max * ( ( 100 - ( settings.envenom_pool_pct or 100 ) ) / 100 )
     end )
 
-    spec:RegisterSetting( "mfd_waste", true, {
-        name = "Allow |T236364:0|t Marked for Death Combo Waste",
-        desc = "If unchecked, the addon will not recommend |T236364:0|t Marked for Death if it will waste combo points.",
-        type = "toggle",
+    spec:RegisterSetting( "mfd_points", 3, {
+        name = "|T236340:0|t Marked for Death Combo Points",
+        desc = "The addon will only recommend |T236364:0|t Marked for Death when you have the specified number of combo points or fewer.",
+        type = "range",
+        min = 0,
+        max = 5,
+        step = 1,
         width = "full"
     } )
 
