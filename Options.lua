@@ -9745,9 +9745,19 @@ local function Sanitize( segment, i, line, warnings )
         table.insert( warnings, "Line " .. line .. ": Converted 'time_to_pct_XX.remains' to 'time_to_pct_XX' (" .. times .. "x)." )
     end
 
-    i, times = i:gsub( "trinket%.([%w_]+)%.cooldown", "cooldown.%1" )
-    if times > 0 then
-        table.insert( warnings, "Line " .. line .. ": Converted 'trinket.X.cooldown' to 'cooldown.X' (" .. times .. "x)." )
+    i, times = i:gsub( "trinket%.1%.", "trinket.t1." )
+    if times > 0 then        
+        table.insert( warnings, "Line " .. line .. ": Converted 'trinket.1.X' to 'trinket.t1.X' (" .. times .. "x)." )        
+    end
+
+    i, times = i:gsub( "trinket%.2%.", "trinket.t2." )
+    if times > 0 then        
+        table.insert( warnings, "Line " .. line .. ": Converted 'trinket.2.X' to 'trinket.t2.X' (" .. times .. "x)." )        
+    end
+
+    i, times = i:gsub( "trinket%.([%w_][%w_][%w_]+)%.cooldown", "cooldown.%1" )
+    if times > 0 then        
+        table.insert( warnings, "Line " .. line .. ": Converted 'trinket.abc.cooldown' to 'cooldown.abc' (" .. times .. "x)." )        
     end
 
     i, times = i:gsub( "min:[a-z0-9_%.]+(,?$?)", "%1" )

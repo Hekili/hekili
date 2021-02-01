@@ -624,7 +624,6 @@ do
 
     local function itemSorter( a, b )
         local action1, action2 = class.abilities[ a.action ].cooldown, class.abilities[ b.action ].cooldown
-
         return action1 > action2
     end
 
@@ -980,33 +979,90 @@ do
             end
         end
 
-        local ItemBuffs = LibStub( "LibItemBuffs-1.0", true )
+        -- Trinkets
+        -- We want to know:
+        -- 1. Which trinket?
+        -- 2. Does it have a spell?  (GetItemSpell)
+        -- 3. Does it have an on-use?  (IsItemUsable)
+        -- 4. ???        
+
         local T1 = GetInventoryItemID( "player", 13 )
 
-        if ItemBuffs and T1 then
-            local t1buff = ItemBuffs:GetItemBuffs( T1 )
+        state.trinket.t1.id = 0
+        state.trinket.t1.usable = false
+        state.trinket.t1.ability = "null_cooldown"
+        state.trinket.t1.cooldown = state.cooldown.null_cooldown
 
-            if type(t1buff) == 'table' then t1buff = t1buff[1] end
-
-            class.auras.trinket1 = class.auras[ t1buff ]
+        if T1 then
             state.trinket.t1.id = T1
-        else
-            state.trinket.t1.id = 0
+
+            local name, spellID = GetItemSpell( T1 )
+            local tSpell = class.itemMap[ T1 ]
+
+            if tSpell then
+                state.trinket.t1.usable = true
+                state.trinket.t1.ability = tSpell
+                state.trinket.t1.cooldown = state.cooldown[ tSpell ]
+            end
+
+            ns.Tooltip:SetOwner( UIParent )
+            ns.Tooltip:SetInventoryItem( "player", 13 )
+            
+            local i = 0
+            while( true ) do
+                i = i + 1
+                local ttLine = _G[ "HekiliTooltipTextLeft" .. i ]
+
+                if not ttLine then break end
+
+                local line = ttLine:GetText()
+
+                if line and line:match( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP ) then
+                    state.trinket.t1.proc = true
+                end
+            end
+
+            ns.Tooltip:Hide()
         end
 
         local T2 = GetInventoryItemID( "player", 14 )
 
-        if ItemBuffs and T2 then
-            local t2buff = ItemBuffs:GetItemBuffs( T2 )
+        state.trinket.t2.id = 0
+        state.trinket.t2.usable = false
+        state.trinket.t2.ability = "null_cooldown"
+        state.trinket.t2.cooldown = state.cooldown.null_cooldown
 
-            if type(t2buff) == 'table' then t2buff = t2buff[1] end
-
-            class.auras.trinket2 = class.auras[ t2buff ]
+        if T2 then
             state.trinket.t2.id = T2
-        else
-            state.trinket.t2.id = 0
-        end
 
+            local name, spellID = GetItemSpell( T2 )
+            local tSpell = class.itemMap[ T2 ]
+
+            if tSpell then
+                state.trinket.t2.usable = true
+                state.trinket.t2.ability = tSpell
+                state.trinket.t2.cooldown = state.cooldown[ tSpell ]
+            end
+
+            ns.Tooltip:SetOwner( UIParent )
+            ns.Tooltip:SetInventoryItem( "player", 14 )
+            
+            local i = 0
+            while( true ) do
+                i = i + 1
+                local ttLine = _G[ "HekiliTooltipTextLeft" .. i ]
+
+                if not ttLine then break end
+
+                local line = ttLine:GetText()
+
+                if line and line:match( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP ) then
+                    state.trinket.t2.proc = true
+                end
+            end
+
+            ns.Tooltip:Hide()
+        end
 
         local dk_forge = class.file == "DEATHKNIGHT" and state.death_knight and state.death_knight.runeforge
 

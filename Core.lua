@@ -717,6 +717,26 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         ability = class.abilities[ action ]
                         state.this_action = action
                         entryReplaced = true
+                    elseif action == "trinket1" then
+                        if state.trinket.t1.usable and state.trinket.t1.ability then
+                            action = state.trinket.t1.ability
+                            ability = class.abilities[ action ]
+                            state.this_action = action
+                            entryReplaced = true
+                        else
+                            if debug then self:Debug( "Bypassing 'trinket1' action as a usable trinket is not in slot #1." ) end
+                            ability = nil
+                        end
+                    elseif action == "trinket2" then
+                        if state.trinket.t2.usable and state.trinket.t2.ability then
+                            action = state.trinket.t2.ability
+                            ability = class.abilities[ action ]
+                            state.this_action = action
+                            entryReplaced = true
+                        else
+                            if debug then Hekili:Debug( "Bypassing 'trinket2' action as a usable trinket is not in slot #2." ) end
+                            ability = nil
+                        end
                     end
 
                     rDepth = rDepth + 1
@@ -730,7 +750,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                     if debug then
                         local d = ""
-                        if entryReplaced then d = format( "Substituting %s for Heart of Azeroth action; it is otherwise not included in the priority.\n", action ) end
+                        if entryReplaced then d = format( "Substituting %s for %s action; it is otherwise not included in the priority.\n", action, class.abilities[ entry.action ].name ) end
                         
                         d = d .. format( "\n%-4s %s ( %s - %d )", rDepth .. ".", action, listName, actID )                        
 

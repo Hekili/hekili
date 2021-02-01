@@ -2262,7 +2262,29 @@ all:RegisterAbilities( {
         handler = function ()
             removeBuff( args.buff_name )
         end,
-    }
+    },
+
+    null_cooldown = {
+        name = "|cff00ccff[Null Cooldown]|r",
+        cast = 0,
+        gcd = "off",
+
+        startsCombat = false,
+
+        unlisted = true
+    },
+
+    trinket1 = {
+        name = "|cff00ccff[Trinket #1]",
+        cast = 0,
+        gcd = "off",
+    },
+
+    trinket2 = {
+        name = "|cff00ccff[Trinket #2]",
+        cast = 0,
+        gcd = "off",
+    },
 } )
 
 
