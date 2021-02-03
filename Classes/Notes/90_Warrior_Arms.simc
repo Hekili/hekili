@@ -1,19 +1,19 @@
-# Arms Warrior
-# December 28, 2020
+## Arms Warrior
+## February 2, 2021
 
-# Changes:
-# - Added Pummel.
-# - Added Victory Rush/Impending Victory.
-# - Added Battle Shout to precombat APL.
-# - Executioner's Precision is deleted.
-# - Added Use Items.
-# - Tweak entry for Bladestorm.
+## Changes:
+## - Added Pummel.
+## - Added Victory Rush/Impending Victory.
+## - Added Battle Shout to precombat APL.
+## - Executioner's Precision is deleted.
+## - Added Use Items.
+## - Tweak entry for Bladestorm.
 
-# Executed before combat begins. Accepts non-harmful actions only.
+## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/battle_shout
-actions.precombat+=/use_item,name=azsharas_font_of_power
+actions.precombat+=/recklessness,if=!runeforge.signet_of_tormented_kings.equipped
 
-# Executed every time the actor is available.
+## Executed every time the actor is available.
 actions=charge
 actions+=/pummel
 actions+=/potion
