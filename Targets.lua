@@ -817,7 +817,7 @@ do
         enemy.lastSeen = time
     end
 
-    local DEFAULT_TTD = 25
+    local DEFAULT_TTD = 30
     local FOREVER = 300
     local TRIVIAL = 5
 
