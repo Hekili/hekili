@@ -1,5 +1,8 @@
 ## Demon Hunter Havoc
-## January 23, 2021
+## February 3, 2021
+
+## Changes:
+## - Metamorphosis and Potion usage "before fight ends" logic adjusted to apply only to boss fights.
 
 actions.precombat=bottled_flayedwing_toxin
 
@@ -21,13 +24,13 @@ actions+=/call_action_list,name=essence_break,if=talent.essence_break.enabled&(v
 actions+=/run_action_list,name=demonic,if=talent.demonic.enabled
 actions+=/run_action_list,name=normal
 
-actions.cooldown=metamorphosis,if=!(talent.demonic.enabled|variable.pooling_for_meta)&cooldown.eye_beam.remains>20&(!covenant.venthyr.enabled|!dot.sinful_brand.ticking)|fight_remains<25
+actions.cooldown=metamorphosis,if=!(talent.demonic.enabled|variable.pooling_for_meta)&cooldown.eye_beam.remains>20&(!covenant.venthyr.enabled|!dot.sinful_brand.ticking)|boss&fight_remains<25
 actions.cooldown+=/metamorphosis,if=talent.demonic.enabled&(cooldown.eye_beam.remains>20&(!variable.blade_dance|cooldown.blade_dance.remains>gcd.max))&(!covenant.venthyr.enabled|!dot.sinful_brand.ticking)
 actions.cooldown+=/sinful_brand,if=!dot.sinful_brand.ticking
 actions.cooldown+=/the_hunt,if=!talent.demonic.enabled&!variable.waiting_for_momentum|buff.furious_gaze.up
 actions.cooldown+=/fodder_to_the_flame
 actions.cooldown+=/elysian_decree,if=(active_enemies>desired_targets|raid_event.adds.in>30)
-actions.cooldown+=/potion,if=buff.metamorphosis.remains>25|fight_remains<60
+actions.cooldown+=/potion,if=buff.metamorphosis.remains>25|boss&fight_remains<60
 # Default fallback for usable items.
 actions.cooldown+=/use_items,if=buff.metamorphosis.up
 
