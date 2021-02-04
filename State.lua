@@ -3310,15 +3310,10 @@ local mt_default_buff = {
             return t.remains > 0
 
         elseif k == "react" then
-            -- React returns stacks assuming you've had time to react to them.
-            -- if state.query_time > t.applied + state.latency then
-                if t.expires > state.query_time then
-                    return t.count
-                end
-                return 0
-            -- end
-
-            -- return state.query_time > t.lastApplied and t.lastCount or 0
+            if t.expires > state.query_time then
+                return t.count
+            end
+            return 0
 
         elseif k == "down" then
             return t.remains == 0
@@ -4219,9 +4214,6 @@ local mt_default_debuff = {
             -- if state.isCyclingTargets( nil, t.key ) then return true end
             return t.remains < 0.3 * ( aura and aura.duration or t.duration or 30 )
 
-        elseif k == "ticks_gained_on_refresh" then
-            return min( 1.3 * t.duration, t.remains + t.duration ) / ( t.tick_time )
-
         elseif k == "time_to_refresh" then
             -- if state.isCyclingTargets( nil, t.key ) then return 0 end
             return t.up and ( max( 0, 0.01 + state.query_time - ( 0.3 * ( aura and aura.duration or t.duration or 30 ) ) ) ) or 0
@@ -4231,15 +4223,10 @@ local mt_default_debuff = {
             if t.up then return ( t.count ) else return 0 end
 
         elseif k == "react" then
-            -- React returns stacks assuming you've had time to react to them.
-            if state.query_time > t.applied + state.latency then
-                if t.expires > state.query_time then
-                    return t.count
-                end
-                return 0
+            if t.expires > state.query_time then
+                return t.count
             end
-
-            return state.query_time > t.lastApplied and t.lastCount or 0
+            return 0
 
         elseif k == "max_stack" or k == "max_stacks" then
             return aura and aura.max_stack or 1
