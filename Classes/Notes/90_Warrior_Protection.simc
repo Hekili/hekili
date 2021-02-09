@@ -1,5 +1,5 @@
 ## Protection Warrior
-## February 2, 2021
+## February 8, 2021
 
 ## Changes
 ## - Add Mitigation logic to new SimC APL.
@@ -29,7 +29,7 @@ actions+=/avatar
 actions+=/ancient_aftershock
 actions+=/spear_of_bastion
 actions+=/conquerors_banner
-actions+=/shield_block,if=buff.shield_block.downs
+actions+=/shield_block,if=buff.shield_block.down
 actions+=/run_action_list,name=aoe,if=spell_targets.thunder_clap>=3
 actions+=/call_action_list,name=generic
 

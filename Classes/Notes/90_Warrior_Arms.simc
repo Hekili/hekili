@@ -1,5 +1,5 @@
 ## Arms Warrior
-## February 2, 2021
+## February 8, 2021
 
 ## Changes:
 ## - Added Pummel.
@@ -11,7 +11,6 @@
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/battle_shout
-actions.precombat+=/recklessness,if=!runeforge.signet_of_tormented_kings.equipped
 
 ## Executed every time the actor is available.
 actions=charge
