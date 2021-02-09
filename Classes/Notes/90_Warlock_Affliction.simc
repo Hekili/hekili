@@ -1,5 +1,5 @@
 ## Affliction Warlock
-## January 23, 2021
+## February 8, 2021
 
 ## Changes:
 ## - Added Spell Lock.
@@ -10,13 +10,14 @@
 ## - Tweaks to avoid blowing Darkglare in multi-target w/o DOTs up.
 ## - Condense some Darkglare Prep calls to reduce computation time.
 ## - Set some call_action_list entries to strict to avoid checking lists that won't be reached.
+## - Only Seed once pre-pull.
 
 actions.precombat=fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
 actions.precombat+=/summon_pet
 actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
 actions.precombat+=/variable,name=dots_ready,value=active_dot.corruption>0&active_dot.agony>0&active_dot.unstable_affliction>0&(!talent.siphon_life.enabled|active_dot.siphon_life>0)&(dot.phantom_singularity.ticking|!talent.phantom_singularity.enabled)
 actions.precombat+=/use_item,name=azsharas_font_of_power
-actions.precombat+=/seed_of_corruption,if=spell_targets.seed_of_corruption_aoe>=3&!equipped.169314
+actions.precombat+=/seed_of_corruption,line_cd=10,if=spell_targets.seed_of_corruption_aoe>=3&!equipped.169314
 actions.precombat+=/haunt
 actions.precombat+=/shadow_bolt,if=!talent.haunt.enabled&spell_targets.seed_of_corruption_aoe<3&!equipped.169314
 
