@@ -1,7 +1,9 @@
 ## Death Knight Unholy
-## January 25, 2021
+## February 8, 2021
 
 ## Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
+## Disabled Sacrificial Pact because dead ghouls make for sad DKs.
+## Using Wound Spender abilities more flexibly (at 4+ stacks instead of 5+); DPS neutral and may prevent some no-rec situations.
 
 actions.precombat+=/potion
 actions.precombat+=/use_item,name=azsharas_font_of_power
@@ -65,13 +67,14 @@ actions.cooldowns+=/unholy_blight,if=variable.st_planning&(cooldown.apocalypse.r
 actions.cooldowns+=/unholy_blight,if=active_enemies>=2|fight_remains<21
 actions.cooldowns+=/dark_transformation,if=variable.st_planning&(dot.unholy_blight_dot.remains|!talent.unholy_blight)
 actions.cooldowns+=/dark_transformation,if=active_enemies>=2|fight_remains<21
-actions.cooldowns+=/apocalypse,if=active_enemies=1&debuff.festering_wound.stack>=4
-actions.cooldowns+=/apocalypse,cycle_targets=1,if=active_enemies>=2&debuff.festering_wound.stack>=4&!death_and_decay.ticking
+actions.cooldowns+=/apocalypse,if=active_enemies=1&debuff.festering_wound.stack>3
+actions.cooldowns+=/apocalypse,cycle_targets=1,if=active_enemies>=2&debuff.festering_wound.stack>3&!death_and_decay.ticking
 actions.cooldowns+=/summon_gargoyle,if=runic_power.deficit<14&(cooldown.unholy_blight.remains<10|dot.unholy_blight_dot.remains)
 actions.cooldowns+=/unholy_assault,if=variable.st_planning&debuff.festering_wound.stack<2&(pet.apoc_ghoul.active|buff.dark_transformation.up&!pet.army_ghoul.active)
 actions.cooldowns+=/unholy_assault,cycle_targets=1,if=active_enemies>=2&debuff.festering_wound.stack<2
 actions.cooldowns+=/raise_dead,if=!pet.ghoul.active
-actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&!buff.dark_transformation.up&!cooldown.dark_transformation.ready|fight_remains<gcd
+## Disabled, just not really normal behavior that's worth pursuing in-game.
+## actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&!buff.dark_transformation.up&!cooldown.dark_transformation.ready|fight_remains<gcd
 
 ## Covenant Abilities
 actions.covenants=swarming_mist,if=variable.st_planning&runic_power.deficit>16&(cooldown.apocalypse.remains|!talent.army_of_the_damned&cooldown.dark_transformation.remains)|fight_remains<11
@@ -87,7 +90,7 @@ actions.covenants+=/shackle_the_unworthy,if=active_enemies>=2&(death_and_decay.t
 actions.generic=death_coil,if=buff.sudden_doom.react&!variable.pooling_runic_power|pet.gargoyle.active
 actions.generic+=/death_coil,if=runic_power.deficit<13|fight_remains<5&!debuff.festering_wound.up
 actions.generic+=/any_dnd,if=cooldown.apocalypse.remains&(talent.defile.enabled|covenant.night_fae|runeforge.phearomones)&(!variable.pooling_runes|fight_remains<5)
-actions.generic+=/wound_spender,if=debuff.festering_wound.stack>4&!variable.pooling_runes
+actions.generic+=/wound_spender,if=debuff.festering_wound.stack>3&!variable.pooling_runes
 actions.generic+=/wound_spender,if=debuff.festering_wound.up&cooldown.apocalypse.remains_expected>5&!variable.pooling_runes
 actions.generic+=/death_coil,if=runic_power.deficit<20&!variable.pooling_runic_power
 actions.generic+=/festering_strike,if=debuff.festering_wound.stack<1&!variable.pooling_runes
@@ -98,7 +101,7 @@ actions.generic+=/death_coil,if=!variable.pooling_runic_power
 actions.generic_aoe=wait_for_cooldown,name=soul_reaper,if=talent.soul_reaper&target.time_to_pct_35<5&fight_remains>5&cooldown.soul_reaper.remains<(gcd*0.75)&active_enemies<=3
 actions.generic_aoe+=/death_coil,if=(!variable.pooling_runic_power|buff.sudden_doom.react)&(buff.dark_transformation.up&runeforge.deadliest_coil&active_enemies<=3|active_enemies=2)
 actions.generic_aoe+=/epidemic,if=buff.sudden_doom.react|!variable.pooling_runic_power
-actions.generic_aoe+=/wound_spender,cycle_targets=1,if=(cooldown.apocalypse.remains>5&debuff.festering_wound.up|debuff.festering_wound.stack>4)&(fight_remains<cooldown.death_and_decay.remains+10|fight_remains>cooldown.apocalypse.remains)
+actions.generic_aoe+=/wound_spender,cycle_targets=1,if=(cooldown.apocalypse.remains>5&debuff.festering_wound.up|debuff.festering_wound.stack>3)&(fight_remains<cooldown.death_and_decay.remains+10|fight_remains>cooldown.apocalypse.remains)
 actions.generic_aoe+=/festering_strike,cycle_targets=1,if=debuff.festering_wound.stack<=3&cooldown.apocalypse.remains<3|debuff.festering_wound.stack<1
 actions.generic_aoe+=/festering_strike,cycle_targets=1,if=cooldown.apocalypse.remains>5&debuff.festering_wound.stack<1
 
