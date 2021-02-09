@@ -582,7 +582,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             id = 114051,
             cast = 0,
             cooldown = 180,
-            gcd = "off",
+            gcd = "spell",
 
             readyTime = function() return buff.ascendance.remains end,
 
