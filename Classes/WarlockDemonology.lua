@@ -1602,7 +1602,19 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
             handler = function ()
                 gain( 1, "soul_shards" )
+
+                if legendary.balespiders_burning_core.enabled then
+                    addStack( "balespiders_burning_core", nil, 1 )
+                end
             end,
+
+            auras = {
+                balespiders_burning_core = {
+                    id = 337161,
+                    duration = 15,
+                    max_stack = 4
+                }
+            }
         },
 
 
