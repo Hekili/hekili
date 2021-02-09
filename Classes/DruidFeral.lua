@@ -1958,7 +1958,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             end,
 
             -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
-            cost = function () return max( 1, class.abilities.brutal_slash.spend ) end,
+            cost = function () return max( 1, class.abilities.shred.spend ) end,
 
             handler = function ()
                 if level > 53 and ( buff.prowl.up or buff.berserk.up or buff.incarnation.up ) then
