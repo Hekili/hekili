@@ -409,7 +409,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         local count = 0
 
         for i, spell in ipairs( hot_streak_spells ) do
-            if state:IsInFlight( spell ) then return true end
+            if state:IsInFlight( spell ) then count = count + 1 end
         end
 
         return count
