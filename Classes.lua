@@ -2120,6 +2120,32 @@ all:RegisterAbilities( {
     },
 
 
+    stoneform = {
+        id = 20594,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        handler = function ()
+            removeBuff( "dispellable_poison" )
+            removeBuff( "dispellable_disease" )
+            removeBuff( "dispellable_curse" )
+            removeBuff( "dispellable_magic" )
+            removeBuff( "dispellable_bleed" )
+
+            applyBuff( "stoneform" )
+        end,
+
+        auras = {
+            stoneform = {
+                id = 65116,
+                duration = 8,
+                max_stack = 1
+            }
+        }
+    },
+
+
     fireblood = {
         id = 265221,
         cast = 0,
