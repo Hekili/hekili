@@ -1,11 +1,13 @@
 ## Death Knight Frost
-## January 25, 2021
+## February 13, 2021
 
 ## Changes
 ## - Removed last-second usage of Chains of Ice as it doesn't play well in practice.
 
 ## Executed every time the actor is available.
 actions=mind_freeze
+# Apply Frost Fever, maintain Icy Talons and keep Remorseless Winter rolling
+actions+=/remorseless_winter,if=conduit.everfrost&talent.gathering_storm&!talent.obliteration&cooldown.pillar_of_frost.remains
 # Apply Frost Fever and maintain Icy Talons
 actions+=/howling_blast,if=!dot.frost_fever.ticking&(talent.icecap|cooldown.breath_of_sindragosa.remains>15|talent.obliteration&cooldown.pillar_of_frost.remains&!buff.killing_machine.up)
 actions+=/glacial_advance,if=buff.icy_talons.remains<=gcd&buff.icy_talons.up&spell_targets.glacial_advance>=2&(!talent.breath_of_sindragosa|cooldown.breath_of_sindragosa.remains>15)
