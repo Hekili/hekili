@@ -326,7 +326,7 @@ do
         },
 
         empyreal_ordnance = {
-            cast = 0.5,
+            cast = 0,
             cooldown = 180,
             gcd = "off",
 
