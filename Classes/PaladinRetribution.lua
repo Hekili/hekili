@@ -377,13 +377,6 @@ if UnitClassBase( "player" ) == "PALADIN" then
             max_stack = 20
         },
 
-        the_arbiters_judgment = {
-            id = 337682,
-            duration = 15,
-            max_stack = 1,
-            copy = "arbiters_judgment"
-        },
-
 
         -- Conduits
         expurgation = {
@@ -505,12 +498,6 @@ if UnitClassBase( "player" ) == "PALADIN" then
         if buff.fires_of_justice.up then return max( 0, amt - 1 ) end
         return amt
     end )
-
-    spec:RegisterStateFunction( "arbiters_cost", function( amt )
-        if buff.arbiters_judgment.up then return max( 0, amt - 1 ) end
-        return amt
-    end )
-
 
 
     -- Abilities
@@ -800,7 +787,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
                 if buff.empyrean_power.up then return 0 end
-                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_arbiters_judgment.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
@@ -831,7 +818,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_arbiters_judgment.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+                return 3 - ( buff.fires_of_justice.up and 1 or 0 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
             end,
             spendType = "holy_power",
 
