@@ -1551,6 +1551,8 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         cycle = true,
         cycleDebuff = "festering_wound",
 
+        enhancedRecheck = true,
+
         potion = "potion_of_spectral_strength",
 
         package = "Unholy",

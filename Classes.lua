@@ -35,7 +35,8 @@ local specTemplate = {
     aoe = 2,
     cycle = false,
     cycle_min = 6,
-    gcdSync = true,
+    gcdSync = false,
+    enhancedRecheck = false,
 
     buffPadding = 0,
     debuffPadding = 0,

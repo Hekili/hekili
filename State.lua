@@ -1435,8 +1435,8 @@ do
                 recheckHelper( workTable, script.Recheck() )
             end
 
-            --[[ This was found to be CPU intensive (when repeated a LOT) without commensurate benefit.
-            if script.Variables then
+            -- This can be CPU intensive but is needed for some APLs (i.e., Unholy).
+            if script.Variables and state.settings.enhancedRecheck then
                 -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
                 for i, var in ipairs( script.Variables ) do
                     local varIDs = state:GetVariableIDs( var )
@@ -1451,7 +1451,7 @@ do
                     end
                     -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
                 end
-            end ]]
+            end
         end
 
         -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end

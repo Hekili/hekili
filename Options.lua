@@ -4880,10 +4880,20 @@ do
                                 gcdSync = {
                                     type = "toggle",
                                     name = "Start after Global Cooldown",
-                                    desc = "If checked, the addon's first recommendation will be delayed to the start of the GCD in your Primary and AOE displays.  This can reduce flickering if trinkets or off-GCD abilities are appearing briefly during the global cooldown.",
+                                    desc = "If checked, the addon's first recommendation will be delayed to the start of the GCD in your Primary and AOE displays.  This can reduce flickering if trinkets or off-GCD abilities are appearing briefly during the global cooldown, " ..
+                                        "but will cause abilities intended to be used while the GCD is active (i.e., Recklessness) to bounce backward in the queue.",
                                     width = "full",
                                     order = 4,
                                 },
+
+                                enhancedRecheck = {
+                                    type = "toggle",
+                                    name = "Enhanced Recheck",
+                                    desc = "When the addon cannot recommend an ability at the present time, it rechecks action's conditions at a few points in the future.  If checked, this feature will enable the addon to do additional checking on entries that use the 'variable' feature.  " ..
+                                        "This may use slightly more CPU, but can reduce the likelihood that the addon will fail to make a recommendation.",
+                                    width = "full",
+                                    order = 5,
+                                }
 
                             }
                         }
