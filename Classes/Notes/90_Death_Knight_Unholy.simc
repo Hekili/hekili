@@ -1,12 +1,12 @@
 ## Death Knight Unholy
-## February 8, 2021
+## March 1, 2021
 
 ## Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
 ## Disabled Sacrificial Pact because dead ghouls make for sad DKs.
 ## Using Wound Spender abilities more flexibly (at 4+ stacks instead of 5+); DPS neutral and may prevent some no-rec situations.
+## Changed many 'fight_remains' conditionals to apply in boss fights only (less CD waste on trash).
 
 actions.precombat+=/potion
-actions.precombat+=/use_item,name=azsharas_font_of_power
 actions.precombat+=/raise_dead
 
 ## Executed every time the actor is available.
@@ -58,15 +58,15 @@ actions.aoe_setup+=/festering_strike,cycle_targets=1,if=debuff.festering_wound.s
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=rune.time_to_4<(cooldown.death_and_decay.remains&!talent.defile|cooldown.defile.remains&talent.defile)
 
 ## Potion
-actions.cooldowns=potion,if=variable.major_cooldowns_active|fight_remains<26
+actions.cooldowns=potion,if=variable.major_cooldowns_active|boss&fight_remains<26
 ## Cooldowns
-actions.cooldowns+=/army_of_the_dead,if=cooldown.unholy_blight.remains<5&cooldown.dark_transformation.remains_expected<5&talent.unholy_blight|!talent.unholy_blight|fight_remains<35
-actions.cooldowns+=/soul_reaper,target_if=target.time_to_pct_35<5&target.time_to_die>5
+actions.cooldowns+=/army_of_the_dead,if=cooldown.unholy_blight.remains<5&cooldown.dark_transformation.remains_expected<5&talent.unholy_blight|!talent.unholy_blight|boss&fight_remains<35
+actions.cooldowns+=/soul_reaper,cycle_targets=1,if=target.time_to_pct_35<5&target.time_to_die>5&active_enemies<=3
 # Holds Blight for up to 5 seconds to sync with Apocalypse, Otherwise, use with Dark Transformation.
 actions.cooldowns+=/unholy_blight,if=variable.st_planning&(cooldown.apocalypse.remains_expected<5|cooldown.apocalypse.remains_expected>10)&(cooldown.dark_transformation.remains<gcd|buff.dark_transformation.up)
-actions.cooldowns+=/unholy_blight,if=active_enemies>=2|fight_remains<21
+actions.cooldowns+=/unholy_blight,if=active_enemies>=2|boss&fight_remains<21
 actions.cooldowns+=/dark_transformation,if=variable.st_planning&(dot.unholy_blight_dot.remains|!talent.unholy_blight)
-actions.cooldowns+=/dark_transformation,if=active_enemies>=2|fight_remains<21
+actions.cooldowns+=/dark_transformation,if=active_enemies>=2|boss&fight_remains<21
 actions.cooldowns+=/apocalypse,if=active_enemies=1&debuff.festering_wound.stack>3
 actions.cooldowns+=/apocalypse,cycle_targets=1,if=active_enemies>=2&debuff.festering_wound.stack>3&!death_and_decay.ticking
 actions.cooldowns+=/summon_gargoyle,if=runic_power.deficit<14&(cooldown.unholy_blight.remains<10|dot.unholy_blight_dot.remains)
@@ -74,16 +74,16 @@ actions.cooldowns+=/unholy_assault,if=variable.st_planning&debuff.festering_woun
 actions.cooldowns+=/unholy_assault,cycle_targets=1,if=active_enemies>=2&debuff.festering_wound.stack<2
 actions.cooldowns+=/raise_dead,if=!pet.ghoul.active
 ## Disabled, just not really normal behavior that's worth pursuing in-game.
-## actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&!buff.dark_transformation.up&!cooldown.dark_transformation.ready|fight_remains<gcd
+## actions.cooldowns+=/sacrificial_pact,if=active_enemies>=2&!buff.dark_transformation.up&!cooldown.dark_transformation.ready|boss&fight_remains<gcd
 
 ## Covenant Abilities
-actions.covenants=swarming_mist,if=variable.st_planning&runic_power.deficit>16&(cooldown.apocalypse.remains|!talent.army_of_the_damned&cooldown.dark_transformation.remains)|fight_remains<11
+actions.covenants=swarming_mist,if=variable.st_planning&runic_power.deficit>16&(cooldown.apocalypse.remains|!talent.army_of_the_damned&cooldown.dark_transformation.remains)|boss&fight_remains<11
 # Set to use after apoc is on CD as to prevent overcapping RP while setting up CD's
 actions.covenants+=/swarming_mist,if=cooldown.apocalypse.remains&(active_enemies>=2&active_enemies<=5&runic_power.deficit>10+(active_enemies*6)|active_enemies>5&runic_power.deficit>40)
-actions.covenants+=/abomination_limb,if=variable.st_planning&!soulbind.lead_by_example&(cooldown.apocalypse.remains|!talent.army_of_the_damned&cooldown.dark_transformation.remains)&rune.time_to_4>(3+buff.runic_corruption.remains)|fight_remains<21
+actions.covenants+=/abomination_limb,if=variable.st_planning&!soulbind.lead_by_example&(cooldown.apocalypse.remains|!talent.army_of_the_damned&cooldown.dark_transformation.remains)&rune.time_to_4>(3+buff.runic_corruption.remains)|boss&fight_remains<21
 actions.covenants+=/abomination_limb,if=variable.st_planning&soulbind.lead_by_example&(dot.unholy_blight_dot.remains>11|!talent.unholy_blight&cooldown.dark_transformation.remains)
 actions.covenants+=/abomination_limb,if=active_enemies>=2&rune.time_to_4>(3+buff.runic_corruption.remains)
-actions.covenants+=/shackle_the_unworthy,if=variable.st_planning&(cooldown.apocalypse.remains|!talent.army_of_the_damned&cooldown.dark_transformation.remains)|fight_remains<15
+actions.covenants+=/shackle_the_unworthy,if=variable.st_planning&(cooldown.apocalypse.remains|!talent.army_of_the_damned&cooldown.dark_transformation.remains)|boss&fight_remains<15
 actions.covenants+=/shackle_the_unworthy,if=active_enemies>=2&(death_and_decay.ticking|raid_event.adds.remains<=14)
 
 ## Single Target
@@ -106,8 +106,8 @@ actions.generic_aoe+=/festering_strike,cycle_targets=1,if=debuff.festering_wound
 actions.generic_aoe+=/festering_strike,cycle_targets=1,if=cooldown.apocalypse.remains>5&debuff.festering_wound.stack<1
 
 ## Trinkets
-actions.trinkets=use_item,name=inscrutable_quantum_device,if=(cooldown.unholy_blight.remains|cooldown.dark_transformation.remains)&(pet.army_ghoul.active|pet.apoc_ghoul.active&!talent.army_of_the_damned|target.time_to_pct_20<5)|fight_remains<21
-actions.trinkets+=/use_item,name=macabre_sheet_music,if=cooldown.apocalypse.remains<5&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)|fight_remains<21
-actions.trinkets+=/use_item,name=dreadfire_vessel,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)|fight_remains<3
-actions.trinkets+=/use_item,name=darkmoon_deck_voracity,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)|fight_remains<21
+actions.trinkets=use_item,name=inscrutable_quantum_device,if=(cooldown.unholy_blight.remains|cooldown.dark_transformation.remains)&(pet.army_ghoul.active|pet.apoc_ghoul.active&!talent.army_of_the_damned|target.time_to_pct_20<5)|boss&fight_remains<21
+actions.trinkets+=/use_item,name=macabre_sheet_music,if=cooldown.apocalypse.remains<5&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)|boss&fight_remains<21
+actions.trinkets+=/use_item,name=dreadfire_vessel,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)|boss&fight_remains<3
+actions.trinkets+=/use_item,name=darkmoon_deck_voracity,if=cooldown.apocalypse.remains&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)|boss&fight_remains<21
 actions.trinkets+=/use_items,if=(cooldown.apocalypse.remains|buff.dark_transformation.up)&(!equipped.inscrutable_quantum_device|cooldown.inscrutable_quantum_device.remains)
