@@ -1,5 +1,5 @@
 ## Demon Hunter Havoc
-## February 3, 2021
+## March 1, 2021
 
 ## Changes:
 ## - Metamorphosis and Potion usage "before fight ends" logic adjusted to apply only to boss fights.
@@ -9,6 +9,8 @@ actions.precombat=bottled_flayedwing_toxin
 ## Executed every time the actor is available.
 actions=disrupt
 actions+=/consume_magic
+## We don't do this target swapping to apply Burning Wound
+## actions+=/retarget_auto_attack,line_cd=1,target_if=min:debuff.burning_wound.remains,if=runeforge.burning_wound&talent.demon_blades.enabled
 # Without Chaos Theory, Blade Dance with First Blood or at 3+ (2+ with Trail of Ruin) targets
 actions+=/variable,name=blade_dance,if=!runeforge.chaos_theory,value=talent.first_blood.enabled|spell_targets.blade_dance1>=(3-talent.trail_of_ruin.enabled)
 # With Chaos Theory, Blade Dance when the buff is down, with First Blood at 2+ (1+ with Trail of Ruin) or with Essence Break at 4+ (3+ with Trail of Ruin) targets
@@ -18,10 +20,10 @@ actions+=/variable,name=pooling_for_blade_dance,value=variable.blade_dance&(fury
 actions+=/variable,name=pooling_for_eye_beam,value=talent.demonic.enabled&!talent.blind_fury.enabled&cooldown.eye_beam.remains<(gcd.max*2)&fury.deficit>20
 actions+=/variable,name=waiting_for_essence_break,value=talent.essence_break.enabled&!variable.pooling_for_blade_dance&!variable.pooling_for_meta&cooldown.essence_break.up
 actions+=/variable,name=waiting_for_momentum,value=talent.momentum.enabled&!buff.momentum.up
-actions+=/call_action_list,name=cooldown,if=gcd.remains=0
+actions+=/call_action_list,name=cooldown
 actions+=/throw_glaive,if=buff.fel_bombardment.stack=5&(buff.immolation_aura.up|!buff.metamorphosis.up)
-actions+=/call_action_list,name=essence_break,if=talent.essence_break.enabled&(variable.waiting_for_essence_break|debuff.essence_break.up)
-actions+=/run_action_list,name=demonic,if=talent.demonic.enabled
+actions+=/call_action_list,name=essence_break,strict=1,if=talent.essence_break.enabled&(variable.waiting_for_essence_break|debuff.essence_break.up)
+actions+=/run_action_list,name=demonic,strict=1,if=talent.demonic.enabled
 actions+=/run_action_list,name=normal
 
 actions.cooldown=metamorphosis,if=!(talent.demonic.enabled|variable.pooling_for_meta)&cooldown.eye_beam.remains>20&(!covenant.venthyr.enabled|!dot.sinful_brand.ticking)|boss&fight_remains<25
