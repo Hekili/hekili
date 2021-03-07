@@ -2102,7 +2102,12 @@ all:RegisterAbilities( {
         cooldown = 120,
         gcd = "off",
 
-        usable = function () return boss or group, "requires boss fight or group (to avoid resetting)" end,        
+        usable = function ()
+            if not boss or group then return false, "requires boss fight or group (to avoid resetting)" end
+            if moving then return false, "can't shadowmeld while moving" end
+            return true
+        end,
+
         handler = function ()
             applyBuff( "shadowmeld" )
         end,
