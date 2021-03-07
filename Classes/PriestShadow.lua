@@ -1744,7 +1744,7 @@ if UnitClassBase( "player" ) == "PRIEST" then
         damage = true,
         damageExpiration = 6,
 
-        potion = "potion_of_phantom_fire",
+        potion = "potion_of_spectral_intellect",
 
         package = "Shadow",
     } )
