@@ -990,6 +990,7 @@ do
 
         state.trinket.t1.id = 0
         state.trinket.t1.usable = false
+        state.trinket.t1.has_use_buff = false
         state.trinket.t1.ability = "null_cooldown"
         state.trinket.t1.cooldown = state.cooldown.null_cooldown
 
@@ -1002,6 +1003,11 @@ do
             if tSpell then
                 state.trinket.t1.usable = true
                 state.trinket.t1.ability = tSpell
+                
+                if spellID and SpellIsSelfBuff( spellID ) then
+                    state.trinket.t1.has_use_buff = true
+                end
+
                 state.trinket.t1.cooldown = state.cooldown[ tSpell ]
             end
 
@@ -1029,6 +1035,7 @@ do
 
         state.trinket.t2.id = 0
         state.trinket.t2.usable = false
+        state.trinket.t2.has_use_buff = false
         state.trinket.t2.ability = "null_cooldown"
         state.trinket.t2.cooldown = state.cooldown.null_cooldown
 
@@ -1041,6 +1048,11 @@ do
             if tSpell then
                 state.trinket.t2.usable = true
                 state.trinket.t2.ability = tSpell
+
+                if spellID and SpellIsSelfBuff( spellID ) then
+                    state.trinket.t2.has_use_buff = true
+                end
+
                 state.trinket.t2.cooldown = state.cooldown[ tSpell ]
             end
 
