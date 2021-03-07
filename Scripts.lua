@@ -378,9 +378,9 @@ do
         { "^!(dot%.[a-z0-9_]+)%.ticking$",          "%1.remains" },
         { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$",    "%1.remains" },
         { "^!ticking",                              "remains" },
-        { "^^!?remains$",                           "remains" },
+        { "^!?remains$",                            "remains" },
         { "^refreshable",                           "time_to_refresh" },
-        
+
         { "^(.-)%.deficit<=?(.-)$",                 "0.01+%1.timeTo(%1.max-(%2))" },
         { "^(.-)%.deficit>=?(.-)$",                 "0.01+%1.timeTo(%1.max-(%2))" },        
         
