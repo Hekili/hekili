@@ -618,6 +618,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 0,
             gcd = "spell",
 
+            discipline = "arcane",
+
             spend = 0.04,
             spendType = "mana",
 
@@ -640,6 +642,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = function () return ( talent.shimmer.enabled and 20 or 15 ) - conduit.flow_of_time.mod * 0.001 end,
             recharge = function () return ( talent.shimmer.enabled and ( 20 - conduit.flow_of_time.mod * 0.001 ) or nil ) end,
             gcd = "off",
+
+            discipline = "arcane",
 
             spend = function () return 0.02 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
             spendType = "mana",
@@ -760,8 +764,13 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = function () return 24 - ( conduit.grounding_surge.mod * 0.1 ) end,
             gcd = "off",
 
+            discipline = "arcane",
+
             interrupt = true,
-            toggle = "interrupts",
+            toggle = function ()
+                if runeforge.disciplinary_command.enabled then return end
+                return "interrupts"
+            end,
 
             spend = 0.02,
             spendType = "mana",
@@ -769,8 +778,14 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             startsCombat = true,
             texture = 135856,
 
-            debuff = "casting",
-            readyTime = state.timeToInterrupt,
+            debuff = function ()
+                if runeforge.disciplinary_command.enabled then return end
+                return "casting"
+            end,
+            readyTime = function ()
+                if runeforge.disciplinary_command.enabled then return end
+                return state.timeToInterrupt()
+            end,
 
             handler = function ()
                 interrupt()
@@ -855,6 +870,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 0,
             gcd = "spell",
             
+            discipline = "arcane",
+
             spend = 0.02,
             spendType = "mana",
             
@@ -1148,6 +1165,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 300,
             gcd = "spell",
 
+            discipline = "arcane",
+
             spend = 0.03,
             spendType = "mana",
 
@@ -1171,6 +1190,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 120,
             gcd = "spell",
 
+            discipline = "arcane",
+
             spend = 0.02,
             spendType = "mana",
 
@@ -1190,6 +1211,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cast = 1.7,
             cooldown = 0,
             gcd = "spell",
+
+            discipline = "arcane",
 
             spend = 0.04,
             spendType = "mana",
@@ -1232,6 +1255,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 8,
             gcd = "spell",
 
+            discipline = "arcane",
+
             spend = 0.01,
             spendType = "mana",
 
@@ -1272,6 +1297,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             recharge = 40,
             gcd = "spell",
 
+            discipline = "arcane",
+
             startsCombat = false,
             texture = 609815,
 
@@ -1290,6 +1317,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cooldown = 0,
             gcd = "spell",
 
+            discipline = "arcane",
+
             spend = 0.01,
             spendType = "mana",
 
@@ -1307,6 +1336,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cast = 0,
             cooldown = 0,
             gcd = "spell",
+
+            discipline = "arcane",
 
             spend = 0.21,
             spendType = "mana",
@@ -1350,6 +1381,8 @@ if UnitClassBase( 'player' ) == 'MAGE' then
             cast = 0,
             cooldown = 300,
             gcd = "off",
+
+            discipline = "arcane",
 
             spend = 0.04,
             spendType = "mana",
