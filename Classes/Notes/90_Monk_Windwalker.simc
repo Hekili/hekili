@@ -1,8 +1,8 @@
 # Windwalker Monk
-# January 22, 2021
+# February 19, 2021
 
 # Tweak Fists of Fury interrupt logic.
-# Tweak Spinning Crane Kick logic; avoid delays and integrate Calculated Strikes.
+# Tweak Spinning Crane Kick logic.
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=potion
@@ -110,7 +110,6 @@ actions.st+=/rushing_jade_wind,if=buff.rushing_jade_wind.down&active_enemies>1
 actions.st+=/fist_of_the_white_tiger,cycle_targets=1,if=chi<3
 actions.st+=/expel_harm,if=chi.max-chi>=1
 actions.st+=/chi_burst,if=chi.max-chi>=1&active_enemies=1&raid_event.adds.in>20|chi.max-chi>=2&active_enemies>=2
-actions.st+=/spinning_crane_kick,if=combo_strike&conduit.calculated_strikes&spell_targets.spinning_crane_kick>1
 actions.st+=/chi_wave
 actions.st+=/tiger_palm,cycle_targets=1,if=combo_strike&chi.max-chi>=2&buff.storm_earth_and_fire.down
 actions.st+=/spinning_crane_kick,if=buff.chi_energy.stack>30-5*active_enemies&buff.storm_earth_and_fire.down&(cooldown.rising_sun_kick.remains>2&cooldown.fists_of_fury.remains>2|cooldown.rising_sun_kick.remains<3&cooldown.fists_of_fury.remains>3&chi>3|cooldown.rising_sun_kick.remains>3&cooldown.fists_of_fury.remains<3&chi>4|chi.max-chi<=1&energy.time_to_max<2)|buff.chi_energy.stack>10&fight_remains<7
