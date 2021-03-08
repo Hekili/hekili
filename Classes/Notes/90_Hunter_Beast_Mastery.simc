@@ -1,5 +1,5 @@
 ## Beast Mastery Hunter
-## February 2, 2021
+## March 1, 2021
 
 actions.precombat=summon_pet
 actions.precombat+=/bottled_flayedwing_toxin
@@ -12,7 +12,10 @@ actions.precombat+=/aspect_of_the_wild,precast_time=1.3,if=!azerite.primal_insti
 actions.precombat+=/bestial_wrath,precast_time=1.5,if=azerite.primal_instincts.enabled&!essence.essence_of_the_focusing_iris.major&(equipped.azsharas_font_of_power|!equipped.cyclotronic_blast)
 
 actions+=/counter_shot
-actions+=/use_items
+# If the trinket has a on-use buff, sync it with Aspect of the Wild. If two are competing for a Aspect of the Wild sync, use the stronger on-use effect. If an on-use buff is ready but another stronger on-use buff will also be ready by the time Aspect of the Wild comes back off cooldown, use it if the shared trinket cooldown won't interfere with the upcoming Aspect of the Wild sync. If an on-use buff could be used and still come back for a future Aspect of the Wild, use it. If a non-buff on-use is ready, use it if it won't interfere with potential on-use buffs trying to Aspect of the Wild sync or if the other trinket isn't an on-use, is a non-buff on-use with a longer cooldown, or isn't ready. If the fight is going to end before your next Aspect of the Wild, just start using trinkets to make sure they get used.
+actions+=/trinket1,if=trinket.1.has_use_buff&(buff.aspect_of_the_wild.up&(!trinket.2.has_use_buff|trinket.2.cooldown.remains|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)|buff.aspect_of_the_wild.down&(trinket.2.has_use_buff&trinket.2.cooldown.duration>=trinket.1.cooldown.duration&trinket.2.cooldown.remains-5<cooldown.aspect_of_the_wild.remains&cooldown.aspect_of_the_wild.remains>20|trinket.1.cooldown.duration-5<cooldown.aspect_of_the_wild.remains)|target.time_to_die<cooldown.aspect_of_the_wild.remains)|!trinket.1.has_use_buff&(trinket.2.has_use_buff&(buff.aspect_of_the_wild.down|trinket.2.cooldown.remains>5)&(cooldown.aspect_of_the_wild.remains>20|trinket.2.cooldown.remains-5>cooldown.aspect_of_the_wild.remains)|!trinket.2.has_use_buff&(!trinket.2.has_cooldown|trinket.2.cooldown.duration>=trinket.1.cooldown.duration|trinket.2.cooldown.remains))
+actions+=/trinket2,if=trinket.2.has_use_buff&(buff.aspect_of_the_wild.up&(!trinket.1.has_use_buff|trinket.1.cooldown.remains|trinket.2.cooldown.duration>=trinket.1.cooldown.duration)|buff.aspect_of_the_wild.down&(trinket.1.has_use_buff&trinket.1.cooldown.duration>=trinket.2.cooldown.duration&trinket.1.cooldown.remains-5<cooldown.aspect_of_the_wild.remains&cooldown.aspect_of_the_wild.remains>20|trinket.2.cooldown.duration-5<cooldown.aspect_of_the_wild.remains)|target.time_to_die<cooldown.aspect_of_the_wild.remains)|!trinket.2.has_use_buff&(trinket.1.has_use_buff&(buff.aspect_of_the_wild.down|trinket.1.cooldown.remains>5)&(cooldown.aspect_of_the_wild.remains>20|trinket.1.cooldown.remains-5>cooldown.aspect_of_the_wild.remains)|!trinket.1.has_use_buff&(!trinket.1.has_cooldown|trinket.1.cooldown.duration>=trinket.2.cooldown.duration|trinket.1.cooldown.remains))
+# actions+=/use_items
 actions+=/tranquilizing_shot
 actions+=/use_items,if=prev_gcd.1.aspect_of_the_wild|fight_remains<20
 actions+=/call_action_list,name=cds
