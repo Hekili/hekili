@@ -46,6 +46,9 @@ state.encounterID = 0
 state.encounterName = "None"
 state.encounterDifficulty = 0
 
+state.aggro = false
+state.tanking = false
+
 state.delay = 0
 state.delayMin = 0
 state.delayMax = 60
@@ -5633,7 +5636,8 @@ function state.reset( dispName )
     state.target.health.current = nil
     state.target.health.max = nil
 
-    state.tanking = state.role.tank and ( UnitThreatSituation( "player" ) or 0 ) > 1
+    state.aggro = ( UnitThreatSituation( "player" ) or 0 ) > 1
+    state.tanking = state.role.tank and state.aggro
 
     -- range checks
     state.target.minR = nil
