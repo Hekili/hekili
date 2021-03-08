@@ -5130,6 +5130,7 @@ do
         if not data then return end
 
         if option == 'date' then return tostring( data.date ) end
+
         return data[ option ]
     end
 
@@ -5151,6 +5152,12 @@ do
         if not data then return end
 
         if type( val ) == 'string' then val = val:trim() end
+        
+        if option == "desc" then
+            -- Auto-strip comments prefix
+            val = val:gsub( "^#+ ", "" )
+            val = val:gsub( "\n#+ ", "\n" )
+        end
 
         data[ option ] = val
     end
