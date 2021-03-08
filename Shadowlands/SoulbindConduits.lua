@@ -489,5 +489,12 @@ all:RegisterAuras( {
         id = 342181,
         duration = 10,
         max_stack = 1,
+    },
+    
+    -- Night Fae: Niya
+    redirected_anima = {
+        id = 342814,
+        duration = 30,
+        max_stack = 99
     }
 } )
