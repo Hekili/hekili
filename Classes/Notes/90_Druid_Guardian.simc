@@ -1,5 +1,5 @@
 # Guardian Druid
-# December 27, 2020
+# March 7, 2020
 
 # Changes:
 # - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -18,6 +18,7 @@ actions=skull_bash
 actions+=/use_items,if=!buff.prowl.up
 actions+=/potion,if=(((talent.heart_of_the_wild.enabled&buff.heart_of_the_wild.up)&(druid.catweave_bear|druid.owlweave_bear)&!buff.prowl.up)|((buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)&(!druid.catweave_bear&!druid.owlweave_bear)))
 # actions+=/run_action_list,name=catweave,if=druid.catweave_bear&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&dot.moonfire.remains>=gcd+0.5&rage<40&buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&buff.galactic_guardian.down)|(buff.cat_form.up&energy>25)|(runeforge.oath_of_the_elder_druid.equipped&!buff.oath_of_the_elder_druid.up&(buff.cat_form.up&energy>20))|(runeforge.oath_of_the_elder_druid.equipped&buff.heart_of_the_wild.remains<10)&(buff.cat_form.up&energy>20)|(covenant.kyrian&cooldown.empower_bond.remains<=1&active_enemies<2))
+# actions+=/run_action_list,name=catweave,if=druid.catweave_bear&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&dot.moonfire.remains>=gcd+0.5&rage<40&buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&buff.galactic_guardian.down)|(buff.cat_form.up&energy>25)|(dot.rake.refreshable&dot.rip.refreshable)|(runeforge.oath_of_the_elder_druid.equipped&!buff.oath_of_the_elder_druid.up&(buff.cat_form.up&energy>20)&buff.heart_of_the_wild.remains<=10)|(covenant.kyrian&cooldown.empower_bond.remains<=1&active_enemies<2)|(buff.heart_of_the_wild.up&energy>90))
 actions+=/run_action_list,name=catweave,if=druid.catweave_bear&buff.cat_form.up
 # actions+=/run_action_list,name=owlweave,if=druid.owlweave_bear&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&rage<20&buff.incarnation.down&buff.berserk_bear.down)|(buff.moonkin_form.up&dot.sunfire.refreshable)|(buff.moonkin_form.up&buff.heart_of_the_wild.up)|(buff.moonkin_form.up&(buff.eclipse_lunar.up|buff.eclipse_solar.up)&!runeforge.oath_of_the_elder_druid.equipped)|(runeforge.oath_of_the_elder_druid.equipped&!buff.oath_of_the_elder_druid.up)|(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1)|(covenant.kyrian&cooldown.empower_bond.remains<=1&active_enemies<2))
 actions+=/run_action_list,name=owlweave,if=druid.owlweave_bear&buff.moonkin_form.up
@@ -37,6 +38,7 @@ actions.bear+=/ravenous_frenzy
 actions.bear+=/convoke_the_spirits,if=!druid.catweave_bear&!druid.owlweave_bear
 actions.bear+=/berserk_bear,if=(buff.ravenous_frenzy.up|!covenant.venthyr)
 actions.bear+=/incarnation,if=(buff.ravenous_frenzy.up|!covenant.venthyr)
+actions.bear+=/berserking,if=(buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)
 actions.bear+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>3)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<5&dot.adaptive_swarm_damage.ticking)
 actions.bear+=/thrash_bear,target_if=refreshable|dot.thrash_bear.stack<3|(dot.thrash_bear.stack<4&runeforge.luffainfused_embrace.equipped)|active_enemies>=4
 actions.bear+=/moonfire,if=((buff.galactic_guardian.up)&active_enemies<2)|((buff.galactic_guardian.up)&!dot.moonfire.ticking&active_enemies>1&target.time_to_die>12)
@@ -55,23 +57,6 @@ actions.bear+=/thrash_bear
 actions.bear+=/maul,if=active_enemies<3
 actions.bear+=/swipe_bear
 actions.bear+=/ironfur,if=rage.deficit<40&buff.ironfur.remains<0.5
-
-# actions+=/call_action_list,name=mitigation
-# actions+=/wild_charge
-# actions+=/call_action_list,name=cooldowns
-# actions+=/maul,if=rage.deficit<20&active_enemies<4
-# actions+=/maul,if=rage.deficit<20&essence.conflict_and_strife.major&!buff.sharpened_claws.up
-# actions+=/ironfur,if=cost=0|(rage>cost&azerite.layered_mane.enabled&active_enemies>2)
-# actions+=/pulverize,target_if=dot.thrash_bear.stack=dot.thrash_bear.max_stacks
-# actions+=/moonfire,target_if=dot.moonfire.refreshable&active_enemies<2
-# actions+=/thrash,if=(buff.incarnation.down&active_enemies>1)|(buff.incarnation.up&active_enemies>4)
-# actions+=/swipe,if=buff.incarnation.down&active_enemies>4
-# actions+=/mangle,if=dot.thrash_bear.ticking
-# actions+=/moonfire,target_if=buff.galactic_guardian.up&active_enemies<2
-# actions+=/thrash
-# Fill with Moonfire with PotMx2
-# actions+=/moonfire,if=azerite.power_of_the_moon.rank>1&active_enemies=1
-# actions+=/swipe
 
 actions.mitigation=ironfur,if=incoming_damage_5s>ironfur_damage_threshold&buff.ironfur.remains<3*haste
 actions.mitigation+=/renewal,if=tanking&health.pct<65
@@ -98,12 +83,12 @@ actions.catweave+=/cat_form,if=!buff.cat_form.up
 actions.catweave+=/rake,if=buff.prowl.up
 actions.catweave+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
 actions.catweave+=/empower_bond,if=druid.catweave_bear
-actions.catweave+=/convoke_the_spirits,if=druid.catweave_bear
-actions.catweave+=/rip,if=dot.rip.refreshable&combo_points>=4
-actions.catweave+=/ferocious_bite,if=combo_points>=4
-actions.catweave+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>3)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<5&dot.adaptive_swarm_damage.ticking)
 actions.catweave+=/rake,if=dot.rake.refreshable&combo_points<4
-actions.catweave+=/shred,if=combo_points<5
+actions.catweave+=/rip,if=dot.rip.refreshable&combo_points>=4
+actions.catweave+=/convoke_the_spirits,if=druid.catweave_bear
+actions.catweave+=/ferocious_bite,max_energy=1,if=combo_points>=4
+actions.catweave+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action.adaptive_swarm_damage.in_flight&(!dot.adaptive_swarm_heal.ticking|dot.adaptive_swarm_heal.remains>3)|dot.adaptive_swarm_damage.stack<3&dot.adaptive_swarm_damage.remains<5&dot.adaptive_swarm_damage.ticking)
+actions.catweave+=/shred,if=combo_points.current<5
 
 actions.cconvoke=cat_form
 actions.cconvoke+=/convoke_the_spirits
