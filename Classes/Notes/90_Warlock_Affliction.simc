@@ -1,5 +1,5 @@
 ## Affliction Warlock
-## February 8, 2021
+## March 7, 2021
 
 ## Changes:
 ## - Added Spell Lock.
@@ -56,7 +56,7 @@ actions+=/call_action_list,name=covenant
 actions+=/agony,if=refreshable
 actions+=/agony,cycle_targets=1,if=(active_enemies>1)&(refreshable)
 actions+=/corruption,if=refreshable&active_enemies<4-(talent.sow_the_seeds.enabled|talent.siphon_life.enabled)
-actions+=/unstable_affliction,if=refreshable
+actions+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&refreshable
 actions+=/siphon_life,if=refreshable
 actions+=/siphon_life,cycle_targets=1,if=(active_enemies>1)&(refreshable)
 actions+=/corruption,cycle_targets=1,if=(active_enemies<4-(talent.sow_the_seeds.enabled|talent.siphon_life.enabled))&(refreshable)
