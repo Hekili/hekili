@@ -354,13 +354,13 @@ if UnitClassBase( "player" ) == "PALADIN" then
         -- Legendaries
         blessing_of_dawn = {
             id = 337767,
-            duration = 8,
+            duration = 12,
             max_stack = 1
         },
 
         blessing_of_dusk = {
             id = 337757,
-            duration = 8,
+            duration = 12,
             max_stack = 1
         },
 
@@ -964,7 +964,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             auras = {
                 vanguards_momentum = {
                     id = 345046,
-                    duration = 8,
+                    duration = 10,
                     max_stack = 3
                 },
 
