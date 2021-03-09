@@ -1,5 +1,5 @@
 ## Death Knight Unholy
-## March 1, 2021
+## March 8, 2021
 
 ## Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
 ## Disabled Sacrificial Pact because dead ghouls make for sad DKs.
@@ -56,6 +56,8 @@ actions.aoe_setup+=/epidemic,if=!variable.pooling_runic_power
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=debuff.festering_wound.stack<=3&cooldown.apocalypse.remains<3
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=debuff.festering_wound.stack<1
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=rune.time_to_4<(cooldown.death_and_decay.remains&!talent.defile|cooldown.defile.remains&talent.defile)
+# When target swaps are disabled, this will let you spend runes/wounds instead of waiting for DnD/Defile/Death's Due.
+actions.aoe_setup+=/wound_spender,if=!settings.cycle&debuff.festering_wound.stack>3&rune.time_to_3<cooldown.any_dnd.remains
 
 ## Potion
 actions.cooldowns=potion,if=variable.major_cooldowns_active|boss&fight_remains<26
