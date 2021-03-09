@@ -838,7 +838,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             end
 
             if legendary.frenzyband.enabled then
-                gainChargeTime( talent.incarnation.enabled and "incarnation" or "berserk", 0.2 )
+                gainChargeTime( talent.incarnation.enabled and "incarnation" or "berserk", 0.3 )
             end
 
             if a >= 5 then
@@ -1028,7 +1028,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             spend = function ()
                 if buff.clearcasting.up then
                     if legendary.cateye_curio.enabled then
-                        return 25 * -0.25
+                        return 25 * -0.3
                     end
                     return 0
                 end
@@ -1941,7 +1941,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             spend = function ()
                 if buff.clearcasting.up then
-                    if legendary.cateye_curio.enabled then return -10 end
+                    if legendary.cateye_curio.enabled then return 40 * -0.3 end
                     return 0
                 end
                 return 40 * ( buff.incarnation.up and 0.8 or 1 )
@@ -2156,7 +2156,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             spend = function ()
                 if buff.clearcasting.up then
-                    if legendary.cateye_curio.enabled then return 35 * -0.25 end
+                    if legendary.cateye_curio.enabled then return 35 * -0.3 end
                     return 0
                 end
                 return max( 0, ( 35 * ( buff.incarnation.up and 0.8 or 1 ) ) + buff.scent_of_blood.v1 )
@@ -2240,7 +2240,7 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             spend = function ()
                 if buff.clearcasting.up then
-                    if legendary.cateye_curio.enabled then return -10 end
+                    if legendary.cateye_curio.enabled then return 40 * -0.3 end
                     return 0
                 end
                 return 40 * ( buff.incarnation.up and 0.8 or 1 )
