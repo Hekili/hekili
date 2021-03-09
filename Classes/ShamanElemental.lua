@@ -1397,7 +1397,7 @@ if UnitClassBase( "player" ) == "SHAMAN" then
 
             talent = "primal_elementalist",
 
-            usable = function () return storm_elemental.up and buff.call_lightning.remains >= 8 end,
+            usable = function () return storm_elemental.up end,
             handler = function () end,
         },
 
