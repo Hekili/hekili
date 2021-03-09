@@ -518,6 +518,7 @@ local packTemplate = {
     desc = "This is a package of action lists for Hekili.",
     source = "",
     date = date("%Y-%m-%d %H:%M"),
+    warnings = "",
 
     hidden = false,
 
@@ -5870,7 +5871,7 @@ do
                                     type = "description",
                                     name = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
-                                        return "|cFFFFD100Import Log|r\n" .. ( p.warnings ) .. "\n\n"
+                                        return "|cFFFFD100Import Log|r\n" .. ( p.warnings or "" ) .. "\n\n"
                                     end,
                                     order = 5,
                                     fontSize = "medium",
