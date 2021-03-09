@@ -743,7 +743,7 @@ if UnitClassBase( "player" ) == "MONK" then
             recharge = 9,
             gcd = "spell",
             
-            spend = 0.02,
+            spend = 0.018,
             spendType = "mana",
             
             startsCombat = true,
@@ -1025,7 +1025,7 @@ if UnitClassBase( "player" ) == "MONK" then
             cooldown = 0,
             gcd = "spell",
             
-            spend = function () return buff.thunder_focus_tea.up and 0 or 0.035 end,
+            spend = function () return buff.thunder_focus_tea.up and 0 or 0.038 end,
             spendType = "mana",
             
             startsCombat = true,
