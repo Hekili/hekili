@@ -311,7 +311,7 @@ if UnitClassBase( "player" ) == "MONK" then
         },
         mighty_pour = {
             id = 337994,
-            duration = 7,
+            duration = 8,
             max_stack = 1
         }
 
