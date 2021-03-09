@@ -1,7 +1,7 @@
-# Demon Hunter Vengeance
-# December 22, 2020
+## Demon Hunter Vengeance
+## March 8, 2021
 
-# Allow Fracture at low Fury (prevents Fury issues with Spirit Bomb).
+## Allow Fracture at low Fury (prevents Fury issues with Spirit Bomb).
 
 actions.precombat=bottled_flayedwing_toxin
 actions.precombat+=/use_item,name=azsharas_font_of_power
@@ -35,7 +35,6 @@ actions.cooldowns+=/use_item,name=ashvanes_razor_coral,if=debuff.razor_coral_deb
 actions.cooldowns+=/use_items
 actions.cooldowns+=/sinful_brand,if=!dot.sinful_brand.ticking
 actions.cooldowns+=/the_hunt
-actions.cooldowns+=/fodder_to_the_flame
 actions.cooldowns+=/elysian_decree
 
 # Defensives
