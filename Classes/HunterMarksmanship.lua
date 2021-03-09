@@ -251,7 +251,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
         },
         trueshot = {
             id = 288613,
-            duration = function () return 15 * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
+            duration = function () return ( legendary.eagletalons_true_focus.enabled and 20 or 15 ) * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
             max_stack = 1,
         },
         volley = {
