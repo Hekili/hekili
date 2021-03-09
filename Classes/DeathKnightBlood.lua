@@ -468,7 +468,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         },
         vampiric_blood = {
             id = 55233,
-            duration = function () return level > 55 and 12 or 10 end,
+            duration = function () return ( level > 55 and 12 or 10 ) + ( legendary.vampiric_aura.enabled and 3 or 0 ) end,
             max_stack = 1,
         },
         veteran_of_the_third_war = {
@@ -989,7 +989,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 removeBuff( "crimson_scourge" )
 
                 if legendary.phearomones.enabled and buff.death_and_decay.down then
-                    stat.haste = stat.haste + 0.08
+                    stat.haste = stat.haste + ( state.spec.blood and 0.1 or 0.15 )
                 end
 
                 applyBuff( "death_and_decay" )
@@ -1449,6 +1449,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
             handler = function ()
                 applyBuff( "vampiric_blood" )
+                if legendary.gorefiends_domination.enabled then gain( 45, "runic_power" ) end
             end,
         },
 
@@ -1537,7 +1538,7 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
                 removeBuff( "crimson_scourge" )
 
                 if legendary.phearomones.enabled and buff.death_and_decay.down then
-                    stat.haste = stat.haste + ( state.spec.blood and 0.08 or 0.15 )
+                    stat.haste = stat.haste + ( state.spec.blood and 0.1 or 0.15 )
                 end
 
                 applyBuff( "death_and_decay" )
