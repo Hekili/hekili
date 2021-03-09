@@ -1279,14 +1279,14 @@ if UnitClassBase( "player" ) == "PRIEST" then
                 if legendary.painbreaker_psalm.enabled then
                     local power = 0
                     if debuff.shadow_word_pain.up then
-                        power = power + 7.5 * min( debuff.shadow_word_pain.remains, 6 ) / 6
-                        if debuff.shadow_word_pain.remains < 6 then removeDebuff( "shadow_word_pain" )
-                        else debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires - 6 end
+                        power = power + 15 * min( debuff.shadow_word_pain.remains, 8 ) / 8
+                        if debuff.shadow_word_pain.remains < 8 then removeDebuff( "shadow_word_pain" )
+                        else debuff.shadow_word_pain.expires = debuff.shadow_word_pain.expires - 8 end
                     end
                     if debuff.vampiric_touch.up then
-                        power = power + 7.5 * min( debuff.vampiric_touch.remains, 6 ) / 6
-                        if debuff.vampiric_touch.remains < 6 then removeDebuff( "vampiric_touch" )
-                        else debuff.vampiric_touch.expires = debuff.vampiric_touch.expires - 6 end
+                        power = power + 15 * min( debuff.vampiric_touch.remains, 8 ) / 8
+                        if debuff.vampiric_touch.remains <= 8 then removeDebuff( "vampiric_touch" )
+                        else debuff.vampiric_touch.expires = debuff.vampiric_touch.expires - 8 end
                     end
                     if power > 0 then gain( power, "insanity" ) end
                 end
