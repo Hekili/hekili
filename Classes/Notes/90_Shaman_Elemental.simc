@@ -1,8 +1,9 @@
-# Elemental Shaman
-# December 27, 2020
+## Elemental Shaman
+## March 8, 2021
 
-# Changes:
-# - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
+## Changes:
+## - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
+## - Add Meteor and Eye of the Storm again.
 
 # Executed every time the actor is available.
 actions.precombat=earth_elemental,if=!talent.primal_elementalist.enabled
@@ -18,7 +19,9 @@ actions+=/spiritwalkers_grace,moving=1
 actions+=/potion
 actions+=/use_items
 actions+=/fire_elemental
+actions+=/meteor
 actions+=/storm_elemental
+actions+=/eye_of_the_storm,if=buff.call_lightning.remains>=10
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
 actions+=/fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
