@@ -2291,6 +2291,7 @@ all:RegisterAbilities( {
         end,
 
         usable = function () return args.buff_name ~= nil, "no buff name detected" end,
+        timeToReady = function () return gcd.remains end,
         handler = function ()
             removeBuff( args.buff_name )
         end,
