@@ -1074,11 +1074,6 @@ if UnitClassBase( "player" ) == "SHAMAN" then
             startsCombat = true,
 
             handler = function ()
-                if buff.stormkeeper.up then
-                    removeBuff( "stormkeeper" )
-                    return
-                end
-
                 consume_maelstrom( 5 )
 
                 removeBuff( "primordial_wave" )
