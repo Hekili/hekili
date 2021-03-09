@@ -221,7 +221,7 @@ if UnitClassBase( "player" ) == "DEMONHUNTER" then
         -- Legendary
         fel_bombardment = {
             id = 337849,
-            duration = 3600,
+            duration = 40,
             max_stack = 5,
         },
         -- Legendary
