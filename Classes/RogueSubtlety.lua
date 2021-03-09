@@ -327,7 +327,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
         -- Legendaries (Shadowlands)
         deathly_shadows = {
             id = 341202,
-            duration = 12,
+            duration = 15,
             max_stack = 1,
         },
 
