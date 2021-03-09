@@ -840,7 +840,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
                 applyDebuff( "target", "barbed_shot_dot" )
 
                 if legendary.qapla_eredun_war_order.enabled then
-                    reduceCooldown( "kill_command", 5 )
+                    setCooldown( "kill_command", 0 )
                 end
             end,
         },
