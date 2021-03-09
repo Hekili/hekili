@@ -226,7 +226,7 @@ if UnitClassBase( 'player' ) == 'WARLOCK' then
         },
         curse_of_tongues = {
             id = 1714,
-            duration = 30,
+            duration = 60,
             type = "Curse",
             max_stack = 1,
         },

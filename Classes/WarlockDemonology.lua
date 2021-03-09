@@ -674,7 +674,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         },
         curse_of_tongues = {
             id = 1714,
-            duration = 30,
+            duration = 60,
             type = "Curse",
             max_stack = 1,
         },
@@ -986,6 +986,10 @@ if UnitClassBase( "player" ) == "WARLOCK" then
         15 ) ]]
     
     spec:RegisterTotem( "demonic_tyrant", 135002 )
+    
+    spec:RegisterTotem( "vilefiend", 1616211 )
+    spec:RegisterTotem( "grimoire_felguard", 136216 )
+    spec:RegisterTotem( "dreadstalkers", 1378282 )
 
 
     spec:RegisterStateExpr( "extra_shards", function () return 0 end )
@@ -1715,8 +1719,7 @@ if UnitClassBase( "player" ) == "WARLOCK" then
 
                 extend_demons()
 
-                if azerite.baleful_invocation.enabled then gain( 5, "soul_shards" ) end
-                if level > 57 then gain( 5, "soul_shards" ) end
+                if azerite.baleful_invocation.enabled or level > 57 then gain( 5, "soul_shards" ) end
             end,
 
             auras = {
