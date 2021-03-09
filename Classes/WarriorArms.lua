@@ -57,7 +57,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             value = function ()
                 return ( state.talent.war_machine.enabled and 1.1 or 1 ) * base_rage_gen * arms_rage_mult * state.swings.mainhand_speed / state.haste
             end,
-        }
+        },
+
+        conquerors_banner = {
+            aura = "conquerors_banner",
+
+            last = function ()
+                local app = state.buff.conquerors_banner.applied
+                local t = state.query_time
+
+                return app + ( floor( ( t - app ) / ( 1 * state.haste ) ) * ( 1 * state.haste ) )
+            end,
+
+            interval = 1,
+
+            value = 4,
+        },        
     } )
 
     -- Talents
@@ -303,13 +318,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         return rageSpent
     end )
 
-    local rageSinceBanner = 0
-
-    spec:RegisterStateExpr( "rage_since_banner", function ()
-        return rageSinceBanner
-    end )
-
-
     spec:RegisterHook( "spend", function( amt, resource )
         if resource == "rage" then
             if talent.anger_management.enabled then
@@ -323,16 +331,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     cooldown.warbreaker.expires = cooldown.warbreaker.expires - reduction
                 end
             end
-
-            if buff.conquerors_frenzy.up then
-                rage_since_banner = rage_since_banner + amt
-                local stacks = floor( rage_since_banner / 20 )
-                rage_since_banner = rage_since_banner % 20
-
-                if stacks > 0 then
-                    addStack( "glory", nil, stacks )
-                end
-            end
         end
     end )
 
@@ -344,8 +342,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" then
             if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
                 last_cs_target = destGUID
-            elseif spellName == class.abilities.conquerors_banner.name then
-                rageSinceBanner = 0
             end
         end
     end )
@@ -360,7 +356,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             if current < lastRage then
                 rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.                
-                rageSinceBanner = ( rageSinceBanner + lastRage - current ) % 20 -- Glory.
             end
 
             lastRage = current
@@ -372,7 +367,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
     spec:RegisterHook( "reset_precast", function ()
         rage_spent = nil
-        rage_since_banner = nil
 
         if buff.bladestorm.up then
             setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) )
@@ -861,7 +855,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
 
             spend = function ()
                 if buff.deadly_calm.up then return 0 end
-                return 30 - ( buff.battlelord.up and 12 or 0 )
+                return buff.battlelord.up and 15 or 30
             end,
             spendType = "rage",
 
@@ -1270,24 +1264,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             toggle = "essences",
 
             handler = function ()
-                applyBuff( "conquerors_frenzy" )
+                applyBuff( "conquerors_banner" )
                 if conduit.veterans_repute.enabled then
                     applyBuff( "veterans_repute" )
                     addStack( "glory", nil, 5 )
                 end
-                rage_since_banner = 0
             end,
 
             auras = {
-                conquerors_frenzy = {
-                    id = 325862,
+                conquerors_banner = {
+                    id = 324143,
                     duration = 20,
                     max_stack = 1
-                },
-                glory = {
-                    id = 325787,
-                    duration = 30,
-                    max_stack = 30
                 },
                 -- Conduit
                 veterans_repute = {

@@ -87,7 +87,22 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             interval = 3,
 
             value = 5,
-        }
+        },
+
+        conquerors_banner = {
+            aura = "conquerors_banner",
+
+            last = function ()
+                local app = state.buff.conquerors_banner.applied
+                local t = state.query_time
+
+                return app + ( floor( ( t - app ) / ( 1 * state.haste ) ) * ( 1 * state.haste ) )
+            end,
+
+            interval = 1,
+
+            value = 4,
+        },
     } )
 
     -- Talents
@@ -549,7 +564,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             auras = {
                 cadence_of_fujieda = {
                     id = 335558,
-                    duration = 8,
+                    duration = 12,
                     max_stack = 5,
                 },
             },
@@ -789,7 +804,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             handler = function ()
                 removeStack( "whirlwind" )
 
-                if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 8 end
+                if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
             end,
 
             copy = { "crushing_blow", 335097, 85288 }
@@ -859,7 +874,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             auras = {
                 will_of_the_berserker = {
                     id = 335597,
-                    duration = 8,
+                    duration = 12,
                     max_stack = 1
                 }
             }

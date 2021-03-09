@@ -37,6 +37,21 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 return ( state.talent.war_machine.enabled and 1.5 or 1 ) * 2
             end
         },
+
+        conquerors_banner = {
+            aura = "conquerors_banner",
+
+            last = function ()
+                local app = state.buff.conquerors_banner.applied
+                local t = state.query_time
+
+                return app + ( floor( ( t - app ) / ( 1 * state.haste ) ) * ( 1 * state.haste ) )
+            end,
+
+            interval = 1,
+
+            value = 4,
+        },
     } )
 
     -- Talents
@@ -240,49 +255,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     } )
 
 
-    local rageSpent = 0
-    local rageSinceBanner = 0 
-
-
-    spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function( event )
-        local _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName = CombatLogGetCurrentEventInfo()
-
-        if sourceGUID == state.GUID and subtype == "SPELL_CAST_SUCCESS" then
-            local ability = class.abilities[ spellID ]
-
-            if not ability then return end
-
-            if ability.key == "conquerors_banner" then
-                rageSinceBanner = 0
-            end
-        end
-    end )
-
-    
-    local RAGE = Enum.PowerType.Rage
-    local lastRage = -1
-
-    spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
-        if powerType == "RAGE" then
-            local current = UnitPower( "player", RAGE )
-
-            if current < lastRage then
-                rageSpent = ( rageSpent + lastRage - current ) % 20 -- Anger Mgmt.                
-                rageSinceBanner = ( rageSinceBanner + lastRage - current ) % 30 -- Glory.
-            end
-
-            lastRage = current
-        end
-    end )
-
-    spec:RegisterStateExpr( "rage_spent", function ()
-        return rageSpent
-    end )
-
-    spec:RegisterStateExpr( "rage_since_banner", function ()
-        return rageSinceBanner
-    end )
-
     -- model rage expenditure reducing CDs...
     spec:RegisterHook( "spend", function( amt, resource )
         if resource == "rage" and amt > 0 then
@@ -292,17 +264,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 rage_spent = rage_spent % 10
 
                 cooldown.avatar.expires = cooldown.avatar.expires - secs
-                cooldown.shield_wall.expires = cooldown.shield_wall.expires - secs
+                reduceCooldown( "shield_wall", secs )
                 -- cooldown.last_stand.expires = cooldown.last_stand.expires - secs
                 -- cooldown.demoralizing_shout.expires = cooldown.demoralizing_shout.expires - secs
-            end
-
-            if buff.conquerors_frenzy.up then
-                rage_since_banner = rage_since_banner + amt
-                local stacks = floor( rage_since_banner / 20 )
-                rage_since_banner = rage_since_banner % 20
-
-                if stacks > 0 then addStack( "glory", nil, stacks ) end
             end
         end
     end )
@@ -437,6 +401,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             
             handler = function ()
                 applyDebuff( "target", "charge" )
+                if legendary.reprisal.enabled then
+                    applyBuff( "shield_block", 4 )
+                    applyBuff( "revenge" )
+                    gain( 20, "rage" )
+                end
             end,
         },
 
@@ -624,6 +593,11 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 132365,
             
             handler = function ()
+                if legendary.reprisal.enabled then
+                    applyBuff( "shield_block", 4 )
+                    applyBuff( "revenge" )
+                    gain( 20, "rage" )
+                end
             end,
         },
 
@@ -749,7 +723,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             gcd = "spell",
 
             spend = function ()
-                if buff.revenge.up or buff.reprisal.up then return 0 end
+                if buff.revenge.up then return 0 end
                 return 20
             end,
             spendType = "rage",
@@ -766,8 +740,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             end,
 
             handler = function ()
-                if buff.revenge.up then removeBuff( "revenge" )
-                else removeBuff( "reprisal" ) end
+                if buff.revenge.up then removeBuff( "revenge" ) end
                 if conduit.show_of_force.enabled then applyBuff( "show_of_force" ) end
             end,
 
@@ -778,11 +751,6 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     duration = 12,
                     max_stack = 1
                 },
-                reprisal = {
-                    id = 335734,
-                    duration = 6,
-                    max_stack = 1
-                }
             }
         },
 
@@ -843,7 +811,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         shield_wall = {
             id = 871,
             cast = 0,
+            charges = function () if legendary.unbreakable_will.enabled then return 2 end end,
             cooldown = function () return 240 - conduit.stalwart_guardian.mod * 0.002 end,
+            recharge = function () return 240 - conduit.stalwart_guardian.mod * 0.002 end,
             gcd = "spell",
 
             toggle = "defensives",
