@@ -698,7 +698,7 @@ if UnitClassBase( "player" ) == "PALADIN" then
             recharge = 7.5,
             gcd = "spell",
 
-            spend = 0.14,
+            spend = 0.16,
             spendType = "mana",
 
             startsCombat = false,
