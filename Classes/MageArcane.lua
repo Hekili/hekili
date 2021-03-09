@@ -999,7 +999,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
                 arcane_harmony = {
                     id = 332777,
                     duration = 3600,
-                    max_stack = 30
+                    max_stack = 18
                 },
                 clearcasting_channel = {
                     duration = function () return 2.5 * haste end,

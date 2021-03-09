@@ -312,7 +312,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         molten_skyfall = {
             id = 333170,
             duration = 30,
-            max_stack = 25
+            max_stack = 18
         },
 
         molten_skyfall_ready = {
@@ -324,7 +324,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         sun_kings_blessing = {
             id = 333314,
             duration = 30,
-            max_stack = 12
+            max_stack =8
         },
 
         sun_kings_blessing_ready = {
@@ -684,7 +684,7 @@ if UnitClassBase( "player" ) == "MAGE" then
             end,
 
             handler = function ()
-                removeBuff( "molten_skyfall" )
+                removeBuff( "molten_skyfall_ready" )
             end,
 
             impact = function ()
@@ -698,7 +698,7 @@ if UnitClassBase( "player" ) == "MAGE" then
 
                 if legendary.molten_skyfall.enabled and buff.molten_skyfall_ready.down then
                     addStack( "molten_skyfall" )
-                    if buff.molten_skyfall.stack == 25 then
+                    if buff.molten_skyfall.stack == 18 then
                         removeBuff( "molten_skyfall" )
                         applyBuff( "molten_skyfall_ready" )
                     end
@@ -728,7 +728,7 @@ if UnitClassBase( "player" ) == "MAGE" then
 
                     if legendary.sun_kings_blessing.enabled then
                         addStack( "sun_kings_blessing", nil, 1 )
-                        if buff.sun_kings_blessing.stack == 12 then
+                        if buff.sun_kings_blessing.stack == 8 then
                             removeBuff( "sun_kings_blessing" )
                             applyBuff( "sun_kings_blessing_ready" )
                         end
@@ -963,7 +963,10 @@ if UnitClassBase( "player" ) == "MAGE" then
             handler = function ()
                 if hardcast then
                     removeStack( "pyroclasm" )
-                    if buff.sun_kings_blessing_ready.up then applyBuff( "combustion", 5 ) end
+                    if buff.sun_kings_blessing_ready.up then
+                        applyBuff( "combustion", 6 )
+                        removeBuff( "sun_kings_blessing_ready" )
+                    end
                 else
                     if buff.hot_streak.up then
                         if buff.expanded_potential.up then removeBuff( "expanded_potential" )
@@ -993,7 +996,7 @@ if UnitClassBase( "player" ) == "MAGE" then
 
                 if legendary.molten_skyfall.enabled and buff.molten_skyfall_ready.down then
                     addStack( "molten_skyfall" )
-                    if buff.molten_skyfall.stack == 25 then
+                    if buff.molten_skyfall.stack == 18 then
                         removeBuff( "molten_skyfall" )
                         applyBuff( "molten_skyfall_ready" )
                     end

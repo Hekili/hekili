@@ -394,7 +394,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         cold_front = {
             id = 327327,
             duration = 30,
-            max_stack = 15
+            max_stack = 30
         },
         cold_front_ready = {
             id = 327330,
@@ -840,7 +840,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
 
                 if legendary.cold_front.enabled then
                     addStack( "cold_front" )
-                    if buff.cold_front.stack == 15 then
+                    if buff.cold_front.stack == 30 then
                         removeBuff( "cold_front" )
                         applyBuff( "cold_front_ready" )
                     end
