@@ -77,7 +77,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 return state.debuff.garrote.tick_time
             end,
 
-            value = 7
+            value = 8
         },
 
         internal_bleeding_vim = {
@@ -101,7 +101,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 return state.debuff.internal_bleeding.tick_time
             end,
 
-            value = 7
+            value = 8
         },
 
         rupture_vim = {
@@ -125,7 +125,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 return state.debuff.rupture.tick_time
             end,
 
-            value = 7
+            value = 8
         },
 
         crimson_tempest_vim = {
@@ -149,7 +149,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                 return state.debuff.crimson_tempest.tick_time
             end,
 
-            value = 7
+            value = 8
         },
 
         nothing_personal = {
@@ -428,7 +428,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             local current = UnitPower( "player", ENERGY )
 
             if current < lastEnergy then
-                energySpent = ( energySpent + lastEnergy - current ) % 50
+                energySpent = ( energySpent + lastEnergy - current ) % 30
             end
 
             lastEnergy = current
@@ -442,8 +442,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
     spec:RegisterHook( "spend", function( amt, resource )
         if legendary.duskwalkers_patch.enabled and cooldown.vendetta.remains > 0 and resource == "energy" and amt > 0 then
             energy_spent = energy_spent + amt
-            local reduction = floor( energy_spent / 50 )
-            energy_spent = energy_spent % 50
+            local reduction = floor( energy_spent / 30 )
+            energy_spent = energy_spent % 30
 
             if reduction > 0 then
                 reduceCooldown( "vendetta", reduction )
@@ -1138,12 +1138,15 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     applyDebuff( "target", "creeping_venom" )
                 end
 
+                if level > 55 and buff.slice_and_dice.up then
+                    buff.slice_and_dice.expires = buff.slice_and_dice.expires + combo_points.current * 3
+                end
+
                 applyBuff( "envenom", 1 + combo_points.current )
                 if combo_points.current == animacharged_cp then removeBuff( "echoing_reprimand" ) end
                 spend( combo_points.current, "combo_points" )
 
                 if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
-
             end,
         },
 
@@ -1854,15 +1857,18 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
         flagellation = {
             id = 323654,
             cast = 0,
-            cooldown = 5,
+            cooldown = PTR and 90 or 5,
             gcd = "spell",
+
+            spend = PTR and 0 or 20,
+            spendType = "energy",
             
             startsCombat = true,
             texture = 3565724,
 
             toggle = "essences",
 
-            bind = "flagellation_cleanse",
+            bind = not PTR and "flagellation_cleanse" or nil,
 
             usable = function ()
                 return IsActiveSpell( 323654 ) and buff.flagellation.down, "flagellation already active"
@@ -1876,7 +1882,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             auras = {
                 flagellation = {
                     id = 323654,
-                    duration = 45,
+                    duration = 12,
                     max_stack = 30,
                     generate = function( t, aType )
                         local unit, func
@@ -1909,7 +1915,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             },
         },
 
-        flagellation_cleanse = {
+        flagellation_cleanse = not PTR and {
             id = 346975,
             cast = 0,
             cooldown = 5,
@@ -1941,7 +1947,7 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
                     max_stack = 30,
                 }
             }
-        },
+        } or nil,
 
 
         -- PvP Talents
