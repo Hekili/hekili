@@ -138,7 +138,7 @@ do
 
         fleshcraft = {
             id = 324631,
-            cast = function () return 4 * haste end,            
+            cast = function () return 3 * haste end,            
             channeled = true,
             cooldown = function () return equipped.relic_of_the_first_ones and 96 or 120 end,
             gcd = "spell",
