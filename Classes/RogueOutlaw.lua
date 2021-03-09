@@ -389,18 +389,21 @@ if UnitClassBase( "player" ) == "ROGUE" then
         -- Guile Charm
         shallow_insight = {
             id = 340582,
-            duration = 10,
+            duration = 12,
             max_stack = 1,
+            copy = "guile_charm_insight_1"
         },
         moderate_insight = {
             id = 340583,
-            duration = 10,
+            duration = 12,
             max_stack = 1,
+            copy = "guile_charm_insight_2"
         },
         deep_insight = {
             id = 340584,
-            duration = 10,
+            duration = 12,
             max_stack = 1,
+            copy = "guile_charm_insight_3"
         },
     } )
 
