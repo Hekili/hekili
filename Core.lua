@@ -868,8 +868,13 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 else
                                     -- Target Cycling.
                                     -- We have to determine *here* whether the ability would be used on the current target or a different target.
-                                    if state.args.cycle_targets == 1 and state.settings.cycle and state.cycle_enemies > 1 then
+                                    if state.args.cycle_targets == 1 and state.settings.cycle then
                                         state.SetupCycle( ability )
+
+                                        if state.cycle_enemies == 1 then
+                                            if debug then Hekili:Debug( "There is only 1 valid enemy for target cycling; canceling cycle." ) end
+                                            state.ClearCycle()
+                                        end
                                     else
                                         state.ClearCycle()
                                     end
@@ -1187,7 +1192,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
                                                         end
 
-                                                        if state.IsCycling() then
+                                                        if state.IsCycling( nil, true ) then
                                                             slot.indicator = "cycle"
                                                         elseif module and module.cycle then
                                                             slot.indicator = module.cycle()
