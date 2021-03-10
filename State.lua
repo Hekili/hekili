@@ -170,6 +170,9 @@ state.totem = {}
 state.trinket = {
     t1 = {
         slot = "t1",
+        usable = false,
+        has_buff = false,
+        has_use_buff = false,
 
         cooldown = {
             slot = "t1"
@@ -199,6 +202,9 @@ state.trinket = {
 
     t2 = {
         slot = "t2",
+        usable = false,
+        has_buff = false,
+        has_use_buff = false,
 
         cooldown = {
             slot = "t2",
