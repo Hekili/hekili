@@ -276,6 +276,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             auraString = auraString .. "\n\n"
 
             table.insert( v.log, 1, auraString )
+            table.insert( v.log, 1, "targets:\n" .. Hekili.TargetDebug )
             table.insert( v.log, 1, self:GenerateProfile() )
             table.insert( snapshots[ k ], table.concat( v.log, "\n" ) )
             

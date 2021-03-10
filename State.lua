@@ -681,6 +681,7 @@ end
 do
     local cycle = {}
     local debug = function( ... ) if Hekili.ActiveDebug then Hekili:Debug( ... ) end end
+    local format = string.format
 
     function state.SetupCycle( ability, quiet )
         wipe( cycle )
@@ -718,7 +719,6 @@ do
 
             if not quiet then
                 debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
-                debug( " - confirm:  IsCycling? %s, %s", tostring( state.IsCycling() ), tostring( state.IsCycling( aura ) ) ) 
             end
         else
             if not quiet then debug( " - cycle aura appears to be down, so we're sticking with our current target." ) end
@@ -742,22 +742,23 @@ do
         return true
     end
 
-    function state.IsCycling( aura )
+    function state.IsCycling( aura, quiet )
         if not cycle.aura then
-            -- debug( "no cycle.aura" )
-            return false end
+            return false, "cycle.aura is nil"
+        end
         if aura and cycle.aura ~= aura then
-            debug( "cycle.aura ~= '%s'", aura )
-            return false end
+            if not quiet then debug( "cycle.aura ~= '%s'", aura ) end
+            return false, format( "cycle aura (%s) is not '%s'", cycle.aura or "none", aura )
+        end
         if state.cycle_enemies == 1 then
-            debug( "cycle_enemies == 1" )
-            return false end
+            return false, "cycle_enemies == 1"
+        end
         if cycle.expires < state.query_time then
-            debug( "cycle aura expired" )
-            return false end
+            return false, format( "cycle aura (%s) expires before current time", cycle.aura )
+        end
         if state.active_dot[ cycle.aura ] >= state.cycle_enemies then
-            debug( "active_dot[%d] >= cycle_enemies[%d]", state.active_dot[ cycle.aura ], state.cycle_enemies )
-            return false end
+            return false, format( "active_dot[%d] >= cycle_enemies[%d]", state.active_dot[ cycle.aura ], state.cycle_enemies )
+        end
 
         return true
     end
@@ -4151,7 +4152,7 @@ local mt_default_debuff = {
     __index = function( t, k )
         local aura = class.auras[ t.key ]
 
-        if state.IsCycling( t.key ) and cycle_debuff[ k ] ~= nil then
+        if state.IsCycling( t.key, true ) and cycle_debuff[ k ] ~= nil then
             return cycle_debuff[ k ]
         end
 
@@ -5234,7 +5235,7 @@ do
             -- Spend resources.
             ns.spendResources( action )
 
-            local wasCycling = self.IsCycling()
+            local wasCycling = self.IsCycling( nil, true )
             local expires, minTTD, maxTTD, aura
 
             if wasCycling then
