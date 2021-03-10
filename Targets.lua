@@ -299,8 +299,8 @@ do
                         if UnitIsUnit( unit, "target" ) then excluded = false end
 
                         if not excluded then
-                            local rate, n = Hekili:GetTTD(unit)
-                            Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
+                            local rate, n = Hekili:GetTTD( unit )
+                            Hekili.TargetDebug = format( "%s    %-12s - %2d - %s - %.2f - %d - %s\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0, unit and UnitName( unit ) or "Unknown" )
                             count = count + 1
                             counted[ guid ] = true
                         end
@@ -339,7 +339,7 @@ do
 
                             if not excluded then
                                 local rate, n = Hekili:GetTTD(unit)
-                                Hekili.TargetDebug = format( "%s%12s - %2d - %s - %.2f - %d\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0 )
+                                Hekili.TargetDebug = format( "%s    %-12s - %2d - %s - %.2f - %d - %s\n", Hekili.TargetDebug, unit, range or 0, guid, rate or 0, n or 0, unit and UnitName( unit ) or "Unknown" )
                                 count = count + 1
                                 counted[ guid ] = true
                             end
@@ -359,7 +359,7 @@ do
 
                 if counted[ guid ] == nil then
                     if not enemyExclusions[npcid] and ( spec.damageRange == 0 or ( not guidRanges[ guid ] or guidRanges[ guid ] <= spec.damageRange ) ) then
-                        Hekili.TargetDebug = format("%s%12s - %2d - %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid)
+                        Hekili.TargetDebug = format("%s    %-12s - %2d - %s\n", Hekili.TargetDebug, "dmg", guidRanges[ guid ] or 0, guid)
                         count = count + 1                    
                         counted[ guid ] = true
                     else
@@ -372,7 +372,7 @@ do
         local targetGUID = UnitGUID( "target" )
         if targetGUID then
             if counted[ targetGUID ] == nil and UnitExists("target") and not UnitIsDead("target") and UnitCanAttack("player", "target") and UnitInPhase("target") and (UnitIsPVP("player") or not UnitIsPlayer("target")) then
-                Hekili.TargetDebug = format("%s%12s - %2d - %s\n", Hekili.TargetDebug, "target", 0, targetGUID)
+                Hekili.TargetDebug = format("%s    %-12s - %2d - %s\n", Hekili.TargetDebug, "target", 0, targetGUID )
                 count = count + 1
                 counted[ targetGUID ] = true
             else
@@ -1024,7 +1024,28 @@ do
         return time
     end
 
-    function Hekili:ExpireTTDs(all)
+    function Hekili:GetTTDInfo()
+        local now = GetTime()
+
+        local output = "targets:"
+        local found = false
+
+        for k, v in pairs( db ) do
+            local unit = ( v.unit or "unknown" ) .. ":"
+            if v.n > 3 then
+                output = output .. format( "\n    %-13s %4ds [%d] %s", unit, ceil(v.lastHealth / v.rate), v.n, UnitName( v.unit ) or "Unknown" )
+            else
+                output = output .. format( "\n    %-13s TBD  [%d] %s", unit, v.n, UnitName(v.unit) or "Unknown" )
+            end
+            found = true
+        end
+
+        if not found then output = output .. "  none" end
+
+        return output
+    end
+
+    function Hekili:ExpireTTDs( all )
         local now = GetTime()
 
         for k, v in pairs(db) do
