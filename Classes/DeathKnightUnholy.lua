@@ -545,6 +545,10 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         return fw ]]
     end )
 
+    spec:RegisterHook( "step", function ( time )
+        if Hekili.ActiveDebug then Hekili:Debug( "Rune Regeneration Time: 1=%.2f, 2=%.2f, 3=%.2f, 4=%.2f, 5=%.2f, 6=%.2f\n", runes.time_to_1, runes.time_to_2, runes.time_to_3, runes.time_to_4, runes.time_to_5, runes.time_to_6 ) end
+    end )   
+
 
     spec:RegisterGear( "tier19", 138355, 138361, 138364, 138349, 138352, 138358 )
     spec:RegisterGear( "tier20", 147124, 147126, 147122, 147121, 147123, 147125 )
@@ -610,7 +614,31 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
 
     local any_dnd_set, wound_spender_set = false, false
 
+    local ExpireRunicCorruption = setfenv( function()
+        local debugstr
+        
+        if Hekili.ActiveDebug then debugstr = format( "Runic Corruption expired; updating regen from %.2f to %.2f.", rune.cooldown, rune.cooldown * 2 ) end
+        rune.cooldown = rune.cooldown * 2
+
+        for i = 1, 6 do
+            local exp = rune.timeTo( i )
+
+            if exp > 0 then                
+                rune.expiry[ i ] = rune.expiry[ i ] + exp
+                if Hekili.ActiveDebug then debugstr = format( "%s\n - rune %d extended by %.2f.", debugstr, i, exp ) end
+            end
+        end
+
+        forecastResources( "runes" )
+        if debugstr then Hekili:Debug( debugstr ) end
+    end, state )
+
     spec:RegisterHook( "reset_precast", function ()
+        if buff.runic_corruption.up then
+            state:QueueAuraExpiration( "ca_inc", ExpireRunicCorruption, buff.runic_corruption.expires )
+        end
+
+
         local expires = action.summon_gargoyle.lastCast + 35
         if expires > now then
             summonPet( "gargoyle", expires - now )
