@@ -1,5 +1,5 @@
 ## Enhancement Shaman
-## March 8, 2021
+## March 10, 2021
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -42,10 +42,11 @@ actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&(talent.fire_nova.enabl
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/fire_nova,if=active_dot.flame_shock>=3
 actions.aoe+=/vesper_totem
-actions.aoe+=/lightning_bolt,if=buff.primordial_wave.up&(buff.stormkeeper.up|buff.maelstrom_weapon.stack>=5)
+actions.aoe+=/lightning_bolt,if=buff.primordial_wave.up&buff.maelstrom_weapon.stack>=5
 actions.aoe+=/chain_lightning,if=buff.stormkeeper.up
 actions.aoe+=/crash_lightning,if=talent.crashing_storm.enabled|buff.crash_lightning.down
-actions.aoe+=/lava_lash,cycle_targets=1,if=talent.lashing_flames.enabled|(runeforge.primal_lava_actuators.equipped&buff.primal_lava_actuators.stack>6)
+actions.aoe+=/lava_lash,cycle_targets=1,if=talent.lashing_flames.enabled
+actions.aoe+=/lava_lash,if=buff.crash_lightning.up&(buff.hot_hand.up|(runeforge.primal_lava_actuators.equipped&buff.primal_lava_actuators.stack>6))
 actions.aoe+=/stormstrike,if=buff.crash_lightning.up
 actions.aoe+=/crash_lightning
 actions.aoe+=/chain_harvest,if=buff.maelstrom_weapon.stack>=5
