@@ -13,7 +13,7 @@ local format = string.format
 local upper  = string.upper
 
 
-ns.PTR = select( 4, GetBuildInfo() ) > 90002
+ns.PTR = select( 4, GetBuildInfo() ) > 90005
 
 
 ns.Patrons = "Abom, Abuna, aerix88, Aern, Aggronaught, Akh270, Alarius, Alasha, alcaras, Amera, Annddyypandy, ApexPlatypus, aphoenix, Archxlock, Aristocles, Arkhon, aro, Artoo, Ash, Aunt Jeremimah, av8ordoc, Belatar, Borelia, Brangeddon, Bsirk, cafasdon, Cele, Chimmi, Coan, Cortland, CptTroll, Cruz, Dane, DarkSparrow, Daz, DB, Dele, DerGuteFee, Dez, Dilvish, djthomp, Drethii, Elmer, Evo, Excitedguy, Feral, fuon, Garumako, glue, Graemec, Grayscale, Grechka, Guycrush Fleetwood, Himea, Hollaputt, Hungrypilot, HXL, Jacii, jawj, Katurn, KayGee, Kingreboot, Kittykiller, Lava Guava, Leorus, Loraniden, LordofWar, Lovien, Lump, Manni, MARU, mr. jing0, Mr_Hunter, MrBean, mrminus, MrSmurfy, Muerr, Mumrikk, muze, Nelix, neurolol, Nighteyez, Nikö, Nissa/Laethri, Nok, nomiss, nqrse, ODB/Tilt, Parameshvar, Rage, Rebdull, RIP, Rivertam, Roodie, Rusah, Samuraiwillz501, sarrge, Sarthol, Sebstar, Seniroth, seriallos, Shakeykev, Shuck, Skeletor, Slem, Smalls, Smiling6Bob9, Spaten, Spy, Srata, Stevi, Stonebone, Ted, Tekfire, Thordros, Tic, Tobi, todd, Torsti, Trikki, Tropical, tsukari, Ulti, Val (Nálá/Bóomah), Vaxum, Wargus (Just 'Gus), Weedwalker, Wonder, Xing, Ytsejam, zab, Zarggg, Zyon"
