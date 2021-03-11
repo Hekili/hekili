@@ -1,5 +1,5 @@
 ## Arms Warrior
-## February 8, 2021
+## March 10, 2021
 
 ## Changes:
 ## - Added Pummel.
@@ -34,10 +34,10 @@ actions+=/victory_rush
 actions+=/impending_victory
 
 actions.execute=deadly_calm
-actions.execute+=/rend,if=remains<=duration*0.3
-actions.execute+=/skullsplitter,if=rage<60&(!talent.deadly_calm.enabled|buff.deadly_calm.down)
+actions.execute+=/cancel_buff,name=bladestorm,if=spell_targets.whirlwind=1&gcd.remains=0&(rage>75|rage>50&buff.recklessness.up)
 actions.execute+=/avatar,if=cooldown.colossus_smash.remains<8&gcd.remains=0
-actions.execute+=/ravager,if=buff.avatar.remains<18&!dot.ravager.remains
+actions.execute+=/skullsplitter,if=rage<60&(!talent.deadly_calm.enabled|buff.deadly_calm.down)
+actions.execute+=/ravager
 actions.execute+=/conquerors_banner
 actions.execute+=/cleave,if=spell_targets.whirlwind>1&dot.deep_wounds.remains<gcd
 actions.execute+=/warbreaker
@@ -46,8 +46,8 @@ actions.execute+=/condemn,if=debuff.colossus_smash.up|buff.sudden_death.react|ra
 actions.execute+=/overpower,if=charges=2
 actions.execute+=/ancient_aftershock
 actions.execute+=/spear_of_bastion
+actions.execute+=/mortal_strike,if=runeforge.enduring_blow|dot.deep_wounds.remains<=gcd
 actions.execute+=/bladestorm,if=buff.deadly_calm.down&rage<50
-actions.execute+=/mortal_strike,if=dot.deep_wounds.remains<=gcd
 actions.execute+=/skullsplitter,if=rage<40
 actions.execute+=/overpower
 actions.execute+=/condemn
@@ -56,13 +56,13 @@ actions.execute+=/execute
 actions.hac=skullsplitter,if=rage<60&buff.deadly_calm.down
 actions.hac+=/conquerors_banner
 actions.hac+=/avatar,if=cooldown.colossus_smash.remains<1
-actions.hac+=/cleave,if=dot.deep_wounds.remains<=gcd
 actions.hac+=/warbreaker
+actions.hac+=/colossus_smash
+actions.hac+=/cleave,if=dot.deep_wounds.remains<=gcd
 actions.hac+=/ancient_aftershock
 actions.hac+=/spear_of_bastion
 actions.hac+=/bladestorm
 actions.hac+=/ravager
-actions.hac+=/colossus_smash
 actions.hac+=/rend,if=remains<=duration*0.3&buff.sweeping_strikes.up
 actions.hac+=/cleave
 actions.hac+=/mortal_strike,if=buff.sweeping_strikes.up|dot.deep_wounds.remains<gcd&!talent.cleave.enabled
@@ -73,17 +73,17 @@ actions.hac+=/overpower
 actions.hac+=/whirlwind
 
 actions.single_target=conquerors_banner,if=(fight_remains>180|(target.health.pct<20|talent.massacre.enabled&target.health.pct<35))
+actions.single_target=rend,if=remains<=duration*0.3
 actions.single_target+=/avatar,if=cooldown.colossus_smash.remains<8&gcd.remains=0
-actions.single_target+=/rend,if=remains<=duration*0.3
 actions.single_target+=/cleave,if=spell_targets.whirlwind>1&dot.deep_wounds.remains<gcd
+actions.single_target+=/ravager
 actions.single_target+=/warbreaker
 actions.single_target+=/colossus_smash
-actions.single_target+=/ravager,if=buff.avatar.remains<18&!dot.ravager.remains
 actions.single_target+=/ancient_aftershock
 actions.single_target+=/spear_of_bastion
 actions.single_target+=/overpower,if=charges=2
-actions.single_target+=/bladestorm,if=buff.deadly_calm.down&(debuff.colossus_smash.up&rage<30|rage<70)
-actions.single_target+=/mortal_strike,if=buff.overpower.stack>=2&buff.deadly_calm.down|(dot.deep_wounds.remains<=gcd&cooldown.colossus_smash.remains>gcd)
+actions.single_target+=/mortal_strike,if=runeforge.enduring_blow|buff.overpower.stack>=2|(dot.deep_wounds.remains<=gcd&cooldown.colossus_smash.remains>gcd)
+actions.single_target+=/bladestorm,if=buff.deadly_calm.down&(debuff.colossus_smash.up&rage<30|rage<50)
 actions.single_target+=/deadly_calm
 actions.single_target+=/skullsplitter,if=rage<60&buff.deadly_calm.down
 actions.single_target+=/overpower
@@ -91,4 +91,4 @@ actions.single_target+=/condemn,if=buff.sudden_death.react
 actions.single_target+=/execute,if=buff.sudden_death.react
 actions.single_target+=/mortal_strike
 actions.single_target+=/whirlwind,if=talent.fervor_of_battle.enabled
-actions.single_target+=/slam,if=!talent.fervor_of_battle.enabled
+actions.single_target+=/slam,if=!talent.fervor_of_battle.enabled&(rage>50|runeforge.signet_of_tormented_kings)
