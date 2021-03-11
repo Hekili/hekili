@@ -580,6 +580,14 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
         if control_expires > now and pet.up then
             summonPet( "controlled_undead", control_expires - now )
         end
+
+        -- Reset CDs on any Rune abilities that do not have an actual cooldown.
+        for action in pairs( class.abilityList ) do
+            local data = class.abilities[ action ]
+            if data.cooldown == 0 and data.spendType == "runes" then
+                setCooldown( action, 0 )
+            end
+        end
     end )
 
 

@@ -1085,11 +1085,13 @@ do
                 _, _, _, start, duration = UnitCastingInfo( "player" )
                 if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
 
-                local rStart, rDuration
+                local rStart, rDuration = 0, 0
                 if a.item then
                     rStart, rDuration = GetItemCooldown( a.item )
                 else
-                    rStart, rDuration = GetSpellCooldown( a.id )
+                    if a.cooldown > 0 or a.spendType ~= "runes" then
+                        rStart, rDuration = GetSpellCooldown( a.id )
+                    end
                 end
                 if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
             end
@@ -1202,7 +1204,9 @@ do
                 if ability.item then
                     start, duration = GetItemCooldown( ability.item )
                 else
-                    start, duration = GetSpellCooldown( ability.id )
+                    if ability.cooldown > 0 or ability.spendType ~= "runes" then
+                        start, duration = GetSpellCooldown( ability.id )
+                    end
                 end
 
                 if ability.gcd ~= "off" and start + duration < gExpires then

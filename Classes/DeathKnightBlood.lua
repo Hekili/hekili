@@ -664,6 +664,14 @@ if UnitClassBase( "player" ) == "DEATHKNIGHT" then
             class.abilityList.any_dnd = "|T136144:0|t |cff00ccff[Any]|r " .. class.abilities.death_and_decay.name
             any_dnd_set = true
         end
+
+        -- Reset CDs on any Rune abilities that do not have an actual cooldown.
+        for action in pairs( class.abilityList ) do
+            local data = class.abilities[ action ]
+            if data.cooldown == 0 and data.spendType == "runes" then
+                setCooldown( action, 0 )
+            end
+        end
     end )
     
 
