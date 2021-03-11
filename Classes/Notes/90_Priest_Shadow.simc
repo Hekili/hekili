@@ -1,5 +1,5 @@
 ## Shadow Priest
-## March 10, 2021
+## March 11, 2021
 
 ## Tweak Void Torrent when target counts are forced.
 
@@ -33,7 +33,7 @@ actions.boon+=/ascended_nova,if=target.within8&spell_targets.ascended_nova>1&spe
 
 ## CDs
 # Use Power Infusion with Voidform. Hold for Voidform comes off cooldown in the next 10 seconds otherwise use on cd unless the Pelagos Trait Combat Meditation is talented, or if there will not be another Void Eruption this fight. Attempt to sync the last power infusion of the fight to void eruption for non Kyrians.
-actions.cds=power_infusion,if=priest.self_power_infusion&(buff.voidform.up|!soulbind.combat_meditation.enabled&cooldown.void_eruption.remains>=10|fight_remains<cooldown.void_eruption.remains)&(boss&fight_remains>=cooldown.void_eruption.remains+15&cooldown.void_eruption.remains<=gcd*4|boss&fight_remains>cooldown.power_infusion.duration|boss&fight_remains<cooldown.void_eruption.remains+15|covenant.kyrian)
+actions.cds=power_infusion,if=priest.self_power_infusion&(buff.voidform.up|!soulbind.combat_meditation.enabled&cooldown.void_eruption.remains>=10|fight_remains<cooldown.void_eruption.remains)&(fight_remains>=cooldown.void_eruption.remains+15&cooldown.void_eruption.remains<=gcd*4|fight_remains>cooldown.power_infusion.duration|fight_remains<cooldown.void_eruption.remains+15|covenant.kyrian)
 # Use Silence on CD to proc Sephuz's Proclamation.
 # actions.cds+=/silence,target_if=runeforge.sephuzs_proclamation.equipped&(target.is_add|target.debuff.casting.react)
 # Use Badge inside of VF for the first use or on CD after the first use. With Night Fae hold for VF.
