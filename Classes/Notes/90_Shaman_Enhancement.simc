@@ -78,8 +78,7 @@ actions.single+=/vesper_totem
 actions.single+=/frost_shock,if=buff.hailstorm.up
 actions.single+=/earthen_spike
 actions.single+=/fae_transfusion
-actions.single+=/lightning_bolt,if=!ptr&buff.stormkeeper.up
-actions.single+=/chain_lightning,if=ptr&buff.stormkeeper.up
+actions.single+=/chain_lightning,if=buff.stormkeeper.up
 actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5
 actions.single+=/chain_harvest,if=buff.maelstrom_weapon.stack>=5&raid_event.adds.in>=90
 actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack=10
