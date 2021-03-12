@@ -1269,6 +1269,9 @@ if UnitClassBase( "player" ) == "PRIEST" then
                     if power > 0 then gain( power, "insanity" ) end
                 end
 
+                if legendary.shadowflame_prism.enabled then
+                    if pet.fiend.active then pet.fiend.expires = pet.fiend.expires + 1 end
+                end
             end,
         },
 
