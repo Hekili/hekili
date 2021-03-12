@@ -184,27 +184,6 @@ if UnitClassBase( "player" ) == "PRIEST" then
     spec:RegisterTotem( "mindbender", 136214 )
     spec:RegisterTotem( "shadowfiend", 136199 )
 
-    do
-        -- Shadowfiend/Mindbender "down" is the opposite of other spec pets.
-        local mt_pet_fiend = {
-            __index = function( t, k )
-                local fiend = state.talent.mindbender.enabled and "mindbender" or "shadowfiend"
-
-                if k == "down" then
-                    return state.cooldown[ fiend ].down
-                end
-
-                return state.pet[ fiend ][ k ]
-            end
-        }
-
-        state.summonPet( "fiend" )
-        setmetatable( state.pet.fiend, mt_shadowpriest_pet )
-    end
-
-
-
-
     local thought_harvester_consumed = 0
     local unfurling_darkness_triggered = 0
 
@@ -259,19 +238,19 @@ if UnitClassBase( "player" ) == "PRIEST" then
             buff.mindbender.applied = action.mindbender.lastCast
             buff.mindbender.duration = 15
             buff.mindbender.expires = action.mindbender.lastCast + 15
-            summonPet( "fiend", buff.mindbender.remains )
         elseif pet.shadowfiend.active then
             applyBuff( "shadowfiend", pet.shadowfiend.remains )
             buff.shadowfiend.applied = action.shadowfiend.lastCast
             buff.shadowfiend.duration = 15
             buff.shadowfiend.expires = action.shadowfiend.lastCast + 15
-            summonPet( "fiend", buff.shadowfiend.remains )
         end
 
         if talent.mindbender.enabled then
             cooldown.fiend = cooldown.mindbender
+            pet.fiend = pet.mindbender
         else
             cooldown.fiend = cooldown.shadowfiend
+            pet.fiend = pet.mindbender
         end
 
         if buff.voidform.up then
@@ -1038,7 +1017,6 @@ if UnitClassBase( "player" ) == "PRIEST" then
             handler = function ()
                 summonPet( talent.mindbender.enabled and "mindbender" or "shadowfiend", 15 )
                 applyBuff( talent.mindbender.enabled and "mindbender" or "shadowfiend" )
-                summonPet( "fiend", 15 )
             end,
 
             copy = { "shadowfiend", 200174, 34433, 132603 }
