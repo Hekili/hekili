@@ -2687,8 +2687,8 @@ local mt_default_cooldown = {
             if id > 0 then start, duration = GetCooldown( id ) end
 
             if t.key ~= "global_cooldown" then
-            local gcdStart, gcdDuration = GetSpellCooldown( 61304 )
-            if gcdStart == start and gcdDuration == duration then start, duration = 0, 0 end
+                local gcdStart, gcdDuration = GetSpellCooldown( 61304 )
+                if gcdStart == start and gcdDuration == duration then start, duration = 0, 0 end
             end
 
             local true_duration = duration
@@ -2893,13 +2893,13 @@ ns.metatables.mt_dot = mt_dot
 
 local mt_gcd = {
     __index = function( t, k )
-        if k == "execute" then
+        if k == "execute" then            
             local ability = state.this_action and class.abilities[ state.this_action ]
 
             -- We can specify this for any ability, if we want.
             if ability and ability.gcdTime then return ability.gcdTime end
 
-            local gcd = ability and ability.gcd or "spell"
+            local gcd = ( state.this_action == "wait" and "spell" ) or ( ability and ability.gcd or "spell" )
 
             if gcd == "off" then return 0 end
             if gcd == "totem" then return 1 end
