@@ -108,25 +108,48 @@ if UnitClassBase( "player" ) == "DRUID" then
         local app_duration = min( ttd, class.abilities[ action ].apply_duration or duration )
         local app_ticks = app_duration / tick_time
 
-        if active_dot[ t.key ] > 0 then
-            -- If our current target isn't debuffed, let's assume that other targets have 1 tick remaining.
-            if remains == 0 then remains = tick_time end
-            remaining_ticks = ( pmult and t.pmultiplier or 1 ) * min( remains, ttd ) / tick_time
-            duration = max( 0, min( remains + duration, 1.3 * class.auras[ aura ].duration, ttd ) )
-        end
-
+        remaining_ticks = ( pmult and t.pmultiplier or 1 ) * min( remains, ttd ) / tick_time
+        duration = max( 0, min( remains + duration, 1.3 * duration, ttd ) )
         potential_ticks = ( pmult and persistent_multiplier or 1 ) * min( duration, ttd ) / tick_time
 
-        if action == "thrash_cat" then
+        if action == "primal_wrath" then
+            local fresh = max( 0, active_enemies - active_dot[ aura ] )
+            local dotted = max( 0, active_enemies - fresh )
+    
+            if remains == 0 then
+                fresh = max( 0, fresh - 1 )
+            else
+                dotted = max( 0, dotted - 1 )
+            end
+
+            -- Current target's ticks are based on actual values.
+            local total = potential_ticks - remaining_ticks
+
+            -- Fresh enemies just get the application value.
+            total = total + fresh * app_ticks
+
+            -- Other dotted enemies could have a different duration for other reasons.
+            -- Especially SbT.
+            local pw_remains = min( fight_remains, max( state.action.primal_wrath.lastCast + class.abilities.primal_wrath.max_apply_duration - query_time, tick_time ) )
+
+            if remains > pw_remains then
+                local pw_ticks = ( pmult and t.pmultiplier or 1 ) * pw_remains / tick_time
+                local pw_duration = max( 0, min( pw_remains + class.abilities.primal_wrath.apply_duration, 1.3 * class.abilities.primal_wrath.max_apply_duration, fight_remains ) )
+                local pw_potential_ticks = ( pmult and persistent_multiplier or 1 ) * min( pw_duration, fight_remains ) / tick_time
+
+                total = total + dotted * ( pw_potential_ticks - pw_ticks )
+            else
+                -- Just assume they're the same.
+                total = total + dotted * ( potential_ticks - remaining_ticks )
+            end
+
+            return max( 0, total )
+
+        elseif action == "thrash" then
             local fresh = max( 0, active_enemies - active_dot.thrash_cat )
             local dotted = max( 0, active_enemies - fresh )
 
-            return fresh * app_ticks + dotted * ( potential_ticks - remaining_ticks )
-        elseif action == "primal_wrath" then
-            local fresh = max( 0, active_enemies - active_dot.rip )
-            local dotted = max( 0, active_enemies - fresh )
-
-            return fresh * app_ticks + dotted * ( potential_ticks - remaining_ticks )
+            return max( 0, fresh * app_ticks + dotted * ( potential_ticks - remaining_ticks ) )
         end
 
         return max( 0, potential_ticks - remaining_ticks )
@@ -902,7 +925,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             elseif k == "owlweave_cat" then
                 return talent.balance_affinity.enabled and settings.owlweave_cat or false
             elseif k == "no_cds" then return not toggle.cooldowns
-            elseif k == "primal_wrath" then return debuff.rip
+            elseif k == "primal_wrath" then return class.abilities.primal_wrath
             elseif k == "lunar_inspiration" then return debuff.moonfire_cat
             elseif debuff[ k ] ~= nil then return debuff[ k ]
             end
@@ -1598,6 +1621,18 @@ if UnitClassBase( "player" ) == "DRUID" then
 
             apply_duration = function ()
                 return mod_circle_dot( 2 + 2 * combo_points.current )
+            end,
+
+            max_apply_duration = function ()
+                return mod_circle_dot( 12 )
+            end,
+
+            ticks_gained_on_refresh = function()
+                return tick_calculator( debuff.rip, "primal_wrath", false )
+            end,
+
+            ticks_gained_on_refresh_pmultiplier = function()
+                return tick_calculator( debuff.rip, "primal_wrath", true )
             end,
 
             usable = function () return combo_points.current > 0, "no combo points" end,
