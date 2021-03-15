@@ -444,15 +444,23 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
     end, state )
 
 
+
+
+    spec:RegisterHook( "TimeToReady", function( wait, action )
+        local id = class.abilities[ action ].id
+        if buff.bladestorm.up and ( id < -99 or id > 0 ) then
+            wait = max( wait, buff.bladestorm.remains )
+        end
+        return wait
+    end )
+    
+    
     spec:RegisterHook( "reset_precast", function ()
         rage_spent = nil
         rage_since_banner = nil
         
-        if buff.bladestorm.up then
-            setCooldown( "global_cooldown", max( cooldown.global_cooldown.remains, buff.bladestorm.remains ) )
-            if buff.gathering_storm.up then
-                applyBuff( "gathering_storm", buff.bladestorm.remains + 6, 5 )
-            end
+        if buff.bladestorm.up and buff.gathering_storm.up then
+            applyBuff( "gathering_storm", buff.bladestorm.remains + 6, 5 )
         end
 
         if buff.whirlwind.up then
