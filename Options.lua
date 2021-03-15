@@ -10171,7 +10171,9 @@ end
 
 
 -- Key Bindings
-function Hekili:MakeSnapshot( dispName )
+function Hekili:MakeSnapshot( dispName, isAuto )
+    if isAuto and not Hekili.DB.profile.autoSnapshot then return end
+
     self.ActiveDebug = true
     local success = false
 

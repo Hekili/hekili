@@ -1415,7 +1415,7 @@ function Hekili:ProcessHooks( dispName, packName )
                 if debug then self:Debug( -100, "Addon used %.2fms CPU time (of %.2fms softcap) before recommendation #%d; stopping early.", usedTime, maxTime, i-1 ) end
                 if not Hekili.HasSnapped then
                     Hekili.HasSnapped = true
-                    Hekili:MakeSnapshot( dispName )
+                    Hekili:MakeSnapshot( dispName, true )
                 end
                 break
             end
@@ -1458,7 +1458,7 @@ function Hekili:ProcessHooks( dispName, packName )
             if debugprofilestop() - actualStartTime > 100 then
                 if not Hekili.HasSnapped then
                     Hekili.HasSnapped = true
-                    Hekili:MakeSnapshot( dispName )
+                    Hekili:MakeSnapshot( dispName, true )
                 end
                 
                 if debug then self:Debug( "Escaping events loop due to high CPU usage." ) end
@@ -1662,7 +1662,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
         if not debug and not Hekili.Config and not Hekili.HasSnapped and ( dispName == "Primary" or dispName == "AOE" ) and action == nil and InCombatLockdown() and state.level >= 50 then
             Hekili.HasSnapped = true
-            Hekili:MakeSnapshot( dispName )
+            Hekili:MakeSnapshot( dispName, true )
             return
         end
 
