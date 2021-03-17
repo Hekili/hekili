@@ -1,8 +1,11 @@
 ## Feral Druid
-## January 31, 2021
+## March 17, 2021
 
 ## Feral APL can also be found at https://gist.github.com/Xanzara/6896c8996f5afce5ce115daa3a08daff
-## Change druid.owlweave_cat=1 checks to druid.owlweave_cat.
+
+## Changes:
+## - druid.owlweave_cat=1 checks to druid.owlweave_cat.
+## - Convert BT pool_resource to wait expression.
 
 actions.precombat+=/variable,name=fourcp_bite,value=0
 # Shred = 0, Non-snapshot Rake = 1, Snapshot Rake = 2, LI = 3, Swipe = 4
@@ -30,7 +33,8 @@ actions+=/run_action_list,name=finisher,if=combo_points>=(5-variable.fourcp_bite
 # Multi-gcd stealth
 actions+=/call_action_list,name=stealth,if=buff.bs_inc.up|buff.sudden_ambush.up
 # The most expensive BT cycle (Thresh Shred Swipe cost 115 energy, make sure we can make that in 4 globals)
-actions+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
+actions+=/wait,sec=((115-23*buff.incarnation_king_of_the_jungle.up)-(energy.current+3.5*energy.regen+(40*buff.clearcasting.up)))/energy.regen,if=talent.bloodtalons.enabled&buff.bloodtalons.down&active_bt_triggers=0
+# actions+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
 actions+=/run_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down
 actions+=/ferocious_bite,cycle_targets=1,if=buff.apex_predators_craving.up
 # Todo: test this with more adverse setups (legendaries, gear, talents) to make sure that this stays a dps increase
