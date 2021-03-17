@@ -21,7 +21,7 @@ actions+=/devour_magic
 actions+=/call_action_list,name=covenant_ability
 actions+=/call_action_list,name=special_trinkets
 actions+=/call_action_list,name=tyrant_setup
-actions+=/call_action_list,name=tyrant_main,if=buff.wild_imps.stack+imps_spawned_during.summon_demonic_tyrant>3|buff.grimoire_felguard.up&buff.grimoire_felguard.remains>2*haste&buff.grimoire_felguard.remains<4|buff.vilefiend.up&buff.vilefiend.remains>2*haste&buff.vilefiend.remains<4
+actions+=/summon_demonic_tyrant,if=buff.wild_imps.stack+imps_spawned_during.summon_demonic_tyrant>3|buff.grimoire_felguard.up&buff.grimoire_felguard.remains>2*haste&buff.grimoire_felguard.remains<4|buff.vilefiend.up&buff.vilefiend.remains>2*haste&buff.vilefiend.remains<4|buff.dreadstalkers.up&buff.dreadstalkers.remains<4
 actions+=/call_action_list,name=during_tyrant,if=pet.demonic_tyrant.active
 actions+=/demonic_strength,if=!runeforge.wilfreds_sigil_of_superior_summoning&cooldown.summon_demonic_tyrant.remains>9
 actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains>20
@@ -98,7 +98,12 @@ actions.during_tyrant+=/potion
 actions.during_tyrant+=/demonic_strength
 actions.during_tyrant+=/use_items
 
-actions.tyrant_main=summon_demonic_tyrant,if=((!talent.summon_vilefiend.enabled|pet.vilefiend.active)&(!talent.grimoire_felguard.enabled|buff.grimoire_felguard.up|cooldown.grimoire_felguard.remains>30)&(pet.dreadstalker.remains<4|(!talent.grimoire_felguard.enabled|buff.grimoire_felguard.remains<4)|buff.vilefiend.remains<4))
+actions.tyrant_main=summon_demonic_tyrant,if=
+(
+    (!talent.summon_vilefiend.enabled|pet.vilefiend.active)&
+    (!talent.grimoire_felguard.enabled|buff.grimoire_felguard.up|cooldown.grimoire_felguard.remains>30)&
+    (pet.dreadstalker.remains<4|(!talent.grimoire_felguard.enabled|buff.grimoire_felguard.remains<4)|buff.vilefiend.remains<4)
+)
 
 ## Pop big summons when fight is about to end.
 actions.fillers=grimoire_felguard,if=boss&fight_remains<32
