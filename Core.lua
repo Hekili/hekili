@@ -1684,7 +1684,7 @@ function Hekili:ProcessHooks( dispName, packName )
 
                     if not action then
                         if debug then self:Debug( "Time spent on event #%d PREADVANCE: %.2fms...", n, debugprofilestop() - eStart ) end
-                        if debug then self:Debug( 1, "No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).\n", n, event.action, event.type, t, state.offset + state.delay ) end
+                        if debug then self:Debug( 1, "No recommendation found before event #%d (%s %s) at %.2f; triggering event and continuing ( %.2f ).\n", n, event.action or "NO ACTION", event.type or "NO TYPE", t, state.offset + state.delay ) end
                         
                         state.advance( overrideTime or t )
                         if debug then self:Debug( "Time spent on event #%d POSTADVANCE: %.2fms...", n, debugprofilestop() - eStart ) end
