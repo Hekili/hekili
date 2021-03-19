@@ -9049,6 +9049,8 @@ do
                 if args[2] then
                     if args[2] == "target_swap" then
                         index = -1
+                    elseif args[2] == "mode" then
+                        index = -2
                     else
                         for i, setting in ipairs( settings ) do
                             if setting.name == args[2] then
@@ -9078,6 +9080,9 @@ do
                     end
 
                     output = format( "%s\n - |cFFFFD100target_swap|r = |cFF00FF00%s|r (%s)", output, spec.cycle and "ON" or "OFF", "Recommend Target Swaps" )
+
+                    output = format( "%s\n\nTo control your display mode (currently |cFF00FF00%s|r):\n - Toggle Mode:  |cFFFFD100/hek set mode|r\n - Set Mode - |cFFFFD100/hek set mode aoe|r (or |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100dual|r, |cFFFFD100reactive|r)", output, self.DB.profile.toggles.mode.value or "unknown" )
+
 
                     if not hasToggle and not hasNumber then
                         output = output .. "cFFFFD100<none>|r"
@@ -9124,7 +9129,14 @@ do
 
                     Hekili:ForceUpdate( "CLI_TOGGLE" )
                     return
-                end                    
+                elseif index == -2 then
+                    if args[3] then
+                        Hekili:SetMode( args[3] )
+                    else
+                        Hekili:FireToggle( "mode" )
+                    end
+                    return
+                end
 
                 local setting = settings[ index ]
 
@@ -10232,6 +10244,24 @@ do
             return name
         end,
     } )
+
+
+    function Hekili:SetMode( mode )
+        mode = lower( mode:trim() )
+        
+        if not modeIndex[ mode ] then
+            Hekili:Print( "SetMode failed:  '%s' is not a valid mode.\nTry |cFFFFD100automatic|r, |cFFFFD100single|r, |cFFFFD100aoe|r, |cFFFFD100dual|r, or |cFFFFD100reactive|r." )
+            return
+        end
+
+        self.DB.profile.toggles.mode.value = mode
+
+        if self.DB.profile.notifications.enabled then
+            self:Notify( "Mode: " .. modeIndex[ mode ][2] )
+        else
+            self:Print( modeIndex[ mode ][2] .. " mode activated." )
+        end        
+    end
 
 
     function Hekili:FireToggle( name )
