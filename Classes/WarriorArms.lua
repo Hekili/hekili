@@ -1331,6 +1331,8 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             hasteCD = true,
             gcd = "spell",
 
+            rangeSpell = function () return class.abilities.execute.id end,
+
             spend = function ()
                 if state.spec.fury then return -20 end
                 return buff.sudden_death.up and 0 or 20
