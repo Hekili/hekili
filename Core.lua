@@ -1140,7 +1140,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         if state.args.for_next == 1 then
                                                             -- Pooling for the next entry in the list.
                                                             local next_entry  = list[ actID + 1 ]
-                                                            local next_action = next_entry and next_action
+                                                            local next_action = next_entry and next_entry.action
                                                             local next_id     = next_action and class.abilities[ next_action ] and class.abilities[ next_action ].id
 
                                                             local extra_amt   = state.args.extra_amount or 0
@@ -1160,6 +1160,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                                 if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable because %s.  Skipping.", next_action, next_why ) end
                                                             else
                                                                 local next_wait = max( state:TimeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
+
+                                                                if next_wait > 0 then
+                                                                    if debug then self:Debug( "Next Wait: %.2f; TTR: %.2f, Resource(%.2f): %.2f", next_wait, state:TimeToReady( next_action, true ), next_cost + extra_amt, state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] ) end
+                                                                end
 
                                                                 if next_wait <= 0 then
                                                                     if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
