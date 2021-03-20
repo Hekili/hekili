@@ -1,5 +1,5 @@
 ## Fury Warrior
-## March 10, 2021
+## March 20, 2021
 
 ## Changes:
 ## - Added Pummel.
@@ -11,21 +11,30 @@
 ## - Tweak for Whirlwind before level 37.
 ## - Removed Essences.
 ## - Don't use Siegebreaker if it's already up (Deathmaker).
-## - Sequences need to be reviewed for inclusion (to do BT/Recklessness vs. BT/Heroic Charge).
+## - Setup fake sequences for Signet opener.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/battle_shout
 actions.precombat+=/recklessness,if=!runeforge.signet_of_tormented_kings.equipped
 
 ## Executed every time the actor is available.
-actions=charge
+# Charge if we're long past our opener, or we don't need the opener combo for Signet (non-Venthyr).
+actions=charge,if=time>8|talent.double_time.enabled|active_enemies>1|covenant.venthyr|!runeforge.signet_of_tormented_kings.equipped|cooldown.recklessness.remains>gcd
 actions+=/pummel
 actions+=/variable,name=execute_phase,value=talent.massacre&target.health.pct<35|target.health.pct<20|target.health.pct>80&covenant.venthyr
 ## This is mostly to prevent cooldowns from being accidentally used during movement.
 ## actions+=/run_action_list,name=movement,if=movement.distance>5
-actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
+## actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
 ## actions+=/sequence,if=active_enemies=1&covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped,name=BT&Reck:bloodthirst:recklessness
+# Emulates initial Bloodthirst sequence for single-target + Signet.
+actions+=/bloodthirst,line_cd=10,if=time<8&active_enemies=1&runeforge.signet_of_tormented_kings.equipped&(!covenant.venthyr|cooldown.recklessness.remains<=gcd)
+# Emulates initial Recklessness sequence for single-target + Venthyr + Signet.
+actions+=/recklessness,line_cd=10,if=time<8&active_enemies=1&covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped&prev.bloodthirst
 ## actions+=/sequence,if=active_enemies=1&!covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped,name=BT&Charge:bloodthirst:heroic_charge
+# Emulates initial Heroic Leap > Charge sequence for single-target + non-Venthyr + Signet.
+actions+=/heroic_leap,line_cd=10,if=time<5&active_enemies=1&!covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped&prev.bloodthirst&cooldown.charge.remains<0.5
+# Emulates initial Heroic Leap > Charge sequence for single-target + non-Venthyr + Signet.
+actions+=/charge,line_cd=10,if=time<5&active_enemies=1&!covenant.venthyr.enabled&runeforge.signet_of_tormented_kings.equipped&prev.heroic_leap
 actions+=/potion
 actions+=/rampage,if=cooldown.recklessness.remains<3&talent.reckless_abandon.enabled
 actions+=/conquerors_banner,if=buff.recklessness.down&debuff.siegebreaker.down|fight_remains<50

@@ -556,7 +556,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             startsCombat = true,
             texture = 132337,
 
-            usable = function () return target.distance > 10 and ( query_time - max( action.charge.lastCast, action.heroic_leap.lastCast ) > gcd.execute ) end,
+            usable = function () return target.distance > 10 and ( query_time - action.charge.lastCast > gcd.execute ) end,
             handler = function ()
                 setDistance( 5 )
                 applyDebuff( "target", "charge" )
@@ -747,16 +747,18 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             cooldown = function () return talent.bounding_stride.enabled and 30 or 45 end,
             charges = function () return legendary.leaper.enabled and 3 or nil end,
             recharge = function () return legendary.leaper.enabled and ( talent.bounding_stride.enabled and 30 or 45 ) or nil end,
-            gcd = "spell",
+            gcd = "off",
 
             startsCombat = false,
             texture = 236171,
 
-            usable = function () return ( equipped.weight_of_the_earth or target.distance > 10 ) and ( query_time - max( action.charge.lastCast, action.heroic_leap.lastCast ) > gcd.execute * 2 ) end,
+            usable = function () return query_time - action.heroic_leap.lastCast > gcd.execute * 2 end,
             handler = function ()
-                setDistance( 5 )
+                setDistance( 15 )
                 if talent.bounding_stride.enabled then applyBuff( "bounding_stride" ) end
             end,
+            
+            copy = 52174
         },
 
 
@@ -1331,7 +1333,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             hasteCD = true,
             gcd = "spell",
 
-            rangeSpell = function () return class.abilities.execute.id end,
+            rangeSpell = function () return class.abilities.execute and class.abilities.execute.id end,
 
             spend = function ()
                 if state.spec.fury then return -20 end
