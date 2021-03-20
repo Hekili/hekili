@@ -1,5 +1,5 @@
 ## Assassination Rogue
-## March 10, 2021
+## March 18, 2021
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
@@ -17,9 +17,8 @@ actions=kick
 actions+=/stealth
 actions+=/variable,name=energy_regen_combined,value=energy.regen+poisoned_bleeds*8%(2*spell_haste)
 actions+=/variable,name=single_target,value=spell_targets.fan_of_knives<2
-actions+=/flagellation_cleanse,if=debuff.flagellation.remains<2
-actions+=/call_action_list,name=stealthed,if=stealthed.rogue
-actions+=/call_action_list,name=cds,if=(!talent.master_assassin.enabled|dot.garrote.ticking)
+actions+=/call_action_list,name=stealthed,strict=1,if=stealthed.rogue
+actions+=/call_action_list,name=cds,strict=1,,if=(!talent.master_assassin.enabled|dot.garrote.ticking)
 # Put SnD up initially for Cut to the Chase, refresh with Envenom if at low duration
 actions+=/slice_and_dice,if=!buff.slice_and_dice.up&combo_points>=3
 actions+=/envenom,if=buff.slice_and_dice.up&buff.slice_and_dice.remains<5&combo_points>=4
