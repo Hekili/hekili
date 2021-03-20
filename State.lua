@@ -161,7 +161,19 @@ state.target = {
     updated = true
 }
 
-state.movement = state.target -- lazy!
+state.movement = {}
+
+setmetatable( state.movement, {
+    __index = function( t, k )
+        if k == "distance" then
+            if state.buff.movement.up then return state.target.distance end
+            return 0
+        end
+
+        return state.target[ k ]
+    end
+} )
+
 state.sim.target = state.target
 state.toggle = {}
 state.totem = {}
