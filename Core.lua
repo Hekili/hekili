@@ -1178,7 +1178,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                                     next_wait = next_wait + 0.01
                                                                     state.offset = state.offset + next_wait
 
+                                                                    state.this_action = next_action
                                                                     aScriptPass = not next_entry.criteria or next_entry.criteria == '' or scripts:CheckScript( packName .. ':' .. listName .. ':' .. ( actID + 1 ) )
+                                                                    state.this_action = "pool_resource"
 
                                                                     if not aScriptPass then
                                                                         if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but its conditions would not be met.  Skipping.", next_action ) end
