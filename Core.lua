@@ -1148,7 +1148,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             local next_known  = next_action and state:IsKnown( next_action )
                                                             local next_usable, next_why = next_action and state:IsUsable( next_action )
                                                             local next_cost   = next_action and state.action[ next_action ].cost or 0
-                                                            local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource                                                    
+                                                            local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource
 
                                                             if not next_entry then
                                                                 if debug then self:Debug( "Attempted to Pool Resources for non-existent next entry in the APL.  Skipping." ) end
@@ -1158,12 +1158,17 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                                 if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not known.  Skipping.", next_action ) end
                                                             elseif not next_usable then
                                                                 if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable because %s.  Skipping.", next_action, next_why ) end
+                                                            elseif state.cooldown[ next_action ].remains > 0 then
+                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is on cooldown.  Skipping.", next_action ) end
+                                                            elseif state[ next_res ].current >= next_cost + extra_amt then
+                                                                if debut then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we already have all the resources needed ( %.2f > %.2f + %.2f ).  Skipping.", next_ation, state[ next_res ].current, next_cost, extra_amt ) end
                                                             else
-                                                                local next_wait = max( state:TimeToReady( next_action, true ), state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] )
+                                                                -- Oops.  We only want to wait if 
+                                                                local next_wait = state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ]
 
-                                                                if next_wait > 0 then
+                                                                --[[ if next_wait > 0 then
                                                                     if debug then self:Debug( "Next Wait: %.2f; TTR: %.2f, Resource(%.2f): %.2f", next_wait, state:TimeToReady( next_action, true ), next_cost + extra_amt, state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ] ) end
-                                                                end
+                                                                end ]]
 
                                                                 if next_wait <= 0 then
                                                                     if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but there is no need to wait.  Skipping.", next_action ) end
