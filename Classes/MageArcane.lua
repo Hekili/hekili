@@ -1814,7 +1814,7 @@ if UnitClassBase( 'player' ) == 'MAGE' then
         order = 1,
     } )
 
-    spec:RegisterSetting( "am_spam", 1, {
+    spec:RegisterSetting( "am_spam", 0, {
         type = "toggle",
         name = "Use |T136096:0|t Arcane Missiles Spam",
         icon = 136096,
