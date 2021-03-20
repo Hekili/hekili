@@ -2105,7 +2105,7 @@ all:RegisterAbilities( {
         gcd = "off",
 
         usable = function ()
-            if not boss or group then return false, "requires boss fight or group (to avoid resetting)" end
+            if not boss or solo then return false, "requires boss fight or group (to avoid resetting)" end
             if moving then return false, "can't shadowmeld while moving" end
             return true
         end,
