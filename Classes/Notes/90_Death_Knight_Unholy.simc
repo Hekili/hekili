@@ -1,5 +1,5 @@
 ## Death Knight Unholy
-## March 20, 2021
+## March 21, 2021
 
 ## Changes:
 ## - Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
@@ -7,6 +7,7 @@
 ## - Using Wound Spender abilities more flexibly (at 4+ stacks instead of 5+); DPS neutral and may prevent some no-rec situations.
 ## - Using Festering Strike in AOE if you have nothing else to do and won't overcap wounds is DPS neutral.
 ## - Changed many 'fight_remains' conditionals to apply in boss fights only (less CD waste on trash).
+## - Added another Outbreak entry to set up stronger Epidemics.
 ## - TODO:  New trinket criteria.
 
 actions.precombat+=/potion
@@ -31,6 +32,8 @@ actions+=/variable,name=major_cooldowns_active,value=pet.gargoyle.active|buff.un
 actions+=/outbreak,if=dot.virulent_plague.refreshable&!talent.unholy_blight&!raid_event.adds.exists
 actions+=/outbreak,if=dot.virulent_plague.refreshable&active_enemies>=2&(!talent.unholy_blight|talent.unholy_blight&cooldown.unholy_blight.remains)
 actions+=/outbreak,if=runeforge.superstrain&(dot.frost_fever.refreshable|dot.blood_plague.refreshable)
+# If there are 3+ targets missing VP, Outbreak to setup better Epidemics.
+actions+=/outbreak,line_cd=5,if=active_enemies-active_dot.virulent_plague>2
 actions+=/wait,sec=cooldown.soul_reaper.remains,if=talent.soul_reaper&target.time_to_pct_35<5&fight_remains>5&cooldown.soul_reaper.remains<(gcd*0.75)&active_enemies=1
 # Action Lists and Openers (Openers/Sequences unsupported in addon.)
 actions+=/call_action_list,name=trinkets
