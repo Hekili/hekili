@@ -1901,8 +1901,7 @@ local function CLEU_HANDLER( event, _, subtype, _, sourceGUID, sourceName, _, _,
                 state.gcd.lastStart = max( state.gcd.lastStart, gcdStart )
             end            
 
-            Hekili:ForceUpdate( subtype, true )
-
+            if subtype ~= "SPELL_DAMAGE" then Hekili:ForceUpdate( subtype, true ) end
         end
     end
 
