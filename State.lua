@@ -6378,8 +6378,8 @@ do
         if ability.channeling then
             local c = class.abilities[ ability.channeling ] and class.abilities[ ability.channeling ].id
             
-            if not c or state.buff.casting.down or not state.buff.casting.v3 or state.buff.casting.v1 ~= c then
-                return false, "required channel (" .. c .. " / " .. ability.channeling .. ") not active [ " .. state.buff.casting.remains .. " / " .. state.buff.casting.applied .. " / " .. state.buff.casting.expires .. " / " .. state.query_time .. " / " .. tostring( state.buff.casting.v3 ) .. " / " .. state.buff.casting.v1 .. " ]"
+            if not c or state.buff.casting.remains < 0.1 or not state.buff.casting.v3 or state.buff.casting.v1 ~= c then
+                return false, "required channel (" .. c .. " / " .. ability.channeling .. ") not active or too short [ " .. state.buff.casting.remains .. " / " .. state.buff.casting.applied .. " / " .. state.buff.casting.expires .. " / " .. state.query_time .. " / " .. tostring( state.buff.casting.v3 ) .. " / " .. state.buff.casting.v1 .. " ]"
             end
         end
 
