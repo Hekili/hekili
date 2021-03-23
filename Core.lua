@@ -1157,7 +1157,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             elseif not next_known then
                                                                 if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not known.  Skipping.", next_action ) end
                                                             elseif not next_usable then
-                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable because %s.  Skipping.", next_action, next_why ) end
+                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is not usable because %s.  Skipping.", next_action, next_why or "of an unknown reason" ) end
                                                             elseif state.cooldown[ next_action ].remains > 0 then
                                                                 if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is on cooldown.  Skipping.", next_action ) end
                                                             elseif state[ next_res ].current >= next_cost + extra_amt then
