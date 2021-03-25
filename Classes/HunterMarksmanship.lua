@@ -297,6 +297,10 @@ if UnitClassBase( "player" ) == "HUNTER" then
 
         if now - action.volley.lastCast < 6 then applyBuff( "volley", 6 - ( now - action.volley.lastCast ) ) end
 
+        if active_dot.resonating_arrow > 0 then
+            applyBuff( "resonating_arrow", max( debuff.resonating_arrow.remains, action.resonating_arrow.lastCast + buff.resonating_arrow.duration ) )
+        end        
+
         last_steady_focus = nil
     end )
 
