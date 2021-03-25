@@ -389,9 +389,7 @@ if UnitClassBase( "player" ) == "HUNTER" then
             debuff.tar_trap.expires = debuff.tar_trap.applied + 30
         end
 
-        if active_dot.resonating_arrow > 0 then
-            applyBuff( "resonating_arrow", max( debuff.resonating_arrow.remains, action.resonating_arrow.lastCast + buff.resonating_arrow.duration ) )
-        end
+        if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
     end )
 
     spec:RegisterHook( "specializationChanged", function ()
