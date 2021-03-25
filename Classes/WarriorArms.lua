@@ -879,6 +879,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyDebuff( "target", "deep_wounds" )
                 removeBuff( "overpower" )
                 removeBuff( "exploiter" )
+                removeBuff( "sharpen_blade" )
 
                 if buff.deadly_calm.up then
                     removeStack( "deadly_calm" )
@@ -892,7 +893,7 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                     id = 346369,
                     duration = 10,
                     max_stack = 1
-                }
+                },
             }
         },
 
@@ -997,6 +998,29 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
                 applyDebuff( "target", "rend" )
                 if buff.deadly_calm.up then removeStack( "deadly_calm" ) end
             end,
+        },
+
+
+        sharpen_blade = {
+            id = 198817,
+            cast = 0,
+            cooldown = 25,
+            gcd = "spell",
+
+            startsCombat = false,
+            pvptalent = "sharpen_blade",
+
+            handler = function ()
+                applyBuff( "sharpen_blade" )
+            end,
+
+            auras = {
+                sharpen_blade = {
+                    id = 198817,
+                    duration = 3600,
+                    max_stack = 1,
+                }
+            }
         },
 
 
