@@ -1401,7 +1401,7 @@ if UnitClassBase( 'player' ) == 'MONK' then
             texture = 606551,
 
             cycle = function ()
-                if legendary.keefers_skyreach.enabled and debuff.recently_rushing_tiger_palm.up and active_dot.recently_rushing_tiger_palm < cycle_enemies then return "recently_rushing_tiger_palm" end
+                if legendary.keefers_skyreach.enabled and debuff.skyreach_exhaustion.up and active_dot.skyreach_exhaustion < cycle_enemies then return "skyreach_exhaustion" end
                 return "mark_of_the_crane"
             end,
 
@@ -1421,10 +1421,10 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     end
                 end
 
-                if legendary.keefers_skyreach.enabled and debuff.recently_rushing_tiger_palm.down then
+                if legendary.keefers_skyreach.enabled and debuff.skyreach_exhaustion.down then
                     setDistance( 5 )
                     applyDebuff( "target", "keefers_skyreach" )
-                    applyDebuff( "target", "recently_rushing_tiger_palm" )
+                    applyDebuff( "target", "skyreach_exhaustion" )
                 end
 
                 gain( 2, "chi" )
@@ -1439,11 +1439,12 @@ if UnitClassBase( 'player' ) == 'MONK' then
                     duration = 6,
                     max_stack = 1,
                 },
-                recently_rushing_tiger_palm = {
+                skyreach_exhaustion = {
                     id = 337341,
                     duration = 30,
                     max_stack = 1,
-                },                
+                    copy = "recently_rushing_tiger_palm"
+                },
             }
         },
 
