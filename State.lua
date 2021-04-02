@@ -3157,6 +3157,13 @@ local mt_resource = {
         elseif k == "time_to_max" then
             return state:TimeToResource( t, t.max )
 
+        elseif k == "time_to_max_combined" then
+            if not state.spec.assassination then return t.time_to_max end
+            
+            -- Assassination, April 2021
+            -- Using the same as time_to_max because our time_to_max uses modeled regen events...
+            return state:TimeToResource( t, t.max )
+
         elseif k:sub(1, 8) == "time_to_" then
             local amount = k:sub(9)
             amount = tonumber(amount)
@@ -3167,6 +3174,10 @@ local mt_resource = {
 
         elseif k == "regen" then
             return ( state.time > 0 and t.active_regen or t.inactive_regen ) or 0
+        
+        elseif k == "regen_combined" then
+            -- Assassination, April 2021
+            return max( t.regen, state:TimeToResource( t, t.max ) / t.deficit )
 
         elseif k == "modmax" then
             return t.max
