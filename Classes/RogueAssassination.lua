@@ -1216,9 +1216,15 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
             startsCombat = true,
             texture = 236273,
 
+            cycle = function () return buff.deadly_poison.up and "deadly_poison" or nil end,
+
             handler = function ()
                 gain( 1, "combo_points" )
                 removeBuff( "hidden_blades" )
+                if buff.deadly_poison.up then
+                    applyDebuff( "target", "deadly_poison" )
+                    active_dot.deadly_poison = min( active_enemies, active_dot.deadly_poison + 8 )
+                end
             end,
         },
 
