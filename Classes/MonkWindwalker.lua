@@ -1334,7 +1334,13 @@ if UnitClassBase( 'player' ) == 'MONK' then
             icd = 1, -- guessing.
             gcd = "off",
             
-            toggle = "cooldowns",
+            toggle = function ()
+                if settings.sef_one_charge then
+                    if cooldown.storm_earth_and_fire.true_time_to_max_charges > gcd.max then return "cooldowns" end
+                    return
+                end
+                return "cooldowns"
+            end,
 
             startsCombat = false,
             texture = 136038,
@@ -1644,6 +1650,13 @@ if UnitClassBase( 'player' ) == 'MONK' then
         type = "toggle",
         width = "full",
     } ) 
+
+    spec:RegisterSetting( "sef_one_charge", false, {
+        name = "Reserve One |T136038:0|t Storm, Earth, and Fire Charge as CD",
+        desc = "If checked, |T136038:0|t when Storm, Earth, and Fire's toggle is set to Default, only one charge will be reserved for use with the Cooldowns toggle.",
+        type = "toggle",
+        width = "full",
+    } )
 
     spec:RegisterSetting( "tok_damage", 1, {
         name = "Required Damage for |T651728:0|t Touch of Karma",
