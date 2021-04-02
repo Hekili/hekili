@@ -415,6 +415,11 @@ if UnitClassBase( "player" ) == "MAGE" then
         return count
     end )
 
+    spec:RegisterStateExpr( "expected_kindling_reduction", function ()
+        -- This only really works well in combat; we'll use the old APL value instead of dynamically updating for now.
+        return 0.4
+    end )
+
 
     Hekili:EmbedDisciplinaryCommand( spec )
 
