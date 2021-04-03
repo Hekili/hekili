@@ -496,5 +496,11 @@ all:RegisterAuras( {
         id = 342814,
         duration = 30,
         max_stack = 99
+    },
+
+    first_strike = {
+        id = 325381,
+        duration = 5,
+        max_stack = 1
     }
 } )
