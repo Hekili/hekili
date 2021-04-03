@@ -838,8 +838,9 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
             texture = 236312,
 
             toggle = "interrupts",
-            debuff = "casting",
-            readyTime = state.timeToInterrupt,
+            debuff = function () return settings.shockwave_interrupt and "casting" or nil end,
+            readyTime = function () return settings.shockwave_interrupt and timeToInterrupt() or nil end,
+
             usable = function () return not target.is_boss end,
 
             handler = function ()
@@ -964,7 +965,14 @@ if UnitClassBase( 'player' ) == 'WARRIOR' then
         name = "Only |T132353:0|t Revenge if Free",
         desc = "If checked, the Revenge ability will only be recommended when it costs 0 Rage to use.",
         type = "toggle",
-        width = 1.5
+        width = "full"
+    } )
+
+    spec:RegisterSetting( "shockwave_interrupt", true, {
+        name = "Use Shockwave as Interrupt",
+        desc = "If checked, Shockwave will only be recommended with a target that is casting.",
+        type = "toggle",
+        width = "full"
     } )
 
 
