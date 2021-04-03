@@ -1,5 +1,5 @@
 ## Enhancement Shaman
-## March 10, 2021
+## April 2, 2021
 
 actions.precombat=windfury_weapon,if=buff.windfury_weapon.remains<300
 actions.precombat+=/flametongue_weapon,if=buff.flametongue_weapon.remains<300
@@ -12,7 +12,7 @@ actions.precombat+=/stormkeeper,if=talent.stormkeeper.enabled
 actions=bloodlust
 # In-combat potion is before combat ends.
 actions+=/potion,if=boss&fight_remains<60
-# Interrupt of casts.
+# Interrupt
 actions+=/wind_shear
 actions+=/use_items
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
@@ -73,6 +73,7 @@ actions.single+=/primordial_wave,if=!buff.primordial_wave.up
 actions.single+=/stormstrike,if=runeforge.doom_winds.equipped&buff.doom_winds.up
 actions.single+=/crash_lightning,if=runeforge.doom_winds.equipped&buff.doom_winds.up
 actions.single+=/ice_strike,if=runeforge.doom_winds.equipped&buff.doom_winds.up
+actions.single+=/sundering,if=runeforge.doom_winds.equipped&buff.doom_winds.up
 actions.single+=/flame_shock,if=!ticking
 actions.single+=/vesper_totem
 actions.single+=/frost_shock,if=buff.hailstorm.up

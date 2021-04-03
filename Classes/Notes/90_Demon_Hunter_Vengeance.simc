@@ -1,10 +1,9 @@
 ## Demon Hunter Vengeance
-## March 8, 2021
+## April 2, 2021
 
 ## Allow Fracture at low Fury (prevents Fury issues with Spirit Bomb).
 
 actions.precombat=bottled_flayedwing_toxin
-actions.precombat+=/use_item,name=azsharas_font_of_power
 
 # Executed every time the actor is available.
 actions+=/variable,name=brand_build,value=talent.agonizing_flames.enabled&talent.burning_alive.enabled&talent.charred_flesh.enabled

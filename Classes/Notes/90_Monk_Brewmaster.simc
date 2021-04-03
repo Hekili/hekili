@@ -1,8 +1,9 @@
 ## Brewmaster Monk
-## March 12, 2021
+## April 2, 2021
 
 ## Changes:
 ## - Add Exploding Keg.
+## - Todo:  Review Purifying during Niuzao.
 
 ## Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat+=/fleshcraft
@@ -27,7 +28,7 @@ actions+=/lights_judgment
 actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
-actions+=/invoke_niuzao_the_black_ox,if=fight_remains>25
+actions+=/invoke_niuzao_the_black_ox,if=target.time_to_die>6&cooldown.purifying_brew.charges_fractional<2
 actions+=/touch_of_death,if=target.health.pct<=15|target.health.current<health.max
 actions+=/weapons_of_order
 actions+=/fallen_order

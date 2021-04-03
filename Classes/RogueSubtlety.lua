@@ -732,7 +732,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
 
                 if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
 
-                gain( 2 + ( buff.shadow_blades.up and 1 or 0 ), "combo_points" )
+                gain( buff.shadow_blades.up and 2 or 1, "combo_points" )
                 removeBuff( "symbols_of_death_crit" )
             end,
         },
@@ -981,7 +981,7 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 end
 
                 local combo = min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current )
-                applyBuff( "kidney_shot", 2 + 1 * ( combo - 1 ) )
+                applyDebuff( "target", "kidney_shot", 2 + 1 * ( combo - 1 ) )
 
                 if talent.prey_on_the_weak.enabled then applyDebuff( "target", "prey_on_the_weak" ) end
 

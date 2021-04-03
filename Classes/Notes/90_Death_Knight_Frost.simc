@@ -1,5 +1,5 @@
 ## Death Knight Frost
-## March 14, 2021
+## April 2, 2021
 
 ## Changes
 ## - Removed last-second usage of Chains of Ice as it doesn't play well in practice.
@@ -38,7 +38,7 @@ actions.aoe=remorseless_winter
 actions.aoe+=/glacial_advance,if=talent.frostscythe
 actions.aoe+=/frost_strike,cycle_targets=1,if=cooldown.remorseless_winter.remains<=2*gcd&talent.gathering_storm
 actions.aoe+=/howling_blast,if=buff.rime.up
-actions.aoe+=/obliterate,if=death_and_decay.ticking&covenant.night_fae&buff.deaths_due.stack<8
+actions.aoe+=/obliterate,if=death_and_decay.ticking&covenant.night_fae&buff.deaths_due.stack<4
 actions.aoe+=/frostscythe,if=buff.killing_machine.react&(!death_and_decay.ticking&covenant.night_fae|!covenant.night_fae)
 actions.aoe+=/glacial_advance,if=runic_power.deficit<(15+talent.runic_attenuation*3)
 actions.aoe+=/frost_strike,cycle_targets=1,if=runic_power.deficit<(15+talent.runic_attenuation*3)

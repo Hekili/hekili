@@ -1,5 +1,5 @@
 ## Feral Druid
-## March 21, 2021
+## April 2, 2021
 
 ## Feral APL can also be found at https://gist.github.com/Xanzara/6896c8996f5afce5ce115daa3a08daff
 
@@ -18,7 +18,6 @@ actions.precombat+=/prowl,if=buff.moonkin_form.down
 actions.precombat+=/cat_form,if=buff.moonkin_form.down
 
 actions=run_action_list,name=balance,if=buff.moonkin_form.up&!druid.owlweave_cat
-# HotW Convoke
 actions+=/call_action_list,name=owlweave,if=druid.owlweave_cat
 # Prowl whenever possible
 actions+=/prowl
@@ -29,7 +28,7 @@ actions+=/run_action_list,name=stealth,if=buff.shadowmeld.up|buff.prowl.up
 actions+=/skull_bash
 actions+=/call_action_list,name=cooldown
 # Necrolord: Cast 3 or 4 combo point rips on single target outside of berserk or during berserk if feral frenzy is up.
-actions+=/rip,target_if=covenant.necrolord&spell_targets.thrash_cat=1&combo_points>2&refreshable&druid.rip.ticks_gained_on_refresh>variable.rip_ticks&(!buff.bs_inc.up|cooldown.bs_inc.up|(buff.bs_inc.up&cooldown.feral_frenzy.up))
+actions+=/rip,cycle_targets=1,if=covenant.necrolord&spell_targets.thrash_cat=1&combo_points>2&refreshable&druid.rip.ticks_gained_on_refresh>variable.rip_ticks&(!buff.bs_inc.up|cooldown.bs_inc.up|(buff.bs_inc.up&cooldown.feral_frenzy.up))
 actions+=/run_action_list,name=finisher,if=combo_points>=(5-variable.fourcp_bite)
 actions+=/primal_wrath,if=druid.primal_wrath.ticks_gained_on_refresh>=20&combo_points>=2,line_cd=5
 # Multi-gcd stealth
@@ -39,7 +38,6 @@ actions+=/wait,sec=((115-23*buff.incarnation_king_of_the_jungle.up)-(energy.curr
 # actions+=/pool_resource,if=talent.bloodtalons.enabled&buff.bloodtalons.down&(energy+3.5*energy.regen+(40*buff.clearcasting.up))<(115-23*buff.incarnation_king_of_the_jungle.up)&active_bt_triggers=0
 actions+=/run_action_list,name=bloodtalons,if=talent.bloodtalons.enabled&buff.bloodtalons.down
 actions+=/ferocious_bite,cycle_targets=1,if=buff.apex_predators_craving.up
-# Todo: test this with more adverse setups (legendaries, gear, talents) to make sure that this stays a dps increase
 actions+=/pool_resource,for_next=1
 actions+=/rake,cycle_targets=1,if=(refreshable|persistent_multiplier>dot.rake.pmultiplier)&druid.rake.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
 actions+=/lunar_inspiration,cycle_targets=1,if=refreshable&druid.lunar_inspiration.ticks_gained_on_refresh>spell_targets.swipe_cat*2-2
@@ -63,7 +61,7 @@ actions.bloodtalons+=/swipe_cat,if=buff.bt_swipe.down
 actions.bloodtalons+=/thrash_cat,if=buff.bt_thrash.down
 
 actions.cooldown=adaptive_swarm,cycle_targets=1,=((!dot.adaptive_swarm_damage.ticking|dot.adaptive_swarm_damage.remains<2)&(dot.adaptive_swarm_damage.stack<3|!dot.adaptive_swarm_heal.stack>1)&!action.adaptive_swarm_heal.in_flight&!action.adaptive_swarm_damage.in_flight&!action.adaptive_swarm.in_flight)&target.time_to_die>5|active_enemies>2&!dot.adaptive_swarm_damage.ticking&energy<35&target.time_to_die>5
-actions.cooldown+=/feral_frenzy,if=combo_points<3&target.time_to_die>7&!cooldown.tigers_fury.up|fight_remains<8&fight_remains>2
+actions.cooldown+=/feral_frenzy,cycle_targets=1,if=combo_points<3&target.time_to_die>7&!cooldown.tigers_fury.up|fight_remains<8&fight_remains>2
 # TODO: Need to sync with with ravenous frenzy when we run frenzyband, or atleast check if its worth it
 actions.cooldown+=/berserk,if=combo_points>=3
 actions.cooldown+=/incarnation,if=combo_points>=3

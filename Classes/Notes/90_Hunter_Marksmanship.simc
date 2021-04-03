@@ -1,5 +1,5 @@
 ## Marksmanship Hunter
-## March 21, 2021
+## April 2, 2021
 
 actions.precombat+=/bottled_flayedwing_toxin
 actions.precombat+=/tar_trap,if=runeforge.soulforge_embers

@@ -1,5 +1,5 @@
 # Guardian Druid
-# March 7, 2020
+# April 2, 2020
 
 # Changes:
 # - Incorporate Cat/Moonkin priorities (if setting is checked).
@@ -17,18 +17,19 @@ actions.precombat+=/starfire,if=buff.moonkin_form.up&druid.owlweave_bear&covenan
 actions=skull_bash
 actions+=/use_items,if=!buff.prowl.up
 actions+=/potion,if=(((talent.heart_of_the_wild.enabled&buff.heart_of_the_wild.up)&(druid.catweave_bear|druid.owlweave_bear)&!buff.prowl.up)|((buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)&(!druid.catweave_bear&!druid.owlweave_bear)))
-# actions+=/run_action_list,name=catweave,if=druid.catweave_bear&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&dot.moonfire.remains>=gcd+0.5&rage<40&buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&buff.galactic_guardian.down)|(buff.cat_form.up&energy>25)|(runeforge.oath_of_the_elder_druid.equipped&!buff.oath_of_the_elder_druid.up&(buff.cat_form.up&energy>20))|(runeforge.oath_of_the_elder_druid.equipped&buff.heart_of_the_wild.remains<10)&(buff.cat_form.up&energy>20)|(covenant.kyrian&cooldown.empower_bond.remains<=1&active_enemies<2))
-# actions+=/run_action_list,name=catweave,if=druid.catweave_bear&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&dot.moonfire.remains>=gcd+0.5&rage<40&buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&buff.galactic_guardian.down)|(buff.cat_form.up&energy>25)|(dot.rake.refreshable&dot.rip.refreshable)|(runeforge.oath_of_the_elder_druid.equipped&!buff.oath_of_the_elder_druid.up&(buff.cat_form.up&energy>20)&buff.heart_of_the_wild.remains<=10)|(covenant.kyrian&cooldown.empower_bond.remains<=1&active_enemies<2)|(buff.heart_of_the_wild.up&energy>90))
-actions+=/run_action_list,name=catweave,if=druid.catweave_bear&buff.cat_form.up
-# actions+=/run_action_list,name=owlweave,if=druid.owlweave_bear&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&rage<20&buff.incarnation.down&buff.berserk_bear.down)|(buff.moonkin_form.up&dot.sunfire.refreshable)|(buff.moonkin_form.up&buff.heart_of_the_wild.up)|(buff.moonkin_form.up&(buff.eclipse_lunar.up|buff.eclipse_solar.up)&!runeforge.oath_of_the_elder_druid.equipped)|(runeforge.oath_of_the_elder_druid.equipped&!buff.oath_of_the_elder_druid.up)|(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1)|(covenant.kyrian&cooldown.empower_bond.remains<=1&active_enemies<2))
-actions+=/run_action_list,name=owlweave,if=druid.owlweave_bear&buff.moonkin_form.up
+## Catweaving action list will be ran if, mangle/thrash are on cd, rage is below 40, zerk and incarnation are down and Gualactic guardian buff is not active, or if, we're in catform and energy is above 25, Or if we have the Oath legendary equipped, the debuff linked to it is not up and energy is above 20,Or if we're kyrian and Empower bond cooldown is up and enemies are inferior to 2.
+## actions+=/run_action_list,name=catweave,if=druid.catweave_bear&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&dot.moonfire.remains>=gcd+0.5&rage<40&buff.incarnation_guardian_of_ursoc.down&buff.berserk_bear.down&buff.galactic_guardian.down)|(buff.cat_form.up&energy>25)|(dot.rake.refreshable&dot.rip.refreshable)|(runeforge.oath_of_the_elder_druid.equipped&!buff.oath_of_the_elder_druid.up&(buff.cat_form.up&energy>20)&buff.heart_of_the_wild.remains<=10)|(covenant.kyrian&cooldown.empower_bond.remains<=1&active_enemies<2)|(buff.heart_of_the_wild.up&energy>90))
+actions+=/run_action_list,name=catweave,strict=1,if=druid.catweave_bear&buff.cat_form.up
+## Owlweaving action list will be ran if, mangle/thrash are on cd, rage is below 15, zerk and incarnation are down and Gualactic guardian buff is not active. Or if, we're in moonkin form and sunfire is refreshable, Or if we have the Oath legendary equipped, the debuff linked to it is not up.Or if we're kyrian and Empower bond cooldown is up and enemies are below 2, or if we're Night fae and Convoke cd is up.
+## actions+=/run_action_list,name=owlweave,if=druid.owlweave_bear&((cooldown.thrash_bear.remains>0&cooldown.mangle.remains>0&rage<20&buff.incarnation.down&buff.berserk_bear.down)|(buff.moonkin_form.up&dot.sunfire.refreshable)|(buff.moonkin_form.up&buff.heart_of_the_wild.up)|(buff.moonkin_form.up&(buff.eclipse_lunar.up|buff.eclipse_solar.up)&!runeforge.oath_of_the_elder_druid.equipped)|(runeforge.oath_of_the_elder_druid.equipped&!buff.oath_of_the_elder_druid.up)|(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1)|(covenant.kyrian&cooldown.empower_bond.remains<=1&active_enemies<2))
+actions+=/run_action_list,name=owlweave,strict=1,if=druid.owlweave_bear&buff.moonkin_form.up
 # If we have Lycara legendary equipped and balance affinity as a talent we switch into moonkin form whenever the lycara buff is at or below 2 sec
 actions+=/run_action_list,name=lycarao,if=((runeforge.lycaras_fleeting_glimpse.equipped)&(talent.balance_affinity.enabled)&(buff.lycaras_fleeting_glimpse.up)&(buff.lycaras_fleeting_glimpse.remains<=2))
 # If we have Lycara legendary equipped and feral affinity as a talent we switch into feral form whenever the lycara buff is at or below 2 sec
 actions+=/run_action_list,name=lycarac,if=((runeforge.lycaras_fleeting_glimpse.equipped)&(talent.feral_affinity.enabled)&(buff.lycaras_fleeting_glimpse.up)&(buff.lycaras_fleeting_glimpse.remains<=2))
-# If we're a nightfae and we don't want to catweave/owlweave,and we have balance/feral affinity talented, Whenever convoke cd is up we switch into affinity form to cast it, here moonkin form.
+# If we're a nightfae and we don't want to catweave/owlweave, and we have balance/feral affinity talented, Whenever convoke cd is up we switch into affinity form to cast it, here moonkin form.
 actions+=/run_action_list,name=oconvoke,if=settings.shift_for_convoke&((talent.balance_affinity.enabled)&(!druid.catweave_bear)&(!druid.owlweave_bear)&(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1))
-# If we're a nightfae and we don't want to catweave/owlweave,and we have balance/feral affinity talented, Whenever convoke cd is up we switch into affinity form to cast it, here catform form.
+# If we're a nightfae and we don't want to catweave/owlweave, and we have balance/feral affinity talented, Whenever convoke cd is up we switch into affinity form to cast it, here catform form.
 actions+=/run_action_list,name=cconvoke,if=settings.shift_for_convoke&((talent.feral_affinity.enabled)&(!druid.catweave_bear)&(!druid.owlweave_bear)&(covenant.night_fae&cooldown.convoke_the_spirits.remains<=1))
 actions+=/call_action_list,name=mitigation
 actions+=/run_action_list,name=bear
@@ -91,14 +92,24 @@ actions.catweave+=/adaptive_swarm,if=(!dot.adaptive_swarm_damage.ticking&!action
 actions.catweave+=/shred,if=combo_points.current<5
 
 actions.cconvoke=cat_form
-actions.cconvoke+=/convoke_the_spirits
+actions.cconvoke+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
+actions.cconvoke+=/convoke_the_spirits,if=soulbind.first_strike.enabled&buff.first_strike.up
+actions.cconvoke+=/convoke_the_spirits,if=talent.heart_of_the_wild.enabled&buff.heart_of_the_wild.up
+actions.cconvoke+=/convoke_the_spirits,if=talent.heart_of_the_wild.enabled&cooldown.heart_of_the_wild.remains>15
+actions.cconvoke+=/convoke_the_spirits,if=!talent.heart_of_the_wild.enabled
 
 actions.lycarac=cat_form
 
 actions.lycarao=moonkin_form
 
 actions.oconvoke=moonkin_form
-actions.oconvoke+=/convoke_the_spirits
+actions.oconvoke+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up
+actions.oconvoke+=/convoke_the_spirits,if=soulbind.first_strike.enabled&buff.first_strike.up
+actions.oconvoke+=/starfire,if=eclipse.any_next|eclipse.solar_next
+actions.oconvoke+=/wrath,if=eclipse.any_next|eclipse.lunar_next
+actions.oconvoke+=/convoke_the_spirits,if=talent.heart_of_the_wild.enabled&buff.heart_of_the_wild.up
+actions.oconvoke+=/convoke_the_spirits,if=talent.heart_of_the_wild.enabled&cooldown.heart_of_the_wild.remains>15
+actions.oconvoke+=/convoke_the_spirits,if=!talent.heart_of_the_wild.enabled
 
 actions.owlweave=moonkin_form,if=!buff.moonkin_form.up
 actions.owlweave+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!buff.heart_of_the_wild.up

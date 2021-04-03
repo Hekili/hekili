@@ -711,6 +711,8 @@ if UnitClassBase( "player" ) == "ROGUE" then
                 if talent.prey_on_the_weak.enabled then
                     applyDebuff( "target", "prey_on_the_weak", 6 )
                 end
+
+                gain( 1, "combo_points" )
             end,
         },
 

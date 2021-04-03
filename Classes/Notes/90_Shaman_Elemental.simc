@@ -1,5 +1,5 @@
 ## Elemental Shaman
-## March 8, 2021
+## April 3, 2021
 
 ## Changes:
 ## - Incorporate settings.stack_buffer for Icefury, Stormkeeper.
@@ -10,7 +10,8 @@ actions.precombat=earth_elemental,if=!talent.primal_elementalist.enabled
 # Use Stormkeeper precombat unless some adds will spawn soon.
 actions.precombat+=/stormkeeper,if=talent.stormkeeper.enabled&(raid_event.adds.count<3|raid_event.adds.in>50)
 actions.precombat+=/elemental_blast,if=talent.elemental_blast.enabled
-actions.precombat+=/lava_burst,if=!talent.elemental_blast.enabled
+actions.precombat+=/lava_burst,line_cd=5,if=!talent.elemental_blast.enabled
+actions.precombat+=/flame_shock,if=refreshable
 actions.precombat+=/potion
 
 # Interrupt of casts.
@@ -33,8 +34,8 @@ actions+=/vesper_totem
 actions+=/fae_transfusion,if=!talent.master_of_the_elements.enabled|buff.master_of_the_elements.up
 
 actions+=/run_action_list,name=aoe,if=active_enemies>2&(spell_targets.chain_lightning>2|spell_targets.lava_beam>2)
-actions+=/run_action_list,name=single_target,if=!talent.storm_elemental.enabled&active_enemies<=2
-actions+=/run_action_list,name=se_single_target,if=talent.storm_elemental.enabled&active_enemies<=2
+actions+=/run_action_list,name=single_target,strict=1,if=!talent.storm_elemental.enabled&active_enemies<=2
+actions+=/run_action_list,name=se_single_target,strict=1,if=talent.storm_elemental.enabled&active_enemies<=2
 
 actions.aoe=earthquake,if=buff.echoing_shock.up
 actions.aoe+=/chain_harvest
@@ -80,6 +81,7 @@ actions.se_single_target+=/frost_shock,if=talent.icefury.enabled&buff.icefury.up
 actions.se_single_target+=/chain_harvest
 actions.se_single_target+=/static_discharge,if=talent.static_discharge.enabled
 actions.se_single_target+=/earth_elemental,if=!talent.primal_elementalist.enabled|talent.primal_elementalist.enabled&(!pet.storm_elemental.active)
+actions.se_single_target+=/chain_lightning,if=spell_targets.chain_lightning=2
 actions.se_single_target+=/lightning_bolt
 actions.se_single_target+=/flame_shock,moving=1,cycle_targets=1,if=refreshable
 actions.se_single_target+=/flame_shock,moving=1,if=movement.distance>6
@@ -111,6 +113,7 @@ actions.single_target+=/frost_shock,if=runeforge.elemental_equilibrium.equipped&
 actions.single_target+=/chain_harvest
 actions.single_target+=/static_discharge,if=talent.static_discharge.enabled
 actions.single_target+=/earth_elemental,if=!talent.primal_elementalist.enabled|!pet.fire_elemental.active
+actions.single_target+=/chain_lightning,if=spell_targets.chain_lightning=2
 actions.single_target+=/lightning_bolt
 actions.single_target+=/flame_shock,moving=1,cycle_targets=1,if=refreshable
 actions.single_target+=/flame_shock,moving=1,if=movement.distance>6
