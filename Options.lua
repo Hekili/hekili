@@ -252,6 +252,12 @@ local oneTimeFixes = {
             p.specs[ id ].potion = nil
         end
     end,
+
+    resetGlobalCooldownSync_20210403 = function( p )
+        for id, spec in pairs( p.specs ) do
+            spec.gcdSync = nil
+        end
+    end,
 }
 
 
