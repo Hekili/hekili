@@ -774,7 +774,7 @@ local HekiliSpecMixin = {
 
 function Hekili:RestoreDefaults()
     local p = self.DB.profile
-    local changed = false
+    local changed = {}
 
     for k, v in pairs( class.packs ) do
         local existing = rawget( p.packs, k )
@@ -787,13 +787,32 @@ function Hekili:RestoreDefaults()
                 data.payload.version = v.version
                 data.payload.date = v.version
                 data.payload.builtIn = true
-                changed = true
+                insert( changed, k )
             end
 
         end
     end
 
-    if changed then self:LoadScripts(); self:RefreshOptions() end
+    if #changed > 0 then
+        self:LoadScripts()
+        self:RefreshOptions()
+
+        if #changed == 1 then
+            self:Print( "The |cFFFFD100" .. changed[1] .. "|r priority was updated." )
+        elseif #changed == 2 then
+            self:Print( "The |cFFFFD100" .. changed[1] .. "|r and |cFFFFD100" .. changed[2] .. "|r priorities were updated." )
+        else
+            local report = "|cFFFFD100" .. changed[1] .. "|r"
+
+            for i = 2, #changed - 1 do
+                report = report .. ", |cFFFFD100" .. changed[i] .. "|r"
+            end
+
+            report = "The " .. report .. ", and |cFFFFD100" .. changed[ #changed ] .. "|r priorities were updated."
+
+            Hekili:Print( report )
+        end
+    end
 end
 
 
