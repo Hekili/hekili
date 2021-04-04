@@ -361,6 +361,11 @@ local mt_trinket = {
             return class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ].remains or 0
         elseif k == "has_cooldown" then
             return GetItemSpell( t.id ) ~= nil
+        elseif k == "ready_cooldown" then
+            if t.usable and t.ability then
+                return t.cooldown.ready
+            end
+            return false
         elseif k == "cooldown" then
             if t.usable and t.ability then
                 t.cooldown = state.cooldown[ t.ability ]
