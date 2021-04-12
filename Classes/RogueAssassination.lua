@@ -1812,6 +1812,8 @@ if UnitClassBase( 'player' ) == 'ROGUE' then
 
             toggle = "essences",
 
+            cycle = "serrated_bone_spike",
+
             handler = function ()
                 applyDebuff( "target", "serrated_bone_spike" )
                 gain( ( buff.broadside.up and 1 or 0 ) + active_dot.serrated_bone_spike, "combo_points" )
