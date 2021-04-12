@@ -245,10 +245,10 @@ do
     end
 
     -- New Nameplate Proximity System
-    function ns.getNumberTargets()
+    function ns.getNumberTargets( targetChanged )
         local now = GetTime()
 
-        if now - lastCycle < 0.2 then return lastCount end
+        if now - lastCycle < 0.2 and not targetChanged then return lastCount end
         lastCycle = now
 
         if now - Hekili.lastAudit > 1 then
