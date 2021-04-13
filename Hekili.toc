@@ -31,7 +31,11 @@ Classes\HunterBeastMastery.lua
 Classes\HunterMarksmanship.lua
 Classes\HunterSurvival.lua
 Classes\MageArcane.lua
-Classes\MageFire.lua
+
+# Fire Mage performance is too poor to include with the addon by default.
+# Remove the # from the next line to re-enable Fire, but you are using at your own risk.
+# Classes\MageFire.lua
+
 Classes\MageFrost.lua
 Classes\MonkBrewmaster.lua
 # Classes\MonkMistweaver.lua
