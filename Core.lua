@@ -845,7 +845,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                 -- REVISIT THIS:  IF A RUN_ACTION_LIST CALLER IS NOT TIME SENSITIVE, DON'T BOTHER LOOPING THROUGH IT IF ITS CONDITIONS DON'T PASS.
                                                 -- if action == "run_action_list" and not ts then
                                                 --    if debug then self:Debug( "This entry was not time-sensitive; exiting loop." ) end
-                                                --    break3
+                                                --    break
                                                 -- end
 
                                             else
@@ -858,7 +858,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 elseif action == "variable" then
                                     local name = state.args.var_name
 
-                                    if name ~= nil then
+                                    if class.variables[ name ] then
+                                        if debug then self:Debug( " - variable.%s references a hardcoded variable and this entry will be ignored.", name ) end
+                                    elseif name ~= nil then
                                         state:RegisterVariable( name, scriptID, listName, Stack )
                                         if debug then self:Debug( " - variable.%s will check this script entry ( %s )\n%s", name, scriptID, scripts:GetModifierValues( "value", scriptID ) ) end
                                     else
@@ -1899,7 +1901,7 @@ function Hekili:ProcessHooks( dispName, packName )
     elseif InCombatLockdown() then
         -- We don't track debug/snapshot recommendations because the additional debug info ~40% more CPU intensive.
         -- We don't track out of combat because who cares?
-        UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime )
+        UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime, checkstr ~= UI.RecommendationsStr )
     end
 
     UI.NewRecommendations = true

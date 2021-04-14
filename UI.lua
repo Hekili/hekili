@@ -1428,7 +1428,7 @@ do
         return left, right, top, bottom
     end
 
-    local function Display_UpdatePerformance( self, now, used )
+    local function Display_UpdatePerformance( self, now, used, newRecs )
         if used == nil then return end        
         used = used / 1000 -- ms to sec.
 
@@ -1488,6 +1488,17 @@ do
             self.combatUpdates.average = ( ( self.combatUpdates.average * self.combatUpdates.samples ) + interval ) / ( self.combatUpdates.samples + 1 )
             self.combatUpdates.samples = self.combatUpdates.samples + 1
         end
+
+        self.successEvents = self.successEvents or {}
+        self.failEvents = self.failEvents or {}
+
+        local events = newRecs and self.successEvents or self.failEvents
+
+        for k in pairs( self.eventsTriggered ) do
+            if events[ k ] then events[ k ] = events[ k ] + 1
+            else events[ k ] = 1 end
+        end
+
     end
 
 
