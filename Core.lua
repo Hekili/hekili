@@ -1387,7 +1387,17 @@ function Hekili:GetDisplayByName( name )
 end
 
 
+
+local lastPrimary = 0
+
 function Hekili:ProcessHooks( dispName, packName )
+
+    if dispName == "Primary" then
+        if lastPrimary > 0 then
+            print( GetTime() - lastPrimary )
+        end
+        lastPrimary = GetTime()
+    end
 
     if self.Pause then return end
     if not self.PLAYER_ENTERING_WORLD then return end -- In 8.2.5, we can start resetting before our character information is loaded apparently.
@@ -1473,10 +1483,6 @@ function Hekili:ProcessHooks( dispName, packName )
 
             if maxTime and usedTime > maxTime then
                 if debug then self:Debug( -100, "Addon used %.2fms CPU time (of %.2fms softcap) before recommendation #%d; stopping early.", usedTime, maxTime, i-1 ) end
-                if not Hekili.HasSnapped then
-                    Hekili.HasSnapped = true
-                    Hekili:MakeSnapshot( dispName, true )
-                end
                 break
             end
             
