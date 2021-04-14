@@ -1388,16 +1388,7 @@ end
 
 
 
-local lastPrimary = 0
-
 function Hekili:ProcessHooks( dispName, packName )
-
-    if dispName == "Primary" then
-        if lastPrimary > 0 then
-            print( GetTime() - lastPrimary )
-        end
-        lastPrimary = GetTime()
-    end
 
     if self.Pause then return end
     if not self.PLAYER_ENTERING_WORLD then return end -- In 8.2.5, we can start resetting before our character information is loaded apparently.
