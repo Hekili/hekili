@@ -1,5 +1,5 @@
 ## Death Knight Unholy
-## April 2, 2021
+## April 12, 2021
 
 ## Changes:
 ## - Adjustments to DnD/Defile/Deaths Due to only count targets who are expected to live long enough to matter (aoe_setup #1).
@@ -31,10 +31,12 @@ actions+=/variable,name=major_cooldowns_active,value=pet.gargoyle.active|buff.un
 # Maintaining Virulent Plague is a priority
 actions+=/outbreak,if=dot.virulent_plague.refreshable&!talent.unholy_blight&!raid_event.adds.exists
 actions+=/outbreak,cycle_targets=1,if=dot.virulent_plague.refreshable&active_enemies>=2&(!talent.unholy_blight|talent.unholy_blight&cooldown.unholy_blight.remains)
+# If there are enemies missing VP, apply it (but no more than once per 6 seconds).
+actions+=/outbreak,line_cd=6,if=active_dot.virulent_plague<active_enemies&active_enemies>=2&(!talent.unholy_blight|talent.unholy_blight&cooldown.unholy_blight.remains)
 actions+=/outbreak,if=runeforge.superstrain&(dot.frost_fever.refreshable|dot.blood_plague.refreshable)
 # Refreshes Deaths Due's buff just before deaths due ends
 actions+=/wound_spender,if=covenant.night_fae&death_and_decay.active_remains<(gcd*1.5)&death_and_decay.ticking
-actions+=/wait,sec=cooldown.soul_reaper.remains,if=talent.soul_reaper&target.time_to_pct_35<5&fight_remains>5&cooldown.soul_reaper.remains<(gcd*0.75)&active_enemies=1
+actions+=/wait,sec=cooldown.soul_reaper.remains,if=talent.soul_reaper&target.time_to_pct_35<5&target.time_to_die>5&cooldown.soul_reaper.remains<(gcd*0.75)&active_enemies=1
 # Wait for Death's Due/Defile if Night Fae to get strength buff back asap
 actions+=/wait,sec=cooldown.deaths_due.remains,if=covenant.night_fae&cooldown.deaths_due.remains<gcd&active_enemies=1
 actions+=/wait,sec=cooldown.defile.remains,if=covenant.night_fae&cooldown.defile.remains<gcd&active_enemies=1
