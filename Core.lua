@@ -1904,7 +1904,7 @@ function Hekili:ProcessHooks( dispName, packName )
         UI:UpdatePerformance( GetTime(), debugprofilestop() - actualStartTime, checkstr ~= UI.RecommendationsStr )
     end
 
-    UI.NewRecommendations = true
+    UI.NewRecommendations = checkstr ~= UI.RecommendationsStr
     UI.RecommendationsStr = checkstr
 
     if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_RECOMMENDATION_UPDATE", dispName, Queue[ 1 ].actionID, UI.eventsTriggered ) end
