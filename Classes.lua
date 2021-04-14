@@ -4145,6 +4145,7 @@ do
     for _, v in ipairs( pvp_medallions ) do
         insert( pvp_medallions_copy, v[1] )
         all:RegisterGear( v[1], v[2] )
+        all:RegisterGear( "gladiators_medallion", v[2] )
     end
 
     all:RegisterAbility( "gladiators_medallion", {
@@ -4198,8 +4199,8 @@ do
 
     for _, v in ipairs( pvp_badges ) do
         insert( pvp_badges_copy, v[1] )
-
         all:RegisterGear( v[1], v[2] )
+        all:RegisterGear( "gladiators_badge", v[2] )
     end
 
     all:RegisterAbility( "gladiators_badge", {
@@ -4268,8 +4269,10 @@ do
 
     local pvp_emblems_copy = {}
 
-    for k in pairs( pvp_emblems ) do
+    for k, v in pairs( pvp_emblems ) do
         insert( pvp_emblems_copy, k )
+        all:RegisterGear( k, v )
+        all:RegisterGear( "gladiators_emblem", v )
     end
 
     
