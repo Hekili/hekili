@@ -550,7 +550,7 @@ if UnitClassBase( "player" ) == "MAGE" then
             value = buff.combustion.remains
             if cooldown.combustion.remains < buff.combustion.remains then value = value + buff.combustion.duration end
         end
-        if conduit.infernal_cascade and ( buff.sun_kings_blessing_ready.up or variable.extended_combustion_remains > 1.5 * gcd.max * ( buff.sun_kings_blessing.max_stack - buff.sun_kings_blessing.stack ) ) then
+        if conduit.infernal_cascade.enabled and ( buff.sun_kings_blessing_ready.up or value > 1.5 * gcd.max * ( buff.sun_kings_blessing.max_stack - buff.sun_kings_blessing.stack ) ) then
             value = value + variable.skb_duration
         end
         return value
