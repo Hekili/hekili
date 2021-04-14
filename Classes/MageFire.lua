@@ -1410,11 +1410,19 @@ if UnitClassBase( "player" ) == "MAGE" then
     } )
 
 
+    --[[ spec:RegisterSetting( "fire_at_will", false, {
+        name = "Accept Fire Disclaimer",
+        desc = "The Fire Mage module is disabled by default, as it tends to require *much* more CPU usage than any other specialization module.  If you wish to use the Fire module, " ..
+            "can check this box and reload your UI (|cFFFFD100/reload|r) and the module will be available again.",
+        type = "toggle",
+        width = "full"
+    } ) ]]
+
     spec:RegisterSetting( "pyroblast_pull", false, {
         name = "Allow |T135808:0|t Pyroblast Hardcast Pre-Pull",
         desc = "If checked, the addon will recommend an opener |T135808:0|t Pyroblast against bosses, if included in the current priority.",
         type = "toggle",
-        width = 3,
+        width = "full"
     } )
     
     spec:RegisterSetting( "prevent_hardcasts", false, {
@@ -1422,7 +1430,7 @@ if UnitClassBase( "player" ) == "MAGE" then
         desc = "If checked, the addon will not recommend |T135808:0|t Pyroblast or |T135812:0|t Fireball if they have a cast time and you are moving.\n\n" ..
             "Instant |T135808:0|t Pyroblasts will not be affected.",
         type = "toggle",
-        width = 3
+        width = "full"
     } )
 
 
