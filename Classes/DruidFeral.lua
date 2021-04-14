@@ -112,40 +112,50 @@ if UnitClassBase( "player" ) == "DRUID" then
         duration = max( 0, min( remains + duration, 1.3 * duration, ttd ) )
         potential_ticks = ( pmult and persistent_multiplier or 1 ) * min( duration, ttd ) / tick_time
 
-        if action == "primal_wrath" then
+        if action == "primal_wrath" and active_enemies > 1 then
+            -- Current target's ticks are based on actual values.
+            local total = potential_ticks - remaining_ticks
+            
+            -- Other enemies could have a different remains for other reasons.
+            -- Especially SbT.
+            local pw_remains = max( state.action.primal_wrath.lastCast + class.abilities.primal_wrath.max_apply_duration - query_time, 0 )
+
             local fresh = max( 0, active_enemies - active_dot[ aura ] )
             local dotted = max( 0, active_enemies - fresh )
-    
+
             if remains == 0 then
                 fresh = max( 0, fresh - 1 )
             else
                 dotted = max( 0, dotted - 1 )
+                pw_remains = min( remains, pw_remains )
             end
 
-            -- Current target's ticks are based on actual values.
-            local total = potential_ticks - remaining_ticks
+            local pw_duration = min( pw_remains + class.abilities.primal_wrath.apply_duration, 1.3 * class.abilities.primal_wrath.apply_duration )
 
-            -- Fresh enemies just get the application value.
-            total = total + fresh * app_ticks
+            local targets = ns.dumpNameplateInfo()
+            for guid, counted in pairs( targets ) do
+                if counted then
+                    -- Use TTD info for enemies that are counted as targets
+                    ttd = min( fight_remains, max( 1, Hekili:GetDeathClockByGUID( guid ) - ( offset + delay ) ) )
 
-            -- Other dotted enemies could have a different duration for other reasons.
-            -- Especially SbT.
-            local pw_remains = min( fight_remains, max( state.action.primal_wrath.lastCast + class.abilities.primal_wrath.max_apply_duration - query_time, tick_time ) )
+                    if dotted > 0 then
+                        -- Dotted enemies use remaining ticks from previous primal wrath cast or target remains, whichever is shorter
+                        remaining_ticks = ( pmult and t.pmultiplier or 1 ) * min( pw_remains, ttd ) / tick_time
+                        dotted = dotted - 1
+                    else
+                        -- Fresh enemies have no remaining_ticks
+                        remaining_ticks = 0
+                        pw_duration = class.abilities.primal_wrath.apply_duration
+                    end
 
-            if remains > pw_remains then
-                local pw_ticks = ( pmult and t.pmultiplier or 1 ) * pw_remains / tick_time
-                local pw_duration = max( 0, min( pw_remains + class.abilities.primal_wrath.apply_duration, 1.3 * class.abilities.primal_wrath.max_apply_duration, fight_remains ) )
-                local pw_potential_ticks = ( pmult and persistent_multiplier or 1 ) * min( pw_duration, fight_remains ) / tick_time
+                    potential_ticks = ( pmult and persistent_multiplier or 1 ) * min( pw_duration, ttd ) / tick_time    
 
-                total = total + dotted * ( pw_potential_ticks - pw_ticks )
-            else
-                -- Just assume they're the same.
-                total = total + dotted * ( potential_ticks - remaining_ticks )
+                    total = total + potential_ticks - remaining_ticks
+                end
             end
-
             return max( 0, total )
 
-        elseif action == "thrash" then
+        elseif action == "thrash_cat" then
             local fresh = max( 0, active_enemies - active_dot.thrash_cat )
             local dotted = max( 0, active_enemies - fresh )
 

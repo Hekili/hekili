@@ -1578,6 +1578,7 @@ RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )
     Hekili.ScrapeUnitAuras( "target", true )
     state.target.updated = false
 
+    ns.getNumberTargets( true )
     Hekili:ForceUpdate( event, true )
 end )
 
