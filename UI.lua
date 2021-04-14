@@ -674,11 +674,11 @@ do
 
     local oocRefresh = 1
     local icRefresh = {
-        Primary = 0.1,
-        AOE = 0.2,
-        Interrupts = 1,
-        Defensives = 1,
-        Cooldowns = 0.2
+        Primary = 0.25,
+        AOE = 0.25,
+        Interrupts = 0.25,
+        Defensives = 0.5,
+        Cooldowns = 0.25
     }
 
     local LRC = LibStub("LibRangeCheck-2.0")
@@ -818,7 +818,7 @@ do
 
         if Hekili.freshFrame and not Hekili.Pause then
             local spec = Hekili.DB.profile.specs[ state.spec.id ]
-            local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or ( 1 / 20 )
+            local throttle = spec.throttleRefresh and ( 1 / spec.maxRefresh ) or 0.25
 
             if self.refreshTimer < 0 or ( self.superUpdate and ( self.id == "Primary" or self.id == "AOE" ) ) or self.criticalUpdate and ( now - self.lastUpdate >= throttle ) then
                 Hekili:ProcessHooks( self.id )
