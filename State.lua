@@ -613,7 +613,7 @@ local function spendCharges( action, charges )
         cd.duration = ability.recharge or ability.cooldown
         cd.expires = cd.next_charge
     else
-        cd.duration = 0
+        cd.duration = ability.recharge or ability.cooldown
         cd.expires = 0
     end
 end
@@ -3887,13 +3887,13 @@ do
         __index = function( t, var )
             local debug = Hekili.ActiveDebug
 
-            local now = state.query_time
-
             if class.variables[ var ] then
                 -- We have a hardcoded shortcut.
-                if Hekili.ActiveDebug then Hekili:Debug( "Using class var '%s'.", var ) end
+                if debug then Hekili:Debug( "Using class var '%s'.", var ) end
                 return class.variables[ var ]()
             end
+
+            local now = state.query_time
 
             if Hekili.LoadingScripts then
                 return 0
