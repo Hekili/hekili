@@ -8178,7 +8178,7 @@ function Hekili:GenerateProfile()
     local toggles
     for k, v in orderedPairs( self.DB.profile.toggles ) do
         if type( v ) == "table" and rawget( v, "value" ) ~= nil then
-            if toggles then toggles = format( "%s\n    %s = %s", toggles, k, tostring( v.value ) )
+            if toggles then toggles = format( "%s\n    %s = %s %s", toggles, k, tostring( v.value ), ( v.separate and "[separate]" or "" ) )
             else toggles = format( "%s = %s", k, tostring( v.value ) ) end
         end
     end
