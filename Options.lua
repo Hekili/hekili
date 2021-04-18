@@ -4628,6 +4628,14 @@ do
                                             local name, _, tex = GetSpellInfo( spell )
                                             
                                             msg = msg .. "\n\n|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r is on your action bar and will be used for all your " .. UnitClass("player") .. " pets."
+                                        else
+                                            msg = msg .. "\n\n|cFFFF0000Requires pet ability on one of your action bars.|r"
+                                        end
+
+                                        if GetCVar( "nameplateShowEnemies" ) == "1" then
+                                            msg = msg .. "\n\nEnemy nameplates are |cFF00FF00enabled|r and will be used to detect targets near your pet."
+                                        else
+                                            msg = msg .. "\n\n|cFFFF0000Requires enemy nameplates.|r"
                                         end
 
                                         return msg
@@ -4639,37 +4647,49 @@ do
                                     order = 3.1
                                 },
 
-                                addPetAbility = {
+                                petbasedGuidance = {
                                     type = "description",
                                     name = function ()
-                                        local out = "For pet-based detection to work, you must take an ability from your |cFF00FF00pet's spellbook|r and place it on one of |cFF00FF00your|r action bars.\n\n"
-                                        local spells = Hekili:GetPetBasedTargetSpells()
+                                        local out
 
-                                        if not spells then return " " end
+                                        if not self:HasPetBasedTargetSpell() then
+                                            out = "For pet-based detection to work, you must take an ability from your |cFF00FF00pet's spellbook|r and place it on one of |cFF00FF00your|r action bars.\n\n"
+                                            local spells = Hekili:GetPetBasedTargetSpells()
 
-                                        out = out .. "For %s, |T%d:0|t |cFFFFD100%s|r is recommended due to its range.  It will work for all your pets."
+                                            if not spells then return " " end
 
-                                        if spells.count > 1 then
-                                            out = out .. "\nAlternative(s): "
+                                            out = out .. "For %s, |T%d:0|t |cFFFFD100%s|r is recommended due to its range.  It will work for all your pets."
+
+                                            if spells.count > 1 then
+                                                out = out .. "\nAlternative(s): "
+                                            end
+
+                                            local n = 0
+
+                                            for spell in pairs( spells ) do                                            
+                                                if type( spell ) == "number" then
+                                                    n = n + 1
+
+                                                    local name, _, tex = GetSpellInfo( spell )
+
+                                                    if n == 1 then
+                                                        out = string.format( out, UnitClass( "player" ), tex, name )
+                                                    elseif n == 2 and spells.count == 2 then
+                                                        out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
+                                                    elseif n ~= spells.count then
+                                                        out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r, "
+                                                    else
+                                                        out = out .. "and |T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
+                                                    end
+                                                end
+                                            end
                                         end
 
-                                        local n = 0
-
-                                        for spell in pairs( spells ) do                                            
-                                            if type( spell ) == "number" then
-                                                n = n + 1
-
-                                                local name, _, tex = GetSpellInfo( spell )
-
-                                                if n == 1 then
-                                                    out = string.format( out, UnitClass( "player" ), tex, name )
-                                                elseif n == 2 and spells.count == 2 then
-                                                    out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
-                                                elseif n ~= spells.count then
-                                                    out = out .. "|T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r, "
-                                                else
-                                                    out = out .. "and |T" .. tex .. ":0|t |cFFFFD100" .. name .. "|r."
-                                                end
+                                        if GetCVar( "nameplateShowEnemies" ) ~= "1" then
+                                            if not out then
+                                                out = "|cFFFF0000WARNING!|r  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."
+                                            else
+                                                out = out .. "\n\n|cFFFF0000WARNING!|r  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."
                                             end
                                         end
                                         
@@ -4680,13 +4700,12 @@ do
                                     hidden = function ( info, val )
                                         if Hekili:GetPetBasedTargetSpells() == nil then return true end
                                         if self.DB.profile.specs[ id ].petbased == false then return true end
-                                        if self:HasPetBasedTargetSpell() then return true end
+                                        if self:HasPetBasedTargetSpell() and GetCVar( "nameplateShowEnemies" ) == "1" then return true end
 
                                         return false
                                     end,
                                     order = 3.11,
-                                },
-
+                                },                            
 
                                 -- Damage Detection Quasi-Group
                                 damage = {
