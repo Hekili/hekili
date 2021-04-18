@@ -1802,8 +1802,8 @@ local mt_state = {
             return IsInRaid() and t.group_members > 5
 
         elseif k == "level" then
-            return ( UnitLevel("player") or MAX_PLAYER_LEVEL )
-
+            return UnitEffectiveLevel("player") or MAX_PLAYER_LEVEL
+        
         elseif k == "active" then
             return false
 
