@@ -182,13 +182,7 @@ state.totem = {}
 state.trinket = {
     t1 = {
         slot = "t1",
-        usable = false,
-        has_buff = false,
-        has_use_buff = false,
 
-        cooldown = {
-            slot = "t1"
-        },
         --[[ has_cooldown = {
             slot = "t1"
         }, ]]
@@ -214,13 +208,6 @@ state.trinket = {
 
     t2 = {
         slot = "t2",
-        usable = false,
-        has_buff = false,
-        has_use_buff = false,
-
-        cooldown = {
-            slot = "t2",
-        },
 
         --[[ has_cooldown = {
             slot = "t2",
@@ -353,26 +340,40 @@ setmetatable( state.trinket.stat, mt_trinket_any_stat )
 
 local mt_trinket = {
     __index = function( t, k )
+        local isEnabled = ( rawget( t, "__ability" ) and not state:IsDisabled( t.__ability ) or false )
+
+        if k:match( "^__" ) then return k end
+
+        if k == "id" then
+            return isEnabled and t.__id or 0
+        elseif k == "ability" then
+            return isEnabled and t.__ability or "null_cooldown"
+        elseif k == "usable" then
+            return isEnabled and t.__usable or false
+        elseif k == "has_use_buff" then
+            return isEnabled and t.__has_use_buff or false
+        elseif k == "proc" then
+            return isEnabled and t.__proc or false
+        end
+
         if k == "up" or k == "ticking" or k == "active" then
-            return class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ].up or false
+            return isEnabled and class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ].up or false
         elseif k == "react" or k == "stack" or k == "stacks" then
-            return class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ][k] or 0
+            return isEnabled and class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ][k] or 0
         elseif k == "remains" then
-            return class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ].remains or 0
+            return isEnabled and class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ].remains or 0
         elseif k == "has_cooldown" then
-            return GetItemSpell( t.id ) ~= nil
+            return isEnabled and ( GetItemSpell( t.id ) ~= nil ) or false
         elseif k == "ready_cooldown" then
-            if t.usable and t.ability then
+            if isEnabled and t.usable and t.ability then
                 return t.cooldown.ready
             end
             return false
         elseif k == "cooldown" then
-            if t.usable and t.ability then
-                t.cooldown = state.cooldown[ t.ability ]
-            else
-                t.cooldown = state.cooldown.null_cooldown
+            if isEnabled and t.usable and t.ability then
+                return state.cooldown[ t.ability ]            
             end
-            return t.cooldown
+            return state.cooldown.null_cooldown
         end
         return false
     end

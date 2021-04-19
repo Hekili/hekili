@@ -988,27 +988,24 @@ do
 
         local T1 = GetInventoryItemID( "player", 13 )
 
-        state.trinket.t1.id = 0
-        state.trinket.t1.usable = false
-        state.trinket.t1.has_use_buff = false
-        state.trinket.t1.ability = "null_cooldown"
-        state.trinket.t1.cooldown = state.cooldown.null_cooldown
+        state.trinket.t1.__id = 0
+        state.trinket.t1.__ability = "null_cooldown"
+        state.trinket.t1.__usable = false
+        state.trinket.t1.__has_use_buff = false
 
         if T1 then
-            state.trinket.t1.id = T1
+            state.trinket.t1.__id = T1
 
             local name, spellID = GetItemSpell( T1 )
             local tSpell = class.itemMap[ T1 ]
 
             if tSpell then
-                state.trinket.t1.usable = true
-                state.trinket.t1.ability = tSpell
+                state.trinket.t1.__usable = true
+                state.trinket.t1.__ability = tSpell
                 
                 if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t1.has_use_buff = true
+                    state.trinket.t1.__has_use_buff = true
                 end
-
-                state.trinket.t1.cooldown = state.cooldown[ tSpell ]
             end
 
             ns.Tooltip:SetOwner( UIParent )
@@ -1024,7 +1021,7 @@ do
                 local line = ttLine:GetText()
 
                 if line and line:match( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP ) then
-                    state.trinket.t1.proc = true
+                    state.trinket.t1.__proc = true
                 end
             end
 
@@ -1033,27 +1030,24 @@ do
 
         local T2 = GetInventoryItemID( "player", 14 )
 
-        state.trinket.t2.id = 0
-        state.trinket.t2.usable = false
-        state.trinket.t2.has_use_buff = false
-        state.trinket.t2.ability = "null_cooldown"
-        state.trinket.t2.cooldown = state.cooldown.null_cooldown
+        state.trinket.t2.__id = 0
+        state.trinket.t2.__ability = "null_cooldown"
+        state.trinket.t2.__usable = false
+        state.trinket.t2.__has_use_buff = false
 
         if T2 then
-            state.trinket.t2.id = T2
+            state.trinket.t2.__id = T2
 
             local name, spellID = GetItemSpell( T2 )
             local tSpell = class.itemMap[ T2 ]
 
             if tSpell then
-                state.trinket.t2.usable = true
-                state.trinket.t2.ability = tSpell
+                state.trinket.t2.__usable = true
+                state.trinket.t2.__ability = tSpell
 
                 if spellID and SpellIsSelfBuff( spellID ) then
-                    state.trinket.t2.has_use_buff = true
+                    state.trinket.t2.__has_use_buff = true
                 end
-
-                state.trinket.t2.cooldown = state.cooldown[ tSpell ]
             end
 
             ns.Tooltip:SetOwner( UIParent )
@@ -1069,7 +1063,7 @@ do
                 local line = ttLine:GetText()
 
                 if line and line:match( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP ) then
-                    state.trinket.t2.proc = true
+                    state.trinket.t2.__proc = true
                 end
             end
 
