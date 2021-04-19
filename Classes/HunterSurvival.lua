@@ -1249,11 +1249,11 @@ if UnitClassBase( "player" ) == "HUNTER" then
             gcd = "spell",
 
             startsCombat = true,
-            texture = function ()
+            --[[ texture = function ()
                 local a = current_wildfire_bomb and current_wildfire_bomb or "wildfire_bomb"
                 if a == "wildfire_bomb" or not action[ a ] then return 2065634 end                
                 return action[ a ].texture
-            end,
+            end, ]]
 
             aura = "wildfire_bomb",
             bind = function () return current_wildfire_bomb end,
