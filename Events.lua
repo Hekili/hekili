@@ -1193,8 +1193,9 @@ RegisterUnitEvent( "UNIT_INVENTORY_CHANGED", "player", nil, function()
     ns.updateGear()
 end )
 
-RegisterEvent( "PLAYER_TALENT_UPDATE", function()
+RegisterEvent( "PLAYER_TALENT_UPDATE", function( event )
     ns.updateTalents()
+    Hekili:ForceUpdate( event, true )
 end )
 
 
