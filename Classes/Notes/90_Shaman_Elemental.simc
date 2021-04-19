@@ -40,7 +40,7 @@ actions+=/run_action_list,name=se_single_target,strict=1,if=talent.storm_element
 actions.aoe=earthquake,if=buff.echoing_shock.up
 actions.aoe+=/chain_harvest
 actions.aoe+=/stormkeeper,if=talent.stormkeeper.enabled
-actions.aoe+=/flame_shock,cycle_targets=1,if=active_dot.flame_shock<3&active_enemies<=5|runeforge.skybreakers_fiery_demise.equipped
+actions.aoe+=/flame_shock,cycle_targets=1,if=refreshable&(active_dot.flame_shock<3&active_enemies<=5|runeforge.skybreakers_fiery_demise.equipped)
 actions.aoe+=/flame_shock,if=!active_dot.flame_shock
 actions.aoe+=/echoing_shock,if=talent.echoing_shock.enabled&maelstrom>=60
 actions.aoe+=/ascendance,if=talent.ascendance.enabled&(!pet.storm_elemental.active)&(!talent.icefury.enabled|!buff.icefury.up&!cooldown.icefury.up)
