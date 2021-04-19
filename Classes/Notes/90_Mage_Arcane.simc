@@ -1,5 +1,5 @@
 ## Mage Arcane
-## April 12, 2021
+## April 19, 2021
 
 ## Remove variable.am_spam in favor of settings.am_spam (check your spec options).
 ## Use typical SimC handling of channel interruption instead of 'cancel_action'.
@@ -24,7 +24,7 @@ actions.precombat+=/variable,name=mot_max_delay_for_ap,op=reset,default=15
 actions.precombat+=/variable,name=ap_max_delay_for_totm,op=reset,default=10
 actions.precombat+=/variable,name=ap_max_delay_for_mot,op=reset,default=20
 actions.precombat+=/variable,name=rop_max_delay_for_totm,op=set,value=20-(5*conduit.arcane_prodigy)
-actions.precombat+=/variable,name=totm_max_delay_for_ap,op=set,if=(covenant.night_fae|(conduit.arcane_prodigy&active_enemies<3)),value=15,value_else=5
+actions.precombat+=/variable,name=totm_max_delay_for_ap,op=set,value=5+10*(covenant.night_fae|(conduit.arcane_prodigy&active_enemies<3))+15*(covenant.kyrian&runeforge.arcane_infinity&active_enemies>2)
 actions.precombat+=/variable,name=totm_max_delay_for_rop,op=set,value=20-(8*conduit.arcane_prodigy)
 actions.precombat+=/variable,name=barrage_mana_pct,op=set,if=covenant.night_fae,value=60-(mastery_value*100)
 actions.precombat+=/variable,name=barrage_mana_pct,op=set,if=covenant.kyrian,value=95-(mastery_value*100)
@@ -33,6 +33,7 @@ actions.precombat+=/variable,name=ap_minimum_mana_pct,op=reset,default=15
 actions.precombat+=/variable,name=totm_max_charges,op=reset,default=2
 actions.precombat+=/variable,name=aoe_totm_max_charges,op=reset,default=2
 actions.precombat+=/variable,name=fishing_opener,op=set,value=1*(equipped.empyreal_ordnance|(talent.rune_of_power&(talent.arcane_echo|!covenant.kyrian)&(!covenant.necrolord|active_enemies=1|runeforge.siphon_storm)))
+
 actions.precombat+=/variable,name=ap_on_use,op=set,value=equipped.macabre_sheet_music|equipped.gladiators_badge|equipped.gladiators_medallion|equipped.darkmoon_deck_putrescence|equipped.inscrutable_quantum_device|equipped.soulletting_ruby|equipped.sunblood_amethyst|equipped.wakeners_frond|equipped.flame_of_battle
 actions.precombat+=/variable,name=aoe_totm_max_charges,op=reset,default=2
 actions.precombat+=/variable,name=evo_pct,op=reset,default=15
