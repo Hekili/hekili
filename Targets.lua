@@ -494,8 +494,8 @@ local debuffs = {}
 local debuffCount = {}
 local debuffMods = {}
 
-function ns.saveDebuffModifier(id, val)
-    debuffMods[id] = val
+function ns.saveDebuffModifier( id, val )
+    debuffMods[ id ] = val
 end
 
 ns.wipeDebuffs = function()
@@ -545,8 +545,8 @@ ns.GetDebuffApplicationTime = function( spell, target )
 end
 
 
-function ns.getModifier(id, target)
-    local debuff = debuffs[id]
+function ns.getModifier( id, target )
+    local debuff = debuffs[ id ]
     if not debuff then
         return 1
     end
@@ -1069,7 +1069,7 @@ do
             local guid = UnitGUID(unit)
 
             if guid and not seen[guid] then
-                if db[guid] and (not UnitExists(unit) or UnitIsDead(unit) or not UnitCanAttack("player", unit) or UnitHealth(unit) <= 1) then
+                if db[ guid ] and ( not UnitExists(unit) or UnitIsDead(unit) or not UnitCanAttack("player", unit) or ( UnitHealth(unit) <= 1 and UnitHealthMax(unit) > 1 ) ) then
                     EliminateEnemy(guid)
                 else
                     local health, healthMax = UnitHealth(unit), UnitHealthMax(unit)
