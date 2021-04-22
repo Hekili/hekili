@@ -4429,6 +4429,9 @@ local mt_default_action = {
         if k == "enabled" or k == "known" then
             return state:IsKnown( t.action )
 
+        elseif k == "disabled" then
+            return state:IsDisabled( t.action )
+
         elseif k == "gcd" then
             local queued_action = state.this_action
             state.this_action = t.action
