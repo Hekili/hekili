@@ -921,7 +921,11 @@ do
             cooldown = 120,
             gcd = "off",
 
-            item = 175732,
+            item = function ()
+                if equipped[ 175732 ] then return 175732 end
+                return 181357
+            end,
+            items = { 175732, 181357 },            
             toggle = "cooldowns",
 
             handler = function ()
