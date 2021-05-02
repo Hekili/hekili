@@ -1,5 +1,5 @@
 ## Mage Arcane
-## April 19, 2021
+## May 2, 2021
 
 ## Remove variable.am_spam in favor of settings.am_spam (check your spec options).
 ## Use typical SimC handling of channel interruption instead of 'cancel_action'.
