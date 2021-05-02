@@ -994,7 +994,7 @@ if UnitClassBase( "player" ) == "DRUID" then
             cooldown = function () return 60 * ( 1 + ( conduit.tough_as_bark.mod * 0.01 ) ) end,
             gcd = "off",
 
-            toggle = "false",
+            toggle = "defensives",
 
             startsCombat = false,
             texture = 136097,
