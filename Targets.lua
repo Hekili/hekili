@@ -968,10 +968,6 @@ do
     end
 
     function Hekili:GetNumTTDsWithin( x )
-        if x <= 3 then
-            return 1
-        end
-
         local count = 0
 
         for k, v in pairs(db) do

@@ -1855,6 +1855,8 @@ local mt_state = {
             if t.min_targets > 0 then targets = max( t.min_targets, targets ) end
             if t.max_targets > 0 then targets = min( t.max_targets, targets ) end
 
+            if Hekili.ActiveDebug then Hekili:Debug( "cycle min:%.2f, max:%.2f, ae:%d, before:%d, after:%d, cycle_enemies:%d", minTTD or 0, maxTTD or 0, t.active_enemies, minTTD and Hekili:GetNumTTDsBefore( minTTD ) or 0, maxTTD and Hekili:GetNumTTDsAfter( maxTTD ) or 0, max( 1, targets ) ) end
+
             return max( 1, targets )
 
         elseif k == "true_active_enemies" then
